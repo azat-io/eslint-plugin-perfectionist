@@ -13,6 +13,8 @@
   ],
   "scripts": {
     "build": "vite build",
+    "docs": "vitepress dev docs",
+    "docs:build": "vitepress build docs",
     "release": "pnpm release:check && pnpm release:version && pnpm release:publish",
     "release:changelog": "conventional-changelog -p angular --infile changelog.md --same-file",
     "release:check": "pnpm test && pnpm run build",
@@ -55,6 +57,7 @@
     "simple-git-hooks": "^2.8.1",
     "typescript": "^5.0.4",
     "vite": "^4.3.5",
+    "vitepress": "1.0.0-alpha.75",
     "vitest": "^0.31.0"
   }
 }

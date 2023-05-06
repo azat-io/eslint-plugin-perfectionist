@@ -8,6 +8,10 @@ dist/
 .vscode/
 .vim/
 
+# VitePress
+docs/.vitepress/cache/
+docs/.vitepress/temp/
+
 # Test
 coverage/
 
