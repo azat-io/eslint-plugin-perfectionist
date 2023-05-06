@@ -1,0 +1,15 @@
+# Node.js
+node_modules/
+
+# Build
+dist/
+
+# Editor
+.vscode/
+.vim/
+
+# Test
+coverage/
+
+# Misc
+.DS_Store

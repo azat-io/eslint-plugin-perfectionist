@@ -1,0 +1,70 @@
+name: test
+
+on:
+  push:
+    branches:
+      - 'main'
+  pull_request:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: checkout
+        uses: actions/checkout@v2
+
+      - name: set outputs
+        id: vars
+        run: echo "::set-output name=sha_short::$(git rev-parse --short HEAD)"
+
+      - name: start build notification
+        uses: appleboy/telegram-action@master
+        with:
+          to: ${{ secrets.TELEGRAM_CHAT }}
+          token: ${{ secrets.TELEGRAM_TOKEN }}
+          disable_web_page_preview: true
+          format: html
+          message: |
+            ⏳ <a href="${{ github.server_url }}/${{ github.repository }}"><b>${{ github.repository }}</b></a>
+
+            ${{ github.workflow }}
+
+            by: ${{ github.actor }}
+            branch: ${{ github.ref }}
+            commit: ${{ github.event.head_commit.message }}
+            sha: ${{ steps.vars.outputs.sha_short }}
+
+            <a href="${{ github.event.head_commit.url }}">link</a>
+
+      - name: install tools from asdf config
+        uses: ai/asdf-cache-action@v1
+
+      - name: install dependencies
+        run: pnpm install
+
+      - name: build packages
+        run: pnpm build
+
+      - name: test
+        run: pnpm test
+
+      - name: finish build notification
+        uses: appleboy/telegram-action@master
+        if: always()
+        with:
+          to: ${{ secrets.TELEGRAM_CHAT }}
+          token: ${{ secrets.TELEGRAM_TOKEN }}
+          disable_web_page_preview: true
+          format: html
+          message: |
+            ${{ job.status == 'success' && '✅' || '🆘' }} <a href="${{ github.server_url }}/${{ github.repository }}"><b>${{ github.repository }}</b></a>
+
+            ${{ github.workflow }}
+
+            by: ${{ github.actor }}
+            branch: ${{ github.ref }}
+            commit: ${{ github.event.head_commit.message }}
+            sha: ${{ steps.vars.outputs.sha_short }}
+
+            <a href="${{ github.event.head_commit.url }}">link</a>

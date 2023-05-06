@@ -1,0 +1,3 @@
+{
+  "commit-msg": "pnpm exec commitlint -e \"$@\""
+}
