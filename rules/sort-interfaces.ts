@@ -6,6 +6,9 @@ import type {
 import { AST_NODE_TYPES } from '@typescript-eslint/types'
 
 import { createEslintRule } from '~/utils/create-eslint-rule'
+import { rangeToDiff } from '~/utils/range-to-diff'
+import { sortNodes } from '~/utils/sort-nodes'
+import type { SortingNode } from '~/typings'
 
 type MESSAGE_ID = 'unexpectedInterfacePropertiesOrder'
 
@@ -31,17 +34,12 @@ export default createEslintRule<Options, MESSAGE_ID>({
   defaultOptions: [],
   create: context => ({
     TSInterfaceBody: node => {
-      let values = node.body.map(typeElement => {
+      let values: SortingNode[] = node.body.map(typeElement => {
         let name = ''
         let size = 0
 
         let inc = (number: number) => {
           size += number
-        }
-
-        let rangeToDiff = (range: Range) => {
-          let [from, to] = range
-          return to - from
         }
 
         let useKey = (element: {
@@ -108,6 +106,7 @@ export default createEslintRule<Options, MESSAGE_ID>({
         }
 
         return {
+          node: typeElement,
           name,
           size,
         }
@@ -120,8 +119,6 @@ export default createEslintRule<Options, MESSAGE_ID>({
         let second = values.at(secondIndex)!
 
         if (first.size < second.size) {
-          let sourceCode = context.getSourceCode()
-          let firstNode = node.body[firstIndex]
           let secondNode = node.body[secondIndex]
 
           context.report({
@@ -132,22 +129,9 @@ export default createEslintRule<Options, MESSAGE_ID>({
             },
             node: secondNode,
             fix: fixer => {
-              let getNodeRange = (nodeValue: Node): Range => [
-                nodeValue.range.at(0)!,
-                nodeValue.range.at(1)!,
-              ]
-
-              let fixes = [
-                fixer.replaceTextRange(
-                  getNodeRange(firstNode),
-                  sourceCode.text.slice(...getNodeRange(secondNode)),
-                ),
-                fixer.replaceTextRange(
-                  getNodeRange(secondNode),
-                  sourceCode.text.slice(...getNodeRange(firstNode)),
-                ),
-              ]
-              return fixes
+              let sourceCode = context.getSourceCode()
+              let { text } = sourceCode
+              return sortNodes(fixer, text, values)
             },
           })
         }

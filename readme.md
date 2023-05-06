@@ -22,9 +22,10 @@ npm install --save-dev eslint-plugin-perfectionist
 
 ## Rules
 
-| Name            | Description                         | 💼  | 🔧  |
-| :-------------- | :---------------------------------- | :-- | :-- |
-| sort-interfaces | Enforce sorted interface properties | 💼  | 🔧  |
+| Name                                                                                       | Description                         | 💼  | 🛠   |
+| :----------------------------------------------------------------------------------------- | :---------------------------------- | :-- | :-- |
+| [sort-interfaces](https://eslint-plugin-perfectionist.azat.io/rules/sort-interfaces)       | Enforce sorted interface properties | ✅  | 🔧  |
+| [sort-named-imports](https://eslint-plugin-perfectionist.azat.io/rules/sort-named-imports) | Enforce sorted named imports        | ✅  | 🔧  |
 
 ## See also
 

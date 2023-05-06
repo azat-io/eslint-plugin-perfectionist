@@ -75,6 +75,10 @@ export default defineConfig({
               text: 'sort-interfaces',
               link: '/rules/sort-interfaces',
             },
+            {
+              text: 'sort-named-imports',
+              link: '/rules/sort-named-imports',
+            },
           ],
         },
       ],

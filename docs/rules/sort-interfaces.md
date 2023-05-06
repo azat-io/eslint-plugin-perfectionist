@@ -4,7 +4,7 @@ title: sort-interfaces
 
 # sort-interfaces
 
-> Enforce sorted interface properties
+> Enforce sorted interface properties.
 
 ## Rule details
 
