@@ -76,6 +76,10 @@ export default defineConfig({
               link: '/rules/sort-interfaces',
             },
             {
+              text: 'sort-jsx-props',
+              link: '/rules/sort-jsx-props',
+            },
+            {
               text: 'sort-named-imports',
               link: '/rules/sort-named-imports',
             },
