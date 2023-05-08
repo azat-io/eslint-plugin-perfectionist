@@ -2,6 +2,7 @@ import { RuleTester } from '@typescript-eslint/utils/dist/ts-eslint/index.js'
 import { describe, it } from 'vitest'
 
 import rule, { RULE_NAME } from '~/rules/sort-interfaces'
+import { SortType, SortOrder } from '~/typings'
 
 describe(RULE_NAME, () => {
   let ruleTester = new RuleTester({
@@ -42,18 +43,34 @@ describe(RULE_NAME, () => {
   it(`${RULE_NAME}: takes into account the presence of an optional operator`, () => {
     ruleTester.run(RULE_NAME, rule, {
       valid: [
-        `
-          interface Interface {
-            color: 'purple' | 'blue' | 'green'
-            align: 'left' | 'center' | 'right'
-          }
-        `,
-        `
-          interface Interface {
-            align: 'left' | 'center' | 'right'
-            color: 'purple' | 'blue' | 'green'
-          }
-        `,
+        {
+          code: `
+            interface Interface {
+              color: 'purple' | 'blue' | 'green'
+              align: 'left' | 'center' | 'right'
+            }
+          `,
+          options: [
+            {
+              type: SortType['line-length'],
+              order: SortOrder.desc,
+            },
+          ],
+        },
+        {
+          code: `
+            interface Interface {
+              align: 'left' | 'center' | 'right'
+              color: 'purple' | 'blue' | 'green'
+            }
+          `,
+          options: [
+            {
+              type: SortType['line-length'],
+              order: SortOrder.desc,
+            },
+          ],
+        },
       ],
       invalid: [
         {
@@ -69,6 +86,12 @@ describe(RULE_NAME, () => {
               color: 'purple' | 'blue' | 'green'
             }
           `,
+          options: [
+            {
+              type: SortType['line-length'],
+              order: SortOrder.desc,
+            },
+          ],
           errors: [
             {
               messageId: 'unexpectedInterfacePropertiesOrder',
@@ -86,12 +109,20 @@ describe(RULE_NAME, () => {
   it(`${RULE_NAME}: checks ts index signature`, () => {
     ruleTester.run(RULE_NAME, rule, {
       valid: [
-        `
-          interface Interface {
-            [key: string]: string
-            elementsNum: number
-          }
-        `,
+        {
+          code: `
+            interface Interface {
+              [key: string]: string
+              elementsNum: number
+            }
+          `,
+          options: [
+            {
+              type: SortType['line-length'],
+              order: SortOrder.desc,
+            },
+          ],
+        },
       ],
       invalid: [
         {
@@ -101,6 +132,12 @@ describe(RULE_NAME, () => {
               [key: string]: number
             }
           `,
+          options: [
+            {
+              type: SortType['line-length'],
+              order: SortOrder.desc,
+            },
+          ],
           output: `
             interface Interface {
               [key: string]: number

@@ -9,7 +9,7 @@ export default defineConfig({
       formats: ['cjs', 'es'],
     },
     rollupOptions: {
-      external: ['@typescript-eslint/utils', '@typescript-eslint/types'],
+      external: ['@typescript-eslint/utils', '@typescript-eslint/types', 'natural-compare-lite'],
     },
   },
   resolve: {

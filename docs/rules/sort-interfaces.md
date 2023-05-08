@@ -6,7 +6,7 @@ title: sort-interfaces
 
 > Enforce sorted interface properties.
 
-## Rule details
+## 📖 Rule details
 
 This rule verifies that all TypeScript interface properties are sorted sorted in order of string length.
 
@@ -42,11 +42,19 @@ interface ButtonProps {
 }
 ```
 
-## Options
+## 🔧 Options
 
-This rule is not configurable.
+### `type`
 
-## Usage
+- `natural` (default) - sorting, which is similar to alphabetical order.
+- `line-length` - sort by code line length.
+
+### `order`
+
+- `asc` (default) - enforce properties to be in ascending order.
+- `desc` - enforce properties to be in descending order.
+
+## 🚀 Usage
 
 ### Legacy config
 
@@ -54,7 +62,7 @@ This rule is not configurable.
 // .eslintrc
 {
   "rules": {
-    "perfectionist/sort-interfaces": "error"
+    "perfectionist/sort-interfaces": ["error", { "type": "line-length", "order": "desc" }]
   }
 }
 ```
@@ -70,12 +78,12 @@ export default {
     perfectionist,
   },
   rules: {
-    'perfectionist/sort-interfaces': 'error',
+    'perfectionist/sort-interfaces': ['error', { type: 'line-length', order: 'desc' }],
   },
 }
 ```
 
-## Resources
+## 📚 Resources
 
 - [Rule source](https://github.com/azat-io/eslint-plugin-perfectionist/blob/main/rules/sort-interfaces.ts)
 - [Test source](https://github.com/azat-io/eslint-plugin-perfectionist/blob/main/test/sort-interfaces.test.ts)

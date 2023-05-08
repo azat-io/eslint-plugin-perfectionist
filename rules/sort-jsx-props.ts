@@ -1,18 +1,23 @@
-import type {
-  JSXSpreadAttribute,
-  JSXAttribute,
-} from '@typescript-eslint/types/dist/generated/ast-spec'
+import type { JSXSpreadAttribute, JSXAttribute } from '@typescript-eslint/types/dist/generated/ast-spec'
 
 import { AST_NODE_TYPES } from '@typescript-eslint/types'
 
 import { createEslintRule } from '~/utils/create-eslint-rule'
 import { rangeToDiff } from '~/utils/range-to-diff'
+import { SortType, SortOrder } from '~/typings'
 import { sortNodes } from '~/utils/sort-nodes'
 import type { SortingNode } from '~/typings'
+import { complete } from '~/utils/complete'
+import { compare } from '~/utils/compare'
 
 type MESSAGE_ID = 'unexpectedJSXPropsOrder'
 
-type Options = []
+type Options = [
+  Partial<{
+    order: SortOrder
+    type: SortType
+  }>,
+]
 
 export const RULE_NAME = 'sort-jsx-props'
 
@@ -28,11 +33,34 @@ export default createEslintRule<Options, MESSAGE_ID>({
       unexpectedJSXPropsOrder: 'Expected "{{second}}" to come before "{{first}}"',
     },
     fixable: 'code',
-    schema: [],
+    schema: [
+      {
+        type: 'object',
+        properties: {
+          type: {
+            enum: [SortType.natural, SortType['line-length']],
+          },
+          order: {
+            enum: [SortOrder.asc, SortOrder.desc],
+          },
+        },
+        additionalProperties: false,
+      },
+    ],
   },
-  defaultOptions: [],
+  defaultOptions: [
+    {
+      type: SortType.natural,
+      order: SortOrder.asc,
+    },
+  ],
   create: context => ({
     JSXElement: node => {
+      let options = complete(context.options.at(0), {
+        type: SortType.natural,
+        order: SortOrder.asc,
+      })
+
       let parts: JSXAttribute[][] = node.openingElement.attributes.reduce(
         (accumulator: JSXAttribute[][], attribute: JSXSpreadAttribute | JSXAttribute) => {
           if (attribute.type === 'JSXAttribute') {
@@ -61,7 +89,7 @@ export default createEslintRule<Options, MESSAGE_ID>({
           let first = values.at(firstIndex)!
           let second = values.at(secondIndex)!
 
-          if (first.size < second.size) {
+          if (compare(first, second, options)) {
             context.report({
               messageId: 'unexpectedJSXPropsOrder',
               data: {
@@ -72,7 +100,7 @@ export default createEslintRule<Options, MESSAGE_ID>({
               fix: fixer => {
                 let sourceCode = context.getSourceCode()
                 let { text } = sourceCode
-                return sortNodes(fixer, text, values)
+                return sortNodes(fixer, text, values, options)
               },
             })
           }

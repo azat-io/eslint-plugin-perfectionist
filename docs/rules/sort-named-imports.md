@@ -6,43 +6,35 @@ title: sort-named-imports
 
 > Enforce sorted named imports.
 
-## Rule details
+## 📖 Rule details
 
 This rule verifies that all named imports are sorted sorted in order of string length.
 
 ### Incorrect
 
 ```ts
-import {
-  useEffect,
-  useState,
-  useMemo,
-  useId,
-  Suspense,
-  useCallback,
-  lazy,
-} from 'react'
+import { useEffect, useState, useMemo, useId, Suspense, useCallback, lazy } from 'react'
 ```
 
 ### Correct
 
 ```ts
-import {
-  useCallback,
-  useEffect,
-  Suspense,
-  useState,
-  useMemo,
-  useId,
-  lazy,
-} from 'react'
+import { useCallback, useEffect, Suspense, useState, useMemo, useId, lazy } from 'react'
 ```
 
-## Options
+## 🔧 Options
 
-This rule is not configurable.
+### `type`
 
-## Usage
+- `natural` (default) - sorting, which is similar to alphabetical order.
+- `line-length` - sort by code line length.
+
+### `order`
+
+- `asc` (default) - enforce properties to be in ascending order.
+- `desc` - enforce properties to be in descending order.
+
+## 🚀 Usage
 
 ### Legacy config
 
@@ -50,7 +42,7 @@ This rule is not configurable.
 // .eslintrc
 {
   "rules": {
-    "perfectionist/sort-named-imports": "error"
+    "perfectionist/sort-named-imports": ["error", { "type": "line-length", "order": "desc" }]
   }
 }
 ```
@@ -66,12 +58,12 @@ export default {
     perfectionist,
   },
   rules: {
-    'perfectionist/sort-named-imports': 'error',
+    'perfectionist/sort-named-imports': ['error', { type: 'line-length', order: 'desc' }],
   },
 }
 ```
 
-## Resources
+## 📚 Resources
 
 - [Rule source](https://github.com/azat-io/eslint-plugin-perfectionist/blob/main/rules/sort-named-imports.ts)
 - [Test source](https://github.com/azat-io/eslint-plugin-perfectionist/blob/main/test/sort-named-imports.test.ts)

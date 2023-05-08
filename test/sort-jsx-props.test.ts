@@ -2,6 +2,7 @@ import { RuleTester } from '@typescript-eslint/utils/dist/ts-eslint/index.js'
 import { describe, it } from 'vitest'
 
 import rule, { RULE_NAME } from '~/rules/sort-jsx-props'
+import { SortType, SortOrder } from '~/typings'
 
 describe(RULE_NAME, () => {
   let ruleTester = new RuleTester({
@@ -16,17 +17,25 @@ describe(RULE_NAME, () => {
   it(`${RULE_NAME}: sorts jsx props`, () => {
     ruleTester.run(RULE_NAME, rule, {
       valid: [
-        `
-          let Container = () => (
-            <Button
-              variant="solid"
-              type="button"
-              color="main"
-            >
-              Press me
-            </Button>
-          )
-        `,
+        {
+          code: `
+            let Container = () => (
+              <Button
+                variant="solid"
+                type="button"
+                color="main"
+              >
+                Press me
+              </Button>
+            )
+          `,
+          options: [
+            {
+              type: SortType['line-length'],
+              order: SortOrder.desc,
+            },
+          ],
+        },
       ],
       invalid: [
         {
@@ -41,6 +50,12 @@ describe(RULE_NAME, () => {
               </Button>
             )
           `,
+          options: [
+            {
+              type: SortType['line-length'],
+              order: SortOrder.desc,
+            },
+          ],
           output: `
             let Container = () => (
               <Button
@@ -113,21 +128,29 @@ describe(RULE_NAME, () => {
   it(`${RULE_NAME}: does not break the property list`, () => {
     ruleTester.run(RULE_NAME, rule, {
       valid: [
-        `
-          let Container = () => (
-            <Input
-              placeholder="Password"
-              value={password}
-              full
-              {...props}
-              className="input"
-              type="password"
-              name="element"
-              error={false}
-              autoFocus
-            />
-          )
-        `,
+        {
+          code: `
+            let Container = () => (
+              <Input
+                placeholder="Password"
+                value={password}
+                full
+                {...props}
+                className="input"
+                type="password"
+                name="element"
+                error={false}
+                autoFocus
+              />
+            )
+          `,
+          options: [
+            {
+              type: SortType['line-length'],
+              order: SortOrder.desc,
+            },
+          ],
+        },
       ],
       invalid: [
         {
@@ -146,6 +169,12 @@ describe(RULE_NAME, () => {
               />
             )
           `,
+          options: [
+            {
+              type: SortType['line-length'],
+              order: SortOrder.desc,
+            },
+          ],
           output: `
             let Container = () => (
               <Input

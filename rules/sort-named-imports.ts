@@ -1,11 +1,19 @@
 import { createEslintRule } from '~/utils/create-eslint-rule'
 import { rangeToDiff } from '~/utils/range-to-diff'
+import { SortType, SortOrder } from '~/typings'
 import { sortNodes } from '~/utils/sort-nodes'
 import type { SortingNode } from '~/typings'
+import { complete } from '~/utils/complete'
+import { compare } from '~/utils/compare'
 
 type MESSAGE_ID = 'unexpectedNamedImportsOrder'
 
-type Options = []
+type Options = [
+  Partial<{
+    order: SortOrder
+    type: SortType
+  }>,
+]
 
 export const RULE_NAME = 'sort-named-imports'
 
@@ -21,11 +29,34 @@ export default createEslintRule<Options, MESSAGE_ID>({
       unexpectedNamedImportsOrder: 'Expected "{{second}}" to come before "{{first}}"',
     },
     fixable: 'code',
-    schema: [],
+    schema: [
+      {
+        type: 'object',
+        properties: {
+          type: {
+            enum: [SortType.natural, SortType['line-length']],
+          },
+          order: {
+            enum: [SortOrder.asc, SortOrder.desc],
+          },
+        },
+        additionalProperties: false,
+      },
+    ],
   },
-  defaultOptions: [],
+  defaultOptions: [
+    {
+      type: SortType.natural,
+      order: SortOrder.asc,
+    },
+  ],
   create: context => ({
     ImportDeclaration: node => {
+      let options = complete(context.options.at(0), {
+        type: SortType.natural,
+        order: SortOrder.asc,
+      })
+
       if (node.specifiers.length > 1) {
         let values: SortingNode[] = node.specifiers.map(specifier => {
           let {
@@ -45,7 +76,7 @@ export default createEslintRule<Options, MESSAGE_ID>({
           let first = values.at(firstIndex)!
           let second = values.at(secondIndex)!
 
-          if (first.size < second.size) {
+          if (compare(first, second, options)) {
             let secondNode = node.specifiers[secondIndex]
 
             context.report({
@@ -58,7 +89,7 @@ export default createEslintRule<Options, MESSAGE_ID>({
               fix: fixer => {
                 let sourceCode = context.getSourceCode()
                 let { text } = sourceCode
-                return sortNodes(fixer, text, values)
+                return sortNodes(fixer, text, values, options)
               },
             })
           }

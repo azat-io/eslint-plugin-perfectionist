@@ -7,6 +7,9 @@ dependencies:
   '@typescript-eslint/utils':
     specifier: ^5.59.2
     version: 5.59.2(eslint@8.40.0)(typescript@5.0.4)
+  natural-compare-lite:
+    specifier: ^1.4.0
+    version: 1.4.0
 
 devDependencies:
   '@azat-io/eslint-config-typescript':
@@ -18,6 +21,9 @@ devDependencies:
   '@commitlint/config-conventional':
     specifier: ^17.6.3
     version: 17.6.3
+  '@types/natural-compare-lite':
+    specifier: ^1.4.0
+    version: 1.4.0
   '@types/node':
     specifier: ^20.1.0
     version: 20.1.0
@@ -858,6 +864,10 @@ packages:
 
   /@types/minimist@1.2.2:
     resolution: {integrity: sha512-jhuKLIRrhvCPLqwPcx6INqmKeiA5EWrsCOPhrlFSrbrmU4ZMPjj5Ul/oLCMDO98XRUIwVm78xICz4EPCektzeQ==}
+    dev: true
+
+  /@types/natural-compare-lite@1.4.0:
+    resolution: {integrity: sha512-ZDcj/yWsRPacqKPpCExWWFq9X1JQwEOfHsu8deN1Qfa6M02z6tN4DK6AMf2IkM7709gp3QW6Bo7m2NFDhA485w==}
     dev: true
 
   /@types/node@20.1.0:
@@ -3521,7 +3531,6 @@ packages:
 
   /natural-compare-lite@1.4.0:
     resolution: {integrity: sha512-Tj+HTDSJJKaZnfiuw+iaF9skdPpTo2GtEly5JHnWV/hfv2Qj/9RKsGISQtLh2ox3l5EAGw487hnBee0sIJ6v2g==}
-    dev: true
 
   /natural-compare@1.4.0:
     resolution: {integrity: sha512-OWND8ei3VtNC9h7V60qff3SVobHr996CTwgxubgyQYEpg290h9J0buyECNNJexkFm5sOajh5G116RYA1c8ZMSw==}
