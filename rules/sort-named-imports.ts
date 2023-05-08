@@ -18,8 +18,7 @@ export default createEslintRule<Options, MESSAGE_ID>({
       recommended: false,
     },
     messages: {
-      unexpectedNamedImportsOrder:
-        'Expected "{{second}}" to come before "{{first}}"',
+      unexpectedNamedImportsOrder: 'Expected "{{second}}" to come before "{{first}}"',
     },
     fixable: 'code',
     schema: [],

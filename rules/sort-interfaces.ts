@@ -1,7 +1,4 @@
-import type {
-  Range,
-  Node,
-} from '@typescript-eslint/types/dist/generated/ast-spec'
+import type { Range, Node } from '@typescript-eslint/types/dist/generated/ast-spec'
 
 import { AST_NODE_TYPES } from '@typescript-eslint/types'
 
@@ -25,8 +22,7 @@ export default createEslintRule<Options, MESSAGE_ID>({
       recommended: false,
     },
     messages: {
-      unexpectedInterfacePropertiesOrder:
-        'Expected "{{second}}" to come before "{{first}}"',
+      unexpectedInterfacePropertiesOrder: 'Expected "{{second}}" to come before "{{first}}"',
     },
     fixable: 'code',
     schema: [],
@@ -50,17 +46,10 @@ export default createEslintRule<Options, MESSAGE_ID>({
           inc(rangeToDiff(element.key.range))
         }
 
-        let useIndexSignatureKey = (element: {
-          parameters: { range: Range }[]
-        }) => {
+        let useIndexSignatureKey = (element: { parameters: { range: Range }[] }) => {
           let { length } = '[]'
 
-          inc(
-            element.parameters.reduce(
-              (accumulator, { range }) => accumulator + rangeToDiff(range),
-              length,
-            ),
-          )
+          inc(element.parameters.reduce((accumulator, { range }) => accumulator + rangeToDiff(range), length))
         }
 
         let useOptional = (element: { optional?: boolean }) => {
