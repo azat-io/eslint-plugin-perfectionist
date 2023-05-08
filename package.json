@@ -2,7 +2,6 @@
   "name": "eslint-plugin-perfectionist",
   "description": "ESLint plugin for code formatting in perfectionist style",
   "version": "0.1.0",
-  "type": "module",
   "repository": "azat-io/eslint-plugin-perfectionist",
   "author": "Azat S. <to@azat.io>",
   "license": "MIT",
@@ -46,7 +45,7 @@
     "@typescript-eslint/utils": "^5.59.2"
   },
   "devDependencies": {
-    "@azat-io/eslint-config-typescript": "^0.7.1",
+    "@azat-io/eslint-config-typescript": "^0.8.0",
     "@commitlint/cli": "^17.6.3",
     "@commitlint/config-conventional": "^17.6.3",
     "@types/node": "^20.1.0",

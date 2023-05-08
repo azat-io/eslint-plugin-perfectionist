@@ -1,6 +1,6 @@
-import config from '@azat-io/eslint-config-typescript'
+let config = require('@azat-io/eslint-config-typescript')
 
-export default [
+module.exports = [
   ...config,
   {
     ignores: ['**/.vitepress/cache/**/*'],

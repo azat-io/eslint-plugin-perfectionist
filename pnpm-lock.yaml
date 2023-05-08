@@ -10,8 +10,8 @@ dependencies:
 
 devDependencies:
   '@azat-io/eslint-config-typescript':
-    specifier: ^0.7.1
-    version: 0.7.1(eslint-plugin-import@2.27.5)(eslint@8.40.0)(typescript@5.0.4)
+    specifier: ^0.8.0
+    version: 0.8.0(eslint-plugin-import@2.27.5)(eslint@8.40.0)(typescript@5.0.4)
   '@commitlint/cli':
     specifier: ^17.6.3
     version: 17.6.3
@@ -170,12 +170,12 @@ packages:
       '@jridgewell/trace-mapping': 0.3.18
     dev: true
 
-  /@azat-io/eslint-config-typescript@0.7.1(eslint-plugin-import@2.27.5)(eslint@8.40.0)(typescript@5.0.4):
-    resolution: {integrity: sha512-rO1BYnxzzGnui+DkIuNBXHItDw7+OmPOQcV19yBfw27P8bTYUV2lGt3TuiMJI22mvyoEVD4NzYk4BntXC2fIsg==}
+  /@azat-io/eslint-config-typescript@0.8.0(eslint-plugin-import@2.27.5)(eslint@8.40.0)(typescript@5.0.4):
+    resolution: {integrity: sha512-hXwnL6XAmHJsyeOgl8b2fRGDCW1xPoUvrbV9LEGCtGJPBW3KaeqEdDa9QO8JpxHf8n92DlcKn30vDVdnEXRSkA==}
     peerDependencies:
       eslint: ^8.38.0
     dependencies:
-      '@azat-io/eslint-config': 0.7.1(@typescript-eslint/parser@5.59.2)(eslint-import-resolver-typescript@3.5.5)(eslint@8.40.0)(typescript@5.0.4)
+      '@azat-io/eslint-config': 0.8.0(@typescript-eslint/parser@5.59.2)(eslint-import-resolver-typescript@3.5.5)(eslint@8.40.0)(typescript@5.0.4)
       '@typescript-eslint/eslint-plugin': 5.59.2(@typescript-eslint/parser@5.59.2)(eslint@8.40.0)(typescript@5.0.4)
       '@typescript-eslint/parser': 5.59.2(eslint@8.40.0)(typescript@5.0.4)
       eslint: 8.40.0
@@ -188,8 +188,8 @@ packages:
       - typescript
     dev: true
 
-  /@azat-io/eslint-config@0.7.1(@typescript-eslint/parser@5.59.2)(eslint-import-resolver-typescript@3.5.5)(eslint@8.40.0)(typescript@5.0.4):
-    resolution: {integrity: sha512-OPbwyA0reSxOiVOBcz1wBtcIufe+O7GkbphfviWZHjnOrREgnNH0FvWpQsL6yUAnwgq/dYhzHm78dMFEoljVDg==}
+  /@azat-io/eslint-config@0.8.0(@typescript-eslint/parser@5.59.2)(eslint-import-resolver-typescript@3.5.5)(eslint@8.40.0)(typescript@5.0.4):
+    resolution: {integrity: sha512-OmA7wCNO61iNXI3CSuPH8XFI/4Gq7DmtqZfsMPKKD5Bg/t8Xqt1LtOWQJzfWD3MQv8jg5441NRpB+7R3Kl91dg==}
     peerDependencies:
       eslint: ^8.38.0
     dependencies:
@@ -201,7 +201,7 @@ packages:
       eslint-plugin-promise: 6.1.1(eslint@8.40.0)
       eslint-plugin-sonarjs: 0.19.0(eslint@8.40.0)
       eslint-plugin-unicorn: 47.0.0(eslint@8.40.0)
-      eslint-plugin-vitest: 0.2.0(eslint@8.40.0)(typescript@5.0.4)
+      eslint-plugin-vitest: 0.2.2(eslint@8.40.0)(typescript@5.0.4)
       globals: 13.20.0
       remove: 0.1.5
     transitivePeerDependencies:
@@ -2192,8 +2192,8 @@ packages:
       strip-indent: 3.0.0
     dev: true
 
-  /eslint-plugin-vitest@0.2.0(eslint@8.40.0)(typescript@5.0.4):
-    resolution: {integrity: sha512-U49VFPXnunaQTSCwH4ewCt9nCZ0iCWYFkPnrZjqUVO0loY/D5uEK7C8L5TB0xys/bj9nHa7yMB+nm2tIwoVCEw==}
+  /eslint-plugin-vitest@0.2.2(eslint@8.40.0)(typescript@5.0.4):
+    resolution: {integrity: sha512-f6E90twgtAAuIE8P2YOy4f1RBVbZ0NB9yoyeHSpwYL6xiNxT4fmq6UHZoR4tHN+NMkbtAoZtiTr1EmqSpB2C4A==}
     engines: {node: 14.x || >= 16}
     peerDependencies:
       eslint: '>=8.0.0'
