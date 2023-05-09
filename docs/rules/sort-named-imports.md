@@ -12,14 +12,32 @@ This rule verifies that all named imports are sorted sorted in order of string l
 
 ### Incorrect
 
+<!-- prettier-ignore -->
 ```ts
-import { useEffect, useState, useMemo, useId, Suspense, useCallback, lazy } from 'react'
+import {
+  useEffect,
+  lazy
+  useState,
+  useMemo,
+  useCallback,
+  useId,
+  Suspense,
+} from 'react'
 ```
 
 ### Correct
 
+<!-- prettier-ignore -->
 ```ts
-import { useCallback, useEffect, Suspense, useState, useMemo, useId, lazy } from 'react'
+import {
+  useCallback,
+  useEffect,
+  Suspense,
+  useState,
+  useMemo,
+  useId,
+  lazy
+} from 'react'
 ```
 
 ## 🔧 Options

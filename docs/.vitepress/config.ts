@@ -95,6 +95,11 @@ export default defineConfig({
       },
     ],
 
+    editLink: {
+      pattern: `${github}/tree/main/docs/:path`,
+      text: 'Suggest changes to this page',
+    },
+
     footer: {
       message: 'Released under the MIT License',
       copyright: 'Copyright © Azat S.',
