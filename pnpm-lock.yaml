@@ -45,6 +45,9 @@ devDependencies:
   simple-git-hooks:
     specifier: ^2.8.1
     version: 2.8.1
+  ts-dedent:
+    specifier: ^2.2.0
+    version: 2.2.0
   typescript:
     specifier: ^5.0.4
     version: 5.0.4
@@ -4426,6 +4429,11 @@ packages:
   /trim-newlines@3.0.1:
     resolution: {integrity: sha512-c1PTsA3tYrIsLGkJkzHF+w9F2EyxfXGo4UyJc4pFL++FMjnq0HJS69T3M7d//gKrFKwy429bouPescbjecU+Zw==}
     engines: {node: '>=8'}
+    dev: true
+
+  /ts-dedent@2.2.0:
+    resolution: {integrity: sha512-q5W7tVM71e2xjHZTlgfTDoPF/SmqKG5hddq9SzR49CH2hayqRKJtQ4mtRlSxKaJlR/+9rEM+mnBHf7I2/BQcpQ==}
+    engines: {node: '>=6.10'}
     dev: true
 
   /ts-node@10.9.1(@types/node@20.1.2)(typescript@5.0.4):

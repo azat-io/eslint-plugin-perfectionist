@@ -83,6 +83,10 @@ export default defineConfig({
               text: 'sort-named-imports',
               link: '/rules/sort-named-imports',
             },
+            {
+              text: 'sort-union-types',
+              link: '/rules/sort-union-types',
+            },
           ],
         },
       ],

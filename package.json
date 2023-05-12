@@ -58,6 +58,7 @@
     "conventional-changelog-cli": "^2.2.2",
     "eslint": "^8.40.0",
     "simple-git-hooks": "^2.8.1",
+    "ts-dedent": "^2.2.0",
     "typescript": "^5.0.4",
     "vite": "^4.3.5",
     "vitepress": "1.0.0-alpha.75",

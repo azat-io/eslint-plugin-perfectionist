@@ -27,6 +27,7 @@ npm install --save-dev eslint-plugin-perfectionist
 | [sort-interfaces](https://eslint-plugin-perfectionist.azat.io/rules/sort-interfaces)       | Enforce sorted interface properties | ✅  | 🔧  |
 | [sort-jsx-props](https://eslint-plugin-perfectionist.azat.io/rules/sort-jsx-props)         | Enforce sorted JSX props            | ✅  | 🔧  |
 | [sort-named-imports](https://eslint-plugin-perfectionist.azat.io/rules/sort-named-imports) | Enforce sorted named imports        | ✅  | 🔧  |
+| [sort-union-types](https://eslint-plugin-perfectionist.azat.io/rules/sort-union-types)     | Enforce sorted union types          | ✅  | 🔧  |
 
 ## See also
 
