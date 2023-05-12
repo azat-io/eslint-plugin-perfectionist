@@ -25,11 +25,11 @@ hero:
 
 features:
   - title: ESLint Powered
-    details: Use a plugin inside ESLint to perfect your code and set rules for other developers.
+    details: Use the plugin inside ESLint to improve your code and make rules for other developers.
   - title: Fixable Rules
     details: All code problems can be fixed automatically with ESLint. You don't have to do anything!
   - title: ESM, TypeScript, JSX
-    details: A large number of rules that includes ESM, TypeScript and JSX support.
+    details: A large number of rules, including support for ESM, TypeScript and JSX.
   - title: It's just beautiful
-    details: Enjoy the look of your code, let it be amazing
+    details: Enjoy the look of your code, let it be awesome
 ---
