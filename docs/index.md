@@ -11,7 +11,7 @@ hero:
   tagline: An ESLint plugin
   image:
     src: /logo-shadow.svg
-    alt: Vitest
+    alt: ESLint Plugin Perfectionist
   actions:
     - theme: brand
       text: Get Started
