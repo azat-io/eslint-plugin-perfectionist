@@ -1,4 +1,4 @@
-import type { JSXSpreadAttribute, JSXAttribute } from '@typescript-eslint/types/dist/generated/ast-spec'
+import type { TSESTree } from '@typescript-eslint/types'
 
 import { AST_NODE_TYPES } from '@typescript-eslint/types'
 
@@ -61,8 +61,8 @@ export default createEslintRule<Options, MESSAGE_ID>({
         order: SortOrder.asc,
       })
 
-      let parts: JSXAttribute[][] = node.openingElement.attributes.reduce(
-        (accumulator: JSXAttribute[][], attribute: JSXSpreadAttribute | JSXAttribute) => {
+      let parts: TSESTree.JSXAttribute[][] = node.openingElement.attributes.reduce(
+        (accumulator: TSESTree.JSXAttribute[][], attribute: TSESTree.JSXSpreadAttribute | TSESTree.JSXAttribute) => {
           if (attribute.type === 'JSXAttribute') {
             accumulator.at(-1)!.push(attribute)
           } else {

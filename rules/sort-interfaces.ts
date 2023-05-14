@@ -1,4 +1,4 @@
-import type { Range, Node } from '@typescript-eslint/types/dist/generated/ast-spec'
+import type { TSESTree } from '@typescript-eslint/types'
 
 import { AST_NODE_TYPES } from '@typescript-eslint/types'
 
@@ -71,13 +71,13 @@ export default createEslintRule<Options, MESSAGE_ID>({
 
         let useKey = (element: {
           key: {
-            range: Range
+            range: TSESTree.Range
           }
         }) => {
           inc(rangeToDiff(element.key.range))
         }
 
-        let useIndexSignatureKey = (element: { parameters: { range: Range }[] }) => {
+        let useIndexSignatureKey = (element: { parameters: { range: TSESTree.Range }[] }) => {
           let { length } = '[]'
 
           inc(element.parameters.reduce((accumulator, { range }) => accumulator + rangeToDiff(range), length))
@@ -102,7 +102,7 @@ export default createEslintRule<Options, MESSAGE_ID>({
           }
         }
 
-        let setName = (interfaceNode: Node) => {
+        let setName = (interfaceNode: TSESTree.Node) => {
           if (interfaceNode.type === AST_NODE_TYPES.Identifier) {
             ;({ name } = interfaceNode)
           } else if (interfaceNode.type === AST_NODE_TYPES.TSIndexSignature) {

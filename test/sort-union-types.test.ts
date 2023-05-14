@@ -1,4 +1,4 @@
-import { RuleTester } from '@typescript-eslint/utils/dist/ts-eslint/index.js'
+import { ESLintUtils } from '@typescript-eslint/utils'
 import { describe, it } from 'vitest'
 import { dedent } from 'ts-dedent'
 
@@ -6,8 +6,8 @@ import rule, { RULE_NAME } from '~/rules/sort-union-types'
 import { SortType, SortOrder } from '~/typings'
 
 describe(RULE_NAME, () => {
-  let ruleTester = new RuleTester({
-    parser: require.resolve('@typescript-eslint/parser'),
+  let ruleTester = new ESLintUtils.RuleTester({
+    parser: '@typescript-eslint/parser',
     parserOptions: {
       ecmaFeatures: {
         jsx: true,

@@ -1,4 +1,4 @@
-import type { Node } from '@typescript-eslint/types/dist/generated/ast-spec'
+import type { TSESTree } from '@typescript-eslint/types'
 
 export enum SortType {
   'natural' = 'natural',
@@ -13,5 +13,5 @@ export enum SortOrder {
 export interface SortingNode {
   size: number
   name: string
-  node: Node
+  node: TSESTree.Node
 }
