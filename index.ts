@@ -1,6 +1,7 @@
 import sortInterfaces, { RULE_NAME as sortInterfacesName } from '~/rules/sort-interfaces'
 import sortJsxProps, { RULE_NAME as sortJsxPropsName } from '~/rules/sort-jsx-props'
 import sortNamedImports, { RULE_NAME as sortNamedImportsName } from '~/rules/sort-named-imports'
+import sortUnionTypes, { RULE_NAME as sortUnionTypesName } from './rules/sort-union-types'
 import { name } from '~/package.json'
 
 let getRulesWithOptions = (options: {
@@ -14,6 +15,7 @@ let getRulesWithOptions = (options: {
     [sortInterfacesName]: ['error'],
     [sortJsxPropsName]: ['error'],
     [sortNamedImportsName]: ['error'],
+    [sortUnionTypesName]: ['error'],
   }
   return Object.fromEntries(
     Object.entries(recommendedRules).map(([key, [message, baseOptions = {}]]) => [
@@ -29,6 +31,7 @@ export default {
     [sortInterfacesName]: sortInterfaces,
     [sortJsxPropsName]: sortJsxProps,
     [sortNamedImportsName]: sortNamedImports,
+    [sortUnionTypesName]: sortUnionTypes,
   },
   configs: {
     'recommended-natural': getRulesWithOptions({ type: 'natural', order: 'asc' }),

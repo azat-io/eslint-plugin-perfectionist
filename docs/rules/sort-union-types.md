@@ -77,7 +77,7 @@ export default {
 
 ## 🚀 Version
 
-This rule was introduced in v0.3.0.
+It will be released soon.
 
 ## 📚 Resources
 
