@@ -1,12 +1,19 @@
 import { defineConfig } from 'vitepress'
 
-import { github, description, changelog, version } from './meta'
+import { github, description, keywords, changelog, title, homepage, image, version } from './meta'
 
 export default defineConfig({
   base: '/',
-  title: 'Perfectionist',
+  title,
   description,
   head: [
+    [
+      'meta',
+      {
+        name: 'theme-color',
+        content: '#252529',
+      },
+    ],
     [
       'link',
       {
@@ -21,6 +28,99 @@ export default defineConfig({
         rel: 'icon',
         type: 'image/svg+xml',
         href: '/favicon.svg',
+      },
+    ],
+    [
+      'meta',
+      {
+        name: 'author',
+        content: 'Azat S.',
+      },
+    ],
+    [
+      'meta',
+      {
+        name: 'keywords',
+        content: keywords.join(', '),
+      },
+    ],
+    [
+      'meta',
+      {
+        property: 'og:title',
+        content: title,
+      },
+    ],
+    [
+      'meta',
+      {
+        property: 'og:description',
+        content: description,
+      },
+    ],
+    [
+      'meta',
+      {
+        property: 'og:url',
+        content: homepage,
+      },
+    ],
+    [
+      'meta',
+      {
+        property: 'og:image',
+        content: image,
+      },
+    ],
+    [
+      'meta',
+      {
+        name: 'twitter:title',
+        content: title,
+      },
+    ],
+    [
+      'meta',
+      {
+        name: 'twitter:creator',
+        content: '@azat_io',
+      },
+    ],
+    [
+      'meta',
+      {
+        name: 'twitter:description',
+        content: description,
+      },
+    ],
+    [
+      'meta',
+      {
+        name: 'twitter:image',
+        content: image,
+      },
+    ],
+    [
+      'meta',
+      {
+        name: 'twitter:card',
+        content: 'summary_large_image',
+      },
+    ],
+    [
+      'link',
+      {
+        rel: 'mask-icon',
+        href: '/favicon.svg',
+        color: '#252529',
+      },
+    ],
+    [
+      'link',
+      {
+        rel: 'apple-touch-icon',
+        href: '/apple-touch-icon.png',
+        sizes: '180x180',
       },
     ],
   ],
