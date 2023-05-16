@@ -8,13 +8,15 @@ let getRulesWithOptions = (options: {
 }): {
   [key: string]: [string, { [key: string]: unknown }]
 } => {
-  let recommendedRules = {
+  let recommendedRules: {
+    [key: string]: [string, { [key: string]: unknown }?]
+  } = {
     [sortInterfacesName]: ['error'],
     [sortJsxPropsName]: ['error'],
     [sortNamedImportsName]: ['error'],
   }
   return Object.fromEntries(
-    Object.entries(recommendedRules).map(([key, [message, baseOptions]]) => [
+    Object.entries(recommendedRules).map(([key, [message, baseOptions = {}]]) => [
       key,
       [message, Object.assign(baseOptions, options)],
     ]),
