@@ -42,7 +42,7 @@ yarn add --dev eslint-plugin-perfectionist
 
 :::
 
-## 🚀 Usage
+## ⚙️ Usage
 
 Add `perfectionist` to the plugins section of your `.eslintrc` configuration file or import `eslint-plugin-perfectionist` in your `eslint.config.js`. Then configure the rules you want to use under the rules section.
 

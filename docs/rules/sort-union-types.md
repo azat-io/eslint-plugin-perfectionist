@@ -46,7 +46,7 @@ type Color =
 - `asc` (default) - enforce properties to be in ascending order.
 - `desc` - enforce properties to be in descending order.
 
-## 🚀 Usage
+## ⚙️ Usage
 
 ### Legacy config
 
@@ -74,6 +74,10 @@ export default {
   },
 }
 ```
+
+## 🚀 Version
+
+This rule was introduced in v0.3.0.
 
 ## 📚 Resources
 
