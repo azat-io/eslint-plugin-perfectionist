@@ -1,37 +1,37 @@
 ---
-title: sort-union-types
+title: sort-named-exports
 ---
 
-# sort-union-types
+# sort-named-exports
 
-> Enforce sorted union types.
+> Enforce sorted named exports.
 
 ## 📖 Rule details
 
-This rule verifies that all named imports are sorted sorted in order of string length.
+This rule verifies that all named exports are sorted sorted in order of string length.
 
 ### Incorrect
 
 <!-- prettier-ignore -->
 ```ts
-type Color =
-  | 'red'
-  | 'green'
-  | 'yellow'
-  | 'blue'
-  | 'rebeccapurple'
+export {
+  get,
+  post,
+  put,
+  patch
+}
 ```
 
 ### Correct
 
 <!-- prettier-ignore -->
 ```ts
-type Color =
-  | 'rebeccapurple'
-  | 'yellow'
-  | 'green'
-  | 'blue'
-  | 'red'
+export {
+  patch
+  post,
+  put,
+  get,
+}
 ```
 
 ## 🔧 Options
@@ -54,7 +54,7 @@ type Color =
 // .eslintrc
 {
   "rules": {
-    "perfectionist/sort-union-types": ["error", { "type": "line-length", "order": "desc" }]
+    "perfectionist/sort-named-exports": ["error", { "type": "line-length", "order": "desc" }]
   }
 }
 ```
@@ -70,7 +70,7 @@ export default {
     perfectionist,
   },
   rules: {
-    'perfectionist/sort-union-types': ['error', { type: 'line-length', order: 'desc' }],
+    'perfectionist/sort-named-exports': ['error', { type: 'line-length', order: 'desc' }],
   },
 }
 ```
@@ -81,5 +81,5 @@ This rule was introduced in v0.4.0.
 
 ## 📚 Resources
 
-- [Rule source](https://github.com/azat-io/eslint-plugin-perfectionist/blob/main/rules/sort-union-types.ts)
-- [Test source](https://github.com/azat-io/eslint-plugin-perfectionist/blob/main/test/sort-union-types.test.ts)
+- [Rule source](https://github.com/azat-io/eslint-plugin-perfectionist/blob/main/rules/sort-named-exports.ts)
+- [Test source](https://github.com/azat-io/eslint-plugin-perfectionist/blob/main/test/sort-named-exports.test.ts)

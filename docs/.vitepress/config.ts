@@ -80,6 +80,10 @@ export default defineConfig({
               link: '/rules/sort-jsx-props',
             },
             {
+              text: 'sort-named-exports',
+              link: '/rules/sort-named-exports',
+            },
+            {
               text: 'sort-named-imports',
               link: '/rules/sort-named-imports',
             },
