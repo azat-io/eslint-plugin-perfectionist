@@ -1,3 +1,18 @@
+# [0.4.0](https://github.com/azat-io/eslint-plugin-perfectionist/compare/v0.3.0...v0.4.0) (2023-05-16)
+
+
+### Bug Fixes
+
+* fix missed sort-union-types rule export ([3b02609](https://github.com/azat-io/eslint-plugin-perfectionist/commit/3b026099d9bd71db4796cfdef49419e8f46d7d47))
+* fix rule configs creation ([8a43758](https://github.com/azat-io/eslint-plugin-perfectionist/commit/8a437587e0dc306b923d86275c2696f5841464ae))
+
+
+### Features
+
+* add sort-named-exports rule ([b3f4b57](https://github.com/azat-io/eslint-plugin-perfectionist/commit/b3f4b57b97fa53996f07ad6ec73f61da2a3d2490))
+
+
+
 # [0.3.0](https://github.com/azat-io/eslint-plugin-perfectionist/compare/v0.2.0...v0.3.0) (2023-05-16)
 
 
