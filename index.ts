@@ -1,5 +1,6 @@
 import sortInterfaces, { RULE_NAME as sortInterfacesName } from '~/rules/sort-interfaces'
 import sortJsxProps, { RULE_NAME as sortJsxPropsName } from '~/rules/sort-jsx-props'
+import sortMapElements, { RULE_NAME as sortMapElementsName } from '~/rules/sort-map-elements'
 import sortNamedExports, { RULE_NAME as sortNamedExportsName } from '~/rules/sort-named-exports'
 import sortNamedImports, { RULE_NAME as sortNamedImportsName } from '~/rules/sort-named-imports'
 import sortUnionTypes, { RULE_NAME as sortUnionTypesName } from '~/rules/sort-union-types'
@@ -15,6 +16,7 @@ let getRulesWithOptions = (options: {
   } = {
     [sortInterfacesName]: ['error'],
     [sortJsxPropsName]: ['error'],
+    [sortMapElementsName]: ['error'],
     [sortNamedExportsName]: ['error'],
     [sortNamedImportsName]: ['error'],
     [sortUnionTypesName]: ['error'],
@@ -32,6 +34,7 @@ export default {
   rules: {
     [sortInterfacesName]: sortInterfaces,
     [sortJsxPropsName]: sortJsxProps,
+    [sortMapElementsName]: sortMapElements,
     [sortNamedExportsName]: sortNamedExports,
     [sortNamedImportsName]: sortNamedImports,
     [sortUnionTypesName]: sortUnionTypes,

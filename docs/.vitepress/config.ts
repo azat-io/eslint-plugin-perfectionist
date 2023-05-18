@@ -184,6 +184,10 @@ export default defineConfig({
               link: '/rules/sort-jsx-props',
             },
             {
+              text: 'sort-map-elements',
+              link: '/rules/sort-map-elements',
+            },
+            {
               text: 'sort-named-exports',
               link: '/rules/sort-named-exports',
             },
