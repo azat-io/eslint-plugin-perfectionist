@@ -138,7 +138,7 @@ export default defineConfig({
     nav: [
       {
         text: 'Guide',
-        link: '/guide/',
+        link: '/guide/introduction',
         activeMatch: '^/guide/',
       },
       {
@@ -163,8 +163,12 @@ export default defineConfig({
           text: 'Guide',
           items: [
             {
+              text: 'Introduction',
+              link: '/guide/introduction',
+            },
+            {
               text: 'Getting Started',
-              link: '/guide/',
+              link: '/guide/getting-started',
             },
           ],
         },
