@@ -1,3 +1,4 @@
+import sortArrayIncludes, { RULE_NAME as sortArrayIncludesName } from '~/rules/sort-array-includes'
 import sortInterfaces, { RULE_NAME as sortInterfacesName } from '~/rules/sort-interfaces'
 import sortJsxProps, { RULE_NAME as sortJsxPropsName } from '~/rules/sort-jsx-props'
 import sortMapElements, { RULE_NAME as sortMapElementsName } from '~/rules/sort-map-elements'
@@ -14,6 +15,7 @@ let getRulesWithOptions = (options: {
   let recommendedRules: {
     [key: string]: [string, { [key: string]: unknown }?]
   } = {
+    [sortArrayIncludesName]: ['error', { spreadLast: true }],
     [sortInterfacesName]: ['error'],
     [sortJsxPropsName]: ['error'],
     [sortMapElementsName]: ['error'],
@@ -32,6 +34,7 @@ let getRulesWithOptions = (options: {
 export default {
   name,
   rules: {
+    [sortArrayIncludesName]: sortArrayIncludes,
     [sortInterfacesName]: sortInterfaces,
     [sortJsxPropsName]: sortJsxProps,
     [sortMapElementsName]: sortMapElements,

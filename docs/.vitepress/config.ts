@@ -177,6 +177,10 @@ export default defineConfig({
           text: 'Rules',
           items: [
             {
+              text: 'sort-array-includes',
+              link: '/rules/sort-array-includes',
+            },
+            {
               text: 'sort-interfaces',
               link: '/rules/sort-interfaces',
             },
