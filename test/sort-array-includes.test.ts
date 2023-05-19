@@ -223,6 +223,64 @@ describe(RULE_NAME, () => {
         ],
       })
     })
+
+    it(`${RULE_NAME}(${type}): sorts array constructor`, () => {
+      ruleTester.run(RULE_NAME, rule, {
+        valid: [
+          {
+            code: dedent`
+              new Array(
+                'Furude Rika',
+                'Maebara Keiichi',
+                'Ryūgū Rena',
+                'Sonozaki Shion',
+              ).includes(name)
+            `,
+            options: [
+              {
+                type: SortType.natural,
+                order: SortOrder.asc,
+              },
+            ],
+          },
+        ],
+        invalid: [
+          {
+            code: dedent`
+              new Array(
+                'Furude Rika',
+                'Ryūgū Rena',
+                'Sonozaki Shion',
+                'Maebara Keiichi',
+              ).includes(name)
+            `,
+            options: [
+              {
+                type: SortType.natural,
+                order: SortOrder.asc,
+              },
+            ],
+            output: dedent`
+              new Array(
+                'Furude Rika',
+                'Maebara Keiichi',
+                'Ryūgū Rena',
+                'Sonozaki Shion',
+              ).includes(name)
+            `,
+            errors: [
+              {
+                messageId: 'unexpectedArrayIncludesOrder',
+                data: {
+                  first: "'Sonozaki Shion'",
+                  second: "'Maebara Keiichi'",
+                },
+              },
+            ],
+          },
+        ],
+      })
+    })
   })
 
   describe(`${RULE_NAME}: sorting by line length`, () => {
@@ -434,6 +492,71 @@ describe(RULE_NAME, () => {
                 data: {
                   first: '...graceFieldOrphans',
                   second: "'Norman'",
+                },
+              },
+            ],
+          },
+        ],
+      })
+    })
+
+    it(`${RULE_NAME}(${type}): sorts array constructor`, () => {
+      ruleTester.run(RULE_NAME, rule, {
+        valid: [
+          {
+            code: dedent`
+              new Array(
+                'Maebara Keiichi',
+                'Sonozaki Shion',
+                'Furude Rika',
+                'Ryūgū Rena',
+              ).includes(name)
+            `,
+            options: [
+              {
+                type: SortType['line-length'],
+                order: SortOrder.desc,
+              },
+            ],
+          },
+        ],
+        invalid: [
+          {
+            code: dedent`
+              new Array(
+                'Furude Rika',
+                'Ryūgū Rena',
+                'Sonozaki Shion',
+                'Maebara Keiichi',
+              ).includes(name)
+            `,
+            options: [
+              {
+                type: SortType['line-length'],
+                order: SortOrder.desc,
+              },
+            ],
+            output: dedent`
+              new Array(
+                'Maebara Keiichi',
+                'Sonozaki Shion',
+                'Furude Rika',
+                'Ryūgū Rena',
+              ).includes(name)
+            `,
+            errors: [
+              {
+                messageId: 'unexpectedArrayIncludesOrder',
+                data: {
+                  first: "'Ryūgū Rena'",
+                  second: "'Sonozaki Shion'",
+                },
+              },
+              {
+                messageId: 'unexpectedArrayIncludesOrder',
+                data: {
+                  first: "'Sonozaki Shion'",
+                  second: "'Maebara Keiichi'",
                 },
               },
             ],

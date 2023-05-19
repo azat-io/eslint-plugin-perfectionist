@@ -64,7 +64,7 @@ export default createEslintRule<Options, MESSAGE_ID>({
   create: context => ({
     MemberExpression: node => {
       if (
-        node.object.type === AST_NODE_TYPES.ArrayExpression &&
+        (node.object.type === AST_NODE_TYPES.ArrayExpression || node.object.type === AST_NODE_TYPES.NewExpression) &&
         node.property.type === AST_NODE_TYPES.Identifier &&
         node.property.name === 'includes'
       ) {
@@ -74,12 +74,13 @@ export default createEslintRule<Options, MESSAGE_ID>({
           spreadLast: false,
         })
 
-        let { elements } = node.object
+        let elements =
+          node.object.type === AST_NODE_TYPES.ArrayExpression ? node.object.elements : node.object.arguments
 
         if (elements.length > 1) {
           let source = context.getSourceCode().text
 
-          let values: (SortingNode & { type: string })[] = node.object.elements
+          let values: (SortingNode & { type: string })[] = elements
             .reduce(
               (
                 accumulator: (SortingNode & { type: string })[][],
