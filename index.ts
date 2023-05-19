@@ -5,6 +5,7 @@ import sortMapElements, { RULE_NAME as sortMapElementsName } from '~/rules/sort-
 import sortNamedExports, { RULE_NAME as sortNamedExportsName } from '~/rules/sort-named-exports'
 import sortNamedImports, { RULE_NAME as sortNamedImportsName } from '~/rules/sort-named-imports'
 import sortUnionTypes, { RULE_NAME as sortUnionTypesName } from '~/rules/sort-union-types'
+import { SortType, SortOrder } from '~/typings'
 import { name } from '~/package.json'
 
 let getRulesWithOptions = (options: {
@@ -43,7 +44,13 @@ export default {
     [sortUnionTypesName]: sortUnionTypes,
   },
   configs: {
-    'recommended-natural': getRulesWithOptions({ type: 'natural', order: 'asc' }),
-    'recommended-line-length': getRulesWithOptions({ type: 'line-length', order: 'desc' }),
+    'recommended-natural': getRulesWithOptions({
+      type: SortType.natural,
+      order: SortOrder.asc,
+    }),
+    'recommended-line-length': getRulesWithOptions({
+      type: SortType['line-length'],
+      order: SortOrder.desc,
+    }),
   },
 }
