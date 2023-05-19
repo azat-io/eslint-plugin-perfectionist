@@ -1,31 +1,39 @@
 :root {
   --vp-home-hero-name-color: transparent;
-  --vp-home-hero-name-background: #6358d4;
-  --vp-home-hero-image-background-image: linear-gradient(
-    0deg,
-    #6358d4 30%,
-    #8080f2
-  );
+  --vp-home-hero-name-background: linear-gradient(-45deg, oklch(55% 0.18 282) 350%, oklch(65% 0.18 272));
+  --vp-home-hero-image-background-image: linear-gradient(-45deg, oklch(65% 0.18 282) 30%, oklch(55% 0.18 272 / 80%));
   --vp-home-hero-image-filter: blur(30px);
 
-  --vp-c-brand: #8080f2;
-  --vp-c-brand-lighter: #6358d4;
-  --vp-c-brand-dark: #341bab;
+  --vp-c-brand: oklch(60% 0.18 282);
+  --vp-c-brand-lighter: oklch(55% 0.18 282);
+  --vp-c-brand-dark: oklch(40% 0.18 282);
 
   --vp-button-brand-bg: #4b32c3;
 
-  --vp-c-green: #6358d4;
-  --vp-c-green-light: #8080f2;
-  --vp-c-green-lighter: #a0a0f5;
-  --vp-c-green-dark: #4b32c3;
-  --vp-c-green-darker: #341bab;
+  --vp-c-green: oklch(55% 0.18 282);
+  --vp-c-green-light: oklch(65% 0.18 282);
+  --vp-c-green-lighter: oklch(75% 0.18 282);
+  --vp-c-green-dark: oklch(45% 0.18 282);
+  --vp-c-green-darker: oklch(35% 0.18 282);
 }
 
 ::selection {
-  background-color: rgba(75 50 195 / 50%);
+  background-color: oklch(55% 0.18 282 / 50%);
 }
 
 a,
 button {
   outline-color: var(--vp-c-brand) !important;
+}
+
+@media (min-width: 640px) {
+  :root {
+    --vp-home-hero-image-filter: blur(56px);
+  }
+}
+
+@media (min-width: 960px) {
+  :root {
+    --vp-home-hero-image-filter: blur(72px);
+  }
 }

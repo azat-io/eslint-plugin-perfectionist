@@ -1,3 +1,4 @@
+import lightningcss from 'vite-plugin-lightningcss'
 import { defineConfig } from 'vitepress'
 
 import { github, description, keywords, changelog, title, homepage, image, version } from './meta'
@@ -220,5 +221,9 @@ export default defineConfig({
       message: 'Released under the MIT License',
       copyright: 'Copyright © Azat S.',
     },
+  },
+
+  vite: {
+    plugins: [lightningcss()],
   },
 })

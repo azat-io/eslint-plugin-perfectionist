@@ -61,6 +61,7 @@
     "ts-dedent": "^2.2.0",
     "typescript": "^5.0.4",
     "vite": "^4.3.6",
+    "vite-plugin-lightningcss": "^0.0.5",
     "vitepress": "1.0.0-alpha.75",
     "vitest": "^0.31.0"
   }
