@@ -51,18 +51,18 @@
     "@commitlint/cli": "^17.6.3",
     "@commitlint/config-conventional": "^17.6.3",
     "@types/natural-compare-lite": "^1.4.0",
-    "@types/node": "^20.1.5",
-    "@vitest/coverage-c8": "^0.31.0",
+    "@types/node": "^20.2.1",
+    "@vitest/coverage-c8": "^0.31.1",
     "bumpp": "^9.1.0",
     "clean-publish": "^4.2.0",
     "conventional-changelog-cli": "^2.2.2",
-    "eslint": "^8.40.0",
+    "eslint": "^8.41.0",
     "simple-git-hooks": "^2.8.1",
     "ts-dedent": "^2.2.0",
     "typescript": "^5.0.4",
-    "vite": "^4.3.6",
+    "vite": "^4.3.8",
     "vite-plugin-lightningcss": "^0.0.5",
-    "vitepress": "1.0.0-alpha.75",
-    "vitest": "^0.31.0"
+    "vitepress": "1.0.0-alpha.76",
+    "vitest": "^0.31.1"
   }
 }
