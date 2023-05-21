@@ -227,6 +227,8 @@ export default defineConfig({
     },
   },
 
+  cleanUrls: true,
+
   vite: {
     plugins: [lightningcss()],
   },
