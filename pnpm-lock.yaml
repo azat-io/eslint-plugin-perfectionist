@@ -34,6 +34,9 @@ devDependencies:
   '@commitlint/config-conventional':
     specifier: ^17.6.5
     version: 17.6.5
+  '@ota-meshi/site-kit-eslint-editor-vue':
+    specifier: ^0.1.2
+    version: 0.1.2
   '@types/is-core-module':
     specifier: ^2.2.0
     version: 2.2.0
@@ -64,6 +67,9 @@ devDependencies:
   eslint-plugin-eslint-plugin:
     specifier: ^5.1.0
     version: 5.1.0(eslint@8.41.0)
+  monaco-editor:
+    specifier: ^0.38.0
+    version: 0.38.0
   simple-git-hooks:
     specifier: ^2.8.1
     version: 2.8.1
@@ -79,6 +85,9 @@ devDependencies:
   vite:
     specifier: ^4.3.9
     version: 4.3.9(@types/node@20.2.5)
+  vite-plugin-eslint4b:
+    specifier: ^0.2.0
+    version: 0.2.0(eslint@8.41.0)
   vite-plugin-lightningcss:
     specifier: ^0.0.5
     version: 0.0.5
@@ -848,6 +857,23 @@ packages:
       '@nodelib/fs.scandir': 2.1.5
       fastq: 1.15.0
 
+  /@ota-meshi/site-kit-eslint-editor-vue@0.1.2:
+    resolution: {integrity: sha512-eM+Dv+0JmW/qRUUAGaZUu4yG3i0sDQ0uwIRrLTnO1+HM0pmCpZKqk7wolNEEw8vxHKFM9GRKL+L7vuA23gx0HQ==}
+    dependencies:
+      '@ota-meshi/site-kit-monaco-editor': 0.4.0
+      '@ota-meshi/site-kit-monaco-editor-vue': 0.2.2
+    dev: true
+
+  /@ota-meshi/site-kit-monaco-editor-vue@0.2.2:
+    resolution: {integrity: sha512-g459mz+GIzZrw97s2VfLiW8KxxaADxMqaiVLf5psrUO1MV84WFXaoMW+3FX/UhGnPn6dwdmm6sLJ7xLfUPq9tw==}
+    dependencies:
+      '@ota-meshi/site-kit-monaco-editor': 0.4.0
+    dev: true
+
+  /@ota-meshi/site-kit-monaco-editor@0.4.0:
+    resolution: {integrity: sha512-z5ln/1vGJvpJFiDl+nAhHlgodruDA1TmVEEEJkMWrBzdiFVNb0PRT4uWM+A6OuBY4v7Qeee+vajfHwZ5B6JMSw==}
+    dev: true
+
   /@pkgr/utils@2.4.1:
     resolution: {integrity: sha512-JOqwkgFEyi+OROIyq7l4Jy28h/WwhDnG/cPkXG2Z1iFbubB6jsHW1NDvmyOzTBxHr3yg68YGirmh1JUgMqa+9w==}
     engines: {node: ^12.20.0 || ^14.18.0 || >=16.0.0}
@@ -1452,6 +1478,15 @@ packages:
   /arrify@1.0.1:
     resolution: {integrity: sha512-3CYzex9M9FGQjCGMGyi6/31c8GJbgb0qGyrx5HWxPd0aCwh4cB2YjMb2Xf9UuoogrMrlO9cTqnB5rI5GHZTcUA==}
     engines: {node: '>=0.10.0'}
+    dev: true
+
+  /assert@2.0.0:
+    resolution: {integrity: sha512-se5Cd+js9dXJnu6Ag2JFc00t+HmHOen+8Q+L7O9zI0PqQXr20uk2J0XQqMxZEeo5U50o8Nvmmx7dZrl+Ufr35A==}
+    dependencies:
+      es6-object-assign: 1.1.0
+      is-nan: 1.3.2
+      object-is: 1.1.5
+      util: 0.12.5
     dev: true
 
   /assertion-error@1.1.0:
@@ -2121,6 +2156,10 @@ packages:
       is-callable: 1.2.7
       is-date-object: 1.0.5
       is-symbol: 1.0.4
+    dev: true
+
+  /es6-object-assign@1.1.0:
+    resolution: {integrity: sha512-MEl9uirslVwqQU369iHNWZXsI8yaZYGg/D65aOgZkeyFJwHYSxilf7rQzXKI7DdDuBPrBXbfk3sl9hJhmd5AUw==}
     dev: true
 
   /esbuild@0.17.19:
@@ -2948,6 +2987,14 @@ packages:
       side-channel: 1.0.4
     dev: true
 
+  /is-arguments@1.1.1:
+    resolution: {integrity: sha512-8Q7EARjzEnKpt/PCD7e1cgUS0a6X8u5tdSiMqXhojOdoV9TsMsiO+9VLC5vAmO8N7/GmXn7yjR8qnA6bVAEzfA==}
+    engines: {node: '>= 0.4'}
+    dependencies:
+      call-bind: 1.0.2
+      has-tostringtag: 1.0.0
+    dev: true
+
   /is-array-buffer@3.0.2:
     resolution: {integrity: sha512-y+FyyR/w8vfIRq4eQcM1EYgSTnmHXPqaF+IgzgraytCFq5Xh8lllDVmAZolPJiZttZLeFSINPYMaEJ7/vWUa1w==}
     dependencies:
@@ -3026,6 +3073,13 @@ packages:
     engines: {node: '>=8'}
     dev: true
 
+  /is-generator-function@1.0.10:
+    resolution: {integrity: sha512-jsEjy9l3yiXEQ+PsXdmBwEPcOxaXWLspKdplFUVI9vq1iZgIekeC0L167qeu86czQaxed3q/Uzuw0swL0irL8A==}
+    engines: {node: '>= 0.4'}
+    dependencies:
+      has-tostringtag: 1.0.0
+    dev: true
+
   /is-glob@4.0.3:
     resolution: {integrity: sha512-xelSayHH36ZgE7ZWhli7pW34hNbNl8Ojv5KVmkJD4hBdD3th8Tfk9vYasLM+mXWOZhFkgZfxhLSnrwRr4elSSg==}
     engines: {node: '>=0.10.0'}
@@ -3038,6 +3092,14 @@ packages:
     hasBin: true
     dependencies:
       is-docker: 3.0.0
+    dev: true
+
+  /is-nan@1.3.2:
+    resolution: {integrity: sha512-E+zBKpQ2t6MEo1VsonYmluk9NxGrbzpeeLC2xIViuO2EjU2xsXsBPwTr3Ykv9l08UYEVEdWeRZNouaZqF6RN0w==}
+    engines: {node: '>= 0.4'}
+    dependencies:
+      call-bind: 1.0.2
+      define-properties: 1.2.0
     dev: true
 
   /is-negative-zero@2.0.2:
@@ -3601,6 +3663,10 @@ packages:
       ufo: 1.1.2
     dev: true
 
+  /monaco-editor@0.38.0:
+    resolution: {integrity: sha512-11Fkh6yzEmwx7O0YoLxeae0qEGFwmyPRlVxpg7oF9czOOCB/iCjdJrG5I67da5WiXK3YJCxoz9TJFE8Tfq/v9A==}
+    dev: true
+
   /mri@1.2.0:
     resolution: {integrity: sha512-tzzskb3bG8LvYGFF/mDTpq3jpI6Q9wc3LEmBaghu+DdCssd1FakN7Bc0hVNmEyGq1bq3RgfkCb3cmQLpNPOroA==}
     engines: {node: '>=4'}
@@ -3680,6 +3746,14 @@ packages:
 
   /object-inspect@1.12.3:
     resolution: {integrity: sha512-geUvdk7c+eizMNUDkRpW1wJwgfOiOeHbxBR/hLXK1aT6zmVSO0jsQcs7fj6MGw89jC/cjGfLcNOrtMYtGqm81g==}
+    dev: true
+
+  /object-is@1.1.5:
+    resolution: {integrity: sha512-3cyDsyHgtmi7I7DfSSI2LDp6SK2lwvtbg0p0R1e0RvTqF5ceGx+K2dfSjm1bKDMVCFEDAQvy+o8c6a7VujOddw==}
+    engines: {node: '>= 0.4'}
+    dependencies:
+      call-bind: 1.0.2
+      define-properties: 1.2.0
     dev: true
 
   /object-keys@1.1.1:
@@ -4595,6 +4669,16 @@ packages:
     resolution: {integrity: sha512-EPD5q1uXyFxJpCrLnCc1nHnq3gOa6DZBocAIiI2TaSCA7VCJ1UJDMagCzIkXNsUYfD1daK//LTEQ8xiIbrHtcw==}
     dev: true
 
+  /util@0.12.5:
+    resolution: {integrity: sha512-kZf/K6hEIrWHI6XqOFUiiMa+79wE/D8Q+NCNAWclkyg3b4d2k7s0QGepNjiABc+aR3N1PAyHL7p6UcLY6LmrnA==}
+    dependencies:
+      inherits: 2.0.4
+      is-arguments: 1.1.1
+      is-generator-function: 1.0.10
+      is-typed-array: 1.1.10
+      which-typed-array: 1.1.9
+    dev: true
+
   /v8-compile-cache-lib@3.0.1:
     resolution: {integrity: sha512-wa7YjyUGfNZngI/vtK0UHAN+lgDCxBPCylVXGp0zu59Fz5aiGtNXaq3DhIov063MorB+VfufLh3JlF2KdTK3xg==}
     dev: true
@@ -4634,6 +4718,16 @@ packages:
       - sugarss
       - supports-color
       - terser
+    dev: true
+
+  /vite-plugin-eslint4b@0.2.0(eslint@8.41.0):
+    resolution: {integrity: sha512-6BfmnrVSNEOPOo07mzv90/h6qPmU3MXwizDALibgFlWl80CkDVa0bGZKBn8SvP6Qsm4feMMx86VMTj1SylI2JA==}
+    peerDependencies:
+      eslint: ^8.0.0
+    dependencies:
+      assert: 2.0.0
+      esbuild: 0.17.19
+      eslint: 8.41.0
     dev: true
 
   /vite-plugin-lightningcss@0.0.5:

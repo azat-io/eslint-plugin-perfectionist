@@ -1,7 +1,8 @@
 import lightningcss from 'vite-plugin-lightningcss'
-import { createWriteStream } from 'fs'
+import eslint4b from 'vite-plugin-eslint4b'
 import { defineConfig } from 'vitepress'
 import { SitemapStream } from 'sitemap'
+import { createWriteStream } from 'fs'
 import path from 'path'
 
 import {
@@ -256,7 +257,17 @@ export default defineConfig({
   cleanUrls: true,
 
   vite: {
-    plugins: [lightningcss()],
+    plugins: [lightningcss(), eslint4b()],
+    define: {
+      // eslint-disable-next-line @typescript-eslint/no-require-imports
+      MONACO_EDITOR_VERSION: JSON.stringify(require('monaco-editor/package.json').version),
+    },
+    resolve: {
+      alias: {
+        '~': path.join(__dirname, '../../'),
+      },
+      extensions: ['.ts'],
+    },
   },
 
   transformHtml: (_, id, { pageData }) => {
