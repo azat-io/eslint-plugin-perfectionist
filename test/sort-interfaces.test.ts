@@ -1,5 +1,6 @@
 import { ESLintUtils } from '@typescript-eslint/utils'
 import { describe, it } from 'vitest'
+import { dedent } from 'ts-dedent'
 
 import rule, { RULE_NAME } from '~/rules/sort-interfaces'
 import { SortType, SortOrder } from '~/typings'
@@ -9,152 +10,725 @@ describe(RULE_NAME, () => {
     parser: '@typescript-eslint/parser',
   })
 
-  it(`${RULE_NAME}: sorts interface properties`, () => {
-    ruleTester.run(RULE_NAME, rule, {
-      valid: [],
-      invalid: [
-        {
-          code: `
-            interface Interface {
-              value: string
-              onChange: () => void
-            }
-          `,
-          output: `
-            interface Interface {
-              onChange: () => void
-              value: string
-            }
-          `,
-          errors: [
-            {
-              messageId: 'unexpectedInterfacePropertiesOrder',
-              data: {
-                first: 'value',
-                second: 'onChange',
+  describe(`${RULE_NAME}: sorting by natural order`, () => {
+    let type = 'natural-order'
+
+    it(`${RULE_NAME}(${type}): sorts interface properties`, () => {
+      ruleTester.run(RULE_NAME, rule, {
+        valid: [
+          {
+            code: dedent`
+              interface DossierByTwilight {
+                age: string
+                country: 'Westalis' | 'Ostania',
+                name: string
+              }
+            `,
+            options: [
+              {
+                type: SortType.natural,
+                order: SortOrder.asc,
               },
-            },
-          ],
-        },
-      ],
+            ],
+          },
+        ],
+        invalid: [
+          {
+            code: dedent`
+              interface DossierByTwilight {
+                name: string
+                age: string
+                country: 'Westalis' | 'Ostania',
+              }
+            `,
+            options: [
+              {
+                type: SortType.natural,
+                order: SortOrder.asc,
+              },
+            ],
+            output: dedent`
+              interface DossierByTwilight {
+                age: string
+                country: 'Westalis' | 'Ostania',
+                name: string
+              }
+            `,
+            errors: [
+              {
+                messageId: 'unexpectedInterfacePropertiesOrder',
+                data: {
+                  first: 'name',
+                  second: 'age',
+                },
+              },
+            ],
+          },
+        ],
+      })
+    })
+
+    it(`${RULE_NAME}(${type}): works with ts index signature`, () => {
+      ruleTester.run(RULE_NAME, rule, {
+        valid: [
+          {
+            code: dedent`
+              interface JujutsuHigh {
+                [key in Sorcerer]: string
+                yuuji: 'Yuuji Itadori'
+              }
+            `,
+            options: [
+              {
+                type: SortType.natural,
+                order: SortOrder.asc,
+              },
+            ],
+          },
+        ],
+        invalid: [
+          {
+            code: dedent`
+              interface JujutsuHigh {
+                yuuji: 'Yuuji Itadori'
+                [key in Sorcerer]: string
+              }
+            `,
+            options: [
+              {
+                type: SortType.natural,
+                order: SortOrder.asc,
+              },
+            ],
+            output: dedent`
+              interface JujutsuHigh {
+                [key in Sorcerer]: string
+                yuuji: 'Yuuji Itadori'
+              }
+            `,
+            errors: [
+              {
+                messageId: 'unexpectedInterfacePropertiesOrder',
+                data: {
+                  first: 'yuuji',
+                  second: '[key in Sorcerer]',
+                },
+              },
+            ],
+          },
+        ],
+      })
+    })
+
+    it(`${RULE_NAME}(${type}): sorts multi-word keys by value`, () => {
+      ruleTester.run(RULE_NAME, rule, {
+        valid: [
+          {
+            code: dedent`
+              interface CowboyBebop {
+                ein: Dog
+                'faye-valentine': Hunter
+                jet: Hunter
+                'spike-spiegel': Hunter
+              }
+            `,
+            options: [
+              {
+                type: SortType.natural,
+                order: SortOrder.asc,
+              },
+            ],
+          },
+        ],
+        invalid: [
+          {
+            code: dedent`
+              interface CowboyBebop {
+                'spike-spiegel': Hunter
+                ein: Dog
+                jet: Hunter
+                'faye-valentine': Hunter
+              }
+            `,
+            options: [
+              {
+                type: SortType.natural,
+                order: SortOrder.asc,
+              },
+            ],
+            output: dedent`
+              interface CowboyBebop {
+                ein: Dog
+                'faye-valentine': Hunter
+                jet: Hunter
+                'spike-spiegel': Hunter
+              }
+            `,
+            errors: [
+              {
+                messageId: 'unexpectedInterfacePropertiesOrder',
+                data: {
+                  first: 'spike-spiegel',
+                  second: 'ein',
+                },
+              },
+              {
+                messageId: 'unexpectedInterfacePropertiesOrder',
+                data: {
+                  first: 'jet',
+                  second: 'faye-valentine',
+                },
+              },
+            ],
+          },
+        ],
+      })
+    })
+
+    it(`${RULE_NAME}(${type}): works with typescript index signature`, () => {
+      ruleTester.run(RULE_NAME, rule, {
+        valid: [
+          {
+            code: dedent`
+              interface Evangelion {
+                [key: string]: string
+                'evangelion-owner': string
+                name: string
+              }
+            `,
+            options: [
+              {
+                type: SortType.natural,
+                order: SortOrder.asc,
+              },
+            ],
+          },
+        ],
+        invalid: [
+          {
+            code: dedent`
+              interface Evangelion {
+                'evangelion-owner': string
+                [key: string]: string
+                name: string
+              }
+            `,
+            options: [
+              {
+                type: SortType.natural,
+                order: SortOrder.asc,
+              },
+            ],
+            output: dedent`
+              interface Evangelion {
+                [key: string]: string
+                'evangelion-owner': string
+                name: string
+              }
+            `,
+            errors: [
+              {
+                messageId: 'unexpectedInterfacePropertiesOrder',
+                data: {
+                  first: 'evangelion-owner',
+                  second: '[key: string]',
+                },
+              },
+            ],
+          },
+        ],
+      })
+    })
+
+    it(`${RULE_NAME}(${type}): works with method and construct signatures`, () => {
+      ruleTester.run(RULE_NAME, rule, {
+        valid: [
+          {
+            code: dedent`
+              interface Zenitsu {
+                age: number
+                airSpin: () => void
+                godspeed(): number
+                name: string
+                sixfold()
+              }
+            `,
+            options: [
+              {
+                type: SortType.natural,
+                order: SortOrder.asc,
+              },
+            ],
+          },
+        ],
+        invalid: [
+          {
+            code: dedent`
+              interface Zenitsu {
+                age: number
+                godspeed(): number
+                airSpin: () => void
+                sixfold()
+                name: string
+              }
+            `,
+            options: [
+              {
+                type: SortType.natural,
+                order: SortOrder.asc,
+              },
+            ],
+            output: dedent`
+              interface Zenitsu {
+                age: number
+                airSpin: () => void
+                godspeed(): number
+                name: string
+                sixfold()
+              }
+            `,
+            errors: [
+              {
+                messageId: 'unexpectedInterfacePropertiesOrder',
+                data: {
+                  first: 'godspeed()',
+                  second: 'airSpin',
+                },
+              },
+              {
+                messageId: 'unexpectedInterfacePropertiesOrder',
+                data: {
+                  first: 'sixfold()',
+                  second: 'name',
+                },
+              },
+            ],
+          },
+        ],
+      })
+    })
+
+    it(`${RULE_NAME}(${type}): works with empty properties with empty values`, () => {
+      ruleTester.run(RULE_NAME, rule, {
+        valid: [
+          {
+            code: dedent`
+              interface SatoruFujinuma {
+                [...memories]
+                [days in daysDiff]
+                [value in stories]?
+                age: 10 | 29
+                job: 'Mangaka'
+              }
+            `,
+            options: [
+              {
+                type: SortType.natural,
+                order: SortOrder.asc,
+              },
+            ],
+          },
+        ],
+        invalid: [
+          {
+            code: dedent`
+              interface SatoruFujinuma {
+                [days in daysDiff]
+                age: 10 | 29
+                [...memories]
+                job: 'Mangaka'
+                [value in stories]?
+              }
+            `,
+            options: [
+              {
+                type: SortType.natural,
+                order: SortOrder.asc,
+              },
+            ],
+            output: dedent`
+              interface SatoruFujinuma {
+                [...memories]
+                [days in daysDiff]
+                [value in stories]?
+                age: 10 | 29
+                job: 'Mangaka'
+              }
+            `,
+            errors: [
+              {
+                messageId: 'unexpectedInterfacePropertiesOrder',
+                data: {
+                  first: 'age',
+                  second: '[...memories]',
+                },
+              },
+              {
+                messageId: 'unexpectedInterfacePropertiesOrder',
+                data: {
+                  first: 'job',
+                  second: '[value in stories]',
+                },
+              },
+            ],
+          },
+        ],
+      })
     })
   })
 
-  it(`${RULE_NAME}: takes into account the presence of an optional operator`, () => {
-    ruleTester.run(RULE_NAME, rule, {
-      valid: [
-        {
-          code: `
-            interface Interface {
-              color: 'purple' | 'blue' | 'green'
-              align: 'left' | 'center' | 'right'
-            }
-          `,
-          options: [
-            {
-              type: SortType['line-length'],
-              order: SortOrder.desc,
-            },
-          ],
-        },
-        {
-          code: `
-            interface Interface {
-              align: 'left' | 'center' | 'right'
-              color: 'purple' | 'blue' | 'green'
-            }
-          `,
-          options: [
-            {
-              type: SortType['line-length'],
-              order: SortOrder.desc,
-            },
-          ],
-        },
-      ],
-      invalid: [
-        {
-          code: `
-            interface Interface {
-              color: 'purple' | 'blue' | 'green'
-              align?: 'left' | 'center' | 'right'
-            }
-          `,
-          output: `
-            interface Interface {
-              align?: 'left' | 'center' | 'right'
-              color: 'purple' | 'blue' | 'green'
-            }
-          `,
-          options: [
-            {
-              type: SortType['line-length'],
-              order: SortOrder.desc,
-            },
-          ],
-          errors: [
-            {
-              messageId: 'unexpectedInterfacePropertiesOrder',
-              data: {
-                first: 'color',
-                second: 'align',
+  describe(`${RULE_NAME}: sorting by line length`, () => {
+    let type = 'line-length-order'
+
+    it(`${RULE_NAME}(${type}): sorts interface properties`, () => {
+      ruleTester.run(RULE_NAME, rule, {
+        valid: [
+          {
+            code: dedent`
+              interface DossierByTwilight {
+                country: 'Westalis' | 'Ostania'
+                name: string
+                age: string
+              }
+            `,
+            options: [
+              {
+                type: SortType['line-length'],
+                order: SortOrder.desc,
               },
-            },
-          ],
-        },
-      ],
+            ],
+          },
+        ],
+        invalid: [
+          {
+            code: dedent`
+              interface DossierByTwilight {
+                name: string
+                age: string
+                country: 'Westalis' | 'Ostania'
+              }
+            `,
+            options: [
+              {
+                type: SortType['line-length'],
+                order: SortOrder.desc,
+              },
+            ],
+            output: dedent`
+              interface DossierByTwilight {
+                country: 'Westalis' | 'Ostania'
+                name: string
+                age: string
+              }
+            `,
+            errors: [
+              {
+                messageId: 'unexpectedInterfacePropertiesOrder',
+                data: {
+                  first: 'age',
+                  second: 'country',
+                },
+              },
+            ],
+          },
+        ],
+      })
+    })
+
+    it(`${RULE_NAME}(${type}): takes into account the presence of an optional operator`, () => {
+      ruleTester.run(RULE_NAME, rule, {
+        valid: [
+          {
+            code: dedent`
+              interface TotoroMessage {
+                color: 'purple' | 'blue' | 'green'
+                align: 'left' | 'center' | 'right'
+              }
+            `,
+            options: [
+              {
+                type: SortType['line-length'],
+                order: SortOrder.desc,
+              },
+            ],
+          },
+          {
+            code: dedent`
+              interface TotoroMessage {
+                align: 'left' | 'center' | 'right'
+                color: 'purple' | 'blue' | 'green'
+              }
+            `,
+            options: [
+              {
+                type: SortType['line-length'],
+                order: SortOrder.desc,
+              },
+            ],
+          },
+        ],
+        invalid: [
+          {
+            code: dedent`
+              interface TotoroMessage {
+                color: 'purple' | 'blue' | 'green'
+                align?: 'left' | 'center' | 'right'
+              }
+            `,
+            output: dedent`
+              interface TotoroMessage {
+                align?: 'left' | 'center' | 'right'
+                color: 'purple' | 'blue' | 'green'
+              }
+            `,
+            options: [
+              {
+                type: SortType['line-length'],
+                order: SortOrder.desc,
+              },
+            ],
+            errors: [
+              {
+                messageId: 'unexpectedInterfacePropertiesOrder',
+                data: {
+                  first: 'color',
+                  second: 'align',
+                },
+              },
+            ],
+          },
+        ],
+      })
+    })
+
+    it(`${RULE_NAME}(${type}): works with ts index signature`, () => {
+      ruleTester.run(RULE_NAME, rule, {
+        valid: [
+          {
+            code: dedent`
+              interface JujutsuHigh {
+                [key in Sorcerer]: string
+                yuuji: 'Yuuji Itadori'
+              }
+            `,
+            options: [
+              {
+                type: SortType['line-length'],
+                order: SortOrder.desc,
+              },
+            ],
+          },
+        ],
+        invalid: [
+          {
+            code: dedent`
+              interface JujutsuHigh {
+                yuuji: 'Yuuji Itadori'
+                [key in Sorcerer]: string
+              }
+            `,
+            options: [
+              {
+                type: SortType['line-length'],
+                order: SortOrder.desc,
+              },
+            ],
+            output: dedent`
+              interface JujutsuHigh {
+                [key in Sorcerer]: string
+                yuuji: 'Yuuji Itadori'
+              }
+            `,
+            errors: [
+              {
+                messageId: 'unexpectedInterfacePropertiesOrder',
+                data: {
+                  first: 'yuuji',
+                  second: '[key in Sorcerer]',
+                },
+              },
+            ],
+          },
+        ],
+      })
+    })
+
+    it(`${RULE_NAME}(${type}): works with method and construct signatures`, () => {
+      ruleTester.run(RULE_NAME, rule, {
+        valid: [
+          {
+            code: dedent`
+              interface Zenitsu {
+                airSpin: () => void
+                godspeed(): number
+                sixfold(): void
+                name: string
+                age: number
+              }
+            `,
+            options: [
+              {
+                type: SortType['line-length'],
+                order: SortOrder.desc,
+              },
+            ],
+          },
+        ],
+        invalid: [
+          {
+            code: dedent`
+              interface Zenitsu {
+                age: number
+                godspeed(): number
+                airSpin: () => void
+                sixfold(): void
+                name: string
+              }
+            `,
+            options: [
+              {
+                type: SortType['line-length'],
+                order: SortOrder.desc,
+              },
+            ],
+            output: dedent`
+              interface Zenitsu {
+                airSpin: () => void
+                godspeed(): number
+                sixfold(): void
+                name: string
+                age: number
+              }
+            `,
+            errors: [
+              {
+                messageId: 'unexpectedInterfacePropertiesOrder',
+                data: {
+                  first: 'age',
+                  second: 'godspeed()',
+                },
+              },
+              {
+                messageId: 'unexpectedInterfacePropertiesOrder',
+                data: {
+                  first: 'godspeed()',
+                  second: 'airSpin',
+                },
+              },
+            ],
+          },
+        ],
+      })
+    })
+
+    it(`${RULE_NAME}(${type}): works with empty properties with empty values`, () => {
+      ruleTester.run(RULE_NAME, rule, {
+        valid: [
+          {
+            code: dedent`
+              interface SatoruFujinuma {
+                [value in stories]?
+                [days in daysDiff]
+                job: 'Mangaka'
+                [...memories]
+                age: 10 | 29
+              }
+            `,
+            options: [
+              {
+                type: SortType['line-length'],
+                order: SortOrder.desc,
+              },
+            ],
+          },
+        ],
+        invalid: [
+          {
+            code: dedent`
+              interface SatoruFujinuma {
+                [days in daysDiff]
+                [value in stories]?
+                [...memories]
+                job: 'Mangaka'
+                age: 10 | 29
+              }
+            `,
+            options: [
+              {
+                type: SortType['line-length'],
+                order: SortOrder.desc,
+              },
+            ],
+            output: dedent`
+              interface SatoruFujinuma {
+                [value in stories]?
+                [days in daysDiff]
+                job: 'Mangaka'
+                [...memories]
+                age: 10 | 29
+              }
+            `,
+            errors: [
+              {
+                messageId: 'unexpectedInterfacePropertiesOrder',
+                data: {
+                  first: '[days in daysDiff]',
+                  second: '[value in stories]',
+                },
+              },
+              {
+                messageId: 'unexpectedInterfacePropertiesOrder',
+                data: {
+                  first: '[...memories]',
+                  second: 'job',
+                },
+              },
+            ],
+          },
+        ],
+      })
     })
   })
 
-  it(`${RULE_NAME}: checks ts index signature`, () => {
-    ruleTester.run(RULE_NAME, rule, {
-      valid: [
-        {
-          code: `
-            interface Interface {
-              [key: string]: string
-              elementsNum: number
-            }
-          `,
-          options: [
-            {
-              type: SortType['line-length'],
-              order: SortOrder.desc,
-            },
-          ],
-        },
-      ],
-      invalid: [
-        {
-          code: `
-            interface Interface {
-              elementsNum: number
-              [key: string]: number
-            }
-          `,
-          options: [
-            {
-              type: SortType['line-length'],
-              order: SortOrder.desc,
-            },
-          ],
-          output: `
-            interface Interface {
-              [key: string]: number
-              elementsNum: number
-            }
-          `,
-          errors: [
-            {
-              messageId: 'unexpectedInterfacePropertiesOrder',
-              data: {
-                first: 'elementsNum',
-                second: 'key',
+  describe(`${RULE_NAME}: misc`, () => {
+    it(`${RULE_NAME}: sets natural asc sorting as default`, () => {
+      ruleTester.run(RULE_NAME, rule, {
+        valid: [
+          {
+            code: dedent`
+              interface DeathNoteValue {
+                causeOfDeath: string
+                name: string
+              }
+            `,
+          },
+        ],
+        invalid: [
+          {
+            code: dedent`
+              interface DeathNoteValue {
+                name: string
+                causeOfDeath: string
+              }
+            `,
+            output: dedent`
+              interface DeathNoteValue {
+                causeOfDeath: string
+                name: string
+              }
+            `,
+            errors: [
+              {
+                messageId: 'unexpectedInterfacePropertiesOrder',
+                data: {
+                  first: 'name',
+                  second: 'causeOfDeath',
+                },
               },
-            },
-          ],
-        },
-      ],
+            ],
+          },
+        ],
+      })
     })
   })
 })

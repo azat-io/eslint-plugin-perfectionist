@@ -1,5 +1,3 @@
-import type { TSESTree } from '@typescript-eslint/types'
-
 import { AST_NODE_TYPES } from '@typescript-eslint/types'
 
 import { createEslintRule } from '~/utils/create-eslint-rule'
@@ -63,99 +61,59 @@ export default createEslintRule<Options, MESSAGE_ID>({
         order: SortOrder.asc,
       })
 
-      let values: SortingNode[] = node.body.map(typeElement => {
-        let name = ''
-        let size = 0
+      if (node.body.length > 1) {
+        let source = context.getSourceCode().text
 
-        let inc = (number: number) => {
-          size += number
-        }
+        let values: SortingNode[] = node.body.map(element => {
+          let name: string
 
-        let useKey = (element: {
-          key: {
-            range: TSESTree.Range
-          }
-        }) => {
-          inc(rangeToDiff(element.key.range))
-        }
+          if (element.type === AST_NODE_TYPES.TSPropertySignature) {
+            if (element.key.type === AST_NODE_TYPES.Identifier) {
+              ;({ name } = element.key)
+            } else if (element.key.type === AST_NODE_TYPES.Literal) {
+              name = `${element.key.value}`
+            } else {
+              let end: number
 
-        let useIndexSignatureKey = (element: { parameters: { range: TSESTree.Range }[] }) => {
-          let { length } = '[]'
+              if (element.typeAnnotation?.range.at(0)) {
+                end = element.typeAnnotation.range.at(0)!
+              } else {
+                let optional = element.optional ? '?'.length : 0
+                end = element.range.at(1)! - optional
+              }
 
-          inc(element.parameters.reduce((accumulator, { range }) => accumulator + rangeToDiff(range), length))
-        }
-
-        let useOptional = (element: { optional?: boolean }) => {
-          if (element.optional) {
-            let { length } = '?'
-            inc(length)
-          }
-        }
-
-        let useTypeAnnotationRange = (element: {
-          typeAnnotation?: {
-            range: [number, number]
-          }
-        }) => {
-          let typeAnnotationRange = element.typeAnnotation?.range
-
-          if (typeAnnotationRange) {
-            inc(rangeToDiff(typeAnnotationRange))
-          }
-        }
-
-        let setName = (interfaceNode: TSESTree.Node) => {
-          if (interfaceNode.type === AST_NODE_TYPES.Identifier) {
-            ;({ name } = interfaceNode)
-          } else if (interfaceNode.type === AST_NODE_TYPES.TSIndexSignature) {
-            let parameter = interfaceNode.parameters.at(0)
-
-            if (parameter) {
-              setName(parameter)
+              name = source.slice(element.range.at(0), end)
             }
+          } else if (element.type === AST_NODE_TYPES.TSIndexSignature) {
+            name = source.slice(element.range.at(0), element.typeAnnotation?.range.at(0) ?? element.range.at(1))
+          } else {
+            name = source.slice(element.range.at(0), element.returnType?.range.at(0) ?? element.range.at(1))
           }
-        }
 
-        if (typeElement.type === AST_NODE_TYPES.TSPropertySignature) {
-          setName(typeElement.key)
-          useKey(typeElement)
-          useOptional(typeElement)
-          useTypeAnnotationRange(typeElement)
-        } else if (typeElement.type === AST_NODE_TYPES.TSIndexSignature) {
-          setName(typeElement)
-          useIndexSignatureKey(typeElement)
-          useTypeAnnotationRange(typeElement)
-        }
+          return {
+            size: rangeToDiff(element.range),
+            node: element,
+            name,
+          }
+        })
 
-        return {
-          node: typeElement,
-          name,
-          size,
-        }
-      })
+        for (let i = 1; i < values.length; i++) {
+          let first = values.at(i - 1)!
+          let second = values.at(i)!
 
-      for (let i = 1; i < values.length; i++) {
-        let firstIndex = i - 1
-        let secondIndex = i
-        let first = values.at(firstIndex)!
-        let second = values.at(secondIndex)!
+          if (compare(first, second, options)) {
+            let secondNode = node.body[i]
 
-        if (compare(first, second, options)) {
-          let secondNode = node.body[secondIndex]
-
-          context.report({
-            messageId: 'unexpectedInterfacePropertiesOrder',
-            data: {
-              first: first.name,
-              second: second.name,
-            },
-            node: secondNode,
-            fix: fixer => {
-              let sourceCode = context.getSourceCode()
-              let { text } = sourceCode
-              return sortNodes(fixer, text, values, options)
-            },
-          })
+            context.report({
+              messageId: 'unexpectedInterfacePropertiesOrder',
+              data: {
+                first: first.name,
+                second: second.name,
+              },
+              node: secondNode,
+              fix: fixer => sortNodes(fixer, source, values, options),
+            })
+          }
         }
       }
     },
