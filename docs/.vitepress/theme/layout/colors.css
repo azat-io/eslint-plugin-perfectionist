@@ -15,6 +15,8 @@
   --vp-c-green-lighter: oklch(75% 0.18 282);
   --vp-c-green-dark: oklch(45% 0.18 282);
   --vp-c-green-darker: oklch(35% 0.18 282);
+
+  --vp-layout-max-width: 1540px;
 }
 
 ::selection {
