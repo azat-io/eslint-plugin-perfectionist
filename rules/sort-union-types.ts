@@ -73,13 +73,11 @@ export default createEslintRule<Options, MESSAGE_ID>({
       })
 
       for (let i = 1; i < values.length; i++) {
-        let firstIndex = i - 1
-        let secondIndex = i
-        let first = values.at(firstIndex)!
-        let second = values.at(secondIndex)!
+        let first = values.at(i - 1)!
+        let second = values.at(i)!
 
         if (compare(first, second, options)) {
-          let secondNode = node.types[secondIndex]
+          let secondNode = node.types[i]
 
           context.report({
             messageId: 'unexpectedUnionTypesOrder',
