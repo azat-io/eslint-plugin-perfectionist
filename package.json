@@ -64,6 +64,7 @@
     "vite": "^4.3.8",
     "vite-plugin-lightningcss": "^0.0.5",
     "vitepress": "1.0.0-alpha.76",
-    "vitest": "^0.31.1"
+    "vitest": "^0.31.1",
+    "vue": "^3.3.4"
   }
 }
