@@ -8,7 +8,7 @@
   --vp-c-brand-lighter: oklch(55% 0.18 282);
   --vp-c-brand-dark: oklch(40% 0.18 282);
 
-  --vp-button-brand-bg: #4b32c3;
+  --vp-button-brand-bg: oklch(45% 0.18 282);
 
   --vp-c-green: oklch(55% 0.18 282);
   --vp-c-green-light: oklch(65% 0.18 282);
