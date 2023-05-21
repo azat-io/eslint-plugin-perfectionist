@@ -4,35 +4,51 @@ title: sort-map-elements
 
 # sort-map-elements
 
-> Enforce sorted Map elements.
+> Enforce sorted `Map` elements.
 
-## 📖 Rule details
+## 💡 Examples
 
-This rule verifies that all `Map` elements are sorted in order of string length.
+### Natural sorting
 
-### Incorrect
-
-<!-- prettier-ignore -->
 ```ts
-Map([
-  ['react', 'facebook/react'],
-  ['vue', 'vuejs/core'],
-  ['svelte', 'sveltejs/svelte'],
-  ['solid', 'solidjs/solid']
-  ['qwik', 'BuilderIO/qwik'],
+// Incorrect
+let bebop = Map([
+  ['spike', 'Spike Spiegel'],
+  ['ed', 'Edward'],
+  ['ein', 'Ein'],
+  ['faye', 'Faye Valentine'],
+  ['jet', 'Jet Black'],
+])
+
+// Correct
+let bebop = Map([
+  ['ed', 'Edward'],
+  ['ein', 'Ein'],
+  ['faye', 'Faye Valentine'],
+  ['jet', 'Jet Black'],
+  ['spike', 'Spike Spiegel'],
 ])
 ```
 
-### Correct
+### Sorting by line length
 
-<!-- prettier-ignore -->
 ```ts
-Map([
-  ['svelte', 'sveltejs/svelte'],
-  ['react', 'facebook/react'],
-  ['solid', 'solidjs/solid']
-  ['qwik', 'BuilderIO/qwik'],
-  ['vue', 'vuejs/core'],
+// Incorrect
+let bebop = Map([
+  ['spike', 'Spike Spiegel'],
+  ['ed', 'Edward'],
+  ['ein', 'Ein'],
+  ['faye', 'Faye Valentine'],
+  ['jet', 'Jet Black'],
+])
+
+// Correct
+let bebop = Map([
+  ['spike', 'Spike Spiegel'],
+  ['faye', 'Faye Valentine'],
+  ['jet', 'Jet Black'],
+  ['ed', 'Edward'],
+  ['ein', 'Ein'],
 ])
 ```
 
@@ -40,13 +56,15 @@ Map([
 
 ### `type`
 
-- `natural` (default) - sorting, which is similar to alphabetical order.
-- `line-length` - sort by code line length.
+- `enum` (default: `natural`):
+  - `natural` - sorting, which is similar to alphabetical order.
+  - `line-length` - sort by code line length.
 
 ### `order`
 
-- `asc` (default) - enforce properties to be in ascending order.
-- `desc` - enforce properties to be in descending order.
+- `enum` (default: `asc`):
+  - `asc` - enforce properties to be in ascending order.
+  - `desc` - enforce properties to be in descending order.
 
 ## ⚙️ Usage
 
@@ -56,13 +74,20 @@ Map([
 // .eslintrc
 {
   "rules": {
-    "perfectionist/sort-map-elements": ["error", { "type": "line-length", "order": "desc" }]
+    "perfectionist/sort-map-elements": [
+      "error",
+      {
+        "type": "line-length",
+        "order": "desc"
+      }
+    ]
   }
 }
 ```
 
 ### Flat config
 
+<!-- prettier-ignore -->
 ```js
 // eslint.config.js
 import perfectionist from 'eslint-plugin-perfectionist'
@@ -72,7 +97,13 @@ export default {
     perfectionist,
   },
   rules: {
-    'perfectionist/sort-map-elements': ['error', { type: 'line-length', order: 'desc' }],
+    'perfectionist/sort-map-elements': [
+      'error',
+      {
+        type: 'line-length',
+        order: 'desc',
+      },
+    ],
   },
 }
 ```

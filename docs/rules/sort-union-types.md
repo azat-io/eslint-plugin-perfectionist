@@ -6,45 +6,63 @@ title: sort-union-types
 
 > Enforce sorted union types.
 
-## 📖 Rule details
+## 💡 Examples
 
-This rule verifies that all named imports are sorted sorted in order of string length.
-
-### Incorrect
+### Natural sorting
 
 <!-- prettier-ignore -->
 ```ts
-type Color =
-  | 'red'
-  | 'green'
-  | 'yellow'
-  | 'blue'
-  | 'rebeccapurple'
+// Incorrect
+type DevilHunter =
+  | 'Denji'
+  | 'Power'
+  | 'Makima'
+  | 'Aki Hayakawa'
+  | 'Pochita'
+
+// Correct
+type DevilHunter =
+  | 'Aki Hayakawa'
+  | 'Denji'
+  | 'Makima'
+  | 'Pochita'
+  | 'Power'
 ```
 
-### Correct
+### Sorting by line length
 
 <!-- prettier-ignore -->
 ```ts
-type Color =
-  | 'rebeccapurple'
-  | 'yellow'
-  | 'green'
-  | 'blue'
-  | 'red'
+// Incorrect
+type DevilHunter =
+  | 'Denji'
+  | 'Power'
+  | 'Makima'
+  | 'Aki Hayakawa'
+  | 'Pochita'
+
+// Correct
+type DevilHunter =
+  | 'Aki Hayakawa'
+  | 'Pochita'
+  | 'Makima'
+  | 'Denji'
+  | 'Power'
 ```
 
 ## 🔧 Options
 
 ### `type`
 
-- `natural` (default) - sorting, which is similar to alphabetical order.
-- `line-length` - sort by code line length.
+- `enum` (default: `natural`):
+  - `natural` - sorting, which is similar to alphabetical order.
+  - `line-length` - sort by code line length.
 
 ### `order`
 
-- `asc` (default) - enforce properties to be in ascending order.
-- `desc` - enforce properties to be in descending order.
+- `enum` (default: `asc`):
+  - `asc` - enforce properties to be in ascending order.
+  - `desc` - enforce properties to be in descending order.
 
 ## ⚙️ Usage
 
@@ -54,7 +72,13 @@ type Color =
 // .eslintrc
 {
   "rules": {
-    "perfectionist/sort-union-types": ["error", { "type": "line-length", "order": "desc" }]
+    "perfectionist/sort-union-types": [
+      "error",
+      {
+        "type": "line-length",
+        "order": "desc"
+      }
+    ]
   }
 }
 ```
@@ -70,7 +94,13 @@ export default {
     perfectionist,
   },
   rules: {
-    'perfectionist/sort-union-types': ['error', { type: 'line-length', order: 'desc' }],
+    'perfectionist/sort-union-types': [
+      'error',
+      {
+        type: 'line-length',
+        order: 'desc',
+      },
+    ],
   },
 }
 ```

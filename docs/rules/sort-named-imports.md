@@ -6,51 +6,67 @@ title: sort-named-imports
 
 > Enforce sorted named imports.
 
-## 📖 Rule details
+## 💡 Examples
 
-This rule verifies that all named imports are sorted sorted in order of string length.
-
-### Incorrect
+### Natural sorting
 
 <!-- prettier-ignore -->
 ```ts
-import {
-  useEffect,
-  lazy
-  useState,
-  useMemo,
-  useCallback,
-  useId,
-  Suspense,
-} from 'react'
+// Incorrect
+export {
+  killuaZoldyck,
+  leorio,
+  gon,
+  hisoka,
+  kurapika,
+} from 'hunters'
+
+// Correct
+export {
+  gon,
+  hisoka,
+  killuaZoldyck,
+  kurapika,
+  leorio,
+} from 'hunters'
 ```
 
-### Correct
+### Sorting by line length
 
 <!-- prettier-ignore -->
 ```ts
-import {
-  useCallback,
-  useEffect,
-  Suspense,
-  useState,
-  useMemo,
-  useId,
-  lazy
-} from 'react'
+// Incorrect
+export {
+  killuaZoldyck,
+  leorio,
+  gon,
+  hisoka,
+  kurapika,
+} from 'hunters'
+
+// Correct
+export {
+  killuaZoldyck,
+  kurapika,
+  hisoka,
+  leorio,
+  gon,
+} from 'hunters'
 ```
 
 ## 🔧 Options
 
 ### `type`
 
-- `natural` (default) - sorting, which is similar to alphabetical order.
-- `line-length` - sort by code line length.
+- `enum` (default: `natural`):
+  - `natural` - sorting, which is similar to alphabetical order.
+  - `line-length` - sort by code line length.
 
 ### `order`
 
-- `asc` (default) - enforce properties to be in ascending order.
-- `desc` - enforce properties to be in descending order.
+- `enum` (default: `asc`):
+  - `asc` - enforce properties to be in ascending order.
+  - `desc` - enforce properties to be in descending order.
 
 ## ⚙️ Usage
 
@@ -60,7 +76,13 @@ import {
 // .eslintrc
 {
   "rules": {
-    "perfectionist/sort-named-imports": ["error", { "type": "line-length", "order": "desc" }]
+    "perfectionist/sort-named-imports": [
+      "error",
+      {
+        "type": "line-length",
+        "order": "desc"
+      }
+    ]
   }
 }
 ```
@@ -76,7 +98,13 @@ export default {
     perfectionist,
   },
   rules: {
-    'perfectionist/sort-named-imports': ['error', { type: 'line-length', order: 'desc' }],
+    'perfectionist/sort-named-imports': [
+      'error',
+      {
+        type: 'line-length',
+        order: 'desc',
+      },
+    ],
   },
 }
 ```

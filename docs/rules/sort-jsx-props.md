@@ -6,40 +6,58 @@ title: sort-jsx-props
 
 > Enforce sorted JSX props.
 
-## 📖 Rule details
+## 💡 Examples
 
-This rule verifies that JSX props are sorted sorted in order of string length.
+### Natural sorting
 
-### Incorrect
-
+<!-- prettier-ignore -->
 ```tsx
-let Container = () => (
-  <Input
-    placeholder="Password"
-    value={password}
-    full
-    className="input"
-    type="password"
-    name="element"
-    error={false}
-    autoFocus
+// Incorrect
+let Riko = () => (
+  <CaveRaider
+    level="White Whistle"
+    name="Riko"
+    home="Belchero Orphanage"
+    delver
+    age={12}
+  />
+)
+
+// Correct
+let Riko = () => (
+  <CaveRaider
+    age={12}
+    delver
+    home="Belchero Orphanage"
+    level="White Whistle"
+    name="Riko"
   />
 )
 ```
 
-### Correct
+### Sorting by line length
 
+<!-- prettier-ignore -->
 ```tsx
-let Container = () => (
-  <Input
-    placeholder="Password"
-    className="input"
-    value={password}
-    type="password"
-    name="element"
-    error={false}
-    autoFocus
-    full
+// Incorrect
+let Riko = () => (
+  <CaveRaider
+    level="White Whistle"
+    name="Riko"
+    home="Belchero Orphanage"
+    delver
+    age={12}
+  />
+)
+
+// Correct
+let Riko = () => (
+  <CaveRaider
+    home="Belchero Orphanage"
+    level="White Whistle"
+    name="Riko"
+    age={12}
+    delver
   />
 )
 ```
@@ -48,13 +66,15 @@ let Container = () => (
 
 ### `type`
 
-- `natural` (default) - sorting, which is similar to alphabetical order.
-- `line-length` - sort by code line length.
+- `enum` (default: `natural`):
+  - `natural` - sorting, which is similar to alphabetical order.
+  - `line-length` - sort by code line length.
 
 ### `order`
 
-- `asc` (default) - enforce properties to be in ascending order.
-- `desc` - enforce properties to be in descending order.
+- `enum` (default: `asc`):
+  - `asc` - enforce properties to be in ascending order.
+  - `desc` - enforce properties to be in descending order.
 
 ## ⚙️ Usage
 
@@ -64,13 +84,20 @@ let Container = () => (
 // .eslintrc
 {
   "rules": {
-    "perfectionist/sort-jsx-props": ["error", { "type": "line-length", "order": "desc" }]
+    "perfectionist/sort-jsx-props": [
+      "error",
+      {
+        "type": "line-length",
+        "order": "desc"
+      }
+    ]
   }
 }
 ```
 
 ### Flat config
 
+<!-- prettier-ignore -->
 ```js
 // eslint.config.js
 import perfectionist from 'eslint-plugin-perfectionist'
@@ -80,7 +107,13 @@ export default {
     perfectionist,
   },
   rules: {
-    'perfectionist/sort-jsx-props': ['error', { type: 'line-length', order: 'desc' }],
+    'perfectionist/sort-jsx-props': [
+      'error',
+      {
+        type: 'line-length',
+        order: 'desc',
+      },
+    ],
   },
 }
 ```

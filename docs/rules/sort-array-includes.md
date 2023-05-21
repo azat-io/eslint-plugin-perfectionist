@@ -6,32 +6,55 @@ title: sort-array-includes
 
 > Enforce sorted array values if the include method is called after the array is created.
 
-## 📖 Rule details
+## 💡 Examples
 
-### Incorrect
-
-```ts
-[
-  'Armored Titan',
-  'Cart Titan',
-  ...titans
-  'Beast Titan',
-  'War Hammer Titan',
-  'Attack Titan',
-].includes(titan)
-```
-
-### Correct
+### Natural sorting
 
 <!-- prettier-ignore -->
 ```ts
+// Incorrect
+[
+  'Beast Titan',
+  'Armored Titan',
+  'Jaw Titan',
+  'Cart Titan',
+  'War Hammer Titan',
+  'Attack Titan',
+].includes(titan)
+
+// Correct
+[
+  'Armored Titan',
+  'Attack Titan',
+  'Beast Titan',
+  'Cart Titan',
+  'Jaw Titan',
+  'War Hammer Titan',
+].includes(titan)
+```
+
+### Sorting by line length
+
+<!-- prettier-ignore -->
+```ts
+// Incorrect
+[
+  'Beast Titan',
+  'Armored Titan',
+  'Jaw Titan',
+  'Cart Titan',
+  'War Hammer Titan',
+  'Attack Titan',
+].includes(titan)
+
+// Correct
 [
   'War Hammer Titan',
   'Armored Titan',
   'Attack Titan',
   'Beast Titan',
   'Cart Titan',
-  ...titans
+  'Jaw Titan',
 ].includes(titan)
 ```
 
@@ -39,13 +62,15 @@ title: sort-array-includes
 
 ### `type`
 
-- `natural` (default) - sorting, which is similar to alphabetical order.
-- `line-length` - sort by code line length.
+- `enum` (default: `natural`):
+  - `natural` - sorting, which is similar to alphabetical order.
+  - `line-length` - sort by code line length.
 
 ### `order`
 
-- `asc` (default) - enforce properties to be in ascending order.
-- `desc` - enforce properties to be in descending order.
+- `enum` (default: `asc`):
+  - `asc` - enforce properties to be in ascending order.
+  - `desc` - enforce properties to be in descending order.
 
 ### `spreadLast`
 
@@ -59,13 +84,21 @@ title: sort-array-includes
 // .eslintrc
 {
   "rules": {
-    "perfectionist/sort-array-includes": ["error", { "type": "line-length", "order": "desc" }]
+    "perfectionist/sort-array-includes": [
+      "error",
+      {
+        "type": "line-length",
+        "order": "desc",
+        "spreadLast": true
+      }
+    ]
   }
 }
 ```
 
 ### Flat config
 
+<!-- prettier-ignore -->
 ```js
 // eslint.config.js
 import perfectionist from 'eslint-plugin-perfectionist'
@@ -75,7 +108,14 @@ export default {
     perfectionist,
   },
   rules: {
-    'perfectionist/sort-array-includes': ['error', { type: 'line-length', order: 'desc' }],
+    'perfectionist/sort-array-includes': [
+      'error',
+      {
+        type: 'line-length',
+        order: 'desc',
+        spreadLast: true,
+      },
+    ],
   },
 }
 ```

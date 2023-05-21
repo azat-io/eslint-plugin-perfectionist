@@ -6,45 +6,67 @@ title: sort-named-exports
 
 > Enforce sorted named exports.
 
-## 📖 Rule details
+## 💡 Examples
 
-This rule verifies that all named exports are sorted sorted in order of string length.
-
-### Incorrect
+### Natural sorting
 
 <!-- prettier-ignore -->
 ```ts
+// Incorrect
 export {
-  get,
-  post,
-  put,
-  patch
-}
+  Emma,
+  Ray,
+  Norman,
+  Don,
+  Gilda,
+} from 'grace-field'
+
+// Correct
+export {
+  Don,
+  Emma,
+  Gilda,
+  Norman,
+  Ray,
+} from 'grace-field'
 ```
 
-### Correct
+### Sorting by line length
 
 <!-- prettier-ignore -->
 ```ts
+// Incorrect
 export {
-  patch
-  post,
-  put,
-  get,
-}
+  Emma,
+  Ray,
+  Norman,
+  Don,
+  Gilda,
+} from 'grace-field'
+
+// Correct
+export {
+  Norman,
+  Gilda,
+  Emma,
+  Don,
+  Ray,
+} from 'grace-field'
 ```
 
 ## 🔧 Options
 
 ### `type`
 
-- `natural` (default) - sorting, which is similar to alphabetical order.
-- `line-length` - sort by code line length.
+- `enum` (default: `natural`):
+  - `natural` - sorting, which is similar to alphabetical order.
+  - `line-length` - sort by code line length.
 
 ### `order`
 
-- `asc` (default) - enforce properties to be in ascending order.
-- `desc` - enforce properties to be in descending order.
+- `enum` (default: `asc`):
+  - `asc` - enforce properties to be in ascending order.
+  - `desc` - enforce properties to be in descending order.
 
 ## ⚙️ Usage
 
@@ -54,13 +76,20 @@ export {
 // .eslintrc
 {
   "rules": {
-    "perfectionist/sort-named-exports": ["error", { "type": "line-length", "order": "desc" }]
+    "perfectionist/sort-named-exports": [
+      "error",
+      {
+        "type": "line-length",
+        "order": "desc"
+      }
+    ]
   }
 }
 ```
 
 ### Flat config
 
+<!-- prettier-ignore -->
 ```js
 // eslint.config.js
 import perfectionist from 'eslint-plugin-perfectionist'
@@ -70,7 +99,13 @@ export default {
     perfectionist,
   },
   rules: {
-    'perfectionist/sort-named-exports': ['error', { type: 'line-length', order: 'desc' }],
+    'perfectionist/sort-named-exports': [
+      'error',
+      {
+        type: 'line-length',
+        order: 'desc',
+      },
+    ],
   },
 }
 ```
