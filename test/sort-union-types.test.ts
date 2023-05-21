@@ -35,15 +35,15 @@ describe(RULE_NAME, () => {
           code: dedent`
             type Color = 'green' | 'purple' | 'red'
           `,
+          output: dedent`
+            type Color = 'purple' | 'green' | 'red'
+          `,
           options: [
             {
               type: SortType['line-length'],
               order: SortOrder.desc,
             },
           ],
-          output: dedent`
-            type Color = 'purple' | 'green' | 'red'
-          `,
           errors: [
             {
               messageId: 'unexpectedUnionTypesOrder',
@@ -76,12 +76,6 @@ describe(RULE_NAME, () => {
               | void
               | bigint
           `,
-          options: [
-            {
-              type: SortType.natural,
-              order: SortOrder.asc,
-            },
-          ],
           output: dedent`
             type Value =
               | any
@@ -95,6 +89,12 @@ describe(RULE_NAME, () => {
               | unknown
               | void
           `,
+          options: [
+            {
+              type: SortType.natural,
+              order: SortOrder.asc,
+            },
+          ],
           errors: [
             {
               messageId: 'unexpectedUnionTypesOrder',
@@ -136,13 +136,13 @@ describe(RULE_NAME, () => {
       invalid: [
         {
           code: "Omit<Color, 'error' | 'warning'>",
+          output: "Omit<Color, 'warning' | 'error'>",
           options: [
             {
               type: SortType['line-length'],
               order: SortOrder.desc,
             },
           ],
-          output: "Omit<Color, 'warning' | 'error'>",
           errors: [
             {
               messageId: 'unexpectedUnionTypesOrder',
@@ -163,13 +163,13 @@ describe(RULE_NAME, () => {
       invalid: [
         {
           code: 'type Status = Error | Success | Warning',
+          output: 'type Status = Warning | Success | Error',
           options: [
             {
               type: SortType['line-length'],
               order: SortOrder.desc,
             },
           ],
-          output: 'type Status = Warning | Success | Error',
           errors: [
             {
               messageId: 'unexpectedUnionTypesOrder',
@@ -194,17 +194,17 @@ describe(RULE_NAME, () => {
               | { code: 403, status: Error }
               | { code: 200, status: Error }
           `,
+          output: dedent`
+            type Response =
+              | { code: 200, status: Error }
+              | { code: 403, status: Error }
+          `,
           options: [
             {
               type: SortType.natural,
               order: SortOrder.asc,
             },
           ],
-          output: dedent`
-            type Response =
-              | { code: 200, status: Error }
-              | { code: 403, status: Error }
-          `,
           errors: [
             {
               messageId: 'unexpectedUnionTypesOrder',

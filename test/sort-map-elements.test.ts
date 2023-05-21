@@ -49,12 +49,6 @@ describe(RULE_NAME, () => {
                 ['contacts', '/contacts'],
               ])
             `,
-            options: [
-              {
-                type: SortType.natural,
-                order: SortOrder.asc,
-              },
-            ],
             output: dedent`
               let map = new Map([
                 ['product', '/product/:id'],
@@ -65,6 +59,12 @@ describe(RULE_NAME, () => {
                 ['contacts', '/contacts'],
               ])
             `,
+            options: [
+              {
+                type: SortType.natural,
+                order: SortOrder.asc,
+              },
+            ],
             errors: [
               {
                 messageId: 'unexpectedMapElementsOrder',
@@ -141,18 +141,18 @@ describe(RULE_NAME, () => {
                 [jessieName, jessieData],
               ])
             `,
-            options: [
-              {
-                type: SortType.natural,
-                order: SortOrder.asc,
-              },
-            ],
             output: dedent`
               new Map([
                 [jessieName, jessieData],
                 [raymondName, raymondData],
               ])
             `,
+            options: [
+              {
+                type: SortType.natural,
+                order: SortOrder.asc,
+              },
+            ],
             errors: [
               {
                 messageId: 'unexpectedMapElementsOrder',
@@ -195,12 +195,6 @@ describe(RULE_NAME, () => {
                 [3, 'three'],
               ])
             `,
-            options: [
-              {
-                type: SortType.natural,
-                order: SortOrder.asc,
-              },
-            ],
             output: dedent`
               new Map([
                 [1, 'one'],
@@ -208,6 +202,12 @@ describe(RULE_NAME, () => {
                 [3, 'three'],
               ])
             `,
+            options: [
+              {
+                type: SortType.natural,
+                order: SortOrder.asc,
+              },
+            ],
             errors: [
               {
                 messageId: 'unexpectedMapElementsOrder',
@@ -252,12 +252,6 @@ describe(RULE_NAME, () => {
                 musicApp,
               ])
             `,
-            options: [
-              {
-                type: SortType.natural,
-                order: SortOrder.asc,
-              },
-            ],
             output: dedent`
               let apps = new Map([
                 booksApp,
@@ -266,6 +260,12 @@ describe(RULE_NAME, () => {
                 weatherApp,
               ])
             `,
+            options: [
+              {
+                type: SortType.natural,
+                order: SortOrder.asc,
+              },
+            ],
             errors: [
               {
                 messageId: 'unexpectedMapElementsOrder',
@@ -322,12 +322,6 @@ describe(RULE_NAME, () => {
                 ['contacts', '/contacts'],
               ])
             `,
-            options: [
-              {
-                type: SortType['line-length'],
-                order: SortOrder.desc,
-              },
-            ],
             output: dedent`
               let map = new Map([
                 ['product', '/product/:id'],
@@ -338,6 +332,12 @@ describe(RULE_NAME, () => {
                 ['contacts', '/contacts'],
               ])
             `,
+            options: [
+              {
+                type: SortType['line-length'],
+                order: SortOrder.desc,
+              },
+            ],
             errors: [
               {
                 messageId: 'unexpectedMapElementsOrder',
@@ -388,18 +388,18 @@ describe(RULE_NAME, () => {
                 ['USD', 'United States dollar'],
               ])
             `,
-            options: [
-              {
-                type: SortType['line-length'],
-                order: SortOrder.desc,
-              },
-            ],
             output: dedent`
               new Map([
                 ['USD', 'United States dollar'],
                 ['EUR', 'Euro'],
               ])
             `,
+            options: [
+              {
+                type: SortType['line-length'],
+                order: SortOrder.desc,
+              },
+            ],
             errors: [
               {
                 messageId: 'unexpectedMapElementsOrder',
@@ -417,18 +417,18 @@ describe(RULE_NAME, () => {
                 ['United States', 'USD'],
               ])
             `,
-            options: [
-              {
-                type: SortType['line-length'],
-                order: SortOrder.desc,
-              },
-            ],
             output: dedent`
               new Map([
                 ['United States', 'USD'],
                 ['Europe', 'EUR'],
               ])
             `,
+            options: [
+              {
+                type: SortType['line-length'],
+                order: SortOrder.desc,
+              },
+            ],
             errors: [
               {
                 messageId: 'unexpectedMapElementsOrder',
@@ -505,18 +505,18 @@ describe(RULE_NAME, () => {
                 [raymondName, raymondData],
               ])
             `,
-            options: [
-              {
-                type: SortType['line-length'],
-                order: SortOrder.desc,
-              },
-            ],
             output: dedent`
               new Map([
                 [raymondName, raymondData],
                 [jessieName, jessieData],
               ])
             `,
+            options: [
+              {
+                type: SortType['line-length'],
+                order: SortOrder.desc,
+              },
+            ],
             errors: [
               {
                 messageId: 'unexpectedMapElementsOrder',
@@ -559,12 +559,6 @@ describe(RULE_NAME, () => {
                 [3, 'three'],
               ])
             `,
-            options: [
-              {
-                type: SortType['line-length'],
-                order: SortOrder.desc,
-              },
-            ],
             output: dedent`
               new Map([
                 [3, 'three'],
@@ -572,6 +566,12 @@ describe(RULE_NAME, () => {
                 [2, 'two'],
               ])
             `,
+            options: [
+              {
+                type: SortType['line-length'],
+                order: SortOrder.desc,
+              },
+            ],
             errors: [
               {
                 messageId: 'unexpectedMapElementsOrder',
@@ -616,12 +616,6 @@ describe(RULE_NAME, () => {
                 musicApp,
               ])
             `,
-            options: [
-              {
-                type: SortType['line-length'],
-                order: SortOrder.desc,
-              },
-            ],
             output: dedent`
               let apps = new Map([
                 weatherApp,
@@ -630,6 +624,12 @@ describe(RULE_NAME, () => {
                 mapsApp,
               ])
             `,
+            options: [
+              {
+                type: SortType['line-length'],
+                order: SortOrder.desc,
+              },
+            ],
             errors: [
               {
                 messageId: 'unexpectedMapElementsOrder',
@@ -656,8 +656,7 @@ describe(RULE_NAME, () => {
     it(`${RULE_NAME}: sets natural asc sorting as default`, () => {
       ruleTester.run(RULE_NAME, rule, {
         valid: [
-          {
-            code: dedent`
+          dedent`
               new Map([
                 ['CNY', 'Renminbi'],
                 ['EUR', 'Euro'],
@@ -666,7 +665,6 @@ describe(RULE_NAME, () => {
                 ['USD', 'United States dollar'],
               ])
             `,
-          },
         ],
         invalid: [
           {
@@ -705,9 +703,7 @@ describe(RULE_NAME, () => {
     it(`${RULE_NAME}: works with empty map`, () => {
       ruleTester.run(RULE_NAME, rule, {
         valid: [
-          {
-            code: 'new Map([[], []])',
-          },
+          'new Map([[], []])',
         ],
         invalid: [],
       })

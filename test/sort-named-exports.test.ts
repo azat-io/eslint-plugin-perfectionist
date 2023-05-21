@@ -53,15 +53,15 @@ describe(RULE_NAME, () => {
           code: dedent`
             export { get, post, put, patch }
           `,
+          output: dedent`
+            export { patch, post, put, get }
+          `,
           options: [
             {
               type: SortType['line-length'],
               order: SortOrder.desc,
             },
           ],
-          output: dedent`
-            export { patch, post, put, get }
-          `,
           errors: [
             {
               messageId: 'unexpectedNamedExportsOrder',

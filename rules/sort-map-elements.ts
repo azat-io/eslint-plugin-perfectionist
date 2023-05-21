@@ -29,9 +29,6 @@ export default createEslintRule<Options, MESSAGE_ID>({
       description: 'Enforce sorted Map elements',
       recommended: false,
     },
-    messages: {
-      unexpectedMapElementsOrder: 'Expected "{{second}}" to come before "{{first}}"',
-    },
     fixable: 'code',
     schema: [
       {
@@ -49,6 +46,9 @@ export default createEslintRule<Options, MESSAGE_ID>({
         additionalProperties: false,
       },
     ],
+    messages: {
+      unexpectedMapElementsOrder: 'Expected "{{second}}" to come before "{{first}}"',
+    },
   },
   defaultOptions: [
     {

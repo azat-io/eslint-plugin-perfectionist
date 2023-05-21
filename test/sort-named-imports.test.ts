@@ -1,5 +1,6 @@
 import { ESLintUtils } from '@typescript-eslint/utils'
 import { describe, it } from 'vitest'
+import { dedent } from 'ts-dedent'
 
 import rule, { RULE_NAME } from '~/rules/sort-named-imports'
 import { SortType, SortOrder } from '~/typings'
@@ -14,10 +15,10 @@ describe(RULE_NAME, () => {
       valid: ["import { get, post, put } from 'axios'"],
       invalid: [
         {
-          code: `
+          code: dedent`
             import { get, post, put, patch } from 'axios'
           `,
-          output: `
+          output: dedent`
             import { get, patch, post, put } from 'axios'
           `,
           errors: [
@@ -38,7 +39,7 @@ describe(RULE_NAME, () => {
     ruleTester.run(RULE_NAME, rule, {
       valid: [
         {
-          code: `
+          code: dedent`
             import { useEffect, useState, useRef } from 'react'
           `,
           options: [
@@ -51,8 +52,11 @@ describe(RULE_NAME, () => {
       ],
       invalid: [
         {
-          code: `
+          code: dedent`
             import { useEffect, useRef, useState } from 'react'
+          `,
+          output: dedent`
+            import { useEffect, useState, useRef } from 'react'
           `,
           options: [
             {
@@ -60,9 +64,6 @@ describe(RULE_NAME, () => {
               order: SortOrder.desc,
             },
           ],
-          output: `
-            import { useEffect, useState, useRef } from 'react'
-          `,
           errors: [
             {
               messageId: 'unexpectedNamedImportsOrder',
@@ -81,7 +82,7 @@ describe(RULE_NAME, () => {
     ruleTester.run(RULE_NAME, rule, {
       valid: [
         {
-          code: `
+          code: dedent`
             import {
               identity,
               andThen,
@@ -107,7 +108,7 @@ describe(RULE_NAME, () => {
       ],
       invalid: [
         {
-          code: `
+          code: dedent`
             import {
               __,
               andThen,
@@ -121,6 +122,22 @@ describe(RULE_NAME, () => {
               ifElse,
               unless,
               when,
+            } from 'ramda'
+          `,
+          output: dedent`
+            import {
+              identity,
+              compose,
+              andThen,
+              unless,
+              ifElse,
+              concat,
+              isNil,
+              when,
+              head,
+              has,
+              __,
+              F,
             } from 'ramda'
           `,
           options: [
@@ -129,22 +146,6 @@ describe(RULE_NAME, () => {
               order: SortOrder.desc,
             },
           ],
-          output: `
-            import {
-              identity,
-              compose,
-              andThen,
-              unless,
-              ifElse,
-              concat,
-              isNil,
-              when,
-              head,
-              has,
-              __,
-              F,
-            } from 'ramda'
-          `,
           errors: [
             {
               messageId: 'unexpectedNamedImportsOrder',

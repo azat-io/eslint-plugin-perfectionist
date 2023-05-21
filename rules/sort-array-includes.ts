@@ -30,9 +30,6 @@ export default createEslintRule<Options, MESSAGE_ID>({
       description: 'Enforce sorted arrays before include method',
       recommended: false,
     },
-    messages: {
-      unexpectedArrayIncludesOrder: 'Expected "{{second}}" to come before "{{first}}"',
-    },
     fixable: 'code',
     schema: [
       {
@@ -54,6 +51,9 @@ export default createEslintRule<Options, MESSAGE_ID>({
         additionalProperties: false,
       },
     ],
+    messages: {
+      unexpectedArrayIncludesOrder: 'Expected "{{second}}" to come before "{{first}}"',
+    },
   },
   defaultOptions: [
     {

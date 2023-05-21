@@ -1,5 +1,6 @@
 import { ESLintUtils } from '@typescript-eslint/utils'
 import { describe, it } from 'vitest'
+import { dedent } from 'ts-dedent'
 
 import rule, { RULE_NAME } from '~/rules/sort-jsx-props'
 import { SortType, SortOrder } from '~/typings'
@@ -18,7 +19,7 @@ describe(RULE_NAME, () => {
     ruleTester.run(RULE_NAME, rule, {
       valid: [
         {
-          code: `
+          code: dedent`
             let Container = () => (
               <Button
                 variant="solid"
@@ -39,11 +40,22 @@ describe(RULE_NAME, () => {
       ],
       invalid: [
         {
-          code: `
+          code: dedent`
             let Container = () => (
               <Button
                 type="button"
                 variant="solid"
+                color="main"
+              >
+                Press me
+              </Button>
+            )
+          `,
+          output: dedent`
+            let Container = () => (
+              <Button
+                variant="solid"
+                type="button"
                 color="main"
               >
                 Press me
@@ -56,17 +68,6 @@ describe(RULE_NAME, () => {
               order: SortOrder.desc,
             },
           ],
-          output: `
-            let Container = () => (
-              <Button
-                variant="solid"
-                type="button"
-                color="main"
-              >
-                Press me
-              </Button>
-            )
-          `,
           errors: [
             {
               messageId: 'unexpectedJSXPropsOrder',
@@ -84,7 +85,7 @@ describe(RULE_NAME, () => {
   it(`${RULE_NAME}: sorts jsx props with namespaced names`, () => {
     ruleTester.run(RULE_NAME, rule, {
       valid: [
-        `
+        dedent`
           let Container = () => (
             <Element
               foo:bar="namespace"
@@ -95,7 +96,7 @@ describe(RULE_NAME, () => {
       ],
       invalid: [
         {
-          code: `
+          code: dedent`
             let Container = () => (
               <Element
                 name="element"
@@ -103,7 +104,7 @@ describe(RULE_NAME, () => {
               />
             )
           `,
-          output: `
+          output: dedent`
             let Container = () => (
               <Element
                 foo:bar="namespace"
@@ -129,7 +130,7 @@ describe(RULE_NAME, () => {
     ruleTester.run(RULE_NAME, rule, {
       valid: [
         {
-          code: `
+          code: dedent`
             let Container = () => (
               <Input
                 placeholder="Password"
@@ -154,7 +155,7 @@ describe(RULE_NAME, () => {
       ],
       invalid: [
         {
-          code: `
+          code: dedent`
             let Container = () => (
               <Input
                 placeholder="Password"
@@ -166,6 +167,21 @@ describe(RULE_NAME, () => {
                 type="password"
                 autoFocus
                 className="input"
+              />
+            )
+          `,
+          output: dedent`
+            let Container = () => (
+              <Input
+                placeholder="Password"
+                value={password}
+                full
+                {...props}
+                className="input"
+                type="password"
+                name="element"
+                error={false}
+                autoFocus
               />
             )
           `,
@@ -175,21 +191,6 @@ describe(RULE_NAME, () => {
               order: SortOrder.desc,
             },
           ],
-          output: `
-            let Container = () => (
-              <Input
-                placeholder="Password"
-                value={password}
-                full
-                {...props}
-                className="input"
-                type="password"
-                name="element"
-                error={false}
-                autoFocus
-              />
-            )
-          `,
           errors: [
             {
               messageId: 'unexpectedJSXPropsOrder',

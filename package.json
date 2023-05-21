@@ -57,6 +57,7 @@
     "clean-publish": "^4.2.0",
     "conventional-changelog-cli": "^2.2.2",
     "eslint": "^8.41.0",
+    "eslint-plugin-eslint-plugin": "^5.1.0",
     "simple-git-hooks": "^2.8.1",
     "ts-dedent": "^2.2.0",
     "typescript": "^5.0.4",

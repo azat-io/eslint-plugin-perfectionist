@@ -27,9 +27,6 @@ export default createEslintRule<Options, MESSAGE_ID>({
       description: 'Enforce sorted interface properties',
       recommended: false,
     },
-    messages: {
-      unexpectedInterfacePropertiesOrder: 'Expected "{{second}}" to come before "{{first}}"',
-    },
     fixable: 'code',
     schema: [
       {
@@ -47,6 +44,9 @@ export default createEslintRule<Options, MESSAGE_ID>({
         additionalProperties: false,
       },
     ],
+    messages: {
+      unexpectedInterfacePropertiesOrder: 'Expected "{{second}}" to come before "{{first}}"',
+    },
   },
   defaultOptions: [
     {

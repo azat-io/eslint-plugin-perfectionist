@@ -52,12 +52,6 @@ describe(RULE_NAME, () => {
                 'War Hammer Titan',
               ].includes(titan)
             `,
-            options: [
-              {
-                type: SortType.natural,
-                order: SortOrder.asc,
-              },
-            ],
             output: dedent`
               [
                 'Armored Titan',
@@ -68,6 +62,12 @@ describe(RULE_NAME, () => {
                 ...otherTitans,
               ].includes(titan)
             `,
+            options: [
+              {
+                type: SortType.natural,
+                order: SortOrder.asc,
+              },
+            ],
             errors: [
               {
                 messageId: 'unexpectedArrayIncludesOrder',
@@ -110,12 +110,6 @@ describe(RULE_NAME, () => {
                 ...lowerRanks,
               ].includes('Nezuko Kamado')
             `,
-            options: [
-              {
-                type: SortType.natural,
-                order: SortOrder.asc,
-              },
-            ],
             output: dedent`
               [
                 ...demons,
@@ -123,6 +117,12 @@ describe(RULE_NAME, () => {
                 ...upperRanks,
               ].includes('Nezuko Kamado')
             `,
+            options: [
+              {
+                type: SortType.natural,
+                order: SortOrder.asc,
+              },
+            ],
             errors: [
               {
                 messageId: 'unexpectedArrayIncludesOrder',
@@ -157,15 +157,15 @@ describe(RULE_NAME, () => {
             code: dedent`
               ['Genos', 'Bang', 'King',, 'Saitama'].includes(hero)
             `,
+            output: dedent`
+              ['Bang', 'Genos', 'King',, 'Saitama'].includes(hero)
+            `,
             options: [
               {
                 type: SortType.natural,
                 order: SortOrder.asc,
               },
             ],
-            output: dedent`
-              ['Bang', 'Genos', 'King',, 'Saitama'].includes(hero)
-            `,
             errors: [
               {
                 messageId: 'unexpectedArrayIncludesOrder',
@@ -201,15 +201,15 @@ describe(RULE_NAME, () => {
             code: dedent`
               ['Emma', ...graceFieldOrphans, 'Norman', 'Ray'].includes(child)
             `,
+            output: dedent`
+              ['Emma', 'Norman', 'Ray', ...graceFieldOrphans].includes(child)
+            `,
             options: [
               {
                 type: SortType.natural,
                 order: SortOrder.asc,
               },
             ],
-            output: dedent`
-              ['Emma', 'Norman', 'Ray', ...graceFieldOrphans].includes(child)
-            `,
             errors: [
               {
                 messageId: 'unexpectedArrayIncludesOrder',
@@ -254,12 +254,6 @@ describe(RULE_NAME, () => {
                 'Maebara Keiichi',
               ).includes(name)
             `,
-            options: [
-              {
-                type: SortType.natural,
-                order: SortOrder.asc,
-              },
-            ],
             output: dedent`
               new Array(
                 'Furude Rika',
@@ -268,6 +262,12 @@ describe(RULE_NAME, () => {
                 'Sonozaki Shion',
               ).includes(name)
             `,
+            options: [
+              {
+                type: SortType.natural,
+                order: SortOrder.asc,
+              },
+            ],
             errors: [
               {
                 messageId: 'unexpectedArrayIncludesOrder',
@@ -320,12 +320,6 @@ describe(RULE_NAME, () => {
                 'War Hammer Titan',
               ].includes(titan)
             `,
-            options: [
-              {
-                type: SortType['line-length'],
-                order: SortOrder.desc,
-              },
-            ],
             output: dedent`
               [
                 'War Hammer Titan',
@@ -336,6 +330,12 @@ describe(RULE_NAME, () => {
                 'Cart Titan',
               ].includes(titan)
             `,
+            options: [
+              {
+                type: SortType['line-length'],
+                order: SortOrder.desc,
+              },
+            ],
             errors: [
               {
                 messageId: 'unexpectedArrayIncludesOrder',
@@ -385,12 +385,6 @@ describe(RULE_NAME, () => {
                 ...lowerRanks,
               ].includes('Nezuko Kamado')
             `,
-            options: [
-              {
-                type: SortType['line-length'],
-                order: SortOrder.desc,
-              },
-            ],
             output: dedent`
               [
                 ...lowerRanks,
@@ -398,6 +392,12 @@ describe(RULE_NAME, () => {
                 ...demons,
               ].includes('Nezuko Kamado')
             `,
+            options: [
+              {
+                type: SortType['line-length'],
+                order: SortOrder.desc,
+              },
+            ],
             errors: [
               {
                 messageId: 'unexpectedArrayIncludesOrder',
@@ -432,15 +432,15 @@ describe(RULE_NAME, () => {
             code: dedent`
               ['Genos', 'Bang', 'King',, 'Saitama'].includes(hero)
             `,
+            output: dedent`
+              ['Saitama', 'Genos', 'King',, 'Bang'].includes(hero)
+            `,
             options: [
               {
                 type: SortType['line-length'],
                 order: SortOrder.desc,
               },
             ],
-            output: dedent`
-              ['Saitama', 'Genos', 'King',, 'Bang'].includes(hero)
-            `,
             errors: [
               {
                 messageId: 'unexpectedArrayIncludesOrder',
@@ -476,6 +476,9 @@ describe(RULE_NAME, () => {
             code: dedent`
               ['Emma', ...graceFieldOrphans, 'Norman', 'Ray'].includes(child)
             `,
+            output: dedent`
+              ['Norman', 'Emma', 'Ray', ...graceFieldOrphans].includes(child)
+            `,
             options: [
               {
                 type: SortType['line-length'],
@@ -483,9 +486,6 @@ describe(RULE_NAME, () => {
                 spreadLast: true,
               },
             ],
-            output: dedent`
-              ['Norman', 'Emma', 'Ray', ...graceFieldOrphans].includes(child)
-            `,
             errors: [
               {
                 messageId: 'unexpectedArrayIncludesOrder',
@@ -530,12 +530,6 @@ describe(RULE_NAME, () => {
                 'Maebara Keiichi',
               ).includes(name)
             `,
-            options: [
-              {
-                type: SortType['line-length'],
-                order: SortOrder.desc,
-              },
-            ],
             output: dedent`
               new Array(
                 'Maebara Keiichi',
@@ -544,6 +538,12 @@ describe(RULE_NAME, () => {
                 'Ryūgū Rena',
               ).includes(name)
             `,
+            options: [
+              {
+                type: SortType['line-length'],
+                order: SortOrder.desc,
+              },
+            ],
             errors: [
               {
                 messageId: 'unexpectedArrayIncludesOrder',
@@ -570,16 +570,14 @@ describe(RULE_NAME, () => {
     it(`${RULE_NAME}: sets natural asc sorting as default`, () => {
       ruleTester.run(RULE_NAME, rule, {
         valid: [
-          {
-            code: dedent`
-                [
-                  'Akane Tsunemori',
-                  'Nobuchika Ginoza',
-                  'Shusei Kagari',
-                  'Tomomi Masaoka',
-                ].includes(enforcer)
-              `,
-          },
+          dedent`
+            [
+              'Akane Tsunemori',
+              'Nobuchika Ginoza',
+              'Shusei Kagari',
+              'Tomomi Masaoka',
+            ].includes(enforcer)
+          `,
         ],
         invalid: [
           {

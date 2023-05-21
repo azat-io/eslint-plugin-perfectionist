@@ -41,12 +41,6 @@ describe(RULE_NAME, () => {
                 country: 'Westalis' | 'Ostania',
               }
             `,
-            options: [
-              {
-                type: SortType.natural,
-                order: SortOrder.asc,
-              },
-            ],
             output: dedent`
               interface DossierByTwilight {
                 age: string
@@ -54,6 +48,12 @@ describe(RULE_NAME, () => {
                 name: string
               }
             `,
+            options: [
+              {
+                type: SortType.natural,
+                order: SortOrder.asc,
+              },
+            ],
             errors: [
               {
                 messageId: 'unexpectedInterfacePropertiesOrder',
@@ -94,18 +94,18 @@ describe(RULE_NAME, () => {
                 [key in Sorcerer]: string
               }
             `,
-            options: [
-              {
-                type: SortType.natural,
-                order: SortOrder.asc,
-              },
-            ],
             output: dedent`
               interface JujutsuHigh {
                 [key in Sorcerer]: string
                 yuuji: 'Yuuji Itadori'
               }
             `,
+            options: [
+              {
+                type: SortType.natural,
+                order: SortOrder.asc,
+              },
+            ],
             errors: [
               {
                 messageId: 'unexpectedInterfacePropertiesOrder',
@@ -150,12 +150,6 @@ describe(RULE_NAME, () => {
                 'faye-valentine': Hunter
               }
             `,
-            options: [
-              {
-                type: SortType.natural,
-                order: SortOrder.asc,
-              },
-            ],
             output: dedent`
               interface CowboyBebop {
                 ein: Dog
@@ -164,6 +158,12 @@ describe(RULE_NAME, () => {
                 'spike-spiegel': Hunter
               }
             `,
+            options: [
+              {
+                type: SortType.natural,
+                order: SortOrder.asc,
+              },
+            ],
             errors: [
               {
                 messageId: 'unexpectedInterfacePropertiesOrder',
@@ -213,12 +213,6 @@ describe(RULE_NAME, () => {
                 name: string
               }
             `,
-            options: [
-              {
-                type: SortType.natural,
-                order: SortOrder.asc,
-              },
-            ],
             output: dedent`
               interface Evangelion {
                 [key: string]: string
@@ -226,6 +220,12 @@ describe(RULE_NAME, () => {
                 name: string
               }
             `,
+            options: [
+              {
+                type: SortType.natural,
+                order: SortOrder.asc,
+              },
+            ],
             errors: [
               {
                 messageId: 'unexpectedInterfacePropertiesOrder',
@@ -272,12 +272,6 @@ describe(RULE_NAME, () => {
                 name: string
               }
             `,
-            options: [
-              {
-                type: SortType.natural,
-                order: SortOrder.asc,
-              },
-            ],
             output: dedent`
               interface Zenitsu {
                 age: number
@@ -287,6 +281,12 @@ describe(RULE_NAME, () => {
                 sixfold()
               }
             `,
+            options: [
+              {
+                type: SortType.natural,
+                order: SortOrder.asc,
+              },
+            ],
             errors: [
               {
                 messageId: 'unexpectedInterfacePropertiesOrder',
@@ -340,12 +340,6 @@ describe(RULE_NAME, () => {
                 [value in stories]?
               }
             `,
-            options: [
-              {
-                type: SortType.natural,
-                order: SortOrder.asc,
-              },
-            ],
             output: dedent`
               interface SatoruFujinuma {
                 [...memories]
@@ -355,6 +349,12 @@ describe(RULE_NAME, () => {
                 job: 'Mangaka'
               }
             `,
+            options: [
+              {
+                type: SortType.natural,
+                order: SortOrder.asc,
+              },
+            ],
             errors: [
               {
                 messageId: 'unexpectedInterfacePropertiesOrder',
@@ -408,12 +408,6 @@ describe(RULE_NAME, () => {
                 country: 'Westalis' | 'Ostania'
               }
             `,
-            options: [
-              {
-                type: SortType['line-length'],
-                order: SortOrder.desc,
-              },
-            ],
             output: dedent`
               interface DossierByTwilight {
                 country: 'Westalis' | 'Ostania'
@@ -421,6 +415,12 @@ describe(RULE_NAME, () => {
                 age: string
               }
             `,
+            options: [
+              {
+                type: SortType['line-length'],
+                order: SortOrder.desc,
+              },
+            ],
             errors: [
               {
                 messageId: 'unexpectedInterfacePropertiesOrder',
@@ -527,18 +527,18 @@ describe(RULE_NAME, () => {
                 [key in Sorcerer]: string
               }
             `,
-            options: [
-              {
-                type: SortType['line-length'],
-                order: SortOrder.desc,
-              },
-            ],
             output: dedent`
               interface JujutsuHigh {
                 [key in Sorcerer]: string
                 yuuji: 'Yuuji Itadori'
               }
             `,
+            options: [
+              {
+                type: SortType['line-length'],
+                order: SortOrder.desc,
+              },
+            ],
             errors: [
               {
                 messageId: 'unexpectedInterfacePropertiesOrder',
@@ -585,12 +585,6 @@ describe(RULE_NAME, () => {
                 name: string
               }
             `,
-            options: [
-              {
-                type: SortType['line-length'],
-                order: SortOrder.desc,
-              },
-            ],
             output: dedent`
               interface Zenitsu {
                 airSpin: () => void
@@ -600,6 +594,12 @@ describe(RULE_NAME, () => {
                 age: number
               }
             `,
+            options: [
+              {
+                type: SortType['line-length'],
+                order: SortOrder.desc,
+              },
+            ],
             errors: [
               {
                 messageId: 'unexpectedInterfacePropertiesOrder',
@@ -653,12 +653,6 @@ describe(RULE_NAME, () => {
                 age: 10 | 29
               }
             `,
-            options: [
-              {
-                type: SortType['line-length'],
-                order: SortOrder.desc,
-              },
-            ],
             output: dedent`
               interface SatoruFujinuma {
                 [value in stories]?
@@ -668,6 +662,12 @@ describe(RULE_NAME, () => {
                 age: 10 | 29
               }
             `,
+            options: [
+              {
+                type: SortType['line-length'],
+                order: SortOrder.desc,
+              },
+            ],
             errors: [
               {
                 messageId: 'unexpectedInterfacePropertiesOrder',
@@ -694,14 +694,12 @@ describe(RULE_NAME, () => {
     it(`${RULE_NAME}: sets natural asc sorting as default`, () => {
       ruleTester.run(RULE_NAME, rule, {
         valid: [
-          {
-            code: dedent`
+          dedent`
               interface DeathNoteValue {
                 causeOfDeath: string
                 name: string
               }
             `,
-          },
         ],
         invalid: [
           {

@@ -25,9 +25,6 @@ export default createEslintRule<Options, MESSAGE_ID>({
       description: 'Enforce sorted named imports',
       recommended: false,
     },
-    messages: {
-      unexpectedNamedImportsOrder: 'Expected "{{second}}" to come before "{{first}}"',
-    },
     fixable: 'code',
     schema: [
       {
@@ -45,6 +42,9 @@ export default createEslintRule<Options, MESSAGE_ID>({
         additionalProperties: false,
       },
     ],
+    messages: {
+      unexpectedNamedImportsOrder: 'Expected "{{second}}" to come before "{{first}}"',
+    },
   },
   defaultOptions: [
     {
