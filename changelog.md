@@ -1,3 +1,21 @@
+# [0.5.0](https://github.com/azat-io/eslint-plugin-perfectionist/compare/v0.4.0...v0.5.0) (2023-05-22)
+
+
+### Bug Fixes
+
+* add array constructor support to sort-array-includes rule ([d255c22](https://github.com/azat-io/eslint-plugin-perfectionist/commit/d255c2269b6ae6579d88f9b0733a4c655a90cb88))
+* add default rules properties ([48d2835](https://github.com/azat-io/eslint-plugin-perfectionist/commit/48d2835997043de9759f82e361cd8cae1071514b))
+* fix interface sorting ([86e3b56](https://github.com/azat-io/eslint-plugin-perfectionist/commit/86e3b56c94c4643a3089b4066923f1d962025b04))
+* fix rules descriptions ([1d18a26](https://github.com/azat-io/eslint-plugin-perfectionist/commit/1d18a263a40249680a4e8a460b72a27936f0e4ca))
+
+
+### Features
+
+* add sort-array-includes rule ([bb7605b](https://github.com/azat-io/eslint-plugin-perfectionist/commit/bb7605bea228b7487093c914fc0b2677b242259d))
+* add sort-map-elements rule ([049c004](https://github.com/azat-io/eslint-plugin-perfectionist/commit/049c0044c7444f8c8f955ae638887f21284ce1e9))
+
+
+
 # [0.4.0](https://github.com/azat-io/eslint-plugin-perfectionist/compare/v0.3.0...v0.4.0) (2023-05-16)
 
 

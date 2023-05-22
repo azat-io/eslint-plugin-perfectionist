@@ -110,7 +110,7 @@ export default {
 
 ## 🚀 Version
 
-Coming soon.
+This rule was introduced in v0.5.0.
 
 ## 📚 Resources
 
