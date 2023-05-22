@@ -147,6 +147,11 @@ export default defineConfig({
         activeMatch: '^/guide/',
       },
       {
+        text: 'Configs',
+        link: '/configs/',
+        activeMatch: '^/configs/',
+      },
+      {
         text: 'Rules',
         link: '/rules/',
         activeMatch: '^/rules/',
@@ -174,6 +179,19 @@ export default defineConfig({
             {
               text: 'Getting Started',
               link: '/guide/getting-started',
+            },
+          ],
+        },
+        {
+          text: 'Configs',
+          items: [
+            {
+              text: 'recommended-natural',
+              link: '/configs/recommended-natural',
+            },
+            {
+              text: 'recommended-line-length',
+              link: '/configs/recommended-line-length',
             },
           ],
         },

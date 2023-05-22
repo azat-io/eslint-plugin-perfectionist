@@ -36,6 +36,10 @@
       "require": "./dist/index.js",
       "import": "./dist/index.mjs"
     },
+    "./configs": {
+      "require": "./dist/configs",
+      "import": "./dist/configs"
+    },
     "./package.json": "./package.json"
   },
   "peerDependencies": {

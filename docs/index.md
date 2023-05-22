@@ -17,6 +17,9 @@ hero:
       text: Get Started
       link: /guide/introduction
     - theme: alt
+      text: Configs
+      link: /configs/
+    - theme: alt
       text: Rules
       link: /rules/
     - theme: alt

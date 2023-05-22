@@ -4,8 +4,20 @@ import path from 'path'
 export default defineConfig({
   build: {
     lib: {
-      fileName: format => `index.${format === 'es' ? 'mjs' : 'js'}`,
-      entry: path.resolve(__dirname, 'index.ts'),
+      fileName: (format, entryName) => {
+        let path = ''
+
+        if (entryName === 'recommended-line-length' || entryName === 'recommended-natural') {
+          path = 'configs/'
+        }
+
+        return `${path}${entryName}.${format === 'es' ? 'mjs' : 'js'}`
+      },
+      entry: [
+        path.resolve(__dirname, 'index.ts'),
+        path.resolve(__dirname, 'configs/recommended-line-length.ts'),
+        path.resolve(__dirname, 'configs/recommended-natural.ts'),
+      ],
       formats: ['cjs', 'es'],
     },
     rollupOptions: {
