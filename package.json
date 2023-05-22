@@ -46,16 +46,16 @@
     "eslint": "^8.39.0"
   },
   "dependencies": {
-    "@typescript-eslint/types": "^5.59.6",
-    "@typescript-eslint/utils": "^5.59.6",
+    "@typescript-eslint/types": "^5.59.7",
+    "@typescript-eslint/utils": "^5.59.7",
     "natural-compare-lite": "^1.4.0"
   },
   "devDependencies": {
-    "@azat-io/eslint-config-typescript": "^0.8.0",
+    "@azat-io/eslint-config-typescript": "^0.8.3",
     "@commitlint/cli": "^17.6.3",
     "@commitlint/config-conventional": "^17.6.3",
     "@types/natural-compare-lite": "^1.4.0",
-    "@types/node": "^20.2.1",
+    "@types/node": "^20.2.3",
     "@vitest/coverage-c8": "^0.31.1",
     "bumpp": "^9.1.0",
     "clean-publish": "^4.2.0",
@@ -67,7 +67,7 @@
     "typescript": "^5.0.4",
     "vite": "^4.3.8",
     "vite-plugin-lightningcss": "^0.0.5",
-    "vitepress": "1.0.0-alpha.76",
+    "vitepress": "1.0.0-beta.1",
     "vitest": "^0.31.1",
     "vue": "^3.3.4"
   }

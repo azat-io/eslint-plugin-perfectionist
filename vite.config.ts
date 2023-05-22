@@ -5,13 +5,13 @@ export default defineConfig({
   build: {
     lib: {
       fileName: (format, entryName) => {
-        let path = ''
+        let directory = ''
 
         if (entryName === 'recommended-line-length' || entryName === 'recommended-natural') {
-          path = 'configs/'
+          directory = 'configs/'
         }
 
-        return `${path}${entryName}.${format === 'es' ? 'mjs' : 'js'}`
+        return `${directory}${entryName}.${format === 'es' ? 'mjs' : 'js'}`
       },
       entry: [
         path.resolve(__dirname, 'index.ts'),
