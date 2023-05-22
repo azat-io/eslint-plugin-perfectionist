@@ -86,23 +86,24 @@ type DevilHunter =
 ### Flat config
 
 ```js
-// eslint.config.js
 import perfectionist from 'eslint-plugin-perfectionist'
 
-export default {
-  plugins: {
-    perfectionist,
+export default [
+  {
+    plugins: {
+      perfectionist,
+    },
+    rules: {
+      'perfectionist/sort-union-types': [
+        'error',
+        {
+          type: 'line-length',
+          order: 'desc',
+        },
+      ],
+    },
   },
-  rules: {
-    'perfectionist/sort-union-types': [
-      'error',
-      {
-        type: 'line-length',
-        order: 'desc',
-      },
-    ],
-  },
-}
+]
 ```
 
 ## 🚀 Version

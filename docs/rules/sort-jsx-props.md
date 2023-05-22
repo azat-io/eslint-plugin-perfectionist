@@ -97,25 +97,26 @@ let Riko = () => (
 
 ### Flat config
 
-<!-- prettier-ignore -->
 ```js
 // eslint.config.js
 import perfectionist from 'eslint-plugin-perfectionist'
 
-export default {
-  plugins: {
-    perfectionist,
+export default [
+  {
+    plugins: {
+      perfectionist,
+    },
+    rules: {
+      'perfectionist/sort-jsx-props': [
+        'error',
+        {
+          type: 'line-length',
+          order: 'desc',
+        },
+      ],
+    },
   },
-  rules: {
-    'perfectionist/sort-jsx-props': [
-      'error',
-      {
-        type: 'line-length',
-        order: 'desc',
-      },
-    ],
-  },
-}
+]
 ```
 
 ## 🚀 Version

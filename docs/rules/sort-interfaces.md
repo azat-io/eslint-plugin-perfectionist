@@ -91,25 +91,26 @@ interface Hero {
 
 ### Flat config
 
-<!-- prettier-ignore -->
 ```js
 // eslint.config.js
 import perfectionist from 'eslint-plugin-perfectionist'
 
-export default {
-  plugins: {
-    perfectionist,
+export default [
+  {
+    plugins: {
+      perfectionist,
+    },
+    rules: {
+      'perfectionist/sort-interfaces': [
+        'error',
+        {
+          type: 'line-length',
+          order: 'desc',
+        },
+      ],
+    },
   },
-  rules: {
-    'perfectionist/sort-interfaces': [
-      'error',
-      {
-        type: 'line-length',
-        order: 'desc',
-      },
-    ],
-  },
-}
+]
 ```
 
 ## 🚀 Version

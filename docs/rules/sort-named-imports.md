@@ -93,20 +93,22 @@ export {
 // eslint.config.js
 import perfectionist from 'eslint-plugin-perfectionist'
 
-export default {
-  plugins: {
-    perfectionist,
+export default [
+  {
+    plugins: {
+      perfectionist,
+    },
+    rules: {
+      'perfectionist/sort-named-imports': [
+        'error',
+        {
+          type: 'line-length',
+          order: 'desc',
+        },
+      ],
+    },
   },
-  rules: {
-    'perfectionist/sort-named-imports': [
-      'error',
-      {
-        type: 'line-length',
-        order: 'desc',
-      },
-    ],
-  },
-}
+]
 ```
 
 ## 🚀 Version

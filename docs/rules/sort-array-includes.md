@@ -98,26 +98,27 @@ title: sort-array-includes
 
 ### Flat config
 
-<!-- prettier-ignore -->
 ```js
 // eslint.config.js
 import perfectionist from 'eslint-plugin-perfectionist'
 
-export default {
-  plugins: {
-    perfectionist,
+export default [
+  {
+    plugins: {
+      perfectionist,
+    },
+    rules: {
+      'perfectionist/sort-array-includes': [
+        'error',
+        {
+          type: 'line-length',
+          order: 'desc',
+          spreadLast: true,
+        },
+      ],
+    },
   },
-  rules: {
-    'perfectionist/sort-array-includes': [
-      'error',
-      {
-        type: 'line-length',
-        order: 'desc',
-        spreadLast: true,
-      },
-    ],
-  },
-}
+]
 ```
 
 ## 🚀 Version
