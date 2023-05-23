@@ -223,6 +223,10 @@ export default defineConfig({
               link: '/rules/sort-named-imports',
             },
             {
+              text: 'sort-object-keys',
+              link: '/rules/sort-object-keys',
+            },
+            {
               text: 'sort-union-types',
               link: '/rules/sort-union-types',
             },

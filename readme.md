@@ -30,6 +30,7 @@ npm install --save-dev eslint-plugin-perfectionist
 | [sort-map-elements](https://eslint-plugin-perfectionist.azat.io/rules/sort-map-elements)     | Enforce sorted Map elements                 | ✅  | 🔧  |
 | [sort-named-exports](https://eslint-plugin-perfectionist.azat.io/rules/sort-named-exports)   | Enforce sorted named exports                | ✅  | 🔧  |
 | [sort-named-imports](https://eslint-plugin-perfectionist.azat.io/rules/sort-named-imports)   | Enforce sorted named imports                | ✅  | 🔧  |
+| [sort-object-keys](https://eslint-plugin-perfectionist.azat.io/rules/sort-object-keys)       | Enforce sorted object keys                  | ✅  | 🔧  |
 | [sort-union-types](https://eslint-plugin-perfectionist.azat.io/rules/sort-union-types)       | Enforce sorted union types                  | ✅  | 🔧  |
 
 ## See also

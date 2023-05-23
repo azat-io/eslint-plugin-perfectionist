@@ -4,6 +4,7 @@ import sortJsxProps, { RULE_NAME as sortJsxPropsName } from '~/rules/sort-jsx-pr
 import sortMapElements, { RULE_NAME as sortMapElementsName } from '~/rules/sort-map-elements'
 import sortNamedExports, { RULE_NAME as sortNamedExportsName } from '~/rules/sort-named-exports'
 import sortNamedImports, { RULE_NAME as sortNamedImportsName } from '~/rules/sort-named-imports'
+import sortObjectKeys, { RULE_NAME as sortObjectKeysName } from '~/rules/sort-object-keys'
 import sortUnionTypes, { RULE_NAME as sortUnionTypesName } from '~/rules/sort-union-types'
 import { SortType, SortOrder } from '~/typings'
 import { name } from '~/package.json'
@@ -22,6 +23,7 @@ let getRulesWithOptions = (options: {
     [sortMapElementsName]: ['error'],
     [sortNamedExportsName]: ['error'],
     [sortNamedImportsName]: ['error'],
+    [sortObjectKeysName]: ['error'],
     [sortUnionTypesName]: ['error'],
   }
   return Object.fromEntries(
@@ -41,6 +43,7 @@ export default {
     [sortMapElementsName]: sortMapElements,
     [sortNamedExportsName]: sortNamedExports,
     [sortNamedImportsName]: sortNamedImports,
+    [sortObjectKeysName]: sortObjectKeys,
     [sortUnionTypesName]: sortUnionTypes,
   },
   configs: {

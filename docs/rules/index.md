@@ -14,4 +14,5 @@ title: Rules
 | [sort-map-elements](/rules/sort-map-elements)     | Enforce sorted Map elements                 | ✅  | 🔧  |
 | [sort-named-exports](/rules/sort-named-exports)   | Enforce sorted named exports                | ✅  | 🔧  |
 | [sort-named-imports](/rules/sort-named-imports)   | Enforce sorted named imports                | ✅  | 🔧  |
+| [sort-named-object-keys](/rules/sort-object-keys) | Enforce sorted object keys                  | ✅  | 🔧  |
 | [sort-named-union-types](/rules/sort-union-types) | Enforce sorted union types                  | ✅  | 🔧  |
