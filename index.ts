@@ -9,13 +9,18 @@ import sortUnionTypes, { RULE_NAME as sortUnionTypesName } from '~/rules/sort-un
 import { SortType, SortOrder } from '~/typings'
 import { name } from '~/package.json'
 
+type RuleSeverity = 'off' | 'warn' | 'error'
+
+type RuleDeclaration = [RuleSeverity, { [key: string]: unknown }?]
+
 let getRulesWithOptions = (options: {
-  [key: string]: unknown
+  type: SortType
+  order: SortOrder
 }): {
-  [key: string]: [string, { [key: string]: unknown }]
+  [key: string]: RuleDeclaration
 } => {
   let recommendedRules: {
-    [key: string]: [string, { [key: string]: unknown }?]
+    [key: string]: RuleDeclaration
   } = {
     [sortArrayIncludesName]: ['error', { spreadLast: true }],
     [sortInterfacesName]: ['error'],
