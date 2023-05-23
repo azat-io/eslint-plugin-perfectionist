@@ -111,7 +111,7 @@ export default [
 
 ## 🚀 Version
 
-Coming soon.
+This rule was introduced in v0.6.0.
 
 ## 📚 Resources
 

@@ -1,3 +1,14 @@
+# [0.6.0](https://github.com/azat-io/eslint-plugin-perfectionist/compare/v0.5.0...v0.6.0) (2023-05-23)
+
+
+### Features
+
+* add recommended-alphabetical config ([66c99f0](https://github.com/azat-io/eslint-plugin-perfectionist/commit/66c99f04508748259ff527ff1a6ac2f89389768c))
+* add sort-object-keys rule ([6dcb425](https://github.com/azat-io/eslint-plugin-perfectionist/commit/6dcb4258ca8e47894a4130c04dfc2f3a0556a6c9))
+* support flat eslint config ([969ae4e](https://github.com/azat-io/eslint-plugin-perfectionist/commit/969ae4e39a6f04d7208acfc058fc2917c11625db))
+
+
+
 # [0.5.0](https://github.com/azat-io/eslint-plugin-perfectionist/compare/v0.4.0...v0.5.0) (2023-05-22)
 
 
