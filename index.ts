@@ -13,11 +13,14 @@ type RuleSeverity = 'off' | 'warn' | 'error'
 
 type RuleDeclaration = [RuleSeverity, { [key: string]: unknown }?]
 
-let getRulesWithOptions = (options: {
+let createConfigWithOptions = (options: {
   type: SortType
   order: SortOrder
 }): {
-  [key: string]: RuleDeclaration
+  plugins: ['perfectionist']
+  rules: {
+    [key: string]: RuleDeclaration
+  }
 } => {
   let recommendedRules: {
     [key: string]: RuleDeclaration
@@ -31,12 +34,15 @@ let getRulesWithOptions = (options: {
     [sortObjectKeysName]: ['error'],
     [sortUnionTypesName]: ['error'],
   }
-  return Object.fromEntries(
-    Object.entries(recommendedRules).map(([key, [message, baseOptions = {}]]) => [
-      key,
-      [message, Object.assign(baseOptions, options)],
-    ]),
-  )
+  return {
+    plugins: ['perfectionist'],
+    rules: Object.fromEntries(
+      Object.entries(recommendedRules).map(([key, [message, baseOptions = {}]]) => [
+        key,
+        [message, Object.assign(baseOptions, options)],
+      ]),
+    ),
+  }
 }
 
 export default {
@@ -52,15 +58,15 @@ export default {
     [sortUnionTypesName]: sortUnionTypes,
   },
   configs: {
-    'recommended-alphabetical': getRulesWithOptions({
+    'recommended-alphabetical': createConfigWithOptions({
       type: SortType.alphabetical,
       order: SortOrder.asc,
     }),
-    'recommended-natural': getRulesWithOptions({
+    'recommended-natural': createConfigWithOptions({
       type: SortType.natural,
       order: SortOrder.asc,
     }),
-    'recommended-line-length': getRulesWithOptions({
+    'recommended-line-length': createConfigWithOptions({
       type: SortType['line-length'],
       order: SortOrder.desc,
     }),
