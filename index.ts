@@ -52,6 +52,10 @@ export default {
     [sortUnionTypesName]: sortUnionTypes,
   },
   configs: {
+    'recommended-alphabetical': getRulesWithOptions({
+      type: SortType.alphabetical,
+      order: SortOrder.asc,
+    }),
     'recommended-natural': getRulesWithOptions({
       type: SortType.natural,
       order: SortOrder.asc,

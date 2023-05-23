@@ -15,6 +15,275 @@ describe(RULE_NAME, () => {
     },
   })
 
+  describe(`${RULE_NAME}: sorting by alphabetical order`, () => {
+    let type = 'alphabetical-order'
+
+    it(`${RULE_NAME}(${type}): does not break the property list`, () => {
+      ruleTester.run(RULE_NAME, rule, {
+        valid: [
+          {
+            code: dedent`
+              [
+                ...otherTitans,
+                'Armored Titan',
+                'Attack Titan',
+                'Beast Titan',
+                'Cart Titan',
+                'War Hammer Titan',
+              ].includes(titan)
+            `,
+            options: [
+              {
+                type: SortType.alphabetical,
+                order: SortOrder.asc,
+              },
+            ],
+          },
+        ],
+        invalid: [
+          {
+            code: dedent`
+              [
+                'Armored Titan',
+                'Attack Titan',
+                'Cart Titan',
+                ...otherTitans,
+                'Beast Titan',
+                'War Hammer Titan',
+              ].includes(titan)
+            `,
+            output: dedent`
+              [
+                ...otherTitans,
+                'Armored Titan',
+                'Attack Titan',
+                'Beast Titan',
+                'Cart Titan',
+                'War Hammer Titan',
+              ].includes(titan)
+            `,
+            options: [
+              {
+                type: SortType.alphabetical,
+                order: SortOrder.asc,
+              },
+            ],
+            errors: [
+              {
+                messageId: 'unexpectedArrayIncludesOrder',
+                data: {
+                  first: "'Cart Titan'",
+                  second: '...otherTitans',
+                },
+              },
+            ],
+          },
+        ],
+      })
+    })
+
+    it(`${RULE_NAME}(${type}): sorts spread elements`, () => {
+      ruleTester.run(RULE_NAME, rule, {
+        valid: [
+          {
+            code: dedent`
+              [
+                ...demons,
+                ...lowerRanks,
+                ...upperRanks,
+              ].includes('Nezuko Kamado')
+            `,
+            options: [
+              {
+                type: SortType.alphabetical,
+                order: SortOrder.asc,
+              },
+            ],
+          },
+        ],
+        invalid: [
+          {
+            code: dedent`
+              [
+                ...demons,
+                ...upperRanks,
+                ...lowerRanks,
+              ].includes('Nezuko Kamado')
+            `,
+            output: dedent`
+              [
+                ...demons,
+                ...lowerRanks,
+                ...upperRanks,
+              ].includes('Nezuko Kamado')
+            `,
+            options: [
+              {
+                type: SortType.alphabetical,
+                order: SortOrder.asc,
+              },
+            ],
+            errors: [
+              {
+                messageId: 'unexpectedArrayIncludesOrder',
+                data: {
+                  first: '...upperRanks',
+                  second: '...lowerRanks',
+                },
+              },
+            ],
+          },
+        ],
+      })
+    })
+
+    it(`${RULE_NAME}(${type}): ignores nullable array elements`, () => {
+      ruleTester.run(RULE_NAME, rule, {
+        valid: [
+          {
+            code: dedent`
+              ['Bang', 'Genos', 'King',, 'Saitama'].includes(hero)
+            `,
+            options: [
+              {
+                type: SortType.alphabetical,
+                order: SortOrder.asc,
+              },
+            ],
+          },
+        ],
+        invalid: [
+          {
+            code: dedent`
+              ['Genos', 'Bang', 'King',, 'Saitama'].includes(hero)
+            `,
+            output: dedent`
+              ['Bang', 'Genos', 'King',, 'Saitama'].includes(hero)
+            `,
+            options: [
+              {
+                type: SortType.alphabetical,
+                order: SortOrder.asc,
+              },
+            ],
+            errors: [
+              {
+                messageId: 'unexpectedArrayIncludesOrder',
+                data: {
+                  first: "'Genos'",
+                  second: "'Bang'",
+                },
+              },
+            ],
+          },
+        ],
+      })
+    })
+
+    it(`${RULE_NAME}(${type}): allow to put spread elements to the end`, () => {
+      ruleTester.run(RULE_NAME, rule, {
+        valid: [
+          {
+            code: dedent`
+              ['Emma', 'Norman', 'Ray', ...graceFieldOrphans].includes(child)
+            `,
+            options: [
+              {
+                type: SortType.alphabetical,
+                order: SortOrder.asc,
+                spreadLast: true,
+              },
+            ],
+          },
+        ],
+        invalid: [
+          {
+            code: dedent`
+              ['Emma', ...graceFieldOrphans, 'Norman', 'Ray'].includes(child)
+            `,
+            output: dedent`
+              ['Emma', 'Norman', 'Ray', ...graceFieldOrphans].includes(child)
+            `,
+            options: [
+              {
+                type: SortType.alphabetical,
+                order: SortOrder.asc,
+                spreadLast: true,
+              },
+            ],
+            errors: [
+              {
+                messageId: 'unexpectedArrayIncludesOrder',
+                data: {
+                  first: '...graceFieldOrphans',
+                  second: "'Norman'",
+                },
+              },
+            ],
+          },
+        ],
+      })
+    })
+
+    it(`${RULE_NAME}(${type}): sorts array constructor`, () => {
+      ruleTester.run(RULE_NAME, rule, {
+        valid: [
+          {
+            code: dedent`
+              new Array(
+                'Furude Rika',
+                'Maebara Keiichi',
+                'Ryūgū Rena',
+                'Sonozaki Shion',
+              ).includes(name)
+            `,
+            options: [
+              {
+                type: SortType.alphabetical,
+                order: SortOrder.asc,
+              },
+            ],
+          },
+        ],
+        invalid: [
+          {
+            code: dedent`
+              new Array(
+                'Furude Rika',
+                'Ryūgū Rena',
+                'Sonozaki Shion',
+                'Maebara Keiichi',
+              ).includes(name)
+            `,
+            output: dedent`
+              new Array(
+                'Furude Rika',
+                'Maebara Keiichi',
+                'Ryūgū Rena',
+                'Sonozaki Shion',
+              ).includes(name)
+            `,
+            options: [
+              {
+                type: SortType.alphabetical,
+                order: SortOrder.asc,
+              },
+            ],
+            errors: [
+              {
+                messageId: 'unexpectedArrayIncludesOrder',
+                data: {
+                  first: "'Sonozaki Shion'",
+                  second: "'Maebara Keiichi'",
+                },
+              },
+            ],
+          },
+        ],
+      })
+    })
+  })
+
   describe(`${RULE_NAME}: sorting by natural order`, () => {
     let type = 'natural-order'
 
@@ -208,6 +477,7 @@ describe(RULE_NAME, () => {
               {
                 type: SortType.natural,
                 order: SortOrder.asc,
+                spreadLast: true,
               },
             ],
             errors: [
@@ -567,7 +837,7 @@ describe(RULE_NAME, () => {
   })
 
   describe(`${RULE_NAME}: misc`, () => {
-    it(`${RULE_NAME}: sets natural asc sorting as default`, () => {
+    it(`${RULE_NAME}: sets alphabetical asc sorting as default`, () => {
       ruleTester.run(RULE_NAME, rule, {
         valid: [
           dedent`

@@ -10,7 +10,17 @@ export let compare = (
     order: SortOrder
     type: SortType
   },
-): boolean =>
-  (options.order === 'asc' ? 1 : -1) *
-    (options.type === SortType.natural ? naturalCompare(a.name, b.name) : a.size - b.size) >
-  0
+): boolean => {
+  let orderCoefficient = options.order === 'asc' ? 1 : -1
+  let sortingFunction: (a: SortingNode, b: SortingNode) => number
+
+  if (options.type === SortType.alphabetical) {
+    sortingFunction = (aNode, bNode) => aNode.name.localeCompare(bNode.name)
+  } else if (options.type === SortType.natural) {
+    sortingFunction = (aNode, bNode) => naturalCompare(aNode.name, bNode.name)
+  } else {
+    sortingFunction = (aNode, bNode) => aNode.size - bNode.size
+  }
+
+  return orderCoefficient * sortingFunction(a, b) > 0
+}

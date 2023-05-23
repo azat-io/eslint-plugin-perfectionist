@@ -22,7 +22,7 @@
     "release:version": "bumpp package.json --execute=\"pnpm release:changelog && git add changelog.md\" --commit \"build: publish v%s\" --tag --all",
     "lint": "eslint \"**/*.{js,ts}\"",
     "test:types": "tsc --noEmit --pretty",
-    "test:unit": "vitest --run --coverage",
+    "test:unit": "vitest --run --coverage --single-thread --no-threads",
     "test": "pnpm run lint && pnpm run test:types && pnpm run test:unit"
   },
   "publishConfig": {
@@ -36,9 +36,17 @@
       "require": "./dist/index.js",
       "import": "./dist/index.mjs"
     },
-    "./configs": {
-      "require": "./dist/configs",
-      "import": "./dist/configs"
+    "./configs/recommended-alphabetical": {
+      "require": "./dist/configs/recommended-alphabetical.js",
+      "import": "./dist/configs/recommended-alphabetical.mjs"
+    },
+    "./configs/recommended-line-length": {
+      "require": "./dist/configs/recommended-line-length.js",
+      "import": "./dist/configs/recommended-line-length.mjs"
+    },
+    "./configs/recommended-natural": {
+      "require": "./dist/configs/recommended-natural.js",
+      "import": "./dist/configs/recommended-natural.mjs"
     },
     "./package.json": "./package.json"
   },

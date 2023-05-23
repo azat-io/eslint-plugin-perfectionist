@@ -186,6 +186,10 @@ export default defineConfig({
           text: 'Configs',
           items: [
             {
+              text: 'recommended-alphabetical',
+              link: '/configs/recommended-alphabetical',
+            },
+            {
               text: 'recommended-natural',
               link: '/configs/recommended-natural',
             },

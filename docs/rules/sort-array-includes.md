@@ -8,7 +8,7 @@ title: sort-array-includes
 
 ## 💡 Examples
 
-### Natural sorting
+### Alphabetical and natural sorting
 
 <!-- prettier-ignore -->
 ```ts

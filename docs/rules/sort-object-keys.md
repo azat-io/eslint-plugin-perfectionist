@@ -8,7 +8,7 @@ title: sort-object-keys
 
 ## 💡 Examples
 
-### Natural sorting
+### Alphabetical and natural sorting
 
 <!-- prettier-ignore -->
 ```ts

@@ -31,7 +31,7 @@ export default createEslintRule<Options, MESSAGE_ID>({
         type: 'object',
         properties: {
           type: {
-            enum: [SortType.natural, SortType['line-length']],
+            enum: [SortType.alphabetical, SortType.natural, SortType['line-length']],
             default: SortType.natural,
           },
           order: {
@@ -48,7 +48,7 @@ export default createEslintRule<Options, MESSAGE_ID>({
   },
   defaultOptions: [
     {
-      type: SortType.natural,
+      type: SortType.alphabetical,
       order: SortOrder.asc,
     },
   ],
@@ -57,7 +57,7 @@ export default createEslintRule<Options, MESSAGE_ID>({
       let source = context.getSourceCode().text
 
       let options = complete(context.options.at(0), {
-        type: SortType.natural,
+        type: SortType.alphabetical,
         order: SortOrder.asc,
       })
 

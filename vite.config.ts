@@ -7,7 +7,7 @@ export default defineConfig({
       fileName: (format, entryName) => {
         let directory = ''
 
-        if (entryName === 'recommended-line-length' || entryName === 'recommended-natural') {
+        if (entryName.startsWith('recommended')) {
           directory = 'configs/'
         }
 
@@ -15,6 +15,7 @@ export default defineConfig({
       },
       entry: [
         path.resolve(__dirname, 'index.ts'),
+        path.resolve(__dirname, 'configs/recommended-alphabetical.ts'),
         path.resolve(__dirname, 'configs/recommended-line-length.ts'),
         path.resolve(__dirname, 'configs/recommended-natural.ts'),
       ],

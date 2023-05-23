@@ -1,6 +1,7 @@
 import type { TSESTree } from '@typescript-eslint/types'
 
 export enum SortType {
+  'alphabetical' = 'alphabetical',
   'natural' = 'natural',
   'line-length' = 'line-length',
 }

@@ -8,7 +8,7 @@ title: sort-jsx-props
 
 ## 💡 Examples
 
-### Natural sorting
+### Alphabetical and natural sorting
 
 <!-- prettier-ignore -->
 ```tsx

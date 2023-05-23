@@ -8,7 +8,7 @@ title: sort-union-types
 
 ## 💡 Examples
 
-### Natural sorting
+### Alphabetical and natural sorting
 
 <!-- prettier-ignore -->
 ```ts

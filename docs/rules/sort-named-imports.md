@@ -8,7 +8,7 @@ title: sort-named-imports
 
 ## 💡 Examples
 
-### Natural sorting
+### Alphabetical and natural sorting
 
 <!-- prettier-ignore -->
 ```ts

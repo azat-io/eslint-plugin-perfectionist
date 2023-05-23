@@ -8,7 +8,7 @@ title: sort-map-elements
 
 ## 💡 Examples
 
-### Natural sorting
+### Alphabetical and natural sorting
 
 ```ts
 // Incorrect

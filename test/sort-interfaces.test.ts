@@ -10,6 +10,373 @@ describe(RULE_NAME, () => {
     parser: '@typescript-eslint/parser',
   })
 
+  describe(`${RULE_NAME}: sorting by alphabetical order`, () => {
+    let type = 'alphabetical-order'
+
+    it(`${RULE_NAME}(${type}): sorts interface properties`, () => {
+      ruleTester.run(RULE_NAME, rule, {
+        valid: [
+          {
+            code: dedent`
+              interface DossierByTwilight {
+                age: string
+                country: 'Westalis' | 'Ostania',
+                name: string
+              }
+            `,
+            options: [
+              {
+                type: SortType.alphabetical,
+                order: SortOrder.asc,
+              },
+            ],
+          },
+        ],
+        invalid: [
+          {
+            code: dedent`
+              interface DossierByTwilight {
+                name: string
+                age: string
+                country: 'Westalis' | 'Ostania',
+              }
+            `,
+            output: dedent`
+              interface DossierByTwilight {
+                age: string
+                country: 'Westalis' | 'Ostania',
+                name: string
+              }
+            `,
+            options: [
+              {
+                type: SortType.alphabetical,
+                order: SortOrder.asc,
+              },
+            ],
+            errors: [
+              {
+                messageId: 'unexpectedInterfacePropertiesOrder',
+                data: {
+                  first: 'name',
+                  second: 'age',
+                },
+              },
+            ],
+          },
+        ],
+      })
+    })
+
+    it(`${RULE_NAME}(${type}): works with ts index signature`, () => {
+      ruleTester.run(RULE_NAME, rule, {
+        valid: [
+          {
+            code: dedent`
+              interface JujutsuHigh {
+                [key in Sorcerer]: string
+                yuuji: 'Yuuji Itadori'
+              }
+            `,
+            options: [
+              {
+                type: SortType.alphabetical,
+                order: SortOrder.asc,
+              },
+            ],
+          },
+        ],
+        invalid: [
+          {
+            code: dedent`
+              interface JujutsuHigh {
+                yuuji: 'Yuuji Itadori'
+                [key in Sorcerer]: string
+              }
+            `,
+            output: dedent`
+              interface JujutsuHigh {
+                [key in Sorcerer]: string
+                yuuji: 'Yuuji Itadori'
+              }
+            `,
+            options: [
+              {
+                type: SortType.alphabetical,
+                order: SortOrder.asc,
+              },
+            ],
+            errors: [
+              {
+                messageId: 'unexpectedInterfacePropertiesOrder',
+                data: {
+                  first: 'yuuji',
+                  second: '[key in Sorcerer]',
+                },
+              },
+            ],
+          },
+        ],
+      })
+    })
+
+    it(`${RULE_NAME}(${type}): sorts multi-word keys by value`, () => {
+      ruleTester.run(RULE_NAME, rule, {
+        valid: [
+          {
+            code: dedent`
+              interface CowboyBebop {
+                ein: Dog
+                'faye-valentine': Hunter
+                jet: Hunter
+                'spike-spiegel': Hunter
+              }
+            `,
+            options: [
+              {
+                type: SortType.alphabetical,
+                order: SortOrder.asc,
+              },
+            ],
+          },
+        ],
+        invalid: [
+          {
+            code: dedent`
+              interface CowboyBebop {
+                'spike-spiegel': Hunter
+                ein: Dog
+                jet: Hunter
+                'faye-valentine': Hunter
+              }
+            `,
+            output: dedent`
+              interface CowboyBebop {
+                ein: Dog
+                'faye-valentine': Hunter
+                jet: Hunter
+                'spike-spiegel': Hunter
+              }
+            `,
+            options: [
+              {
+                type: SortType.alphabetical,
+                order: SortOrder.asc,
+              },
+            ],
+            errors: [
+              {
+                messageId: 'unexpectedInterfacePropertiesOrder',
+                data: {
+                  first: 'spike-spiegel',
+                  second: 'ein',
+                },
+              },
+              {
+                messageId: 'unexpectedInterfacePropertiesOrder',
+                data: {
+                  first: 'jet',
+                  second: 'faye-valentine',
+                },
+              },
+            ],
+          },
+        ],
+      })
+    })
+
+    it(`${RULE_NAME}(${type}): works with typescript index signature`, () => {
+      ruleTester.run(RULE_NAME, rule, {
+        valid: [
+          {
+            code: dedent`
+              interface Evangelion {
+                [key: string]: string
+                'evangelion-owner': string
+                name: string
+              }
+            `,
+            options: [
+              {
+                type: SortType.alphabetical,
+                order: SortOrder.asc,
+              },
+            ],
+          },
+        ],
+        invalid: [
+          {
+            code: dedent`
+              interface Evangelion {
+                'evangelion-owner': string
+                [key: string]: string
+                name: string
+              }
+            `,
+            output: dedent`
+              interface Evangelion {
+                [key: string]: string
+                'evangelion-owner': string
+                name: string
+              }
+            `,
+            options: [
+              {
+                type: SortType.alphabetical,
+                order: SortOrder.asc,
+              },
+            ],
+            errors: [
+              {
+                messageId: 'unexpectedInterfacePropertiesOrder',
+                data: {
+                  first: 'evangelion-owner',
+                  second: '[key: string]',
+                },
+              },
+            ],
+          },
+        ],
+      })
+    })
+
+    it(`${RULE_NAME}(${type}): works with method and construct signatures`, () => {
+      ruleTester.run(RULE_NAME, rule, {
+        valid: [
+          {
+            code: dedent`
+              interface Zenitsu {
+                age: number
+                airSpin: () => void
+                godspeed(): number
+                name: string
+                sixfold()
+              }
+            `,
+            options: [
+              {
+                type: SortType.alphabetical,
+                order: SortOrder.asc,
+              },
+            ],
+          },
+        ],
+        invalid: [
+          {
+            code: dedent`
+              interface Zenitsu {
+                age: number
+                godspeed(): number
+                airSpin: () => void
+                sixfold()
+                name: string
+              }
+            `,
+            output: dedent`
+              interface Zenitsu {
+                age: number
+                airSpin: () => void
+                godspeed(): number
+                name: string
+                sixfold()
+              }
+            `,
+            options: [
+              {
+                type: SortType.alphabetical,
+                order: SortOrder.asc,
+              },
+            ],
+            errors: [
+              {
+                messageId: 'unexpectedInterfacePropertiesOrder',
+                data: {
+                  first: 'godspeed()',
+                  second: 'airSpin',
+                },
+              },
+              {
+                messageId: 'unexpectedInterfacePropertiesOrder',
+                data: {
+                  first: 'sixfold()',
+                  second: 'name',
+                },
+              },
+            ],
+          },
+        ],
+      })
+    })
+
+    it(`${RULE_NAME}(${type}): works with empty properties with empty values`, () => {
+      ruleTester.run(RULE_NAME, rule, {
+        valid: [
+          {
+            code: dedent`
+              interface SatoruFujinuma {
+                [...memories]
+                [days in daysDiff]
+                [value in stories]?
+                age: 10 | 29
+                job: 'Mangaka'
+              }
+            `,
+            options: [
+              {
+                type: SortType.alphabetical,
+                order: SortOrder.asc,
+              },
+            ],
+          },
+        ],
+        invalid: [
+          {
+            code: dedent`
+              interface SatoruFujinuma {
+                [days in daysDiff]
+                age: 10 | 29
+                [...memories]
+                job: 'Mangaka'
+                [value in stories]?
+              }
+            `,
+            output: dedent`
+              interface SatoruFujinuma {
+                [...memories]
+                [days in daysDiff]
+                [value in stories]?
+                age: 10 | 29
+                job: 'Mangaka'
+              }
+            `,
+            options: [
+              {
+                type: SortType.alphabetical,
+                order: SortOrder.asc,
+              },
+            ],
+            errors: [
+              {
+                messageId: 'unexpectedInterfacePropertiesOrder',
+                data: {
+                  first: 'age',
+                  second: '[...memories]',
+                },
+              },
+              {
+                messageId: 'unexpectedInterfacePropertiesOrder',
+                data: {
+                  first: 'job',
+                  second: '[value in stories]',
+                },
+              },
+            ],
+          },
+        ],
+      })
+    })
+  })
+
   describe(`${RULE_NAME}: sorting by natural order`, () => {
     let type = 'natural-order'
 
@@ -691,7 +1058,7 @@ describe(RULE_NAME, () => {
   })
 
   describe(`${RULE_NAME}: misc`, () => {
-    it(`${RULE_NAME}: sets natural asc sorting as default`, () => {
+    it(`${RULE_NAME}: sets alphabetical asc sorting as default`, () => {
       ruleTester.run(RULE_NAME, rule, {
         valid: [
           dedent`

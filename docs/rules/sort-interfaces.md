@@ -8,7 +8,7 @@ title: sort-interfaces
 
 ## 💡 Examples
 
-### Natural sorting
+### Alphabetical and natural sorting
 
 ```ts
 // Incorrect

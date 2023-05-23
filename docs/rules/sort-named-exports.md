@@ -8,7 +8,7 @@ title: sort-named-exports
 
 ## 💡 Examples
 
-### Natural sorting
+### Alphabetical and natural sorting
 
 <!-- prettier-ignore -->
 ```ts
