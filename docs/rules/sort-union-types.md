@@ -66,6 +66,10 @@ type DevilHunter =
 
 ## ⚙️ Usage
 
+:::tip
+If you use `@typescript-eslint/eslint-plugin`, you should disable the `sort-type-constituents` rule, as it may conflict with the current rule
+:::
+
 ### Legacy config
 
 ```json
