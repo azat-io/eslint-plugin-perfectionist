@@ -1,0 +1,47 @@
+name: "\U0001F527 Request a rule change"
+description: Request a change to an existing core rule
+
+title: 'Feature: (fill in)'
+labels:
+  - enhancement
+
+body:
+  - type: input
+    id: eslint-version
+    attributes:
+      label: What rule do you want to change?
+      description: Please write the name of the rule.
+    validations:
+      required: true
+
+  - type: textarea
+    id: rule-description
+    attributes:
+      label: Describe the problem
+      description: How is the rule supposed to work?
+    validations:
+      required: true
+
+  - type: textarea
+    id: code-example
+    attributes:
+      label: Code example
+      description: Please show the code related to this rule
+    validations:
+      required: true
+
+  - type: textarea
+    attributes:
+      label: Additional comments
+      description: Is there anything else that's important to know?
+
+  - type: checkboxes
+    id: checkboxes
+    attributes:
+      label: Validations
+      description: Before submitting the issue, please make sure you do the following
+      options:
+        - label: Read the [docs](https://eslint-plugin-perfectionist.azat.io).
+          required: true
+        - label: Check that there isn't [already an issue](https://github.com/azat-io/eslint-plugin-perfectionist/issues) that reports the same bug to avoid creating a duplicate.
+          required: true

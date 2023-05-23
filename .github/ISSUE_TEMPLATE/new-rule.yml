@@ -1,0 +1,39 @@
+name: "\U0001F4A1 Propose a new rule"
+description: Propose a new rule to be added to the ESLint Plugin Perfectionist
+
+title: 'Feature: (fill in)'
+labels:
+  - enhancement
+
+body:
+  - type: textarea
+    id: rule-description
+    attributes:
+      label: Describe the rule
+      description: What should the new rule do?
+    validations:
+      required: true
+
+  - type: textarea
+    id: code-example
+    attributes:
+      label: Code example
+      description: Please show the code related to this rule
+    validations:
+      required: true
+
+  - type: textarea
+    attributes:
+      label: Additional comments
+      description: Is there anything else that's important to know?
+
+  - type: checkboxes
+    id: checkboxes
+    attributes:
+      label: Validations
+      description: Before submitting the issue, please make sure you do the following
+      options:
+        - label: Read the [docs](https://eslint-plugin-perfectionist.azat.io).
+          required: true
+        - label: Check that there isn't [already an issue](https://github.com/azat-io/eslint-plugin-perfectionist/issues) that reports the same bug to avoid creating a duplicate.
+          required: true
