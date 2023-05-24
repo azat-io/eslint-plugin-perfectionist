@@ -38,7 +38,7 @@ let createConfigWithOptions = (options: {
     plugins: ['perfectionist'],
     rules: Object.fromEntries(
       Object.entries(recommendedRules).map(([key, [message, baseOptions = {}]]) => [
-        key,
+        `perfectionist/${key}`,
         [message, Object.assign(baseOptions, options)],
       ]),
     ),
