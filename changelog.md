@@ -1,3 +1,12 @@
+# [0.7.0](https://github.com/azat-io/eslint-plugin-perfectionist/compare/v0.6.0...v0.7.0) (2023-05-24)
+
+
+### Bug Fixes
+
+* fix plugin configs creation ([559a2ce](https://github.com/azat-io/eslint-plugin-perfectionist/commit/559a2ce4ba482520d0254ac4934e8d08dde8626e))
+
+
+
 # [0.6.0](https://github.com/azat-io/eslint-plugin-perfectionist/compare/v0.5.0...v0.6.0) (2023-05-23)
 
 
