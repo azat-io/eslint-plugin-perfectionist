@@ -235,6 +235,55 @@ describe(RULE_NAME, () => {
         ],
       })
     })
+
+    it(`${RULE_NAME}(${type}): does not break interface docs`, () => {
+      ruleTester.run(RULE_NAME, rule, {
+        valid: [],
+        invalid: [
+          {
+            code: dedent`
+              enum LastTourGirls {
+                /**
+                 * Yuuri is a care-free, fun-loving girl. She is the direct foil and companion of Chito. She carries an Arisaka type 38 rifle and loves food more than anything else in the world.
+                 */
+                Yuu = 'Yuuri',
+                /**
+                 * She travels with Yuuri on their Kettenkrad. She can read and write in the current language, but not in kanji or Latin alphabets, because they became old languages in this world. She loves reading and collecting books she finds during traveling.
+                 */
+                'Chi-Chii' = 'Chito',
+              }
+            `,
+            output: dedent`
+              enum LastTourGirls {
+                /**
+                 * She travels with Yuuri on their Kettenkrad. She can read and write in the current language, but not in kanji or Latin alphabets, because they became old languages in this world. She loves reading and collecting books she finds during traveling.
+                 */
+                'Chi-Chii' = 'Chito',
+                /**
+                 * Yuuri is a care-free, fun-loving girl. She is the direct foil and companion of Chito. She carries an Arisaka type 38 rifle and loves food more than anything else in the world.
+                 */
+                Yuu = 'Yuuri',
+              }
+            `,
+            options: [
+              {
+                type: SortType.alphabetical,
+                order: SortOrder.asc,
+              },
+            ],
+            errors: [
+              {
+                messageId: 'unexpectedEnumsOrder',
+                data: {
+                  first: 'Yuu',
+                  second: 'Chi-Chii',
+                },
+              },
+            ],
+          },
+        ],
+      })
+    })
   })
 
   describe(`${RULE_NAME}: sorting by natural order`, () => {
@@ -455,6 +504,55 @@ describe(RULE_NAME, () => {
                 data: {
                   first: 'true',
                   second: 'false',
+                },
+              },
+            ],
+          },
+        ],
+      })
+    })
+
+    it(`${RULE_NAME}(${type}): does not break interface docs`, () => {
+      ruleTester.run(RULE_NAME, rule, {
+        valid: [],
+        invalid: [
+          {
+            code: dedent`
+              enum LastTourGirls {
+                /**
+                 * Yuuri is a care-free, fun-loving girl. She is the direct foil and companion of Chito. She carries an Arisaka type 38 rifle and loves food more than anything else in the world.
+                 */
+                Yuu = 'Yuuri',
+                /**
+                 * She travels with Yuuri on their Kettenkrad. She can read and write in the current language, but not in kanji or Latin alphabets, because they became old languages in this world. She loves reading and collecting books she finds during traveling.
+                 */
+                'Chi-Chii' = 'Chito',
+              }
+            `,
+            output: dedent`
+              enum LastTourGirls {
+                /**
+                 * She travels with Yuuri on their Kettenkrad. She can read and write in the current language, but not in kanji or Latin alphabets, because they became old languages in this world. She loves reading and collecting books she finds during traveling.
+                 */
+                'Chi-Chii' = 'Chito',
+                /**
+                 * Yuuri is a care-free, fun-loving girl. She is the direct foil and companion of Chito. She carries an Arisaka type 38 rifle and loves food more than anything else in the world.
+                 */
+                Yuu = 'Yuuri',
+              }
+            `,
+            options: [
+              {
+                type: SortType.natural,
+                order: SortOrder.asc,
+              },
+            ],
+            errors: [
+              {
+                messageId: 'unexpectedEnumsOrder',
+                data: {
+                  first: 'Yuu',
+                  second: 'Chi-Chii',
                 },
               },
             ],
@@ -696,6 +794,55 @@ describe(RULE_NAME, () => {
                 data: {
                   first: 'true',
                   second: 'false',
+                },
+              },
+            ],
+          },
+        ],
+      })
+    })
+
+    it(`${RULE_NAME}(${type}): does not break interface docs`, () => {
+      ruleTester.run(RULE_NAME, rule, {
+        valid: [],
+        invalid: [
+          {
+            code: dedent`
+              enum LastTourGirls {
+                /**
+                 * Yuuri is a care-free, fun-loving girl. She is the direct foil and companion of Chito. She carries an Arisaka type 38 rifle and loves food more than anything else in the world.
+                 */
+                Yuu = 'Yuuri',
+                /**
+                 * She travels with Yuuri on their Kettenkrad. She can read and write in the current language, but not in kanji or Latin alphabets, because they became old languages in this world. She loves reading and collecting books she finds during traveling.
+                 */
+                'Chi-Chii' = 'Chito',
+              }
+            `,
+            output: dedent`
+              enum LastTourGirls {
+                /**
+                 * She travels with Yuuri on their Kettenkrad. She can read and write in the current language, but not in kanji or Latin alphabets, because they became old languages in this world. She loves reading and collecting books she finds during traveling.
+                 */
+                'Chi-Chii' = 'Chito',
+                /**
+                 * Yuuri is a care-free, fun-loving girl. She is the direct foil and companion of Chito. She carries an Arisaka type 38 rifle and loves food more than anything else in the world.
+                 */
+                Yuu = 'Yuuri',
+              }
+            `,
+            options: [
+              {
+                type: SortType['line-length'],
+                order: SortOrder.desc,
+              },
+            ],
+            errors: [
+              {
+                messageId: 'unexpectedEnumsOrder',
+                data: {
+                  first: 'Yuu',
+                  second: 'Chi-Chii',
                 },
               },
             ],

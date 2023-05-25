@@ -54,16 +54,16 @@ export default createEslintRule<Options, MESSAGE_ID>({
   ],
   create: context => ({
     TSUnionType: node => {
-      let source = context.getSourceCode().text
+      let source = context.getSourceCode()
 
       let options = complete(context.options.at(0), {
         type: SortType.alphabetical,
         order: SortOrder.asc,
       })
 
-      let values: SortingNode[] = node.types.map(type => {
+      let nodes: SortingNode[] = node.types.map(type => {
         let { range } = type
-        let name: string = source.slice(...range)
+        let name: string = source.text.slice(...range)
 
         return {
           size: rangeToDiff(range),
@@ -72,9 +72,9 @@ export default createEslintRule<Options, MESSAGE_ID>({
         }
       })
 
-      for (let i = 1; i < values.length; i++) {
-        let first = values.at(i - 1)!
-        let second = values.at(i)!
+      for (let i = 1; i < nodes.length; i++) {
+        let first = nodes.at(i - 1)!
+        let second = nodes.at(i)!
 
         if (compare(first, second, options)) {
           let secondNode = node.types[i]
@@ -86,11 +86,12 @@ export default createEslintRule<Options, MESSAGE_ID>({
               second: second.name,
             },
             node: secondNode,
-            fix: fixer => {
-              let sourceCode = context.getSourceCode()
-              let { text } = sourceCode
-              return sortNodes(fixer, text, values, options)
-            },
+            fix: fixer =>
+              sortNodes(fixer, {
+                options,
+                source,
+                nodes,
+              }),
           })
         }
       }

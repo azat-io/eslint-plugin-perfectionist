@@ -375,6 +375,81 @@ describe(RULE_NAME, () => {
         ],
       })
     })
+
+    it(`${RULE_NAME}(${type}): does not break interface docs`, () => {
+      ruleTester.run(RULE_NAME, rule, {
+        valid: [],
+        invalid: [
+          {
+            code: dedent`
+              interface SpiritsAndSuchConsultation {
+                /**
+                 * Ekubo is a self-proclaimed upper-class evil spirit who has aligned himself with Mob after being defeated by him.
+                 *
+                 * Ekubo wants to be a god. Specifically, he wants to be worshipped by all humanity.
+                 */
+                spirit: 'Ekubo'
+                /**
+                 * Mob's mentor and boss in the Mob Psycho 100 series. He owns a business exorcising ghosts and is a self-proclaimed psychic.
+                 */
+                owner: 'Arataka Reigen'
+                // He is an extremely powerful Esper who was formerly a part of the Super 5 of Claw. He now works at the agency alongside Reigen and Mob.
+                esper: 'Katsuya Serizawa'
+                /* He is the assistant and disciple of Arataka Reigen. He is also the newest member of the Body Improvement Club. */
+                assistant: 'Shigeo Kageyama'
+              }
+            `,
+            output: dedent`
+              interface SpiritsAndSuchConsultation {
+                /* He is the assistant and disciple of Arataka Reigen. He is also the newest member of the Body Improvement Club. */
+                assistant: 'Shigeo Kageyama'
+                // He is an extremely powerful Esper who was formerly a part of the Super 5 of Claw. He now works at the agency alongside Reigen and Mob.
+                esper: 'Katsuya Serizawa'
+                /**
+                 * Mob's mentor and boss in the Mob Psycho 100 series. He owns a business exorcising ghosts and is a self-proclaimed psychic.
+                 */
+                owner: 'Arataka Reigen'
+                /**
+                 * Ekubo is a self-proclaimed upper-class evil spirit who has aligned himself with Mob after being defeated by him.
+                 *
+                 * Ekubo wants to be a god. Specifically, he wants to be worshipped by all humanity.
+                 */
+                spirit: 'Ekubo'
+              }
+            `,
+            options: [
+              {
+                type: SortType.alphabetical,
+                order: SortOrder.asc,
+              },
+            ],
+            errors: [
+              {
+                messageId: 'unexpectedInterfacePropertiesOrder',
+                data: {
+                  first: 'spirit',
+                  second: 'owner',
+                },
+              },
+              {
+                messageId: 'unexpectedInterfacePropertiesOrder',
+                data: {
+                  first: 'owner',
+                  second: 'esper',
+                },
+              },
+              {
+                messageId: 'unexpectedInterfacePropertiesOrder',
+                data: {
+                  first: 'esper',
+                  second: 'assistant',
+                },
+              },
+            ],
+          },
+        ],
+      })
+    })
   })
 
   describe(`${RULE_NAME}: sorting by natural order`, () => {
@@ -742,6 +817,81 @@ describe(RULE_NAME, () => {
         ],
       })
     })
+
+    it(`${RULE_NAME}(${type}): does not break interface docs`, () => {
+      ruleTester.run(RULE_NAME, rule, {
+        valid: [],
+        invalid: [
+          {
+            code: dedent`
+              interface SpiritsAndSuchConsultation {
+                /**
+                 * Ekubo is a self-proclaimed upper-class evil spirit who has aligned himself with Mob after being defeated by him.
+                 *
+                 * Ekubo wants to be a god. Specifically, he wants to be worshipped by all humanity.
+                 */
+                spirit: 'Ekubo'
+                /**
+                 * Mob's mentor and boss in the Mob Psycho 100 series. He owns a business exorcising ghosts and is a self-proclaimed psychic.
+                 */
+                owner: 'Arataka Reigen'
+                // He is an extremely powerful Esper who was formerly a part of the Super 5 of Claw. He now works at the agency alongside Reigen and Mob.
+                esper: 'Katsuya Serizawa'
+                /* He is the assistant and disciple of Arataka Reigen. He is also the newest member of the Body Improvement Club. */
+                assistant: 'Shigeo Kageyama'
+              }
+            `,
+            output: dedent`
+              interface SpiritsAndSuchConsultation {
+                /* He is the assistant and disciple of Arataka Reigen. He is also the newest member of the Body Improvement Club. */
+                assistant: 'Shigeo Kageyama'
+                // He is an extremely powerful Esper who was formerly a part of the Super 5 of Claw. He now works at the agency alongside Reigen and Mob.
+                esper: 'Katsuya Serizawa'
+                /**
+                 * Mob's mentor and boss in the Mob Psycho 100 series. He owns a business exorcising ghosts and is a self-proclaimed psychic.
+                 */
+                owner: 'Arataka Reigen'
+                /**
+                 * Ekubo is a self-proclaimed upper-class evil spirit who has aligned himself with Mob after being defeated by him.
+                 *
+                 * Ekubo wants to be a god. Specifically, he wants to be worshipped by all humanity.
+                 */
+                spirit: 'Ekubo'
+              }
+            `,
+            options: [
+              {
+                type: SortType.natural,
+                order: SortOrder.asc,
+              },
+            ],
+            errors: [
+              {
+                messageId: 'unexpectedInterfacePropertiesOrder',
+                data: {
+                  first: 'spirit',
+                  second: 'owner',
+                },
+              },
+              {
+                messageId: 'unexpectedInterfacePropertiesOrder',
+                data: {
+                  first: 'owner',
+                  second: 'esper',
+                },
+              },
+              {
+                messageId: 'unexpectedInterfacePropertiesOrder',
+                data: {
+                  first: 'esper',
+                  second: 'assistant',
+                },
+              },
+            ],
+          },
+        ],
+      })
+    })
   })
 
   describe(`${RULE_NAME}: sorting by line length`, () => {
@@ -1048,6 +1198,81 @@ describe(RULE_NAME, () => {
                 data: {
                   first: '[...memories]',
                   second: 'job',
+                },
+              },
+            ],
+          },
+        ],
+      })
+    })
+
+    it(`${RULE_NAME}(${type}): does not break interface docs`, () => {
+      ruleTester.run(RULE_NAME, rule, {
+        valid: [],
+        invalid: [
+          {
+            code: dedent`
+              interface SpiritsAndSuchConsultation {
+                /**
+                 * Ekubo is a self-proclaimed upper-class evil spirit who has aligned himself with Mob after being defeated by him.
+                 *
+                 * Ekubo wants to be a god. Specifically, he wants to be worshipped by all humanity.
+                 */
+                spirit: 'Ekubo'
+                /**
+                 * Mob's mentor and boss in the Mob Psycho 100 series. He owns a business exorcising ghosts and is a self-proclaimed psychic.
+                 */
+                owner: 'Arataka Reigen'
+                // He is an extremely powerful Esper who was formerly a part of the Super 5 of Claw. He now works at the agency alongside Reigen and Mob.
+                esper: 'Katsuya Serizawa'
+                /* He is the assistant and disciple of Arataka Reigen. He is also the newest member of the Body Improvement Club. */
+                assistant: 'Shigeo Kageyama'
+              }
+            `,
+            output: dedent`
+              interface SpiritsAndSuchConsultation {
+                /* He is the assistant and disciple of Arataka Reigen. He is also the newest member of the Body Improvement Club. */
+                assistant: 'Shigeo Kageyama'
+                // He is an extremely powerful Esper who was formerly a part of the Super 5 of Claw. He now works at the agency alongside Reigen and Mob.
+                esper: 'Katsuya Serizawa'
+                /**
+                 * Mob's mentor and boss in the Mob Psycho 100 series. He owns a business exorcising ghosts and is a self-proclaimed psychic.
+                 */
+                owner: 'Arataka Reigen'
+                /**
+                 * Ekubo is a self-proclaimed upper-class evil spirit who has aligned himself with Mob after being defeated by him.
+                 *
+                 * Ekubo wants to be a god. Specifically, he wants to be worshipped by all humanity.
+                 */
+                spirit: 'Ekubo'
+              }
+            `,
+            options: [
+              {
+                type: SortType['line-length'],
+                order: SortOrder.desc,
+              },
+            ],
+            errors: [
+              {
+                messageId: 'unexpectedInterfacePropertiesOrder',
+                data: {
+                  first: 'spirit',
+                  second: 'owner',
+                },
+              },
+              {
+                messageId: 'unexpectedInterfacePropertiesOrder',
+                data: {
+                  first: 'owner',
+                  second: 'esper',
+                },
+              },
+              {
+                messageId: 'unexpectedInterfacePropertiesOrder',
+                data: {
+                  first: 'esper',
+                  second: 'assistant',
                 },
               },
             ],

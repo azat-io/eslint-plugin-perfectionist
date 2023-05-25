@@ -63,6 +63,8 @@ export default createEslintRule<Options, MESSAGE_ID>({
         order: SortOrder.asc,
       })
 
+      let source = context.getSourceCode()
+
       let parts: TSESTree.JSXAttribute[][] = node.openingElement.attributes.reduce(
         (accumulator: TSESTree.JSXAttribute[][], attribute: TSESTree.JSXSpreadAttribute | TSESTree.JSXAttribute) => {
           if (attribute.type === 'JSXAttribute') {
@@ -76,7 +78,7 @@ export default createEslintRule<Options, MESSAGE_ID>({
       )
 
       parts.forEach(part => {
-        let values: SortingNode[] = part.map(attribute => ({
+        let nodes: SortingNode[] = part.map(attribute => ({
           name:
             attribute.name.type === AST_NODE_TYPES.JSXNamespacedName
               ? `${attribute.name.namespace.name}:${attribute.name.name.name}`
@@ -85,9 +87,9 @@ export default createEslintRule<Options, MESSAGE_ID>({
           node: attribute,
         }))
 
-        for (let i = 1; i < values.length; i++) {
-          let first = values.at(i - 1)!
-          let second = values.at(i)!
+        for (let i = 1; i < nodes.length; i++) {
+          let first = nodes.at(i - 1)!
+          let second = nodes.at(i)!
 
           if (compare(first, second, options)) {
             context.report({
@@ -97,10 +99,12 @@ export default createEslintRule<Options, MESSAGE_ID>({
                 second: second.name,
               },
               node: second.node,
-              fix: fixer => {
-                let source = context.getSourceCode().text
-                return sortNodes(fixer, source, values, options)
-              },
+              fix: fixer =>
+                sortNodes(fixer, {
+                  options,
+                  source,
+                  nodes,
+                }),
             })
           }
         }

@@ -60,7 +60,9 @@ export default createEslintRule<Options, MESSAGE_ID>({
       })
 
       if (node.specifiers.length > 1) {
-        let values: SortingNode[] = node.specifiers.map(specifier => {
+        let source = context.getSourceCode()
+
+        let nodes: SortingNode[] = node.specifiers.map(specifier => {
           let {
             range,
             local: { name },
@@ -72,9 +74,9 @@ export default createEslintRule<Options, MESSAGE_ID>({
           }
         })
 
-        for (let i = 1; i < values.length; i++) {
-          let first = values.at(i - 1)!
-          let second = values.at(i)!
+        for (let i = 1; i < nodes.length; i++) {
+          let first = nodes.at(i - 1)!
+          let second = nodes.at(i)!
 
           if (compare(first, second, options)) {
             let secondNode = node.specifiers[i]
@@ -86,11 +88,12 @@ export default createEslintRule<Options, MESSAGE_ID>({
                 second: second.name,
               },
               node: secondNode,
-              fix: fixer => {
-                let sourceCode = context.getSourceCode()
-                let { text } = sourceCode
-                return sortNodes(fixer, text, values, options)
-              },
+              fix: fixer =>
+                sortNodes(fixer, {
+                  options,
+                  source,
+                  nodes,
+                }),
             })
           }
         }

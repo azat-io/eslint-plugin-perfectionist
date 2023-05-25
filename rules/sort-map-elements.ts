@@ -69,7 +69,7 @@ export default createEslintRule<Options, MESSAGE_ID>({
         })
 
         let [{ elements }] = node.arguments
-        let source = context.getSourceCode().text
+        let source = context.getSourceCode()
 
         if (elements.length > 1) {
           let parts: TSESTree.Expression[][] = elements.reduce(
@@ -85,7 +85,7 @@ export default createEslintRule<Options, MESSAGE_ID>({
           )
 
           parts.forEach(part => {
-            let values: SortingNode[] = part.map(element => {
+            let nodes: SortingNode[] = part.map(element => {
               let name: string
 
               if (element.type === AST_NODE_TYPES.ArrayExpression) {
@@ -96,10 +96,10 @@ export default createEslintRule<Options, MESSAGE_ID>({
                 } else if (first.type === AST_NODE_TYPES.Literal) {
                   name = first.raw
                 } else {
-                  name = source.slice(...first.range)
+                  name = source.text.slice(...first.range)
                 }
               } else {
-                name = source.slice(...element.range)
+                name = source.text.slice(...element.range)
               }
 
               return {
@@ -109,9 +109,9 @@ export default createEslintRule<Options, MESSAGE_ID>({
               }
             })
 
-            for (let i = 1; i < values.length; i++) {
-              let first = values.at(i - 1)!
-              let second = values.at(i)!
+            for (let i = 1; i < nodes.length; i++) {
+              let first = nodes.at(i - 1)!
+              let second = nodes.at(i)!
 
               if (compare(first, second, options)) {
                 context.report({
@@ -121,11 +121,12 @@ export default createEslintRule<Options, MESSAGE_ID>({
                     second: second.name,
                   },
                   node: second.node,
-                  fix: fixer => {
-                    let sourceCode = context.getSourceCode()
-                    let { text } = sourceCode
-                    return sortNodes(fixer, text, values, options)
-                  },
+                  fix: fixer =>
+                    sortNodes(fixer, {
+                      options,
+                      source,
+                      nodes,
+                    }),
                 })
               }
             }

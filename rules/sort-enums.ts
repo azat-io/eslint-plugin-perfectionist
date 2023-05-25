@@ -62,15 +62,15 @@ export default createEslintRule<Options, MESSAGE_ID>({
       })
 
       if (node.members.length > 1) {
-        let source = context.getSourceCode().text
+        let source = context.getSourceCode()
 
-        let values: SortingNode[] = node.members.map(member => {
+        let nodes: SortingNode[] = node.members.map(member => {
           let name: string
 
           if (member.id.type === AST_NODE_TYPES.Literal) {
             name = `${member.id.value}`
           } else {
-            name = `${source.slice(...member.id.range)}`
+            name = `${source.text.slice(...member.id.range)}`
           }
 
           return {
@@ -80,9 +80,9 @@ export default createEslintRule<Options, MESSAGE_ID>({
           }
         })
 
-        for (let i = 1; i < values.length; i++) {
-          let first = values.at(i - 1)!
-          let second = values.at(i)!
+        for (let i = 1; i < nodes.length; i++) {
+          let first = nodes.at(i - 1)!
+          let second = nodes.at(i)!
 
           if (compare(first, second, options)) {
             context.report({
@@ -92,7 +92,12 @@ export default createEslintRule<Options, MESSAGE_ID>({
                 second: second.name,
               },
               node: second.node,
-              fix: fixer => sortNodes(fixer, source, values, options),
+              fix: fixer =>
+                sortNodes(fixer, {
+                  options,
+                  source,
+                  nodes,
+                }),
             })
           }
         }

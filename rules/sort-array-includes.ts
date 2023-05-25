@@ -78,9 +78,9 @@ export default createEslintRule<Options, MESSAGE_ID>({
           node.object.type === AST_NODE_TYPES.ArrayExpression ? node.object.elements : node.object.arguments
 
         if (elements.length > 1) {
-          let source = context.getSourceCode().text
+          let source = context.getSourceCode()
 
-          let values: (SortingNode & { type: string })[] = elements
+          let nodes: (SortingNode & { type: string })[] = elements
             .reduce(
               (
                 accumulator: (SortingNode & { type: string })[][],
@@ -91,7 +91,7 @@ export default createEslintRule<Options, MESSAGE_ID>({
                 }
 
                 accumulator.at(0)!.push({
-                  name: element.type === AST_NODE_TYPES.Literal ? element.raw : source.slice(...element.range),
+                  name: element.type === AST_NODE_TYPES.Literal ? element.raw : source.text.slice(...element.range),
                   size: rangeToDiff(element.range),
                   type: element.type,
                   node: element,
@@ -103,9 +103,9 @@ export default createEslintRule<Options, MESSAGE_ID>({
             )
             .flat()
 
-          for (let i = 1; i < values.length; i++) {
-            let first = values.at(i - 1)!
-            let second = values.at(i)!
+          for (let i = 1; i < nodes.length; i++) {
+            let first = nodes.at(i - 1)!
+            let second = nodes.at(i)!
 
             let compareValue: boolean
 
@@ -133,12 +133,12 @@ export default createEslintRule<Options, MESSAGE_ID>({
                   second: second.name,
                 },
                 node: second.node,
-                fix: fixer => {
-                  let sourceCode = context.getSourceCode()
-                  let { text } = sourceCode
-
-                  return sortNodes(fixer, text, values, options)
-                },
+                fix: fixer =>
+                  sortNodes(fixer, {
+                    options,
+                    source,
+                    nodes,
+                  }),
               })
             }
           }

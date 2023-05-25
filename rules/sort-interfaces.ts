@@ -62,9 +62,9 @@ export default createEslintRule<Options, MESSAGE_ID>({
       })
 
       if (node.body.length > 1) {
-        let source = context.getSourceCode().text
+        let source = context.getSourceCode()
 
-        let values: SortingNode[] = node.body.map(element => {
+        let nodes: SortingNode[] = node.body.map(element => {
           let name: string
 
           if (element.type === AST_NODE_TYPES.TSPropertySignature) {
@@ -82,12 +82,12 @@ export default createEslintRule<Options, MESSAGE_ID>({
                 end = element.range.at(1)! - optional
               }
 
-              name = source.slice(element.range.at(0), end)
+              name = source.text.slice(element.range.at(0), end)
             }
           } else if (element.type === AST_NODE_TYPES.TSIndexSignature) {
-            name = source.slice(element.range.at(0), element.typeAnnotation?.range.at(0) ?? element.range.at(1))
+            name = source.text.slice(element.range.at(0), element.typeAnnotation?.range.at(0) ?? element.range.at(1))
           } else {
-            name = source.slice(element.range.at(0), element.returnType?.range.at(0) ?? element.range.at(1))
+            name = source.text.slice(element.range.at(0), element.returnType?.range.at(0) ?? element.range.at(1))
           }
 
           return {
@@ -97,9 +97,9 @@ export default createEslintRule<Options, MESSAGE_ID>({
           }
         })
 
-        for (let i = 1; i < values.length; i++) {
-          let first = values.at(i - 1)!
-          let second = values.at(i)!
+        for (let i = 1; i < nodes.length; i++) {
+          let first = nodes.at(i - 1)!
+          let second = nodes.at(i)!
 
           if (compare(first, second, options)) {
             let secondNode = node.body[i]
@@ -111,7 +111,12 @@ export default createEslintRule<Options, MESSAGE_ID>({
                 second: second.name,
               },
               node: secondNode,
-              fix: fixer => sortNodes(fixer, source, values, options),
+              fix: fixer =>
+                sortNodes(fixer, {
+                  options,
+                  source,
+                  nodes,
+                }),
             })
           }
         }

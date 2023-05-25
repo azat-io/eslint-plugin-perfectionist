@@ -64,7 +64,7 @@ export default createEslintRule<Options, MESSAGE_ID>({
           order: SortOrder.asc,
         })
 
-        let source = context.getSourceCode().text
+        let source = context.getSourceCode()
 
         let formatProperties = (props: TSESTree.ObjectLiteralElement[]): SortingNode[][] =>
           props.reduce(
@@ -81,7 +81,7 @@ export default createEslintRule<Options, MESSAGE_ID>({
               } else if (prop.key.type === AST_NODE_TYPES.Literal) {
                 name = `${prop.key.value}`
               } else {
-                name = source.slice(...prop.key.range)
+                name = source.text.slice(...prop.key.range)
               }
 
               let value = {
@@ -97,11 +97,11 @@ export default createEslintRule<Options, MESSAGE_ID>({
             [[]],
           )
 
-        formatProperties(node.properties).forEach(values => {
-          if (values.length > 1) {
-            for (let i = 1; i < values.length; i++) {
-              let first = values.at(i - 1)!
-              let second = values.at(i)!
+        formatProperties(node.properties).forEach(nodes => {
+          if (nodes.length > 1) {
+            for (let i = 1; i < nodes.length; i++) {
+              let first = nodes.at(i - 1)!
+              let second = nodes.at(i)!
 
               if (compare(first, second, options)) {
                 context.report({
@@ -111,7 +111,12 @@ export default createEslintRule<Options, MESSAGE_ID>({
                     second: second.name,
                   },
                   node: second.node,
-                  fix: fixer => sortNodes(fixer, source, values, options),
+                  fix: fixer =>
+                    sortNodes(fixer, {
+                      options,
+                      source,
+                      nodes,
+                    }),
                 })
               }
             }
