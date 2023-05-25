@@ -1,3 +1,17 @@
+# [0.8.0](https://github.com/azat-io/eslint-plugin-perfectionist/compare/v0.7.0...v0.8.0) (2023-05-25)
+
+
+### Bug Fixes
+
+* fix defenition for rule not found error ([050d20d](https://github.com/azat-io/eslint-plugin-perfectionist/commit/050d20d96b5b86f3821238d66178f04cfb3101c6))
+
+
+### Features
+
+* add sort-enums rule ([47167e0](https://github.com/azat-io/eslint-plugin-perfectionist/commit/47167e0db6b86e248edac2bc35b333c1a1ba8a14))
+
+
+
 # [0.7.0](https://github.com/azat-io/eslint-plugin-perfectionist/compare/v0.6.0...v0.7.0) (2023-05-24)
 
 

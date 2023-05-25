@@ -107,7 +107,7 @@ export default [
 
 ## 🚀 Version
 
-Coming soon.
+This rule was introduced in v0.8.0.
 
 ## 📚 Resources
 
