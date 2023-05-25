@@ -124,6 +124,14 @@ export default defineConfig({
         sizes: '180x180',
       },
     ],
+    [
+      'script',
+      {
+        async: '',
+        src: 'https://analytics.azat.io/script.js',
+        'data-website-id': 'c69a8be1-771a-4504-b778-4d247c1069aa',
+      },
+    ],
   ],
 
   markdown: {
