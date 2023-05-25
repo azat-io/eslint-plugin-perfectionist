@@ -8,11 +8,6 @@ import { SortType, SortOrder } from '~/typings'
 describe(RULE_NAME, () => {
   let ruleTester = new ESLintUtils.RuleTester({
     parser: '@typescript-eslint/parser',
-    parserOptions: {
-      ecmaFeatures: {
-        jsx: true,
-      },
-    },
   })
 
   describe(`${RULE_NAME}: sorting by alphabetical order`, () => {

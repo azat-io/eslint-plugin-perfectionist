@@ -8,11 +8,6 @@ import { SortType, SortOrder } from '~/typings'
 describe(RULE_NAME, () => {
   let ruleTester = new ESLintUtils.RuleTester({
     parser: '@typescript-eslint/parser',
-    parserOptions: {
-      ecmaFeatures: {
-        jsx: true,
-      },
-    },
   })
 
   it(`${RULE_NAME}: sorts union types by length`, () => {
