@@ -207,6 +207,10 @@ export default defineConfig({
               link: '/rules/sort-array-includes',
             },
             {
+              text: 'sort-enums',
+              link: '/rules/sort-enums',
+            },
+            {
               text: 'sort-interfaces',
               link: '/rules/sort-interfaces',
             },

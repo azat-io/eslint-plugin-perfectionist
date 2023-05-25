@@ -25,6 +25,7 @@ npm install --save-dev eslint-plugin-perfectionist
 | Name                                                                                         | Description                                 | 💼  | 🛠   |
 | :------------------------------------------------------------------------------------------- | :------------------------------------------ | :-- | :-- |
 | [sort-array-includes](https://eslint-plugin-perfectionist.azat.io/rules/sort-array-includes) | Enforce sorted arrays before include method | ✅  | 🔧  |
+| [sort-enums](https://eslint-plugin-perfectionist.azat.io/rules/sort-enums)                   | Enforce sorted TypeScript enums             | ✅  | 🔧  |
 | [sort-interfaces](https://eslint-plugin-perfectionist.azat.io/rules/sort-interfaces)         | Enforce sorted interface properties         | ✅  | 🔧  |
 | [sort-jsx-props](https://eslint-plugin-perfectionist.azat.io/rules/sort-jsx-props)           | Enforce sorted JSX props                    | ✅  | 🔧  |
 | [sort-map-elements](https://eslint-plugin-perfectionist.azat.io/rules/sort-map-elements)     | Enforce sorted Map elements                 | ✅  | 🔧  |

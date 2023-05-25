@@ -1,0 +1,102 @@
+import { AST_NODE_TYPES } from '@typescript-eslint/types'
+
+import { createEslintRule } from '~/utils/create-eslint-rule'
+import { rangeToDiff } from '~/utils/range-to-diff'
+import { SortType, SortOrder } from '~/typings'
+import { sortNodes } from '~/utils/sort-nodes'
+import type { SortingNode } from '~/typings'
+import { complete } from '~/utils/complete'
+import { compare } from '~/utils/compare'
+
+type MESSAGE_ID = 'unexpectedEnumsOrder'
+
+type Options = [
+  Partial<{
+    order: SortOrder
+    type: SortType
+  }>,
+]
+
+export const RULE_NAME = 'sort-enums'
+
+export default createEslintRule<Options, MESSAGE_ID>({
+  name: RULE_NAME,
+  meta: {
+    type: 'suggestion',
+    docs: {
+      description: 'Enforce sorted TypeScript enums',
+      recommended: false,
+    },
+    fixable: 'code',
+    schema: [
+      {
+        type: 'object',
+        properties: {
+          type: {
+            enum: [SortType.alphabetical, SortType.natural, SortType['line-length']],
+            default: SortType.natural,
+          },
+          order: {
+            enum: [SortOrder.asc, SortOrder.desc],
+            default: SortOrder.asc,
+          },
+        },
+        additionalProperties: false,
+      },
+    ],
+    messages: {
+      unexpectedEnumsOrder: 'Expected "{{second}}" to come before "{{first}}"',
+    },
+  },
+  defaultOptions: [
+    {
+      type: SortType.alphabetical,
+      order: SortOrder.asc,
+    },
+  ],
+  create: context => ({
+    TSEnumDeclaration: node => {
+      let options = complete(context.options.at(0), {
+        type: SortType.alphabetical,
+        order: SortOrder.asc,
+      })
+
+      if (node.members.length > 1) {
+        let source = context.getSourceCode().text
+
+        let values: SortingNode[] = node.members.map(member => {
+          let name: string
+
+          if (member.id.type === AST_NODE_TYPES.Literal) {
+            name = `${member.id.value}`
+          } else {
+            name = `${source.slice(...member.id.range)}`
+          }
+
+          return {
+            size: rangeToDiff(member.range),
+            node: member,
+            name,
+          }
+        })
+
+        for (let i = 1; i < values.length; i++) {
+          let first = values.at(i - 1)!
+          let second = values.at(i)!
+
+          if (compare(first, second, options)) {
+            context.report({
+              messageId: 'unexpectedEnumsOrder',
+              data: {
+                first: first.name,
+                second: second.name,
+              },
+              node: second.node,
+              fix: fixer => sortNodes(fixer, source, values, options),
+            })
+          }
+        }
+      }
+    },
+  }),
+})

@@ -9,6 +9,7 @@ title: Rules
 | Name                                              | Description                                 | 💼  | 🛠   |
 | :------------------------------------------------ | :------------------------------------------ | :-- | :-- |
 | [sort-array-includes](/rules/sort-array-includes) | Enforce sorted arrays before include method | ✅  | 🔧  |
+| [sort-enums](/rules/sort-enums)                   | Enforce sorted TypeScript enums members     | ✅  | 🔧  |
 | [sort-interfaces](/rules/sort-interfaces)         | Enforce sorted interface properties         | ✅  | 🔧  |
 | [sort-jsx-props](/rules/sort-jsx-props)           | Enforce sorted JSX props                    | ✅  | 🔧  |
 | [sort-map-elements](/rules/sort-map-elements)     | Enforce sorted Map elements                 | ✅  | 🔧  |
