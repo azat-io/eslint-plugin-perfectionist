@@ -8,7 +8,7 @@ title: recommended-alphabetical
 
 Configuration for the `eslint-plugin-perfectionist` plugin, which provides all plugin rules with predefined options: alphabetical sorting in ascending order.
 
-This configuration will allow you to navigate your code faster and easier.
+It makes it just a tiny bit faster to find a declaration in a large list. Remember, you read code far more than you write it.
 
 ## ⚙️ Usage
 

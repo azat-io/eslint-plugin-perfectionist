@@ -8,6 +8,20 @@ ESLint plugin that sets rules to format your code and make it consistent.
 
 This plugin defines rules for sorting various data, such as objects, imports, TypeScript types, enums, JSX props, etc.
 
+## Why
+
+Sorting imports and properties in software development offers numerous benefits:
+
+- **Readability**: Finding declarations in a sorted, large list is a little faster. Remember that you read the code much more often than you write it.
+
+- **Maintainability**: Sorting imports and properties is considered a good practice in software development, contributing to code quality and consistency across the codebase.
+
+- **Code Review and Collaboration**: If you set rules that say you can only do things one way, then no one will have to spend time thinking about how to do it.
+
+- **Code Uniformity**: When all code looks exactly the same, it is very hard to see who wrote it, which makes achieving the lofty goal of _collective code ownership_ easier.
+
+- **Aesthetics**: This not only provides functional benefits, but also gives the code an aesthetic appeal, visually pleasing and harmonious structure.
+
 ## Installation
 
 You'll first need to install [ESLint](https://eslint.org):
@@ -26,9 +40,7 @@ npm install --save-dev eslint-plugin-perfectionist
 
 Add `eslint-plugin-perfectionist` to the plugins section of the ESLint configuration file and define the list of rules you will use.
 
-### Examples
-
-#### Legacy config ([`.eslintrc`](https://eslint.org/docs/latest/use/configure/configuration-files))
+### Legacy config ([`.eslintrc`](https://eslint.org/docs/latest/use/configure/configuration-files))
 
 ```
 {
@@ -46,7 +58,7 @@ Add `eslint-plugin-perfectionist` to the plugins section of the ESLint configura
 }
 ```
 
-#### Flat config ([`eslint.config.js`](https://eslint.org/docs/latest/use/configure/configuration-files-new)) (requires eslint >= v8.23.0)
+### Flat config ([`eslint.config.js`](https://eslint.org/docs/latest/use/configure/configuration-files-new)) (requires eslint >= v8.23.0)
 
 ```js
 import perfectionist from 'eslint-plugin-perfectionist'
@@ -70,11 +82,11 @@ export default [
 ]
 ```
 
-### Configs
+## Configs
 
 The easiest way to use `eslint-plugin-perfectionist` is to use ready-made configs. Config files use all the rules of the current plugin, but you can override them.
 
-#### Legacy config ([`.eslintrc`](https://eslint.org/docs/latest/use/configure/configuration-files))
+### Legacy config ([`.eslintrc`](https://eslint.org/docs/latest/use/configure/configuration-files))
 
 ```json
 {
@@ -82,7 +94,7 @@ The easiest way to use `eslint-plugin-perfectionist` is to use ready-made config
 }
 ```
 
-#### Flat config ([`eslint.config.js`](https://eslint.org/docs/latest/use/configure/configuration-files-new)) (requires eslint >= v8.23.0)
+### Flat config ([`eslint.config.js`](https://eslint.org/docs/latest/use/configure/configuration-files-new)) (requires eslint >= v8.23.0)
 
 ```js
 import perfectionistPluginRecommendedNatural from 'eslint-plugin-perfectionist/configs/recommended-natural'
@@ -90,7 +102,7 @@ import perfectionistPluginRecommendedNatural from 'eslint-plugin-perfectionist/c
 export default [perfectionistPluginRecommendedNatural]
 ```
 
-#### List of configs
+### List of configs
 
 | Name                                                                                                     | Description                                                      |
 | :------------------------------------------------------------------------------------------------------- | :--------------------------------------------------------------- |
