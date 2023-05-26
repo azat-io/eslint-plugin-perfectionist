@@ -29,7 +29,7 @@ This configuration will allow you to navigate your code faster and easier.
 <!-- prettier-ignore -->
 ```js
 // eslint.config.js
-import perfectionistPluginRecommendedAlphabetical from 'eslint-plugin-perfectionist/config/recommended-alphabetical'
+import perfectionistPluginRecommendedAlphabetical from 'eslint-plugin-perfectionist/configs/recommended-alphabetical'
 
 export default [
   perfectionistPluginRecommendedAlphabetical

@@ -31,7 +31,7 @@ This configuration will allow you to navigate through your code faster because a
 <!-- prettier-ignore -->
 ```js
 // eslint.config.js
-import perfectionistPluginRecommendedNatural from 'eslint-plugin-perfectionist/config/recommended-natural'
+import perfectionistPluginRecommendedNatural from 'eslint-plugin-perfectionist/configs/recommended-natural'
 
 export default [
   perfectionistPluginRecommendedNatural

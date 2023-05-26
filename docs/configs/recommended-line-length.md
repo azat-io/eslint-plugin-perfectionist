@@ -29,7 +29,7 @@ This configuration will make your code prettier and more pleasing to the eye.
 <!-- prettier-ignore -->
 ```js
 // eslint.config.js
-import perfectionistPluginRecommendedLineLength from 'eslint-plugin-perfectionist/config/recommended-line-length'
+import perfectionistPluginRecommendedLineLength from 'eslint-plugin-perfectionist/configs/recommended-line-length'
 
 export default [
   perfectionistPluginRecommendedLineLength

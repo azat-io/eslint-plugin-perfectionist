@@ -85,7 +85,7 @@ The easiest way to use `eslint-plugin-perfectionist` is to use ready-made config
 #### Flat config ([`eslint.config.js`](https://eslint.org/docs/latest/use/configure/configuration-files-new)) (requires eslint >= v8.23.0)
 
 ```js
-import perfectionistPluginRecommendedNatural from 'eslint-plugin-perfectionist/config/recommended-natural'
+import perfectionistPluginRecommendedNatural from 'eslint-plugin-perfectionist/configs/recommended-natural'
 
 export default [perfectionistPluginRecommendedNatural]
 ```
