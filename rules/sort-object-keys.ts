@@ -35,7 +35,11 @@ export default createEslintRule<Options, MESSAGE_ID>({
         type: 'object',
         properties: {
           type: {
-            enum: [SortType.alphabetical, SortType.natural, SortType['line-length']],
+            enum: [
+              SortType.alphabetical,
+              SortType.natural,
+              SortType['line-length'],
+            ],
             default: SortType.natural,
           },
           order: {
@@ -47,7 +51,8 @@ export default createEslintRule<Options, MESSAGE_ID>({
       },
     ],
     messages: {
-      unexpectedObjectKeysOrder: 'Expected "{{second}}" to come before "{{first}}"',
+      unexpectedObjectKeysOrder:
+        'Expected "{{second}}" to come before "{{first}}"',
     },
   },
   defaultOptions: [
@@ -66,7 +71,9 @@ export default createEslintRule<Options, MESSAGE_ID>({
 
         let source = context.getSourceCode()
 
-        let formatProperties = (props: TSESTree.ObjectLiteralElement[]): SortingNode[][] =>
+        let formatProperties = (
+          props: TSESTree.ObjectLiteralElement[],
+        ): SortingNode[][] =>
           props.reduce(
             (accumulator: SortingNode[][], prop) => {
               if (prop.type === AST_NODE_TYPES.SpreadElement) {

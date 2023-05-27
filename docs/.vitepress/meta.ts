@@ -1,6 +1,7 @@
 import packageJson from '../../package.json'
 
-export let { description, repository, homepage, keywords, version } = packageJson
+export let { description, repository, homepage, keywords, version } =
+  packageJson
 
 export let title = 'Perfectionist'
 

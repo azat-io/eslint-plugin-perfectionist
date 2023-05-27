@@ -1,7 +1,16 @@
 import lightningcss from 'vite-plugin-lightningcss'
 import { defineConfig } from 'vitepress'
 
-import { github, description, keywords, changelog, title, homepage, image, version } from './meta'
+import {
+  description,
+  changelog,
+  keywords,
+  homepage,
+  version,
+  github,
+  title,
+  image,
+} from './meta'
 
 export default defineConfig({
   base: '/',

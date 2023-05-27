@@ -35,7 +35,11 @@ export default createEslintRule<Options, MESSAGE_ID>({
         type: 'object',
         properties: {
           type: {
-            enum: [SortType.alphabetical, SortType.natural, SortType['line-length']],
+            enum: [
+              SortType.alphabetical,
+              SortType.natural,
+              SortType['line-length'],
+            ],
             default: SortType.natural,
           },
           order: {
@@ -47,7 +51,8 @@ export default createEslintRule<Options, MESSAGE_ID>({
       },
     ],
     messages: {
-      unexpectedJSXPropsOrder: 'Expected "{{second}}" to come before "{{first}}"',
+      unexpectedJSXPropsOrder:
+        'Expected "{{second}}" to come before "{{first}}"',
     },
   },
   defaultOptions: [
@@ -65,17 +70,21 @@ export default createEslintRule<Options, MESSAGE_ID>({
 
       let source = context.getSourceCode()
 
-      let parts: TSESTree.JSXAttribute[][] = node.openingElement.attributes.reduce(
-        (accumulator: TSESTree.JSXAttribute[][], attribute: TSESTree.JSXSpreadAttribute | TSESTree.JSXAttribute) => {
-          if (attribute.type === 'JSXAttribute') {
-            accumulator.at(-1)!.push(attribute)
-          } else {
-            accumulator.push([])
-          }
-          return accumulator
-        },
-        [[]],
-      )
+      let parts: TSESTree.JSXAttribute[][] =
+        node.openingElement.attributes.reduce(
+          (
+            accumulator: TSESTree.JSXAttribute[][],
+            attribute: TSESTree.JSXSpreadAttribute | TSESTree.JSXAttribute,
+          ) => {
+            if (attribute.type === 'JSXAttribute') {
+              accumulator.at(-1)!.push(attribute)
+            } else {
+              accumulator.push([])
+            }
+            return accumulator
+          },
+          [[]],
+        )
 
       parts.forEach(part => {
         let nodes: SortingNode[] = part.map(attribute => ({

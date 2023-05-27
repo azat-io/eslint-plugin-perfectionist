@@ -33,7 +33,11 @@ export default createEslintRule<Options, MESSAGE_ID>({
         type: 'object',
         properties: {
           type: {
-            enum: [SortType.alphabetical, SortType.natural, SortType['line-length']],
+            enum: [
+              SortType.alphabetical,
+              SortType.natural,
+              SortType['line-length'],
+            ],
             default: SortType.natural,
           },
           order: {
@@ -45,7 +49,8 @@ export default createEslintRule<Options, MESSAGE_ID>({
       },
     ],
     messages: {
-      unexpectedInterfacePropertiesOrder: 'Expected "{{second}}" to come before "{{first}}"',
+      unexpectedInterfacePropertiesOrder:
+        'Expected "{{second}}" to come before "{{first}}"',
     },
   },
   defaultOptions: [
@@ -85,9 +90,15 @@ export default createEslintRule<Options, MESSAGE_ID>({
               name = source.text.slice(element.range.at(0), end)
             }
           } else if (element.type === AST_NODE_TYPES.TSIndexSignature) {
-            name = source.text.slice(element.range.at(0), element.typeAnnotation?.range.at(0) ?? element.range.at(1))
+            name = source.text.slice(
+              element.range.at(0),
+              element.typeAnnotation?.range.at(0) ?? element.range.at(1),
+            )
           } else {
-            name = source.text.slice(element.range.at(0), element.returnType?.range.at(0) ?? element.range.at(1))
+            name = source.text.slice(
+              element.range.at(0),
+              element.returnType?.range.at(0) ?? element.range.at(1),
+            )
           }
 
           return {

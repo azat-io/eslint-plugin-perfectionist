@@ -36,7 +36,11 @@ export default createEslintRule<Options, MESSAGE_ID>({
         type: 'object',
         properties: {
           type: {
-            enum: [SortType.alphabetical, SortType.natural, SortType['line-length']],
+            enum: [
+              SortType.alphabetical,
+              SortType.natural,
+              SortType['line-length'],
+            ],
             default: SortType.natural,
           },
           order: {
@@ -52,7 +56,8 @@ export default createEslintRule<Options, MESSAGE_ID>({
       },
     ],
     messages: {
-      unexpectedArrayIncludesOrder: 'Expected "{{second}}" to come before "{{first}}"',
+      unexpectedArrayIncludesOrder:
+        'Expected "{{second}}" to come before "{{first}}"',
     },
   },
   defaultOptions: [
@@ -64,7 +69,8 @@ export default createEslintRule<Options, MESSAGE_ID>({
   create: context => ({
     MemberExpression: node => {
       if (
-        (node.object.type === AST_NODE_TYPES.ArrayExpression || node.object.type === AST_NODE_TYPES.NewExpression) &&
+        (node.object.type === AST_NODE_TYPES.ArrayExpression ||
+          node.object.type === AST_NODE_TYPES.NewExpression) &&
         node.property.type === AST_NODE_TYPES.Identifier &&
         node.property.name === 'includes'
       ) {
@@ -75,7 +81,9 @@ export default createEslintRule<Options, MESSAGE_ID>({
         })
 
         let elements =
-          node.object.type === AST_NODE_TYPES.ArrayExpression ? node.object.elements : node.object.arguments
+          node.object.type === AST_NODE_TYPES.ArrayExpression
+            ? node.object.elements
+            : node.object.arguments
 
         if (elements.length > 1) {
           let source = context.getSourceCode()
@@ -91,7 +99,10 @@ export default createEslintRule<Options, MESSAGE_ID>({
                 }
 
                 accumulator.at(0)!.push({
-                  name: element.type === AST_NODE_TYPES.Literal ? element.raw : source.text.slice(...element.range),
+                  name:
+                    element.type === AST_NODE_TYPES.Literal
+                      ? element.raw
+                      : source.text.slice(...element.range),
                   size: rangeToDiff(element.range),
                   type: element.type,
                   node: element,

@@ -10,7 +10,6 @@ title: sort-array-includes
 
 ### Alphabetical and natural sorting
 
-<!-- prettier-ignore -->
 ```ts
 // Incorrect
 [
@@ -35,7 +34,6 @@ title: sort-array-includes
 
 ### Sorting by line length
 
-<!-- prettier-ignore -->
 ```ts
 // Incorrect
 [

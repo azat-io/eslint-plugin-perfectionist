@@ -35,7 +35,11 @@ export default createEslintRule<Options, MESSAGE_ID>({
         type: 'object',
         properties: {
           type: {
-            enum: [SortType.alphabetical, SortType.natural, SortType['line-length']],
+            enum: [
+              SortType.alphabetical,
+              SortType.natural,
+              SortType['line-length'],
+            ],
             default: SortType.natural,
           },
           order: {
@@ -47,7 +51,8 @@ export default createEslintRule<Options, MESSAGE_ID>({
       },
     ],
     messages: {
-      unexpectedMapElementsOrder: 'Expected "{{second}}" to come before "{{first}}"',
+      unexpectedMapElementsOrder:
+        'Expected "{{second}}" to come before "{{first}}"',
     },
   },
   defaultOptions: [
@@ -73,8 +78,14 @@ export default createEslintRule<Options, MESSAGE_ID>({
 
         if (elements.length > 1) {
           let parts: TSESTree.Expression[][] = elements.reduce(
-            (accumulator: TSESTree.Expression[][], element: TSESTree.Expression | TSESTree.SpreadElement | null) => {
-              if (element === null || element.type === AST_NODE_TYPES.SpreadElement) {
+            (
+              accumulator: TSESTree.Expression[][],
+              element: TSESTree.Expression | TSESTree.SpreadElement | null,
+            ) => {
+              if (
+                element === null ||
+                element.type === AST_NODE_TYPES.SpreadElement
+              ) {
                 accumulator.push([])
               } else {
                 accumulator.at(-1)!.push(element)

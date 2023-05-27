@@ -10,7 +10,6 @@ title: sort-jsx-props
 
 ### Alphabetical and natural sorting
 
-<!-- prettier-ignore -->
 ```tsx
 // Incorrect
 let Riko = () => (
@@ -37,7 +36,6 @@ let Riko = () => (
 
 ### Sorting by line length
 
-<!-- prettier-ignore -->
 ```tsx
 // Incorrect
 let Riko = () => (

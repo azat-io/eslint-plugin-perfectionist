@@ -10,7 +10,10 @@ module.exports = [
   {
     rules: {
       'eslint-plugin/require-meta-docs-url': 'off',
-      'eslint-plugin/require-meta-docs-description': ['error', { pattern: '^Enforce' }],
+      'eslint-plugin/require-meta-docs-description': [
+        'error',
+        { pattern: '^Enforce' },
+      ],
     },
   },
 ]

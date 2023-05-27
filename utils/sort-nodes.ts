@@ -23,7 +23,9 @@ export let sortNodes = (
     }
   },
 ): TSESLint.RuleFix[] => {
-  let sortedNodes = [...nodes].sort((a, b) => Number(compare(a, b, options)) || -1)
+  let sortedNodes = [...nodes].sort(
+    (a, b) => Number(compare(a, b, options)) || -1,
+  )
 
   if (options.spreadLast) {
     sortedNodes.forEach((sortedNode, index) => {
@@ -33,7 +35,10 @@ export let sortNodes = (
     })
   }
 
-  let getNodeRange = (node: TSESTree.Node, sourceCode: TSESLint.SourceCode): TSESTree.Range => {
+  let getNodeRange = (
+    node: TSESTree.Node,
+    sourceCode: TSESLint.SourceCode,
+  ): TSESTree.Range => {
     let comment = getComment(node, sourceCode)
     return [comment?.range.at(0) ?? node.range.at(0)!, node.range.at(1)!]
   }
@@ -42,6 +47,9 @@ export let sortNodes = (
     let currentNodeRange = getNodeRange(node, source)
     let newNodeRange = getNodeRange(sortedNodes[index].node, source)
 
-    return fixer.replaceTextRange(currentNodeRange, source.text.slice(...newNodeRange))
+    return fixer.replaceTextRange(
+      currentNodeRange,
+      source.text.slice(...newNodeRange),
+    )
   })
 }
