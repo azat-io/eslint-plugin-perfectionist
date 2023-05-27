@@ -1,5 +1,8 @@
 import lightningcss from 'vite-plugin-lightningcss'
+import { createWriteStream } from 'fs'
 import { defineConfig } from 'vitepress'
+import { SitemapStream } from 'sitemap'
+import path from 'path'
 
 import {
   description,
@@ -11,6 +14,8 @@ import {
   title,
   image,
 } from './meta'
+
+let links: { url: string; lastmod?: number }[] = []
 
 export default defineConfig({
   base: '/',
@@ -142,6 +147,8 @@ export default defineConfig({
       },
     ],
   ],
+
+  lastUpdated: true,
 
   markdown: {
     theme: {
@@ -282,5 +289,28 @@ export default defineConfig({
 
   vite: {
     plugins: [lightningcss()],
+  },
+
+  transformHtml: (_, id, { pageData }) => {
+    if (!/[/\\]404\.html$/.test(id)) {
+      links.push({
+        url: pageData.relativePath.replace(/((^|\/)index)?\.md$/, '$2'),
+        lastmod: pageData.lastUpdated,
+      })
+    }
+  },
+
+  buildEnd: async ({ outDir }) => {
+    let sitemap = new SitemapStream({
+      hostname: 'https://eslint-plugin-perfectionist.azat.io/',
+    })
+
+    let writeStream = createWriteStream(path.resolve(outDir, 'sitemap.xml'))
+
+    sitemap.pipe(writeStream)
+    links.forEach(link => sitemap.write(link))
+    sitemap.end()
+
+    await new Promise(resolve => writeStream.on('finish', resolve))
   },
 })
