@@ -112,7 +112,7 @@ let members = [
     font-family: var(--vp-font-family-mono);
     font-size: 12px;
     background: var(--vp-c-brand);
-    color: var(--vp-c-text-1);
+    color: var(--vp-button-brand-text);
     position: absolute;
     inset-block-start: 0;
     inset-inline-start: 0;
