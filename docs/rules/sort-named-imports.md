@@ -58,8 +58,9 @@ export {
 
 ### `type`
 
-- `enum` (default: `natural`):
-  - `natural` - sorting, which is similar to alphabetical order.
+- `enum` (default: `alphabetical`):
+  - `alphabetical` - sort alphabetically.
+  - `natural` - sort in natural order.
   - `line-length` - sort by code line length.
 
 ### `order`
