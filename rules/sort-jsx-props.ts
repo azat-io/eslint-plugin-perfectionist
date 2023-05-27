@@ -8,6 +8,7 @@ import { SortType, SortOrder } from '~/typings'
 import { sortNodes } from '~/utils/sort-nodes'
 import type { SortingNode } from '~/typings'
 import { complete } from '~/utils/complete'
+import { pairwise } from '~/utils/pairwise'
 import { compare } from '~/utils/compare'
 
 type MESSAGE_ID = 'unexpectedJSXPropsOrder'
@@ -96,10 +97,7 @@ export default createEslintRule<Options, MESSAGE_ID>({
           node: attribute,
         }))
 
-        for (let i = 1; i < nodes.length; i++) {
-          let first = nodes.at(i - 1)!
-          let second = nodes.at(i)!
-
+        pairwise(nodes, (first, second) => {
           if (compare(first, second, options)) {
             context.report({
               messageId: 'unexpectedJSXPropsOrder',
@@ -116,7 +114,7 @@ export default createEslintRule<Options, MESSAGE_ID>({
                 }),
             })
           }
-        }
+        })
       })
     },
   }),

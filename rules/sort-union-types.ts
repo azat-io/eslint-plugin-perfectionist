@@ -4,6 +4,7 @@ import { SortType, SortOrder } from '~/typings'
 import { sortNodes } from '~/utils/sort-nodes'
 import type { SortingNode } from '~/typings'
 import { complete } from '~/utils/complete'
+import { pairwise } from '~/utils/pairwise'
 import { compare } from '~/utils/compare'
 
 type MESSAGE_ID = 'unexpectedUnionTypesOrder'
@@ -66,31 +67,21 @@ export default createEslintRule<Options, MESSAGE_ID>({
         order: SortOrder.asc,
       })
 
-      let nodes: SortingNode[] = node.types.map(type => {
-        let { range } = type
-        let name: string = source.text.slice(...range)
+      let nodes: SortingNode[] = node.types.map(type => ({
+        size: rangeToDiff(type.range),
+        node: type,
+        name: source.text.slice(...type.range),
+      }))
 
-        return {
-          size: rangeToDiff(range),
-          node: type,
-          name,
-        }
-      })
-
-      for (let i = 1; i < nodes.length; i++) {
-        let first = nodes.at(i - 1)!
-        let second = nodes.at(i)!
-
+      pairwise(nodes, (first, second) => {
         if (compare(first, second, options)) {
-          let secondNode = node.types[i]
-
           context.report({
             messageId: 'unexpectedUnionTypesOrder',
             data: {
               first: first.name,
               second: second.name,
             },
-            node: secondNode,
+            node: second.node,
             fix: fixer =>
               sortNodes(fixer, {
                 options,
@@ -99,7 +90,7 @@ export default createEslintRule<Options, MESSAGE_ID>({
               }),
           })
         }
-      }
+      })
     },
   }),
 })
