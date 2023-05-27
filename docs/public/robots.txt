@@ -1,0 +1,5 @@
+User-agent: *
+Allow: /
+Host: eslint-plugin-perfectionist.azat.io
+
+Sitemap: https://eslint-plugin-perfectionist.azat.io/sitemap.xml
