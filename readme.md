@@ -42,7 +42,7 @@ Add `eslint-plugin-perfectionist` to the plugins section of the ESLint configura
 
 ### Legacy config ([`.eslintrc`](https://eslint.org/docs/latest/use/configure/configuration-files))
 
-```
+```json
 {
   "plugins": ["perfectionist"],
   "rules": {
