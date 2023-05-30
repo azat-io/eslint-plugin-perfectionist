@@ -32,7 +32,7 @@ let createConfigWithOptions = (options: {
     [sortImportsName]: [
       'error',
       {
-        order: [
+        groups: [
           'type',
           ['builtin', 'external'],
           'internal-type',
