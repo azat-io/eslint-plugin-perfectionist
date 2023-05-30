@@ -1,10 +1,9 @@
 import type { TSESLint } from '@typescript-eslint/utils'
-import type { TSESTree } from '@typescript-eslint/types'
 
 import { AST_NODE_TYPES } from '@typescript-eslint/types'
 
 import type { SortingNode, SortType, SortOrder } from '~/typings'
-import { getComment } from '~/utils/get-comment'
+import { getNodeRange } from '~/utils/get-node-range'
 import { compare } from '~/utils/compare'
 
 export let sortNodes = (
@@ -35,21 +34,10 @@ export let sortNodes = (
     })
   }
 
-  let getNodeRange = (
-    node: TSESTree.Node,
-    sourceCode: TSESLint.SourceCode,
-  ): TSESTree.Range => {
-    let comment = getComment(node, sourceCode)
-    return [comment?.range.at(0) ?? node.range.at(0)!, node.range.at(1)!]
-  }
-
-  return nodes.map(({ node }, index) => {
-    let currentNodeRange = getNodeRange(node, source)
-    let newNodeRange = getNodeRange(sortedNodes[index].node, source)
-
-    return fixer.replaceTextRange(
-      currentNodeRange,
-      source.text.slice(...newNodeRange),
-    )
-  })
+  return nodes.map(({ node }, index) =>
+    fixer.replaceTextRange(
+      getNodeRange(node, source),
+      source.text.slice(...getNodeRange(sortedNodes[index].node, source)),
+    ),
+  )
 }

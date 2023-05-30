@@ -235,6 +235,10 @@ export default defineConfig({
               link: '/rules/sort-enums',
             },
             {
+              text: 'sort-imports',
+              link: '/rules/sort-imports',
+            },
+            {
               text: 'sort-interfaces',
               link: '/rules/sort-interfaces',
             },

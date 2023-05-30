@@ -1,5 +1,6 @@
 import sortArrayIncludes, { RULE_NAME as sortArrayIncludesName } from '~/rules/sort-array-includes'
 import sortEnums, { RULE_NAME as sortEnumsName } from '~/rules/sort-enums'
+import sortImports, { RULE_NAME as sortImportsName } from '~/rules/sort-imports'
 import sortInterfaces, { RULE_NAME as sortInterfacesName } from '~/rules/sort-interfaces'
 import sortJsxProps, { RULE_NAME as sortJsxPropsName } from '~/rules/sort-jsx-props'
 import sortMapElements, { RULE_NAME as sortMapElementsName } from '~/rules/sort-map-elements'
@@ -28,6 +29,23 @@ let createConfigWithOptions = (options: {
   } = {
     [sortArrayIncludesName]: ['error', { spreadLast: true }],
     [sortEnumsName]: ['error'],
+    [sortImportsName]: [
+      'error',
+      {
+        order: [
+          'type',
+          ['builtin', 'external'],
+          'internal-type',
+          'internal',
+          ['parent-type', 'sibling-type', 'index-type'],
+          ['parent', 'sibling', 'index'],
+          'object',
+          'unknown',
+        ],
+        'newlines-between': 'always',
+        'internal-pattern': ['~/**'],
+      },
+    ],
     [sortInterfacesName]: ['error'],
     [sortJsxPropsName]: ['error'],
     [sortMapElementsName]: ['error'],
@@ -52,6 +70,7 @@ export default {
   rules: {
     [sortArrayIncludesName]: sortArrayIncludes,
     [sortEnumsName]: sortEnums,
+    [sortImportsName]: sortImports,
     [sortInterfacesName]: sortInterfaces,
     [sortJsxPropsName]: sortJsxProps,
     [sortMapElementsName]: sortMapElements,
