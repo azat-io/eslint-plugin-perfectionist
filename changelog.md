@@ -1,3 +1,18 @@
+# [0.9.0](https://github.com/azat-io/eslint-plugin-perfectionist/compare/v0.8.0...v0.9.0) (2023-05-30)
+
+
+### Bug Fixes
+
+* keep code comments when sorting ([547f825](https://github.com/azat-io/eslint-plugin-perfectionist/commit/547f82545a8ad9f643f24565ac1142ff27503eaa))
+* update url to documentation of rules ([423b145](https://github.com/azat-io/eslint-plugin-perfectionist/commit/423b145f461c50b1b17679c3e62e12f02f4b01be))
+
+
+### Features
+
+* add sort-imports rule ([e3ed15e](https://github.com/azat-io/eslint-plugin-perfectionist/commit/e3ed15e92b76858a35b8821253c38b8d59b7cb45))
+
+
+
 # [0.8.0](https://github.com/azat-io/eslint-plugin-perfectionist/compare/v0.7.0...v0.8.0) (2023-05-25)
 
 
