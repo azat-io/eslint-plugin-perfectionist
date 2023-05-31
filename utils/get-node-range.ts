@@ -3,7 +3,7 @@ import type { TSESTree } from '@typescript-eslint/types'
 
 import { ASTUtils } from '@typescript-eslint/utils'
 
-import { getComment } from '~/utils/get-comment'
+import { getComment } from './get-comment'
 
 export let getNodeRange = (
   node: TSESTree.Node,

@@ -31,10 +31,4 @@ export default defineConfig({
       ],
     },
   },
-  resolve: {
-    alias: {
-      '~': __dirname,
-    },
-    extensions: ['.ts'],
-  },
 })

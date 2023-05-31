@@ -10,10 +10,7 @@
     "types": ["node"],
     "allowJs": true,
     "strict": true,
-    "noEmit": true,
-    "paths": {
-      "~/*": ["./*"]
-    }
+    "noEmit": true
   },
   "include": ["**/*.ts", "docs/.vitepress/**/*.ts"],
   "exclude": ["node_modules"]

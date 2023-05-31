@@ -1,7 +1,8 @@
+import type { SortingNode, SortOrder } from '../typings'
+
 import naturalCompare from 'natural-compare-lite'
 
-import type { SortingNode, SortOrder } from '~/typings'
-import { SortType } from '~/typings'
+import { SortType } from '../typings'
 
 export let compare = (
   a: SortingNode,

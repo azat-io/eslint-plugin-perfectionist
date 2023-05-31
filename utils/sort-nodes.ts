@@ -1,10 +1,10 @@
 import type { TSESLint } from '@typescript-eslint/utils'
+import type { SortingNode, SortType, SortOrder } from '../typings'
 
 import { AST_NODE_TYPES } from '@typescript-eslint/types'
 
-import type { SortingNode, SortType, SortOrder } from '~/typings'
-import { getNodeRange } from '~/utils/get-node-range'
-import { compare } from '~/utils/compare'
+import { getNodeRange } from './get-node-range'
+import { compare } from './compare'
 
 export let sortNodes = (
   fixer: TSESLint.RuleFixer,

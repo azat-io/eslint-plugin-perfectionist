@@ -1,18 +1,18 @@
 import type { TSESLint } from '@typescript-eslint/utils'
 import type { TSESTree } from '@typescript-eslint/types'
+import type { SortingNode } from '../typings'
 
 import { AST_NODE_TYPES } from '@typescript-eslint/types'
 import isCoreModule from 'is-core-module'
 import { minimatch } from 'minimatch'
 
-import { createEslintRule } from '~/utils/create-eslint-rule'
-import { getNodeRange } from '~/utils/get-node-range'
-import { rangeToDiff } from '~/utils/range-to-diff'
-import { SortType, SortOrder } from '~/typings'
-import type { SortingNode } from '~/typings'
-import { complete } from '~/utils/complete'
-import { pairwise } from '~/utils/pairwise'
-import { compare } from '~/utils/compare'
+import { createEslintRule } from '../utils/create-eslint-rule'
+import { getNodeRange } from '../utils/get-node-range'
+import { rangeToDiff } from '../utils/range-to-diff'
+import { SortType, SortOrder } from '../typings'
+import { complete } from '../utils/complete'
+import { pairwise } from '../utils/pairwise'
+import { compare } from '../utils/compare'
 
 type MESSAGE_ID =
   | 'missedSpacingBetweenImports'

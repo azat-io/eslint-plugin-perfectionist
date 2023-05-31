@@ -1,12 +1,13 @@
-import { createEslintRule } from '~/utils/create-eslint-rule'
-import { toSingleLine } from '~/utils/to-single-line'
-import { rangeToDiff } from '~/utils/range-to-diff'
-import { SortType, SortOrder } from '~/typings'
-import { sortNodes } from '~/utils/sort-nodes'
-import type { SortingNode } from '~/typings'
-import { complete } from '~/utils/complete'
-import { pairwise } from '~/utils/pairwise'
-import { compare } from '~/utils/compare'
+import type { SortingNode } from '../typings'
+
+import { createEslintRule } from '../utils/create-eslint-rule'
+import { toSingleLine } from '../utils/to-single-line'
+import { rangeToDiff } from '../utils/range-to-diff'
+import { SortType, SortOrder } from '../typings'
+import { sortNodes } from '../utils/sort-nodes'
+import { complete } from '../utils/complete'
+import { pairwise } from '../utils/pairwise'
+import { compare } from '../utils/compare'
 
 type MESSAGE_ID = 'unexpectedUnionTypesOrder'
 

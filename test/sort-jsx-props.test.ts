@@ -2,8 +2,8 @@ import { ESLintUtils } from '@typescript-eslint/utils'
 import { describe, it } from 'vitest'
 import { dedent } from 'ts-dedent'
 
-import rule, { RULE_NAME } from '~/rules/sort-jsx-props'
-import { SortType, SortOrder } from '~/typings'
+import rule, { RULE_NAME } from '../rules/sort-jsx-props'
+import { SortType, SortOrder } from '../typings'
 
 describe(RULE_NAME, () => {
   let ruleTester = new ESLintUtils.RuleTester({
