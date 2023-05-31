@@ -167,6 +167,10 @@ If you use [one of the configs](/configs/) exported by this plugin, you get the 
   - `always` - at least one new line between each group will be enforced, and new lines inside a group will be forbidden.
   - `never` - no new lines are allowed in the entire import section.
 
+### `read-tsconfig`
+
+- `boolean` (default: `false`) - read `tsconfig.json` and use `paths` as internal imports.
+
 ## ⚙️ Usage
 
 ### Legacy config

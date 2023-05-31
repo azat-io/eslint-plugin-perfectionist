@@ -44,6 +44,7 @@ let createConfigWithOptions = (options: {
         ],
         'newlines-between': 'always',
         'internal-pattern': ['./**'],
+        'read-tsconfig': false,
       },
     ],
     [sortInterfacesName]: ['error'],

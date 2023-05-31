@@ -59,6 +59,7 @@
     "@typescript-eslint/types": "^5.59.8",
     "@typescript-eslint/utils": "^5.59.8",
     "is-core-module": "^2.12.1",
+    "json5": "^2.2.3",
     "minimatch": "^9.0.1",
     "natural-compare-lite": "^1.4.0"
   },

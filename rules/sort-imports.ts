@@ -8,6 +8,7 @@ import { minimatch } from 'minimatch'
 
 import { createEslintRule } from '../utils/create-eslint-rule'
 import { getNodeRange } from '../utils/get-node-range'
+import { readTSConfig } from '../utils/read-ts-config'
 import { rangeToDiff } from '../utils/range-to-diff'
 import { SortType, SortOrder } from '../typings'
 import { complete } from '../utils/complete'
@@ -47,6 +48,7 @@ type Options = [
     'newlines-between': NewlinesBetweenValue
     'internal-pattern': string[]
     groups: (Group[] | Group)[]
+    'read-tsconfig': boolean
   }>,
 ]
 
@@ -99,6 +101,10 @@ export default createEslintRule<Options, MESSAGE_ID>({
             ],
             default: NewlinesBetweenValue.always,
           },
+          'read-tsconfig': {
+            type: 'boolean',
+            default: false,
+          },
         },
         additionalProperties: false,
       },
@@ -123,9 +129,22 @@ export default createEslintRule<Options, MESSAGE_ID>({
       'newlines-between': NewlinesBetweenValue.always,
       'internal-pattern': ['~/**'],
       type: SortType.alphabetical,
+      'read-tsconfig': false,
       order: SortOrder.asc,
       groups: ['unknown'],
     })
+
+    let tsPaths: string[] = []
+
+    if (options['read-tsconfig']) {
+      let { compilerOptions } = readTSConfig()
+
+      if (compilerOptions?.paths) {
+        Object.keys(compilerOptions?.paths).forEach(path => {
+          tsPaths.push(path)
+        })
+      }
+    }
 
     let source = context.getSourceCode()
 
@@ -156,10 +175,11 @@ export default createEslintRule<Options, MESSAGE_ID>({
       }
 
       let isInternal = (nodeElement: TSESTree.ImportDeclaration) =>
-        options['internal-pattern'].length &&
-        options['internal-pattern'].some(pattern =>
-          minimatch(nodeElement.source.value, pattern),
-        )
+        (options['internal-pattern'].length &&
+          options['internal-pattern'].some(pattern =>
+            minimatch(nodeElement.source.value, pattern),
+          )) ||
+        tsPaths.some(pattern => minimatch(nodeElement.source.value, pattern))
 
       if (node.importKind === 'type') {
         if (node.type === AST_NODE_TYPES.ImportDeclaration) {
