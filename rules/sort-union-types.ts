@@ -1,4 +1,5 @@
 import { createEslintRule } from '~/utils/create-eslint-rule'
+import { toSingleLine } from '~/utils/to-single-line'
 import { rangeToDiff } from '~/utils/range-to-diff'
 import { SortType, SortOrder } from '~/typings'
 import { sortNodes } from '~/utils/sort-nodes'
@@ -78,8 +79,8 @@ export default createEslintRule<Options, MESSAGE_ID>({
           context.report({
             messageId: 'unexpectedUnionTypesOrder',
             data: {
-              first: first.name,
-              second: second.name,
+              first: toSingleLine(first.name),
+              second: toSingleLine(second.name),
             },
             node: second.node,
             fix: fixer =>

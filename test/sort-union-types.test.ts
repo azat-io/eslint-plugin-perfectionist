@@ -216,6 +216,51 @@ describe(RULE_NAME, () => {
         ],
       })
     })
+
+    it(`${RULE_NAME}: sorts unions with parentheses`, () => {
+      ruleTester.run(RULE_NAME, rule, {
+        valid: [],
+        invalid: [
+          {
+            code: dedent`
+              type HeroAssociation = {
+                team:
+                  | Saitama
+                  | ((
+                      superstrike: () => void,
+                    ) => Hero[] | Saitama)
+                  | Hero[]
+              }
+            `,
+            output: dedent`
+              type HeroAssociation = {
+                team:
+                  | ((
+                      superstrike: () => void,
+                    ) => Hero[] | Saitama)
+                  | Hero[]
+                  | Saitama
+              }
+            `,
+            options: [
+              {
+                type: SortType.alphabetical,
+                order: SortOrder.asc,
+              },
+            ],
+            errors: [
+              {
+                messageId: 'unexpectedUnionTypesOrder',
+                data: {
+                  first: 'Saitama',
+                  second: '( superstrike: () => void, ) => Hero[] | Saitama',
+                },
+              },
+            ],
+          },
+        ],
+      })
+    })
   })
 
   describe(`${RULE_NAME}: sorting by natural order`, () => {
@@ -424,6 +469,51 @@ describe(RULE_NAME, () => {
         ],
       })
     })
+
+    it(`${RULE_NAME}: sorts unions with parentheses`, () => {
+      ruleTester.run(RULE_NAME, rule, {
+        valid: [],
+        invalid: [
+          {
+            code: dedent`
+              type HeroAssociation = {
+                team:
+                  | Saitama
+                  | ((
+                      superstrike: () => void,
+                    ) => Hero[] | Saitama)
+                  | Hero[]
+              }
+            `,
+            output: dedent`
+              type HeroAssociation = {
+                team:
+                  | ((
+                      superstrike: () => void,
+                    ) => Hero[] | Saitama)
+                  | Hero[]
+                  | Saitama
+              }
+            `,
+            options: [
+              {
+                type: SortType.natural,
+                order: SortOrder.asc,
+              },
+            ],
+            errors: [
+              {
+                messageId: 'unexpectedUnionTypesOrder',
+                data: {
+                  first: 'Saitama',
+                  second: '( superstrike: () => void, ) => Hero[] | Saitama',
+                },
+              },
+            ],
+          },
+        ],
+      })
+    })
   })
 
   describe(`${RULE_NAME}: sorting by line length`, () => {
@@ -608,6 +698,58 @@ describe(RULE_NAME, () => {
                 data: {
                   first: "{ name: 'Eren Yeager', species: 'human' }",
                   second: "{ name: 'Intelligent Titan', status: 'titan' }",
+                },
+              },
+            ],
+          },
+        ],
+      })
+    })
+
+    it(`${RULE_NAME}: sorts unions with parentheses`, () => {
+      ruleTester.run(RULE_NAME, rule, {
+        valid: [],
+        invalid: [
+          {
+            code: dedent`
+              type HeroAssociation = {
+                team:
+                  | Saitama
+                  | ((
+                      superstrike: () => void,
+                    ) => Hero[] | Saitama)
+                  | Hero[]
+              }
+            `,
+            output: dedent`
+              type HeroAssociation = {
+                team:
+                  | ((
+                      superstrike: () => void,
+                    ) => Hero[] | Saitama)
+                  | Saitama
+                  | Hero[]
+              }
+            `,
+            options: [
+              {
+                type: SortType['line-length'],
+                order: SortOrder.desc,
+              },
+            ],
+            errors: [
+              {
+                messageId: 'unexpectedUnionTypesOrder',
+                data: {
+                  first: 'Saitama',
+                  second: '( superstrike: () => void, ) => Hero[] | Saitama',
+                },
+              },
+              {
+                messageId: 'unexpectedUnionTypesOrder',
+                data: {
+                  first: 'Hero[]',
+                  second: 'Saitama',
                 },
               },
             ],
