@@ -258,16 +258,6 @@ export default defineConfig({
 
   vite: {
     plugins: [lightningcss(), eslint4b()],
-    define: {
-      // eslint-disable-next-line @typescript-eslint/no-require-imports
-      MONACO_EDITOR_VERSION: JSON.stringify(require('monaco-editor/package.json').version),
-    },
-    resolve: {
-      alias: {
-        '~': path.join(__dirname, '../../'),
-      },
-      extensions: ['.ts'],
-    },
   },
 
   transformHtml: (_, id, { pageData }) => {
