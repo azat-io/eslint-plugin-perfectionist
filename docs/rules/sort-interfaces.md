@@ -4,7 +4,13 @@ title: sort-interfaces
 
 # sort-interfaces
 
-> Enforce sorted TypeScript interface properties.
+💼 This rule is enabled in the following [configs](https://eslint-plugin-perfectionist.azat.io/configs): `recommended-alphabetical`, `recommended-line-length`, `recommended-natural`.
+
+🔧 This rule is automatically fixable by the [`--fix` CLI option](https://eslint.org/docs/latest/user-guide/command-line-interface#--fix).
+
+<!-- end auto-generated rule header -->
+
+Enforce sorted TypeScript interface properties.
 
 ## 💡 Examples
 
