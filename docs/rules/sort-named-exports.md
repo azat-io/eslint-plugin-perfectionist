@@ -10,7 +10,11 @@ title: sort-named-exports
 
 <!-- end auto-generated rule header -->
 
+## 📖 Rule Details
+
 Enforce sorted named exports.
+
+Maintaining a consistent and sorted order of named exports can improve code readability.
 
 ## 💡 Examples
 

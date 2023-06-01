@@ -10,7 +10,11 @@ title: sort-array-includes
 
 <!-- end auto-generated rule header -->
 
-Enforce sorted array values if the include method is called after the array is created.
+## 📖 Rule Details
+
+Enforce sorted array values if the `includes` method is immediately called after the array is created.
+
+This rule aims to promote code readability and maintainability by enforcing a consistent ordering of values in arrays.
 
 ## 💡 Examples
 

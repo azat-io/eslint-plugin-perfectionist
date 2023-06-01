@@ -30,7 +30,7 @@ features:
   - title: ESLint Powered
     details: Use the plugin inside ESLint to improve your code and make rules for other developers.
   - title: Fixable Rules
-    details: All code problems can be fixed automatically with ESLint. You don't have to do anything!
+    details: All errors can be safely fixed automatically with ESLint. You don't have to do anything!
   - title: ESM, TypeScript, JSX
     details: A large number of rules, including support for ESM, TypeScript and JSX.
   - title: It's Just Beautiful

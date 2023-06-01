@@ -10,7 +10,13 @@ title: sort-map-elements
 
 <!-- end auto-generated rule header -->
 
-Enforce sorted `Map` elements.
+## 📖 Rule Details
+
+Enforce sorted elements within a JavaScript `Map` object.
+
+Sorting Map elements provides a clear and predictable structure to the codebase, making it easier for developers to locate and understand the key-value pairs defined within a Map.
+
+This rule detects instances where Map elements are not sorted in a specified order and raises a linting error. It encourages developers to rearrange the elements in the desired order, ensuring a consistent structure across Map objects.
 
 ## 💡 Examples
 

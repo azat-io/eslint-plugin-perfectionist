@@ -10,7 +10,17 @@ title: sort-object-keys
 
 <!-- end auto-generated rule header -->
 
+## 📖 Rule Details
+
 Enforce sorted object keys.
+
+By adhering to the rule, developers can ensure that object keys are consistently sorted, leading to cleaner and more maintainable code. It promotes a standardized key ordering across objects, making it easier for developers to navigate and understand the structure of objects within the codebase.
+
+It's **safe**. The rule considers spread elements in objects and does not break component functionality.
+
+:::info Important
+If you use the [`sort-keys`](https://eslint.org/docs/latest/rules/sort-keys) rule, it is highly recommended to [disable it](https://eslint.org/docs/latest/use/configure/rules#using-configuration-files-1) to avoid conflicts.
+:::
 
 ## 💡 Examples
 
@@ -68,10 +78,6 @@ let family = {
   - `desc` - enforce properties to be in descending order.
 
 ## ⚙️ Usage
-
-:::tip
-If you use the `sort-keys` rule, you should disable it, as it may conflict with the current rule.
-:::
 
 ### Legacy Config
 

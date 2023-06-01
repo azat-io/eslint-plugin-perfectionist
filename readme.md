@@ -1,12 +1,14 @@
 # ESLint Plugin Perfectionist
 
-<img src="https://raw.githubusercontent.com/azat-io/eslint-plugin-perfectionist/main/docs/public/logo.svg" alt="ESLint" align="right" width="150" height="150" />
+<img src="https://raw.githubusercontent.com/azat-io/eslint-plugin-perfectionist/main/docs/public/logo.svg" alt="ESLint" align="right" width="170" height="170" />
 
 ![Version](https://img.shields.io/npm/v/eslint-plugin-perfectionist.svg?color=brightgreen)
 
 ESLint plugin that sets rules to format your code and make it consistent.
 
 This plugin defines rules for sorting various data, such as objects, imports, TypeScript types, enums, JSX props, etc.
+
+All rules are automatically fixable. It's safe!
 
 ## Why
 

@@ -10,7 +10,15 @@ title: sort-named-imports
 
 <!-- end auto-generated rule header -->
 
+## 📖 Rule Details
+
 Enforce sorted named imports.
+
+It promotes a standardized ordering of named imports, making it easier for developers to navigate and understand the import statements within the codebase.
+
+:::info Important
+If you use the [`sort-imports`](https://eslint.org/docs/latest/rules/sort-imports) rule, it is highly recommended to [disable it](https://eslint.org/docs/latest/use/configure/rules#using-configuration-files-1) to avoid conflicts.
+:::
 
 ## 💡 Examples
 

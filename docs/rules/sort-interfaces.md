@@ -10,7 +10,13 @@ title: sort-interfaces
 
 <!-- end auto-generated rule header -->
 
+## 📖 Rule Details
+
 Enforce sorted TypeScript interface properties.
+
+Sorting interface properties provides a clear and predictable structure to the codebase, making it easier for developers to locate the various properties defined within an interface. It helps maintain consistency and allows for efficient maintenance and collaboration among team members.
+
+It's **safe**. If you document interface properties line by line, property comments will also be sorted.
 
 ## 💡 Examples
 

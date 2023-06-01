@@ -10,7 +10,13 @@ title: sort-enums
 
 <!-- end auto-generated rule header -->
 
-Enforce sorted TypeScript enum members.
+## 📖 Rule Details
+
+Enforce sorted TypeScript `enum` members.
+
+Enums provide a way to define a set of named constants, and it is good practice to maintain a consistent and predictable order for readability and maintainability purposes.
+
+When enum members are sorted, it sometimes becomes easier to reason about their values and identify any missing or duplicate entries.
 
 ## 💡 Examples
 

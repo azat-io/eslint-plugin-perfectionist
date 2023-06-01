@@ -34,6 +34,10 @@ button {
   outline-color: var(--vp-c-brand) !important;
 }
 
+.vp-doc .custom-block {
+  margin-block: 24px;
+}
+
 @media (min-width: 640px) {
   :root {
     --vp-home-hero-image-filter: blur(56px);

@@ -10,7 +10,17 @@ title: sort-jsx-props
 
 <!-- end auto-generated rule header -->
 
-Enforce sorted JSX props.
+## 📖 Rule Details
+
+Enforce sorted JSX props within JSX elements.
+
+Maintaining a consistent and sorted order of JSX props can improve code readability, organization, and reduce potential errors caused by misplaced or unordered props.
+
+It's **safe**. The rule considers spread elements in a props list and does not break component functionality.
+
+:::info Important
+If you use the [`jsx-sort-props`](https://github.com/jsx-eslint/eslint-plugin-react/blob/master/docs/rules/jsx-sort-props.md) rule from the [`eslint-plugin-react`](https://github.com/jsx-eslint/eslint-plugin-react) plugin, it is highly recommended to [disable it](https://eslint.org/docs/latest/use/configure/rules#using-configuration-files-1) to avoid conflicts.
+:::
 
 ## 💡 Examples
 

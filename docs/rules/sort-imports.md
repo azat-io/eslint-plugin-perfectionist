@@ -10,7 +10,23 @@ title: sort-imports
 
 <!-- end auto-generated rule header -->
 
+## 📖 Rule Details
+
 Enforce sorted imports.
+
+Maintaining a consistent and sorted order of imports can improve code readability, organization, and reduce the likelihood of errors caused by import conflicts.
+
+Sorting imports ensures that imports are easily locatable and quickly scannable, especially in modules with a large number of import statements. It provides a clear and predictable structure to the codebase, making it easier for developers to identify and manage imports.
+
+:::info Important
+If you use the [`sort-imports`](https://eslint.org/docs/latest/rules/sort-imports) rule or the [`order`](https://github.com/import-js/eslint-plugin-import/blob/main/docs/rules/order.md) rule from the [`eslint-plugin-import`](https://github.com/import-js/eslint-plugin-import) plugin, it is highly recommended to [disable them](https://eslint.org/docs/latest/use/configure/rules#using-configuration-files-1) to avoid conflicts.
+:::
+
+Rule `perfectionist/sort-imports` works in a similar way to rule `import/order`, but with some differences:
+
+1. Supporting for new import types: `'internal-type'`, `'parent-type'`, `'sibling-type'`, `'index-type'`
+2. Parsing `tsconfig.json` with the `read-tsconfig` option enabled to recognize internal imports
+3. Sorting not only alphabetically, but also naturally and by line length
 
 ## 💡 Examples
 

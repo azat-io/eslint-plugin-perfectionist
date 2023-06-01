@@ -10,7 +10,15 @@ title: sort-union-types
 
 <!-- end auto-generated rule header -->
 
-Enforce sorted union types.
+## 📖 Rule Details
+
+Enforce sorted union types in TypeScript.
+
+Adhering to the `sort-union-types` rule enables developers to ensure that union types are consistently sorted, resulting in cleaner and more maintainable code. This rule promotes a standardized ordering of union types, making it easier for developers to navigate and understand the structure of type unions within the codebase.
+
+:::info Important
+If you use the [`sort-type-constituents`](https://typescript-eslint.io/rules/sort-type-constituents) rule from the [`@typescript-eslint/eslint-plugin`](https://typescript-eslint.io) plugin, it is highly recommended to [disable it](https://eslint.org/docs/latest/use/configure/rules#using-configuration-files-1) to avoid conflicts.
+:::
 
 ## 💡 Examples
 
@@ -72,10 +80,6 @@ type DevilHunter =
   - `desc` - enforce properties to be in descending order.
 
 ## ⚙️ Usage
-
-:::tip
-If you use `@typescript-eslint/eslint-plugin`, you should disable the `sort-type-constituents` rule, as it may conflict with the current rule
-:::
 
 ### Legacy Config
 
