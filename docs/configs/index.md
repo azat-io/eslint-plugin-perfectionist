@@ -12,6 +12,6 @@ See the [ESLint docs](https://eslint.org/docs/latest/use/configure/configuration
 
 | Name                                                          | Description                                                      |
 | :------------------------------------------------------------ | :--------------------------------------------------------------- |
-| [recommended-alphabetical](/configs/recommended-alphabetical) | All plugin rules with alphabetical sorting in ascending order    |
-| [recommended-natural](/configs/recommended-natural)           | All plugin rules with natural sorting in ascending order         |
-| [recommended-line-length](/configs/recommended-line-length)   | All plugin rules with sorting by line length in descending order |
+| [recommended-alphabetical](/configs/recommended-alphabetical) | all plugin rules with alphabetical sorting in ascending order    |
+| [recommended-natural](/configs/recommended-natural)           | all plugin rules with natural sorting in ascending order         |
+| [recommended-line-length](/configs/recommended-line-length)   | all plugin rules with sorting by line length in descending order |

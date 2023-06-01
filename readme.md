@@ -106,9 +106,9 @@ export default [perfectionistPluginRecommendedNatural]
 
 | Name                                                                                                     | Description                                                      |
 | :------------------------------------------------------------------------------------------------------- | :--------------------------------------------------------------- |
-| [recommended-alphabetical](https://eslint-plugin-perfectionist.azat.io/configs/recommended-alphabetical) | All plugin rules with alphabetical sorting in ascending order    |
-| [recommended-natural](https://eslint-plugin-perfectionist.azat.io/configs/recommended-natural)           | All plugin rules with natural sorting in ascending order         |
-| [recommended-line-length](https://eslint-plugin-perfectionist.azat.io/configs/recommended-line-length)   | All plugin rules with sorting by line length in descending order |
+| [recommended-alphabetical](https://eslint-plugin-perfectionist.azat.io/configs/recommended-alphabetical) | all plugin rules with alphabetical sorting in ascending order    |
+| [recommended-natural](https://eslint-plugin-perfectionist.azat.io/configs/recommended-natural)           | all plugin rules with natural sorting in ascending order         |
+| [recommended-line-length](https://eslint-plugin-perfectionist.azat.io/configs/recommended-line-length)   | all plugin rules with sorting by line length in descending order |
 
 ## Rules
 
@@ -118,16 +118,16 @@ export default [perfectionistPluginRecommendedNatural]
 
 | Name                                                                                         | Description                                 | 🔧  |
 | :------------------------------------------------------------------------------------------- | :------------------------------------------ | :-- |
-| [sort-array-includes](https://eslint-plugin-perfectionist.azat.io/rules/sort-array-includes) | Enforce sorted arrays before include method | 🔧  |
-| [sort-enums](https://eslint-plugin-perfectionist.azat.io/rules/sort-enums)                   | Enforce sorted TypeScript enums             | 🔧  |
-| [sort-imports](https://eslint-plugin-perfectionist.azat.io/rules/sort-imports)               | Enforce sorted imports                      | 🔧  |
-| [sort-interfaces](https://eslint-plugin-perfectionist.azat.io/rules/sort-interfaces)         | Enforce sorted interface properties         | 🔧  |
-| [sort-jsx-props](https://eslint-plugin-perfectionist.azat.io/rules/sort-jsx-props)           | Enforce sorted JSX props                    | 🔧  |
-| [sort-map-elements](https://eslint-plugin-perfectionist.azat.io/rules/sort-map-elements)     | Enforce sorted Map elements                 | 🔧  |
-| [sort-named-exports](https://eslint-plugin-perfectionist.azat.io/rules/sort-named-exports)   | Enforce sorted named exports                | 🔧  |
-| [sort-named-imports](https://eslint-plugin-perfectionist.azat.io/rules/sort-named-imports)   | Enforce sorted named imports                | 🔧  |
-| [sort-object-keys](https://eslint-plugin-perfectionist.azat.io/rules/sort-object-keys)       | Enforce sorted object keys                  | 🔧  |
-| [sort-union-types](https://eslint-plugin-perfectionist.azat.io/rules/sort-union-types)       | Enforce sorted union types                  | 🔧  |
+| [sort-array-includes](https://eslint-plugin-perfectionist.azat.io/rules/sort-array-includes) | enforce sorted arrays before include method | 🔧  |
+| [sort-enums](https://eslint-plugin-perfectionist.azat.io/rules/sort-enums)                   | enforce sorted TypeScript enums             | 🔧  |
+| [sort-imports](https://eslint-plugin-perfectionist.azat.io/rules/sort-imports)               | enforce sorted imports                      | 🔧  |
+| [sort-interfaces](https://eslint-plugin-perfectionist.azat.io/rules/sort-interfaces)         | enforce sorted interface properties         | 🔧  |
+| [sort-jsx-props](https://eslint-plugin-perfectionist.azat.io/rules/sort-jsx-props)           | enforce sorted JSX props                    | 🔧  |
+| [sort-map-elements](https://eslint-plugin-perfectionist.azat.io/rules/sort-map-elements)     | enforce sorted Map elements                 | 🔧  |
+| [sort-named-exports](https://eslint-plugin-perfectionist.azat.io/rules/sort-named-exports)   | enforce sorted named exports                | 🔧  |
+| [sort-named-imports](https://eslint-plugin-perfectionist.azat.io/rules/sort-named-imports)   | enforce sorted named imports                | 🔧  |
+| [sort-object-keys](https://eslint-plugin-perfectionist.azat.io/rules/sort-object-keys)       | enforce sorted object keys                  | 🔧  |
+| [sort-union-types](https://eslint-plugin-perfectionist.azat.io/rules/sort-union-types)       | enforce sorted union types                  | 🔧  |
 
 <!-- end auto-generated rules list -->
 

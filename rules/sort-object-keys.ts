@@ -27,7 +27,7 @@ export default createEslintRule<Options, MESSAGE_ID>({
   meta: {
     type: 'suggestion',
     docs: {
-      description: 'Enforce sorted object keys',
+      description: 'enforce sorted object keys',
       recommended: false,
     },
     fixable: 'code',

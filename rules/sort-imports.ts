@@ -65,7 +65,7 @@ export default createEslintRule<Options, MESSAGE_ID>({
   meta: {
     type: 'suggestion',
     docs: {
-      description: 'Enforce sorted imports',
+      description: 'enforce sorted imports',
       recommended: false,
     },
     fixable: 'code',
