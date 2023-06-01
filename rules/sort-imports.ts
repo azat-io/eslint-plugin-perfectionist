@@ -11,6 +11,7 @@ import { getNodeRange } from '../utils/get-node-range'
 import { readTSConfig } from '../utils/read-ts-config'
 import { rangeToDiff } from '../utils/range-to-diff'
 import { SortType, SortOrder } from '../typings'
+import { sortNodes } from '../utils/sort-nodes'
 import { complete } from '../utils/complete'
 import { pairwise } from '../utils/pairwise'
 import { compare } from '../utils/compare'
@@ -285,8 +286,9 @@ export default createEslintRule<Options, MESSAGE_ID>({
               if (!(groupNum in accumulator)) {
                 accumulator[groupNum] = [node]
               } else {
-                accumulator[groupNum] = [...accumulator[groupNum], node].sort(
-                  (a, b) => Number(compare(a, b, options)) || -1,
+                accumulator[groupNum] = sortNodes(
+                  [...accumulator[groupNum], node],
+                  options,
                 )
               }
 

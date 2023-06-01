@@ -5,6 +5,7 @@ import { toSingleLine } from '../utils/to-single-line'
 import { rangeToDiff } from '../utils/range-to-diff'
 import { SortType, SortOrder } from '../typings'
 import { sortNodes } from '../utils/sort-nodes'
+import { makeFixes } from '../utils/make-fixes'
 import { complete } from '../utils/complete'
 import { pairwise } from '../utils/pairwise'
 import { compare } from '../utils/compare'
@@ -85,11 +86,7 @@ export default createEslintRule<Options, MESSAGE_ID>({
             },
             node: second.node,
             fix: fixer =>
-              sortNodes(fixer, {
-                options,
-                source,
-                nodes,
-              }),
+              makeFixes(fixer, nodes, sortNodes(nodes, options), source),
           })
         }
       })

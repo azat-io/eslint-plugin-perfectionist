@@ -7,6 +7,7 @@ import { createEslintRule } from '../utils/create-eslint-rule'
 import { rangeToDiff } from '../utils/range-to-diff'
 import { SortType, SortOrder } from '../typings'
 import { sortNodes } from '../utils/sort-nodes'
+import { makeFixes } from '../utils/make-fixes'
 import { complete } from '../utils/complete'
 import { pairwise } from '../utils/pairwise'
 import { compare } from '../utils/compare'
@@ -140,12 +141,21 @@ export default createEslintRule<Options, MESSAGE_ID>({
                   second: second.name,
                 },
                 node: second.node,
-                fix: fixer =>
-                  sortNodes(fixer, {
-                    options,
-                    source,
-                    nodes,
-                  }),
+                fix: fixer => {
+                  let sortedNodes = sortNodes(nodes, options)
+
+                  if (options.spreadLast) {
+                    sortedNodes.forEach((sortedNode, index) => {
+                      if (
+                        sortedNode.node.type === AST_NODE_TYPES.SpreadElement
+                      ) {
+                        sortedNodes.push(sortedNodes.splice(index, 1).at(0)!)
+                      }
+                    })
+                  }
+
+                  return makeFixes(fixer, nodes, sortedNodes, source)
+                },
               })
             }
           })

@@ -1,43 +1,11 @@
-import type { TSESLint } from '@typescript-eslint/utils'
 import type { SortingNode, SortType, SortOrder } from '../typings'
 
-import { AST_NODE_TYPES } from '@typescript-eslint/types'
-
-import { getNodeRange } from './get-node-range'
 import { compare } from './compare'
 
-export let sortNodes = (
-  fixer: TSESLint.RuleFixer,
-  {
-    options,
-    source,
-    nodes,
-  }: {
-    nodes: SortingNode[]
-    source: TSESLint.SourceCode
-    options: {
-      spreadLast?: boolean
-      order: SortOrder
-      type: SortType
-    }
+export let sortNodes = <T extends SortingNode>(
+  nodes: T[],
+  options: {
+    order: SortOrder
+    type: SortType
   },
-): TSESLint.RuleFix[] => {
-  let sortedNodes = [...nodes].sort(
-    (a, b) => Number(compare(a, b, options)) || -1,
-  )
-
-  if (options.spreadLast) {
-    sortedNodes.forEach((sortedNode, index) => {
-      if (sortedNode.node.type === AST_NODE_TYPES.SpreadElement) {
-        sortedNodes.push(sortedNodes.splice(index, 1).at(0)!)
-      }
-    })
-  }
-
-  return nodes.map(({ node }, index) =>
-    fixer.replaceTextRange(
-      getNodeRange(node, source),
-      source.text.slice(...getNodeRange(sortedNodes[index].node, source)),
-    ),
-  )
-}
+): T[] => [...nodes].sort((a, b) => Number(compare(a, b, options)) || -1)
