@@ -70,9 +70,9 @@ export default createEslintRule<Options, MESSAGE_ID>({
       })
 
       let nodes: SortingNode[] = node.types.map(type => ({
+        name: source.text.slice(...type.range),
         size: rangeToDiff(type.range),
         node: type,
-        name: source.text.slice(...type.range),
       }))
 
       pairwise(nodes, (first, second) => {

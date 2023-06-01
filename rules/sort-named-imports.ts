@@ -69,17 +69,11 @@ export default createEslintRule<Options, MESSAGE_ID>({
       if (node.specifiers.length > 1) {
         let source = context.getSourceCode()
 
-        let nodes: SortingNode[] = node.specifiers.map(specifier => {
-          let {
-            range,
-            local: { name },
-          } = specifier
-          return {
-            size: rangeToDiff(range),
-            node: specifier,
-            name,
-          }
-        })
+        let nodes: SortingNode[] = node.specifiers.map(specifier => ({
+          size: rangeToDiff(specifier.range),
+          name: specifier.local.name,
+          node: specifier,
+        }))
 
         pairwise(nodes, (first, second) => {
           if (compare(first, second, options)) {

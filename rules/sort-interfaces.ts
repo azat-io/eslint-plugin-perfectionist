@@ -92,27 +92,22 @@ export default createEslintRule<Options, MESSAGE_ID>({
             } else if (element.key.type === AST_NODE_TYPES.Literal) {
               name = `${element.key.value}`
             } else {
-              let end: number
-
-              if (element.typeAnnotation?.range.at(0)) {
-                end = element.typeAnnotation.range.at(0)!
-              } else {
-                let optional = element.optional ? '?'.length : 0
-                end = element.range.at(1)! - optional
-              }
+              let end: number =
+                element.typeAnnotation?.range.at(0) ??
+                element.range.at(1)! - (element.optional ? '?'.length : 0)
 
               name = source.text.slice(element.range.at(0), end)
             }
           } else if (element.type === AST_NODE_TYPES.TSIndexSignature) {
-            name = source.text.slice(
-              element.range.at(0),
-              element.typeAnnotation?.range.at(0) ?? element.range.at(1),
-            )
+            let endIndex: number =
+              element.typeAnnotation?.range.at(0) ?? element.range.at(1)!
+
+            name = source.text.slice(element.range.at(0), endIndex)
           } else {
-            name = source.text.slice(
-              element.range.at(0),
-              element.returnType?.range.at(0) ?? element.range.at(1),
-            )
+            let endIndex: number =
+              element.returnType?.range.at(0) ?? element.range.at(1)!
+
+            name = source.text.slice(element.range.at(0), endIndex)
           }
 
           return {

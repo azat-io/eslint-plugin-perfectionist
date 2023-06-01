@@ -70,21 +70,14 @@ export default createEslintRule<Options, MESSAGE_ID>({
       if (node.members.length > 1) {
         let source = context.getSourceCode()
 
-        let nodes: SortingNode[] = node.members.map(member => {
-          let name: string
-
-          if (member.id.type === AST_NODE_TYPES.Literal) {
-            name = `${member.id.value}`
-          } else {
-            name = `${source.text.slice(...member.id.range)}`
-          }
-
-          return {
-            size: rangeToDiff(member.range),
-            node: member,
-            name,
-          }
-        })
+        let nodes: SortingNode[] = node.members.map(member => ({
+          name:
+            member.id.type === AST_NODE_TYPES.Literal
+              ? `${member.id.value}`
+              : `${source.text.slice(...member.id.range)}`,
+          size: rangeToDiff(member.range),
+          node: member,
+        }))
 
         pairwise(nodes, (first, second) => {
           if (compare(first, second, options)) {

@@ -95,19 +95,17 @@ export default createEslintRule<Options, MESSAGE_ID>({
                 accumulator: (SortingNode & { type: string })[][],
                 element: TSESTree.Expression | TSESTree.SpreadElement | null,
               ) => {
-                if (element === null) {
-                  return accumulator
+                if (element !== null) {
+                  accumulator.at(0)!.push({
+                    name:
+                      element.type === AST_NODE_TYPES.Literal
+                        ? element.raw
+                        : source.text.slice(...element.range),
+                    size: rangeToDiff(element.range),
+                    type: element.type,
+                    node: element,
+                  })
                 }
-
-                accumulator.at(0)!.push({
-                  name:
-                    element.type === AST_NODE_TYPES.Literal
-                      ? element.raw
-                      : source.text.slice(...element.range),
-                  size: rangeToDiff(element.range),
-                  type: element.type,
-                  node: element,
-                })
 
                 return accumulator
               },
