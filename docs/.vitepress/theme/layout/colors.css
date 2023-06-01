@@ -12,12 +12,15 @@
   );
   --vp-home-hero-image-filter: blur(30px);
 
-  --vp-c-brand: oklch(60% 0.18 282);
-  --vp-c-brand-lighter: oklch(55% 0.18 282);
-  --vp-c-brand-dark: oklch(40% 0.18 282);
+  --vp-c-brand: oklch(55% 0.18 282);
+  --vp-c-brand-lighter: oklch(65% 0.18 282);
+  --vp-c-brand-dark: oklch(45% 0.18 282);
 
   --vp-button-brand-bg: oklch(45% 0.18 282);
   --vp-button-brand-active-bg: oklch(40% 0.18 282);
+  --vp-button-brand-hover-bg: oklch(37.5% 0.18 282);
+  --vp-button-brand-border: oklch(40% 0.18 282);
+  --vp-button-brand-hover-border: oklch(35% 0.18 282);
 
   --vp-layout-max-width: 1540px;
 }
@@ -41,4 +44,10 @@ button {
   :root {
     --vp-home-hero-image-filter: blur(72px);
   }
+}
+
+.dark:root {
+  --vp-c-brand: oklch(60% 0.18 282);
+  --vp-c-brand-lighter: oklch(75% 0.18 282);
+  --vp-c-brand-dark: oklch(55% 0.18 282);
 }
