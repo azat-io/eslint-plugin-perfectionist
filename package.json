@@ -14,7 +14,7 @@
   "scripts": {
     "build": "vite build",
     "docs:dev": "vitepress dev docs",
-    "docs:generate": "eslint-doc-generator --rule-list-columns name,description,fixable,hasSuggestions,deprecated --rule-doc-title-format name --path-rule-list readme.md --path-rule-list ./docs/rules/index.md --url-rule-doc https://eslint-plugin-perfectionist.azat.io/rules/{name} --url-configs https://eslint-plugin-perfectionist.azat.io/configs",
+    "docs:generate": "eslint-doc-generator --rule-list-columns name,description,fixable,hasSuggestions,deprecated --path-rule-list readme.md --url-rule-doc https://eslint-plugin-perfectionist.azat.io/rules/{name} --url-configs https://eslint-plugin-perfectionist.azat.io/configs && eslint-doc-generator --rule-list-columns name,description,fixable,hasSuggestions,deprecated --rule-doc-title-format name --path-rule-list ./docs/rules/index.md --url-rule-doc /rules/{name} --url-configs /configs/",
     "docs:build": "vitepress build docs",
     "release": "pnpm release:check && pnpm release:version && pnpm release:publish",
     "release:changelog": "conventional-changelog -p angular --infile changelog.md --same-file",
