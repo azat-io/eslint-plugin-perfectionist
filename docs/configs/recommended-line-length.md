@@ -4,7 +4,7 @@ title: recommended-line-length
 
 # recommended-line-length
 
-## 📖 Details
+## 📖 Config Details
 
 Configuration for the `eslint-plugin-perfectionist` plugin, which provides all plugin rules with preset options: sorting by string length in descending order.
 
@@ -12,7 +12,7 @@ This configuration will make your code prettier and more pleasing to the eye.
 
 ## ⚙️ Usage
 
-### Legacy config
+### Legacy Config
 
 <!-- prettier-ignore -->
 ```json
@@ -24,7 +24,7 @@ This configuration will make your code prettier and more pleasing to the eye.
 }
 ```
 
-### Flat config
+### Flat Config
 
 <!-- prettier-ignore -->
 ```js

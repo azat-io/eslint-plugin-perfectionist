@@ -14,7 +14,7 @@ Enforce sorted `Map` elements.
 
 ## 💡 Examples
 
-### Alphabetical and natural sorting
+### Alphabetical and Natural Sorting
 
 ```ts
 // Incorrect
@@ -36,7 +36,7 @@ let bebop = Map([
 ])
 ```
 
-### Sorting by line length
+### Sorting by Line Length
 
 ```ts
 // Incorrect
@@ -75,7 +75,7 @@ let bebop = Map([
 
 ## ⚙️ Usage
 
-### Legacy config
+### Legacy Config
 
 ```json
 // .eslintrc
@@ -92,7 +92,7 @@ let bebop = Map([
 }
 ```
 
-### Flat config
+### Flat Config
 
 ```js
 // eslint.config.js

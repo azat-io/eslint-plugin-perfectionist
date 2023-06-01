@@ -30,7 +30,7 @@ The plugin supports:
 - TypeScript
 - JSX
 
-## 🚥 Versioning policy
+## 🚥 Versioning Policy
 
 This plugin is following [Semantic Versioning](https://semver.org/) and [ESLint's Semantic Versioning Policy](https://github.com/eslint/eslint#semantic-versioning-policy).
 

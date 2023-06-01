@@ -4,7 +4,7 @@ title: recommended-natural
 
 # recommended-natural
 
-## 📖 Details
+## 📖 Config Details
 
 Configuration for the `eslint-plugin-perfectionist` plugin, which provides all plugin rules with predefined options: natural sorting in ascending order.
 
@@ -16,7 +16,7 @@ This configuration will allow you to navigate through your code faster because a
 
 ## ⚙️ Usage
 
-### Legacy config
+### Legacy Config
 
 <!-- prettier-ignore -->
 ```json
@@ -28,7 +28,7 @@ This configuration will allow you to navigate through your code faster because a
 }
 ```
 
-### Flat config
+### Flat Config
 
 <!-- prettier-ignore -->
 ```js

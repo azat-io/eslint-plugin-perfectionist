@@ -14,7 +14,7 @@ Enforce sorted object keys.
 
 ## 💡 Examples
 
-### Alphabetical and natural sorting
+### Alphabetical and Natural Sorting
 
 <!-- prettier-ignore -->
 ```ts
@@ -33,7 +33,7 @@ let family = {
 }
 ```
 
-### Sorting by line length
+### Sorting by Line Length
 
 <!-- prettier-ignore -->
 ```ts
@@ -73,7 +73,7 @@ let family = {
 If you use the `sort-keys` rule, you should disable it, as it may conflict with the current rule.
 :::
 
-### Legacy config
+### Legacy Config
 
 ```json
 // .eslintrc
@@ -91,7 +91,7 @@ If you use the `sort-keys` rule, you should disable it, as it may conflict with 
 }
 ```
 
-### Flat config
+### Flat Config
 
 ```js
 // eslint.config.js

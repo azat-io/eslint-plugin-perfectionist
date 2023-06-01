@@ -4,7 +4,7 @@ title: recommended-alphabetical
 
 # recommended-alphabetical
 
-## 📖 Details
+## 📖 Config Details
 
 Configuration for the `eslint-plugin-perfectionist` plugin, which provides all plugin rules with predefined options: alphabetical sorting in ascending order.
 
@@ -12,7 +12,7 @@ It makes it just a tiny bit faster to find a declaration in a large list. Rememb
 
 ## ⚙️ Usage
 
-### Legacy config
+### Legacy Config
 
 <!-- prettier-ignore -->
 ```json
@@ -24,7 +24,7 @@ It makes it just a tiny bit faster to find a declaration in a large list. Rememb
 }
 ```
 
-### Flat config
+### Flat Config
 
 <!-- prettier-ignore -->
 ```js

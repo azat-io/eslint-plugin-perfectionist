@@ -14,7 +14,7 @@ Enforce sorted array values if the include method is called after the array is c
 
 ## 💡 Examples
 
-### Alphabetical and natural sorting
+### Alphabetical and Natural Sorting
 
 ```ts
 // Incorrect
@@ -38,7 +38,7 @@ Enforce sorted array values if the include method is called after the array is c
 ].includes(titan)
 ```
 
-### Sorting by line length
+### Sorting by Line Length
 
 ```ts
 // Incorrect
@@ -83,7 +83,7 @@ Enforce sorted array values if the include method is called after the array is c
 
 ## ⚙️ Usage
 
-### Legacy config
+### Legacy Config
 
 ```json
 // .eslintrc
@@ -101,7 +101,7 @@ Enforce sorted array values if the include method is called after the array is c
 }
 ```
 
-### Flat config
+### Flat Config
 
 ```js
 // eslint.config.js

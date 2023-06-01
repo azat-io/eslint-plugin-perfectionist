@@ -14,7 +14,7 @@ Enforce sorted JSX props.
 
 ## 💡 Examples
 
-### Alphabetical and natural sorting
+### Alphabetical and Natural Sorting
 
 ```tsx
 // Incorrect
@@ -40,7 +40,7 @@ let Riko = () => (
 )
 ```
 
-### Sorting by line length
+### Sorting by Line Length
 
 ```tsx
 // Incorrect
@@ -83,7 +83,7 @@ let Riko = () => (
 
 ## ⚙️ Usage
 
-### Legacy config
+### Legacy Config
 
 ```json
 // .eslintrc
@@ -100,7 +100,7 @@ let Riko = () => (
 }
 ```
 
-### Flat config
+### Flat Config
 
 ```js
 // eslint.config.js

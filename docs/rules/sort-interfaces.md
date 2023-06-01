@@ -14,7 +14,7 @@ Enforce sorted TypeScript interface properties.
 
 ## 💡 Examples
 
-### Alphabetical and natural sorting
+### Alphabetical and Natural Sorting
 
 ```ts
 // Incorrect
@@ -38,7 +38,7 @@ interface Hero {
 }
 ```
 
-### Sorting by line length
+### Sorting by Line Length
 
 ```ts
 // Incorrect
@@ -83,7 +83,7 @@ interface Hero {
 
 ## ⚙️ Usage
 
-### Legacy config
+### Legacy Config
 
 ```json
 // .eslintrc
@@ -100,7 +100,7 @@ interface Hero {
 }
 ```
 
-### Flat config
+### Flat Config
 
 ```js
 // eslint.config.js

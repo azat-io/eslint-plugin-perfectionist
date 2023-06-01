@@ -14,7 +14,7 @@ Enforce sorted TypeScript enum members.
 
 ## 💡 Examples
 
-### Alphabetical and natural sorting
+### Alphabetical and Natural Sorting
 
 ```ts
 // Incorrect
@@ -34,7 +34,7 @@ enum Hinamizawa {
 }
 ```
 
-### Sorting by line length
+### Sorting by Line Length
 
 ```ts
 // Incorrect
@@ -71,7 +71,7 @@ enum Hinamizawa {
 
 ## ⚙️ Usage
 
-### Legacy config
+### Legacy Config
 
 ```json
 // .eslintrc
@@ -88,7 +88,7 @@ enum Hinamizawa {
 }
 ```
 
-### Flat config
+### Flat Config
 
 ```js
 // eslint.config.js

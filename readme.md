@@ -40,7 +40,7 @@ npm install --save-dev eslint-plugin-perfectionist
 
 Add `eslint-plugin-perfectionist` to the plugins section of the ESLint configuration file and define the list of rules you will use.
 
-### Legacy config ([`.eslintrc`](https://eslint.org/docs/latest/use/configure/configuration-files))
+### Legacy Config ([`.eslintrc`](https://eslint.org/docs/latest/use/configure/configuration-files))
 
 ```json
 {
@@ -58,7 +58,7 @@ Add `eslint-plugin-perfectionist` to the plugins section of the ESLint configura
 }
 ```
 
-### Flat config ([`eslint.config.js`](https://eslint.org/docs/latest/use/configure/configuration-files-new)) (requires eslint >= v8.23.0)
+### Flat Config ([`eslint.config.js`](https://eslint.org/docs/latest/use/configure/configuration-files-new)) (requires eslint >= v8.23.0)
 
 ```js
 import perfectionist from 'eslint-plugin-perfectionist'
@@ -86,7 +86,7 @@ export default [
 
 The easiest way to use `eslint-plugin-perfectionist` is to use ready-made configs. Config files use all the rules of the current plugin, but you can override them.
 
-### Legacy config ([`.eslintrc`](https://eslint.org/docs/latest/use/configure/configuration-files))
+### Legacy Config ([`.eslintrc`](https://eslint.org/docs/latest/use/configure/configuration-files))
 
 ```json
 {
@@ -94,7 +94,7 @@ The easiest way to use `eslint-plugin-perfectionist` is to use ready-made config
 }
 ```
 
-### Flat config ([`eslint.config.js`](https://eslint.org/docs/latest/use/configure/configuration-files-new))
+### Flat Config ([`eslint.config.js`](https://eslint.org/docs/latest/use/configure/configuration-files-new))
 
 ```js
 import perfectionistPluginRecommendedNatural from 'eslint-plugin-perfectionist/configs/recommended-natural'
@@ -102,7 +102,7 @@ import perfectionistPluginRecommendedNatural from 'eslint-plugin-perfectionist/c
 export default [perfectionistPluginRecommendedNatural]
 ```
 
-### List of configs
+### List of Configs
 
 | Name                                                                                                     | Description                                                      |
 | :------------------------------------------------------------------------------------------------------- | :--------------------------------------------------------------- |
@@ -131,7 +131,7 @@ export default [perfectionistPluginRecommendedNatural]
 
 <!-- end auto-generated rules list -->
 
-## See also
+## See Also
 
 - [`@azat-io/eslint-config`](https://github.com/azat-io/eslint-config) - Collection of ESLint configs
 

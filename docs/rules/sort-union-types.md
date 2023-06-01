@@ -14,7 +14,7 @@ Enforce sorted union types.
 
 ## 💡 Examples
 
-### Alphabetical and natural sorting
+### Alphabetical and Natural Sorting
 
 <!-- prettier-ignore -->
 ```ts
@@ -35,7 +35,7 @@ type DevilHunter =
   | 'Power'
 ```
 
-### Sorting by line length
+### Sorting by Line Length
 
 <!-- prettier-ignore -->
 ```ts
@@ -77,7 +77,7 @@ type DevilHunter =
 If you use `@typescript-eslint/eslint-plugin`, you should disable the `sort-type-constituents` rule, as it may conflict with the current rule
 :::
 
-### Legacy config
+### Legacy Config
 
 ```json
 // .eslintrc
@@ -94,7 +94,7 @@ If you use `@typescript-eslint/eslint-plugin`, you should disable the `sort-type
 }
 ```
 
-### Flat config
+### Flat Config
 
 ```js
 import perfectionist from 'eslint-plugin-perfectionist'

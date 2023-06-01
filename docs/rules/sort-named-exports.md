@@ -14,7 +14,7 @@ Enforce sorted named exports.
 
 ## 💡 Examples
 
-### Alphabetical and natural sorting
+### Alphabetical and Natural Sorting
 
 <!-- prettier-ignore -->
 ```ts
@@ -37,7 +37,7 @@ export {
 } from 'grace-field'
 ```
 
-### Sorting by line length
+### Sorting by Line Length
 
 <!-- prettier-ignore -->
 ```ts
@@ -77,7 +77,7 @@ export {
 
 ## ⚙️ Usage
 
-### Legacy config
+### Legacy Config
 
 ```json
 // .eslintrc
@@ -94,7 +94,7 @@ export {
 }
 ```
 
-### Flat config
+### Flat Config
 
 ```js
 // eslint.config.js

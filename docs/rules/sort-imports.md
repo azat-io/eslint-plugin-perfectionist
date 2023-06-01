@@ -14,7 +14,7 @@ Enforce sorted imports.
 
 ## 💡 Examples
 
-### Alphabetical and natural sorting
+### Alphabetical and Natural Sorting
 
 ```ts
 // Incorrect
@@ -67,7 +67,7 @@ import { ChimeraAntQueen } from '../ants'
 import './style.css'
 ```
 
-### Sorting by line length
+### Sorting by Line Length
 
 ```ts
 // Incorrect
@@ -173,7 +173,7 @@ If you use [one of the configs](/configs/) exported by this plugin, you get the 
 
 ## ⚙️ Usage
 
-### Legacy config
+### Legacy Config
 
 ```json
 // .eslintrc
@@ -191,7 +191,7 @@ If you use [one of the configs](/configs/) exported by this plugin, you get the 
 }
 ```
 
-### Flat config
+### Flat Config
 
 ```js
 // eslint.config.js

@@ -7,7 +7,7 @@ titleTemplate: ESLint plugin for code formatting in perfectionist style
 
 hero:
   name: Perfectionist
-  text: Make your code pleasing to the eye
+  text: Make Your Code Pleasing to the Eye
   tagline: An ESLint plugin
   image:
     src: /logo-shadow.svg
@@ -33,6 +33,6 @@ features:
     details: All code problems can be fixed automatically with ESLint. You don't have to do anything!
   - title: ESM, TypeScript, JSX
     details: A large number of rules, including support for ESM, TypeScript and JSX.
-  - title: It's just beautiful
+  - title: It's Just Beautiful
     details: Enjoy the look of your code, let it be awesome
 ---
