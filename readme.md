@@ -3,6 +3,7 @@
 <img src="https://raw.githubusercontent.com/azat-io/eslint-plugin-perfectionist/main/docs/public/logo.svg" alt="ESLint" align="right" width="170" height="170" />
 
 ![Version](https://img.shields.io/npm/v/eslint-plugin-perfectionist.svg?color=brightgreen)
+[![GitHub license](https://img.shields.io/badge/license-MIT-brightgreen.svg)](https://github.com/facebook/react/blob/main/LICENSE)
 
 ESLint plugin that sets rules to format your code and make it consistent.
 
