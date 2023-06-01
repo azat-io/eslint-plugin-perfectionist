@@ -1320,5 +1320,43 @@ describe(RULE_NAME, () => {
         ],
       })
     })
+
+    it(`${RULE_NAME}: allows to ignore interfaces`, () => {
+      ruleTester.run(RULE_NAME, rule, {
+        valid: [
+          {
+            code: dedent`
+              interface UiDiclonius {
+                name: 'Lucy' | 'Nyu'
+                type: 'diclonius'
+              }
+            `,
+            options: [
+              {
+                type: SortType['line-length'],
+                order: SortOrder.desc,
+                'ignore-pattern': ['Ui*'],
+              },
+            ],
+          },
+          {
+            code: dedent`
+              interface UiDiclonius {
+                type: 'diclonius'
+                name: 'Lucy' | 'Nyu'
+              }
+            `,
+            options: [
+              {
+                type: SortType['line-length'],
+                order: SortOrder.desc,
+                'ignore-pattern': ['Ui*'],
+              },
+            ],
+          },
+        ],
+        invalid: [],
+      })
+    })
   })
 })

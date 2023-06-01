@@ -1,6 +1,7 @@
 import type { SortingNode } from '../typings'
 
 import { AST_NODE_TYPES } from '@typescript-eslint/types'
+import { minimatch } from 'minimatch'
 
 import { createEslintRule } from '../utils/create-eslint-rule'
 import { rangeToDiff } from '../utils/range-to-diff'
@@ -16,6 +17,7 @@ type Options = [
   Partial<{
     order: SortOrder
     type: SortType
+    'ignore-pattern': string[]
   }>,
 ]
 
@@ -46,6 +48,10 @@ export default createEslintRule<Options, MESSAGE_ID>({
             enum: [SortOrder.asc, SortOrder.desc],
             default: SortOrder.asc,
           },
+          'ignore-pattern': {
+            type: 'array',
+            default: [],
+          },
         },
         additionalProperties: false,
       },
@@ -62,16 +68,22 @@ export default createEslintRule<Options, MESSAGE_ID>({
     },
   ],
   create: context => ({
-    TSInterfaceBody: node => {
+    TSInterfaceDeclaration: node => {
       let options = complete(context.options.at(0), {
         type: SortType.alphabetical,
         order: SortOrder.asc,
+        'ignore-pattern': [],
       })
 
-      if (node.body.length > 1) {
+      if (
+        !options['ignore-pattern'].some(pattern =>
+          minimatch(node.id.name, pattern),
+        ) &&
+        node.body.body.length > 1
+      ) {
         let source = context.getSourceCode()
 
-        let nodes: SortingNode[] = node.body.map(element => {
+        let nodes: SortingNode[] = node.body.body.map(element => {
           let name: string
 
           if (element.type === AST_NODE_TYPES.TSPropertySignature) {

@@ -77,6 +77,10 @@ interface Hero {
   - `asc` - enforce properties to be in ascending order.
   - `desc` - enforce properties to be in descending order.
 
+### `ignore-pattern`
+
+- `[string]` (default: `[]`) - allows to ignore interface by pattern
+
 ## ⚙️ Usage
 
 ### Legacy config
