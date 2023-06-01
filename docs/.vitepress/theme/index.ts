@@ -1,9 +1,8 @@
 import type { Theme } from 'vitepress'
 
+import { defineAsyncComponent, h } from 'vue'
 import DefaultTheme from 'vitepress/theme'
-import { h } from 'vue'
 
-import ESLintCodeBlock from './components/eslint-code-block.vue'
 import HomePage from './components/home-page.vue'
 import './layout/colors.css'
 
@@ -15,7 +14,13 @@ let theme: Theme = {
     }),
   enhanceApp: context => {
     DefaultTheme.enhanceApp(context)
-    context.app.component('eslint-code-block', ESLintCodeBlock)
+
+    context.app.component(
+      'eslint-playground',
+      defineAsyncComponent({
+        loader: () => import('./components/eslint-playground.vue'),
+      }),
+    )
   },
 }
 

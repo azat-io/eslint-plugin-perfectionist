@@ -34,12 +34,12 @@ This rule aims to promote code readability and maintainability by enforcing a co
 
 // Correct
 [
-  'Armored Titan',
-  'Attack Titan',
-  'Beast Titan',
-  'Cart Titan',
-  'Jaw Titan',
-  'War Hammer Titan',
+'Armored Titan',
+'Attack Titan',
+'Beast Titan',
+'Cart Titan',
+'Jaw Titan',
+'War Hammer Titan',
 ].includes(titan)
 ```
 

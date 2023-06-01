@@ -258,6 +258,16 @@ export default defineConfig({
 
   vite: {
     plugins: [lightningcss(), eslint4b()],
+    optimizeDeps: {
+      exclude: [
+        '@typescript-eslint/types',
+        '@typescript-eslint/utils',
+        'natural-compare-lite',
+        'is-core-module',
+        'minimatch',
+        'json5',
+      ],
+    },
   },
 
   transformHtml: (_, id, { pageData }) => {
