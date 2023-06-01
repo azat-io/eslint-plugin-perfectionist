@@ -1943,21 +1943,23 @@ describe(RULE_NAME, () => {
 
   it(`${RULE_NAME}: allow to use paths from tsconfig.json`, () => {
     vi.mock('../utils/read-ts-config', () => ({
-      readTSConfig: () => ({
-        compilerOptions: {
-          moduleResolution: 'bundler',
-          verbatimModuleSyntax: true,
-          resolveJsonModule: true,
-          lib: ['ESNext', 'DOM'],
-          esModuleInterop: true,
-          skipLibCheck: true,
-          module: 'esnext',
-          target: 'es2020',
-          paths: {
-            '@/components/*': './src/components/*',
+      TSConfig: {
+        get: () => ({
+          compilerOptions: {
+            moduleResolution: 'bundler',
+            verbatimModuleSyntax: true,
+            resolveJsonModule: true,
+            lib: ['ESNext', 'DOM'],
+            esModuleInterop: true,
+            skipLibCheck: true,
+            module: 'esnext',
+            target: 'es2020',
+            paths: {
+              '@/components/*': './src/components/*',
+            },
           },
-        },
-      }),
+        }),
+      },
     }))
 
     ruleTester.run(RULE_NAME, rule, {

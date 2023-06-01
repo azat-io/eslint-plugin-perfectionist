@@ -8,8 +8,8 @@ import { minimatch } from 'minimatch'
 
 import { createEslintRule } from '../utils/create-eslint-rule'
 import { getNodeRange } from '../utils/get-node-range'
-import { readTSConfig } from '../utils/read-ts-config'
 import { rangeToDiff } from '../utils/range-to-diff'
+import { TSConfig } from '../utils/read-ts-config'
 import { SortType, SortOrder } from '../typings'
 import { sortNodes } from '../utils/sort-nodes'
 import { complete } from '../utils/complete'
@@ -138,10 +138,10 @@ export default createEslintRule<Options, MESSAGE_ID>({
     let tsPaths: string[] = []
 
     if (options['read-tsconfig']) {
-      let { compilerOptions } = readTSConfig()
+      let tsConfig = TSConfig.get()
 
-      if (compilerOptions?.paths) {
-        Object.keys(compilerOptions?.paths).forEach(path => {
+      if (tsConfig.compilerOptions?.paths) {
+        Object.keys(tsConfig.compilerOptions.paths).forEach(path => {
           tsPaths.push(path)
         })
       }
