@@ -561,7 +561,9 @@ describe(RULE_NAME, () => {
   })
 
   describe(`${RULE_NAME}: sorting by line length`, () => {
-    it(`${RULE_NAME}: does not break the property list`, () => {
+    let type = 'line-length-order'
+
+    it(`${RULE_NAME}(${type}): does not break the property list`, () => {
       ruleTester.run(RULE_NAME, rule, {
         valid: [
           {
@@ -631,7 +633,7 @@ describe(RULE_NAME, () => {
       })
     })
 
-    it(`${RULE_NAME}: both key and value affect sorting by length`, () => {
+    it(`${RULE_NAME}(${type}): both key and value affect sorting by length`, () => {
       ruleTester.run(RULE_NAME, rule, {
         valid: [
           {
@@ -715,7 +717,7 @@ describe(RULE_NAME, () => {
       })
     })
 
-    it(`${RULE_NAME}: not sorts spread elements`, () => {
+    it(`${RULE_NAME}(${type}): not sorts spread elements`, () => {
       ruleTester.run(RULE_NAME, rule, {
         valid: [
           {
@@ -751,7 +753,7 @@ describe(RULE_NAME, () => {
       })
     })
 
-    it(`${RULE_NAME}: works with variables as keys`, () => {
+    it(`${RULE_NAME}(${type}): works with variables as keys`, () => {
       ruleTester.run(RULE_NAME, rule, {
         valid: [
           {
@@ -803,7 +805,7 @@ describe(RULE_NAME, () => {
       })
     })
 
-    it(`${RULE_NAME}: works with numbers as keys`, () => {
+    it(`${RULE_NAME}(${type}): works with numbers as keys`, () => {
       ruleTester.run(RULE_NAME, rule, {
         valid: [
           {
@@ -858,7 +860,7 @@ describe(RULE_NAME, () => {
       })
     })
 
-    it(`${RULE_NAME}: sorts variable identifiers`, () => {
+    it(`${RULE_NAME}(${type}): sorts variable identifiers`, () => {
       ruleTester.run(RULE_NAME, rule, {
         valid: [
           {

@@ -10,174 +10,586 @@ describe(RULE_NAME, () => {
     parser: '@typescript-eslint/parser',
   })
 
-  it(`${RULE_NAME}: sets natural asc sorting as default`, () => {
-    ruleTester.run(RULE_NAME, rule, {
-      valid: ["import { get, post, put } from 'axios'"],
-      invalid: [
-        {
-          code: dedent`
-            import { get, post, put, patch } from 'axios'
-          `,
-          output: dedent`
-            import { get, patch, post, put } from 'axios'
-          `,
-          errors: [
-            {
-              messageId: 'unexpectedNamedImportsOrder',
-              data: {
-                first: 'put',
-                second: 'patch',
+  describe(`${RULE_NAME}: sorting by alphabetical order`, () => {
+    let type = 'alphabetical-order'
+
+    it(`${RULE_NAME}(${type}): sorts named imports`, () => {
+      ruleTester.run(RULE_NAME, rule, {
+        valid: [
+          {
+            code: dedent`
+              import { Kana, Kuu, Rakka, Reki } from 'haibane-renmei'
+            `,
+            options: [
+              {
+                type: SortType.alphabetical,
+                order: SortOrder.asc,
               },
-            },
-          ],
-        },
-      ],
+            ],
+          },
+        ],
+        invalid: [
+          {
+            code: dedent`
+              import { Kana, Reki, Rakka, Kuu } from 'haibane-renmei'
+            `,
+            output: dedent`
+              import { Kana, Kuu, Rakka, Reki } from 'haibane-renmei'
+            `,
+            options: [
+              {
+                type: SortType.alphabetical,
+                order: SortOrder.asc,
+              },
+            ],
+            errors: [
+              {
+                messageId: 'unexpectedNamedImportsOrder',
+                data: {
+                  first: 'Reki',
+                  second: 'Rakka',
+                },
+              },
+              {
+                messageId: 'unexpectedNamedImportsOrder',
+                data: {
+                  first: 'Rakka',
+                  second: 'Kuu',
+                },
+              },
+            ],
+          },
+        ],
+      })
+    })
+
+    it(`${RULE_NAME}: sorts named multiline imports`, () => {
+      ruleTester.run(RULE_NAME, rule, {
+        valid: [
+          {
+            code: dedent`
+              import {
+                AnnieLeonhart,
+                BertholdtHoover,
+                FalcoGrice,
+                GabiBraun,
+                Gross,
+                ReinerBraun,
+              } from 'marleyan-military'
+            `,
+            options: [
+              {
+                type: SortType.alphabetical,
+                order: SortOrder.asc,
+              },
+            ],
+          },
+        ],
+        invalid: [
+          {
+            code: dedent`
+              import {
+                GabiBraun,
+                ReinerBraun,
+                FalcoGrice,
+                AnnieLeonhart,
+                Gross,
+                BertholdtHoover,
+              } from 'marleyan-military'
+            `,
+            output: dedent`
+              import {
+                AnnieLeonhart,
+                BertholdtHoover,
+                FalcoGrice,
+                GabiBraun,
+                Gross,
+                ReinerBraun,
+              } from 'marleyan-military'
+            `,
+            options: [
+              {
+                type: SortType.alphabetical,
+                order: SortOrder.asc,
+              },
+            ],
+            errors: [
+              {
+                messageId: 'unexpectedNamedImportsOrder',
+                data: {
+                  first: 'ReinerBraun',
+                  second: 'FalcoGrice',
+                },
+              },
+              {
+                messageId: 'unexpectedNamedImportsOrder',
+                data: {
+                  first: 'FalcoGrice',
+                  second: 'AnnieLeonhart',
+                },
+              },
+              {
+                messageId: 'unexpectedNamedImportsOrder',
+                data: {
+                  first: 'Gross',
+                  second: 'BertholdtHoover',
+                },
+              },
+            ],
+          },
+        ],
+      })
+    })
+
+    it(`${RULE_NAME}: sorts named imports with aliases`, () => {
+      ruleTester.run(RULE_NAME, rule, {
+        valid: [
+          {
+            code: dedent`
+              import {
+                ReiAyanami as Eva0,
+                ShinjiIkari as Eva1,
+                GendouIkari
+              } from 'nerv'
+            `,
+            options: [
+              {
+                type: SortType.alphabetical,
+                order: SortOrder.asc,
+              },
+            ],
+          },
+        ],
+        invalid: [
+          {
+            code: dedent`
+              import {
+                GendouIkari,
+                ReiAyanami as Eva0,
+                ShinjiIkari as Eva1
+              } from 'nerv'
+            `,
+            output: dedent`
+              import {
+                ReiAyanami as Eva0,
+                ShinjiIkari as Eva1,
+                GendouIkari
+              } from 'nerv'
+            `,
+            options: [
+              {
+                type: SortType.alphabetical,
+                order: SortOrder.asc,
+              },
+            ],
+            errors: [
+              {
+                messageId: 'unexpectedNamedImportsOrder',
+                data: {
+                  first: 'GendouIkari',
+                  second: 'Eva0',
+                },
+              },
+            ],
+          },
+        ],
+      })
     })
   })
 
-  it(`${RULE_NAME}: sorts named imports`, () => {
-    ruleTester.run(RULE_NAME, rule, {
-      valid: [
-        {
-          code: dedent`
-            import { useEffect, useState, useRef } from 'react'
-          `,
-          options: [
-            {
-              type: SortType['line-length'],
-              order: SortOrder.desc,
-            },
-          ],
-        },
-      ],
-      invalid: [
-        {
-          code: dedent`
-            import { useEffect, useRef, useState } from 'react'
-          `,
-          output: dedent`
-            import { useEffect, useState, useRef } from 'react'
-          `,
-          options: [
-            {
-              type: SortType['line-length'],
-              order: SortOrder.desc,
-            },
-          ],
-          errors: [
-            {
-              messageId: 'unexpectedNamedImportsOrder',
-              data: {
-                first: 'useRef',
-                second: 'useState',
+  describe(`${RULE_NAME}: sorting by natural order`, () => {
+    let type = 'natural-order'
+
+    it(`${RULE_NAME}(${type}): sorts named imports`, () => {
+      ruleTester.run(RULE_NAME, rule, {
+        valid: [
+          {
+            code: dedent`
+              import { Kana, Kuu, Rakka, Reki } from 'haibane-renmei'
+            `,
+            options: [
+              {
+                type: SortType.natural,
+                order: SortOrder.asc,
               },
-            },
-          ],
-        },
-      ],
+            ],
+          },
+        ],
+        invalid: [
+          {
+            code: dedent`
+              import { Kana, Reki, Rakka, Kuu } from 'haibane-renmei'
+            `,
+            output: dedent`
+              import { Kana, Kuu, Rakka, Reki } from 'haibane-renmei'
+            `,
+            options: [
+              {
+                type: SortType.natural,
+                order: SortOrder.asc,
+              },
+            ],
+            errors: [
+              {
+                messageId: 'unexpectedNamedImportsOrder',
+                data: {
+                  first: 'Reki',
+                  second: 'Rakka',
+                },
+              },
+              {
+                messageId: 'unexpectedNamedImportsOrder',
+                data: {
+                  first: 'Rakka',
+                  second: 'Kuu',
+                },
+              },
+            ],
+          },
+        ],
+      })
+    })
+
+    it(`${RULE_NAME}: sorts named multiline imports`, () => {
+      ruleTester.run(RULE_NAME, rule, {
+        valid: [
+          {
+            code: dedent`
+              import {
+                AnnieLeonhart,
+                BertholdtHoover,
+                FalcoGrice,
+                GabiBraun,
+                Gross,
+                ReinerBraun,
+              } from 'marleyan-military'
+            `,
+            options: [
+              {
+                type: SortType.natural,
+                order: SortOrder.asc,
+              },
+            ],
+          },
+        ],
+        invalid: [
+          {
+            code: dedent`
+              import {
+                GabiBraun,
+                ReinerBraun,
+                FalcoGrice,
+                AnnieLeonhart,
+                Gross,
+                BertholdtHoover,
+              } from 'marleyan-military'
+            `,
+            output: dedent`
+              import {
+                AnnieLeonhart,
+                BertholdtHoover,
+                FalcoGrice,
+                GabiBraun,
+                Gross,
+                ReinerBraun,
+              } from 'marleyan-military'
+            `,
+            options: [
+              {
+                type: SortType.natural,
+                order: SortOrder.asc,
+              },
+            ],
+            errors: [
+              {
+                messageId: 'unexpectedNamedImportsOrder',
+                data: {
+                  first: 'ReinerBraun',
+                  second: 'FalcoGrice',
+                },
+              },
+              {
+                messageId: 'unexpectedNamedImportsOrder',
+                data: {
+                  first: 'FalcoGrice',
+                  second: 'AnnieLeonhart',
+                },
+              },
+              {
+                messageId: 'unexpectedNamedImportsOrder',
+                data: {
+                  first: 'Gross',
+                  second: 'BertholdtHoover',
+                },
+              },
+            ],
+          },
+        ],
+      })
+    })
+
+    it(`${RULE_NAME}: sorts named imports with aliases`, () => {
+      ruleTester.run(RULE_NAME, rule, {
+        valid: [
+          {
+            code: dedent`
+              import {
+                ReiAyanami as Eva0,
+                ShinjiIkari as Eva1,
+                GendouIkari
+              } from 'nerv'
+            `,
+            options: [
+              {
+                type: SortType.natural,
+                order: SortOrder.asc,
+              },
+            ],
+          },
+        ],
+        invalid: [
+          {
+            code: dedent`
+              import {
+                GendouIkari,
+                ReiAyanami as Eva0,
+                ShinjiIkari as Eva1
+              } from 'nerv'
+            `,
+            output: dedent`
+              import {
+                ReiAyanami as Eva0,
+                ShinjiIkari as Eva1,
+                GendouIkari
+              } from 'nerv'
+            `,
+            options: [
+              {
+                type: SortType.natural,
+                order: SortOrder.asc,
+              },
+            ],
+            errors: [
+              {
+                messageId: 'unexpectedNamedImportsOrder',
+                data: {
+                  first: 'GendouIkari',
+                  second: 'Eva0',
+                },
+              },
+            ],
+          },
+        ],
+      })
     })
   })
 
-  it(`${RULE_NAME}: sorts named multiline imports`, () => {
-    ruleTester.run(RULE_NAME, rule, {
-      valid: [
-        {
-          code: dedent`
-            import {
-              identity,
-              andThen,
-              compose,
-              concat,
-              ifElse,
-              unless,
-              isNil,
-              head,
-              when,
-              has,
-              __,
-              F,
-            } from 'ramda'
-          `,
-          options: [
-            {
-              type: SortType['line-length'],
-              order: SortOrder.desc,
-            },
-          ],
-        },
-      ],
-      invalid: [
-        {
-          code: dedent`
-            import {
-              __,
-              andThen,
-              compose,
-              concat,
-              F,
-              isNil,
-              has,
-              head,
-              identity,
-              ifElse,
-              unless,
-              when,
-            } from 'ramda'
-          `,
-          output: dedent`
-            import {
-              identity,
-              compose,
-              andThen,
-              unless,
-              ifElse,
-              concat,
-              isNil,
-              when,
-              head,
-              has,
-              __,
-              F,
-            } from 'ramda'
-          `,
-          options: [
-            {
-              type: SortType['line-length'],
-              order: SortOrder.desc,
-            },
-          ],
-          errors: [
-            {
-              messageId: 'unexpectedNamedImportsOrder',
-              data: {
-                first: '__',
-                second: 'andThen',
+  describe(`${RULE_NAME}: sorting by line length`, () => {
+    let type = 'line-length-order'
+
+    it(`${RULE_NAME}(${type}): sorts named imports`, () => {
+      ruleTester.run(RULE_NAME, rule, {
+        valid: [
+          {
+            code: dedent`
+              import { Rakka, Reki, Kana, Kuu } from 'haibane-renmei'
+            `,
+            options: [
+              {
+                type: SortType['line-length'],
+                order: SortOrder.desc,
               },
-            },
-            {
-              messageId: 'unexpectedNamedImportsOrder',
-              data: {
-                first: 'F',
-                second: 'isNil',
+            ],
+          },
+        ],
+        invalid: [
+          {
+            code: dedent`
+              import { Kana, Reki, Rakka, Kuu } from 'haibane-renmei'
+            `,
+            output: dedent`
+              import { Rakka, Reki, Kana, Kuu } from 'haibane-renmei'
+            `,
+            options: [
+              {
+                type: SortType['line-length'],
+                order: SortOrder.desc,
               },
-            },
-            {
-              messageId: 'unexpectedNamedImportsOrder',
-              data: {
-                first: 'has',
-                second: 'head',
+            ],
+            errors: [
+              {
+                messageId: 'unexpectedNamedImportsOrder',
+                data: {
+                  first: 'Reki',
+                  second: 'Rakka',
+                },
               },
-            },
-            {
-              messageId: 'unexpectedNamedImportsOrder',
-              data: {
-                first: 'head',
-                second: 'identity',
+            ],
+          },
+        ],
+      })
+    })
+
+    it(`${RULE_NAME}: sorts named multiline imports`, () => {
+      ruleTester.run(RULE_NAME, rule, {
+        valid: [
+          {
+            code: dedent`
+              import {
+                BertholdtHoover,
+                AnnieLeonhart,
+                ReinerBraun,
+                FalcoGrice,
+                GabiBraun,
+                Gross,
+              } from 'marleyan-military'
+            `,
+            options: [
+              {
+                type: SortType['line-length'],
+                order: SortOrder.desc,
               },
-            },
-          ],
-        },
-      ],
+            ],
+          },
+        ],
+        invalid: [
+          {
+            code: dedent`
+              import {
+                AnnieLeonhart,
+                BertholdtHoover,
+                FalcoGrice,
+                GabiBraun,
+                Gross,
+                ReinerBraun,
+              } from 'marleyan-military'
+            `,
+            output: dedent`
+              import {
+                BertholdtHoover,
+                AnnieLeonhart,
+                ReinerBraun,
+                FalcoGrice,
+                GabiBraun,
+                Gross,
+              } from 'marleyan-military'
+            `,
+            options: [
+              {
+                type: SortType['line-length'],
+                order: SortOrder.desc,
+              },
+            ],
+            errors: [
+              {
+                messageId: 'unexpectedNamedImportsOrder',
+                data: {
+                  first: 'AnnieLeonhart',
+                  second: 'BertholdtHoover',
+                },
+              },
+              {
+                messageId: 'unexpectedNamedImportsOrder',
+                data: {
+                  first: 'Gross',
+                  second: 'ReinerBraun',
+                },
+              },
+            ],
+          },
+        ],
+      })
+    })
+
+    it(`${RULE_NAME}: sorts named imports with aliases`, () => {
+      ruleTester.run(RULE_NAME, rule, {
+        valid: [
+          {
+            code: dedent`
+              import {
+                ShinjiIkari as Eva1,
+                ReiAyanami as Eva0,
+                GendouIkari
+              } from 'nerv'
+            `,
+            options: [
+              {
+                type: SortType['line-length'],
+                order: SortOrder.desc,
+              },
+            ],
+          },
+        ],
+        invalid: [
+          {
+            code: dedent`
+              import {
+                GendouIkari,
+                ReiAyanami as Eva0,
+                ShinjiIkari as Eva1
+              } from 'nerv'
+            `,
+            output: dedent`
+              import {
+                ShinjiIkari as Eva1,
+                ReiAyanami as Eva0,
+                GendouIkari
+              } from 'nerv'
+            `,
+            options: [
+              {
+                type: SortType['line-length'],
+                order: SortOrder.desc,
+              },
+            ],
+            errors: [
+              {
+                messageId: 'unexpectedNamedImportsOrder',
+                data: {
+                  first: 'GendouIkari',
+                  second: 'Eva0',
+                },
+              },
+              {
+                messageId: 'unexpectedNamedImportsOrder',
+                data: {
+                  first: 'Eva0',
+                  second: 'Eva1',
+                },
+              },
+            ],
+          },
+        ],
+      })
+    })
+  })
+
+  describe(`${RULE_NAME}: misc`, () => {
+    it(`${RULE_NAME}: sets alphabetical asc sorting as default`, () => {
+      ruleTester.run(RULE_NAME, rule, {
+        valid: [
+          "import { David, Maine, Rebecca } from 'cyberpunks-edgerunners'",
+        ],
+        invalid: [
+          {
+            code: dedent`
+              import { David, Rebecca, Maine } from 'cyberpunks-edgerunners'
+            `,
+            output: dedent`
+              import { David, Maine, Rebecca } from 'cyberpunks-edgerunners'
+            `,
+            errors: [
+              {
+                messageId: 'unexpectedNamedImportsOrder',
+                data: {
+                  first: 'Rebecca',
+                  second: 'Maine',
+                },
+              },
+            ],
+          },
+        ],
+      })
     })
   })
 })

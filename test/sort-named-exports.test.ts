@@ -10,76 +10,189 @@ describe(RULE_NAME, () => {
     parser: '@typescript-eslint/parser',
   })
 
-  it(`${RULE_NAME}: sets natural asc sorting as default`, () => {
-    ruleTester.run(RULE_NAME, rule, {
-      valid: ['export { get, post, put }'],
-      invalid: [
-        {
-          code: dedent`
-            export { get, post, put, patch }
-          `,
-          output: dedent`
-            export { get, patch, post, put }
-          `,
-          errors: [
-            {
-              messageId: 'unexpectedNamedExportsOrder',
-              data: {
-                first: 'put',
-                second: 'patch',
+  describe(`${RULE_NAME}: sorting by alphabetical order`, () => {
+    let type = 'alphabetical-order'
+
+    it(`${RULE_NAME}(${type}): sorts named exports`, () => {
+      ruleTester.run(RULE_NAME, rule, {
+        valid: [
+          {
+            code: 'export { ErisBoreas, Rudeus, RuijerdSuperdia }',
+            options: [
+              {
+                type: SortType.alphabetical,
+                order: SortOrder.asc,
               },
-            },
-          ],
-        },
-      ],
+            ],
+          },
+        ],
+        invalid: [
+          {
+            code: dedent`
+              export {
+                Rudeus,
+                RuijerdSuperdia,
+                ErisBoreas
+              }
+            `,
+            output: dedent`
+              export {
+                ErisBoreas,
+                Rudeus,
+                RuijerdSuperdia
+              }
+            `,
+            options: [
+              {
+                type: SortType.alphabetical,
+                order: SortOrder.asc,
+              },
+            ],
+            errors: [
+              {
+                messageId: 'unexpectedNamedExportsOrder',
+                data: {
+                  first: 'RuijerdSuperdia',
+                  second: 'ErisBoreas',
+                },
+              },
+            ],
+          },
+        ],
+      })
     })
   })
 
-  it(`${RULE_NAME}: sorts by length`, () => {
-    ruleTester.run(RULE_NAME, rule, {
-      valid: [
-        {
-          code: 'export { post, get, put }',
-          options: [
-            {
-              type: SortType['line-length'],
-              order: SortOrder.desc,
-            },
-          ],
-        },
-      ],
-      invalid: [
-        {
-          code: dedent`
-            export { get, post, put, patch }
-          `,
-          output: dedent`
-            export { patch, post, put, get }
-          `,
-          options: [
-            {
-              type: SortType['line-length'],
-              order: SortOrder.desc,
-            },
-          ],
-          errors: [
-            {
-              messageId: 'unexpectedNamedExportsOrder',
-              data: {
-                first: 'get',
-                second: 'post',
+  describe(`${RULE_NAME}: sorting by natural order`, () => {
+    let type = 'natural-order'
+
+    it(`${RULE_NAME}(${type}): sorts named exports`, () => {
+      ruleTester.run(RULE_NAME, rule, {
+        valid: [
+          {
+            code: 'export { ErisBoreas, Rudeus, RuijerdSuperdia }',
+            options: [
+              {
+                type: SortType.natural,
+                order: SortOrder.asc,
               },
-            },
-            {
-              messageId: 'unexpectedNamedExportsOrder',
-              data: {
-                first: 'put',
-                second: 'patch',
+            ],
+          },
+        ],
+        invalid: [
+          {
+            code: dedent`
+              export {
+                Rudeus,
+                RuijerdSuperdia,
+                ErisBoreas
+              }
+            `,
+            output: dedent`
+              export {
+                ErisBoreas,
+                Rudeus,
+                RuijerdSuperdia
+              }
+            `,
+            options: [
+              {
+                type: SortType.natural,
+                order: SortOrder.asc,
               },
-            },
-          ],
-        },
-      ],
+            ],
+            errors: [
+              {
+                messageId: 'unexpectedNamedExportsOrder',
+                data: {
+                  first: 'RuijerdSuperdia',
+                  second: 'ErisBoreas',
+                },
+              },
+            ],
+          },
+        ],
+      })
+    })
+  })
+
+  describe(`${RULE_NAME}: sorting by line length`, () => {
+    let type = 'line-length-order'
+
+    it(`${RULE_NAME}(${type}): sorts named exports`, () => {
+      ruleTester.run(RULE_NAME, rule, {
+        valid: [
+          {
+            code: 'export { RuijerdSuperdia, ErisBoreas, Rudeus }',
+            options: [
+              {
+                type: SortType['line-length'],
+                order: SortOrder.desc,
+              },
+            ],
+          },
+        ],
+        invalid: [
+          {
+            code: dedent`
+              export {
+                Rudeus,
+                RuijerdSuperdia,
+                ErisBoreas
+              }
+            `,
+            output: dedent`
+              export {
+                RuijerdSuperdia,
+                ErisBoreas,
+                Rudeus
+              }
+            `,
+            options: [
+              {
+                type: SortType['line-length'],
+                order: SortOrder.desc,
+              },
+            ],
+            errors: [
+              {
+                messageId: 'unexpectedNamedExportsOrder',
+                data: {
+                  first: 'Rudeus',
+                  second: 'RuijerdSuperdia',
+                },
+              },
+            ],
+          },
+        ],
+      })
+    })
+  })
+
+  describe(`${RULE_NAME}: misc`, () => {
+    it(`${RULE_NAME}: sets alphabetical asc sorting as default`, () => {
+      ruleTester.run(RULE_NAME, rule, {
+        valid: ['export { KayoHinazuki, SatoruFujinuma }'],
+        invalid: [
+          {
+            code: dedent`
+              export { SatoruFujinuma, KayoHinazuki }
+            `,
+            output: dedent`
+              export { KayoHinazuki, SatoruFujinuma }
+            `,
+            errors: [
+              {
+                messageId: 'unexpectedNamedExportsOrder',
+                data: {
+                  first: 'SatoruFujinuma',
+                  second: 'KayoHinazuki',
+                },
+              },
+            ],
+          },
+        ],
+      })
     })
   })
 })
