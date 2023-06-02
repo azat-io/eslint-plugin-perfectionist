@@ -165,9 +165,9 @@ export default createEslintRule<Options, MESSAGE_ID>({
           '.',
         ].includes(value)
 
-      let isParent = (value: string) => /^\.\.$|^\.\.[/\\]/.test(value)
+      let isParent = (value: string) => value.indexOf('..') === 0
 
-      let isSibling = (value: string) => /^\.[/\\]/.test(value)
+      let isSibling = (value: string) => value.indexOf('./') === 0
 
       let defineGroup = (nodeGroup: Group) => {
         if (!group && options.groups.flat().includes(nodeGroup)) {
