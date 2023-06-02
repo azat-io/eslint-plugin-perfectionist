@@ -18,6 +18,7 @@ type RuleDeclaration = [RuleSeverity, { [key: string]: unknown }?]
 let createConfigWithOptions = (options: {
   type: SortType
   order: SortOrder
+  'ignore-case'?: boolean
 }): {
   plugins: ['perfectionist']
   rules: {
@@ -84,10 +85,12 @@ export default {
     'recommended-alphabetical': createConfigWithOptions({
       type: SortType.alphabetical,
       order: SortOrder.asc,
+      'ignore-case': false,
     }),
     'recommended-natural': createConfigWithOptions({
       type: SortType.natural,
       order: SortOrder.asc,
+      'ignore-case': false,
     }),
     'recommended-line-length': createConfigWithOptions({
       type: SortType['line-length'],

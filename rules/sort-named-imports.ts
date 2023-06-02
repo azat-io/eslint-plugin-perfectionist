@@ -13,6 +13,7 @@ type MESSAGE_ID = 'unexpectedNamedImportsOrder'
 
 type Options = [
   Partial<{
+    'ignore-case': boolean
     order: SortOrder
     type: SortType
   }>,
@@ -45,6 +46,10 @@ export default createEslintRule<Options, MESSAGE_ID>({
             enum: [SortOrder.asc, SortOrder.desc],
             default: SortOrder.asc,
           },
+          'ignore-case': {
+            type: 'boolean',
+            default: false,
+          },
         },
         additionalProperties: false,
       },
@@ -64,6 +69,7 @@ export default createEslintRule<Options, MESSAGE_ID>({
     ImportDeclaration: node => {
       let options = complete(context.options.at(0), {
         type: SortType.alphabetical,
+        'ignore-case': false,
         order: SortOrder.asc,
       })
 

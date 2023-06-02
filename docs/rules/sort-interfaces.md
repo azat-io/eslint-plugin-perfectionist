@@ -83,6 +83,10 @@ interface Hero {
   - `asc` - enforce properties to be in ascending order.
   - `desc` - enforce properties to be in descending order.
 
+### `ignore-case`
+
+- `boolean` (default: `false`) - only affects alphabetical and natural sorting. When `true` the rule ignores the case-sensitivity of the order.
+
 ### `ignore-pattern`
 
 - `[string]` (default: `[]`) - allows to ignore interface by pattern

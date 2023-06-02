@@ -81,6 +81,10 @@ This rule aims to promote code readability and maintainability by enforcing a co
   - `asc` - enforce properties to be in ascending order.
   - `desc` - enforce properties to be in descending order.
 
+### `ignore-case`
+
+- `boolean` (default: `false`) - only affects alphabetical and natural sorting. When `true` the rule ignores the case-sensitivity of the order.
+
 ### `spreadLast`
 
 - `boolean` (default: `false`) - enforce spread elements in array to be last

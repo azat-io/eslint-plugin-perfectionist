@@ -8,6 +8,7 @@ export let compare = (
   a: SortingNode,
   b: SortingNode,
   options: {
+    'ignore-case'?: boolean
     order: SortOrder
     type: SortType
   },
@@ -15,10 +16,15 @@ export let compare = (
   let orderCoefficient = options.order === 'asc' ? 1 : -1
   let sortingFunction: (a: SortingNode, b: SortingNode) => number
 
+  let formatString = (string: string) =>
+    options['ignore-case'] ? string.toLowerCase() : string
+
   if (options.type === SortType.alphabetical) {
-    sortingFunction = (aNode, bNode) => aNode.name.localeCompare(bNode.name)
+    sortingFunction = (aNode, bNode) =>
+      formatString(aNode.name).localeCompare(formatString(bNode.name))
   } else if (options.type === SortType.natural) {
-    sortingFunction = (aNode, bNode) => naturalCompare(aNode.name, bNode.name)
+    sortingFunction = (aNode, bNode) =>
+      naturalCompare(formatString(aNode.name), formatString(bNode.name))
   } else {
     sortingFunction = (aNode, bNode) => aNode.size - bNode.size
   }

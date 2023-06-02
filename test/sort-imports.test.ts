@@ -25,6 +25,7 @@ describe(RULE_NAME, () => {
               {
                 type: SortType.alphabetical,
                 order: SortOrder.asc,
+                'ignore-case': true,
               },
             ],
           },
@@ -43,6 +44,7 @@ describe(RULE_NAME, () => {
               {
                 type: SortType.alphabetical,
                 order: SortOrder.asc,
+                'ignore-case': true,
               },
             ],
             errors: [
@@ -639,6 +641,7 @@ describe(RULE_NAME, () => {
               {
                 type: SortType.natural,
                 order: SortOrder.asc,
+                'ignore-case': true,
               },
             ],
           },
@@ -657,6 +660,7 @@ describe(RULE_NAME, () => {
               {
                 type: SortType.natural,
                 order: SortOrder.asc,
+                'ignore-case': true,
               },
             ],
             errors: [
@@ -1253,6 +1257,7 @@ describe(RULE_NAME, () => {
               {
                 type: SortType['line-length'],
                 order: SortOrder.desc,
+                'ignore-case': true,
               },
             ],
           },
@@ -1271,6 +1276,7 @@ describe(RULE_NAME, () => {
               {
                 type: SortType['line-length'],
                 order: SortOrder.desc,
+                'ignore-case': true,
               },
             ],
             errors: [

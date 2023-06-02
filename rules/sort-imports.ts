@@ -50,6 +50,7 @@ type Options = [
     'internal-pattern': string[]
     groups: (Group[] | Group)[]
     'read-tsconfig': boolean
+    'ignore-case': boolean
   }>,
 ]
 
@@ -85,6 +86,10 @@ export default createEslintRule<Options, MESSAGE_ID>({
           order: {
             enum: [SortOrder.asc, SortOrder.desc],
             default: SortOrder.asc,
+          },
+          'ignore-case': {
+            type: 'boolean',
+            default: false,
           },
           groups: {
             type: 'array',
@@ -132,6 +137,7 @@ export default createEslintRule<Options, MESSAGE_ID>({
       type: SortType.alphabetical,
       'read-tsconfig': false,
       order: SortOrder.asc,
+      'ignore-case': false,
       groups: ['unknown'],
     })
 

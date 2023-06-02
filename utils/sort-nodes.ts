@@ -7,5 +7,6 @@ export let sortNodes = <T extends SortingNode>(
   options: {
     order: SortOrder
     type: SortType
+    'ignore-case'?: boolean
   },
 ): T[] => [...nodes].sort((a, b) => Number(compare(a, b, options)) || -1)

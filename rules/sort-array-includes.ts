@@ -16,9 +16,10 @@ type MESSAGE_ID = 'unexpectedArrayIncludesOrder'
 
 type Options = [
   Partial<{
+    spreadLast: boolean
+    'ignore-case': boolean
     order: SortOrder
     type: SortType
-    spreadLast: boolean
   }>,
 ]
 
@@ -48,6 +49,10 @@ export default createEslintRule<Options, MESSAGE_ID>({
           order: {
             enum: [SortOrder.asc, SortOrder.desc],
             default: SortOrder.asc,
+          },
+          'ignore-case': {
+            type: 'boolean',
+            default: false,
           },
           spreadLast: {
             type: 'boolean',
@@ -79,6 +84,7 @@ export default createEslintRule<Options, MESSAGE_ID>({
         let options = complete(context.options.at(0), {
           type: SortType.alphabetical,
           order: SortOrder.asc,
+          'ignore-case': false,
           spreadLast: false,
         })
 

@@ -18,6 +18,7 @@ type Options = [
   Partial<{
     order: SortOrder
     type: SortType
+    'ignore-case': boolean
     'ignore-pattern': string[]
   }>,
 ]
@@ -49,6 +50,10 @@ export default createEslintRule<Options, MESSAGE_ID>({
             enum: [SortOrder.asc, SortOrder.desc],
             default: SortOrder.asc,
           },
+          'ignore-case': {
+            type: 'boolean',
+            default: false,
+          },
           'ignore-pattern': {
             type: 'array',
             default: [],
@@ -72,6 +77,7 @@ export default createEslintRule<Options, MESSAGE_ID>({
     TSInterfaceDeclaration: node => {
       let options = complete(context.options.at(0), {
         type: SortType.alphabetical,
+        'ignore-case': false,
         order: SortOrder.asc,
         'ignore-pattern': [],
       })

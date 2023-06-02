@@ -15,6 +15,7 @@ type MESSAGE_ID = 'unexpectedEnumsOrder'
 
 type Options = [
   Partial<{
+    'ignore-case': boolean
     order: SortOrder
     type: SortType
   }>,
@@ -43,6 +44,10 @@ export default createEslintRule<Options, MESSAGE_ID>({
             ],
             default: SortType.natural,
           },
+          'ignore-case': {
+            type: 'boolean',
+            default: false,
+          },
           order: {
             enum: [SortOrder.asc, SortOrder.desc],
             default: SortOrder.asc,
@@ -66,6 +71,7 @@ export default createEslintRule<Options, MESSAGE_ID>({
       let options = complete(context.options.at(0), {
         type: SortType.alphabetical,
         order: SortOrder.asc,
+        'ignore-case': false,
       })
 
       if (node.members.length > 1) {
