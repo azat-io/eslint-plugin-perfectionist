@@ -60,7 +60,7 @@ Add `eslint-plugin-perfectionist` to the plugins section of the ESLint configura
       {
         "type": "line-length",
         "order": "desc",
-        "spreadLast": true
+        "spread-last": true
       }
     ]
   }
@@ -83,7 +83,7 @@ export default [
         {
           type: 'line-length',
           order: 'desc',
-          spreadLast: true,
+          'spread-last': true,
         },
       ],
     },

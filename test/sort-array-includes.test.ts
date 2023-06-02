@@ -186,7 +186,7 @@ describe(RULE_NAME, () => {
               {
                 type: SortType.alphabetical,
                 order: SortOrder.asc,
-                spreadLast: true,
+                'spread-last': true,
               },
             ],
           },
@@ -203,7 +203,7 @@ describe(RULE_NAME, () => {
               {
                 type: SortType.alphabetical,
                 order: SortOrder.asc,
-                spreadLast: true,
+                'spread-last': true,
               },
             ],
             errors: [
@@ -455,7 +455,7 @@ describe(RULE_NAME, () => {
               {
                 type: SortType.natural,
                 order: SortOrder.asc,
-                spreadLast: true,
+                'spread-last': true,
               },
             ],
           },
@@ -472,7 +472,7 @@ describe(RULE_NAME, () => {
               {
                 type: SortType.natural,
                 order: SortOrder.asc,
-                spreadLast: true,
+                'spread-last': true,
               },
             ],
             errors: [
@@ -731,7 +731,7 @@ describe(RULE_NAME, () => {
               {
                 type: SortType['line-length'],
                 order: SortOrder.desc,
-                spreadLast: true,
+                'spread-last': true,
               },
             ],
           },
@@ -748,7 +748,7 @@ describe(RULE_NAME, () => {
               {
                 type: SortType['line-length'],
                 order: SortOrder.desc,
-                spreadLast: true,
+                'spread-last': true,
               },
             ],
             errors: [

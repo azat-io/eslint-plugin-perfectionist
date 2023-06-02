@@ -16,7 +16,7 @@ type MESSAGE_ID = 'unexpectedArrayIncludesOrder'
 
 type Options = [
   Partial<{
-    spreadLast: boolean
+    'spread-last': boolean
     'ignore-case': boolean
     order: SortOrder
     type: SortType
@@ -54,7 +54,7 @@ export default createEslintRule<Options, MESSAGE_ID>({
             type: 'boolean',
             default: false,
           },
-          spreadLast: {
+          'spread-last': {
             type: 'boolean',
             default: false,
           },
@@ -85,7 +85,7 @@ export default createEslintRule<Options, MESSAGE_ID>({
           type: SortType.alphabetical,
           order: SortOrder.asc,
           'ignore-case': false,
-          spreadLast: false,
+          'spread-last': false,
         })
 
         let elements =
@@ -124,13 +124,13 @@ export default createEslintRule<Options, MESSAGE_ID>({
             let compareValue: boolean
 
             if (
-              options.spreadLast &&
+              options['spread-last'] &&
               first.node.type === AST_NODE_TYPES.Literal &&
               second.node.type === AST_NODE_TYPES.SpreadElement
             ) {
               compareValue = false
             } else if (
-              options.spreadLast &&
+              options['spread-last'] &&
               first.node.type === AST_NODE_TYPES.SpreadElement &&
               second.node.type === AST_NODE_TYPES.Literal
             ) {
@@ -150,7 +150,7 @@ export default createEslintRule<Options, MESSAGE_ID>({
                 fix: fixer => {
                   let sortedNodes = sortNodes(nodes, options)
 
-                  if (options.spreadLast) {
+                  if (options['spread-last']) {
                     sortedNodes.forEach((sortedNode, index) => {
                       if (
                         sortedNode.node.type === AST_NODE_TYPES.SpreadElement

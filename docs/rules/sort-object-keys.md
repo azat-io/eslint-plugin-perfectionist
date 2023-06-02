@@ -93,8 +93,7 @@ let family = {
       "error",
       {
         "type": "line-length",
-        "order": "desc",
-        "spreadLast": true
+        "order": "desc"
       }
     ]
   }
@@ -118,7 +117,6 @@ export default [
         {
           type: 'line-length',
           order: 'desc',
-          spreadLast: true,
         },
       ],
     },

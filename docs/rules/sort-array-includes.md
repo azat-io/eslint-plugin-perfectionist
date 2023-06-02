@@ -85,7 +85,7 @@ This rule aims to promote code readability and maintainability by enforcing a co
 
 - `boolean` (default: `false`) - only affects alphabetical and natural sorting. When `true` the rule ignores the case-sensitivity of the order.
 
-### `spreadLast`
+### `spread-last`
 
 - `boolean` (default: `false`) - enforce spread elements in array to be last
 
@@ -102,7 +102,7 @@ This rule aims to promote code readability and maintainability by enforcing a co
       {
         "type": "line-length",
         "order": "desc",
-        "spreadLast": true
+        "spread-last": true
       }
     ]
   }
@@ -126,7 +126,7 @@ export default [
         {
           type: 'line-length',
           order: 'desc',
-          spreadLast: true,
+          spread-last: true,
         },
       ],
     },

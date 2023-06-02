@@ -28,7 +28,7 @@ let createConfigWithOptions = (options: {
   let recommendedRules: {
     [key: string]: RuleDeclaration
   } = {
-    [sortArrayIncludesName]: ['error', { spreadLast: true }],
+    [sortArrayIncludesName]: ['error', { 'spread-last': true }],
     [sortEnumsName]: ['error'],
     [sortImportsName]: [
       'error',
