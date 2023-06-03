@@ -95,6 +95,13 @@ let Riko = () => (
 
 - `boolean` (default: `false`) - only affects alphabetical and natural sorting. When `true` the rule ignores the case-sensitivity of the order.
 
+### `shorthand`
+
+- `enum` (default: `ignore`):
+  - `first` - enforce shorthand JSX props to be at the top of the list
+  - `ignore` - sort shorthand props in general order
+  - `last` - enforce shorthand JSX props to be at the end of the list
+
 ## ⚙️ Usage
 
 ### Legacy Config

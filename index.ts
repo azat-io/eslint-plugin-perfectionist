@@ -28,7 +28,12 @@ let createConfigWithOptions = (options: {
   let recommendedRules: {
     [key: string]: RuleDeclaration
   } = {
-    [sortArrayIncludesName]: ['error', { 'spread-last': true }],
+    [sortArrayIncludesName]: [
+      'error',
+      {
+        'spread-last': true,
+      },
+    ],
     [sortEnumsName]: ['error'],
     [sortImportsName]: [
       'error',
@@ -49,7 +54,12 @@ let createConfigWithOptions = (options: {
       },
     ],
     [sortInterfacesName]: ['error'],
-    [sortJsxPropsName]: ['error'],
+    [sortJsxPropsName]: [
+      'error',
+      {
+        shorthand: 'ignore',
+      },
+    ],
     [sortMapElementsName]: ['error'],
     [sortNamedExportsName]: ['error'],
     [sortNamedImportsName]: ['error'],

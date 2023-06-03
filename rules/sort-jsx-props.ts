@@ -10,15 +10,25 @@ import { sortNodes } from '../utils/sort-nodes'
 import { makeFixes } from '../utils/make-fixes'
 import { complete } from '../utils/complete'
 import { pairwise } from '../utils/pairwise'
+import { groupBy } from '../utils/group-by'
 import { compare } from '../utils/compare'
 
 type MESSAGE_ID = 'unexpectedJSXPropsOrder'
+
+export enum Position {
+  'first' = 'first',
+  'last' = 'last',
+  'ignore' = 'ignore',
+}
+
+type SortingNodeWithPosition = SortingNode & { position: Position }
 
 type Options = [
   Partial<{
     order: SortOrder
     type: SortType
     'ignore-case': boolean
+    shorthand: Position
   }>,
 ]
 
@@ -53,6 +63,9 @@ export default createEslintRule<Options, MESSAGE_ID>({
             type: 'boolean',
             default: false,
           },
+          shorthand: {
+            enum: [Position.first, Position.last, Position.ignore],
+          },
         },
         additionalProperties: false,
       },
@@ -72,40 +85,68 @@ export default createEslintRule<Options, MESSAGE_ID>({
     JSXElement: node => {
       let options = complete(context.options.at(0), {
         type: SortType.alphabetical,
+        shorthand: Position.ignore,
         'ignore-case': false,
         order: SortOrder.asc,
       })
 
       let source = context.getSourceCode()
 
-      let parts: TSESTree.JSXAttribute[][] =
+      let parts: SortingNodeWithPosition[][] =
         node.openingElement.attributes.reduce(
           (
-            accumulator: TSESTree.JSXAttribute[][],
+            accumulator: SortingNodeWithPosition[][],
             attribute: TSESTree.JSXSpreadAttribute | TSESTree.JSXAttribute,
           ) => {
-            if (attribute.type === 'JSXAttribute') {
-              accumulator.at(-1)!.push(attribute)
-            } else {
+            if (attribute.type === AST_NODE_TYPES.JSXSpreadAttribute) {
               accumulator.push([])
+              return accumulator
             }
+
+            let position: Position = Position.ignore
+
+            if (
+              options.shorthand !== Position.ignore &&
+              attribute.value === null
+            ) {
+              position = options.shorthand
+            }
+
+            let jsxNode = {
+              name:
+                attribute.name.type === AST_NODE_TYPES.JSXNamespacedName
+                  ? `${attribute.name.namespace.name}:${attribute.name.name.name}`
+                  : attribute.name.name,
+              size: rangeToDiff(attribute.range),
+              node: attribute,
+              position,
+            }
+
+            accumulator.at(-1)!.push(jsxNode)
+
             return accumulator
           },
           [[]],
         )
 
-      parts.forEach(part => {
-        let nodes: SortingNode[] = part.map(attribute => ({
-          name:
-            attribute.name.type === AST_NODE_TYPES.JSXNamespacedName
-              ? `${attribute.name.namespace.name}:${attribute.name.name.name}`
-              : attribute.name.name,
-          size: rangeToDiff(attribute.range),
-          node: attribute,
-        }))
-
+      parts.forEach(nodes => {
         pairwise(nodes, (first, second) => {
-          if (compare(first, second, options)) {
+          let comparison: boolean
+
+          if (first.position === second.position) {
+            comparison = compare(first, second, options)
+          } else {
+            let positionPower = {
+              [Position.first]: 1,
+              [Position.ignore]: 0,
+              [Position.last]: -1,
+            }
+
+            comparison =
+              positionPower[first.position] < positionPower[second.position]
+          }
+
+          if (comparison) {
             context.report({
               messageId: 'unexpectedJSXPropsOrder',
               data: {
@@ -113,8 +154,20 @@ export default createEslintRule<Options, MESSAGE_ID>({
                 second: second.name,
               },
               node: second.node,
-              fix: fixer =>
-                makeFixes(fixer, nodes, sortNodes(nodes, options), source),
+              fix: fixer => {
+                let groups = groupBy(nodes, ({ position }) => position)
+
+                let getGroup = (index: string) =>
+                  index in groups ? groups[index] : []
+
+                let sortedNodes = [
+                  sortNodes(getGroup(Position.first), options),
+                  sortNodes(getGroup(Position.ignore), options),
+                  sortNodes(getGroup(Position.last), options),
+                ].flat()
+
+                return makeFixes(fixer, nodes, sortedNodes, source)
+              },
             })
           }
         })

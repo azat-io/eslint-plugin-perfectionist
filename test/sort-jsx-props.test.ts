@@ -2,7 +2,7 @@ import { ESLintUtils } from '@typescript-eslint/utils'
 import { describe, it } from 'vitest'
 import { dedent } from 'ts-dedent'
 
-import rule, { RULE_NAME } from '../rules/sort-jsx-props'
+import rule, { RULE_NAME, Position } from '../rules/sort-jsx-props'
 import { SortType, SortOrder } from '../typings'
 
 describe(RULE_NAME, () => {
@@ -223,6 +223,72 @@ describe(RULE_NAME, () => {
                 data: {
                   first: 'occupation',
                   second: 'age',
+                },
+              },
+            ],
+          },
+        ],
+      })
+    })
+
+    it(`${RULE_NAME}(${type}): allows to put shorthand props to the end`, () => {
+      ruleTester.run(RULE_NAME, rule, {
+        valid: [
+          {
+            code: dedent`
+              let Spike = () => (
+                <Hunter
+                  age={27}
+                  bloodType={0}
+                  origin="Mars"
+                  isFromCowboyBebop
+                />
+              )
+            `,
+            options: [
+              {
+                type: SortType.alphabetical,
+                shorthand: Position.last,
+                order: SortOrder.asc,
+              },
+            ],
+          },
+        ],
+        invalid: [
+          {
+            code: dedent`
+              let Spike = () => (
+                <Hunter
+                  age={27}
+                  bloodType={0}
+                  isFromCowboyBebop
+                  origin="Mars"
+                />
+              )
+            `,
+            output: dedent`
+              let Spike = () => (
+                <Hunter
+                  age={27}
+                  bloodType={0}
+                  origin="Mars"
+                  isFromCowboyBebop
+                />
+              )
+            `,
+            options: [
+              {
+                type: SortType.alphabetical,
+                shorthand: Position.last,
+                order: SortOrder.asc,
+              },
+            ],
+            errors: [
+              {
+                messageId: 'unexpectedJSXPropsOrder',
+                data: {
+                  first: 'isFromCowboyBebop',
+                  second: 'origin',
                 },
               },
             ],
