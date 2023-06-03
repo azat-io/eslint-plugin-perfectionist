@@ -441,6 +441,139 @@ describe(RULE_NAME, () => {
         ],
       })
     })
+
+    it(`${RULE_NAME}(${type}): allows to set priority props`, () => {
+      ruleTester.run(RULE_NAME, rule, {
+        valid: [
+          {
+            code: dedent`
+              <Hero
+                id="ed2cc26e-ec5a-41da-aab0-51a61d6a919f"
+                name="Saitama"
+                age={25}
+                height={175}
+                nickname="One-Punch Man"
+                weight={70}
+              />
+            `,
+            options: [
+              {
+                type: SortType.alphabetical,
+                order: SortOrder.asc,
+                'always-on-top': ['id', 'name'],
+              },
+            ],
+          },
+        ],
+        invalid: [
+          {
+            code: dedent`
+              <Hero
+                age={25}
+                nickname="One-Punch Man"
+                name="Saitama"
+                id="ed2cc26e-ec5a-41da-aab0-51a61d6a919f"
+                height={175}
+                weight={70}
+              />
+            `,
+            output: dedent`
+              <Hero
+                id="ed2cc26e-ec5a-41da-aab0-51a61d6a919f"
+                name="Saitama"
+                age={25}
+                height={175}
+                nickname="One-Punch Man"
+                weight={70}
+              />
+            `,
+            options: [
+              {
+                type: SortType.alphabetical,
+                order: SortOrder.asc,
+                'always-on-top': ['id', 'name'],
+              },
+            ],
+            errors: [
+              {
+                messageId: 'unexpectedJSXPropsOrder',
+                data: {
+                  first: 'nickname',
+                  second: 'name',
+                },
+              },
+              {
+                messageId: 'unexpectedJSXPropsOrder',
+                data: {
+                  first: 'name',
+                  second: 'id',
+                },
+              },
+            ],
+          },
+          {
+            code: dedent`
+              <Hero
+                name="Genos"
+                id="dabd9d43-a165-419a-bfc8-061533bf40bd"
+              />
+            `,
+            output: dedent`
+              <Hero
+                id="dabd9d43-a165-419a-bfc8-061533bf40bd"
+                name="Genos"
+              />
+            `,
+            options: [
+              {
+                type: SortType.alphabetical,
+                order: SortOrder.asc,
+                'always-on-top': ['id', 'name'],
+              },
+            ],
+            errors: [
+              {
+                messageId: 'unexpectedJSXPropsOrder',
+                data: {
+                  first: 'name',
+                  second: 'id',
+                },
+              },
+            ],
+          },
+          {
+            code: dedent`
+              <Hero
+                name="King"
+                id="5bcd11c7-bb04-4046-b986-a4e4796fa624"
+              />
+            `,
+            output: dedent`
+              <Hero
+                id="5bcd11c7-bb04-4046-b986-a4e4796fa624"
+                name="King"
+              />
+            `,
+            options: [
+              {
+                type: SortType.alphabetical,
+                order: SortOrder.asc,
+                'always-on-top': ['id'],
+              },
+            ],
+            errors: [
+              {
+                messageId: 'unexpectedJSXPropsOrder',
+                data: {
+                  first: 'name',
+                  second: 'id',
+                },
+              },
+            ],
+          },
+        ],
+      })
+    })
   })
 
   describe(`${RULE_NAME}: sorting by natural order`, () => {
@@ -862,6 +995,139 @@ describe(RULE_NAME, () => {
                 data: {
                   first: 'residence',
                   second: 'style',
+                },
+              },
+            ],
+          },
+        ],
+      })
+    })
+
+    it(`${RULE_NAME}(${type}): allows to set priority props`, () => {
+      ruleTester.run(RULE_NAME, rule, {
+        valid: [
+          {
+            code: dedent`
+              <Hero
+                id="ed2cc26e-ec5a-41da-aab0-51a61d6a919f"
+                name="Saitama"
+                age={25}
+                height={175}
+                nickname="One-Punch Man"
+                weight={70}
+              />
+            `,
+            options: [
+              {
+                type: SortType.natural,
+                order: SortOrder.asc,
+                'always-on-top': ['id', 'name'],
+              },
+            ],
+          },
+        ],
+        invalid: [
+          {
+            code: dedent`
+              <Hero
+                age={25}
+                nickname="One-Punch Man"
+                name="Saitama"
+                id="ed2cc26e-ec5a-41da-aab0-51a61d6a919f"
+                height={175}
+                weight={70}
+              />
+            `,
+            output: dedent`
+              <Hero
+                id="ed2cc26e-ec5a-41da-aab0-51a61d6a919f"
+                name="Saitama"
+                age={25}
+                height={175}
+                nickname="One-Punch Man"
+                weight={70}
+              />
+            `,
+            options: [
+              {
+                type: SortType.natural,
+                order: SortOrder.asc,
+                'always-on-top': ['id', 'name'],
+              },
+            ],
+            errors: [
+              {
+                messageId: 'unexpectedJSXPropsOrder',
+                data: {
+                  first: 'nickname',
+                  second: 'name',
+                },
+              },
+              {
+                messageId: 'unexpectedJSXPropsOrder',
+                data: {
+                  first: 'name',
+                  second: 'id',
+                },
+              },
+            ],
+          },
+          {
+            code: dedent`
+              <Hero
+                name="Genos"
+                id="dabd9d43-a165-419a-bfc8-061533bf40bd"
+              />
+            `,
+            output: dedent`
+              <Hero
+                id="dabd9d43-a165-419a-bfc8-061533bf40bd"
+                name="Genos"
+              />
+            `,
+            options: [
+              {
+                type: SortType.natural,
+                order: SortOrder.asc,
+                'always-on-top': ['id', 'name'],
+              },
+            ],
+            errors: [
+              {
+                messageId: 'unexpectedJSXPropsOrder',
+                data: {
+                  first: 'name',
+                  second: 'id',
+                },
+              },
+            ],
+          },
+          {
+            code: dedent`
+              <Hero
+                name="King"
+                id="5bcd11c7-bb04-4046-b986-a4e4796fa624"
+              />
+            `,
+            output: dedent`
+              <Hero
+                id="5bcd11c7-bb04-4046-b986-a4e4796fa624"
+                name="King"
+              />
+            `,
+            options: [
+              {
+                type: SortType.natural,
+                order: SortOrder.asc,
+                'always-on-top': ['id'],
+              },
+            ],
+            errors: [
+              {
+                messageId: 'unexpectedJSXPropsOrder',
+                data: {
+                  first: 'name',
+                  second: 'id',
                 },
               },
             ],
@@ -1297,6 +1563,146 @@ describe(RULE_NAME, () => {
                 data: {
                   first: 'residence',
                   second: 'style',
+                },
+              },
+            ],
+          },
+        ],
+      })
+    })
+
+    it(`${RULE_NAME}(${type}): allows to set priority props`, () => {
+      ruleTester.run(RULE_NAME, rule, {
+        valid: [
+          {
+            code: dedent`
+              <Hero
+                id="ed2cc26e-ec5a-41da-aab0-51a61d6a919f"
+                name="Saitama"
+                nickname="One-Punch Man"
+                height={175}
+                weight={70}
+                age={25}
+              />
+            `,
+            options: [
+              {
+                type: SortType['line-length'],
+                order: SortOrder.desc,
+                'always-on-top': ['id', 'name'],
+              },
+            ],
+          },
+        ],
+        invalid: [
+          {
+            code: dedent`
+              <Hero
+                age={25}
+                nickname="One-Punch Man"
+                name="Saitama"
+                id="ed2cc26e-ec5a-41da-aab0-51a61d6a919f"
+                height={175}
+                weight={70}
+              />
+            `,
+            output: dedent`
+              <Hero
+                id="ed2cc26e-ec5a-41da-aab0-51a61d6a919f"
+                name="Saitama"
+                nickname="One-Punch Man"
+                height={175}
+                weight={70}
+                age={25}
+              />
+            `,
+            options: [
+              {
+                type: SortType['line-length'],
+                order: SortOrder.desc,
+                'always-on-top': ['id', 'name'],
+              },
+            ],
+            errors: [
+              {
+                messageId: 'unexpectedJSXPropsOrder',
+                data: {
+                  first: 'age',
+                  second: 'nickname',
+                },
+              },
+              {
+                messageId: 'unexpectedJSXPropsOrder',
+                data: {
+                  first: 'nickname',
+                  second: 'name',
+                },
+              },
+              {
+                messageId: 'unexpectedJSXPropsOrder',
+                data: {
+                  first: 'name',
+                  second: 'id',
+                },
+              },
+            ],
+          },
+          {
+            code: dedent`
+              <Hero
+                name="Genos"
+                id="dabd9d43-a165-419a-bfc8-061533bf40bd"
+              />
+            `,
+            output: dedent`
+              <Hero
+                id="dabd9d43-a165-419a-bfc8-061533bf40bd"
+                name="Genos"
+              />
+            `,
+            options: [
+              {
+                type: SortType['line-length'],
+                order: SortOrder.desc,
+                'always-on-top': ['id', 'name'],
+              },
+            ],
+            errors: [
+              {
+                messageId: 'unexpectedJSXPropsOrder',
+                data: {
+                  first: 'name',
+                  second: 'id',
+                },
+              },
+            ],
+          },
+          {
+            code: dedent`
+              <Hero
+                name="King"
+                id="5bcd11c7-bb04-4046-b986-a4e4796fa624"
+              />
+            `,
+            output: dedent`
+              <Hero
+                id="5bcd11c7-bb04-4046-b986-a4e4796fa624"
+                name="King"
+              />
+            `,
+            options: [
+              {
+                type: SortType['line-length'],
+                order: SortOrder.desc,
+                'always-on-top': ['id'],
+              },
+            ],
+            errors: [
+              {
+                messageId: 'unexpectedJSXPropsOrder',
+                data: {
+                  first: 'name',
+                  second: 'id',
                 },
               },
             ],

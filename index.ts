@@ -57,6 +57,7 @@ let createConfigWithOptions = (options: {
     [sortJsxPropsName]: [
       'error',
       {
+        'always-on-top': [],
         shorthand: 'ignore',
         multiline: 'start',
         callback: 'ignore',

@@ -85,7 +85,7 @@ interface Options {
   type?: 'alphabetical' | 'natural' | 'natural'
   order?: 'asc' | 'desc'
   'ignore-case'?: boolean
-  'spread-last'?: boolean
+  'always-on-top'?: string[]
   callback?: 'first' | 'ignore' | 'last'
   multiline?: 'first' | 'ignore' | 'last'
   shorthand?: 'first' | 'ignore' | 'last'
@@ -112,6 +112,12 @@ interface Options {
 <sub>(default: `false`)</sub>
 
 Only affects alphabetical and natural sorting. When `true` the rule ignores the case-sensitivity of the order.
+
+### always-on-top
+
+<sub>(default: `[]`)</sub>
+
+You can set a list of property names that will always go at the beginning of the JSX element. For example: `['id', 'name']`
 
 ### callback
 

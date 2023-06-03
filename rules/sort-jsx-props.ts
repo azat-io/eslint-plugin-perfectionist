@@ -19,6 +19,7 @@ export enum Position {
   'first' = 'first',
   'last' = 'last',
   'ignore' = 'ignore',
+  'exception' = 'exception',
 }
 
 type SortingNodeWithPosition = SortingNode & { position: Position }
@@ -28,6 +29,7 @@ type Options = [
     order: SortOrder
     type: SortType
     'ignore-case': boolean
+    'always-on-top': string[]
     shorthand: Position
     callback: Position
     multiline: Position
@@ -60,6 +62,10 @@ export default createEslintRule<Options, MESSAGE_ID>({
           order: {
             enum: [SortOrder.asc, SortOrder.desc],
             default: SortOrder.asc,
+          },
+          'always-on-top': {
+            type: 'array',
+            default: [],
           },
           'ignore-case': {
             type: 'boolean',
@@ -96,6 +102,7 @@ export default createEslintRule<Options, MESSAGE_ID>({
         shorthand: Position.ignore,
         multiline: Position.ignore,
         callback: Position.ignore,
+        'always-on-top': [],
         'ignore-case': false,
         order: SortOrder.asc,
       })
@@ -116,24 +123,31 @@ export default createEslintRule<Options, MESSAGE_ID>({
             let position: Position = Position.ignore
 
             if (
-              options.shorthand !== Position.ignore &&
-              attribute.value === null
-            ) {
-              position = options.shorthand
-            }
-
-            if (
-              options.callback !== Position.ignore &&
               attribute.name.type === AST_NODE_TYPES.JSXIdentifier &&
-              attribute.name.name.indexOf('on') === 0 &&
-              attribute.value !== null
+              options['always-on-top'].includes(attribute.name.name)
             ) {
-              position = options.callback
-            } else if (
-              options.multiline !== Position.ignore &&
-              attribute.loc.start.line !== attribute.loc.end.line
-            ) {
-              position = options.multiline
+              position = Position.exception
+            } else {
+              if (
+                options.shorthand !== Position.ignore &&
+                attribute.value === null
+              ) {
+                position = options.shorthand
+              }
+
+              if (
+                options.callback !== Position.ignore &&
+                attribute.name.type === AST_NODE_TYPES.JSXIdentifier &&
+                attribute.name.name.indexOf('on') === 0 &&
+                attribute.value !== null
+              ) {
+                position = options.callback
+              } else if (
+                options.multiline !== Position.ignore &&
+                attribute.loc.start.line !== attribute.loc.end.line
+              ) {
+                position = options.multiline
+              }
             }
 
             let jsxNode = {
@@ -157,10 +171,18 @@ export default createEslintRule<Options, MESSAGE_ID>({
         pairwise(nodes, (first, second) => {
           let comparison: boolean
 
-          if (first.position === second.position) {
+          if (
+            first.position === Position.exception &&
+            second.position === Position.exception
+          ) {
+            comparison =
+              options['always-on-top'].indexOf(first.name) >
+              options['always-on-top'].indexOf(second.name)
+          } else if (first.position === second.position) {
             comparison = compare(first, second, options)
           } else {
             let positionPower = {
+              [Position.exception]: 2,
               [Position.first]: 1,
               [Position.ignore]: 0,
               [Position.last]: -1,
@@ -185,6 +207,11 @@ export default createEslintRule<Options, MESSAGE_ID>({
                   index in groups ? groups[index] : []
 
                 let sortedNodes = [
+                  getGroup(Position.exception).sort(
+                    (aNode, bNode) =>
+                      options['always-on-top'].indexOf(aNode.name) -
+                      options['always-on-top'].indexOf(bNode.name),
+                  ),
                   sortNodes(getGroup(Position.first), options),
                   sortNodes(getGroup(Position.ignore), options),
                   sortNodes(getGroup(Position.last), options),
