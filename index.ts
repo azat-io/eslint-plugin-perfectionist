@@ -59,7 +59,7 @@ let createConfigWithOptions = (options: {
       {
         'always-on-top': [],
         shorthand: 'ignore',
-        multiline: 'start',
+        multiline: 'first',
         callback: 'ignore',
       },
     ],
