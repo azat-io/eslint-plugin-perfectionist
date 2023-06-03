@@ -95,6 +95,13 @@ let Riko = () => (
 
 - `boolean` (default: `false`) - only affects alphabetical and natural sorting. When `true` the rule ignores the case-sensitivity of the order.
 
+### `callback`
+
+- `enum` (default: `ignore`):
+  - `first` - enforce callback JSX props to be at the top of the list
+  - `ignore` - sort callback props in general order
+  - `last` - enforce callback JSX props to be at the end of the list
+
 ### `shorthand`
 
 - `enum` (default: `ignore`):

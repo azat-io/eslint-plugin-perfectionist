@@ -58,6 +58,7 @@ let createConfigWithOptions = (options: {
       'error',
       {
         shorthand: 'ignore',
+        callback: 'ignore',
       },
     ],
     [sortMapElementsName]: ['error'],

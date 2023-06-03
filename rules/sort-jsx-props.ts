@@ -29,6 +29,7 @@ type Options = [
     type: SortType
     'ignore-case': boolean
     shorthand: Position
+    callback: Position
   }>,
 ]
 
@@ -66,6 +67,9 @@ export default createEslintRule<Options, MESSAGE_ID>({
           shorthand: {
             enum: [Position.first, Position.last, Position.ignore],
           },
+          callback: {
+            enum: [Position.first, Position.last, Position.ignore],
+          },
         },
         additionalProperties: false,
       },
@@ -86,6 +90,7 @@ export default createEslintRule<Options, MESSAGE_ID>({
       let options = complete(context.options.at(0), {
         type: SortType.alphabetical,
         shorthand: Position.ignore,
+        callback: Position.ignore,
         'ignore-case': false,
         order: SortOrder.asc,
       })
@@ -110,6 +115,15 @@ export default createEslintRule<Options, MESSAGE_ID>({
               attribute.value === null
             ) {
               position = options.shorthand
+            }
+
+            if (
+              options.callback !== Position.ignore &&
+              attribute.name.type === AST_NODE_TYPES.JSXIdentifier &&
+              attribute.name.name.indexOf('on') === 0 &&
+              attribute.value !== null
+            ) {
+              position = options.callback
             }
 
             let jsxNode = {

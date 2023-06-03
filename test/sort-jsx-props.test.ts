@@ -231,7 +231,7 @@ describe(RULE_NAME, () => {
       })
     })
 
-    it(`${RULE_NAME}(${type}): allows to put shorthand props to the end`, () => {
+    it(`${RULE_NAME}(${type}): allows to set shorthand props position`, () => {
       ruleTester.run(RULE_NAME, rule, {
         valid: [
           {
@@ -289,6 +289,66 @@ describe(RULE_NAME, () => {
                 data: {
                   first: 'isFromCowboyBebop',
                   second: 'origin',
+                },
+              },
+            ],
+          },
+        ],
+      })
+    })
+
+    it(`${RULE_NAME}(${type}): allows to set callback props position`, () => {
+      ruleTester.run(RULE_NAME, rule, {
+        valid: [
+          {
+            code: dedent`
+              <DeathNote
+                author="Light Yagami"
+                list={deathNotes}
+                shinigami="Ryuk"
+                onChange={updateDeathNotes}
+              />
+            `,
+            options: [
+              {
+                type: SortType.alphabetical,
+                callback: Position.last,
+                order: SortOrder.asc,
+              },
+            ],
+          },
+        ],
+        invalid: [
+          {
+            code: dedent`
+              <DeathNote
+                author="Light Yagami"
+                list={deathNotes}
+                onChange={updateDeathNotes}
+                shinigami="Ryuk"
+              />
+            `,
+            output: dedent`
+              <DeathNote
+                author="Light Yagami"
+                list={deathNotes}
+                shinigami="Ryuk"
+                onChange={updateDeathNotes}
+              />
+            `,
+            options: [
+              {
+                type: SortType.alphabetical,
+                callback: Position.last,
+                order: SortOrder.asc,
+              },
+            ],
+            errors: [
+              {
+                messageId: 'unexpectedJSXPropsOrder',
+                data: {
+                  first: 'onChange',
+                  second: 'shinigami',
                 },
               },
             ],
@@ -513,6 +573,132 @@ describe(RULE_NAME, () => {
         ],
       })
     })
+
+    it(`${RULE_NAME}(${type}): allows to set shorthand props position`, () => {
+      ruleTester.run(RULE_NAME, rule, {
+        valid: [
+          {
+            code: dedent`
+              let Spike = () => (
+                <Hunter
+                  age={27}
+                  bloodType={0}
+                  origin="Mars"
+                  isFromCowboyBebop
+                />
+              )
+            `,
+            options: [
+              {
+                type: SortType.natural,
+                shorthand: Position.last,
+                order: SortOrder.asc,
+              },
+            ],
+          },
+        ],
+        invalid: [
+          {
+            code: dedent`
+              let Spike = () => (
+                <Hunter
+                  age={27}
+                  bloodType={0}
+                  isFromCowboyBebop
+                  origin="Mars"
+                />
+              )
+            `,
+            output: dedent`
+              let Spike = () => (
+                <Hunter
+                  age={27}
+                  bloodType={0}
+                  origin="Mars"
+                  isFromCowboyBebop
+                />
+              )
+            `,
+            options: [
+              {
+                type: SortType.natural,
+                shorthand: Position.last,
+                order: SortOrder.asc,
+              },
+            ],
+            errors: [
+              {
+                messageId: 'unexpectedJSXPropsOrder',
+                data: {
+                  first: 'isFromCowboyBebop',
+                  second: 'origin',
+                },
+              },
+            ],
+          },
+        ],
+      })
+    })
+
+    it(`${RULE_NAME}(${type}): allows to set callback props position`, () => {
+      ruleTester.run(RULE_NAME, rule, {
+        valid: [
+          {
+            code: dedent`
+              <DeathNote
+                author="Light Yagami"
+                list={deathNotes}
+                shinigami="Ryuk"
+                onChange={updateDeathNotes}
+              />
+            `,
+            options: [
+              {
+                type: SortType.natural,
+                callback: Position.last,
+                order: SortOrder.asc,
+              },
+            ],
+          },
+        ],
+        invalid: [
+          {
+            code: dedent`
+              <DeathNote
+                author="Light Yagami"
+                list={deathNotes}
+                onChange={updateDeathNotes}
+                shinigami="Ryuk"
+              />
+            `,
+            output: dedent`
+              <DeathNote
+                author="Light Yagami"
+                list={deathNotes}
+                shinigami="Ryuk"
+                onChange={updateDeathNotes}
+              />
+            `,
+            options: [
+              {
+                type: SortType.natural,
+                callback: Position.last,
+                order: SortOrder.asc,
+              },
+            ],
+            errors: [
+              {
+                messageId: 'unexpectedJSXPropsOrder',
+                data: {
+                  first: 'onChange',
+                  second: 'shinigami',
+                },
+              },
+            ],
+          },
+        ],
+      })
+    })
   })
 
   describe(`${RULE_NAME}: sorting by line length`, () => {
@@ -723,6 +909,139 @@ describe(RULE_NAME, () => {
                 data: {
                   first: 'age',
                   second: 'weapon',
+                },
+              },
+            ],
+          },
+        ],
+      })
+    })
+
+    it(`${RULE_NAME}(${type}): allows to set shorthand props position`, () => {
+      ruleTester.run(RULE_NAME, rule, {
+        valid: [
+          {
+            code: dedent`
+              let Spike = () => (
+                <Hunter
+                  bloodType={0}
+                  origin="Mars"
+                  age={27}
+                  isFromCowboyBebop
+                />
+              )
+            `,
+            options: [
+              {
+                type: SortType['line-length'],
+                shorthand: Position.last,
+                order: SortOrder.desc,
+              },
+            ],
+          },
+        ],
+        invalid: [
+          {
+            code: dedent`
+              let Spike = () => (
+                <Hunter
+                  age={27}
+                  bloodType={0}
+                  isFromCowboyBebop
+                  origin="Mars"
+                />
+              )
+            `,
+            output: dedent`
+              let Spike = () => (
+                <Hunter
+                  origin="Mars"
+                  bloodType={0}
+                  age={27}
+                  isFromCowboyBebop
+                />
+              )
+            `,
+            options: [
+              {
+                type: SortType['line-length'],
+                order: SortOrder.desc,
+                shorthand: Position.last,
+              },
+            ],
+            errors: [
+              {
+                messageId: 'unexpectedJSXPropsOrder',
+                data: {
+                  first: 'age',
+                  second: 'bloodType',
+                },
+              },
+              {
+                messageId: 'unexpectedJSXPropsOrder',
+                data: {
+                  first: 'isFromCowboyBebop',
+                  second: 'origin',
+                },
+              },
+            ],
+          },
+        ],
+      })
+    })
+
+    it(`${RULE_NAME}(${type}): allows to set callback props position`, () => {
+      ruleTester.run(RULE_NAME, rule, {
+        valid: [
+          {
+            code: dedent`
+              <DeathNote
+                author="Light Yagami"
+                list={deathNotes}
+                shinigami="Ryuk"
+                onChange={updateDeathNotes}
+              />
+            `,
+            options: [
+              {
+                type: SortType['line-length'],
+                callback: Position.last,
+                order: SortOrder.desc,
+              },
+            ],
+          },
+        ],
+        invalid: [
+          {
+            code: dedent`
+              <DeathNote
+                author="Light Yagami"
+                list={deathNotes}
+                onChange={updateDeathNotes}
+                shinigami="Ryuk"
+              />
+            `,
+            output: dedent`
+              <DeathNote
+                author="Light Yagami"
+                list={deathNotes}
+                shinigami="Ryuk"
+                onChange={updateDeathNotes}
+              />
+            `,
+            options: [
+              {
+                type: SortType['line-length'],
+                callback: Position.last,
+                order: SortOrder.desc,
+              },
+            ],
+            errors: [
+              {
+                messageId: 'unexpectedJSXPropsOrder',
+                data: {
+                  first: 'onChange',
+                  second: 'shinigami',
                 },
               },
             ],
