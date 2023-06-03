@@ -99,16 +99,16 @@ The easiest way to use `eslint-plugin-perfectionist` is to use ready-made config
 
 ```json
 {
-  "extends": ["plugin:perfectionist/recommended-natural"]
+  "extends": ["plugin:perfectionist/recommended-line-length"]
 }
 ```
 
 ### Flat Config ([`eslint.config.js`](https://eslint.org/docs/latest/use/configure/configuration-files-new))
 
 ```js
-import perfectionistPluginRecommendedNatural from 'eslint-plugin-perfectionist/configs/recommended-natural'
+import perfectionistPluginRecommendedLineLength from 'eslint-plugin-perfectionist/configs/recommended-line-length'
 
-export default [perfectionistPluginRecommendedNatural]
+export default [perfectionistPluginRecommendedLineLength]
 ```
 
 ### List of Configs
