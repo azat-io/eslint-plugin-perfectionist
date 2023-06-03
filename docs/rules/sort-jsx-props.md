@@ -102,6 +102,13 @@ let Riko = () => (
   - `ignore` - sort callback props in general order
   - `last` - enforce callback JSX props to be at the end of the list
 
+### `multiline`
+
+- `enum` (default: `ignore`):
+  - `first` - enforce multiline JSX props to be at the top of the list
+  - `ignore` - sort multiline props in general order
+  - `last` - enforce multiline JSX props to be at the end of the list
+
 ### `shorthand`
 
 - `enum` (default: `ignore`):

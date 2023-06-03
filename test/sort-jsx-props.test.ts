@@ -356,6 +356,91 @@ describe(RULE_NAME, () => {
         ],
       })
     })
+
+    it(`${RULE_NAME}(${type}): allows to set multiline props position`, () => {
+      ruleTester.run(RULE_NAME, rule, {
+        valid: [
+          {
+            code: dedent`
+              <Holo
+                handleTransform={(type: 'Human' | 'Wolf') => {
+                  toogleForm(form)
+                }}
+                style={{
+                  position: 'absolute',
+                  color: 'red',
+                }}
+                form={form}
+                residence="Pasloe"
+                title="Wisewolf"
+              />
+            `,
+            options: [
+              {
+                type: SortType.alphabetical,
+                multiline: Position.first,
+                order: SortOrder.asc,
+              },
+            ],
+          },
+        ],
+        invalid: [
+          {
+            code: dedent`
+              <Holo
+                form={form}
+                handleTransform={(type: 'Human' | 'Wolf') => {
+                  toogleForm(form)
+                }}
+                residence="Pasloe"
+                style={{
+                  position: 'absolute',
+                  color: 'red',
+                }}
+                title="Wisewolf"
+              />
+            `,
+            output: dedent`
+              <Holo
+                handleTransform={(type: 'Human' | 'Wolf') => {
+                  toogleForm(form)
+                }}
+                style={{
+                  position: 'absolute',
+                  color: 'red',
+                }}
+                form={form}
+                residence="Pasloe"
+                title="Wisewolf"
+              />
+            `,
+            options: [
+              {
+                type: SortType.alphabetical,
+                multiline: Position.first,
+                order: SortOrder.asc,
+              },
+            ],
+            errors: [
+              {
+                messageId: 'unexpectedJSXPropsOrder',
+                data: {
+                  first: 'form',
+                  second: 'handleTransform',
+                },
+              },
+              {
+                messageId: 'unexpectedJSXPropsOrder',
+                data: {
+                  first: 'residence',
+                  second: 'style',
+                },
+              },
+            ],
+          },
+        ],
+      })
+    })
   })
 
   describe(`${RULE_NAME}: sorting by natural order`, () => {
@@ -692,6 +777,91 @@ describe(RULE_NAME, () => {
                 data: {
                   first: 'onChange',
                   second: 'shinigami',
+                },
+              },
+            ],
+          },
+        ],
+      })
+    })
+
+    it(`${RULE_NAME}(${type}): allows to set multiline props position`, () => {
+      ruleTester.run(RULE_NAME, rule, {
+        valid: [
+          {
+            code: dedent`
+              <Holo
+                handleTransform={(type: 'Human' | 'Wolf') => {
+                  toogleForm(form)
+                }}
+                style={{
+                  position: 'absolute',
+                  color: 'red',
+                }}
+                form={form}
+                residence="Pasloe"
+                title="Wisewolf"
+              />
+            `,
+            options: [
+              {
+                type: SortType.natural,
+                multiline: Position.first,
+                order: SortOrder.asc,
+              },
+            ],
+          },
+        ],
+        invalid: [
+          {
+            code: dedent`
+              <Holo
+                form={form}
+                handleTransform={(type: 'Human' | 'Wolf') => {
+                  toogleForm(form)
+                }}
+                residence="Pasloe"
+                style={{
+                  position: 'absolute',
+                  color: 'red',
+                }}
+                title="Wisewolf"
+              />
+            `,
+            output: dedent`
+              <Holo
+                handleTransform={(type: 'Human' | 'Wolf') => {
+                  toogleForm(form)
+                }}
+                style={{
+                  position: 'absolute',
+                  color: 'red',
+                }}
+                form={form}
+                residence="Pasloe"
+                title="Wisewolf"
+              />
+            `,
+            options: [
+              {
+                type: SortType.natural,
+                multiline: Position.first,
+                order: SortOrder.asc,
+              },
+            ],
+            errors: [
+              {
+                messageId: 'unexpectedJSXPropsOrder',
+                data: {
+                  first: 'form',
+                  second: 'handleTransform',
+                },
+              },
+              {
+                messageId: 'unexpectedJSXPropsOrder',
+                data: {
+                  first: 'residence',
+                  second: 'style',
                 },
               },
             ],
@@ -1042,6 +1212,91 @@ describe(RULE_NAME, () => {
                 data: {
                   first: 'onChange',
                   second: 'shinigami',
+                },
+              },
+            ],
+          },
+        ],
+      })
+    })
+
+    it(`${RULE_NAME}(${type}): allows to set multiline props position`, () => {
+      ruleTester.run(RULE_NAME, rule, {
+        valid: [
+          {
+            code: dedent`
+              <Holo
+                handleTransform={(type: 'Human' | 'Wolf') => {
+                  toogleForm(form)
+                }}
+                style={{
+                  position: 'absolute',
+                  color: 'red',
+                }}
+                residence="Pasloe"
+                title="Wisewolf"
+                form={form}
+              />
+            `,
+            options: [
+              {
+                type: SortType['line-length'],
+                multiline: Position.first,
+                order: SortOrder.desc,
+              },
+            ],
+          },
+        ],
+        invalid: [
+          {
+            code: dedent`
+              <Holo
+                form={form}
+                handleTransform={(type: 'Human' | 'Wolf') => {
+                  toogleForm(form)
+                }}
+                residence="Pasloe"
+                style={{
+                  position: 'absolute',
+                  color: 'red',
+                }}
+                title="Wisewolf"
+              />
+            `,
+            output: dedent`
+              <Holo
+                handleTransform={(type: 'Human' | 'Wolf') => {
+                  toogleForm(form)
+                }}
+                style={{
+                  position: 'absolute',
+                  color: 'red',
+                }}
+                residence="Pasloe"
+                title="Wisewolf"
+                form={form}
+              />
+            `,
+            options: [
+              {
+                type: SortType['line-length'],
+                multiline: Position.first,
+                order: SortOrder.desc,
+              },
+            ],
+            errors: [
+              {
+                messageId: 'unexpectedJSXPropsOrder',
+                data: {
+                  first: 'form',
+                  second: 'handleTransform',
+                },
+              },
+              {
+                messageId: 'unexpectedJSXPropsOrder',
+                data: {
+                  first: 'residence',
+                  second: 'style',
                 },
               },
             ],

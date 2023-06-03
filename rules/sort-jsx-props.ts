@@ -30,6 +30,7 @@ type Options = [
     'ignore-case': boolean
     shorthand: Position
     callback: Position
+    multiline: Position
   }>,
 ]
 
@@ -70,6 +71,9 @@ export default createEslintRule<Options, MESSAGE_ID>({
           callback: {
             enum: [Position.first, Position.last, Position.ignore],
           },
+          multiline: {
+            enum: [Position.first, Position.last, Position.ignore],
+          },
         },
         additionalProperties: false,
       },
@@ -90,6 +94,7 @@ export default createEslintRule<Options, MESSAGE_ID>({
       let options = complete(context.options.at(0), {
         type: SortType.alphabetical,
         shorthand: Position.ignore,
+        multiline: Position.ignore,
         callback: Position.ignore,
         'ignore-case': false,
         order: SortOrder.asc,
@@ -124,6 +129,11 @@ export default createEslintRule<Options, MESSAGE_ID>({
               attribute.value !== null
             ) {
               position = options.callback
+            } else if (
+              options.multiline !== Position.ignore &&
+              attribute.loc.start.line !== attribute.loc.end.line
+            ) {
+              position = options.multiline
             }
 
             let jsxNode = {

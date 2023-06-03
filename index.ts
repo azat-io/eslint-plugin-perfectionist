@@ -58,6 +58,7 @@ let createConfigWithOptions = (options: {
       'error',
       {
         shorthand: 'ignore',
+        multiline: 'start',
         callback: 'ignore',
       },
     ],
