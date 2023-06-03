@@ -1,3 +1,34 @@
+# [0.10.0](https://github.com/azat-io/eslint-plugin-perfectionist/compare/v0.9.0...v0.10.0) (2023-06-03)
+
+
+### Bug Fixes
+
+* fix groups in sort-imports rule in configs ([f83c499](https://github.com/azat-io/eslint-plugin-perfectionist/commit/f83c49916cbfa0c4b90e492390d8aec204041aad))
+* move parentheses when sorting ([d09395f](https://github.com/azat-io/eslint-plugin-perfectionist/commit/d09395f11ee8680e33cd1ef309377e3becc76bfb))
+* update peer deps ([800c2a3](https://github.com/azat-io/eslint-plugin-perfectionist/commit/800c2a3160a711a7772e433e37f0bc0b88fb9741))
+
+
+### Features
+
+* add always-on-top option to sort-jsx-props rule ([57af3a2](https://github.com/azat-io/eslint-plugin-perfectionist/commit/57af3a2fedd78f142e776f5e59015129533b4ec6))
+* add always-on-top option to sort-objects rule ([464108f](https://github.com/azat-io/eslint-plugin-perfectionist/commit/464108fefe306e892dc604215cc07835b4601ba8))
+* add callback position option to sort-jsx-props rule ([8c6189f](https://github.com/azat-io/eslint-plugin-perfectionist/commit/8c6189f3661a67c848aab13f282ee8f786b72354))
+* add ignore-case option to each rule ([e331b9a](https://github.com/azat-io/eslint-plugin-perfectionist/commit/e331b9a400de67be823e12abd72aff6d519f8b6c))
+* add multiline position option to sort-jsx-props rule ([58e094a](https://github.com/azat-io/eslint-plugin-perfectionist/commit/58e094aafdd37566ebdbf35d5f878113d5798e7e))
+* add read-tsconfig option to sort-imports rule ([84cfc3d](https://github.com/azat-io/eslint-plugin-perfectionist/commit/84cfc3dd4786d527f895fb2141f2ec2f47c4f0a3))
+* add shorthand position option to sort-jsx-props rule ([416ffee](https://github.com/azat-io/eslint-plugin-perfectionist/commit/416ffee6e6d07abd6e2c3d9e9ba03d100ff6fb4b))
+* allow to ignore interface by pattern ([9aaf08a](https://github.com/azat-io/eslint-plugin-perfectionist/commit/9aaf08a35359027838fe7a4b69b02f372a1d8a43))
+* rename sort-object-keys rule to sort-objects ([3340a9f](https://github.com/azat-io/eslint-plugin-perfectionist/commit/3340a9fc7371687debdc28c69b7a5e6f75ef861b))
+* rename spread-last option in sort-array-includes rule to kebab case ([fc342d2](https://github.com/azat-io/eslint-plugin-perfectionist/commit/fc342d23fddefa4db155bbdf27a7c9ef8e8fab0f))
+
+
+### Performance Improvements
+
+* improve sort-imports rule performance ([2989539](https://github.com/azat-io/eslint-plugin-perfectionist/commit/2989539cef50addd6f86d4fcca05d4f87879c3d2))
+* make reading tsconfig singleton ([c748445](https://github.com/azat-io/eslint-plugin-perfectionist/commit/c748445ff866a94036ace2fb36fc9f3f342ce75e))
+
+
+
 # [0.9.0](https://github.com/azat-io/eslint-plugin-perfectionist/compare/v0.8.0...v0.9.0) (2023-05-30)
 
 
