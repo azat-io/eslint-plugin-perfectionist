@@ -1,8 +1,8 @@
 ---
-title: sort-object-keys
+title: sort-objects
 ---
 
-# sort-object-keys
+# sort-objects
 
 💼 This rule is enabled in the following [configs](/configs/): `recommended-alphabetical`, `recommended-line-length`, `recommended-natural`.
 
@@ -12,7 +12,7 @@ title: sort-object-keys
 
 ## 📖 Rule Details
 
-Enforce sorted object keys.
+Enforce sorted objects.
 
 By adhering to the rule, developers can ensure that object keys are consistently sorted, leading to cleaner and more maintainable code. It promotes a standardized key ordering across objects, making it easier for developers to navigate and understand the structure of objects within the codebase.
 
@@ -103,7 +103,7 @@ Only affects alphabetical and natural sorting. When `true` the rule ignores the 
 // .eslintrc
 {
   "rules": {
-    "perfectionist/sort-object-keys": [
+    "perfectionist/sort-objects": [
       "error",
       {
         "type": "line-length",
@@ -126,7 +126,7 @@ export default [
       perfectionist,
     },
     rules: {
-      'perfectionist/sort-object-keys': [
+      'perfectionist/sort-objects': [
         'error',
         {
           type: 'line-length',
@@ -144,5 +144,5 @@ This rule was introduced in v0.6.0.
 
 ## 📚 Resources
 
-- [Rule source](https://github.com/azat-io/eslint-plugin-perfectionist/blob/main/rules/sort-object-keys.ts)
-- [Test source](https://github.com/azat-io/eslint-plugin-perfectionist/blob/main/test/sort-object-keys.test.ts)
+- [Rule source](https://github.com/azat-io/eslint-plugin-perfectionist/blob/main/rules/sort-objects.ts)
+- [Test source](https://github.com/azat-io/eslint-plugin-perfectionist/blob/main/test/sort-objects.test.ts)

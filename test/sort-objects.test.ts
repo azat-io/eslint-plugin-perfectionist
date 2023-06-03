@@ -2,7 +2,7 @@ import { ESLintUtils } from '@typescript-eslint/utils'
 import { describe, it } from 'vitest'
 import { dedent } from 'ts-dedent'
 
-import rule, { RULE_NAME } from '../rules/sort-object-keys'
+import rule, { RULE_NAME } from '../rules/sort-objects'
 import { SortType, SortOrder } from '../typings'
 
 describe(RULE_NAME, () => {
@@ -59,7 +59,7 @@ describe(RULE_NAME, () => {
             ],
             errors: [
               {
-                messageId: 'unexpectedObjectKeysOrder',
+                messageId: 'unexpectedObjectsOrder',
                 data: {
                   first: 'hometown',
                   second: 'eye-color',
@@ -117,7 +117,7 @@ describe(RULE_NAME, () => {
             ],
             errors: [
               {
-                messageId: 'unexpectedObjectKeysOrder',
+                messageId: 'unexpectedObjectsOrder',
                 data: {
                   first: 'hunter',
                   second: 'dog',
@@ -199,28 +199,28 @@ describe(RULE_NAME, () => {
             ],
             errors: [
               {
-                messageId: 'unexpectedObjectKeysOrder',
+                messageId: 'unexpectedObjectsOrder',
                 data: {
                   first: 'crime-coefficient',
                   second: 'age',
                 },
               },
               {
-                messageId: 'unexpectedObjectKeysOrder',
+                messageId: 'unexpectedObjectsOrder',
                 data: {
                   first: 'crime-coefficient',
                   second: 'age',
                 },
               },
               {
-                messageId: 'unexpectedObjectKeysOrder',
+                messageId: 'unexpectedObjectsOrder',
                 data: {
                   first: 'shinya-kogami',
                   second: 'nobuchika-ginoza',
                 },
               },
               {
-                messageId: 'unexpectedObjectKeysOrder',
+                messageId: 'unexpectedObjectsOrder',
                 data: {
                   first: 'crime-coefficient',
                   second: 'age',
@@ -275,14 +275,14 @@ describe(RULE_NAME, () => {
             ],
             errors: [
               {
-                messageId: 'unexpectedObjectKeysOrder',
+                messageId: 'unexpectedObjectsOrder',
                 data: {
                   first: 'robots[1]',
                   second: 'getTestEva()',
                 },
               },
               {
-                messageId: 'unexpectedObjectKeysOrder',
+                messageId: 'unexpectedObjectsOrder',
                 data: {
                   first: 'getTestEva()',
                   second: 'eva-02',
@@ -344,7 +344,7 @@ describe(RULE_NAME, () => {
             ],
             errors: [
               {
-                messageId: 'unexpectedObjectKeysOrder',
+                messageId: 'unexpectedObjectsOrder',
                 data: {
                   first: 'hometown',
                   second: 'eye-color',
@@ -402,7 +402,7 @@ describe(RULE_NAME, () => {
             ],
             errors: [
               {
-                messageId: 'unexpectedObjectKeysOrder',
+                messageId: 'unexpectedObjectsOrder',
                 data: {
                   first: 'hunter',
                   second: 'dog',
@@ -484,28 +484,28 @@ describe(RULE_NAME, () => {
             ],
             errors: [
               {
-                messageId: 'unexpectedObjectKeysOrder',
+                messageId: 'unexpectedObjectsOrder',
                 data: {
                   first: 'crime-coefficient',
                   second: 'age',
                 },
               },
               {
-                messageId: 'unexpectedObjectKeysOrder',
+                messageId: 'unexpectedObjectsOrder',
                 data: {
                   first: 'crime-coefficient',
                   second: 'age',
                 },
               },
               {
-                messageId: 'unexpectedObjectKeysOrder',
+                messageId: 'unexpectedObjectsOrder',
                 data: {
                   first: 'shinya-kogami',
                   second: 'nobuchika-ginoza',
                 },
               },
               {
-                messageId: 'unexpectedObjectKeysOrder',
+                messageId: 'unexpectedObjectsOrder',
                 data: {
                   first: 'crime-coefficient',
                   second: 'age',
@@ -560,14 +560,14 @@ describe(RULE_NAME, () => {
             ],
             errors: [
               {
-                messageId: 'unexpectedObjectKeysOrder',
+                messageId: 'unexpectedObjectsOrder',
                 data: {
                   first: 'robots[1]',
                   second: 'getTestEva()',
                 },
               },
               {
-                messageId: 'unexpectedObjectKeysOrder',
+                messageId: 'unexpectedObjectsOrder',
                 data: {
                   first: 'getTestEva()',
                   second: 'eva-02',
@@ -629,7 +629,7 @@ describe(RULE_NAME, () => {
             ],
             errors: [
               {
-                messageId: 'unexpectedObjectKeysOrder',
+                messageId: 'unexpectedObjectsOrder',
                 data: {
                   first: 'age',
                   second: 'hometown',
@@ -687,7 +687,7 @@ describe(RULE_NAME, () => {
             ],
             errors: [
               {
-                messageId: 'unexpectedObjectKeysOrder',
+                messageId: 'unexpectedObjectsOrder',
                 data: {
                   first: 'dog',
                   second: 'hunter',
@@ -769,28 +769,28 @@ describe(RULE_NAME, () => {
             ],
             errors: [
               {
-                messageId: 'unexpectedObjectKeysOrder',
+                messageId: 'unexpectedObjectsOrder',
                 data: {
                   first: 'age',
                   second: 'crime-coefficient',
                 },
               },
               {
-                messageId: 'unexpectedObjectKeysOrder',
+                messageId: 'unexpectedObjectsOrder',
                 data: {
                   first: 'age',
                   second: 'crime-coefficient',
                 },
               },
               {
-                messageId: 'unexpectedObjectKeysOrder',
+                messageId: 'unexpectedObjectsOrder',
                 data: {
                   first: 'akane-tsunemori',
                   second: 'nobuchika-ginoza',
                 },
               },
               {
-                messageId: 'unexpectedObjectKeysOrder',
+                messageId: 'unexpectedObjectsOrder',
                 data: {
                   first: 'age',
                   second: 'crime-coefficient',
@@ -845,14 +845,14 @@ describe(RULE_NAME, () => {
             ],
             errors: [
               {
-                messageId: 'unexpectedObjectKeysOrder',
+                messageId: 'unexpectedObjectsOrder',
                 data: {
                   first: 'robots[1]',
                   second: 'getTestEva()',
                 },
               },
               {
-                messageId: 'unexpectedObjectKeysOrder',
+                messageId: 'unexpectedObjectsOrder',
                 data: {
                   first: 'getTestEva()',
                   second: 'eva-02',
@@ -895,7 +895,7 @@ describe(RULE_NAME, () => {
             `,
             errors: [
               {
-                messageId: 'unexpectedObjectKeysOrder',
+                messageId: 'unexpectedObjectsOrder',
                 data: {
                   first: 'mom',
                   second: 'daughter',

@@ -12,7 +12,7 @@ import { complete } from '../utils/complete'
 import { pairwise } from '../utils/pairwise'
 import { compare } from '../utils/compare'
 
-type MESSAGE_ID = 'unexpectedObjectKeysOrder'
+type MESSAGE_ID = 'unexpectedObjectsOrder'
 
 type Options = [
   Partial<{
@@ -22,14 +22,14 @@ type Options = [
   }>,
 ]
 
-export const RULE_NAME = 'sort-object-keys'
+export const RULE_NAME = 'sort-objects'
 
 export default createEslintRule<Options, MESSAGE_ID>({
   name: RULE_NAME,
   meta: {
     type: 'suggestion',
     docs: {
-      description: 'enforce sorted object keys',
+      description: 'enforce sorted objects',
       recommended: false,
     },
     fixable: 'code',
@@ -58,7 +58,7 @@ export default createEslintRule<Options, MESSAGE_ID>({
       },
     ],
     messages: {
-      unexpectedObjectKeysOrder:
+      unexpectedObjectsOrder:
         'Expected "{{second}}" to come before "{{first}}"',
     },
   },
@@ -116,7 +116,7 @@ export default createEslintRule<Options, MESSAGE_ID>({
           pairwise(nodes, (first, second) => {
             if (compare(first, second, options)) {
               context.report({
-                messageId: 'unexpectedObjectKeysOrder',
+                messageId: 'unexpectedObjectsOrder',
                 data: {
                   first: first.name,
                   second: second.name,

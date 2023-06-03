@@ -18,7 +18,7 @@ title: Rules
 | [sort-map-elements](/rules/sort-map-elements)     | enforce sorted Map elements                 | 🔧 |
 | [sort-named-exports](/rules/sort-named-exports)   | enforce sorted named exports                | 🔧 |
 | [sort-named-imports](/rules/sort-named-imports)   | enforce sorted named imports                | 🔧 |
-| [sort-object-keys](/rules/sort-object-keys)       | enforce sorted object keys                  | 🔧 |
+| [sort-objects](/rules/sort-objects)               | enforce sorted objects                      | 🔧 |
 | [sort-union-types](/rules/sort-union-types)       | enforce sorted union types                  | 🔧 |
 
 <!-- end auto-generated rules list -->
