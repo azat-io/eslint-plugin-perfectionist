@@ -14,8 +14,11 @@ import {
   title,
   image,
 } from './meta'
+import plugin from '../../index'
 
 let links: { url: string; lastmod?: number }[] = []
+
+let { configs, rules } = plugin
 
 export default defineConfig({
   base: '/',
@@ -208,69 +211,17 @@ export default defineConfig({
         },
         {
           text: 'Configs',
-          items: [
-            {
-              text: 'recommended-alphabetical',
-              link: '/configs/recommended-alphabetical',
-            },
-            {
-              text: 'recommended-natural',
-              link: '/configs/recommended-natural',
-            },
-            {
-              text: 'recommended-line-length',
-              link: '/configs/recommended-line-length',
-            },
-          ],
+          items: Object.keys(configs).map(config => ({
+            text: config,
+            link: `/configs/${config}`,
+          })),
         },
         {
           text: 'Rules',
-          items: [
-            {
-              text: 'sort-array-includes',
-              link: '/rules/sort-array-includes',
-            },
-            {
-              text: 'sort-enums',
-              link: '/rules/sort-enums',
-            },
-            {
-              text: 'sort-imports',
-              link: '/rules/sort-imports',
-            },
-            {
-              text: 'sort-interfaces',
-              link: '/rules/sort-interfaces',
-            },
-            {
-              text: 'sort-jsx-props',
-              link: '/rules/sort-jsx-props',
-            },
-            {
-              text: 'sort-map-elements',
-              link: '/rules/sort-map-elements',
-            },
-            {
-              text: 'sort-named-exports',
-              link: '/rules/sort-named-exports',
-            },
-            {
-              text: 'sort-named-imports',
-              link: '/rules/sort-named-imports',
-            },
-            {
-              text: 'sort-object-types',
-              link: '/rules/sort-object-types',
-            },
-            {
-              text: 'sort-objects',
-              link: '/rules/sort-objects',
-            },
-            {
-              text: 'sort-union-types',
-              link: '/rules/sort-union-types',
-            },
-          ],
+          items: Object.keys(rules).map(rule => ({
+            text: rule,
+            link: `/rules/${rule}`,
+          })),
         },
       ],
     },
