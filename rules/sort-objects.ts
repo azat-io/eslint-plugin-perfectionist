@@ -10,12 +10,21 @@ import { sortNodes } from '../utils/sort-nodes'
 import { makeFixes } from '../utils/make-fixes'
 import { complete } from '../utils/complete'
 import { pairwise } from '../utils/pairwise'
+import { groupBy } from '../utils/group-by'
 import { compare } from '../utils/compare'
 
 type MESSAGE_ID = 'unexpectedObjectsOrder'
 
+export enum Position {
+  'exception' = 'exception',
+  'ignore' = 'ignore',
+}
+
+type SortingNodeWithPosition = SortingNode & { position: Position }
+
 type Options = [
   Partial<{
+    'always-on-top': string[]
     'ignore-case': boolean
     order: SortOrder
     type: SortType
@@ -53,6 +62,10 @@ export default createEslintRule<Options, MESSAGE_ID>({
             type: 'boolean',
             default: false,
           },
+          'always-on-top': {
+            type: 'array',
+            default: [],
+          },
         },
         additionalProperties: false,
       },
@@ -75,21 +88,23 @@ export default createEslintRule<Options, MESSAGE_ID>({
           type: SortType.alphabetical,
           'ignore-case': false,
           order: SortOrder.asc,
+          'always-on-top': [],
         })
 
         let source = context.getSourceCode()
 
         let formatProperties = (
           props: TSESTree.ObjectLiteralElement[],
-        ): SortingNode[][] =>
+        ): SortingNodeWithPosition[][] =>
           props.reduce(
-            (accumulator: SortingNode[][], prop) => {
+            (accumulator: SortingNodeWithPosition[][], prop) => {
               if (prop.type === AST_NODE_TYPES.SpreadElement) {
                 accumulator.push([])
                 return accumulator
               }
 
               let name: string
+              let position: Position = Position.ignore
 
               if (prop.key.type === AST_NODE_TYPES.Identifier) {
                 ;({ name } = prop.key)
@@ -99,9 +114,17 @@ export default createEslintRule<Options, MESSAGE_ID>({
                 name = source.text.slice(...prop.key.range)
               }
 
+              if (
+                prop.key.type === AST_NODE_TYPES.Identifier &&
+                options['always-on-top'].includes(prop.key.name)
+              ) {
+                position = Position.exception
+              }
+
               let value = {
                 size: rangeToDiff(prop.range),
                 node: prop,
+                position,
                 name,
               }
 
@@ -114,7 +137,28 @@ export default createEslintRule<Options, MESSAGE_ID>({
 
         formatProperties(node.properties).forEach(nodes => {
           pairwise(nodes, (first, second) => {
-            if (compare(first, second, options)) {
+            let comparison: boolean
+
+            if (
+              first.position === Position.exception &&
+              second.position === Position.exception
+            ) {
+              comparison =
+                options['always-on-top'].indexOf(first.name) >
+                options['always-on-top'].indexOf(second.name)
+            } else if (first.position === second.position) {
+              comparison = compare(first, second, options)
+            } else {
+              let positionPower = {
+                [Position.exception]: 1,
+                [Position.ignore]: 0,
+              }
+
+              comparison =
+                positionPower[first.position] < positionPower[second.position]
+            }
+
+            if (comparison) {
               context.report({
                 messageId: 'unexpectedObjectsOrder',
                 data: {
@@ -122,8 +166,23 @@ export default createEslintRule<Options, MESSAGE_ID>({
                   second: second.name,
                 },
                 node: second.node,
-                fix: fixer =>
-                  makeFixes(fixer, nodes, sortNodes(nodes, options), source),
+                fix: fixer => {
+                  let groups = groupBy(nodes, ({ position }) => position)
+
+                  let getGroup = (index: string) =>
+                    index in groups ? groups[index] : []
+
+                  let sortedNodes = [
+                    getGroup(Position.exception).sort(
+                      (aNode, bNode) =>
+                        options['always-on-top'].indexOf(aNode.name) -
+                        options['always-on-top'].indexOf(bNode.name),
+                    ),
+                    sortNodes(getGroup(Position.ignore), options),
+                  ].flat()
+
+                  return makeFixes(fixer, nodes, sortedNodes, source)
+                },
               })
             }
           })

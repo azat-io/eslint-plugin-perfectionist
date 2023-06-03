@@ -293,6 +293,79 @@ describe(RULE_NAME, () => {
         ],
       })
     })
+
+    it(`${RULE_NAME}(${type}): allows to set priority keys`, () => {
+      ruleTester.run(RULE_NAME, rule, {
+        valid: [
+          {
+            code: dedent`
+              let terrorInResonance = {
+                name: 'Terror in Resonance',
+                id: 'de4d12c2-200c-49bf-a2c8-14f5b4576299',
+                episodes: 11,
+                genres: ['drama', 'mystery', 'psychological', 'thriller'],
+                romaji: 'Zankyou no Terror',
+                studio: 'Mappa'
+              }
+            `,
+            options: [
+              {
+                'always-on-top': ['name', 'id'],
+                type: SortType.alphabetical,
+                order: SortOrder.asc,
+              },
+            ],
+          },
+        ],
+        invalid: [
+          {
+            code: dedent`
+              let terrorInResonance = {
+                episodes: 11,
+                genres: ['drama', 'mystery', 'psychological', 'thriller'],
+                id: 'de4d12c2-200c-49bf-a2c8-14f5b4576299',
+                name: 'Terror in Resonance',
+                romaji: 'Zankyou no Terror',
+                studio: 'Mappa'
+              }
+            `,
+            output: dedent`
+              let terrorInResonance = {
+                name: 'Terror in Resonance',
+                id: 'de4d12c2-200c-49bf-a2c8-14f5b4576299',
+                episodes: 11,
+                genres: ['drama', 'mystery', 'psychological', 'thriller'],
+                romaji: 'Zankyou no Terror',
+                studio: 'Mappa'
+              }
+            `,
+            options: [
+              {
+                'always-on-top': ['name', 'id'],
+                type: SortType.alphabetical,
+                order: SortOrder.asc,
+              },
+            ],
+            errors: [
+              {
+                messageId: 'unexpectedObjectsOrder',
+                data: {
+                  first: 'genres',
+                  second: 'id',
+                },
+              },
+              {
+                messageId: 'unexpectedObjectsOrder',
+                data: {
+                  first: 'id',
+                  second: 'name',
+                },
+              },
+            ],
+          },
+        ],
+      })
+    })
   })
 
   describe(`${RULE_NAME}: sorting by natural order`, () => {
@@ -578,6 +651,79 @@ describe(RULE_NAME, () => {
         ],
       })
     })
+
+    it(`${RULE_NAME}(${type}): allows to set priority keys`, () => {
+      ruleTester.run(RULE_NAME, rule, {
+        valid: [
+          {
+            code: dedent`
+              let terrorInResonance = {
+                name: 'Terror in Resonance',
+                id: 'de4d12c2-200c-49bf-a2c8-14f5b4576299',
+                episodes: 11,
+                genres: ['drama', 'mystery', 'psychological', 'thriller'],
+                romaji: 'Zankyou no Terror',
+                studio: 'Mappa'
+              }
+            `,
+            options: [
+              {
+                'always-on-top': ['name', 'id'],
+                type: SortType.natural,
+                order: SortOrder.asc,
+              },
+            ],
+          },
+        ],
+        invalid: [
+          {
+            code: dedent`
+              let terrorInResonance = {
+                episodes: 11,
+                genres: ['drama', 'mystery', 'psychological', 'thriller'],
+                id: 'de4d12c2-200c-49bf-a2c8-14f5b4576299',
+                name: 'Terror in Resonance',
+                romaji: 'Zankyou no Terror',
+                studio: 'Mappa'
+              }
+            `,
+            output: dedent`
+              let terrorInResonance = {
+                name: 'Terror in Resonance',
+                id: 'de4d12c2-200c-49bf-a2c8-14f5b4576299',
+                episodes: 11,
+                genres: ['drama', 'mystery', 'psychological', 'thriller'],
+                romaji: 'Zankyou no Terror',
+                studio: 'Mappa'
+              }
+            `,
+            options: [
+              {
+                'always-on-top': ['name', 'id'],
+                type: SortType.natural,
+                order: SortOrder.asc,
+              },
+            ],
+            errors: [
+              {
+                messageId: 'unexpectedObjectsOrder',
+                data: {
+                  first: 'genres',
+                  second: 'id',
+                },
+              },
+              {
+                messageId: 'unexpectedObjectsOrder',
+                data: {
+                  first: 'id',
+                  second: 'name',
+                },
+              },
+            ],
+          },
+        ],
+      })
+    })
   })
 
   describe(`${RULE_NAME}: sorting by line length`, () => {
@@ -856,6 +1002,86 @@ describe(RULE_NAME, () => {
                 data: {
                   first: 'getTestEva()',
                   second: 'eva-02',
+                },
+              },
+            ],
+          },
+        ],
+      })
+    })
+
+    it(`${RULE_NAME}(${type}): allows to set priority keys`, () => {
+      ruleTester.run(RULE_NAME, rule, {
+        valid: [
+          {
+            code: dedent`
+              let terrorInResonance = {
+                name: 'Terror in Resonance',
+                id: 'de4d12c2-200c-49bf-a2c8-14f5b4576299',
+                genres: ['drama', 'mystery', 'psychological', 'thriller'],
+                romaji: 'Zankyou no Terror',
+                studio: 'Mappa',
+                episodes: 11,
+              }
+            `,
+            options: [
+              {
+                'always-on-top': ['name', 'id'],
+                type: SortType['line-length'],
+                order: SortOrder.desc,
+              },
+            ],
+          },
+        ],
+        invalid: [
+          {
+            code: dedent`
+              let terrorInResonance = {
+                episodes: 11,
+                genres: ['drama', 'mystery', 'psychological', 'thriller'],
+                id: 'de4d12c2-200c-49bf-a2c8-14f5b4576299',
+                name: 'Terror in Resonance',
+                romaji: 'Zankyou no Terror',
+                studio: 'Mappa'
+              }
+            `,
+            output: dedent`
+              let terrorInResonance = {
+                name: 'Terror in Resonance',
+                id: 'de4d12c2-200c-49bf-a2c8-14f5b4576299',
+                genres: ['drama', 'mystery', 'psychological', 'thriller'],
+                romaji: 'Zankyou no Terror',
+                studio: 'Mappa',
+                episodes: 11
+              }
+            `,
+            options: [
+              {
+                'always-on-top': ['name', 'id'],
+                type: SortType['line-length'],
+                order: SortOrder.desc,
+              },
+            ],
+            errors: [
+              {
+                messageId: 'unexpectedObjectsOrder',
+                data: {
+                  first: 'episodes',
+                  second: 'genres',
+                },
+              },
+              {
+                messageId: 'unexpectedObjectsOrder',
+                data: {
+                  first: 'genres',
+                  second: 'id',
+                },
+              },
+              {
+                messageId: 'unexpectedObjectsOrder',
+                data: {
+                  first: 'id',
+                  second: 'name',
                 },
               },
             ],

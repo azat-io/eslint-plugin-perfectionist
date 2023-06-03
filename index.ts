@@ -66,7 +66,12 @@ let createConfigWithOptions = (options: {
     [sortMapElementsName]: ['error'],
     [sortNamedExportsName]: ['error'],
     [sortNamedImportsName]: ['error'],
-    [sortObjectsName]: ['error'],
+    [sortObjectsName]: [
+      'error',
+      {
+        'always-on-top': [],
+      },
+    ],
     [sortUnionTypesName]: ['error'],
   }
   return {

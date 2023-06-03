@@ -71,6 +71,7 @@ interface Options {
   type?: 'alphabetical' | 'natural' | 'natural'
   order?: 'asc' | 'desc'
   'ignore-case'?: boolean
+  'always-on-top'?: string[]
 }
 ```
 
@@ -94,6 +95,12 @@ interface Options {
 <sub>(default: `false`)</sub>
 
 Only affects alphabetical and natural sorting. When `true` the rule ignores the case-sensitivity of the order.
+
+### always-on-top
+
+<sub>(default: `[]`)</sub>
+
+You can set a list of key names that will always go at the beginning of the object. For example: `['id', 'name']`
 
 ## ⚙️ Usage
 
