@@ -259,6 +259,10 @@ export default defineConfig({
               link: '/rules/sort-named-imports',
             },
             {
+              text: 'sort-object-types',
+              link: '/rules/sort-object-types',
+            },
+            {
               text: 'sort-objects',
               link: '/rules/sort-objects',
             },

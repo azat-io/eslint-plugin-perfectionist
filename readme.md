@@ -135,6 +135,7 @@ export default [perfectionistPluginRecommendedLineLength]
 | [sort-map-elements](https://eslint-plugin-perfectionist.azat.io/rules/sort-map-elements)     | enforce sorted Map elements                 | 🔧 |
 | [sort-named-exports](https://eslint-plugin-perfectionist.azat.io/rules/sort-named-exports)   | enforce sorted named exports                | 🔧 |
 | [sort-named-imports](https://eslint-plugin-perfectionist.azat.io/rules/sort-named-imports)   | enforce sorted named imports                | 🔧 |
+| [sort-object-types](https://eslint-plugin-perfectionist.azat.io/rules/sort-object-types)     | enforce sorted object types                 | 🔧 |
 | [sort-objects](https://eslint-plugin-perfectionist.azat.io/rules/sort-objects)               | enforce sorted objects                      | 🔧 |
 | [sort-union-types](https://eslint-plugin-perfectionist.azat.io/rules/sort-union-types)       | enforce sorted union types                  | 🔧 |
 

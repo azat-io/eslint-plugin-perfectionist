@@ -6,6 +6,7 @@ import sortJsxProps, { RULE_NAME as sortJsxPropsName } from './rules/sort-jsx-pr
 import sortMapElements, { RULE_NAME as sortMapElementsName } from './rules/sort-map-elements'
 import sortNamedExports, { RULE_NAME as sortNamedExportsName } from './rules/sort-named-exports'
 import sortNamedImports, { RULE_NAME as sortNamedImportsName } from './rules/sort-named-imports'
+import sortObjectTypes, { RULE_NAME as sortObjectTypesName } from './rules/sort-object-types'
 import sortObjects, { RULE_NAME as sortObjectsName } from './rules/sort-objects'
 import sortUnionTypes, { RULE_NAME as sortUnionTypesName } from './rules/sort-union-types'
 import { SortType, SortOrder } from './typings'
@@ -66,6 +67,7 @@ let createConfigWithOptions = (options: {
     [sortMapElementsName]: ['error'],
     [sortNamedExportsName]: ['error'],
     [sortNamedImportsName]: ['error'],
+    [sortObjectTypesName]: ['error'],
     [sortObjectsName]: [
       'error',
       {
@@ -96,6 +98,7 @@ export default {
     [sortMapElementsName]: sortMapElements,
     [sortNamedExportsName]: sortNamedExports,
     [sortNamedImportsName]: sortNamedImports,
+    [sortObjectTypesName]: sortObjectTypes,
     [sortObjectsName]: sortObjects,
     [sortUnionTypesName]: sortUnionTypes,
   },
