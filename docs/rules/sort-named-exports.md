@@ -1,5 +1,6 @@
 ---
 title: sort-named-exports
+description: ESLint Plugin Perfectionist rule which enforce sorted named exports
 ---
 
 # sort-named-exports

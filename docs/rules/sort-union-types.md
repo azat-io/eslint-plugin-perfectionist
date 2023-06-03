@@ -1,5 +1,6 @@
 ---
 title: sort-union-types
+description: ESLint Plugin Perfectionist rule which enforce sorted union types in TypeScript
 ---
 
 # sort-union-types

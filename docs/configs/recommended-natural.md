@@ -1,5 +1,6 @@
 ---
 title: recommended-natural
+description: ESLint Plugin Perfectionist config for natural sorting
 ---
 
 # recommended-natural

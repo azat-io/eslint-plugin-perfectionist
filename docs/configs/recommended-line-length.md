@@ -1,5 +1,6 @@
 ---
 title: recommended-line-length
+description: ESLint Plugin Perfectionist config for sorting by line length
 ---
 
 # recommended-line-length

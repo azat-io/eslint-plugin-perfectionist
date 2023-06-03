@@ -1,5 +1,6 @@
 ---
 title: sort-array-includes
+description: ESLint Plugin Perfectionist rule which enforce sorted array values if the `includes` method is immediately called after the array is created
 ---
 
 # sort-array-includes

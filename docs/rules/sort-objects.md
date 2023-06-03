@@ -1,5 +1,6 @@
 ---
 title: sort-objects
+description: ESLint Plugin Perfectionist rule which enforce sorted objects
 ---
 
 # sort-objects

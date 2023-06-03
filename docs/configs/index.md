@@ -1,5 +1,6 @@
 ---
 title: Configs
+description: ESLint Plugin Perfectionist list of configs
 ---
 
 # Configs

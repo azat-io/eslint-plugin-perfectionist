@@ -1,5 +1,6 @@
 ---
 title: recommended-alphabetical
+description: ESLint Plugin Perfectionist config for alphabetical sorting
 ---
 
 # recommended-alphabetical

@@ -1,5 +1,6 @@
 ---
 title: sort-map-elements
+description: ESLint Plugin Perfectionist rule which enforce sorted element within JavaScript Map object
 ---
 
 # sort-map-elements
@@ -12,7 +13,7 @@ title: sort-map-elements
 
 ## 📖 Rule Details
 
-Enforce sorted elements within a JavaScript `Map` object.
+Enforce sorted elements within JavaScript `Map` object.
 
 Sorting Map elements provides a clear and predictable structure to the codebase, making it easier for developers to locate and understand the key-value pairs defined within a Map.
 

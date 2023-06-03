@@ -1,6 +1,6 @@
 {
   "name": "eslint-plugin-perfectionist",
-  "description": "ESLint plugin for code formatting in perfectionist style",
+  "description": "ESLint plugin for sorting various data such as objects, imports, types, enums, JSX props, etc.",
   "version": "0.10.0",
   "homepage": "https://eslint-plugin-perfectionist.azat.io",
   "repository": "azat-io/eslint-plugin-perfectionist",

@@ -1,5 +1,6 @@
 ---
 title: sort-enums
+description: ESLint Plugin Perfectionist rule which enforce sorted TypeScript enum members
 ---
 
 # sort-enums

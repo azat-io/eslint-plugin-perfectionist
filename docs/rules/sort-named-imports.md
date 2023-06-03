@@ -1,5 +1,6 @@
 ---
 title: sort-named-imports
+description: ESLint Plugin Perfectionist rule which enforce sorted named imports
 ---
 
 # sort-named-imports

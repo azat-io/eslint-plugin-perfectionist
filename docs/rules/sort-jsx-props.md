@@ -1,5 +1,6 @@
 ---
 title: sort-jsx-props
+description: ESLint Plugin Perfectionist rule which enforce sorted JSX props within JSX elements
 ---
 
 # sort-jsx-props

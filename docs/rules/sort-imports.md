@@ -1,5 +1,6 @@
 ---
 title: sort-imports
+description: ESLint Plugin Perfectionist rule which enforce sorted imports
 ---
 
 # sort-imports

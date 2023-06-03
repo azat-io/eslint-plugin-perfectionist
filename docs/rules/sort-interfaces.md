@@ -1,5 +1,6 @@
 ---
 title: sort-interfaces
+description: ESLint Plugin Perfectionist rule which enforce sorted TypeScript interface properties
 ---
 
 # sort-interfaces

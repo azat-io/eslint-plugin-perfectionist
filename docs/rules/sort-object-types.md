@@ -1,5 +1,6 @@
 ---
 title: sort-object-types
+description: ESLint Plugin Perfectionist rule which enforce sorted object types in TypeScript
 ---
 
 # sort-object-types
