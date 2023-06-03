@@ -78,43 +78,64 @@ let Riko = () => (
 
 ## 🔧 Options
 
-### `type`
+This rule accepts an options object with the following properties:
 
-- `enum` (default: `alphabetical`):
-  - `alphabetical` - sort alphabetically.
-  - `natural` - sort in natural order.
-  - `line-length` - sort by code line length.
+```ts
+interface Options {
+  type?: 'alphabetical' | 'natural' | 'natural'
+  order?: 'asc' | 'desc'
+  'ignore-case'?: boolean
+  'spread-last'?: boolean
+  callback?: 'first' | 'ignore' | 'last'
+  multiline?: 'first' | 'ignore' | 'last'
+  shorthand?: 'first' | 'ignore' | 'last'
+}
+```
 
-### `order`
+### type
 
-- `enum` (default: `asc`):
-  - `asc` - enforce properties to be in ascending order.
-  - `desc` - enforce properties to be in descending order.
+<sub>(default: `'alphabetical'`)</sub>
 
-### `ignore-case`
+- `alphabetical` - sort alphabetically.
+- `natural` - sort in natural order.
+- `line-length` - sort by code line length.
 
-- `boolean` (default: `false`) - only affects alphabetical and natural sorting. When `true` the rule ignores the case-sensitivity of the order.
+### order
 
-### `callback`
+<sub>(default: `'asc'`)</sub>
 
-- `enum` (default: `ignore`):
-  - `first` - enforce callback JSX props to be at the top of the list
-  - `ignore` - sort callback props in general order
-  - `last` - enforce callback JSX props to be at the end of the list
+- `asc` - enforce properties to be in ascending order.
+- `desc` - enforce properties to be in descending order.
 
-### `multiline`
+### ignore-case
 
-- `enum` (default: `ignore`):
-  - `first` - enforce multiline JSX props to be at the top of the list
-  - `ignore` - sort multiline props in general order
-  - `last` - enforce multiline JSX props to be at the end of the list
+<sub>(default: `false`)</sub>
 
-### `shorthand`
+Only affects alphabetical and natural sorting. When `true` the rule ignores the case-sensitivity of the order.
 
-- `enum` (default: `ignore`):
-  - `first` - enforce shorthand JSX props to be at the top of the list
-  - `ignore` - sort shorthand props in general order
-  - `last` - enforce shorthand JSX props to be at the end of the list
+### callback
+
+<sub>(default: `'ignore'`)</sub>
+
+- `first` - enforce callback JSX props to be at the top of the list
+- `ignore` - sort callback props in general order
+- `last` - enforce callback JSX props to be at the end of the list
+
+### multiline
+
+<sub>(default: `'ignore'`)</sub>
+
+- `first` - enforce multiline JSX props to be at the top of the list
+- `ignore` - sort multiline props in general order
+- `last` - enforce multiline JSX props to be at the end of the list
+
+### shorthand
+
+<sub>(default: `'ignore'`)</sub>
+
+- `first` - enforce shorthand JSX props to be at the top of the list
+- `ignore` - sort shorthand props in general order
+- `last` - enforce shorthand JSX props to be at the end of the list
 
 ## ⚙️ Usage
 

@@ -68,26 +68,43 @@ This rule aims to promote code readability and maintainability by enforcing a co
 
 ## 🔧 Options
 
-### `type`
+This rule accepts an options object with the following properties:
 
-- `enum` (default: `alphabetical`):
-  - `alphabetical` - sort alphabetically.
-  - `natural` - sort in natural order.
-  - `line-length` - sort by code line length.
+```ts
+interface Options {
+  type?: 'alphabetical' | 'natural' | 'natural'
+  order?: 'asc' | 'desc'
+  'ignore-case'?: boolean
+  'spread-last'?: boolean
+}
+```
 
-### `order`
+### type
 
-- `enum` (default: `asc`):
-  - `asc` - enforce properties to be in ascending order.
-  - `desc` - enforce properties to be in descending order.
+<sub>(default: `'alphabetical'`)</sub>
 
-### `ignore-case`
+- `alphabetical` - sort alphabetically.
+- `natural` - sort in natural order.
+- `line-length` - sort by code line length.
 
-- `boolean` (default: `false`) - only affects alphabetical and natural sorting. When `true` the rule ignores the case-sensitivity of the order.
+### order
 
-### `spread-last`
+<sub>(default: `'asc'`)</sub>
 
-- `boolean` (default: `false`) - enforce spread elements in array to be last
+- `asc` - enforce properties to be in ascending order.
+- `desc` - enforce properties to be in descending order.
+
+### ignore-case
+
+<sub>(default: `false`)</sub>
+
+Only affects alphabetical and natural sorting. When `true` the rule ignores the case-sensitivity of the order.
+
+### spread-last
+
+<sub>(default: `false`)</sub>
+
+When `true` enforce spread elements in array to be last.
 
 ## ⚙️ Usage
 

@@ -38,6 +38,15 @@ button {
   margin-block: 24px;
 }
 
+.vp-doc p:has(sub) {
+  margin-block-start: 8px;
+}
+
+sub {
+  font-size: 15px;
+  color: var(--vp-c-text-2);
+}
+
 @media (min-width: 640px) {
   :root {
     --vp-home-hero-image-filter: blur(56px);

@@ -138,26 +138,87 @@ import './style.css'
 
 ## 🔧 Options
 
-### `type`
+This rule accepts an options object with the following properties:
 
-- `enum` (default: `alphabetical`):
-  - `alphabetical` - sort alphabetically.
-  - `natural` - sort in natural order.
-  - `line-length` - sort by code line length.
+```ts
+type Group =
+  | 'builtin'
+  | 'external'
+  | 'internal'
+  | 'parent'
+  | 'sibling'
+  | 'index'
+  | 'object'
+  | 'type'
+  | 'internal-type'
+  | 'parent-type'
+  | 'sibling-type'
+  | 'index-type'
+  | 'unknown'
 
-### `order`
+interface Options {
+  type?: 'alphabetical' | 'natural' | 'natural'
+  order?: 'asc' | 'desc'
+  'ignore-case'?: boolean
+  groups?: (Group | Group[])[]
+  'internal-pattern'?: string[]
+  'newlines-between'?: 'always' | 'ignore' | 'never'
+  'read-tsconfig'?: boolean
+```
 
-- `enum` (default: `asc`):
-  - `asc` - enforce properties to be in ascending order.
-  - `desc` - enforce properties to be in descending order.
+### type
 
-### `ignore-case`
+<sub>(default: `'alphabetical'`)</sub>
 
-- `boolean` (default: `false`) - only affects alphabetical and natural sorting. When `true` the rule ignores the case-sensitivity of the order.
+- `alphabetical` - sort alphabetically.
+- `natural` - sort in natural order.
+- `line-length` - sort by code line length.
 
-### `groups`
+### order
 
-- `[array]`
+<sub>(default: `'asc'`)</sub>
+
+- `asc` - enforce properties to be in ascending order.
+- `desc` - enforce properties to be in descending order.
+
+### ignore-case
+
+<sub>(default: `false`)</sub>
+
+Only affects alphabetical and natural sorting. When `true` the rule ignores the case-sensitivity of the order.
+
+### groups
+
+<sub>(default: `[]`)</sub>
+
+You can set up a list of import groups for sorting. Groups can be combined.
+
+```ts
+// 'builtin' - Node.js Built-in Modules
+import path from 'path'
+// 'external' - External modules installed in the project
+import axios from 'axios'
+// internal - Your internal modules
+import Button from '~/components/Button'
+// parent - Modules from parent directory
+import formatNumber from '../utils/format-number'
+// siblings - Modules from the same directory
+import config from './config'
+// index - Main file from the current directory
+import main from '.'
+// object - TypeScript object-imports
+import log = console.log
+// type - TypeScript type imports
+import type { FC } from 'react'
+// internal-type - TypeScript type imports from your internal modules
+import type { User } from '~/users'
+// parent-type - TypeScript type imports from parent directory
+import type { InputProps } from '../Input'
+// sibling-type - TypeScript type imports from the same directory
+import type { Details } from './data'
+// index-type - TypeScript type imports from main directory file
+import type { BaseOptions } from './index.d.ts'
+```
 
 If you use [one of the configs](/configs/) exported by this plugin, you get the following import grouping settings:
 
@@ -176,20 +237,27 @@ If you use [one of the configs](/configs/) exported by this plugin, you get the 
 }
 ```
 
-### `internal-pattern`
+### internal-pattern
 
-- `[string]` (default: `['~/**']`)
+<sub>(default: `['~/**']`)</sub>
 
-### `newlines-between`
+You can specify a pattern for internal imports.
 
-- `enum` (default: `always`):
-  - `ignore` - do not report errors related to new lines between import groups.
-  - `always` - at least one new line between each group will be enforced, and new lines inside a group will be forbidden.
-  - `never` - no new lines are allowed in the entire import section.
+The [minimatch](https://github.com/isaacs/minimatch) library is used for pattern matching.
 
-### `read-tsconfig`
+### newlines-between
 
-- `boolean` (default: `false`) - read `tsconfig.json` and use `paths` as internal imports.
+<sub>(default: `'always'`)</sub>
+
+- `ignore` - do not report errors related to new lines between import groups.
+- `always` - one new line between each group will be enforced, and new lines inside a group will be forbidden.
+- `never` - no new lines are allowed in the entire import section.
+
+### read-tsconfig
+
+<sub>(default: `false`)</sub>
+
+If your project is written in TypeScript, you can read `tsconfig.json` and use `paths` as internal imports.
 
 ## ⚙️ Usage
 

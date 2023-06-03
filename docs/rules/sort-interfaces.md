@@ -70,26 +70,45 @@ interface Hero {
 
 ## 🔧 Options
 
-### `type`
+This rule accepts an options object with the following properties:
 
-- `enum` (default: `alphabetical`):
-  - `alphabetical` - sort alphabetically.
-  - `natural` - sort in natural order.
-  - `line-length` - sort by code line length.
+```ts
+interface Options {
+  type?: 'alphabetical' | 'natural' | 'natural'
+  order?: 'asc' | 'desc'
+  'ignore-case'?: boolean
+  'ignore-pattern'?: string[]
+}
+```
 
-### `order`
+### type
 
-- `enum` (default: `asc`):
-  - `asc` - enforce properties to be in ascending order.
-  - `desc` - enforce properties to be in descending order.
+<sub>(default: `'alphabetical'`)</sub>
 
-### `ignore-case`
+- `alphabetical` - sort alphabetically.
+- `natural` - sort in natural order.
+- `line-length` - sort by code line length.
 
-- `boolean` (default: `false`) - only affects alphabetical and natural sorting. When `true` the rule ignores the case-sensitivity of the order.
+### order
 
-### `ignore-pattern`
+<sub>(default: `'asc'`)</sub>
 
-- `[string]` (default: `[]`) - allows to ignore interface by pattern
+- `asc` - enforce properties to be in ascending order.
+- `desc` - enforce properties to be in descending order.
+
+### ignore-case
+
+<sub>(default: `false`)</sub>
+
+Only affects alphabetical and natural sorting. When `true` the rule ignores the case-sensitivity of the order.
+
+### ignore-pattern
+
+<sub>(default: `[]`)</sub>
+
+If you need to ignore a rule for some interfaces, you can specify their names or a pattern to ignore, for example: `'Component*'` to ignore all interfaces whose names begin with the word Component.
+
+The [minimatch](https://github.com/isaacs/minimatch) library is used for pattern matching.
 
 ## ⚙️ Usage
 

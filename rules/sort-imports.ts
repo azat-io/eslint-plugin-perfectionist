@@ -138,7 +138,7 @@ export default createEslintRule<Options, MESSAGE_ID>({
       'read-tsconfig': false,
       order: SortOrder.asc,
       'ignore-case': false,
-      groups: ['unknown'],
+      groups: [],
     })
 
     let tsPaths: string[] = []
