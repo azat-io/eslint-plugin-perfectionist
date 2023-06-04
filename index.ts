@@ -66,7 +66,7 @@ let createConfigWithOptions = (options: {
           'unknown',
         ],
         'newlines-between': 'always',
-        'internal-pattern': ['./**'],
+        'internal-pattern': ['~/**'],
         'read-tsconfig': false,
       },
     ],
