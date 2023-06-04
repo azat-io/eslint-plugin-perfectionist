@@ -3,11 +3,11 @@ layout: home
 sidebar: false
 
 title: ESLint Plugin Perfectionist
-titleTemplate: ESLint plugin for code formatting in perfectionist style
+titleTemplate: ESLint plugin for sorting various data such as objects, imports, types, enums, JSX props, etc.
 
 hero:
   name: Perfectionist
-  text: Make Your Code Pleasing to the Eye
+  text: Take Your Code to the Beauty Salon
   tagline: An ESLint plugin
   image:
     src: /logo-shadow.svg
