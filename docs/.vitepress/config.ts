@@ -5,6 +5,7 @@ import { SitemapStream } from 'sitemap'
 import path from 'path'
 
 import {
+  contributing,
   description,
   changelog,
   keywords,
@@ -187,8 +188,12 @@ export default defineConfig({
         text: `v${version}`,
         items: [
           {
-            text: 'Changelog ',
+            text: 'Changelog',
             link: changelog,
+          },
+          {
+            text: 'Contributing',
+            link: contributing,
           },
         ],
       },

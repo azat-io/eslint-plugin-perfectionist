@@ -9,4 +9,6 @@ export let github = `https://github.com/${repository}`
 
 export let changelog = `${github}/blob/main/changelog.md`
 
+export let contributing = `${github}/blob/main/contributing.md`
+
 export let image = `${homepage}/open-graph.png`
