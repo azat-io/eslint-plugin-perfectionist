@@ -1,3 +1,17 @@
+## [0.11.2](https://github.com/azat-io/eslint-plugin-perfectionist/compare/v0.11.1...v0.11.2) (2023-06-04)
+
+
+### Bug Fixes
+
+* fix single line type objects sorting ([aaa446a](https://github.com/azat-io/eslint-plugin-perfectionist/commit/aaa446ab5ebef1e1f5b24a45d44e7bcf1d8b592d))
+
+
+### Performance Improvements
+
+* do not compute options if rule is not used ([4574caa](https://github.com/azat-io/eslint-plugin-perfectionist/commit/4574caace5fb935a0c69eab527b5f1dc6ae92213))
+
+
+
 ## [0.11.1](https://github.com/azat-io/eslint-plugin-perfectionist/compare/v0.11.0...v0.11.1) (2023-06-04)
 
 
