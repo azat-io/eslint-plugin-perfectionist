@@ -39,7 +39,7 @@ let createConfigWithOptions = (options: {
     [sortClassesName]: [
       'error',
       {
-        group: [
+        groups: [
           'static-property',
           'private-property',
           'property',
