@@ -76,16 +76,17 @@ export default createEslintRule<Options, MESSAGE_ID>({
         node.callee.name === 'Map' &&
         node.arguments[0].type === AST_NODE_TYPES.ArrayExpression
       ) {
-        let options = complete(context.options.at(0), {
-          type: SortType.alphabetical,
-          'ignore-case': false,
-          order: SortOrder.asc,
-        })
-
         let [{ elements }] = node.arguments
-        let source = context.getSourceCode()
 
         if (elements.length > 1) {
+          let options = complete(context.options.at(0), {
+            type: SortType.alphabetical,
+            'ignore-case': false,
+            order: SortOrder.asc,
+          })
+
+          let source = context.getSourceCode()
+
           let parts: TSESTree.Expression[][] = elements.reduce(
             (
               accumulator: TSESTree.Expression[][],

@@ -67,13 +67,13 @@ export default createEslintRule<Options, MESSAGE_ID>({
   ],
   create: context => ({
     ImportDeclaration: node => {
-      let options = complete(context.options.at(0), {
-        type: SortType.alphabetical,
-        'ignore-case': false,
-        order: SortOrder.asc,
-      })
-
       if (node.specifiers.length > 1) {
+        let options = complete(context.options.at(0), {
+          type: SortType.alphabetical,
+          'ignore-case': false,
+          order: SortOrder.asc,
+        })
+
         let source = context.getSourceCode()
 
         let nodes: SortingNode[] = node.specifiers.map(specifier => ({

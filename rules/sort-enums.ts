@@ -69,13 +69,13 @@ export default createEslintRule<Options, MESSAGE_ID>({
   ],
   create: context => ({
     TSEnumDeclaration: node => {
-      let options = complete(context.options.at(0), {
-        type: SortType.alphabetical,
-        order: SortOrder.asc,
-        'ignore-case': false,
-      })
-
       if (node.members.length > 1) {
+        let options = complete(context.options.at(0), {
+          type: SortType.alphabetical,
+          order: SortOrder.asc,
+          'ignore-case': false,
+        })
+
         let source = context.getSourceCode()
 
         let nodes: SortingNode[] = node.members.map(member => ({

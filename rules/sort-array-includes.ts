@@ -82,19 +82,19 @@ export default createEslintRule<Options, MESSAGE_ID>({
         node.property.type === AST_NODE_TYPES.Identifier &&
         node.property.name === 'includes'
       ) {
-        let options = complete(context.options.at(0), {
-          type: SortType.alphabetical,
-          order: SortOrder.asc,
-          'ignore-case': false,
-          'spread-last': false,
-        })
-
         let elements =
           node.object.type === AST_NODE_TYPES.ArrayExpression
             ? node.object.elements
             : node.object.arguments
 
         if (elements.length > 1) {
+          let options = complete(context.options.at(0), {
+            type: SortType.alphabetical,
+            order: SortOrder.asc,
+            'ignore-case': false,
+            'spread-last': false,
+          })
+
           let source = context.getSourceCode()
 
           let nodes: (SortingNode & { type: string })[] = elements

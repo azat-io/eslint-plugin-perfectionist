@@ -76,69 +76,70 @@ export default createEslintRule<Options, MESSAGE_ID>({
   ],
   create: context => ({
     TSInterfaceDeclaration: node => {
-      let options = complete(context.options.at(0), {
-        type: SortType.alphabetical,
-        'ignore-case': false,
-        order: SortOrder.asc,
-        'ignore-pattern': [],
-      })
+      if (node.body.body.length > 1) {
+        let options = complete(context.options.at(0), {
+          type: SortType.alphabetical,
+          'ignore-case': false,
+          order: SortOrder.asc,
+          'ignore-pattern': [],
+        })
 
-      if (
-        !options['ignore-pattern'].some(pattern =>
-          minimatch(node.id.name, pattern),
-        ) &&
-        node.body.body.length > 1
-      ) {
-        let source = context.getSourceCode()
+        if (
+          !options['ignore-pattern'].some(pattern =>
+            minimatch(node.id.name, pattern),
+          )
+        ) {
+          let source = context.getSourceCode()
 
-        let nodes: SortingNode[] = node.body.body.map(element => {
-          let name: string
+          let nodes: SortingNode[] = node.body.body.map(element => {
+            let name: string
 
-          if (element.type === AST_NODE_TYPES.TSPropertySignature) {
-            if (element.key.type === AST_NODE_TYPES.Identifier) {
-              ;({ name } = element.key)
-            } else if (element.key.type === AST_NODE_TYPES.Literal) {
-              name = `${element.key.value}`
+            if (element.type === AST_NODE_TYPES.TSPropertySignature) {
+              if (element.key.type === AST_NODE_TYPES.Identifier) {
+                ;({ name } = element.key)
+              } else if (element.key.type === AST_NODE_TYPES.Literal) {
+                name = `${element.key.value}`
+              } else {
+                let end: number =
+                  element.typeAnnotation?.range.at(0) ??
+                  element.range.at(1)! - (element.optional ? '?'.length : 0)
+
+                name = source.text.slice(element.range.at(0), end)
+              }
+            } else if (element.type === AST_NODE_TYPES.TSIndexSignature) {
+              let endIndex: number =
+                element.typeAnnotation?.range.at(0) ?? element.range.at(1)!
+
+              name = source.text.slice(element.range.at(0), endIndex)
             } else {
-              let end: number =
-                element.typeAnnotation?.range.at(0) ??
-                element.range.at(1)! - (element.optional ? '?'.length : 0)
+              let endIndex: number =
+                element.returnType?.range.at(0) ?? element.range.at(1)!
 
-              name = source.text.slice(element.range.at(0), end)
+              name = source.text.slice(element.range.at(0), endIndex)
             }
-          } else if (element.type === AST_NODE_TYPES.TSIndexSignature) {
-            let endIndex: number =
-              element.typeAnnotation?.range.at(0) ?? element.range.at(1)!
 
-            name = source.text.slice(element.range.at(0), endIndex)
-          } else {
-            let endIndex: number =
-              element.returnType?.range.at(0) ?? element.range.at(1)!
+            return {
+              size: rangeToDiff(element.range),
+              node: element,
+              name,
+            }
+          })
 
-            name = source.text.slice(element.range.at(0), endIndex)
-          }
-
-          return {
-            size: rangeToDiff(element.range),
-            node: element,
-            name,
-          }
-        })
-
-        pairwise(nodes, (first, second) => {
-          if (compare(first, second, options)) {
-            context.report({
-              messageId: 'unexpectedInterfacePropertiesOrder',
-              data: {
-                first: toSingleLine(first.name),
-                second: toSingleLine(second.name),
-              },
-              node: second.node,
-              fix: fixer =>
-                makeFixes(fixer, nodes, sortNodes(nodes, options), source),
-            })
-          }
-        })
+          pairwise(nodes, (first, second) => {
+            if (compare(first, second, options)) {
+              context.report({
+                messageId: 'unexpectedInterfacePropertiesOrder',
+                data: {
+                  first: toSingleLine(first.name),
+                  second: toSingleLine(second.name),
+                },
+                node: second.node,
+                fix: fixer =>
+                  makeFixes(fixer, nodes, sortNodes(nodes, options), source),
+              })
+            }
+          })
+        }
       }
     },
   }),

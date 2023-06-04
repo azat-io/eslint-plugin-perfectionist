@@ -97,132 +97,134 @@ export default createEslintRule<Options, MESSAGE_ID>({
   ],
   create: context => ({
     JSXElement: node => {
-      let options = complete(context.options.at(0), {
-        type: SortType.alphabetical,
-        shorthand: Position.ignore,
-        multiline: Position.ignore,
-        callback: Position.ignore,
-        'always-on-top': [],
-        'ignore-case': false,
-        order: SortOrder.asc,
-      })
+      if (node.openingElement.attributes.length > 1) {
+        let options = complete(context.options.at(0), {
+          type: SortType.alphabetical,
+          shorthand: Position.ignore,
+          multiline: Position.ignore,
+          callback: Position.ignore,
+          'always-on-top': [],
+          'ignore-case': false,
+          order: SortOrder.asc,
+        })
 
-      let source = context.getSourceCode()
+        let source = context.getSourceCode()
 
-      let parts: SortingNodeWithPosition[][] =
-        node.openingElement.attributes.reduce(
-          (
-            accumulator: SortingNodeWithPosition[][],
-            attribute: TSESTree.JSXSpreadAttribute | TSESTree.JSXAttribute,
-          ) => {
-            if (attribute.type === AST_NODE_TYPES.JSXSpreadAttribute) {
-              accumulator.push([])
+        let parts: SortingNodeWithPosition[][] =
+          node.openingElement.attributes.reduce(
+            (
+              accumulator: SortingNodeWithPosition[][],
+              attribute: TSESTree.JSXSpreadAttribute | TSESTree.JSXAttribute,
+            ) => {
+              if (attribute.type === AST_NODE_TYPES.JSXSpreadAttribute) {
+                accumulator.push([])
+                return accumulator
+              }
+
+              let position: Position = Position.ignore
+
+              if (
+                attribute.name.type === AST_NODE_TYPES.JSXIdentifier &&
+                options['always-on-top'].includes(attribute.name.name)
+              ) {
+                position = Position.exception
+              } else {
+                if (
+                  options.shorthand !== Position.ignore &&
+                  attribute.value === null
+                ) {
+                  position = options.shorthand
+                }
+
+                if (
+                  options.callback !== Position.ignore &&
+                  attribute.name.type === AST_NODE_TYPES.JSXIdentifier &&
+                  attribute.name.name.indexOf('on') === 0 &&
+                  attribute.value !== null
+                ) {
+                  position = options.callback
+                } else if (
+                  options.multiline !== Position.ignore &&
+                  attribute.loc.start.line !== attribute.loc.end.line
+                ) {
+                  position = options.multiline
+                }
+              }
+
+              let jsxNode = {
+                name:
+                  attribute.name.type === AST_NODE_TYPES.JSXNamespacedName
+                    ? `${attribute.name.namespace.name}:${attribute.name.name.name}`
+                    : attribute.name.name,
+                size: rangeToDiff(attribute.range),
+                node: attribute,
+                position,
+              }
+
+              accumulator.at(-1)!.push(jsxNode)
+
               return accumulator
-            }
+            },
+            [[]],
+          )
 
-            let position: Position = Position.ignore
+        parts.forEach(nodes => {
+          pairwise(nodes, (first, second) => {
+            let comparison: boolean
 
             if (
-              attribute.name.type === AST_NODE_TYPES.JSXIdentifier &&
-              options['always-on-top'].includes(attribute.name.name)
+              first.position === Position.exception &&
+              second.position === Position.exception
             ) {
-              position = Position.exception
+              comparison =
+                options['always-on-top'].indexOf(first.name) >
+                options['always-on-top'].indexOf(second.name)
+            } else if (first.position === second.position) {
+              comparison = compare(first, second, options)
             } else {
-              if (
-                options.shorthand !== Position.ignore &&
-                attribute.value === null
-              ) {
-                position = options.shorthand
+              let positionPower = {
+                [Position.exception]: 2,
+                [Position.first]: 1,
+                [Position.ignore]: 0,
+                [Position.last]: -1,
               }
 
-              if (
-                options.callback !== Position.ignore &&
-                attribute.name.type === AST_NODE_TYPES.JSXIdentifier &&
-                attribute.name.name.indexOf('on') === 0 &&
-                attribute.value !== null
-              ) {
-                position = options.callback
-              } else if (
-                options.multiline !== Position.ignore &&
-                attribute.loc.start.line !== attribute.loc.end.line
-              ) {
-                position = options.multiline
-              }
+              comparison =
+                positionPower[first.position] < positionPower[second.position]
             }
 
-            let jsxNode = {
-              name:
-                attribute.name.type === AST_NODE_TYPES.JSXNamespacedName
-                  ? `${attribute.name.namespace.name}:${attribute.name.name.name}`
-                  : attribute.name.name,
-              size: rangeToDiff(attribute.range),
-              node: attribute,
-              position,
+            if (comparison) {
+              context.report({
+                messageId: 'unexpectedJSXPropsOrder',
+                data: {
+                  first: first.name,
+                  second: second.name,
+                },
+                node: second.node,
+                fix: fixer => {
+                  let groups = groupBy(nodes, ({ position }) => position)
+
+                  let getGroup = (index: string) =>
+                    index in groups ? groups[index] : []
+
+                  let sortedNodes = [
+                    getGroup(Position.exception).sort(
+                      (aNode, bNode) =>
+                        options['always-on-top'].indexOf(aNode.name) -
+                        options['always-on-top'].indexOf(bNode.name),
+                    ),
+                    sortNodes(getGroup(Position.first), options),
+                    sortNodes(getGroup(Position.ignore), options),
+                    sortNodes(getGroup(Position.last), options),
+                  ].flat()
+
+                  return makeFixes(fixer, nodes, sortedNodes, source)
+                },
+              })
             }
-
-            accumulator.at(-1)!.push(jsxNode)
-
-            return accumulator
-          },
-          [[]],
-        )
-
-      parts.forEach(nodes => {
-        pairwise(nodes, (first, second) => {
-          let comparison: boolean
-
-          if (
-            first.position === Position.exception &&
-            second.position === Position.exception
-          ) {
-            comparison =
-              options['always-on-top'].indexOf(first.name) >
-              options['always-on-top'].indexOf(second.name)
-          } else if (first.position === second.position) {
-            comparison = compare(first, second, options)
-          } else {
-            let positionPower = {
-              [Position.exception]: 2,
-              [Position.first]: 1,
-              [Position.ignore]: 0,
-              [Position.last]: -1,
-            }
-
-            comparison =
-              positionPower[first.position] < positionPower[second.position]
-          }
-
-          if (comparison) {
-            context.report({
-              messageId: 'unexpectedJSXPropsOrder',
-              data: {
-                first: first.name,
-                second: second.name,
-              },
-              node: second.node,
-              fix: fixer => {
-                let groups = groupBy(nodes, ({ position }) => position)
-
-                let getGroup = (index: string) =>
-                  index in groups ? groups[index] : []
-
-                let sortedNodes = [
-                  getGroup(Position.exception).sort(
-                    (aNode, bNode) =>
-                      options['always-on-top'].indexOf(aNode.name) -
-                      options['always-on-top'].indexOf(bNode.name),
-                  ),
-                  sortNodes(getGroup(Position.first), options),
-                  sortNodes(getGroup(Position.ignore), options),
-                  sortNodes(getGroup(Position.last), options),
-                ].flat()
-
-                return makeFixes(fixer, nodes, sortedNodes, source)
-              },
-            })
-          }
+          })
         })
-      })
+      }
     },
   }),
 })
