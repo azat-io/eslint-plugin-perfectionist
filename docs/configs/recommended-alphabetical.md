@@ -30,9 +30,9 @@ It makes it just a tiny bit faster to find a declaration in a large list. Rememb
 <!-- prettier-ignore -->
 ```js
 // eslint.config.js
-import perfectionistPluginRecommendedAlphabetical from 'eslint-plugin-perfectionist/configs/recommended-alphabetical'
+import perfectionistAlphabetical from 'eslint-plugin-perfectionist/configs/recommended-alphabetical'
 
 export default [
-  perfectionistPluginRecommendedAlphabetical
+  perfectionistAlphabetical
 ]
 ```

@@ -106,9 +106,9 @@ The easiest way to use `eslint-plugin-perfectionist` is to use ready-made config
 ### Flat Config ([`eslint.config.js`](https://eslint.org/docs/latest/use/configure/configuration-files-new))
 
 ```js
-import perfectionistPluginRecommendedLineLength from 'eslint-plugin-perfectionist/configs/recommended-line-length'
+import perfectionistLineLength from 'eslint-plugin-perfectionist/configs/recommended-line-length'
 
-export default [perfectionistPluginRecommendedLineLength]
+export default [perfectionistLineLength]
 ```
 
 ### List of Configs
