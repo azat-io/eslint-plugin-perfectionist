@@ -81,6 +81,7 @@ export default createEslintRule<Options, MESSAGE_ID>({
 
         let nodes: SortingNode[] = node.members.map(member => {
           let name: string
+          let raw = source.text.slice(member.range.at(0), member.range.at(1))
 
           if (member.type === AST_NODE_TYPES.TSPropertySignature) {
             if (member.key.type === AST_NODE_TYPES.Identifier) {
@@ -102,8 +103,11 @@ export default createEslintRule<Options, MESSAGE_ID>({
             name = source.text.slice(member.range.at(0), member.range.at(1))
           }
 
+          let endsWithComma = raw.endsWith(';') || raw.endsWith(',')
+          let endSize = endsWithComma ? 1 : 0
+
           return {
-            size: rangeToDiff(member.range),
+            size: rangeToDiff(member.range) - endSize,
             node: member,
             name,
           }

@@ -38,13 +38,13 @@ describe(RULE_NAME, () => {
               interface DossierByTwilight {
                 name: string
                 age: string
-                country: 'Westalis' | 'Ostania',
+                country: 'Westalis' | 'Ostania'
               }
             `,
             output: dedent`
               interface DossierByTwilight {
                 age: string
-                country: 'Westalis' | 'Ostania',
+                country: 'Westalis' | 'Ostania'
                 name: string
               }
             `,
@@ -462,7 +462,7 @@ describe(RULE_NAME, () => {
             code: dedent`
               interface DossierByTwilight {
                 age: string
-                country: 'Westalis' | 'Ostania',
+                country: 'Westalis' | 'Ostania'
                 name: string
               }
             `,
@@ -480,13 +480,13 @@ describe(RULE_NAME, () => {
               interface DossierByTwilight {
                 name: string
                 age: string
-                country: 'Westalis' | 'Ostania',
+                country: 'Westalis' | 'Ostania'
               }
             `,
             output: dedent`
               interface DossierByTwilight {
                 age: string
-                country: 'Westalis' | 'Ostania',
+                country: 'Westalis' | 'Ostania'
                 name: string
               }
             `,

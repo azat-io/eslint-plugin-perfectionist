@@ -268,6 +268,49 @@ describe(RULE_NAME, () => {
         ],
       })
     })
+
+    it(`${RULE_NAME}(${type}): sorts inline type members`, () => {
+      ruleTester.run(RULE_NAME, rule, {
+        valid: [
+          {
+            code: dedent`
+              addToDeathNote<{ name: string; reasonOfDeath: string }>(/* ... */)
+            `,
+            options: [
+              {
+                type: SortType.alphabetical,
+                order: SortOrder.asc,
+              },
+            ],
+          },
+        ],
+        invalid: [
+          {
+            code: dedent`
+              addToDeathNote<{ reasonOfDeath: string; name: string }>(/* ... */)
+            `,
+            output: dedent`
+              addToDeathNote<{ name: string; reasonOfDeath: string }>(/* ... */)
+            `,
+            options: [
+              {
+                type: SortType.alphabetical,
+                order: SortOrder.asc,
+              },
+            ],
+            errors: [
+              {
+                messageId: 'unexpectedObjectTypesOrder',
+                data: {
+                  first: 'reasonOfDeath',
+                  second: 'name',
+                },
+              },
+            ],
+          },
+        ],
+      })
+    })
   })
 
   describe(`${RULE_NAME}: sorting by natural order`, () => {
@@ -521,6 +564,49 @@ describe(RULE_NAME, () => {
                 data: {
                   first: 'goldenBatAttack(): void',
                   second: '8',
+                },
+              },
+            ],
+          },
+        ],
+      })
+    })
+
+    it(`${RULE_NAME}(${type}): sorts inline type members`, () => {
+      ruleTester.run(RULE_NAME, rule, {
+        valid: [
+          {
+            code: dedent`
+              addToDeathNote<{ name: string; reasonOfDeath: string }>(/* ... */)
+            `,
+            options: [
+              {
+                type: SortType.natural,
+                order: SortOrder.asc,
+              },
+            ],
+          },
+        ],
+        invalid: [
+          {
+            code: dedent`
+              addToDeathNote<{ reasonOfDeath: string; name: string }>(/* ... */)
+            `,
+            output: dedent`
+              addToDeathNote<{ name: string; reasonOfDeath: string }>(/* ... */)
+            `,
+            options: [
+              {
+                type: SortType.natural,
+                order: SortOrder.asc,
+              },
+            ],
+            errors: [
+              {
+                messageId: 'unexpectedObjectTypesOrder',
+                data: {
+                  first: 'reasonOfDeath',
+                  second: 'name',
                 },
               },
             ],
@@ -801,6 +887,49 @@ describe(RULE_NAME, () => {
                 data: {
                   first: '8',
                   second: 'hide',
+                },
+              },
+            ],
+          },
+        ],
+      })
+    })
+
+    it(`${RULE_NAME}(${type}): sorts inline type members`, () => {
+      ruleTester.run(RULE_NAME, rule, {
+        valid: [
+          {
+            code: dedent`
+              addToDeathNote<{ reasonOfDeath: string; name: string }>(/* ... */)
+            `,
+            options: [
+              {
+                type: SortType['line-length'],
+                order: SortOrder.desc,
+              },
+            ],
+          },
+        ],
+        invalid: [
+          {
+            code: dedent`
+            addToDeathNote<{ name: string; reasonOfDeath: string }>(/* ... */)
+            `,
+            output: dedent`
+              addToDeathNote<{ reasonOfDeath: string; name: string }>(/* ... */)
+            `,
+            options: [
+              {
+                type: SortType['line-length'],
+                order: SortOrder.desc,
+              },
+            ],
+            errors: [
+              {
+                messageId: 'unexpectedObjectTypesOrder',
+                data: {
+                  first: 'name',
+                  second: 'reasonOfDeath',
                 },
               },
             ],

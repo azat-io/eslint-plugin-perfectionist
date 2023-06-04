@@ -12,6 +12,8 @@ export let getNodeRange = (
   let start = node.range.at(0)!
   let end = node.range.at(1)!
 
+  let raw = sourceCode.text.slice(start, end)
+
   if (ASTUtils.isParenthesized(node, sourceCode)) {
     let bodyOpeningParen = sourceCode.getTokenBefore(
       node,
@@ -28,6 +30,10 @@ export let getNodeRange = (
   }
 
   let comment = getComment(node, sourceCode)
+
+  if (raw.endsWith(';') || raw.endsWith(',')) {
+    end -= 1
+  }
 
   if (comment) {
     start = comment.range.at(0)!
