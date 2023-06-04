@@ -204,6 +204,10 @@ export default defineConfig({
               link: '/guide/introduction',
             },
             {
+              text: 'Why',
+              link: '/guide/why',
+            },
+            {
               text: 'Getting Started',
               link: '/guide/getting-started',
             },
