@@ -109,6 +109,7 @@ Only affects alphabetical and natural sorting. When `true` the rule ignores the 
 ```json
 // .eslintrc
 {
+  "plugins": ["perfectionist"],
   "rules": {
     "perfectionist/sort-named-imports": [
       "error",

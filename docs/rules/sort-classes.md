@@ -181,6 +181,7 @@ If you use [one of the configs](/configs/) exported by this plugin, you get the 
 ```json
 // .eslintrc
 {
+  "plugins": ["perfectionist"],
   "rules": {
     "perfectionist/sort-classes": [
       "error",

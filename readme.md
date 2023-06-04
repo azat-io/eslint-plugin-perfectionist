@@ -55,12 +55,11 @@ Add `eslint-plugin-perfectionist` to the plugins section of the ESLint configura
 {
   "plugins": ["perfectionist"],
   "rules": {
-    "perfectionist/sort-array-includes": [
+    "perfectionist/sort-objects": [
       "error",
       {
         "type": "line-length",
-        "order": "desc",
-        "spread-last": true
+        "order": "desc"
       }
     ]
   }
@@ -78,12 +77,11 @@ export default [
       perfectionist,
     },
     rules: {
-      'perfectionist/sort-array-includes': [
+      'perfectionist/sort-objects': [
         'error',
         {
           type: 'line-length',
           order: 'desc',
-          'spread-last': true,
         },
       ],
     },

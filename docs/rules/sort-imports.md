@@ -267,6 +267,7 @@ If your project is written in TypeScript, you can read `tsconfig.json` and use `
 ```json
 // .eslintrc
 {
+  "plugins": ["perfectionist"],
   "rules": {
     "perfectionist/sort-imports": [
       "error",

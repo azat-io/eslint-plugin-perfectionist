@@ -110,6 +110,7 @@ You can set a list of key names that will always go at the beginning of the obje
 ```json
 // .eslintrc
 {
+  "plugins": ["perfectionist"],
   "rules": {
     "perfectionist/sort-objects": [
       "error",

@@ -151,6 +151,7 @@ You can set a list of property names that will always go at the beginning of the
 ```json
 // .eslintrc
 {
+  "plugins": ["perfectionist"],
   "rules": {
     "perfectionist/sort-jsx-props": [
       "error",

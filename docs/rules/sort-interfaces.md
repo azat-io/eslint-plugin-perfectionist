@@ -118,6 +118,7 @@ The [minimatch](https://github.com/isaacs/minimatch) library is used for pattern
 ```json
 // .eslintrc
 {
+  "plugins": ["perfectionist"],
   "rules": {
     "perfectionist/sort-interfaces": [
       "error",

@@ -114,6 +114,7 @@ When `true` enforce spread elements in array to be last.
 ```json
 // .eslintrc
 {
+  "plugins": ["perfectionist"],
   "rules": {
     "perfectionist/sort-array-includes": [
       "error",
