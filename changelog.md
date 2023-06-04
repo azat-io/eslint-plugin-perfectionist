@@ -1,3 +1,12 @@
+## [0.11.1](https://github.com/azat-io/eslint-plugin-perfectionist/compare/v0.11.0...v0.11.1) (2023-06-04)
+
+
+### Bug Fixes
+
+* fix option names in sort-classes in configs ([bf578ed](https://github.com/azat-io/eslint-plugin-perfectionist/commit/bf578ed3580b069baf64151b8afe5be746a02945))
+
+
+
 # [0.11.0](https://github.com/azat-io/eslint-plugin-perfectionist/compare/v0.10.0...v0.11.0) (2023-06-04)
 
 
