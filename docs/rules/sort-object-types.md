@@ -106,7 +106,8 @@ Only affects alphabetical and natural sorting. When `true` the rule ignores the 
       "error",
       {
         "type": "line-length",
-        "order": "desc"
+        "order": "desc",
+        "always-on-top": ["id"]
       }
     ]
   }
@@ -130,6 +131,7 @@ export default [
         {
           type: 'line-length',
           order: 'desc',
+          'always-on-top': ['id'],
         },
       ],
     },

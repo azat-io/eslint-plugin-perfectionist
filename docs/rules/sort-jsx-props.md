@@ -118,7 +118,7 @@ Only affects alphabetical and natural sorting. When `true` the rule ignores the 
 
 <sub>(default: `[]`)</sub>
 
-You can set a list of property names that will always go at the beginning of the JSX element. For example: `['id', 'name']`
+You can set a list of property names that will always go at the beginning of the JSX element.
 
 ### callback
 
@@ -156,7 +156,11 @@ You can set a list of property names that will always go at the beginning of the
       "error",
       {
         "type": "line-length",
-        "order": "desc"
+        "order": "desc",
+        "always-on-top": ["id", "name"],
+        "shorthand": "last",
+        "multiline": "first",
+        "callback": "ignore"
       }
     ]
   }
@@ -180,6 +184,10 @@ export default [
         {
           type: 'line-length',
           order: 'desc',
+          'always-on-top': ['id', 'name'],
+          shorthand: 'last',
+          multiline: 'first',
+          callback: 'ignore',
         },
       ],
     },

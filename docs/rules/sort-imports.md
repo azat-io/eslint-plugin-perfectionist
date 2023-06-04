@@ -271,9 +271,26 @@ If your project is written in TypeScript, you can read `tsconfig.json` and use `
     "perfectionist/sort-imports": [
       "error",
       {
-        "newlines-between": "always",
         "type": "line-length",
-        "order": "desc"
+        "order": "desc",
+        "groups": [
+          "type",
+          ["builtin", "external"],
+          "internal-type",
+          "internal",
+          ["parent-type", "sibling-type", "index-type"],
+          ["parent", "sibling", "index"],
+          "object",
+          "unknown"
+        ],
+        "newlines-between": "always",
+        "internal-pattern": [
+          "@/components/**",
+          "@/stores/**",
+          "@/pages/**",
+          "@/lib/**"
+        ],
+        "read-tsconfig": false
       }
     ]
   }
@@ -297,6 +314,24 @@ export default [
         {
           type: 'line-length',
           order: 'desc',
+          groups: [
+            'type',
+            ['builtin', 'external'],
+            'internal-type',
+            'internal',
+            ['parent-type', 'sibling-type', 'index-type'],
+            ['parent', 'sibling', 'index'],
+            'object',
+            'unknown',
+          ],
+          'newlines-between': 'always',
+          'internal-pattern': [
+            '@/components/**',
+            '@/stores/**',
+            '@/pages/**',
+            '@/lib/**',
+          ],
+          'read-tsconfig': false,
         },
       ],
     },
