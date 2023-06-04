@@ -1,4 +1,5 @@
 import sortArrayIncludes, { RULE_NAME as sortArrayIncludesName } from './rules/sort-array-includes'
+import sortClasses, { RULE_NAME as sortClassesName } from './rules/sort-classes'
 import sortEnums, { RULE_NAME as sortEnumsName } from './rules/sort-enums'
 import sortImports, { RULE_NAME as sortImportsName } from './rules/sort-imports'
 import sortInterfaces, { RULE_NAME as sortInterfacesName } from './rules/sort-interfaces'
@@ -33,6 +34,21 @@ let createConfigWithOptions = (options: {
       'error',
       {
         'spread-last': true,
+      },
+    ],
+    [sortClassesName]: [
+      'error',
+      {
+        group: [
+          'static-property',
+          'private-property',
+          'property',
+          'constructor',
+          'static-method',
+          'private-method',
+          'method',
+          'unknown',
+        ],
       },
     ],
     [sortEnumsName]: ['error'],
@@ -91,6 +107,7 @@ export default {
   name,
   rules: {
     [sortArrayIncludesName]: sortArrayIncludes,
+    [sortClassesName]: sortClasses,
     [sortEnumsName]: sortEnums,
     [sortImportsName]: sortImports,
     [sortInterfacesName]: sortInterfaces,

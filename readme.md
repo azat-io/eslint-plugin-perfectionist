@@ -128,6 +128,7 @@ export default [perfectionistPluginRecommendedLineLength]
 | Name                                                                                         | Description                                 | 🔧 |
 | :------------------------------------------------------------------------------------------- | :------------------------------------------ | :- |
 | [sort-array-includes](https://eslint-plugin-perfectionist.azat.io/rules/sort-array-includes) | enforce sorted arrays before include method | 🔧 |
+| [sort-classes](https://eslint-plugin-perfectionist.azat.io/rules/sort-classes)               | enforce sorted classes                      | 🔧 |
 | [sort-enums](https://eslint-plugin-perfectionist.azat.io/rules/sort-enums)                   | enforce sorted TypeScript enums             | 🔧 |
 | [sort-imports](https://eslint-plugin-perfectionist.azat.io/rules/sort-imports)               | enforce sorted imports                      | 🔧 |
 | [sort-interfaces](https://eslint-plugin-perfectionist.azat.io/rules/sort-interfaces)         | enforce sorted interface properties         | 🔧 |
