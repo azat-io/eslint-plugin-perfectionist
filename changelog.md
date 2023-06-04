@@ -1,3 +1,20 @@
+# [0.11.0](https://github.com/azat-io/eslint-plugin-perfectionist/compare/v0.10.0...v0.11.0) (2023-06-04)
+
+
+### Bug Fixes
+
+* fix internal patter in configs ([4be8a74](https://github.com/azat-io/eslint-plugin-perfectionist/commit/4be8a745562fe847bff4cf79c61ff731666b04f4))
+* fix multiline option value in sort-jsx-props rule in configs ([556690d](https://github.com/azat-io/eslint-plugin-perfectionist/commit/556690de8dda82a9668cd94f746f35e730d8747e))
+* improve error output ([c1ad261](https://github.com/azat-io/eslint-plugin-perfectionist/commit/c1ad2616e5aac3c6bf71d6b7d8f9bd480a147f3c))
+
+
+### Features
+
+* add sort-classes rule ([b3a0cb8](https://github.com/azat-io/eslint-plugin-perfectionist/commit/b3a0cb84337d4b800cf3458d272d8983c6bab0a9))
+* add sort-object-types rule ([e3a06cf](https://github.com/azat-io/eslint-plugin-perfectionist/commit/e3a06cf67d63c60d29af54e4e32ef8a60ead85aa))
+
+
+
 # [0.10.0](https://github.com/azat-io/eslint-plugin-perfectionist/compare/v0.9.0...v0.10.0) (2023-06-03)
 
 
