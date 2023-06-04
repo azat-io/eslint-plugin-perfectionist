@@ -976,7 +976,7 @@ describe(RULE_NAME, () => {
 
     it(`${RULE_NAME}: works with empty map`, () => {
       ruleTester.run(RULE_NAME, rule, {
-        valid: ['new Map([[], []])'],
+        valid: ['new Map([[], []])', 'new Map()'],
         invalid: [],
       })
     })

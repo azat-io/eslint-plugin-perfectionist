@@ -74,6 +74,7 @@ export default createEslintRule<Options, MESSAGE_ID>({
       if (
         node.callee.type === AST_NODE_TYPES.Identifier &&
         node.callee.name === 'Map' &&
+        node.arguments.length &&
         node.arguments[0].type === AST_NODE_TYPES.ArrayExpression
       ) {
         let [{ elements }] = node.arguments
