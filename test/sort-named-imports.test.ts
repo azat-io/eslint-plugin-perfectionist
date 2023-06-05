@@ -195,6 +195,100 @@ describe(RULE_NAME, () => {
         ],
       })
     })
+
+    it(`${RULE_NAME}: not sorts default specifiers`, () => {
+      ruleTester.run(RULE_NAME, rule, {
+        valid: [
+          {
+            code: dedent`
+              import spiritedAway, { protagonist as chihiro } from 'spirited-away'
+            `,
+            options: [
+              {
+                type: SortType.alphabetical,
+                order: SortOrder.asc,
+              },
+            ],
+          },
+        ],
+        invalid: [],
+      })
+    })
+
+    it(`${RULE_NAME}: sorts with import aliases`, () => {
+      ruleTester.run(RULE_NAME, rule, {
+        valid: [
+          {
+            code: dedent`
+              import titan, {
+                femaleTitan as annieLeonhart,
+                colossusTitan,
+                attackTitan as erenYeager,
+                armoredTitan as reinerBraun,
+                beastTitan as zekeYeager,
+              } from '~/titans'
+            `,
+            options: [
+              {
+                type: SortType.alphabetical,
+                order: SortOrder.asc,
+              },
+            ],
+          },
+        ],
+        invalid: [
+          {
+            code: dedent`
+              import titan, {
+                armoredTitan as reinerBraun,
+                colossusTitan,
+                beastTitan as zekeYeager,
+                attackTitan as erenYeager,
+                femaleTitan as annieLeonhart,
+              } from '~/titans'
+          `,
+            output: dedent`
+              import titan, {
+                femaleTitan as annieLeonhart,
+                colossusTitan,
+                attackTitan as erenYeager,
+                armoredTitan as reinerBraun,
+                beastTitan as zekeYeager,
+              } from '~/titans'
+          `,
+            options: [
+              {
+                type: SortType.alphabetical,
+                order: SortOrder.asc,
+              },
+            ],
+            errors: [
+              {
+                messageId: 'unexpectedNamedImportsOrder',
+                data: {
+                  first: 'reinerBraun',
+                  second: 'colossusTitan',
+                },
+              },
+              {
+                messageId: 'unexpectedNamedImportsOrder',
+                data: {
+                  first: 'zekeYeager',
+                  second: 'erenYeager',
+                },
+              },
+              {
+                messageId: 'unexpectedNamedImportsOrder',
+                data: {
+                  first: 'erenYeager',
+                  second: 'annieLeonhart',
+                },
+              },
+            ],
+          },
+        ],
+      })
+    })
   })
 
   describe(`${RULE_NAME}: sorting by natural order`, () => {
@@ -382,6 +476,100 @@ describe(RULE_NAME, () => {
         ],
       })
     })
+
+    it(`${RULE_NAME}: not sorts default specifiers`, () => {
+      ruleTester.run(RULE_NAME, rule, {
+        valid: [
+          {
+            code: dedent`
+              import spiritedAway, { protagonist as chihiro } from 'spirited-away'
+            `,
+            options: [
+              {
+                type: SortType['line-length'],
+                order: SortOrder.asc,
+              },
+            ],
+          },
+        ],
+        invalid: [],
+      })
+    })
+
+    it(`${RULE_NAME}: sorts with import aliases`, () => {
+      ruleTester.run(RULE_NAME, rule, {
+        valid: [
+          {
+            code: dedent`
+              import titan, {
+                femaleTitan as annieLeonhart,
+                colossusTitan,
+                attackTitan as erenYeager,
+                armoredTitan as reinerBraun,
+                beastTitan as zekeYeager,
+              } from '~/titans'
+            `,
+            options: [
+              {
+                type: SortType.natural,
+                order: SortOrder.asc,
+              },
+            ],
+          },
+        ],
+        invalid: [
+          {
+            code: dedent`
+              import titan, {
+                armoredTitan as reinerBraun,
+                colossusTitan,
+                beastTitan as zekeYeager,
+                attackTitan as erenYeager,
+                femaleTitan as annieLeonhart,
+              } from '~/titans'
+          `,
+            output: dedent`
+              import titan, {
+                femaleTitan as annieLeonhart,
+                colossusTitan,
+                attackTitan as erenYeager,
+                armoredTitan as reinerBraun,
+                beastTitan as zekeYeager,
+              } from '~/titans'
+          `,
+            options: [
+              {
+                type: SortType.natural,
+                order: SortOrder.asc,
+              },
+            ],
+            errors: [
+              {
+                messageId: 'unexpectedNamedImportsOrder',
+                data: {
+                  first: 'reinerBraun',
+                  second: 'colossusTitan',
+                },
+              },
+              {
+                messageId: 'unexpectedNamedImportsOrder',
+                data: {
+                  first: 'zekeYeager',
+                  second: 'erenYeager',
+                },
+              },
+              {
+                messageId: 'unexpectedNamedImportsOrder',
+                data: {
+                  first: 'erenYeager',
+                  second: 'annieLeonhart',
+                },
+              },
+            ],
+          },
+        ],
+      })
+    })
   })
 
   describe(`${RULE_NAME}: sorting by line length`, () => {
@@ -555,6 +743,100 @@ describe(RULE_NAME, () => {
                 data: {
                   first: 'Eva0',
                   second: 'Eva1',
+                },
+              },
+            ],
+          },
+        ],
+      })
+    })
+
+    it(`${RULE_NAME}: not sorts default specifiers`, () => {
+      ruleTester.run(RULE_NAME, rule, {
+        valid: [
+          {
+            code: dedent`
+              import spiritedAway, { protagonist as chihiro } from 'spirited-away'
+            `,
+            options: [
+              {
+                type: SortType['line-length'],
+                order: SortOrder.desc,
+              },
+            ],
+          },
+        ],
+        invalid: [],
+      })
+    })
+
+    it(`${RULE_NAME}: sorts with import aliases`, () => {
+      ruleTester.run(RULE_NAME, rule, {
+        valid: [
+          {
+            code: dedent`
+              import titan, {
+                femaleTitan as annieLeonhart,
+                armoredTitan as reinerBraun,
+                attackTitan as erenYeager,
+                beastTitan as zekeYeager,
+                colossusTitan,
+              } from '~/titans'
+            `,
+            options: [
+              {
+                type: SortType['line-length'],
+                order: SortOrder.desc,
+              },
+            ],
+          },
+        ],
+        invalid: [
+          {
+            code: dedent`
+              import titan, {
+                armoredTitan as reinerBraun,
+                colossusTitan,
+                beastTitan as zekeYeager,
+                attackTitan as erenYeager,
+                femaleTitan as annieLeonhart,
+              } from '~/titans'
+          `,
+            output: dedent`
+              import titan, {
+                femaleTitan as annieLeonhart,
+                armoredTitan as reinerBraun,
+                attackTitan as erenYeager,
+                beastTitan as zekeYeager,
+                colossusTitan,
+              } from '~/titans'
+          `,
+            options: [
+              {
+                type: SortType['line-length'],
+                order: SortOrder.desc,
+              },
+            ],
+            errors: [
+              {
+                messageId: 'unexpectedNamedImportsOrder',
+                data: {
+                  first: 'colossusTitan',
+                  second: 'zekeYeager',
+                },
+              },
+              {
+                messageId: 'unexpectedNamedImportsOrder',
+                data: {
+                  first: 'zekeYeager',
+                  second: 'erenYeager',
+                },
+              },
+              {
+                messageId: 'unexpectedNamedImportsOrder',
+                data: {
+                  first: 'erenYeager',
+                  second: 'annieLeonhart',
                 },
               },
             ],
