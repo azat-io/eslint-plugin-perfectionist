@@ -14,12 +14,11 @@ jobs:
       - name: checkout
         uses: actions/checkout@v3
 
-      - name: create release
-        id: release_tag
-        uses: yyx990803/release-tag@master
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: install node
+        uses: actions/setup-node@v3
         with:
-          tag_name: ${{ github.ref }}
-          body: |
-            Please refer to [changelog.md](https://github.com/${{ github.repository }}/blob/main/changelog.md) for details.
+          node-version: 20
+
+      - run: npx changelogithub
+        env:
+          GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}

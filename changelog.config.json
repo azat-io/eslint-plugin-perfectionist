@@ -1,0 +1,20 @@
+{
+  "types": {
+    "feat": {
+      "title": "🚀 Features"
+    },
+    "fix": {
+      "title": "🐞 Bug Fixes"
+    },
+    "perf": {
+      "title": "🏎 Performance Improvements"
+    },
+    "refactor": false,
+    "style": false,
+    "chore": false,
+    "build": false,
+    "test": false,
+    "docs": false,
+    "ci": false
+  }
+}
