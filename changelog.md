@@ -1,6 +1,21 @@
 # Changelog
 
 
+## v0.11.3
+
+[compare changes](https://github.com/azat-io/eslint-plugin-perfectionist/compare/v0.11.2...v0.11.3)
+
+
+### 🐞 Bug Fixes
+
+  - Fix working sort-map-elements with empty map ([de061ff](https://github.com/azat-io/eslint-plugin-perfectionist/commit/de061ff))
+  - Disallow to sort default import specifiers ([60044c6](https://github.com/azat-io/eslint-plugin-perfectionist/commit/60044c6))
+  - Do not sort imports if there are tokens between them ([a4fabe9](https://github.com/azat-io/eslint-plugin-perfectionist/commit/a4fabe9))
+
+### ❤️  Contributors
+
+- Azat S ([@azat-io](http://github.com/azat-io))
+
 ## v0.11.2
 
 [compare changes](https://github.com/azat-io/eslint-plugin-perfectionist/compare/v0.11.1...v0.11.2)
