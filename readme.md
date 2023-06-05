@@ -8,8 +8,8 @@
   width="170"
 />
 
-![Version](https://img.shields.io/npm/v/eslint-plugin-perfectionist.svg?color=brightgreen)
-[![GitHub license](https://img.shields.io/badge/license-MIT-brightgreen.svg)](https://github.com/facebook/react/blob/main/LICENSE)
+![Version](https://img.shields.io/npm/v/eslint-plugin-perfectionist.svg?color=4a32c3)
+[![GitHub license](https://img.shields.io/badge/license-MIT-4a32c3.svg)](https://github.com/facebook/react/blob/main/LICENSE)
 
 ESLint plugin that sets rules to format your code and make it consistent.
 
