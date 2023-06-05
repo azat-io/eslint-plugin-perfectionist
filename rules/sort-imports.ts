@@ -266,14 +266,27 @@ export default createEslintRule<Options, MESSAGE_ID>({
           return options.groups.length
         }
 
+        let hasContentBetweenNodes = (
+          aNode: SortingNode,
+          bNode: SortingNode,
+        ): boolean =>
+          !!source.getTokensBetween(aNode.node, bNode.node, {
+            includeComments: true,
+          }).length
+
         let getLinesBetweenImports = (
           first: SortingNode,
           second: SortingNode,
         ) => {
+          if (hasContentBetweenNodes(first, second)) {
+            return 0
+          }
+
           let linesBetweenImports = source.lines.slice(
             first.node.loc.end.line,
             second.node.loc.start.line - 1,
           )
+
           return linesBetweenImports.filter(line => !line.trim().length).length
         }
 
@@ -386,8 +399,9 @@ export default createEslintRule<Options, MESSAGE_ID>({
           let numberOfEmptyLinesBetween = getLinesBetweenImports(first, second)
 
           if (
-            firstNum > secondNum ||
-            (firstNum === secondNum && compare(first, second, options))
+            !hasContentBetweenNodes(first, second) &&
+            (firstNum > secondNum ||
+              (firstNum === secondNum && compare(first, second, options)))
           ) {
             context.report({
               messageId: 'unexpectedImportsOrder',
