@@ -12,8 +12,9 @@ export let getComment = (
   })
 
   if (
-    previousTokenOrComment?.type === AST_TOKEN_TYPES.Block ||
-    previousTokenOrComment?.type === AST_TOKEN_TYPES.Line
+    (previousTokenOrComment?.type === AST_TOKEN_TYPES.Block ||
+      previousTokenOrComment?.type === AST_TOKEN_TYPES.Line) &&
+    node.loc.start.line - previousTokenOrComment.loc.end.line <= 1
   ) {
     return previousTokenOrComment
   }

@@ -10,6 +10,7 @@ import { createEslintRule } from '../utils/create-eslint-rule'
 import { getNodeRange } from '../utils/get-node-range'
 import { rangeToDiff } from '../utils/range-to-diff'
 import { TSConfig } from '../utils/read-ts-config'
+import { getComment } from '../utils/get-comment'
 import { SortType, SortOrder } from '../typings'
 import { sortNodes } from '../utils/sort-nodes'
 import { complete } from '../utils/complete'
@@ -267,24 +268,28 @@ export default createEslintRule<Options, MESSAGE_ID>({
         }
 
         let hasContentBetweenNodes = (
-          aNode: SortingNode,
-          bNode: SortingNode,
+          left: SortingNode,
+          right: SortingNode,
         ): boolean =>
-          !!source.getTokensBetween(aNode.node, bNode.node, {
-            includeComments: true,
-          }).length
+          !!source.getTokensBetween(
+            left.node,
+            getComment(right.node, source) || right.node,
+            {
+              includeComments: true,
+            },
+          ).length
 
         let getLinesBetweenImports = (
-          first: SortingNode,
-          second: SortingNode,
+          left: SortingNode,
+          right: SortingNode,
         ) => {
-          if (hasContentBetweenNodes(first, second)) {
+          if (hasContentBetweenNodes(left, right)) {
             return 0
           }
 
           let linesBetweenImports = source.lines.slice(
-            first.node.loc.end.line,
-            second.node.loc.start.line - 1,
+            left.node.loc.end.line,
+            right.node.loc.start.line - 1,
           )
 
           return linesBetweenImports.filter(line => !line.trim().length).length
