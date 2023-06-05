@@ -19,7 +19,7 @@
     "release": "pnpm release:check && pnpm release:version && pnpm release:publish",
     "release:check": "pnpm test && pnpm run build",
     "release:publish": "clean-publish",
-    "release:version": "bumpp package.json --execute=\"pnpm exec changelogen --output changelog.md -r %s && git add changelog.md && git tag v%s\" --commit \"build: publish v%s\" --all",
+    "release:version": "bumpp package.json --execute=\"pnpm exec changelogen --output changelog.md -r %s && git add changelog.md\" --commit \"build: publish v%s\" --tag --all",
     "lint": "eslint \"**/*.{js,ts}\"",
     "test:types": "tsc --noEmit --pretty",
     "test:unit": "vitest --run --coverage --single-thread --no-threads",
