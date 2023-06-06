@@ -150,15 +150,15 @@ describe(RULE_NAME, () => {
               {
                 messageId: 'unexpectedClassesOrder',
                 data: {
-                  first: 'constructor',
-                  second: 'placeOfWork',
+                  left: 'constructor',
+                  right: 'placeOfWork',
                 },
               },
               {
                 messageId: 'unexpectedClassesOrder',
                 data: {
-                  first: 'decreaseStressLevel',
-                  second: 'greet',
+                  left: 'decreaseStressLevel',
+                  right: 'greet',
                 },
               },
             ],
@@ -242,8 +242,8 @@ describe(RULE_NAME, () => {
               {
                 messageId: 'unexpectedClassesOrder',
                 data: {
-                  first: 'territory',
-                  second: 'status',
+                  left: 'territory',
+                  right: 'status',
                 },
               },
             ],
@@ -311,8 +311,8 @@ describe(RULE_NAME, () => {
               {
                 messageId: 'unexpectedClassesOrder',
                 data: {
-                  first: '[k: string];',
-                  second: 'name',
+                  left: '[k: string];',
+                  right: 'name',
                 },
               },
             ],
@@ -462,15 +462,15 @@ describe(RULE_NAME, () => {
               {
                 messageId: 'unexpectedClassesOrder',
                 data: {
-                  first: 'constructor',
-                  second: 'placeOfWork',
+                  left: 'constructor',
+                  right: 'placeOfWork',
                 },
               },
               {
                 messageId: 'unexpectedClassesOrder',
                 data: {
-                  first: 'decreaseStressLevel',
-                  second: 'greet',
+                  left: 'decreaseStressLevel',
+                  right: 'greet',
                 },
               },
             ],
@@ -554,8 +554,8 @@ describe(RULE_NAME, () => {
               {
                 messageId: 'unexpectedClassesOrder',
                 data: {
-                  first: 'territory',
-                  second: 'status',
+                  left: 'territory',
+                  right: 'status',
                 },
               },
             ],
@@ -623,8 +623,8 @@ describe(RULE_NAME, () => {
               {
                 messageId: 'unexpectedClassesOrder',
                 data: {
-                  first: '[k: string];',
-                  second: 'name',
+                  left: '[k: string];',
+                  right: 'name',
                 },
               },
             ],
@@ -774,15 +774,15 @@ describe(RULE_NAME, () => {
               {
                 messageId: 'unexpectedClassesOrder',
                 data: {
-                  first: 'constructor',
-                  second: 'placeOfWork',
+                  left: 'constructor',
+                  right: 'placeOfWork',
                 },
               },
               {
                 messageId: 'unexpectedClassesOrder',
                 data: {
-                  first: 'decreaseStressLevel',
-                  second: 'greet',
+                  left: 'decreaseStressLevel',
+                  right: 'greet',
                 },
               },
             ],
@@ -866,8 +866,8 @@ describe(RULE_NAME, () => {
               {
                 messageId: 'unexpectedClassesOrder',
                 data: {
-                  first: 'key in Attractions',
-                  second: 'territory',
+                  left: 'key in Attractions',
+                  right: 'territory',
                 },
               },
             ],
@@ -935,8 +935,8 @@ describe(RULE_NAME, () => {
               {
                 messageId: 'unexpectedClassesOrder',
                 data: {
-                  first: '[k: string];',
-                  second: 'name',
+                  left: '[k: string];',
+                  right: 'name',
                 },
               },
             ],

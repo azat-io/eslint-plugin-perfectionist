@@ -58,8 +58,8 @@ describe(RULE_NAME, () => {
               {
                 messageId: 'unexpectedInterfacePropertiesOrder',
                 data: {
-                  first: 'name',
-                  second: 'age',
+                  left: 'name',
+                  right: 'age',
                 },
               },
             ],
@@ -110,8 +110,8 @@ describe(RULE_NAME, () => {
               {
                 messageId: 'unexpectedInterfacePropertiesOrder',
                 data: {
-                  first: 'yuuji',
-                  second: '[key in Sorcerer]',
+                  left: 'yuuji',
+                  right: '[key in Sorcerer]',
                 },
               },
             ],
@@ -168,15 +168,15 @@ describe(RULE_NAME, () => {
               {
                 messageId: 'unexpectedInterfacePropertiesOrder',
                 data: {
-                  first: 'spike-spiegel',
-                  second: 'ein',
+                  left: 'spike-spiegel',
+                  right: 'ein',
                 },
               },
               {
                 messageId: 'unexpectedInterfacePropertiesOrder',
                 data: {
-                  first: 'jet',
-                  second: 'faye-valentine',
+                  left: 'jet',
+                  right: 'faye-valentine',
                 },
               },
             ],
@@ -230,8 +230,8 @@ describe(RULE_NAME, () => {
               {
                 messageId: 'unexpectedInterfacePropertiesOrder',
                 data: {
-                  first: 'evangelion-owner',
-                  second: '[key: string]',
+                  left: 'evangelion-owner',
+                  right: '[key: string]',
                 },
               },
             ],
@@ -291,15 +291,15 @@ describe(RULE_NAME, () => {
               {
                 messageId: 'unexpectedInterfacePropertiesOrder',
                 data: {
-                  first: 'godspeed()',
-                  second: 'airSpin',
+                  left: 'godspeed()',
+                  right: 'airSpin',
                 },
               },
               {
                 messageId: 'unexpectedInterfacePropertiesOrder',
                 data: {
-                  first: 'sixfold()',
-                  second: 'name',
+                  left: 'sixfold()',
+                  right: 'name',
                 },
               },
             ],
@@ -359,15 +359,15 @@ describe(RULE_NAME, () => {
               {
                 messageId: 'unexpectedInterfacePropertiesOrder',
                 data: {
-                  first: 'age',
-                  second: '[...memories]',
+                  left: 'age',
+                  right: '[...memories]',
                 },
               },
               {
                 messageId: 'unexpectedInterfacePropertiesOrder',
                 data: {
-                  first: 'job',
-                  second: '[value in stories]',
+                  left: 'job',
+                  right: '[value in stories]',
                 },
               },
             ],
@@ -427,22 +427,22 @@ describe(RULE_NAME, () => {
               {
                 messageId: 'unexpectedInterfacePropertiesOrder',
                 data: {
-                  first: 'spirit',
-                  second: 'owner',
+                  left: 'spirit',
+                  right: 'owner',
                 },
               },
               {
                 messageId: 'unexpectedInterfacePropertiesOrder',
                 data: {
-                  first: 'owner',
-                  second: 'esper',
+                  left: 'owner',
+                  right: 'esper',
                 },
               },
               {
                 messageId: 'unexpectedInterfacePropertiesOrder',
                 data: {
-                  first: 'esper',
-                  second: 'assistant',
+                  left: 'esper',
+                  right: 'assistant',
                 },
               },
             ],
@@ -478,8 +478,8 @@ describe(RULE_NAME, () => {
               {
                 messageId: 'unexpectedInterfacePropertiesOrder',
                 data: {
-                  first: 'rescuer',
-                  second: 'hikikomori',
+                  left: 'rescuer',
+                  right: 'hikikomori',
                 },
               },
             ],
@@ -537,8 +537,8 @@ describe(RULE_NAME, () => {
               {
                 messageId: 'unexpectedInterfacePropertiesOrder',
                 data: {
-                  first: 'name',
-                  second: 'age',
+                  left: 'name',
+                  right: 'age',
                 },
               },
             ],
@@ -589,8 +589,8 @@ describe(RULE_NAME, () => {
               {
                 messageId: 'unexpectedInterfacePropertiesOrder',
                 data: {
-                  first: 'yuuji',
-                  second: '[key in Sorcerer]',
+                  left: 'yuuji',
+                  right: '[key in Sorcerer]',
                 },
               },
             ],
@@ -647,15 +647,15 @@ describe(RULE_NAME, () => {
               {
                 messageId: 'unexpectedInterfacePropertiesOrder',
                 data: {
-                  first: 'spike-spiegel',
-                  second: 'ein',
+                  left: 'spike-spiegel',
+                  right: 'ein',
                 },
               },
               {
                 messageId: 'unexpectedInterfacePropertiesOrder',
                 data: {
-                  first: 'jet',
-                  second: 'faye-valentine',
+                  left: 'jet',
+                  right: 'faye-valentine',
                 },
               },
             ],
@@ -709,8 +709,8 @@ describe(RULE_NAME, () => {
               {
                 messageId: 'unexpectedInterfacePropertiesOrder',
                 data: {
-                  first: 'evangelion-owner',
-                  second: '[key: string]',
+                  left: 'evangelion-owner',
+                  right: '[key: string]',
                 },
               },
             ],
@@ -770,15 +770,15 @@ describe(RULE_NAME, () => {
               {
                 messageId: 'unexpectedInterfacePropertiesOrder',
                 data: {
-                  first: 'godspeed()',
-                  second: 'airSpin',
+                  left: 'godspeed()',
+                  right: 'airSpin',
                 },
               },
               {
                 messageId: 'unexpectedInterfacePropertiesOrder',
                 data: {
-                  first: 'sixfold()',
-                  second: 'name',
+                  left: 'sixfold()',
+                  right: 'name',
                 },
               },
             ],
@@ -838,15 +838,15 @@ describe(RULE_NAME, () => {
               {
                 messageId: 'unexpectedInterfacePropertiesOrder',
                 data: {
-                  first: 'age',
-                  second: '[...memories]',
+                  left: 'age',
+                  right: '[...memories]',
                 },
               },
               {
                 messageId: 'unexpectedInterfacePropertiesOrder',
                 data: {
-                  first: 'job',
-                  second: '[value in stories]',
+                  left: 'job',
+                  right: '[value in stories]',
                 },
               },
             ],
@@ -906,22 +906,22 @@ describe(RULE_NAME, () => {
               {
                 messageId: 'unexpectedInterfacePropertiesOrder',
                 data: {
-                  first: 'spirit',
-                  second: 'owner',
+                  left: 'spirit',
+                  right: 'owner',
                 },
               },
               {
                 messageId: 'unexpectedInterfacePropertiesOrder',
                 data: {
-                  first: 'owner',
-                  second: 'esper',
+                  left: 'owner',
+                  right: 'esper',
                 },
               },
               {
                 messageId: 'unexpectedInterfacePropertiesOrder',
                 data: {
-                  first: 'esper',
-                  second: 'assistant',
+                  left: 'esper',
+                  right: 'assistant',
                 },
               },
             ],
@@ -957,8 +957,8 @@ describe(RULE_NAME, () => {
               {
                 messageId: 'unexpectedInterfacePropertiesOrder',
                 data: {
-                  first: 'rescuer',
-                  second: 'hikikomori',
+                  left: 'rescuer',
+                  right: 'hikikomori',
                 },
               },
             ],
@@ -1016,8 +1016,8 @@ describe(RULE_NAME, () => {
               {
                 messageId: 'unexpectedInterfacePropertiesOrder',
                 data: {
-                  first: 'age',
-                  second: 'country',
+                  left: 'age',
+                  right: 'country',
                 },
               },
             ],
@@ -1082,8 +1082,8 @@ describe(RULE_NAME, () => {
               {
                 messageId: 'unexpectedInterfacePropertiesOrder',
                 data: {
-                  first: 'color',
-                  second: 'align',
+                  left: 'color',
+                  right: 'align',
                 },
               },
             ],
@@ -1134,8 +1134,8 @@ describe(RULE_NAME, () => {
               {
                 messageId: 'unexpectedInterfacePropertiesOrder',
                 data: {
-                  first: 'yuuji',
-                  second: '[key in Sorcerer]',
+                  left: 'yuuji',
+                  right: '[key in Sorcerer]',
                 },
               },
             ],
@@ -1195,15 +1195,15 @@ describe(RULE_NAME, () => {
               {
                 messageId: 'unexpectedInterfacePropertiesOrder',
                 data: {
-                  first: 'age',
-                  second: 'godspeed()',
+                  left: 'age',
+                  right: 'godspeed()',
                 },
               },
               {
                 messageId: 'unexpectedInterfacePropertiesOrder',
                 data: {
-                  first: 'godspeed()',
-                  second: 'airSpin',
+                  left: 'godspeed()',
+                  right: 'airSpin',
                 },
               },
             ],
@@ -1263,15 +1263,15 @@ describe(RULE_NAME, () => {
               {
                 messageId: 'unexpectedInterfacePropertiesOrder',
                 data: {
-                  first: '[days in daysDiff]',
-                  second: '[value in stories]',
+                  left: '[days in daysDiff]',
+                  right: '[value in stories]',
                 },
               },
               {
                 messageId: 'unexpectedInterfacePropertiesOrder',
                 data: {
-                  first: '[...memories]',
-                  second: 'job',
+                  left: '[...memories]',
+                  right: 'job',
                 },
               },
             ],
@@ -1331,22 +1331,22 @@ describe(RULE_NAME, () => {
               {
                 messageId: 'unexpectedInterfacePropertiesOrder',
                 data: {
-                  first: 'spirit',
-                  second: 'owner',
+                  left: 'spirit',
+                  right: 'owner',
                 },
               },
               {
                 messageId: 'unexpectedInterfacePropertiesOrder',
                 data: {
-                  first: 'owner',
-                  second: 'esper',
+                  left: 'owner',
+                  right: 'esper',
                 },
               },
               {
                 messageId: 'unexpectedInterfacePropertiesOrder',
                 data: {
-                  first: 'esper',
-                  second: 'assistant',
+                  left: 'esper',
+                  right: 'assistant',
                 },
               },
             ],
@@ -1382,8 +1382,8 @@ describe(RULE_NAME, () => {
               {
                 messageId: 'unexpectedInterfacePropertiesOrder',
                 data: {
-                  first: 'rescuer',
-                  second: 'hikikomori',
+                  left: 'rescuer',
+                  right: 'hikikomori',
                 },
               },
             ],
@@ -1422,8 +1422,8 @@ describe(RULE_NAME, () => {
               {
                 messageId: 'unexpectedInterfacePropertiesOrder',
                 data: {
-                  first: 'name',
-                  second: 'causeOfDeath',
+                  left: 'name',
+                  right: 'causeOfDeath',
                 },
               },
             ],

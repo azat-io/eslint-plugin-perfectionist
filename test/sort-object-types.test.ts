@@ -58,8 +58,8 @@ describe(RULE_NAME, () => {
               {
                 messageId: 'unexpectedObjectTypesOrder',
                 data: {
-                  first: 'name',
-                  second: 'birthname',
+                  left: 'name',
+                  right: 'birthname',
                 },
               },
             ],
@@ -119,8 +119,8 @@ describe(RULE_NAME, () => {
               {
                 messageId: 'unexpectedObjectTypesOrder',
                 data: {
-                  first: 'slayerName',
-                  second: 'attackType',
+                  left: 'slayerName',
+                  right: 'attackType',
                 },
               },
             ],
@@ -183,22 +183,22 @@ describe(RULE_NAME, () => {
               {
                 messageId: 'unexpectedObjectTypesOrder',
                 data: {
-                  first: 'age',
-                  second: '[key: string]',
+                  left: 'age',
+                  right: '[key: string]',
                 },
               },
               {
                 messageId: 'unexpectedObjectTypesOrder',
                 data: {
-                  first: 'occupation',
-                  second: 'name',
+                  left: 'occupation',
+                  right: 'name',
                 },
               },
               {
                 messageId: 'unexpectedObjectTypesOrder',
                 data: {
-                  first: 'residence',
-                  second: 'rank',
+                  left: 'residence',
+                  right: 'rank',
                 },
               },
             ],
@@ -259,8 +259,8 @@ describe(RULE_NAME, () => {
               {
                 messageId: 'unexpectedObjectTypesOrder',
                 data: {
-                  first: 'goldenBatAttack(): void',
-                  second: '8',
+                  left: 'goldenBatAttack(): void',
+                  right: '8',
                 },
               },
             ],
@@ -302,8 +302,8 @@ describe(RULE_NAME, () => {
               {
                 messageId: 'unexpectedObjectTypesOrder',
                 data: {
-                  first: 'reasonOfDeath',
-                  second: 'name',
+                  left: 'reasonOfDeath',
+                  right: 'name',
                 },
               },
             ],
@@ -361,8 +361,8 @@ describe(RULE_NAME, () => {
               {
                 messageId: 'unexpectedObjectTypesOrder',
                 data: {
-                  first: 'name',
-                  second: 'birthname',
+                  left: 'name',
+                  right: 'birthname',
                 },
               },
             ],
@@ -422,8 +422,8 @@ describe(RULE_NAME, () => {
               {
                 messageId: 'unexpectedObjectTypesOrder',
                 data: {
-                  first: 'slayerName',
-                  second: 'attackType',
+                  left: 'slayerName',
+                  right: 'attackType',
                 },
               },
             ],
@@ -486,22 +486,22 @@ describe(RULE_NAME, () => {
               {
                 messageId: 'unexpectedObjectTypesOrder',
                 data: {
-                  first: 'age',
-                  second: '[key: string]',
+                  left: 'age',
+                  right: '[key: string]',
                 },
               },
               {
                 messageId: 'unexpectedObjectTypesOrder',
                 data: {
-                  first: 'occupation',
-                  second: 'name',
+                  left: 'occupation',
+                  right: 'name',
                 },
               },
               {
                 messageId: 'unexpectedObjectTypesOrder',
                 data: {
-                  first: 'residence',
-                  second: 'rank',
+                  left: 'residence',
+                  right: 'rank',
                 },
               },
             ],
@@ -562,8 +562,8 @@ describe(RULE_NAME, () => {
               {
                 messageId: 'unexpectedObjectTypesOrder',
                 data: {
-                  first: 'goldenBatAttack(): void',
-                  second: '8',
+                  left: 'goldenBatAttack(): void',
+                  right: '8',
                 },
               },
             ],
@@ -605,8 +605,8 @@ describe(RULE_NAME, () => {
               {
                 messageId: 'unexpectedObjectTypesOrder',
                 data: {
-                  first: 'reasonOfDeath',
-                  second: 'name',
+                  left: 'reasonOfDeath',
+                  right: 'name',
                 },
               },
             ],
@@ -664,15 +664,15 @@ describe(RULE_NAME, () => {
               {
                 messageId: 'unexpectedObjectTypesOrder',
                 data: {
-                  first: 'name',
-                  second: 'birthname',
+                  left: 'name',
+                  right: 'birthname',
                 },
               },
               {
                 messageId: 'unexpectedObjectTypesOrder',
                 data: {
-                  first: 'birthname',
-                  second: 'status',
+                  left: 'birthname',
+                  right: 'status',
                 },
               },
             ],
@@ -732,8 +732,8 @@ describe(RULE_NAME, () => {
               {
                 messageId: 'unexpectedObjectTypesOrder',
                 data: {
-                  first: 'demon',
-                  second: 'attackType',
+                  left: 'demon',
+                  right: 'attackType',
                 },
               },
             ],
@@ -796,22 +796,22 @@ describe(RULE_NAME, () => {
               {
                 messageId: 'unexpectedObjectTypesOrder',
                 data: {
-                  first: 'age',
-                  second: '[key: string]',
+                  left: 'age',
+                  right: '[key: string]',
                 },
               },
               {
                 messageId: 'unexpectedObjectTypesOrder',
                 data: {
-                  first: 'occupation',
-                  second: 'name',
+                  left: 'occupation',
+                  right: 'name',
                 },
               },
               {
                 messageId: 'unexpectedObjectTypesOrder',
                 data: {
-                  first: 'name',
-                  second: 'residence',
+                  left: 'name',
+                  right: 'residence',
                 },
               },
             ],
@@ -871,22 +871,22 @@ describe(RULE_NAME, () => {
               {
                 messageId: 'unexpectedObjectTypesOrder',
                 data: {
-                  first: '[...kills]',
-                  second: '[[data]]',
+                  left: '[...kills]',
+                  right: '[[data]]',
                 },
               },
               {
                 messageId: 'unexpectedObjectTypesOrder',
                 data: {
-                  first: '[[data]]',
-                  second: 'goldenBatAttack(): void',
+                  left: '[[data]]',
+                  right: 'goldenBatAttack(): void',
                 },
               },
               {
                 messageId: 'unexpectedObjectTypesOrder',
                 data: {
-                  first: '8',
-                  second: 'hide',
+                  left: '8',
+                  right: 'hide',
                 },
               },
             ],
@@ -928,8 +928,8 @@ describe(RULE_NAME, () => {
               {
                 messageId: 'unexpectedObjectTypesOrder',
                 data: {
-                  first: 'name',
-                  second: 'reasonOfDeath',
+                  left: 'name',
+                  right: 'reasonOfDeath',
                 },
               },
             ],

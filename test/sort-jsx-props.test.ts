@@ -77,8 +77,8 @@ describe(RULE_NAME, () => {
               {
                 messageId: 'unexpectedJSXPropsOrder',
                 data: {
-                  first: 'type',
-                  second: 'role',
+                  left: 'type',
+                  right: 'role',
                 },
               },
             ],
@@ -141,8 +141,8 @@ describe(RULE_NAME, () => {
               {
                 messageId: 'unexpectedJSXPropsOrder',
                 data: {
-                  first: 'parasite:name',
-                  second: 'name',
+                  left: 'parasite:name',
+                  right: 'name',
                 },
               },
             ],
@@ -214,15 +214,15 @@ describe(RULE_NAME, () => {
               {
                 messageId: 'unexpectedJSXPropsOrder',
                 data: {
-                  first: 'lastName',
-                  second: 'big',
+                  left: 'lastName',
+                  right: 'big',
                 },
               },
               {
                 messageId: 'unexpectedJSXPropsOrder',
                 data: {
-                  first: 'occupation',
-                  second: 'age',
+                  left: 'occupation',
+                  right: 'age',
                 },
               },
             ],
@@ -287,8 +287,8 @@ describe(RULE_NAME, () => {
               {
                 messageId: 'unexpectedJSXPropsOrder',
                 data: {
-                  first: 'isFromCowboyBebop',
-                  second: 'origin',
+                  left: 'isFromCowboyBebop',
+                  right: 'origin',
                 },
               },
             ],
@@ -347,8 +347,8 @@ describe(RULE_NAME, () => {
               {
                 messageId: 'unexpectedJSXPropsOrder',
                 data: {
-                  first: 'onChange',
-                  second: 'shinigami',
+                  left: 'onChange',
+                  right: 'shinigami',
                 },
               },
             ],
@@ -425,15 +425,15 @@ describe(RULE_NAME, () => {
               {
                 messageId: 'unexpectedJSXPropsOrder',
                 data: {
-                  first: 'form',
-                  second: 'handleTransform',
+                  left: 'form',
+                  right: 'handleTransform',
                 },
               },
               {
                 messageId: 'unexpectedJSXPropsOrder',
                 data: {
-                  first: 'residence',
-                  second: 'style',
+                  left: 'residence',
+                  right: 'style',
                 },
               },
             ],
@@ -498,15 +498,15 @@ describe(RULE_NAME, () => {
               {
                 messageId: 'unexpectedJSXPropsOrder',
                 data: {
-                  first: 'nickname',
-                  second: 'name',
+                  left: 'nickname',
+                  right: 'name',
                 },
               },
               {
                 messageId: 'unexpectedJSXPropsOrder',
                 data: {
-                  first: 'name',
-                  second: 'id',
+                  left: 'name',
+                  right: 'id',
                 },
               },
             ],
@@ -535,8 +535,8 @@ describe(RULE_NAME, () => {
               {
                 messageId: 'unexpectedJSXPropsOrder',
                 data: {
-                  first: 'name',
-                  second: 'id',
+                  left: 'name',
+                  right: 'id',
                 },
               },
             ],
@@ -565,8 +565,8 @@ describe(RULE_NAME, () => {
               {
                 messageId: 'unexpectedJSXPropsOrder',
                 data: {
-                  first: 'name',
-                  second: 'id',
+                  left: 'name',
+                  right: 'id',
                 },
               },
             ],
@@ -638,8 +638,8 @@ describe(RULE_NAME, () => {
               {
                 messageId: 'unexpectedJSXPropsOrder',
                 data: {
-                  first: 'type',
-                  second: 'role',
+                  left: 'type',
+                  right: 'role',
                 },
               },
             ],
@@ -702,8 +702,8 @@ describe(RULE_NAME, () => {
               {
                 messageId: 'unexpectedJSXPropsOrder',
                 data: {
-                  first: 'parasite:name',
-                  second: 'name',
+                  left: 'parasite:name',
+                  right: 'name',
                 },
               },
             ],
@@ -775,15 +775,15 @@ describe(RULE_NAME, () => {
               {
                 messageId: 'unexpectedJSXPropsOrder',
                 data: {
-                  first: 'lastName',
-                  second: 'big',
+                  left: 'lastName',
+                  right: 'big',
                 },
               },
               {
                 messageId: 'unexpectedJSXPropsOrder',
                 data: {
-                  first: 'occupation',
-                  second: 'age',
+                  left: 'occupation',
+                  right: 'age',
                 },
               },
             ],
@@ -848,8 +848,8 @@ describe(RULE_NAME, () => {
               {
                 messageId: 'unexpectedJSXPropsOrder',
                 data: {
-                  first: 'isFromCowboyBebop',
-                  second: 'origin',
+                  left: 'isFromCowboyBebop',
+                  right: 'origin',
                 },
               },
             ],
@@ -908,8 +908,8 @@ describe(RULE_NAME, () => {
               {
                 messageId: 'unexpectedJSXPropsOrder',
                 data: {
-                  first: 'onChange',
-                  second: 'shinigami',
+                  left: 'onChange',
+                  right: 'shinigami',
                 },
               },
             ],
@@ -986,15 +986,15 @@ describe(RULE_NAME, () => {
               {
                 messageId: 'unexpectedJSXPropsOrder',
                 data: {
-                  first: 'form',
-                  second: 'handleTransform',
+                  left: 'form',
+                  right: 'handleTransform',
                 },
               },
               {
                 messageId: 'unexpectedJSXPropsOrder',
                 data: {
-                  first: 'residence',
-                  second: 'style',
+                  left: 'residence',
+                  right: 'style',
                 },
               },
             ],
@@ -1059,15 +1059,15 @@ describe(RULE_NAME, () => {
               {
                 messageId: 'unexpectedJSXPropsOrder',
                 data: {
-                  first: 'nickname',
-                  second: 'name',
+                  left: 'nickname',
+                  right: 'name',
                 },
               },
               {
                 messageId: 'unexpectedJSXPropsOrder',
                 data: {
-                  first: 'name',
-                  second: 'id',
+                  left: 'name',
+                  right: 'id',
                 },
               },
             ],
@@ -1096,8 +1096,8 @@ describe(RULE_NAME, () => {
               {
                 messageId: 'unexpectedJSXPropsOrder',
                 data: {
-                  first: 'name',
-                  second: 'id',
+                  left: 'name',
+                  right: 'id',
                 },
               },
             ],
@@ -1126,8 +1126,8 @@ describe(RULE_NAME, () => {
               {
                 messageId: 'unexpectedJSXPropsOrder',
                 data: {
-                  first: 'name',
-                  second: 'id',
+                  left: 'name',
+                  right: 'id',
                 },
               },
             ],
@@ -1199,8 +1199,8 @@ describe(RULE_NAME, () => {
               {
                 messageId: 'unexpectedJSXPropsOrder',
                 data: {
-                  first: 'type',
-                  second: 'role',
+                  left: 'type',
+                  right: 'role',
                 },
               },
             ],
@@ -1263,15 +1263,15 @@ describe(RULE_NAME, () => {
               {
                 messageId: 'unexpectedJSXPropsOrder',
                 data: {
-                  first: 'age',
-                  second: 'parasite:name',
+                  left: 'age',
+                  right: 'parasite:name',
                 },
               },
               {
                 messageId: 'unexpectedJSXPropsOrder',
                 data: {
-                  first: 'parasite:name',
-                  second: 'name',
+                  left: 'parasite:name',
+                  right: 'name',
                 },
               },
             ],
@@ -1343,8 +1343,8 @@ describe(RULE_NAME, () => {
               {
                 messageId: 'unexpectedJSXPropsOrder',
                 data: {
-                  first: 'age',
-                  second: 'weapon',
+                  left: 'age',
+                  right: 'weapon',
                 },
               },
             ],
@@ -1409,15 +1409,15 @@ describe(RULE_NAME, () => {
               {
                 messageId: 'unexpectedJSXPropsOrder',
                 data: {
-                  first: 'age',
-                  second: 'bloodType',
+                  left: 'age',
+                  right: 'bloodType',
                 },
               },
               {
                 messageId: 'unexpectedJSXPropsOrder',
                 data: {
-                  first: 'isFromCowboyBebop',
-                  second: 'origin',
+                  left: 'isFromCowboyBebop',
+                  right: 'origin',
                 },
               },
             ],
@@ -1476,8 +1476,8 @@ describe(RULE_NAME, () => {
               {
                 messageId: 'unexpectedJSXPropsOrder',
                 data: {
-                  first: 'onChange',
-                  second: 'shinigami',
+                  left: 'onChange',
+                  right: 'shinigami',
                 },
               },
             ],
@@ -1554,15 +1554,15 @@ describe(RULE_NAME, () => {
               {
                 messageId: 'unexpectedJSXPropsOrder',
                 data: {
-                  first: 'form',
-                  second: 'handleTransform',
+                  left: 'form',
+                  right: 'handleTransform',
                 },
               },
               {
                 messageId: 'unexpectedJSXPropsOrder',
                 data: {
-                  first: 'residence',
-                  second: 'style',
+                  left: 'residence',
+                  right: 'style',
                 },
               },
             ],
@@ -1627,22 +1627,22 @@ describe(RULE_NAME, () => {
               {
                 messageId: 'unexpectedJSXPropsOrder',
                 data: {
-                  first: 'age',
-                  second: 'nickname',
+                  left: 'age',
+                  right: 'nickname',
                 },
               },
               {
                 messageId: 'unexpectedJSXPropsOrder',
                 data: {
-                  first: 'nickname',
-                  second: 'name',
+                  left: 'nickname',
+                  right: 'name',
                 },
               },
               {
                 messageId: 'unexpectedJSXPropsOrder',
                 data: {
-                  first: 'name',
-                  second: 'id',
+                  left: 'name',
+                  right: 'id',
                 },
               },
             ],
@@ -1671,8 +1671,8 @@ describe(RULE_NAME, () => {
               {
                 messageId: 'unexpectedJSXPropsOrder',
                 data: {
-                  first: 'name',
-                  second: 'id',
+                  left: 'name',
+                  right: 'id',
                 },
               },
             ],
@@ -1701,8 +1701,8 @@ describe(RULE_NAME, () => {
               {
                 messageId: 'unexpectedJSXPropsOrder',
                 data: {
-                  first: 'name',
-                  second: 'id',
+                  left: 'name',
+                  right: 'id',
                 },
               },
             ],
@@ -1750,8 +1750,8 @@ describe(RULE_NAME, () => {
               {
                 messageId: 'unexpectedJSXPropsOrder',
                 data: {
-                  first: 'occupation',
-                  second: 'firstName',
+                  left: 'occupation',
+                  right: 'firstName',
                 },
               },
             ],

@@ -60,7 +60,7 @@ export default createEslintRule<Options, MESSAGE_ID>({
     ],
     messages: {
       unexpectedMapElementsOrder:
-        'Expected "{{second}}" to come before "{{first}}"',
+        'Expected "{{right}}" to come before "{{left}}"',
     },
   },
   defaultOptions: [
@@ -111,14 +111,14 @@ export default createEslintRule<Options, MESSAGE_ID>({
               let name: string
 
               if (element.type === AST_NODE_TYPES.ArrayExpression) {
-                let [first] = element.elements
+                let [left] = element.elements
 
-                if (!first) {
-                  name = `${first}`
-                } else if (first.type === AST_NODE_TYPES.Literal) {
-                  name = first.raw
+                if (!left) {
+                  name = `${left}`
+                } else if (left.type === AST_NODE_TYPES.Literal) {
+                  name = left.raw
                 } else {
-                  name = source.text.slice(...first.range)
+                  name = source.text.slice(...left.range)
                 }
               } else {
                 name = source.text.slice(...element.range)
@@ -131,15 +131,15 @@ export default createEslintRule<Options, MESSAGE_ID>({
               }
             })
 
-            pairwise(nodes, (first, second) => {
-              if (compare(first, second, options)) {
+            pairwise(nodes, (left, right) => {
+              if (compare(left, right, options)) {
                 context.report({
                   messageId: 'unexpectedMapElementsOrder',
                   data: {
-                    first: toSingleLine(first.name),
-                    second: toSingleLine(second.name),
+                    left: toSingleLine(left.name),
+                    right: toSingleLine(right.name),
                   },
-                  node: second.node,
+                  node: right.node,
                   fix: fixer =>
                     makeFixes(fixer, nodes, sortNodes(nodes, options), source),
                 })

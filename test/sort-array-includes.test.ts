@@ -67,8 +67,8 @@ describe(RULE_NAME, () => {
               {
                 messageId: 'unexpectedArrayIncludesOrder',
                 data: {
-                  first: "'Cart Titan'",
-                  second: '...otherTitans',
+                  left: "'Cart Titan'",
+                  right: '...otherTitans',
                 },
               },
             ],
@@ -122,8 +122,8 @@ describe(RULE_NAME, () => {
               {
                 messageId: 'unexpectedArrayIncludesOrder',
                 data: {
-                  first: '...upperRanks',
-                  second: '...lowerRanks',
+                  left: '...upperRanks',
+                  right: '...lowerRanks',
                 },
               },
             ],
@@ -165,8 +165,8 @@ describe(RULE_NAME, () => {
               {
                 messageId: 'unexpectedArrayIncludesOrder',
                 data: {
-                  first: "'Genos'",
-                  second: "'Bang'",
+                  left: "'Genos'",
+                  right: "'Bang'",
                 },
               },
             ],
@@ -210,8 +210,8 @@ describe(RULE_NAME, () => {
               {
                 messageId: 'unexpectedArrayIncludesOrder',
                 data: {
-                  first: '...graceFieldOrphans',
-                  second: "'Norman'",
+                  left: '...graceFieldOrphans',
+                  right: "'Norman'",
                 },
               },
             ],
@@ -268,8 +268,8 @@ describe(RULE_NAME, () => {
               {
                 messageId: 'unexpectedArrayIncludesOrder',
                 data: {
-                  first: "'Sonozaki Shion'",
-                  second: "'Maebara Keiichi'",
+                  left: "'Sonozaki Shion'",
+                  right: "'Maebara Keiichi'",
                 },
               },
             ],
@@ -336,8 +336,8 @@ describe(RULE_NAME, () => {
               {
                 messageId: 'unexpectedArrayIncludesOrder',
                 data: {
-                  first: '...otherTitans',
-                  second: "'Beast Titan'",
+                  left: '...otherTitans',
+                  right: "'Beast Titan'",
                 },
               },
             ],
@@ -391,8 +391,8 @@ describe(RULE_NAME, () => {
               {
                 messageId: 'unexpectedArrayIncludesOrder',
                 data: {
-                  first: '...upperRanks',
-                  second: '...lowerRanks',
+                  left: '...upperRanks',
+                  right: '...lowerRanks',
                 },
               },
             ],
@@ -434,8 +434,8 @@ describe(RULE_NAME, () => {
               {
                 messageId: 'unexpectedArrayIncludesOrder',
                 data: {
-                  first: "'Genos'",
-                  second: "'Bang'",
+                  left: "'Genos'",
+                  right: "'Bang'",
                 },
               },
             ],
@@ -479,8 +479,8 @@ describe(RULE_NAME, () => {
               {
                 messageId: 'unexpectedArrayIncludesOrder',
                 data: {
-                  first: '...graceFieldOrphans',
-                  second: "'Norman'",
+                  left: '...graceFieldOrphans',
+                  right: "'Norman'",
                 },
               },
             ],
@@ -537,8 +537,8 @@ describe(RULE_NAME, () => {
               {
                 messageId: 'unexpectedArrayIncludesOrder',
                 data: {
-                  first: "'Sonozaki Shion'",
-                  second: "'Maebara Keiichi'",
+                  left: "'Sonozaki Shion'",
+                  right: "'Maebara Keiichi'",
                 },
               },
             ],
@@ -605,15 +605,15 @@ describe(RULE_NAME, () => {
               {
                 messageId: 'unexpectedArrayIncludesOrder',
                 data: {
-                  first: "'Cart Titan'",
-                  second: '...otherTitans',
+                  left: "'Cart Titan'",
+                  right: '...otherTitans',
                 },
               },
               {
                 messageId: 'unexpectedArrayIncludesOrder',
                 data: {
-                  first: "'Beast Titan'",
-                  second: "'War Hammer Titan'",
+                  left: "'Beast Titan'",
+                  right: "'War Hammer Titan'",
                 },
               },
             ],
@@ -667,8 +667,8 @@ describe(RULE_NAME, () => {
               {
                 messageId: 'unexpectedArrayIncludesOrder',
                 data: {
-                  first: '...demons',
-                  second: '...upperRanks',
+                  left: '...demons',
+                  right: '...upperRanks',
                 },
               },
             ],
@@ -710,8 +710,8 @@ describe(RULE_NAME, () => {
               {
                 messageId: 'unexpectedArrayIncludesOrder',
                 data: {
-                  first: "'King'",
-                  second: "'Saitama'",
+                  left: "'King'",
+                  right: "'Saitama'",
                 },
               },
             ],
@@ -755,8 +755,8 @@ describe(RULE_NAME, () => {
               {
                 messageId: 'unexpectedArrayIncludesOrder',
                 data: {
-                  first: '...graceFieldOrphans',
-                  second: "'Norman'",
+                  left: '...graceFieldOrphans',
+                  right: "'Norman'",
                 },
               },
             ],
@@ -813,15 +813,15 @@ describe(RULE_NAME, () => {
               {
                 messageId: 'unexpectedArrayIncludesOrder',
                 data: {
-                  first: "'Ryūgū Rena'",
-                  second: "'Sonozaki Shion'",
+                  left: "'Ryūgū Rena'",
+                  right: "'Sonozaki Shion'",
                 },
               },
               {
                 messageId: 'unexpectedArrayIncludesOrder',
                 data: {
-                  first: "'Sonozaki Shion'",
-                  second: "'Maebara Keiichi'",
+                  left: "'Sonozaki Shion'",
+                  right: "'Maebara Keiichi'",
                 },
               },
             ],
@@ -866,15 +866,15 @@ describe(RULE_NAME, () => {
               {
                 messageId: 'unexpectedArrayIncludesOrder',
                 data: {
-                  first: "'Shusei Kagari'",
-                  second: "'Akane Tsunemori'",
+                  left: "'Shusei Kagari'",
+                  right: "'Akane Tsunemori'",
                 },
               },
               {
                 messageId: 'unexpectedArrayIncludesOrder',
                 data: {
-                  first: "'Tomomi Masaoka'",
-                  second: "'Nobuchika Ginoza'",
+                  left: "'Tomomi Masaoka'",
+                  right: "'Nobuchika Ginoza'",
                 },
               },
             ],

@@ -61,8 +61,8 @@ describe(RULE_NAME, () => {
               {
                 messageId: 'unexpectedObjectsOrder',
                 data: {
-                  first: 'hometown',
-                  second: 'eye-color',
+                  left: 'hometown',
+                  right: 'eye-color',
                 },
               },
             ],
@@ -119,8 +119,8 @@ describe(RULE_NAME, () => {
               {
                 messageId: 'unexpectedObjectsOrder',
                 data: {
-                  first: 'hunter',
-                  second: 'dog',
+                  left: 'hunter',
+                  right: 'dog',
                 },
               },
             ],
@@ -201,29 +201,29 @@ describe(RULE_NAME, () => {
               {
                 messageId: 'unexpectedObjectsOrder',
                 data: {
-                  first: 'crime-coefficient',
-                  second: 'age',
+                  left: 'crime-coefficient',
+                  right: 'age',
                 },
               },
               {
                 messageId: 'unexpectedObjectsOrder',
                 data: {
-                  first: 'crime-coefficient',
-                  second: 'age',
+                  left: 'crime-coefficient',
+                  right: 'age',
                 },
               },
               {
                 messageId: 'unexpectedObjectsOrder',
                 data: {
-                  first: 'shinya-kogami',
-                  second: 'nobuchika-ginoza',
+                  left: 'shinya-kogami',
+                  right: 'nobuchika-ginoza',
                 },
               },
               {
                 messageId: 'unexpectedObjectsOrder',
                 data: {
-                  first: 'crime-coefficient',
-                  second: 'age',
+                  left: 'crime-coefficient',
+                  right: 'age',
                 },
               },
             ],
@@ -277,15 +277,15 @@ describe(RULE_NAME, () => {
               {
                 messageId: 'unexpectedObjectsOrder',
                 data: {
-                  first: 'robots[1]',
-                  second: 'getTestEva()',
+                  left: 'robots[1]',
+                  right: 'getTestEva()',
                 },
               },
               {
                 messageId: 'unexpectedObjectsOrder',
                 data: {
-                  first: 'getTestEva()',
-                  second: 'eva-02',
+                  left: 'getTestEva()',
+                  right: 'eva-02',
                 },
               },
             ],
@@ -350,15 +350,15 @@ describe(RULE_NAME, () => {
               {
                 messageId: 'unexpectedObjectsOrder',
                 data: {
-                  first: 'genres',
-                  second: 'id',
+                  left: 'genres',
+                  right: 'id',
                 },
               },
               {
                 messageId: 'unexpectedObjectsOrder',
                 data: {
-                  first: 'id',
-                  second: 'name',
+                  left: 'id',
+                  right: 'name',
                 },
               },
             ],
@@ -414,15 +414,15 @@ describe(RULE_NAME, () => {
               {
                 messageId: 'unexpectedObjectsOrder',
                 data: {
-                  first: 'sister',
-                  second: 'mrs-yokokawa',
+                  left: 'sister',
+                  right: 'mrs-yokokawa',
                 },
               },
               {
                 messageId: 'unexpectedObjectsOrder',
                 data: {
-                  first: 'mrs-yokokawa',
-                  second: 'brother',
+                  left: 'mrs-yokokawa',
+                  right: 'brother',
                 },
               },
             ],
@@ -483,8 +483,8 @@ describe(RULE_NAME, () => {
               {
                 messageId: 'unexpectedObjectsOrder',
                 data: {
-                  first: 'hometown',
-                  second: 'eye-color',
+                  left: 'hometown',
+                  right: 'eye-color',
                 },
               },
             ],
@@ -541,8 +541,8 @@ describe(RULE_NAME, () => {
               {
                 messageId: 'unexpectedObjectsOrder',
                 data: {
-                  first: 'hunter',
-                  second: 'dog',
+                  left: 'hunter',
+                  right: 'dog',
                 },
               },
             ],
@@ -623,29 +623,29 @@ describe(RULE_NAME, () => {
               {
                 messageId: 'unexpectedObjectsOrder',
                 data: {
-                  first: 'crime-coefficient',
-                  second: 'age',
+                  left: 'crime-coefficient',
+                  right: 'age',
                 },
               },
               {
                 messageId: 'unexpectedObjectsOrder',
                 data: {
-                  first: 'crime-coefficient',
-                  second: 'age',
+                  left: 'crime-coefficient',
+                  right: 'age',
                 },
               },
               {
                 messageId: 'unexpectedObjectsOrder',
                 data: {
-                  first: 'shinya-kogami',
-                  second: 'nobuchika-ginoza',
+                  left: 'shinya-kogami',
+                  right: 'nobuchika-ginoza',
                 },
               },
               {
                 messageId: 'unexpectedObjectsOrder',
                 data: {
-                  first: 'crime-coefficient',
-                  second: 'age',
+                  left: 'crime-coefficient',
+                  right: 'age',
                 },
               },
             ],
@@ -699,15 +699,15 @@ describe(RULE_NAME, () => {
               {
                 messageId: 'unexpectedObjectsOrder',
                 data: {
-                  first: 'robots[1]',
-                  second: 'getTestEva()',
+                  left: 'robots[1]',
+                  right: 'getTestEva()',
                 },
               },
               {
                 messageId: 'unexpectedObjectsOrder',
                 data: {
-                  first: 'getTestEva()',
-                  second: 'eva-02',
+                  left: 'getTestEva()',
+                  right: 'eva-02',
                 },
               },
             ],
@@ -772,15 +772,15 @@ describe(RULE_NAME, () => {
               {
                 messageId: 'unexpectedObjectsOrder',
                 data: {
-                  first: 'genres',
-                  second: 'id',
+                  left: 'genres',
+                  right: 'id',
                 },
               },
               {
                 messageId: 'unexpectedObjectsOrder',
                 data: {
-                  first: 'id',
-                  second: 'name',
+                  left: 'id',
+                  right: 'name',
                 },
               },
             ],
@@ -836,15 +836,15 @@ describe(RULE_NAME, () => {
               {
                 messageId: 'unexpectedObjectsOrder',
                 data: {
-                  first: 'sister',
-                  second: 'mrs-yokokawa',
+                  left: 'sister',
+                  right: 'mrs-yokokawa',
                 },
               },
               {
                 messageId: 'unexpectedObjectsOrder',
                 data: {
-                  first: 'mrs-yokokawa',
-                  second: 'brother',
+                  left: 'mrs-yokokawa',
+                  right: 'brother',
                 },
               },
             ],
@@ -905,8 +905,8 @@ describe(RULE_NAME, () => {
               {
                 messageId: 'unexpectedObjectsOrder',
                 data: {
-                  first: 'age',
-                  second: 'hometown',
+                  left: 'age',
+                  right: 'hometown',
                 },
               },
             ],
@@ -963,8 +963,8 @@ describe(RULE_NAME, () => {
               {
                 messageId: 'unexpectedObjectsOrder',
                 data: {
-                  first: 'dog',
-                  second: 'hunter',
+                  left: 'dog',
+                  right: 'hunter',
                 },
               },
             ],
@@ -1045,29 +1045,29 @@ describe(RULE_NAME, () => {
               {
                 messageId: 'unexpectedObjectsOrder',
                 data: {
-                  first: 'age',
-                  second: 'crime-coefficient',
+                  left: 'age',
+                  right: 'crime-coefficient',
                 },
               },
               {
                 messageId: 'unexpectedObjectsOrder',
                 data: {
-                  first: 'age',
-                  second: 'crime-coefficient',
+                  left: 'age',
+                  right: 'crime-coefficient',
                 },
               },
               {
                 messageId: 'unexpectedObjectsOrder',
                 data: {
-                  first: 'akane-tsunemori',
-                  second: 'nobuchika-ginoza',
+                  left: 'akane-tsunemori',
+                  right: 'nobuchika-ginoza',
                 },
               },
               {
                 messageId: 'unexpectedObjectsOrder',
                 data: {
-                  first: 'age',
-                  second: 'crime-coefficient',
+                  left: 'age',
+                  right: 'crime-coefficient',
                 },
               },
             ],
@@ -1121,15 +1121,15 @@ describe(RULE_NAME, () => {
               {
                 messageId: 'unexpectedObjectsOrder',
                 data: {
-                  first: 'robots[1]',
-                  second: 'getTestEva()',
+                  left: 'robots[1]',
+                  right: 'getTestEva()',
                 },
               },
               {
                 messageId: 'unexpectedObjectsOrder',
                 data: {
-                  first: 'getTestEva()',
-                  second: 'eva-02',
+                  left: 'getTestEva()',
+                  right: 'eva-02',
                 },
               },
             ],
@@ -1194,22 +1194,22 @@ describe(RULE_NAME, () => {
               {
                 messageId: 'unexpectedObjectsOrder',
                 data: {
-                  first: 'episodes',
-                  second: 'genres',
+                  left: 'episodes',
+                  right: 'genres',
                 },
               },
               {
                 messageId: 'unexpectedObjectsOrder',
                 data: {
-                  first: 'genres',
-                  second: 'id',
+                  left: 'genres',
+                  right: 'id',
                 },
               },
               {
                 messageId: 'unexpectedObjectsOrder',
                 data: {
-                  first: 'id',
-                  second: 'name',
+                  left: 'id',
+                  right: 'name',
                 },
               },
             ],
@@ -1265,8 +1265,8 @@ describe(RULE_NAME, () => {
               {
                 messageId: 'unexpectedObjectsOrder',
                 data: {
-                  first: 'sister',
-                  second: 'mrs-yokokawa',
+                  left: 'sister',
+                  right: 'mrs-yokokawa',
                 },
               },
             ],
@@ -1308,8 +1308,8 @@ describe(RULE_NAME, () => {
               {
                 messageId: 'unexpectedObjectsOrder',
                 data: {
-                  first: 'mom',
-                  second: 'daughter',
+                  left: 'mom',
+                  right: 'daughter',
                 },
               },
             ],

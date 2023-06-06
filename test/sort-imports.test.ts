@@ -51,8 +51,8 @@ describe(RULE_NAME, () => {
               {
                 messageId: 'unexpectedImportsOrder',
                 data: {
-                  first: 'makoto-shinkai',
-                  second: 'hayao-miyazaki',
+                  left: 'makoto-shinkai',
+                  right: 'hayao-miyazaki',
                 },
               },
             ],
@@ -184,85 +184,85 @@ describe(RULE_NAME, () => {
               {
                 messageId: 'missedSpacingBetweenImports',
                 data: {
-                  first: '~/hunter-association',
-                  second: '~/hunter-association',
+                  left: '~/hunter-association',
+                  right: '~/hunter-association',
                 },
               },
               {
                 messageId: 'unexpectedImportsOrder',
                 data: {
-                  first: '~/hunter-association',
-                  second: 'phantom-troupe',
+                  left: '~/hunter-association',
+                  right: 'phantom-troupe',
                 },
               },
               {
                 messageId: 'missedSpacingBetweenImports',
                 data: {
-                  first: 'phantom-troupe',
-                  second: '.',
+                  left: 'phantom-troupe',
+                  right: '.',
                 },
               },
               {
                 messageId: 'missedSpacingBetweenImports',
                 data: {
-                  first: '.',
-                  second: '../ants',
+                  left: '.',
+                  right: '../ants',
                 },
               },
               {
                 messageId: 'unexpectedImportsOrder',
                 data: {
-                  first: '../ants',
-                  second: 'path',
+                  left: '../ants',
+                  right: 'path',
                 },
               },
               {
                 messageId: 'unexpectedImportsOrder',
                 data: {
-                  first: 'path',
-                  second: 'fs',
+                  left: 'path',
+                  right: 'fs',
                 },
               },
               {
                 messageId: 'missedSpacingBetweenImports',
                 data: {
-                  first: 'fs',
-                  second: '../ants',
+                  left: 'fs',
+                  right: '../ants',
                 },
               },
               {
                 messageId: 'unexpectedImportsOrder',
                 data: {
-                  first: './association-data',
-                  second: '~/hunters/beast-hunters',
+                  left: './association-data',
+                  right: '~/hunters/beast-hunters',
                 },
               },
               {
                 messageId: 'missedSpacingBetweenImports',
                 data: {
-                  first: '~/hunters/virus-hunters',
-                  second: './index.d.ts',
+                  left: '~/hunters/virus-hunters',
+                  right: './index.d.ts',
                 },
               },
               {
                 messageId: 'missedSpacingBetweenImports',
                 data: {
-                  first: './index.d.ts',
-                  second: './style.css',
+                  left: './index.d.ts',
+                  right: './style.css',
                 },
               },
               {
                 messageId: 'unexpectedImportsOrder',
                 data: {
-                  first: './style.css',
-                  second: 'hunter',
+                  left: './style.css',
+                  right: 'hunter',
                 },
               },
               {
                 messageId: 'unexpectedImportsOrder',
                 data: {
-                  first: '../ants',
-                  second: '../../hunters/histoka',
+                  left: '../ants',
+                  right: '../../hunters/histoka',
                 },
               },
             ],
@@ -345,22 +345,22 @@ describe(RULE_NAME, () => {
               {
                 messageId: 'extraSpacingBetweenImports',
                 data: {
-                  first: '~/tokyo-high/1st-year',
-                  second: '~/tokyo-high/2nd-year',
+                  left: '~/tokyo-high/1st-year',
+                  right: '~/tokyo-high/2nd-year',
                 },
               },
               {
                 messageId: 'unexpectedImportsOrder',
                 data: {
-                  first: '~/tokyo-high/2nd-year',
-                  second: 'jujutsu-kaisen',
+                  left: '~/tokyo-high/2nd-year',
+                  right: 'jujutsu-kaisen',
                 },
               },
               {
                 messageId: 'extraSpacingBetweenImports',
                 data: {
-                  first: 'jujutsu-kaisen',
-                  second: '.',
+                  left: 'jujutsu-kaisen',
+                  right: '.',
                 },
               },
             ],
@@ -440,15 +440,15 @@ describe(RULE_NAME, () => {
               {
                 messageId: 'extraSpacingBetweenImports',
                 data: {
-                  first: 'narehate',
-                  second: '~/team/nanachi',
+                  left: 'narehate',
+                  right: '~/team/nanachi',
                 },
               },
               {
                 messageId: 'extraSpacingBetweenImports',
                 data: {
-                  first: '~/team/nanachi',
-                  second: '~/team/reg',
+                  left: '~/team/nanachi',
+                  right: '~/team/reg',
                 },
               },
             ],
@@ -534,15 +534,15 @@ describe(RULE_NAME, () => {
               {
                 messageId: 'unexpectedImportsOrder',
                 data: {
-                  first: 'console.log',
-                  second: 'daigo',
+                  left: 'console.log',
+                  right: 'daigo',
                 },
               },
               {
                 messageId: 'missedSpacingBetweenImports',
                 data: {
-                  first: 'daigo',
-                  second: 'daigo/tahomaru',
+                  left: 'daigo',
+                  right: 'daigo/tahomaru',
                 },
               },
             ],
@@ -608,15 +608,15 @@ describe(RULE_NAME, () => {
               {
                 messageId: 'extraSpacingBetweenImports',
                 data: {
-                  first: '../cats',
-                  second: '~/delivery-service',
+                  left: '../cats',
+                  right: '~/delivery-service',
                 },
               },
               {
                 messageId: 'extraSpacingBetweenImports',
                 data: {
-                  first: '~/delivery-service',
-                  second: 'witches',
+                  left: '~/delivery-service',
+                  right: 'witches',
                 },
               },
             ],
@@ -742,8 +742,8 @@ describe(RULE_NAME, () => {
               {
                 messageId: 'unexpectedImportsOrder',
                 data: {
-                  first: 'makoto-shinkai',
-                  second: 'hayao-miyazaki',
+                  left: 'makoto-shinkai',
+                  right: 'hayao-miyazaki',
                 },
               },
             ],
@@ -875,85 +875,85 @@ describe(RULE_NAME, () => {
               {
                 messageId: 'missedSpacingBetweenImports',
                 data: {
-                  first: '~/hunter-association',
-                  second: '~/hunter-association',
+                  left: '~/hunter-association',
+                  right: '~/hunter-association',
                 },
               },
               {
                 messageId: 'unexpectedImportsOrder',
                 data: {
-                  first: '~/hunter-association',
-                  second: 'phantom-troupe',
+                  left: '~/hunter-association',
+                  right: 'phantom-troupe',
                 },
               },
               {
                 messageId: 'missedSpacingBetweenImports',
                 data: {
-                  first: 'phantom-troupe',
-                  second: '.',
+                  left: 'phantom-troupe',
+                  right: '.',
                 },
               },
               {
                 messageId: 'missedSpacingBetweenImports',
                 data: {
-                  first: '.',
-                  second: '../ants',
+                  left: '.',
+                  right: '../ants',
                 },
               },
               {
                 messageId: 'unexpectedImportsOrder',
                 data: {
-                  first: '../ants',
-                  second: 'path',
+                  left: '../ants',
+                  right: 'path',
                 },
               },
               {
                 messageId: 'unexpectedImportsOrder',
                 data: {
-                  first: 'path',
-                  second: 'fs',
+                  left: 'path',
+                  right: 'fs',
                 },
               },
               {
                 messageId: 'missedSpacingBetweenImports',
                 data: {
-                  first: 'fs',
-                  second: '../ants',
+                  left: 'fs',
+                  right: '../ants',
                 },
               },
               {
                 messageId: 'unexpectedImportsOrder',
                 data: {
-                  first: './association-data',
-                  second: '~/hunters/beast-hunters',
+                  left: './association-data',
+                  right: '~/hunters/beast-hunters',
                 },
               },
               {
                 messageId: 'missedSpacingBetweenImports',
                 data: {
-                  first: '~/hunters/virus-hunters',
-                  second: './index.d.ts',
+                  left: '~/hunters/virus-hunters',
+                  right: './index.d.ts',
                 },
               },
               {
                 messageId: 'missedSpacingBetweenImports',
                 data: {
-                  first: './index.d.ts',
-                  second: './style.css',
+                  left: './index.d.ts',
+                  right: './style.css',
                 },
               },
               {
                 messageId: 'unexpectedImportsOrder',
                 data: {
-                  first: './style.css',
-                  second: 'hunter',
+                  left: './style.css',
+                  right: 'hunter',
                 },
               },
               {
                 messageId: 'unexpectedImportsOrder',
                 data: {
-                  first: '../ants',
-                  second: '../../hunters/histoka',
+                  left: '../ants',
+                  right: '../../hunters/histoka',
                 },
               },
             ],
@@ -1036,22 +1036,22 @@ describe(RULE_NAME, () => {
               {
                 messageId: 'extraSpacingBetweenImports',
                 data: {
-                  first: '~/tokyo-high/1st-year',
-                  second: '~/tokyo-high/2nd-year',
+                  left: '~/tokyo-high/1st-year',
+                  right: '~/tokyo-high/2nd-year',
                 },
               },
               {
                 messageId: 'unexpectedImportsOrder',
                 data: {
-                  first: '~/tokyo-high/2nd-year',
-                  second: 'jujutsu-kaisen',
+                  left: '~/tokyo-high/2nd-year',
+                  right: 'jujutsu-kaisen',
                 },
               },
               {
                 messageId: 'extraSpacingBetweenImports',
                 data: {
-                  first: 'jujutsu-kaisen',
-                  second: '.',
+                  left: 'jujutsu-kaisen',
+                  right: '.',
                 },
               },
             ],
@@ -1131,15 +1131,15 @@ describe(RULE_NAME, () => {
               {
                 messageId: 'extraSpacingBetweenImports',
                 data: {
-                  first: 'narehate',
-                  second: '~/team/nanachi',
+                  left: 'narehate',
+                  right: '~/team/nanachi',
                 },
               },
               {
                 messageId: 'extraSpacingBetweenImports',
                 data: {
-                  first: '~/team/nanachi',
-                  second: '~/team/reg',
+                  left: '~/team/nanachi',
+                  right: '~/team/reg',
                 },
               },
             ],
@@ -1225,15 +1225,15 @@ describe(RULE_NAME, () => {
               {
                 messageId: 'unexpectedImportsOrder',
                 data: {
-                  first: 'console.log',
-                  second: 'daigo',
+                  left: 'console.log',
+                  right: 'daigo',
                 },
               },
               {
                 messageId: 'missedSpacingBetweenImports',
                 data: {
-                  first: 'daigo',
-                  second: 'daigo/tahomaru',
+                  left: 'daigo',
+                  right: 'daigo/tahomaru',
                 },
               },
             ],
@@ -1299,15 +1299,15 @@ describe(RULE_NAME, () => {
               {
                 messageId: 'extraSpacingBetweenImports',
                 data: {
-                  first: '../cats',
-                  second: '~/delivery-service',
+                  left: '../cats',
+                  right: '~/delivery-service',
                 },
               },
               {
                 messageId: 'extraSpacingBetweenImports',
                 data: {
-                  first: '~/delivery-service',
-                  second: 'witches',
+                  left: '~/delivery-service',
+                  right: 'witches',
                 },
               },
             ],
@@ -1433,8 +1433,8 @@ describe(RULE_NAME, () => {
               {
                 messageId: 'unexpectedImportsOrder',
                 data: {
-                  first: 'makoto-shinkai',
-                  second: 'hayao-miyazaki',
+                  left: 'makoto-shinkai',
+                  right: 'hayao-miyazaki',
                 },
               },
             ],
@@ -1566,99 +1566,99 @@ describe(RULE_NAME, () => {
               {
                 messageId: 'missedSpacingBetweenImports',
                 data: {
-                  first: '~/hunter-association',
-                  second: '~/hunter-association',
+                  left: '~/hunter-association',
+                  right: '~/hunter-association',
                 },
               },
               {
                 messageId: 'unexpectedImportsOrder',
                 data: {
-                  first: '~/hunter-association',
-                  second: 'phantom-troupe',
+                  left: '~/hunter-association',
+                  right: 'phantom-troupe',
                 },
               },
               {
                 messageId: 'missedSpacingBetweenImports',
                 data: {
-                  first: 'phantom-troupe',
-                  second: '.',
+                  left: 'phantom-troupe',
+                  right: '.',
                 },
               },
               {
                 messageId: 'missedSpacingBetweenImports',
                 data: {
-                  first: '.',
-                  second: '../ants',
+                  left: '.',
+                  right: '../ants',
                 },
               },
               {
                 messageId: 'unexpectedImportsOrder',
                 data: {
-                  first: '../ants',
-                  second: 'path',
+                  left: '../ants',
+                  right: 'path',
                 },
               },
               {
                 messageId: 'missedSpacingBetweenImports',
                 data: {
-                  first: 'fs',
-                  second: '../ants',
+                  left: 'fs',
+                  right: '../ants',
                 },
               },
               {
                 messageId: 'unexpectedImportsOrder',
                 data: {
-                  first: '../ants',
-                  second: './association-data',
+                  left: '../ants',
+                  right: './association-data',
                 },
               },
               {
                 messageId: 'unexpectedImportsOrder',
                 data: {
-                  first: './association-data',
-                  second: '~/hunters/beast-hunters',
+                  left: './association-data',
+                  right: '~/hunters/beast-hunters',
                 },
               },
               {
                 messageId: 'unexpectedImportsOrder',
                 data: {
-                  first: '~/hunters/beast-hunters',
-                  second: '~/hunters/virus-hunters',
+                  left: '~/hunters/beast-hunters',
+                  right: '~/hunters/virus-hunters',
                 },
               },
               {
                 messageId: 'missedSpacingBetweenImports',
                 data: {
-                  first: '~/hunters/virus-hunters',
-                  second: './index.d.ts',
+                  left: '~/hunters/virus-hunters',
+                  right: './index.d.ts',
                 },
               },
               {
                 messageId: 'missedSpacingBetweenImports',
                 data: {
-                  first: './index.d.ts',
-                  second: './style.css',
+                  left: './index.d.ts',
+                  right: './style.css',
                 },
               },
               {
                 messageId: 'unexpectedImportsOrder',
                 data: {
-                  first: './style.css',
-                  second: 'hunter',
+                  left: './style.css',
+                  right: 'hunter',
                 },
               },
               {
                 messageId: 'unexpectedImportsOrder',
                 data: {
-                  first: '.',
-                  second: '../ants',
+                  left: '.',
+                  right: '../ants',
                 },
               },
               {
                 messageId: 'unexpectedImportsOrder',
                 data: {
-                  first: '../ants',
-                  second: '../../hunters/histoka',
+                  left: '../ants',
+                  right: '../../hunters/histoka',
                 },
               },
             ],
@@ -1741,36 +1741,36 @@ describe(RULE_NAME, () => {
               {
                 messageId: 'unexpectedImportsOrder',
                 data: {
-                  first: '~/tokyo-high/1st-year',
-                  second: '~/tokyo-high/2nd-year',
+                  left: '~/tokyo-high/1st-year',
+                  right: '~/tokyo-high/2nd-year',
                 },
               },
               {
                 messageId: 'extraSpacingBetweenImports',
                 data: {
-                  first: '~/tokyo-high/1st-year',
-                  second: '~/tokyo-high/2nd-year',
+                  left: '~/tokyo-high/1st-year',
+                  right: '~/tokyo-high/2nd-year',
                 },
               },
               {
                 messageId: 'unexpectedImportsOrder',
                 data: {
-                  first: '~/tokyo-high/2nd-year',
-                  second: 'jujutsu-kaisen',
+                  left: '~/tokyo-high/2nd-year',
+                  right: 'jujutsu-kaisen',
                 },
               },
               {
                 messageId: 'extraSpacingBetweenImports',
                 data: {
-                  first: 'jujutsu-kaisen',
-                  second: '.',
+                  left: 'jujutsu-kaisen',
+                  right: '.',
                 },
               },
               {
                 messageId: 'unexpectedImportsOrder',
                 data: {
-                  first: '.',
-                  second: '../../kyoto-high/data',
+                  left: '.',
+                  right: '../../kyoto-high/data',
                 },
               },
             ],
@@ -1850,22 +1850,22 @@ describe(RULE_NAME, () => {
               {
                 messageId: 'extraSpacingBetweenImports',
                 data: {
-                  first: 'narehate',
-                  second: '~/team/nanachi',
+                  left: 'narehate',
+                  right: '~/team/nanachi',
                 },
               },
               {
                 messageId: 'extraSpacingBetweenImports',
                 data: {
-                  first: '~/team/nanachi',
-                  second: '~/team/reg',
+                  left: '~/team/nanachi',
+                  right: '~/team/reg',
                 },
               },
               {
                 messageId: 'unexpectedImportsOrder',
                 data: {
-                  first: '~/team/reg',
-                  second: '~/team/riko',
+                  left: '~/team/reg',
+                  right: '~/team/riko',
                 },
               },
             ],
@@ -1951,15 +1951,15 @@ describe(RULE_NAME, () => {
               {
                 messageId: 'unexpectedImportsOrder',
                 data: {
-                  first: 'console.log',
-                  second: 'daigo',
+                  left: 'console.log',
+                  right: 'daigo',
                 },
               },
               {
                 messageId: 'missedSpacingBetweenImports',
                 data: {
-                  first: 'daigo',
-                  second: 'daigo/tahomaru',
+                  left: 'daigo',
+                  right: 'daigo/tahomaru',
                 },
               },
             ],
@@ -2025,22 +2025,22 @@ describe(RULE_NAME, () => {
               {
                 messageId: 'unexpectedImportsOrder',
                 data: {
-                  first: '../cats',
-                  second: '~/delivery-service',
+                  left: '../cats',
+                  right: '~/delivery-service',
                 },
               },
               {
                 messageId: 'extraSpacingBetweenImports',
                 data: {
-                  first: '../cats',
-                  second: '~/delivery-service',
+                  left: '../cats',
+                  right: '~/delivery-service',
                 },
               },
               {
                 messageId: 'extraSpacingBetweenImports',
                 data: {
-                  first: '~/delivery-service',
-                  second: 'witches',
+                  left: '~/delivery-service',
+                  right: 'witches',
                 },
               },
             ],
@@ -2154,15 +2154,15 @@ describe(RULE_NAME, () => {
               {
                 messageId: 'unexpectedImportsOrder',
                 data: {
-                  first: '~/higotoshima/shinpei',
-                  second: '~/higotoshima/mio',
+                  left: '~/higotoshima/shinpei',
+                  right: '~/higotoshima/mio',
                 },
               },
               {
                 messageId: 'unexpectedImportsOrder',
                 data: {
-                  first: '~/higotoshima/ushio',
-                  second: '~/higotoshima/hizuru',
+                  left: '~/higotoshima/ushio',
+                  right: '~/higotoshima/hizuru',
                 },
               },
             ],
@@ -2231,15 +2231,15 @@ describe(RULE_NAME, () => {
             {
               messageId: 'unexpectedImportsOrder',
               data: {
-                first: '@/components/mikuru',
-                second: '@melancholy/haruhi-suzumiya',
+                left: '@/components/mikuru',
+                right: '@melancholy/haruhi-suzumiya',
               },
             },
             {
               messageId: 'missedSpacingBetweenImports',
               data: {
-                first: '@melancholy/haruhi-suzumiya',
-                second: '~/data/yuki',
+                left: '@melancholy/haruhi-suzumiya',
+                right: '~/data/yuki',
               },
             },
           ],

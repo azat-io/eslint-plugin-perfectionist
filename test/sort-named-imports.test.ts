@@ -46,15 +46,15 @@ describe(RULE_NAME, () => {
               {
                 messageId: 'unexpectedNamedImportsOrder',
                 data: {
-                  first: 'Reki',
-                  second: 'Rakka',
+                  left: 'Reki',
+                  right: 'Rakka',
                 },
               },
               {
                 messageId: 'unexpectedNamedImportsOrder',
                 data: {
-                  first: 'Rakka',
-                  second: 'Kuu',
+                  left: 'Rakka',
+                  right: 'Kuu',
                 },
               },
             ],
@@ -117,22 +117,22 @@ describe(RULE_NAME, () => {
               {
                 messageId: 'unexpectedNamedImportsOrder',
                 data: {
-                  first: 'ReinerBraun',
-                  second: 'FalcoGrice',
+                  left: 'ReinerBraun',
+                  right: 'FalcoGrice',
                 },
               },
               {
                 messageId: 'unexpectedNamedImportsOrder',
                 data: {
-                  first: 'FalcoGrice',
-                  second: 'AnnieLeonhart',
+                  left: 'FalcoGrice',
+                  right: 'AnnieLeonhart',
                 },
               },
               {
                 messageId: 'unexpectedNamedImportsOrder',
                 data: {
-                  first: 'Gross',
-                  second: 'BertholdtHoover',
+                  left: 'Gross',
+                  right: 'BertholdtHoover',
                 },
               },
             ],
@@ -186,8 +186,8 @@ describe(RULE_NAME, () => {
               {
                 messageId: 'unexpectedNamedImportsOrder',
                 data: {
-                  first: 'GendouIkari',
-                  second: 'Eva0',
+                  left: 'GendouIkari',
+                  right: 'Eva0',
                 },
               },
             ],
@@ -266,22 +266,22 @@ describe(RULE_NAME, () => {
               {
                 messageId: 'unexpectedNamedImportsOrder',
                 data: {
-                  first: 'reinerBraun',
-                  second: 'colossusTitan',
+                  left: 'reinerBraun',
+                  right: 'colossusTitan',
                 },
               },
               {
                 messageId: 'unexpectedNamedImportsOrder',
                 data: {
-                  first: 'zekeYeager',
-                  second: 'erenYeager',
+                  left: 'zekeYeager',
+                  right: 'erenYeager',
                 },
               },
               {
                 messageId: 'unexpectedNamedImportsOrder',
                 data: {
-                  first: 'erenYeager',
-                  second: 'annieLeonhart',
+                  left: 'erenYeager',
+                  right: 'annieLeonhart',
                 },
               },
             ],
@@ -327,15 +327,15 @@ describe(RULE_NAME, () => {
               {
                 messageId: 'unexpectedNamedImportsOrder',
                 data: {
-                  first: 'Reki',
-                  second: 'Rakka',
+                  left: 'Reki',
+                  right: 'Rakka',
                 },
               },
               {
                 messageId: 'unexpectedNamedImportsOrder',
                 data: {
-                  first: 'Rakka',
-                  second: 'Kuu',
+                  left: 'Rakka',
+                  right: 'Kuu',
                 },
               },
             ],
@@ -398,22 +398,22 @@ describe(RULE_NAME, () => {
               {
                 messageId: 'unexpectedNamedImportsOrder',
                 data: {
-                  first: 'ReinerBraun',
-                  second: 'FalcoGrice',
+                  left: 'ReinerBraun',
+                  right: 'FalcoGrice',
                 },
               },
               {
                 messageId: 'unexpectedNamedImportsOrder',
                 data: {
-                  first: 'FalcoGrice',
-                  second: 'AnnieLeonhart',
+                  left: 'FalcoGrice',
+                  right: 'AnnieLeonhart',
                 },
               },
               {
                 messageId: 'unexpectedNamedImportsOrder',
                 data: {
-                  first: 'Gross',
-                  second: 'BertholdtHoover',
+                  left: 'Gross',
+                  right: 'BertholdtHoover',
                 },
               },
             ],
@@ -467,8 +467,8 @@ describe(RULE_NAME, () => {
               {
                 messageId: 'unexpectedNamedImportsOrder',
                 data: {
-                  first: 'GendouIkari',
-                  second: 'Eva0',
+                  left: 'GendouIkari',
+                  right: 'Eva0',
                 },
               },
             ],
@@ -547,22 +547,22 @@ describe(RULE_NAME, () => {
               {
                 messageId: 'unexpectedNamedImportsOrder',
                 data: {
-                  first: 'reinerBraun',
-                  second: 'colossusTitan',
+                  left: 'reinerBraun',
+                  right: 'colossusTitan',
                 },
               },
               {
                 messageId: 'unexpectedNamedImportsOrder',
                 data: {
-                  first: 'zekeYeager',
-                  second: 'erenYeager',
+                  left: 'zekeYeager',
+                  right: 'erenYeager',
                 },
               },
               {
                 messageId: 'unexpectedNamedImportsOrder',
                 data: {
-                  first: 'erenYeager',
-                  second: 'annieLeonhart',
+                  left: 'erenYeager',
+                  right: 'annieLeonhart',
                 },
               },
             ],
@@ -608,8 +608,8 @@ describe(RULE_NAME, () => {
               {
                 messageId: 'unexpectedNamedImportsOrder',
                 data: {
-                  first: 'Reki',
-                  second: 'Rakka',
+                  left: 'Reki',
+                  right: 'Rakka',
                 },
               },
             ],
@@ -672,15 +672,15 @@ describe(RULE_NAME, () => {
               {
                 messageId: 'unexpectedNamedImportsOrder',
                 data: {
-                  first: 'AnnieLeonhart',
-                  second: 'BertholdtHoover',
+                  left: 'AnnieLeonhart',
+                  right: 'BertholdtHoover',
                 },
               },
               {
                 messageId: 'unexpectedNamedImportsOrder',
                 data: {
-                  first: 'Gross',
-                  second: 'ReinerBraun',
+                  left: 'Gross',
+                  right: 'ReinerBraun',
                 },
               },
             ],
@@ -734,15 +734,15 @@ describe(RULE_NAME, () => {
               {
                 messageId: 'unexpectedNamedImportsOrder',
                 data: {
-                  first: 'GendouIkari',
-                  second: 'Eva0',
+                  left: 'GendouIkari',
+                  right: 'Eva0',
                 },
               },
               {
                 messageId: 'unexpectedNamedImportsOrder',
                 data: {
-                  first: 'Eva0',
-                  second: 'Eva1',
+                  left: 'Eva0',
+                  right: 'Eva1',
                 },
               },
             ],
@@ -821,22 +821,22 @@ describe(RULE_NAME, () => {
               {
                 messageId: 'unexpectedNamedImportsOrder',
                 data: {
-                  first: 'colossusTitan',
-                  second: 'zekeYeager',
+                  left: 'colossusTitan',
+                  right: 'zekeYeager',
                 },
               },
               {
                 messageId: 'unexpectedNamedImportsOrder',
                 data: {
-                  first: 'zekeYeager',
-                  second: 'erenYeager',
+                  left: 'zekeYeager',
+                  right: 'erenYeager',
                 },
               },
               {
                 messageId: 'unexpectedNamedImportsOrder',
                 data: {
-                  first: 'erenYeager',
-                  second: 'annieLeonhart',
+                  left: 'erenYeager',
+                  right: 'annieLeonhart',
                 },
               },
             ],
@@ -864,8 +864,8 @@ describe(RULE_NAME, () => {
               {
                 messageId: 'unexpectedNamedImportsOrder',
                 data: {
-                  first: 'Rebecca',
-                  second: 'Maine',
+                  left: 'Rebecca',
+                  right: 'Maine',
                 },
               },
             ],

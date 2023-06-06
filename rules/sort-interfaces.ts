@@ -65,7 +65,7 @@ export default createEslintRule<Options, MESSAGE_ID>({
     ],
     messages: {
       unexpectedInterfacePropertiesOrder:
-        'Expected "{{second}}" to come before "{{first}}"',
+        'Expected "{{right}}" to come before "{{left}}"',
     },
   },
   defaultOptions: [
@@ -125,15 +125,15 @@ export default createEslintRule<Options, MESSAGE_ID>({
             }
           })
 
-          pairwise(nodes, (first, second) => {
-            if (compare(first, second, options)) {
+          pairwise(nodes, (left, right) => {
+            if (compare(left, right, options)) {
               context.report({
                 messageId: 'unexpectedInterfacePropertiesOrder',
                 data: {
-                  first: toSingleLine(first.name),
-                  second: toSingleLine(second.name),
+                  left: toSingleLine(left.name),
+                  right: toSingleLine(right.name),
                 },
-                node: second.node,
+                node: right.node,
                 fix: fixer =>
                   makeFixes(fixer, nodes, sortNodes(nodes, options), source),
               })

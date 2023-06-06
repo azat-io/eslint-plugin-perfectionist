@@ -66,8 +66,8 @@ describe(RULE_NAME, () => {
               {
                 messageId: 'unexpectedMapElementsOrder',
                 data: {
-                  first: "'products'",
-                  second: "'product'",
+                  left: "'products'",
+                  right: "'product'",
                 },
               },
             ],
@@ -154,8 +154,8 @@ describe(RULE_NAME, () => {
               {
                 messageId: 'unexpectedMapElementsOrder',
                 data: {
-                  first: 'raymondName',
-                  second: 'jessieName',
+                  left: 'raymondName',
+                  right: 'jessieName',
                 },
               },
             ],
@@ -209,8 +209,8 @@ describe(RULE_NAME, () => {
               {
                 messageId: 'unexpectedMapElementsOrder',
                 data: {
-                  first: '2',
-                  second: '1',
+                  left: '2',
+                  right: '1',
                 },
               },
             ],
@@ -267,15 +267,15 @@ describe(RULE_NAME, () => {
               {
                 messageId: 'unexpectedMapElementsOrder',
                 data: {
-                  first: 'mapsApp',
-                  second: 'booksApp',
+                  left: 'mapsApp',
+                  right: 'booksApp',
                 },
               },
               {
                 messageId: 'unexpectedMapElementsOrder',
                 data: {
-                  first: 'weatherApp',
-                  second: 'musicApp',
+                  left: 'weatherApp',
+                  right: 'musicApp',
                 },
               },
             ],
@@ -341,8 +341,8 @@ describe(RULE_NAME, () => {
               {
                 messageId: 'unexpectedMapElementsOrder',
                 data: {
-                  first: "'products'",
-                  second: "'product'",
+                  left: "'products'",
+                  right: "'product'",
                 },
               },
             ],
@@ -429,8 +429,8 @@ describe(RULE_NAME, () => {
               {
                 messageId: 'unexpectedMapElementsOrder',
                 data: {
-                  first: 'raymondName',
-                  second: 'jessieName',
+                  left: 'raymondName',
+                  right: 'jessieName',
                 },
               },
             ],
@@ -484,8 +484,8 @@ describe(RULE_NAME, () => {
               {
                 messageId: 'unexpectedMapElementsOrder',
                 data: {
-                  first: '2',
-                  second: '1',
+                  left: '2',
+                  right: '1',
                 },
               },
             ],
@@ -542,15 +542,15 @@ describe(RULE_NAME, () => {
               {
                 messageId: 'unexpectedMapElementsOrder',
                 data: {
-                  first: 'mapsApp',
-                  second: 'booksApp',
+                  left: 'mapsApp',
+                  right: 'booksApp',
                 },
               },
               {
                 messageId: 'unexpectedMapElementsOrder',
                 data: {
-                  first: 'weatherApp',
-                  second: 'musicApp',
+                  left: 'weatherApp',
+                  right: 'musicApp',
                 },
               },
             ],
@@ -616,15 +616,15 @@ describe(RULE_NAME, () => {
               {
                 messageId: 'unexpectedMapElementsOrder',
                 data: {
-                  first: "'products'",
-                  second: "'product'",
+                  left: "'products'",
+                  right: "'product'",
                 },
               },
               {
                 messageId: 'unexpectedMapElementsOrder',
                 data: {
-                  first: "'categories'",
-                  second: "'category'",
+                  left: "'categories'",
+                  right: "'category'",
                 },
               },
             ],
@@ -678,8 +678,8 @@ describe(RULE_NAME, () => {
               {
                 messageId: 'unexpectedMapElementsOrder',
                 data: {
-                  first: "'EUR'",
-                  second: "'USD'",
+                  left: "'EUR'",
+                  right: "'USD'",
                 },
               },
             ],
@@ -707,8 +707,8 @@ describe(RULE_NAME, () => {
               {
                 messageId: 'unexpectedMapElementsOrder',
                 data: {
-                  first: "'Europe'",
-                  second: "'United States'",
+                  left: "'Europe'",
+                  right: "'United States'",
                 },
               },
             ],
@@ -795,8 +795,8 @@ describe(RULE_NAME, () => {
               {
                 messageId: 'unexpectedMapElementsOrder',
                 data: {
-                  first: 'jessieName',
-                  second: 'raymondName',
+                  left: 'jessieName',
+                  right: 'raymondName',
                 },
               },
             ],
@@ -850,8 +850,8 @@ describe(RULE_NAME, () => {
               {
                 messageId: 'unexpectedMapElementsOrder',
                 data: {
-                  first: '1',
-                  second: '3',
+                  left: '1',
+                  right: '3',
                 },
               },
             ],
@@ -908,15 +908,15 @@ describe(RULE_NAME, () => {
               {
                 messageId: 'unexpectedMapElementsOrder',
                 data: {
-                  first: 'mapsApp',
-                  second: 'booksApp',
+                  left: 'mapsApp',
+                  right: 'booksApp',
                 },
               },
               {
                 messageId: 'unexpectedMapElementsOrder',
                 data: {
-                  first: 'booksApp',
-                  second: 'weatherApp',
+                  left: 'booksApp',
+                  right: 'weatherApp',
                 },
               },
             ],
@@ -964,8 +964,8 @@ describe(RULE_NAME, () => {
               {
                 messageId: 'unexpectedMapElementsOrder',
                 data: {
-                  first: "'USD'",
-                  second: "'EUR'",
+                  left: "'USD'",
+                  right: "'EUR'",
                 },
               },
             ],

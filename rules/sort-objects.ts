@@ -72,8 +72,7 @@ export default createEslintRule<Options, MESSAGE_ID>({
       },
     ],
     messages: {
-      unexpectedObjectsOrder:
-        'Expected "{{second}}" to come before "{{first}}"',
+      unexpectedObjectsOrder: 'Expected "{{right}}" to come before "{{left}}"',
     },
   },
   defaultOptions: [
@@ -137,18 +136,18 @@ export default createEslintRule<Options, MESSAGE_ID>({
           )
 
         formatProperties(node.properties).forEach(nodes => {
-          pairwise(nodes, (first, second) => {
+          pairwise(nodes, (left, right) => {
             let comparison: boolean
 
             if (
-              first.position === Position.exception &&
-              second.position === Position.exception
+              left.position === Position.exception &&
+              right.position === Position.exception
             ) {
               comparison =
-                options['always-on-top'].indexOf(first.name) >
-                options['always-on-top'].indexOf(second.name)
-            } else if (first.position === second.position) {
-              comparison = compare(first, second, options)
+                options['always-on-top'].indexOf(left.name) >
+                options['always-on-top'].indexOf(right.name)
+            } else if (left.position === right.position) {
+              comparison = compare(left, right, options)
             } else {
               let positionPower = {
                 [Position.exception]: 1,
@@ -156,17 +155,17 @@ export default createEslintRule<Options, MESSAGE_ID>({
               }
 
               comparison =
-                positionPower[first.position] < positionPower[second.position]
+                positionPower[left.position] < positionPower[right.position]
             }
 
             if (comparison) {
               context.report({
                 messageId: 'unexpectedObjectsOrder',
                 data: {
-                  first: toSingleLine(first.name),
-                  second: toSingleLine(second.name),
+                  left: toSingleLine(left.name),
+                  right: toSingleLine(right.name),
                 },
-                node: second.node,
+                node: right.node,
                 fix: fixer => {
                   let groups = groupBy(nodes, ({ position }) => position)
 

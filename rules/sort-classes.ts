@@ -76,8 +76,7 @@ export default createEslintRule<Options, MESSAGE_ID>({
       },
     ],
     messages: {
-      unexpectedClassesOrder:
-        'Expected "{{second}}" to come before "{{first}}"',
+      unexpectedClassesOrder: 'Expected "{{right}}" to come before "{{left}}"',
     },
   },
   defaultOptions: [
@@ -172,21 +171,21 @@ export default createEslintRule<Options, MESSAGE_ID>({
           return options.groups.length
         }
 
-        pairwise(nodes, (first, second) => {
-          let firstNum = getGroupNumber(first)
-          let secondNum = getGroupNumber(second)
+        pairwise(nodes, (left, right) => {
+          let leftNum = getGroupNumber(left)
+          let rightNum = getGroupNumber(right)
 
           if (
-            firstNum > secondNum ||
-            (firstNum === secondNum && compare(first, second, options))
+            leftNum > rightNum ||
+            (leftNum === rightNum && compare(left, right, options))
           ) {
             context.report({
               messageId: 'unexpectedClassesOrder',
               data: {
-                first: toSingleLine(first.name),
-                second: toSingleLine(second.name),
+                left: toSingleLine(left.name),
+                right: toSingleLine(right.name),
               },
-              node: second.node,
+              node: right.node,
               fix: (fixer: TSESLint.RuleFixer) => {
                 let fixes: TSESLint.RuleFix[] = []
 

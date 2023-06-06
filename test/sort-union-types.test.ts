@@ -46,8 +46,8 @@ describe(RULE_NAME, () => {
               {
                 messageId: 'unexpectedUnionTypesOrder',
                 data: {
-                  first: "'Parona'",
-                  second: "'Gugu'",
+                  left: "'Parona'",
+                  right: "'Gugu'",
                 },
               },
             ],
@@ -97,29 +97,29 @@ describe(RULE_NAME, () => {
               {
                 messageId: 'unexpectedUnionTypesOrder',
                 data: {
-                  first: 'string',
-                  second: 'any',
+                  left: 'string',
+                  right: 'any',
                 },
               },
               {
                 messageId: 'unexpectedUnionTypesOrder',
                 data: {
-                  first: 'unknown',
-                  second: 'null',
+                  left: 'unknown',
+                  right: 'null',
                 },
               },
               {
                 messageId: 'unexpectedUnionTypesOrder',
                 data: {
-                  first: 'undefined',
-                  second: 'never',
+                  left: 'undefined',
+                  right: 'never',
                 },
               },
               {
                 messageId: 'unexpectedUnionTypesOrder',
                 data: {
-                  first: 'void',
-                  second: 'bigint',
+                  left: 'void',
+                  right: 'bigint',
                 },
               },
             ],
@@ -145,8 +145,8 @@ describe(RULE_NAME, () => {
               {
                 messageId: 'unexpectedUnionTypesOrder',
                 data: {
-                  first: "'psychic-abilities'",
-                  second: "'power'",
+                  left: "'psychic-abilities'",
+                  right: "'power'",
                 },
               },
             ],
@@ -172,8 +172,8 @@ describe(RULE_NAME, () => {
               {
                 messageId: 'unexpectedUnionTypesOrder',
                 data: {
-                  first: 'Zenitsu',
-                  second: 'Inosuke',
+                  left: 'Zenitsu',
+                  right: 'Inosuke',
                 },
               },
             ],
@@ -207,8 +207,8 @@ describe(RULE_NAME, () => {
               {
                 messageId: 'unexpectedUnionTypesOrder',
                 data: {
-                  first: "{ name: 'Intelligent Titan', status: 'titan' }",
-                  second: "{ name: 'Eren Yeager', species: 'human' }",
+                  left: "{ name: 'Intelligent Titan', status: 'titan' }",
+                  right: "{ name: 'Eren Yeager', species: 'human' }",
                 },
               },
             ],
@@ -252,8 +252,8 @@ describe(RULE_NAME, () => {
               {
                 messageId: 'unexpectedUnionTypesOrder',
                 data: {
-                  first: 'Saitama',
-                  second: '( superstrike: () => void, ) => Hero[] | Saitama',
+                  left: 'Saitama',
+                  right: '( superstrike: () => void, ) => Hero[] | Saitama',
                 },
               },
             ],
@@ -299,8 +299,8 @@ describe(RULE_NAME, () => {
               {
                 messageId: 'unexpectedUnionTypesOrder',
                 data: {
-                  first: "'Parona'",
-                  second: "'Gugu'",
+                  left: "'Parona'",
+                  right: "'Gugu'",
                 },
               },
             ],
@@ -350,29 +350,29 @@ describe(RULE_NAME, () => {
               {
                 messageId: 'unexpectedUnionTypesOrder',
                 data: {
-                  first: 'string',
-                  second: 'any',
+                  left: 'string',
+                  right: 'any',
                 },
               },
               {
                 messageId: 'unexpectedUnionTypesOrder',
                 data: {
-                  first: 'unknown',
-                  second: 'null',
+                  left: 'unknown',
+                  right: 'null',
                 },
               },
               {
                 messageId: 'unexpectedUnionTypesOrder',
                 data: {
-                  first: 'undefined',
-                  second: 'never',
+                  left: 'undefined',
+                  right: 'never',
                 },
               },
               {
                 messageId: 'unexpectedUnionTypesOrder',
                 data: {
-                  first: 'void',
-                  second: 'bigint',
+                  left: 'void',
+                  right: 'bigint',
                 },
               },
             ],
@@ -398,8 +398,8 @@ describe(RULE_NAME, () => {
               {
                 messageId: 'unexpectedUnionTypesOrder',
                 data: {
-                  first: "'psychic-abilities'",
-                  second: "'power'",
+                  left: "'psychic-abilities'",
+                  right: "'power'",
                 },
               },
             ],
@@ -425,8 +425,8 @@ describe(RULE_NAME, () => {
               {
                 messageId: 'unexpectedUnionTypesOrder',
                 data: {
-                  first: 'Zenitsu',
-                  second: 'Inosuke',
+                  left: 'Zenitsu',
+                  right: 'Inosuke',
                 },
               },
             ],
@@ -460,8 +460,8 @@ describe(RULE_NAME, () => {
               {
                 messageId: 'unexpectedUnionTypesOrder',
                 data: {
-                  first: "{ name: 'Intelligent Titan', status: 'titan' }",
-                  second: "{ name: 'Eren Yeager', species: 'human' }",
+                  left: "{ name: 'Intelligent Titan', status: 'titan' }",
+                  right: "{ name: 'Eren Yeager', species: 'human' }",
                 },
               },
             ],
@@ -505,8 +505,8 @@ describe(RULE_NAME, () => {
               {
                 messageId: 'unexpectedUnionTypesOrder',
                 data: {
-                  first: 'Saitama',
-                  second: '( superstrike: () => void, ) => Hero[] | Saitama',
+                  left: 'Saitama',
+                  right: '( superstrike: () => void, ) => Hero[] | Saitama',
                 },
               },
             ],
@@ -552,8 +552,8 @@ describe(RULE_NAME, () => {
               {
                 messageId: 'unexpectedUnionTypesOrder',
                 data: {
-                  first: "'Joaan'",
-                  second: "'Parona'",
+                  left: "'Joaan'",
+                  right: "'Parona'",
                 },
               },
             ],
@@ -603,22 +603,22 @@ describe(RULE_NAME, () => {
               {
                 messageId: 'unexpectedUnionTypesOrder',
                 data: {
-                  first: 'any',
-                  second: 'unknown',
+                  left: 'any',
+                  right: 'unknown',
                 },
               },
               {
                 messageId: 'unexpectedUnionTypesOrder',
                 data: {
-                  first: 'null',
-                  second: 'undefined',
+                  left: 'null',
+                  right: 'undefined',
                 },
               },
               {
                 messageId: 'unexpectedUnionTypesOrder',
                 data: {
-                  first: 'void',
-                  second: 'bigint',
+                  left: 'void',
+                  right: 'bigint',
                 },
               },
             ],
@@ -644,8 +644,8 @@ describe(RULE_NAME, () => {
               {
                 messageId: 'unexpectedUnionTypesOrder',
                 data: {
-                  first: "'power'",
-                  second: "'psychic-abilities'",
+                  left: "'power'",
+                  right: "'psychic-abilities'",
                 },
               },
             ],
@@ -696,8 +696,8 @@ describe(RULE_NAME, () => {
               {
                 messageId: 'unexpectedUnionTypesOrder',
                 data: {
-                  first: "{ name: 'Eren Yeager', species: 'human' }",
-                  second: "{ name: 'Intelligent Titan', status: 'titan' }",
+                  left: "{ name: 'Eren Yeager', species: 'human' }",
+                  right: "{ name: 'Intelligent Titan', status: 'titan' }",
                 },
               },
             ],
@@ -741,15 +741,15 @@ describe(RULE_NAME, () => {
               {
                 messageId: 'unexpectedUnionTypesOrder',
                 data: {
-                  first: 'Saitama',
-                  second: '( superstrike: () => void, ) => Hero[] | Saitama',
+                  left: 'Saitama',
+                  right: '( superstrike: () => void, ) => Hero[] | Saitama',
                 },
               },
               {
                 messageId: 'unexpectedUnionTypesOrder',
                 data: {
-                  first: 'Hero[]',
-                  second: 'Saitama',
+                  left: 'Hero[]',
+                  right: 'Saitama',
                 },
               },
             ],

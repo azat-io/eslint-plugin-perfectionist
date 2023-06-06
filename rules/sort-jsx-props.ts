@@ -85,8 +85,7 @@ export default createEslintRule<Options, MESSAGE_ID>({
       },
     ],
     messages: {
-      unexpectedJSXPropsOrder:
-        'Expected "{{second}}" to come before "{{first}}"',
+      unexpectedJSXPropsOrder: 'Expected "{{right}}" to come before "{{left}}"',
     },
   },
   defaultOptions: [
@@ -169,18 +168,18 @@ export default createEslintRule<Options, MESSAGE_ID>({
           )
 
         parts.forEach(nodes => {
-          pairwise(nodes, (first, second) => {
+          pairwise(nodes, (left, right) => {
             let comparison: boolean
 
             if (
-              first.position === Position.exception &&
-              second.position === Position.exception
+              left.position === Position.exception &&
+              right.position === Position.exception
             ) {
               comparison =
-                options['always-on-top'].indexOf(first.name) >
-                options['always-on-top'].indexOf(second.name)
-            } else if (first.position === second.position) {
-              comparison = compare(first, second, options)
+                options['always-on-top'].indexOf(left.name) >
+                options['always-on-top'].indexOf(right.name)
+            } else if (left.position === right.position) {
+              comparison = compare(left, right, options)
             } else {
               let positionPower = {
                 [Position.exception]: 2,
@@ -190,17 +189,17 @@ export default createEslintRule<Options, MESSAGE_ID>({
               }
 
               comparison =
-                positionPower[first.position] < positionPower[second.position]
+                positionPower[left.position] < positionPower[right.position]
             }
 
             if (comparison) {
               context.report({
                 messageId: 'unexpectedJSXPropsOrder',
                 data: {
-                  first: first.name,
-                  second: second.name,
+                  left: left.name,
+                  right: right.name,
                 },
-                node: second.node,
+                node: right.node,
                 fix: fixer => {
                   let groups = groupBy(nodes, ({ position }) => position)
 

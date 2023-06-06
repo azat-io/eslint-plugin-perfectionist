@@ -52,8 +52,8 @@ describe(RULE_NAME, () => {
               {
                 messageId: 'unexpectedNamedExportsOrder',
                 data: {
-                  first: 'RuijerdSuperdia',
-                  second: 'ErisBoreas',
+                  left: 'RuijerdSuperdia',
+                  right: 'ErisBoreas',
                 },
               },
             ],
@@ -105,8 +105,8 @@ describe(RULE_NAME, () => {
               {
                 messageId: 'unexpectedNamedExportsOrder',
                 data: {
-                  first: 'RuijerdSuperdia',
-                  second: 'ErisBoreas',
+                  left: 'RuijerdSuperdia',
+                  right: 'ErisBoreas',
                 },
               },
             ],
@@ -158,8 +158,8 @@ describe(RULE_NAME, () => {
               {
                 messageId: 'unexpectedNamedExportsOrder',
                 data: {
-                  first: 'Rudeus',
-                  second: 'RuijerdSuperdia',
+                  left: 'Rudeus',
+                  right: 'RuijerdSuperdia',
                 },
               },
             ],
@@ -185,8 +185,8 @@ describe(RULE_NAME, () => {
               {
                 messageId: 'unexpectedNamedExportsOrder',
                 data: {
-                  first: 'SatoruFujinuma',
-                  second: 'KayoHinazuki',
+                  left: 'SatoruFujinuma',
+                  right: 'KayoHinazuki',
                 },
               },
             ],

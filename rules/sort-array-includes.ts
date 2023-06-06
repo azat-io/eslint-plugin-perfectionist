@@ -65,7 +65,7 @@ export default createEslintRule<Options, MESSAGE_ID>({
     ],
     messages: {
       unexpectedArrayIncludesOrder:
-        'Expected "{{second}}" to come before "{{first}}"',
+        'Expected "{{right}}" to come before "{{left}}"',
     },
   },
   defaultOptions: [
@@ -121,33 +121,33 @@ export default createEslintRule<Options, MESSAGE_ID>({
             )
             .flat()
 
-          pairwise(nodes, (first, second) => {
+          pairwise(nodes, (left, right) => {
             let compareValue: boolean
 
             if (
               options['spread-last'] &&
-              first.node.type === AST_NODE_TYPES.Literal &&
-              second.node.type === AST_NODE_TYPES.SpreadElement
+              left.node.type === AST_NODE_TYPES.Literal &&
+              right.node.type === AST_NODE_TYPES.SpreadElement
             ) {
               compareValue = false
             } else if (
               options['spread-last'] &&
-              first.node.type === AST_NODE_TYPES.SpreadElement &&
-              second.node.type === AST_NODE_TYPES.Literal
+              left.node.type === AST_NODE_TYPES.SpreadElement &&
+              right.node.type === AST_NODE_TYPES.Literal
             ) {
               compareValue = true
             } else {
-              compareValue = compare(first, second, options)
+              compareValue = compare(left, right, options)
             }
 
             if (compareValue) {
               context.report({
                 messageId: 'unexpectedArrayIncludesOrder',
                 data: {
-                  first: toSingleLine(first.name),
-                  second: toSingleLine(second.name),
+                  left: toSingleLine(left.name),
+                  right: toSingleLine(right.name),
                 },
-                node: second.node,
+                node: right.node,
                 fix: fixer => {
                   let sortedNodes = sortNodes(nodes, options)
 

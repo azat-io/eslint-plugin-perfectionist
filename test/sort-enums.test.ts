@@ -61,8 +61,8 @@ describe(RULE_NAME, () => {
               {
                 messageId: 'unexpectedEnumsOrder',
                 data: {
-                  first: 'Sonozaki Shion',
-                  second: 'Ryūgū Rena',
+                  left: 'Sonozaki Shion',
+                  right: 'Ryūgū Rena',
                 },
               },
             ],
@@ -119,8 +119,8 @@ describe(RULE_NAME, () => {
               {
                 messageId: 'unexpectedEnumsOrder',
                 data: {
-                  first: '8',
-                  second: '12',
+                  left: '8',
+                  right: '12',
                 },
               },
             ],
@@ -174,8 +174,8 @@ describe(RULE_NAME, () => {
               {
                 messageId: 'unexpectedEnumsOrder',
                 data: {
-                  first: 'Miyuki',
-                  second: 'Hana',
+                  left: 'Miyuki',
+                  right: 'Hana',
                 },
               },
             ],
@@ -226,8 +226,8 @@ describe(RULE_NAME, () => {
               {
                 messageId: 'unexpectedEnumsOrder',
                 data: {
-                  first: 'true',
-                  second: 'false',
+                  left: 'true',
+                  right: 'false',
                 },
               },
             ],
@@ -275,8 +275,8 @@ describe(RULE_NAME, () => {
               {
                 messageId: 'unexpectedEnumsOrder',
                 data: {
-                  first: 'Yuu',
-                  second: 'Chi-Chii',
+                  left: 'Yuu',
+                  right: 'Chi-Chii',
                 },
               },
             ],
@@ -337,8 +337,8 @@ describe(RULE_NAME, () => {
               {
                 messageId: 'unexpectedEnumsOrder',
                 data: {
-                  first: 'Sonozaki Shion',
-                  second: 'Ryūgū Rena',
+                  left: 'Sonozaki Shion',
+                  right: 'Ryūgū Rena',
                 },
               },
             ],
@@ -395,8 +395,8 @@ describe(RULE_NAME, () => {
               {
                 messageId: 'unexpectedEnumsOrder',
                 data: {
-                  first: '12',
-                  second: '2',
+                  left: '12',
+                  right: '2',
                 },
               },
             ],
@@ -450,8 +450,8 @@ describe(RULE_NAME, () => {
               {
                 messageId: 'unexpectedEnumsOrder',
                 data: {
-                  first: 'Miyuki',
-                  second: 'Hana',
+                  left: 'Miyuki',
+                  right: 'Hana',
                 },
               },
             ],
@@ -502,8 +502,8 @@ describe(RULE_NAME, () => {
               {
                 messageId: 'unexpectedEnumsOrder',
                 data: {
-                  first: 'true',
-                  second: 'false',
+                  left: 'true',
+                  right: 'false',
                 },
               },
             ],
@@ -551,8 +551,8 @@ describe(RULE_NAME, () => {
               {
                 messageId: 'unexpectedEnumsOrder',
                 data: {
-                  first: 'Yuu',
-                  second: 'Chi-Chii',
+                  left: 'Yuu',
+                  right: 'Chi-Chii',
                 },
               },
             ],
@@ -613,15 +613,15 @@ describe(RULE_NAME, () => {
               {
                 messageId: 'unexpectedEnumsOrder',
                 data: {
-                  first: 'Furude Rika',
-                  second: 'Sonozaki Mion',
+                  left: 'Furude Rika',
+                  right: 'Sonozaki Mion',
                 },
               },
               {
                 messageId: 'unexpectedEnumsOrder',
                 data: {
-                  first: 'Sonozaki Mion',
-                  second: 'Sonozaki Shion',
+                  left: 'Sonozaki Mion',
+                  right: 'Sonozaki Shion',
                 },
               },
             ],
@@ -678,8 +678,8 @@ describe(RULE_NAME, () => {
               {
                 messageId: 'unexpectedEnumsOrder',
                 data: {
-                  first: '1',
-                  second: '12',
+                  left: '1',
+                  right: '12',
                 },
               },
             ],
@@ -733,15 +733,15 @@ describe(RULE_NAME, () => {
               {
                 messageId: 'unexpectedEnumsOrder',
                 data: {
-                  first: 'Gin',
-                  second: 'Miyuki',
+                  left: 'Gin',
+                  right: 'Miyuki',
                 },
               },
               {
                 messageId: 'unexpectedEnumsOrder',
                 data: {
-                  first: 'Miyuki',
-                  second: 'Hana',
+                  left: 'Miyuki',
+                  right: 'Hana',
                 },
               },
             ],
@@ -792,8 +792,8 @@ describe(RULE_NAME, () => {
               {
                 messageId: 'unexpectedEnumsOrder',
                 data: {
-                  first: 'true',
-                  second: 'false',
+                  left: 'true',
+                  right: 'false',
                 },
               },
             ],
@@ -841,8 +841,8 @@ describe(RULE_NAME, () => {
               {
                 messageId: 'unexpectedEnumsOrder',
                 data: {
-                  first: 'Yuu',
-                  second: 'Chi-Chii',
+                  left: 'Yuu',
+                  right: 'Chi-Chii',
                 },
               },
             ],
@@ -884,8 +884,8 @@ describe(RULE_NAME, () => {
               {
                 messageId: 'unexpectedEnumsOrder',
                 data: {
-                  first: 'Ushio Kofune',
-                  second: 'Mio Kofune',
+                  left: 'Ushio Kofune',
+                  right: 'Mio Kofune',
                 },
               },
             ],

@@ -56,7 +56,7 @@ export default createEslintRule<Options, MESSAGE_ID>({
     ],
     messages: {
       unexpectedNamedExportsOrder:
-        'Expected "{{second}}" to come before "{{first}}"',
+        'Expected "{{right}}" to come before "{{left}}"',
     },
   },
   defaultOptions: [
@@ -82,15 +82,15 @@ export default createEslintRule<Options, MESSAGE_ID>({
           node: specifier,
         }))
 
-        pairwise(nodes, (first, second) => {
-          if (compare(first, second, options)) {
+        pairwise(nodes, (left, right) => {
+          if (compare(left, right, options)) {
             context.report({
               messageId: 'unexpectedNamedExportsOrder',
               data: {
-                first: first.name,
-                second: second.name,
+                left: left.name,
+                right: right.name,
               },
-              node: second.node,
+              node: right.node,
               fix: fixer =>
                 makeFixes(fixer, nodes, sortNodes(nodes, options), source),
             })
