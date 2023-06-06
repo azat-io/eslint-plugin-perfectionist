@@ -282,10 +282,6 @@ export default createEslintRule<Options, MESSAGE_ID>({
           left: SortingNode,
           right: SortingNode,
         ) => {
-          if (hasContentBetweenNodes(left, right)) {
-            return 0
-          }
-
           let linesBetweenImports = source.lines.slice(
             left.node.loc.end.line,
             right.node.loc.start.line - 1,
@@ -396,47 +392,38 @@ export default createEslintRule<Options, MESSAGE_ID>({
           return fixes
         }
 
-        pairwise(nodes, (left, right) => {
-          let leftNum = getGroupNumber(left)
-          let rightNum = getGroupNumber(right)
+        let splittedNodes = nodes.reduce(
+          (
+            accumulator: SortingNodeWithGroup[][],
+            node: SortingNodeWithGroup,
+          ) => {
+            let lastNode = accumulator.at(-1)?.at(-1)
 
-          let numberOfEmptyLinesBetween = getLinesBetweenImports(left, right)
+            if (lastNode && hasContentBetweenNodes(lastNode, node)) {
+              accumulator.push([node])
+            } else {
+              accumulator.at(-1)!.push(node)
+            }
 
-          if (
-            !hasContentBetweenNodes(left, right) &&
-            (leftNum > rightNum ||
-              (leftNum === rightNum && compare(left, right, options)))
-          ) {
-            context.report({
-              messageId: 'unexpectedImportsOrder',
-              data: {
-                left: left.name,
-                right: right.name,
-              },
-              node: right.node,
-              fix,
-            })
-          }
+            return accumulator
+          },
+          [[]],
+        )
 
-          if (
-            options['newlines-between'] === 'never' &&
-            numberOfEmptyLinesBetween > 0
-          ) {
-            context.report({
-              messageId: 'extraSpacingBetweenImports',
-              data: {
-                left: left.name,
-                right: right.name,
-              },
-              node: right.node,
-              fix,
-            })
-          }
+        splittedNodes.forEach(nodeList => {
+          pairwise(nodeList, (left, right) => {
+            let leftNum = getGroupNumber(left)
+            let rightNum = getGroupNumber(right)
 
-          if (options['newlines-between'] === 'always') {
-            if (leftNum < rightNum && numberOfEmptyLinesBetween === 0) {
+            let numberOfEmptyLinesBetween = getLinesBetweenImports(left, right)
+
+            if (
+              !hasContentBetweenNodes(left, right) &&
+              (leftNum > rightNum ||
+                (leftNum === rightNum && compare(left, right, options)))
+            ) {
               context.report({
-                messageId: 'missedSpacingBetweenImports',
+                messageId: 'unexpectedImportsOrder',
                 data: {
                   left: left.name,
                   right: right.name,
@@ -444,9 +431,11 @@ export default createEslintRule<Options, MESSAGE_ID>({
                 node: right.node,
                 fix,
               })
-            } else if (
-              numberOfEmptyLinesBetween > 1 ||
-              (leftNum === rightNum && numberOfEmptyLinesBetween > 0)
+            }
+
+            if (
+              options['newlines-between'] === 'never' &&
+              numberOfEmptyLinesBetween > 0
             ) {
               context.report({
                 messageId: 'extraSpacingBetweenImports',
@@ -458,7 +447,34 @@ export default createEslintRule<Options, MESSAGE_ID>({
                 fix,
               })
             }
-          }
+
+            if (options['newlines-between'] === 'always') {
+              if (leftNum < rightNum && numberOfEmptyLinesBetween === 0) {
+                context.report({
+                  messageId: 'missedSpacingBetweenImports',
+                  data: {
+                    left: left.name,
+                    right: right.name,
+                  },
+                  node: right.node,
+                  fix,
+                })
+              } else if (
+                numberOfEmptyLinesBetween > 1 ||
+                (leftNum === rightNum && numberOfEmptyLinesBetween > 0)
+              ) {
+                context.report({
+                  messageId: 'extraSpacingBetweenImports',
+                  data: {
+                    left: left.name,
+                    right: right.name,
+                  },
+                  node: right.node,
+                  fix,
+                })
+              }
+            }
+          })
         })
       },
     }
