@@ -7,10 +7,10 @@ import isCoreModule from 'is-core-module'
 import { minimatch } from 'minimatch'
 
 import { createEslintRule } from '../utils/create-eslint-rule'
+import { getCommentBefore } from '../utils/get-comment-before'
 import { getNodeRange } from '../utils/get-node-range'
 import { rangeToDiff } from '../utils/range-to-diff'
 import { TSConfig } from '../utils/read-ts-config'
-import { getComment } from '../utils/get-comment'
 import { SortType, SortOrder } from '../typings'
 import { sortNodes } from '../utils/sort-nodes'
 import { complete } from '../utils/complete'
@@ -272,7 +272,7 @@ export default createEslintRule<Options, MESSAGE_ID>({
         ): boolean =>
           !!source.getTokensBetween(
             left.node,
-            getComment(right.node, source).before || right.node,
+            getCommentBefore(right.node, source) || right.node,
             {
               includeComments: true,
             },

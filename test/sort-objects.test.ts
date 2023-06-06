@@ -391,7 +391,7 @@ describe(RULE_NAME, () => {
           {
             code: dedent`
               let yokokawaFamily = {
-                sister: 'Setsuko', // Setsuko completely adores her older brother Seita
+                sister: 'Setsuko',// Setsuko completely adores her older brother Seita
                 'mrs-yokokawa': 'Mrs. Yokokawa', // Seita's and Setsuko's mother
                 brother: 'Seita', // Seita is responsible, mature, and tough
               }
@@ -400,7 +400,7 @@ describe(RULE_NAME, () => {
               let yokokawaFamily = {
                 brother: 'Seita', // Seita is responsible, mature, and tough
                 'mrs-yokokawa': 'Mrs. Yokokawa', // Seita's and Setsuko's mother
-                sister: 'Setsuko', // Setsuko completely adores her older brother Seita
+                sister: 'Setsuko',// Setsuko completely adores her older brother Seita
               }
             `,
             options: [
@@ -440,6 +440,12 @@ describe(RULE_NAME, () => {
               let daddies = {
                 rei: 'Rei Suwa', // daddy #1
                 kazuki: 'Kazuki Kurusu' // daddy #2
+              }
+            `,
+            output: dedent`
+              let daddies = {
+                kazuki: 'Kazuki Kurusu', // daddy #2
+                rei: 'Rei Suwa' // daddy #1
               }
             `,
             options: [
@@ -895,6 +901,12 @@ describe(RULE_NAME, () => {
                 kazuki: 'Kazuki Kurusu' // daddy #2
               }
             `,
+            output: dedent`
+              let daddies = {
+                kazuki: 'Kazuki Kurusu', // daddy #2
+                rei: 'Rei Suwa' // daddy #1
+              }
+            `,
             options: [
               {
                 type: SortType.natural,
@@ -1346,6 +1358,12 @@ describe(RULE_NAME, () => {
               let daddies = {
                 rei: 'Rei Suwa', // daddy #1
                 kazuki: 'Kazuki Kurusu' // daddy #2
+              }
+            `,
+            output: dedent`
+              let daddies = {
+                kazuki: 'Kazuki Kurusu', // daddy #2
+                rei: 'Rei Suwa' // daddy #1
               }
             `,
             options: [

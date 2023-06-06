@@ -3,7 +3,7 @@ import type { TSESTree } from '@typescript-eslint/types'
 
 import { ASTUtils } from '@typescript-eslint/utils'
 
-import { getComment } from './get-comment'
+import { getCommentBefore } from './get-comment-before'
 
 export let getNodeRange = (
   node: TSESTree.Node,
@@ -29,18 +29,14 @@ export let getNodeRange = (
     end = bodyClosingParen.range.at(1)!
   }
 
-  let comment = getComment(node, sourceCode)
+  let comment = getCommentBefore(node, sourceCode)
 
   if (raw.endsWith(';') || raw.endsWith(',')) {
     end -= 1
   }
 
-  if (comment.before) {
-    start = comment.before.range.at(0)!
-  }
-
-  if (comment.after) {
-    end = comment.after.range.at(1)!
+  if (comment) {
+    start = comment.range.at(0)!
   }
 
   return [start, end]
