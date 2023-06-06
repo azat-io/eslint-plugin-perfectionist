@@ -430,6 +430,37 @@ describe(RULE_NAME, () => {
         ],
       })
     })
+
+    it(`${RULE_NAME}(${type}): do not sorts objects without a comma and with a comment in the last element`, () => {
+      ruleTester.run(RULE_NAME, rule, {
+        valid: [],
+        invalid: [
+          {
+            code: dedent`
+              let daddies = {
+                rei: 'Rei Suwa', // daddy #1
+                kazuki: 'Kazuki Kurusu' // daddy #2
+              }
+            `,
+            options: [
+              {
+                type: SortType.alphabetical,
+                order: SortOrder.asc,
+              },
+            ],
+            errors: [
+              {
+                messageId: 'unexpectedObjectsOrder',
+                data: {
+                  left: 'rei',
+                  right: 'kazuki',
+                },
+              },
+            ],
+          },
+        ],
+      })
+    })
   })
 
   describe(`${RULE_NAME}: sorting by natural order`, () => {
@@ -852,6 +883,37 @@ describe(RULE_NAME, () => {
         ],
       })
     })
+
+    it(`${RULE_NAME}(${type}): do not sorts objects without a comma and with a comment in the last element`, () => {
+      ruleTester.run(RULE_NAME, rule, {
+        valid: [],
+        invalid: [
+          {
+            code: dedent`
+              let daddies = {
+                rei: 'Rei Suwa', // daddy #1
+                kazuki: 'Kazuki Kurusu' // daddy #2
+              }
+            `,
+            options: [
+              {
+                type: SortType.natural,
+                order: SortOrder.asc,
+              },
+            ],
+            errors: [
+              {
+                messageId: 'unexpectedObjectsOrder',
+                data: {
+                  left: 'rei',
+                  right: 'kazuki',
+                },
+              },
+            ],
+          },
+        ],
+      })
+    })
   })
 
   describe(`${RULE_NAME}: sorting by line length`, () => {
@@ -1267,6 +1329,37 @@ describe(RULE_NAME, () => {
                 data: {
                   left: 'sister',
                   right: 'mrs-yokokawa',
+                },
+              },
+            ],
+          },
+        ],
+      })
+    })
+
+    it(`${RULE_NAME}(${type}): do not sorts objects without a comma and with a comment in the last element`, () => {
+      ruleTester.run(RULE_NAME, rule, {
+        valid: [],
+        invalid: [
+          {
+            code: dedent`
+              let daddies = {
+                rei: 'Rei Suwa', // daddy #1
+                kazuki: 'Kazuki Kurusu' // daddy #2
+              }
+            `,
+            options: [
+              {
+                type: SortType['line-length'],
+                order: SortOrder.desc,
+              },
+            ],
+            errors: [
+              {
+                messageId: 'unexpectedObjectsOrder',
+                data: {
+                  left: 'rei',
+                  right: 'kazuki',
                 },
               },
             ],

@@ -1,14 +1,16 @@
 import type { TSESTree } from '@typescript-eslint/types'
+import type { TSESLint } from '@typescript-eslint/utils'
 import type { SortingNode } from '../typings'
 
-import { AST_NODE_TYPES } from '@typescript-eslint/types'
+import { AST_NODE_TYPES, AST_TOKEN_TYPES } from '@typescript-eslint/types'
 
 import { createEslintRule } from '../utils/create-eslint-rule'
 import { toSingleLine } from '../utils/to-single-line'
 import { rangeToDiff } from '../utils/range-to-diff'
+import { getComment } from '../utils/get-comment'
 import { SortType, SortOrder } from '../typings'
-import { sortNodes } from '../utils/sort-nodes'
 import { makeFixes } from '../utils/make-fixes'
+import { sortNodes } from '../utils/sort-nodes'
 import { complete } from '../utils/complete'
 import { pairwise } from '../utils/pairwise'
 import { groupBy } from '../utils/group-by'
@@ -159,6 +161,41 @@ export default createEslintRule<Options, MESSAGE_ID>({
             }
 
             if (comparison) {
+              let nextToken = source.getTokenAfter(nodes.at(-1)!.node, {
+                includeComments: true,
+              })
+
+              let hasTrailingComma =
+                nextToken?.type === AST_TOKEN_TYPES.Punctuator &&
+                nextToken.value === ','
+
+              let fix:
+                | ((fixer: TSESLint.RuleFixer) => TSESLint.RuleFix[])
+                | undefined = fixer => {
+                let groups = groupBy(nodes, ({ position }) => position)
+
+                let getGroup = (index: string) =>
+                  index in groups ? groups[index] : []
+
+                let sortedNodes = [
+                  getGroup(Position.exception).sort(
+                    (aNode, bNode) =>
+                      options['always-on-top'].indexOf(aNode.name) -
+                      options['always-on-top'].indexOf(bNode.name),
+                  ),
+                  sortNodes(getGroup(Position.ignore), options),
+                ].flat()
+
+                return makeFixes(fixer, nodes, sortedNodes, source)
+              }
+
+              if (
+                !hasTrailingComma &&
+                getComment(nodes.at(-1)!.node, source).after
+              ) {
+                fix = undefined
+              }
+
               context.report({
                 messageId: 'unexpectedObjectsOrder',
                 data: {
@@ -166,23 +203,7 @@ export default createEslintRule<Options, MESSAGE_ID>({
                   right: toSingleLine(right.name),
                 },
                 node: right.node,
-                fix: fixer => {
-                  let groups = groupBy(nodes, ({ position }) => position)
-
-                  let getGroup = (index: string) =>
-                    index in groups ? groups[index] : []
-
-                  let sortedNodes = [
-                    getGroup(Position.exception).sort(
-                      (aNode, bNode) =>
-                        options['always-on-top'].indexOf(aNode.name) -
-                        options['always-on-top'].indexOf(bNode.name),
-                    ),
-                    sortNodes(getGroup(Position.ignore), options),
-                  ].flat()
-
-                  return makeFixes(fixer, nodes, sortedNodes, source)
-                },
+                fix,
               })
             }
           })
