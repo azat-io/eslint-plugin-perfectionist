@@ -1,6 +1,21 @@
 # Changelog
 
 
+## v0.11.4
+
+[compare changes](https://github.com/azat-io/eslint-plugin-perfectionist/compare/v0.11.3...v0.11.4)
+
+
+### 🐞 Bug Fixes
+
+  - Use service comments when sorting imports ([b577ac7](https://github.com/azat-io/eslint-plugin-perfectionist/commit/b577ac7))
+  - Fix sorting nodes with comments on the same line ([16887ea](https://github.com/azat-io/eslint-plugin-perfectionist/commit/16887ea))
+  - Do not fix objects if last member contains a comment and doesn't contain comma ([a9915f1](https://github.com/azat-io/eslint-plugin-perfectionist/commit/a9915f1))
+
+### ❤️  Contributors
+
+- Azat S ([@azat-io](http://github.com/azat-io))
+
 ## v0.11.3
 
 [compare changes](https://github.com/azat-io/eslint-plugin-perfectionist/compare/v0.11.2...v0.11.3)
