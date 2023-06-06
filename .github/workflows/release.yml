@@ -16,11 +16,16 @@ jobs:
         with:
           fetch-depth: 0
 
+      - name: install pnpm
+        uses: pnpm/action-setup@v2
+        with:
+          version: 8
+
       - name: install node
         uses: actions/setup-node@v3
         with:
           node-version: 20
 
-      - run: npx changelogithub
+      - run: pnpx changelogithub
         env:
           GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
