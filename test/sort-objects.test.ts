@@ -366,6 +366,70 @@ describe(RULE_NAME, () => {
         ],
       })
     })
+
+    it(`${RULE_NAME}(${type}): sorts with comments on the same line`, () => {
+      ruleTester.run(RULE_NAME, rule, {
+        valid: [
+          {
+            code: dedent`
+              let yokokawaFamily = {
+                brother: 'Seita', // Seita is responsible, mature, and tough
+                'mrs-yokokawa': 'Mrs. Yokokawa', // Seita's and Setsuko's mother
+                sister: 'Setsuko' // Setsuko completely adores her older brother Seita
+              }
+            `,
+            options: [
+              {
+                'always-on-top': ['name', 'id'],
+                type: SortType.alphabetical,
+                order: SortOrder.asc,
+              },
+            ],
+          },
+        ],
+        invalid: [
+          {
+            code: dedent`
+              let yokokawaFamily = {
+                sister: 'Setsuko', // Setsuko completely adores her older brother Seita
+                'mrs-yokokawa': 'Mrs. Yokokawa', // Seita's and Setsuko's mother
+                brother: 'Seita', // Seita is responsible, mature, and tough
+              }
+            `,
+            output: dedent`
+              let yokokawaFamily = {
+                brother: 'Seita', // Seita is responsible, mature, and tough
+                'mrs-yokokawa': 'Mrs. Yokokawa', // Seita's and Setsuko's mother
+                sister: 'Setsuko', // Setsuko completely adores her older brother Seita
+              }
+            `,
+            options: [
+              {
+                'always-on-top': ['name', 'id'],
+                type: SortType.alphabetical,
+                order: SortOrder.asc,
+              },
+            ],
+            errors: [
+              {
+                messageId: 'unexpectedObjectsOrder',
+                data: {
+                  first: 'sister',
+                  second: 'mrs-yokokawa',
+                },
+              },
+              {
+                messageId: 'unexpectedObjectsOrder',
+                data: {
+                  first: 'mrs-yokokawa',
+                  second: 'brother',
+                },
+              },
+            ],
+          },
+        ],
+      })
+    })
   })
 
   describe(`${RULE_NAME}: sorting by natural order`, () => {
@@ -717,6 +781,70 @@ describe(RULE_NAME, () => {
                 data: {
                   first: 'id',
                   second: 'name',
+                },
+              },
+            ],
+          },
+        ],
+      })
+    })
+
+    it(`${RULE_NAME}(${type}): sorts with comments on the same line`, () => {
+      ruleTester.run(RULE_NAME, rule, {
+        valid: [
+          {
+            code: dedent`
+              let yokokawaFamily = {
+                brother: 'Seita', // Seita is responsible, mature, and tough
+                'mrs-yokokawa': 'Mrs. Yokokawa', // Seita's and Setsuko's mother
+                sister: 'Setsuko' // Setsuko completely adores her older brother Seita
+              }
+            `,
+            options: [
+              {
+                'always-on-top': ['name', 'id'],
+                type: SortType.alphabetical,
+                order: SortOrder.asc,
+              },
+            ],
+          },
+        ],
+        invalid: [
+          {
+            code: dedent`
+              let yokokawaFamily = {
+                sister: 'Setsuko', // Setsuko completely adores her older brother Seita
+                'mrs-yokokawa': 'Mrs. Yokokawa', // Seita's and Setsuko's mother
+                brother: 'Seita', // Seita is responsible, mature, and tough
+              }
+            `,
+            output: dedent`
+              let yokokawaFamily = {
+                brother: 'Seita', // Seita is responsible, mature, and tough
+                'mrs-yokokawa': 'Mrs. Yokokawa', // Seita's and Setsuko's mother
+                sister: 'Setsuko', // Setsuko completely adores her older brother Seita
+              }
+            `,
+            options: [
+              {
+                'always-on-top': ['name', 'id'],
+                type: SortType.natural,
+                order: SortOrder.asc,
+              },
+            ],
+            errors: [
+              {
+                messageId: 'unexpectedObjectsOrder',
+                data: {
+                  first: 'sister',
+                  second: 'mrs-yokokawa',
+                },
+              },
+              {
+                messageId: 'unexpectedObjectsOrder',
+                data: {
+                  first: 'mrs-yokokawa',
+                  second: 'brother',
                 },
               },
             ],
@@ -1082,6 +1210,63 @@ describe(RULE_NAME, () => {
                 data: {
                   first: 'id',
                   second: 'name',
+                },
+              },
+            ],
+          },
+        ],
+      })
+    })
+
+    it(`${RULE_NAME}(${type}): sorts with comments on the same line`, () => {
+      ruleTester.run(RULE_NAME, rule, {
+        valid: [
+          {
+            code: dedent`
+              let yokokawaFamily = {
+                'mrs-yokokawa': 'Mrs. Yokokawa', // Seita's and Setsuko's mother
+                sister: 'Setsuko', // Setsuko completely adores her older brother Seita
+                brother: 'Seita', // Seita is responsible, mature, and tough
+              }
+            `,
+            options: [
+              {
+                'always-on-top': ['name', 'id'],
+                type: SortType['line-length'],
+                order: SortOrder.desc,
+              },
+            ],
+          },
+        ],
+        invalid: [
+          {
+            code: dedent`
+              let yokokawaFamily = {
+                sister: 'Setsuko', // Setsuko completely adores her older brother Seita
+                'mrs-yokokawa': 'Mrs. Yokokawa', // Seita's and Setsuko's mother
+                brother: 'Seita', // Seita is responsible, mature, and tough
+              }
+            `,
+            output: dedent`
+              let yokokawaFamily = {
+                'mrs-yokokawa': 'Mrs. Yokokawa', // Seita's and Setsuko's mother
+                sister: 'Setsuko', // Setsuko completely adores her older brother Seita
+                brother: 'Seita', // Seita is responsible, mature, and tough
+              }
+            `,
+            options: [
+              {
+                'always-on-top': ['name', 'id'],
+                type: SortType['line-length'],
+                order: SortOrder.desc,
+              },
+            ],
+            errors: [
+              {
+                messageId: 'unexpectedObjectsOrder',
+                data: {
+                  first: 'sister',
+                  second: 'mrs-yokokawa',
                 },
               },
             ],

@@ -6,18 +6,48 @@ import { AST_TOKEN_TYPES } from '@typescript-eslint/types'
 export let getComment = (
   node: TSESTree.Node,
   source: TSESLint.SourceCode,
-): TSESTree.Comment | null => {
-  let previousTokenOrComment = source.getTokenBefore(node, {
+): {
+  before: TSESTree.Token | null
+  after: TSESTree.Token | null
+} => {
+  let isComment = (token: TSESTree.Token | null) =>
+    token?.type === AST_TOKEN_TYPES.Block ||
+    token?.type === AST_TOKEN_TYPES.Line
+
+  let filter = ({ type, value }: TSESTree.Token) =>
+    !(type === AST_TOKEN_TYPES.Punctuator && [',', ';'].includes(value))
+
+  let [tokenBefore, tokenOrCommentBefore] = source.getTokensBefore(node, {
     includeComments: true,
+    count: 2,
+    filter,
   })
 
+  let tokenOrCommentAfter = source.getTokenAfter(node, {
+    includeComments: true,
+    filter,
+  })
+
+  let before = null
+  let after = null
+
   if (
-    (previousTokenOrComment?.type === AST_TOKEN_TYPES.Block ||
-      previousTokenOrComment?.type === AST_TOKEN_TYPES.Line) &&
-    node.loc.start.line - previousTokenOrComment.loc.end.line <= 1
+    isComment(tokenOrCommentBefore) &&
+    node.loc.start.line - tokenOrCommentBefore.loc.end.line <= 1 &&
+    tokenBefore.loc.end.line !== tokenOrCommentBefore.loc.start.line
   ) {
-    return previousTokenOrComment
+    before = tokenOrCommentBefore
   }
 
-  return null
+  if (
+    isComment(tokenOrCommentAfter) &&
+    node.loc.end.line === tokenOrCommentAfter!.loc.end.line
+  ) {
+    after = tokenOrCommentAfter
+  }
+
+  return {
+    before,
+    after,
+  }
 }

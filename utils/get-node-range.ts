@@ -35,8 +35,12 @@ export let getNodeRange = (
     end -= 1
   }
 
-  if (comment) {
-    start = comment.range.at(0)!
+  if (comment.before) {
+    start = comment.before.range.at(0)!
+  }
+
+  if (comment.after) {
+    end = comment.after.range.at(1)!
   }
 
   return [start, end]

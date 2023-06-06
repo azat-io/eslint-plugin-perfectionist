@@ -273,7 +273,7 @@ export default createEslintRule<Options, MESSAGE_ID>({
         ): boolean =>
           !!source.getTokensBetween(
             left.node,
-            getComment(right.node, source) || right.node,
+            getComment(right.node, source).before || right.node,
             {
               includeComments: true,
             },
