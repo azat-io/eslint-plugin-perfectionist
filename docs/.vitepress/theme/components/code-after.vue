@@ -31,7 +31,7 @@
       width="39"
       height="12"
       rx="2"
-      fill="var(--vp-c-text-2)"
+      fill="var(--vp-c-text-3)"
     />
     <rect
       x="7"
@@ -47,7 +47,7 @@
       width="40"
       height="12"
       rx="2"
-      fill="var(--vp-c-text-2)"
+      fill="var(--vp-c-text-3)"
     />
     <rect
       x="37"
@@ -63,7 +63,7 @@
       width="100"
       height="12"
       rx="2"
-      fill="var(--vp-c-text-2)"
+      fill="var(--vp-c-text-3)"
     />
     <rect
       x="174"
@@ -79,7 +79,7 @@
       width="74"
       height="12"
       rx="2"
-      fill="var(--vp-c-text-2)"
+      fill="var(--vp-c-text-3)"
     />
     <rect
       x="147"
@@ -95,7 +95,7 @@
       width="42"
       height="12"
       rx="2"
-      fill="var(--vp-c-text-2)"
+      fill="var(--vp-c-text-3)"
     />
     <rect
       x="116"
@@ -111,7 +111,7 @@
       width="51"
       height="12"
       rx="2"
-      fill="var(--vp-c-text-2)"
+      fill="var(--vp-c-text-3)"
     />
     <rect
       x="125"
@@ -127,7 +127,7 @@
       width="94"
       height="12"
       rx="2"
-      fill="var(--vp-c-text-2)"
+      fill="var(--vp-c-text-3)"
     />
     <rect
       x="168"
@@ -143,7 +143,7 @@
       width="66"
       height="12"
       rx="2"
-      fill="var(--vp-c-text-2)"
+      fill="var(--vp-c-text-3)"
     />
     <rect
       x="66"
@@ -151,7 +151,7 @@
       width="42"
       height="12"
       rx="2"
-      fill="var(--vp-c-text-2)"
+      fill="var(--vp-c-text-3)"
     />
     <rect
       x="140"
@@ -183,7 +183,7 @@
       width="20"
       height="12"
       rx="2"
-      fill="var(--vp-c-text-2)"
+      fill="var(--vp-c-text-3)"
     />
     <rect
       x="7"
@@ -191,7 +191,7 @@
       width="20"
       height="12"
       rx="2"
-      fill="var(--vp-c-text-2)"
+      fill="var(--vp-c-text-3)"
     />
     <rect
       x="214"
@@ -207,7 +207,7 @@
       width="52"
       height="12"
       rx="2"
-      fill="var(--vp-c-text-2)"
+      fill="var(--vp-c-text-3)"
     />
     <rect
       x="176"
@@ -223,7 +223,7 @@
       width="90"
       height="12"
       rx="2"
-      fill="var(--vp-c-text-2)"
+      fill="var(--vp-c-text-3)"
     />
     <rect
       x="116"
@@ -231,7 +231,7 @@
       width="101"
       height="12"
       rx="2"
-      fill="var(--vp-c-text-2)"
+      fill="var(--vp-c-text-3)"
     />
   </svg>
 </template>
