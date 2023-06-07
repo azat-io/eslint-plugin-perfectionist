@@ -68,8 +68,8 @@ devDependencies:
     specifier: ^5.1.0
     version: 5.1.0(eslint@8.41.0)
   monaco-editor:
-    specifier: ^0.38.0
-    version: 0.38.0
+    specifier: ^0.39.0
+    version: 0.39.0
   simple-git-hooks:
     specifier: ^2.8.1
     version: 2.8.1
@@ -3663,8 +3663,8 @@ packages:
       ufo: 1.1.2
     dev: true
 
-  /monaco-editor@0.38.0:
-    resolution: {integrity: sha512-11Fkh6yzEmwx7O0YoLxeae0qEGFwmyPRlVxpg7oF9czOOCB/iCjdJrG5I67da5WiXK3YJCxoz9TJFE8Tfq/v9A==}
+  /monaco-editor@0.39.0:
+    resolution: {integrity: sha512-zhbZ2Nx93tLR8aJmL2zI1mhJpsl87HMebNBM6R8z4pLfs8pj604pIVIVwyF1TivcfNtIPpMXL+nb3DsBmE/x6Q==}
     dev: true
 
   /mri@1.2.0:
