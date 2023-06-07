@@ -290,10 +290,13 @@ export default createEslintRule<Options, MESSAGE_ID>({
           return linesBetweenImports.filter(line => !line.trim().length).length
         }
 
-        let fix = (fixer: TSESLint.RuleFixer): TSESLint.RuleFix[] => {
+        let fix = (
+          fixer: TSESLint.RuleFixer,
+          nodesToFix: SortingNodeWithGroup[],
+        ): TSESLint.RuleFix[] => {
           let fixes: TSESLint.RuleFix[] = []
 
-          let grouped = nodes.reduce(
+          let grouped = nodesToFix.reduce(
             (
               accumulator: {
                 [key: string]: SortingNodeWithGroup[]
@@ -329,7 +332,7 @@ export default createEslintRule<Options, MESSAGE_ID>({
           formatted.forEach((node, i) => {
             fixes.push(
               fixer.replaceTextRange(
-                getNodeRange(nodes.at(i)!.node, source),
+                getNodeRange(nodesToFix.at(i)!.node, source),
                 source.text.slice(...getNodeRange(node.node, source)),
               ),
             )
@@ -339,8 +342,8 @@ export default createEslintRule<Options, MESSAGE_ID>({
 
               if (nextNode) {
                 let linesBetweenImports = getLinesBetweenImports(
-                  nodes.at(i)!,
-                  nodes.at(i + 1)!,
+                  nodesToFix.at(i)!,
+                  nodesToFix.at(i + 1)!,
                 )
 
                 if (
@@ -352,8 +355,9 @@ export default createEslintRule<Options, MESSAGE_ID>({
                 ) {
                   fixes.push(
                     fixer.removeRange([
-                      getNodeRange(nodes.at(i)!.node, source).at(1)!,
-                      getNodeRange(nodes.at(i + 1)!.node, source).at(0)! - 1,
+                      getNodeRange(nodesToFix.at(i)!.node, source).at(1)!,
+                      getNodeRange(nodesToFix.at(i + 1)!.node, source).at(0)! -
+                        1,
                     ]),
                   )
                 }
@@ -365,8 +369,10 @@ export default createEslintRule<Options, MESSAGE_ID>({
                   fixes.push(
                     fixer.replaceTextRange(
                       [
-                        getNodeRange(nodes.at(i)!.node, source).at(1)!,
-                        getNodeRange(nodes.at(i + 1)!.node, source).at(0)! - 1,
+                        getNodeRange(nodesToFix.at(i)!.node, source).at(1)!,
+                        getNodeRange(nodesToFix.at(i + 1)!.node, source).at(
+                          0,
+                        )! - 1,
                       ],
                       '\n',
                     ),
@@ -380,7 +386,7 @@ export default createEslintRule<Options, MESSAGE_ID>({
                 ) {
                   fixes.push(
                     fixer.insertTextAfterRange(
-                      getNodeRange(nodes.at(i)!.node, source),
+                      getNodeRange(nodesToFix.at(i)!.node, source),
                       '\n',
                     ),
                   )
@@ -429,7 +435,7 @@ export default createEslintRule<Options, MESSAGE_ID>({
                   right: right.name,
                 },
                 node: right.node,
-                fix,
+                fix: fixer => fix(fixer, nodeList),
               })
             }
 
@@ -444,7 +450,7 @@ export default createEslintRule<Options, MESSAGE_ID>({
                   right: right.name,
                 },
                 node: right.node,
-                fix,
+                fix: fixer => fix(fixer, nodeList),
               })
             }
 
@@ -457,7 +463,7 @@ export default createEslintRule<Options, MESSAGE_ID>({
                     right: right.name,
                   },
                   node: right.node,
-                  fix,
+                  fix: fixer => fix(fixer, nodeList),
                 })
               } else if (
                 numberOfEmptyLinesBetween > 1 ||
@@ -470,7 +476,7 @@ export default createEslintRule<Options, MESSAGE_ID>({
                     right: right.name,
                   },
                   node: right.node,
-                  fix,
+                  fix: fixer => fix(fixer, nodeList),
                 })
               }
             }
