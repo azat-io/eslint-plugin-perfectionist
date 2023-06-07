@@ -1,6 +1,19 @@
 # Changelog
 
 
+## v0.11.6
+
+[compare changes](https://github.com/azat-io/eslint-plugin-perfectionist/compare/v0.11.2...main)
+
+
+### 🐞 Bug Fixes
+
+  - Improve sort-imports fix function ([e7a39f2](https://github.com/azat-io/eslint-plugin-perfectionist/commit/e7a39f2))
+
+### ❤️  Contributors
+
+- Azat S ([@azat-io](http://github.com/azat-io))
+
 ## v0.11.5
 
 [compare changes](https://github.com/azat-io/eslint-plugin-perfectionist/compare/v0.11.4...v0.11.5)
