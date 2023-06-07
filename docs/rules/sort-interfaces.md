@@ -111,6 +111,10 @@ If you need to ignore a rule for some interfaces, you can specify their names or
 
 The [minimatch](https://github.com/isaacs/minimatch) library is used for pattern matching.
 
+:::info Important
+If you use the [`adjacent-overload-signatures`](https://typescript-eslint.io/rules/adjacent-overload-signatures) rule from the [`@typescript-eslint/eslint-plugin`](https://typescript-eslint.io) plugin, it is highly recommended to [disable it](https://eslint.org/docs/latest/use/configure/rules#using-configuration-files-1) to avoid conflicts.
+:::
+
 ## ⚙️ Usage
 
 ### Legacy Config

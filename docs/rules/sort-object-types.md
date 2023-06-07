@@ -17,6 +17,10 @@ Enforce sorted object types.
 
 This rule standardizes the order of members of an object type in a TypeScript. The order in which the members are defined within an object type does not affect the type system or the behavior of the code.
 
+:::info Important
+If you use the [`adjacent-overload-signatures`](https://typescript-eslint.io/rules/adjacent-overload-signatures) rule from the [`@typescript-eslint/eslint-plugin`](https://typescript-eslint.io) plugin, it is highly recommended to [disable it](https://eslint.org/docs/latest/use/configure/rules#using-configuration-files-1) to avoid conflicts.
+:::
+
 ## 💡 Examples
 
 ### Alphabetical and Natural Sorting

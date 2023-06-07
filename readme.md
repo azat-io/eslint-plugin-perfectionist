@@ -8,8 +8,8 @@
   width="170"
 />
 
-![Version](https://img.shields.io/npm/v/eslint-plugin-perfectionist.svg?color=4a32c3)
-[![GitHub license](https://img.shields.io/badge/license-MIT-4a32c3.svg)](https://github.com/facebook/react/blob/main/LICENSE)
+[![Version](https://img.shields.io/npm/v/eslint-plugin-perfectionist.svg?color=4a32c3)](https://www.npmjs.com/package/eslint-plugin-perfectionist)
+[![GitHub license](https://img.shields.io/badge/license-MIT-4a32c3.svg)](https://github.com/azat-io/eslint-plugin-perfectionist/blob/main/license)
 
 ESLint plugin that sets rules to format your code and make it consistent.
 
@@ -31,6 +31,10 @@ Sorting imports and properties in software development offers numerous benefits:
 
 - **Aesthetics**: This not only provides functional benefits, but also gives the code an aesthetic appeal, visually pleasing and harmonious structure. Take your code to the beauty salon!
 
+## 📖 Documentation
+
+See [docs](https://eslint-plugin-perfectionist.azat.io).
+
 ## 💿 Installation
 
 You'll first need to install [ESLint](https://eslint.org):
@@ -45,7 +49,7 @@ Next, install `eslint-plugin-perfectionist`:
 npm install --save-dev eslint-plugin-perfectionist
 ```
 
-## 📖 Usage
+## 🚀️️️️ Usage
 
 Add `eslint-plugin-perfectionist` to the plugins section of the ESLint configuration file and define the list of rules you will use.
 
@@ -117,7 +121,7 @@ export default [perfectionistLineLength]
 | [recommended-natural](https://eslint-plugin-perfectionist.azat.io/configs/recommended-natural)           | all plugin rules with natural sorting in ascending order         |
 | [recommended-line-length](https://eslint-plugin-perfectionist.azat.io/configs/recommended-line-length)   | all plugin rules with sorting by line length in descending order |
 
-## 🚀 Rules
+## ✅ Rules
 
 <!-- begin auto-generated rules list -->
 
@@ -139,6 +143,88 @@ export default [perfectionistLineLength]
 | [sort-union-types](https://eslint-plugin-perfectionist.azat.io/rules/sort-union-types)       | enforce sorted union types                  | 🔧 |
 
 <!-- end auto-generated rules list -->
+
+## ⚠️ Troubleshooting
+
+There are rules of ESLint and other ESLint plugins that may conflict with the rules of ESLint Plugin Perfectionist. We strongly recommend that you [disable rules](https://eslint.org/docs/latest/use/configure/rules#using-configuration-files-1) with similar functionality.
+
+I recommend that you read the [documentation](https://eslint-plugin-perfectionist.azat.io) before using any rules.
+
+<details>
+  <summary>Possible conflicts</summary>
+
+**perfectionist/sort-imports:**
+
+```json
+{
+  "rules": {
+    "import/order": "off",
+    "sort-imports": "off"
+  }
+}
+```
+
+**perfectionist/sort-interfaces:**
+
+```json
+{
+  "rules": {
+    "@typescript-eslint/adjacent-overload-signatures": "off"
+  }
+}
+```
+
+**perfectionist/sort-jsx-props:**
+
+```json
+{
+  "rules": {
+    "react/jsx-sort-props": "off"
+  }
+}
+```
+
+**perfectionist/sort-named-imports:**
+
+```json
+{
+  "rules": {
+    "sort-imports": "off"
+  }
+}
+```
+
+**perfectionist/sort-object-types:**
+
+```json
+{
+  "rules": {
+    "@typescript-eslint/adjacent-overload-signatures": "off"
+  }
+}
+```
+
+**perfectionist/sort-objects:**
+
+```json
+{
+  "rules": {
+    "sort-keys": "off"
+  }
+}
+```
+
+**perfectionist/sort-union-types:**
+
+```json
+{
+  "rules": {
+    "@typescript-eslint/sort-type-constituents": "off"
+  }
+}
+```
+
+</details>
 
 ## 🚥 Versioning Policy
 
