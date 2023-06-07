@@ -21,45 +21,46 @@ When enum members are sorted, it sometimes becomes easier to reason about their 
 
 ## 💡 Examples
 
-### Alphabetical and Natural Sorting
+::: code-group
 
-```ts
-// Incorrect
-enum Hinamizawa {
-  'Sonozaki Shion' = 'Sonozaki Shion',
-  'Furude Rika' = 'Furude Rika',
-  'Sonozaki Mion' = 'Sonozaki Mion',
-  'Ryūgū Rena' = 'Ryūgū Rena',
+<!-- prettier-ignore -->
+```ts [Alphabetical and Natural Sorting]
+// ❌ Incorrect
+enum StatusCodes {
+  NotFound = 404
+  Ok = 200
+  MethodNotAllowed = 405
+  BadRequest = 400
 }
 
-// Correct
-enum Hinamizawa {
-  'Furude Rika' = 'Furude Rika',
-  'Ryūgū Rena' = 'Ryūgū Rena',
-  'Sonozaki Mion' = 'Sonozaki Mion',
-  'Sonozaki Shion' = 'Sonozaki Shion',
+// ✅ Correct
+enum StatusCodes {
+  BadRequest = 400
+  MethodNotAllowed = 405
+  NotFound = 404
+  Ok = 200
+}
+```
+
+```ts [Sorting by Line Length]
+// ❌ Incorrect
+enum StatusCodes {
+  NotFound = 404
+  Ok = 200
+  MethodNotAllowed = 405
+  BadRequest = 400
+}
+
+// ✅ Correct
+enum StatusCodes {
+  MethodNotAllowed = 405
+  BadRequest = 400
+  NotFound = 404
+  Ok = 200
 }
 ```
 
-### Sorting by Line Length
-
-```ts
-// Incorrect
-enum Hinamizawa {
-  'Sonozaki Shion' = 'Sonozaki Shion',
-  'Furude Rika' = 'Furude Rika',
-  'Sonozaki Mion' = 'Sonozaki Mion',
-  'Ryūgū Rena' = 'Ryūgū Rena',
-}
-
-// Correct
-enum Hinamizawa {
-  'Sonozaki Shion' = 'Sonozaki Shion',
-  'Sonozaki Mion' = 'Sonozaki Mion',
-  'Furude Rika' = 'Furude Rika',
-  'Ryūgū Rena' = 'Ryūgū Rena',
-}
-```
+:::
 
 ## 🔧 Options
 
@@ -96,9 +97,9 @@ Only affects alphabetical and natural sorting. When `true` the rule ignores the 
 
 ## ⚙️ Usage
 
-### Legacy Config
+::: code-group
 
-```json
+```json [Legacy Config]
 // .eslintrc
 {
   "plugins": ["perfectionist"],
@@ -114,9 +115,7 @@ Only affects alphabetical and natural sorting. When `true` the rule ignores the 
 }
 ```
 
-### Flat Config
-
-```js
+```js [Flat Config]
 // eslint.config.js
 import perfectionist from 'eslint-plugin-perfectionist'
 
@@ -137,6 +136,8 @@ export default [
   },
 ]
 ```
+
+:::
 
 ## 🚀 Version
 

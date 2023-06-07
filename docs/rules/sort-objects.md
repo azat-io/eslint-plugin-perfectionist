@@ -25,43 +25,54 @@ If you use the [`sort-keys`](https://eslint.org/docs/latest/rules/sort-keys) rul
 
 ## 💡 Examples
 
-### Alphabetical and Natural Sorting
+::: code-group
 
 <!-- prettier-ignore -->
-```ts
-// Incorrect
-let family = {
-  dad: 'Loid Forger',
-  mom: 'Yor Forger',
-  daughter: 'Anya Forger',
+```js [Alphabetical and Natural Sorting]
+// ❌ Incorrect
+let product = {
+  name: 'iPhone 14 Pro',
+  software: 'iOS',
+  weight: '7.27 oz.; 206g',
+  pixelDensity: 458,
+  price: 1199,
+  storage: '512GB',
 }
 
-// Correct
-let family = {
-  dad: 'Loid Forger',
-  daughter: 'Anya Forger',
-  mom: 'Yor Forger',
+// ✅ Correct
+let product = {
+  name: 'iPhone 14 Pro',
+  pixelDensity: 458,
+  price: 1199,
+  software: 'iOS',
+  storage: '512GB',
+  weight: '7.27 oz.; 206g',
 }
 ```
 
-### Sorting by Line Length
-
-<!-- prettier-ignore -->
-```ts
-// Incorrect
-let family = {
-  dad: 'Loid Forger',
-  mom: 'Yor Forger',
-  daughter: 'Anya Forger',
+```js [Sorting by Line Length]
+// ❌ Incorrect
+let product = {
+  name: 'iPhone 14 Pro',
+  software: 'iOS',
+  weight: '7.27 oz.; 206g',
+  pixelDensity: 458,
+  price: 1199,
+  storage: '512GB',
 }
 
-// Correct
-let family = {
-  daughter: 'Anya Forger',
-  dad: 'Loid Forger',
-  mom: 'Yor Forger',
+// ✅ Correct
+let product = {
+  weight: '7.27 oz.; 206g',
+  name: 'iPhone 14 Pro',
+  pixelDensity: 458,
+  storage: '512GB',
+  software: 'iOS',
+  price: 1199,
 }
 ```
+
+:::
 
 ## 🔧 Options
 
@@ -105,9 +116,9 @@ You can set a list of key names that will always go at the beginning of the obje
 
 ## ⚙️ Usage
 
-### Legacy Config
+::: code-group
 
-```json
+```json [Legacy Config]
 // .eslintrc
 {
   "plugins": ["perfectionist"],
@@ -123,9 +134,7 @@ You can set a list of key names that will always go at the beginning of the obje
 }
 ```
 
-### Flat Config
-
-```js
+```js [Flat Config]
 // eslint.config.js
 import perfectionist from 'eslint-plugin-perfectionist'
 
@@ -146,6 +155,8 @@ export default [
   },
 ]
 ```
+
+:::
 
 ## 🚀 Version
 

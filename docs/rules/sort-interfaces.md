@@ -19,55 +19,76 @@ Sorting interface properties provides a clear and predictable structure to the c
 
 It's **safe**. If you document interface properties line by line, property comments will also be sorted.
 
+:::info Important
+If you use the [`adjacent-overload-signatures`](https://typescript-eslint.io/rules/adjacent-overload-signatures) rule from the [`@typescript-eslint/eslint-plugin`](https://typescript-eslint.io) plugin, it is highly recommended to [disable it](https://eslint.org/docs/latest/use/configure/rules#using-configuration-files-1) to avoid conflicts.
+:::
+
 ## 💡 Examples
 
-### Alphabetical and Natural Sorting
+::: code-group
 
-```ts
-// Incorrect
-interface Hero {
-  name: string
-  rank: 'S-Class' | 'A-Class' | 'B-Class' | 'C-Class'
-  isAlive: boolean
-  abilities: string[]
-  age: number
-  affiliation: 'Association' | 'Saitama Group'
+<!-- prettier-ignore -->
+```ts [Alphabetical and Natural Sorting]
+// ❌ Incorrect
+interface ButtonProps {
+  variant?: 'solid' | 'outline' | 'text'
+  full?: boolean
+  disabled?: ComponentProps<'button'>['disabled']
+  type?: 'submit' | 'button'
+  color: 'main' | 'info' | 'success' | 'warning' | 'error'
+  onClick?: () => void
+  children?: string | number
+  icon?: FC<SVGProps<SVGSVGElement>>
+  className?: string
+  size: 's' | 'm' | 'l'
 }
 
-// Correct
-interface Hero {
-  abilities: string[]
-  affiliation: 'Association' | 'Saitama Group'
-  age: number
-  isAlive: boolean
-  name: string
-  rank: 'S-Class' | 'A-Class' | 'B-Class' | 'C-Class'
+// ✅ Correct
+interface ButtonProps {
+  children?: string | number
+  className?: string
+  color: 'main' | 'info' | 'success' | 'warning' | 'error'
+  disabled?: ComponentProps<'button'>['disabled']
+  full?: boolean
+  icon?: FC<SVGProps<SVGSVGElement>>
+  onClick?: () => void
+  size: 's' | 'm' | 'l'
+  type?: 'submit' | 'button'
+  variant?: 'solid' | 'outline' | 'text'
+}
+```
+
+```ts [Sorting by Line Length]
+// ❌ Incorrect
+interface ButtonProps {
+  variant?: 'solid' | 'outline' | 'text'
+  full?: boolean
+  disabled?: ComponentProps<'button'>['disabled']
+  type?: 'submit' | 'button'
+  color: 'main' | 'info' | 'success' | 'warning' | 'error'
+  onClick?: () => void
+  children?: string | number
+  icon?: FC<SVGProps<SVGSVGElement>>
+  className?: string
+  size: 's' | 'm' | 'l'
+}
+
+// ✅ Correct
+interface ButtonProps {
+  color: 'main' | 'info' | 'success' | 'warning' | 'error'
+  disabled?: ComponentProps<'button'>['disabled']
+  variant?: 'solid' | 'outline' | 'text'
+  icon?: FC<SVGProps<SVGSVGElement>>
+  children?: string | number
+  type?: 'submit' | 'button'
+  size: 's' | 'm' | 'l'
+  onClick?: () => void
+  className?: string
+  full?: boolean
 }
 ```
 
-### Sorting by Line Length
-
-```ts
-// Incorrect
-interface Hero {
-  name: string
-  rank: 'S-Class' | 'A-Class' | 'B-Class' | 'C-Class'
-  isAlive: boolean
-  abilities: string[]
-  age: number
-  affiliation: 'Association' | 'Saitama Group'
-}
-
-// Correct
-interface Hero {
-  rank: 'S-Class' | 'A-Class' | 'B-Class' | 'C-Class'
-  affiliation: 'Association' | 'Saitama Group'
-  abilities: string[]
-  isAlive: boolean
-  name: string
-  age: number
-}
-```
+:::
 
 ## 🔧 Options
 
@@ -111,15 +132,11 @@ If you need to ignore a rule for some interfaces, you can specify their names or
 
 The [minimatch](https://github.com/isaacs/minimatch) library is used for pattern matching.
 
-:::info Important
-If you use the [`adjacent-overload-signatures`](https://typescript-eslint.io/rules/adjacent-overload-signatures) rule from the [`@typescript-eslint/eslint-plugin`](https://typescript-eslint.io) plugin, it is highly recommended to [disable it](https://eslint.org/docs/latest/use/configure/rules#using-configuration-files-1) to avoid conflicts.
-:::
-
 ## ⚙️ Usage
 
-### Legacy Config
+::: code-group
 
-```json
+```json [Legacy Config]
 // .eslintrc
 {
   "plugins": ["perfectionist"],
@@ -135,9 +152,7 @@ If you use the [`adjacent-overload-signatures`](https://typescript-eslint.io/rul
 }
 ```
 
-### Flat Config
-
-```js
+```js [Flat Config]
 // eslint.config.js
 import perfectionist from 'eslint-plugin-perfectionist'
 
@@ -158,6 +173,8 @@ export default [
   },
 ]
 ```
+
+:::
 
 ## 🚀 Version
 

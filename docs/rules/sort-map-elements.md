@@ -21,49 +21,54 @@ This rule detects instances where Map elements are not sorted in a specified ord
 
 ## 💡 Examples
 
-### Alphabetical and Natural Sorting
+::: code-group
 
-```ts
-// Incorrect
-let bebop = Map([
-  ['spike', 'Spike Spiegel'],
-  ['ed', 'Edward'],
-  ['ein', 'Ein'],
-  ['faye', 'Faye Valentine'],
-  ['jet', 'Jet Black'],
+<!-- prettier-ignore -->
+```js [Alphabetical and Natural Sorting]
+// ❌ Incorrect
+let burritoRecipeMap = new Map([
+  ['tomatoes', 300],
+  ['bell pepper', 100],
+  ['corn', 150],
+  ['cheese', 200],
+  ['chicken fillet', 300],
+  ['beans', 150],
 ])
 
-// Correct
-let bebop = Map([
-  ['ed', 'Edward'],
-  ['ein', 'Ein'],
-  ['faye', 'Faye Valentine'],
-  ['jet', 'Jet Black'],
-  ['spike', 'Spike Spiegel'],
+// ✅ Correct
+let burritoRecipeMap = new Map([
+  ['beans', 150],
+  ['bell pepper', 100],
+  ['cheese', 200],
+  ['chicken fillet', 300],
+  ['corn', 150],
+  ['tomatoes', 300],
+])
+```
+
+```js [Sorting by Line Length]
+// ❌ Incorrect
+let burritoRecipeMap = new Map([
+  ['tomatoes', 300],
+  ['bell pepper', 100],
+  ['corn', 150],
+  ['cheese', 200],
+  ['chicken fillet', 300],
+  ['beans', 150],
+])
+
+// ✅ Correct
+let burritoRecipeMap = new Map([
+  ['chicken fillet', 300],
+  ['bell pepper', 100],
+  ['tomatoes', 300],
+  ['cheese', 200],
+  ['beans', 150],
+  ['corn', 150],
 ])
 ```
 
-### Sorting by Line Length
-
-```ts
-// Incorrect
-let bebop = Map([
-  ['spike', 'Spike Spiegel'],
-  ['ed', 'Edward'],
-  ['ein', 'Ein'],
-  ['faye', 'Faye Valentine'],
-  ['jet', 'Jet Black'],
-])
-
-// Correct
-let bebop = Map([
-  ['spike', 'Spike Spiegel'],
-  ['faye', 'Faye Valentine'],
-  ['jet', 'Jet Black'],
-  ['ed', 'Edward'],
-  ['ein', 'Ein'],
-])
-```
+:::
 
 ## 🔧 Options
 
@@ -100,9 +105,9 @@ Only affects alphabetical and natural sorting. When `true` the rule ignores the 
 
 ## ⚙️ Usage
 
-### Legacy Config
+::: code-group
 
-```json
+```json [Legacy Config]
 // .eslintrc
 {
   "plugins": ["perfectionist"],
@@ -118,9 +123,7 @@ Only affects alphabetical and natural sorting. When `true` the rule ignores the 
 }
 ```
 
-### Flat Config
-
-```js
+```js [Flat Config]
 // eslint.config.js
 import perfectionist from 'eslint-plugin-perfectionist'
 
@@ -141,6 +144,8 @@ export default [
   },
 ]
 ```
+
+:::
 
 ## 🚀 Version
 

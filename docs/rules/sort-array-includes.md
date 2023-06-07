@@ -19,53 +19,58 @@ This rule aims to promote code readability and maintainability by enforcing a co
 
 ## 💡 Examples
 
-### Alphabetical and Natural Sorting
+::: code-group
 
-```ts
-// Incorrect
-[
-  'Beast Titan',
-  'Armored Titan',
-  'Jaw Titan',
-  'Cart Titan',
-  'War Hammer Titan',
-  'Attack Titan',
-].includes(titan)
+<!-- prettier-ignore -->
+```js [Alphabetical and Natural Sorting]
+// ❌ Incorrect
+if ([
+  'maintainer',
+  'admin',
+  'developer',
+  'owner',
+  'observer'
+].includes(user.role)) {
+  return response.json({ allowed: true })
+}
 
-// Correct
-[
-  'Armored Titan',
-  'Attack Titan',
-  'Beast Titan',
-  'Cart Titan',
-  'Jaw Titan',
-  'War Hammer Titan',
-].includes(titan)
+// ✅ Correct
+if ([
+  'admin',
+  'developer',
+  'maintainer',
+  'observer'
+  'owner',
+].includes(user.role)) {
+  return response.json({ allowed: true })
+}
 ```
 
-### Sorting by Line Length
+```js [Sorting by Line Length]
+// ❌ Incorrect
+if ([
+  'maintainer',
+  'admin',
+  'developer',
+  'owner',
+  'observer'
+].includes(user.role)) {
+  return response.json({ allowed: true })
+}
 
-```ts
-// Incorrect
-[
-  'Beast Titan',
-  'Armored Titan',
-  'Jaw Titan',
-  'Cart Titan',
-  'War Hammer Titan',
-  'Attack Titan',
-].includes(titan)
-
-// Correct
-[
-  'War Hammer Titan',
-  'Armored Titan',
-  'Attack Titan',
-  'Beast Titan',
-  'Cart Titan',
-  'Jaw Titan',
-].includes(titan)
+// ✅ Correct
+if ([
+  'maintainer',
+  'developer',
+  'observer'
+  'admin',
+  'owner',
+].includes(user.role)) {
+  return response.json({ allowed: true })
+}
 ```
+
+:::
 
 ## 🔧 Options
 
@@ -109,9 +114,9 @@ When `true` enforce spread elements in array to be last.
 
 ## ⚙️ Usage
 
-### Legacy Config
+::: code-group
 
-```json
+```json [Legacy Config]
 // .eslintrc
 {
   "plugins": ["perfectionist"],
@@ -128,9 +133,7 @@ When `true` enforce spread elements in array to be last.
 }
 ```
 
-### Flat Config
-
-```js
+```js [Flat Config]
 // eslint.config.js
 import perfectionist from 'eslint-plugin-perfectionist'
 
@@ -152,6 +155,8 @@ export default [
   },
 ]
 ```
+
+:::
 
 ## 🚀 Version
 

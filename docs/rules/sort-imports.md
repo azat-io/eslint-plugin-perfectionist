@@ -31,111 +31,60 @@ Rule `perfectionist/sort-imports` works in a similar way to rule `import/order`,
 
 ## 💡 Examples
 
-### Alphabetical and Natural Sorting
+::: code-group
 
-```ts
-// Incorrect
-import { GingFreecss } from 'hunter/freecss'
-import { Netero } from 'hunter/netero'
+<!-- prettier-ignore -->
+```js [Alphabetical and Natural Sorting]
+// ❌ Incorrect
+import express from 'express'
+import type { Response, Request } from 'express'
+import fromPairs from 'lodash/fromPairs'
+import dotenv from 'dotenv'
 
-import type { Hunter } from '~/hunter-association'
-import { Gon, Kurapika, Leorio } from '~/hunter-association'
-import { Feitan, Phinks, Shalnark, Pakunoda } from 'phantom-troupe'
-import type { Association } from '.'
-import { Meruem, Neferpitou, Shaiapouf } from '../ants'
-import path from 'path'
+import config from './config.js'
+import map from 'lodash/map'
+import defaultsDeep from 'lodash/defaultsDeep'
 import fs from 'fs'
-import type { ChimeraAnt } from '../ants'
-import type { IHero } from './association-data'
-import { Knuckle, Shoot } from '~/hunters/beast-hunters'
-import { CheadleYorkshire } from '~/hunters/virus-hunters'
-import type { HeroList } from './index.d.ts'
-import './style.css'
-import type { Chairman } from 'hunter'
 
-import association from '.'
-import { ChimeraAntQueen } from '../ants'
-import hisoka from '../../hunters/histoka'
+// ✅ Correct
+import type { Response, Request } from 'express'
 
-// Correct
-import type { Chairman } from 'hunter'
-
+import dotenv from 'dotenv'
+import express from 'express'
 import fs from 'fs'
-import { GingFreecss } from 'hunter/freecss'
-import { Netero } from 'hunter/netero'
-import path from 'path'
-import { Feitan, Phinks, Shalnark, Pakunoda } from 'phantom-troupe'
+import defaultsDeep from 'lodash/defaultsDeep'
+import fromPairs from 'lodash/fromPairs'
+import map from 'lodash/map'
 
-import type { Hunter } from '~/hunter-association'
-
-import { Gon, Kurapika, Leorio } from '~/hunter-association'
-import { Knuckle, Shoot } from '~/hunters/beast-hunters'
-import { CheadleYorkshire } from '~/hunters/virus-hunters'
-
-import type { Association } from '.'
-import type { ChimeraAnt } from '../ants'
-import type { IHero } from './association-data'
-import type { HeroList } from './index.d.ts'
-
-import association from '.'
-import hisoka from '../../hunters/histoka'
-import { Meruem, Neferpitou, Shaiapouf } from '../ants'
-import { ChimeraAntQueen } from '../ants'
-import './style.css'
+import config from './config.js'
 ```
 
-### Sorting by Line Length
+```js [Sorting by Line Length]
+// ❌ Incorrect
+import express from 'express'
+import type { Response, Request } from 'express'
+import fromPairs from 'lodash/fromPairs'
+import dotenv from 'dotenv'
 
-```ts
-// Incorrect
-import { GingFreecss } from 'hunter/freecss'
-import { Netero } from 'hunter/netero'
-
-import type { Hunter } from '~/hunter-association'
-import { Gon, Kurapika, Leorio } from '~/hunter-association'
-import { Feitan, Phinks, Shalnark, Pakunoda } from 'phantom-troupe'
-import type { Association } from '.'
-import { Meruem, Neferpitou, Shaiapouf } from '../ants'
-import path from 'path'
-import fs from 'fs'
-import type { ChimeraAnt } from '../ants'
-import type { IHero } from './association-data'
-import { Knuckle, Shoot } from '~/hunters/beast-hunters'
-import { CheadleYorkshire } from '~/hunters/virus-hunters'
-import type { HeroList } from './index.d.ts'
-import './style.css'
-import type { Chairman } from 'hunter'
-
-import association from '.'
-import { ChimeraAntQueen } from '../ants'
-import hisoka from '../../hunters/histoka'
-
-// Correct
-import type { Chairman } from 'hunter'
-
-import { Feitan, Phinks, Shalnark, Pakunoda } from 'phantom-troupe'
-import { GingFreecss } from 'hunter/freecss'
-import { Netero } from 'hunter/netero'
-import path from 'path'
+import config from './config.js'
+import map from 'lodash/map'
+import defaultsDeep from 'lodash/defaultsDeep'
 import fs from 'fs'
 
-import type { Hunter } from '~/hunter-association'
+// ✅ Correct
+import type { Response, Request } from 'express'
 
-import { Gon, Kurapika, Leorio } from '~/hunter-association'
-import { CheadleYorkshire } from '~/hunters/virus-hunters'
-import { Knuckle, Shoot } from '~/hunters/beast-hunters'
+import defaultsDeep from 'lodash/defaultsDeep'
+import fromPairs from 'lodash/fromPairs'
+import express from 'express'
+import map from 'lodash/map'
+import dotenv from 'dotenv'
+import fs from 'fs'
 
-import type { IHero } from './association-data'
-import type { HeroList } from './index.d.ts'
-import type { ChimeraAnt } from '../ants'
-import type { Association } from '.'
-
-import { Meruem, Neferpitou, Shaiapouf } from '../ants'
-import hisoka from '../../hunters/histoka'
-import { ChimeraAntQueen } from '../ants'
-import association from '.'
-import './style.css'
+import config from './config.js'
 ```
+
+:::
 
 ## 🔧 Options
 
@@ -262,9 +211,9 @@ If your project is written in TypeScript, you can read `tsconfig.json` and use `
 
 ## ⚙️ Usage
 
-### Legacy Config
+::: code-group
 
-```json
+```json [Legacy Config]
 // .eslintrc
 {
   "plugins": ["perfectionist"],
@@ -298,9 +247,7 @@ If your project is written in TypeScript, you can read `tsconfig.json` and use `
 }
 ```
 
-### Flat Config
-
-```js
+```js [Flat Config]
 // eslint.config.js
 import perfectionist from 'eslint-plugin-perfectionist'
 
@@ -339,6 +286,8 @@ export default [
   },
 ]
 ```
+
+:::
 
 ## 🚀 Version
 

@@ -13,10 +13,10 @@ This configuration will make your code prettier and more pleasing to the eye.
 
 ## ⚙️ Usage
 
-### Legacy Config
+::: code-group
 
 <!-- prettier-ignore -->
-```json
+```json [Legacy Config]
 // .eslintrc
 {
   "extends": [
@@ -25,14 +25,14 @@ This configuration will make your code prettier and more pleasing to the eye.
 }
 ```
 
-### Flat Config
-
 <!-- prettier-ignore -->
-```js
+```js [Flat Config]
 // eslint.config.js
 import perfectionistLineLength from 'eslint-plugin-perfectionist/configs/recommended-line-length'
 
 export default [
-  perfectionistLineLength
+  perfectionistLineLength,
 ]
 ```
+
+:::

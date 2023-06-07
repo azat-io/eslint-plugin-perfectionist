@@ -19,51 +19,47 @@ Maintaining a consistent and sorted order of named exports can improve code read
 
 ## 💡 Examples
 
-### Alphabetical and Natural Sorting
+::: code-group
 
 <!-- prettier-ignore -->
-```ts
-// Incorrect
+```js [Alphabetical and Natural Sorting]
+// ❌ Incorrect
 export {
-  Emma,
-  Ray,
-  Norman,
-  Don,
-  Gilda,
-} from 'grace-field'
+  defineConfig,
+  validateConfig,
+  merge,
+  baseConfig,
+} from './config'
 
-// Correct
+// ✅ Correct
 export {
-  Don,
-  Emma,
-  Gilda,
-  Norman,
-  Ray,
-} from 'grace-field'
+  baseConfig,
+  defineConfig,
+  merge,
+  validateConfig,
+} from './config'
 ```
-
-### Sorting by Line Length
 
 <!-- prettier-ignore -->
-```ts
-// Incorrect
+```js [Sorting by Line Length]
+// ❌ Incorrect
 export {
-  Emma,
-  Ray,
-  Norman,
-  Don,
-  Gilda,
-} from 'grace-field'
+  defineConfig,
+  validateConfig,
+  merge,
+  baseConfig,
+} from './config'
 
-// Correct
+// ✅ Correct
 export {
-  Norman,
-  Gilda,
-  Emma,
-  Don,
-  Ray,
-} from 'grace-field'
+  validateConfig,
+  defineConfig,
+  baseConfig,
+  merge,
+} from './config'
 ```
+
+:::
 
 ## 🔧 Options
 
@@ -100,9 +96,9 @@ Only affects alphabetical and natural sorting. When `true` the rule ignores the 
 
 ## ⚙️ Usage
 
-### Legacy Config
+::: code-group
 
-```json
+```json [Legacy Config]
 // .eslintrc
 {
   "plugins": ["perfectionist"],
@@ -118,9 +114,7 @@ Only affects alphabetical and natural sorting. When `true` the rule ignores the 
 }
 ```
 
-### Flat Config
-
-```js
+```js [Flat Config]
 // eslint.config.js
 import perfectionist from 'eslint-plugin-perfectionist'
 
@@ -141,6 +135,8 @@ export default [
   },
 ]
 ```
+
+:::
 
 ## 🚀 Version
 

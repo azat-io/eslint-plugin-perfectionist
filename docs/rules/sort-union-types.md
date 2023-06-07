@@ -23,47 +23,43 @@ If you use the [`sort-type-constituents`](https://typescript-eslint.io/rules/sor
 
 ## 💡 Examples
 
-### Alphabetical and Natural Sorting
+::: code-group
 
 <!-- prettier-ignore -->
-```ts
-// Incorrect
-type DevilHunter =
-  | 'Denji'
-  | 'Power'
-  | 'Makima'
-  | 'Aki Hayakawa'
-  | 'Pochita'
+```ts [Alphabetical and Natural Sorting]
+// ❌ Incorrect
+type NetworkState =
+  | 'Failed'
+  | 'LoadedFromCache'
+  | 'Success'
+  | 'DataLoading'
 
-// Correct
-type DevilHunter =
-  | 'Aki Hayakawa'
-  | 'Denji'
-  | 'Makima'
-  | 'Pochita'
-  | 'Power'
+// ✅ Correct
+type NetworkState =
+  | 'DataLoading'
+  | 'Failed'
+  | 'LoadedFromCache'
+  | 'Success'
 ```
-
-### Sorting by Line Length
 
 <!-- prettier-ignore -->
-```ts
-// Incorrect
-type DevilHunter =
-  | 'Denji'
-  | 'Power'
-  | 'Makima'
-  | 'Aki Hayakawa'
-  | 'Pochita'
+```ts [Sorting by Line Length]
+// ❌ Incorrect
+type NetworkState =
+  | 'Failed'
+  | 'LoadedFromCache'
+  | 'Success'
+  | 'DataLoading'
 
-// Correct
-type DevilHunter =
-  | 'Aki Hayakawa'
-  | 'Pochita'
-  | 'Makima'
-  | 'Denji'
-  | 'Power'
+// ✅ Correct
+type NetworkState =
+  | 'LoadedFromCache'
+  | 'DataLoading'
+  | 'Success'
+  | 'Failed'
 ```
+
+:::
 
 ## 🔧 Options
 
@@ -100,9 +96,9 @@ Only affects alphabetical and natural sorting. When `true` the rule ignores the 
 
 ## ⚙️ Usage
 
-### Legacy Config
+::: code-group
 
-```json
+```json [Legacy Config]
 // .eslintrc
 {
   "plugins": ["perfectionist"],
@@ -118,9 +114,8 @@ Only affects alphabetical and natural sorting. When `true` the rule ignores the 
 }
 ```
 
-### Flat Config
-
-```js
+```js [Flat Config]
+// eslint.config.js
 import perfectionist from 'eslint-plugin-perfectionist'
 
 export default [
@@ -140,6 +135,8 @@ export default [
   },
 ]
 ```
+
+:::
 
 ## 🚀 Version
 

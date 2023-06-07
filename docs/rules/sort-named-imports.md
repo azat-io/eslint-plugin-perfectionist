@@ -23,51 +23,59 @@ If you use the [`sort-imports`](https://eslint.org/docs/latest/rules/sort-import
 
 ## 💡 Examples
 
-### Alphabetical and Natural Sorting
+::: code-group
 
 <!-- prettier-ignore -->
-```ts
-// Incorrect
-export {
-  killuaZoldyck,
-  leorio,
-  gon,
-  hisoka,
-  kurapika,
-} from 'hunters'
+```js [Alphabetical and Natural Sorting]
+// ❌ Incorrect
+import {
+  useLayoutEffect,
+  useRef,
+  useEffect,
+  useId,
+  useState,
+  createContext,
+  useReducer,
+} from 'react'
 
-// Correct
-export {
-  gon,
-  hisoka,
-  killuaZoldyck,
-  kurapika,
-  leorio,
-} from 'hunters'
+// ✅ Correct
+import {
+  createContext,
+  useEffect,
+  useId,
+  useLayoutEffect,
+  useReducer,
+  useRef,
+  useState,
+} from 'react'
 ```
-
-### Sorting by Line Length
 
 <!-- prettier-ignore -->
-```ts
-// Incorrect
-export {
-  killuaZoldyck,
-  leorio,
-  gon,
-  hisoka,
-  kurapika,
-} from 'hunters'
+```js [Sorting by Line Length]
+// ❌ Incorrect
+import {
+  useLayoutEffect,
+  useRef,
+  useEffect,
+  useId,
+  useState,
+  createContext,
+  useReducer,
+} from 'react'
 
-// Correct
-export {
-  killuaZoldyck,
-  kurapika,
-  hisoka,
-  leorio,
-  gon,
-} from 'hunters'
+// ✅ Correct
+import {
+  useLayoutEffect,
+  createContext,
+  useReducer,
+  useEffect,
+  useState,
+  useRef,
+  useId,
+} from 'react'
 ```
+
+:::
 
 ## 🔧 Options
 
@@ -104,9 +112,9 @@ Only affects alphabetical and natural sorting. When `true` the rule ignores the 
 
 ## ⚙️ Usage
 
-### Legacy Config
+::: code-group
 
-```json
+```json [Legacy Config]
 // .eslintrc
 {
   "plugins": ["perfectionist"],
@@ -122,9 +130,7 @@ Only affects alphabetical and natural sorting. When `true` the rule ignores the 
 }
 ```
 
-### Flat Config
-
-```js
+```js [Flat Config]
 // eslint.config.js
 import perfectionist from 'eslint-plugin-perfectionist'
 
@@ -145,6 +151,8 @@ export default [
   },
 ]
 ```
+
+:::
 
 ## 🚀 Version
 

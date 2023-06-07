@@ -25,57 +25,62 @@ If you use the [`jsx-sort-props`](https://github.com/jsx-eslint/eslint-plugin-re
 
 ## 💡 Examples
 
-### Alphabetical and Natural Sorting
+::: code-group
 
-```tsx
-// Incorrect
-let Riko = () => (
-  <CaveRaider
-    level="White Whistle"
-    name="Riko"
-    home="Belchero Orphanage"
-    delver
-    age={12}
-  />
-)
+<!-- prettier-ignore -->
+```jsx [Alphabetical and Natural Sorting]
+// ❌ Incorrect
+<Input
+  color="secondary"
+  name="username"
+  onChange={event => setUsername(event.target.value)}
+  full
+  placeholder={t['enter-username']}
+  size="l"
+  label={t.username}
+  end={<UserProfileIcon />}
+/>
 
-// Correct
-let Riko = () => (
-  <CaveRaider
-    age={12}
-    delver
-    home="Belchero Orphanage"
-    level="White Whistle"
-    name="Riko"
-  />
-)
+// ✅ Correct
+<Input
+  color="secondary"
+  end={<UserProfileIcon />}
+  full
+  label={t.username}
+  name="username"
+  onChange={event => setUsername(event.target.value)}
+  placeholder={t['enter-username']}
+  size="l"
+/>
 ```
 
-### Sorting by Line Length
+```jsx [Sorting by Line Length]
+// ❌ Incorrect
+<Input
+  color="secondary"
+  name="username"
+  onChange={event => setUsername(event.target.value)}
+  full
+  placeholder={t['enter-username']}
+  size="l"
+  label={t.username}
+  end={<UserProfileIcon />}
+/>
 
-```tsx
-// Incorrect
-let Riko = () => (
-  <CaveRaider
-    level="White Whistle"
-    name="Riko"
-    home="Belchero Orphanage"
-    delver
-    age={12}
-  />
-)
-
-// Correct
-let Riko = () => (
-  <CaveRaider
-    home="Belchero Orphanage"
-    level="White Whistle"
-    name="Riko"
-    age={12}
-    delver
-  />
-)
+// ✅ Correct
+<Input
+  onChange={event => setUsername(event.target.value)}
+  placeholder={t['enter-username']}
+  end={<UserProfileIcon />}
+  label={t.username}
+  color="secondary"
+  name="username"
+  size="l"
+  full
+/>
 ```
+
+:::
 
 ## 🔧 Options
 
@@ -146,9 +151,9 @@ You can set a list of property names that will always go at the beginning of the
 
 ## ⚙️ Usage
 
-### Legacy Config
+::: code-group
 
-```json
+```json [Legacy Config]
 // .eslintrc
 {
   "plugins": ["perfectionist"],
@@ -168,9 +173,7 @@ You can set a list of property names that will always go at the beginning of the
 }
 ```
 
-### Flat Config
-
-```js
+```js [Flat Config]
 // eslint.config.js
 import perfectionist from 'eslint-plugin-perfectionist'
 
@@ -195,6 +198,8 @@ export default [
   },
 ]
 ```
+
+:::
 
 ## 🚀 Version
 

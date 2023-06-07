@@ -17,10 +17,10 @@ This configuration will allow you to navigate through your code faster because a
 
 ## ⚙️ Usage
 
-### Legacy Config
+::: code-group
 
 <!-- prettier-ignore -->
-```json
+```json [Legacy Config]
 // .eslintrc
 {
   "extends": [
@@ -29,14 +29,14 @@ This configuration will allow you to navigate through your code faster because a
 }
 ```
 
-### Flat Config
-
 <!-- prettier-ignore -->
-```js
+```js [Flat Config]
 // eslint.config.js
 import perfectionistNatural from 'eslint-plugin-perfectionist/configs/recommended-natural'
 
 export default [
-  perfectionistNatural
+  perfectionistNatural,
 ]
 ```
+
+:::

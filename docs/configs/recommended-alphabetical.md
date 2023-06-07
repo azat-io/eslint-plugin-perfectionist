@@ -13,10 +13,10 @@ It makes it just a tiny bit faster to find a declaration in a large list. Rememb
 
 ## ⚙️ Usage
 
-### Legacy Config
+::: code-group
 
 <!-- prettier-ignore -->
-```json
+```json [Legacy Config]
 // .eslintrc
 {
   "extends": [
@@ -25,14 +25,14 @@ It makes it just a tiny bit faster to find a declaration in a large list. Rememb
 }
 ```
 
-### Flat Config
-
 <!-- prettier-ignore -->
-```js
+```js [Flat Config]
 // eslint.config.js
 import perfectionistAlphabetical from 'eslint-plugin-perfectionist/configs/recommended-alphabetical'
 
 export default [
-  perfectionistAlphabetical
+  perfectionistAlphabetical,
 ]
 ```
+
+:::

@@ -23,47 +23,50 @@ If you use the [`adjacent-overload-signatures`](https://typescript-eslint.io/rul
 
 ## 💡 Examples
 
-### Alphabetical and Natural Sorting
+::: code-group
 
 <!-- prettier-ignore -->
-```ts
-// Incorrect
+```ts [Alphabetical and Natural Sorting]
+// ❌ Incorrect
 type User = {
-  name: string
+  isBlocked: boolean
+  createdAt: Date
+  role: 'admin' | 'lead' | 'user'
+  username: string
   email: string
-  role: Role
-  isAdmin: boolean
 }
 
-// Correct
+// ✅ Correct
 type User = {
+  createdAt: Date
   email: string
-  isAdmin: boolean
-  name: string
-  role: Role
+  isBlocked: boolean
+  role: 'admin' | 'lead' | 'user'
+  username: string
 }
 ```
 
-### Sorting by Line Length
-
-<!-- prettier-ignore -->
-```ts
-// Incorrect
+```ts [Sorting by Line Length]
+// ❌ Incorrect
 type User = {
-  name: string
+  isBlocked: boolean
+  createdAt: Date
+  role: 'admin' | 'lead' | 'user'
+  username: string
   email: string
-  role: Role
-  isAdmin: boolean
 }
 
-// Correct
+// ✅ Correct
 type User = {
-  isAdmin: boolean
+  role: 'admin' | 'lead' | 'user'
+  isBlocked: boolean
+  username: string
+  createdAt: Date
   email: string
-  name: string
-  role: Role
 }
 ```
+
+:::
 
 ## 🔧 Options
 
@@ -100,9 +103,9 @@ Only affects alphabetical and natural sorting. When `true` the rule ignores the 
 
 ## ⚙️ Usage
 
-### Legacy Config
+::: code-group
 
-```json
+```json [Legacy Config]
 // .eslintrc
 {
   "plugins": ["perfectionist"],
@@ -119,9 +122,7 @@ Only affects alphabetical and natural sorting. When `true` the rule ignores the 
 }
 ```
 
-### Flat Config
-
-```js
+```js [Flat Config]
 // eslint.config.js
 import perfectionist from 'eslint-plugin-perfectionist'
 
@@ -143,6 +144,8 @@ export default [
   },
 ]
 ```
+
+:::
 
 ## 🚀 Version
 

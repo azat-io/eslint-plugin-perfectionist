@@ -19,10 +19,11 @@ Class members that are not sorted in a certain order can cause confusion and red
 
 ## 💡 Examples
 
-### Alphabetical and Natural Sorting
+::: code-group
 
-```js
-// Incorrect
+<!-- prettier-ignore -->
+```js [Alphabetical and Natural Sorting]
+// ❌ Incorrect
 class Rectangle {
   get area() {
     return this.calcArea()
@@ -42,7 +43,7 @@ class Rectangle {
   }
 }
 
-// Correct
+// ✅ Correct
 class Rectangle {
   constructor(height, width) {
     this.height = height
@@ -59,53 +60,53 @@ class Rectangle {
 
   calcPerimeter() {
     return this.height * 2 + this.width * 2
+  }
+}
+```
+
+```js [Sorting by Line Length]
+// ❌ Incorrect
+class Rectangle {
+  get area() {
+    return this.calcArea()
+  }
+
+  calcPerimeter() {
+    return this.height * 2 + this.width * 2
+  }
+
+  calcArea() {
+    return this.height * this.width
+  }
+
+  constructor(height, width) {
+    this.height = height
+    this.width = width
+  }
+}
+
+// ✅ Correct
+class Rectangle {
+  constructor(height, width) {
+    this.height = height
+    this.width = width
+  }
+
+  calcPerimeter() {
+    return this.height * 2 + this.width * 2
+  }
+
+  calcArea() {
+    return this.height * this.width
+  }
+
+  get area() {
+    return this.calcArea()
   }
 }
 ```
 
-### Sorting by Line Length
-
-```js
-// Incorrect
-class Rectangle {
-  get area() {
-    return this.calcArea()
-  }
-
-  calcPerimeter() {
-    return this.height * 2 + this.width * 2
-  }
-
-  calcArea() {
-    return this.height * this.width
-  }
-
-  constructor(height, width) {
-    this.height = height
-    this.width = width
-  }
-}
-
-// Correct
-class Rectangle {
-  constructor(height, width) {
-    this.height = height
-    this.width = width
-  }
-
-  calcPerimeter() {
-    return this.height * 2 + this.width * 2
-  }
-
-  calcArea() {
-    return this.height * this.width
-  }
-
-  get area() {
-    return this.calcArea()
-  }
-}
-```
+:::
 
 ## 🔧 Options
 
@@ -176,9 +177,9 @@ If you use [one of the configs](/configs/) exported by this plugin, you get the 
 
 ## ⚙️ Usage
 
-### Legacy Config
+::: code-group
 
-```json
+```json [Legacy Config]
 // .eslintrc
 {
   "plugins": ["perfectionist"],
@@ -203,9 +204,7 @@ If you use [one of the configs](/configs/) exported by this plugin, you get the 
 }
 ```
 
-### Flat Config
-
-```js
+```js [Flat Config]
 // eslint.config.js
 import perfectionist from 'eslint-plugin-perfectionist'
 
@@ -235,6 +234,8 @@ export default [
   },
 ]
 ```
+
+:::
 
 ## 🚀 Version
 
