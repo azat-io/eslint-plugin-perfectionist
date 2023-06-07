@@ -1,6 +1,20 @@
 # Changelog
 
 
+## v0.11.5
+
+[compare changes](https://github.com/azat-io/eslint-plugin-perfectionist/compare/v0.11.4...v0.11.5)
+
+
+### 🐞 Bug Fixes
+
+  - Fix sorting objects with inline comments ([37a537d](https://github.com/azat-io/eslint-plugin-perfectionist/commit/37a537d))
+  - Split imports if there are other nodes between ([b1a8837](https://github.com/azat-io/eslint-plugin-perfectionist/commit/b1a8837))
+
+### ❤️  Contributors
+
+- Azat S ([@azat-io](http://github.com/azat-io))
+
 ## v0.11.4
 
 [compare changes](https://github.com/azat-io/eslint-plugin-perfectionist/compare/v0.11.3...v0.11.4)
