@@ -1,7 +1,7 @@
 import lightningcss from 'vite-plugin-lightningcss'
-import { createWriteStream } from 'fs'
 import { defineConfig } from 'vitepress'
 import { SitemapStream } from 'sitemap'
+import { createWriteStream } from 'fs'
 import path from 'path'
 
 import {
@@ -17,7 +17,7 @@ import {
 } from './meta'
 import plugin from '../../index'
 
-let links: { url: string; lastmod?: number }[] = []
+let links: { lastmod?: number; url: string }[] = []
 
 let { configs, rules } = plugin
 

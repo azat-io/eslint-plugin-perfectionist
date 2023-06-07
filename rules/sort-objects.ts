@@ -1,17 +1,18 @@
-import type { TSESTree } from '@typescript-eslint/types'
 import type { TSESLint } from '@typescript-eslint/utils'
-import type { SortingNode } from '../typings'
+import type { TSESTree } from '@typescript-eslint/types'
 
 import { AST_NODE_TYPES } from '@typescript-eslint/types'
+
+import type { SortingNode } from '../typings'
 
 import { createEslintRule } from '../utils/create-eslint-rule'
 import { toSingleLine } from '../utils/to-single-line'
 import { rangeToDiff } from '../utils/range-to-diff'
-import { SortType, SortOrder } from '../typings'
-import { makeFixes } from '../utils/make-fixes'
+import { SortOrder, SortType } from '../typings'
 import { sortNodes } from '../utils/sort-nodes'
-import { complete } from '../utils/complete'
+import { makeFixes } from '../utils/make-fixes'
 import { pairwise } from '../utils/pairwise'
+import { complete } from '../utils/complete'
 import { groupBy } from '../utils/group-by'
 import { compare } from '../utils/compare'
 

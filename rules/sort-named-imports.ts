@@ -1,10 +1,10 @@
-import type { SortingNode } from '../typings'
-
 import { AST_NODE_TYPES } from '@typescript-eslint/types'
+
+import type { SortingNode } from '../typings'
 
 import { createEslintRule } from '../utils/create-eslint-rule'
 import { rangeToDiff } from '../utils/range-to-diff'
-import { SortType, SortOrder } from '../typings'
+import { SortOrder, SortType } from '../typings'
 import { sortNodes } from '../utils/sort-nodes'
 import { makeFixes } from '../utils/make-fixes'
 import { complete } from '../utils/complete'

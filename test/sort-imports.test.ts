@@ -3,7 +3,7 @@ import { describe, it, vi } from 'vitest'
 import { dedent } from 'ts-dedent'
 
 import rule, { NewlinesBetweenValue, RULE_NAME } from '../rules/sort-imports'
-import { SortType, SortOrder } from '../typings'
+import { SortOrder, SortType } from '../typings'
 
 describe(RULE_NAME, () => {
   let ruleTester = new ESLintUtils.RuleTester({

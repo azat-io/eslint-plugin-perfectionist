@@ -1,57 +1,35 @@
 import sortArrayIncludes, { RULE_NAME as sortArrayIncludesName } from './rules/sort-array-includes'
-import sortClasses, { RULE_NAME as sortClassesName } from './rules/sort-classes'
-import sortEnums, { RULE_NAME as sortEnumsName } from './rules/sort-enums'
-import sortImports, { RULE_NAME as sortImportsName } from './rules/sort-imports'
-import sortInterfaces, { RULE_NAME as sortInterfacesName } from './rules/sort-interfaces'
-import sortJsxProps, { RULE_NAME as sortJsxPropsName } from './rules/sort-jsx-props'
-import sortMapElements, { RULE_NAME as sortMapElementsName } from './rules/sort-map-elements'
 import sortNamedExports, { RULE_NAME as sortNamedExportsName } from './rules/sort-named-exports'
 import sortNamedImports, { RULE_NAME as sortNamedImportsName } from './rules/sort-named-imports'
 import sortObjectTypes, { RULE_NAME as sortObjectTypesName } from './rules/sort-object-types'
-import sortObjects, { RULE_NAME as sortObjectsName } from './rules/sort-objects'
+import sortMapElements, { RULE_NAME as sortMapElementsName } from './rules/sort-map-elements'
 import sortUnionTypes, { RULE_NAME as sortUnionTypesName } from './rules/sort-union-types'
-import { SortType, SortOrder } from './typings'
+import sortInterfaces, { RULE_NAME as sortInterfacesName } from './rules/sort-interfaces'
+import sortJsxProps, { RULE_NAME as sortJsxPropsName } from './rules/sort-jsx-props'
+import sortImports, { RULE_NAME as sortImportsName } from './rules/sort-imports'
+import sortClasses, { RULE_NAME as sortClassesName } from './rules/sort-classes'
+import sortObjects, { RULE_NAME as sortObjectsName } from './rules/sort-objects'
+import sortEnums, { RULE_NAME as sortEnumsName } from './rules/sort-enums'
+import { SortOrder, SortType } from './typings'
 import { name } from './package.json'
 
-type RuleSeverity = 'off' | 'warn' | 'error'
+type RuleSeverity = 'error' | 'warn' | 'off'
 
 type RuleDeclaration = [RuleSeverity, { [key: string]: unknown }?]
 
 let createConfigWithOptions = (options: {
-  type: SortType
-  order: SortOrder
   'ignore-case'?: boolean
+  order: SortOrder
+  type: SortType
 }): {
-  plugins: ['perfectionist']
   rules: {
     [key: string]: RuleDeclaration
   }
+  plugins: ['perfectionist']
 } => {
   let recommendedRules: {
     [key: string]: RuleDeclaration
   } = {
-    [sortArrayIncludesName]: [
-      'error',
-      {
-        'spread-last': true,
-      },
-    ],
-    [sortClassesName]: [
-      'error',
-      {
-        groups: [
-          'static-property',
-          'private-property',
-          'property',
-          'constructor',
-          'static-method',
-          'private-method',
-          'method',
-          'unknown',
-        ],
-      },
-    ],
-    [sortEnumsName]: ['error'],
     [sortImportsName]: [
       'error',
       {
@@ -70,7 +48,21 @@ let createConfigWithOptions = (options: {
         'read-tsconfig': false,
       },
     ],
-    [sortInterfacesName]: ['error'],
+    [sortClassesName]: [
+      'error',
+      {
+        groups: [
+          'static-property',
+          'private-property',
+          'property',
+          'constructor',
+          'static-method',
+          'private-method',
+          'method',
+          'unknown',
+        ],
+      },
+    ],
     [sortJsxPropsName]: [
       'error',
       {
@@ -80,44 +72,51 @@ let createConfigWithOptions = (options: {
         callback: 'ignore',
       },
     ],
-    [sortMapElementsName]: ['error'],
-    [sortNamedExportsName]: ['error'],
-    [sortNamedImportsName]: ['error'],
-    [sortObjectTypesName]: ['error'],
+    [sortArrayIncludesName]: [
+      'error',
+      {
+        'spread-last': true,
+      },
+    ],
     [sortObjectsName]: [
       'error',
       {
         'always-on-top': [],
       },
     ],
+    [sortNamedImportsName]: ['error'],
+    [sortNamedExportsName]: ['error'],
+    [sortObjectTypesName]: ['error'],
+    [sortMapElementsName]: ['error'],
     [sortUnionTypesName]: ['error'],
+    [sortInterfacesName]: ['error'],
+    [sortEnumsName]: ['error'],
   }
   return {
-    plugins: ['perfectionist'],
     rules: Object.fromEntries(
       Object.entries(recommendedRules).map(([key, [message, baseOptions = {}]]) => [
         `perfectionist/${key}`,
         [message, Object.assign(baseOptions, options)],
       ]),
     ),
+    plugins: ['perfectionist'],
   }
 }
 
 export default {
-  name,
   rules: {
     [sortArrayIncludesName]: sortArrayIncludes,
-    [sortClassesName]: sortClasses,
-    [sortEnumsName]: sortEnums,
-    [sortImportsName]: sortImports,
+    [sortNamedImportsName]: sortNamedImports,
+    [sortNamedExportsName]: sortNamedExports,
+    [sortObjectTypesName]: sortObjectTypes,
+    [sortMapElementsName]: sortMapElements,
+    [sortUnionTypesName]: sortUnionTypes,
     [sortInterfacesName]: sortInterfaces,
     [sortJsxPropsName]: sortJsxProps,
-    [sortMapElementsName]: sortMapElements,
-    [sortNamedExportsName]: sortNamedExports,
-    [sortNamedImportsName]: sortNamedImports,
-    [sortObjectTypesName]: sortObjectTypes,
     [sortObjectsName]: sortObjects,
-    [sortUnionTypesName]: sortUnionTypes,
+    [sortImportsName]: sortImports,
+    [sortClassesName]: sortClasses,
+    [sortEnumsName]: sortEnums,
   },
   configs: {
     'recommended-alphabetical': createConfigWithOptions({
@@ -135,4 +134,5 @@ export default {
       order: SortOrder.desc,
     }),
   },
+  name,
 }

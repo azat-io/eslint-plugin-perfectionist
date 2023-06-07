@@ -12,4 +12,10 @@ module.exports = [
       'eslint-plugin/require-meta-docs-url': 'off',
     },
   },
+  {
+    files: ['**/test/*', '**/rules/*', '**/docs/.vitepress/config.ts'],
+    rules: {
+      'perfectionist/sort-objects': 'off'
+    }
+  }
 ]

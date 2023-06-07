@@ -2,17 +2,17 @@ import type { TSESTree } from '@typescript-eslint/types'
 
 export enum SortType {
   'alphabetical' = 'alphabetical',
-  'natural' = 'natural',
   'line-length' = 'line-length',
+  'natural' = 'natural',
 }
 
 export enum SortOrder {
-  'asc' = 'asc',
   'desc' = 'desc',
+  'asc' = 'asc',
 }
 
 export interface SortingNode {
-  size: number
-  name: string
   node: TSESTree.Node
+  name: string
+  size: number
 }

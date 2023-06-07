@@ -1,38 +1,39 @@
 import type { TSESTree } from '@typescript-eslint/types'
-import type { SortingNode } from '../typings'
 
 import { AST_NODE_TYPES } from '@typescript-eslint/types'
 
+import type { SortingNode } from '../typings'
+
 import { createEslintRule } from '../utils/create-eslint-rule'
 import { rangeToDiff } from '../utils/range-to-diff'
-import { SortType, SortOrder } from '../typings'
-import { sortNodes } from '../utils/sort-nodes'
+import { SortOrder, SortType } from '../typings'
 import { makeFixes } from '../utils/make-fixes'
-import { complete } from '../utils/complete'
+import { sortNodes } from '../utils/sort-nodes'
 import { pairwise } from '../utils/pairwise'
+import { complete } from '../utils/complete'
 import { groupBy } from '../utils/group-by'
 import { compare } from '../utils/compare'
 
 type MESSAGE_ID = 'unexpectedJSXPropsOrder'
 
 export enum Position {
+  'exception' = 'exception',
+  'ignore' = 'ignore',
   'first' = 'first',
   'last' = 'last',
-  'ignore' = 'ignore',
-  'exception' = 'exception',
 }
 
 type SortingNodeWithPosition = SortingNode & { position: Position }
 
 type Options = [
   Partial<{
-    order: SortOrder
-    type: SortType
-    'ignore-case': boolean
     'always-on-top': string[]
+    'ignore-case': boolean
+    multiline: Position
     shorthand: Position
     callback: Position
-    multiline: Position
+    order: SortOrder
+    type: SortType
   }>,
 ]
 

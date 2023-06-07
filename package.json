@@ -63,7 +63,7 @@
     "natural-compare-lite": "^1.4.0"
   },
   "devDependencies": {
-    "@azat-io/eslint-config-typescript": "^0.8.3",
+    "@azat-io/eslint-config-typescript": "^1.0.0",
     "@commitlint/cli": "^17.6.5",
     "@commitlint/config-conventional": "^17.6.5",
     "@types/is-core-module": "^2.2.0",

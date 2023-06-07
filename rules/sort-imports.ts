@@ -1,17 +1,18 @@
-import type { TSESLint } from '@typescript-eslint/utils'
 import type { TSESTree } from '@typescript-eslint/types'
-import type { SortingNode } from '../typings'
+import type { TSESLint } from '@typescript-eslint/utils'
 
 import { AST_NODE_TYPES } from '@typescript-eslint/types'
 import isCoreModule from 'is-core-module'
 import { minimatch } from 'minimatch'
 
-import { createEslintRule } from '../utils/create-eslint-rule'
+import type { SortingNode } from '../typings'
+
 import { getCommentBefore } from '../utils/get-comment-before'
+import { createEslintRule } from '../utils/create-eslint-rule'
 import { getNodeRange } from '../utils/get-node-range'
 import { rangeToDiff } from '../utils/range-to-diff'
 import { TSConfig } from '../utils/read-ts-config'
-import { SortType, SortOrder } from '../typings'
+import { SortOrder, SortType } from '../typings'
 import { sortNodes } from '../utils/sort-nodes'
 import { complete } from '../utils/complete'
 import { pairwise } from '../utils/pairwise'
@@ -45,21 +46,21 @@ type Group =
 
 type Options = [
   Partial<{
-    order: SortOrder
-    type: SortType
     'newlines-between': NewlinesBetweenValue
     'internal-pattern': string[]
     groups: (Group[] | Group)[]
     'read-tsconfig': boolean
     'ignore-case': boolean
+    order: SortOrder
+    type: SortType
   }>,
 ]
 
 export const RULE_NAME = 'sort-imports'
 
 type ModuleDeclaration =
-  | TSESTree.ImportDeclaration
   | TSESTree.TSImportEqualsDeclaration
+  | TSESTree.ImportDeclaration
 
 type SortingNodeWithGroup = SortingNode & { group: Group }
 
@@ -158,7 +159,7 @@ export default createEslintRule<Options, MESSAGE_ID>({
     let nodes: SortingNodeWithGroup[] = []
 
     let computeGroup = (node: ModuleDeclaration): Group => {
-      let group: Group | undefined
+      let group: undefined | Group
 
       let isIndex = (value: string) =>
         [

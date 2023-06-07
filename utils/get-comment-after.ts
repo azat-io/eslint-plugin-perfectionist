@@ -8,9 +8,9 @@ export let getCommentAfter = (
   source: TSESLint.SourceCode,
 ): TSESTree.Comment | null => {
   let token = source.getTokenAfter(node, {
-    includeComments: true,
     filter: ({ type, value }) =>
       !(type === AST_TOKEN_TYPES.Punctuator && [',', ';'].includes(value)),
+    includeComments: true,
   })
 
   if (

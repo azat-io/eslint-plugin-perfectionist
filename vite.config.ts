@@ -4,6 +4,12 @@ import path from 'path'
 export default defineConfig({
   build: {
     lib: {
+      entry: [
+        path.resolve(__dirname, 'configs/recommended-alphabetical.ts'),
+        path.resolve(__dirname, 'configs/recommended-line-length.ts'),
+        path.resolve(__dirname, 'configs/recommended-natural.ts'),
+        path.resolve(__dirname, 'index.ts'),
+      ],
       fileName: (format, entryName) => {
         let directory = ''
 
@@ -13,12 +19,6 @@ export default defineConfig({
 
         return `${directory}${entryName}.${format === 'es' ? 'mjs' : 'js'}`
       },
-      entry: [
-        path.resolve(__dirname, 'configs/recommended-alphabetical.ts'),
-        path.resolve(__dirname, 'configs/recommended-line-length.ts'),
-        path.resolve(__dirname, 'configs/recommended-natural.ts'),
-        path.resolve(__dirname, 'index.ts'),
-      ],
       formats: ['cjs', 'es'],
     },
     rollupOptions: {

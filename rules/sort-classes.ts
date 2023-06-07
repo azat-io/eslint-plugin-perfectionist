@@ -1,13 +1,14 @@
 import type { TSESLint } from '@typescript-eslint/utils'
-import type { SortingNode } from '../typings'
 
 import { AST_NODE_TYPES } from '@typescript-eslint/types'
 
+import type { SortingNode } from '../typings'
+
 import { createEslintRule } from '../utils/create-eslint-rule'
-import { getNodeRange } from '../utils/get-node-range'
 import { toSingleLine } from '../utils/to-single-line'
+import { getNodeRange } from '../utils/get-node-range'
 import { rangeToDiff } from '../utils/range-to-diff'
-import { SortType, SortOrder } from '../typings'
+import { SortOrder, SortType } from '../typings'
 import { sortNodes } from '../utils/sort-nodes'
 import { complete } from '../utils/complete'
 import { pairwise } from '../utils/pairwise'
@@ -98,7 +99,7 @@ export default createEslintRule<Options, MESSAGE_ID>({
         let source = context.getSourceCode()
 
         let nodes: SortingNodeWithGroup[] = node.body.map(member => {
-          let group: Group | undefined
+          let group: undefined | Group
           let name: string
 
           if (member.type === AST_NODE_TYPES.StaticBlock) {

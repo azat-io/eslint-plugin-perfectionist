@@ -1,12 +1,13 @@
 import type { TSESTree } from '@typescript-eslint/types'
-import type { SortingNode } from '../typings'
 
 import { AST_NODE_TYPES } from '@typescript-eslint/types'
+
+import type { SortingNode } from '../typings'
 
 import { createEslintRule } from '../utils/create-eslint-rule'
 import { toSingleLine } from '../utils/to-single-line'
 import { rangeToDiff } from '../utils/range-to-diff'
-import { SortType, SortOrder } from '../typings'
+import { SortOrder, SortType } from '../typings'
 import { sortNodes } from '../utils/sort-nodes'
 import { makeFixes } from '../utils/make-fixes'
 import { complete } from '../utils/complete'
@@ -101,7 +102,7 @@ export default createEslintRule<Options, MESSAGE_ID>({
             .reduce(
               (
                 accumulator: (SortingNode & { type: string })[][],
-                element: TSESTree.Expression | TSESTree.SpreadElement | null,
+                element: TSESTree.SpreadElement | TSESTree.Expression | null,
               ) => {
                 if (element !== null) {
                   accumulator.at(0)!.push({

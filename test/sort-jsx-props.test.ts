@@ -3,7 +3,7 @@ import { describe, it } from 'vitest'
 import { dedent } from 'ts-dedent'
 
 import rule, { RULE_NAME, Position } from '../rules/sort-jsx-props'
-import { SortType, SortOrder } from '../typings'
+import { SortOrder, SortType } from '../typings'
 
 describe(RULE_NAME, () => {
   let ruleTester = new ESLintUtils.RuleTester({
