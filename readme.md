@@ -17,7 +17,7 @@ This plugin defines rules for sorting various data, such as objects, imports, Ty
 
 All rules are automatically fixable. It's safe!
 
-## Why
+## 🦄 Why
 
 Sorting imports and properties in software development offers numerous benefits:
 
@@ -31,7 +31,7 @@ Sorting imports and properties in software development offers numerous benefits:
 
 - **Aesthetics**: This not only provides functional benefits, but also gives the code an aesthetic appeal, visually pleasing and harmonious structure. Take your code to the beauty salon!
 
-## Installation
+## 💿 Installation
 
 You'll first need to install [ESLint](https://eslint.org):
 
@@ -45,7 +45,7 @@ Next, install `eslint-plugin-perfectionist`:
 npm install --save-dev eslint-plugin-perfectionist
 ```
 
-## Usage
+## 📖 Usage
 
 Add `eslint-plugin-perfectionist` to the plugins section of the ESLint configuration file and define the list of rules you will use.
 
@@ -89,7 +89,7 @@ export default [
 ]
 ```
 
-## Configs
+## ⚙️ Configs
 
 The easiest way to use `eslint-plugin-perfectionist` is to use ready-made configs. Config files use all the rules of the current plugin, but you can override them.
 
@@ -117,7 +117,7 @@ export default [perfectionistLineLength]
 | [recommended-natural](https://eslint-plugin-perfectionist.azat.io/configs/recommended-natural)           | all plugin rules with natural sorting in ascending order         |
 | [recommended-line-length](https://eslint-plugin-perfectionist.azat.io/configs/recommended-line-length)   | all plugin rules with sorting by line length in descending order |
 
-## Rules
+## 🚀 Rules
 
 <!-- begin auto-generated rules list -->
 
@@ -140,10 +140,18 @@ export default [perfectionistLineLength]
 
 <!-- end auto-generated rules list -->
 
-## See Also
+## 🚥 Versioning Policy
+
+This plugin is following [Semantic Versioning](https://semver.org/) and [ESLint's Semantic Versioning Policy](https://github.com/eslint/eslint#semantic-versioning-policy).
+
+## ❤️ Contributing
+
+See [Contributing Guide](https://github.com/azat-io/eslint-plugin-perfectionist/blob/main/contributing.md).
+
+## 👁 See Also
 
 - [`@azat-io/eslint-config`](https://github.com/azat-io/eslint-config) - Collection of ESLint configs
 
-## License
+## 🔒 License
 
 MIT &copy; [Azat S.](https://azat.io)
