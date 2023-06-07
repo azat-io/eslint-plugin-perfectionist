@@ -1,10 +1,13 @@
 <script lang="ts" setup>
 import { VPTeamMembers } from 'vitepress/theme'
+import { onMounted, computed, ref } from 'vue'
 
 import codeBefore from './code-before.vue'
 import codeAfter from './code-after.vue'
 
-let members = [
+let twitter = ref('https://twitter.com/azat_io_en')
+
+let members = computed(() => [
   {
     avatar: 'https://github.com/azat-io.png',
     name: 'Azat S.',
@@ -16,11 +19,26 @@ let members = [
       },
       {
         icon: 'twitter',
-        link: 'https://twitter.com/azat_io',
+        link: twitter.value,
       },
     ],
   },
-]
+])
+
+onMounted(() => {
+  let checkUserLang = (language: string | string[]): boolean => {
+    let userLang = window.navigator.language.substring(0, 2)
+    let checkLang = (lang: string): boolean => lang === userLang
+    if (typeof language === 'string') {
+      return checkLang(language)
+    }
+    return language.some(lang => checkLang(lang))
+  }
+
+  if (checkUserLang(['ru', 'uk', 'be'])) {
+    twitter.value = 'https://twitter.com/azat_io'
+  }
+})
 </script>
 
 <template>
