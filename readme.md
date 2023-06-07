@@ -35,6 +35,8 @@ Sorting imports and properties in software development offers numerous benefits:
 
 See [docs](https://eslint-plugin-perfectionist.azat.io).
 
+![ESLint Plugin Perfectionist usage example](https://raw.githubusercontent.com/azat-io/eslint-plugin-perfectionist/main/docs/public/example.webp)
+
 ## 💿 Installation
 
 You'll first need to install [ESLint](https://eslint.org):
