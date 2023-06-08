@@ -107,7 +107,7 @@ type Group =
   | 'unknown'
 
 interface Options {
-  type?: 'alphabetical' | 'natural' | 'natural'
+  type?: 'alphabetical' | 'natural' | 'line-length'
   order?: 'asc' | 'desc'
   'ignore-case'?: boolean
   groups?: (Group | Group[])[]

@@ -80,7 +80,7 @@ This rule accepts an options object with the following properties:
 
 ```ts
 interface Options {
-  type?: 'alphabetical' | 'natural' | 'natural'
+  type?: 'alphabetical' | 'natural' | 'line-length'
   order?: 'asc' | 'desc'
   'ignore-case'?: boolean
   'always-on-top'?: string[]
