@@ -103,20 +103,21 @@ let createConfigWithOptions = (options: {
   }
 }
 
+/* eslint-disable perfectionist/sort-objects */
 export default {
   rules: {
     [sortArrayIncludesName]: sortArrayIncludes,
-    [sortNamedImportsName]: sortNamedImports,
-    [sortNamedExportsName]: sortNamedExports,
-    [sortObjectTypesName]: sortObjectTypes,
-    [sortMapElementsName]: sortMapElements,
-    [sortUnionTypesName]: sortUnionTypes,
-    [sortInterfacesName]: sortInterfaces,
-    [sortJsxPropsName]: sortJsxProps,
-    [sortObjectsName]: sortObjects,
-    [sortImportsName]: sortImports,
     [sortClassesName]: sortClasses,
     [sortEnumsName]: sortEnums,
+    [sortImportsName]: sortImports,
+    [sortInterfacesName]: sortInterfaces,
+    [sortJsxPropsName]: sortJsxProps,
+    [sortMapElementsName]: sortMapElements,
+    [sortNamedExportsName]: sortNamedExports,
+    [sortNamedImportsName]: sortNamedImports,
+    [sortObjectTypesName]: sortObjectTypes,
+    [sortObjectsName]: sortObjects,
+    [sortUnionTypesName]: sortUnionTypes,
   },
   configs: {
     'recommended-alphabetical': createConfigWithOptions({
