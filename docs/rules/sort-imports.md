@@ -174,7 +174,7 @@ If you use [one of the configs](/configs/) exported by this plugin, you get the 
 
 ```js
 {
-  order: [
+  groups: [
     'type',
     ['builtin', 'external'],
     'internal-type',
