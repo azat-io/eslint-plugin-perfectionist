@@ -57,9 +57,12 @@ Add `eslint-plugin-perfectionist` to the plugins section of the ESLint configura
 
 ### Legacy Config ([`.eslintrc`](https://eslint.org/docs/latest/use/configure/configuration-files))
 
+<!-- prettier-ignore -->
 ```json
 {
-  "plugins": ["perfectionist"],
+  "plugins": [
+    "perfectionist"
+  ],
   "rules": {
     "perfectionist/sort-objects": [
       "error",
@@ -101,18 +104,24 @@ The easiest way to use `eslint-plugin-perfectionist` is to use ready-made config
 
 ### Legacy Config ([`.eslintrc`](https://eslint.org/docs/latest/use/configure/configuration-files))
 
+<!-- prettier-ignore -->
 ```json
 {
-  "extends": ["plugin:perfectionist/recommended-line-length"]
+  "extends": [
+    "plugin:perfectionist/recommended-line-length"
+  ]
 }
 ```
 
 ### Flat Config ([`eslint.config.js`](https://eslint.org/docs/latest/use/configure/configuration-files-new))
 
+<!-- prettier-ignore -->
 ```js
 import perfectionistLineLength from 'eslint-plugin-perfectionist/configs/recommended-line-length'
 
-export default [perfectionistLineLength]
+export default [
+  perfectionistLineLength,
+]
 ```
 
 ### List of Configs
