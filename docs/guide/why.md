@@ -18,4 +18,4 @@ Sorting imports and properties in software development offers numerous benefits:
 
 ## 🖼 Example
 
-![ESLint Plugin Perfectionist usage example](/public/example.webp)
+![ESLint Plugin Perfectionist usage example](/public/example.png)
