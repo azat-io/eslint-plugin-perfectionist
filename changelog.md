@@ -1,9 +1,20 @@
 # Changelog
 
 
+## v1.0.0
+
+[compare changes](https://github.com/azat-io/eslint-plugin-perfectionist/compare/v0.11.6...v1.0.0)
+
+
+### 🎉 Stable release
+
+### ❤️  Contributors
+
+- Azat S ([@azat-io](http://github.com/azat-io))
+
 ## v0.11.6
 
-[compare changes](https://github.com/azat-io/eslint-plugin-perfectionist/compare/v0.11.2...main)
+[compare changes](https://github.com/azat-io/eslint-plugin-perfectionist/compare/v0.11.5...v0.11.6)
 
 
 ### 🐞 Bug Fixes
