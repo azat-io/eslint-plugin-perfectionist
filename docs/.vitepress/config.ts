@@ -7,11 +7,11 @@ import path from 'path'
 import {
   contributing,
   description,
+  repository,
   changelog,
   keywords,
   homepage,
   version,
-  github,
   title,
   image,
 } from './meta'
@@ -238,12 +238,12 @@ export default defineConfig({
     socialLinks: [
       {
         icon: 'github',
-        link: github,
+        link: repository,
       },
     ],
 
     editLink: {
-      pattern: `${github}/tree/main/docs/:path`,
+      pattern: `${repository}/tree/main/docs/:path`,
       text: 'Suggest changes to this page',
     },
 

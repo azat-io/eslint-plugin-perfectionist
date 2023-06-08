@@ -5,10 +5,8 @@ export let { description, repository, homepage, keywords, version } =
 
 export let title = 'Perfectionist'
 
-export let github = `https://github.com/${repository}`
+export let changelog = `${repository}/blob/main/changelog.md`
 
-export let changelog = `${github}/blob/main/changelog.md`
-
-export let contributing = `${github}/blob/main/contributing.md`
+export let contributing = `${repository}/blob/main/contributing.md`
 
 export let image = `${homepage}/open-graph.png`
