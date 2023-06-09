@@ -25,7 +25,7 @@ If you use the [`sort-imports`](https://eslint.org/docs/latest/rules/sort-import
 
 Rule `perfectionist/sort-imports` works in a similar way to rule `import/order`, but with some differences:
 
-1. Supporting for new import types: `'internal-type'`, `'parent-type'`, `'sibling-type'`, `'index-type'`
+1. Supporting for new import types: `'side-effect'`, `'style'`, `'builtin-type'`, `'internal-type'`, `'parent-type'`, `'sibling-type'`, `'index-type'`
 2. Parsing `tsconfig.json` with the `read-tsconfig` option enabled to recognize internal imports
 3. Sorting not only alphabetically, but also naturally and by line length
 
@@ -102,6 +102,7 @@ type Group =
   | 'object'
   | 'style'
   | 'type'
+  | 'builtin-type'
   | 'internal-type'
   | 'parent-type'
   | 'sibling-type'
@@ -166,6 +167,8 @@ import log = console.log
 import styles from './index.module.css'
 // type - TypeScript type imports
 import type { FC } from 'react'
+// builtin-type - TypeScript type imports from Built-in Modules
+import type { Server } from 'http'
 // internal-type - TypeScript type imports from your internal modules
 import type { User } from '~/users'
 // parent-type - TypeScript type imports from parent directory

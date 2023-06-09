@@ -805,6 +805,30 @@ describe(RULE_NAME, () => {
         invalid: [],
       })
     })
+
+    it(`${RULE_NAME}(${type}): separates builtin type from the rest types`, () => {
+      ruleTester.run(RULE_NAME, rule, {
+        valid: [
+          {
+            code: dedent`
+              import type { Server } from 'http'
+
+              import express, { static as serveStatic } from 'express'
+            `,
+            options: [
+              {
+                type: SortType.alphabetical,
+                order: SortOrder.asc,
+                'newlines-between': NewlinesBetweenValue.always,
+                'internal-pattern': ['~/**'],
+                groups: ['builtin-type', 'type'],
+              },
+            ],
+          },
+        ],
+        invalid: [],
+      })
+    })
   })
 
   describe(`${RULE_NAME}: sorting by natural order`, () => {
@@ -1595,6 +1619,30 @@ describe(RULE_NAME, () => {
                   'object',
                   'unknown',
                 ],
+              },
+            ],
+          },
+        ],
+        invalid: [],
+      })
+    })
+
+    it(`${RULE_NAME}(${type}): separates builtin type from the rest types`, () => {
+      ruleTester.run(RULE_NAME, rule, {
+        valid: [
+          {
+            code: dedent`
+              import type { Server } from 'http'
+
+              import express, { static as serveStatic } from 'express'
+            `,
+            options: [
+              {
+                type: SortType.natural,
+                order: SortOrder.asc,
+                'newlines-between': NewlinesBetweenValue.always,
+                'internal-pattern': ['~/**'],
+                groups: ['builtin-type', 'type'],
               },
             ],
           },
@@ -2434,6 +2482,30 @@ describe(RULE_NAME, () => {
                   'object',
                   'unknown',
                 ],
+              },
+            ],
+          },
+        ],
+        invalid: [],
+      })
+    })
+
+    it(`${RULE_NAME}(${type}): separates builtin type from the rest types`, () => {
+      ruleTester.run(RULE_NAME, rule, {
+        valid: [
+          {
+            code: dedent`
+              import type { Server } from 'http'
+
+              import express, { static as serveStatic } from 'express'
+            `,
+            options: [
+              {
+                type: SortType['line-length'],
+                order: SortOrder.desc,
+                'newlines-between': NewlinesBetweenValue.always,
+                'internal-pattern': ['~/**'],
+                groups: ['builtin-type', 'type'],
               },
             ],
           },

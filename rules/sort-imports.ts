@@ -31,7 +31,9 @@ export enum NewlinesBetweenValue {
 
 type Group =
   | 'internal-type'
+  | 'external-type'
   | 'sibling-type'
+  | 'builtin-type'
   | 'side-effect'
   | 'parent-type'
   | 'index-type'
@@ -198,6 +200,10 @@ export default createEslintRule<Options, MESSAGE_ID>({
 
       if (node.importKind === 'type') {
         if (node.type === AST_NODE_TYPES.ImportDeclaration) {
+          if (isCoreModule(node.source.value)) {
+            defineGroup('builtin-type')
+          }
+
           if (isInternal(node)) {
             defineGroup('internal-type')
           }
