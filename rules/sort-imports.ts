@@ -32,6 +32,7 @@ export enum NewlinesBetweenValue {
 type Group =
   | 'internal-type'
   | 'sibling-type'
+  | 'side-effect'
   | 'parent-type'
   | 'index-type'
   | 'external'
@@ -41,6 +42,7 @@ type Group =
   | 'sibling'
   | 'object'
   | 'parent'
+  | 'style'
   | 'index'
   | 'type'
 
@@ -161,6 +163,11 @@ export default createEslintRule<Options, MESSAGE_ID>({
     let computeGroup = (node: ModuleDeclaration): Group => {
       let group: undefined | Group
 
+      let isStyle = (value: string) =>
+        ['.less', '.scss', '.sass', '.pcss', '.css', '.sss'].some(extension =>
+          value.endsWith(extension),
+        )
+
       let isIndex = (value: string) =>
         [
           './index.d.js',
@@ -193,11 +200,17 @@ export default createEslintRule<Options, MESSAGE_ID>({
         if (node.type === AST_NODE_TYPES.ImportDeclaration) {
           if (isInternal(node)) {
             defineGroup('internal-type')
-          } else if (isIndex(node.source.value)) {
+          }
+
+          if (isIndex(node.source.value)) {
             defineGroup('index-type')
-          } else if (isParent(node.source.value)) {
+          }
+
+          if (isParent(node.source.value)) {
             defineGroup('parent-type')
-          } else if (isSibling(node.source.value)) {
+          }
+
+          if (isSibling(node.source.value)) {
             defineGroup('sibling-type')
           }
         }
@@ -208,17 +221,29 @@ export default createEslintRule<Options, MESSAGE_ID>({
       if (!group && node.type === AST_NODE_TYPES.ImportDeclaration) {
         if (isCoreModule(node.source.value)) {
           defineGroup('builtin')
-        } else if (isInternal(node)) {
-          defineGroup('internal')
-        } else if (isIndex(node.source.value)) {
-          defineGroup('index')
-        } else if (isParent(node.source.value)) {
-          defineGroup('parent')
-        } else if (isSibling(node.source.value)) {
-          defineGroup('sibling')
-        } else {
-          defineGroup('external')
         }
+
+        if (isInternal(node)) {
+          defineGroup('internal')
+        }
+
+        if (isStyle(node.source.value)) {
+          defineGroup('style')
+        }
+
+        if (isIndex(node.source.value)) {
+          defineGroup('index')
+        }
+
+        if (isParent(node.source.value)) {
+          defineGroup('parent')
+        }
+
+        if (isSibling(node.source.value)) {
+          defineGroup('sibling')
+        }
+
+        defineGroup('external')
       }
 
       return group ?? 'unknown'

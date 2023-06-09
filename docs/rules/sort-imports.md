@@ -99,6 +99,7 @@ type Group =
   | 'sibling'
   | 'index'
   | 'object'
+  | 'style'
   | 'type'
   | 'internal-type'
   | 'parent-type'
@@ -158,6 +159,8 @@ import config from './config'
 import main from '.'
 // object - TypeScript object-imports
 import log = console.log
+// style - Styles
+import styles from './index.module.css'
 // type - TypeScript type imports
 import type { FC } from 'react'
 // internal-type - TypeScript type imports from your internal modules
@@ -230,6 +233,7 @@ If your project is written in TypeScript, you can read `tsconfig.json` and use `
           "internal",
           ["parent-type", "sibling-type", "index-type"],
           ["parent", "sibling", "index"],
+          "style",
           "object",
           "unknown"
         ],
@@ -269,6 +273,7 @@ export default [
             'internal',
             ['parent-type', 'sibling-type', 'index-type'],
             ['parent', 'sibling', 'index'],
+            'style',
             'object',
             'unknown',
           ],

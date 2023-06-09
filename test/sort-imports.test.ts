@@ -734,6 +734,41 @@ describe(RULE_NAME, () => {
         invalid: [],
       })
     })
+
+    it(`${RULE_NAME}(${type}): separates style imports from the rest`, () => {
+      ruleTester.run(RULE_NAME, rule, {
+        valid: [
+          {
+            code: dedent`
+              import { MatsuriShihou, AonoMorimiya } from 'sola'
+
+              import styles from '../sunrise.css'
+              import './sky.css'
+            `,
+            options: [
+              {
+                type: SortType.alphabetical,
+                order: SortOrder.asc,
+                'newlines-between': NewlinesBetweenValue.always,
+                'internal-pattern': ['~/**'],
+                groups: [
+                  'type',
+                  ['builtin', 'external'],
+                  'internal-type',
+                  'internal',
+                  ['parent-type', 'sibling-type', 'index-type'],
+                  ['parent', 'sibling', 'index'],
+                  'style',
+                  'object',
+                  'unknown',
+                ],
+              },
+            ],
+          },
+        ],
+        invalid: [],
+      })
+    })
   })
 
   describe(`${RULE_NAME}: sorting by natural order`, () => {
@@ -1450,6 +1485,41 @@ describe(RULE_NAME, () => {
                   'internal',
                   ['parent-type', 'sibling-type', 'index-type'],
                   ['parent', 'sibling', 'index'],
+                  'object',
+                  'unknown',
+                ],
+              },
+            ],
+          },
+        ],
+        invalid: [],
+      })
+    })
+
+    it(`${RULE_NAME}(${type}): separates style imports from the rest`, () => {
+      ruleTester.run(RULE_NAME, rule, {
+        valid: [
+          {
+            code: dedent`
+              import { MatsuriShihou, AonoMorimiya } from 'sola'
+
+              import styles from '../sunrise.css'
+              import './sky.css'
+            `,
+            options: [
+              {
+                type: SortType.natural,
+                order: SortOrder.asc,
+                'newlines-between': NewlinesBetweenValue.always,
+                'internal-pattern': ['~/**'],
+                groups: [
+                  'type',
+                  ['builtin', 'external'],
+                  'internal-type',
+                  'internal',
+                  ['parent-type', 'sibling-type', 'index-type'],
+                  ['parent', 'sibling', 'index'],
+                  'style',
                   'object',
                   'unknown',
                 ],
@@ -2218,6 +2288,41 @@ describe(RULE_NAME, () => {
                   'internal',
                   ['parent-type', 'sibling-type', 'index-type'],
                   ['parent', 'sibling', 'index'],
+                  'object',
+                  'unknown',
+                ],
+              },
+            ],
+          },
+        ],
+        invalid: [],
+      })
+    })
+
+    it(`${RULE_NAME}(${type}): separates style imports from the rest`, () => {
+      ruleTester.run(RULE_NAME, rule, {
+        valid: [
+          {
+            code: dedent`
+              import { MatsuriShihou, AonoMorimiya } from 'sola'
+
+              import styles from '../sunrise.css'
+              import './sky.css'
+            `,
+            options: [
+              {
+                type: SortType['line-length'],
+                order: SortOrder.desc,
+                'newlines-between': NewlinesBetweenValue.always,
+                'internal-pattern': ['~/**'],
+                groups: [
+                  'type',
+                  ['builtin', 'external'],
+                  'internal-type',
+                  'internal',
+                  ['parent-type', 'sibling-type', 'index-type'],
+                  ['parent', 'sibling', 'index'],
+                  'style',
                   'object',
                   'unknown',
                 ],
