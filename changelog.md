@@ -1,6 +1,19 @@
 # Changelog
 
 
+## v1.0.1
+
+[compare changes](https://github.com/azat-io/eslint-plugin-perfectionist/compare/v1.0.0...v1.0.1)
+
+
+### 🐞 Bug Fixes
+
+  - Do not sort enums with implicit values ([166edac](https://github.com/azat-io/eslint-plugin-perfectionist/commit/166edac))
+
+### ❤️  Contributors
+
+- Azat S ([@azat-io](http://github.com/azat-io))
+
 ## v1.0.0
 
 [compare changes](https://github.com/azat-io/eslint-plugin-perfectionist/compare/v0.11.6...v1.0.0)
