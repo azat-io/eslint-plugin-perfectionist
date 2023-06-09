@@ -284,6 +284,30 @@ describe(RULE_NAME, () => {
         ],
       })
     })
+
+    it(`${RULE_NAME}(${type}): does not sort enums with implicit values`, () => {
+      ruleTester.run(RULE_NAME, rule, {
+        valid: [
+          {
+            code: dedent`
+              export enum KessokuBand {
+                HitoriGotou, // implicit value: 0
+                NijikaIjichi, // implicit value: 1
+                RyouYamada, // implicit value: 2
+                IkuyoKita, // implicit value: 3
+              }
+            `,
+            options: [
+              {
+                type: SortType.alphabetical,
+                order: SortOrder.asc,
+              },
+            ],
+          },
+        ],
+        invalid: [],
+      })
+    })
   })
 
   describe(`${RULE_NAME}: sorting by natural order`, () => {
@@ -558,6 +582,30 @@ describe(RULE_NAME, () => {
             ],
           },
         ],
+      })
+    })
+
+    it(`${RULE_NAME}(${type}): does not sort enums with implicit values`, () => {
+      ruleTester.run(RULE_NAME, rule, {
+        valid: [
+          {
+            code: dedent`
+              export enum KessokuBand {
+                HitoriGotou, // implicit value: 0
+                NijikaIjichi, // implicit value: 1
+                RyouYamada, // implicit value: 2
+                IkuyoKita, // implicit value: 3
+              }
+            `,
+            options: [
+              {
+                type: SortType.natural,
+                order: SortOrder.asc,
+              },
+            ],
+          },
+        ],
+        invalid: [],
       })
     })
   })
@@ -848,6 +896,30 @@ describe(RULE_NAME, () => {
             ],
           },
         ],
+      })
+    })
+
+    it(`${RULE_NAME}(${type}): does not sort enums with implicit values`, () => {
+      ruleTester.run(RULE_NAME, rule, {
+        valid: [
+          {
+            code: dedent`
+              export enum KessokuBand {
+                HitoriGotou, // implicit value: 0
+                NijikaIjichi, // implicit value: 1
+                RyouYamada, // implicit value: 2
+                IkuyoKita, // implicit value: 3
+              }
+            `,
+            options: [
+              {
+                type: SortType['line-length'],
+                order: SortOrder.desc,
+              },
+            ],
+          },
+        ],
+        invalid: [],
       })
     })
   })

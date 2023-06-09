@@ -69,7 +69,10 @@ export default createEslintRule<Options, MESSAGE_ID>({
   ],
   create: context => ({
     TSEnumDeclaration: node => {
-      if (node.members.length > 1) {
+      if (
+        node.members.length > 1 &&
+        node.members.some(({ initializer }) => initializer)
+      ) {
         let options = complete(context.options.at(0), {
           type: SortType.alphabetical,
           order: SortOrder.asc,
