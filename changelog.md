@@ -1,6 +1,25 @@
 # Changelog
 
 
+## v1.1.0
+
+[compare changes](https://github.com/azat-io/eslint-plugin-perfectionist/compare/v1.0.1...1.1.0)
+
+
+### 🚀 Features
+
+  - Add style group to sort the imports ([05bf0f7](https://github.com/azat-io/eslint-plugin-perfectionist/commit/05bf0f7))
+  - Add side-effect group to sort the imports ([02f51fb](https://github.com/azat-io/eslint-plugin-perfectionist/commit/02f51fb))
+  - Add builtin-type group to sort the imports ([ca34b5e](https://github.com/azat-io/eslint-plugin-perfectionist/commit/ca34b5e))
+
+### 🐞 Bug Fixes
+
+  - Allow to sort destructured objects ([65fe6c7](https://github.com/azat-io/eslint-plugin-perfectionist/commit/65fe6c7))
+
+### ❤️  Contributors
+
+- Azat S ([@azat-io](http://github.com/azat-io))
+
 ## v1.0.1
 
 [compare changes](https://github.com/azat-io/eslint-plugin-perfectionist/compare/v1.0.0...v1.0.1)
