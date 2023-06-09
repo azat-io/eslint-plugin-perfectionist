@@ -97,6 +97,7 @@ type Group =
   | 'internal'
   | 'parent'
   | 'sibling'
+  | 'side-effect'
   | 'index'
   | 'object'
   | 'style'
@@ -155,6 +156,8 @@ import Button from '~/components/Button'
 import formatNumber from '../utils/format-number'
 // siblings - Modules from the same directory
 import config from './config'
+// side-effect - Side effect imports
+import './set-production-env.js'
 // index - Main file from the current directory
 import main from '.'
 // object - TypeScript object-imports
@@ -233,6 +236,7 @@ If your project is written in TypeScript, you can read `tsconfig.json` and use `
           "internal",
           ["parent-type", "sibling-type", "index-type"],
           ["parent", "sibling", "index"],
+          "side-effect",
           "style",
           "object",
           "unknown"
@@ -273,6 +277,7 @@ export default [
             'internal',
             ['parent-type', 'sibling-type', 'index-type'],
             ['parent', 'sibling', 'index'],
+            'side-effect'
             'style',
             'object',
             'unknown',

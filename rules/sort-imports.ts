@@ -231,6 +231,10 @@ export default createEslintRule<Options, MESSAGE_ID>({
           defineGroup('style')
         }
 
+        if (node.specifiers.length === 0) {
+          defineGroup('side-effect')
+        }
+
         if (isIndex(node.source.value)) {
           defineGroup('index')
         }
