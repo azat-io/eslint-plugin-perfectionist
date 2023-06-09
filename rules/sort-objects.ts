@@ -83,8 +83,10 @@ export default createEslintRule<Options, MESSAGE_ID>({
       order: SortOrder.asc,
     },
   ],
-  create: context => ({
-    ObjectExpression: node => {
+  create: context => {
+    let sortObject = (
+      node: TSESTree.ObjectExpression | TSESTree.ObjectPattern,
+    ) => {
       if (node.properties.length > 1) {
         let options = complete(context.options.at(0), {
           type: SortType.alphabetical,
@@ -96,11 +98,18 @@ export default createEslintRule<Options, MESSAGE_ID>({
         let source = context.getSourceCode()
 
         let formatProperties = (
-          props: TSESTree.ObjectLiteralElement[],
+          props: (
+            | TSESTree.ObjectLiteralElement
+            | TSESTree.RestElement
+            | TSESTree.Property
+          )[],
         ): SortingNodeWithPosition[][] =>
           props.reduce(
             (accumulator: SortingNodeWithPosition[][], prop) => {
-              if (prop.type === AST_NODE_TYPES.SpreadElement) {
+              if (
+                prop.type === AST_NODE_TYPES.SpreadElement ||
+                prop.type === AST_NODE_TYPES.RestElement
+              ) {
                 accumulator.push([])
                 return accumulator
               }
@@ -194,6 +203,11 @@ export default createEslintRule<Options, MESSAGE_ID>({
           })
         })
       }
-    },
-  }),
+    }
+
+    return {
+      ObjectExpression: sortObject,
+      ObjectPattern: sortObject,
+    }
+  },
 })

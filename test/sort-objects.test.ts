@@ -467,6 +467,49 @@ describe(RULE_NAME, () => {
         ],
       })
     })
+
+    it(`${RULE_NAME}(${type}): sorts destructured object`, () => {
+      ruleTester.run(RULE_NAME, rule, {
+        valid: [],
+        invalid: [
+          {
+            code: dedent`
+              let startTerrorInResonance = ({
+                name = 'Nine',
+                bombType,
+                placeToAttack
+              }) => {
+                // ...
+              }
+            `,
+            output: dedent`
+              let startTerrorInResonance = ({
+                bombType,
+                name = 'Nine',
+                placeToAttack
+              }) => {
+                // ...
+              }
+            `,
+            options: [
+              {
+                type: SortType.alphabetical,
+                order: SortOrder.asc,
+              },
+            ],
+            errors: [
+              {
+                messageId: 'unexpectedObjectsOrder',
+                data: {
+                  left: 'name',
+                  right: 'bombType',
+                },
+              },
+            ],
+          },
+        ],
+      })
+    })
   })
 
   describe(`${RULE_NAME}: sorting by natural order`, () => {
@@ -926,6 +969,49 @@ describe(RULE_NAME, () => {
         ],
       })
     })
+
+    it(`${RULE_NAME}(${type}): sorts destructured object`, () => {
+      ruleTester.run(RULE_NAME, rule, {
+        valid: [],
+        invalid: [
+          {
+            code: dedent`
+              let startTerrorInResonance = ({
+                name = 'Nine',
+                bombType,
+                placeToAttack
+              }) => {
+                // ...
+              }
+            `,
+            output: dedent`
+              let startTerrorInResonance = ({
+                bombType,
+                name = 'Nine',
+                placeToAttack
+              }) => {
+                // ...
+              }
+            `,
+            options: [
+              {
+                type: SortType.natural,
+                order: SortOrder.asc,
+              },
+            ],
+            errors: [
+              {
+                messageId: 'unexpectedObjectsOrder',
+                data: {
+                  left: 'name',
+                  right: 'bombType',
+                },
+              },
+            ],
+          },
+        ],
+      })
+    })
   })
 
   describe(`${RULE_NAME}: sorting by line length`, () => {
@@ -1378,6 +1464,49 @@ describe(RULE_NAME, () => {
                 data: {
                   left: 'rei',
                   right: 'kazuki',
+                },
+              },
+            ],
+          },
+        ],
+      })
+    })
+
+    it(`${RULE_NAME}(${type}): sorts destructured object`, () => {
+      ruleTester.run(RULE_NAME, rule, {
+        valid: [],
+        invalid: [
+          {
+            code: dedent`
+              let startTerrorInResonance = ({
+                name = 'Nine',
+                bombType,
+                placeToAttack
+              }) => {
+                // ...
+              }
+            `,
+            output: dedent`
+              let startTerrorInResonance = ({
+                placeToAttack,
+                name = 'Nine',
+                bombType
+              }) => {
+                // ...
+              }
+            `,
+            options: [
+              {
+                type: SortType['line-length'],
+                order: SortOrder.desc,
+              },
+            ],
+            errors: [
+              {
+                messageId: 'unexpectedObjectsOrder',
+                data: {
+                  left: 'bombType',
+                  right: 'placeToAttack',
                 },
               },
             ],
