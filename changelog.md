@@ -1,6 +1,19 @@
 # Changelog
 
 
+## v1.1.2
+
+[compare changes](https://github.com/azat-io/eslint-plugin-perfectionist/compare/v1.1.1...v1.1.2)
+
+
+### 🐞 Bug Fixes
+
+  - Fix sorting interfaces and types with comment on same line ([03e5508](https://github.com/azat-io/eslint-plugin-perfectionist/commit/03e5508))
+
+### ❤️  Contributors
+
+- Azat S <to@azat.io>
+
 ## v1.1.1
 
 [compare changes](https://github.com/azat-io/eslint-plugin-perfectionist/compare/v1.1.0...v1.1.1)
