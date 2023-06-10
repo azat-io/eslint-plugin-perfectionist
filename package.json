@@ -1,7 +1,7 @@
 {
   "name": "eslint-plugin-perfectionist",
   "description": "ESLint plugin for sorting various data such as objects, imports, types, enums, JSX props, etc.",
-  "version": "1.1.0",
+  "version": "1.1.1",
   "homepage": "https://eslint-plugin-perfectionist.azat.io",
   "repository": "https://github.com/azat-io/eslint-plugin-perfectionist",
   "author": "Azat S. <to@azat.io>",

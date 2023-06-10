@@ -1,9 +1,24 @@
 # Changelog
 
 
+## v1.1.1
+
+[compare changes](https://github.com/azat-io/eslint-plugin-perfectionist/compare/v1.1.0...v1.1.1)
+
+
+### 🐞 Bug Fixes
+
+  - Fix adding extra lines if import ends with semi ([e435f91](https://github.com/azat-io/eslint-plugin-perfectionist/commit/e435f91))
+  - Don't sort keys if right value depends on left ([3e987ae](https://github.com/azat-io/eslint-plugin-perfectionist/commit/3e987ae))
+  - Ignore semi at the end of object type member value ([623ac67](https://github.com/azat-io/eslint-plugin-perfectionist/commit/623ac67))
+
+### ❤️  Contributors
+
+- Azat S ([@azat-io](http://github.com/azat-io))
+
 ## v1.1.0
 
-[compare changes](https://github.com/azat-io/eslint-plugin-perfectionist/compare/v1.0.1...1.1.0)
+[compare changes](https://github.com/azat-io/eslint-plugin-perfectionist/compare/v1.0.1...v1.1.0)
 
 
 ### 🚀 Features
