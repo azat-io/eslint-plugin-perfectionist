@@ -83,6 +83,9 @@ export default createEslintRule<Options, MESSAGE_ID>({
           let name: string
           let raw = source.text.slice(member.range.at(0), member.range.at(1))
 
+          let formatName = (value: string): string =>
+            value.replace(/(,|;)$/, '')
+
           if (member.type === AST_NODE_TYPES.TSPropertySignature) {
             if (member.key.type === AST_NODE_TYPES.Identifier) {
               ;({ name } = member.key)
@@ -98,9 +101,11 @@ export default createEslintRule<Options, MESSAGE_ID>({
             let endIndex: number =
               member.typeAnnotation?.range.at(0) ?? member.range.at(1)!
 
-            name = source.text.slice(member.range.at(0), endIndex)
+            name = formatName(source.text.slice(member.range.at(0), endIndex))
           } else {
-            name = source.text.slice(member.range.at(0), member.range.at(1))
+            name = formatName(
+              source.text.slice(member.range.at(0), member.range.at(1)),
+            )
           }
 
           let endsWithComma = raw.endsWith(';') || raw.endsWith(',')

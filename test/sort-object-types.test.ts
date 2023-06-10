@@ -938,4 +938,30 @@ describe(RULE_NAME, () => {
       })
     })
   })
+
+  describe('misc', () => {
+    it(`${RULE_NAME}: ignores semi at the end of value`, () => {
+      ruleTester.run(RULE_NAME, rule, {
+        valid: [
+          dedent`
+            type OverloadedReturnType<T> = T extends {
+              (...args: any[]): infer R;
+              (...args: any[]): infer R;
+              (...args: any[]): infer R;
+              (...args: any[]): infer R;
+            }
+              ? R
+              : T extends { (...args: any[]): infer R; (...args: any[]): infer R; (...args: any[]): infer R }
+              ? R
+              : T extends { (...args: any[]): infer R; (...args: any[]): infer R }
+              ? R
+              : T extends (...args: any[]) => infer R
+              ? R
+              : any;
+            `,
+        ],
+        invalid: [],
+      })
+    })
+  })
 })
