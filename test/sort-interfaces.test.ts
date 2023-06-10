@@ -487,6 +487,43 @@ describe(RULE_NAME, () => {
         ],
       })
     })
+
+    it(`${RULE_NAME}(${type}): sorts interfaces with semi and comments on the same line`, () => {
+      ruleTester.run(RULE_NAME, rule, {
+        valid: [],
+        invalid: [
+          {
+            code: dedent`
+              interface Researcher {
+                rescuer: 'Tokita Kōsaku'; // Character
+                occupation: string; // Professional direction
+              }
+            `,
+            output: dedent`
+              interface Researcher {
+                occupation: string; // Professional direction
+                rescuer: 'Tokita Kōsaku'; // Character
+              }
+            `,
+            options: [
+              {
+                type: SortType.alphabetical,
+                order: SortOrder.asc,
+              },
+            ],
+            errors: [
+              {
+                messageId: 'unexpectedInterfacePropertiesOrder',
+                data: {
+                  left: 'rescuer',
+                  right: 'occupation',
+                },
+              },
+            ],
+          },
+        ],
+      })
+    })
   })
 
   describe(`${RULE_NAME}: sorting by natural order`, () => {
@@ -966,6 +1003,43 @@ describe(RULE_NAME, () => {
         ],
       })
     })
+
+    it(`${RULE_NAME}(${type}): sorts interfaces with semi and comments on the same line`, () => {
+      ruleTester.run(RULE_NAME, rule, {
+        valid: [],
+        invalid: [
+          {
+            code: dedent`
+              interface Researcher {
+                rescuer: 'Tokita Kōsaku'; // Character
+                occupation: string; // Professional direction
+              }
+            `,
+            output: dedent`
+              interface Researcher {
+                occupation: string; // Professional direction
+                rescuer: 'Tokita Kōsaku'; // Character
+              }
+            `,
+            options: [
+              {
+                type: SortType.natural,
+                order: SortOrder.asc,
+              },
+            ],
+            errors: [
+              {
+                messageId: 'unexpectedInterfacePropertiesOrder',
+                data: {
+                  left: 'rescuer',
+                  right: 'occupation',
+                },
+              },
+            ],
+          },
+        ],
+      })
+    })
   })
 
   describe(`${RULE_NAME}: sorting by line length`, () => {
@@ -1384,6 +1458,43 @@ describe(RULE_NAME, () => {
                 data: {
                   left: 'rescuer',
                   right: 'hikikomori',
+                },
+              },
+            ],
+          },
+        ],
+      })
+    })
+
+    it(`${RULE_NAME}(${type}): sorts interfaces with semi and comments on the same line`, () => {
+      ruleTester.run(RULE_NAME, rule, {
+        valid: [],
+        invalid: [
+          {
+            code: dedent`
+              interface Researcher {
+                occupation: string; // Professional direction
+                rescuer: 'Tokita Kōsaku'; // Character
+              }
+            `,
+            output: dedent`
+              interface Researcher {
+                rescuer: 'Tokita Kōsaku'; // Character
+                occupation: string; // Professional direction
+              }
+            `,
+            options: [
+              {
+                type: SortType['line-length'],
+                order: SortOrder.desc,
+              },
+            ],
+            errors: [
+              {
+                messageId: 'unexpectedInterfacePropertiesOrder',
+                data: {
+                  left: 'occupation',
+                  right: 'rescuer',
                 },
               },
             ],

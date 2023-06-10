@@ -46,5 +46,6 @@ export let makeFixes = (
       )
     }
   })
+
   return fixes
 }

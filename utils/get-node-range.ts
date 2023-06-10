@@ -37,9 +37,7 @@ export let getNodeRange = (
       count: 2,
     })
 
-    if (node.loc.start.line !== tokensAfter.at(1)?.loc.start.line) {
-      end += 1
-    } else {
+    if (node.loc.start.line === tokensAfter.at(1)?.loc.start.line) {
       end -= 1
     }
   }
