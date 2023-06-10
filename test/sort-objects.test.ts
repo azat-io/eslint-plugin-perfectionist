@@ -510,6 +510,96 @@ describe(RULE_NAME, () => {
         ],
       })
     })
+
+    it(`${RULE_NAME}(${type}): does not sort keys if the right value depends on the left value`, () => {
+      ruleTester.run(RULE_NAME, rule, {
+        valid: [],
+        invalid: [
+          {
+            code: dedent`
+              let getPartiallyParasite = ({
+                parasite,
+                name = parasite,
+                school = 'West Heigh',
+                gender,
+              }) => {
+                // ...
+              }
+            `,
+            output: dedent`
+              let getPartiallyParasite = ({
+                gender,
+                parasite,
+                name = parasite,
+                school = 'West Heigh',
+              }) => {
+                // ...
+              }
+            `,
+            options: [
+              {
+                type: SortType.alphabetical,
+                order: SortOrder.asc,
+              },
+            ],
+            errors: [
+              {
+                messageId: 'unexpectedObjectsOrder',
+                data: {
+                  left: 'school',
+                  right: 'gender',
+                },
+              },
+            ],
+          },
+        ],
+      })
+    })
+
+    it(`${RULE_NAME}(${type}): works with complex dependencies`, () => {
+      ruleTester.run(RULE_NAME, rule, {
+        valid: [],
+        invalid: [
+          {
+            code: dedent`
+              let countPrisonSchoolGrade = ({
+                biology,
+                finalScore = biology + math + naturalScience,
+                math,
+                naturalScience,
+              }) => {
+                // ...
+              }
+            `,
+            output: dedent`
+              let countPrisonSchoolGrade = ({
+                biology,
+                math,
+                naturalScience,
+                finalScore = biology + math + naturalScience,
+              }) => {
+                // ...
+              }
+            `,
+            options: [
+              {
+                type: SortType.alphabetical,
+                order: SortOrder.asc,
+              },
+            ],
+            errors: [
+              {
+                messageId: 'unexpectedObjectsOrder',
+                data: {
+                  left: 'finalScore',
+                  right: 'math',
+                },
+              },
+            ],
+          },
+        ],
+      })
+    })
   })
 
   describe(`${RULE_NAME}: sorting by natural order`, () => {
@@ -1012,6 +1102,96 @@ describe(RULE_NAME, () => {
         ],
       })
     })
+
+    it(`${RULE_NAME}(${type}): does not sort keys if the right value depends on the left value`, () => {
+      ruleTester.run(RULE_NAME, rule, {
+        valid: [],
+        invalid: [
+          {
+            code: dedent`
+              let getPartiallyParasite = ({
+                parasite,
+                name = parasite,
+                school = 'West Heigh',
+                gender,
+              }) => {
+                // ...
+              }
+            `,
+            output: dedent`
+              let getPartiallyParasite = ({
+                gender,
+                parasite,
+                name = parasite,
+                school = 'West Heigh',
+              }) => {
+                // ...
+              }
+            `,
+            options: [
+              {
+                type: SortType.natural,
+                order: SortOrder.asc,
+              },
+            ],
+            errors: [
+              {
+                messageId: 'unexpectedObjectsOrder',
+                data: {
+                  left: 'school',
+                  right: 'gender',
+                },
+              },
+            ],
+          },
+        ],
+      })
+    })
+
+    it(`${RULE_NAME}(${type}): works with complex dependencies`, () => {
+      ruleTester.run(RULE_NAME, rule, {
+        valid: [],
+        invalid: [
+          {
+            code: dedent`
+              let countPrisonSchoolGrade = ({
+                biology,
+                finalScore = biology + math + naturalScience,
+                math,
+                naturalScience,
+              }) => {
+                // ...
+              }
+            `,
+            output: dedent`
+              let countPrisonSchoolGrade = ({
+                biology,
+                math,
+                naturalScience,
+                finalScore = biology + math + naturalScience,
+              }) => {
+                // ...
+              }
+            `,
+            options: [
+              {
+                type: SortType.natural,
+                order: SortOrder.asc,
+              },
+            ],
+            errors: [
+              {
+                messageId: 'unexpectedObjectsOrder',
+                data: {
+                  left: 'finalScore',
+                  right: 'math',
+                },
+              },
+            ],
+          },
+        ],
+      })
+    })
   })
 
   describe(`${RULE_NAME}: sorting by line length`, () => {
@@ -1507,6 +1687,103 @@ describe(RULE_NAME, () => {
                 data: {
                   left: 'bombType',
                   right: 'placeToAttack',
+                },
+              },
+            ],
+          },
+        ],
+      })
+    })
+
+    it(`${RULE_NAME}(${type}): does not sort keys if the right value depends on the left value`, () => {
+      ruleTester.run(RULE_NAME, rule, {
+        valid: [],
+        invalid: [
+          {
+            code: dedent`
+              let getPartiallyParasite = ({
+                parasite,
+                name = parasite,
+                school = 'West Heigh',
+                gender,
+              }) => {
+                // ...
+              }
+            `,
+            output: dedent`
+              let getPartiallyParasite = ({
+                school = 'West Heigh',
+                parasite,
+                name = parasite,
+                gender,
+              }) => {
+                // ...
+              }
+            `,
+            options: [
+              {
+                type: SortType['line-length'],
+                order: SortOrder.desc,
+              },
+            ],
+            errors: [
+              {
+                messageId: 'unexpectedObjectsOrder',
+                data: {
+                  left: 'name',
+                  right: 'school',
+                },
+              },
+            ],
+          },
+        ],
+      })
+    })
+
+    it(`${RULE_NAME}(${type}): works with complex dependencies`, () => {
+      ruleTester.run(RULE_NAME, rule, {
+        valid: [],
+        invalid: [
+          {
+            code: dedent`
+              let countPrisonSchoolGrade = ({
+                biology,
+                finalScore = biology + math + naturalScience,
+                math,
+                naturalScience,
+              }) => {
+                // ...
+              }
+            `,
+            output: dedent`
+              let countPrisonSchoolGrade = ({
+                naturalScience,
+                biology,
+                math,
+                finalScore = biology + math + naturalScience,
+              }) => {
+                // ...
+              }
+            `,
+            options: [
+              {
+                type: SortType['line-length'],
+                order: SortOrder.desc,
+              },
+            ],
+            errors: [
+              {
+                messageId: 'unexpectedObjectsOrder',
+                data: {
+                  left: 'finalScore',
+                  right: 'math',
+                },
+              },
+              {
+                messageId: 'unexpectedObjectsOrder',
+                data: {
+                  left: 'math',
+                  right: 'naturalScience',
                 },
               },
             ],

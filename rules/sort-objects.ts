@@ -23,7 +23,9 @@ export enum Position {
   'ignore' = 'ignore',
 }
 
-type SortingNodeWithPosition = SortingNode & { position: Position }
+type SortingNodeWithPosition = SortingNode & {
+  position: Position
+}
 
 type Options = [
   Partial<{
@@ -116,6 +118,7 @@ export default createEslintRule<Options, MESSAGE_ID>({
 
               let name: string
               let position: Position = Position.ignore
+              let dependencies: string[] = []
 
               if (prop.key.type === AST_NODE_TYPES.Identifier) {
                 ;({ name } = prop.key)
@@ -132,8 +135,47 @@ export default createEslintRule<Options, MESSAGE_ID>({
                 position = Position.exception
               }
 
+              if (prop.value.type === AST_NODE_TYPES.AssignmentPattern) {
+                let addDependencies = (
+                  value: TSESTree.AssignmentPattern | TSESTree.BinaryExpression,
+                  initialStart: boolean,
+                ) => {
+                  if (value.right.type === AST_NODE_TYPES.Identifier) {
+                    dependencies.push(value.right.name)
+                  }
+
+                  if (
+                    !initialStart &&
+                    value.left.type === AST_NODE_TYPES.Identifier
+                  ) {
+                    dependencies.push(value.left.name)
+                  }
+
+                  let handleBinaryExpression = (
+                    expression: TSESTree.BinaryExpression,
+                  ) => {
+                    if (expression.right.type === AST_NODE_TYPES.Identifier) {
+                      dependencies.push(expression.right.name)
+                    }
+
+                    if (
+                      expression.left.type === AST_NODE_TYPES.BinaryExpression
+                    ) {
+                      addDependencies(expression.left, false)
+                    }
+                  }
+
+                  if (value.right.type === AST_NODE_TYPES.BinaryExpression) {
+                    handleBinaryExpression(value.right)
+                  }
+                }
+
+                addDependencies(prop.value, true)
+              }
+
               let value = {
                 size: rangeToDiff(prop.range),
+                dependencies,
                 node: prop,
                 position,
                 name,
@@ -184,6 +226,7 @@ export default createEslintRule<Options, MESSAGE_ID>({
                       options['always-on-top'].indexOf(aNode.name) -
                       options['always-on-top'].indexOf(bNode.name),
                   ),
+
                   sortNodes(getGroup(Position.ignore), options),
                 ].flat()
 

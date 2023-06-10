@@ -13,6 +13,12 @@ export let compare = (
     type: SortType
   },
 ): boolean => {
+  if (b.dependencies?.includes(a.name)) {
+    return false
+  } else if (a.dependencies?.includes(b.name)) {
+    return true
+  }
+
   let orderCoefficient = options.order === 'asc' ? 1 : -1
   let sortingFunction: (a: SortingNode, b: SortingNode) => number
 

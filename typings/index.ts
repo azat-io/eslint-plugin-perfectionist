@@ -12,6 +12,7 @@ export enum SortOrder {
 }
 
 export interface SortingNode {
+  dependencies?: string[]
   node: TSESTree.Node
   name: string
   size: number
