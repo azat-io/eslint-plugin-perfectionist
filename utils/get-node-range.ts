@@ -32,7 +32,16 @@ export let getNodeRange = (
   let comment = getCommentBefore(node, sourceCode)
 
   if (raw.endsWith(';') || raw.endsWith(',')) {
-    end -= 1
+    let tokensAfter = sourceCode.getTokensAfter(node, {
+      includeComments: true,
+      count: 2,
+    })
+
+    if (node.loc.start.line !== tokensAfter.at(1)?.loc.start.line) {
+      end += 1
+    } else {
+      end -= 1
+    }
   }
 
   if (comment) {

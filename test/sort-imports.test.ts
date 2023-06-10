@@ -829,6 +829,52 @@ describe(RULE_NAME, () => {
         invalid: [],
       })
     })
+
+    it(`${RULE_NAME}(${type}): works with imports ending with a semicolon`, () => {
+      ruleTester.run(RULE_NAME, rule, {
+        valid: [],
+        invalid: [
+          {
+            code: dedent`
+            import TakakiTohno from '5-cm-per-second';
+            import AkariShinohara from './index';
+          `,
+            output: dedent`
+              import TakakiTohno from '5-cm-per-second';
+
+              import AkariShinohara from './index';
+            `,
+            options: [
+              {
+                type: SortType.alphabetical,
+                order: SortOrder.asc,
+                'newlines-between': NewlinesBetweenValue.always,
+                'internal-pattern': ['~/**'],
+                groups: [
+                  'type',
+                  ['builtin', 'external'],
+                  'internal-type',
+                  'internal',
+                  ['parent-type', 'sibling-type', 'index-type'],
+                  ['parent', 'sibling', 'index'],
+                  'object',
+                  'unknown',
+                ],
+              },
+            ],
+            errors: [
+              {
+                messageId: 'missedSpacingBetweenImports',
+                data: {
+                  left: '5-cm-per-second',
+                  right: './index',
+                },
+              },
+            ],
+          },
+        ],
+      })
+    })
   })
 
   describe(`${RULE_NAME}: sorting by natural order`, () => {
@@ -1648,6 +1694,52 @@ describe(RULE_NAME, () => {
           },
         ],
         invalid: [],
+      })
+    })
+
+    it(`${RULE_NAME}(${type}): works with imports ending with a semicolon`, () => {
+      ruleTester.run(RULE_NAME, rule, {
+        valid: [],
+        invalid: [
+          {
+            code: dedent`
+            import TakakiTohno from '5-cm-per-second';
+            import AkariShinohara from './index';
+          `,
+            output: dedent`
+              import TakakiTohno from '5-cm-per-second';
+
+              import AkariShinohara from './index';
+            `,
+            options: [
+              {
+                type: SortType.natural,
+                order: SortOrder.asc,
+                'newlines-between': NewlinesBetweenValue.always,
+                'internal-pattern': ['~/**'],
+                groups: [
+                  'type',
+                  ['builtin', 'external'],
+                  'internal-type',
+                  'internal',
+                  ['parent-type', 'sibling-type', 'index-type'],
+                  ['parent', 'sibling', 'index'],
+                  'object',
+                  'unknown',
+                ],
+              },
+            ],
+            errors: [
+              {
+                messageId: 'missedSpacingBetweenImports',
+                data: {
+                  left: '5-cm-per-second',
+                  right: './index',
+                },
+              },
+            ],
+          },
+        ],
       })
     })
   })
@@ -2511,6 +2603,52 @@ describe(RULE_NAME, () => {
           },
         ],
         invalid: [],
+      })
+    })
+
+    it(`${RULE_NAME}(${type}): works with imports ending with a semicolon`, () => {
+      ruleTester.run(RULE_NAME, rule, {
+        valid: [],
+        invalid: [
+          {
+            code: dedent`
+            import TakakiTohno from '5-cm-per-second';
+            import AkariShinohara from './index';
+          `,
+            output: dedent`
+              import TakakiTohno from '5-cm-per-second';
+
+              import AkariShinohara from './index';
+            `,
+            options: [
+              {
+                type: SortType['line-length'],
+                order: SortOrder.desc,
+                'newlines-between': NewlinesBetweenValue.always,
+                'internal-pattern': ['~/**'],
+                groups: [
+                  'type',
+                  ['builtin', 'external'],
+                  'internal-type',
+                  'internal',
+                  ['parent-type', 'sibling-type', 'index-type'],
+                  ['parent', 'sibling', 'index'],
+                  'object',
+                  'unknown',
+                ],
+              },
+            ],
+            errors: [
+              {
+                messageId: 'missedSpacingBetweenImports',
+                data: {
+                  left: '5-cm-per-second',
+                  right: './index',
+                },
+              },
+            ],
+          },
+        ],
       })
     })
   })
