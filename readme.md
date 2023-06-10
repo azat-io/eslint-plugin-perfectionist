@@ -67,7 +67,7 @@ Add `eslint-plugin-perfectionist` to the plugins section of the ESLint configura
     "perfectionist/sort-objects": [
       "error",
       {
-        "type": "line-length",
+        "type": "natural",
         "order": "desc"
       }
     ]
@@ -89,7 +89,7 @@ export default [
       'perfectionist/sort-objects': [
         'error',
         {
-          type: 'line-length',
+          type: 'natural',
           order: 'desc',
         },
       ],
@@ -108,7 +108,7 @@ The easiest way to use `eslint-plugin-perfectionist` is to use ready-made config
 ```json
 {
   "extends": [
-    "plugin:perfectionist/recommended-line-length"
+    "plugin:perfectionist/recommended-natural"
   ]
 }
 ```
@@ -117,10 +117,10 @@ The easiest way to use `eslint-plugin-perfectionist` is to use ready-made config
 
 <!-- prettier-ignore -->
 ```js
-import perfectionistLineLength from 'eslint-plugin-perfectionist/configs/recommended-line-length'
+import perfectionistNatural from 'eslint-plugin-perfectionist/configs/recommended-natural'
 
 export default [
-  perfectionistLineLength,
+  perfectionistNatural,
 ]
 ```
 
