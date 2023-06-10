@@ -16,5 +16,8 @@
     "test": false,
     "docs": false,
     "ci": false
+  },
+  "templates": {
+    "commitMessage": "build: publish v{{newVersion}}"
   }
 }
