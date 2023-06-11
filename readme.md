@@ -68,7 +68,7 @@ Add `eslint-plugin-perfectionist` to the plugins section of the ESLint configura
       "error",
       {
         "type": "natural",
-        "order": "desc"
+        "order": "asc"
       }
     ]
   }
@@ -90,7 +90,7 @@ export default [
         'error',
         {
           type: 'natural',
-          order: 'desc',
+          order: 'asc',
         },
       ],
     },
