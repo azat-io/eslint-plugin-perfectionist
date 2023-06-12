@@ -166,8 +166,8 @@ export default createEslintRule<Options, MESSAGE_ID>({
       let group: undefined | Group
 
       let isStyle = (value: string) =>
-        ['.less', '.scss', '.sass', '.pcss', '.css', '.sss'].some(extension =>
-          value.endsWith(extension),
+        ['.less', '.scss', '.sass', '.styl', '.pcss', '.css', '.sss'].some(
+          extension => value.endsWith(extension),
         )
 
       let isIndex = (value: string) =>
