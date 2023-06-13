@@ -1,6 +1,20 @@
 # Changelog
 
 
+## v1.2.0
+
+[compare changes](https://github.com/azat-io/eslint-plugin-perfectionist/compare/v1.1.2...v1.2.0)
+
+
+### 🚀 Features
+
+  - Support stylus file imports ([dbef415](https://github.com/azat-io/eslint-plugin-perfectionist/commit/dbef415))
+  - Add sort-exports rule ([a71eeb3](https://github.com/azat-io/eslint-plugin-perfectionist/commit/a71eeb3))
+
+### ❤️  Contributors
+
+- Azat S ([@azat-io](http://github.com/azat-io))
+
 ## v1.1.2
 
 [compare changes](https://github.com/azat-io/eslint-plugin-perfectionist/compare/v1.1.1...v1.1.2)
