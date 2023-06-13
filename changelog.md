@@ -1,6 +1,19 @@
 # Changelog
 
 
+## v1.2.1
+
+[compare changes](https://github.com/azat-io/eslint-plugin-perfectionist/compare/v1.2.0...v1.2.1)
+
+
+### 🐞 Bug Fixes
+
+  - Fix removing extra spaces between imports ([21bc7a8](https://github.com/azat-io/eslint-plugin-perfectionist/commit/21bc7a8))
+
+### ❤️  Contributors
+
+- Azat S ([@azat-io](http://github.com/azat-io))
+
 ## v1.2.0
 
 [compare changes](https://github.com/azat-io/eslint-plugin-perfectionist/compare/v1.1.2...v1.2.0)
