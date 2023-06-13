@@ -875,6 +875,72 @@ describe(RULE_NAME, () => {
         ],
       })
     })
+
+    it(`${RULE_NAME}(${type}): remove unnecessary spaces`, () => {
+      ruleTester.run(RULE_NAME, rule, {
+        valid: [],
+        invalid: [
+          {
+            code: dedent`
+              import { RintarouOkabe } from 'scientists'
+
+
+              import { ItaruHashida } from './universities/tokyo-denki'
+
+
+
+              import { MayuriShiina } from 'prepatory-academy'
+            `,
+            output: dedent`
+              import { MayuriShiina } from 'prepatory-academy'
+              import { RintarouOkabe } from 'scientists'
+
+              import { ItaruHashida } from './universities/tokyo-denki'
+            `,
+            options: [
+              {
+                type: SortType.alphabetical,
+                order: SortOrder.asc,
+                'ignore-case': true,
+                groups: [
+                  'type',
+                  ['builtin', 'external'],
+                  'internal-type',
+                  'internal',
+                  ['parent-type', 'sibling-type', 'index-type'],
+                  ['parent', 'sibling', 'index'],
+                  'object',
+                  'unknown',
+                ],
+              },
+            ],
+            errors: [
+              {
+                messageId: 'extraSpacingBetweenImports',
+                data: {
+                  left: 'scientists',
+                  right: './universities/tokyo-denki',
+                },
+              },
+              {
+                messageId: 'unexpectedImportsOrder',
+                data: {
+                  left: './universities/tokyo-denki',
+                  right: 'prepatory-academy',
+                },
+              },
+              {
+                messageId: 'extraSpacingBetweenImports',
+                data: {
+                  left: './universities/tokyo-denki',
+                  right: 'prepatory-academy',
+                },
+              },
+            ],
+          },
+        ],
+      })
+    })
   })
 
   describe(`${RULE_NAME}: sorting by natural order`, () => {
@@ -1735,6 +1801,72 @@ describe(RULE_NAME, () => {
                 data: {
                   left: '5-cm-per-second',
                   right: './index',
+                },
+              },
+            ],
+          },
+        ],
+      })
+    })
+
+    it(`${RULE_NAME}(${type}): remove unnecessary spaces`, () => {
+      ruleTester.run(RULE_NAME, rule, {
+        valid: [],
+        invalid: [
+          {
+            code: dedent`
+              import { RintarouOkabe } from 'scientists'
+
+
+              import { ItaruHashida } from './universities/tokyo-denki'
+
+
+
+              import { MayuriShiina } from 'prepatory-academy'
+            `,
+            output: dedent`
+              import { MayuriShiina } from 'prepatory-academy'
+              import { RintarouOkabe } from 'scientists'
+
+              import { ItaruHashida } from './universities/tokyo-denki'
+            `,
+            options: [
+              {
+                type: SortType.natural,
+                order: SortOrder.asc,
+                'ignore-case': true,
+                groups: [
+                  'type',
+                  ['builtin', 'external'],
+                  'internal-type',
+                  'internal',
+                  ['parent-type', 'sibling-type', 'index-type'],
+                  ['parent', 'sibling', 'index'],
+                  'object',
+                  'unknown',
+                ],
+              },
+            ],
+            errors: [
+              {
+                messageId: 'extraSpacingBetweenImports',
+                data: {
+                  left: 'scientists',
+                  right: './universities/tokyo-denki',
+                },
+              },
+              {
+                messageId: 'unexpectedImportsOrder',
+                data: {
+                  left: './universities/tokyo-denki',
+                  right: 'prepatory-academy',
+                },
+              },
+              {
+                messageId: 'extraSpacingBetweenImports',
+                data: {
+                  left: './universities/tokyo-denki',
+                  right: 'prepatory-academy',
                 },
               },
             ],
@@ -2644,6 +2776,72 @@ describe(RULE_NAME, () => {
                 data: {
                   left: '5-cm-per-second',
                   right: './index',
+                },
+              },
+            ],
+          },
+        ],
+      })
+    })
+
+    it(`${RULE_NAME}(${type}): remove unnecessary spaces`, () => {
+      ruleTester.run(RULE_NAME, rule, {
+        valid: [],
+        invalid: [
+          {
+            code: dedent`
+              import { RintarouOkabe } from 'scientists'
+
+
+              import { ItaruHashida } from './universities/tokyo-denki'
+
+
+
+              import { MayuriShiina } from 'prepatory-academy'
+            `,
+            output: dedent`
+              import { MayuriShiina } from 'prepatory-academy'
+              import { RintarouOkabe } from 'scientists'
+
+              import { ItaruHashida } from './universities/tokyo-denki'
+            `,
+            options: [
+              {
+                type: SortType['line-length'],
+                order: SortOrder.desc,
+                'ignore-case': true,
+                groups: [
+                  'type',
+                  ['builtin', 'external'],
+                  'internal-type',
+                  'internal',
+                  ['parent-type', 'sibling-type', 'index-type'],
+                  ['parent', 'sibling', 'index'],
+                  'object',
+                  'unknown',
+                ],
+              },
+            ],
+            errors: [
+              {
+                messageId: 'extraSpacingBetweenImports',
+                data: {
+                  left: 'scientists',
+                  right: './universities/tokyo-denki',
+                },
+              },
+              {
+                messageId: 'unexpectedImportsOrder',
+                data: {
+                  left: './universities/tokyo-denki',
+                  right: 'prepatory-academy',
+                },
+              },
+              {
+                messageId: 'extraSpacingBetweenImports',
+                data: {
+                  left: './universities/tokyo-denki',
+                  right: 'prepatory-academy',
                 },
               },
             ],

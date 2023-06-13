@@ -400,6 +400,7 @@ export default createEslintRule<Options, MESSAGE_ID>({
 
                 if (
                   options['newlines-between'] === 'always' &&
+                  getGroupNumber(node) !== getGroupNumber(nextNode) &&
                   linesBetweenImports > 1
                 ) {
                   fixes.push(
