@@ -14,6 +14,7 @@ description: ESLint Plugin Perfectionist list of rules
 | [sort-array-includes](/rules/sort-array-includes) | enforce sorted arrays before include method | 🔧 |
 | [sort-classes](/rules/sort-classes)               | enforce sorted classes                      | 🔧 |
 | [sort-enums](/rules/sort-enums)                   | enforce sorted TypeScript enums             | 🔧 |
+| [sort-exports](/rules/sort-exports)               | enforce sorted exports                      | 🔧 |
 | [sort-imports](/rules/sort-imports)               | enforce sorted imports                      | 🔧 |
 | [sort-interfaces](/rules/sort-interfaces)         | enforce sorted interface properties         | 🔧 |
 | [sort-jsx-props](/rules/sort-jsx-props)           | enforce sorted JSX props                    | 🔧 |

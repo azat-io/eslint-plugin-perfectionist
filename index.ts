@@ -9,6 +9,7 @@ import sortJsxProps, { RULE_NAME as sortJsxPropsName } from './rules/sort-jsx-pr
 import sortImports, { RULE_NAME as sortImportsName } from './rules/sort-imports'
 import sortClasses, { RULE_NAME as sortClassesName } from './rules/sort-classes'
 import sortObjects, { RULE_NAME as sortObjectsName } from './rules/sort-objects'
+import sortExports, { RULE_NAME as sortExportsName } from './rules/sort-exports'
 import sortEnums, { RULE_NAME as sortEnumsName } from './rules/sort-enums'
 import { SortOrder, SortType } from './typings'
 import { name } from './package.json'
@@ -90,6 +91,7 @@ let createConfigWithOptions = (options: {
     [sortMapElementsName]: ['error'],
     [sortUnionTypesName]: ['error'],
     [sortInterfacesName]: ['error'],
+    [sortExportsName]: ['error'],
     [sortEnumsName]: ['error'],
   }
   return {
@@ -109,6 +111,7 @@ export default {
     [sortArrayIncludesName]: sortArrayIncludes,
     [sortClassesName]: sortClasses,
     [sortEnumsName]: sortEnums,
+    [sortExportsName]: sortExports,
     [sortImportsName]: sortImports,
     [sortInterfacesName]: sortInterfaces,
     [sortJsxPropsName]: sortJsxProps,
