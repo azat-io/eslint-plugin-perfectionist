@@ -94,8 +94,8 @@ Only affects alphabetical and natural sorting. When `true` the rule ignores the 
     "perfectionist/sort-exports": [
       "error",
       {
-        "type": "line-length",
-        "order": "desc"
+        "type": "natural",
+        "order": "asc"
       }
     ]
   }
@@ -115,8 +115,8 @@ export default [
       'perfectionist/sort-exports': [
         'error',
         {
-          type: 'line-length',
-          order: 'desc',
+          type: 'natural',
+          order: 'asc',
         },
       ],
     },

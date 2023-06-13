@@ -187,8 +187,8 @@ If you use [one of the configs](/configs/) exported by this plugin, you get the 
     "perfectionist/sort-classes": [
       "error",
       {
-        "type": "line-length",
-        "order": "desc",
+        "type": "natural",
+        "order": "asc",
         "groups": [
           "static-property",
           "private-property",
@@ -217,8 +217,8 @@ export default [
       'perfectionist/sort-classes': [
         'error',
         {
-          type: 'line-length',
-          order: 'desc',
+          type: 'natural',
+          order: 'asc',
           groups: [
             'static-property',
             'private-property',

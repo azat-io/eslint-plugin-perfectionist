@@ -126,8 +126,8 @@ You can set a list of key names that will always go at the beginning of the obje
     "perfectionist/sort-objects": [
       "error",
       {
-        "type": "line-length",
-        "order": "desc"
+        "type": "natural",
+        "order": "asc"
       }
     ]
   }
@@ -147,8 +147,8 @@ export default [
       'perfectionist/sort-objects': [
         'error',
         {
-          type: 'line-length',
-          order: 'desc',
+          type: 'natural',
+          order: 'asc',
         },
       ],
     },

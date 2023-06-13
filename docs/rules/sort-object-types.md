@@ -113,8 +113,8 @@ Only affects alphabetical and natural sorting. When `true` the rule ignores the 
     "perfectionist/sort-object-types": [
       "error",
       {
-        "type": "line-length",
-        "order": "desc",
+        "type": "natural",
+        "order": "asc",
         "always-on-top": ["id"]
       }
     ]
@@ -135,8 +135,8 @@ export default [
       'perfectionist/sort-object-types': [
         'error',
         {
-          type: 'line-length',
-          order: 'desc',
+          type: 'natural',
+          order: 'asc',
           'always-on-top': ['id'],
         },
       ],

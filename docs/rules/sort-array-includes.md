@@ -124,8 +124,8 @@ When `true` enforce spread elements in array to be last.
     "perfectionist/sort-array-includes": [
       "error",
       {
-        "type": "line-length",
-        "order": "desc",
+        "type": "natural",
+        "order": "asc",
         "spread-last": true
       }
     ]
@@ -146,8 +146,8 @@ export default [
       'perfectionist/sort-array-includes': [
         'error',
         {
-          type: 'line-length',
-          order: 'desc',
+          type: 'natural',
+          order: 'asc',
           spread-last: true,
         },
       ],

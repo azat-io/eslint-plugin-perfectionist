@@ -230,8 +230,8 @@ If your project is written in TypeScript, you can read `tsconfig.json` and use `
     "perfectionist/sort-imports": [
       "error",
       {
-        "type": "line-length",
-        "order": "desc",
+        "type": "natural",
+        "order": "asc",
         "groups": [
           "type",
           ["builtin", "external"],
@@ -271,8 +271,8 @@ export default [
       'perfectionist/sort-imports': [
         'error',
         {
-          type: 'line-length',
-          order: 'desc',
+          type: 'natural',
+          order: 'asc',
           groups: [
             'type',
             ['builtin', 'external'],

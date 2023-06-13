@@ -107,8 +107,8 @@ Only affects alphabetical and natural sorting. When `true` the rule ignores the 
     "perfectionist/sort-enums": [
       "error",
       {
-        "type": "line-length",
-        "order": "desc"
+        "type": "natural",
+        "order": "asc"
       }
     ]
   }
@@ -128,8 +128,8 @@ export default [
       'perfectionist/sort-enums': [
         'error',
         {
-          type: 'line-length',
-          order: 'desc',
+          type: 'natural',
+          order: 'asc',
         },
       ],
     },

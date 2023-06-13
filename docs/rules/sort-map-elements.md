@@ -115,8 +115,8 @@ Only affects alphabetical and natural sorting. When `true` the rule ignores the 
     "perfectionist/sort-map-elements": [
       "error",
       {
-        "type": "line-length",
-        "order": "desc"
+        "type": "natural",
+        "order": "asc"
       }
     ]
   }
@@ -136,8 +136,8 @@ export default [
       'perfectionist/sort-map-elements': [
         'error',
         {
-          type: 'line-length',
-          order: 'desc',
+          type: 'natural',
+          order: 'asc',
         },
       ],
     },

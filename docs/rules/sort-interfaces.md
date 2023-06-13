@@ -144,8 +144,8 @@ The [minimatch](https://github.com/isaacs/minimatch) library is used for pattern
     "perfectionist/sort-interfaces": [
       "error",
       {
-        "type": "line-length",
-        "order": "desc"
+        "type": "natural",
+        "order": "asc"
       }
     ]
   }
@@ -165,8 +165,8 @@ export default [
       'perfectionist/sort-interfaces': [
         'error',
         {
-          type: 'line-length',
-          order: 'desc',
+          type: 'natural',
+          order: 'asc',
         },
       ],
     },

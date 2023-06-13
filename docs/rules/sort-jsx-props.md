@@ -161,8 +161,8 @@ You can set a list of property names that will always go at the beginning of the
     "perfectionist/sort-jsx-props": [
       "error",
       {
-        "type": "line-length",
-        "order": "desc",
+        "type": "natural",
+        "order": "asc",
         "always-on-top": ["id", "name"],
         "shorthand": "last",
         "multiline": "first",
@@ -186,8 +186,8 @@ export default [
       'perfectionist/sort-jsx-props': [
         'error',
         {
-          type: 'line-length',
-          order: 'desc',
+          type: 'natural',
+          order: 'asc',
           'always-on-top': ['id', 'name'],
           shorthand: 'last',
           multiline: 'first',
