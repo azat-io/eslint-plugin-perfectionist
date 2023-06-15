@@ -27,7 +27,8 @@ Rule `perfectionist/sort-imports` works in a similar way to rule `import/order`,
 
 1. Supporting for new import types: `'side-effect'`, `'style'`, `'builtin-type'`, `'internal-type'`, `'parent-type'`, `'sibling-type'`, `'index-type'`
 2. Parsing `tsconfig.json` with the `read-tsconfig` option enabled to recognize internal imports
-3. Sorting not only alphabetically, but also naturally and by line length
+3. Supporting for adding custom import groups
+4. Sorting not only alphabetically, but also naturally and by line length
 
 ## 💡 Examples
 
