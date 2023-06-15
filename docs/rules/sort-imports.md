@@ -115,6 +115,14 @@ interface Options {
   order?: 'asc' | 'desc'
   'ignore-case'?: boolean
   groups?: (Group | Group[])[]
+  'custom-groups'?: {
+    value?: {
+      [key: string]: string | string[]
+    }
+    type?: {
+      [key: string]: string | string[]
+    }
+  }
   'internal-pattern'?: string[]
   'newlines-between'?: 'always' | 'ignore' | 'never'
   'read-tsconfig'?: boolean
