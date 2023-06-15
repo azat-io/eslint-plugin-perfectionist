@@ -1,6 +1,19 @@
 # Changelog
 
 
+## v1.3.0
+
+[compare changes](https://github.com/azat-io/eslint-plugin-perfectionist/compare/v1.2.1...v1.3.0)
+
+
+### 🚀 Features
+
+  - Support custom import groups ([0b837d4](https://github.com/azat-io/eslint-plugin-perfectionist/commit/0b837d4))
+
+### ❤️  Contributors
+
+- Azat S ([@azat-io](http://github.com/azat-io))
+
 ## v1.2.1
 
 [compare changes](https://github.com/azat-io/eslint-plugin-perfectionist/compare/v1.2.0...v1.2.1)
