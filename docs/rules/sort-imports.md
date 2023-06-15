@@ -196,6 +196,28 @@ If you use [one of the configs](/configs/) exported by this plugin, you get the 
 }
 ```
 
+### custom-groups
+
+<sub>(default: `{ value: {}, type: {} }`)</sub>
+
+You can define your own groups for importing values or types. The [minimatch](https://github.com/isaacs/minimatch) library is used for pattern matching.
+
+Example:
+
+```
+{
+  "custom-groups": {
+    "value": {
+      "react": ["react", "react-*"],
+      "lodash": "lodash"
+    },
+    "type": {
+      "react": ["react", "react-*"]
+    }
+  }
+}
+```
+
 ### internal-pattern
 
 <sub>(default: `['~/**']`)</sub>
@@ -234,6 +256,8 @@ If your project is written in TypeScript, you can read `tsconfig.json` and use `
         "order": "asc",
         "groups": [
           "type",
+          "react",
+          "nanostores",
           ["builtin", "external"],
           "internal-type",
           "internal",
@@ -244,6 +268,15 @@ If your project is written in TypeScript, you can read `tsconfig.json` and use `
           "object",
           "unknown"
         ],
+        "custom-groups": {
+          "value": {
+            "react": ["react", "react-*"],
+            "nanostores": "@nanostores/**"
+          },
+          "type": {
+            "react": "react"
+          }
+        },
         "newlines-between": "always",
         "internal-pattern": [
           "@/components/**",
@@ -275,6 +308,8 @@ export default [
           order: 'asc',
           groups: [
             'type',
+            'react',
+            'nanostores',
             ['builtin', 'external'],
             'internal-type',
             'internal',
@@ -285,6 +320,15 @@ export default [
             'object',
             'unknown',
           ],
+          'custom-groups': {
+            value: {
+              react: ['react', 'react-*'],
+              nanostores: '@nanostores/**',
+            },
+            type: {
+              react: 'react'
+            }
+          },
           'newlines-between': 'always',
           'internal-pattern': [
             '@/components/**',

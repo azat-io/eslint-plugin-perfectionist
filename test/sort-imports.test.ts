@@ -941,6 +941,122 @@ describe(RULE_NAME, () => {
         ],
       })
     })
+
+    it(`${RULE_NAME}(${type}): allows to define custom groups`, () => {
+      ruleTester.run(RULE_NAME, rule, {
+        valid: [],
+        invalid: [
+          {
+            code: dedent`
+              import type { Titan } from 'titans'
+
+              import Armin from '@scout-regiment/armin'
+              import Mikasa from '@scout-regiment/mikasa'
+              import Reiner from '@titans/armored-titan'
+              import Eren from '@titans/attack-titan'
+              import Zeke from '@titans/beast-titan'
+              import { KennyAckermann } from 'military-police'
+            `,
+            output: dedent`
+              import Reiner from '@titans/armored-titan'
+              import Eren from '@titans/attack-titan'
+              import Zeke from '@titans/beast-titan'
+              import type { Titan } from 'titans'
+
+              import Armin from '@scout-regiment/armin'
+              import Mikasa from '@scout-regiment/mikasa'
+
+              import { KennyAckermann } from 'military-police'
+            `,
+            options: [
+              {
+                type: SortType.alphabetical,
+                order: SortOrder.asc,
+                'ignore-case': true,
+                'custom-groups': {
+                  type: {
+                    titans: ['titans', '@titans/**'],
+                  },
+                  value: {
+                    titans: ['titans', '@titans/**'],
+                    scouts: '@scout-regiment/**',
+                  },
+                },
+                groups: [
+                  'type',
+                  'titans',
+                  'scouts',
+                  ['builtin', 'external'],
+                  'internal-type',
+                  'internal',
+                  ['parent-type', 'sibling-type', 'index-type'],
+                  ['parent', 'sibling', 'index'],
+                  'object',
+                  'unknown',
+                ],
+              },
+            ],
+            errors: [
+              {
+                messageId: 'unexpectedImportsOrder',
+                data: {
+                  left: '@scout-regiment/mikasa',
+                  right: '@titans/armored-titan',
+                },
+              },
+              {
+                messageId: 'missedSpacingBetweenImports',
+                data: {
+                  left: '@titans/beast-titan',
+                  right: 'military-police',
+                },
+              },
+            ],
+          },
+        ],
+      })
+    })
+
+    it(`${RULE_NAME}(${type}): allows to define value only custom groups`, () => {
+      ruleTester.run(RULE_NAME, rule, {
+        valid: [],
+        invalid: [
+          {
+            code: dedent`
+              import type { Child } from 'giovannis-island'
+              import { Kanta, Junpei } from 'giovannis-island'
+            `,
+            output: dedent`
+              import type { Child } from 'giovannis-island'
+
+              import { Kanta, Junpei } from 'giovannis-island'
+            `,
+            options: [
+              {
+                type: SortType.alphabetical,
+                order: SortOrder.asc,
+                'ignore-case': true,
+                'custom-groups': {
+                  value: {
+                    giovanni: ['giovannis-island'],
+                  },
+                },
+                groups: ['type', 'giovanni'],
+              },
+            ],
+            errors: [
+              {
+                messageId: 'missedSpacingBetweenImports',
+                data: {
+                  left: 'giovannis-island',
+                  right: 'giovannis-island',
+                },
+              },
+            ],
+          },
+        ],
+      })
+    })
   })
 
   describe(`${RULE_NAME}: sorting by natural order`, () => {
@@ -1867,6 +1983,122 @@ describe(RULE_NAME, () => {
                 data: {
                   left: './universities/tokyo-denki',
                   right: 'prepatory-academy',
+                },
+              },
+            ],
+          },
+        ],
+      })
+    })
+
+    it(`${RULE_NAME}(${type}): allows to define custom groups`, () => {
+      ruleTester.run(RULE_NAME, rule, {
+        valid: [],
+        invalid: [
+          {
+            code: dedent`
+              import type { Titan } from 'titans'
+
+              import Armin from '@scout-regiment/armin'
+              import Mikasa from '@scout-regiment/mikasa'
+              import Reiner from '@titans/armored-titan'
+              import Eren from '@titans/attack-titan'
+              import Zeke from '@titans/beast-titan'
+              import { KennyAckermann } from 'military-police'
+            `,
+            output: dedent`
+              import Reiner from '@titans/armored-titan'
+              import Eren from '@titans/attack-titan'
+              import Zeke from '@titans/beast-titan'
+              import type { Titan } from 'titans'
+
+              import Armin from '@scout-regiment/armin'
+              import Mikasa from '@scout-regiment/mikasa'
+
+              import { KennyAckermann } from 'military-police'
+            `,
+            options: [
+              {
+                type: SortType.natural,
+                order: SortOrder.asc,
+                'ignore-case': true,
+                'custom-groups': {
+                  type: {
+                    titans: ['titans', '@titans/**'],
+                  },
+                  value: {
+                    titans: ['titans', '@titans/**'],
+                    scouts: '@scout-regiment/**',
+                  },
+                },
+                groups: [
+                  'type',
+                  'titans',
+                  'scouts',
+                  ['builtin', 'external'],
+                  'internal-type',
+                  'internal',
+                  ['parent-type', 'sibling-type', 'index-type'],
+                  ['parent', 'sibling', 'index'],
+                  'object',
+                  'unknown',
+                ],
+              },
+            ],
+            errors: [
+              {
+                messageId: 'unexpectedImportsOrder',
+                data: {
+                  left: '@scout-regiment/mikasa',
+                  right: '@titans/armored-titan',
+                },
+              },
+              {
+                messageId: 'missedSpacingBetweenImports',
+                data: {
+                  left: '@titans/beast-titan',
+                  right: 'military-police',
+                },
+              },
+            ],
+          },
+        ],
+      })
+    })
+
+    it(`${RULE_NAME}(${type}): allows to define value only custom groups`, () => {
+      ruleTester.run(RULE_NAME, rule, {
+        valid: [],
+        invalid: [
+          {
+            code: dedent`
+              import type { Child } from 'giovannis-island'
+              import { Kanta, Junpei } from 'giovannis-island'
+            `,
+            output: dedent`
+              import type { Child } from 'giovannis-island'
+
+              import { Kanta, Junpei } from 'giovannis-island'
+            `,
+            options: [
+              {
+                type: SortType.natural,
+                order: SortOrder.asc,
+                'ignore-case': true,
+                'custom-groups': {
+                  value: {
+                    giovanni: ['giovannis-island'],
+                  },
+                },
+                groups: ['type', 'giovanni'],
+              },
+            ],
+            errors: [
+              {
+                messageId: 'missedSpacingBetweenImports',
+                data: {
+                  left: 'giovannis-island',
+                  right: 'giovannis-island',
                 },
               },
             ],
@@ -2842,6 +3074,129 @@ describe(RULE_NAME, () => {
                 data: {
                   left: './universities/tokyo-denki',
                   right: 'prepatory-academy',
+                },
+              },
+            ],
+          },
+        ],
+      })
+    })
+
+    it(`${RULE_NAME}(${type}): allows to define custom groups`, () => {
+      ruleTester.run(RULE_NAME, rule, {
+        valid: [],
+        invalid: [
+          {
+            code: dedent`
+              import type { Titan } from 'titans'
+
+              import Armin from '@scout-regiment/armin'
+              import Mikasa from '@scout-regiment/mikasa'
+              import Reiner from '@titans/armored-titan'
+              import Eren from '@titans/attack-titan'
+              import Zeke from '@titans/beast-titan'
+              import { KennyAckermann } from 'military-police'
+            `,
+            output: dedent`
+              import Reiner from '@titans/armored-titan'
+              import Eren from '@titans/attack-titan'
+              import Zeke from '@titans/beast-titan'
+              import type { Titan } from 'titans'
+
+              import Mikasa from '@scout-regiment/mikasa'
+              import Armin from '@scout-regiment/armin'
+
+              import { KennyAckermann } from 'military-police'
+            `,
+            options: [
+              {
+                type: SortType['line-length'],
+                order: SortOrder.desc,
+                'ignore-case': true,
+                'custom-groups': {
+                  type: {
+                    titans: ['titans', '@titans/**'],
+                  },
+                  value: {
+                    titans: ['titans', '@titans/**'],
+                    scouts: '@scout-regiment/**',
+                  },
+                },
+                groups: [
+                  'type',
+                  'titans',
+                  'scouts',
+                  ['builtin', 'external'],
+                  'internal-type',
+                  'internal',
+                  ['parent-type', 'sibling-type', 'index-type'],
+                  ['parent', 'sibling', 'index'],
+                  'object',
+                  'unknown',
+                ],
+              },
+            ],
+            errors: [
+              {
+                messageId: 'unexpectedImportsOrder',
+                data: {
+                  left: '@scout-regiment/armin',
+                  right: '@scout-regiment/mikasa',
+                },
+              },
+              {
+                messageId: 'unexpectedImportsOrder',
+                data: {
+                  left: '@scout-regiment/mikasa',
+                  right: '@titans/armored-titan',
+                },
+              },
+              {
+                messageId: 'missedSpacingBetweenImports',
+                data: {
+                  left: '@titans/beast-titan',
+                  right: 'military-police',
+                },
+              },
+            ],
+          },
+        ],
+      })
+    })
+
+    it(`${RULE_NAME}(${type}): allows to define value only custom groups`, () => {
+      ruleTester.run(RULE_NAME, rule, {
+        valid: [],
+        invalid: [
+          {
+            code: dedent`
+              import type { Child } from 'giovannis-island'
+              import { Kanta, Junpei } from 'giovannis-island'
+            `,
+            output: dedent`
+              import type { Child } from 'giovannis-island'
+
+              import { Kanta, Junpei } from 'giovannis-island'
+            `,
+            options: [
+              {
+                type: SortType['line-length'],
+                order: SortOrder.desc,
+                'ignore-case': true,
+                'custom-groups': {
+                  value: {
+                    giovanni: ['giovannis-island'],
+                  },
+                },
+                groups: ['type', 'giovanni'],
+              },
+            ],
+            errors: [
+              {
+                messageId: 'missedSpacingBetweenImports',
+                data: {
+                  left: 'giovannis-island',
+                  right: 'giovannis-island',
                 },
               },
             ],
