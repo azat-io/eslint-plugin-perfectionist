@@ -18,6 +18,7 @@
 
   --vp-button-brand-bg: oklch(45% 0.18 282);
   --vp-button-brand-active-bg: oklch(40% 0.18 282);
+  --vp-button-brand-active-border: oklch(35% 0.18 282);
   --vp-button-brand-hover-bg: oklch(37.5% 0.18 282);
   --vp-button-brand-border: oklch(40% 0.18 282);
   --vp-button-brand-hover-border: oklch(35% 0.18 282);
