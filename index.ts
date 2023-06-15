@@ -44,6 +44,10 @@ let createConfigWithOptions = (options: {
           'object',
           'unknown',
         ],
+        'custom-groups': {
+          value: {},
+          type: {},
+        },
         'newlines-between': 'always',
         'internal-pattern': ['~/**'],
         'read-tsconfig': false,

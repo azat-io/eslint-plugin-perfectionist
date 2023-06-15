@@ -29,30 +29,35 @@ export enum NewlinesBetweenValue {
   'never' = 'never',
 }
 
-type Group =
-  | 'internal-type'
+type Group<T extends string[]> =
   | 'external-type'
-  | 'sibling-type'
+  | 'internal-type'
   | 'builtin-type'
-  | 'side-effect'
+  | 'sibling-type'
   | 'parent-type'
+  | 'side-effect'
   | 'index-type'
-  | 'external'
   | 'internal'
-  | 'builtin'
-  | 'unknown'
+  | 'external'
+  | T[number]
   | 'sibling'
-  | 'object'
+  | 'unknown'
+  | 'builtin'
   | 'parent'
-  | 'style'
+  | 'object'
   | 'index'
+  | 'style'
   | 'type'
 
-type Options = [
+type Options<T extends string[]> = [
   Partial<{
+    'custom-groups': {
+      value?: { [key in T[number]]: string[] | string }
+      type?: { [key in T[number]]: string[] | string }
+    }
     'newlines-between': NewlinesBetweenValue
+    groups: (Group<T>[] | Group<T>)[]
     'internal-pattern': string[]
-    groups: (Group[] | Group)[]
     'read-tsconfig': boolean
     'ignore-case': boolean
     order: SortOrder
@@ -66,9 +71,11 @@ type ModuleDeclaration =
   | TSESTree.TSImportEqualsDeclaration
   | TSESTree.ImportDeclaration
 
-type SortingNodeWithGroup = SortingNode & { group: Group }
+type SortingNodeWithGroup<T extends string[]> = SortingNode & {
+  group: Group<T>
+}
 
-export default createEslintRule<Options, MESSAGE_ID>({
+export default createEslintRule<Options<string[]>, MESSAGE_ID>({
   name: RULE_NAME,
   meta: {
     type: 'suggestion',
@@ -81,6 +88,18 @@ export default createEslintRule<Options, MESSAGE_ID>({
       {
         type: 'object',
         properties: {
+          'custom-groups': {
+            type: 'object',
+            properties: {
+              type: {
+                type: 'object',
+              },
+              value: {
+                type: 'object',
+              },
+            },
+            additionalProperties: false,
+          },
           type: {
             enum: [
               SortType.alphabetical,
@@ -138,6 +157,7 @@ export default createEslintRule<Options, MESSAGE_ID>({
   create: context => {
     let options = complete(context.options.at(0), {
       'newlines-between': NewlinesBetweenValue.always,
+      'custom-groups': { type: {}, value: {} },
       'internal-pattern': ['~/**'],
       type: SortType.alphabetical,
       'read-tsconfig': false,
@@ -160,10 +180,10 @@ export default createEslintRule<Options, MESSAGE_ID>({
 
     let source = context.getSourceCode()
 
-    let nodes: SortingNodeWithGroup[] = []
+    let nodes: SortingNodeWithGroup<string[]>[] = []
 
-    let computeGroup = (node: ModuleDeclaration): Group => {
-      let group: undefined | Group
+    let computeGroup = (node: ModuleDeclaration): Group<string[]> => {
+      let group: Group<string[]> | undefined
 
       let isStyle = (value: string) =>
         ['.less', '.scss', '.sass', '.styl', '.pcss', '.css', '.sss'].some(
@@ -185,7 +205,7 @@ export default createEslintRule<Options, MESSAGE_ID>({
 
       let isSibling = (value: string) => value.indexOf('./') === 0
 
-      let defineGroup = (nodeGroup: Group) => {
+      let defineGroup = (nodeGroup: Group<string[]>) => {
         if (!group && options.groups.flat().includes(nodeGroup)) {
           group = nodeGroup
         }
@@ -198,8 +218,30 @@ export default createEslintRule<Options, MESSAGE_ID>({
           )) ||
         tsPaths.some(pattern => minimatch(nodeElement.source.value, pattern))
 
+      let determineCustomGroup = (
+        groupType: 'value' | 'type',
+        value: string,
+      ) => {
+        Object.entries(options['custom-groups'][groupType] ?? {}).forEach(
+          ([key, pattern]) => {
+            if (
+              Array.isArray(pattern) &&
+              pattern.some(patternValue => minimatch(value, patternValue))
+            ) {
+              defineGroup(key)
+            }
+
+            if (typeof pattern === 'string' && minimatch(value, pattern)) {
+              defineGroup(key)
+            }
+          },
+        )
+      }
+
       if (node.importKind === 'type') {
         if (node.type === AST_NODE_TYPES.ImportDeclaration) {
+          determineCustomGroup('type', node.source.value)
+
           if (isCoreModule(node.source.value)) {
             defineGroup('builtin-type')
           }
@@ -225,6 +267,8 @@ export default createEslintRule<Options, MESSAGE_ID>({
       }
 
       if (!group && node.type === AST_NODE_TYPES.ImportDeclaration) {
+        determineCustomGroup('value', node.source.value)
+
         if (isCoreModule(node.source.value)) {
           defineGroup('builtin')
         }
@@ -288,7 +332,7 @@ export default createEslintRule<Options, MESSAGE_ID>({
       TSImportEqualsDeclaration: registerNode,
       ImportDeclaration: registerNode,
       'Program:exit': () => {
-        let getGroupNumber = (node: SortingNodeWithGroup): number => {
+        let getGroupNumber = (node: SortingNodeWithGroup<string[]>): number => {
           for (let i = 0, max = options.groups.length; i < max; i++) {
             let currentGroup = options.groups[i]
 
@@ -328,14 +372,14 @@ export default createEslintRule<Options, MESSAGE_ID>({
 
         let fix = (
           fixer: TSESLint.RuleFixer,
-          nodesToFix: SortingNodeWithGroup[],
+          nodesToFix: SortingNodeWithGroup<string[]>[],
         ): TSESLint.RuleFix[] => {
           let fixes: TSESLint.RuleFix[] = []
 
           let grouped = nodesToFix.reduce(
             (
               accumulator: {
-                [key: string]: SortingNodeWithGroup[]
+                [key: string]: SortingNodeWithGroup<string[]>[]
               },
               node,
             ) => {
@@ -358,10 +402,10 @@ export default createEslintRule<Options, MESSAGE_ID>({
           let formatted = Object.keys(grouped)
             .sort()
             .reduce(
-              (accumulator: SortingNodeWithGroup[], group: string) => [
-                ...accumulator,
-                ...grouped[group],
-              ],
+              (
+                accumulator: SortingNodeWithGroup<string[]>[],
+                group: string,
+              ) => [...accumulator, ...grouped[group]],
               [],
             )
 
@@ -437,8 +481,8 @@ export default createEslintRule<Options, MESSAGE_ID>({
 
         let splittedNodes = nodes.reduce(
           (
-            accumulator: SortingNodeWithGroup[][],
-            node: SortingNodeWithGroup,
+            accumulator: SortingNodeWithGroup<string[]>[][],
+            node: SortingNodeWithGroup<string[]>,
           ) => {
             let lastNode = accumulator.at(-1)?.at(-1)
 
