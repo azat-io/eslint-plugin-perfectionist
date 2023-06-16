@@ -77,24 +77,25 @@ let createConfigWithOptions = (options: {
         callback: 'ignore',
       },
     ],
+    [sortObjectsName]: [
+      'error',
+      {
+        'partition-by-comment': false,
+        'always-on-top': [],
+      },
+    ],
     [sortArrayIncludesName]: [
       'error',
       {
         'spread-last': true,
       },
     ],
-    [sortObjectsName]: [
-      'error',
-      {
-        'always-on-top': [],
-      },
-    ],
-    [sortNamedImportsName]: ['error'],
     [sortNamedExportsName]: ['error'],
-    [sortObjectTypesName]: ['error'],
+    [sortNamedImportsName]: ['error'],
     [sortMapElementsName]: ['error'],
-    [sortUnionTypesName]: ['error'],
+    [sortObjectTypesName]: ['error'],
     [sortInterfacesName]: ['error'],
+    [sortUnionTypesName]: ['error'],
     [sortExportsName]: ['error'],
     [sortEnumsName]: ['error'],
   }

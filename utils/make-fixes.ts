@@ -1,7 +1,7 @@
 import type { TSESTree } from '@typescript-eslint/types'
 import type { TSESLint } from '@typescript-eslint/utils'
 
-import type { SortingNode } from '../typings'
+import type { PartitionComment, SortingNode } from '../typings'
 
 import { getCommentAfter } from './get-comment-after'
 import { getNodeRange } from './get-node-range'
@@ -11,14 +11,19 @@ export let makeFixes = (
   nodes: SortingNode[],
   sortedNodes: SortingNode[],
   source: TSESLint.SourceCode,
+  additionalOptions?: {
+    partitionComment?: PartitionComment
+  },
 ) => {
   let fixes: TSESLint.RuleFix[] = []
 
   nodes.forEach(({ node }, index) => {
     fixes.push(
       fixer.replaceTextRange(
-        getNodeRange(node, source),
-        source.text.slice(...getNodeRange(sortedNodes[index].node, source)),
+        getNodeRange(node, source, additionalOptions),
+        source.text.slice(
+          ...getNodeRange(sortedNodes[index].node, source, additionalOptions),
+        ),
       ),
     )
 

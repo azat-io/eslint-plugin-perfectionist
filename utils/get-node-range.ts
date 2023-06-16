@@ -1,13 +1,19 @@
-import type { TSESLint } from '@typescript-eslint/utils'
 import type { TSESTree } from '@typescript-eslint/types'
+import type { TSESLint } from '@typescript-eslint/utils'
 
 import { ASTUtils } from '@typescript-eslint/utils'
 
+import type { PartitionComment } from '../typings'
+
+import { isPartitionComment } from './is-partition-comment'
 import { getCommentBefore } from './get-comment-before'
 
 export let getNodeRange = (
   node: TSESTree.Node,
   sourceCode: TSESLint.SourceCode,
+  additionalOptions?: {
+    partitionComment?: PartitionComment
+  },
 ): TSESTree.Range => {
   let start = node.range.at(0)!
   let end = node.range.at(1)!
@@ -42,7 +48,13 @@ export let getNodeRange = (
     }
   }
 
-  if (comment) {
+  if (
+    comment &&
+    !isPartitionComment(
+      additionalOptions?.partitionComment ?? false,
+      comment.value,
+    )
+  ) {
     start = comment.range.at(0)!
   }
 

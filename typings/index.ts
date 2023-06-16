@@ -11,6 +11,8 @@ export enum SortOrder {
   'asc' = 'asc',
 }
 
+export type PartitionComment = string[] | boolean | string
+
 export interface SortingNode {
   dependencies?: string[]
   node: TSESTree.Node

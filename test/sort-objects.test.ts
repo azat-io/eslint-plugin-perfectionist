@@ -600,6 +600,159 @@ describe(RULE_NAME, () => {
         ],
       })
     })
+
+    it(`${RULE_NAME}(${type}): allows to use partition comments`, () => {
+      ruleTester.run(RULE_NAME, rule, {
+        valid: [],
+        invalid: [
+          {
+            code: dedent`
+              let heroAssociation = {
+                // Part: S-Class
+                blast: 'Blast',
+                tatsumaki: 'Tatsumaki',
+                // Atomic Samurai
+                kamikaze: 'Kamikaze',
+                // Part: A-Class
+                sweet: 'Sweet Mask',
+                iaian: 'Iaian',
+                // Part: B-Class
+                'mountain-ape': 'Mountain Ape',
+                // Member of the Blizzard Group
+                eyelashes: 'Eyelashes',
+              }
+            `,
+            output: dedent`
+              let heroAssociation = {
+                // Part: S-Class
+                blast: 'Blast',
+                // Atomic Samurai
+                kamikaze: 'Kamikaze',
+                tatsumaki: 'Tatsumaki',
+                // Part: A-Class
+                iaian: 'Iaian',
+                sweet: 'Sweet Mask',
+                // Part: B-Class
+                // Member of the Blizzard Group
+                eyelashes: 'Eyelashes',
+                'mountain-ape': 'Mountain Ape',
+              }
+            `,
+            options: [
+              {
+                type: SortType.alphabetical,
+                order: SortOrder.asc,
+                'partition-by-comment': 'Part**',
+              },
+            ],
+            errors: [
+              {
+                messageId: 'unexpectedObjectsOrder',
+                data: {
+                  left: 'tatsumaki',
+                  right: 'kamikaze',
+                },
+              },
+              {
+                messageId: 'unexpectedObjectsOrder',
+                data: {
+                  left: 'sweet',
+                  right: 'iaian',
+                },
+              },
+              {
+                messageId: 'unexpectedObjectsOrder',
+                data: {
+                  left: 'mountain-ape',
+                  right: 'eyelashes',
+                },
+              },
+            ],
+          },
+        ],
+      })
+    })
+
+    it(`${RULE_NAME}(${type}): allows to use all comments as parts`, () => {
+      ruleTester.run(RULE_NAME, rule, {
+        valid: [
+          {
+            code: dedent`
+              let brothers = {
+                // Older brother
+                edward: 'Edward Elric',
+                // Younger brother
+                alphonse: 'Alphonse Elric',
+              }
+            `,
+            options: [
+              {
+                type: SortType.alphabetical,
+                order: SortOrder.asc,
+                'partition-by-comment': true,
+              },
+            ],
+          },
+        ],
+        invalid: [],
+      })
+    })
+
+    it(`${RULE_NAME}(${type}): allows to use multiple partition comments`, () => {
+      ruleTester.run(RULE_NAME, rule, {
+        valid: [],
+        invalid: [
+          {
+            code: dedent`
+              let psychoPass = {
+                /* Public Safety Bureau */
+                // Crime Coefficient: Low
+                tsunemori: 'Akane Tsunemori',
+                // Crime Coefficient: High
+                kogami: 'Shinya Kogami',
+                ginoza: 'Nobuchika Ginoza',
+                masaoka: 'Tomomi Masaoka',
+                /* Victims */
+                makishima: 'Shogo Makishima',
+              }
+            `,
+            output: dedent`
+              let psychoPass = {
+                /* Public Safety Bureau */
+                // Crime Coefficient: Low
+                tsunemori: 'Akane Tsunemori',
+                // Crime Coefficient: High
+                ginoza: 'Nobuchika Ginoza',
+                kogami: 'Shinya Kogami',
+                masaoka: 'Tomomi Masaoka',
+                /* Victims */
+                makishima: 'Shogo Makishima',
+              }
+            `,
+            options: [
+              {
+                type: SortType.alphabetical,
+                order: SortOrder.asc,
+                'partition-by-comment': [
+                  'Public Safety Bureau',
+                  'Crime Coefficient: *',
+                  'Victims',
+                ],
+              },
+            ],
+            errors: [
+              {
+                messageId: 'unexpectedObjectsOrder',
+                data: {
+                  left: 'kogami',
+                  right: 'ginoza',
+                },
+              },
+            ],
+          },
+        ],
+      })
+    })
   })
 
   describe(`${RULE_NAME}: sorting by natural order`, () => {
@@ -1185,6 +1338,159 @@ describe(RULE_NAME, () => {
                 data: {
                   left: 'finalScore',
                   right: 'math',
+                },
+              },
+            ],
+          },
+        ],
+      })
+    })
+
+    it(`${RULE_NAME}(${type}): allows to use partition comments`, () => {
+      ruleTester.run(RULE_NAME, rule, {
+        valid: [],
+        invalid: [
+          {
+            code: dedent`
+              let heroAssociation = {
+                // Part: S-Class
+                blast: 'Blast',
+                tatsumaki: 'Tatsumaki',
+                // Atomic Samurai
+                kamikaze: 'Kamikaze',
+                // Part: A-Class
+                sweet: 'Sweet Mask',
+                iaian: 'Iaian',
+                // Part: B-Class
+                'mountain-ape': 'Mountain Ape',
+                // Member of the Blizzard Group
+                eyelashes: 'Eyelashes',
+              }
+            `,
+            output: dedent`
+              let heroAssociation = {
+                // Part: S-Class
+                blast: 'Blast',
+                // Atomic Samurai
+                kamikaze: 'Kamikaze',
+                tatsumaki: 'Tatsumaki',
+                // Part: A-Class
+                iaian: 'Iaian',
+                sweet: 'Sweet Mask',
+                // Part: B-Class
+                // Member of the Blizzard Group
+                eyelashes: 'Eyelashes',
+                'mountain-ape': 'Mountain Ape',
+              }
+            `,
+            options: [
+              {
+                type: SortType.natural,
+                order: SortOrder.asc,
+                'partition-by-comment': 'Part**',
+              },
+            ],
+            errors: [
+              {
+                messageId: 'unexpectedObjectsOrder',
+                data: {
+                  left: 'tatsumaki',
+                  right: 'kamikaze',
+                },
+              },
+              {
+                messageId: 'unexpectedObjectsOrder',
+                data: {
+                  left: 'sweet',
+                  right: 'iaian',
+                },
+              },
+              {
+                messageId: 'unexpectedObjectsOrder',
+                data: {
+                  left: 'mountain-ape',
+                  right: 'eyelashes',
+                },
+              },
+            ],
+          },
+        ],
+      })
+    })
+
+    it(`${RULE_NAME}(${type}): allows to use all comments as parts`, () => {
+      ruleTester.run(RULE_NAME, rule, {
+        valid: [
+          {
+            code: dedent`
+              let brothers = {
+                // Older brother
+                edward: 'Edward Elric',
+                // Younger brother
+                alphonse: 'Alphonse Elric',
+              }
+            `,
+            options: [
+              {
+                type: SortType.natural,
+                order: SortOrder.asc,
+                'partition-by-comment': true,
+              },
+            ],
+          },
+        ],
+        invalid: [],
+      })
+    })
+
+    it(`${RULE_NAME}(${type}): allows to use multiple partition comments`, () => {
+      ruleTester.run(RULE_NAME, rule, {
+        valid: [],
+        invalid: [
+          {
+            code: dedent`
+              let psychoPass = {
+                /* Public Safety Bureau */
+                // Crime Coefficient: Low
+                tsunemori: 'Akane Tsunemori',
+                // Crime Coefficient: High
+                kogami: 'Shinya Kogami',
+                ginoza: 'Nobuchika Ginoza',
+                masaoka: 'Tomomi Masaoka',
+                /* Victims */
+                makishima: 'Shogo Makishima',
+              }
+            `,
+            output: dedent`
+              let psychoPass = {
+                /* Public Safety Bureau */
+                // Crime Coefficient: Low
+                tsunemori: 'Akane Tsunemori',
+                // Crime Coefficient: High
+                ginoza: 'Nobuchika Ginoza',
+                kogami: 'Shinya Kogami',
+                masaoka: 'Tomomi Masaoka',
+                /* Victims */
+                makishima: 'Shogo Makishima',
+              }
+            `,
+            options: [
+              {
+                type: SortType.natural,
+                order: SortOrder.asc,
+                'partition-by-comment': [
+                  'Public Safety Bureau',
+                  'Crime Coefficient: *',
+                  'Victims',
+                ],
+              },
+            ],
+            errors: [
+              {
+                messageId: 'unexpectedObjectsOrder',
+                data: {
+                  left: 'kogami',
+                  right: 'ginoza',
                 },
               },
             ],
@@ -1784,6 +2090,145 @@ describe(RULE_NAME, () => {
                 data: {
                   left: 'math',
                   right: 'naturalScience',
+                },
+              },
+            ],
+          },
+        ],
+      })
+    })
+
+    it(`${RULE_NAME}(${type}): allows to use partition comments`, () => {
+      ruleTester.run(RULE_NAME, rule, {
+        valid: [],
+        invalid: [
+          {
+            code: dedent`
+              let heroAssociation = {
+                // Part: S-Class
+                blast: 'Blast',
+                tatsumaki: 'Tatsumaki',
+                // Atomic Samurai
+                kamikaze: 'Kamikaze',
+                // Part: A-Class
+                sweet: 'Sweet Mask',
+                iaian: 'Iaian',
+                // Part: B-Class
+                'mountain-ape': 'Mountain Ape',
+                // Member of the Blizzard Group
+                eyelashes: 'Eyelashes',
+              }
+            `,
+            output: dedent`
+              let heroAssociation = {
+                // Part: S-Class
+                tatsumaki: 'Tatsumaki',
+                // Atomic Samurai
+                kamikaze: 'Kamikaze',
+                blast: 'Blast',
+                // Part: A-Class
+                sweet: 'Sweet Mask',
+                iaian: 'Iaian',
+                // Part: B-Class
+                'mountain-ape': 'Mountain Ape',
+                // Member of the Blizzard Group
+                eyelashes: 'Eyelashes',
+              }
+            `,
+            options: [
+              {
+                type: SortType['line-length'],
+                order: SortOrder.desc,
+                'partition-by-comment': 'Part**',
+              },
+            ],
+            errors: [
+              {
+                messageId: 'unexpectedObjectsOrder',
+                data: {
+                  left: 'blast',
+                  right: 'tatsumaki',
+                },
+              },
+            ],
+          },
+        ],
+      })
+    })
+
+    it(`${RULE_NAME}(${type}): allows to use all comments as parts`, () => {
+      ruleTester.run(RULE_NAME, rule, {
+        valid: [
+          {
+            code: dedent`
+              let brothers = {
+                // Older brother
+                edward: 'Edward Elric',
+                // Younger brother
+                alphonse: 'Alphonse Elric',
+              }
+            `,
+            options: [
+              {
+                type: SortType['line-length'],
+                order: SortOrder.desc,
+                'partition-by-comment': true,
+              },
+            ],
+          },
+        ],
+        invalid: [],
+      })
+    })
+
+    it(`${RULE_NAME}(${type}): allows to use multiple partition comments`, () => {
+      ruleTester.run(RULE_NAME, rule, {
+        valid: [],
+        invalid: [
+          {
+            code: dedent`
+              let psychoPass = {
+                /* Public Safety Bureau */
+                // Crime Coefficient: Low
+                tsunemori: 'Akane Tsunemori',
+                // Crime Coefficient: High
+                kogami: 'Shinya Kogami',
+                ginoza: 'Nobuchika Ginoza',
+                masaoka: 'Tomomi Masaoka',
+                /* Victims */
+                makishima: 'Shogo Makishima',
+              }
+            `,
+            output: dedent`
+              let psychoPass = {
+                /* Public Safety Bureau */
+                // Crime Coefficient: Low
+                tsunemori: 'Akane Tsunemori',
+                // Crime Coefficient: High
+                ginoza: 'Nobuchika Ginoza',
+                masaoka: 'Tomomi Masaoka',
+                kogami: 'Shinya Kogami',
+                /* Victims */
+                makishima: 'Shogo Makishima',
+              }
+            `,
+            options: [
+              {
+                type: SortType['line-length'],
+                order: SortOrder.desc,
+                'partition-by-comment': [
+                  'Public Safety Bureau',
+                  'Crime Coefficient: *',
+                  'Victims',
+                ],
+              },
+            ],
+            errors: [
+              {
+                messageId: 'unexpectedObjectsOrder',
+                data: {
+                  left: 'kogami',
+                  right: 'ginoza',
                 },
               },
             ],
