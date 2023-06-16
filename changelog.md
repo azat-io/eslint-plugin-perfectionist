@@ -1,6 +1,19 @@
 # Changelog
 
 
+## v1.4.0
+
+[compare changes](https://github.com/azat-io/eslint-plugin-perfectionist/compare/v1.3.0...v1.4.0)
+
+
+### 🚀 Features
+
+  - Allow separating object properties into logical parts ([933b621](https://github.com/azat-io/eslint-plugin-perfectionist/commit/933b621))
+
+### ❤️  Contributors
+
+- Azat S ([@azat-io](http://github.com/azat-io))
+
 ## v1.3.0
 
 [compare changes](https://github.com/azat-io/eslint-plugin-perfectionist/compare/v1.2.1...v1.3.0)
