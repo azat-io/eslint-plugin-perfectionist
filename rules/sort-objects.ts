@@ -1,18 +1,20 @@
-import type { TSESLint } from '@typescript-eslint/utils'
 import type { TSESTree } from '@typescript-eslint/types'
+import type { TSESLint } from '@typescript-eslint/utils'
 
 import { AST_NODE_TYPES } from '@typescript-eslint/types'
 
-import type { SortingNode } from '../typings'
+import type { PartitionComment, SortingNode } from '../typings'
 
+import { isPartitionComment } from '../utils/is-partition-comment'
+import { getCommentBefore } from '../utils/get-comment-before'
 import { createEslintRule } from '../utils/create-eslint-rule'
 import { toSingleLine } from '../utils/to-single-line'
 import { rangeToDiff } from '../utils/range-to-diff'
 import { SortOrder, SortType } from '../typings'
-import { sortNodes } from '../utils/sort-nodes'
 import { makeFixes } from '../utils/make-fixes'
-import { pairwise } from '../utils/pairwise'
+import { sortNodes } from '../utils/sort-nodes'
 import { complete } from '../utils/complete'
+import { pairwise } from '../utils/pairwise'
 import { groupBy } from '../utils/group-by'
 import { compare } from '../utils/compare'
 
@@ -29,6 +31,7 @@ type SortingNodeWithPosition = SortingNode & {
 
 type Options = [
   Partial<{
+    'partition-by-comment': PartitionComment
     'always-on-top': string[]
     'ignore-case': boolean
     order: SortOrder
@@ -51,6 +54,10 @@ export default createEslintRule<Options, MESSAGE_ID>({
       {
         type: 'object',
         properties: {
+          'partition-by-comment': {
+            type: ['boolean', 'string', 'array'],
+            default: false,
+          },
           type: {
             enum: [
               SortType.alphabetical,
@@ -91,6 +98,7 @@ export default createEslintRule<Options, MESSAGE_ID>({
     ) => {
       if (node.properties.length > 1) {
         let options = complete(context.options.at(0), {
+          'partition-by-comment': false,
           type: SortType.alphabetical,
           'ignore-case': false,
           order: SortOrder.asc,
@@ -114,6 +122,19 @@ export default createEslintRule<Options, MESSAGE_ID>({
               ) {
                 accumulator.push([])
                 return accumulator
+              }
+
+              let comment = getCommentBefore(prop, source)
+
+              if (
+                options['partition-by-comment'] &&
+                comment &&
+                isPartitionComment(
+                  options['partition-by-comment'],
+                  comment.value,
+                )
+              ) {
+                accumulator.push([])
               }
 
               let name: string
@@ -230,7 +251,9 @@ export default createEslintRule<Options, MESSAGE_ID>({
                   sortNodes(getGroup(Position.ignore), options),
                 ].flat()
 
-                return makeFixes(fixer, nodes, sortedNodes, source)
+                return makeFixes(fixer, nodes, sortedNodes, source, {
+                  partitionComment: options['partition-by-comment'],
+                })
               }
 
               context.report({

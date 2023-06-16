@@ -84,6 +84,7 @@ interface Options {
   order?: 'asc' | 'desc'
   'ignore-case'?: boolean
   'always-on-top'?: string[]
+  'partition-by-comment': string[] | string | boolean
 }
 ```
 
@@ -114,6 +115,14 @@ Only affects alphabetical and natural sorting. When `true` the rule ignores the 
 
 You can set a list of key names that will always go at the beginning of the object. For example: `['id', 'name']`
 
+### partition-by-comment
+
+<sub>(default: `false`)</sub>
+
+You can set comments that would separate the properties of objects into logical parts. If set to `true`, all object property comments will be treated as delimiters.
+
+The [minimatch](https://github.com/isaacs/minimatch) library is used for pattern matching.
+
 ## ⚙️ Usage
 
 ::: code-group
@@ -127,7 +136,9 @@ You can set a list of key names that will always go at the beginning of the obje
       "error",
       {
         "type": "natural",
-        "order": "asc"
+        "order": "asc",
+        "always-on-top": ["id", "name"],
+        "partition-by-comment": "Part:**"
       }
     ]
   }
@@ -149,6 +160,8 @@ export default [
         {
           type: 'natural',
           order: 'asc',
+          'always-on-top': ['id', 'name'],
+          'partition-by-comment': 'Part:**',
         },
       ],
     },
