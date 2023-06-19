@@ -20,10 +20,10 @@
     "release:check": "pnpm test && pnpm run build",
     "release:publish": "clean-publish",
     "release:version": "changelogen --output changelog.md --release --push",
-    "lint": "eslint \"**/*.{js,ts}\"",
+    "test:js": "eslint \"**/*.{js,ts}\"",
     "test:types": "tsc --noEmit --pretty",
     "test:unit": "vitest --run --coverage --single-thread --no-threads",
-    "test": "pnpm run lint && pnpm run test:types && pnpm run test:unit"
+    "test": "pnpm run --include-workspace-root /^test:/"
   },
   "publishConfig": {
     "access": "public"
