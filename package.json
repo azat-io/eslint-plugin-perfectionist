@@ -23,7 +23,7 @@
     "test:js": "eslint \"**/*.{js,ts}\"",
     "test:types": "tsc --noEmit --pretty",
     "test:unit": "vitest --run --coverage --single-thread --no-threads",
-    "test": "pnpm run --include-workspace-root /^test:/"
+    "test": "pnpm run /^test:/"
   },
   "publishConfig": {
     "access": "public"
