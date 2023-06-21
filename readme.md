@@ -13,7 +13,7 @@
 
 ESLint plugin that sets rules to format your code and make it consistent.
 
-This plugin defines rules for sorting various data, such as objects, imports, TypeScript types, enums, JSX props, etc.
+This plugin defines rules for sorting various data, such as objects, imports, TypeScript types, enums, JSX props, etc. alphabetically, naturally, or by line length
 
 All rules are automatically fixable. It's safe!
 
