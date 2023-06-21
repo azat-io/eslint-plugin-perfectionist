@@ -156,6 +156,21 @@ export default [
 
 <!-- end auto-generated rules list -->
 
+## ⁉️ FAQ
+
+### Can I automatically fix problems in the editor?
+
+Yes. To do this, you need to enable autofix in ESLint when you save the file in your editor. Instructions for your editor can be found [here](https://eslint-plugin-perfectionist.azat.io/guide/integrations).
+
+### Is it safety?
+
+On the whole, yes. We are very careful to make sure that the work of the plugin does not negatively affect the work of the code. For example, the plugin takes into account spread operators in JSX and objects, comments to the code, exports with `*`. Safety is our priority. If you encounter any problem, you can create an [issue](https://github.com/azat-io/eslint-plugin-perfectionist/issues/new/choose).
+
+### Why not Prettier?
+
+I love Prettier. However, this is not his area of responsibility. Prettier is used for formatting, and ESLint is also used for styling. For example, changing the order of imports can affect how the code works (console.log calls, fetch, style loading). Prettier should not change the AST. There is a cool article about this: ["The Blurry Line Between Formatting and Style"](https://blog.joshuakgoldberg.com/the-blurry-line-between-formatting-and-style) by **@joshuakgoldberg**.
+
+
 ## ⚠️ Troubleshooting
 
 There are rules of ESLint and other ESLint plugins that may conflict with the rules of ESLint Plugin Perfectionist. We strongly recommend that you [disable rules](https://eslint.org/docs/latest/use/configure/rules#using-configuration-files-1) with similar functionality.

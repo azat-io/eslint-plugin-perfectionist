@@ -48,6 +48,18 @@ sub {
   color: var(--vp-c-text-2);
 }
 
+kbd {
+  padding: 0.1em 0.6em;
+  background: var(--vp-c-bg-soft-up);
+  color: var(--vp-button-alt-text);
+  border: 1px solid var(--vp-button-alt-border);
+  box-shadow: 0 1px 0 0.5px var(--vp-button-alt-border);
+  border-radius: 0.25rem;
+  font-size: 14px;
+  line-height: 1;
+  margin: 0 0.1em;
+}
+
 @media (min-width: 640px) {
   :root {
     --vp-home-hero-image-filter: blur(56px);

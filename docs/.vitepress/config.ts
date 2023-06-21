@@ -213,6 +213,10 @@ export default defineConfig({
               link: '/guide/why',
             },
             {
+              text: 'Integrations',
+              link: '/guide/integrations',
+            },
+            {
               text: 'Getting Started',
               link: '/guide/getting-started',
             },
