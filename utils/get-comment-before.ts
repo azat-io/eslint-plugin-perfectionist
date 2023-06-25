@@ -8,7 +8,7 @@ export let getCommentBefore = (
   source: TSESLint.SourceCode,
 ): TSESTree.Comment | null => {
   let [tokenBefore, tokenOrCommentBefore] = source.getTokensBefore(node, {
-    filter: ({ type, value }) =>
+    filter: ({ value, type }) =>
       !(type === AST_TOKEN_TYPES.Punctuator && [',', ';'].includes(value)),
     includeComments: true,
     count: 2,
