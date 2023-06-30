@@ -168,7 +168,7 @@ export default createEslintRule<Options, MESSAGE_ID>({
             [[]],
           )
 
-        parts.forEach(nodes => {
+        for (let nodes of parts) {
           pairwise(nodes, (left, right) => {
             let comparison: boolean
 
@@ -223,7 +223,7 @@ export default createEslintRule<Options, MESSAGE_ID>({
               })
             }
           })
-        })
+        }
       }
     },
   }),

@@ -172,9 +172,9 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
       let tsConfig = TSConfig.get()
 
       if (tsConfig.compilerOptions?.paths) {
-        Object.keys(tsConfig.compilerOptions.paths).forEach(path => {
+        for (let path of Object.keys(tsConfig.compilerOptions.paths)) {
           tsPaths.push(path)
-        })
+        }
       }
     }
 
@@ -222,20 +222,20 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
         groupType: 'value' | 'type',
         value: string,
       ) => {
-        Object.entries(options['custom-groups'][groupType] ?? {}).forEach(
-          ([key, pattern]) => {
-            if (
-              Array.isArray(pattern) &&
-              pattern.some(patternValue => minimatch(value, patternValue))
-            ) {
-              defineGroup(key)
-            }
+        for (let [key, pattern] of Object.entries(
+          options['custom-groups'][groupType] ?? {},
+        )) {
+          if (
+            Array.isArray(pattern) &&
+            pattern.some(patternValue => minimatch(value, patternValue))
+          ) {
+            defineGroup(key)
+          }
 
-            if (typeof pattern === 'string' && minimatch(value, pattern)) {
-              defineGroup(key)
-            }
-          },
-        )
+          if (typeof pattern === 'string' && minimatch(value, pattern)) {
+            defineGroup(key)
+          }
+        }
       }
 
       if (node.importKind === 'type') {
@@ -409,7 +409,9 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
               [],
             )
 
-          formatted.forEach((node, i) => {
+          for (let i = 0, max = formatted.length; i < max; i++) {
+            let node = formatted.at(i)!
+
             fixes.push(
               fixer.replaceTextRange(
                 getNodeRange(nodesToFix.at(i)!.node, source),
@@ -474,7 +476,7 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
                 }
               }
             }
-          })
+          }
 
           return fixes
         }
@@ -497,7 +499,7 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
           [[]],
         )
 
-        splittedNodes.forEach(nodeList => {
+        for (let nodeList of splittedNodes) {
           pairwise(nodeList, (left, right) => {
             let leftNum = getGroupNumber(left)
             let rightNum = getGroupNumber(right)
@@ -562,7 +564,7 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
               }
             }
           })
-        })
+        }
       },
     }
   },

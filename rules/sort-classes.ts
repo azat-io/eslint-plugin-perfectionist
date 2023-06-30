@@ -223,16 +223,16 @@ export default createEslintRule<Options, MESSAGE_ID>({
                     [],
                   )
 
-                formatted.forEach((sortingNode, i) => {
+                for (let i = 0, max = formatted.length; i < max; i++) {
                   fixes.push(
                     fixer.replaceTextRange(
                       getNodeRange(nodes.at(i)!.node, source),
                       source.text.slice(
-                        ...getNodeRange(sortingNode.node, source),
+                        ...getNodeRange(formatted.at(i)!.node, source),
                       ),
                     ),
                   )
-                })
+                }
 
                 return fixes
               },

@@ -107,7 +107,7 @@ export default createEslintRule<Options, MESSAGE_ID>({
             [[]],
           )
 
-          parts.forEach(part => {
+          for (let part of parts) {
             let nodes: SortingNode[] = part.map(element => {
               let name: string
 
@@ -146,7 +146,7 @@ export default createEslintRule<Options, MESSAGE_ID>({
                 })
               }
             })
-          })
+          }
         }
       }
     },

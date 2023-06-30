@@ -106,7 +106,7 @@ export default createEslintRule<Options, MESSAGE_ID>({
       'Program:exit': () => {
         let source = context.getSourceCode()
 
-        parts.forEach(nodes => {
+        for (let nodes of parts) {
           pairwise(nodes, (left, right) => {
             if (compare(left, right, options)) {
               context.report({
@@ -121,7 +121,7 @@ export default createEslintRule<Options, MESSAGE_ID>({
               })
             }
           })
-        })
+        }
       },
     }
   },

@@ -209,7 +209,7 @@ export default createEslintRule<Options, MESSAGE_ID>({
             [[]],
           )
 
-        formatProperties(node.properties).forEach(nodes => {
+        for (let nodes of formatProperties(node.properties)) {
           pairwise(nodes, (left, right) => {
             let comparison: boolean
 
@@ -267,7 +267,7 @@ export default createEslintRule<Options, MESSAGE_ID>({
               })
             }
           })
-        })
+        }
       }
     }
 

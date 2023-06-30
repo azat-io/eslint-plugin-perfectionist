@@ -153,13 +153,14 @@ export default createEslintRule<Options, MESSAGE_ID>({
                   let sortedNodes = sortNodes(nodes, options)
 
                   if (options['spread-last']) {
-                    sortedNodes.forEach((sortedNode, index) => {
+                    for (let i = 0, max = sortedNodes.length; i < max; i++) {
                       if (
-                        sortedNode.node.type === AST_NODE_TYPES.SpreadElement
+                        sortedNodes.at(i)!.node.type ===
+                        AST_NODE_TYPES.SpreadElement
                       ) {
-                        sortedNodes.push(sortedNodes.splice(index, 1).at(0)!)
+                        sortedNodes.push(sortedNodes.splice(i, 1).at(0)!)
                       }
-                    })
+                    }
                   }
 
                   return makeFixes(fixer, nodes, sortedNodes, source)

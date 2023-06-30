@@ -17,17 +17,19 @@ export let makeFixes = (
 ) => {
   let fixes: TSESLint.RuleFix[] = []
 
-  nodes.forEach(({ node }, index) => {
+  for (let i = 0, max = nodes.length; i < max; i++) {
+    let { node } = nodes.at(i)!
+
     fixes.push(
       fixer.replaceTextRange(
         getNodeRange(node, source, additionalOptions),
         source.text.slice(
-          ...getNodeRange(sortedNodes[index].node, source, additionalOptions),
+          ...getNodeRange(sortedNodes.at(i)!.node, source, additionalOptions),
         ),
       ),
     )
 
-    let commentAfter = getCommentAfter(sortedNodes[index].node, source)
+    let commentAfter = getCommentAfter(sortedNodes.at(i)!.node, source)
 
     if (commentAfter) {
       let tokenBefore = source.getTokenBefore(commentAfter)
@@ -50,7 +52,7 @@ export let makeFixes = (
         ),
       )
     }
-  })
+  }
 
   return fixes
 }
