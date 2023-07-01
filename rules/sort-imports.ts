@@ -376,28 +376,22 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
         ): TSESLint.RuleFix[] => {
           let fixes: TSESLint.RuleFix[] = []
 
-          let grouped = nodesToFix.reduce(
-            (
-              accumulator: {
-                [key: string]: SortingNodeWithGroup<string[]>[]
-              },
-              node,
-            ) => {
-              let groupNum = getGroupNumber(node)
+          let grouped: {
+            [key: string]: SortingNodeWithGroup<string[]>[]
+          } = {}
 
-              if (!(groupNum in accumulator)) {
-                accumulator[groupNum] = [node]
-              } else {
-                accumulator[groupNum] = sortNodes(
-                  [...accumulator[groupNum], node],
-                  options,
-                )
-              }
+          for (let node of nodesToFix) {
+            let groupNum = getGroupNumber(node)
 
-              return accumulator
-            },
-            {},
-          )
+            if (!(groupNum in grouped)) {
+              grouped[groupNum] = [node]
+            } else {
+              grouped[groupNum] = sortNodes(
+                [...grouped[groupNum], node],
+                options,
+              )
+            }
+          }
 
           let formatted = Object.keys(grouped)
             .sort()
@@ -481,23 +475,17 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
           return fixes
         }
 
-        let splittedNodes = nodes.reduce(
-          (
-            accumulator: SortingNodeWithGroup<string[]>[][],
-            node: SortingNodeWithGroup<string[]>,
-          ) => {
-            let lastNode = accumulator.at(-1)?.at(-1)
+        let splittedNodes: SortingNodeWithGroup<string[]>[][] = [[]]
 
-            if (lastNode && hasContentBetweenNodes(lastNode, node)) {
-              accumulator.push([node])
-            } else {
-              accumulator.at(-1)!.push(node)
-            }
+        for (let node of nodes) {
+          let lastNode = splittedNodes.at(-1)?.at(-1)
 
-            return accumulator
-          },
-          [[]],
-        )
+          if (lastNode && hasContentBetweenNodes(lastNode, node)) {
+            splittedNodes.push([node])
+          } else {
+            splittedNodes.at(-1)!.push(node)
+          }
+        }
 
         for (let nodeList of splittedNodes) {
           pairwise(nodeList, (left, right) => {
