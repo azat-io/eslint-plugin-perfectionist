@@ -6,7 +6,7 @@ title: Integrations
 
 You can set up the ability to fix linting problems when saving in your editor.
 
-![ESLint Plugin Perfectionist usage demo](/public/demo.gif)
+![ESLint Plugin Perfectionist usage demo](/demo.gif)
 
 ## 📟 JetBrains IDE
 
