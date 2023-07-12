@@ -141,6 +141,7 @@ export default [
 | Name                                                                                               | Description                                 | 🔧 |
 | :------------------------------------------------------------------------------------------------- | :------------------------------------------ | :- |
 | [sort-array-includes](https://eslint-plugin-perfectionist.azat.io/rules/sort-array-includes)       | enforce sorted arrays before include method | 🔧 |
+| [sort-astro-attributes](https://eslint-plugin-perfectionist.azat.io/rules/sort-astro-attributes)   | enforce sorted union types                  | 🔧 |
 | [sort-classes](https://eslint-plugin-perfectionist.azat.io/rules/sort-classes)                     | enforce sorted classes                      | 🔧 |
 | [sort-enums](https://eslint-plugin-perfectionist.azat.io/rules/sort-enums)                         | enforce sorted TypeScript enums             | 🔧 |
 | [sort-exports](https://eslint-plugin-perfectionist.azat.io/rules/sort-exports)                     | enforce sorted exports                      | 🔧 |

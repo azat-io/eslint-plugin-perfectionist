@@ -1,4 +1,5 @@
 import sortSvelteAttributes, { RULE_NAME as sortSvelteAttributesName } from './rules/sort-svelte-attributes'
+import sortAstroAttributes, { RULE_NAME as sortAstroAttributesName } from './rules/sort-astro-attributes'
 import sortArrayIncludes, { RULE_NAME as sortArrayIncludesName } from './rules/sort-array-includes'
 import sortNamedImports, { RULE_NAME as sortNamedImportsName } from './rules/sort-named-imports'
 import sortNamedExports, { RULE_NAME as sortNamedExportsName } from './rules/sort-named-exports'
@@ -92,6 +93,7 @@ let createConfigWithOptions = (options: {
       },
     ],
     [sortSvelteAttributesName]: ['error'],
+    [sortAstroAttributesName]: ['error'],
     [sortNamedExportsName]: ['error'],
     [sortNamedImportsName]: ['error'],
     [sortObjectTypesName]: ['error'],
@@ -116,6 +118,7 @@ let createConfigWithOptions = (options: {
 export default {
   rules: {
     [sortArrayIncludesName]: sortArrayIncludes,
+    [sortAstroAttributesName]: sortAstroAttributes,
     [sortClassesName]: sortClasses,
     [sortEnumsName]: sortEnums,
     [sortExportsName]: sortExports,
