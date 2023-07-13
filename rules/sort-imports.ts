@@ -263,6 +263,7 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
           }
         }
 
+        defineGroup('external-type')
         defineGroup('type')
       }
 

@@ -104,6 +104,7 @@ type Group =
   | 'style'
   | 'type'
   | 'builtin-type'
+  | 'external-type'
   | 'internal-type'
   | 'parent-type'
   | 'sibling-type'
@@ -174,7 +175,7 @@ import main from '.'
 import log = console.log
 // style - Styles
 import styles from './index.module.css'
-// type - TypeScript type imports
+// external-type - TypeScript type imports
 import type { FC } from 'react'
 // builtin-type - TypeScript type imports from Built-in Modules
 import type { Server } from 'http'
