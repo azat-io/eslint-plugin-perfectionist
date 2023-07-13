@@ -1,6 +1,27 @@
 # Changelog
 
 
+## v1.5.0
+
+[compare changes](https://github.com/azat-io/eslint-plugin-perfectionist/compare/v1.4.0...v1.5.0)
+
+### 🚀 Features
+
+- Add external-type import group ([47b07cc](https://github.com/azat-io/eslint-plugin-perfectionist/commit/47b07cc))
+
+### 🏎 Performance Improvements
+
+- Move from foreach to for loops ([b648f74](https://github.com/azat-io/eslint-plugin-perfectionist/commit/b648f74))
+- Move from reduce to for loops in sort-imports ([16f6361](https://github.com/azat-io/eslint-plugin-perfectionist/commit/16f6361))
+
+### 🐞 Bug Fixes
+
+- Don't sort ts call signature declarations in interfactes ([5829a65](https://github.com/azat-io/eslint-plugin-perfectionist/commit/5829a65))
+
+### ❤️  Contributors
+
+- Azat S ([@azat-io](http://github.com/azat-io))
+
 ## v1.4.0
 
 [compare changes](https://github.com/azat-io/eslint-plugin-perfectionist/compare/v1.3.0...v1.4.0)
