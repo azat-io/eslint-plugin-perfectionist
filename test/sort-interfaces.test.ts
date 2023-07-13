@@ -524,6 +524,33 @@ describe(RULE_NAME, () => {
         ],
       })
     })
+
+    it(`${RULE_NAME}(${type}): not sorts call signature declarations`, () => {
+      ruleTester.run(RULE_NAME, rule, {
+        valid: [
+          {
+            code: dedent`
+              interface Abilities {
+                <Parameters extends Record<string, number | string>>(
+                  input: AbilityFunction<[Parameters], string>
+                ): Alternatives<Parameters>
+                <Ability extends CountAbility>(input: Input): AbilityFunction<
+                  [number],
+                  Ability[keyof Ability]
+                >
+              }
+            `,
+            options: [
+              {
+                type: SortType.alphabetical,
+                order: SortOrder.asc,
+              },
+            ],
+          },
+        ],
+        invalid: [],
+      })
+    })
   })
 
   describe(`${RULE_NAME}: sorting by natural order`, () => {
@@ -1040,6 +1067,33 @@ describe(RULE_NAME, () => {
         ],
       })
     })
+
+    it(`${RULE_NAME}(${type}): not sorts call signature declarations`, () => {
+      ruleTester.run(RULE_NAME, rule, {
+        valid: [
+          {
+            code: dedent`
+              interface Abilities {
+                <Parameters extends Record<string, number | string>>(
+                  input: AbilityFunction<[Parameters], string>
+                ): Alternatives<Parameters>
+                <Ability extends CountAbility>(input: Input): AbilityFunction<
+                  [number],
+                  Ability[keyof Ability]
+                >
+              }
+            `,
+            options: [
+              {
+                type: SortType.natural,
+                order: SortOrder.asc,
+              },
+            ],
+          },
+        ],
+        invalid: [],
+      })
+    })
   })
 
   describe(`${RULE_NAME}: sorting by line length`, () => {
@@ -1500,6 +1554,33 @@ describe(RULE_NAME, () => {
             ],
           },
         ],
+      })
+    })
+
+    it(`${RULE_NAME}(${type}): not sorts call signature declarations`, () => {
+      ruleTester.run(RULE_NAME, rule, {
+        valid: [
+          {
+            code: dedent`
+              interface Abilities {
+                <Parameters extends Record<string, number | string>>(
+                  input: AbilityFunction<[Parameters], string>
+                ): Alternatives<Parameters>
+                <Ability extends CountAbility>(input: Input): AbilityFunction<
+                  [number],
+                  Ability[keyof Ability]
+                >
+              }
+            `,
+            options: [
+              {
+                type: SortType['line-length'],
+                order: SortOrder.desc,
+              },
+            ],
+          },
+        ],
+        invalid: [],
       })
     })
   })

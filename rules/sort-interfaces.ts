@@ -91,54 +91,66 @@ export default createEslintRule<Options, MESSAGE_ID>({
         ) {
           let source = context.getSourceCode()
 
-          let nodes: SortingNode[] = node.body.body.map(element => {
-            let name: string
-
-            if (element.type === AST_NODE_TYPES.TSPropertySignature) {
-              if (element.key.type === AST_NODE_TYPES.Identifier) {
-                ;({ name } = element.key)
-              } else if (element.key.type === AST_NODE_TYPES.Literal) {
-                name = `${element.key.value}`
-              } else {
-                let end: number =
-                  element.typeAnnotation?.range.at(0) ??
-                  element.range.at(1)! - (element.optional ? '?'.length : 0)
-
-                name = source.text.slice(element.range.at(0), end)
+          let formattedMembers: SortingNode[][] = node.body.body.reduce(
+            (accumulator: SortingNode[][], element) => {
+              if (element.type === AST_NODE_TYPES.TSCallSignatureDeclaration) {
+                accumulator.push([])
+                return accumulator
               }
-            } else if (element.type === AST_NODE_TYPES.TSIndexSignature) {
-              let endIndex: number =
-                element.typeAnnotation?.range.at(0) ?? element.range.at(1)!
 
-              name = source.text.slice(element.range.at(0), endIndex)
-            } else {
-              let endIndex: number =
-                element.returnType?.range.at(0) ?? element.range.at(1)!
+              let name: string
 
-              name = source.text.slice(element.range.at(0), endIndex)
-            }
+              if (element.type === AST_NODE_TYPES.TSPropertySignature) {
+                if (element.key.type === AST_NODE_TYPES.Identifier) {
+                  ;({ name } = element.key)
+                } else if (element.key.type === AST_NODE_TYPES.Literal) {
+                  name = `${element.key.value}`
+                } else {
+                  let end: number =
+                    element.typeAnnotation?.range.at(0) ??
+                    element.range.at(1)! - (element.optional ? '?'.length : 0)
 
-            return {
-              size: rangeToDiff(element.range),
-              node: element,
-              name,
-            }
-          })
+                  name = source.text.slice(element.range.at(0), end)
+                }
+              } else if (element.type === AST_NODE_TYPES.TSIndexSignature) {
+                let endIndex: number =
+                  element.typeAnnotation?.range.at(0) ?? element.range.at(1)!
 
-          pairwise(nodes, (left, right) => {
-            if (compare(left, right, options)) {
-              context.report({
-                messageId: 'unexpectedInterfacePropertiesOrder',
-                data: {
-                  left: toSingleLine(left.name),
-                  right: toSingleLine(right.name),
-                },
-                node: right.node,
-                fix: fixer =>
-                  makeFixes(fixer, nodes, sortNodes(nodes, options), source),
+                name = source.text.slice(element.range.at(0), endIndex)
+              } else {
+                let endIndex: number =
+                  element.returnType?.range.at(0) ?? element.range.at(1)!
+
+                name = source.text.slice(element.range.at(0), endIndex)
+              }
+
+              accumulator.at(-1)!.push({
+                size: rangeToDiff(element.range),
+                node: element,
+                name,
               })
-            }
-          })
+
+              return accumulator
+            },
+            [[]],
+          )
+
+          for (let nodes of formattedMembers) {
+            pairwise(nodes, (left, right) => {
+              if (compare(left, right, options)) {
+                context.report({
+                  messageId: 'unexpectedInterfacePropertiesOrder',
+                  data: {
+                    left: toSingleLine(left.name),
+                    right: toSingleLine(right.name),
+                  },
+                  node: right.node,
+                  fix: fixer =>
+                    makeFixes(fixer, nodes, sortNodes(nodes, options), source),
+                })
+              }
+            })
+          }
         }
       }
     },
