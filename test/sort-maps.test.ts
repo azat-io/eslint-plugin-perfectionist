@@ -2,7 +2,7 @@ import { ESLintUtils } from '@typescript-eslint/utils'
 import { describe, it } from 'vitest'
 import { dedent } from 'ts-dedent'
 
-import rule, { RULE_NAME } from '../rules/sort-map-elements'
+import rule, { RULE_NAME } from '../rules/sort-maps'
 import { SortOrder, SortType } from '../typings'
 
 describe(RULE_NAME, () => {
