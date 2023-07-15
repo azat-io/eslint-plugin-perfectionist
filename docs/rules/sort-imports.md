@@ -26,9 +26,8 @@ If you use the [`sort-imports`](https://eslint.org/docs/latest/rules/sort-import
 Rule `perfectionist/sort-imports` works in a similar way to rule `import/order`, but with some differences:
 
 1. Supporting for new import types: `'side-effect'`, `'style'`, `'builtin-type'`, `'internal-type'`, `'parent-type'`, `'sibling-type'`, `'index-type'`
-2. Parsing `tsconfig.json` with the `read-tsconfig` option enabled to recognize internal imports
-3. Supporting for adding custom import groups
-4. Sorting not only alphabetically, but also naturally and by line length
+2. Supporting for adding custom import groups
+3. Sorting not only alphabetically, but also naturally and by line length
 
 ## 💡 Examples
 
@@ -126,7 +125,6 @@ interface Options {
   }
   'internal-pattern'?: string[]
   'newlines-between'?: 'always' | 'ignore' | 'never'
-  'read-tsconfig'?: boolean
 ```
 
 ### type
@@ -244,12 +242,6 @@ The [minimatch](https://github.com/isaacs/minimatch) library is used for pattern
 - `always` - one new line between each group will be enforced, and new lines inside a group will be forbidden.
 - `never` - no new lines are allowed in the entire import section.
 
-### read-tsconfig
-
-<sub>(default: `false`)</sub>
-
-If your project is written in TypeScript, you can read `tsconfig.json` and use `paths` as internal imports.
-
 ## ⚙️ Usage
 
 ::: code-group
@@ -293,8 +285,7 @@ If your project is written in TypeScript, you can read `tsconfig.json` and use `
           "@/stores/**",
           "@/pages/**",
           "@/lib/**"
-        ],
-        "read-tsconfig": false
+        ]
       }
     ]
   }
@@ -346,7 +337,6 @@ export default [
             '@/pages/**',
             '@/lib/**',
           ],
-          'read-tsconfig': false,
         },
       ],
     },
