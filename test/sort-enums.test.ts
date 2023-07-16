@@ -1,12 +1,16 @@
-import { ESLintUtils } from '@typescript-eslint/utils'
-import { describe, it } from 'vitest'
+import { RuleTester } from '@typescript-eslint/rule-tester'
+import { afterAll, describe, it } from 'vitest'
 import { dedent } from 'ts-dedent'
 
 import rule, { RULE_NAME } from '../rules/sort-enums'
 import { SortOrder, SortType } from '../typings'
 
 describe(RULE_NAME, () => {
-  let ruleTester = new ESLintUtils.RuleTester({
+  RuleTester.afterAll = afterAll
+  RuleTester.describe = describe
+  RuleTester.it = it
+
+  let ruleTester = new RuleTester({
     parser: '@typescript-eslint/parser',
   })
 
