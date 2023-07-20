@@ -1,6 +1,7 @@
 import type { TSESTree } from '@typescript-eslint/types'
 
 import { AST_NODE_TYPES } from '@typescript-eslint/types'
+import { minimatch } from 'minimatch'
 
 import type { SortingNode } from '../typings'
 
@@ -11,27 +12,25 @@ import { makeFixes } from '../utils/make-fixes'
 import { sortNodes } from '../utils/sort-nodes'
 import { pairwise } from '../utils/pairwise'
 import { complete } from '../utils/complete'
-import { groupBy } from '../utils/group-by'
 import { compare } from '../utils/compare'
 
 type MESSAGE_ID = 'unexpectedJSXPropsOrder'
 
-export enum Position {
-  'exception' = 'exception',
-  'ignore' = 'ignore',
-  'first' = 'first',
-  'last' = 'last',
+type Group<T extends string[]> =
+  | 'multiline'
+  | 'shorthand'
+  | 'unknown'
+  | T[number]
+
+type SortingNodeWithGroup<T extends string[]> = SortingNode & {
+  group: Group<T>
 }
 
-type SortingNodeWithPosition = SortingNode & { position: Position }
-
-type Options = [
+type Options<T extends string[]> = [
   Partial<{
-    'always-on-top': string[]
+    'custom-groups': { [key in T[number]]: string[] | string }
+    groups: (Group<T>[] | Group<T>)[]
     'ignore-case': boolean
-    multiline: Position
-    shorthand: Position
-    callback: Position
     order: SortOrder
     type: SortType
   }>,
@@ -39,7 +38,7 @@ type Options = [
 
 export const RULE_NAME = 'sort-jsx-props'
 
-export default createEslintRule<Options, MESSAGE_ID>({
+export default createEslintRule<Options<string[]>, MESSAGE_ID>({
   name: RULE_NAME,
   meta: {
     type: 'suggestion',
@@ -52,6 +51,9 @@ export default createEslintRule<Options, MESSAGE_ID>({
       {
         type: 'object',
         properties: {
+          'custom-groups': {
+            type: 'object',
+          },
           type: {
             enum: [
               SortType.alphabetical,
@@ -64,22 +66,13 @@ export default createEslintRule<Options, MESSAGE_ID>({
             enum: [SortOrder.asc, SortOrder.desc],
             default: SortOrder.asc,
           },
-          'always-on-top': {
+          groups: {
             type: 'array',
             default: [],
           },
           'ignore-case': {
             type: 'boolean',
             default: false,
-          },
-          shorthand: {
-            enum: [Position.first, Position.last, Position.ignore],
-          },
-          callback: {
-            enum: [Position.first, Position.last, Position.ignore],
-          },
-          multiline: {
-            enum: [Position.first, Position.last, Position.ignore],
           },
         },
         additionalProperties: false,
@@ -100,20 +93,18 @@ export default createEslintRule<Options, MESSAGE_ID>({
       if (node.openingElement.attributes.length > 1) {
         let options = complete(context.options.at(0), {
           type: SortType.alphabetical,
-          shorthand: Position.ignore,
-          multiline: Position.ignore,
-          callback: Position.ignore,
-          'always-on-top': [],
           'ignore-case': false,
           order: SortOrder.asc,
+          'custom-groups': {},
+          groups: [],
         })
 
         let source = context.getSourceCode()
 
-        let parts: SortingNodeWithPosition[][] =
+        let parts: SortingNodeWithGroup<string[]>[][] =
           node.openingElement.attributes.reduce(
             (
-              accumulator: SortingNodeWithPosition[][],
+              accumulator: SortingNodeWithGroup<string[]>[][],
               attribute: TSESTree.JSXSpreadAttribute | TSESTree.JSXAttribute,
             ) => {
               if (attribute.type === AST_NODE_TYPES.JSXSpreadAttribute) {
@@ -121,44 +112,44 @@ export default createEslintRule<Options, MESSAGE_ID>({
                 return accumulator
               }
 
-              let position: Position = Position.ignore
+              let name = attribute.name.type === AST_NODE_TYPES.JSXNamespacedName
+              ? `${attribute.name.namespace.name}:${attribute.name.name.name}`
+              : attribute.name.name
 
-              if (
-                attribute.name.type === AST_NODE_TYPES.JSXIdentifier &&
-                options['always-on-top'].includes(attribute.name.name)
-              ) {
-                position = Position.exception
-              } else {
-                if (
-                  options.shorthand !== Position.ignore &&
-                  attribute.value === null
-                ) {
-                  position = options.shorthand
-                }
+              let group: Group<string[]> | undefined
 
-                if (
-                  options.callback !== Position.ignore &&
-                  attribute.name.type === AST_NODE_TYPES.JSXIdentifier &&
-                  attribute.name.name.indexOf('on') === 0 &&
-                  attribute.value !== null
-                ) {
-                  position = options.callback
-                } else if (
-                  options.multiline !== Position.ignore &&
-                  attribute.loc.start.line !== attribute.loc.end.line
-                ) {
-                  position = options.multiline
+              let defineGroup = (nodeGroup: Group<string[]>) => {
+                if (!group && options.groups.flat().includes(nodeGroup)) {
+                  group = nodeGroup
                 }
               }
 
+              for (let [key, pattern] of Object.entries(options['custom-groups'])) {
+                if (
+                  Array.isArray(pattern) &&
+                  pattern.some(patternValue => minimatch(name, patternValue))
+                ) {
+                  defineGroup(key)
+                }
+
+                if (typeof pattern === 'string' && minimatch(name, pattern)) {
+                  defineGroup(key)
+                }
+              }
+
+              if (attribute.value === null) {
+                defineGroup('shorthand')
+              }
+
+              if (attribute.loc.start.line !== attribute.loc.end.line) {
+                defineGroup('multiline')
+              }
+
               let jsxNode = {
-                name:
-                  attribute.name.type === AST_NODE_TYPES.JSXNamespacedName
-                    ? `${attribute.name.namespace.name}:${attribute.name.name.name}`
-                    : attribute.name.name,
                 size: rangeToDiff(attribute.range),
+                group: group ?? 'unknown',
                 node: attribute,
-                position,
+                name,
               }
 
               accumulator.at(-1)!.push(jsxNode)
@@ -168,32 +159,27 @@ export default createEslintRule<Options, MESSAGE_ID>({
             [[]],
           )
 
-        for (let nodes of parts) {
-          pairwise(nodes, (left, right) => {
-            let comparison: boolean
+        let getGroupNumber = (nodeWithGroup: SortingNodeWithGroup<string[]>): number => {
+          for (let i = 0, max = options.groups.length; i < max; i++) {
+            let currentGroup = options.groups[i]
 
             if (
-              left.position === Position.exception &&
-              right.position === Position.exception
+              nodeWithGroup.group === currentGroup ||
+              (Array.isArray(currentGroup) && currentGroup.includes(nodeWithGroup.group))
             ) {
-              comparison =
-                options['always-on-top'].indexOf(left.name) >
-                options['always-on-top'].indexOf(right.name)
-            } else if (left.position === right.position) {
-              comparison = compare(left, right, options)
-            } else {
-              let positionPower = {
-                [Position.exception]: 2,
-                [Position.first]: 1,
-                [Position.ignore]: 0,
-                [Position.last]: -1,
-              }
-
-              comparison =
-                positionPower[left.position] < positionPower[right.position]
+              return i
             }
+          }
+          return options.groups.length
+        }
 
-            if (comparison) {
+        for (let nodes of parts) {
+          pairwise(nodes, (left, right) => {
+            let leftNum = getGroupNumber(left)
+            let rightNum = getGroupNumber(right)
+
+            if ((leftNum > rightNum ||
+                (leftNum === rightNum && compare(left, right, options)))) {
               context.report({
                 messageId: 'unexpectedJSXPropsOrder',
                 data: {
@@ -202,24 +188,31 @@ export default createEslintRule<Options, MESSAGE_ID>({
                 },
                 node: right.node,
                 fix: fixer => {
-                  let groups = groupBy(nodes, ({ position }) => position)
+                  let grouped: {
+                    [key: string]: SortingNodeWithGroup<string[]>[]
+                  } = {}
 
-                  let getGroup = (index: string) =>
-                    index in groups ? groups[index] : []
+                  for (let currentNode of nodes) {
+                    let groupNum = getGroupNumber(currentNode)
 
-                  let sortedNodes = [
-                    getGroup(Position.exception).sort(
-                      (aNode, bNode) =>
-                        options['always-on-top'].indexOf(aNode.name) -
-                        options['always-on-top'].indexOf(bNode.name),
-                    ),
-                    sortNodes(getGroup(Position.first), options),
-                    sortNodes(getGroup(Position.ignore), options),
-                    sortNodes(getGroup(Position.last), options),
-                  ].flat()
+                    if (!(groupNum in grouped)) {
+                      grouped[groupNum] = [currentNode]
+                    } else {
+                      grouped[groupNum] = sortNodes(
+                        [...grouped[groupNum], currentNode],
+                        options,
+                      )
+                    }
+                  }
+
+                  let sortedNodes: SortingNode[] = []
+
+                  for(let group of Object.keys(grouped).sort()) {
+                    sortedNodes.push(...sortNodes(grouped[group], options))
+                  }
 
                   return makeFixes(fixer, nodes, sortedNodes, source)
-                },
+                }
               })
             }
           })
