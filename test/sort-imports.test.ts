@@ -3282,59 +3282,5 @@ describe(RULE_NAME, () => {
         }),
       },
     }))
-
-    ruleTester.run(RULE_NAME, rule, {
-      valid: [],
-      invalid: [
-        {
-          code: dedent`
-            import { MikuruAsahina } from '@/components/mikuru'
-            import { HaruhiSuzumiya } from '@melancholy/haruhi-suzumiya'
-            import { YukiNagato } from '~/data/yuki'
-          `,
-          output: dedent`
-            import { HaruhiSuzumiya } from '@melancholy/haruhi-suzumiya'
-
-            import { MikuruAsahina } from '@/components/mikuru'
-            import { YukiNagato } from '~/data/yuki'
-          `,
-          options: [
-            {
-              type: SortType['line-length'],
-              order: SortOrder.desc,
-              'newlines-between': NewlinesBetweenValue.always,
-              'internal-pattern': ['~/**'],
-              groups: [
-                'type',
-                ['builtin', 'external'],
-                'internal-type',
-                'internal',
-                ['parent-type', 'sibling-type', 'index-type'],
-                ['parent', 'sibling', 'index'],
-                'object',
-                'unknown',
-              ],
-              'read-tsconfig': true,
-            },
-          ],
-          errors: [
-            {
-              messageId: 'unexpectedImportsOrder',
-              data: {
-                left: '@/components/mikuru',
-                right: '@melancholy/haruhi-suzumiya',
-              },
-            },
-            {
-              messageId: 'missedSpacingBetweenImports',
-              data: {
-                left: '@melancholy/haruhi-suzumiya',
-                right: '~/data/yuki',
-              },
-            },
-          ],
-        },
-      ],
-    })
   })
 })

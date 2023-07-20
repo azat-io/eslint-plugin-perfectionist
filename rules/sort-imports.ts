@@ -11,7 +11,6 @@ import { getCommentBefore } from '../utils/get-comment-before'
 import { createEslintRule } from '../utils/create-eslint-rule'
 import { getNodeRange } from '../utils/get-node-range'
 import { rangeToDiff } from '../utils/range-to-diff'
-import { TSConfig } from '../utils/read-ts-config'
 import { SortOrder, SortType } from '../typings'
 import { sortNodes } from '../utils/sort-nodes'
 import { complete } from '../utils/complete'
@@ -58,7 +57,6 @@ type Options<T extends string[]> = [
     'newlines-between': NewlinesBetweenValue
     groups: (Group<T>[] | Group<T>)[]
     'internal-pattern': string[]
-    'read-tsconfig': boolean
     'ignore-case': boolean
     order: SortOrder
     type: SortType
@@ -132,10 +130,6 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
             ],
             default: NewlinesBetweenValue.always,
           },
-          'read-tsconfig': {
-            type: 'boolean',
-            default: false,
-          },
         },
         additionalProperties: false,
       },
@@ -160,23 +154,12 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
       'custom-groups': { type: {}, value: {} },
       'internal-pattern': ['~/**'],
       type: SortType.alphabetical,
-      'read-tsconfig': false,
       order: SortOrder.asc,
       'ignore-case': false,
       groups: [],
     })
 
     let tsPaths: string[] = []
-
-    if (options['read-tsconfig']) {
-      let tsConfig = TSConfig.get()
-
-      if (tsConfig.compilerOptions?.paths) {
-        for (let path of Object.keys(tsConfig.compilerOptions.paths)) {
-          tsPaths.push(path)
-        }
-      }
-    }
 
     let source = context.getSourceCode()
 
