@@ -1057,6 +1057,80 @@ describe(RULE_NAME, () => {
         ],
       })
     })
+
+    it(`${RULE_NAME}(${type}): supports require imports`, () => {
+      ruleTester.run(RULE_NAME, rule, {
+        valid: [],
+        invalid: [
+          {
+            code: dedent`
+              let { GantaNakami, IsakiMagari } = require('insomniacs')
+              let TaoUkegawa = require('./school/ukegawa')
+              let MotokoKanikawa = require('./school/kanikawa')
+              let KanamiAnamizu = require('./school/anamizu')
+              let { YuiShiromaru } = require('astronomy-club')
+            `,
+            output: dedent`
+              let { YuiShiromaru } = require('astronomy-club')
+              let { GantaNakami, IsakiMagari } = require('insomniacs')
+
+              let KanamiAnamizu = require('./school/anamizu')
+              let MotokoKanikawa = require('./school/kanikawa')
+              let TaoUkegawa = require('./school/ukegawa')
+            `,
+            options: [
+              {
+                type: SortType.alphabetical,
+                order: SortOrder.asc,
+                'ignore-case': true,
+                'newlines-between': NewlinesBetweenValue.always,
+                'internal-pattern': ['~/**'],
+                groups: [
+                  'type',
+                  ['builtin', 'external'],
+                  'internal-type',
+                  'internal',
+                  ['parent-type', 'sibling-type', 'index-type'],
+                  ['parent', 'sibling', 'index'],
+                  'object',
+                  'unknown',
+                ],
+              },
+            ],
+            errors: [
+              {
+                messageId: 'missedSpacingBetweenImports',
+                data: {
+                  left: 'insomniacs',
+                  right: './school/ukegawa',
+                },
+              },
+              {
+                messageId: 'unexpectedImportsOrder',
+                data: {
+                  left: './school/ukegawa',
+                  right: './school/kanikawa',
+                },
+              },
+              {
+                messageId: 'unexpectedImportsOrder',
+                data: {
+                  left: './school/kanikawa',
+                  right: './school/anamizu',
+                },
+              },
+              {
+                messageId: 'unexpectedImportsOrder',
+                data: {
+                  left: './school/anamizu',
+                  right: 'astronomy-club',
+                },
+              },
+            ],
+          },
+        ],
+      })
+    })
   })
 
   describe(`${RULE_NAME}: sorting by natural order`, () => {
@@ -2099,6 +2173,80 @@ describe(RULE_NAME, () => {
                 data: {
                   left: 'giovannis-island',
                   right: 'giovannis-island',
+                },
+              },
+            ],
+          },
+        ],
+      })
+    })
+
+    it(`${RULE_NAME}(${type}): supports require imports`, () => {
+      ruleTester.run(RULE_NAME, rule, {
+        valid: [],
+        invalid: [
+          {
+            code: dedent`
+              let { GantaNakami, IsakiMagari } = require('insomniacs')
+              let TaoUkegawa = require('./school/ukegawa')
+              let MotokoKanikawa = require('./school/kanikawa')
+              let KanamiAnamizu = require('./school/anamizu')
+              let { YuiShiromaru } = require('astronomy-club')
+            `,
+            output: dedent`
+              let { YuiShiromaru } = require('astronomy-club')
+              let { GantaNakami, IsakiMagari } = require('insomniacs')
+
+              let KanamiAnamizu = require('./school/anamizu')
+              let MotokoKanikawa = require('./school/kanikawa')
+              let TaoUkegawa = require('./school/ukegawa')
+            `,
+            options: [
+              {
+                type: SortType.natural,
+                order: SortOrder.asc,
+                'ignore-case': true,
+                'newlines-between': NewlinesBetweenValue.always,
+                'internal-pattern': ['~/**'],
+                groups: [
+                  'type',
+                  ['builtin', 'external'],
+                  'internal-type',
+                  'internal',
+                  ['parent-type', 'sibling-type', 'index-type'],
+                  ['parent', 'sibling', 'index'],
+                  'object',
+                  'unknown',
+                ],
+              },
+            ],
+            errors: [
+              {
+                messageId: 'missedSpacingBetweenImports',
+                data: {
+                  left: 'insomniacs',
+                  right: './school/ukegawa',
+                },
+              },
+              {
+                messageId: 'unexpectedImportsOrder',
+                data: {
+                  left: './school/ukegawa',
+                  right: './school/kanikawa',
+                },
+              },
+              {
+                messageId: 'unexpectedImportsOrder',
+                data: {
+                  left: './school/kanikawa',
+                  right: './school/anamizu',
+                },
+              },
+              {
+                messageId: 'unexpectedImportsOrder',
+                data: {
+                  left: './school/anamizu',
+                  right: 'astronomy-club',
                 },
               },
             ],
@@ -3197,6 +3345,73 @@ describe(RULE_NAME, () => {
                 data: {
                   left: 'giovannis-island',
                   right: 'giovannis-island',
+                },
+              },
+            ],
+          },
+        ],
+      })
+    })
+
+    it(`${RULE_NAME}(${type}): supports require imports`, () => {
+      ruleTester.run(RULE_NAME, rule, {
+        valid: [],
+        invalid: [
+          {
+            code: dedent`
+              let { GantaNakami, IsakiMagari } = require('insomniacs')
+              let TaoUkegawa = require('./school/ukegawa')
+              let MotokoKanikawa = require('./school/kanikawa')
+              let KanamiAnamizu = require('./school/anamizu')
+              let { YuiShiromaru } = require('astronomy-club')
+            `,
+            output: dedent`
+              let { GantaNakami, IsakiMagari } = require('insomniacs')
+              let { YuiShiromaru } = require('astronomy-club')
+
+              let MotokoKanikawa = require('./school/kanikawa')
+              let KanamiAnamizu = require('./school/anamizu')
+              let TaoUkegawa = require('./school/ukegawa')
+            `,
+            options: [
+              {
+                type: SortType['line-length'],
+                order: SortOrder.desc,
+                'ignore-case': true,
+                'newlines-between': NewlinesBetweenValue.always,
+                'internal-pattern': ['~/**'],
+                groups: [
+                  'type',
+                  ['builtin', 'external'],
+                  'internal-type',
+                  'internal',
+                  ['parent-type', 'sibling-type', 'index-type'],
+                  ['parent', 'sibling', 'index'],
+                  'object',
+                  'unknown',
+                ],
+              },
+            ],
+            errors: [
+              {
+                messageId: 'missedSpacingBetweenImports',
+                data: {
+                  left: 'insomniacs',
+                  right: './school/ukegawa',
+                },
+              },
+              {
+                messageId: 'unexpectedImportsOrder',
+                data: {
+                  left: './school/ukegawa',
+                  right: './school/kanikawa',
+                },
+              },
+              {
+                messageId: 'unexpectedImportsOrder',
+                data: {
+                  left: './school/anamizu',
+                  right: 'astronomy-club',
                 },
               },
             ],
