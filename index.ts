@@ -1,16 +1,16 @@
 import sortArrayIncludes, { RULE_NAME as sortArrayIncludesName } from './rules/sort-array-includes'
-import sortNamedExports, { RULE_NAME as sortNamedExportsName } from './rules/sort-named-exports'
 import sortNamedImports, { RULE_NAME as sortNamedImportsName } from './rules/sort-named-imports'
+import sortNamedExports, { RULE_NAME as sortNamedExportsName } from './rules/sort-named-exports'
 import sortObjectTypes, { RULE_NAME as sortObjectTypesName } from './rules/sort-object-types'
-import sortMapElements, { RULE_NAME as sortMapElementsName } from './rules/sort-map-elements'
 import sortUnionTypes, { RULE_NAME as sortUnionTypesName } from './rules/sort-union-types'
 import sortInterfaces, { RULE_NAME as sortInterfacesName } from './rules/sort-interfaces'
 import sortJsxProps, { RULE_NAME as sortJsxPropsName } from './rules/sort-jsx-props'
+import sortObjects, { RULE_NAME as sortObjectsName } from './rules/sort-objects'
 import sortImports, { RULE_NAME as sortImportsName } from './rules/sort-imports'
 import sortClasses, { RULE_NAME as sortClassesName } from './rules/sort-classes'
-import sortObjects, { RULE_NAME as sortObjectsName } from './rules/sort-objects'
 import sortExports, { RULE_NAME as sortExportsName } from './rules/sort-exports'
 import sortEnums, { RULE_NAME as sortEnumsName } from './rules/sort-enums'
+import sortMaps, { RULE_NAME as sortMapsName } from './rules/sort-maps'
 import { SortOrder, SortType } from './typings'
 import { name } from './package.json'
 
@@ -90,14 +90,14 @@ let createConfigWithOptions = (options: {
         'spread-last': true,
       },
     ],
-    [sortNamedExportsName]: ['error'],
     [sortNamedImportsName]: ['error'],
-    [sortMapElementsName]: ['error'],
+    [sortNamedExportsName]: ['error'],
     [sortObjectTypesName]: ['error'],
-    [sortInterfacesName]: ['error'],
     [sortUnionTypesName]: ['error'],
+    [sortInterfacesName]: ['error'],
     [sortExportsName]: ['error'],
     [sortEnumsName]: ['error'],
+    [sortMapsName]: ['error'],
   }
   return {
     rules: Object.fromEntries(
@@ -120,7 +120,7 @@ export default {
     [sortImportsName]: sortImports,
     [sortInterfacesName]: sortInterfaces,
     [sortJsxPropsName]: sortJsxProps,
-    [sortMapElementsName]: sortMapElements,
+    [sortMapsName]: sortMaps,
     [sortNamedExportsName]: sortNamedExports,
     [sortNamedImportsName]: sortNamedImports,
     [sortObjectTypesName]: sortObjectTypes,
