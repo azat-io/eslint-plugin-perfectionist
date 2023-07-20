@@ -24,7 +24,7 @@ type Options = [
   }>,
 ]
 
-export const RULE_NAME = 'sort-map-elements'
+export const RULE_NAME = 'sort-maps'
 
 export default createEslintRule<Options, MESSAGE_ID>({
   name: RULE_NAME,

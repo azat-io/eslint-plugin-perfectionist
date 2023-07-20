@@ -1,9 +1,9 @@
 ---
-title: sort-map-elements
+title: sort-maps
 description: ESLint Plugin Perfectionist rule which enforce sorted element within JavaScript Map object
 ---
 
-# sort-map-elements
+# sort-maps
 
 💼 This rule is enabled in the following [configs](/configs/): `recommended-alphabetical`, `recommended-line-length`, `recommended-natural`.
 
@@ -112,7 +112,7 @@ Only affects alphabetical and natural sorting. When `true` the rule ignores the 
 {
   "plugins": ["perfectionist"],
   "rules": {
-    "perfectionist/sort-map-elements": [
+    "perfectionist/sort-maps": [
       "error",
       {
         "type": "natural",
@@ -133,7 +133,7 @@ export default [
       perfectionist,
     },
     rules: {
-      'perfectionist/sort-map-elements': [
+      'perfectionist/sort-maps': [
         'error',
         {
           type: 'natural',
@@ -153,5 +153,5 @@ This rule was introduced in v0.5.0.
 
 ## 📚 Resources
 
-- [Rule source](https://github.com/azat-io/eslint-plugin-perfectionist/blob/main/rules/sort-map-elements.ts)
-- [Test source](https://github.com/azat-io/eslint-plugin-perfectionist/blob/main/test/sort-map-elements.test.ts)
+- [Rule source](https://github.com/azat-io/eslint-plugin-perfectionist/blob/main/rules/sort-maps.ts)
+- [Test source](https://github.com/azat-io/eslint-plugin-perfectionist/blob/main/test/sort-maps.test.ts)

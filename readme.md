@@ -147,7 +147,7 @@ export default [
 | [sort-imports](https://eslint-plugin-perfectionist.azat.io/rules/sort-imports)               | enforce sorted imports                      | 🔧 |
 | [sort-interfaces](https://eslint-plugin-perfectionist.azat.io/rules/sort-interfaces)         | enforce sorted interface properties         | 🔧 |
 | [sort-jsx-props](https://eslint-plugin-perfectionist.azat.io/rules/sort-jsx-props)           | enforce sorted JSX props                    | 🔧 |
-| [sort-map-elements](https://eslint-plugin-perfectionist.azat.io/rules/sort-map-elements)     | enforce sorted Map elements                 | 🔧 |
+| [sort-maps](https://eslint-plugin-perfectionist.azat.io/rules/sort-maps)                     | enforce sorted Map elements                 | 🔧 |
 | [sort-named-exports](https://eslint-plugin-perfectionist.azat.io/rules/sort-named-exports)   | enforce sorted named exports                | 🔧 |
 | [sort-named-imports](https://eslint-plugin-perfectionist.azat.io/rules/sort-named-imports)   | enforce sorted named imports                | 🔧 |
 | [sort-object-types](https://eslint-plugin-perfectionist.azat.io/rules/sort-object-types)     | enforce sorted object types                 | 🔧 |
