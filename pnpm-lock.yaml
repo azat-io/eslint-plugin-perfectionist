@@ -14,9 +14,6 @@ dependencies:
   is-core-module:
     specifier: ^2.12.1
     version: 2.12.1
-  json5:
-    specifier: ^2.2.3
-    version: 2.2.3
   minimatch:
     specifier: ^9.0.3
     version: 9.0.3
@@ -27,7 +24,7 @@ dependencies:
 devDependencies:
   '@azat-io/eslint-config-typescript':
     specifier: ^1.1.1
-    version: 1.1.1(@typescript-eslint/eslint-plugin@5.62.0)(@typescript-eslint/parser@5.62.0)(eslint-plugin-import@2.27.5)(eslint-plugin-n@16.0.1)(eslint-plugin-perfectionist@1.5.0)(eslint-plugin-prefer-arrow@1.2.3)(eslint-plugin-prefer-let@3.0.1)(eslint-plugin-promise@6.1.1)(eslint-plugin-sonarjs@0.19.0)(eslint-plugin-unicorn@47.0.0)(eslint-plugin-vitest@0.2.6)(eslint@8.45.0)
+    version: 1.1.1(@typescript-eslint/eslint-plugin@5.62.0)(@typescript-eslint/parser@5.62.0)(eslint-plugin-import@2.27.5)(eslint-plugin-n@16.0.1)(eslint-plugin-perfectionist@1.5.1)(eslint-plugin-prefer-arrow@1.2.3)(eslint-plugin-prefer-let@3.0.1)(eslint-plugin-promise@6.1.1)(eslint-plugin-sonarjs@0.19.0)(eslint-plugin-unicorn@47.0.0)(eslint-plugin-vitest@0.2.6)(eslint@8.45.0)
   '@commitlint/cli':
     specifier: ^17.6.7
     version: 17.6.7
@@ -74,8 +71,8 @@ devDependencies:
     specifier: ^16.0.1
     version: 16.0.1(eslint@8.45.0)
   eslint-plugin-perfectionist:
-    specifier: ^1.5.0
-    version: 1.5.0(eslint@8.45.0)(typescript@5.1.6)
+    specifier: ^1.5.1
+    version: 1.5.1(eslint@8.45.0)(typescript@5.1.6)
   eslint-plugin-prefer-arrow:
     specifier: ^1.2.3
     version: 1.2.3(eslint@8.45.0)
@@ -305,7 +302,7 @@ packages:
       '@jridgewell/trace-mapping': 0.3.18
     dev: true
 
-  /@azat-io/eslint-config-typescript@1.1.1(@typescript-eslint/eslint-plugin@5.62.0)(@typescript-eslint/parser@5.62.0)(eslint-plugin-import@2.27.5)(eslint-plugin-n@16.0.1)(eslint-plugin-perfectionist@1.5.0)(eslint-plugin-prefer-arrow@1.2.3)(eslint-plugin-prefer-let@3.0.1)(eslint-plugin-promise@6.1.1)(eslint-plugin-sonarjs@0.19.0)(eslint-plugin-unicorn@47.0.0)(eslint-plugin-vitest@0.2.6)(eslint@8.45.0):
+  /@azat-io/eslint-config-typescript@1.1.1(@typescript-eslint/eslint-plugin@5.62.0)(@typescript-eslint/parser@5.62.0)(eslint-plugin-import@2.27.5)(eslint-plugin-n@16.0.1)(eslint-plugin-perfectionist@1.5.1)(eslint-plugin-prefer-arrow@1.2.3)(eslint-plugin-prefer-let@3.0.1)(eslint-plugin-promise@6.1.1)(eslint-plugin-sonarjs@0.19.0)(eslint-plugin-unicorn@47.0.0)(eslint-plugin-vitest@0.2.6)(eslint@8.45.0):
     resolution: {integrity: sha512-OvN3/IgvxZfWwo7LibT3L+9WEUq1NGi5QVKcKj4x9EyNdOJz6T8CfiYHLsDZXBajHaE1X4/7HC/c9H/E3buKBg==}
     peerDependencies:
       '@typescript-eslint/eslint-plugin': ^5.60.0
@@ -321,14 +318,14 @@ packages:
       eslint-plugin-unicorn: ^47.0.0
       eslint-plugin-vitest: ^0.2.6
     dependencies:
-      '@azat-io/eslint-config': 1.1.1(eslint-plugin-import@2.27.5)(eslint-plugin-n@16.0.1)(eslint-plugin-perfectionist@1.5.0)(eslint-plugin-prefer-arrow@1.2.3)(eslint-plugin-prefer-let@3.0.1)(eslint-plugin-promise@6.1.1)(eslint-plugin-sonarjs@0.19.0)(eslint-plugin-unicorn@47.0.0)(eslint-plugin-vitest@0.2.6)(eslint@8.45.0)
+      '@azat-io/eslint-config': 1.1.1(eslint-plugin-import@2.27.5)(eslint-plugin-n@16.0.1)(eslint-plugin-perfectionist@1.5.1)(eslint-plugin-prefer-arrow@1.2.3)(eslint-plugin-prefer-let@3.0.1)(eslint-plugin-promise@6.1.1)(eslint-plugin-sonarjs@0.19.0)(eslint-plugin-unicorn@47.0.0)(eslint-plugin-vitest@0.2.6)(eslint@8.45.0)
       '@typescript-eslint/eslint-plugin': 5.62.0(@typescript-eslint/parser@5.62.0)(eslint@8.45.0)(typescript@5.1.6)
       '@typescript-eslint/parser': 5.62.0(eslint@8.45.0)(typescript@5.1.6)
       eslint: 8.45.0
       eslint-import-resolver-typescript: 3.5.5(@typescript-eslint/parser@5.62.0)(eslint-plugin-import@2.27.5)(eslint@8.45.0)
       eslint-plugin-import: 2.27.5(@typescript-eslint/parser@5.62.0)(eslint@8.45.0)
       eslint-plugin-n: 16.0.1(eslint@8.45.0)
-      eslint-plugin-perfectionist: 1.5.0(eslint@8.45.0)(typescript@5.1.6)
+      eslint-plugin-perfectionist: 1.5.1(eslint@8.45.0)(typescript@5.1.6)
       eslint-plugin-prefer-arrow: 1.2.3(eslint@8.45.0)
       eslint-plugin-prefer-let: 3.0.1
       eslint-plugin-promise: 6.1.1(eslint@8.45.0)
@@ -341,7 +338,7 @@ packages:
       - supports-color
     dev: true
 
-  /@azat-io/eslint-config@1.1.1(eslint-plugin-import@2.27.5)(eslint-plugin-n@16.0.1)(eslint-plugin-perfectionist@1.5.0)(eslint-plugin-prefer-arrow@1.2.3)(eslint-plugin-prefer-let@3.0.1)(eslint-plugin-promise@6.1.1)(eslint-plugin-sonarjs@0.19.0)(eslint-plugin-unicorn@47.0.0)(eslint-plugin-vitest@0.2.6)(eslint@8.45.0):
+  /@azat-io/eslint-config@1.1.1(eslint-plugin-import@2.27.5)(eslint-plugin-n@16.0.1)(eslint-plugin-perfectionist@1.5.1)(eslint-plugin-prefer-arrow@1.2.3)(eslint-plugin-prefer-let@3.0.1)(eslint-plugin-promise@6.1.1)(eslint-plugin-sonarjs@0.19.0)(eslint-plugin-unicorn@47.0.0)(eslint-plugin-vitest@0.2.6)(eslint@8.45.0):
     resolution: {integrity: sha512-ySEeikfFKh/+pvib/hNqhREyLaZhCCmEXGaj04s43wyrII07a4PDOUlFjChztIZQEImGq5EojJVUwRvKyrbJdQ==}
     peerDependencies:
       eslint: ^8.38.0
@@ -358,7 +355,7 @@ packages:
       eslint: 8.45.0
       eslint-plugin-import: 2.27.5(@typescript-eslint/parser@5.62.0)(eslint@8.45.0)
       eslint-plugin-n: 16.0.1(eslint@8.45.0)
-      eslint-plugin-perfectionist: 1.5.0(eslint@8.45.0)(typescript@5.1.6)
+      eslint-plugin-perfectionist: 1.5.1(eslint@8.45.0)(typescript@5.1.6)
       eslint-plugin-prefer-arrow: 1.2.3(eslint@8.45.0)
       eslint-plugin-prefer-let: 3.0.1
       eslint-plugin-promise: 6.1.1(eslint@8.45.0)
@@ -2400,8 +2397,8 @@ packages:
       semver: 7.5.4
     dev: true
 
-  /eslint-plugin-perfectionist@1.5.0(eslint@8.45.0)(typescript@5.1.6):
-    resolution: {integrity: sha512-khVm+M55D95YhoNEjinLdhC5pSse5/EXn7HuI1Y2R+WU1Hb5wWehPlRqAWzWS4VFJKRPWt78OmnzsmnDq1T5IA==}
+  /eslint-plugin-perfectionist@1.5.1(eslint@8.45.0)(typescript@5.1.6):
+    resolution: {integrity: sha512-PiUrAfGDc/l6MKKUP8qt5RXueC7FZC6F/0j8ijXYU8o3x8o2qUi6zEEYBkId/IiKloIXM5KTD4jrH9833kDNzA==}
     peerDependencies:
       eslint: '>=8.0.0'
     dependencies:
@@ -3312,6 +3309,7 @@ packages:
     resolution: {integrity: sha512-XmOWe7eyHYH14cLdVPoyg+GOH3rYX++KpzrylJwSW98t3Nk+U8XOl8FWKOgwtzdb8lXGf6zYwDUzeHMWfxasyg==}
     engines: {node: '>=6'}
     hasBin: true
+    dev: true
 
   /jsonc-parser@3.2.0:
     resolution: {integrity: sha512-gfFQZrcTc8CnKXp6Y4/CBT3fTc0OVuDofpre4aEeEpSBPV5X5v4+Vmx+8snU7RLPrNHPKSgLxGo9YuQzz20o+w==}
