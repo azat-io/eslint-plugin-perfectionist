@@ -1,3 +1,4 @@
+import sortSvelteAttributes, { RULE_NAME as sortSvelteAttributesName } from './rules/sort-svelte-attributes'
 import sortArrayIncludes, { RULE_NAME as sortArrayIncludesName } from './rules/sort-array-includes'
 import sortNamedImports, { RULE_NAME as sortNamedImportsName } from './rules/sort-named-imports'
 import sortNamedExports, { RULE_NAME as sortNamedExportsName } from './rules/sort-named-exports'
@@ -90,8 +91,9 @@ let createConfigWithOptions = (options: {
         'spread-last': true,
       },
     ],
-    [sortNamedImportsName]: ['error'],
+    [sortSvelteAttributesName]: ['error'],
     [sortNamedExportsName]: ['error'],
+    [sortNamedImportsName]: ['error'],
     [sortObjectTypesName]: ['error'],
     [sortUnionTypesName]: ['error'],
     [sortInterfacesName]: ['error'],
@@ -125,6 +127,7 @@ export default {
     [sortNamedImportsName]: sortNamedImports,
     [sortObjectTypesName]: sortObjectTypes,
     [sortObjectsName]: sortObjects,
+    [sortSvelteAttributesName]: sortSvelteAttributes,
     [sortUnionTypesName]: sortUnionTypes,
   },
   configs: {
