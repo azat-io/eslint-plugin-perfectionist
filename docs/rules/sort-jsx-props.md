@@ -87,14 +87,17 @@ If you use the [`jsx-sort-props`](https://github.com/jsx-eslint/eslint-plugin-re
 This rule accepts an options object with the following properties:
 
 ```ts
+type Group =
+  | 'multiline'
+  | 'shorthand'
+  | 'unknown'
+
 interface Options {
   type?: 'alphabetical' | 'natural' | 'line-length'
   order?: 'asc' | 'desc'
   'ignore-case'?: boolean
-  'always-on-top'?: string[]
-  callback?: 'first' | 'ignore' | 'last'
-  multiline?: 'first' | 'ignore' | 'last'
-  shorthand?: 'first' | 'ignore' | 'last'
+  groups?: (Group | Group[])[]
+  'custom-groups': { [key in T[number]]: string[] | string }
 }
 ```
 
@@ -119,35 +122,27 @@ interface Options {
 
 Only affects alphabetical and natural sorting. When `true` the rule ignores the case-sensitivity of the order.
 
-### always-on-top
+### groups
 
 <sub>(default: `[]`)</sub>
 
-You can set a list of property names that will always go at the beginning of the JSX element.
+You can set up a list of JSX props groups for sorting. Groups can be combined. There are predefined groups: `'multiline'`, `'shorthand'`.
 
-### callback
+### custom-groups
 
-<sub>(default: `'ignore'`)</sub>
+<sub>(default: `{}`)</sub>
 
-- `first` - enforce callback JSX props to be at the top of the list
-- `ignore` - sort callback props in general order
-- `last` - enforce callback JSX props to be at the end of the list
+You can define your own groups for JSX props. The [minimatch](https://github.com/isaacs/minimatch) library is used for pattern matching.
 
-### multiline
+Example:
 
-<sub>(default: `'ignore'`)</sub>
-
-- `first` - enforce multiline JSX props to be at the top of the list
-- `ignore` - sort multiline props in general order
-- `last` - enforce multiline JSX props to be at the end of the list
-
-### shorthand
-
-<sub>(default: `'ignore'`)</sub>
-
-- `first` - enforce shorthand JSX props to be at the top of the list
-- `ignore` - sort shorthand props in general order
-- `last` - enforce shorthand JSX props to be at the end of the list
+```
+{
+  "custom-groups": {
+    "callback": "on*"
+  }
+}
+```
 
 ## ⚙️ Usage
 
@@ -163,10 +158,11 @@ You can set a list of property names that will always go at the beginning of the
       {
         "type": "natural",
         "order": "asc",
-        "always-on-top": ["id", "name"],
-        "shorthand": "last",
-        "multiline": "first",
-        "callback": "ignore"
+        "groups": [
+          "multiline",
+          "unknown",
+          "shorthand"
+        ]
       }
     ]
   }
@@ -188,10 +184,11 @@ export default [
         {
           type: 'natural',
           order: 'asc',
-          'always-on-top': ['id', 'name'],
-          shorthand: 'last',
-          multiline: 'first',
-          callback: 'ignore',
+          groups: [
+            'multiline',
+            'unknown',
+            'shorthand',
+          ],
         },
       ],
     },
