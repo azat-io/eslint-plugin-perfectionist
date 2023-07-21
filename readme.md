@@ -141,7 +141,7 @@ export default [
 | Name                                                                                               | Description                                 | 🔧 |
 | :------------------------------------------------------------------------------------------------- | :------------------------------------------ | :- |
 | [sort-array-includes](https://eslint-plugin-perfectionist.azat.io/rules/sort-array-includes)       | enforce sorted arrays before include method | 🔧 |
-| [sort-astro-attributes](https://eslint-plugin-perfectionist.azat.io/rules/sort-astro-attributes)   | enforce sorted union types                  | 🔧 |
+| [sort-astro-attributes](https://eslint-plugin-perfectionist.azat.io/rules/sort-astro-attributes)   | enforce sorted Astro attributes             | 🔧 |
 | [sort-classes](https://eslint-plugin-perfectionist.azat.io/rules/sort-classes)                     | enforce sorted classes                      | 🔧 |
 | [sort-enums](https://eslint-plugin-perfectionist.azat.io/rules/sort-enums)                         | enforce sorted TypeScript enums             | 🔧 |
 | [sort-exports](https://eslint-plugin-perfectionist.azat.io/rules/sort-exports)                     | enforce sorted exports                      | 🔧 |
@@ -153,7 +153,7 @@ export default [
 | [sort-named-imports](https://eslint-plugin-perfectionist.azat.io/rules/sort-named-imports)         | enforce sorted named imports                | 🔧 |
 | [sort-object-types](https://eslint-plugin-perfectionist.azat.io/rules/sort-object-types)           | enforce sorted object types                 | 🔧 |
 | [sort-objects](https://eslint-plugin-perfectionist.azat.io/rules/sort-objects)                     | enforce sorted objects                      | 🔧 |
-| [sort-svelte-attributes](https://eslint-plugin-perfectionist.azat.io/rules/sort-svelte-attributes) | enforce sorted union types                  | 🔧 |
+| [sort-svelte-attributes](https://eslint-plugin-perfectionist.azat.io/rules/sort-svelte-attributes) | enforce sorted Svelte attributes            | 🔧 |
 | [sort-union-types](https://eslint-plugin-perfectionist.azat.io/rules/sort-union-types)             | enforce sorted union types                  | 🔧 |
 
 <!-- end auto-generated rules list -->

@@ -31,7 +31,7 @@ export default createEslintRule<Options, MESSAGE_ID>({
   meta: {
     type: 'suggestion',
     docs: {
-      description: 'enforce sorted union types',
+      description: 'enforce sorted Astro attributes',
       recommended: false,
     },
     fixable: 'code',
