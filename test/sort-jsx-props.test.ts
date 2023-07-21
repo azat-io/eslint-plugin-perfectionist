@@ -1725,6 +1725,18 @@ describe(RULE_NAME, () => {
               />
             )
           `,
+          {
+            code: dedent`
+              const content = (
+                <AppBar
+                  link1="http://www.example.com"
+                  link10="http://www.example.com"
+                  link2="http://www.example.com"
+                />
+              )
+            `,
+            options: [{}],
+          },
         ],
         invalid: [
           {

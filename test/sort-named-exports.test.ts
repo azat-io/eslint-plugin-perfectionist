@@ -172,7 +172,13 @@ describe(RULE_NAME, () => {
   describe(`${RULE_NAME}: misc`, () => {
     it(`${RULE_NAME}: sets alphabetical asc sorting as default`, () => {
       ruleTester.run(RULE_NAME, rule, {
-        valid: ['export { KayoHinazuki, SatoruFujinuma }'],
+        valid: [
+          'export { KayoHinazuki, SatoruFujinuma }',
+          {
+            code: 'export { log, log10, log1p, log2 }',
+            options: [{}],
+          },
+        ],
         invalid: [
           {
             code: dedent`

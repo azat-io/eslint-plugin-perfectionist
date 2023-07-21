@@ -46,7 +46,7 @@ export default createEslintRule<Options, MESSAGE_ID>({
               SortType.natural,
               SortType['line-length'],
             ],
-            default: SortType.natural,
+            default: SortType.alphabetical,
           },
           order: {
             enum: [SortOrder.asc, SortOrder.desc],

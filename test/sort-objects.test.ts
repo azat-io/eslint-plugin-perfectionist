@@ -2249,6 +2249,17 @@ describe(RULE_NAME, () => {
               mom: 'Yor Forger',
             }
           `,
+          {
+            code: dedent`
+              const calculator = {
+                log: () => undefined,
+                log10: () => undefined,
+                log1p: () => undefined,
+                log2: () => undefined,
+              }
+            `,
+            options: [{}],
+          },
         ],
         invalid: [
           {

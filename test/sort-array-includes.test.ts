@@ -843,6 +843,17 @@ describe(RULE_NAME, () => {
               'Tomomi Masaoka',
             ].includes(enforcer)
           `,
+          {
+            code: dedent`
+              [
+                'img1.png',
+                'img10.png',
+                'img12.png',
+                'img2.png',
+              ].includes(filename)
+            `,
+            options: [{}],
+          },
         ],
         invalid: [
           {

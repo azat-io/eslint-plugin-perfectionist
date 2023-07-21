@@ -931,14 +931,25 @@ describe(RULE_NAME, () => {
       ruleTester.run(RULE_NAME, rule, {
         valid: [
           dedent`
+            new Map([
+              ['CNY', 'Renminbi'],
+              ['EUR', 'Euro'],
+              ['GBP', 'Sterling'],
+              ['RUB', 'Russian ruble'],
+              ['USD', 'United States dollar'],
+            ])
+          `,
+          {
+            code: dedent`
               new Map([
-                ['CNY', 'Renminbi'],
-                ['EUR', 'Euro'],
-                ['GBP', 'Sterling'],
-                ['RUB', 'Russian ruble'],
-                ['USD', 'United States dollar'],
+                ['img1.png', 'http://www.example.com/img1.png'],
+                ['img10.png', 'http://www.example.com/img10.png'],
+                ['img12.png', 'http://www.example.com/img12.png'],
+                ['img2.png', 'http://www.example.com/img2.png']
               ])
             `,
+            options: [{}],
+          },
         ],
         invalid: [
           {
