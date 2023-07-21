@@ -935,6 +935,17 @@ describe(RULE_NAME, () => {
               'Ushio Kofune' = 'Ushio Kofune',
             }
           `,
+          {
+            code: dedent`
+              enum NumberBase {
+                BASE_10 = 10,
+                BASE_16 = 16,
+                BASE_2 = 2,
+                BASE_8 = 8
+              }
+            `,
+            options: [{}],
+          },
         ],
         invalid: [
           {

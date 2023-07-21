@@ -963,5 +963,60 @@ describe(RULE_NAME, () => {
         invalid: [],
       })
     })
+
+    it(`${RULE_NAME}: sets alphabetical asc sorting as default`, () => {
+      ruleTester.run(RULE_NAME, rule, {
+        valid: [
+          dedent`
+            type Calculator = {
+              log: (x: number) => number,
+              log10: (x: number) => number,
+              log1p: (x: number) => number,
+              log2: (x: number) => number,
+            }
+          `,
+          {
+            code: dedent`
+              type Calculator = {
+                log: (x: number) => number,
+                log10: (x: number) => number,
+                log1p: (x: number) => number,
+                log2: (x: number) => number,
+              }
+            `,
+            options: [{}],
+          },
+        ],
+        invalid: [
+          {
+            code: dedent`
+              type Calculator = {
+                log: (x: number) => number,
+                log1p: (x: number) => number,
+                log2: (x: number) => number,
+                log10: (x: number) => number,
+              }
+            `,
+            output: dedent`
+              type Calculator = {
+                log: (x: number) => number,
+                log10: (x: number) => number,
+                log1p: (x: number) => number,
+                log2: (x: number) => number,
+              }
+            `,
+            errors: [
+              {
+                messageId: 'unexpectedObjectTypesOrder',
+                data: {
+                  left: 'log2',
+                  right: 'log10',
+                },
+              },
+            ],
+          },
+        ],
+      })
+    })
   })
 })

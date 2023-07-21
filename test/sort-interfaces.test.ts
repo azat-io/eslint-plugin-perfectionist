@@ -1590,11 +1590,22 @@ describe(RULE_NAME, () => {
       ruleTester.run(RULE_NAME, rule, {
         valid: [
           dedent`
-              interface DeathNoteValue {
-                causeOfDeath: string
-                name: string
+            interface DeathNoteValue {
+              causeOfDeath: string
+              name: string
+            }
+          `,
+          {
+            code: dedent`
+              interface Calculator {
+                log: (x: number) => number,
+                log10: (x: number) => number,
+                log1p: (x: number) => number,
+                log2: (x: number) => number,
               }
             `,
+            options: [{}],
+          },
         ],
         invalid: [
           {

@@ -851,6 +851,10 @@ describe(RULE_NAME, () => {
       ruleTester.run(RULE_NAME, rule, {
         valid: [
           "import { David, Maine, Rebecca } from 'cyberpunks-edgerunners'",
+          {
+            code: "import { log, log10, log1p, log2 } from 'calculator'",
+            options: [{}],
+          },
         ],
         invalid: [
           {

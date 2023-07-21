@@ -43,7 +43,7 @@ export default createEslintRule<Options, MESSAGE_ID>({
               SortType.natural,
               SortType['line-length'],
             ],
-            default: SortType.natural,
+            default: SortType.alphabetical,
           },
           'ignore-case': {
             type: 'boolean',

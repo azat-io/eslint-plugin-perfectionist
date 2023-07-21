@@ -758,4 +758,41 @@ describe(RULE_NAME, () => {
       })
     })
   })
+
+  describe(`${RULE_NAME}: misc`, () => {
+    it(`${RULE_NAME}: sets alphabetical asc sorting as default`, () => {
+      ruleTester.run(RULE_NAME, rule, {
+        valid: [
+          dedent`
+            type SupportedNumberBase = NumberBase.BASE_10 | NumberBase.BASE_16 | NumberBase.BASE_2
+          `,
+          {
+            code: dedent`
+              type SupportedNumberBase = NumberBase.BASE_10 | NumberBase.BASE_16 | NumberBase.BASE_2
+            `,
+            options: [{}],
+          },
+        ],
+        invalid: [
+          {
+            code: dedent`
+              type SupportedNumberBase = NumberBase.BASE_2 | NumberBase.BASE_10 | NumberBase.BASE_16
+            `,
+            output: dedent`
+              type SupportedNumberBase = NumberBase.BASE_10 | NumberBase.BASE_16 | NumberBase.BASE_2
+            `,
+            errors: [
+              {
+                messageId: 'unexpectedUnionTypesOrder',
+                data: {
+                  left: 'NumberBase.BASE_2',
+                  right: 'NumberBase.BASE_10',
+                },
+              },
+            ],
+          },
+        ],
+      })
+    })
+  })
 })

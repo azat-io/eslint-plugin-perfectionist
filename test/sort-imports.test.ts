@@ -3216,6 +3216,15 @@ describe(RULE_NAME, () => {
             import Shinpei from '~/higotoshima/shinpei'
             import Ushio from '~/higotoshima/ushio'
           `,
+          {
+            code: dedent`
+              import { log } from './log'
+              import { log10 } from './log10'
+              import { log1p } from './log1p'
+              import { log2 } from './log2'
+            `,
+            options: [{}],
+          },
         ],
         invalid: [
           {

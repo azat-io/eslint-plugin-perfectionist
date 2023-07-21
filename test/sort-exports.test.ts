@@ -512,6 +512,60 @@ describe(RULE_NAME, () => {
   })
 
   describe('misc', () => {
+    it(`${RULE_NAME}: sets alphabetical asc sorting as default`, () => {
+      ruleTester.run(RULE_NAME, rule, {
+        valid: [
+          dedent`
+            export { Hizuru } from '~/higotoshima/hizuru'
+            export { Mio } from '~/higotoshima/mio'
+            export { Shinpei } from '~/higotoshima/shinpei'
+            export { Ushio } from '~/higotoshima/ushio'
+          `,
+          {
+            code: dedent`
+              export { log } from './log'
+              export { log10 } from './log10'
+              export { log1p } from './log1p'
+              export { log2 } from './log2'
+            `,
+            options: [{}],
+          },
+        ],
+        invalid: [
+          {
+            code: dedent`
+              export { Shinpei } from '~/higotoshima/shinpei'
+              export { Mio } from '~/higotoshima/mio'
+              export { Ushio } from '~/higotoshima/ushio'
+              export { Hizuru } from '~/higotoshima/hizuru'
+            `,
+            output: dedent`
+              export { Hizuru } from '~/higotoshima/hizuru'
+              export { Mio } from '~/higotoshima/mio'
+              export { Shinpei } from '~/higotoshima/shinpei'
+              export { Ushio } from '~/higotoshima/ushio'
+            `,
+            errors: [
+              {
+                messageId: 'unexpectedExportsOrder',
+                data: {
+                  left: '~/higotoshima/shinpei',
+                  right: '~/higotoshima/mio',
+                },
+              },
+              {
+                messageId: 'unexpectedExportsOrder',
+                data: {
+                  left: '~/higotoshima/ushio',
+                  right: '~/higotoshima/hizuru',
+                },
+              },
+            ],
+          },
+        ],
+      })
+    })
+
     it(`${RULE_NAME}: ignores exported variables or functions`, () => {
       ruleTester.run(RULE_NAME, rule, {
         valid: [

@@ -945,4 +945,86 @@ describe(RULE_NAME, () => {
       })
     })
   })
+
+  describe(`${RULE_NAME}: misc`, () => {
+    it(`${RULE_NAME}: sets alphabetical asc sorting as default`, () => {
+      ruleTester.run(RULE_NAME, rule, {
+        valid: [
+          {
+            code: dedent`
+              class Calculator {
+                static log(x) {
+                  return 0;
+                }
+
+                static log10(x) {
+                  return 0;
+                }
+
+                static log1p(x) {
+                  return 0;
+                }
+
+                static log2(x) {
+                  return 0;
+                }
+              }
+            `,
+            options: [{}],
+          },
+        ],
+        invalid: [
+          {
+            code: dedent`
+              class Calculator {
+                static log(x) {
+                  return 0;
+                }
+
+                static log1p(x) {
+                  return 0;
+                }
+
+                static log10(x) {
+                  return 0;
+                }
+                
+                static log2(x) {
+                  return 0;
+                }
+              }
+            `,
+            output: dedent`
+              class Calculator {
+                static log(x) {
+                  return 0;
+                }
+
+                static log10(x) {
+                  return 0;
+                }
+
+                static log1p(x) {
+                  return 0;
+                }
+                
+                static log2(x) {
+                  return 0;
+                }
+              }
+            `,
+            errors: [
+              {
+                messageId: 'unexpectedClassesOrder',
+                data: {
+                  left: 'log1p',
+                  right: 'log10',
+                },
+              },
+            ],
+          },
+        ],
+      })
+    })
+  })
 })
