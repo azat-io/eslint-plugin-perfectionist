@@ -14,19 +14,32 @@ import { complete } from '../utils/complete'
 import { pairwise } from '../utils/pairwise'
 import { compare } from '../utils/compare'
 
-export const RULE_NAME = 'sort-svelte-attributes'
-
 type MESSAGE_ID = 'unexpectedSvelteAttributesOrder'
 
-type Options = [
+type Group<T extends string[]> =
+  | 'svelte-shorthand'
+  | 'multiline'
+  | 'shorthand'
+  | 'unknown'
+  | T[number]
+
+type SortingNodeWithGroup<T extends string[]> = SortingNode & {
+  group: Group<T>
+}
+
+type Options<T extends string[]> = [
   Partial<{
+    'custom-groups': { [key in T[number]]: string[] | string }
+    groups: (Group<T>[] | Group<T>)[]
     'ignore-case': boolean
     order: SortOrder
     type: SortType
   }>,
 ]
 
-export default createEslintRule<Options, MESSAGE_ID>({
+export const RULE_NAME = 'sort-svelte-attributes'
+
+export default createEslintRule<Options<string[]>, MESSAGE_ID>({
   name: RULE_NAME,
   meta: {
     type: 'suggestion',
@@ -39,6 +52,9 @@ export default createEslintRule<Options, MESSAGE_ID>({
       {
         type: 'object',
         properties: {
+          'custom-groups': {
+            type: 'object',
+          },
           type: {
             enum: [
               SortType.alphabetical,
@@ -54,6 +70,10 @@ export default createEslintRule<Options, MESSAGE_ID>({
           'ignore-case': {
             type: 'boolean',
             default: false,
+          },
+          groups: {
+            type: 'array',
+            default: [],
           },
         },
         additionalProperties: false,
@@ -82,43 +102,94 @@ export default createEslintRule<Options, MESSAGE_ID>({
             type: SortType.alphabetical,
             order: SortOrder.asc,
             'ignore-case': false,
+            'custom-groups': {},
+            groups: [],
           })
 
           let source = context.getSourceCode()
 
-          let parts: SortingNode[][] = node.attributes.reduce(
-            (accumulator: SortingNode[][], attribute) => {
-              if (attribute.type === 'SvelteSpreadAttribute') {
-                accumulator.push([])
-                return accumulator
-              }
-
-              let name: string
-
-              if (attribute.key.type === 'SvelteSpecialDirectiveKey') {
-                name = source.text.slice(...attribute.key.range)
-              } else {
-                if (typeof attribute.key.name === 'string') {
-                  ;({ name } = attribute.key)
-                } else {
-                  name = source.text.slice(...attribute.key.range!)
+          let parts: SortingNodeWithGroup<string[]>[][] =
+            node.attributes.reduce(
+              (accumulator: SortingNodeWithGroup<string[]>[][], attribute) => {
+                if (attribute.type === 'SvelteSpreadAttribute') {
+                  accumulator.push([])
+                  return accumulator
                 }
+
+                let name: string
+
+                let group: Group<string[]> | undefined
+
+                let defineGroup = (nodeGroup: Group<string[]>) => {
+                  if (!group && options.groups.flat().includes(nodeGroup)) {
+                    group = nodeGroup
+                  }
+                }
+
+                if (attribute.key.type === 'SvelteSpecialDirectiveKey') {
+                  name = source.text.slice(...attribute.key.range)
+                } else {
+                  if (typeof attribute.key.name === 'string') {
+                    ;({ name } = attribute.key)
+                  } else {
+                    name = source.text.slice(...attribute.key.range!)
+                  }
+                }
+
+                if (attribute.type === 'SvelteShorthandAttribute') {
+                  defineGroup('svelte-shorthand')
+                  defineGroup('shorthand')
+                }
+
+                if (
+                  !('value' in attribute) ||
+                  (Array.isArray(attribute.value) && !attribute.value.at(0))
+                ) {
+                  defineGroup('shorthand')
+                }
+
+                if (attribute.loc.start.line !== attribute.loc.end.line) {
+                  defineGroup('multiline')
+                }
+
+                accumulator.at(-1)!.push({
+                  size: rangeToDiff(attribute.range),
+                  node: attribute as unknown as TSESTree.Node,
+                  group: group ?? 'unknown',
+                  name,
+                })
+
+                return accumulator
+              },
+              [[]],
+            )
+
+          let getGroupNumber = (
+            nodeWithGroup: SortingNodeWithGroup<string[]>,
+          ): number => {
+            for (let i = 0, max = options.groups.length; i < max; i++) {
+              let currentGroup = options.groups[i]
+
+              if (
+                nodeWithGroup.group === currentGroup ||
+                (Array.isArray(currentGroup) &&
+                  currentGroup.includes(nodeWithGroup.group))
+              ) {
+                return i
               }
-
-              accumulator.at(-1)!.push({
-                size: rangeToDiff(attribute.range),
-                node: attribute as unknown as TSESTree.Node,
-                name,
-              })
-
-              return accumulator
-            },
-            [[]],
-          )
+            }
+            return options.groups.length
+          }
 
           for (let nodes of parts) {
             pairwise(nodes, (left, right) => {
-              if (compare(left, right, options)) {
+              let leftNum = getGroupNumber(left)
+              let rightNum = getGroupNumber(right)
+
+              if (
+                leftNum > rightNum ||
+                (leftNum === rightNum && compare(left, right, options))
+              ) {
                 context.report({
                   messageId: 'unexpectedSvelteAttributesOrder',
                   data: {
@@ -126,8 +197,32 @@ export default createEslintRule<Options, MESSAGE_ID>({
                     right: right.name,
                   },
                   node: right.node,
-                  fix: fixer =>
-                    makeFixes(fixer, nodes, sortNodes(nodes, options), source),
+                  fix: fixer => {
+                    let grouped: {
+                      [key: string]: SortingNodeWithGroup<string[]>[]
+                    } = {}
+
+                    for (let currentNode of nodes) {
+                      let groupNum = getGroupNumber(currentNode)
+
+                      if (!(groupNum in grouped)) {
+                        grouped[groupNum] = [currentNode]
+                      } else {
+                        grouped[groupNum] = sortNodes(
+                          [...grouped[groupNum], currentNode],
+                          options,
+                        )
+                      }
+                    }
+
+                    let sortedNodes: SortingNode[] = []
+
+                    for (let group of Object.keys(grouped).sort()) {
+                      sortedNodes.push(...sortNodes(grouped[group], options))
+                    }
+
+                    return makeFixes(fixer, nodes, sortedNodes, source)
+                  },
                 })
               }
             })

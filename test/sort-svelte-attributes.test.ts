@@ -227,6 +227,182 @@ describe(RULE_NAME, () => {
         ],
       })
     })
+
+    it(`${RULE_NAME}(${type}): allows to set shorthand attributes position`, () => {
+      ruleTester.run(RULE_NAME, rule, {
+        valid: [
+          {
+            filename: 'component.svelte',
+            code: dedent`
+              <script>
+                import Reborn from '../components/Reborn.svelte'
+
+                let isAlive = true
+              </script>
+
+              <Reborn
+                age={23}
+                firstName="Rudeus"
+                lastName="Greyrat"
+                {isAlive}
+                reincarnated
+              />
+            `,
+            options: [
+              {
+                type: SortType.alphabetical,
+                order: SortOrder.asc,
+                groups: ['unknown', ['svelte-shorthand', 'shorthand']],
+              },
+            ],
+          },
+        ],
+        invalid: [
+          {
+            filename: 'component.svelte',
+            code: dedent`
+              <script>
+                import Reborn from '../components/Reborn.svelte'
+
+                let isAlive = true
+              </script>
+
+              <Reborn
+                age={23}
+                reincarnated
+                {isAlive}
+                firstName="Rudeus"
+                lastName="Greyrat"
+              />
+            `,
+            output: dedent`
+              <script>
+                import Reborn from '../components/Reborn.svelte'
+
+                let isAlive = true
+              </script>
+
+              <Reborn
+                age={23}
+                firstName="Rudeus"
+                lastName="Greyrat"
+                {isAlive}
+                reincarnated
+              />
+            `,
+            options: [
+              {
+                type: SortType.alphabetical,
+                order: SortOrder.asc,
+                groups: ['unknown', ['svelte-shorthand', 'shorthand']],
+              },
+            ],
+            errors: [
+              {
+                messageId: 'unexpectedSvelteAttributesOrder',
+                data: {
+                  left: 'reincarnated',
+                  right: 'isAlive',
+                },
+              },
+              {
+                messageId: 'unexpectedSvelteAttributesOrder',
+                data: {
+                  left: 'isAlive',
+                  right: 'firstName',
+                },
+              },
+            ],
+          },
+        ],
+      })
+    })
+
+    it(`${RULE_NAME}(${type}): allows to set multiline attributes position`, () => {
+      ruleTester.run(RULE_NAME, rule, {
+        valid: [
+          {
+            filename: 'component.svelte',
+            code: dedent`
+              <script>
+                import Hero from '../components/Hero.svelte'
+
+                let frags = 0
+              </script>
+
+              <Reborn
+                onAttack={() => {
+                  frags += 1
+                }}
+                frags={frags}
+                name="One-Punch Man"
+                realName="Saitama"
+              />
+            `,
+            options: [
+              {
+                type: SortType.alphabetical,
+                order: SortOrder.asc,
+                groups: ['multiline', 'unknown'],
+              },
+            ],
+          },
+        ],
+        invalid: [
+          {
+            filename: 'component.svelte',
+            code: dedent`
+              <script>
+                import Hero from '../components/Hero.svelte'
+
+                let frags = 0
+              </script>
+
+              <Reborn
+                frags={frags}
+                onAttack={() => {
+                  frags += 1
+                }}
+                name="One-Punch Man"
+                realName="Saitama"
+              />
+            `,
+            output: dedent`
+              <script>
+                import Hero from '../components/Hero.svelte'
+
+                let frags = 0
+              </script>
+
+              <Reborn
+                onAttack={() => {
+                  frags += 1
+                }}
+                frags={frags}
+                name="One-Punch Man"
+                realName="Saitama"
+              />
+            `,
+            options: [
+              {
+                type: SortType.alphabetical,
+                order: SortOrder.asc,
+                groups: ['multiline', 'unknown'],
+              },
+            ],
+            errors: [
+              {
+                messageId: 'unexpectedSvelteAttributesOrder',
+                data: {
+                  left: 'frags',
+                  right: 'onAttack',
+                },
+              },
+            ],
+          },
+        ],
+      })
+    })
   })
 
   describe(`${RULE_NAME}: sorting by natural order`, () => {
@@ -440,6 +616,182 @@ describe(RULE_NAME, () => {
         ],
       })
     })
+
+    it(`${RULE_NAME}(${type}): allows to set shorthand attributes position`, () => {
+      ruleTester.run(RULE_NAME, rule, {
+        valid: [
+          {
+            filename: 'component.svelte',
+            code: dedent`
+              <script>
+                import Reborn from '../components/Reborn.svelte'
+
+                let isAlive = true
+              </script>
+
+              <Reborn
+                age={23}
+                firstName="Rudeus"
+                lastName="Greyrat"
+                {isAlive}
+                reincarnated
+              />
+            `,
+            options: [
+              {
+                type: SortType.natural,
+                order: SortOrder.asc,
+                groups: ['unknown', 'shorthand'],
+              },
+            ],
+          },
+        ],
+        invalid: [
+          {
+            filename: 'component.svelte',
+            code: dedent`
+              <script>
+                import Reborn from '../components/Reborn.svelte'
+
+                let isAlive = true
+              </script>
+
+              <Reborn
+                age={23}
+                reincarnated
+                {isAlive}
+                firstName="Rudeus"
+                lastName="Greyrat"
+              />
+            `,
+            output: dedent`
+              <script>
+                import Reborn from '../components/Reborn.svelte'
+
+                let isAlive = true
+              </script>
+
+              <Reborn
+                age={23}
+                firstName="Rudeus"
+                lastName="Greyrat"
+                {isAlive}
+                reincarnated
+              />
+            `,
+            options: [
+              {
+                type: SortType.natural,
+                order: SortOrder.asc,
+                groups: ['unknown', 'shorthand'],
+              },
+            ],
+            errors: [
+              {
+                messageId: 'unexpectedSvelteAttributesOrder',
+                data: {
+                  left: 'reincarnated',
+                  right: 'isAlive',
+                },
+              },
+              {
+                messageId: 'unexpectedSvelteAttributesOrder',
+                data: {
+                  left: 'isAlive',
+                  right: 'firstName',
+                },
+              },
+            ],
+          },
+        ],
+      })
+    })
+
+    it(`${RULE_NAME}(${type}): allows to set multiline attributes position`, () => {
+      ruleTester.run(RULE_NAME, rule, {
+        valid: [
+          {
+            filename: 'component.svelte',
+            code: dedent`
+              <script>
+                import Hero from '../components/Hero.svelte'
+
+                let frags = 0
+              </script>
+
+              <Reborn
+                onAttack={() => {
+                  frags += 1
+                }}
+                frags={frags}
+                name="One-Punch Man"
+                realName="Saitama"
+              />
+            `,
+            options: [
+              {
+                type: SortType.natural,
+                order: SortOrder.asc,
+                groups: ['multiline', 'unknown'],
+              },
+            ],
+          },
+        ],
+        invalid: [
+          {
+            filename: 'component.svelte',
+            code: dedent`
+              <script>
+                import Hero from '../components/Hero.svelte'
+
+                let frags = 0
+              </script>
+
+              <Reborn
+                frags={frags}
+                onAttack={() => {
+                  frags += 1
+                }}
+                name="One-Punch Man"
+                realName="Saitama"
+              />
+            `,
+            output: dedent`
+              <script>
+                import Hero from '../components/Hero.svelte'
+
+                let frags = 0
+              </script>
+
+              <Reborn
+                onAttack={() => {
+                  frags += 1
+                }}
+                frags={frags}
+                name="One-Punch Man"
+                realName="Saitama"
+              />
+            `,
+            options: [
+              {
+                type: SortType.natural,
+                order: SortOrder.asc,
+                groups: ['multiline', 'unknown'],
+              },
+            ],
+            errors: [
+              {
+                messageId: 'unexpectedSvelteAttributesOrder',
+                data: {
+                  left: 'frags',
+                  right: 'onAttack',
+                },
+              },
+            ],
+          },
+        ],
+      })
+    })
   })
 
   describe(`${RULE_NAME}: sorting by line length`, () => {
@@ -639,6 +991,175 @@ describe(RULE_NAME, () => {
                 data: {
                   left: 'use:clickOutside',
                   right: 'on:outclick',
+                },
+              },
+            ],
+          },
+        ],
+      })
+    })
+
+    it(`${RULE_NAME}(${type}): allows to set shorthand attributes position`, () => {
+      ruleTester.run(RULE_NAME, rule, {
+        valid: [
+          {
+            filename: 'component.svelte',
+            code: dedent`
+              <script>
+                import Reborn from '../components/Reborn.svelte'
+
+                let isAlive = true
+              </script>
+
+              <Reborn
+                firstName="Rudeus"
+                lastName="Greyrat"
+                age={23}
+                reincarnated
+                {isAlive}
+              />
+            `,
+            options: [
+              {
+                type: SortType['line-length'],
+                order: SortOrder.desc,
+                groups: ['unknown', 'shorthand'],
+              },
+            ],
+          },
+        ],
+        invalid: [
+          {
+            filename: 'component.svelte',
+            code: dedent`
+              <script>
+                import Reborn from '../components/Reborn.svelte'
+
+                let isAlive = true
+              </script>
+
+              <Reborn
+                age={23}
+                reincarnated
+                {isAlive}
+                firstName="Rudeus"
+                lastName="Greyrat"
+              />
+            `,
+            output: dedent`
+              <script>
+                import Reborn from '../components/Reborn.svelte'
+
+                let isAlive = true
+              </script>
+
+              <Reborn
+                firstName="Rudeus"
+                lastName="Greyrat"
+                age={23}
+                reincarnated
+                {isAlive}
+              />
+            `,
+            options: [
+              {
+                type: SortType['line-length'],
+                order: SortOrder.desc,
+                groups: ['unknown', ['svelte-shorthand', 'shorthand']],
+              },
+            ],
+            errors: [
+              {
+                messageId: 'unexpectedSvelteAttributesOrder',
+                data: {
+                  left: 'isAlive',
+                  right: 'firstName',
+                },
+              },
+            ],
+          },
+        ],
+      })
+    })
+
+    it(`${RULE_NAME}(${type}): allows to set multiline attributes position`, () => {
+      ruleTester.run(RULE_NAME, rule, {
+        valid: [
+          {
+            filename: 'component.svelte',
+            code: dedent`
+              <script>
+                import Hero from '../components/Hero.svelte'
+
+                let frags = 0
+              </script>
+
+              <Reborn
+                onAttack={() => {
+                  frags += 1
+                }}
+                name="One-Punch Man"
+                realName="Saitama"
+                frags={frags}
+              />
+            `,
+            options: [
+              {
+                type: SortType['line-length'],
+                order: SortOrder.desc,
+                groups: ['multiline', 'unknown'],
+              },
+            ],
+          },
+        ],
+        invalid: [
+          {
+            filename: 'component.svelte',
+            code: dedent`
+              <script>
+                import Hero from '../components/Hero.svelte'
+
+                let frags = 0
+              </script>
+
+              <Reborn
+                frags={frags}
+                onAttack={() => {
+                  frags += 1
+                }}
+                name="One-Punch Man"
+                realName="Saitama"
+              />
+            `,
+            output: dedent`
+              <script>
+                import Hero from '../components/Hero.svelte'
+
+                let frags = 0
+              </script>
+
+              <Reborn
+                onAttack={() => {
+                  frags += 1
+                }}
+                name="One-Punch Man"
+                realName="Saitama"
+                frags={frags}
+              />
+            `,
+            options: [
+              {
+                type: SortType['line-length'],
+                order: SortOrder.desc,
+                groups: ['multiline', 'unknown'],
+              },
+            ],
+            errors: [
+              {
+                messageId: 'unexpectedSvelteAttributesOrder',
+                data: {
+                  left: 'frags',
+                  right: 'onAttack',
                 },
               },
             ],

@@ -85,10 +85,18 @@ If you use the [`sort-attributes`](https://sveltejs.github.io/eslint-plugin-svel
 This rule accepts an options object with the following properties:
 
 ```ts
+type Group =
+  | 'multiline'
+  | 'shorthand'
+  | 'svelte-shorthand'
+  | 'unknown'
+
 interface Options {
   type?: 'alphabetical' | 'natural' | 'line-length'
   order?: 'asc' | 'desc'
   'ignore-case'?: boolean
+  groups?: (Group | Group[])[]
+  'custom-groups': { [key in T[number]]: string[] | string }
 }
 ```
 
@@ -113,12 +121,36 @@ interface Options {
 
 Only affects alphabetical and natural sorting. When `true` the rule ignores the case-sensitivity of the order.
 
+### groups
+
+<sub>(default: `[]`)</sub>
+
+You can set up a list of Svelte attribute groups for sorting. Groups can be combined. There are predefined groups: `'multiline'`, `'shorthand'`, `'svelte-shorthand'`.
+
+### custom-groups
+
+<sub>(default: `{}`)</sub>
+
+You can define your own groups for Svelte attributes. The [minimatch](https://github.com/isaacs/minimatch) library is used for pattern matching.
+
+Example:
+
+```
+{
+  "custom-groups": {
+    "callback": "on*"
+  }
+}
+```
+
 ## ⚙️ Usage
 
+:::info Important
 In order to start using this rule, you need to install additional dependencies:
 
 - `svelte`
 - `svelte-eslint-parser`
+:::
 
 ::: code-group
 
@@ -131,7 +163,12 @@ In order to start using this rule, you need to install additional dependencies:
       "error",
       {
         "type": "natural",
-        "order": "asc"
+        "order": "asc",
+        "groups": [
+          "multiline",
+          "unknown",
+          ["shorthand", "svelte-shorthand"]
+        ]
       }
     ]
   }
@@ -153,6 +190,11 @@ export default [
         {
           type: 'natural',
           order: 'asc',
+          groups: [
+            'multiline',
+            'unknown',
+            ['shorthand', 'svelte-shorthand'],
+          ],
         },
       ],
     },
