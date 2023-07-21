@@ -2,7 +2,7 @@ import { ESLintUtils } from '@typescript-eslint/utils'
 import { describe, it } from 'vitest'
 import { dedent } from 'ts-dedent'
 
-import rule, { RULE_NAME, Position } from '../rules/sort-jsx-props'
+import rule, { RULE_NAME } from '../rules/sort-jsx-props'
 import { SortOrder, SortType } from '../typings'
 
 describe(RULE_NAME, () => {
@@ -247,8 +247,8 @@ describe(RULE_NAME, () => {
             `,
             options: [
               {
+                groups: ['unknown', 'shorthand'],
                 type: SortType.alphabetical,
-                shorthand: Position.last,
                 order: SortOrder.asc,
               },
             ],
@@ -278,8 +278,8 @@ describe(RULE_NAME, () => {
             `,
             options: [
               {
+                groups: ['unknown', 'shorthand'],
                 type: SortType.alphabetical,
-                shorthand: Position.last,
                 order: SortOrder.asc,
               },
             ],
@@ -311,8 +311,9 @@ describe(RULE_NAME, () => {
             `,
             options: [
               {
+                'custom-groups': { callback: 'on*' },
+                groups: ['unknown', 'callback'],
                 type: SortType.alphabetical,
-                callback: Position.last,
                 order: SortOrder.asc,
               },
             ],
@@ -338,8 +339,9 @@ describe(RULE_NAME, () => {
             `,
             options: [
               {
+                'custom-groups': { callback: 'on*' },
+                groups: ['unknown', 'callback'],
                 type: SortType.alphabetical,
-                callback: Position.last,
                 order: SortOrder.asc,
               },
             ],
@@ -377,8 +379,8 @@ describe(RULE_NAME, () => {
             `,
             options: [
               {
+                groups: [['multiline'], 'unknown'],
                 type: SortType.alphabetical,
-                multiline: Position.first,
                 order: SortOrder.asc,
               },
             ],
@@ -416,8 +418,8 @@ describe(RULE_NAME, () => {
             `,
             options: [
               {
+                groups: ['multiline', 'unknown'],
                 type: SortType.alphabetical,
-                multiline: Position.first,
                 order: SortOrder.asc,
               },
             ],
@@ -458,9 +460,10 @@ describe(RULE_NAME, () => {
             `,
             options: [
               {
+                'custom-groups': { top: ['id', 'name'] },
                 type: SortType.alphabetical,
+                groups: ['top', 'unknown'],
                 order: SortOrder.asc,
-                'always-on-top': ['id', 'name'],
               },
             ],
           },
@@ -489,9 +492,10 @@ describe(RULE_NAME, () => {
             `,
             options: [
               {
+                'custom-groups': { top: ['id', 'name'] },
                 type: SortType.alphabetical,
+                groups: ['top', 'unknown'],
                 order: SortOrder.asc,
-                'always-on-top': ['id', 'name'],
               },
             ],
             errors: [
@@ -526,9 +530,10 @@ describe(RULE_NAME, () => {
             `,
             options: [
               {
+                'custom-groups': { top: ['id'] },
                 type: SortType.alphabetical,
+                groups: ['top', 'unknown'],
                 order: SortOrder.asc,
-                'always-on-top': ['id', 'name'],
               },
             ],
             errors: [
@@ -556,9 +561,10 @@ describe(RULE_NAME, () => {
             `,
             options: [
               {
+                'custom-groups': { top: ['id'] },
                 type: SortType.alphabetical,
+                groups: ['top', 'unknown'],
                 order: SortOrder.asc,
-                'always-on-top': ['id'],
               },
             ],
             errors: [
@@ -808,8 +814,8 @@ describe(RULE_NAME, () => {
             `,
             options: [
               {
+                groups: ['unknown', 'shorthand'],
                 type: SortType.natural,
-                shorthand: Position.last,
                 order: SortOrder.asc,
               },
             ],
@@ -839,8 +845,8 @@ describe(RULE_NAME, () => {
             `,
             options: [
               {
+                groups: ['unknown', 'shorthand'],
                 type: SortType.natural,
-                shorthand: Position.last,
                 order: SortOrder.asc,
               },
             ],
@@ -872,8 +878,9 @@ describe(RULE_NAME, () => {
             `,
             options: [
               {
+                'custom-groups': { callback: 'on*' },
+                groups: ['unknown', 'callback'],
                 type: SortType.natural,
-                callback: Position.last,
                 order: SortOrder.asc,
               },
             ],
@@ -899,8 +906,9 @@ describe(RULE_NAME, () => {
             `,
             options: [
               {
+                'custom-groups': { callback: 'on*' },
+                groups: ['unknown', 'callback'],
                 type: SortType.natural,
-                callback: Position.last,
                 order: SortOrder.asc,
               },
             ],
@@ -938,8 +946,8 @@ describe(RULE_NAME, () => {
             `,
             options: [
               {
+                groups: [['multiline'], 'unknown'],
                 type: SortType.natural,
-                multiline: Position.first,
                 order: SortOrder.asc,
               },
             ],
@@ -977,8 +985,8 @@ describe(RULE_NAME, () => {
             `,
             options: [
               {
+                groups: ['multiline', 'unknown'],
                 type: SortType.natural,
-                multiline: Position.first,
                 order: SortOrder.asc,
               },
             ],
@@ -1019,9 +1027,10 @@ describe(RULE_NAME, () => {
             `,
             options: [
               {
+                'custom-groups': { top: ['id', 'name'] },
+                groups: ['top', 'unknown'],
                 type: SortType.natural,
                 order: SortOrder.asc,
-                'always-on-top': ['id', 'name'],
               },
             ],
           },
@@ -1050,9 +1059,10 @@ describe(RULE_NAME, () => {
             `,
             options: [
               {
+                'custom-groups': { top: ['id', 'name'] },
+                groups: ['top', 'unknown'],
                 type: SortType.natural,
                 order: SortOrder.asc,
-                'always-on-top': ['id', 'name'],
               },
             ],
             errors: [
@@ -1087,9 +1097,10 @@ describe(RULE_NAME, () => {
             `,
             options: [
               {
+                'custom-groups': { top: ['id'] },
+                groups: ['top', 'unknown'],
                 type: SortType.natural,
                 order: SortOrder.asc,
-                'always-on-top': ['id', 'name'],
               },
             ],
             errors: [
@@ -1117,9 +1128,10 @@ describe(RULE_NAME, () => {
             `,
             options: [
               {
+                'custom-groups': { top: ['id'] },
+                groups: ['top', 'unknown'],
                 type: SortType.natural,
                 order: SortOrder.asc,
-                'always-on-top': ['id'],
               },
             ],
             errors: [
@@ -1181,8 +1193,8 @@ describe(RULE_NAME, () => {
               let Odokawa = () => (
                 <Character
                   role="taxi driver"
-                  variant="odd"
                   type="walrus"
+                  variant="odd"
                 >
                   Pew-pew
                 </Character>
@@ -1369,8 +1381,8 @@ describe(RULE_NAME, () => {
             `,
             options: [
               {
+                groups: ['unknown', 'shorthand'],
                 type: SortType['line-length'],
-                shorthand: Position.last,
                 order: SortOrder.desc,
               },
             ],
@@ -1391,8 +1403,8 @@ describe(RULE_NAME, () => {
             output: dedent`
               let Spike = () => (
                 <Hunter
-                  origin="Mars"
                   bloodType={0}
+                  origin="Mars"
                   age={27}
                   isFromCowboyBebop
                 />
@@ -1400,9 +1412,9 @@ describe(RULE_NAME, () => {
             `,
             options: [
               {
+                groups: ['unknown', 'shorthand'],
                 type: SortType['line-length'],
                 order: SortOrder.desc,
-                shorthand: Position.last,
               },
             ],
             errors: [
@@ -1440,8 +1452,9 @@ describe(RULE_NAME, () => {
             `,
             options: [
               {
+                'custom-groups': { callback: 'on*' },
+                groups: ['unknown', 'callback'],
                 type: SortType['line-length'],
-                callback: Position.last,
                 order: SortOrder.desc,
               },
             ],
@@ -1467,8 +1480,9 @@ describe(RULE_NAME, () => {
             `,
             options: [
               {
+                'custom-groups': { callback: 'on*' },
+                groups: ['unknown', 'callback'],
                 type: SortType['line-length'],
-                callback: Position.last,
                 order: SortOrder.desc,
               },
             ],
@@ -1506,8 +1520,8 @@ describe(RULE_NAME, () => {
             `,
             options: [
               {
+                groups: [['multiline'], 'unknown'],
                 type: SortType['line-length'],
-                multiline: Position.first,
                 order: SortOrder.desc,
               },
             ],
@@ -1545,8 +1559,8 @@ describe(RULE_NAME, () => {
             `,
             options: [
               {
+                groups: ['multiline', 'unknown'],
                 type: SortType['line-length'],
-                multiline: Position.first,
                 order: SortOrder.desc,
               },
             ],
@@ -1587,9 +1601,10 @@ describe(RULE_NAME, () => {
             `,
             options: [
               {
+                'custom-groups': { top: ['id', 'name'] },
                 type: SortType['line-length'],
+                groups: ['top', 'unknown'],
                 order: SortOrder.desc,
-                'always-on-top': ['id', 'name'],
               },
             ],
           },
@@ -1618,9 +1633,10 @@ describe(RULE_NAME, () => {
             `,
             options: [
               {
+                'custom-groups': { top: ['id', 'name'] },
                 type: SortType['line-length'],
+                groups: ['top', 'unknown'],
                 order: SortOrder.desc,
-                'always-on-top': ['id', 'name'],
               },
             ],
             errors: [
@@ -1662,9 +1678,10 @@ describe(RULE_NAME, () => {
             `,
             options: [
               {
+                'custom-groups': { top: ['id', 'name'] },
                 type: SortType['line-length'],
+                groups: ['top', 'unknown'],
                 order: SortOrder.desc,
-                'always-on-top': ['id', 'name'],
               },
             ],
             errors: [
@@ -1692,9 +1709,10 @@ describe(RULE_NAME, () => {
             `,
             options: [
               {
+                'custom-groups': { top: ['id', 'name'] },
                 type: SortType['line-length'],
+                groups: ['top', 'unknown'],
                 order: SortOrder.desc,
-                'always-on-top': ['id'],
               },
             ],
             errors: [
