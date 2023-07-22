@@ -22,10 +22,18 @@ It's **safe**. The rule considers spread elements in an attributes list and does
 This rule accepts an options object with the following properties:
 
 ```ts
+type Group =
+  | 'multiline'
+  | 'shorthand'
+  | 'astro-shorthand'
+  | 'unknown'
+
 interface Options {
   type?: 'alphabetical' | 'natural' | 'line-length'
   order?: 'asc' | 'desc'
   'ignore-case'?: boolean
+  groups?: (Group | Group[])[]
+  'custom-groups': { [key in T[number]]: string[] | string }
 }
 ```
 
@@ -50,6 +58,28 @@ interface Options {
 
 Only affects alphabetical and natural sorting. When `true` the rule ignores the case-sensitivity of the order.
 
+### groups
+
+<sub>(default: `[]`)</sub>
+
+You can set up a list of Astro attribute groups for sorting. Groups can be combined. There are predefined groups: `'multiline'`, `'shorthand'`, `'astro-shorthand'`.
+
+### custom-groups
+
+<sub>(default: `{}`)</sub>
+
+You can define your own groups for Astro attributes. The [minimatch](https://github.com/isaacs/minimatch) library is used for pattern matching.
+
+Example:
+
+```
+{
+  "custom-groups": {
+    "callback": "on*"
+  }
+}
+```
+
 ## ⚙️ Usage
 
 In order to start using this rule, you need to install additional dependency:
@@ -67,7 +97,12 @@ In order to start using this rule, you need to install additional dependency:
       "error",
       {
         "type": "natural",
-        "order": "asc"
+        "order": "asc",
+        "groups": [
+          "multiline",
+          "unknown",
+          ["shorthand", "astro-shorthand"]
+        ]
       }
     ]
   }
@@ -89,6 +124,11 @@ export default [
         {
           type: 'natural',
           order: 'asc',
+          groups: [
+            'multiline',
+            'unknown',
+            ['shorthand', 'astro-shorthand'],
+          ],
         },
       ],
     },
