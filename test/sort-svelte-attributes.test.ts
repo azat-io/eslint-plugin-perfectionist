@@ -403,6 +403,101 @@ describe(RULE_NAME, () => {
         ],
       })
     })
+
+    it(`${RULE_NAME}(${type}): allows to set custom groups`, () => {
+      ruleTester.run(RULE_NAME, rule, {
+        valid: [
+          {
+            filename: 'component.svelte',
+            code: dedent`
+              <script>
+                import Robot from '~/base/robot.svelte'
+              </script>
+
+              <Robot
+                id="42f1b85f-54ef-413d-b99e-27c9e9610fc2"
+                name="Reg"
+                handlePushHand={() => {
+                  /* ... */
+                }}
+                team="Team Riko"
+              />
+            `,
+            options: [
+              {
+                type: SortType.alphabetical,
+                order: SortOrder.asc,
+                groups: ['top', 'handlers', 'unknown'],
+                'custom-groups': {
+                  top: ['id', 'name'],
+                  handlers: 'handle*',
+                },
+              },
+            ],
+          },
+        ],
+        invalid: [
+          {
+            filename: 'component.svelte',
+            code: dedent`
+              <script>
+                import Robot from '~/base/robot.svelte'
+              </script>
+
+              <Robot
+                handlePushHand={() => {
+                  /* ... */
+                }}
+                name="Reg"
+                team="Team Riko"
+                id="42f1b85f-54ef-413d-b99e-27c9e9610fc2"
+              />
+            `,
+            output: dedent`
+              <script>
+                import Robot from '~/base/robot.svelte'
+              </script>
+
+              <Robot
+                id="42f1b85f-54ef-413d-b99e-27c9e9610fc2"
+                name="Reg"
+                handlePushHand={() => {
+                  /* ... */
+                }}
+                team="Team Riko"
+              />
+            `,
+            options: [
+              {
+                type: SortType.alphabetical,
+                order: SortOrder.asc,
+                groups: ['top', 'handlers', 'unknown'],
+                'custom-groups': {
+                  top: ['id', 'name'],
+                  handlers: 'handle*',
+                },
+              },
+            ],
+            errors: [
+              {
+                messageId: 'unexpectedSvelteAttributesOrder',
+                data: {
+                  left: 'handlePushHand',
+                  right: 'name',
+                },
+              },
+              {
+                messageId: 'unexpectedSvelteAttributesOrder',
+                data: {
+                  left: 'team',
+                  right: 'id',
+                },
+              },
+            ],
+          },
+        ],
+      })
+    })
   })
 
   describe(`${RULE_NAME}: sorting by natural order`, () => {
@@ -792,6 +887,101 @@ describe(RULE_NAME, () => {
         ],
       })
     })
+
+    it(`${RULE_NAME}(${type}): allows to set custom groups`, () => {
+      ruleTester.run(RULE_NAME, rule, {
+        valid: [
+          {
+            filename: 'component.svelte',
+            code: dedent`
+              <script>
+                import Robot from '~/base/robot.svelte'
+              </script>
+
+              <Robot
+                id="42f1b85f-54ef-413d-b99e-27c9e9610fc2"
+                name="Reg"
+                handlePushHand={() => {
+                  /* ... */
+                }}
+                team="Team Riko"
+              />
+            `,
+            options: [
+              {
+                type: SortType.natural,
+                order: SortOrder.asc,
+                groups: ['top', 'handlers', 'unknown'],
+                'custom-groups': {
+                  top: ['id', 'name'],
+                  handlers: 'handle*',
+                },
+              },
+            ],
+          },
+        ],
+        invalid: [
+          {
+            filename: 'component.svelte',
+            code: dedent`
+              <script>
+                import Robot from '~/base/robot.svelte'
+              </script>
+
+              <Robot
+                handlePushHand={() => {
+                  /* ... */
+                }}
+                name="Reg"
+                team="Team Riko"
+                id="42f1b85f-54ef-413d-b99e-27c9e9610fc2"
+              />
+            `,
+            output: dedent`
+              <script>
+                import Robot from '~/base/robot.svelte'
+              </script>
+
+              <Robot
+                id="42f1b85f-54ef-413d-b99e-27c9e9610fc2"
+                name="Reg"
+                handlePushHand={() => {
+                  /* ... */
+                }}
+                team="Team Riko"
+              />
+            `,
+            options: [
+              {
+                type: SortType.natural,
+                order: SortOrder.asc,
+                groups: ['top', 'handlers', 'unknown'],
+                'custom-groups': {
+                  top: ['id', 'name'],
+                  handlers: 'handle*',
+                },
+              },
+            ],
+            errors: [
+              {
+                messageId: 'unexpectedSvelteAttributesOrder',
+                data: {
+                  left: 'handlePushHand',
+                  right: 'name',
+                },
+              },
+              {
+                messageId: 'unexpectedSvelteAttributesOrder',
+                data: {
+                  left: 'team',
+                  right: 'id',
+                },
+              },
+            ],
+          },
+        ],
+      })
+    })
   })
 
   describe(`${RULE_NAME}: sorting by line length`, () => {
@@ -1160,6 +1350,101 @@ describe(RULE_NAME, () => {
                 data: {
                   left: 'frags',
                   right: 'onAttack',
+                },
+              },
+            ],
+          },
+        ],
+      })
+    })
+
+    it(`${RULE_NAME}(${type}): allows to set custom groups`, () => {
+      ruleTester.run(RULE_NAME, rule, {
+        valid: [
+          {
+            filename: 'component.svelte',
+            code: dedent`
+              <script>
+                import Robot from '~/base/robot.svelte'
+              </script>
+
+              <Robot
+                id="42f1b85f-54ef-413d-b99e-27c9e9610fc2"
+                name="Reg"
+                handlePushHand={() => {
+                  /* ... */
+                }}
+                team="Team Riko"
+              />
+            `,
+            options: [
+              {
+                type: SortType['line-length'],
+                order: SortOrder.desc,
+                groups: ['top', 'handlers', 'unknown'],
+                'custom-groups': {
+                  top: ['id', 'name'],
+                  handlers: 'handle*',
+                },
+              },
+            ],
+          },
+        ],
+        invalid: [
+          {
+            filename: 'component.svelte',
+            code: dedent`
+              <script>
+                import Robot from '~/base/robot.svelte'
+              </script>
+
+              <Robot
+                handlePushHand={() => {
+                  /* ... */
+                }}
+                name="Reg"
+                team="Team Riko"
+                id="42f1b85f-54ef-413d-b99e-27c9e9610fc2"
+              />
+            `,
+            output: dedent`
+              <script>
+                import Robot from '~/base/robot.svelte'
+              </script>
+
+              <Robot
+                id="42f1b85f-54ef-413d-b99e-27c9e9610fc2"
+                name="Reg"
+                handlePushHand={() => {
+                  /* ... */
+                }}
+                team="Team Riko"
+              />
+            `,
+            options: [
+              {
+                type: SortType['line-length'],
+                order: SortOrder.desc,
+                groups: ['top', 'handlers', 'unknown'],
+                'custom-groups': {
+                  top: ['id', 'name'],
+                  handlers: 'handle*',
+                },
+              },
+            ],
+            errors: [
+              {
+                messageId: 'unexpectedSvelteAttributesOrder',
+                data: {
+                  left: 'handlePushHand',
+                  right: 'name',
+                },
+              },
+              {
+                messageId: 'unexpectedSvelteAttributesOrder',
+                data: {
+                  left: 'team',
+                  right: 'id',
                 },
               },
             ],

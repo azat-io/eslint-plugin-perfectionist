@@ -112,9 +112,10 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
                 return accumulator
               }
 
-              let name = attribute.name.type === AST_NODE_TYPES.JSXNamespacedName
-              ? `${attribute.name.namespace.name}:${attribute.name.name.name}`
-              : attribute.name.name
+              let name =
+                attribute.name.type === AST_NODE_TYPES.JSXNamespacedName
+                  ? `${attribute.name.namespace.name}:${attribute.name.name.name}`
+                  : attribute.name.name
 
               let group: Group<string[]> | undefined
 
@@ -124,7 +125,9 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
                 }
               }
 
-              for (let [key, pattern] of Object.entries(options['custom-groups'])) {
+              for (let [key, pattern] of Object.entries(
+                options['custom-groups'],
+              )) {
                 if (
                   Array.isArray(pattern) &&
                   pattern.some(patternValue => minimatch(name, patternValue))
@@ -159,13 +162,16 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
             [[]],
           )
 
-        let getGroupNumber = (nodeWithGroup: SortingNodeWithGroup<string[]>): number => {
+        let getGroupNumber = (
+          nodeWithGroup: SortingNodeWithGroup<string[]>,
+        ): number => {
           for (let i = 0, max = options.groups.length; i < max; i++) {
             let currentGroup = options.groups[i]
 
             if (
               nodeWithGroup.group === currentGroup ||
-              (Array.isArray(currentGroup) && currentGroup.includes(nodeWithGroup.group))
+              (Array.isArray(currentGroup) &&
+                currentGroup.includes(nodeWithGroup.group))
             ) {
               return i
             }
@@ -178,8 +184,10 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
             let leftNum = getGroupNumber(left)
             let rightNum = getGroupNumber(right)
 
-            if ((leftNum > rightNum ||
-                (leftNum === rightNum && compare(left, right, options)))) {
+            if (
+              leftNum > rightNum ||
+              (leftNum === rightNum && compare(left, right, options))
+            ) {
               context.report({
                 messageId: 'unexpectedJSXPropsOrder',
                 data: {
@@ -207,12 +215,12 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
 
                   let sortedNodes: SortingNode[] = []
 
-                  for(let group of Object.keys(grouped).sort()) {
+                  for (let group of Object.keys(grouped).sort()) {
                     sortedNodes.push(...sortNodes(grouped[group], options))
                   }
 
                   return makeFixes(fixer, nodes, sortedNodes, source)
-                }
+                },
               })
             }
           })
