@@ -1,5 +1,5 @@
 import type { TSESTree } from '@typescript-eslint/types'
-import type { AST } from 'svelte-eslint-parser'
+import type { AST } from 'astro-eslint-parser'
 
 import { minimatch } from 'minimatch'
 import path from 'path'
@@ -9,16 +9,14 @@ import type { SortingNode } from '../typings'
 import { createEslintRule } from '../utils/create-eslint-rule'
 import { rangeToDiff } from '../utils/range-to-diff'
 import { SortOrder, SortType } from '../typings'
-import { sortNodes } from '../utils/sort-nodes'
 import { makeFixes } from '../utils/make-fixes'
-import { complete } from '../utils/complete'
+import { sortNodes } from '../utils/sort-nodes'
 import { pairwise } from '../utils/pairwise'
+import { complete } from '../utils/complete'
 import { compare } from '../utils/compare'
 
-type MESSAGE_ID = 'unexpectedSvelteAttributesOrder'
-
 type Group<T extends string[]> =
-  | 'svelte-shorthand'
+  | 'astro-shorthand'
   | 'multiline'
   | 'shorthand'
   | 'unknown'
@@ -27,6 +25,8 @@ type Group<T extends string[]> =
 type SortingNodeWithGroup<T extends string[]> = SortingNode & {
   group: Group<T>
 }
+
+type MESSAGE_ID = 'unexpectedAstroAttributesOrder'
 
 type Options<T extends string[]> = [
   Partial<{
@@ -38,14 +38,14 @@ type Options<T extends string[]> = [
   }>,
 ]
 
-export const RULE_NAME = 'sort-svelte-attributes'
+export const RULE_NAME = 'sort-astro-attributes'
 
 export default createEslintRule<Options<string[]>, MESSAGE_ID>({
   name: RULE_NAME,
   meta: {
     type: 'suggestion',
     docs: {
-      description: 'enforce sorted Svelte attributes',
+      description: 'enforce sorted Astro attributes',
       recommended: false,
     },
     fixable: 'code',
@@ -81,7 +81,7 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
       },
     ],
     messages: {
-      unexpectedSvelteAttributesOrder:
+      unexpectedAstroAttributesOrder:
         'Expected "{{right}}" to come before "{{left}}"',
     },
   },
@@ -91,14 +91,17 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
       order: SortOrder.asc,
     },
   ],
+  // @ts-ignore
   create: context => {
-    if (path.extname(context.getFilename()) !== '.svelte') {
+    if (path.extname(context.getFilename()) !== '.astro') {
       return {}
     }
 
     return {
-      SvelteStartTag: (node: AST.SvelteStartTag) => {
-        if (node.attributes.length > 1) {
+      JSXElement: (node: AST.JSXElement) => {
+        let { attributes } = node.openingElement
+
+        if (attributes.length > 1) {
           let options = complete(context.options.at(0), {
             type: SortType.alphabetical,
             order: SortOrder.asc,
@@ -109,76 +112,65 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
 
           let source = context.getSourceCode()
 
-          let parts: SortingNodeWithGroup<string[]>[][] =
-            node.attributes.reduce(
-              (accumulator: SortingNodeWithGroup<string[]>[][], attribute) => {
-                if (attribute.type === 'SvelteSpreadAttribute') {
-                  accumulator.push([])
-                  return accumulator
-                }
-
-                let name: string
-
-                let group: Group<string[]> | undefined
-
-                let defineGroup = (nodeGroup: Group<string[]>) => {
-                  if (!group && options.groups.flat().includes(nodeGroup)) {
-                    group = nodeGroup
-                  }
-                }
-
-                if (attribute.key.type === 'SvelteSpecialDirectiveKey') {
-                  name = source.text.slice(...attribute.key.range)
-                } else {
-                  if (typeof attribute.key.name === 'string') {
-                    ;({ name } = attribute.key)
-                  } else {
-                    name = source.text.slice(...attribute.key.range!)
-                  }
-                }
-
-                for (let [key, pattern] of Object.entries(
-                  options['custom-groups'],
-                )) {
-                  if (
-                    Array.isArray(pattern) &&
-                    pattern.some(patternValue => minimatch(name, patternValue))
-                  ) {
-                    defineGroup(key)
-                  }
-
-                  if (typeof pattern === 'string' && minimatch(name, pattern)) {
-                    defineGroup(key)
-                  }
-                }
-
-                if (attribute.type === 'SvelteShorthandAttribute') {
-                  defineGroup('svelte-shorthand')
-                  defineGroup('shorthand')
-                }
-
-                if (
-                  !('value' in attribute) ||
-                  (Array.isArray(attribute.value) && !attribute.value.at(0))
-                ) {
-                  defineGroup('shorthand')
-                }
-
-                if (attribute.loc.start.line !== attribute.loc.end.line) {
-                  defineGroup('multiline')
-                }
-
-                accumulator.at(-1)!.push({
-                  size: rangeToDiff(attribute.range),
-                  node: attribute as unknown as TSESTree.Node,
-                  group: group ?? 'unknown',
-                  name,
-                })
-
+          let parts: SortingNodeWithGroup<string[]>[][] = attributes.reduce(
+            (accumulator: SortingNodeWithGroup<string[]>[][], attribute) => {
+              if (attribute.type === 'JSXSpreadAttribute') {
+                accumulator.push([])
                 return accumulator
-              },
-              [[]],
-            )
+              }
+
+              let name =
+                typeof attribute.name.name === 'string'
+                  ? attribute.name.name
+                  : source.text.slice(...attribute.name.range)
+
+              let group: Group<string[]> | undefined
+
+              let defineGroup = (nodeGroup: Group<string[]>) => {
+                if (!group && options.groups.flat().includes(nodeGroup)) {
+                  group = nodeGroup
+                }
+              }
+
+              for (let [key, pattern] of Object.entries(
+                options['custom-groups'],
+              )) {
+                if (
+                  Array.isArray(pattern) &&
+                  pattern.some(patternValue => minimatch(name, patternValue))
+                ) {
+                  defineGroup(key)
+                }
+
+                if (typeof pattern === 'string' && minimatch(name, pattern)) {
+                  defineGroup(key)
+                }
+              }
+
+              if (attribute.type === 'AstroShorthandAttribute') {
+                defineGroup('astro-shorthand')
+                defineGroup('shorthand')
+              }
+
+              if (attribute.value === null) {
+                defineGroup('shorthand')
+              }
+
+              if (attribute.loc.start.line !== attribute.loc.end.line) {
+                defineGroup('multiline')
+              }
+
+              accumulator.at(-1)!.push({
+                size: rangeToDiff(attribute.range),
+                node: attribute as unknown as TSESTree.Node,
+                group: group ?? 'unknown',
+                name,
+              })
+
+              return accumulator
+            },
+            [[]],
+          )
 
           let getGroupNumber = (
             nodeWithGroup: SortingNodeWithGroup<string[]>,
@@ -207,7 +199,7 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
                 (leftNum === rightNum && compare(left, right, options))
               ) {
                 context.report({
-                  messageId: 'unexpectedSvelteAttributesOrder',
+                  messageId: 'unexpectedAstroAttributesOrder',
                   data: {
                     left: left.name,
                     right: right.name,
