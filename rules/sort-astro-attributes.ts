@@ -1,6 +1,7 @@
 import type { TSESTree } from '@typescript-eslint/types'
 import type { AST } from 'astro-eslint-parser'
 
+import { minimatch } from 'minimatch'
 import path from 'path'
 
 import type { SortingNode } from '../typings'
@@ -118,11 +119,31 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
                 return accumulator
               }
 
+              let name =
+                typeof attribute.name.name === 'string'
+                  ? attribute.name.name
+                  : source.text.slice(...attribute.name.range)
+
               let group: Group<string[]> | undefined
 
               let defineGroup = (nodeGroup: Group<string[]>) => {
                 if (!group && options.groups.flat().includes(nodeGroup)) {
                   group = nodeGroup
+                }
+              }
+
+              for (let [key, pattern] of Object.entries(
+                options['custom-groups'],
+              )) {
+                if (
+                  Array.isArray(pattern) &&
+                  pattern.some(patternValue => minimatch(name, patternValue))
+                ) {
+                  defineGroup(key)
+                }
+
+                if (typeof pattern === 'string' && minimatch(name, pattern)) {
+                  defineGroup(key)
                 }
               }
 
@@ -142,11 +163,8 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
               accumulator.at(-1)!.push({
                 size: rangeToDiff(attribute.range),
                 node: attribute as unknown as TSESTree.Node,
-                name:
-                  typeof attribute.name.name === 'string'
-                    ? attribute.name.name
-                    : source.text.slice(...attribute.name.range),
                 group: group ?? 'unknown',
+                name,
               })
 
               return accumulator

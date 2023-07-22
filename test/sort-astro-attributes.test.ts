@@ -400,6 +400,101 @@ describe(RULE_NAME, () => {
         ],
       })
     })
+
+    it(`${RULE_NAME}(${type}): allows to set custom groups`, () => {
+      ruleTester.run(RULE_NAME, rule, {
+        valid: [
+          {
+            filename: 'component.astro',
+            code: dedent`
+              <script>
+                import Suzume from '~/base/suzume.astro
+              </script>
+
+              <Suzume
+                id="0c3cc950-181f-497e-97e2-7d0c73575ebb"
+                name="Suzume"
+                onCloseDoor={() => {
+                  /* ... */
+                }}
+                age={17}
+              />
+            `,
+            options: [
+              {
+                type: SortType.alphabetical,
+                order: SortOrder.asc,
+                groups: ['top', 'callback', 'unknown'],
+                'custom-groups': {
+                  top: ['id', 'name'],
+                  callback: 'on*',
+                },
+              },
+            ],
+          },
+        ],
+        invalid: [
+          {
+            filename: 'component.astro',
+            code: dedent`
+              <script>
+                import Suzume from '~/base/suzume.astro
+              </script>
+
+              <Suzume
+                age={17}
+                id="0c3cc950-181f-497e-97e2-7d0c73575ebb"
+                onCloseDoor={() => {
+                  /* ... */
+                }}
+                name="Suzume"
+              />
+            `,
+            output: dedent`
+              <script>
+                import Suzume from '~/base/suzume.astro
+              </script>
+
+              <Suzume
+                id="0c3cc950-181f-497e-97e2-7d0c73575ebb"
+                name="Suzume"
+                onCloseDoor={() => {
+                  /* ... */
+                }}
+                age={17}
+              />
+            `,
+            options: [
+              {
+                type: SortType.alphabetical,
+                order: SortOrder.asc,
+                groups: ['top', 'callback', 'unknown'],
+                'custom-groups': {
+                  top: ['id', 'name'],
+                  callback: 'on*',
+                },
+              },
+            ],
+            errors: [
+              {
+                messageId: 'unexpectedAstroAttributesOrder',
+                data: {
+                  left: 'age',
+                  right: 'id',
+                },
+              },
+              {
+                messageId: 'unexpectedAstroAttributesOrder',
+                data: {
+                  left: 'onCloseDoor',
+                  right: 'name',
+                },
+              },
+            ],
+          },
+        ],
+      })
+    })
   })
 
   describe(`${RULE_NAME}: sorting by natural order`, () => {
@@ -786,6 +881,101 @@ describe(RULE_NAME, () => {
         ],
       })
     })
+
+    it(`${RULE_NAME}(${type}): allows to set custom groups`, () => {
+      ruleTester.run(RULE_NAME, rule, {
+        valid: [
+          {
+            filename: 'component.astro',
+            code: dedent`
+              <script>
+                import Suzume from '~/base/suzume.astro
+              </script>
+
+              <Suzume
+                id="0c3cc950-181f-497e-97e2-7d0c73575ebb"
+                name="Suzume"
+                onCloseDoor={() => {
+                  /* ... */
+                }}
+                age={17}
+              />
+            `,
+            options: [
+              {
+                type: SortType.natural,
+                order: SortOrder.asc,
+                groups: ['top', 'callback', 'unknown'],
+                'custom-groups': {
+                  top: ['id', 'name'],
+                  callback: 'on*',
+                },
+              },
+            ],
+          },
+        ],
+        invalid: [
+          {
+            filename: 'component.astro',
+            code: dedent`
+              <script>
+                import Suzume from '~/base/suzume.astro
+              </script>
+
+              <Suzume
+                age={17}
+                id="0c3cc950-181f-497e-97e2-7d0c73575ebb"
+                onCloseDoor={() => {
+                  /* ... */
+                }}
+                name="Suzume"
+              />
+            `,
+            output: dedent`
+              <script>
+                import Suzume from '~/base/suzume.astro
+              </script>
+
+              <Suzume
+                id="0c3cc950-181f-497e-97e2-7d0c73575ebb"
+                name="Suzume"
+                onCloseDoor={() => {
+                  /* ... */
+                }}
+                age={17}
+              />
+            `,
+            options: [
+              {
+                type: SortType.natural,
+                order: SortOrder.asc,
+                groups: ['top', 'callback', 'unknown'],
+                'custom-groups': {
+                  top: ['id', 'name'],
+                  callback: 'on*',
+                },
+              },
+            ],
+            errors: [
+              {
+                messageId: 'unexpectedAstroAttributesOrder',
+                data: {
+                  left: 'age',
+                  right: 'id',
+                },
+              },
+              {
+                messageId: 'unexpectedAstroAttributesOrder',
+                data: {
+                  left: 'onCloseDoor',
+                  right: 'name',
+                },
+              },
+            ],
+          },
+        ],
+      })
+    })
   })
 
   describe(`${RULE_NAME}: sorting by line length`, () => {
@@ -1151,6 +1341,101 @@ describe(RULE_NAME, () => {
                 data: {
                   left: 'name',
                   right: 'onPlay',
+                },
+              },
+            ],
+          },
+        ],
+      })
+    })
+
+    it(`${RULE_NAME}(${type}): allows to set custom groups`, () => {
+      ruleTester.run(RULE_NAME, rule, {
+        valid: [
+          {
+            filename: 'component.astro',
+            code: dedent`
+              <script>
+                import Suzume from '~/base/suzume.astro
+              </script>
+
+              <Suzume
+                id="0c3cc950-181f-497e-97e2-7d0c73575ebb"
+                name="Suzume"
+                onCloseDoor={() => {
+                  /* ... */
+                }}
+                age={17}
+              />
+            `,
+            options: [
+              {
+                type: SortType['line-length'],
+                order: SortOrder.desc,
+                groups: ['top', 'callback', 'unknown'],
+                'custom-groups': {
+                  top: ['id', 'name'],
+                  callback: 'on*',
+                },
+              },
+            ],
+          },
+        ],
+        invalid: [
+          {
+            filename: 'component.astro',
+            code: dedent`
+              <script>
+                import Suzume from '~/base/suzume.astro
+              </script>
+
+              <Suzume
+                age={17}
+                id="0c3cc950-181f-497e-97e2-7d0c73575ebb"
+                onCloseDoor={() => {
+                  /* ... */
+                }}
+                name="Suzume"
+              />
+            `,
+            output: dedent`
+              <script>
+                import Suzume from '~/base/suzume.astro
+              </script>
+
+              <Suzume
+                id="0c3cc950-181f-497e-97e2-7d0c73575ebb"
+                name="Suzume"
+                onCloseDoor={() => {
+                  /* ... */
+                }}
+                age={17}
+              />
+            `,
+            options: [
+              {
+                type: SortType['line-length'],
+                order: SortOrder.desc,
+                groups: ['top', 'callback', 'unknown'],
+                'custom-groups': {
+                  top: ['id', 'name'],
+                  callback: 'on*',
+                },
+              },
+            ],
+            errors: [
+              {
+                messageId: 'unexpectedAstroAttributesOrder',
+                data: {
+                  left: 'age',
+                  right: 'id',
+                },
+              },
+              {
+                messageId: 'unexpectedAstroAttributesOrder',
+                data: {
+                  left: 'onCloseDoor',
+                  right: 'name',
                 },
               },
             ],

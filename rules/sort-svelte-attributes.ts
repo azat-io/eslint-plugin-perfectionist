@@ -1,6 +1,7 @@
 import type { TSESTree } from '@typescript-eslint/types'
 import type { AST } from 'svelte-eslint-parser'
 
+import { minimatch } from 'minimatch'
 import path from 'path'
 
 import type { SortingNode } from '../typings'
@@ -133,6 +134,21 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
                     ;({ name } = attribute.key)
                   } else {
                     name = source.text.slice(...attribute.key.range!)
+                  }
+                }
+
+                for (let [key, pattern] of Object.entries(
+                  options['custom-groups'],
+                )) {
+                  if (
+                    Array.isArray(pattern) &&
+                    pattern.some(patternValue => minimatch(name, patternValue))
+                  ) {
+                    defineGroup(key)
+                  }
+
+                  if (typeof pattern === 'string' && minimatch(name, pattern)) {
+                    defineGroup(key)
                   }
                 }
 
