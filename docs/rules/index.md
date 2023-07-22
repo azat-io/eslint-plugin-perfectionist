@@ -12,6 +12,7 @@ description: ESLint Plugin Perfectionist list of rules
 | Name                                                    | Description                                 | 🔧 |
 | :------------------------------------------------------ | :------------------------------------------ | :- |
 | [sort-array-includes](/rules/sort-array-includes)       | enforce sorted arrays before include method | 🔧 |
+| [sort-astro-attributes](/rules/sort-astro-attributes)   | enforce sorted Astro attributes             | 🔧 |
 | [sort-classes](/rules/sort-classes)                     | enforce sorted classes                      | 🔧 |
 | [sort-enums](/rules/sort-enums)                         | enforce sorted TypeScript enums             | 🔧 |
 | [sort-exports](/rules/sort-exports)                     | enforce sorted exports                      | 🔧 |
@@ -23,7 +24,7 @@ description: ESLint Plugin Perfectionist list of rules
 | [sort-named-imports](/rules/sort-named-imports)         | enforce sorted named imports                | 🔧 |
 | [sort-object-types](/rules/sort-object-types)           | enforce sorted object types                 | 🔧 |
 | [sort-objects](/rules/sort-objects)                     | enforce sorted objects                      | 🔧 |
-| [sort-svelte-attributes](/rules/sort-svelte-attributes) | enforce sorted union types                  | 🔧 |
+| [sort-svelte-attributes](/rules/sort-svelte-attributes) | enforce sorted Svelte attributes            | 🔧 |
 | [sort-union-types](/rules/sort-union-types)             | enforce sorted union types                  | 🔧 |
 
 <!-- end auto-generated rules list -->
