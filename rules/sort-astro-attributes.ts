@@ -121,7 +121,9 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
                   ? attribute.name.name
                   : source.text.slice(...attribute.name.range)
 
-              let { getGroup, defineGroup, setCustomGroups } = useGroups(options.groups)
+              let { getGroup, defineGroup, setCustomGroups } = useGroups(
+                options.groups,
+              )
 
               setCustomGroups(options['custom-groups'], name)
 

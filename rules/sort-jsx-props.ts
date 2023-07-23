@@ -113,7 +113,9 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
                 ? `${attribute.name.namespace.name}:${attribute.name.name.name}`
                 : attribute.name.name
 
-            let { getGroup, defineGroup, setCustomGroups } = useGroups(options.groups)
+            let { getGroup, defineGroup, setCustomGroups } = useGroups(
+              options.groups,
+            )
 
             setCustomGroups(options['custom-groups'], name)
 

@@ -115,7 +115,9 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
 
               let name: string
 
-              let { getGroup, defineGroup, setCustomGroups } = useGroups(options.groups)
+              let { getGroup, defineGroup, setCustomGroups } = useGroups(
+                options.groups,
+              )
 
               if (attribute.key.type === 'SvelteSpecialDirectiveKey') {
                 name = source.text.slice(...attribute.key.range)

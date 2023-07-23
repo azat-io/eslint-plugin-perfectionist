@@ -195,7 +195,7 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
 
       if (node.importKind === 'type') {
         if (node.type === AST_NODE_TYPES.ImportDeclaration) {
-          setCustomGroups(options['custom-groups'].type ?? {}, node.source.value)
+          setCustomGroups(options['custom-groups'].type, node.source.value)
 
           if (isCoreModule(node.source.value)) {
             defineGroup('builtin-type')
@@ -223,7 +223,7 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
       }
 
       if (node.type === AST_NODE_TYPES.ImportDeclaration) {
-        setCustomGroups(options['custom-groups'].value ?? {}, node.source.value)
+        setCustomGroups(options['custom-groups'].value, node.source.value)
 
         if (isCoreModule(node.source.value)) {
           defineGroup('builtin')
