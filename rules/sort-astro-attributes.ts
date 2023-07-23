@@ -1,7 +1,6 @@
 import type { TSESTree } from '@typescript-eslint/types'
 import type { AST } from 'astro-eslint-parser'
 
-import { minimatch } from 'minimatch'
 import path from 'path'
 
 import type { SortingNode } from '../typings'
@@ -122,22 +121,9 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
                   ? attribute.name.name
                   : source.text.slice(...attribute.name.range)
 
-              let { getGroup, defineGroup } = useGroups(options.groups)
+              let { getGroup, defineGroup, setCustomGroups } = useGroups(options.groups)
 
-              for (let [key, pattern] of Object.entries(
-                options['custom-groups'],
-              )) {
-                if (
-                  Array.isArray(pattern) &&
-                  pattern.some(patternValue => minimatch(name, patternValue))
-                ) {
-                  defineGroup(key)
-                }
-
-                if (typeof pattern === 'string' && minimatch(name, pattern)) {
-                  defineGroup(key)
-                }
-              }
+              setCustomGroups(options['custom-groups'], name)
 
               if (attribute.type === 'AstroShorthandAttribute') {
                 defineGroup('astro-shorthand')

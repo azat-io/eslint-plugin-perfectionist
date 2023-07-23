@@ -184,7 +184,7 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
 
       let isSibling = (value: string) => value.indexOf('./') === 0
 
-      let { getGroup, defineGroup } = useGroups(options.groups)
+      let { getGroup, defineGroup, setCustomGroups } = useGroups(options.groups)
 
       let isInternal = (nodeElement: TSESTree.ImportDeclaration) =>
         (options['internal-pattern'].length &&
@@ -193,29 +193,9 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
           )) ||
         tsPaths.some(pattern => minimatch(nodeElement.source.value, pattern))
 
-      let determineCustomGroup = (
-        groupType: 'value' | 'type',
-        value: string,
-      ) => {
-        for (let [key, pattern] of Object.entries(
-          options['custom-groups'][groupType] ?? {},
-        )) {
-          if (
-            Array.isArray(pattern) &&
-            pattern.some(patternValue => minimatch(value, patternValue))
-          ) {
-            defineGroup(key)
-          }
-
-          if (typeof pattern === 'string' && minimatch(value, pattern)) {
-            defineGroup(key)
-          }
-        }
-      }
-
       if (node.importKind === 'type') {
         if (node.type === AST_NODE_TYPES.ImportDeclaration) {
-          determineCustomGroup('type', node.source.value)
+          setCustomGroups(options['custom-groups'].type ?? {}, node.source.value)
 
           if (isCoreModule(node.source.value)) {
             defineGroup('builtin-type')
@@ -243,7 +223,7 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
       }
 
       if (node.type === AST_NODE_TYPES.ImportDeclaration) {
-        determineCustomGroup('value', node.source.value)
+        setCustomGroups(options['custom-groups'].value ?? {}, node.source.value)
 
         if (isCoreModule(node.source.value)) {
           defineGroup('builtin')
