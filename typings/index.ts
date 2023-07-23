@@ -16,6 +16,7 @@ export type PartitionComment = string[] | boolean | string
 export interface SortingNode {
   dependencies?: string[]
   node: TSESTree.Node
+  group?: string
   name: string
   size: number
 }

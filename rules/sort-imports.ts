@@ -9,9 +9,11 @@ import type { SortingNode } from '../typings'
 
 import { getCommentBefore } from '../utils/get-comment-before'
 import { createEslintRule } from '../utils/create-eslint-rule'
+import { getGroupNumber } from '../utils/get-group-number'
 import { getNodeRange } from '../utils/get-node-range'
 import { rangeToDiff } from '../utils/range-to-diff'
 import { SortOrder, SortType } from '../typings'
+import { useGroups } from '../utils/use-groups'
 import { sortNodes } from '../utils/sort-nodes'
 import { complete } from '../utils/complete'
 import { pairwise } from '../utils/pairwise'
@@ -68,10 +70,6 @@ export const RULE_NAME = 'sort-imports'
 type ModuleDeclaration =
   | TSESTree.TSImportEqualsDeclaration
   | TSESTree.ImportDeclaration
-
-type SortingNodeWithGroup<T extends string[]> = SortingNode & {
-  group: Group<T>
-}
 
 export default createEslintRule<Options<string[]>, MESSAGE_ID>({
   name: RULE_NAME,
@@ -163,15 +161,13 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
 
     let source = context.getSourceCode()
 
-    let nodes: SortingNodeWithGroup<string[]>[] = []
+    let nodes: SortingNode[] = []
 
     let isSideEffectImport = (node: TSESTree.Node) =>
       node.type === AST_NODE_TYPES.ImportDeclaration &&
       node.specifiers.length === 0
 
     let computeGroup = (node: ModuleDeclaration): Group<string[]> => {
-      let group: Group<string[]> | undefined
-
       let isStyle = (value: string) =>
         ['.less', '.scss', '.sass', '.styl', '.pcss', '.css', '.sss'].some(
           extension => value.endsWith(extension),
@@ -192,11 +188,7 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
 
       let isSibling = (value: string) => value.indexOf('./') === 0
 
-      let defineGroup = (nodeGroup: Group<string[]>) => {
-        if (!group && options.groups.flat().includes(nodeGroup)) {
-          group = nodeGroup
-        }
-      }
+      let { getGroup, defineGroup, setCustomGroups } = useGroups(options.groups)
 
       let isInternal = (nodeElement: TSESTree.ImportDeclaration) =>
         (options['internal-pattern'].length &&
@@ -205,29 +197,9 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
           )) ||
         tsPaths.some(pattern => minimatch(nodeElement.source.value, pattern))
 
-      let determineCustomGroup = (
-        groupType: 'value' | 'type',
-        value: string,
-      ) => {
-        for (let [key, pattern] of Object.entries(
-          options['custom-groups'][groupType] ?? {},
-        )) {
-          if (
-            Array.isArray(pattern) &&
-            pattern.some(patternValue => minimatch(value, patternValue))
-          ) {
-            defineGroup(key)
-          }
-
-          if (typeof pattern === 'string' && minimatch(value, pattern)) {
-            defineGroup(key)
-          }
-        }
-      }
-
       if (node.importKind === 'type') {
         if (node.type === AST_NODE_TYPES.ImportDeclaration) {
-          determineCustomGroup('type', node.source.value)
+          setCustomGroups(options['custom-groups'].type, node.source.value)
 
           if (isCoreModule(node.source.value)) {
             defineGroup('builtin-type')
@@ -254,8 +226,8 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
         defineGroup('type')
       }
 
-      if (!group && node.type === AST_NODE_TYPES.ImportDeclaration) {
-        determineCustomGroup('value', node.source.value)
+      if (node.type === AST_NODE_TYPES.ImportDeclaration) {
+        setCustomGroups(options['custom-groups'].value, node.source.value)
 
         if (isCoreModule(node.source.value)) {
           defineGroup('builtin')
@@ -288,7 +260,7 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
         defineGroup('external')
       }
 
-      return group ?? 'unknown'
+      return getGroup()
     }
 
     let registerNode = (node: ModuleDeclaration) => {
@@ -320,20 +292,6 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
       TSImportEqualsDeclaration: registerNode,
       ImportDeclaration: registerNode,
       'Program:exit': () => {
-        let getGroupNumber = (node: SortingNodeWithGroup<string[]>): number => {
-          for (let i = 0, max = options.groups.length; i < max; i++) {
-            let currentGroup = options.groups[i]
-
-            if (
-              node.group === currentGroup ||
-              (Array.isArray(currentGroup) && currentGroup.includes(node.group))
-            ) {
-              return i
-            }
-          }
-          return options.groups.length
-        }
-
         let hasContentBetweenNodes = (
           left: SortingNode,
           right: SortingNode,
@@ -360,16 +318,16 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
 
         let fix = (
           fixer: TSESLint.RuleFixer,
-          nodesToFix: SortingNodeWithGroup<string[]>[],
+          nodesToFix: SortingNode[],
         ): TSESLint.RuleFix[] => {
           let fixes: TSESLint.RuleFix[] = []
 
           let grouped: {
-            [key: string]: SortingNodeWithGroup<string[]>[]
+            [key: string]: SortingNode[]
           } = {}
 
           for (let node of nodesToFix) {
-            let groupNum = getGroupNumber(node)
+            let groupNum = getGroupNumber(options.groups, node)
 
             if (!(groupNum in grouped)) {
               grouped[groupNum] = [node]
@@ -384,10 +342,10 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
           let formatted = Object.keys(grouped)
             .sort()
             .reduce(
-              (
-                accumulator: SortingNodeWithGroup<string[]>[],
-                group: string,
-              ) => [...accumulator, ...grouped[group]],
+              (accumulator: SortingNode[], group: string) => [
+                ...accumulator,
+                ...grouped[group],
+              ],
               [],
             )
 
@@ -412,7 +370,8 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
 
                 if (
                   (options['newlines-between'] === 'always' &&
-                    getGroupNumber(node) === getGroupNumber(nextNode) &&
+                    getGroupNumber(options.groups, node) ===
+                      getGroupNumber(options.groups, nextNode) &&
                     linesBetweenImports !== 0) ||
                   (options['newlines-between'] === 'never' &&
                     linesBetweenImports > 0)
@@ -428,7 +387,8 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
 
                 if (
                   options['newlines-between'] === 'always' &&
-                  getGroupNumber(node) !== getGroupNumber(nextNode) &&
+                  getGroupNumber(options.groups, node) !==
+                    getGroupNumber(options.groups, nextNode) &&
                   linesBetweenImports > 1
                 ) {
                   fixes.push(
@@ -446,7 +406,8 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
 
                 if (
                   options['newlines-between'] === 'always' &&
-                  getGroupNumber(node) !== getGroupNumber(nextNode) &&
+                  getGroupNumber(options.groups, node) !==
+                    getGroupNumber(options.groups, nextNode) &&
                   linesBetweenImports === 0
                 ) {
                   fixes.push(
@@ -463,7 +424,7 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
           return fixes
         }
 
-        let splittedNodes: SortingNodeWithGroup<string[]>[][] = [[]]
+        let splittedNodes: SortingNode[][] = [[]]
 
         for (let node of nodes) {
           let lastNode = splittedNodes.at(-1)?.at(-1)
@@ -477,8 +438,8 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
 
         for (let nodeList of splittedNodes) {
           pairwise(nodeList, (left, right) => {
-            let leftNum = getGroupNumber(left)
-            let rightNum = getGroupNumber(right)
+            let leftNum = getGroupNumber(options.groups, left)
+            let rightNum = getGroupNumber(options.groups, right)
 
             let numberOfEmptyLinesBetween = getLinesBetweenImports(left, right)
 

@@ -5,10 +5,12 @@ import { AST_NODE_TYPES } from '@typescript-eslint/types'
 import type { SortingNode } from '../typings'
 
 import { createEslintRule } from '../utils/create-eslint-rule'
+import { getGroupNumber } from '../utils/get-group-number'
 import { toSingleLine } from '../utils/to-single-line'
 import { getNodeRange } from '../utils/get-node-range'
 import { rangeToDiff } from '../utils/range-to-diff'
 import { SortOrder, SortType } from '../typings'
+import { useGroups } from '../utils/use-groups'
 import { sortNodes } from '../utils/sort-nodes'
 import { complete } from '../utils/complete'
 import { pairwise } from '../utils/pairwise'
@@ -34,8 +36,6 @@ type Options = [
     type: SortType
   }>,
 ]
-
-type SortingNodeWithGroup = SortingNode & { group: Group }
 
 export const RULE_NAME = 'sort-classes'
 
@@ -98,9 +98,9 @@ export default createEslintRule<Options, MESSAGE_ID>({
 
         let source = context.getSourceCode()
 
-        let nodes: SortingNodeWithGroup[] = node.body.map(member => {
-          let group: undefined | Group
+        let nodes: SortingNode[] = node.body.map(member => {
           let name: string
+          let { getGroup, defineGroup } = useGroups(options.groups)
 
           if (member.type === AST_NODE_TYPES.StaticBlock) {
             name = 'static'
@@ -114,12 +114,6 @@ export default createEslintRule<Options, MESSAGE_ID>({
               ;({ name } = member.key)
             } else {
               name = source.text.slice(...member.key.range)
-            }
-          }
-
-          let defineGroup = (nodeGroup: Group) => {
-            if (!group && options.groups.flat().includes(nodeGroup)) {
-              group = nodeGroup
             }
           }
 
@@ -151,30 +145,15 @@ export default createEslintRule<Options, MESSAGE_ID>({
 
           return {
             size: rangeToDiff(member.range),
-            group: group ?? 'unknown',
+            group: getGroup(),
             node: member,
             name,
           }
         })
 
-        let getGroupNumber = (sortingNode: SortingNodeWithGroup): number => {
-          for (let i = 0, max = options.groups.length; i < max; i++) {
-            let currentGroup = options.groups[i]
-
-            if (
-              sortingNode.group === currentGroup ||
-              (Array.isArray(currentGroup) &&
-                currentGroup.includes(sortingNode.group))
-            ) {
-              return i
-            }
-          }
-          return options.groups.length
-        }
-
         pairwise(nodes, (left, right) => {
-          let leftNum = getGroupNumber(left)
-          let rightNum = getGroupNumber(right)
+          let leftNum = getGroupNumber(options.groups, left)
+          let rightNum = getGroupNumber(options.groups, right)
 
           if (
             leftNum > rightNum ||
@@ -193,11 +172,11 @@ export default createEslintRule<Options, MESSAGE_ID>({
                 let grouped = nodes.reduce(
                   (
                     accumulator: {
-                      [key: string]: SortingNodeWithGroup[]
+                      [key: string]: SortingNode[]
                     },
                     sortingNode,
                   ) => {
-                    let groupNum = getGroupNumber(sortingNode)
+                    let groupNum = getGroupNumber(options.groups, sortingNode)
 
                     if (!(groupNum in accumulator)) {
                       accumulator[groupNum] = [sortingNode]
@@ -216,7 +195,7 @@ export default createEslintRule<Options, MESSAGE_ID>({
                 let formatted = Object.keys(grouped)
                   .sort()
                   .reduce(
-                    (accumulator: SortingNodeWithGroup[], group: string) => [
+                    (accumulator: SortingNode[], group: string) => [
                       ...accumulator,
                       ...grouped[group],
                     ],
