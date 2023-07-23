@@ -1,14 +1,15 @@
 import type { TSESTree } from '@typescript-eslint/types'
 import type { AST } from 'svelte-eslint-parser'
 
-import { minimatch } from 'minimatch'
 import path from 'path'
 
 import type { SortingNode } from '../typings'
 
 import { createEslintRule } from '../utils/create-eslint-rule'
+import { getGroupNumber } from '../utils/get-group-number'
 import { rangeToDiff } from '../utils/range-to-diff'
 import { SortOrder, SortType } from '../typings'
+import { useGroups } from '../utils/use-groups'
 import { sortNodes } from '../utils/sort-nodes'
 import { makeFixes } from '../utils/make-fixes'
 import { complete } from '../utils/complete'
@@ -23,10 +24,6 @@ type Group<T extends string[]> =
   | 'shorthand'
   | 'unknown'
   | T[number]
-
-type SortingNodeWithGroup<T extends string[]> = SortingNode & {
-  group: Group<T>
-}
 
 type Options<T extends string[]> = [
   Partial<{
@@ -109,98 +106,63 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
 
           let source = context.getSourceCode()
 
-          let parts: SortingNodeWithGroup<string[]>[][] =
-            node.attributes.reduce(
-              (accumulator: SortingNodeWithGroup<string[]>[][], attribute) => {
-                if (attribute.type === 'SvelteSpreadAttribute') {
-                  accumulator.push([])
-                  return accumulator
-                }
-
-                let name: string
-
-                let group: Group<string[]> | undefined
-
-                let defineGroup = (nodeGroup: Group<string[]>) => {
-                  if (!group && options.groups.flat().includes(nodeGroup)) {
-                    group = nodeGroup
-                  }
-                }
-
-                if (attribute.key.type === 'SvelteSpecialDirectiveKey') {
-                  name = source.text.slice(...attribute.key.range)
-                } else {
-                  if (typeof attribute.key.name === 'string') {
-                    ;({ name } = attribute.key)
-                  } else {
-                    name = source.text.slice(...attribute.key.range!)
-                  }
-                }
-
-                for (let [key, pattern] of Object.entries(
-                  options['custom-groups'],
-                )) {
-                  if (
-                    Array.isArray(pattern) &&
-                    pattern.some(patternValue => minimatch(name, patternValue))
-                  ) {
-                    defineGroup(key)
-                  }
-
-                  if (typeof pattern === 'string' && minimatch(name, pattern)) {
-                    defineGroup(key)
-                  }
-                }
-
-                if (attribute.type === 'SvelteShorthandAttribute') {
-                  defineGroup('svelte-shorthand')
-                  defineGroup('shorthand')
-                }
-
-                if (
-                  !('value' in attribute) ||
-                  (Array.isArray(attribute.value) && !attribute.value.at(0))
-                ) {
-                  defineGroup('shorthand')
-                }
-
-                if (attribute.loc.start.line !== attribute.loc.end.line) {
-                  defineGroup('multiline')
-                }
-
-                accumulator.at(-1)!.push({
-                  size: rangeToDiff(attribute.range),
-                  node: attribute as unknown as TSESTree.Node,
-                  group: group ?? 'unknown',
-                  name,
-                })
-
+          let parts: SortingNode[][] = node.attributes.reduce(
+            (accumulator: SortingNode[][], attribute) => {
+              if (attribute.type === 'SvelteSpreadAttribute') {
+                accumulator.push([])
                 return accumulator
-              },
-              [[]],
-            )
+              }
 
-          let getGroupNumber = (
-            nodeWithGroup: SortingNodeWithGroup<string[]>,
-          ): number => {
-            for (let i = 0, max = options.groups.length; i < max; i++) {
-              let currentGroup = options.groups[i]
+              let name: string
+
+              let { getGroup, defineGroup, setCustomGroups } = useGroups(
+                options.groups,
+              )
+
+              if (attribute.key.type === 'SvelteSpecialDirectiveKey') {
+                name = source.text.slice(...attribute.key.range)
+              } else {
+                if (typeof attribute.key.name === 'string') {
+                  ;({ name } = attribute.key)
+                } else {
+                  name = source.text.slice(...attribute.key.range!)
+                }
+              }
+
+              setCustomGroups(options['custom-groups'], name)
+
+              if (attribute.type === 'SvelteShorthandAttribute') {
+                defineGroup('svelte-shorthand')
+                defineGroup('shorthand')
+              }
 
               if (
-                nodeWithGroup.group === currentGroup ||
-                (Array.isArray(currentGroup) &&
-                  currentGroup.includes(nodeWithGroup.group))
+                !('value' in attribute) ||
+                (Array.isArray(attribute.value) && !attribute.value.at(0))
               ) {
-                return i
+                defineGroup('shorthand')
               }
-            }
-            return options.groups.length
-          }
+
+              if (attribute.loc.start.line !== attribute.loc.end.line) {
+                defineGroup('multiline')
+              }
+
+              accumulator.at(-1)!.push({
+                size: rangeToDiff(attribute.range),
+                node: attribute as unknown as TSESTree.Node,
+                group: getGroup(),
+                name,
+              })
+
+              return accumulator
+            },
+            [[]],
+          )
 
           for (let nodes of parts) {
             pairwise(nodes, (left, right) => {
-              let leftNum = getGroupNumber(left)
-              let rightNum = getGroupNumber(right)
+              let leftNum = getGroupNumber(options.groups, left)
+              let rightNum = getGroupNumber(options.groups, right)
 
               if (
                 leftNum > rightNum ||
@@ -215,11 +177,11 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
                   node: right.node,
                   fix: fixer => {
                     let grouped: {
-                      [key: string]: SortingNodeWithGroup<string[]>[]
+                      [key: string]: SortingNode[]
                     } = {}
 
                     for (let currentNode of nodes) {
-                      let groupNum = getGroupNumber(currentNode)
+                      let groupNum = getGroupNumber(options.groups, currentNode)
 
                       if (!(groupNum in grouped)) {
                         grouped[groupNum] = [currentNode]
