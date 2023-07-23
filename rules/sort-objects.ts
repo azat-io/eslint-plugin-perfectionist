@@ -8,14 +8,15 @@ import type { PartitionComment, SortingNode } from '../typings'
 import { isPartitionComment } from '../utils/is-partition-comment'
 import { getCommentBefore } from '../utils/get-comment-before'
 import { createEslintRule } from '../utils/create-eslint-rule'
+import { getGroupNumber } from '../utils/get-group-number'
 import { toSingleLine } from '../utils/to-single-line'
 import { rangeToDiff } from '../utils/range-to-diff'
 import { SortOrder, SortType } from '../typings'
+import { useGroups } from '../utils/use-groups'
 import { makeFixes } from '../utils/make-fixes'
 import { sortNodes } from '../utils/sort-nodes'
 import { complete } from '../utils/complete'
 import { pairwise } from '../utils/pairwise'
-import { groupBy } from '../utils/group-by'
 import { compare } from '../utils/compare'
 
 type MESSAGE_ID = 'unexpectedObjectsOrder'
@@ -31,8 +32,9 @@ type SortingNodeWithPosition = SortingNode & {
 
 type Options = [
   Partial<{
+    'custom-groups': { [key: string]: string[] | string }
     'partition-by-comment': PartitionComment
-    'always-on-top': string[]
+    groups: (string[] | string)[]
     'ignore-case': boolean
     order: SortOrder
     type: SortType
@@ -54,6 +56,9 @@ export default createEslintRule<Options, MESSAGE_ID>({
       {
         type: 'object',
         properties: {
+          'custom-groups': {
+            type: 'object',
+          },
           'partition-by-comment': {
             type: ['boolean', 'string', 'array'],
             default: false,
@@ -74,7 +79,7 @@ export default createEslintRule<Options, MESSAGE_ID>({
             type: 'boolean',
             default: false,
           },
-          'always-on-top': {
+          groups: {
             type: 'array',
             default: [],
           },
@@ -102,7 +107,8 @@ export default createEslintRule<Options, MESSAGE_ID>({
           type: SortType.alphabetical,
           'ignore-case': false,
           order: SortOrder.asc,
-          'always-on-top': [],
+          'custom-groups': {},
+          groups: [],
         })
 
         let source = context.getSourceCode()
@@ -141,19 +147,14 @@ export default createEslintRule<Options, MESSAGE_ID>({
               let position: Position = Position.ignore
               let dependencies: string[] = []
 
+              let { getGroup, setCustomGroups } = useGroups(options.groups)
+
               if (prop.key.type === AST_NODE_TYPES.Identifier) {
                 ;({ name } = prop.key)
               } else if (prop.key.type === AST_NODE_TYPES.Literal) {
                 name = `${prop.key.value}`
               } else {
                 name = source.text.slice(...prop.key.range)
-              }
-
-              if (
-                prop.key.type === AST_NODE_TYPES.Identifier &&
-                options['always-on-top'].includes(prop.key.name)
-              ) {
-                position = Position.exception
               }
 
               if (prop.value.type === AST_NODE_TYPES.AssignmentPattern) {
@@ -233,8 +234,11 @@ export default createEslintRule<Options, MESSAGE_ID>({
                 addDependencies(prop.value, true)
               }
 
+              setCustomGroups(options['custom-groups'], name)
+
               let value = {
                 size: rangeToDiff(prop.range),
+                group: getGroup(),
                 dependencies,
                 node: prop,
                 position,
@@ -250,45 +254,38 @@ export default createEslintRule<Options, MESSAGE_ID>({
 
         for (let nodes of formatProperties(node.properties)) {
           pairwise(nodes, (left, right) => {
-            let comparison: boolean
+            let leftNum = getGroupNumber(options.groups, left)
+            let rightNum = getGroupNumber(options.groups, right)
 
             if (
-              left.position === Position.exception &&
-              right.position === Position.exception
+              leftNum > rightNum ||
+              (leftNum === rightNum && compare(left, right, options))
             ) {
-              comparison =
-                options['always-on-top'].indexOf(left.name) >
-                options['always-on-top'].indexOf(right.name)
-            } else if (left.position === right.position) {
-              comparison = compare(left, right, options)
-            } else {
-              let positionPower = {
-                [Position.exception]: 1,
-                [Position.ignore]: 0,
-              }
-
-              comparison =
-                positionPower[left.position] < positionPower[right.position]
-            }
-
-            if (comparison) {
               let fix:
                 | ((fixer: TSESLint.RuleFixer) => TSESLint.RuleFix[])
                 | undefined = fixer => {
-                let groups = groupBy(nodes, ({ position }) => position)
+                let grouped: {
+                  [key: string]: SortingNode[]
+                } = {}
 
-                let getGroup = (index: string) =>
-                  index in groups ? groups[index] : []
+                for (let currentNode of nodes) {
+                  let groupNum = getGroupNumber(options.groups, currentNode)
 
-                let sortedNodes = [
-                  getGroup(Position.exception).sort(
-                    (aNode, bNode) =>
-                      options['always-on-top'].indexOf(aNode.name) -
-                      options['always-on-top'].indexOf(bNode.name),
-                  ),
+                  if (!(groupNum in grouped)) {
+                    grouped[groupNum] = [currentNode]
+                  } else {
+                    grouped[groupNum] = sortNodes(
+                      [...grouped[groupNum], currentNode],
+                      options,
+                    )
+                  }
+                }
 
-                  sortNodes(getGroup(Position.ignore), options),
-                ].flat()
+                let sortedNodes: SortingNode[] = []
+
+                for (let group of Object.keys(grouped).sort()) {
+                  sortedNodes.push(...sortNodes(grouped[group], options))
+                }
 
                 return makeFixes(fixer, nodes, sortedNodes, source, {
                   partitionComment: options['partition-by-comment'],

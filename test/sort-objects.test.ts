@@ -300,8 +300,8 @@ describe(RULE_NAME, () => {
           {
             code: dedent`
               let terrorInResonance = {
-                name: 'Terror in Resonance',
                 id: 'de4d12c2-200c-49bf-a2c8-14f5b4576299',
+                name: 'Terror in Resonance',
                 episodes: 11,
                 genres: ['drama', 'mystery', 'psychological', 'thriller'],
                 romaji: 'Zankyou no Terror',
@@ -310,7 +310,8 @@ describe(RULE_NAME, () => {
             `,
             options: [
               {
-                'always-on-top': ['name', 'id'],
+                'custom-groups': { top: ['name', 'id'] },
+                groups: ['top', 'unknown'],
                 type: SortType.alphabetical,
                 order: SortOrder.asc,
               },
@@ -331,8 +332,8 @@ describe(RULE_NAME, () => {
             `,
             output: dedent`
               let terrorInResonance = {
-                name: 'Terror in Resonance',
                 id: 'de4d12c2-200c-49bf-a2c8-14f5b4576299',
+                name: 'Terror in Resonance',
                 episodes: 11,
                 genres: ['drama', 'mystery', 'psychological', 'thriller'],
                 romaji: 'Zankyou no Terror',
@@ -341,8 +342,8 @@ describe(RULE_NAME, () => {
             `,
             options: [
               {
-                'always-on-top': ['name', 'id'],
-                type: SortType.alphabetical,
+                'custom-groups': { top: ['name', 'id'] },
+                groups: ['top', 'unknown'],
                 order: SortOrder.asc,
               },
             ],
@@ -352,13 +353,6 @@ describe(RULE_NAME, () => {
                 data: {
                   left: 'genres',
                   right: 'id',
-                },
-              },
-              {
-                messageId: 'unexpectedObjectsOrder',
-                data: {
-                  left: 'id',
-                  right: 'name',
                 },
               },
             ],
@@ -380,7 +374,8 @@ describe(RULE_NAME, () => {
             `,
             options: [
               {
-                'always-on-top': ['name', 'id'],
+                'custom-groups': { top: ['name', 'id'] },
+                groups: ['top', 'unknown'],
                 type: SortType.alphabetical,
                 order: SortOrder.asc,
               },
@@ -405,7 +400,8 @@ describe(RULE_NAME, () => {
             `,
             options: [
               {
-                'always-on-top': ['name', 'id'],
+                'custom-groups': { top: ['name', 'id'] },
+                groups: ['top', 'unknown'],
                 type: SortType.alphabetical,
                 order: SortOrder.asc,
               },
@@ -1230,8 +1226,8 @@ describe(RULE_NAME, () => {
           {
             code: dedent`
               let terrorInResonance = {
-                name: 'Terror in Resonance',
                 id: 'de4d12c2-200c-49bf-a2c8-14f5b4576299',
+                name: 'Terror in Resonance',
                 episodes: 11,
                 genres: ['drama', 'mystery', 'psychological', 'thriller'],
                 romaji: 'Zankyou no Terror',
@@ -1240,7 +1236,8 @@ describe(RULE_NAME, () => {
             `,
             options: [
               {
-                'always-on-top': ['name', 'id'],
+                'custom-groups': { top: ['name', 'id'] },
+                groups: ['top', 'unknown'],
                 type: SortType.natural,
                 order: SortOrder.asc,
               },
@@ -1261,8 +1258,8 @@ describe(RULE_NAME, () => {
             `,
             output: dedent`
               let terrorInResonance = {
-                name: 'Terror in Resonance',
                 id: 'de4d12c2-200c-49bf-a2c8-14f5b4576299',
+                name: 'Terror in Resonance',
                 episodes: 11,
                 genres: ['drama', 'mystery', 'psychological', 'thriller'],
                 romaji: 'Zankyou no Terror',
@@ -1271,7 +1268,8 @@ describe(RULE_NAME, () => {
             `,
             options: [
               {
-                'always-on-top': ['name', 'id'],
+                'custom-groups': { top: ['name', 'id'] },
+                groups: ['top', 'unknown'],
                 type: SortType.natural,
                 order: SortOrder.asc,
               },
@@ -1282,13 +1280,6 @@ describe(RULE_NAME, () => {
                 data: {
                   left: 'genres',
                   right: 'id',
-                },
-              },
-              {
-                messageId: 'unexpectedObjectsOrder',
-                data: {
-                  left: 'id',
-                  right: 'name',
                 },
               },
             ],
@@ -1310,7 +1301,8 @@ describe(RULE_NAME, () => {
             `,
             options: [
               {
-                'always-on-top': ['name', 'id'],
+                'custom-groups': { top: ['name', 'id'] },
+                groups: ['top', 'unknown'],
                 type: SortType.alphabetical,
                 order: SortOrder.asc,
               },
@@ -1335,7 +1327,8 @@ describe(RULE_NAME, () => {
             `,
             options: [
               {
-                'always-on-top': ['name', 'id'],
+                'custom-groups': { top: ['name', 'id'] },
+                groups: ['top', 'unknown'],
                 type: SortType.natural,
                 order: SortOrder.asc,
               },
@@ -1975,8 +1968,8 @@ describe(RULE_NAME, () => {
           {
             code: dedent`
               let terrorInResonance = {
-                name: 'Terror in Resonance',
                 id: 'de4d12c2-200c-49bf-a2c8-14f5b4576299',
+                name: 'Terror in Resonance',
                 genres: ['drama', 'mystery', 'psychological', 'thriller'],
                 romaji: 'Zankyou no Terror',
                 studio: 'Mappa',
@@ -1985,7 +1978,8 @@ describe(RULE_NAME, () => {
             `,
             options: [
               {
-                'always-on-top': ['name', 'id'],
+                'custom-groups': { top: ['name', 'id'] },
+                groups: ['top', 'unknown'],
                 type: SortType['line-length'],
                 order: SortOrder.desc,
               },
@@ -2006,8 +2000,8 @@ describe(RULE_NAME, () => {
             `,
             output: dedent`
               let terrorInResonance = {
-                name: 'Terror in Resonance',
                 id: 'de4d12c2-200c-49bf-a2c8-14f5b4576299',
+                name: 'Terror in Resonance',
                 genres: ['drama', 'mystery', 'psychological', 'thriller'],
                 romaji: 'Zankyou no Terror',
                 studio: 'Mappa',
@@ -2016,7 +2010,8 @@ describe(RULE_NAME, () => {
             `,
             options: [
               {
-                'always-on-top': ['name', 'id'],
+                'custom-groups': { top: ['name', 'id'] },
+                groups: ['top', 'unknown'],
                 type: SortType['line-length'],
                 order: SortOrder.desc,
               },
@@ -2034,13 +2029,6 @@ describe(RULE_NAME, () => {
                 data: {
                   left: 'genres',
                   right: 'id',
-                },
-              },
-              {
-                messageId: 'unexpectedObjectsOrder',
-                data: {
-                  left: 'id',
-                  right: 'name',
                 },
               },
             ],
@@ -2062,7 +2050,8 @@ describe(RULE_NAME, () => {
             `,
             options: [
               {
-                'always-on-top': ['name', 'id'],
+                'custom-groups': { top: ['name', 'id'] },
+                groups: ['top', 'unknown'],
                 type: SortType['line-length'],
                 order: SortOrder.desc,
               },
@@ -2087,7 +2076,8 @@ describe(RULE_NAME, () => {
             `,
             options: [
               {
-                'always-on-top': ['name', 'id'],
+                'custom-groups': { top: ['name', 'id'] },
+                groups: ['top', 'unknown'],
                 type: SortType['line-length'],
                 order: SortOrder.desc,
               },
@@ -2159,8 +2149,8 @@ describe(RULE_NAME, () => {
             `,
             output: dedent`
               let startTerrorInResonance = ({
-                placeToAttack,
                 name = 'Nine',
+                placeToAttack,
                 bombType
               }) => {
                 // ...

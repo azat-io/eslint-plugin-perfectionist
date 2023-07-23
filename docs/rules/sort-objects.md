@@ -83,7 +83,8 @@ interface Options {
   type?: 'alphabetical' | 'natural' | 'line-length'
   order?: 'asc' | 'desc'
   'ignore-case'?: boolean
-  'always-on-top'?: string[]
+  groups?: (string | string[])[]
+  'custom-groups': { [key: string]: string[] | string }
   'partition-by-comment': string[] | string | boolean
 }
 ```
@@ -109,11 +110,27 @@ interface Options {
 
 Only affects alphabetical and natural sorting. When `true` the rule ignores the case-sensitivity of the order.
 
-### always-on-top
+### groups
 
 <sub>(default: `[]`)</sub>
 
-You can set a list of key names that will always go at the beginning of the object. For example: `['id', 'name']`
+You can set up a list of object keys groups for sorting. Groups can be combined. There are no predefined groups.
+
+### custom-groups
+
+<sub>(default: `{}`)</sub>
+
+You can define your own groups for object keys. The [minimatch](https://github.com/isaacs/minimatch) library is used for pattern matching.
+
+Example:
+
+```
+{
+  "custom-groups": {
+    "top": "id"
+  }
+}
+```
 
 ### partition-by-comment
 
@@ -137,8 +154,11 @@ The [minimatch](https://github.com/isaacs/minimatch) library is used for pattern
       {
         "type": "natural",
         "order": "asc",
-        "always-on-top": ["id", "name"],
-        "partition-by-comment": "Part:**"
+        "partition-by-comment": "Part:**",
+        "groups": ["id", "unknown"],
+        "custom-groups": {
+          "id": "id"
+        }
       }
     ]
   }
@@ -160,8 +180,11 @@ export default [
         {
           type: 'natural',
           order: 'asc',
-          'always-on-top': ['id', 'name'],
           'partition-by-comment': 'Part:**',
+          groups: ['id', 'unknown'],
+          'custom-groups': {
+            id: 'id',
+          },
         },
       ],
     },
