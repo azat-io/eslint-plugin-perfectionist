@@ -6,9 +6,11 @@ import { minimatch } from 'minimatch'
 import type { SortingNode } from '../typings'
 
 import { createEslintRule } from '../utils/create-eslint-rule'
+import { getGroupNumber } from '../utils/get-group-number'
 import { rangeToDiff } from '../utils/range-to-diff'
 import { SortOrder, SortType } from '../typings'
 import { makeFixes } from '../utils/make-fixes'
+import { useGroups } from '../utils/use-groups'
 import { sortNodes } from '../utils/sort-nodes'
 import { pairwise } from '../utils/pairwise'
 import { complete } from '../utils/complete'
@@ -21,10 +23,6 @@ type Group<T extends string[]> =
   | 'shorthand'
   | 'unknown'
   | T[number]
-
-type SortingNodeWithGroup<T extends string[]> = SortingNode & {
-  group: Group<T>
-}
 
 type Options<T extends string[]> = [
   Partial<{
@@ -101,88 +99,64 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
 
         let source = context.getSourceCode()
 
-        let parts: SortingNodeWithGroup<string[]>[][] =
-          node.openingElement.attributes.reduce(
-            (
-              accumulator: SortingNodeWithGroup<string[]>[][],
-              attribute: TSESTree.JSXSpreadAttribute | TSESTree.JSXAttribute,
-            ) => {
-              if (attribute.type === AST_NODE_TYPES.JSXSpreadAttribute) {
-                accumulator.push([])
-                return accumulator
-              }
-
-              let name =
-                attribute.name.type === AST_NODE_TYPES.JSXNamespacedName
-                  ? `${attribute.name.namespace.name}:${attribute.name.name.name}`
-                  : attribute.name.name
-
-              let group: Group<string[]> | undefined
-
-              let defineGroup = (nodeGroup: Group<string[]>) => {
-                if (!group && options.groups.flat().includes(nodeGroup)) {
-                  group = nodeGroup
-                }
-              }
-
-              for (let [key, pattern] of Object.entries(
-                options['custom-groups'],
-              )) {
-                if (
-                  Array.isArray(pattern) &&
-                  pattern.some(patternValue => minimatch(name, patternValue))
-                ) {
-                  defineGroup(key)
-                }
-
-                if (typeof pattern === 'string' && minimatch(name, pattern)) {
-                  defineGroup(key)
-                }
-              }
-
-              if (attribute.value === null) {
-                defineGroup('shorthand')
-              }
-
-              if (attribute.loc.start.line !== attribute.loc.end.line) {
-                defineGroup('multiline')
-              }
-
-              let jsxNode = {
-                size: rangeToDiff(attribute.range),
-                group: group ?? 'unknown',
-                node: attribute,
-                name,
-              }
-
-              accumulator.at(-1)!.push(jsxNode)
-
+        let parts: SortingNode[][] = node.openingElement.attributes.reduce(
+          (
+            accumulator: SortingNode[][],
+            attribute: TSESTree.JSXSpreadAttribute | TSESTree.JSXAttribute,
+          ) => {
+            if (attribute.type === AST_NODE_TYPES.JSXSpreadAttribute) {
+              accumulator.push([])
               return accumulator
-            },
-            [[]],
-          )
-
-        let getGroupNumber = (
-          nodeWithGroup: SortingNodeWithGroup<string[]>,
-        ): number => {
-          for (let i = 0, max = options.groups.length; i < max; i++) {
-            let currentGroup = options.groups[i]
-
-            if (
-              nodeWithGroup.group === currentGroup ||
-              (Array.isArray(currentGroup) &&
-                currentGroup.includes(nodeWithGroup.group))
-            ) {
-              return i
             }
-          }
-          return options.groups.length
-        }
+
+            let name =
+              attribute.name.type === AST_NODE_TYPES.JSXNamespacedName
+                ? `${attribute.name.namespace.name}:${attribute.name.name.name}`
+                : attribute.name.name
+
+            let { getGroup, defineGroup } = useGroups(options.groups)
+
+            for (let [key, pattern] of Object.entries(
+              options['custom-groups'],
+            )) {
+              if (
+                Array.isArray(pattern) &&
+                pattern.some(patternValue => minimatch(name, patternValue))
+              ) {
+                defineGroup(key)
+              }
+
+              if (typeof pattern === 'string' && minimatch(name, pattern)) {
+                defineGroup(key)
+              }
+            }
+
+            if (attribute.value === null) {
+              defineGroup('shorthand')
+            }
+
+            if (attribute.loc.start.line !== attribute.loc.end.line) {
+              defineGroup('multiline')
+            }
+
+            let jsxNode = {
+              size: rangeToDiff(attribute.range),
+              group: getGroup(),
+              node: attribute,
+              name,
+            }
+
+            accumulator.at(-1)!.push(jsxNode)
+
+            return accumulator
+          },
+          [[]],
+        )
 
         for (let nodes of parts) {
           pairwise(nodes, (left, right) => {
-            let leftNum = getGroupNumber(left)
-            let rightNum = getGroupNumber(right)
+            let leftNum = getGroupNumber(options.groups, left)
+            let rightNum = getGroupNumber(options.groups, right)
 
             if (
               leftNum > rightNum ||
@@ -197,11 +171,11 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
                 node: right.node,
                 fix: fixer => {
                   let grouped: {
-                    [key: string]: SortingNodeWithGroup<string[]>[]
+                    [key: string]: SortingNode[]
                   } = {}
 
                   for (let currentNode of nodes) {
-                    let groupNum = getGroupNumber(currentNode)
+                    let groupNum = getGroupNumber(options.groups, currentNode)
 
                     if (!(groupNum in grouped)) {
                       grouped[groupNum] = [currentNode]

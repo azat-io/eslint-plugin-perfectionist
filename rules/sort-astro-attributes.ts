@@ -7,8 +7,10 @@ import path from 'path'
 import type { SortingNode } from '../typings'
 
 import { createEslintRule } from '../utils/create-eslint-rule'
+import { getGroupNumber } from '../utils/get-group-number'
 import { rangeToDiff } from '../utils/range-to-diff'
 import { SortOrder, SortType } from '../typings'
+import { useGroups } from '../utils/use-groups'
 import { makeFixes } from '../utils/make-fixes'
 import { sortNodes } from '../utils/sort-nodes'
 import { pairwise } from '../utils/pairwise'
@@ -21,10 +23,6 @@ type Group<T extends string[]> =
   | 'shorthand'
   | 'unknown'
   | T[number]
-
-type SortingNodeWithGroup<T extends string[]> = SortingNode & {
-  group: Group<T>
-}
 
 type MESSAGE_ID = 'unexpectedAstroAttributesOrder'
 
@@ -112,8 +110,8 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
 
           let source = context.getSourceCode()
 
-          let parts: SortingNodeWithGroup<string[]>[][] = attributes.reduce(
-            (accumulator: SortingNodeWithGroup<string[]>[][], attribute) => {
+          let parts: SortingNode[][] = attributes.reduce(
+            (accumulator: SortingNode[][], attribute) => {
               if (attribute.type === 'JSXSpreadAttribute') {
                 accumulator.push([])
                 return accumulator
@@ -124,13 +122,7 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
                   ? attribute.name.name
                   : source.text.slice(...attribute.name.range)
 
-              let group: Group<string[]> | undefined
-
-              let defineGroup = (nodeGroup: Group<string[]>) => {
-                if (!group && options.groups.flat().includes(nodeGroup)) {
-                  group = nodeGroup
-                }
-              }
+              let { getGroup, defineGroup } = useGroups(options.groups)
 
               for (let [key, pattern] of Object.entries(
                 options['custom-groups'],
@@ -163,7 +155,7 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
               accumulator.at(-1)!.push({
                 size: rangeToDiff(attribute.range),
                 node: attribute as unknown as TSESTree.Node,
-                group: group ?? 'unknown',
+                group: getGroup(),
                 name,
               })
 
@@ -172,27 +164,10 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
             [[]],
           )
 
-          let getGroupNumber = (
-            nodeWithGroup: SortingNodeWithGroup<string[]>,
-          ): number => {
-            for (let i = 0, max = options.groups.length; i < max; i++) {
-              let currentGroup = options.groups[i]
-
-              if (
-                nodeWithGroup.group === currentGroup ||
-                (Array.isArray(currentGroup) &&
-                  currentGroup.includes(nodeWithGroup.group))
-              ) {
-                return i
-              }
-            }
-            return options.groups.length
-          }
-
           for (let nodes of parts) {
             pairwise(nodes, (left, right) => {
-              let leftNum = getGroupNumber(left)
-              let rightNum = getGroupNumber(right)
+              let leftNum = getGroupNumber(options.groups, left)
+              let rightNum = getGroupNumber(options.groups, right)
 
               if (
                 leftNum > rightNum ||
@@ -207,11 +182,11 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
                   node: right.node,
                   fix: fixer => {
                     let grouped: {
-                      [key: string]: SortingNodeWithGroup<string[]>[]
+                      [key: string]: SortingNode[]
                     } = {}
 
                     for (let currentNode of nodes) {
-                      let groupNum = getGroupNumber(currentNode)
+                      let groupNum = getGroupNumber(options.groups, currentNode)
 
                       if (!(groupNum in grouped)) {
                         grouped[groupNum] = [currentNode]
