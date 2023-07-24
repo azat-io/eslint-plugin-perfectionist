@@ -2465,5 +2465,56 @@ describe(RULE_NAME, () => {
         ],
       })
     })
+
+    it(`${RULE_NAME}: allow to disable rule for styled-components`, () => {
+      ruleTester.run(RULE_NAME, rule, {
+        valid: [
+          {
+            code: dedent`
+              const Box = styled.div({
+                background: "palevioletred",
+                width: "50px",
+                height: "50px",
+              })
+            `,
+            options: [
+              {
+                'styled-components': false,
+              },
+            ],
+          },
+          {
+            code: dedent`
+              const PropsBox = styled.div((props) => ({
+                background: props.background,
+                height: "50px",
+                width: "50px",
+              }))
+            `,
+            options: [
+              {
+                'styled-components': false,
+              },
+            ],
+          },
+          {
+            code: dedent`
+              export default styled('div')(() => ({
+                borderRadius: 0,
+                borderWidth: 0,
+                border: 0,
+                borderBottom: hasBorder && \`1px solid \${theme.palette.divider}\`,
+              }))
+            `,
+            options: [
+              {
+                'styled-components': false,
+              },
+            ],
+          },
+        ],
+        invalid: [],
+      })
+    })
   })
 })
