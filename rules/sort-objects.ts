@@ -35,6 +35,7 @@ type Options = [
     'custom-groups': { [key: string]: string[] | string }
     'partition-by-comment': PartitionComment
     groups: (string[] | string)[]
+    'styled-components': boolean
     'ignore-case': boolean
     order: SortOrder
     type: SortType
@@ -62,6 +63,10 @@ export default createEslintRule<Options, MESSAGE_ID>({
           'partition-by-comment': {
             type: ['boolean', 'string', 'array'],
             default: false,
+          },
+          'styled-components': {
+            type: 'boolean',
+            default: true,
           },
           type: {
             enum: [
@@ -105,11 +110,33 @@ export default createEslintRule<Options, MESSAGE_ID>({
         let options = complete(context.options.at(0), {
           'partition-by-comment': false,
           type: SortType.alphabetical,
+          'styled-components': true,
           'ignore-case': false,
           order: SortOrder.asc,
           'custom-groups': {},
           groups: [],
         })
+
+        let isStyledComponents = (
+          styledNode: TSESTree.Node | undefined,
+        ): boolean =>
+          styledNode !== undefined &&
+          styledNode.type === 'CallExpression' &&
+          ((styledNode.callee.type === 'MemberExpression' &&
+            styledNode.callee.object.type === 'Identifier' &&
+            styledNode.callee.object.name === 'styled') ||
+            (styledNode.callee.type === 'CallExpression' &&
+              styledNode.callee.callee.type === 'Identifier' &&
+              styledNode.callee.callee.name === 'styled'))
+
+        if (
+          !options['styled-components'] &&
+          (isStyledComponents(node.parent) ||
+            (node.parent?.type === 'ArrowFunctionExpression' &&
+              isStyledComponents(node.parent.parent)))
+        ) {
+          return
+        }
 
         let source = context.getSourceCode()
 

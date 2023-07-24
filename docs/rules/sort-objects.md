@@ -85,6 +85,7 @@ interface Options {
   'ignore-case'?: boolean
   groups?: (string | string[])[]
   'custom-groups': { [key: string]: string[] | string }
+  'styled-components': boolean
   'partition-by-comment': string[] | string | boolean
 }
 ```
@@ -131,6 +132,12 @@ Example:
   }
 }
 ```
+
+### styled-components
+
+<sub>(default: `true`)</sub>
+
+When `false`, this rule will be disabled for the styled-components like libraries.
 
 ### partition-by-comment
 
