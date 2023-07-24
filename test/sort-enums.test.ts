@@ -6,8 +6,11 @@ import rule, { RULE_NAME } from '../rules/sort-enums'
 import { SortOrder, SortType } from '../typings'
 
 describe(RULE_NAME, () => {
+  RuleTester.describeSkip = describe.skip
   RuleTester.afterAll = afterAll
   RuleTester.describe = describe
+  RuleTester.itOnly = it.only
+  RuleTester.itSkip = it.skip
   RuleTester.it = it
 
   let ruleTester = new RuleTester({
