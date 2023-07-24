@@ -117,17 +117,18 @@ export default createEslintRule<Options, MESSAGE_ID>({
           groups: [],
         })
 
+        let isStyledCallExpression = (identifier: TSESTree.Expression) =>
+          identifier.type === 'Identifier' && identifier.name === 'styled'
+
         let isStyledComponents = (
           styledNode: TSESTree.Node | undefined,
         ): boolean =>
           styledNode !== undefined &&
           styledNode.type === 'CallExpression' &&
           ((styledNode.callee.type === 'MemberExpression' &&
-            styledNode.callee.object.type === 'Identifier' &&
-            styledNode.callee.object.name === 'styled') ||
+            isStyledCallExpression(styledNode.callee.object)) ||
             (styledNode.callee.type === 'CallExpression' &&
-              styledNode.callee.callee.type === 'Identifier' &&
-              styledNode.callee.callee.name === 'styled'))
+              isStyledCallExpression(styledNode.callee.callee)))
 
         if (
           !options['styled-components'] &&
