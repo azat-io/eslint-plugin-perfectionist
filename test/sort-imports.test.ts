@@ -3260,81 +3260,94 @@ describe(RULE_NAME, () => {
         ],
       })
     })
-  })
 
-  it(`${RULE_NAME}: allow to use paths from tsconfig.json`, () => {
-    vi.mock('../utils/read-ts-config', () => ({
-      TSConfig: {
-        get: () => ({
-          compilerOptions: {
-            moduleResolution: 'bundler',
-            verbatimModuleSyntax: true,
-            resolveJsonModule: true,
-            lib: ['ESNext', 'DOM'],
-            esModuleInterop: true,
-            skipLibCheck: true,
-            module: 'esnext',
-            target: 'es2020',
-            paths: {
-              '@/components/*': './src/components/*',
-            },
-          },
-        }),
-      },
-    }))
-
-    ruleTester.run(RULE_NAME, rule, {
-      valid: [],
-      invalid: [
-        {
-          code: dedent`
-            import { MikuruAsahina } from '@/components/mikuru'
-            import { HaruhiSuzumiya } from '@melancholy/haruhi-suzumiya'
-            import { YukiNagato } from '~/data/yuki'
-          `,
-          output: dedent`
-            import { HaruhiSuzumiya } from '@melancholy/haruhi-suzumiya'
-
-            import { MikuruAsahina } from '@/components/mikuru'
-            import { YukiNagato } from '~/data/yuki'
-          `,
-          options: [
-            {
-              type: SortType['line-length'],
-              order: SortOrder.desc,
-              'newlines-between': NewlinesBetweenValue.always,
-              'internal-pattern': ['~/**'],
-              groups: [
-                'type',
-                ['builtin', 'external'],
-                'internal-type',
-                'internal',
-                ['parent-type', 'sibling-type', 'index-type'],
-                ['parent', 'sibling', 'index'],
-                'object',
-                'unknown',
-              ],
-              'read-tsconfig': true,
-            },
-          ],
-          errors: [
-            {
-              messageId: 'unexpectedImportsOrder',
-              data: {
-                left: '@/components/mikuru',
-                right: '@melancholy/haruhi-suzumiya',
+    it(`${RULE_NAME}: allow to use paths from tsconfig.json`, () => {
+      vi.mock('../utils/read-ts-config', () => ({
+        TSConfig: {
+          get: () => ({
+            compilerOptions: {
+              moduleResolution: 'bundler',
+              verbatimModuleSyntax: true,
+              resolveJsonModule: true,
+              lib: ['ESNext', 'DOM'],
+              esModuleInterop: true,
+              skipLibCheck: true,
+              module: 'esnext',
+              target: 'es2020',
+              paths: {
+                '@/components/*': './src/components/*',
               },
             },
-            {
-              messageId: 'missedSpacingBetweenImports',
-              data: {
-                left: '@melancholy/haruhi-suzumiya',
-                right: '~/data/yuki',
-              },
-            },
-          ],
+          }),
         },
-      ],
+      }))
+
+      ruleTester.run(RULE_NAME, rule, {
+        valid: [],
+        invalid: [
+          {
+            code: dedent`
+              import { MikuruAsahina } from '@/components/mikuru'
+              import { HaruhiSuzumiya } from '@melancholy/haruhi-suzumiya'
+              import { YukiNagato } from '~/data/yuki'
+            `,
+            output: dedent`
+              import { HaruhiSuzumiya } from '@melancholy/haruhi-suzumiya'
+
+              import { MikuruAsahina } from '@/components/mikuru'
+              import { YukiNagato } from '~/data/yuki'
+            `,
+            options: [
+              {
+                type: SortType['line-length'],
+                order: SortOrder.desc,
+                'newlines-between': NewlinesBetweenValue.always,
+                'internal-pattern': ['~/**'],
+                groups: [
+                  'type',
+                  ['builtin', 'external'],
+                  'internal-type',
+                  'internal',
+                  ['parent-type', 'sibling-type', 'index-type'],
+                  ['parent', 'sibling', 'index'],
+                  'object',
+                  'unknown',
+                ],
+                'read-tsconfig': true,
+              },
+            ],
+            errors: [
+              {
+                messageId: 'unexpectedImportsOrder',
+                data: {
+                  left: '@/components/mikuru',
+                  right: '@melancholy/haruhi-suzumiya',
+                },
+              },
+              {
+                messageId: 'missedSpacingBetweenImports',
+                data: {
+                  left: '@melancholy/haruhi-suzumiya',
+                  right: '~/data/yuki',
+                },
+              },
+            ],
+          },
+        ],
+      })
+    })
+
+    it(`${RULE_NAME}: doesn't sort imports with side effects`, () => {
+      ruleTester.run(RULE_NAME, rule, {
+        valid: [
+          dedent`
+            import './index.css'
+            import './animate.css'
+            import './reset.css'
+          `,
+        ],
+        invalid: [],
+      })
     })
   })
 })

@@ -182,6 +182,10 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
 
     let nodes: SortingNodeWithGroup<string[]>[] = []
 
+    let isSideEffectImport = (node: TSESTree.Node) =>
+      node.type === AST_NODE_TYPES.ImportDeclaration &&
+      node.specifiers.length === 0
+
     let computeGroup = (node: ModuleDeclaration): Group<string[]> => {
       let group: Group<string[]> | undefined
 
@@ -282,7 +286,7 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
           defineGroup('style')
         }
 
-        if (node.specifiers.length === 0) {
+        if (isSideEffectImport(node)) {
           defineGroup('side-effect')
         }
 
@@ -496,6 +500,9 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
             let numberOfEmptyLinesBetween = getLinesBetweenImports(left, right)
 
             if (
+              !(
+                isSideEffectImport(left.node) && isSideEffectImport(right.node)
+              ) &&
               !hasContentBetweenNodes(left, right) &&
               (leftNum > rightNum ||
                 (leftNum === rightNum && compare(left, right, options)))
