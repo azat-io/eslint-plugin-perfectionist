@@ -27,7 +27,7 @@ dependencies:
 devDependencies:
   '@azat-io/eslint-config-typescript':
     specifier: ^1.1.1
-    version: 1.1.1(@typescript-eslint/eslint-plugin@5.62.0)(@typescript-eslint/parser@5.62.0)(eslint-plugin-import@2.27.5)(eslint-plugin-n@16.0.1)(eslint-plugin-perfectionist@)(eslint-plugin-prefer-arrow@1.2.3)(eslint-plugin-prefer-let@3.0.1)(eslint-plugin-promise@6.1.1)(eslint-plugin-sonarjs@0.19.0)(eslint-plugin-unicorn@47.0.0)(eslint-plugin-vitest@0.2.6)(eslint@8.45.0)
+    version: 1.1.1(@typescript-eslint/eslint-plugin@5.62.0)(@typescript-eslint/parser@5.62.0)(eslint-plugin-import@2.27.5)(eslint-plugin-n@16.0.1)(eslint-plugin-perfectionist@1.5.0)(eslint-plugin-prefer-arrow@1.2.3)(eslint-plugin-prefer-let@3.0.1)(eslint-plugin-promise@6.1.1)(eslint-plugin-sonarjs@0.19.0)(eslint-plugin-unicorn@47.0.0)(eslint-plugin-vitest@0.2.6)(eslint@8.45.0)
   '@commitlint/cli':
     specifier: ^17.6.7
     version: 17.6.7
@@ -74,8 +74,8 @@ devDependencies:
     specifier: ^16.0.1
     version: 16.0.1(eslint@8.45.0)
   eslint-plugin-perfectionist:
-    specifier: workspace:^
-    version: 'link:'
+    specifier: ^1.5.0
+    version: 1.5.0(eslint@8.45.0)(typescript@5.1.6)
   eslint-plugin-prefer-arrow:
     specifier: ^1.2.3
     version: 1.2.3(eslint@8.45.0)
@@ -305,7 +305,7 @@ packages:
       '@jridgewell/trace-mapping': 0.3.18
     dev: true
 
-  /@azat-io/eslint-config-typescript@1.1.1(@typescript-eslint/eslint-plugin@5.62.0)(@typescript-eslint/parser@5.62.0)(eslint-plugin-import@2.27.5)(eslint-plugin-n@16.0.1)(eslint-plugin-perfectionist@)(eslint-plugin-prefer-arrow@1.2.3)(eslint-plugin-prefer-let@3.0.1)(eslint-plugin-promise@6.1.1)(eslint-plugin-sonarjs@0.19.0)(eslint-plugin-unicorn@47.0.0)(eslint-plugin-vitest@0.2.6)(eslint@8.45.0):
+  /@azat-io/eslint-config-typescript@1.1.1(@typescript-eslint/eslint-plugin@5.62.0)(@typescript-eslint/parser@5.62.0)(eslint-plugin-import@2.27.5)(eslint-plugin-n@16.0.1)(eslint-plugin-perfectionist@1.5.0)(eslint-plugin-prefer-arrow@1.2.3)(eslint-plugin-prefer-let@3.0.1)(eslint-plugin-promise@6.1.1)(eslint-plugin-sonarjs@0.19.0)(eslint-plugin-unicorn@47.0.0)(eslint-plugin-vitest@0.2.6)(eslint@8.45.0):
     resolution: {integrity: sha512-OvN3/IgvxZfWwo7LibT3L+9WEUq1NGi5QVKcKj4x9EyNdOJz6T8CfiYHLsDZXBajHaE1X4/7HC/c9H/E3buKBg==}
     peerDependencies:
       '@typescript-eslint/eslint-plugin': ^5.60.0
@@ -321,14 +321,14 @@ packages:
       eslint-plugin-unicorn: ^47.0.0
       eslint-plugin-vitest: ^0.2.6
     dependencies:
-      '@azat-io/eslint-config': 1.1.1(eslint-plugin-import@2.27.5)(eslint-plugin-n@16.0.1)(eslint-plugin-perfectionist@)(eslint-plugin-prefer-arrow@1.2.3)(eslint-plugin-prefer-let@3.0.1)(eslint-plugin-promise@6.1.1)(eslint-plugin-sonarjs@0.19.0)(eslint-plugin-unicorn@47.0.0)(eslint-plugin-vitest@0.2.6)(eslint@8.45.0)
+      '@azat-io/eslint-config': 1.1.1(eslint-plugin-import@2.27.5)(eslint-plugin-n@16.0.1)(eslint-plugin-perfectionist@1.5.0)(eslint-plugin-prefer-arrow@1.2.3)(eslint-plugin-prefer-let@3.0.1)(eslint-plugin-promise@6.1.1)(eslint-plugin-sonarjs@0.19.0)(eslint-plugin-unicorn@47.0.0)(eslint-plugin-vitest@0.2.6)(eslint@8.45.0)
       '@typescript-eslint/eslint-plugin': 5.62.0(@typescript-eslint/parser@5.62.0)(eslint@8.45.0)(typescript@5.1.6)
       '@typescript-eslint/parser': 5.62.0(eslint@8.45.0)(typescript@5.1.6)
       eslint: 8.45.0
       eslint-import-resolver-typescript: 3.5.5(@typescript-eslint/parser@5.62.0)(eslint-plugin-import@2.27.5)(eslint@8.45.0)
       eslint-plugin-import: 2.27.5(@typescript-eslint/parser@5.62.0)(eslint@8.45.0)
       eslint-plugin-n: 16.0.1(eslint@8.45.0)
-      eslint-plugin-perfectionist: 'link:'
+      eslint-plugin-perfectionist: 1.5.0(eslint@8.45.0)(typescript@5.1.6)
       eslint-plugin-prefer-arrow: 1.2.3(eslint@8.45.0)
       eslint-plugin-prefer-let: 3.0.1
       eslint-plugin-promise: 6.1.1(eslint@8.45.0)
@@ -341,7 +341,7 @@ packages:
       - supports-color
     dev: true
 
-  /@azat-io/eslint-config@1.1.1(eslint-plugin-import@2.27.5)(eslint-plugin-n@16.0.1)(eslint-plugin-perfectionist@)(eslint-plugin-prefer-arrow@1.2.3)(eslint-plugin-prefer-let@3.0.1)(eslint-plugin-promise@6.1.1)(eslint-plugin-sonarjs@0.19.0)(eslint-plugin-unicorn@47.0.0)(eslint-plugin-vitest@0.2.6)(eslint@8.45.0):
+  /@azat-io/eslint-config@1.1.1(eslint-plugin-import@2.27.5)(eslint-plugin-n@16.0.1)(eslint-plugin-perfectionist@1.5.0)(eslint-plugin-prefer-arrow@1.2.3)(eslint-plugin-prefer-let@3.0.1)(eslint-plugin-promise@6.1.1)(eslint-plugin-sonarjs@0.19.0)(eslint-plugin-unicorn@47.0.0)(eslint-plugin-vitest@0.2.6)(eslint@8.45.0):
     resolution: {integrity: sha512-ySEeikfFKh/+pvib/hNqhREyLaZhCCmEXGaj04s43wyrII07a4PDOUlFjChztIZQEImGq5EojJVUwRvKyrbJdQ==}
     peerDependencies:
       eslint: ^8.38.0
@@ -358,7 +358,7 @@ packages:
       eslint: 8.45.0
       eslint-plugin-import: 2.27.5(@typescript-eslint/parser@5.62.0)(eslint@8.45.0)
       eslint-plugin-n: 16.0.1(eslint@8.45.0)
-      eslint-plugin-perfectionist: 'link:'
+      eslint-plugin-perfectionist: 1.5.0(eslint@8.45.0)(typescript@5.1.6)
       eslint-plugin-prefer-arrow: 1.2.3(eslint@8.45.0)
       eslint-plugin-prefer-let: 3.0.1
       eslint-plugin-promise: 6.1.1(eslint@8.45.0)
@@ -1614,7 +1614,6 @@ packages:
     resolution: {integrity: sha512-XnAIvQ8eM+kC6aULx6wuQiwVsnzsi9d3WxzV3FpWTGA19F621kwdbsAcFKXgKUHZWsy+mY6iL1sHTxWEFCytDA==}
     dependencies:
       balanced-match: 1.0.2
-    dev: false
 
   /braces@3.0.2:
     resolution: {integrity: sha512-b8um+L1RzM3WDSzvhm6gIz1yfTbBt6YTlcEKAvsmqCZZFw46z626lVj9j1yEPW33H5H+lBQpZMP1k8l+78Ha0A==}
@@ -2399,6 +2398,23 @@ packages:
       minimatch: 3.1.2
       resolve: 1.22.2
       semver: 7.5.4
+    dev: true
+
+  /eslint-plugin-perfectionist@1.5.0(eslint@8.45.0)(typescript@5.1.6):
+    resolution: {integrity: sha512-khVm+M55D95YhoNEjinLdhC5pSse5/EXn7HuI1Y2R+WU1Hb5wWehPlRqAWzWS4VFJKRPWt78OmnzsmnDq1T5IA==}
+    peerDependencies:
+      eslint: '>=8.0.0'
+    dependencies:
+      '@typescript-eslint/types': 5.62.0
+      '@typescript-eslint/utils': 5.62.0(eslint@8.45.0)(typescript@5.1.6)
+      eslint: 8.45.0
+      is-core-module: 2.12.1
+      json5: 2.2.3
+      minimatch: 9.0.3
+      natural-compare-lite: 1.4.0
+    transitivePeerDependencies:
+      - supports-color
+      - typescript
     dev: true
 
   /eslint-plugin-prefer-arrow@1.2.3(eslint@8.45.0):
@@ -3296,7 +3312,6 @@ packages:
     resolution: {integrity: sha512-XmOWe7eyHYH14cLdVPoyg+GOH3rYX++KpzrylJwSW98t3Nk+U8XOl8FWKOgwtzdb8lXGf6zYwDUzeHMWfxasyg==}
     engines: {node: '>=6'}
     hasBin: true
-    dev: false
 
   /jsonc-parser@3.2.0:
     resolution: {integrity: sha512-gfFQZrcTc8CnKXp6Y4/CBT3fTc0OVuDofpre4aEeEpSBPV5X5v4+Vmx+8snU7RLPrNHPKSgLxGo9YuQzz20o+w==}
@@ -3596,7 +3611,6 @@ packages:
     engines: {node: '>=16 || 14 >=14.17'}
     dependencies:
       brace-expansion: 2.0.1
-    dev: false
 
   /minimist-options@4.1.0:
     resolution: {integrity: sha512-Q4r8ghd80yhO/0j1O3B2BjweX3fiHg9cdOwjJd2J76Q135c+NDxGCqdYKQ1SKBuFfgWbAUzBfvYjPUEeNgqN1A==}

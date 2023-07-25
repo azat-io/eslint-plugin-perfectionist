@@ -79,7 +79,7 @@
     "eslint-plugin-eslint-plugin": "^5.1.1",
     "eslint-plugin-import": "^2.27.5",
     "eslint-plugin-n": "^16.0.1",
-    "eslint-plugin-perfectionist": "workspace:^",
+    "eslint-plugin-perfectionist": "^1.5.0",
     "eslint-plugin-prefer-arrow": "^1.2.3",
     "eslint-plugin-prefer-let": "^3.0.1",
     "eslint-plugin-promise": "^6.1.1",
