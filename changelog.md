@@ -1,6 +1,20 @@
 # Changelog
 
 
+## v1.5.1
+
+[compare changes](https://github.com/azat-io/eslint-plugin-perfectionist/compare/v1.5.0...v1.5.1)
+
+### 🐞 Bug Fixes
+
+- Use alphabetical as the default sort type in schemas ([3b9366e](https://github.com/azat-io/eslint-plugin-perfectionist/commit/3b9366e))
+- Disable sorting side-effect imports ([01da88a](https://github.com/azat-io/eslint-plugin-perfectionist/commit/01da88a))
+
+### ❤️  Contributors
+
+- Azat S ([@azat-io](http://github.com/azat-io))
+- Hao Cheng <hcheng636@gmail.com>
+
 ## v1.5.0
 
 [compare changes](https://github.com/azat-io/eslint-plugin-perfectionist/compare/v1.4.0...v1.5.0)
