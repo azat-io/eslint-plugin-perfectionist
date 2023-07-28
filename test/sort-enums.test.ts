@@ -129,7 +129,7 @@ describe(RULE_NAME, () => {
       })
     })
 
-    it(`${RULE_NAME}(${type}): sorts enum members without initializer`, () => {
+    it(`${RULE_NAME}(${type}): doesn't sorts enum members without initializer`, () => {
       ruleTester.run(RULE_NAME, rule, {
         valid: [
           {
@@ -148,39 +148,7 @@ describe(RULE_NAME, () => {
             ],
           },
         ],
-        invalid: [
-          {
-            code: dedent`
-              enum TokyoGodfathers {
-                Gin,
-                Miyuki,
-                Hana = 'Hana',
-              }
-            `,
-            output: dedent`
-              enum TokyoGodfathers {
-                Gin,
-                Hana = 'Hana',
-                Miyuki,
-              }
-            `,
-            options: [
-              {
-                type: SortType.alphabetical,
-                order: SortOrder.asc,
-              },
-            ],
-            errors: [
-              {
-                messageId: 'unexpectedEnumsOrder',
-                data: {
-                  left: 'Miyuki',
-                  right: 'Hana',
-                },
-              },
-            ],
-          },
-        ],
+        invalid: [],
       })
     })
 
@@ -429,7 +397,7 @@ describe(RULE_NAME, () => {
       })
     })
 
-    it(`${RULE_NAME}(${type}): sorts enum members without initializer`, () => {
+    it(`${RULE_NAME}(${type}): doesn't sorts enum members without initializer`, () => {
       ruleTester.run(RULE_NAME, rule, {
         valid: [
           {
@@ -448,39 +416,7 @@ describe(RULE_NAME, () => {
             ],
           },
         ],
-        invalid: [
-          {
-            code: dedent`
-              enum TokyoGodfathers {
-                Gin,
-                Miyuki,
-                Hana = 'Hana',
-              }
-            `,
-            output: dedent`
-              enum TokyoGodfathers {
-                Gin,
-                Hana = 'Hana',
-                Miyuki,
-              }
-            `,
-            options: [
-              {
-                type: SortType.natural,
-                order: SortOrder.asc,
-              },
-            ],
-            errors: [
-              {
-                messageId: 'unexpectedEnumsOrder',
-                data: {
-                  left: 'Miyuki',
-                  right: 'Hana',
-                },
-              },
-            ],
-          },
-        ],
+        invalid: [],
       })
     })
 
@@ -736,7 +672,7 @@ describe(RULE_NAME, () => {
       })
     })
 
-    it(`${RULE_NAME}(${type}): sorts enum members without initializer`, () => {
+    it(`${RULE_NAME}(${type}): doesn't sorts enum members without initializer`, () => {
       ruleTester.run(RULE_NAME, rule, {
         valid: [
           {
@@ -755,46 +691,7 @@ describe(RULE_NAME, () => {
             ],
           },
         ],
-        invalid: [
-          {
-            code: dedent`
-              enum TokyoGodfathers {
-                Gin,
-                Miyuki,
-                Hana = 'Hana',
-              }
-            `,
-            output: dedent`
-              enum TokyoGodfathers {
-                Hana = 'Hana',
-                Miyuki,
-                Gin,
-              }
-            `,
-            options: [
-              {
-                type: SortType['line-length'],
-                order: SortOrder.desc,
-              },
-            ],
-            errors: [
-              {
-                messageId: 'unexpectedEnumsOrder',
-                data: {
-                  left: 'Gin',
-                  right: 'Miyuki',
-                },
-              },
-              {
-                messageId: 'unexpectedEnumsOrder',
-                data: {
-                  left: 'Miyuki',
-                  right: 'Hana',
-                },
-              },
-            ],
-          },
-        ],
+        invalid: [],
       })
     })
 
