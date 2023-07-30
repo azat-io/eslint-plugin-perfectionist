@@ -108,7 +108,7 @@ export default createEslintRule<Options, MESSAGE_ID>({
                   accumulator.at(0)!.push({
                     name:
                       element.type === AST_NODE_TYPES.Literal
-                        ? element.raw
+                        ? `${element.value}`
                         : source.text.slice(...element.range),
                     size: rangeToDiff(element.range),
                     type: element.type,

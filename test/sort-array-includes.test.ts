@@ -67,7 +67,7 @@ describe(RULE_NAME, () => {
               {
                 messageId: 'unexpectedArrayIncludesOrder',
                 data: {
-                  left: "'Cart Titan'",
+                  left: 'Cart Titan',
                   right: '...otherTitans',
                 },
               },
@@ -165,8 +165,8 @@ describe(RULE_NAME, () => {
               {
                 messageId: 'unexpectedArrayIncludesOrder',
                 data: {
-                  left: "'Genos'",
-                  right: "'Bang'",
+                  left: 'Genos',
+                  right: 'Bang',
                 },
               },
             ],
@@ -211,7 +211,7 @@ describe(RULE_NAME, () => {
                 messageId: 'unexpectedArrayIncludesOrder',
                 data: {
                   left: '...graceFieldOrphans',
-                  right: "'Norman'",
+                  right: 'Norman',
                 },
               },
             ],
@@ -268,8 +268,8 @@ describe(RULE_NAME, () => {
               {
                 messageId: 'unexpectedArrayIncludesOrder',
                 data: {
-                  left: "'Sonozaki Shion'",
-                  right: "'Maebara Keiichi'",
+                  left: 'Sonozaki Shion',
+                  right: 'Maebara Keiichi',
                 },
               },
             ],
@@ -288,12 +288,12 @@ describe(RULE_NAME, () => {
           {
             code: dedent`
               [
+                ...otherTitans,
                 'Armored Titan',
                 'Attack Titan',
                 'Beast Titan',
                 'Cart Titan',
                 'War Hammer Titan',
-                ...otherTitans,
               ].includes(titan)
             `,
             options: [
@@ -318,12 +318,12 @@ describe(RULE_NAME, () => {
             `,
             output: dedent`
               [
+                ...otherTitans,
                 'Armored Titan',
                 'Attack Titan',
                 'Beast Titan',
                 'Cart Titan',
                 'War Hammer Titan',
-                ...otherTitans,
               ].includes(titan)
             `,
             options: [
@@ -336,8 +336,8 @@ describe(RULE_NAME, () => {
               {
                 messageId: 'unexpectedArrayIncludesOrder',
                 data: {
-                  left: '...otherTitans',
-                  right: "'Beast Titan'",
+                  left: 'Cart Titan',
+                  right: '...otherTitans',
                 },
               },
             ],
@@ -434,8 +434,8 @@ describe(RULE_NAME, () => {
               {
                 messageId: 'unexpectedArrayIncludesOrder',
                 data: {
-                  left: "'Genos'",
-                  right: "'Bang'",
+                  left: 'Genos',
+                  right: 'Bang',
                 },
               },
             ],
@@ -480,7 +480,7 @@ describe(RULE_NAME, () => {
                 messageId: 'unexpectedArrayIncludesOrder',
                 data: {
                   left: '...graceFieldOrphans',
-                  right: "'Norman'",
+                  right: 'Norman',
                 },
               },
             ],
@@ -537,8 +537,8 @@ describe(RULE_NAME, () => {
               {
                 messageId: 'unexpectedArrayIncludesOrder',
                 data: {
-                  left: "'Sonozaki Shion'",
-                  right: "'Maebara Keiichi'",
+                  left: 'Sonozaki Shion',
+                  right: 'Maebara Keiichi',
                 },
               },
             ],
@@ -605,15 +605,15 @@ describe(RULE_NAME, () => {
               {
                 messageId: 'unexpectedArrayIncludesOrder',
                 data: {
-                  left: "'Cart Titan'",
+                  left: 'Cart Titan',
                   right: '...otherTitans',
                 },
               },
               {
                 messageId: 'unexpectedArrayIncludesOrder',
                 data: {
-                  left: "'Beast Titan'",
-                  right: "'War Hammer Titan'",
+                  left: 'Beast Titan',
+                  right: 'War Hammer Titan',
                 },
               },
             ],
@@ -710,8 +710,8 @@ describe(RULE_NAME, () => {
               {
                 messageId: 'unexpectedArrayIncludesOrder',
                 data: {
-                  left: "'King'",
-                  right: "'Saitama'",
+                  left: 'King',
+                  right: 'Saitama',
                 },
               },
             ],
@@ -756,7 +756,7 @@ describe(RULE_NAME, () => {
                 messageId: 'unexpectedArrayIncludesOrder',
                 data: {
                   left: '...graceFieldOrphans',
-                  right: "'Norman'",
+                  right: 'Norman',
                 },
               },
             ],
@@ -813,15 +813,15 @@ describe(RULE_NAME, () => {
               {
                 messageId: 'unexpectedArrayIncludesOrder',
                 data: {
-                  left: "'Ryūgū Rena'",
-                  right: "'Sonozaki Shion'",
+                  left: 'Ryūgū Rena',
+                  right: 'Sonozaki Shion',
                 },
               },
               {
                 messageId: 'unexpectedArrayIncludesOrder',
                 data: {
-                  left: "'Sonozaki Shion'",
-                  right: "'Maebara Keiichi'",
+                  left: 'Sonozaki Shion',
+                  right: 'Maebara Keiichi',
                 },
               },
             ],
@@ -877,15 +877,15 @@ describe(RULE_NAME, () => {
               {
                 messageId: 'unexpectedArrayIncludesOrder',
                 data: {
-                  left: "'Shusei Kagari'",
-                  right: "'Akane Tsunemori'",
+                  left: 'Shusei Kagari',
+                  right: 'Akane Tsunemori',
                 },
               },
               {
                 messageId: 'unexpectedArrayIncludesOrder',
                 data: {
-                  left: "'Tomomi Masaoka'",
-                  right: "'Nobuchika Ginoza'",
+                  left: 'Tomomi Masaoka',
+                  right: 'Nobuchika Ginoza',
                 },
               },
             ],
@@ -897,6 +897,17 @@ describe(RULE_NAME, () => {
     it(`${RULE_NAME}: works consistently with an empty array or an array with one element`, () => {
       ruleTester.run(RULE_NAME, rule, {
         valid: ['[].includes(person)', "['Decim'].includes(bartender)"],
+        invalid: [],
+      })
+    })
+
+    it(`${RULE_NAME}: ignores quotes of strings`, () => {
+      ruleTester.run(RULE_NAME, rule, {
+        valid: [
+          dedent`
+            ['Burger King', "McDonald's", 'Subway'].includes(name)
+          `,
+        ],
         invalid: [],
       })
     })
