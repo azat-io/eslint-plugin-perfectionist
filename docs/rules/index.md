@@ -26,5 +26,6 @@ description: ESLint Plugin Perfectionist list of rules
 | [sort-objects](/rules/sort-objects)                     | enforce sorted objects                      | 🔧  |
 | [sort-svelte-attributes](/rules/sort-svelte-attributes) | enforce sorted Svelte attributes            | 🔧  |
 | [sort-union-types](/rules/sort-union-types)             | enforce sorted union types                  | 🔧  |
+| [sort-vue-attributes](/rules/sort-vue-attributes)       | enforce sorted Vue attributes               | 🔧  |
 
 <!-- end auto-generated rules list -->

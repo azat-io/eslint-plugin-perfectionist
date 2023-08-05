@@ -155,6 +155,7 @@ export default [
 | [sort-objects](https://eslint-plugin-perfectionist.azat.io/rules/sort-objects)                     | enforce sorted objects                      | 🔧  |
 | [sort-svelte-attributes](https://eslint-plugin-perfectionist.azat.io/rules/sort-svelte-attributes) | enforce sorted Svelte attributes            | 🔧  |
 | [sort-union-types](https://eslint-plugin-perfectionist.azat.io/rules/sort-union-types)             | enforce sorted union types                  | 🔧  |
+| [sort-vue-attributes](https://eslint-plugin-perfectionist.azat.io/rules/sort-vue-attributes)       | enforce sorted Vue attributes               | 🔧  |
 
 <!-- end auto-generated rules list -->
 

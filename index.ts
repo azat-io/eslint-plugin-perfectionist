@@ -1,16 +1,17 @@
 import sortSvelteAttributes, { RULE_NAME as sortSvelteAttributesName } from './rules/sort-svelte-attributes'
 import sortAstroAttributes, { RULE_NAME as sortAstroAttributesName } from './rules/sort-astro-attributes'
 import sortArrayIncludes, { RULE_NAME as sortArrayIncludesName } from './rules/sort-array-includes'
-import sortNamedImports, { RULE_NAME as sortNamedImportsName } from './rules/sort-named-imports'
+import sortVueAttributes, { RULE_NAME as sortVueAttributesName } from './rules/sort-vue-attributes'
 import sortNamedExports, { RULE_NAME as sortNamedExportsName } from './rules/sort-named-exports'
+import sortNamedImports, { RULE_NAME as sortNamedImportsName } from './rules/sort-named-imports'
 import sortObjectTypes, { RULE_NAME as sortObjectTypesName } from './rules/sort-object-types'
 import sortUnionTypes, { RULE_NAME as sortUnionTypesName } from './rules/sort-union-types'
 import sortInterfaces, { RULE_NAME as sortInterfacesName } from './rules/sort-interfaces'
 import sortJsxProps, { RULE_NAME as sortJsxPropsName } from './rules/sort-jsx-props'
-import sortObjects, { RULE_NAME as sortObjectsName } from './rules/sort-objects'
-import sortImports, { RULE_NAME as sortImportsName } from './rules/sort-imports'
-import sortClasses, { RULE_NAME as sortClassesName } from './rules/sort-classes'
 import sortExports, { RULE_NAME as sortExportsName } from './rules/sort-exports'
+import sortImports, { RULE_NAME as sortImportsName } from './rules/sort-imports'
+import sortObjects, { RULE_NAME as sortObjectsName } from './rules/sort-objects'
+import sortClasses, { RULE_NAME as sortClassesName } from './rules/sort-classes'
 import sortEnums, { RULE_NAME as sortEnumsName } from './rules/sort-enums'
 import sortMaps, { RULE_NAME as sortMapsName } from './rules/sort-maps'
 import { SortOrder, SortType } from './typings'
@@ -94,6 +95,7 @@ let createConfigWithOptions = (options: {
     ],
     [sortSvelteAttributesName]: ['error'],
     [sortAstroAttributesName]: ['error'],
+    [sortVueAttributesName]: ['error'],
     [sortNamedExportsName]: ['error'],
     [sortNamedImportsName]: ['error'],
     [sortObjectTypesName]: ['error'],
@@ -132,6 +134,7 @@ export default {
     [sortObjectsName]: sortObjects,
     [sortSvelteAttributesName]: sortSvelteAttributes,
     [sortUnionTypesName]: sortUnionTypes,
+    [sortVueAttributesName]: sortVueAttributes,
   },
   configs: {
     'recommended-alphabetical': createConfigWithOptions({

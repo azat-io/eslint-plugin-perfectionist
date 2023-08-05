@@ -92,7 +92,7 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
       return {}
     }
 
-    if (!('defineTemplateBodyVisitor' in (context.parserServices ?? {}))) {
+    if (!('defineTemplateBodyVisitor' in context.parserServices!)) {
       return {}
     }
 
@@ -117,7 +117,10 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
 
           let parts: SortingNode[][] = node.attributes.reduce(
             (accumulator: SortingNode[][], attribute) => {
-              if (attribute.key.type === 'VDirectiveKey' && attribute.key.name.rawName === 'bind') {
+              if (
+                attribute.key.type === 'VDirectiveKey' &&
+                attribute.key.name.rawName === 'bind'
+              ) {
                 accumulator.push([])
                 return accumulator
               }
