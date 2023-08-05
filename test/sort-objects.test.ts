@@ -13,6 +13,12 @@ describe(RULE_NAME, () => {
   describe(`${RULE_NAME}: sorting by alphabetical order`, () => {
     let type = 'alphabetical-order'
 
+    let options = {
+      type: SortType.alphabetical,
+      order: SortOrder.asc,
+      'ignore-case': false,
+    }
+
     it(`${RULE_NAME}(${type}): sorts object with identifier and literal keys`, () => {
       ruleTester.run(RULE_NAME, rule, {
         valid: [
@@ -25,12 +31,7 @@ describe(RULE_NAME, () => {
                 name: 'Holo',
               }
             `,
-            options: [
-              {
-                type: SortType.alphabetical,
-                order: SortOrder.asc,
-              },
-            ],
+            options: [options],
           },
         ],
         invalid: [
@@ -51,12 +52,7 @@ describe(RULE_NAME, () => {
                 name: 'Holo',
               }
             `,
-            options: [
-              {
-                type: SortType.alphabetical,
-                order: SortOrder.asc,
-              },
-            ],
+            options: [options],
             errors: [
               {
                 messageId: 'unexpectedObjectsOrder',
@@ -83,12 +79,7 @@ describe(RULE_NAME, () => {
                 hacker: 'Ed',
               }
             `,
-            options: [
-              {
-                type: SortType.alphabetical,
-                order: SortOrder.asc,
-              },
-            ],
+            options: [options],
           },
         ],
         invalid: [
@@ -109,12 +100,7 @@ describe(RULE_NAME, () => {
                 hacker: 'Ed',
               }
             `,
-            options: [
-              {
-                type: SortType.alphabetical,
-                order: SortOrder.asc,
-              },
-            ],
+            options: [options],
             errors: [
               {
                 messageId: 'unexpectedObjectsOrder',
@@ -149,12 +135,7 @@ describe(RULE_NAME, () => {
                 },
               }
             `,
-            options: [
-              {
-                type: SortType.alphabetical,
-                order: SortOrder.asc,
-              },
-            ],
+            options: [options],
           },
         ],
         invalid: [
@@ -191,12 +172,7 @@ describe(RULE_NAME, () => {
                 },
               }
             `,
-            options: [
-              {
-                type: SortType.alphabetical,
-                order: SortOrder.asc,
-              },
-            ],
+            options: [options],
             errors: [
               {
                 messageId: 'unexpectedObjectsOrder',
@@ -243,12 +219,7 @@ describe(RULE_NAME, () => {
                 [robots[1]]: 'Rei Ayanami',
               }
             `,
-            options: [
-              {
-                type: SortType.alphabetical,
-                order: SortOrder.asc,
-              },
-            ],
+            options: [options],
           },
         ],
         invalid: [
@@ -267,12 +238,7 @@ describe(RULE_NAME, () => {
                 [robots[1]]: 'Rei Ayanami',
               }
             `,
-            options: [
-              {
-                type: SortType.alphabetical,
-                order: SortOrder.asc,
-              },
-            ],
+            options: [options],
             errors: [
               {
                 messageId: 'unexpectedObjectsOrder',
@@ -310,10 +276,9 @@ describe(RULE_NAME, () => {
             `,
             options: [
               {
+                ...options,
                 'custom-groups': { top: ['name', 'id'] },
                 groups: ['top', 'unknown'],
-                type: SortType.alphabetical,
-                order: SortOrder.asc,
               },
             ],
           },
@@ -342,9 +307,9 @@ describe(RULE_NAME, () => {
             `,
             options: [
               {
+                ...options,
                 'custom-groups': { top: ['name', 'id'] },
                 groups: ['top', 'unknown'],
-                order: SortOrder.asc,
               },
             ],
             errors: [
@@ -374,10 +339,9 @@ describe(RULE_NAME, () => {
             `,
             options: [
               {
+                ...options,
                 'custom-groups': { top: ['name', 'id'] },
                 groups: ['top', 'unknown'],
-                type: SortType.alphabetical,
-                order: SortOrder.asc,
               },
             ],
           },
@@ -400,10 +364,9 @@ describe(RULE_NAME, () => {
             `,
             options: [
               {
+                ...options,
                 'custom-groups': { top: ['name', 'id'] },
                 groups: ['top', 'unknown'],
-                type: SortType.alphabetical,
-                order: SortOrder.asc,
               },
             ],
             errors: [
@@ -444,12 +407,7 @@ describe(RULE_NAME, () => {
                 rei: 'Rei Suwa' // daddy #1
               }
             `,
-            options: [
-              {
-                type: SortType.alphabetical,
-                order: SortOrder.asc,
-              },
-            ],
+            options: [options],
             errors: [
               {
                 messageId: 'unexpectedObjectsOrder',
@@ -487,12 +445,7 @@ describe(RULE_NAME, () => {
                 // ...
               }
             `,
-            options: [
-              {
-                type: SortType.alphabetical,
-                order: SortOrder.asc,
-              },
-            ],
+            options: [options],
             errors: [
               {
                 messageId: 'unexpectedObjectsOrder',
@@ -532,12 +485,7 @@ describe(RULE_NAME, () => {
                 // ...
               }
             `,
-            options: [
-              {
-                type: SortType.alphabetical,
-                order: SortOrder.asc,
-              },
-            ],
+            options: [options],
             errors: [
               {
                 messageId: 'unexpectedObjectsOrder',
@@ -577,12 +525,7 @@ describe(RULE_NAME, () => {
                 // ...
               }
             `,
-            options: [
-              {
-                type: SortType.alphabetical,
-                order: SortOrder.asc,
-              },
-            ],
+            options: [options],
             errors: [
               {
                 messageId: 'unexpectedObjectsOrder',
@@ -821,8 +764,7 @@ describe(RULE_NAME, () => {
             `,
             options: [
               {
-                type: SortType.alphabetical,
-                order: SortOrder.asc,
+                ...options,
                 'partition-by-comment': 'Part**',
               },
             ],
@@ -868,8 +810,7 @@ describe(RULE_NAME, () => {
             `,
             options: [
               {
-                type: SortType.alphabetical,
-                order: SortOrder.asc,
+                ...options,
                 'partition-by-comment': true,
               },
             ],
@@ -912,8 +853,7 @@ describe(RULE_NAME, () => {
             `,
             options: [
               {
-                type: SortType.alphabetical,
-                order: SortOrder.asc,
+                ...options,
                 'partition-by-comment': [
                   'Public Safety Bureau',
                   'Crime Coefficient: *',
@@ -939,6 +879,12 @@ describe(RULE_NAME, () => {
   describe(`${RULE_NAME}: sorting by natural order`, () => {
     let type = 'natural-order'
 
+    let options = {
+      type: SortType.natural,
+      order: SortOrder.asc,
+      'ignore-case': false,
+    }
+
     it(`${RULE_NAME}(${type}): sorts object with identifier and literal keys`, () => {
       ruleTester.run(RULE_NAME, rule, {
         valid: [
@@ -951,12 +897,7 @@ describe(RULE_NAME, () => {
                 name: 'Holo',
               }
             `,
-            options: [
-              {
-                type: SortType.natural,
-                order: SortOrder.asc,
-              },
-            ],
+            options: [options],
           },
         ],
         invalid: [
@@ -977,12 +918,7 @@ describe(RULE_NAME, () => {
                 name: 'Holo',
               }
             `,
-            options: [
-              {
-                type: SortType.natural,
-                order: SortOrder.asc,
-              },
-            ],
+            options: [options],
             errors: [
               {
                 messageId: 'unexpectedObjectsOrder',
@@ -1009,12 +945,7 @@ describe(RULE_NAME, () => {
                 hacker: 'Ed',
               }
             `,
-            options: [
-              {
-                type: SortType.natural,
-                order: SortOrder.asc,
-              },
-            ],
+            options: [options],
           },
         ],
         invalid: [
@@ -1035,12 +966,7 @@ describe(RULE_NAME, () => {
                 hacker: 'Ed',
               }
             `,
-            options: [
-              {
-                type: SortType.natural,
-                order: SortOrder.asc,
-              },
-            ],
+            options: [options],
             errors: [
               {
                 messageId: 'unexpectedObjectsOrder',
@@ -1075,12 +1001,7 @@ describe(RULE_NAME, () => {
                 },
               }
             `,
-            options: [
-              {
-                type: SortType.natural,
-                order: SortOrder.asc,
-              },
-            ],
+            options: [options],
           },
         ],
         invalid: [
@@ -1117,12 +1038,7 @@ describe(RULE_NAME, () => {
                 },
               }
             `,
-            options: [
-              {
-                type: SortType.natural,
-                order: SortOrder.asc,
-              },
-            ],
+            options: [options],
             errors: [
               {
                 messageId: 'unexpectedObjectsOrder',
@@ -1169,12 +1085,7 @@ describe(RULE_NAME, () => {
                 [robots[1]]: 'Rei Ayanami',
               }
             `,
-            options: [
-              {
-                type: SortType.natural,
-                order: SortOrder.asc,
-              },
-            ],
+            options: [options],
           },
         ],
         invalid: [
@@ -1193,12 +1104,7 @@ describe(RULE_NAME, () => {
                 [robots[1]]: 'Rei Ayanami',
               }
             `,
-            options: [
-              {
-                type: SortType.natural,
-                order: SortOrder.asc,
-              },
-            ],
+            options: [options],
             errors: [
               {
                 messageId: 'unexpectedObjectsOrder',
@@ -1236,10 +1142,9 @@ describe(RULE_NAME, () => {
             `,
             options: [
               {
+                ...options,
                 'custom-groups': { top: ['name', 'id'] },
                 groups: ['top', 'unknown'],
-                type: SortType.natural,
-                order: SortOrder.asc,
               },
             ],
           },
@@ -1268,10 +1173,9 @@ describe(RULE_NAME, () => {
             `,
             options: [
               {
+                ...options,
                 'custom-groups': { top: ['name', 'id'] },
                 groups: ['top', 'unknown'],
-                type: SortType.natural,
-                order: SortOrder.asc,
               },
             ],
             errors: [
@@ -1301,10 +1205,9 @@ describe(RULE_NAME, () => {
             `,
             options: [
               {
+                ...options,
                 'custom-groups': { top: ['name', 'id'] },
                 groups: ['top', 'unknown'],
-                type: SortType.alphabetical,
-                order: SortOrder.asc,
               },
             ],
           },
@@ -1327,10 +1230,9 @@ describe(RULE_NAME, () => {
             `,
             options: [
               {
+                ...options,
                 'custom-groups': { top: ['name', 'id'] },
                 groups: ['top', 'unknown'],
-                type: SortType.natural,
-                order: SortOrder.asc,
               },
             ],
             errors: [
@@ -1371,12 +1273,7 @@ describe(RULE_NAME, () => {
                 rei: 'Rei Suwa' // daddy #1
               }
             `,
-            options: [
-              {
-                type: SortType.natural,
-                order: SortOrder.asc,
-              },
-            ],
+            options: [options],
             errors: [
               {
                 messageId: 'unexpectedObjectsOrder',
@@ -1414,12 +1311,7 @@ describe(RULE_NAME, () => {
                 // ...
               }
             `,
-            options: [
-              {
-                type: SortType.natural,
-                order: SortOrder.asc,
-              },
-            ],
+            options: [options],
             errors: [
               {
                 messageId: 'unexpectedObjectsOrder',
@@ -1459,12 +1351,7 @@ describe(RULE_NAME, () => {
                 // ...
               }
             `,
-            options: [
-              {
-                type: SortType.natural,
-                order: SortOrder.asc,
-              },
-            ],
+            options: [options],
             errors: [
               {
                 messageId: 'unexpectedObjectsOrder',
@@ -1504,12 +1391,7 @@ describe(RULE_NAME, () => {
                 // ...
               }
             `,
-            options: [
-              {
-                type: SortType.natural,
-                order: SortOrder.asc,
-              },
-            ],
+            options: [options],
             errors: [
               {
                 messageId: 'unexpectedObjectsOrder',
@@ -1563,8 +1445,7 @@ describe(RULE_NAME, () => {
             `,
             options: [
               {
-                type: SortType.natural,
-                order: SortOrder.asc,
+                ...options,
                 'partition-by-comment': 'Part**',
               },
             ],
@@ -1610,8 +1491,7 @@ describe(RULE_NAME, () => {
             `,
             options: [
               {
-                type: SortType.natural,
-                order: SortOrder.asc,
+                ...options,
                 'partition-by-comment': true,
               },
             ],
@@ -1654,8 +1534,7 @@ describe(RULE_NAME, () => {
             `,
             options: [
               {
-                type: SortType.natural,
-                order: SortOrder.asc,
+                ...options,
                 'partition-by-comment': [
                   'Public Safety Bureau',
                   'Crime Coefficient: *',
@@ -1681,6 +1560,11 @@ describe(RULE_NAME, () => {
   describe(`${RULE_NAME}: sorting by line length`, () => {
     let type = 'line-length-order'
 
+    let options = {
+      type: SortType['line-length'],
+      order: SortOrder.desc,
+    }
+
     it(`${RULE_NAME}(${type}): sorts object with identifier and literal keys`, () => {
       ruleTester.run(RULE_NAME, rule, {
         valid: [
@@ -1693,12 +1577,7 @@ describe(RULE_NAME, () => {
                 name: 'Holo',
               }
             `,
-            options: [
-              {
-                type: SortType['line-length'],
-                order: SortOrder.desc,
-              },
-            ],
+            options: [options],
           },
         ],
         invalid: [
@@ -1719,12 +1598,7 @@ describe(RULE_NAME, () => {
                 name: 'Holo',
               }
             `,
-            options: [
-              {
-                type: SortType['line-length'],
-                order: SortOrder.desc,
-              },
-            ],
+            options: [options],
             errors: [
               {
                 messageId: 'unexpectedObjectsOrder',
@@ -1751,12 +1625,7 @@ describe(RULE_NAME, () => {
                 hacker: 'Ed',
               }
             `,
-            options: [
-              {
-                type: SortType['line-length'],
-                order: SortOrder.desc,
-              },
-            ],
+            options: [options],
           },
         ],
         invalid: [
@@ -1777,12 +1646,7 @@ describe(RULE_NAME, () => {
                 hacker: 'Ed',
               }
             `,
-            options: [
-              {
-                type: SortType['line-length'],
-                order: SortOrder.desc,
-              },
-            ],
+            options: [options],
             errors: [
               {
                 messageId: 'unexpectedObjectsOrder',
@@ -1817,12 +1681,7 @@ describe(RULE_NAME, () => {
                 },
               }
             `,
-            options: [
-              {
-                type: SortType['line-length'],
-                order: SortOrder.desc,
-              },
-            ],
+            options: [options],
           },
         ],
         invalid: [
@@ -1859,12 +1718,7 @@ describe(RULE_NAME, () => {
                 },
               }
             `,
-            options: [
-              {
-                type: SortType['line-length'],
-                order: SortOrder.desc,
-              },
-            ],
+            options: [options],
             errors: [
               {
                 messageId: 'unexpectedObjectsOrder',
@@ -1911,12 +1765,7 @@ describe(RULE_NAME, () => {
                 [robots[1]]: 'Rei Ayanami',
               }
             `,
-            options: [
-              {
-                type: SortType['line-length'],
-                order: SortOrder.desc,
-              },
-            ],
+            options: [options],
           },
         ],
         invalid: [
@@ -1935,12 +1784,7 @@ describe(RULE_NAME, () => {
                 [robots[1]]: 'Rei Ayanami',
               }
             `,
-            options: [
-              {
-                type: SortType['line-length'],
-                order: SortOrder.desc,
-              },
-            ],
+            options: [options],
             errors: [
               {
                 messageId: 'unexpectedObjectsOrder',
@@ -1978,10 +1822,9 @@ describe(RULE_NAME, () => {
             `,
             options: [
               {
+                ...options,
                 'custom-groups': { top: ['name', 'id'] },
                 groups: ['top', 'unknown'],
-                type: SortType['line-length'],
-                order: SortOrder.desc,
               },
             ],
           },
@@ -2010,10 +1853,9 @@ describe(RULE_NAME, () => {
             `,
             options: [
               {
+                ...options,
                 'custom-groups': { top: ['name', 'id'] },
                 groups: ['top', 'unknown'],
-                type: SortType['line-length'],
-                order: SortOrder.desc,
               },
             ],
             errors: [
@@ -2050,10 +1892,9 @@ describe(RULE_NAME, () => {
             `,
             options: [
               {
+                ...options,
                 'custom-groups': { top: ['name', 'id'] },
                 groups: ['top', 'unknown'],
-                type: SortType['line-length'],
-                order: SortOrder.desc,
               },
             ],
           },
@@ -2076,10 +1917,9 @@ describe(RULE_NAME, () => {
             `,
             options: [
               {
+                ...options,
                 'custom-groups': { top: ['name', 'id'] },
                 groups: ['top', 'unknown'],
-                type: SortType['line-length'],
-                order: SortOrder.desc,
               },
             ],
             errors: [
@@ -2113,12 +1953,7 @@ describe(RULE_NAME, () => {
                 rei: 'Rei Suwa' // daddy #1
               }
             `,
-            options: [
-              {
-                type: SortType['line-length'],
-                order: SortOrder.desc,
-              },
-            ],
+            options: [options],
             errors: [
               {
                 messageId: 'unexpectedObjectsOrder',
@@ -2156,12 +1991,7 @@ describe(RULE_NAME, () => {
                 // ...
               }
             `,
-            options: [
-              {
-                type: SortType['line-length'],
-                order: SortOrder.desc,
-              },
-            ],
+            options: [options],
             errors: [
               {
                 messageId: 'unexpectedObjectsOrder',
@@ -2201,12 +2031,7 @@ describe(RULE_NAME, () => {
                 // ...
               }
             `,
-            options: [
-              {
-                type: SortType['line-length'],
-                order: SortOrder.desc,
-              },
-            ],
+            options: [options],
             errors: [
               {
                 messageId: 'unexpectedObjectsOrder',
@@ -2246,12 +2071,7 @@ describe(RULE_NAME, () => {
                 // ...
               }
             `,
-            options: [
-              {
-                type: SortType['line-length'],
-                order: SortOrder.desc,
-              },
-            ],
+            options: [options],
             errors: [
               {
                 messageId: 'unexpectedObjectsOrder',
@@ -2312,8 +2132,7 @@ describe(RULE_NAME, () => {
             `,
             options: [
               {
-                type: SortType['line-length'],
-                order: SortOrder.desc,
+                ...options,
                 'partition-by-comment': 'Part**',
               },
             ],
@@ -2345,8 +2164,7 @@ describe(RULE_NAME, () => {
             `,
             options: [
               {
-                type: SortType['line-length'],
-                order: SortOrder.desc,
+                ...options,
                 'partition-by-comment': true,
               },
             ],
@@ -2389,8 +2207,7 @@ describe(RULE_NAME, () => {
             `,
             options: [
               {
-                type: SortType['line-length'],
-                order: SortOrder.desc,
+                ...options,
                 'partition-by-comment': [
                   'Public Safety Bureau',
                   'Crime Coefficient: *',

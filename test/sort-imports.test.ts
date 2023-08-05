@@ -13,6 +13,12 @@ describe(RULE_NAME, () => {
   describe(`${RULE_NAME}: sorting by alphabetical order`, () => {
     let type = 'alphabetical-order'
 
+    let options = {
+      type: SortType.alphabetical,
+      order: SortOrder.asc,
+      'ignore-case': false,
+    }
+
     it(`${RULE_NAME}(${type}): sorts imports`, () => {
       ruleTester.run(RULE_NAME, rule, {
         valid: [
@@ -21,13 +27,7 @@ describe(RULE_NAME, () => {
               import { SpiritedAway, HowlsMovingCastle } from 'hayao-miyazaki'
               import { Suzume } from 'makoto-shinkai'
             `,
-            options: [
-              {
-                type: SortType.alphabetical,
-                order: SortOrder.asc,
-                'ignore-case': true,
-              },
-            ],
+            options: [options],
           },
         ],
         invalid: [
@@ -40,13 +40,7 @@ describe(RULE_NAME, () => {
               import { SpiritedAway, HowlsMovingCastle } from 'hayao-miyazaki'
               import { Suzume } from 'makoto-shinkai'
             `,
-            options: [
-              {
-                type: SortType.alphabetical,
-                order: SortOrder.asc,
-                'ignore-case': true,
-              },
-            ],
+            options: [options],
             errors: [
               {
                 messageId: 'unexpectedImportsOrder',
@@ -93,8 +87,7 @@ describe(RULE_NAME, () => {
             `,
             options: [
               {
-                type: SortType.alphabetical,
-                order: SortOrder.asc,
+                ...options,
                 'newlines-between': NewlinesBetweenValue.always,
                 'internal-pattern': ['~/**'],
                 groups: [
@@ -164,8 +157,7 @@ describe(RULE_NAME, () => {
             `,
             options: [
               {
-                type: SortType.alphabetical,
-                order: SortOrder.asc,
+                ...options,
                 'newlines-between': NewlinesBetweenValue.always,
                 'internal-pattern': ['~/**'],
                 groups: [
@@ -285,8 +277,7 @@ describe(RULE_NAME, () => {
             `,
             options: [
               {
-                type: SortType.alphabetical,
-                order: SortOrder.asc,
+                ...options,
                 'newlines-between': NewlinesBetweenValue.never,
                 'internal-pattern': ['~/**'],
                 groups: [
@@ -325,8 +316,7 @@ describe(RULE_NAME, () => {
             `,
             options: [
               {
-                type: SortType.alphabetical,
-                order: SortOrder.asc,
+                ...options,
                 'newlines-between': NewlinesBetweenValue.never,
                 'internal-pattern': ['~/**'],
                 groups: [
@@ -382,8 +372,7 @@ describe(RULE_NAME, () => {
             `,
             options: [
               {
-                type: SortType.alphabetical,
-                order: SortOrder.asc,
+                ...options,
                 'newlines-between': NewlinesBetweenValue.always,
                 'internal-pattern': ['~/**'],
                 groups: [
@@ -420,8 +409,7 @@ describe(RULE_NAME, () => {
             `,
             options: [
               {
-                type: SortType.alphabetical,
-                order: SortOrder.asc,
+                ...options,
                 'newlines-between': NewlinesBetweenValue.always,
                 'internal-pattern': ['~/**'],
                 groups: [
@@ -473,8 +461,7 @@ describe(RULE_NAME, () => {
             `,
             options: [
               {
-                type: SortType.alphabetical,
-                order: SortOrder.asc,
+                ...options,
                 'newlines-between': NewlinesBetweenValue.always,
                 'internal-pattern': ['~/**'],
                 groups: [
@@ -514,8 +501,7 @@ describe(RULE_NAME, () => {
             `,
             options: [
               {
-                type: SortType.alphabetical,
-                order: SortOrder.asc,
+                ...options,
                 'newlines-between': NewlinesBetweenValue.always,
                 'internal-pattern': ['~/**'],
                 groups: [
@@ -562,8 +548,7 @@ describe(RULE_NAME, () => {
             `,
             options: [
               {
-                type: SortType.alphabetical,
-                order: SortOrder.asc,
+                ...options,
                 'newlines-between': NewlinesBetweenValue.always,
                 'internal-pattern': ['~/**'],
                 groups: [
@@ -592,8 +577,7 @@ describe(RULE_NAME, () => {
             `,
             options: [
               {
-                type: SortType.alphabetical,
-                order: SortOrder.asc,
+                ...options,
                 'newlines-between': NewlinesBetweenValue.always,
                 'internal-pattern': ['~/**'],
                 groups: [
@@ -644,8 +628,7 @@ describe(RULE_NAME, () => {
             `,
             options: [
               {
-                type: SortType.alphabetical,
-                order: SortOrder.asc,
+                ...options,
                 'newlines-between': NewlinesBetweenValue.always,
                 'internal-pattern': ['~/**'],
                 groups: [
@@ -678,8 +661,7 @@ describe(RULE_NAME, () => {
             `,
             options: [
               {
-                type: SortType.alphabetical,
-                order: SortOrder.asc,
+                ...options,
                 'newlines-between': NewlinesBetweenValue.always,
                 'internal-pattern': ['~/**'],
                 groups: [
@@ -713,8 +695,7 @@ describe(RULE_NAME, () => {
             `,
             options: [
               {
-                type: SortType.alphabetical,
-                order: SortOrder.asc,
+                ...options,
                 'newlines-between': NewlinesBetweenValue.always,
                 'internal-pattern': ['~/**'],
                 groups: [
@@ -747,8 +728,7 @@ describe(RULE_NAME, () => {
             `,
             options: [
               {
-                type: SortType.alphabetical,
-                order: SortOrder.asc,
+                ...options,
                 'newlines-between': NewlinesBetweenValue.always,
                 'internal-pattern': ['~/**'],
                 groups: [
@@ -783,8 +763,7 @@ describe(RULE_NAME, () => {
             `,
             options: [
               {
-                type: SortType.alphabetical,
-                order: SortOrder.asc,
+                ...options,
                 'newlines-between': NewlinesBetweenValue.always,
                 'internal-pattern': ['~/**'],
                 groups: [
@@ -817,8 +796,7 @@ describe(RULE_NAME, () => {
             `,
             options: [
               {
-                type: SortType.alphabetical,
-                order: SortOrder.asc,
+                ...options,
                 'newlines-between': NewlinesBetweenValue.always,
                 'internal-pattern': ['~/**'],
                 groups: ['builtin-type', 'type'],
@@ -846,8 +824,7 @@ describe(RULE_NAME, () => {
             `,
             options: [
               {
-                type: SortType.alphabetical,
-                order: SortOrder.asc,
+                ...options,
                 'newlines-between': NewlinesBetweenValue.always,
                 'internal-pattern': ['~/**'],
                 groups: [
@@ -899,9 +876,7 @@ describe(RULE_NAME, () => {
             `,
             options: [
               {
-                type: SortType.alphabetical,
-                order: SortOrder.asc,
-                'ignore-case': true,
+                ...options,
                 groups: [
                   'type',
                   ['builtin', 'external'],
@@ -970,9 +945,7 @@ describe(RULE_NAME, () => {
             `,
             options: [
               {
-                type: SortType.alphabetical,
-                order: SortOrder.asc,
-                'ignore-case': true,
+                ...options,
                 'custom-groups': {
                   type: {
                     titans: ['titans', '@titans/**'],
@@ -1033,9 +1006,7 @@ describe(RULE_NAME, () => {
             `,
             options: [
               {
-                type: SortType.alphabetical,
-                order: SortOrder.asc,
-                'ignore-case': true,
+                ...options,
                 'custom-groups': {
                   value: {
                     giovanni: ['giovannis-island'],
@@ -1062,6 +1033,12 @@ describe(RULE_NAME, () => {
   describe(`${RULE_NAME}: sorting by natural order`, () => {
     let type = 'natural-order'
 
+    let options = {
+      type: SortType.natural,
+      order: SortOrder.asc,
+      'ignore-case': false,
+    }
+
     it(`${RULE_NAME}(${type}): sorts imports`, () => {
       ruleTester.run(RULE_NAME, rule, {
         valid: [
@@ -1070,13 +1047,7 @@ describe(RULE_NAME, () => {
               import { SpiritedAway, HowlsMovingCastle } from 'hayao-miyazaki'
               import { Suzume } from 'makoto-shinkai'
             `,
-            options: [
-              {
-                type: SortType.natural,
-                order: SortOrder.asc,
-                'ignore-case': true,
-              },
-            ],
+            options: [options],
           },
         ],
         invalid: [
@@ -1089,13 +1060,7 @@ describe(RULE_NAME, () => {
               import { SpiritedAway, HowlsMovingCastle } from 'hayao-miyazaki'
               import { Suzume } from 'makoto-shinkai'
             `,
-            options: [
-              {
-                type: SortType.natural,
-                order: SortOrder.asc,
-                'ignore-case': true,
-              },
-            ],
+            options: [options],
             errors: [
               {
                 messageId: 'unexpectedImportsOrder',
@@ -1142,8 +1107,7 @@ describe(RULE_NAME, () => {
             `,
             options: [
               {
-                type: SortType.natural,
-                order: SortOrder.asc,
+                ...options,
                 'newlines-between': NewlinesBetweenValue.always,
                 'internal-pattern': ['~/**'],
                 groups: [
@@ -1213,8 +1177,7 @@ describe(RULE_NAME, () => {
             `,
             options: [
               {
-                type: SortType.natural,
-                order: SortOrder.asc,
+                ...options,
                 'newlines-between': NewlinesBetweenValue.always,
                 'internal-pattern': ['~/**'],
                 groups: [
@@ -1334,8 +1297,7 @@ describe(RULE_NAME, () => {
             `,
             options: [
               {
-                type: SortType.natural,
-                order: SortOrder.asc,
+                ...options,
                 'newlines-between': NewlinesBetweenValue.never,
                 'internal-pattern': ['~/**'],
                 groups: [
@@ -1374,8 +1336,7 @@ describe(RULE_NAME, () => {
             `,
             options: [
               {
-                type: SortType.natural,
-                order: SortOrder.asc,
+                ...options,
                 'newlines-between': NewlinesBetweenValue.never,
                 'internal-pattern': ['~/**'],
                 groups: [
@@ -1431,8 +1392,7 @@ describe(RULE_NAME, () => {
             `,
             options: [
               {
-                type: SortType.natural,
-                order: SortOrder.asc,
+                ...options,
                 'newlines-between': NewlinesBetweenValue.always,
                 'internal-pattern': ['~/**'],
                 groups: [
@@ -1469,8 +1429,7 @@ describe(RULE_NAME, () => {
             `,
             options: [
               {
-                type: SortType.natural,
-                order: SortOrder.asc,
+                ...options,
                 'newlines-between': NewlinesBetweenValue.always,
                 'internal-pattern': ['~/**'],
                 groups: [
@@ -1522,8 +1481,7 @@ describe(RULE_NAME, () => {
             `,
             options: [
               {
-                type: SortType.natural,
-                order: SortOrder.asc,
+                ...options,
                 'newlines-between': NewlinesBetweenValue.always,
                 'internal-pattern': ['~/**'],
                 groups: [
@@ -1563,8 +1521,7 @@ describe(RULE_NAME, () => {
             `,
             options: [
               {
-                type: SortType.natural,
-                order: SortOrder.asc,
+                ...options,
                 'newlines-between': NewlinesBetweenValue.always,
                 'internal-pattern': ['~/**'],
                 groups: [
@@ -1611,8 +1568,7 @@ describe(RULE_NAME, () => {
             `,
             options: [
               {
-                type: SortType.natural,
-                order: SortOrder.asc,
+                ...options,
                 'newlines-between': NewlinesBetweenValue.always,
                 'internal-pattern': ['~/**'],
                 groups: [
@@ -1641,8 +1597,7 @@ describe(RULE_NAME, () => {
             `,
             options: [
               {
-                type: SortType.natural,
-                order: SortOrder.asc,
+                ...options,
                 'newlines-between': NewlinesBetweenValue.always,
                 'internal-pattern': ['~/**'],
                 groups: [
@@ -1693,8 +1648,7 @@ describe(RULE_NAME, () => {
             `,
             options: [
               {
-                type: SortType.natural,
-                order: SortOrder.asc,
+                ...options,
                 'newlines-between': NewlinesBetweenValue.always,
                 'internal-pattern': ['~/**'],
                 groups: [
@@ -1727,8 +1681,7 @@ describe(RULE_NAME, () => {
             `,
             options: [
               {
-                type: SortType.natural,
-                order: SortOrder.asc,
+                ...options,
                 'newlines-between': NewlinesBetweenValue.always,
                 'internal-pattern': ['~/**'],
                 groups: [
@@ -1762,8 +1715,7 @@ describe(RULE_NAME, () => {
             `,
             options: [
               {
-                type: SortType.natural,
-                order: SortOrder.asc,
+                ...options,
                 'newlines-between': NewlinesBetweenValue.always,
                 'internal-pattern': ['~/**'],
                 groups: [
@@ -1796,8 +1748,7 @@ describe(RULE_NAME, () => {
             `,
             options: [
               {
-                type: SortType.natural,
-                order: SortOrder.asc,
+                ...options,
                 'newlines-between': NewlinesBetweenValue.always,
                 'internal-pattern': ['~/**'],
                 groups: [
@@ -1832,8 +1783,7 @@ describe(RULE_NAME, () => {
             `,
             options: [
               {
-                type: SortType.natural,
-                order: SortOrder.asc,
+                ...options,
                 'newlines-between': NewlinesBetweenValue.always,
                 'internal-pattern': ['~/**'],
                 groups: [
@@ -1866,8 +1816,7 @@ describe(RULE_NAME, () => {
             `,
             options: [
               {
-                type: SortType.natural,
-                order: SortOrder.asc,
+                ...options,
                 'newlines-between': NewlinesBetweenValue.always,
                 'internal-pattern': ['~/**'],
                 groups: ['builtin-type', 'type'],
@@ -1895,8 +1844,7 @@ describe(RULE_NAME, () => {
             `,
             options: [
               {
-                type: SortType.natural,
-                order: SortOrder.asc,
+                ...options,
                 'newlines-between': NewlinesBetweenValue.always,
                 'internal-pattern': ['~/**'],
                 groups: [
@@ -1948,9 +1896,7 @@ describe(RULE_NAME, () => {
             `,
             options: [
               {
-                type: SortType.natural,
-                order: SortOrder.asc,
-                'ignore-case': true,
+                ...options,
                 groups: [
                   'type',
                   ['builtin', 'external'],
@@ -2019,9 +1965,7 @@ describe(RULE_NAME, () => {
             `,
             options: [
               {
-                type: SortType.natural,
-                order: SortOrder.asc,
-                'ignore-case': true,
+                ...options,
                 'custom-groups': {
                   type: {
                     titans: ['titans', '@titans/**'],
@@ -2082,9 +2026,7 @@ describe(RULE_NAME, () => {
             `,
             options: [
               {
-                type: SortType.natural,
-                order: SortOrder.asc,
-                'ignore-case': true,
+                ...options,
                 'custom-groups': {
                   value: {
                     giovanni: ['giovannis-island'],
@@ -2111,6 +2053,11 @@ describe(RULE_NAME, () => {
   describe(`${RULE_NAME}: sorting by line length`, () => {
     let type = 'line-length-order'
 
+    let options = {
+      type: SortType['line-length'],
+      order: SortOrder.desc,
+    }
+
     it(`${RULE_NAME}(${type}): sorts imports`, () => {
       ruleTester.run(RULE_NAME, rule, {
         valid: [
@@ -2119,13 +2066,7 @@ describe(RULE_NAME, () => {
               import { SpiritedAway, HowlsMovingCastle } from 'hayao-miyazaki'
               import { Suzume } from 'makoto-shinkai'
             `,
-            options: [
-              {
-                type: SortType['line-length'],
-                order: SortOrder.desc,
-                'ignore-case': true,
-              },
-            ],
+            options: [options],
           },
         ],
         invalid: [
@@ -2138,13 +2079,7 @@ describe(RULE_NAME, () => {
               import { SpiritedAway, HowlsMovingCastle } from 'hayao-miyazaki'
               import { Suzume } from 'makoto-shinkai'
             `,
-            options: [
-              {
-                type: SortType['line-length'],
-                order: SortOrder.desc,
-                'ignore-case': true,
-              },
-            ],
+            options: [options],
             errors: [
               {
                 messageId: 'unexpectedImportsOrder',
@@ -2191,8 +2126,7 @@ describe(RULE_NAME, () => {
             `,
             options: [
               {
-                type: SortType['line-length'],
-                order: SortOrder.desc,
+                ...options,
                 'newlines-between': NewlinesBetweenValue.always,
                 'internal-pattern': ['~/**'],
                 groups: [
@@ -2262,8 +2196,7 @@ describe(RULE_NAME, () => {
             `,
             options: [
               {
-                type: SortType['line-length'],
-                order: SortOrder.desc,
+                ...options,
                 'newlines-between': NewlinesBetweenValue.always,
                 'internal-pattern': ['~/**'],
                 groups: [
@@ -2397,8 +2330,7 @@ describe(RULE_NAME, () => {
             `,
             options: [
               {
-                type: SortType['line-length'],
-                order: SortOrder.desc,
+                ...options,
                 'newlines-between': NewlinesBetweenValue.never,
                 'internal-pattern': ['~/**'],
                 groups: [
@@ -2437,8 +2369,7 @@ describe(RULE_NAME, () => {
             `,
             options: [
               {
-                type: SortType['line-length'],
-                order: SortOrder.desc,
+                ...options,
                 'newlines-between': NewlinesBetweenValue.never,
                 'internal-pattern': ['~/**'],
                 groups: [
@@ -2508,8 +2439,7 @@ describe(RULE_NAME, () => {
             `,
             options: [
               {
-                type: SortType['line-length'],
-                order: SortOrder.desc,
+                ...options,
                 'newlines-between': NewlinesBetweenValue.always,
                 'internal-pattern': ['~/**'],
                 groups: [
@@ -2546,8 +2476,7 @@ describe(RULE_NAME, () => {
             `,
             options: [
               {
-                type: SortType['line-length'],
-                order: SortOrder.desc,
+                ...options,
                 'newlines-between': NewlinesBetweenValue.always,
                 'internal-pattern': ['~/**'],
                 groups: [
@@ -2606,8 +2535,7 @@ describe(RULE_NAME, () => {
             `,
             options: [
               {
-                type: SortType['line-length'],
-                order: SortOrder.desc,
+                ...options,
                 'newlines-between': NewlinesBetweenValue.always,
                 'internal-pattern': ['~/**'],
                 groups: [
@@ -2647,8 +2575,7 @@ describe(RULE_NAME, () => {
             `,
             options: [
               {
-                type: SortType['line-length'],
-                order: SortOrder.desc,
+                ...options,
                 'newlines-between': NewlinesBetweenValue.always,
                 'internal-pattern': ['~/**'],
                 groups: [
@@ -2695,8 +2622,7 @@ describe(RULE_NAME, () => {
             `,
             options: [
               {
-                type: SortType['line-length'],
-                order: SortOrder.desc,
+                ...options,
                 'newlines-between': NewlinesBetweenValue.always,
                 'internal-pattern': ['~/**'],
                 groups: [
@@ -2725,8 +2651,7 @@ describe(RULE_NAME, () => {
             `,
             options: [
               {
-                type: SortType['line-length'],
-                order: SortOrder.desc,
+                ...options,
                 'newlines-between': NewlinesBetweenValue.always,
                 'internal-pattern': ['~/**'],
                 groups: [
@@ -2784,8 +2709,7 @@ describe(RULE_NAME, () => {
             `,
             options: [
               {
-                type: SortType['line-length'],
-                order: SortOrder.desc,
+                ...options,
                 'newlines-between': NewlinesBetweenValue.always,
                 'internal-pattern': ['~/**'],
                 groups: [
@@ -2818,8 +2742,7 @@ describe(RULE_NAME, () => {
             `,
             options: [
               {
-                type: SortType['line-length'],
-                order: SortOrder.desc,
+                ...options,
                 'newlines-between': NewlinesBetweenValue.always,
                 'internal-pattern': ['~/**'],
                 groups: [
@@ -2853,8 +2776,7 @@ describe(RULE_NAME, () => {
             `,
             options: [
               {
-                type: SortType['line-length'],
-                order: SortOrder.desc,
+                ...options,
                 'newlines-between': NewlinesBetweenValue.always,
                 'internal-pattern': ['~/**'],
                 groups: [
@@ -2887,8 +2809,7 @@ describe(RULE_NAME, () => {
             `,
             options: [
               {
-                type: SortType['line-length'],
-                order: SortOrder.desc,
+                ...options,
                 'newlines-between': NewlinesBetweenValue.always,
                 'internal-pattern': ['~/**'],
                 groups: [
@@ -2923,8 +2844,7 @@ describe(RULE_NAME, () => {
             `,
             options: [
               {
-                type: SortType['line-length'],
-                order: SortOrder.desc,
+                ...options,
                 'newlines-between': NewlinesBetweenValue.always,
                 'internal-pattern': ['~/**'],
                 groups: [
@@ -2957,8 +2877,7 @@ describe(RULE_NAME, () => {
             `,
             options: [
               {
-                type: SortType['line-length'],
-                order: SortOrder.desc,
+                ...options,
                 'newlines-between': NewlinesBetweenValue.always,
                 'internal-pattern': ['~/**'],
                 groups: ['builtin-type', 'type'],
@@ -2986,8 +2905,7 @@ describe(RULE_NAME, () => {
             `,
             options: [
               {
-                type: SortType['line-length'],
-                order: SortOrder.desc,
+                ...options,
                 'newlines-between': NewlinesBetweenValue.always,
                 'internal-pattern': ['~/**'],
                 groups: [
@@ -3039,9 +2957,7 @@ describe(RULE_NAME, () => {
             `,
             options: [
               {
-                type: SortType['line-length'],
-                order: SortOrder.desc,
-                'ignore-case': true,
+                ...options,
                 groups: [
                   'type',
                   ['builtin', 'external'],
@@ -3110,9 +3026,7 @@ describe(RULE_NAME, () => {
             `,
             options: [
               {
-                type: SortType['line-length'],
-                order: SortOrder.desc,
-                'ignore-case': true,
+                ...options,
                 'custom-groups': {
                   type: {
                     titans: ['titans', '@titans/**'],
@@ -3180,9 +3094,7 @@ describe(RULE_NAME, () => {
             `,
             options: [
               {
-                type: SortType['line-length'],
-                order: SortOrder.desc,
-                'ignore-case': true,
+                ...options,
                 'custom-groups': {
                   value: {
                     giovanni: ['giovannis-island'],

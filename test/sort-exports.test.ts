@@ -13,6 +13,12 @@ describe(RULE_NAME, () => {
   describe(`${RULE_NAME}: sorting by alphabetical order`, () => {
     let type = 'alphabetical-order'
 
+    let options = {
+      type: SortType.alphabetical,
+      order: SortOrder.asc,
+      'ignore-case': false,
+    }
+
     it(`${RULE_NAME}(${type}): sorts exports`, () => {
       ruleTester.run(RULE_NAME, rule, {
         valid: [
@@ -23,12 +29,7 @@ describe(RULE_NAME, () => {
               export { Daimon1, Daimon2 } from 'police'
               export { Shibagaki, Baba } from 'radio'
             `,
-            options: [
-              {
-                type: SortType.alphabetical,
-                order: SortOrder.asc,
-              },
-            ],
+            options: [options],
           },
         ],
         invalid: [
@@ -45,12 +46,7 @@ describe(RULE_NAME, () => {
               export { Daimon1, Daimon2 } from 'police'
               export { Shibagaki, Baba } from 'radio'
             `,
-            options: [
-              {
-                type: SortType.alphabetical,
-                order: SortOrder.asc,
-              },
-            ],
+            options: [options],
             errors: [
               {
                 messageId: 'unexpectedExportsOrder',
@@ -83,12 +79,7 @@ describe(RULE_NAME, () => {
               export * from 'hiroshima'
               export { Shuusaku } from './shuusaku'
             `,
-            options: [
-              {
-                type: SortType.alphabetical,
-                order: SortOrder.asc,
-              },
-            ],
+            options: [options],
           },
         ],
         invalid: [
@@ -107,12 +98,7 @@ describe(RULE_NAME, () => {
               export * from 'hiroshima'
               export { Shuusaku } from './shuusaku'
             `,
-            options: [
-              {
-                type: SortType.alphabetical,
-                order: SortOrder.asc,
-              },
-            ],
+            options: [options],
             errors: [
               {
                 messageId: 'unexpectedExportsOrder',
@@ -136,12 +122,7 @@ describe(RULE_NAME, () => {
               export { default as Gojira } from './monsters/gojira'
               export { Yun, Haberu } from './otaki-factory'
             `,
-            options: [
-              {
-                type: SortType.alphabetical,
-                order: SortOrder.asc,
-              },
-            ],
+            options: [options],
           },
         ],
         invalid: [
@@ -156,12 +137,7 @@ describe(RULE_NAME, () => {
               export { default as Gojira } from './monsters/gojira'
               export { Yun, Haberu } from './otaki-factory'
             `,
-            options: [
-              {
-                type: SortType.alphabetical,
-                order: SortOrder.asc,
-              },
-            ],
+            options: [options],
             errors: [
               {
                 messageId: 'unexpectedExportsOrder',
@@ -180,6 +156,12 @@ describe(RULE_NAME, () => {
   describe(`${RULE_NAME}: sorting by natural order`, () => {
     let type = 'natural-order'
 
+    let options = {
+      type: SortType.natural,
+      order: SortOrder.asc,
+      'ignore-case': false,
+    }
+
     it(`${RULE_NAME}(${type}): sorts exports`, () => {
       ruleTester.run(RULE_NAME, rule, {
         valid: [
@@ -190,12 +172,7 @@ describe(RULE_NAME, () => {
               export { Daimon1, Daimon2 } from 'police'
               export { Shibagaki, Baba } from 'radio'
             `,
-            options: [
-              {
-                type: SortType.natural,
-                order: SortOrder.asc,
-              },
-            ],
+            options: [options],
           },
         ],
         invalid: [
@@ -212,12 +189,7 @@ describe(RULE_NAME, () => {
               export { Daimon1, Daimon2 } from 'police'
               export { Shibagaki, Baba } from 'radio'
             `,
-            options: [
-              {
-                type: SortType.natural,
-                order: SortOrder.asc,
-              },
-            ],
+            options: [options],
             errors: [
               {
                 messageId: 'unexpectedExportsOrder',
@@ -250,12 +222,7 @@ describe(RULE_NAME, () => {
               export * from 'hiroshima'
               export { Shuusaku } from './shuusaku'
             `,
-            options: [
-              {
-                type: SortType.natural,
-                order: SortOrder.asc,
-              },
-            ],
+            options: [options],
           },
         ],
         invalid: [
@@ -274,12 +241,7 @@ describe(RULE_NAME, () => {
               export * from 'hiroshima'
               export { Shuusaku } from './shuusaku'
             `,
-            options: [
-              {
-                type: SortType.natural,
-                order: SortOrder.asc,
-              },
-            ],
+            options: [options],
             errors: [
               {
                 messageId: 'unexpectedExportsOrder',
@@ -303,12 +265,7 @@ describe(RULE_NAME, () => {
               export { default as Gojira } from './monsters/gojira'
               export { Yun, Haberu } from './otaki-factory'
             `,
-            options: [
-              {
-                type: SortType.natural,
-                order: SortOrder.asc,
-              },
-            ],
+            options: [options],
           },
         ],
         invalid: [
@@ -323,12 +280,7 @@ describe(RULE_NAME, () => {
               export { default as Gojira } from './monsters/gojira'
               export { Yun, Haberu } from './otaki-factory'
             `,
-            options: [
-              {
-                type: SortType.natural,
-                order: SortOrder.asc,
-              },
-            ],
+            options: [options],
             errors: [
               {
                 messageId: 'unexpectedExportsOrder',
@@ -347,6 +299,11 @@ describe(RULE_NAME, () => {
   describe(`${RULE_NAME}: sorting by line length`, () => {
     let type = 'line-length-order'
 
+    let options = {
+      type: SortType['line-length'],
+      order: SortOrder.desc,
+    }
+
     it(`${RULE_NAME}(${type}): sorts exports`, () => {
       ruleTester.run(RULE_NAME, rule, {
         valid: [
@@ -357,12 +314,7 @@ describe(RULE_NAME, () => {
               export { Shibagaki, Baba } from 'radio'
               export { Gouriki } from 'hospital'
             `,
-            options: [
-              {
-                type: SortType['line-length'],
-                order: SortOrder.desc,
-              },
-            ],
+            options: [options],
           },
         ],
         invalid: [
@@ -379,12 +331,7 @@ describe(RULE_NAME, () => {
               export { Shibagaki, Baba } from 'radio'
               export { Gouriki } from 'hospital'
             `,
-            options: [
-              {
-                type: SortType['line-length'],
-                order: SortOrder.desc,
-              },
-            ],
+            options: [options],
             errors: [
               {
                 messageId: 'unexpectedExportsOrder',
@@ -417,12 +364,7 @@ describe(RULE_NAME, () => {
               export * from 'hiroshima'
               export { Shuusaku } from './shuusaku'
             `,
-            options: [
-              {
-                type: SortType['line-length'],
-                order: SortOrder.desc,
-              },
-            ],
+            options: [options],
           },
         ],
         invalid: [
@@ -441,12 +383,7 @@ describe(RULE_NAME, () => {
               export * from 'hiroshima'
               export { Shuusaku } from './shuusaku'
             `,
-            options: [
-              {
-                type: SortType['line-length'],
-                order: SortOrder.desc,
-              },
-            ],
+            options: [options],
             errors: [
               {
                 messageId: 'unexpectedExportsOrder',
@@ -470,12 +407,7 @@ describe(RULE_NAME, () => {
               export { student as MeiKamino } from './laboratory'
               export { Yun, Haberu } from './otaki-factory'
             `,
-            options: [
-              {
-                type: SortType['line-length'],
-                order: SortOrder.desc,
-              },
-            ],
+            options: [options],
           },
         ],
         invalid: [
@@ -490,12 +422,7 @@ describe(RULE_NAME, () => {
               export { student as MeiKamino } from './laboratory'
               export { Yun, Haberu } from './otaki-factory'
             `,
-            options: [
-              {
-                type: SortType['line-length'],
-                order: SortOrder.desc,
-              },
-            ],
+            options: [options],
             errors: [
               {
                 messageId: 'unexpectedExportsOrder',

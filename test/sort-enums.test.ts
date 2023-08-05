@@ -13,6 +13,12 @@ describe(RULE_NAME, () => {
   describe(`${RULE_NAME}: sorting by alphabetical order`, () => {
     let type = 'alphabetical-order'
 
+    let options = {
+      type: SortType.alphabetical,
+      order: SortOrder.asc,
+      'ignore-case': false,
+    }
+
     it(`${RULE_NAME}(${type}): sorts enum members`, () => {
       ruleTester.run(RULE_NAME, rule, {
         valid: [
@@ -25,12 +31,7 @@ describe(RULE_NAME, () => {
                 'Sonozaki Shion' = 'Sonozaki Shion',
               }
             `,
-            options: [
-              {
-                type: SortType.alphabetical,
-                order: SortOrder.asc,
-              },
-            ],
+            options: [options],
           },
         ],
         invalid: [
@@ -51,12 +52,7 @@ describe(RULE_NAME, () => {
                 'Sonozaki Shion' = 'Sonozaki Shion',
               }
             `,
-            options: [
-              {
-                type: SortType.alphabetical,
-                order: SortOrder.asc,
-              },
-            ],
+            options: [options],
             errors: [
               {
                 messageId: 'unexpectedEnumsOrder',
@@ -83,12 +79,7 @@ describe(RULE_NAME, () => {
                 8 = 'Daiki Aomine',
               }
             `,
-            options: [
-              {
-                type: SortType.alphabetical,
-                order: SortOrder.asc,
-              },
-            ],
+            options: [options],
           },
         ],
         invalid: [
@@ -109,12 +100,7 @@ describe(RULE_NAME, () => {
                 8 = 'Daiki Aomine',
               }
             `,
-            options: [
-              {
-                type: SortType.alphabetical,
-                order: SortOrder.asc,
-              },
-            ],
+            options: [options],
             errors: [
               {
                 messageId: 'unexpectedEnumsOrder',
@@ -140,12 +126,7 @@ describe(RULE_NAME, () => {
                 Miyuki,
               }
             `,
-            options: [
-              {
-                type: SortType.alphabetical,
-                order: SortOrder.asc,
-              },
-            ],
+            options: [options],
           },
         ],
         invalid: [],
@@ -162,12 +143,7 @@ describe(RULE_NAME, () => {
                 true = 'Denji',
               }
             `,
-            options: [
-              {
-                type: SortType.alphabetical,
-                order: SortOrder.asc,
-              },
-            ],
+            options: [options],
           },
         ],
         invalid: [
@@ -184,12 +160,7 @@ describe(RULE_NAME, () => {
                 true = 'Denji',
               }
             `,
-            options: [
-              {
-                type: SortType.alphabetical,
-                order: SortOrder.asc,
-              },
-            ],
+            options: [options],
             errors: [
               {
                 messageId: 'unexpectedEnumsOrder',
@@ -233,12 +204,7 @@ describe(RULE_NAME, () => {
                 Yuu = 'Yuuri',
               }
             `,
-            options: [
-              {
-                type: SortType.alphabetical,
-                order: SortOrder.asc,
-              },
-            ],
+            options: [options],
             errors: [
               {
                 messageId: 'unexpectedEnumsOrder',
@@ -265,12 +231,7 @@ describe(RULE_NAME, () => {
                 IkuyoKita, // implicit value: 3
               }
             `,
-            options: [
-              {
-                type: SortType.alphabetical,
-                order: SortOrder.asc,
-              },
-            ],
+            options: [options],
           },
         ],
         invalid: [],
@@ -280,6 +241,12 @@ describe(RULE_NAME, () => {
 
   describe(`${RULE_NAME}: sorting by natural order`, () => {
     let type = 'natural-order'
+
+    let options = {
+      type: SortType.natural,
+      order: SortOrder.asc,
+      'ignore-case': false,
+    }
 
     it(`${RULE_NAME}(${type}): sorts enum members`, () => {
       ruleTester.run(RULE_NAME, rule, {
@@ -293,12 +260,7 @@ describe(RULE_NAME, () => {
                 'Sonozaki Shion' = 'Sonozaki Shion',
               }
             `,
-            options: [
-              {
-                type: SortType.natural,
-                order: SortOrder.asc,
-              },
-            ],
+            options: [options],
           },
         ],
         invalid: [
@@ -319,12 +281,7 @@ describe(RULE_NAME, () => {
                 'Sonozaki Shion' = 'Sonozaki Shion',
               }
             `,
-            options: [
-              {
-                type: SortType.natural,
-                order: SortOrder.asc,
-              },
-            ],
+            options: [options],
             errors: [
               {
                 messageId: 'unexpectedEnumsOrder',
@@ -351,12 +308,7 @@ describe(RULE_NAME, () => {
                 12 = 'Tetsuya Kuroko',
               }
             `,
-            options: [
-              {
-                type: SortType.natural,
-                order: SortOrder.asc,
-              },
-            ],
+            options: [options],
           },
         ],
         invalid: [
@@ -377,12 +329,7 @@ describe(RULE_NAME, () => {
                 12 = 'Tetsuya Kuroko',
               }
             `,
-            options: [
-              {
-                type: SortType.natural,
-                order: SortOrder.asc,
-              },
-            ],
+            options: [options],
             errors: [
               {
                 messageId: 'unexpectedEnumsOrder',
@@ -408,12 +355,7 @@ describe(RULE_NAME, () => {
                 Miyuki,
               }
             `,
-            options: [
-              {
-                type: SortType.natural,
-                order: SortOrder.asc,
-              },
-            ],
+            options: [options],
           },
         ],
         invalid: [],
@@ -430,12 +372,7 @@ describe(RULE_NAME, () => {
                 true = 'Denji',
               }
             `,
-            options: [
-              {
-                type: SortType.natural,
-                order: SortOrder.asc,
-              },
-            ],
+            options: [options],
           },
         ],
         invalid: [
@@ -452,12 +389,7 @@ describe(RULE_NAME, () => {
                 true = 'Denji',
               }
             `,
-            options: [
-              {
-                type: SortType.natural,
-                order: SortOrder.asc,
-              },
-            ],
+            options: [options],
             errors: [
               {
                 messageId: 'unexpectedEnumsOrder',
@@ -501,12 +433,7 @@ describe(RULE_NAME, () => {
                 Yuu = 'Yuuri',
               }
             `,
-            options: [
-              {
-                type: SortType.natural,
-                order: SortOrder.asc,
-              },
-            ],
+            options: [options],
             errors: [
               {
                 messageId: 'unexpectedEnumsOrder',
@@ -533,12 +460,7 @@ describe(RULE_NAME, () => {
                 IkuyoKita, // implicit value: 3
               }
             `,
-            options: [
-              {
-                type: SortType.natural,
-                order: SortOrder.asc,
-              },
-            ],
+            options: [options],
           },
         ],
         invalid: [],
@@ -548,6 +470,11 @@ describe(RULE_NAME, () => {
 
   describe(`${RULE_NAME}: sorting by line length`, () => {
     let type = 'line-length-order'
+
+    let options = {
+      type: SortType['line-length'],
+      order: SortOrder.desc,
+    }
 
     it(`${RULE_NAME}(${type}): sorts enum members`, () => {
       ruleTester.run(RULE_NAME, rule, {
@@ -561,12 +488,7 @@ describe(RULE_NAME, () => {
                 'Ryūgū Rena' = 'Ryūgū Rena',
               }
             `,
-            options: [
-              {
-                type: SortType['line-length'],
-                order: SortOrder.desc,
-              },
-            ],
+            options: [options],
           },
         ],
         invalid: [
@@ -587,12 +509,7 @@ describe(RULE_NAME, () => {
                 'Ryūgū Rena' = 'Ryūgū Rena',
               }
             `,
-            options: [
-              {
-                type: SortType['line-length'],
-                order: SortOrder.desc,
-              },
-            ],
+            options: [options],
             errors: [
               {
                 messageId: 'unexpectedEnumsOrder',
@@ -626,12 +543,7 @@ describe(RULE_NAME, () => {
                 1 = 'Riko Aida',
               }
             `,
-            options: [
-              {
-                type: SortType['line-length'],
-                order: SortOrder.desc,
-              },
-            ],
+            options: [options],
           },
         ],
         invalid: [
@@ -652,12 +564,7 @@ describe(RULE_NAME, () => {
                 1 = 'Riko Aida',
               }
             `,
-            options: [
-              {
-                type: SortType['line-length'],
-                order: SortOrder.desc,
-              },
-            ],
+            options: [options],
             errors: [
               {
                 messageId: 'unexpectedEnumsOrder',
@@ -683,12 +590,7 @@ describe(RULE_NAME, () => {
                 Gin,
               }
             `,
-            options: [
-              {
-                type: SortType['line-length'],
-                order: SortOrder.desc,
-              },
-            ],
+            options: [options],
           },
         ],
         invalid: [],
@@ -705,12 +607,7 @@ describe(RULE_NAME, () => {
                 true = 'Denji',
               }
             `,
-            options: [
-              {
-                type: SortType['line-length'],
-                order: SortOrder.desc,
-              },
-            ],
+            options: [options],
           },
         ],
         invalid: [
@@ -727,12 +624,7 @@ describe(RULE_NAME, () => {
                 true = 'Denji',
               }
             `,
-            options: [
-              {
-                type: SortType['line-length'],
-                order: SortOrder.desc,
-              },
-            ],
+            options: [options],
             errors: [
               {
                 messageId: 'unexpectedEnumsOrder',
@@ -776,12 +668,7 @@ describe(RULE_NAME, () => {
                 Yuu = 'Yuuri',
               }
             `,
-            options: [
-              {
-                type: SortType['line-length'],
-                order: SortOrder.desc,
-              },
-            ],
+            options: [options],
             errors: [
               {
                 messageId: 'unexpectedEnumsOrder',
@@ -808,12 +695,7 @@ describe(RULE_NAME, () => {
                 IkuyoKita, // implicit value: 3
               }
             `,
-            options: [
-              {
-                type: SortType['line-length'],
-                order: SortOrder.desc,
-              },
-            ],
+            options: [options],
           },
         ],
         invalid: [],

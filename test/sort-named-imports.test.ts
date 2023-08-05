@@ -13,6 +13,12 @@ describe(RULE_NAME, () => {
   describe(`${RULE_NAME}: sorting by alphabetical order`, () => {
     let type = 'alphabetical-order'
 
+    let options = {
+      type: SortType.alphabetical,
+      order: SortOrder.asc,
+      'ignore-case': false,
+    }
+
     it(`${RULE_NAME}(${type}): sorts named imports`, () => {
       ruleTester.run(RULE_NAME, rule, {
         valid: [
@@ -20,12 +26,7 @@ describe(RULE_NAME, () => {
             code: dedent`
               import { Kana, Kuu, Rakka, Reki } from 'haibane-renmei'
             `,
-            options: [
-              {
-                type: SortType.alphabetical,
-                order: SortOrder.asc,
-              },
-            ],
+            options: [options],
           },
         ],
         invalid: [
@@ -36,12 +37,7 @@ describe(RULE_NAME, () => {
             output: dedent`
               import { Kana, Kuu, Rakka, Reki } from 'haibane-renmei'
             `,
-            options: [
-              {
-                type: SortType.alphabetical,
-                order: SortOrder.asc,
-              },
-            ],
+            options: [options],
             errors: [
               {
                 messageId: 'unexpectedNamedImportsOrder',
@@ -77,12 +73,7 @@ describe(RULE_NAME, () => {
                 ReinerBraun,
               } from 'marleyan-military'
             `,
-            options: [
-              {
-                type: SortType.alphabetical,
-                order: SortOrder.asc,
-              },
-            ],
+            options: [options],
           },
         ],
         invalid: [
@@ -107,12 +98,7 @@ describe(RULE_NAME, () => {
                 ReinerBraun,
               } from 'marleyan-military'
             `,
-            options: [
-              {
-                type: SortType.alphabetical,
-                order: SortOrder.asc,
-              },
-            ],
+            options: [options],
             errors: [
               {
                 messageId: 'unexpectedNamedImportsOrder',
@@ -152,12 +138,7 @@ describe(RULE_NAME, () => {
                 GendouIkari
               } from 'nerv'
             `,
-            options: [
-              {
-                type: SortType.alphabetical,
-                order: SortOrder.asc,
-              },
-            ],
+            options: [options],
           },
         ],
         invalid: [
@@ -176,12 +157,7 @@ describe(RULE_NAME, () => {
                 GendouIkari
               } from 'nerv'
             `,
-            options: [
-              {
-                type: SortType.alphabetical,
-                order: SortOrder.asc,
-              },
-            ],
+            options: [options],
             errors: [
               {
                 messageId: 'unexpectedNamedImportsOrder',
@@ -203,12 +179,7 @@ describe(RULE_NAME, () => {
             code: dedent`
               import spiritedAway, { protagonist as chihiro } from 'spirited-away'
             `,
-            options: [
-              {
-                type: SortType.alphabetical,
-                order: SortOrder.asc,
-              },
-            ],
+            options: [options],
           },
         ],
         invalid: [],
@@ -228,12 +199,7 @@ describe(RULE_NAME, () => {
                 beastTitan as zekeYeager,
               } from '~/titans'
             `,
-            options: [
-              {
-                type: SortType.alphabetical,
-                order: SortOrder.asc,
-              },
-            ],
+            options: [options],
           },
         ],
         invalid: [
@@ -246,7 +212,7 @@ describe(RULE_NAME, () => {
                 attackTitan as erenYeager,
                 femaleTitan as annieLeonhart,
               } from '~/titans'
-          `,
+            `,
             output: dedent`
               import titan, {
                 femaleTitan as annieLeonhart,
@@ -255,13 +221,8 @@ describe(RULE_NAME, () => {
                 armoredTitan as reinerBraun,
                 beastTitan as zekeYeager,
               } from '~/titans'
-          `,
-            options: [
-              {
-                type: SortType.alphabetical,
-                order: SortOrder.asc,
-              },
-            ],
+            `,
+            options: [options],
             errors: [
               {
                 messageId: 'unexpectedNamedImportsOrder',
@@ -294,6 +255,12 @@ describe(RULE_NAME, () => {
   describe(`${RULE_NAME}: sorting by natural order`, () => {
     let type = 'natural-order'
 
+    let options = {
+      type: SortType.natural,
+      order: SortOrder.asc,
+      'ignore-case': false,
+    }
+
     it(`${RULE_NAME}(${type}): sorts named imports`, () => {
       ruleTester.run(RULE_NAME, rule, {
         valid: [
@@ -301,12 +268,7 @@ describe(RULE_NAME, () => {
             code: dedent`
               import { Kana, Kuu, Rakka, Reki } from 'haibane-renmei'
             `,
-            options: [
-              {
-                type: SortType.natural,
-                order: SortOrder.asc,
-              },
-            ],
+            options: [options],
           },
         ],
         invalid: [
@@ -317,12 +279,7 @@ describe(RULE_NAME, () => {
             output: dedent`
               import { Kana, Kuu, Rakka, Reki } from 'haibane-renmei'
             `,
-            options: [
-              {
-                type: SortType.natural,
-                order: SortOrder.asc,
-              },
-            ],
+            options: [options],
             errors: [
               {
                 messageId: 'unexpectedNamedImportsOrder',
@@ -358,12 +315,7 @@ describe(RULE_NAME, () => {
                 ReinerBraun,
               } from 'marleyan-military'
             `,
-            options: [
-              {
-                type: SortType.natural,
-                order: SortOrder.asc,
-              },
-            ],
+            options: [options],
           },
         ],
         invalid: [
@@ -388,12 +340,7 @@ describe(RULE_NAME, () => {
                 ReinerBraun,
               } from 'marleyan-military'
             `,
-            options: [
-              {
-                type: SortType.natural,
-                order: SortOrder.asc,
-              },
-            ],
+            options: [options],
             errors: [
               {
                 messageId: 'unexpectedNamedImportsOrder',
@@ -433,12 +380,7 @@ describe(RULE_NAME, () => {
                 GendouIkari
               } from 'nerv'
             `,
-            options: [
-              {
-                type: SortType.natural,
-                order: SortOrder.asc,
-              },
-            ],
+            options: [options],
           },
         ],
         invalid: [
@@ -457,12 +399,7 @@ describe(RULE_NAME, () => {
                 GendouIkari
               } from 'nerv'
             `,
-            options: [
-              {
-                type: SortType.natural,
-                order: SortOrder.asc,
-              },
-            ],
+            options: [options],
             errors: [
               {
                 messageId: 'unexpectedNamedImportsOrder',
@@ -484,12 +421,7 @@ describe(RULE_NAME, () => {
             code: dedent`
               import spiritedAway, { protagonist as chihiro } from 'spirited-away'
             `,
-            options: [
-              {
-                type: SortType['line-length'],
-                order: SortOrder.asc,
-              },
-            ],
+            options: [options],
           },
         ],
         invalid: [],
@@ -509,12 +441,7 @@ describe(RULE_NAME, () => {
                 beastTitan as zekeYeager,
               } from '~/titans'
             `,
-            options: [
-              {
-                type: SortType.natural,
-                order: SortOrder.asc,
-              },
-            ],
+            options: [options],
           },
         ],
         invalid: [
@@ -527,7 +454,7 @@ describe(RULE_NAME, () => {
                 attackTitan as erenYeager,
                 femaleTitan as annieLeonhart,
               } from '~/titans'
-          `,
+            `,
             output: dedent`
               import titan, {
                 femaleTitan as annieLeonhart,
@@ -536,13 +463,8 @@ describe(RULE_NAME, () => {
                 armoredTitan as reinerBraun,
                 beastTitan as zekeYeager,
               } from '~/titans'
-          `,
-            options: [
-              {
-                type: SortType.natural,
-                order: SortOrder.asc,
-              },
-            ],
+            `,
+            options: [options],
             errors: [
               {
                 messageId: 'unexpectedNamedImportsOrder',
@@ -575,6 +497,11 @@ describe(RULE_NAME, () => {
   describe(`${RULE_NAME}: sorting by line length`, () => {
     let type = 'line-length-order'
 
+    let options = {
+      type: SortType['line-length'],
+      order: SortOrder.desc,
+    }
+
     it(`${RULE_NAME}(${type}): sorts named imports`, () => {
       ruleTester.run(RULE_NAME, rule, {
         valid: [
@@ -582,12 +509,7 @@ describe(RULE_NAME, () => {
             code: dedent`
               import { Rakka, Reki, Kana, Kuu } from 'haibane-renmei'
             `,
-            options: [
-              {
-                type: SortType['line-length'],
-                order: SortOrder.desc,
-              },
-            ],
+            options: [options],
           },
         ],
         invalid: [
@@ -598,12 +520,7 @@ describe(RULE_NAME, () => {
             output: dedent`
               import { Rakka, Reki, Kana, Kuu } from 'haibane-renmei'
             `,
-            options: [
-              {
-                type: SortType['line-length'],
-                order: SortOrder.desc,
-              },
-            ],
+            options: [options],
             errors: [
               {
                 messageId: 'unexpectedNamedImportsOrder',
@@ -632,12 +549,7 @@ describe(RULE_NAME, () => {
                 Gross,
               } from 'marleyan-military'
             `,
-            options: [
-              {
-                type: SortType['line-length'],
-                order: SortOrder.desc,
-              },
-            ],
+            options: [options],
           },
         ],
         invalid: [
@@ -662,12 +574,7 @@ describe(RULE_NAME, () => {
                 Gross,
               } from 'marleyan-military'
             `,
-            options: [
-              {
-                type: SortType['line-length'],
-                order: SortOrder.desc,
-              },
-            ],
+            options: [options],
             errors: [
               {
                 messageId: 'unexpectedNamedImportsOrder',
@@ -700,12 +607,7 @@ describe(RULE_NAME, () => {
                 GendouIkari
               } from 'nerv'
             `,
-            options: [
-              {
-                type: SortType['line-length'],
-                order: SortOrder.desc,
-              },
-            ],
+            options: [options],
           },
         ],
         invalid: [
@@ -724,12 +626,7 @@ describe(RULE_NAME, () => {
                 GendouIkari
               } from 'nerv'
             `,
-            options: [
-              {
-                type: SortType['line-length'],
-                order: SortOrder.desc,
-              },
-            ],
+            options: [options],
             errors: [
               {
                 messageId: 'unexpectedNamedImportsOrder',
@@ -758,12 +655,7 @@ describe(RULE_NAME, () => {
             code: dedent`
               import spiritedAway, { protagonist as chihiro } from 'spirited-away'
             `,
-            options: [
-              {
-                type: SortType['line-length'],
-                order: SortOrder.desc,
-              },
-            ],
+            options: [options],
           },
         ],
         invalid: [],
@@ -783,12 +675,7 @@ describe(RULE_NAME, () => {
                 colossusTitan,
               } from '~/titans'
             `,
-            options: [
-              {
-                type: SortType['line-length'],
-                order: SortOrder.desc,
-              },
-            ],
+            options: [options],
           },
         ],
         invalid: [
@@ -801,7 +688,7 @@ describe(RULE_NAME, () => {
                 attackTitan as erenYeager,
                 femaleTitan as annieLeonhart,
               } from '~/titans'
-          `,
+            `,
             output: dedent`
               import titan, {
                 femaleTitan as annieLeonhart,
@@ -810,13 +697,8 @@ describe(RULE_NAME, () => {
                 beastTitan as zekeYeager,
                 colossusTitan,
               } from '~/titans'
-          `,
-            options: [
-              {
-                type: SortType['line-length'],
-                order: SortOrder.desc,
-              },
-            ],
+            `,
+            options: [options],
             errors: [
               {
                 messageId: 'unexpectedNamedImportsOrder',

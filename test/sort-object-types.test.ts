@@ -13,6 +13,12 @@ describe(RULE_NAME, () => {
   describe(`${RULE_NAME}: sorting by alphabetical order`, () => {
     let type = 'alphabetical-order'
 
+    let options = {
+      type: SortType.alphabetical,
+      order: SortOrder.asc,
+      'ignore-case': false,
+    }
+
     it(`${RULE_NAME}(${type}): sorts type members`, () => {
       ruleTester.run(RULE_NAME, rule, {
         valid: [
@@ -24,12 +30,7 @@ describe(RULE_NAME, () => {
                 status: 'wanderer'
               }
             `,
-            options: [
-              {
-                type: SortType.alphabetical,
-                order: SortOrder.asc,
-              },
-            ],
+            options: [options],
           },
         ],
         invalid: [
@@ -48,12 +49,7 @@ describe(RULE_NAME, () => {
                 status: 'wanderer'
               }
             `,
-            options: [
-              {
-                type: SortType.alphabetical,
-                order: SortOrder.asc,
-              },
-            ],
+            options: [options],
             errors: [
               {
                 messageId: 'unexpectedObjectTypesOrder',
@@ -81,12 +77,7 @@ describe(RULE_NAME, () => {
                 // ...
               }
             `,
-            options: [
-              {
-                type: SortType.alphabetical,
-                order: SortOrder.asc,
-              },
-            ],
+            options: [options],
           },
         ],
         invalid: [
@@ -109,12 +100,7 @@ describe(RULE_NAME, () => {
                 // ...
               }
             `,
-            options: [
-              {
-                type: SortType.alphabetical,
-                order: SortOrder.asc,
-              },
-            ],
+            options: [options],
             errors: [
               {
                 messageId: 'unexpectedObjectTypesOrder',
@@ -143,12 +129,7 @@ describe(RULE_NAME, () => {
                 [residence]: 'Wall Rose'
               }
             `,
-            options: [
-              {
-                type: SortType.alphabetical,
-                order: SortOrder.asc,
-              },
-            ],
+            options: [options],
           },
         ],
         invalid: [
@@ -173,12 +154,7 @@ describe(RULE_NAME, () => {
                 [residence]: 'Wall Rose'
               }
             `,
-            options: [
-              {
-                type: SortType.alphabetical,
-                order: SortOrder.asc,
-              },
-            ],
+            options: [options],
             errors: [
               {
                 messageId: 'unexpectedObjectTypesOrder',
@@ -221,12 +197,7 @@ describe(RULE_NAME, () => {
                 hide?: () => void
               }
             `,
-            options: [
-              {
-                type: SortType.alphabetical,
-                order: SortOrder.asc,
-              },
-            ],
+            options: [options],
           },
         ],
         invalid: [
@@ -249,12 +220,7 @@ describe(RULE_NAME, () => {
                 hide?: () => void
               }
             `,
-            options: [
-              {
-                type: SortType.alphabetical,
-                order: SortOrder.asc,
-              },
-            ],
+            options: [options],
             errors: [
               {
                 messageId: 'unexpectedObjectTypesOrder',
@@ -276,12 +242,7 @@ describe(RULE_NAME, () => {
             code: dedent`
               addToDeathNote<{ name: string; reasonOfDeath: string }>(/* ... */)
             `,
-            options: [
-              {
-                type: SortType.alphabetical,
-                order: SortOrder.asc,
-              },
-            ],
+            options: [options],
           },
         ],
         invalid: [
@@ -292,12 +253,7 @@ describe(RULE_NAME, () => {
             output: dedent`
               addToDeathNote<{ name: string; reasonOfDeath: string }>(/* ... */)
             `,
-            options: [
-              {
-                type: SortType.alphabetical,
-                order: SortOrder.asc,
-              },
-            ],
+            options: [options],
             errors: [
               {
                 messageId: 'unexpectedObjectTypesOrder',
@@ -316,6 +272,12 @@ describe(RULE_NAME, () => {
   describe(`${RULE_NAME}: sorting by natural order`, () => {
     let type = 'natural-order'
 
+    let options = {
+      type: SortType.natural,
+      order: SortOrder.asc,
+      'ignore-case': false,
+    }
+
     it(`${RULE_NAME}(${type}): sorts type members`, () => {
       ruleTester.run(RULE_NAME, rule, {
         valid: [
@@ -327,12 +289,7 @@ describe(RULE_NAME, () => {
                 status: 'wanderer'
               }
             `,
-            options: [
-              {
-                type: SortType.natural,
-                order: SortOrder.asc,
-              },
-            ],
+            options: [options],
           },
         ],
         invalid: [
@@ -351,12 +308,7 @@ describe(RULE_NAME, () => {
                 status: 'wanderer'
               }
             `,
-            options: [
-              {
-                type: SortType.natural,
-                order: SortOrder.asc,
-              },
-            ],
+            options: [options],
             errors: [
               {
                 messageId: 'unexpectedObjectTypesOrder',
@@ -384,12 +336,7 @@ describe(RULE_NAME, () => {
                 // ...
               }
             `,
-            options: [
-              {
-                type: SortType.natural,
-                order: SortOrder.asc,
-              },
-            ],
+            options: [options],
           },
         ],
         invalid: [
@@ -412,12 +359,7 @@ describe(RULE_NAME, () => {
                 // ...
               }
             `,
-            options: [
-              {
-                type: SortType.natural,
-                order: SortOrder.asc,
-              },
-            ],
+            options: [options],
             errors: [
               {
                 messageId: 'unexpectedObjectTypesOrder',
@@ -446,12 +388,7 @@ describe(RULE_NAME, () => {
                 [residence]: 'Wall Rose'
               }
             `,
-            options: [
-              {
-                type: SortType.natural,
-                order: SortOrder.asc,
-              },
-            ],
+            options: [options],
           },
         ],
         invalid: [
@@ -476,12 +413,7 @@ describe(RULE_NAME, () => {
                 [residence]: 'Wall Rose'
               }
             `,
-            options: [
-              {
-                type: SortType.natural,
-                order: SortOrder.asc,
-              },
-            ],
+            options: [options],
             errors: [
               {
                 messageId: 'unexpectedObjectTypesOrder',
@@ -524,12 +456,7 @@ describe(RULE_NAME, () => {
                 hide?: () => void
               }
             `,
-            options: [
-              {
-                type: SortType.natural,
-                order: SortOrder.asc,
-              },
-            ],
+            options: [options],
           },
         ],
         invalid: [
@@ -552,12 +479,7 @@ describe(RULE_NAME, () => {
                 hide?: () => void
               }
             `,
-            options: [
-              {
-                type: SortType.natural,
-                order: SortOrder.asc,
-              },
-            ],
+            options: [options],
             errors: [
               {
                 messageId: 'unexpectedObjectTypesOrder',
@@ -579,12 +501,7 @@ describe(RULE_NAME, () => {
             code: dedent`
               addToDeathNote<{ name: string; reasonOfDeath: string }>(/* ... */)
             `,
-            options: [
-              {
-                type: SortType.natural,
-                order: SortOrder.asc,
-              },
-            ],
+            options: [options],
           },
         ],
         invalid: [
@@ -595,12 +512,7 @@ describe(RULE_NAME, () => {
             output: dedent`
               addToDeathNote<{ name: string; reasonOfDeath: string }>(/* ... */)
             `,
-            options: [
-              {
-                type: SortType.natural,
-                order: SortOrder.asc,
-              },
-            ],
+            options: [options],
             errors: [
               {
                 messageId: 'unexpectedObjectTypesOrder',
@@ -619,6 +531,11 @@ describe(RULE_NAME, () => {
   describe(`${RULE_NAME}: sorting by line length`, () => {
     let type = 'line-length-order'
 
+    let options = {
+      type: SortType['line-length'],
+      order: SortOrder.desc,
+    }
+
     it(`${RULE_NAME}(${type}): sorts type members`, () => {
       ruleTester.run(RULE_NAME, rule, {
         valid: [
@@ -630,12 +547,7 @@ describe(RULE_NAME, () => {
                 name: 'Ginko'
               }
             `,
-            options: [
-              {
-                type: SortType['line-length'],
-                order: SortOrder.desc,
-              },
-            ],
+            options: [options],
           },
         ],
         invalid: [
@@ -654,12 +566,7 @@ describe(RULE_NAME, () => {
                 name: 'Ginko'
               }
             `,
-            options: [
-              {
-                type: SortType['line-length'],
-                order: SortOrder.desc,
-              },
-            ],
+            options: [options],
             errors: [
               {
                 messageId: 'unexpectedObjectTypesOrder',
@@ -694,12 +601,7 @@ describe(RULE_NAME, () => {
                 // ...
               }
             `,
-            options: [
-              {
-                type: SortType['line-length'],
-                order: SortOrder.desc,
-              },
-            ],
+            options: [options],
           },
         ],
         invalid: [
@@ -722,12 +624,7 @@ describe(RULE_NAME, () => {
                 // ...
               }
             `,
-            options: [
-              {
-                type: SortType['line-length'],
-                order: SortOrder.desc,
-              },
-            ],
+            options: [options],
             errors: [
               {
                 messageId: 'unexpectedObjectTypesOrder',
@@ -756,12 +653,7 @@ describe(RULE_NAME, () => {
                 age?: 30
               }
             `,
-            options: [
-              {
-                type: SortType['line-length'],
-                order: SortOrder.desc,
-              },
-            ],
+            options: [options],
           },
         ],
         invalid: [
@@ -786,12 +678,7 @@ describe(RULE_NAME, () => {
                 age?: 30
               }
             `,
-            options: [
-              {
-                type: SortType['line-length'],
-                order: SortOrder.desc,
-              },
-            ],
+            options: [options],
             errors: [
               {
                 messageId: 'unexpectedObjectTypesOrder',
@@ -833,12 +720,7 @@ describe(RULE_NAME, () => {
                 [...kills]
               }
             `,
-            options: [
-              {
-                type: SortType['line-length'],
-                order: SortOrder.desc,
-              },
-            ],
+            options: [options],
           },
         ],
         invalid: [
@@ -861,12 +743,7 @@ describe(RULE_NAME, () => {
                 [...kills]
               }
             `,
-            options: [
-              {
-                type: SortType['line-length'],
-                order: SortOrder.desc,
-              },
-            ],
+            options: [options],
             errors: [
               {
                 messageId: 'unexpectedObjectTypesOrder',
@@ -902,12 +779,7 @@ describe(RULE_NAME, () => {
             code: dedent`
               addToDeathNote<{ reasonOfDeath: string; name: string }>(/* ... */)
             `,
-            options: [
-              {
-                type: SortType['line-length'],
-                order: SortOrder.desc,
-              },
-            ],
+            options: [options],
           },
         ],
         invalid: [
@@ -918,12 +790,7 @@ describe(RULE_NAME, () => {
             output: dedent`
               addToDeathNote<{ reasonOfDeath: string; name: string }>(/* ... */)
             `,
-            options: [
-              {
-                type: SortType['line-length'],
-                order: SortOrder.desc,
-              },
-            ],
+            options: [options],
             errors: [
               {
                 messageId: 'unexpectedObjectTypesOrder',

@@ -13,6 +13,12 @@ describe(RULE_NAME, () => {
   describe(`${RULE_NAME}: sorting by alphabetical order`, () => {
     let type = 'alphabetical-order'
 
+    let options = {
+      type: SortType.alphabetical,
+      order: SortOrder.asc,
+      'ignore-case': false,
+    }
+
     it(`${RULE_NAME}(${type}): sorts interface properties`, () => {
       ruleTester.run(RULE_NAME, rule, {
         valid: [
@@ -24,12 +30,7 @@ describe(RULE_NAME, () => {
                 name: string
               }
             `,
-            options: [
-              {
-                type: SortType.alphabetical,
-                order: SortOrder.asc,
-              },
-            ],
+            options: [options],
           },
         ],
         invalid: [
@@ -48,12 +49,7 @@ describe(RULE_NAME, () => {
                 name: string
               }
             `,
-            options: [
-              {
-                type: SortType.alphabetical,
-                order: SortOrder.asc,
-              },
-            ],
+            options: [options],
             errors: [
               {
                 messageId: 'unexpectedInterfacePropertiesOrder',
@@ -78,12 +74,7 @@ describe(RULE_NAME, () => {
                 yuuji: 'Yuuji Itadori'
               }
             `,
-            options: [
-              {
-                type: SortType.alphabetical,
-                order: SortOrder.asc,
-              },
-            ],
+            options: [options],
           },
         ],
         invalid: [
@@ -100,12 +91,7 @@ describe(RULE_NAME, () => {
                 yuuji: 'Yuuji Itadori'
               }
             `,
-            options: [
-              {
-                type: SortType.alphabetical,
-                order: SortOrder.asc,
-              },
-            ],
+            options: [options],
             errors: [
               {
                 messageId: 'unexpectedInterfacePropertiesOrder',
@@ -132,12 +118,7 @@ describe(RULE_NAME, () => {
                 'spike-spiegel': Hunter
               }
             `,
-            options: [
-              {
-                type: SortType.alphabetical,
-                order: SortOrder.asc,
-              },
-            ],
+            options: [options],
           },
         ],
         invalid: [
@@ -158,12 +139,7 @@ describe(RULE_NAME, () => {
                 'spike-spiegel': Hunter
               }
             `,
-            options: [
-              {
-                type: SortType.alphabetical,
-                order: SortOrder.asc,
-              },
-            ],
+            options: [options],
             errors: [
               {
                 messageId: 'unexpectedInterfacePropertiesOrder',
@@ -196,12 +172,7 @@ describe(RULE_NAME, () => {
                 name: string
               }
             `,
-            options: [
-              {
-                type: SortType.alphabetical,
-                order: SortOrder.asc,
-              },
-            ],
+            options: [options],
           },
         ],
         invalid: [
@@ -220,12 +191,7 @@ describe(RULE_NAME, () => {
                 name: string
               }
             `,
-            options: [
-              {
-                type: SortType.alphabetical,
-                order: SortOrder.asc,
-              },
-            ],
+            options: [options],
             errors: [
               {
                 messageId: 'unexpectedInterfacePropertiesOrder',
@@ -253,12 +219,7 @@ describe(RULE_NAME, () => {
                 sixfold()
               }
             `,
-            options: [
-              {
-                type: SortType.alphabetical,
-                order: SortOrder.asc,
-              },
-            ],
+            options: [options],
           },
         ],
         invalid: [
@@ -281,12 +242,7 @@ describe(RULE_NAME, () => {
                 sixfold()
               }
             `,
-            options: [
-              {
-                type: SortType.alphabetical,
-                order: SortOrder.asc,
-              },
-            ],
+            options: [options],
             errors: [
               {
                 messageId: 'unexpectedInterfacePropertiesOrder',
@@ -321,12 +277,7 @@ describe(RULE_NAME, () => {
                 job: 'Mangaka'
               }
             `,
-            options: [
-              {
-                type: SortType.alphabetical,
-                order: SortOrder.asc,
-              },
-            ],
+            options: [options],
           },
         ],
         invalid: [
@@ -349,12 +300,7 @@ describe(RULE_NAME, () => {
                 job: 'Mangaka'
               }
             `,
-            options: [
-              {
-                type: SortType.alphabetical,
-                order: SortOrder.asc,
-              },
-            ],
+            options: [options],
             errors: [
               {
                 messageId: 'unexpectedInterfacePropertiesOrder',
@@ -417,12 +363,7 @@ describe(RULE_NAME, () => {
                 spirit: 'Ekubo'
               }
             `,
-            options: [
-              {
-                type: SortType.alphabetical,
-                order: SortOrder.asc,
-              },
-            ],
+            options: [options],
             errors: [
               {
                 messageId: 'unexpectedInterfacePropertiesOrder',
@@ -468,12 +409,7 @@ describe(RULE_NAME, () => {
                 rescuer: 'Misaki Nakahara' // Misaki is a mysterious girl who decides to help Tatsuhiro Satou escape his hikikomori lifestyle
               }
             `,
-            options: [
-              {
-                type: SortType.alphabetical,
-                order: SortOrder.asc,
-              },
-            ],
+            options: [options],
             errors: [
               {
                 messageId: 'unexpectedInterfacePropertiesOrder',
@@ -505,12 +441,7 @@ describe(RULE_NAME, () => {
                 rescuer: 'Tokita Kōsaku'; // Character
               }
             `,
-            options: [
-              {
-                type: SortType.alphabetical,
-                order: SortOrder.asc,
-              },
-            ],
+            options: [options],
             errors: [
               {
                 messageId: 'unexpectedInterfacePropertiesOrder',
@@ -540,12 +471,7 @@ describe(RULE_NAME, () => {
                 >
               }
             `,
-            options: [
-              {
-                type: SortType.alphabetical,
-                order: SortOrder.asc,
-              },
-            ],
+            options: [options],
           },
         ],
         invalid: [],
@@ -556,6 +482,12 @@ describe(RULE_NAME, () => {
   describe(`${RULE_NAME}: sorting by natural order`, () => {
     let type = 'natural-order'
 
+    let options = {
+      type: SortType.alphabetical,
+      order: SortOrder.asc,
+      'ignore-case': false,
+    }
+
     it(`${RULE_NAME}(${type}): sorts interface properties`, () => {
       ruleTester.run(RULE_NAME, rule, {
         valid: [
@@ -567,12 +499,7 @@ describe(RULE_NAME, () => {
                 name: string
               }
             `,
-            options: [
-              {
-                type: SortType.natural,
-                order: SortOrder.asc,
-              },
-            ],
+            options: [options],
           },
         ],
         invalid: [
@@ -591,12 +518,7 @@ describe(RULE_NAME, () => {
                 name: string
               }
             `,
-            options: [
-              {
-                type: SortType.natural,
-                order: SortOrder.asc,
-              },
-            ],
+            options: [options],
             errors: [
               {
                 messageId: 'unexpectedInterfacePropertiesOrder',
@@ -621,12 +543,7 @@ describe(RULE_NAME, () => {
                 yuuji: 'Yuuji Itadori'
               }
             `,
-            options: [
-              {
-                type: SortType.natural,
-                order: SortOrder.asc,
-              },
-            ],
+            options: [options],
           },
         ],
         invalid: [
@@ -643,12 +560,7 @@ describe(RULE_NAME, () => {
                 yuuji: 'Yuuji Itadori'
               }
             `,
-            options: [
-              {
-                type: SortType.natural,
-                order: SortOrder.asc,
-              },
-            ],
+            options: [options],
             errors: [
               {
                 messageId: 'unexpectedInterfacePropertiesOrder',
@@ -675,12 +587,7 @@ describe(RULE_NAME, () => {
                 'spike-spiegel': Hunter
               }
             `,
-            options: [
-              {
-                type: SortType.natural,
-                order: SortOrder.asc,
-              },
-            ],
+            options: [options],
           },
         ],
         invalid: [
@@ -701,12 +608,7 @@ describe(RULE_NAME, () => {
                 'spike-spiegel': Hunter
               }
             `,
-            options: [
-              {
-                type: SortType.natural,
-                order: SortOrder.asc,
-              },
-            ],
+            options: [options],
             errors: [
               {
                 messageId: 'unexpectedInterfacePropertiesOrder',
@@ -739,12 +641,7 @@ describe(RULE_NAME, () => {
                 name: string
               }
             `,
-            options: [
-              {
-                type: SortType.natural,
-                order: SortOrder.asc,
-              },
-            ],
+            options: [options],
           },
         ],
         invalid: [
@@ -763,12 +660,7 @@ describe(RULE_NAME, () => {
                 name: string
               }
             `,
-            options: [
-              {
-                type: SortType.natural,
-                order: SortOrder.asc,
-              },
-            ],
+            options: [options],
             errors: [
               {
                 messageId: 'unexpectedInterfacePropertiesOrder',
@@ -796,12 +688,7 @@ describe(RULE_NAME, () => {
                 sixfold()
               }
             `,
-            options: [
-              {
-                type: SortType.natural,
-                order: SortOrder.asc,
-              },
-            ],
+            options: [options],
           },
         ],
         invalid: [
@@ -824,12 +711,7 @@ describe(RULE_NAME, () => {
                 sixfold()
               }
             `,
-            options: [
-              {
-                type: SortType.natural,
-                order: SortOrder.asc,
-              },
-            ],
+            options: [options],
             errors: [
               {
                 messageId: 'unexpectedInterfacePropertiesOrder',
@@ -864,12 +746,7 @@ describe(RULE_NAME, () => {
                 job: 'Mangaka'
               }
             `,
-            options: [
-              {
-                type: SortType.natural,
-                order: SortOrder.asc,
-              },
-            ],
+            options: [options],
           },
         ],
         invalid: [
@@ -892,12 +769,7 @@ describe(RULE_NAME, () => {
                 job: 'Mangaka'
               }
             `,
-            options: [
-              {
-                type: SortType.natural,
-                order: SortOrder.asc,
-              },
-            ],
+            options: [options],
             errors: [
               {
                 messageId: 'unexpectedInterfacePropertiesOrder',
@@ -960,12 +832,7 @@ describe(RULE_NAME, () => {
                 spirit: 'Ekubo'
               }
             `,
-            options: [
-              {
-                type: SortType.natural,
-                order: SortOrder.asc,
-              },
-            ],
+            options: [options],
             errors: [
               {
                 messageId: 'unexpectedInterfacePropertiesOrder',
@@ -1011,12 +878,7 @@ describe(RULE_NAME, () => {
                 rescuer: 'Misaki Nakahara' // Misaki is a mysterious girl who decides to help Tatsuhiro Satou escape his hikikomori lifestyle
               }
             `,
-            options: [
-              {
-                type: SortType.natural,
-                order: SortOrder.asc,
-              },
-            ],
+            options: [options],
             errors: [
               {
                 messageId: 'unexpectedInterfacePropertiesOrder',
@@ -1048,12 +910,7 @@ describe(RULE_NAME, () => {
                 rescuer: 'Tokita Kōsaku'; // Character
               }
             `,
-            options: [
-              {
-                type: SortType.natural,
-                order: SortOrder.asc,
-              },
-            ],
+            options: [options],
             errors: [
               {
                 messageId: 'unexpectedInterfacePropertiesOrder',
@@ -1083,12 +940,7 @@ describe(RULE_NAME, () => {
                 >
               }
             `,
-            options: [
-              {
-                type: SortType.natural,
-                order: SortOrder.asc,
-              },
-            ],
+            options: [options],
           },
         ],
         invalid: [],
@@ -1098,6 +950,11 @@ describe(RULE_NAME, () => {
 
   describe(`${RULE_NAME}: sorting by line length`, () => {
     let type = 'line-length-order'
+
+    let options = {
+      type: SortType['line-length'],
+      order: SortOrder.desc,
+    }
 
     it(`${RULE_NAME}(${type}): sorts interface properties`, () => {
       ruleTester.run(RULE_NAME, rule, {
@@ -1110,12 +967,7 @@ describe(RULE_NAME, () => {
                 age: string
               }
             `,
-            options: [
-              {
-                type: SortType['line-length'],
-                order: SortOrder.desc,
-              },
-            ],
+            options: [options],
           },
         ],
         invalid: [
@@ -1134,12 +986,7 @@ describe(RULE_NAME, () => {
                 age: string
               }
             `,
-            options: [
-              {
-                type: SortType['line-length'],
-                order: SortOrder.desc,
-              },
-            ],
+            options: [options],
             errors: [
               {
                 messageId: 'unexpectedInterfacePropertiesOrder',
@@ -1164,12 +1011,7 @@ describe(RULE_NAME, () => {
                 align: 'left' | 'center' | 'right'
               }
             `,
-            options: [
-              {
-                type: SortType['line-length'],
-                order: SortOrder.desc,
-              },
-            ],
+            options: [options],
           },
           {
             code: dedent`
@@ -1178,12 +1020,7 @@ describe(RULE_NAME, () => {
                 color: 'purple' | 'blue' | 'green'
               }
             `,
-            options: [
-              {
-                type: SortType['line-length'],
-                order: SortOrder.desc,
-              },
-            ],
+            options: [options],
           },
         ],
         invalid: [
@@ -1200,12 +1037,7 @@ describe(RULE_NAME, () => {
                 color: 'purple' | 'blue' | 'green'
               }
             `,
-            options: [
-              {
-                type: SortType['line-length'],
-                order: SortOrder.desc,
-              },
-            ],
+            options: [options],
             errors: [
               {
                 messageId: 'unexpectedInterfacePropertiesOrder',
@@ -1230,12 +1062,7 @@ describe(RULE_NAME, () => {
                 yuuji: 'Yuuji Itadori'
               }
             `,
-            options: [
-              {
-                type: SortType['line-length'],
-                order: SortOrder.desc,
-              },
-            ],
+            options: [options],
           },
         ],
         invalid: [
@@ -1252,12 +1079,7 @@ describe(RULE_NAME, () => {
                 yuuji: 'Yuuji Itadori'
               }
             `,
-            options: [
-              {
-                type: SortType['line-length'],
-                order: SortOrder.desc,
-              },
-            ],
+            options: [options],
             errors: [
               {
                 messageId: 'unexpectedInterfacePropertiesOrder',
@@ -1285,12 +1107,7 @@ describe(RULE_NAME, () => {
                 age: number
               }
             `,
-            options: [
-              {
-                type: SortType['line-length'],
-                order: SortOrder.desc,
-              },
-            ],
+            options: [options],
           },
         ],
         invalid: [
@@ -1313,12 +1130,7 @@ describe(RULE_NAME, () => {
                 age: number
               }
             `,
-            options: [
-              {
-                type: SortType['line-length'],
-                order: SortOrder.desc,
-              },
-            ],
+            options: [options],
             errors: [
               {
                 messageId: 'unexpectedInterfacePropertiesOrder',
@@ -1353,12 +1165,7 @@ describe(RULE_NAME, () => {
                 age: 10 | 29
               }
             `,
-            options: [
-              {
-                type: SortType['line-length'],
-                order: SortOrder.desc,
-              },
-            ],
+            options: [options],
           },
         ],
         invalid: [
@@ -1381,12 +1188,7 @@ describe(RULE_NAME, () => {
                 age: 10 | 29
               }
             `,
-            options: [
-              {
-                type: SortType['line-length'],
-                order: SortOrder.desc,
-              },
-            ],
+            options: [options],
             errors: [
               {
                 messageId: 'unexpectedInterfacePropertiesOrder',
@@ -1449,12 +1251,7 @@ describe(RULE_NAME, () => {
                 spirit: 'Ekubo'
               }
             `,
-            options: [
-              {
-                type: SortType['line-length'],
-                order: SortOrder.desc,
-              },
-            ],
+            options: [options],
             errors: [
               {
                 messageId: 'unexpectedInterfacePropertiesOrder',
@@ -1500,12 +1297,7 @@ describe(RULE_NAME, () => {
                 rescuer: 'Misaki Nakahara' // Misaki is a mysterious girl who decides to help Tatsuhiro Satou escape his hikikomori lifestyle
               }
             `,
-            options: [
-              {
-                type: SortType['line-length'],
-                order: SortOrder.desc,
-              },
-            ],
+            options: [options],
             errors: [
               {
                 messageId: 'unexpectedInterfacePropertiesOrder',
@@ -1537,12 +1329,7 @@ describe(RULE_NAME, () => {
                 occupation: string; // Professional direction
               }
             `,
-            options: [
-              {
-                type: SortType['line-length'],
-                order: SortOrder.desc,
-              },
-            ],
+            options: [options],
             errors: [
               {
                 messageId: 'unexpectedInterfacePropertiesOrder',
@@ -1572,12 +1359,7 @@ describe(RULE_NAME, () => {
                 >
               }
             `,
-            options: [
-              {
-                type: SortType['line-length'],
-                order: SortOrder.desc,
-              },
-            ],
+            options: [options],
           },
         ],
         invalid: [],
