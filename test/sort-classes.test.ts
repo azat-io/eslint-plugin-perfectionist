@@ -13,6 +13,12 @@ describe(RULE_NAME, () => {
   describe(`${RULE_NAME}: sorting by alphabetical order`, () => {
     let type = 'alphabetical-order'
 
+    let options = {
+      type: SortType.alphabetical,
+      order: SortOrder.asc,
+      'ignore-case': false,
+    }
+
     it(`${RULE_NAME}(${type}): sorts class members`, () => {
       ruleTester.run(RULE_NAME, rule, {
         valid: [
@@ -50,8 +56,7 @@ describe(RULE_NAME, () => {
             `,
             options: [
               {
-                type: SortType.alphabetical,
-                order: SortOrder.asc,
+                ...options,
                 groups: [
                   'static-property',
                   'private-property',
@@ -132,8 +137,7 @@ describe(RULE_NAME, () => {
             `,
             options: [
               {
-                type: SortType.alphabetical,
-                order: SortOrder.asc,
+                ...options,
                 groups: [
                   'static-property',
                   'private-property',
@@ -186,8 +190,7 @@ describe(RULE_NAME, () => {
             `,
             options: [
               {
-                type: SortType.alphabetical,
-                order: SortOrder.asc,
+                ...options,
                 groups: [
                   ['static-property', 'private-property', 'property'],
                   'constructor',
@@ -228,8 +231,7 @@ describe(RULE_NAME, () => {
             `,
             options: [
               {
-                type: SortType.alphabetical,
-                order: SortOrder.asc,
+                ...options,
                 groups: [
                   ['static-property', 'private-property', 'property'],
                   'constructor',
@@ -267,8 +269,7 @@ describe(RULE_NAME, () => {
             `,
             options: [
               {
-                type: SortType.alphabetical,
-                order: SortOrder.asc,
+                ...options,
                 groups: [
                   ['static-property', 'private-property', 'property'],
                   'constructor',
@@ -299,8 +300,7 @@ describe(RULE_NAME, () => {
             `,
             options: [
               {
-                type: SortType.alphabetical,
-                order: SortOrder.asc,
+                ...options,
                 groups: [
                   ['static-property', 'private-property', 'property'],
                   'constructor',
@@ -324,6 +324,12 @@ describe(RULE_NAME, () => {
 
   describe(`${RULE_NAME}: sorting by natural order`, () => {
     let type = 'natural-order'
+
+    let options = {
+      type: SortType.natural,
+      order: SortOrder.asc,
+      'ignore-case': false,
+    }
 
     it(`${RULE_NAME}(${type}): sorts class members`, () => {
       ruleTester.run(RULE_NAME, rule, {
@@ -362,8 +368,7 @@ describe(RULE_NAME, () => {
             `,
             options: [
               {
-                type: SortType.alphabetical,
-                order: SortOrder.asc,
+                ...options,
                 groups: [
                   'static-property',
                   'private-property',
@@ -444,8 +449,7 @@ describe(RULE_NAME, () => {
             `,
             options: [
               {
-                type: SortType.alphabetical,
-                order: SortOrder.asc,
+                ...options,
                 groups: [
                   'static-property',
                   'private-property',
@@ -498,8 +502,7 @@ describe(RULE_NAME, () => {
             `,
             options: [
               {
-                type: SortType.natural,
-                order: SortOrder.asc,
+                ...options,
                 groups: [
                   ['static-property', 'private-property', 'property'],
                   'constructor',
@@ -540,8 +543,7 @@ describe(RULE_NAME, () => {
             `,
             options: [
               {
-                type: SortType.natural,
-                order: SortOrder.asc,
+                ...options,
                 groups: [
                   ['static-property', 'private-property', 'property'],
                   'constructor',
@@ -579,8 +581,7 @@ describe(RULE_NAME, () => {
             `,
             options: [
               {
-                type: SortType.natural,
-                order: SortOrder.asc,
+                ...options,
                 groups: [
                   ['static-property', 'private-property', 'property'],
                   'constructor',
@@ -611,8 +612,7 @@ describe(RULE_NAME, () => {
             `,
             options: [
               {
-                type: SortType.natural,
-                order: SortOrder.asc,
+                ...options,
                 groups: [
                   ['static-property', 'private-property', 'property'],
                   'constructor',
@@ -634,8 +634,13 @@ describe(RULE_NAME, () => {
     })
   })
 
-  describe(`${RULE_NAME}: sorting by natural order`, () => {
-    let type = 'natural-order'
+  describe(`${RULE_NAME}: sorting by line length`, () => {
+    let type = 'line-length-order'
+
+    let options = {
+      type: SortType['line-length'],
+      order: SortOrder.desc,
+    }
 
     it(`${RULE_NAME}(${type}): sorts class members`, () => {
       ruleTester.run(RULE_NAME, rule, {
@@ -674,8 +679,7 @@ describe(RULE_NAME, () => {
             `,
             options: [
               {
-                type: SortType['line-length'],
-                order: SortOrder.desc,
+                ...options,
                 groups: [
                   'static-property',
                   'private-property',
@@ -756,8 +760,7 @@ describe(RULE_NAME, () => {
             `,
             options: [
               {
-                type: SortType['line-length'],
-                order: SortOrder.desc,
+                ...options,
                 groups: [
                   'static-property',
                   'private-property',
@@ -810,8 +813,7 @@ describe(RULE_NAME, () => {
             `,
             options: [
               {
-                type: SortType['line-length'],
-                order: SortOrder.desc,
+                ...options,
                 groups: [
                   ['static-property', 'private-property', 'property'],
                   'constructor',
@@ -852,8 +854,7 @@ describe(RULE_NAME, () => {
             `,
             options: [
               {
-                type: SortType['line-length'],
-                order: SortOrder.desc,
+                ...options,
                 groups: [
                   ['static-property', 'private-property', 'property'],
                   'constructor',
@@ -891,8 +892,7 @@ describe(RULE_NAME, () => {
             `,
             options: [
               {
-                type: SortType['line-length'],
-                order: SortOrder.desc,
+                ...options,
                 groups: [
                   ['static-property', 'private-property', 'property'],
                   'constructor',
@@ -923,8 +923,7 @@ describe(RULE_NAME, () => {
             `,
             options: [
               {
-                type: SortType['line-length'],
-                order: SortOrder.desc,
+                ...options,
                 groups: [
                   ['static-property', 'private-property', 'property'],
                   'constructor',
@@ -988,7 +987,7 @@ describe(RULE_NAME, () => {
                 static log10(x) {
                   return 0;
                 }
-                
+
                 static log2(x) {
                   return 0;
                 }
@@ -1007,7 +1006,7 @@ describe(RULE_NAME, () => {
                 static log1p(x) {
                   return 0;
                 }
-                
+
                 static log2(x) {
                   return 0;
                 }

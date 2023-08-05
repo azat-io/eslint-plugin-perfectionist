@@ -13,17 +13,18 @@ describe(RULE_NAME, () => {
   describe(`${RULE_NAME}: sorting by alphabetical order`, () => {
     let type = 'alphabetical-order'
 
+    let options = {
+      type: SortType.alphabetical,
+      order: SortOrder.asc,
+      'ignore-case': false,
+    }
+
     it(`${RULE_NAME}(${type}): sorts named exports`, () => {
       ruleTester.run(RULE_NAME, rule, {
         valid: [
           {
             code: 'export { ErisBoreas, Rudeus, RuijerdSuperdia }',
-            options: [
-              {
-                type: SortType.alphabetical,
-                order: SortOrder.asc,
-              },
-            ],
+            options: [options],
           },
         ],
         invalid: [
@@ -42,12 +43,7 @@ describe(RULE_NAME, () => {
                 RuijerdSuperdia
               }
             `,
-            options: [
-              {
-                type: SortType.alphabetical,
-                order: SortOrder.asc,
-              },
-            ],
+            options: [options],
             errors: [
               {
                 messageId: 'unexpectedNamedExportsOrder',
@@ -66,17 +62,18 @@ describe(RULE_NAME, () => {
   describe(`${RULE_NAME}: sorting by natural order`, () => {
     let type = 'natural-order'
 
+    let options = {
+      type: SortType.natural,
+      order: SortOrder.asc,
+      'ignore-case': false,
+    }
+
     it(`${RULE_NAME}(${type}): sorts named exports`, () => {
       ruleTester.run(RULE_NAME, rule, {
         valid: [
           {
             code: 'export { ErisBoreas, Rudeus, RuijerdSuperdia }',
-            options: [
-              {
-                type: SortType.natural,
-                order: SortOrder.asc,
-              },
-            ],
+            options: [options],
           },
         ],
         invalid: [
@@ -95,12 +92,7 @@ describe(RULE_NAME, () => {
                 RuijerdSuperdia
               }
             `,
-            options: [
-              {
-                type: SortType.natural,
-                order: SortOrder.asc,
-              },
-            ],
+            options: [options],
             errors: [
               {
                 messageId: 'unexpectedNamedExportsOrder',
@@ -119,17 +111,17 @@ describe(RULE_NAME, () => {
   describe(`${RULE_NAME}: sorting by line length`, () => {
     let type = 'line-length-order'
 
+    let options = {
+      type: SortType['line-length'],
+      order: SortOrder.desc,
+    }
+
     it(`${RULE_NAME}(${type}): sorts named exports`, () => {
       ruleTester.run(RULE_NAME, rule, {
         valid: [
           {
             code: 'export { RuijerdSuperdia, ErisBoreas, Rudeus }',
-            options: [
-              {
-                type: SortType['line-length'],
-                order: SortOrder.desc,
-              },
-            ],
+            options: [options],
           },
         ],
         invalid: [
@@ -148,12 +140,7 @@ describe(RULE_NAME, () => {
                 Rudeus
               }
             `,
-            options: [
-              {
-                type: SortType['line-length'],
-                order: SortOrder.desc,
-              },
-            ],
+            options: [options],
             errors: [
               {
                 messageId: 'unexpectedNamedExportsOrder',

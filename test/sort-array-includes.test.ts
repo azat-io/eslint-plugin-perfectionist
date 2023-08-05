@@ -13,6 +13,12 @@ describe(RULE_NAME, () => {
   describe(`${RULE_NAME}: sorting by alphabetical order`, () => {
     let type = 'alphabetical-order'
 
+    let options = {
+      type: SortType.alphabetical,
+      order: SortOrder.asc,
+      'ignore-case': false,
+    }
+
     it(`${RULE_NAME}(${type}): does not break the property list`, () => {
       ruleTester.run(RULE_NAME, rule, {
         valid: [
@@ -27,12 +33,7 @@ describe(RULE_NAME, () => {
                 'War Hammer Titan',
               ].includes(titan)
             `,
-            options: [
-              {
-                type: SortType.alphabetical,
-                order: SortOrder.asc,
-              },
-            ],
+            options: [options],
           },
         ],
         invalid: [
@@ -57,12 +58,7 @@ describe(RULE_NAME, () => {
                 'War Hammer Titan',
               ].includes(titan)
             `,
-            options: [
-              {
-                type: SortType.alphabetical,
-                order: SortOrder.asc,
-              },
-            ],
+            options: [options],
             errors: [
               {
                 messageId: 'unexpectedArrayIncludesOrder',
@@ -88,12 +84,7 @@ describe(RULE_NAME, () => {
                 ...upperRanks,
               ].includes('Nezuko Kamado')
             `,
-            options: [
-              {
-                type: SortType.alphabetical,
-                order: SortOrder.asc,
-              },
-            ],
+            options: [options],
           },
         ],
         invalid: [
@@ -112,12 +103,7 @@ describe(RULE_NAME, () => {
                 ...upperRanks,
               ].includes('Nezuko Kamado')
             `,
-            options: [
-              {
-                type: SortType.alphabetical,
-                order: SortOrder.asc,
-              },
-            ],
+            options: [options],
             errors: [
               {
                 messageId: 'unexpectedArrayIncludesOrder',
@@ -139,12 +125,7 @@ describe(RULE_NAME, () => {
             code: dedent`
               ['Bang', 'Genos', 'King',, 'Saitama'].includes(hero)
             `,
-            options: [
-              {
-                type: SortType.alphabetical,
-                order: SortOrder.asc,
-              },
-            ],
+            options: [options],
           },
         ],
         invalid: [
@@ -155,12 +136,7 @@ describe(RULE_NAME, () => {
             output: dedent`
               ['Bang', 'Genos', 'King',, 'Saitama'].includes(hero)
             `,
-            options: [
-              {
-                type: SortType.alphabetical,
-                order: SortOrder.asc,
-              },
-            ],
+            options: [options],
             errors: [
               {
                 messageId: 'unexpectedArrayIncludesOrder',
@@ -184,8 +160,7 @@ describe(RULE_NAME, () => {
             `,
             options: [
               {
-                type: SortType.alphabetical,
-                order: SortOrder.asc,
+                ...options,
                 'spread-last': true,
               },
             ],
@@ -201,8 +176,7 @@ describe(RULE_NAME, () => {
             `,
             options: [
               {
-                type: SortType.alphabetical,
-                order: SortOrder.asc,
+                ...options,
                 'spread-last': true,
               },
             ],
@@ -232,12 +206,7 @@ describe(RULE_NAME, () => {
                 'Sonozaki Shion',
               ).includes(name)
             `,
-            options: [
-              {
-                type: SortType.alphabetical,
-                order: SortOrder.asc,
-              },
-            ],
+            options: [options],
           },
         ],
         invalid: [
@@ -258,12 +227,7 @@ describe(RULE_NAME, () => {
                 'Sonozaki Shion',
               ).includes(name)
             `,
-            options: [
-              {
-                type: SortType.alphabetical,
-                order: SortOrder.asc,
-              },
-            ],
+            options: [options],
             errors: [
               {
                 messageId: 'unexpectedArrayIncludesOrder',
@@ -282,6 +246,12 @@ describe(RULE_NAME, () => {
   describe(`${RULE_NAME}: sorting by natural order`, () => {
     let type = 'natural-order'
 
+    let options = {
+      type: SortType.natural,
+      order: SortOrder.asc,
+      'ignore-case': false,
+    }
+
     it(`${RULE_NAME}(${type}): does not break the property list`, () => {
       ruleTester.run(RULE_NAME, rule, {
         valid: [
@@ -296,12 +266,7 @@ describe(RULE_NAME, () => {
                 'War Hammer Titan',
               ].includes(titan)
             `,
-            options: [
-              {
-                type: SortType.natural,
-                order: SortOrder.asc,
-              },
-            ],
+            options: [options],
           },
         ],
         invalid: [
@@ -326,12 +291,7 @@ describe(RULE_NAME, () => {
                 'War Hammer Titan',
               ].includes(titan)
             `,
-            options: [
-              {
-                type: SortType.natural,
-                order: SortOrder.asc,
-              },
-            ],
+            options: [options],
             errors: [
               {
                 messageId: 'unexpectedArrayIncludesOrder',
@@ -357,12 +317,7 @@ describe(RULE_NAME, () => {
                 ...upperRanks,
               ].includes('Nezuko Kamado')
             `,
-            options: [
-              {
-                type: SortType.natural,
-                order: SortOrder.asc,
-              },
-            ],
+            options: [options],
           },
         ],
         invalid: [
@@ -381,12 +336,7 @@ describe(RULE_NAME, () => {
                 ...upperRanks,
               ].includes('Nezuko Kamado')
             `,
-            options: [
-              {
-                type: SortType.natural,
-                order: SortOrder.asc,
-              },
-            ],
+            options: [options],
             errors: [
               {
                 messageId: 'unexpectedArrayIncludesOrder',
@@ -408,12 +358,7 @@ describe(RULE_NAME, () => {
             code: dedent`
               ['Bang', 'Genos', 'King',, 'Saitama'].includes(hero)
             `,
-            options: [
-              {
-                type: SortType.natural,
-                order: SortOrder.asc,
-              },
-            ],
+            options: [options],
           },
         ],
         invalid: [
@@ -424,12 +369,7 @@ describe(RULE_NAME, () => {
             output: dedent`
               ['Bang', 'Genos', 'King',, 'Saitama'].includes(hero)
             `,
-            options: [
-              {
-                type: SortType.natural,
-                order: SortOrder.asc,
-              },
-            ],
+            options: [options],
             errors: [
               {
                 messageId: 'unexpectedArrayIncludesOrder',
@@ -453,8 +393,7 @@ describe(RULE_NAME, () => {
             `,
             options: [
               {
-                type: SortType.natural,
-                order: SortOrder.asc,
+                ...options,
                 'spread-last': true,
               },
             ],
@@ -470,8 +409,7 @@ describe(RULE_NAME, () => {
             `,
             options: [
               {
-                type: SortType.natural,
-                order: SortOrder.asc,
+                ...options,
                 'spread-last': true,
               },
             ],
@@ -501,12 +439,7 @@ describe(RULE_NAME, () => {
                 'Sonozaki Shion',
               ).includes(name)
             `,
-            options: [
-              {
-                type: SortType.natural,
-                order: SortOrder.asc,
-              },
-            ],
+            options: [options],
           },
         ],
         invalid: [
@@ -527,12 +460,7 @@ describe(RULE_NAME, () => {
                 'Sonozaki Shion',
               ).includes(name)
             `,
-            options: [
-              {
-                type: SortType.natural,
-                order: SortOrder.asc,
-              },
-            ],
+            options: [options],
             errors: [
               {
                 messageId: 'unexpectedArrayIncludesOrder',
@@ -551,6 +479,11 @@ describe(RULE_NAME, () => {
   describe(`${RULE_NAME}: sorting by line length`, () => {
     let type = 'line-length-order'
 
+    let options = {
+      type: SortType['line-length'],
+      order: SortOrder.desc,
+    }
+
     it(`${RULE_NAME}(${type}): does not break the property list`, () => {
       ruleTester.run(RULE_NAME, rule, {
         valid: [
@@ -565,12 +498,7 @@ describe(RULE_NAME, () => {
                 'Cart Titan',
               ].includes(titan)
             `,
-            options: [
-              {
-                type: SortType['line-length'],
-                order: SortOrder.desc,
-              },
-            ],
+            options: [options],
           },
         ],
         invalid: [
@@ -595,12 +523,7 @@ describe(RULE_NAME, () => {
                 'Cart Titan',
               ].includes(titan)
             `,
-            options: [
-              {
-                type: SortType['line-length'],
-                order: SortOrder.desc,
-              },
-            ],
+            options: [options],
             errors: [
               {
                 messageId: 'unexpectedArrayIncludesOrder',
@@ -633,12 +556,7 @@ describe(RULE_NAME, () => {
                 ...demons,
               ].includes('Nezuko Kamado')
             `,
-            options: [
-              {
-                type: SortType['line-length'],
-                order: SortOrder.desc,
-              },
-            ],
+            options: [options],
           },
         ],
         invalid: [
@@ -657,12 +575,7 @@ describe(RULE_NAME, () => {
                 ...demons,
               ].includes('Nezuko Kamado')
             `,
-            options: [
-              {
-                type: SortType['line-length'],
-                order: SortOrder.desc,
-              },
-            ],
+            options: [options],
             errors: [
               {
                 messageId: 'unexpectedArrayIncludesOrder',
@@ -684,12 +597,7 @@ describe(RULE_NAME, () => {
             code: dedent`
               ['Saitama', 'Genos', 'King',, 'Bang'].includes(hero)
             `,
-            options: [
-              {
-                type: SortType['line-length'],
-                order: SortOrder.desc,
-              },
-            ],
+            options: [options],
           },
         ],
         invalid: [
@@ -700,12 +608,7 @@ describe(RULE_NAME, () => {
             output: dedent`
               ['Saitama', 'Genos', 'King',, 'Bang'].includes(hero)
             `,
-            options: [
-              {
-                type: SortType['line-length'],
-                order: SortOrder.desc,
-              },
-            ],
+            options: [options],
             errors: [
               {
                 messageId: 'unexpectedArrayIncludesOrder',
@@ -729,8 +632,7 @@ describe(RULE_NAME, () => {
             `,
             options: [
               {
-                type: SortType['line-length'],
-                order: SortOrder.desc,
+                ...options,
                 'spread-last': true,
               },
             ],
@@ -746,8 +648,7 @@ describe(RULE_NAME, () => {
             `,
             options: [
               {
-                type: SortType['line-length'],
-                order: SortOrder.desc,
+                ...options,
                 'spread-last': true,
               },
             ],
@@ -777,12 +678,7 @@ describe(RULE_NAME, () => {
                 'Ryūgū Rena',
               ).includes(name)
             `,
-            options: [
-              {
-                type: SortType['line-length'],
-                order: SortOrder.desc,
-              },
-            ],
+            options: [options],
           },
         ],
         invalid: [
@@ -803,12 +699,7 @@ describe(RULE_NAME, () => {
                 'Ryūgū Rena',
               ).includes(name)
             `,
-            options: [
-              {
-                type: SortType['line-length'],
-                order: SortOrder.desc,
-              },
-            ],
+            options: [options],
             errors: [
               {
                 messageId: 'unexpectedArrayIncludesOrder',

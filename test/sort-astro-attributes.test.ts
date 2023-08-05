@@ -19,6 +19,12 @@ describe(RULE_NAME, () => {
   describe(`${RULE_NAME}: sorting by alphabetical order`, () => {
     let type = 'alphabetical-order'
 
+    let options = {
+      type: SortType.alphabetical,
+      order: SortOrder.asc,
+      'ignore-case': false,
+    }
+
     it(`${RULE_NAME}(${type}): sorts props in astro components`, () => {
       ruleTester.run(RULE_NAME, rule, {
         valid: [
@@ -30,12 +36,7 @@ describe(RULE_NAME, () => {
               </script>
               <HeavenChild age={14} name="Tokio" partner="Kona" sick />
             `,
-            options: [
-              {
-                type: SortType.alphabetical,
-                order: SortOrder.asc,
-              },
-            ],
+            options: [options],
           },
         ],
         invalid: [
@@ -53,12 +54,7 @@ describe(RULE_NAME, () => {
               </script>
               <HeavenChild age={14} name="Tokio" partner="Kona" sick />
             `,
-            options: [
-              {
-                type: SortType.alphabetical,
-                order: SortOrder.asc,
-              },
-            ],
+            options: [options],
             errors: [
               {
                 messageId: 'unexpectedAstroAttributesOrder',
@@ -86,12 +82,7 @@ describe(RULE_NAME, () => {
               </script>
               <Mushishi name="Yoki" {...ginko} occupation="Mushishi" status="wanderer" />
             `,
-            options: [
-              {
-                type: SortType.alphabetical,
-                order: SortOrder.asc,
-              },
-            ],
+            options: [options],
           },
         ],
         invalid: [
@@ -113,12 +104,7 @@ describe(RULE_NAME, () => {
               </script>
               <Mushishi name="Yoki" {...ginko} occupation="Mushishi" status="wanderer" />
             `,
-            options: [
-              {
-                type: SortType.alphabetical,
-                order: SortOrder.asc,
-              },
-            ],
+            options: [options],
             errors: [
               {
                 messageId: 'unexpectedAstroAttributesOrder',
@@ -152,12 +138,7 @@ describe(RULE_NAME, () => {
                 set:html={greeting}
               />
             `,
-            options: [
-              {
-                type: SortType.alphabetical,
-                order: SortOrder.asc,
-              },
-            ],
+            options: [options],
           },
         ],
         invalid: [
@@ -191,12 +172,7 @@ describe(RULE_NAME, () => {
                 set:html={greeting}
               />
             `,
-            options: [
-              {
-                type: SortType.alphabetical,
-                order: SortOrder.asc,
-              },
-            ],
+            options: [options],
             errors: [
               {
                 messageId: 'unexpectedAstroAttributesOrder',
@@ -240,8 +216,7 @@ describe(RULE_NAME, () => {
             `,
             options: [
               {
-                type: SortType.alphabetical,
-                order: SortOrder.asc,
+                ...options,
                 groups: ['unknown', ['astro-shorthand', 'shorthand']],
               },
             ],
@@ -282,8 +257,7 @@ describe(RULE_NAME, () => {
             `,
             options: [
               {
-                type: SortType.alphabetical,
-                order: SortOrder.asc,
+                ...options,
                 groups: ['unknown', ['svelte-shorthand', 'shorthand']],
               },
             ],
@@ -331,8 +305,7 @@ describe(RULE_NAME, () => {
             `,
             options: [
               {
-                type: SortType.alphabetical,
-                order: SortOrder.asc,
+                ...options,
                 groups: ['multiline', 'unknown'],
               },
             ],
@@ -375,8 +348,7 @@ describe(RULE_NAME, () => {
             `,
             options: [
               {
-                type: SortType.alphabetical,
-                order: SortOrder.asc,
+                ...options,
                 groups: ['multiline', 'unknown'],
               },
             ],
@@ -422,8 +394,7 @@ describe(RULE_NAME, () => {
             `,
             options: [
               {
-                type: SortType.alphabetical,
-                order: SortOrder.asc,
+                ...options,
                 groups: ['top', 'callback', 'unknown'],
                 'custom-groups': {
                   top: ['id', 'name'],
@@ -466,8 +437,7 @@ describe(RULE_NAME, () => {
             `,
             options: [
               {
-                type: SortType.alphabetical,
-                order: SortOrder.asc,
+                ...options,
                 groups: ['top', 'callback', 'unknown'],
                 'custom-groups': {
                   top: ['id', 'name'],
@@ -500,6 +470,12 @@ describe(RULE_NAME, () => {
   describe(`${RULE_NAME}: sorting by natural order`, () => {
     let type = 'natural-order'
 
+    let options = {
+      type: SortType.natural,
+      order: SortOrder.asc,
+      'ignore-case': false,
+    }
+
     it(`${RULE_NAME}(${type}): sorts props in astro components`, () => {
       ruleTester.run(RULE_NAME, rule, {
         valid: [
@@ -511,12 +487,7 @@ describe(RULE_NAME, () => {
               </script>
               <HeavenChild age={14} name="Tokio" partner="Kona" sick />
             `,
-            options: [
-              {
-                type: SortType.natural,
-                order: SortOrder.asc,
-              },
-            ],
+            options: [options],
           },
         ],
         invalid: [
@@ -534,12 +505,7 @@ describe(RULE_NAME, () => {
               </script>
               <HeavenChild age={14} name="Tokio" partner="Kona" sick />
             `,
-            options: [
-              {
-                type: SortType.natural,
-                order: SortOrder.asc,
-              },
-            ],
+            options: [options],
             errors: [
               {
                 messageId: 'unexpectedAstroAttributesOrder',
@@ -567,12 +533,7 @@ describe(RULE_NAME, () => {
               </script>
               <Mushishi name="Yoki" {...ginko} occupation="Mushishi" status="wanderer" />
             `,
-            options: [
-              {
-                type: SortType.natural,
-                order: SortOrder.asc,
-              },
-            ],
+            options: [options],
           },
         ],
         invalid: [
@@ -594,12 +555,7 @@ describe(RULE_NAME, () => {
               </script>
               <Mushishi name="Yoki" {...ginko} occupation="Mushishi" status="wanderer" />
             `,
-            options: [
-              {
-                type: SortType.natural,
-                order: SortOrder.asc,
-              },
-            ],
+            options: [options],
             errors: [
               {
                 messageId: 'unexpectedAstroAttributesOrder',
@@ -633,12 +589,7 @@ describe(RULE_NAME, () => {
                 set:html={greeting}
               />
             `,
-            options: [
-              {
-                type: SortType.natural,
-                order: SortOrder.asc,
-              },
-            ],
+            options: [options],
           },
         ],
         invalid: [
@@ -672,12 +623,7 @@ describe(RULE_NAME, () => {
                 set:html={greeting}
               />
             `,
-            options: [
-              {
-                type: SortType.natural,
-                order: SortOrder.asc,
-              },
-            ],
+            options: [options],
             errors: [
               {
                 messageId: 'unexpectedAstroAttributesOrder',
@@ -721,8 +667,7 @@ describe(RULE_NAME, () => {
             `,
             options: [
               {
-                type: SortType.natural,
-                order: SortOrder.asc,
+                ...options,
                 groups: ['unknown', ['astro-shorthand', 'shorthand']],
               },
             ],
@@ -763,8 +708,7 @@ describe(RULE_NAME, () => {
             `,
             options: [
               {
-                type: SortType.natural,
-                order: SortOrder.asc,
+                ...options,
                 groups: ['unknown', ['svelte-shorthand', 'shorthand']],
               },
             ],
@@ -812,8 +756,7 @@ describe(RULE_NAME, () => {
             `,
             options: [
               {
-                type: SortType.natural,
-                order: SortOrder.asc,
+                ...options,
                 groups: ['multiline', 'unknown'],
               },
             ],
@@ -856,8 +799,7 @@ describe(RULE_NAME, () => {
             `,
             options: [
               {
-                type: SortType.natural,
-                order: SortOrder.asc,
+                ...options,
                 groups: ['multiline', 'unknown'],
               },
             ],
@@ -903,8 +845,7 @@ describe(RULE_NAME, () => {
             `,
             options: [
               {
-                type: SortType.natural,
-                order: SortOrder.asc,
+                ...options,
                 groups: ['top', 'callback', 'unknown'],
                 'custom-groups': {
                   top: ['id', 'name'],
@@ -947,8 +888,7 @@ describe(RULE_NAME, () => {
             `,
             options: [
               {
-                type: SortType.natural,
-                order: SortOrder.asc,
+                ...options,
                 groups: ['top', 'callback', 'unknown'],
                 'custom-groups': {
                   top: ['id', 'name'],
@@ -981,6 +921,11 @@ describe(RULE_NAME, () => {
   describe(`${RULE_NAME}: sorting by line length`, () => {
     let type = 'line-length-order'
 
+    let options = {
+      type: SortType['line-length'],
+      order: SortOrder.desc,
+    }
+
     it(`${RULE_NAME}(${type}): sorts props in astro components`, () => {
       ruleTester.run(RULE_NAME, rule, {
         valid: [
@@ -992,12 +937,7 @@ describe(RULE_NAME, () => {
               </script>
               <HeavenChild partner="Kona" name="Tokio" age={14} sick />
             `,
-            options: [
-              {
-                type: SortType['line-length'],
-                order: SortOrder.desc,
-              },
-            ],
+            options: [options],
           },
         ],
         invalid: [
@@ -1015,12 +955,7 @@ describe(RULE_NAME, () => {
               </script>
               <HeavenChild partner="Kona" name="Tokio" age={14} sick />
             `,
-            options: [
-              {
-                type: SortType['line-length'],
-                order: SortOrder.desc,
-              },
-            ],
+            options: [options],
             errors: [
               {
                 messageId: 'unexpectedAstroAttributesOrder',
@@ -1048,12 +983,7 @@ describe(RULE_NAME, () => {
               </script>
               <Mushishi name="Yoki" {...ginko} occupation="Mushishi" status="wanderer" />
             `,
-            options: [
-              {
-                type: SortType['line-length'],
-                order: SortOrder.desc,
-              },
-            ],
+            options: [options],
           },
         ],
         invalid: [
@@ -1075,12 +1005,7 @@ describe(RULE_NAME, () => {
               </script>
               <Mushishi name="Yoki" {...ginko} occupation="Mushishi" status="wanderer" />
             `,
-            options: [
-              {
-                type: SortType['line-length'],
-                order: SortOrder.desc,
-              },
-            ],
+            options: [options],
             errors: [
               {
                 messageId: 'unexpectedAstroAttributesOrder',
@@ -1114,12 +1039,7 @@ describe(RULE_NAME, () => {
                 {name}
               />
             `,
-            options: [
-              {
-                type: SortType['line-length'],
-                order: SortOrder.desc,
-              },
-            ],
+            options: [options],
           },
         ],
         invalid: [
@@ -1153,12 +1073,7 @@ describe(RULE_NAME, () => {
                 {name}
               />
             `,
-            options: [
-              {
-                type: SortType['line-length'],
-                order: SortOrder.desc,
-              },
-            ],
+            options: [options],
             errors: [
               {
                 messageId: 'unexpectedAstroAttributesOrder',
@@ -1195,8 +1110,7 @@ describe(RULE_NAME, () => {
             `,
             options: [
               {
-                type: SortType['line-length'],
-                order: SortOrder.desc,
+                ...options,
                 groups: ['unknown', ['astro-shorthand', 'shorthand']],
               },
             ],
@@ -1237,8 +1151,7 @@ describe(RULE_NAME, () => {
             `,
             options: [
               {
-                type: SortType['line-length'],
-                order: SortOrder.desc,
+                ...options,
                 groups: ['unknown', ['svelte-shorthand', 'shorthand']],
               },
             ],
@@ -1286,8 +1199,7 @@ describe(RULE_NAME, () => {
             `,
             options: [
               {
-                type: SortType['line-length'],
-                order: SortOrder.desc,
+                ...options,
                 groups: ['multiline', 'unknown'],
               },
             ],
@@ -1330,8 +1242,7 @@ describe(RULE_NAME, () => {
             `,
             options: [
               {
-                type: SortType['line-length'],
-                order: SortOrder.desc,
+                ...options,
                 groups: ['multiline', 'unknown'],
               },
             ],
@@ -1370,8 +1281,7 @@ describe(RULE_NAME, () => {
             `,
             options: [
               {
-                type: SortType['line-length'],
-                order: SortOrder.desc,
+                ...options,
                 groups: ['top', 'callback', 'unknown'],
                 'custom-groups': {
                   top: ['id', 'name'],
@@ -1414,8 +1324,7 @@ describe(RULE_NAME, () => {
             `,
             options: [
               {
-                type: SortType['line-length'],
-                order: SortOrder.desc,
+                ...options,
                 groups: ['top', 'callback', 'unknown'],
                 'custom-groups': {
                   top: ['id', 'name'],

@@ -13,6 +13,12 @@ describe(RULE_NAME, () => {
   describe(`${RULE_NAME}: sorting by alphabetical order`, () => {
     let type = 'alphabetical-order'
 
+    let options = {
+      type: SortType.alphabetical,
+      order: SortOrder.asc,
+      'ignore-case': false,
+    }
+
     it(`${RULE_NAME}(${type}: sorts union types`, () => {
       ruleTester.run(RULE_NAME, rule, {
         valid: [
@@ -20,12 +26,7 @@ describe(RULE_NAME, () => {
             code: dedent`
               type Eternity = 'Fushi' | 'Gugu' | 'Joaan' | 'Parona'
             `,
-            options: [
-              {
-                type: SortType.alphabetical,
-                order: SortOrder.asc,
-              },
-            ],
+            options: [options],
           },
         ],
         invalid: [
@@ -36,12 +37,7 @@ describe(RULE_NAME, () => {
             output: dedent`
               type Eternity = 'Fushi' | 'Gugu' | 'Joaan' | 'Parona'
             `,
-            options: [
-              {
-                type: SortType.alphabetical,
-                order: SortOrder.asc,
-              },
-            ],
+            options: [options],
             errors: [
               {
                 messageId: 'unexpectedUnionTypesOrder',
@@ -87,12 +83,7 @@ describe(RULE_NAME, () => {
                 | unknown
                 | void
             `,
-            options: [
-              {
-                type: SortType.alphabetical,
-                order: SortOrder.asc,
-              },
-            ],
+            options: [options],
             errors: [
               {
                 messageId: 'unexpectedUnionTypesOrder',
@@ -135,12 +126,7 @@ describe(RULE_NAME, () => {
           {
             code: "Omit<Arataka, 'psychic-abilities' | 'power'>",
             output: "Omit<Arataka, 'power' | 'psychic-abilities'>",
-            options: [
-              {
-                type: SortType.alphabetical,
-                order: SortOrder.asc,
-              },
-            ],
+            options: [options],
             errors: [
               {
                 messageId: 'unexpectedUnionTypesOrder',
@@ -162,12 +148,7 @@ describe(RULE_NAME, () => {
           {
             code: 'type DemonSlayer = Tanjiro | Zenitsu | Inosuke',
             output: 'type DemonSlayer = Inosuke | Tanjiro | Zenitsu',
-            options: [
-              {
-                type: SortType.alphabetical,
-                order: SortOrder.asc,
-              },
-            ],
+            options: [options],
             errors: [
               {
                 messageId: 'unexpectedUnionTypesOrder',
@@ -197,12 +178,7 @@ describe(RULE_NAME, () => {
                 | { name: 'Eren Yeager', species: 'human' }
                 | { name: 'Intelligent Titan', status: 'titan' }
             `,
-            options: [
-              {
-                type: SortType.alphabetical,
-                order: SortOrder.asc,
-              },
-            ],
+            options: [options],
             errors: [
               {
                 messageId: 'unexpectedUnionTypesOrder',
@@ -242,12 +218,7 @@ describe(RULE_NAME, () => {
                   | Saitama
               }
             `,
-            options: [
-              {
-                type: SortType.alphabetical,
-                order: SortOrder.asc,
-              },
-            ],
+            options: [options],
             errors: [
               {
                 messageId: 'unexpectedUnionTypesOrder',
@@ -266,6 +237,12 @@ describe(RULE_NAME, () => {
   describe(`${RULE_NAME}: sorting by natural order`, () => {
     let type = 'natural-order'
 
+    let options = {
+      type: SortType.alphabetical,
+      order: SortOrder.asc,
+      'ignore-case': false,
+    }
+
     it(`${RULE_NAME}(${type}: sorts union types`, () => {
       ruleTester.run(RULE_NAME, rule, {
         valid: [
@@ -273,12 +250,7 @@ describe(RULE_NAME, () => {
             code: dedent`
               type Eternity = 'Fushi' | 'Gugu' | 'Joaan' | 'Parona'
             `,
-            options: [
-              {
-                type: SortType.natural,
-                order: SortOrder.asc,
-              },
-            ],
+            options: [options],
           },
         ],
         invalid: [
@@ -289,12 +261,7 @@ describe(RULE_NAME, () => {
             output: dedent`
               type Eternity = 'Fushi' | 'Gugu' | 'Joaan' | 'Parona'
             `,
-            options: [
-              {
-                type: SortType.natural,
-                order: SortOrder.asc,
-              },
-            ],
+            options: [options],
             errors: [
               {
                 messageId: 'unexpectedUnionTypesOrder',
@@ -340,12 +307,7 @@ describe(RULE_NAME, () => {
                 | unknown
                 | void
             `,
-            options: [
-              {
-                type: SortType.natural,
-                order: SortOrder.asc,
-              },
-            ],
+            options: [options],
             errors: [
               {
                 messageId: 'unexpectedUnionTypesOrder',
@@ -388,12 +350,7 @@ describe(RULE_NAME, () => {
           {
             code: "Omit<Arataka, 'psychic-abilities' | 'power'>",
             output: "Omit<Arataka, 'power' | 'psychic-abilities'>",
-            options: [
-              {
-                type: SortType.natural,
-                order: SortOrder.asc,
-              },
-            ],
+            options: [options],
             errors: [
               {
                 messageId: 'unexpectedUnionTypesOrder',
@@ -415,12 +372,7 @@ describe(RULE_NAME, () => {
           {
             code: 'type DemonSlayer = Tanjiro | Zenitsu | Inosuke',
             output: 'type DemonSlayer = Inosuke | Tanjiro | Zenitsu',
-            options: [
-              {
-                type: SortType.natural,
-                order: SortOrder.asc,
-              },
-            ],
+            options: [options],
             errors: [
               {
                 messageId: 'unexpectedUnionTypesOrder',
@@ -450,12 +402,7 @@ describe(RULE_NAME, () => {
                 | { name: 'Eren Yeager', species: 'human' }
                 | { name: 'Intelligent Titan', status: 'titan' }
             `,
-            options: [
-              {
-                type: SortType.natural,
-                order: SortOrder.asc,
-              },
-            ],
+            options: [options],
             errors: [
               {
                 messageId: 'unexpectedUnionTypesOrder',
@@ -495,12 +442,7 @@ describe(RULE_NAME, () => {
                   | Saitama
               }
             `,
-            options: [
-              {
-                type: SortType.natural,
-                order: SortOrder.asc,
-              },
-            ],
+            options: [options],
             errors: [
               {
                 messageId: 'unexpectedUnionTypesOrder',
@@ -519,6 +461,11 @@ describe(RULE_NAME, () => {
   describe(`${RULE_NAME}: sorting by line length`, () => {
     let type = 'line-length-order'
 
+    let options = {
+      type: SortType['line-length'],
+      order: SortOrder.desc,
+    }
+
     it(`${RULE_NAME}(${type}: sorts union types`, () => {
       ruleTester.run(RULE_NAME, rule, {
         valid: [
@@ -526,12 +473,7 @@ describe(RULE_NAME, () => {
             code: dedent`
               type Eternity = 'Parona' | 'Joaan' | 'Fushi' | 'Gugu'
             `,
-            options: [
-              {
-                type: SortType['line-length'],
-                order: SortOrder.desc,
-              },
-            ],
+            options: [options],
           },
         ],
         invalid: [
@@ -542,12 +484,7 @@ describe(RULE_NAME, () => {
             output: dedent`
               type Eternity = 'Parona' | 'Joaan' | 'Fushi' | 'Gugu'
             `,
-            options: [
-              {
-                type: SortType['line-length'],
-                order: SortOrder.desc,
-              },
-            ],
+            options: [options],
             errors: [
               {
                 messageId: 'unexpectedUnionTypesOrder',
@@ -593,12 +530,7 @@ describe(RULE_NAME, () => {
                 | null
                 | any
             `,
-            options: [
-              {
-                type: SortType['line-length'],
-                order: SortOrder.desc,
-              },
-            ],
+            options: [options],
             errors: [
               {
                 messageId: 'unexpectedUnionTypesOrder',
@@ -634,12 +566,7 @@ describe(RULE_NAME, () => {
           {
             code: "Omit<Arataka, 'power' | 'psychic-abilities'>",
             output: "Omit<Arataka, 'psychic-abilities' | 'power'>",
-            options: [
-              {
-                type: SortType['line-length'],
-                order: SortOrder.desc,
-              },
-            ],
+            options: [options],
             errors: [
               {
                 messageId: 'unexpectedUnionTypesOrder',
@@ -659,12 +586,7 @@ describe(RULE_NAME, () => {
         valid: [
           {
             code: 'type DemonSlayer = Tanjiro | Zenitsu | Inosuke',
-            options: [
-              {
-                type: SortType['line-length'],
-                order: SortOrder.desc,
-              },
-            ],
+            options: [options],
           },
         ],
         invalid: [],
@@ -686,12 +608,7 @@ describe(RULE_NAME, () => {
                 | { name: 'Intelligent Titan', status: 'titan' }
                 | { name: 'Eren Yeager', species: 'human' }
             `,
-            options: [
-              {
-                type: SortType['line-length'],
-                order: SortOrder.desc,
-              },
-            ],
+            options: [options],
             errors: [
               {
                 messageId: 'unexpectedUnionTypesOrder',
@@ -731,12 +648,7 @@ describe(RULE_NAME, () => {
                   | Hero[]
               }
             `,
-            options: [
-              {
-                type: SortType['line-length'],
-                order: SortOrder.desc,
-              },
-            ],
+            options: [options],
             errors: [
               {
                 messageId: 'unexpectedUnionTypesOrder',

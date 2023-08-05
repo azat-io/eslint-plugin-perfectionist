@@ -13,6 +13,12 @@ describe(RULE_NAME, () => {
   describe(`${RULE_NAME}: sorting by alphabetical order`, () => {
     let type = 'alphabetical-order'
 
+    let options = {
+      type: SortType.alphabetical,
+      order: SortOrder.asc,
+      'ignore-case': false,
+    }
+
     it(`${RULE_NAME}(${type}): does not break the property list`, () => {
       ruleTester.run(RULE_NAME, rule, {
         valid: [
@@ -26,12 +32,7 @@ describe(RULE_NAME, () => {
                 ['sign-out', '/auth/sign-out'],
               ])
             `,
-            options: [
-              {
-                type: SortType.alphabetical,
-                order: SortOrder.asc,
-              },
-            ],
+            options: [options],
           },
         ],
         invalid: [
@@ -56,12 +57,7 @@ describe(RULE_NAME, () => {
                 ['contacts', '/contacts'],
               ])
             `,
-            options: [
-              {
-                type: SortType.alphabetical,
-                order: SortOrder.asc,
-              },
-            ],
+            options: [options],
             errors: [
               {
                 messageId: 'unexpectedMapElementsOrder',
@@ -86,12 +82,7 @@ describe(RULE_NAME, () => {
                 ...designers,
               ])
             `,
-            options: [
-              {
-                type: SortType.alphabetical,
-                order: SortOrder.asc,
-              },
-            ],
+            options: [options],
           },
           {
             code: dedent`
@@ -100,12 +91,7 @@ describe(RULE_NAME, () => {
                 ...developers,
               ])
             `,
-            options: [
-              {
-                type: SortType.alphabetical,
-                order: SortOrder.asc,
-              },
-            ],
+            options: [options],
           },
         ],
         invalid: [],
@@ -122,12 +108,7 @@ describe(RULE_NAME, () => {
                 [raymondName, raymondData],
               ])
             `,
-            options: [
-              {
-                type: SortType.alphabetical,
-                order: SortOrder.asc,
-              },
-            ],
+            options: [options],
           },
         ],
         invalid: [
@@ -144,12 +125,7 @@ describe(RULE_NAME, () => {
                 [raymondName, raymondData],
               ])
             `,
-            options: [
-              {
-                type: SortType.alphabetical,
-                order: SortOrder.asc,
-              },
-            ],
+            options: [options],
             errors: [
               {
                 messageId: 'unexpectedMapElementsOrder',
@@ -175,12 +151,7 @@ describe(RULE_NAME, () => {
                 [3, 'three'],
               ])
             `,
-            options: [
-              {
-                type: SortType.alphabetical,
-                order: SortOrder.asc,
-              },
-            ],
+            options: [options],
           },
         ],
         invalid: [
@@ -199,12 +170,7 @@ describe(RULE_NAME, () => {
                 [3, 'three'],
               ])
             `,
-            options: [
-              {
-                type: SortType.alphabetical,
-                order: SortOrder.asc,
-              },
-            ],
+            options: [options],
             errors: [
               {
                 messageId: 'unexpectedMapElementsOrder',
@@ -231,12 +197,7 @@ describe(RULE_NAME, () => {
                 weatherApp,
               ])
             `,
-            options: [
-              {
-                type: SortType.natural,
-                order: SortOrder.asc,
-              },
-            ],
+            options: [options],
           },
         ],
         invalid: [
@@ -257,12 +218,7 @@ describe(RULE_NAME, () => {
                 weatherApp,
               ])
             `,
-            options: [
-              {
-                type: SortType.natural,
-                order: SortOrder.asc,
-              },
-            ],
+            options: [options],
             errors: [
               {
                 messageId: 'unexpectedMapElementsOrder',
@@ -288,6 +244,12 @@ describe(RULE_NAME, () => {
   describe(`${RULE_NAME}: sorting by natural order`, () => {
     let type = 'natural-order'
 
+    let options = {
+      type: SortType.natural,
+      order: SortOrder.asc,
+      'ignore-case': false,
+    }
+
     it(`${RULE_NAME}(${type}): does not break the property list`, () => {
       ruleTester.run(RULE_NAME, rule, {
         valid: [
@@ -301,12 +263,7 @@ describe(RULE_NAME, () => {
                 ['sign-out', '/auth/sign-out'],
               ])
             `,
-            options: [
-              {
-                type: SortType.natural,
-                order: SortOrder.asc,
-              },
-            ],
+            options: [options],
           },
         ],
         invalid: [
@@ -331,12 +288,7 @@ describe(RULE_NAME, () => {
                 ['contacts', '/contacts'],
               ])
             `,
-            options: [
-              {
-                type: SortType.natural,
-                order: SortOrder.asc,
-              },
-            ],
+            options: [options],
             errors: [
               {
                 messageId: 'unexpectedMapElementsOrder',
@@ -361,12 +313,7 @@ describe(RULE_NAME, () => {
                 ...designers,
               ])
             `,
-            options: [
-              {
-                type: SortType.natural,
-                order: SortOrder.asc,
-              },
-            ],
+            options: [options],
           },
           {
             code: dedent`
@@ -375,12 +322,7 @@ describe(RULE_NAME, () => {
                 ...developers,
               ])
             `,
-            options: [
-              {
-                type: SortType.natural,
-                order: SortOrder.asc,
-              },
-            ],
+            options: [options],
           },
         ],
         invalid: [],
@@ -397,12 +339,7 @@ describe(RULE_NAME, () => {
                 [raymondName, raymondData],
               ])
             `,
-            options: [
-              {
-                type: SortType.natural,
-                order: SortOrder.asc,
-              },
-            ],
+            options: [options],
           },
         ],
         invalid: [
@@ -419,12 +356,7 @@ describe(RULE_NAME, () => {
                 [raymondName, raymondData],
               ])
             `,
-            options: [
-              {
-                type: SortType.natural,
-                order: SortOrder.asc,
-              },
-            ],
+            options: [options],
             errors: [
               {
                 messageId: 'unexpectedMapElementsOrder',
@@ -450,12 +382,7 @@ describe(RULE_NAME, () => {
                 [3, 'three'],
               ])
             `,
-            options: [
-              {
-                type: SortType.natural,
-                order: SortOrder.asc,
-              },
-            ],
+            options: [options],
           },
         ],
         invalid: [
@@ -474,12 +401,7 @@ describe(RULE_NAME, () => {
                 [3, 'three'],
               ])
             `,
-            options: [
-              {
-                type: SortType.natural,
-                order: SortOrder.asc,
-              },
-            ],
+            options: [options],
             errors: [
               {
                 messageId: 'unexpectedMapElementsOrder',
@@ -506,12 +428,7 @@ describe(RULE_NAME, () => {
                 weatherApp,
               ])
             `,
-            options: [
-              {
-                type: SortType.natural,
-                order: SortOrder.asc,
-              },
-            ],
+            options: [options],
           },
         ],
         invalid: [
@@ -532,12 +449,7 @@ describe(RULE_NAME, () => {
                 weatherApp,
               ])
             `,
-            options: [
-              {
-                type: SortType.natural,
-                order: SortOrder.asc,
-              },
-            ],
+            options: [options],
             errors: [
               {
                 messageId: 'unexpectedMapElementsOrder',
@@ -563,6 +475,11 @@ describe(RULE_NAME, () => {
   describe(`${RULE_NAME}: sorting by line length`, () => {
     let type = 'line-length-order'
 
+    let options = {
+      type: SortType['line-length'],
+      order: SortOrder.desc,
+    }
+
     it(`${RULE_NAME}(${type}): does not break the property list`, () => {
       ruleTester.run(RULE_NAME, rule, {
         valid: [
@@ -576,12 +493,7 @@ describe(RULE_NAME, () => {
                 ['sign-out', '/auth/sign-out'],
               ])
             `,
-            options: [
-              {
-                type: SortType['line-length'],
-                order: SortOrder.desc,
-              },
-            ],
+            options: [options],
           },
         ],
         invalid: [
@@ -606,12 +518,7 @@ describe(RULE_NAME, () => {
                 ['contacts', '/contacts'],
               ])
             `,
-            options: [
-              {
-                type: SortType['line-length'],
-                order: SortOrder.desc,
-              },
-            ],
+            options: [options],
             errors: [
               {
                 messageId: 'unexpectedMapElementsOrder',
@@ -646,12 +553,7 @@ describe(RULE_NAME, () => {
                 ['EUR', 'Euro'],
               ])
             `,
-            options: [
-              {
-                type: SortType['line-length'],
-                order: SortOrder.desc,
-              },
-            ],
+            options: [options],
           },
         ],
         invalid: [
@@ -668,12 +570,7 @@ describe(RULE_NAME, () => {
                 ['EUR', 'Euro'],
               ])
             `,
-            options: [
-              {
-                type: SortType['line-length'],
-                order: SortOrder.desc,
-              },
-            ],
+            options: [options],
             errors: [
               {
                 messageId: 'unexpectedMapElementsOrder',
@@ -697,12 +594,7 @@ describe(RULE_NAME, () => {
                 ['Europe', 'EUR'],
               ])
             `,
-            options: [
-              {
-                type: SortType['line-length'],
-                order: SortOrder.desc,
-              },
-            ],
+            options: [options],
             errors: [
               {
                 messageId: 'unexpectedMapElementsOrder',
@@ -727,12 +619,7 @@ describe(RULE_NAME, () => {
                 ...designers,
               ])
             `,
-            options: [
-              {
-                type: SortType['line-length'],
-                order: SortOrder.desc,
-              },
-            ],
+            options: [options],
           },
           {
             code: dedent`
@@ -741,12 +628,7 @@ describe(RULE_NAME, () => {
                 ...developers,
               ])
             `,
-            options: [
-              {
-                type: SortType['line-length'],
-                order: SortOrder.desc,
-              },
-            ],
+            options: [options],
           },
         ],
         invalid: [],
@@ -763,12 +645,7 @@ describe(RULE_NAME, () => {
                 [jessieName, jessieData],
               ])
             `,
-            options: [
-              {
-                type: SortType['line-length'],
-                order: SortOrder.desc,
-              },
-            ],
+            options: [options],
           },
         ],
         invalid: [
@@ -785,12 +662,7 @@ describe(RULE_NAME, () => {
                 [jessieName, jessieData],
               ])
             `,
-            options: [
-              {
-                type: SortType['line-length'],
-                order: SortOrder.desc,
-              },
-            ],
+            options: [options],
             errors: [
               {
                 messageId: 'unexpectedMapElementsOrder',
@@ -816,12 +688,7 @@ describe(RULE_NAME, () => {
                 [2, 'two'],
               ])
             `,
-            options: [
-              {
-                type: SortType['line-length'],
-                order: SortOrder.desc,
-              },
-            ],
+            options: [options],
           },
         ],
         invalid: [
@@ -840,12 +707,7 @@ describe(RULE_NAME, () => {
                 [2, 'two'],
               ])
             `,
-            options: [
-              {
-                type: SortType['line-length'],
-                order: SortOrder.desc,
-              },
-            ],
+            options: [options],
             errors: [
               {
                 messageId: 'unexpectedMapElementsOrder',
@@ -872,12 +734,7 @@ describe(RULE_NAME, () => {
                 mapsApp,
               ])
             `,
-            options: [
-              {
-                type: SortType['line-length'],
-                order: SortOrder.desc,
-              },
-            ],
+            options: [options],
           },
         ],
         invalid: [
@@ -898,12 +755,7 @@ describe(RULE_NAME, () => {
                 mapsApp,
               ])
             `,
-            options: [
-              {
-                type: SortType['line-length'],
-                order: SortOrder.desc,
-              },
-            ],
+            options: [options],
             errors: [
               {
                 messageId: 'unexpectedMapElementsOrder',
