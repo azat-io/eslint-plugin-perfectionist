@@ -75,7 +75,7 @@
     "vue-eslint-parser": ">=9.0.0"
   },
   "dependencies": {
-    "@typescript-eslint/utils": "^6.2.0",
+    "@typescript-eslint/utils": "^6.2.1",
     "minimatch": "^9.0.3",
     "natural-compare-lite": "^1.4.0"
   },
@@ -86,10 +86,10 @@
     "@commitlint/config-conventional": "^17.7.0",
     "@types/natural-compare-lite": "^1.4.0",
     "@types/node": "^20.5.1",
-    "@typescript-eslint/eslint-plugin": "^6.2.0",
-    "@typescript-eslint/parser": "^6.2.0",
-    "@typescript-eslint/rule-tester": "^6.2.0",
-    "@typescript-eslint/types": "^6.2.0",
+    "@typescript-eslint/eslint-plugin": "^6.2.1",
+    "@typescript-eslint/parser": "^6.2.1",
+    "@typescript-eslint/rule-tester": "^6.2.1",
+    "@typescript-eslint/types": "^6.2.1",
     "@vitest/coverage-v8": "^0.34.1",
     "astro-eslint-parser": "^0.14.0",
     "changelogen": "^0.5.4",
