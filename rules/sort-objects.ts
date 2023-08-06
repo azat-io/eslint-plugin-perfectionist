@@ -1,8 +1,6 @@
 import type { TSESTree } from '@typescript-eslint/types'
 import type { TSESLint } from '@typescript-eslint/utils'
 
-import { AST_NODE_TYPES } from '@typescript-eslint/types'
-
 import type { PartitionComment, SortingNode } from '../typings'
 
 import { isPartitionComment } from '../utils/is-partition-comment'
@@ -151,8 +149,8 @@ export default createEslintRule<Options, MESSAGE_ID>({
           props.reduce(
             (accumulator: SortingNodeWithPosition[][], prop) => {
               if (
-                prop.type === AST_NODE_TYPES.SpreadElement ||
-                prop.type === AST_NODE_TYPES.RestElement
+                prop.type === 'SpreadElement' ||
+                prop.type === 'RestElement'
               ) {
                 accumulator.push([])
                 return accumulator
@@ -177,27 +175,24 @@ export default createEslintRule<Options, MESSAGE_ID>({
 
               let { getGroup, setCustomGroups } = useGroups(options.groups)
 
-              if (prop.key.type === AST_NODE_TYPES.Identifier) {
+              if (prop.key.type === 'Identifier') {
                 ;({ name } = prop.key)
-              } else if (prop.key.type === AST_NODE_TYPES.Literal) {
+              } else if (prop.key.type === 'Literal') {
                 name = `${prop.key.value}`
               } else {
                 name = source.text.slice(...prop.key.range)
               }
 
-              if (prop.value.type === AST_NODE_TYPES.AssignmentPattern) {
+              if (prop.value.type === 'AssignmentPattern') {
                 let addDependencies = (
                   value: TSESTree.AssignmentPattern,
                   initialStart: boolean,
                 ) => {
-                  if (value.right.type === AST_NODE_TYPES.Identifier) {
+                  if (value.right.type === 'Identifier') {
                     dependencies.push(value.right.name)
                   }
 
-                  if (
-                    !initialStart &&
-                    value.left.type === AST_NODE_TYPES.Identifier
-                  ) {
+                  if (!initialStart && value.left.type === 'Identifier') {
                     dependencies.push(value.left.name)
                   }
 
@@ -212,20 +207,20 @@ export default createEslintRule<Options, MESSAGE_ID>({
                     let nodes = []
 
                     switch (expression.type) {
-                      case AST_NODE_TYPES.ArrowFunctionExpression:
+                      case 'ArrowFunctionExpression':
                         nodes.push(expression.body)
                         break
 
-                      case AST_NODE_TYPES.ConditionalExpression:
+                      case 'ConditionalExpression':
                         nodes.push(expression.consequent, expression.alternate)
                         break
 
-                      case AST_NODE_TYPES.LogicalExpression:
-                      case AST_NODE_TYPES.BinaryExpression:
+                      case 'LogicalExpression':
+                      case 'BinaryExpression':
                         nodes.push(expression.left, expression.right)
                         break
 
-                      case AST_NODE_TYPES.CallExpression:
+                      case 'CallExpression':
                         nodes.push(...expression.arguments)
                         break
 
@@ -233,13 +228,13 @@ export default createEslintRule<Options, MESSAGE_ID>({
                     }
 
                     nodes.forEach(nestedNode => {
-                      if (nestedNode.type === AST_NODE_TYPES.Identifier) {
+                      if (nestedNode.type === 'Identifier') {
                         dependencies.push(nestedNode.name)
                       }
 
                       if (
-                        nestedNode.type === AST_NODE_TYPES.BinaryExpression ||
-                        nestedNode.type === AST_NODE_TYPES.ConditionalExpression
+                        nestedNode.type === 'BinaryExpression' ||
+                        nestedNode.type === 'ConditionalExpression'
                       ) {
                         handleComplexExpression(nestedNode)
                       }
@@ -247,11 +242,11 @@ export default createEslintRule<Options, MESSAGE_ID>({
                   }
 
                   switch (value.right.type) {
-                    case AST_NODE_TYPES.ArrowFunctionExpression:
-                    case AST_NODE_TYPES.ConditionalExpression:
-                    case AST_NODE_TYPES.LogicalExpression:
-                    case AST_NODE_TYPES.BinaryExpression:
-                    case AST_NODE_TYPES.CallExpression:
+                    case 'ArrowFunctionExpression':
+                    case 'ConditionalExpression':
+                    case 'LogicalExpression':
+                    case 'BinaryExpression':
+                    case 'CallExpression':
                       handleComplexExpression(value.right)
                       break
 

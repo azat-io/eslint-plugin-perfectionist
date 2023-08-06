@@ -1,7 +1,5 @@
 import type { TSESTree } from '@typescript-eslint/types'
 
-import { AST_NODE_TYPES } from '@typescript-eslint/types'
-
 import type { SortingNode } from '../typings'
 
 import { createEslintRule } from '../utils/create-eslint-rule'
@@ -82,10 +80,7 @@ export default createEslintRule<Options, MESSAGE_ID>({
         | TSESTree.ExportNamedDeclarationWithSource
         | TSESTree.ExportAllDeclaration,
     ) => {
-      if (
-        node.type === AST_NODE_TYPES.ExportAllDeclaration &&
-        node.exported === null
-      ) {
+      if (node.type === 'ExportAllDeclaration' && node.exported === null) {
         parts.push([])
       } else {
         parts.at(-1)!.push({

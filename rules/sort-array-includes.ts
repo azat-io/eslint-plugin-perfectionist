@@ -1,7 +1,5 @@
 import type { TSESTree } from '@typescript-eslint/types'
 
-import { AST_NODE_TYPES } from '@typescript-eslint/types'
-
 import type { SortingNode } from '../typings'
 
 import { createEslintRule } from '../utils/create-eslint-rule'
@@ -78,13 +76,13 @@ export default createEslintRule<Options, MESSAGE_ID>({
   create: context => ({
     MemberExpression: node => {
       if (
-        (node.object.type === AST_NODE_TYPES.ArrayExpression ||
-          node.object.type === AST_NODE_TYPES.NewExpression) &&
-        node.property.type === AST_NODE_TYPES.Identifier &&
+        (node.object.type === 'ArrayExpression' ||
+          node.object.type === 'NewExpression') &&
+        node.property.type === 'Identifier' &&
         node.property.name === 'includes'
       ) {
         let elements =
-          node.object.type === AST_NODE_TYPES.ArrayExpression
+          node.object.type === 'ArrayExpression'
             ? node.object.elements
             : node.object.arguments
 
@@ -107,7 +105,7 @@ export default createEslintRule<Options, MESSAGE_ID>({
                 if (element !== null) {
                   accumulator.at(0)!.push({
                     name:
-                      element.type === AST_NODE_TYPES.Literal
+                      element.type === 'Literal'
                         ? `${element.value}`
                         : source.text.slice(...element.range),
                     size: rangeToDiff(element.range),
@@ -127,14 +125,14 @@ export default createEslintRule<Options, MESSAGE_ID>({
 
             if (
               options['spread-last'] &&
-              left.node.type === AST_NODE_TYPES.Literal &&
-              right.node.type === AST_NODE_TYPES.SpreadElement
+              left.node.type === 'Literal' &&
+              right.node.type === 'SpreadElement'
             ) {
               compareValue = false
             } else if (
               options['spread-last'] &&
-              left.node.type === AST_NODE_TYPES.SpreadElement &&
-              right.node.type === AST_NODE_TYPES.Literal
+              left.node.type === 'SpreadElement' &&
+              right.node.type === 'Literal'
             ) {
               compareValue = true
             } else {
@@ -154,10 +152,7 @@ export default createEslintRule<Options, MESSAGE_ID>({
 
                   if (options['spread-last']) {
                     for (let i = 0, max = sortedNodes.length; i < max; i++) {
-                      if (
-                        sortedNodes.at(i)!.node.type ===
-                        AST_NODE_TYPES.SpreadElement
-                      ) {
+                      if (sortedNodes.at(i)!.node.type === 'SpreadElement') {
                         sortedNodes.push(sortedNodes.splice(i, 1).at(0)!)
                       }
                     }

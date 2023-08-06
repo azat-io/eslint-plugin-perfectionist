@@ -1,5 +1,3 @@
-import { AST_NODE_TYPES } from '@typescript-eslint/types'
-
 import type { SortingNode } from '../typings'
 
 import { createEslintRule } from '../utils/create-eslint-rule'
@@ -86,10 +84,10 @@ export default createEslintRule<Options, MESSAGE_ID>({
           let formatName = (value: string): string =>
             value.replace(/(,|;)$/, '')
 
-          if (member.type === AST_NODE_TYPES.TSPropertySignature) {
-            if (member.key.type === AST_NODE_TYPES.Identifier) {
+          if (member.type === 'TSPropertySignature') {
+            if (member.key.type === 'Identifier') {
               ;({ name } = member.key)
-            } else if (member.key.type === AST_NODE_TYPES.Literal) {
+            } else if (member.key.type === 'Literal') {
               name = `${member.key.value}`
             } else {
               name = source.text.slice(
@@ -97,7 +95,7 @@ export default createEslintRule<Options, MESSAGE_ID>({
                 member.typeAnnotation?.range.at(0),
               )
             }
-          } else if (member.type === AST_NODE_TYPES.TSIndexSignature) {
+          } else if (member.type === 'TSIndexSignature') {
             let endIndex: number =
               member.typeAnnotation?.range.at(0) ?? member.range.at(1)!
 

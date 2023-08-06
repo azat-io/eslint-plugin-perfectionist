@@ -1,7 +1,6 @@
 import type { TSESTree } from '@typescript-eslint/types'
 import type { TSESLint } from '@typescript-eslint/utils'
 
-import { AST_NODE_TYPES } from '@typescript-eslint/types'
 import isCoreModule from 'is-core-module'
 import { minimatch } from 'minimatch'
 
@@ -164,8 +163,7 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
     let nodes: SortingNode[] = []
 
     let isSideEffectImport = (node: TSESTree.Node) =>
-      node.type === AST_NODE_TYPES.ImportDeclaration &&
-      node.specifiers.length === 0
+      node.type === 'ImportDeclaration' && node.specifiers.length === 0
 
     let computeGroup = (node: ModuleDeclaration): Group<string[]> => {
       let isStyle = (value: string) =>
@@ -198,7 +196,7 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
         tsPaths.some(pattern => minimatch(nodeElement.source.value, pattern))
 
       if (node.importKind === 'type') {
-        if (node.type === AST_NODE_TYPES.ImportDeclaration) {
+        if (node.type === 'ImportDeclaration') {
           setCustomGroups(options['custom-groups'].type, node.source.value)
 
           if (isCoreModule(node.source.value)) {
@@ -226,7 +224,7 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
         defineGroup('type')
       }
 
-      if (node.type === AST_NODE_TYPES.ImportDeclaration) {
+      if (node.type === 'ImportDeclaration') {
         setCustomGroups(options['custom-groups'].value, node.source.value)
 
         if (isCoreModule(node.source.value)) {
@@ -266,13 +264,12 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
     let registerNode = (node: ModuleDeclaration) => {
       let name: string
 
-      if (node.type === AST_NODE_TYPES.ImportDeclaration) {
+      if (node.type === 'ImportDeclaration') {
         name = node.source.value
       } else {
         if (
-          node.moduleReference.type ===
-            AST_NODE_TYPES.TSExternalModuleReference &&
-          node.moduleReference.expression.type === AST_NODE_TYPES.Literal
+          node.moduleReference.type === 'TSExternalModuleReference' &&
+          node.moduleReference.expression.type === 'Literal'
         ) {
           name = `${node.moduleReference.expression.value}`
         } else {
