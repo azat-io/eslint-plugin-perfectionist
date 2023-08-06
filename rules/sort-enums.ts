@@ -1,5 +1,3 @@
-import { AST_NODE_TYPES } from '@typescript-eslint/types'
-
 import type { SortingNode } from '../typings'
 
 import { createEslintRule } from '../utils/create-eslint-rule'
@@ -83,7 +81,7 @@ export default createEslintRule<Options, MESSAGE_ID>({
 
         let nodes: SortingNode[] = node.members.map(member => ({
           name:
-            member.id.type === AST_NODE_TYPES.Literal
+            member.id.type === 'Literal'
               ? `${member.id.value}`
               : `${source.text.slice(...member.id.range)}`,
           size: rangeToDiff(member.range),

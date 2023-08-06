@@ -1,5 +1,3 @@
-import { AST_NODE_TYPES } from '@typescript-eslint/types'
-
 import type { SortingNode } from '../typings'
 
 import { createEslintRule } from '../utils/create-eslint-rule'
@@ -70,7 +68,7 @@ export default createEslintRule<Options, MESSAGE_ID>({
   create: context => ({
     ImportDeclaration: node => {
       let specifiers = node.specifiers.filter(
-        ({ type }) => type === AST_NODE_TYPES.ImportSpecifier,
+        ({ type }) => type === 'ImportSpecifier',
       )
 
       if (specifiers.length > 1) {

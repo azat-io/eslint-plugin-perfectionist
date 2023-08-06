@@ -1,4 +1,3 @@
-import { AST_NODE_TYPES } from '@typescript-eslint/types'
 import { minimatch } from 'minimatch'
 
 import type { SortingNode } from '../typings'
@@ -93,17 +92,17 @@ export default createEslintRule<Options, MESSAGE_ID>({
 
           let formattedMembers: SortingNode[][] = node.body.body.reduce(
             (accumulator: SortingNode[][], element) => {
-              if (element.type === AST_NODE_TYPES.TSCallSignatureDeclaration) {
+              if (element.type === 'TSCallSignatureDeclaration') {
                 accumulator.push([])
                 return accumulator
               }
 
               let name: string
 
-              if (element.type === AST_NODE_TYPES.TSPropertySignature) {
-                if (element.key.type === AST_NODE_TYPES.Identifier) {
+              if (element.type === 'TSPropertySignature') {
+                if (element.key.type === 'Identifier') {
                   ;({ name } = element.key)
-                } else if (element.key.type === AST_NODE_TYPES.Literal) {
+                } else if (element.key.type === 'Literal') {
                   name = `${element.key.value}`
                 } else {
                   let end: number =
@@ -112,7 +111,7 @@ export default createEslintRule<Options, MESSAGE_ID>({
 
                   name = source.text.slice(element.range.at(0), end)
                 }
-              } else if (element.type === AST_NODE_TYPES.TSIndexSignature) {
+              } else if (element.type === 'TSIndexSignature') {
                 let endIndex: number =
                   element.typeAnnotation?.range.at(0) ?? element.range.at(1)!
 

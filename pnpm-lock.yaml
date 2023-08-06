@@ -5,9 +5,6 @@ settings:
   excludeLinksFromLockfile: false
 
 dependencies:
-  '@typescript-eslint/types':
-    specifier: ^5.62.0
-    version: 5.62.0
   '@typescript-eslint/utils':
     specifier: ^5.62.0
     version: 5.62.0(eslint@8.46.0)(typescript@5.1.6)
@@ -46,6 +43,9 @@ devDependencies:
   '@typescript-eslint/parser':
     specifier: ^5.62.0
     version: 5.62.0(eslint@8.46.0)(typescript@5.1.6)
+  '@typescript-eslint/types':
+    specifier: ^5.62.0
+    version: 5.62.0
   '@vitest/coverage-v8':
     specifier: ^0.34.1
     version: 0.34.1(vitest@0.34.1)

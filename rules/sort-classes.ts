@@ -1,7 +1,5 @@
 import type { TSESLint } from '@typescript-eslint/utils'
 
-import { AST_NODE_TYPES } from '@typescript-eslint/types'
-
 import type { SortingNode } from '../typings'
 
 import { createEslintRule } from '../utils/create-eslint-rule'
@@ -102,22 +100,22 @@ export default createEslintRule<Options, MESSAGE_ID>({
           let name: string
           let { getGroup, defineGroup } = useGroups(options.groups)
 
-          if (member.type === AST_NODE_TYPES.StaticBlock) {
+          if (member.type === 'StaticBlock') {
             name = 'static'
-          } else if (member.type === AST_NODE_TYPES.TSIndexSignature) {
+          } else if (member.type === 'TSIndexSignature') {
             name = source.text.slice(
               member.range.at(0),
               member.typeAnnotation?.range.at(0) ?? member.range.at(1),
             )
           } else {
-            if (member.key.type === AST_NODE_TYPES.Identifier) {
+            if (member.key.type === 'Identifier') {
               ;({ name } = member.key)
             } else {
               name = source.text.slice(...member.key.range)
             }
           }
 
-          if (member.type === AST_NODE_TYPES.MethodDefinition) {
+          if (member.type === 'MethodDefinition') {
             if (member.kind === 'constructor') {
               defineGroup('constructor')
             }
@@ -131,7 +129,7 @@ export default createEslintRule<Options, MESSAGE_ID>({
             }
 
             defineGroup('method')
-          } else if (member.type === AST_NODE_TYPES.PropertyDefinition) {
+          } else if (member.type === 'PropertyDefinition') {
             if (member.static) {
               defineGroup('static-property')
             }

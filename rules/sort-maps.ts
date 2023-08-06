@@ -1,7 +1,5 @@
 import type { TSESTree } from '@typescript-eslint/types'
 
-import { AST_NODE_TYPES } from '@typescript-eslint/types'
-
 import type { SortingNode } from '../typings'
 
 import { createEslintRule } from '../utils/create-eslint-rule'
@@ -73,10 +71,10 @@ export default createEslintRule<Options, MESSAGE_ID>({
   create: context => ({
     NewExpression: node => {
       if (
-        node.callee.type === AST_NODE_TYPES.Identifier &&
+        node.callee.type === 'Identifier' &&
         node.callee.name === 'Map' &&
         node.arguments.length &&
-        node.arguments[0].type === AST_NODE_TYPES.ArrayExpression
+        node.arguments[0].type === 'ArrayExpression'
       ) {
         let [{ elements }] = node.arguments
 
@@ -94,10 +92,7 @@ export default createEslintRule<Options, MESSAGE_ID>({
               accumulator: TSESTree.Expression[][],
               element: TSESTree.SpreadElement | TSESTree.Expression | null,
             ) => {
-              if (
-                element === null ||
-                element.type === AST_NODE_TYPES.SpreadElement
-              ) {
+              if (element === null || element.type === 'SpreadElement') {
                 accumulator.push([])
               } else {
                 accumulator.at(-1)!.push(element)
@@ -111,12 +106,12 @@ export default createEslintRule<Options, MESSAGE_ID>({
             let nodes: SortingNode[] = part.map(element => {
               let name: string
 
-              if (element.type === AST_NODE_TYPES.ArrayExpression) {
+              if (element.type === 'ArrayExpression') {
                 let [left] = element.elements
 
                 if (!left) {
                   name = `${left}`
-                } else if (left.type === AST_NODE_TYPES.Literal) {
+                } else if (left.type === 'Literal') {
                   name = left.raw
                 } else {
                   name = source.text.slice(...left.range)

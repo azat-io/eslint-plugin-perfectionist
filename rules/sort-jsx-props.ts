@@ -1,7 +1,5 @@
 import type { TSESTree } from '@typescript-eslint/types'
 
-import { AST_NODE_TYPES } from '@typescript-eslint/types'
-
 import type { SortingNode } from '../typings'
 
 import { createEslintRule } from '../utils/create-eslint-rule'
@@ -103,13 +101,13 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
             accumulator: SortingNode[][],
             attribute: TSESTree.JSXSpreadAttribute | TSESTree.JSXAttribute,
           ) => {
-            if (attribute.type === AST_NODE_TYPES.JSXSpreadAttribute) {
+            if (attribute.type === 'JSXSpreadAttribute') {
               accumulator.push([])
               return accumulator
             }
 
             let name =
-              attribute.name.type === AST_NODE_TYPES.JSXNamespacedName
+              attribute.name.type === 'JSXNamespacedName'
                 ? `${attribute.name.namespace.name}:${attribute.name.name.name}`
                 : attribute.name.name
 
