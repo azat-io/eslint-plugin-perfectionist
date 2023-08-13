@@ -83,16 +83,9 @@ interface Options {
   type?: 'alphabetical' | 'natural' | 'line-length'
   order?: 'asc' | 'desc'
   'ignore-case'?: boolean
-<<<<<<< HEAD
   groups?: (string | string[])[]
   'custom-groups': { [key: string]: string[] | string }
   'styled-components': boolean
-||||||| parent of d670980 (feat!: move from always-on-top option to groups in sort-objects rule)
-  'always-on-top'?: string[]
-=======
-  groups?: (string | string[])[]
-  'custom-groups': { [key: string]: string[] | string }
->>>>>>> d670980 (feat!: move from always-on-top option to groups in sort-objects rule)
   'partition-by-comment': string[] | string | boolean
 }
 ```

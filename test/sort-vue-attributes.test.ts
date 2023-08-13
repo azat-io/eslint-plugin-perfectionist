@@ -1,12 +1,19 @@
-import { ESLintUtils } from '@typescript-eslint/utils'
-import { describe, it } from 'vitest'
+import { RuleTester } from '@typescript-eslint/rule-tester'
+import { afterAll, describe, it } from 'vitest'
 import { dedent } from 'ts-dedent'
 
 import rule, { RULE_NAME } from '../rules/sort-vue-attributes'
 import { SortOrder, SortType } from '../typings'
 
 describe(RULE_NAME, () => {
-  let ruleTester = new ESLintUtils.RuleTester({
+  RuleTester.describeSkip = describe.skip
+  RuleTester.afterAll = afterAll
+  RuleTester.describe = describe
+  RuleTester.itOnly = it.only
+  RuleTester.itSkip = it.skip
+  RuleTester.it = it
+
+  let ruleTester = new RuleTester({
     // @ts-ignore
     parser: require.resolve('vue-eslint-parser'),
     parserOptions: {
@@ -890,7 +897,7 @@ describe(RULE_NAME, () => {
     })
 
     it(`${RULE_NAME}: requires vue parser`, () => {
-      let tsRuleTester = new ESLintUtils.RuleTester({
+      let tsRuleTester = new RuleTester({
         parser: '@typescript-eslint/parser',
       })
 
