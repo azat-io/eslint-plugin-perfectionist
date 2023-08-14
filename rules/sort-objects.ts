@@ -175,48 +175,51 @@ export default createEslintRule<Options, MESSAGE_ID>({
                   let handleComplexExpression = (
                     expression:
                       | TSESTree.ArrowFunctionExpression
-                      | TSESTree.BinaryExpression
-                      | TSESTree.CallExpression
-                      | TSESTree.ChainExpression
                       | TSESTree.ConditionalExpression
-                      | TSESTree.LogicalExpression,
+                      | TSESTree.LogicalExpression
+                      | TSESTree.BinaryExpression
+                      | TSESTree.ChainExpression
+                      | TSESTree.CallExpression,
                   ) => {
-                    const nodes = []
+                    let nestedNodes = []
 
                     if (
                       expression.type === AST_NODE_TYPES.ArrowFunctionExpression
                     ) {
-                      nodes.push(expression.body)
+                      nestedNodes.push(expression.body)
                     }
 
                     if (expression.type === AST_NODE_TYPES.BinaryExpression) {
-                      nodes.push(expression.left, expression.right)
+                      nestedNodes.push(expression.left, expression.right)
                     }
 
                     if (expression.type === AST_NODE_TYPES.CallExpression) {
-                      nodes.push(...expression.arguments)
+                      nestedNodes.push(...expression.arguments)
                     }
 
                     if (
                       expression.type === AST_NODE_TYPES.ConditionalExpression
                     ) {
-                      nodes.push(expression.consequent, expression.alternate)
+                      nestedNodes.push(
+                        expression.consequent,
+                        expression.alternate,
+                      )
                     }
 
                     if (expression.type === AST_NODE_TYPES.LogicalExpression) {
-                      nodes.push(expression.left, expression.right)
+                      nestedNodes.push(expression.left, expression.right)
                     }
 
-                    nodes.forEach(node => {
-                      if (node.type === AST_NODE_TYPES.Identifier) {
-                        dependencies.push(node.name)
+                    nestedNodes.forEach(nestedNode => {
+                      if (nestedNode.type === AST_NODE_TYPES.Identifier) {
+                        dependencies.push(nestedNode.name)
                       }
 
                       if (
-                        node.type === AST_NODE_TYPES.BinaryExpression ||
-                        node.type === AST_NODE_TYPES.ConditionalExpression
+                        nestedNode.type === AST_NODE_TYPES.BinaryExpression ||
+                        nestedNode.type === AST_NODE_TYPES.ConditionalExpression
                       ) {
-                        handleComplexExpression(node)
+                        handleComplexExpression(nestedNode)
                       }
                     })
                   }
