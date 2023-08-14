@@ -192,9 +192,6 @@ export default createEslintRule<Options, MESSAGE_ID>({
                         break
 
                       case AST_NODE_TYPES.LogicalExpression:
-                        nodes.push(expression.left, expression.right)
-                        break
-
                       case AST_NODE_TYPES.BinaryExpression:
                         nodes.push(expression.left, expression.right)
                         break
