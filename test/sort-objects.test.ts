@@ -597,6 +597,191 @@ describe(RULE_NAME, () => {
               },
             ],
           },
+          {
+            code: dedent`
+              let countPrisonSchoolGrade = ({
+                biology,
+                finalScore = () => biology + math,
+                math,
+                naturalScience,
+              }) => {
+                // ...
+              }
+            `,
+            output: dedent`
+              let countPrisonSchoolGrade = ({
+                biology,
+                math,
+                finalScore = () => biology + math,
+                naturalScience,
+              }) => {
+                // ...
+              }
+            `,
+            options: [
+              {
+                type: SortType.alphabetical,
+                order: SortOrder.asc,
+              },
+            ],
+            errors: [
+              {
+                messageId: 'unexpectedObjectsOrder',
+                data: {
+                  left: 'finalScore',
+                  right: 'math',
+                },
+              },
+            ],
+          },
+          {
+            code: dedent`
+              let countPrisonSchoolGrade = ({
+                biology,
+                finalScore = 1 === 1 ? 1 === 1 ? math : biology : biology,
+                math,
+                naturalScience,
+              }) => {
+                // ...
+              }
+            `,
+            output: dedent`
+              let countPrisonSchoolGrade = ({
+                biology,
+                math,
+                finalScore = 1 === 1 ? 1 === 1 ? math : biology : biology,
+                naturalScience,
+              }) => {
+                // ...
+              }
+            `,
+            options: [
+              {
+                type: SortType.alphabetical,
+                order: SortOrder.asc,
+              },
+            ],
+            errors: [
+              {
+                messageId: 'unexpectedObjectsOrder',
+                data: {
+                  left: 'finalScore',
+                  right: 'math',
+                },
+              },
+            ],
+          },
+          {
+            code: dedent`
+              let countPrisonSchoolGrade = ({
+                biology,
+                finalScore = ['a', 'b', 'c'].includes(naturalScience, math, biology),
+                math,
+                naturalScience,
+              }) => {
+                // ...
+              }
+            `,
+            output: dedent`
+              let countPrisonSchoolGrade = ({
+                biology,
+                math,
+                naturalScience,
+                finalScore = ['a', 'b', 'c'].includes(naturalScience, math, biology),
+              }) => {
+                // ...
+              }
+            `,
+            options: [
+              {
+                type: SortType.alphabetical,
+                order: SortOrder.asc,
+              },
+            ],
+            errors: [
+              {
+                messageId: 'unexpectedObjectsOrder',
+                data: {
+                  left: 'finalScore',
+                  right: 'math',
+                },
+              },
+            ],
+          },
+          {
+            code: dedent`
+              let countPrisonSchoolGrade = ({
+                biology,
+                finalScore = math || biology,
+                math,
+                naturalScience,
+              }) => {
+                // ...
+              }
+            `,
+            output: dedent`
+              let countPrisonSchoolGrade = ({
+                biology,
+                math,
+                finalScore = math || biology,
+                naturalScience,
+              }) => {
+                // ...
+              }
+            `,
+            options: [
+              {
+                type: SortType.alphabetical,
+                order: SortOrder.asc,
+              },
+            ],
+            errors: [
+              {
+                messageId: 'unexpectedObjectsOrder',
+                data: {
+                  left: 'finalScore',
+                  right: 'math',
+                },
+              },
+            ],
+          },
+          {
+            code: dedent`
+              let countPrisonSchoolGrade = ({
+                biology,
+                finalScore = 1 === 1 ? math : biology,
+                math,
+                naturalScience,
+              }) => {
+                // ...
+              }
+            `,
+            output: dedent`
+              let countPrisonSchoolGrade = ({
+                biology,
+                math,
+                finalScore = 1 === 1 ? math : biology,
+                naturalScience,
+              }) => {
+                // ...
+              }
+            `,
+            options: [
+              {
+                type: SortType.alphabetical,
+                order: SortOrder.asc,
+              },
+            ],
+            errors: [
+              {
+                messageId: 'unexpectedObjectsOrder',
+                data: {
+                  left: 'finalScore',
+                  right: 'math',
+                },
+              },
+            ],
+          },
         ],
       })
     })
