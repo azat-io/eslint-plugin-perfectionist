@@ -178,39 +178,35 @@ export default createEslintRule<Options, MESSAGE_ID>({
                       | TSESTree.ConditionalExpression
                       | TSESTree.LogicalExpression
                       | TSESTree.BinaryExpression
-                      | TSESTree.ChainExpression
                       | TSESTree.CallExpression,
                   ) => {
-                    let nestedNodes = []
+                    let nodes = []
 
-                    if (
-                      expression.type === AST_NODE_TYPES.ArrowFunctionExpression
-                    ) {
-                      nestedNodes.push(expression.body)
+                    switch (expression.type) {
+                      case AST_NODE_TYPES.ArrowFunctionExpression:
+                        nodes.push(expression.body)
+                        break
+
+                      case AST_NODE_TYPES.ConditionalExpression:
+                        nodes.push(expression.consequent, expression.alternate)
+                        break
+
+                      case AST_NODE_TYPES.LogicalExpression:
+                        nodes.push(expression.left, expression.right)
+                        break
+
+                      case AST_NODE_TYPES.BinaryExpression:
+                        nodes.push(expression.left, expression.right)
+                        break
+
+                      case AST_NODE_TYPES.CallExpression:
+                        nodes.push(...expression.arguments)
+                        break
+
+                      default:
                     }
 
-                    if (expression.type === AST_NODE_TYPES.BinaryExpression) {
-                      nestedNodes.push(expression.left, expression.right)
-                    }
-
-                    if (expression.type === AST_NODE_TYPES.CallExpression) {
-                      nestedNodes.push(...expression.arguments)
-                    }
-
-                    if (
-                      expression.type === AST_NODE_TYPES.ConditionalExpression
-                    ) {
-                      nestedNodes.push(
-                        expression.consequent,
-                        expression.alternate,
-                      )
-                    }
-
-                    if (expression.type === AST_NODE_TYPES.LogicalExpression) {
-                      nestedNodes.push(expression.left, expression.right)
-                    }
-
-                    nestedNodes.forEach(nestedNode => {
+                    nodes.forEach(nestedNode => {
                       if (nestedNode.type === AST_NODE_TYPES.Identifier) {
                         dependencies.push(nestedNode.name)
                       }
@@ -226,11 +222,10 @@ export default createEslintRule<Options, MESSAGE_ID>({
 
                   switch (value.right.type) {
                     case AST_NODE_TYPES.ArrowFunctionExpression:
-                    case AST_NODE_TYPES.BinaryExpression:
-                    case AST_NODE_TYPES.CallExpression:
-                    case AST_NODE_TYPES.ChainExpression:
                     case AST_NODE_TYPES.ConditionalExpression:
                     case AST_NODE_TYPES.LogicalExpression:
+                    case AST_NODE_TYPES.BinaryExpression:
+                    case AST_NODE_TYPES.CallExpression:
                       handleComplexExpression(value.right)
                       break
 
