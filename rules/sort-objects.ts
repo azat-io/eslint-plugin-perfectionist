@@ -158,7 +158,7 @@ export default createEslintRule<Options, MESSAGE_ID>({
 
               if (prop.value.type === AST_NODE_TYPES.AssignmentPattern) {
                 let addDependencies = (
-                  value: TSESTree.AssignmentPattern | TSESTree.BinaryExpression,
+                  value: TSESTree.AssignmentPattern,
                   initialStart: boolean,
                 ) => {
                   if (value.right.type === AST_NODE_TYPES.Identifier) {
@@ -172,22 +172,61 @@ export default createEslintRule<Options, MESSAGE_ID>({
                     dependencies.push(value.left.name)
                   }
 
-                  let handleBinaryExpression = (
-                    expression: TSESTree.BinaryExpression,
+                  let handleComplexExpression = (
+                    expression:
+                      | TSESTree.ArrowFunctionExpression
+                      | TSESTree.ConditionalExpression
+                      | TSESTree.LogicalExpression
+                      | TSESTree.BinaryExpression
+                      | TSESTree.CallExpression,
                   ) => {
-                    if (expression.right.type === AST_NODE_TYPES.Identifier) {
-                      dependencies.push(expression.right.name)
+                    let nodes = []
+
+                    switch (expression.type) {
+                      case AST_NODE_TYPES.ArrowFunctionExpression:
+                        nodes.push(expression.body)
+                        break
+
+                      case AST_NODE_TYPES.ConditionalExpression:
+                        nodes.push(expression.consequent, expression.alternate)
+                        break
+
+                      case AST_NODE_TYPES.LogicalExpression:
+                      case AST_NODE_TYPES.BinaryExpression:
+                        nodes.push(expression.left, expression.right)
+                        break
+
+                      case AST_NODE_TYPES.CallExpression:
+                        nodes.push(...expression.arguments)
+                        break
+
+                      default:
                     }
 
-                    if (
-                      expression.left.type === AST_NODE_TYPES.BinaryExpression
-                    ) {
-                      addDependencies(expression.left, false)
-                    }
+                    nodes.forEach(nestedNode => {
+                      if (nestedNode.type === AST_NODE_TYPES.Identifier) {
+                        dependencies.push(nestedNode.name)
+                      }
+
+                      if (
+                        nestedNode.type === AST_NODE_TYPES.BinaryExpression ||
+                        nestedNode.type === AST_NODE_TYPES.ConditionalExpression
+                      ) {
+                        handleComplexExpression(nestedNode)
+                      }
+                    })
                   }
 
-                  if (value.right.type === AST_NODE_TYPES.BinaryExpression) {
-                    handleBinaryExpression(value.right)
+                  switch (value.right.type) {
+                    case AST_NODE_TYPES.ArrowFunctionExpression:
+                    case AST_NODE_TYPES.ConditionalExpression:
+                    case AST_NODE_TYPES.LogicalExpression:
+                    case AST_NODE_TYPES.BinaryExpression:
+                    case AST_NODE_TYPES.CallExpression:
+                      handleComplexExpression(value.right)
+                      break
+
+                    default:
                   }
                 }
 
