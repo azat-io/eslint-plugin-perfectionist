@@ -15,7 +15,7 @@ module.exports = [
   {
     files: ['**/test/*', '**/rules/*', '**/docs/.vitepress/config.ts'],
     rules: {
-      'perfectionist/sort-objects': 'off'
-    }
-  }
+      'perfectionist/sort-objects': 'off',
+    },
+  },
 ]
