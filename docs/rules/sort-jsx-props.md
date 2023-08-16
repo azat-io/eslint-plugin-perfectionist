@@ -87,10 +87,7 @@ If you use the [`jsx-sort-props`](https://github.com/jsx-eslint/eslint-plugin-re
 This rule accepts an options object with the following properties:
 
 ```ts
-type Group =
-  | 'multiline'
-  | 'shorthand'
-  | 'unknown'
+type Group = 'multiline' | 'shorthand' | 'unknown'
 
 interface Options {
   type?: 'alphabetical' | 'natural' | 'line-length'
@@ -158,11 +155,7 @@ Example:
       {
         "type": "natural",
         "order": "asc",
-        "groups": [
-          "multiline",
-          "unknown",
-          "shorthand"
-        ]
+        "groups": ["multiline", "unknown", "shorthand"]
       }
     ]
   }
@@ -184,11 +177,7 @@ export default [
         {
           type: 'natural',
           order: 'asc',
-          groups: [
-            'multiline',
-            'unknown',
-            'shorthand',
-          ],
+          groups: ['multiline', 'unknown', 'shorthand'],
         },
       ],
     },

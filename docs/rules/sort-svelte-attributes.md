@@ -85,11 +85,7 @@ If you use the [`sort-attributes`](https://sveltejs.github.io/eslint-plugin-svel
 This rule accepts an options object with the following properties:
 
 ```ts
-type Group =
-  | 'multiline'
-  | 'shorthand'
-  | 'svelte-shorthand'
-  | 'unknown'
+type Group = 'multiline' | 'shorthand' | 'svelte-shorthand' | 'unknown'
 
 interface Options {
   type?: 'alphabetical' | 'natural' | 'line-length'
@@ -150,7 +146,7 @@ In order to start using this rule, you need to install additional dependencies:
 
 - `svelte`
 - `svelte-eslint-parser`
-:::
+  :::
 
 ::: code-group
 
@@ -164,11 +160,7 @@ In order to start using this rule, you need to install additional dependencies:
       {
         "type": "natural",
         "order": "asc",
-        "groups": [
-          "multiline",
-          "unknown",
-          ["shorthand", "svelte-shorthand"]
-        ]
+        "groups": ["multiline", "unknown", ["shorthand", "svelte-shorthand"]]
       }
     ]
   }
@@ -190,11 +182,7 @@ export default [
         {
           type: 'natural',
           order: 'asc',
-          groups: [
-            'multiline',
-            'unknown',
-            ['shorthand', 'svelte-shorthand'],
-          ],
+          groups: ['multiline', 'unknown', ['shorthand', 'svelte-shorthand']],
         },
       ],
     },
