@@ -22,11 +22,7 @@ It's **safe**. The rule considers spread elements in an attributes list and does
 This rule accepts an options object with the following properties:
 
 ```ts
-type Group =
-  | 'multiline'
-  | 'shorthand'
-  | 'astro-shorthand'
-  | 'unknown'
+type Group = 'multiline' | 'shorthand' | 'astro-shorthand' | 'unknown'
 
 interface Options {
   type?: 'alphabetical' | 'natural' | 'line-length'
@@ -98,11 +94,7 @@ In order to start using this rule, you need to install additional dependency:
       {
         "type": "natural",
         "order": "asc",
-        "groups": [
-          "multiline",
-          "unknown",
-          ["shorthand", "astro-shorthand"]
-        ]
+        "groups": ["multiline", "unknown", ["shorthand", "astro-shorthand"]]
       }
     ]
   }
@@ -124,11 +116,7 @@ export default [
         {
           type: 'natural',
           order: 'asc',
-          groups: [
-            'multiline',
-            'unknown',
-            ['shorthand', 'astro-shorthand'],
-          ],
+          groups: ['multiline', 'unknown', ['shorthand', 'astro-shorthand']],
         },
       ],
     },
