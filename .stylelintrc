@@ -1,0 +1,10 @@
+{
+  "extends": "@azat-io/stylelint-config",
+  "ignoreFiles": ["coverage/**/*", "docs/.vitepress/dist/**/*"],
+  "overrides": [
+    {
+      "files": ["**/*.vue"],
+      "customSyntax": "postcss-html"
+    }
+  ]
+}
