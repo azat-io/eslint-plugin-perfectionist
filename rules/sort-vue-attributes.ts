@@ -131,8 +131,11 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
                 options.groups,
               )
 
-              if (typeof attribute.key.name === 'string') {
-                ;({ name } = attribute.key)
+              if (
+                typeof attribute.key.name === 'string' &&
+                attribute.key.type !== 'VDirectiveKey'
+              ) {
+                name = attribute.key.rawName
               } else {
                 name = source.text.slice(...attribute.key.range)
               }

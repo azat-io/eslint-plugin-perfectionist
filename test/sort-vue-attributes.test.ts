@@ -98,6 +98,209 @@ describe(RULE_NAME, () => {
         ],
       })
     })
+
+    it(`${RULE_NAME}(${type}): does not break the property list`, () => {
+      ruleTester.run(RULE_NAME, rule, {
+        valid: [
+          {
+            filename: 'component.vue',
+            code: dedent`
+              <script lang="ts" setup>
+                import Daddy from '@/characters/buddy-daddies.vue'
+              </script>
+
+              <template>
+                <daddy
+                  :age="29"
+                  firstName="Kazuki"
+                  lastName="Kurusu"
+                  v-bind="{ firstName: 'Rei', lastName: 'Suwa' }"
+                  cover-job="Stand-up comedian"
+                  job="assassin"
+                ></daddy>
+              </template>
+            `,
+            options: [options],
+          },
+        ],
+        invalid: [
+          {
+            filename: 'component.vue',
+            code: dedent`
+              <script lang="ts" setup>
+                import Daddy from '@/characters/buddy-daddies.vue'
+              </script>
+
+              <template>
+                <daddy
+                  firstName="Kazuki"
+                  lastName="Kurusu"
+                  :age="29"
+                  v-bind="{ firstName: 'Rei', lastName: 'Suwa' }"
+                  job="assassin"
+                  cover-job="Stand-up comedian"
+                ></daddy>
+              </template>
+            `,
+            output: dedent`
+              <script lang="ts" setup>
+                import Daddy from '@/characters/buddy-daddies.vue'
+              </script>
+
+              <template>
+                <daddy
+                  :age="29"
+                  firstName="Kazuki"
+                  lastName="Kurusu"
+                  v-bind="{ firstName: 'Rei', lastName: 'Suwa' }"
+                  cover-job="Stand-up comedian"
+                  job="assassin"
+                ></daddy>
+              </template>
+            `,
+            options: [options],
+            errors: [
+              {
+                messageId: 'unexpectedVueAttributesOrder',
+                data: {
+                  left: 'lastName',
+                  right: ':age',
+                },
+              },
+              {
+                messageId: 'unexpectedVueAttributesOrder',
+                data: {
+                  left: 'job',
+                  right: 'cover-job',
+                },
+              },
+            ],
+          },
+        ],
+      })
+    })
+
+    it(`${RULE_NAME}(${type}): allows to sort props using groups`, () => {
+      ruleTester.run(RULE_NAME, rule, {
+        valid: [
+          {
+            filename: 'component.vue',
+            code: dedent`
+              <script lang="ts" setup>
+                import { useRef } from 'vue'
+
+                import Titan from '../components/Titan.vue'
+
+                let isTitan = useRef(false)
+                let isAlive = true
+              </script>
+
+              <template>
+                <titan
+                  @transform="() => {
+                    isTitan.value = false
+                  }"
+                  name="Armin Arlelt"
+                  occupation="soldier"
+                  team="Scout Regiment"
+                  is-titan
+                ></titan>
+              </template>
+            `,
+            options: [
+              {
+                ...options,
+                groups: ['multiline', 'directives', 'unknown', 'shorthand'],
+                'custom-groups': {
+                  directives: 'v-*',
+                },
+              },
+            ],
+          },
+        ],
+        invalid: [
+          {
+            filename: 'component.vue',
+            code: dedent`
+              <script lang="ts" setup>
+                import { useRef } from 'vue'
+
+                import Titan from '../components/Titan.vue'
+
+                let isTitan = useRef(false)
+                let isAlive = true
+              </script>
+
+              <template>
+                <titan
+                  occupation="soldier"
+                  name="Armin Arlelt"
+                  is-titan
+                  team="Scout Regiment"
+                  @transform="() => {
+                    isTitan.value = false
+                  }"
+                ></titan>
+              </template>
+            `,
+            output: dedent`
+              <script lang="ts" setup>
+                import { useRef } from 'vue'
+
+                import Titan from '../components/Titan.vue'
+
+                let isTitan = useRef(false)
+                let isAlive = true
+              </script>
+
+              <template>
+                <titan
+                  @transform="() => {
+                    isTitan.value = false
+                  }"
+                  name="Armin Arlelt"
+                  occupation="soldier"
+                  team="Scout Regiment"
+                  is-titan
+                ></titan>
+              </template>
+            `,
+            options: [
+              {
+                ...options,
+                groups: ['multiline', 'directives', 'unknown', 'shorthand'],
+                'custom-groups': {
+                  directives: 'v-*',
+                },
+              },
+            ],
+            errors: [
+              {
+                messageId: 'unexpectedVueAttributesOrder',
+                data: {
+                  left: 'occupation',
+                  right: 'name',
+                },
+              },
+              {
+                messageId: 'unexpectedVueAttributesOrder',
+                data: {
+                  left: 'is-titan',
+                  right: 'team',
+                },
+              },
+              {
+                messageId: 'unexpectedVueAttributesOrder',
+                data: {
+                  left: 'team',
+                  right: '@transform',
+                },
+              },
+            ],
+          },
+        ],
+      })
+    })
   })
 
   describe(`${RULE_NAME}: sorting by natural order`, () => {
@@ -182,6 +385,209 @@ describe(RULE_NAME, () => {
         ],
       })
     })
+
+    it(`${RULE_NAME}(${type}): does not break the property list`, () => {
+      ruleTester.run(RULE_NAME, rule, {
+        valid: [
+          {
+            filename: 'component.vue',
+            code: dedent`
+              <script lang="ts" setup>
+                import Daddy from '@/characters/buddy-daddies.vue'
+              </script>
+
+              <template>
+                <daddy
+                  :age="29"
+                  firstName="Kazuki"
+                  lastName="Kurusu"
+                  v-bind="{ firstName: 'Rei', lastName: 'Suwa' }"
+                  cover-job="Stand-up comedian"
+                  job="assassin"
+                ></daddy>
+              </template>
+            `,
+            options: [options],
+          },
+        ],
+        invalid: [
+          {
+            filename: 'component.vue',
+            code: dedent`
+              <script lang="ts" setup>
+                import Daddy from '@/characters/buddy-daddies.vue'
+              </script>
+
+              <template>
+                <daddy
+                  firstName="Kazuki"
+                  lastName="Kurusu"
+                  :age="29"
+                  v-bind="{ firstName: 'Rei', lastName: 'Suwa' }"
+                  job="assassin"
+                  cover-job="Stand-up comedian"
+                ></daddy>
+              </template>
+            `,
+            output: dedent`
+              <script lang="ts" setup>
+                import Daddy from '@/characters/buddy-daddies.vue'
+              </script>
+
+              <template>
+                <daddy
+                  :age="29"
+                  firstName="Kazuki"
+                  lastName="Kurusu"
+                  v-bind="{ firstName: 'Rei', lastName: 'Suwa' }"
+                  cover-job="Stand-up comedian"
+                  job="assassin"
+                ></daddy>
+              </template>
+            `,
+            options: [options],
+            errors: [
+              {
+                messageId: 'unexpectedVueAttributesOrder',
+                data: {
+                  left: 'lastName',
+                  right: ':age',
+                },
+              },
+              {
+                messageId: 'unexpectedVueAttributesOrder',
+                data: {
+                  left: 'job',
+                  right: 'cover-job',
+                },
+              },
+            ],
+          },
+        ],
+      })
+    })
+
+    it(`${RULE_NAME}(${type}): allows to sort props using groups`, () => {
+      ruleTester.run(RULE_NAME, rule, {
+        valid: [
+          {
+            filename: 'component.vue',
+            code: dedent`
+              <script lang="ts" setup>
+                import { useRef } from 'vue'
+
+                import Titan from '../components/Titan.vue'
+
+                let isTitan = useRef(false)
+                let isAlive = true
+              </script>
+
+              <template>
+                <titan
+                  @transform="() => {
+                    isTitan.value = false
+                  }"
+                  name="Armin Arlelt"
+                  occupation="soldier"
+                  team="Scout Regiment"
+                  is-titan
+                ></titan>
+              </template>
+            `,
+            options: [
+              {
+                ...options,
+                groups: ['multiline', 'directives', 'unknown', 'shorthand'],
+                'custom-groups': {
+                  directives: 'v-*',
+                },
+              },
+            ],
+          },
+        ],
+        invalid: [
+          {
+            filename: 'component.vue',
+            code: dedent`
+              <script lang="ts" setup>
+                import { useRef } from 'vue'
+
+                import Titan from '../components/Titan.vue'
+
+                let isTitan = useRef(false)
+                let isAlive = true
+              </script>
+
+              <template>
+                <titan
+                  occupation="soldier"
+                  name="Armin Arlelt"
+                  is-titan
+                  team="Scout Regiment"
+                  @transform="() => {
+                    isTitan.value = false
+                  }"
+                ></titan>
+              </template>
+            `,
+            output: dedent`
+              <script lang="ts" setup>
+                import { useRef } from 'vue'
+
+                import Titan from '../components/Titan.vue'
+
+                let isTitan = useRef(false)
+                let isAlive = true
+              </script>
+
+              <template>
+                <titan
+                  @transform="() => {
+                    isTitan.value = false
+                  }"
+                  name="Armin Arlelt"
+                  occupation="soldier"
+                  team="Scout Regiment"
+                  is-titan
+                ></titan>
+              </template>
+            `,
+            options: [
+              {
+                ...options,
+                groups: ['multiline', 'directives', 'unknown', 'shorthand'],
+                'custom-groups': {
+                  directives: 'v-*',
+                },
+              },
+            ],
+            errors: [
+              {
+                messageId: 'unexpectedVueAttributesOrder',
+                data: {
+                  left: 'occupation',
+                  right: 'name',
+                },
+              },
+              {
+                messageId: 'unexpectedVueAttributesOrder',
+                data: {
+                  left: 'is-titan',
+                  right: 'team',
+                },
+              },
+              {
+                messageId: 'unexpectedVueAttributesOrder',
+                data: {
+                  left: 'team',
+                  right: '@transform',
+                },
+              },
+            ],
+          },
+        ],
+      })
+    })
   })
 
   describe(`${RULE_NAME}: sorting by line length`, () => {
@@ -258,6 +664,195 @@ describe(RULE_NAME, () => {
                 data: {
                   left: ':age',
                   right: 'affiliation',
+                },
+              },
+            ],
+          },
+        ],
+      })
+    })
+
+    it(`${RULE_NAME}(${type}): does not break the property list`, () => {
+      ruleTester.run(RULE_NAME, rule, {
+        valid: [
+          {
+            filename: 'component.vue',
+            code: dedent`
+              <script lang="ts" setup>
+                import Daddy from '@/characters/buddy-daddies.vue'
+              </script>
+
+              <template>
+                <daddy
+                  firstName="Kazuki"
+                  lastName="Kurusu"
+                    :age="29"
+                  v-bind="{ firstName: 'Rei', lastName: 'Suwa' }"
+                  cover-job="Stand-up comedian"
+                  job="assassin"
+                ></daddy>
+              </template>
+            `,
+            options: [options],
+          },
+        ],
+        invalid: [
+          {
+            filename: 'component.vue',
+            code: dedent`
+              <script lang="ts" setup>
+                import Daddy from '@/characters/buddy-daddies.vue'
+              </script>
+
+              <template>
+                <daddy
+                  firstName="Kazuki"
+                  lastName="Kurusu"
+                  :age="29"
+                  v-bind="{ firstName: 'Rei', lastName: 'Suwa' }"
+                  job="assassin"
+                  cover-job="Stand-up comedian"
+                ></daddy>
+              </template>
+            `,
+            output: dedent`
+              <script lang="ts" setup>
+                import Daddy from '@/characters/buddy-daddies.vue'
+              </script>
+
+              <template>
+                <daddy
+                  firstName="Kazuki"
+                  lastName="Kurusu"
+                  :age="29"
+                  v-bind="{ firstName: 'Rei', lastName: 'Suwa' }"
+                  cover-job="Stand-up comedian"
+                  job="assassin"
+                ></daddy>
+              </template>
+            `,
+            options: [options],
+            errors: [
+              {
+                messageId: 'unexpectedVueAttributesOrder',
+                data: {
+                  left: 'job',
+                  right: 'cover-job',
+                },
+              },
+            ],
+          },
+        ],
+      })
+    })
+
+    it(`${RULE_NAME}(${type}): allows to sort props using groups`, () => {
+      ruleTester.run(RULE_NAME, rule, {
+        valid: [
+          {
+            filename: 'component.vue',
+            code: dedent`
+              <script lang="ts" setup>
+                import { useRef } from 'vue'
+
+                import Titan from '../components/Titan.vue'
+
+                let isTitan = useRef(false)
+                let isAlive = true
+              </script>
+
+              <template>
+                <titan
+                  @transform="() => {
+                    isTitan.value = false
+                  }"
+                  team="Scout Regiment"
+                  occupation="soldier"
+                  name="Armin Arlelt"
+                  is-titan
+                ></titan>
+              </template>
+            `,
+            options: [
+              {
+                ...options,
+                groups: ['multiline', 'directives', 'unknown', 'shorthand'],
+                'custom-groups': {
+                  directives: 'v-*',
+                },
+              },
+            ],
+          },
+        ],
+        invalid: [
+          {
+            filename: 'component.vue',
+            code: dedent`
+              <script lang="ts" setup>
+                import { useRef } from 'vue'
+
+                import Titan from '../components/Titan.vue'
+
+                let isTitan = useRef(false)
+                let isAlive = true
+              </script>
+
+              <template>
+                <titan
+                  occupation="soldier"
+                  name="Armin Arlelt"
+                  is-titan
+                  team="Scout Regiment"
+                  @transform="() => {
+                    isTitan.value = false
+                  }"
+                ></titan>
+              </template>
+            `,
+            output: dedent`
+              <script lang="ts" setup>
+                import { useRef } from 'vue'
+
+                import Titan from '../components/Titan.vue'
+
+                let isTitan = useRef(false)
+                let isAlive = true
+              </script>
+
+              <template>
+                <titan
+                  @transform="() => {
+                    isTitan.value = false
+                  }"
+                  team="Scout Regiment"
+                  occupation="soldier"
+                  name="Armin Arlelt"
+                  is-titan
+                ></titan>
+              </template>
+            `,
+            options: [
+              {
+                ...options,
+                groups: ['multiline', 'directives', 'unknown', 'shorthand'],
+                'custom-groups': {
+                  directives: 'v-*',
+                },
+              },
+            ],
+            errors: [
+              {
+                messageId: 'unexpectedVueAttributesOrder',
+                data: {
+                  left: 'is-titan',
+                  right: 'team',
+                },
+              },
+              {
+                messageId: 'unexpectedVueAttributesOrder',
+                data: {
+                  left: 'team',
+                  right: '@transform',
                 },
               },
             ],
