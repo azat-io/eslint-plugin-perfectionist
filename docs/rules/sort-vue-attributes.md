@@ -19,7 +19,6 @@ Enforce sorted attributes in Vue elements.
 
 ::: code-group
 
-<!-- prettier-ignore -->
 ```vue [Alphabetical and Natural Sorting]
 <!-- ❌ Incorrect -->
 <template>
@@ -28,7 +27,7 @@ Enforce sorted attributes in Vue elements.
     color="info"
     variant="circle"
     name="Jonah Jameson"
-  />
+  ></v-avatar>
 </template>
 
 <!-- ✅ Correct -->
@@ -38,19 +37,29 @@ Enforce sorted attributes in Vue elements.
     name="Jonah Jameson"
     size="s"
     variant="circle"
-  />
+  ></v-avatar>
 </template>
 ```
 
 ```vue [Sorting by Line Length]
 <!-- ❌ Incorrect -->
 <template>
-  <v-avatar size="s" color="info" variant="circle" name="Jonah Jameson" />
+  <v-avatar
+    size="s"
+    color="info"
+    variant="circle"
+    name="Jonah Jameson"
+  ></v-avatar>
 </template>
 
 <!-- ✅ Correct -->
 <template>
-  <v-avatar name="Jonah Jameson" variant="circle" color="info" size="s" />
+  <v-avatar
+    name="Jonah Jameson"
+    variant="circle"
+    color="info"
+    size="s"
+  ></v-avatar>
 </template>
 ```
 
