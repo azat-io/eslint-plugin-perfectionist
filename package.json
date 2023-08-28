@@ -62,13 +62,17 @@
     },
     "svelte-eslint-parser": {
       "optional": true
+    },
+    "vue-eslint-parser": {
+      "optional": true
     }
   },
   "peerDependencies": {
     "astro-eslint-parser": "^0.14.0",
     "eslint": ">=8.0.0",
     "svelte": ">=3.0.0",
-    "svelte-eslint-parser": "^0.32.0"
+    "svelte-eslint-parser": "^0.32.0",
+    "vue-eslint-parser": ">=9.0.0"
   },
   "dependencies": {
     "@typescript-eslint/utils": "^5.62.0",
