@@ -477,6 +477,89 @@ describe(RULE_NAME, () => {
         invalid: [],
       })
     })
+
+    it(`${RULE_NAME}(${type}): allows to set groups for sorting`, () => {
+      ruleTester.run(RULE_NAME, rule, {
+        valid: [
+          {
+            code: dedent`
+              interface DemonSlayer {
+                id: string
+                style: {
+                  'combat-style': string
+                  rank: number
+                }
+                age: number
+                gender: 'male' | 'female'
+                onAttack: (enemyId: string) => void
+              }
+            `,
+            options: [
+              {
+                ...options,
+                groups: ['id', 'multiline', 'unknown'],
+                'custom-groups': {
+                  id: 'id',
+                },
+              },
+            ],
+          },
+        ],
+        invalid: [
+          {
+            code: dedent`
+              interface DemonSlayer {
+                age: number
+                onAttack: (enemyId: string) => void
+                style: {
+                  'combat-style': string
+                  rank: number
+                }
+                id: string
+                gender: 'male' | 'female'
+              }
+            `,
+            output: dedent`
+              interface DemonSlayer {
+                id: string
+                style: {
+                  'combat-style': string
+                  rank: number
+                }
+                age: number
+                gender: 'male' | 'female'
+                onAttack: (enemyId: string) => void
+              }
+            `,
+            options: [
+              {
+                ...options,
+                groups: ['id', 'multiline', 'unknown'],
+                'custom-groups': {
+                  id: 'id',
+                },
+              },
+            ],
+            errors: [
+              {
+                messageId: 'unexpectedInterfacePropertiesOrder',
+                data: {
+                  left: 'onAttack',
+                  right: 'style',
+                },
+              },
+              {
+                messageId: 'unexpectedInterfacePropertiesOrder',
+                data: {
+                  left: 'style',
+                  right: 'id',
+                },
+              },
+            ],
+          },
+        ],
+      })
+    })
   })
 
   describe(`${RULE_NAME}: sorting by natural order`, () => {
@@ -946,6 +1029,89 @@ describe(RULE_NAME, () => {
         invalid: [],
       })
     })
+
+    it(`${RULE_NAME}(${type}): allows to set groups for sorting`, () => {
+      ruleTester.run(RULE_NAME, rule, {
+        valid: [
+          {
+            code: dedent`
+              interface DemonSlayer {
+                id: string
+                style: {
+                  'combat-style': string
+                  rank: number
+                }
+                age: number
+                gender: 'male' | 'female'
+                onAttack: (enemyId: string) => void
+              }
+            `,
+            options: [
+              {
+                ...options,
+                groups: ['id', 'multiline', 'unknown'],
+                'custom-groups': {
+                  id: 'id',
+                },
+              },
+            ],
+          },
+        ],
+        invalid: [
+          {
+            code: dedent`
+              interface DemonSlayer {
+                age: number
+                onAttack: (enemyId: string) => void
+                style: {
+                  'combat-style': string
+                  rank: number
+                }
+                id: string
+                gender: 'male' | 'female'
+              }
+            `,
+            output: dedent`
+              interface DemonSlayer {
+                id: string
+                style: {
+                  'combat-style': string
+                  rank: number
+                }
+                age: number
+                gender: 'male' | 'female'
+                onAttack: (enemyId: string) => void
+              }
+            `,
+            options: [
+              {
+                ...options,
+                groups: ['id', 'multiline', 'unknown'],
+                'custom-groups': {
+                  id: 'id',
+                },
+              },
+            ],
+            errors: [
+              {
+                messageId: 'unexpectedInterfacePropertiesOrder',
+                data: {
+                  left: 'onAttack',
+                  right: 'style',
+                },
+              },
+              {
+                messageId: 'unexpectedInterfacePropertiesOrder',
+                data: {
+                  left: 'style',
+                  right: 'id',
+                },
+              },
+            ],
+          },
+        ],
+      })
+    })
   })
 
   describe(`${RULE_NAME}: sorting by line length`, () => {
@@ -1363,6 +1529,96 @@ describe(RULE_NAME, () => {
           },
         ],
         invalid: [],
+      })
+    })
+
+    it(`${RULE_NAME}(${type}): allows to set groups for sorting`, () => {
+      ruleTester.run(RULE_NAME, rule, {
+        valid: [
+          {
+            code: dedent`
+              interface DemonSlayer {
+                id: string
+                style: {
+                  'combat-style': string
+                  rank: number
+                }
+                onAttack: (enemyId: string) => void
+                gender: 'male' | 'female'
+                age: number
+              }
+            `,
+            options: [
+              {
+                ...options,
+                groups: ['id', 'multiline', 'unknown'],
+                'custom-groups': {
+                  id: 'id',
+                },
+              },
+            ],
+          },
+        ],
+        invalid: [
+          {
+            code: dedent`
+              interface DemonSlayer {
+                age: number
+                onAttack: (enemyId: string) => void
+                style: {
+                  'combat-style': string
+                  rank: number
+                }
+                id: string
+                gender: 'male' | 'female'
+              }
+            `,
+            output: dedent`
+              interface DemonSlayer {
+                id: string
+                style: {
+                  'combat-style': string
+                  rank: number
+                }
+                onAttack: (enemyId: string) => void
+                gender: 'male' | 'female'
+                age: number
+              }
+            `,
+            options: [
+              {
+                ...options,
+                groups: ['id', 'multiline', 'unknown'],
+                'custom-groups': {
+                  id: 'id',
+                },
+              },
+            ],
+            errors: [
+              {
+                messageId: 'unexpectedInterfacePropertiesOrder',
+                data: {
+                  left: 'age',
+                  right: 'onAttack',
+                },
+              },
+              {
+                messageId: 'unexpectedInterfacePropertiesOrder',
+                data: {
+                  left: 'onAttack',
+                  right: 'style',
+                },
+              },
+              {
+                messageId: 'unexpectedInterfacePropertiesOrder',
+                data: {
+                  left: 'style',
+                  right: 'id',
+                },
+              },
+            ],
+          },
+        ],
       })
     })
   })
