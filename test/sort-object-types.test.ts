@@ -267,6 +267,89 @@ describe(RULE_NAME, () => {
         ],
       })
     })
+
+    it(`${RULE_NAME}(${type}): allows to set groups for sorting`, () => {
+      ruleTester.run(RULE_NAME, rule, {
+        valid: [
+          {
+            code: dedent`
+              interface Idol {
+                id: string
+                age: number
+                gender: 'female'
+                name: 'Ai Hoshino'
+                skills: {
+                  actress: number
+                  singer: number
+                }
+              }
+            `,
+            options: [
+              {
+                ...options,
+                groups: ['id', 'unknown', 'multiline'],
+                'custom-groups': {
+                  id: 'id',
+                },
+              },
+            ],
+          },
+        ],
+        invalid: [
+          {
+            code: dedent`
+              type Idol = {
+                age: number
+                gender: 'female'
+                id: string
+                skills: {
+                  actress: number
+                  singer: number
+                }
+                name: 'Ai Hoshino'
+              }
+            `,
+            output: dedent`
+              type Idol = {
+                id: string
+                age: number
+                gender: 'female'
+                name: 'Ai Hoshino'
+                skills: {
+                  actress: number
+                  singer: number
+                }
+              }
+            `,
+            options: [
+              {
+                ...options,
+                groups: ['id', 'unknown', 'multiline'],
+                'custom-groups': {
+                  id: 'id',
+                },
+              },
+            ],
+            errors: [
+              {
+                messageId: 'unexpectedObjectTypesOrder',
+                data: {
+                  left: 'gender',
+                  right: 'id',
+                },
+              },
+              {
+                messageId: 'unexpectedObjectTypesOrder',
+                data: {
+                  left: 'skills',
+                  right: 'name',
+                },
+              },
+            ],
+          },
+        ],
+      })
+    })
   })
 
   describe(`${RULE_NAME}: sorting by natural order`, () => {
@@ -617,8 +700,8 @@ describe(RULE_NAME, () => {
             `,
             output: dedent`
               let handleDemonSlayerAttack = (attack: {
-                attackType: string
                 slayerName: string
+                attackType: string
                 demon: string
               }) => {
                 // ...

@@ -16,10 +16,12 @@ import { compare } from '../utils/compare'
 
 type MESSAGE_ID = 'unexpectedInterfacePropertiesOrder'
 
-type Options = [
+type Group<T extends string[]> = 'multiline' | 'unknown' | T[number]
+
+type Options<T extends string[]> = [
   Partial<{
     'custom-groups': { [key: string]: string[] | string }
-    groups: (string[] | string)[]
+    groups: (Group<T>[] | Group<T>)[]
     'ignore-pattern': string[]
     'ignore-case': boolean
     order: SortOrder
@@ -29,7 +31,7 @@ type Options = [
 
 export const RULE_NAME = 'sort-interfaces'
 
-export default createEslintRule<Options, MESSAGE_ID>({
+export default createEslintRule<Options<string[]>, MESSAGE_ID>({
   name: RULE_NAME,
   meta: {
     type: 'suggestion',

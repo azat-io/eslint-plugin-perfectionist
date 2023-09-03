@@ -77,6 +77,8 @@ interface Options {
   type?: 'alphabetical' | 'natural' | 'line-length'
   order?: 'asc' | 'desc'
   'ignore-case'?: boolean
+  groups?: (string | string[])[]
+  'custom-groups': { [key: string]: string[] | string }
 }
 ```
 
@@ -100,6 +102,28 @@ interface Options {
 <sub>(default: `false`)</sub>
 
 Only affects alphabetical and natural sorting. When `true` the rule ignores the case-sensitivity of the order.
+
+### groups
+
+<sub>(default: `[]`)</sub>
+
+You can set up a list of type properties groups for sorting. Groups can be combined. There are predefined group: `'multiline'`.
+
+### custom-groups
+
+<sub>(default: `{}`)</sub>
+
+You can define your own groups for type properties attributes. The [minimatch](https://github.com/isaacs/minimatch) library is used for pattern matching.
+
+Example:
+
+```
+{
+  "custom-groups": {
+    "callback": "on*"
+  }
+}
+```
 
 ## ⚙️ Usage
 
