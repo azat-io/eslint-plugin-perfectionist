@@ -1,20 +1,26 @@
 import type { SortingNode } from '../typings'
 
 import { createEslintRule } from '../utils/create-eslint-rule'
+import { getGroupNumber } from '../utils/get-group-number'
 import { toSingleLine } from '../utils/to-single-line'
 import { rangeToDiff } from '../utils/range-to-diff'
 import { SortOrder, SortType } from '../typings'
 import { sortNodes } from '../utils/sort-nodes'
 import { makeFixes } from '../utils/make-fixes'
+import { useGroups } from '../utils/use-groups'
 import { complete } from '../utils/complete'
 import { pairwise } from '../utils/pairwise'
 import { compare } from '../utils/compare'
 
 type MESSAGE_ID = 'unexpectedObjectTypesOrder'
 
-type Options = [
+type Group<T extends string[]> = 'multiline' | 'unknown' | T[number]
+
+type Options<T extends string[]> = [
   Partial<{
+    groups: (Group<T>[] | Group<T>)[]
     'ignore-case': boolean
+    'custom-groups': {}
     order: SortOrder
     type: SortType
   }>,
@@ -22,7 +28,7 @@ type Options = [
 
 export const RULE_NAME = 'sort-object-types'
 
-export default createEslintRule<Options, MESSAGE_ID>({
+export default createEslintRule<Options<string[]>, MESSAGE_ID>({
   name: RULE_NAME,
   meta: {
     type: 'suggestion',
@@ -35,6 +41,9 @@ export default createEslintRule<Options, MESSAGE_ID>({
       {
         type: 'object',
         properties: {
+          'custom-groups': {
+            type: 'object',
+          },
           type: {
             enum: [
               SortType.alphabetical,
@@ -50,6 +59,10 @@ export default createEslintRule<Options, MESSAGE_ID>({
           'ignore-case': {
             type: 'boolean',
             default: false,
+          },
+          groups: {
+            type: 'array',
+            default: [],
           },
         },
         additionalProperties: false,
@@ -73,6 +86,8 @@ export default createEslintRule<Options, MESSAGE_ID>({
           type: SortType.alphabetical,
           'ignore-case': false,
           order: SortOrder.asc,
+          'custom-groups': {},
+          groups: [],
         })
 
         let source = context.getSourceCode()
@@ -80,6 +95,10 @@ export default createEslintRule<Options, MESSAGE_ID>({
         let nodes: SortingNode[] = node.members.map(member => {
           let name: string
           let raw = source.text.slice(member.range.at(0), member.range.at(1))
+
+          let { getGroup, defineGroup, setCustomGroups } = useGroups(
+            options.groups,
+          )
 
           let formatName = (value: string): string =>
             value.replace(/(,|;)$/, '')
@@ -106,18 +125,31 @@ export default createEslintRule<Options, MESSAGE_ID>({
             )
           }
 
+          setCustomGroups(options['custom-groups'], name)
+
+          if (member.loc.start.line !== member.loc.end.line) {
+            defineGroup('multiline')
+          }
+
           let endsWithComma = raw.endsWith(';') || raw.endsWith(',')
           let endSize = endsWithComma ? 1 : 0
 
           return {
             size: rangeToDiff(member.range) - endSize,
+            group: getGroup(),
             node: member,
             name,
           }
         })
 
         pairwise(nodes, (left, right) => {
-          if (compare(left, right, options)) {
+          let leftNum = getGroupNumber(options.groups, left)
+          let rightNum = getGroupNumber(options.groups, right)
+
+          if (
+            leftNum > rightNum ||
+            (leftNum === rightNum && compare(left, right, options))
+          ) {
             context.report({
               messageId: 'unexpectedObjectTypesOrder',
               data: {
@@ -125,8 +157,32 @@ export default createEslintRule<Options, MESSAGE_ID>({
                 right: toSingleLine(right.name),
               },
               node: right.node,
-              fix: fixer =>
-                makeFixes(fixer, nodes, sortNodes(nodes, options), source),
+              fix: fixer => {
+                let grouped: {
+                  [key: string]: SortingNode[]
+                } = {}
+
+                for (let currentNode of nodes) {
+                  let groupNum = getGroupNumber(options.groups, currentNode)
+
+                  if (!(groupNum in grouped)) {
+                    grouped[groupNum] = [currentNode]
+                  } else {
+                    grouped[groupNum] = sortNodes(
+                      [...grouped[groupNum], currentNode],
+                      options,
+                    )
+                  }
+                }
+
+                let sortedNodes: SortingNode[] = []
+
+                for (let group of Object.keys(grouped).sort()) {
+                  sortedNodes.push(...sortNodes(grouped[group], options))
+                }
+
+                return makeFixes(fixer, nodes, sortedNodes, source)
+              },
             })
           }
         })
