@@ -1,7 +1,7 @@
 import type { TSESTree } from '@typescript-eslint/types'
 import type { TSESLint } from '@typescript-eslint/utils'
 
-import isCoreModule from 'is-core-module'
+import { builtinModules } from 'module'
 import { minimatch } from 'minimatch'
 
 import type { SortingNode } from '../typings'
@@ -194,6 +194,10 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
             minimatch(nodeElement.source.value, pattern),
           )) ||
         tsPaths.some(pattern => minimatch(nodeElement.source.value, pattern))
+
+      let isCoreModule = (value: string) =>
+        builtinModules.includes(value) ||
+        builtinModules.includes(`node:${value}`)
 
       if (node.importKind === 'type') {
         if (node.type === 'ImportDeclaration') {
