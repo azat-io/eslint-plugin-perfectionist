@@ -227,6 +227,37 @@ describe(RULE_NAME, () => {
         },
       ],
     })
+
+    ruleTester.run(`${RULE_NAME}: sorts unions with comment at the end`, rule, {
+      valid: [],
+      invalid: [
+        {
+          code: dedent`
+            type Step = 1 | 2 | 4 | 3 | 5 | 100; // Exam step. Example: 3
+          `,
+          output: dedent`
+            type Step = 1 | 100 | 2 | 3 | 4 | 5; // Exam step. Example: 3
+          `,
+          options: [options],
+          errors: [
+            {
+              messageId: 'unexpectedUnionTypesOrder',
+              data: {
+                left: '4',
+                right: '3',
+              },
+            },
+            {
+              messageId: 'unexpectedUnionTypesOrder',
+              data: {
+                left: '5',
+                right: '100',
+              },
+            },
+          ],
+        },
+      ],
+    })
   })
 
   describe(`${RULE_NAME}: sorting by natural order`, () => {
@@ -439,6 +470,37 @@ describe(RULE_NAME, () => {
         },
       ],
     })
+
+    ruleTester.run(`${RULE_NAME}: sorts unions with comment at the end`, rule, {
+      valid: [],
+      invalid: [
+        {
+          code: dedent`
+            type Step = 1 | 2 | 4 | 3 | 5 | 100; // Exam step. Example: 3
+          `,
+          output: dedent`
+            type Step = 1 | 100 | 2 | 3 | 4 | 5; // Exam step. Example: 3
+          `,
+          options: [options],
+          errors: [
+            {
+              messageId: 'unexpectedUnionTypesOrder',
+              data: {
+                left: '4',
+                right: '3',
+              },
+            },
+            {
+              messageId: 'unexpectedUnionTypesOrder',
+              data: {
+                left: '5',
+                right: '100',
+              },
+            },
+          ],
+        },
+      ],
+    })
   })
 
   describe(`${RULE_NAME}: sorting by line length`, () => {
@@ -634,6 +696,30 @@ describe(RULE_NAME, () => {
               data: {
                 left: 'Hero[]',
                 right: 'Saitama',
+              },
+            },
+          ],
+        },
+      ],
+    })
+
+    ruleTester.run(`${RULE_NAME}: sorts unions with comment at the end`, rule, {
+      valid: [],
+      invalid: [
+        {
+          code: dedent`
+            type Step = 1 | 2 | 4 | 3 | 5 | 100; // Exam step. Example: 3
+          `,
+          output: dedent`
+            type Step = 100 | 5 | 3 | 4 | 2 | 1; // Exam step. Example: 3
+          `,
+          options: [options],
+          errors: [
+            {
+              messageId: 'unexpectedUnionTypesOrder',
+              data: {
+                left: '5',
+                right: '100',
               },
             },
           ],

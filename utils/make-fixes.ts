@@ -17,6 +17,9 @@ export let makeFixes = (
 ) => {
   let fixes: TSESLint.RuleFix[] = []
 
+  let isSingleline =
+    nodes.at(0)?.node.loc.start.line === nodes.at(-1)?.node.loc.end.line
+
   for (let i = 0, max = nodes.length; i < max; i++) {
     let { node } = nodes.at(i)!
 
@@ -31,7 +34,7 @@ export let makeFixes = (
 
     let commentAfter = getCommentAfter(sortedNodes.at(i)!.node, source)
 
-    if (commentAfter) {
+    if (commentAfter && !isSingleline) {
       let tokenBefore = source.getTokenBefore(commentAfter)
 
       let range: TSESTree.Range = [
