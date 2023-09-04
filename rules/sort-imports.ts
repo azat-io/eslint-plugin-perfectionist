@@ -113,11 +113,8 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
             default: false,
           },
           groups: {
-            items: {
-              type: 'string',
-            },
-            uniqueItems: true,
             type: 'array',
+            default: [],
           },
           'internal-pattern': {
             items: {

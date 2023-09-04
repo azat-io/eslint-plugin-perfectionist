@@ -26,57 +26,57 @@ describe(RULE_NAME, () => {
       'ignore-case': false,
     }
 
-    it(`${RULE_NAME}(${type}): sorts exports`, () => {
-      ruleTester.run(RULE_NAME, rule, {
-        valid: [
-          {
-            code: dedent`
-              export { HiroshiOdokawa } from 'cab-park'
-              export { Gouriki } from 'hospital'
-              export { Daimon1, Daimon2 } from 'police'
-              export { Shibagaki, Baba } from 'radio'
-            `,
-            options: [options],
-          },
-        ],
-        invalid: [
-          {
-            code: dedent`
-              export { Gouriki } from 'hospital'
-              export { HiroshiOdokawa } from 'cab-park'
-              export { Shibagaki, Baba } from 'radio'
-              export { Daimon1, Daimon2 } from 'police'
-            `,
-            output: dedent`
-              export { HiroshiOdokawa } from 'cab-park'
-              export { Gouriki } from 'hospital'
-              export { Daimon1, Daimon2 } from 'police'
-              export { Shibagaki, Baba } from 'radio'
-            `,
-            options: [options],
-            errors: [
-              {
-                messageId: 'unexpectedExportsOrder',
-                data: {
-                  left: 'hospital',
-                  right: 'cab-park',
-                },
+    ruleTester.run(`${RULE_NAME}(${type}): sorts exports`, rule, {
+      valid: [
+        {
+          code: dedent`
+            export { HiroshiOdokawa } from 'cab-park'
+            export { Gouriki } from 'hospital'
+            export { Daimon1, Daimon2 } from 'police'
+            export { Shibagaki, Baba } from 'radio'
+          `,
+          options: [options],
+        },
+      ],
+      invalid: [
+        {
+          code: dedent`
+            export { Gouriki } from 'hospital'
+            export { HiroshiOdokawa } from 'cab-park'
+            export { Shibagaki, Baba } from 'radio'
+            export { Daimon1, Daimon2 } from 'police'
+          `,
+          output: dedent`
+            export { HiroshiOdokawa } from 'cab-park'
+            export { Gouriki } from 'hospital'
+            export { Daimon1, Daimon2 } from 'police'
+            export { Shibagaki, Baba } from 'radio'
+          `,
+          options: [options],
+          errors: [
+            {
+              messageId: 'unexpectedExportsOrder',
+              data: {
+                left: 'hospital',
+                right: 'cab-park',
               },
-              {
-                messageId: 'unexpectedExportsOrder',
-                data: {
-                  left: 'radio',
-                  right: 'police',
-                },
+            },
+            {
+              messageId: 'unexpectedExportsOrder',
+              data: {
+                left: 'radio',
+                right: 'police',
               },
-            ],
-          },
-        ],
-      })
+            },
+          ],
+        },
+      ],
     })
 
-    it(`${RULE_NAME}(${type}): sorts all-exports only if export kind is value`, () => {
-      ruleTester.run(RULE_NAME, rule, {
+    ruleTester.run(
+      `${RULE_NAME}(${type}): sorts all-exports only if export kind is value`,
+      rule,
+      {
         valid: [
           {
             code: dedent`
@@ -117,46 +117,44 @@ describe(RULE_NAME, () => {
             ],
           },
         ],
-      })
-    })
+      },
+    )
 
-    it(`${RULE_NAME}(${type}): works with export aliases`, () => {
-      ruleTester.run(RULE_NAME, rule, {
-        valid: [
-          {
-            code: dedent`
-              export { student as MeiKamino } from './laboratory'
-              export { default as Gojira } from './monsters/gojira'
-              export { Yun, Haberu } from './otaki-factory'
-            `,
-            options: [options],
-          },
-        ],
-        invalid: [
-          {
-            code: dedent`
-              export { default as Gojira } from './monsters/gojira'
-              export { Yun, Haberu } from './otaki-factory'
-              export { student as MeiKamino } from './laboratory'
-            `,
-            output: dedent`
-              export { student as MeiKamino } from './laboratory'
-              export { default as Gojira } from './monsters/gojira'
-              export { Yun, Haberu } from './otaki-factory'
-            `,
-            options: [options],
-            errors: [
-              {
-                messageId: 'unexpectedExportsOrder',
-                data: {
-                  left: './otaki-factory',
-                  right: './laboratory',
-                },
+    ruleTester.run(`${RULE_NAME}(${type}): works with export aliases`, rule, {
+      valid: [
+        {
+          code: dedent`
+            export { student as MeiKamino } from './laboratory'
+            export { default as Gojira } from './monsters/gojira'
+            export { Yun, Haberu } from './otaki-factory'
+          `,
+          options: [options],
+        },
+      ],
+      invalid: [
+        {
+          code: dedent`
+            export { default as Gojira } from './monsters/gojira'
+            export { Yun, Haberu } from './otaki-factory'
+            export { student as MeiKamino } from './laboratory'
+          `,
+          output: dedent`
+            export { student as MeiKamino } from './laboratory'
+            export { default as Gojira } from './monsters/gojira'
+            export { Yun, Haberu } from './otaki-factory'
+          `,
+          options: [options],
+          errors: [
+            {
+              messageId: 'unexpectedExportsOrder',
+              data: {
+                left: './otaki-factory',
+                right: './laboratory',
               },
-            ],
-          },
-        ],
-      })
+            },
+          ],
+        },
+      ],
     })
   })
 
@@ -169,57 +167,57 @@ describe(RULE_NAME, () => {
       'ignore-case': false,
     }
 
-    it(`${RULE_NAME}(${type}): sorts exports`, () => {
-      ruleTester.run(RULE_NAME, rule, {
-        valid: [
-          {
-            code: dedent`
-              export { HiroshiOdokawa } from 'cab-park'
-              export { Gouriki } from 'hospital'
-              export { Daimon1, Daimon2 } from 'police'
-              export { Shibagaki, Baba } from 'radio'
-            `,
-            options: [options],
-          },
-        ],
-        invalid: [
-          {
-            code: dedent`
-              export { Gouriki } from 'hospital'
-              export { HiroshiOdokawa } from 'cab-park'
-              export { Shibagaki, Baba } from 'radio'
-              export { Daimon1, Daimon2 } from 'police'
-            `,
-            output: dedent`
-              export { HiroshiOdokawa } from 'cab-park'
-              export { Gouriki } from 'hospital'
-              export { Daimon1, Daimon2 } from 'police'
-              export { Shibagaki, Baba } from 'radio'
-            `,
-            options: [options],
-            errors: [
-              {
-                messageId: 'unexpectedExportsOrder',
-                data: {
-                  left: 'hospital',
-                  right: 'cab-park',
-                },
+    ruleTester.run(`${RULE_NAME}(${type}): sorts exports`, rule, {
+      valid: [
+        {
+          code: dedent`
+            export { HiroshiOdokawa } from 'cab-park'
+            export { Gouriki } from 'hospital'
+            export { Daimon1, Daimon2 } from 'police'
+            export { Shibagaki, Baba } from 'radio'
+          `,
+          options: [options],
+        },
+      ],
+      invalid: [
+        {
+          code: dedent`
+            export { Gouriki } from 'hospital'
+            export { HiroshiOdokawa } from 'cab-park'
+            export { Shibagaki, Baba } from 'radio'
+            export { Daimon1, Daimon2 } from 'police'
+          `,
+          output: dedent`
+            export { HiroshiOdokawa } from 'cab-park'
+            export { Gouriki } from 'hospital'
+            export { Daimon1, Daimon2 } from 'police'
+            export { Shibagaki, Baba } from 'radio'
+          `,
+          options: [options],
+          errors: [
+            {
+              messageId: 'unexpectedExportsOrder',
+              data: {
+                left: 'hospital',
+                right: 'cab-park',
               },
-              {
-                messageId: 'unexpectedExportsOrder',
-                data: {
-                  left: 'radio',
-                  right: 'police',
-                },
+            },
+            {
+              messageId: 'unexpectedExportsOrder',
+              data: {
+                left: 'radio',
+                right: 'police',
               },
-            ],
-          },
-        ],
-      })
+            },
+          ],
+        },
+      ],
     })
 
-    it(`${RULE_NAME}(${type}): sorts all-exports only if export kind is value`, () => {
-      ruleTester.run(RULE_NAME, rule, {
+    ruleTester.run(
+      `${RULE_NAME}(${type}): sorts all-exports only if export kind is value`,
+      rule,
+      {
         valid: [
           {
             code: dedent`
@@ -260,46 +258,44 @@ describe(RULE_NAME, () => {
             ],
           },
         ],
-      })
-    })
+      },
+    )
 
-    it(`${RULE_NAME}(${type}): works with export aliases`, () => {
-      ruleTester.run(RULE_NAME, rule, {
-        valid: [
-          {
-            code: dedent`
-              export { student as MeiKamino } from './laboratory'
-              export { default as Gojira } from './monsters/gojira'
-              export { Yun, Haberu } from './otaki-factory'
-            `,
-            options: [options],
-          },
-        ],
-        invalid: [
-          {
-            code: dedent`
-              export { default as Gojira } from './monsters/gojira'
-              export { Yun, Haberu } from './otaki-factory'
-              export { student as MeiKamino } from './laboratory'
-            `,
-            output: dedent`
-              export { student as MeiKamino } from './laboratory'
-              export { default as Gojira } from './monsters/gojira'
-              export { Yun, Haberu } from './otaki-factory'
-            `,
-            options: [options],
-            errors: [
-              {
-                messageId: 'unexpectedExportsOrder',
-                data: {
-                  left: './otaki-factory',
-                  right: './laboratory',
-                },
+    ruleTester.run(`${RULE_NAME}(${type}): works with export aliases`, rule, {
+      valid: [
+        {
+          code: dedent`
+            export { student as MeiKamino } from './laboratory'
+            export { default as Gojira } from './monsters/gojira'
+            export { Yun, Haberu } from './otaki-factory'
+          `,
+          options: [options],
+        },
+      ],
+      invalid: [
+        {
+          code: dedent`
+            export { default as Gojira } from './monsters/gojira'
+            export { Yun, Haberu } from './otaki-factory'
+            export { student as MeiKamino } from './laboratory'
+          `,
+          output: dedent`
+            export { student as MeiKamino } from './laboratory'
+            export { default as Gojira } from './monsters/gojira'
+            export { Yun, Haberu } from './otaki-factory'
+          `,
+          options: [options],
+          errors: [
+            {
+              messageId: 'unexpectedExportsOrder',
+              data: {
+                left: './otaki-factory',
+                right: './laboratory',
               },
-            ],
-          },
-        ],
-      })
+            },
+          ],
+        },
+      ],
     })
   })
 
@@ -311,57 +307,57 @@ describe(RULE_NAME, () => {
       order: SortOrder.desc,
     }
 
-    it(`${RULE_NAME}(${type}): sorts exports`, () => {
-      ruleTester.run(RULE_NAME, rule, {
-        valid: [
-          {
-            code: dedent`
-              export { HiroshiOdokawa } from 'cab-park'
-              export { Daimon1, Daimon2 } from 'police'
-              export { Shibagaki, Baba } from 'radio'
-              export { Gouriki } from 'hospital'
-            `,
-            options: [options],
-          },
-        ],
-        invalid: [
-          {
-            code: dedent`
-              export { Gouriki } from 'hospital'
-              export { HiroshiOdokawa } from 'cab-park'
-              export { Shibagaki, Baba } from 'radio'
-              export { Daimon1, Daimon2 } from 'police'
-            `,
-            output: dedent`
-              export { Daimon1, Daimon2 } from 'police'
-              export { HiroshiOdokawa } from 'cab-park'
-              export { Shibagaki, Baba } from 'radio'
-              export { Gouriki } from 'hospital'
-            `,
-            options: [options],
-            errors: [
-              {
-                messageId: 'unexpectedExportsOrder',
-                data: {
-                  left: 'hospital',
-                  right: 'cab-park',
-                },
+    ruleTester.run(`${RULE_NAME}(${type}): sorts exports`, rule, {
+      valid: [
+        {
+          code: dedent`
+            export { HiroshiOdokawa } from 'cab-park'
+            export { Daimon1, Daimon2 } from 'police'
+            export { Shibagaki, Baba } from 'radio'
+            export { Gouriki } from 'hospital'
+          `,
+          options: [options],
+        },
+      ],
+      invalid: [
+        {
+          code: dedent`
+            export { Gouriki } from 'hospital'
+            export { HiroshiOdokawa } from 'cab-park'
+            export { Shibagaki, Baba } from 'radio'
+            export { Daimon1, Daimon2 } from 'police'
+          `,
+          output: dedent`
+            export { Daimon1, Daimon2 } from 'police'
+            export { HiroshiOdokawa } from 'cab-park'
+            export { Shibagaki, Baba } from 'radio'
+            export { Gouriki } from 'hospital'
+          `,
+          options: [options],
+          errors: [
+            {
+              messageId: 'unexpectedExportsOrder',
+              data: {
+                left: 'hospital',
+                right: 'cab-park',
               },
-              {
-                messageId: 'unexpectedExportsOrder',
-                data: {
-                  left: 'radio',
-                  right: 'police',
-                },
+            },
+            {
+              messageId: 'unexpectedExportsOrder',
+              data: {
+                left: 'radio',
+                right: 'police',
               },
-            ],
-          },
-        ],
-      })
+            },
+          ],
+        },
+      ],
     })
 
-    it(`${RULE_NAME}(${type}): sorts all-exports only if export kind is value`, () => {
-      ruleTester.run(RULE_NAME, rule, {
+    ruleTester.run(
+      `${RULE_NAME}(${type}): sorts all-exports only if export kind is value`,
+      rule,
+      {
         valid: [
           {
             code: dedent`
@@ -402,52 +398,52 @@ describe(RULE_NAME, () => {
             ],
           },
         ],
-      })
-    })
+      },
+    )
 
-    it(`${RULE_NAME}(${type}): works with export aliases`, () => {
-      ruleTester.run(RULE_NAME, rule, {
-        valid: [
-          {
-            code: dedent`
-              export { default as Gojira } from './monsters/gojira'
-              export { student as MeiKamino } from './laboratory'
-              export { Yun, Haberu } from './otaki-factory'
-            `,
-            options: [options],
-          },
-        ],
-        invalid: [
-          {
-            code: dedent`
-              export { default as Gojira } from './monsters/gojira'
-              export { Yun, Haberu } from './otaki-factory'
-              export { student as MeiKamino } from './laboratory'
-            `,
-            output: dedent`
-              export { default as Gojira } from './monsters/gojira'
-              export { student as MeiKamino } from './laboratory'
-              export { Yun, Haberu } from './otaki-factory'
-            `,
-            options: [options],
-            errors: [
-              {
-                messageId: 'unexpectedExportsOrder',
-                data: {
-                  left: './otaki-factory',
-                  right: './laboratory',
-                },
+    ruleTester.run(`${RULE_NAME}(${type}): works with export aliases`, rule, {
+      valid: [
+        {
+          code: dedent`
+            export { default as Gojira } from './monsters/gojira'
+            export { student as MeiKamino } from './laboratory'
+            export { Yun, Haberu } from './otaki-factory'
+          `,
+          options: [options],
+        },
+      ],
+      invalid: [
+        {
+          code: dedent`
+            export { default as Gojira } from './monsters/gojira'
+            export { Yun, Haberu } from './otaki-factory'
+            export { student as MeiKamino } from './laboratory'
+          `,
+          output: dedent`
+            export { default as Gojira } from './monsters/gojira'
+            export { student as MeiKamino } from './laboratory'
+            export { Yun, Haberu } from './otaki-factory'
+          `,
+          options: [options],
+          errors: [
+            {
+              messageId: 'unexpectedExportsOrder',
+              data: {
+                left: './otaki-factory',
+                right: './laboratory',
               },
-            ],
-          },
-        ],
-      })
+            },
+          ],
+        },
+      ],
     })
   })
 
   describe('misc', () => {
-    it(`${RULE_NAME}: sets alphabetical asc sorting as default`, () => {
-      ruleTester.run(RULE_NAME, rule, {
+    ruleTester.run(
+      `${RULE_NAME}: sets alphabetical asc sorting as default`,
+      rule,
+      {
         valid: [
           dedent`
             export { Hizuru } from '~/higotoshima/hizuru'
@@ -497,11 +493,13 @@ describe(RULE_NAME, () => {
             ],
           },
         ],
-      })
-    })
+      },
+    )
 
-    it(`${RULE_NAME}: ignores exported variables or functions`, () => {
-      ruleTester.run(RULE_NAME, rule, {
+    ruleTester.run(
+      `${RULE_NAME}: ignores exported variables or functions`,
+      rule,
+      {
         valid: [
           dedent`
             export let jajankenAttack = () => {
@@ -516,7 +514,7 @@ describe(RULE_NAME, () => {
           `,
         ],
         invalid: [],
-      })
-    })
+      },
+    )
   })
 })

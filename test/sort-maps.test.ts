@@ -26,8 +26,10 @@ describe(RULE_NAME, () => {
       'ignore-case': false,
     }
 
-    it(`${RULE_NAME}(${type}): does not break the property list`, () => {
-      ruleTester.run(RULE_NAME, rule, {
+    ruleTester.run(
+      `${RULE_NAME}(${type}): does not break the property list`,
+      rule,
+      {
         valid: [
           {
             code: dedent`
@@ -76,37 +78,37 @@ describe(RULE_NAME, () => {
             ],
           },
         ],
-      })
+      },
+    )
+
+    ruleTester.run(`${RULE_NAME}(${type}): not sorts spread elements`, rule, {
+      valid: [
+        {
+          code: dedent`
+            new Map([
+              ...developers,
+              ...designers,
+            ])
+          `,
+          options: [options],
+        },
+        {
+          code: dedent`
+            new Map([
+              ...designers,
+              ...developers,
+            ])
+          `,
+          options: [options],
+        },
+      ],
+      invalid: [],
     })
 
-    it(`${RULE_NAME}(${type}): not sorts spread elements`, () => {
-      ruleTester.run(RULE_NAME, rule, {
-        valid: [
-          {
-            code: dedent`
-              new Map([
-                ...developers,
-                ...designers,
-              ])
-            `,
-            options: [options],
-          },
-          {
-            code: dedent`
-              new Map([
-                ...designers,
-                ...developers,
-              ])
-            `,
-            options: [options],
-          },
-        ],
-        invalid: [],
-      })
-    })
-
-    it(`${RULE_NAME}(${type}): works with variables as keys`, () => {
-      ruleTester.run(RULE_NAME, rule, {
+    ruleTester.run(
+      `${RULE_NAME}(${type}): works with variables as keys`,
+      rule,
+      {
         valid: [
           {
             code: dedent`
@@ -144,107 +146,103 @@ describe(RULE_NAME, () => {
             ],
           },
         ],
-      })
+      },
+    )
+
+    ruleTester.run(`${RULE_NAME}(${type}): works with numbers as keys`, rule, {
+      valid: [
+        {
+          code: dedent`
+              new Map([
+                [1, 'one'],
+                [2, 'two'],
+                [3, 'three'],
+              ])
+            `,
+          options: [options],
+        },
+      ],
+      invalid: [
+        {
+          code: dedent`
+              new Map([
+                [2, 'two'],
+                [1, 'one'],
+                [3, 'three'],
+              ])
+            `,
+          output: dedent`
+              new Map([
+                [1, 'one'],
+                [2, 'two'],
+                [3, 'three'],
+              ])
+            `,
+          options: [options],
+          errors: [
+            {
+              messageId: 'unexpectedMapElementsOrder',
+              data: {
+                left: '2',
+                right: '1',
+              },
+            },
+          ],
+        },
+      ],
     })
 
-    it(`${RULE_NAME}(${type}): works with numbers as keys`, () => {
-      ruleTester.run(RULE_NAME, rule, {
-        valid: [
-          {
-            code: dedent`
-              new Map([
-                [1, 'one'],
-                [2, 'two'],
-                [3, 'three'],
-              ])
-            `,
-            options: [options],
-          },
-        ],
-        invalid: [
-          {
-            code: dedent`
-              new Map([
-                [2, 'two'],
-                [1, 'one'],
-                [3, 'three'],
-              ])
-            `,
-            output: dedent`
-              new Map([
-                [1, 'one'],
-                [2, 'two'],
-                [3, 'three'],
-              ])
-            `,
-            options: [options],
-            errors: [
-              {
-                messageId: 'unexpectedMapElementsOrder',
-                data: {
-                  left: '2',
-                  right: '1',
-                },
+    ruleTester.run(`${RULE_NAME}(${type}): sorts variable identifiers`, rule, {
+      valid: [
+        {
+          code: dedent`
+            let apps = new Map([
+              booksApp,
+              mapsApp,
+              musicApp,
+              weatherApp,
+            ])
+          `,
+          options: [options],
+        },
+      ],
+      invalid: [
+        {
+          code: dedent`
+            let apps = new Map([
+              mapsApp,
+              booksApp,
+              weatherApp,
+              musicApp,
+            ])
+          `,
+          output: dedent`
+            let apps = new Map([
+              booksApp,
+              mapsApp,
+              musicApp,
+              weatherApp,
+            ])
+          `,
+          options: [options],
+          errors: [
+            {
+              messageId: 'unexpectedMapElementsOrder',
+              data: {
+                left: 'mapsApp',
+                right: 'booksApp',
               },
-            ],
-          },
-        ],
-      })
-    })
-
-    it(`${RULE_NAME}(${type}): sorts variable identifiers`, () => {
-      ruleTester.run(RULE_NAME, rule, {
-        valid: [
-          {
-            code: dedent`
-              let apps = new Map([
-                booksApp,
-                mapsApp,
-                musicApp,
-                weatherApp,
-              ])
-            `,
-            options: [options],
-          },
-        ],
-        invalid: [
-          {
-            code: dedent`
-              let apps = new Map([
-                mapsApp,
-                booksApp,
-                weatherApp,
-                musicApp,
-              ])
-            `,
-            output: dedent`
-              let apps = new Map([
-                booksApp,
-                mapsApp,
-                musicApp,
-                weatherApp,
-              ])
-            `,
-            options: [options],
-            errors: [
-              {
-                messageId: 'unexpectedMapElementsOrder',
-                data: {
-                  left: 'mapsApp',
-                  right: 'booksApp',
-                },
+            },
+            {
+              messageId: 'unexpectedMapElementsOrder',
+              data: {
+                left: 'weatherApp',
+                right: 'musicApp',
               },
-              {
-                messageId: 'unexpectedMapElementsOrder',
-                data: {
-                  left: 'weatherApp',
-                  right: 'musicApp',
-                },
-              },
-            ],
-          },
-        ],
-      })
+            },
+          ],
+        },
+      ],
     })
   })
 
@@ -257,8 +255,10 @@ describe(RULE_NAME, () => {
       'ignore-case': false,
     }
 
-    it(`${RULE_NAME}(${type}): does not break the property list`, () => {
-      ruleTester.run(RULE_NAME, rule, {
+    ruleTester.run(
+      `${RULE_NAME}(${type}): does not break the property list`,
+      rule,
+      {
         valid: [
           {
             code: dedent`
@@ -307,37 +307,37 @@ describe(RULE_NAME, () => {
             ],
           },
         ],
-      })
+      },
+    )
+
+    ruleTester.run(`${RULE_NAME}(${type}): not sorts spread elements`, rule, {
+      valid: [
+        {
+          code: dedent`
+            new Map([
+              ...developers,
+              ...designers,
+            ])
+          `,
+          options: [options],
+        },
+        {
+          code: dedent`
+            new Map([
+              ...designers,
+              ...developers,
+            ])
+          `,
+          options: [options],
+        },
+      ],
+      invalid: [],
     })
 
-    it(`${RULE_NAME}(${type}): not sorts spread elements`, () => {
-      ruleTester.run(RULE_NAME, rule, {
-        valid: [
-          {
-            code: dedent`
-              new Map([
-                ...developers,
-                ...designers,
-              ])
-            `,
-            options: [options],
-          },
-          {
-            code: dedent`
-              new Map([
-                ...designers,
-                ...developers,
-              ])
-            `,
-            options: [options],
-          },
-        ],
-        invalid: [],
-      })
-    })
-
-    it(`${RULE_NAME}(${type}): works with variables as keys`, () => {
-      ruleTester.run(RULE_NAME, rule, {
+    ruleTester.run(
+      `${RULE_NAME}(${type}): works with variables as keys`,
+      rule,
+      {
         valid: [
           {
             code: dedent`
@@ -375,107 +375,103 @@ describe(RULE_NAME, () => {
             ],
           },
         ],
-      })
+      },
+    )
+
+    ruleTester.run(`${RULE_NAME}(${type}): works with numbers as keys`, rule, {
+      valid: [
+        {
+          code: dedent`
+            new Map([
+              [1, 'one'],
+              [2, 'two'],
+              [3, 'three'],
+            ])
+          `,
+          options: [options],
+        },
+      ],
+      invalid: [
+        {
+          code: dedent`
+            new Map([
+              [2, 'two'],
+              [1, 'one'],
+              [3, 'three'],
+            ])
+          `,
+          output: dedent`
+            new Map([
+              [1, 'one'],
+              [2, 'two'],
+              [3, 'three'],
+            ])
+          `,
+          options: [options],
+          errors: [
+            {
+              messageId: 'unexpectedMapElementsOrder',
+              data: {
+                left: '2',
+                right: '1',
+              },
+            },
+          ],
+        },
+      ],
     })
 
-    it(`${RULE_NAME}(${type}): works with numbers as keys`, () => {
-      ruleTester.run(RULE_NAME, rule, {
-        valid: [
-          {
-            code: dedent`
-              new Map([
-                [1, 'one'],
-                [2, 'two'],
-                [3, 'three'],
-              ])
-            `,
-            options: [options],
-          },
-        ],
-        invalid: [
-          {
-            code: dedent`
-              new Map([
-                [2, 'two'],
-                [1, 'one'],
-                [3, 'three'],
-              ])
-            `,
-            output: dedent`
-              new Map([
-                [1, 'one'],
-                [2, 'two'],
-                [3, 'three'],
-              ])
-            `,
-            options: [options],
-            errors: [
-              {
-                messageId: 'unexpectedMapElementsOrder',
-                data: {
-                  left: '2',
-                  right: '1',
-                },
+    ruleTester.run(`${RULE_NAME}(${type}): sorts variable identifiers`, rule, {
+      valid: [
+        {
+          code: dedent`
+            let apps = new Map([
+              booksApp,
+              mapsApp,
+              musicApp,
+              weatherApp,
+            ])
+          `,
+          options: [options],
+        },
+      ],
+      invalid: [
+        {
+          code: dedent`
+            let apps = new Map([
+              mapsApp,
+              booksApp,
+              weatherApp,
+              musicApp,
+            ])
+          `,
+          output: dedent`
+            let apps = new Map([
+              booksApp,
+              mapsApp,
+              musicApp,
+              weatherApp,
+            ])
+          `,
+          options: [options],
+          errors: [
+            {
+              messageId: 'unexpectedMapElementsOrder',
+              data: {
+                left: 'mapsApp',
+                right: 'booksApp',
               },
-            ],
-          },
-        ],
-      })
-    })
-
-    it(`${RULE_NAME}(${type}): sorts variable identifiers`, () => {
-      ruleTester.run(RULE_NAME, rule, {
-        valid: [
-          {
-            code: dedent`
-              let apps = new Map([
-                booksApp,
-                mapsApp,
-                musicApp,
-                weatherApp,
-              ])
-            `,
-            options: [options],
-          },
-        ],
-        invalid: [
-          {
-            code: dedent`
-              let apps = new Map([
-                mapsApp,
-                booksApp,
-                weatherApp,
-                musicApp,
-              ])
-            `,
-            output: dedent`
-              let apps = new Map([
-                booksApp,
-                mapsApp,
-                musicApp,
-                weatherApp,
-              ])
-            `,
-            options: [options],
-            errors: [
-              {
-                messageId: 'unexpectedMapElementsOrder',
-                data: {
-                  left: 'mapsApp',
-                  right: 'booksApp',
-                },
+            },
+            {
+              messageId: 'unexpectedMapElementsOrder',
+              data: {
+                left: 'weatherApp',
+                right: 'musicApp',
               },
-              {
-                messageId: 'unexpectedMapElementsOrder',
-                data: {
-                  left: 'weatherApp',
-                  right: 'musicApp',
-                },
-              },
-            ],
-          },
-        ],
-      })
+            },
+          ],
+        },
+      ],
     })
   })
 
@@ -487,8 +483,10 @@ describe(RULE_NAME, () => {
       order: SortOrder.desc,
     }
 
-    it(`${RULE_NAME}(${type}): does not break the property list`, () => {
-      ruleTester.run(RULE_NAME, rule, {
+    ruleTester.run(
+      `${RULE_NAME}(${type}): does not break the property list`,
+      rule,
+      {
         valid: [
           {
             code: dedent`
@@ -544,11 +542,13 @@ describe(RULE_NAME, () => {
             ],
           },
         ],
-      })
-    })
+      },
+    )
 
-    it(`${RULE_NAME}(${type}): both key and value affect sorting by length`, () => {
-      ruleTester.run(RULE_NAME, rule, {
+    ruleTester.run(
+      `${RULE_NAME}(${type}): both key and value affect sorting by length`,
+      rule,
+      {
         valid: [
           {
             code: dedent`
@@ -613,37 +613,37 @@ describe(RULE_NAME, () => {
             ],
           },
         ],
-      })
+      },
+    )
+
+    ruleTester.run(`${RULE_NAME}(${type}): not sorts spread elements`, rule, {
+      valid: [
+        {
+          code: dedent`
+            new Map([
+              ...developers,
+              ...designers,
+            ])
+          `,
+          options: [options],
+        },
+        {
+          code: dedent`
+            new Map([
+              ...designers,
+              ...developers,
+            ])
+          `,
+          options: [options],
+        },
+      ],
+      invalid: [],
     })
 
-    it(`${RULE_NAME}(${type}): not sorts spread elements`, () => {
-      ruleTester.run(RULE_NAME, rule, {
-        valid: [
-          {
-            code: dedent`
-              new Map([
-                ...developers,
-                ...designers,
-              ])
-            `,
-            options: [options],
-          },
-          {
-            code: dedent`
-              new Map([
-                ...designers,
-                ...developers,
-              ])
-            `,
-            options: [options],
-          },
-        ],
-        invalid: [],
-      })
-    })
-
-    it(`${RULE_NAME}(${type}): works with variables as keys`, () => {
-      ruleTester.run(RULE_NAME, rule, {
+    ruleTester.run(
+      `${RULE_NAME}(${type}): works with variables as keys`,
+      rule,
+      {
         valid: [
           {
             code: dedent`
@@ -681,113 +681,111 @@ describe(RULE_NAME, () => {
             ],
           },
         ],
-      })
+      },
+    )
+
+    ruleTester.run(`${RULE_NAME}(${type}): works with numbers as keys`, rule, {
+      valid: [
+        {
+          code: dedent`
+            new Map([
+              [3, 'three'],
+              [1, 'one'],
+              [2, 'two'],
+            ])
+          `,
+          options: [options],
+        },
+      ],
+      invalid: [
+        {
+          code: dedent`
+            new Map([
+              [2, 'two'],
+              [1, 'one'],
+              [3, 'three'],
+            ])
+          `,
+          output: dedent`
+            new Map([
+              [3, 'three'],
+              [1, 'one'],
+              [2, 'two'],
+            ])
+          `,
+          options: [options],
+          errors: [
+            {
+              messageId: 'unexpectedMapElementsOrder',
+              data: {
+                left: '1',
+                right: '3',
+              },
+            },
+          ],
+        },
+      ],
     })
 
-    it(`${RULE_NAME}(${type}): works with numbers as keys`, () => {
-      ruleTester.run(RULE_NAME, rule, {
-        valid: [
-          {
-            code: dedent`
-              new Map([
-                [3, 'three'],
-                [1, 'one'],
-                [2, 'two'],
-              ])
-            `,
-            options: [options],
-          },
-        ],
-        invalid: [
-          {
-            code: dedent`
-              new Map([
-                [2, 'two'],
-                [1, 'one'],
-                [3, 'three'],
-              ])
-            `,
-            output: dedent`
-              new Map([
-                [3, 'three'],
-                [1, 'one'],
-                [2, 'two'],
-              ])
-            `,
-            options: [options],
-            errors: [
-              {
-                messageId: 'unexpectedMapElementsOrder',
-                data: {
-                  left: '1',
-                  right: '3',
-                },
+    ruleTester.run(`${RULE_NAME}(${type}): sorts variable identifiers`, rule, {
+      valid: [
+        {
+          code: dedent`
+            let apps = new Map([
+              weatherApp,
+              booksApp,
+              musicApp,
+              mapsApp,
+            ])
+          `,
+          options: [options],
+        },
+      ],
+      invalid: [
+        {
+          code: dedent`
+            let apps = new Map([
+              mapsApp,
+              booksApp,
+              weatherApp,
+              musicApp,
+            ])
+          `,
+          output: dedent`
+            let apps = new Map([
+              weatherApp,
+              musicApp,
+              booksApp,
+              mapsApp,
+            ])
+          `,
+          options: [options],
+          errors: [
+            {
+              messageId: 'unexpectedMapElementsOrder',
+              data: {
+                left: 'mapsApp',
+                right: 'booksApp',
               },
-            ],
-          },
-        ],
-      })
-    })
-
-    it(`${RULE_NAME}(${type}): sorts variable identifiers`, () => {
-      ruleTester.run(RULE_NAME, rule, {
-        valid: [
-          {
-            code: dedent`
-              let apps = new Map([
-                weatherApp,
-                booksApp,
-                musicApp,
-                mapsApp,
-              ])
-            `,
-            options: [options],
-          },
-        ],
-        invalid: [
-          {
-            code: dedent`
-              let apps = new Map([
-                mapsApp,
-                booksApp,
-                weatherApp,
-                musicApp,
-              ])
-            `,
-            output: dedent`
-              let apps = new Map([
-                weatherApp,
-                musicApp,
-                booksApp,
-                mapsApp,
-              ])
-            `,
-            options: [options],
-            errors: [
-              {
-                messageId: 'unexpectedMapElementsOrder',
-                data: {
-                  left: 'mapsApp',
-                  right: 'booksApp',
-                },
+            },
+            {
+              messageId: 'unexpectedMapElementsOrder',
+              data: {
+                left: 'booksApp',
+                right: 'weatherApp',
               },
-              {
-                messageId: 'unexpectedMapElementsOrder',
-                data: {
-                  left: 'booksApp',
-                  right: 'weatherApp',
-                },
-              },
-            ],
-          },
-        ],
-      })
+            },
+          ],
+        },
+      ],
     })
   })
 
   describe(`${RULE_NAME}: misc`, () => {
-    it(`${RULE_NAME}: sets alphabetical asc sorting as default`, () => {
-      ruleTester.run(RULE_NAME, rule, {
+    ruleTester.run(
+      `${RULE_NAME}: sets alphabetical asc sorting as default`,
+      rule,
+      {
         valid: [
           dedent`
             new Map([
@@ -841,14 +839,12 @@ describe(RULE_NAME, () => {
             ],
           },
         ],
-      })
-    })
+      },
+    )
 
-    it(`${RULE_NAME}: works with empty map`, () => {
-      ruleTester.run(RULE_NAME, rule, {
-        valid: ['new Map([[], []])', 'new Map()'],
-        invalid: [],
-      })
+    ruleTester.run(`${RULE_NAME}: works with empty map`, rule, {
+      valid: ['new Map([[], []])', 'new Map()'],
+      invalid: [],
     })
   })
 })

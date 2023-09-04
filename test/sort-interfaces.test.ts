@@ -26,53 +26,53 @@ describe(RULE_NAME, () => {
       'ignore-case': false,
     }
 
-    it(`${RULE_NAME}(${type}): sorts interface properties`, () => {
-      ruleTester.run(RULE_NAME, rule, {
-        valid: [
-          {
-            code: dedent`
-              interface DossierByTwilight {
-                age: string
-                country: 'Westalis' | 'Ostania',
-                name: string
-              }
-            `,
-            options: [options],
-          },
-        ],
-        invalid: [
-          {
-            code: dedent`
-              interface DossierByTwilight {
-                name: string
-                age: string
-                country: 'Westalis' | 'Ostania'
-              }
-            `,
-            output: dedent`
-              interface DossierByTwilight {
-                age: string
-                country: 'Westalis' | 'Ostania'
-                name: string
-              }
-            `,
-            options: [options],
-            errors: [
-              {
-                messageId: 'unexpectedInterfacePropertiesOrder',
-                data: {
-                  left: 'name',
-                  right: 'age',
-                },
+    ruleTester.run(`${RULE_NAME}(${type}): sorts interface properties`, rule, {
+      valid: [
+        {
+          code: dedent`
+            interface DossierByTwilight {
+              age: string
+              country: 'Westalis' | 'Ostania',
+              name: string
+            }
+          `,
+          options: [options],
+        },
+      ],
+      invalid: [
+        {
+          code: dedent`
+            interface DossierByTwilight {
+              name: string
+              age: string
+              country: 'Westalis' | 'Ostania'
+            }
+          `,
+          output: dedent`
+            interface DossierByTwilight {
+              age: string
+              country: 'Westalis' | 'Ostania'
+              name: string
+            }
+          `,
+          options: [options],
+          errors: [
+            {
+              messageId: 'unexpectedInterfacePropertiesOrder',
+              data: {
+                left: 'name',
+                right: 'age',
               },
-            ],
-          },
-        ],
-      })
+            },
+          ],
+        },
+      ],
     })
 
-    it(`${RULE_NAME}(${type}): works with ts index signature`, () => {
-      ruleTester.run(RULE_NAME, rule, {
+    ruleTester.run(
+      `${RULE_NAME}(${type}): works with ts index signature`,
+      rule,
+      {
         valid: [
           {
             code: dedent`
@@ -110,11 +110,13 @@ describe(RULE_NAME, () => {
             ],
           },
         ],
-      })
-    })
+      },
+    )
 
-    it(`${RULE_NAME}(${type}): sorts multi-word keys by value`, () => {
-      ruleTester.run(RULE_NAME, rule, {
+    ruleTester.run(
+      `${RULE_NAME}(${type}): sorts multi-word keys by value`,
+      rule,
+      {
         valid: [
           {
             code: dedent`
@@ -165,11 +167,13 @@ describe(RULE_NAME, () => {
             ],
           },
         ],
-      })
-    })
+      },
+    )
 
-    it(`${RULE_NAME}(${type}): works with typescript index signature`, () => {
-      ruleTester.run(RULE_NAME, rule, {
+    ruleTester.run(
+      `${RULE_NAME}(${type}): works with typescript index signature`,
+      rule,
+      {
         valid: [
           {
             code: dedent`
@@ -210,11 +214,13 @@ describe(RULE_NAME, () => {
             ],
           },
         ],
-      })
-    })
+      },
+    )
 
-    it(`${RULE_NAME}(${type}): works with method and construct signatures`, () => {
-      ruleTester.run(RULE_NAME, rule, {
+    ruleTester.run(
+      `${RULE_NAME}(${type}): works with method and construct signatures`,
+      rule,
+      {
         valid: [
           {
             code: dedent`
@@ -268,11 +274,13 @@ describe(RULE_NAME, () => {
             ],
           },
         ],
-      })
-    })
+      },
+    )
 
-    it(`${RULE_NAME}(${type}): works with empty properties with empty values`, () => {
-      ruleTester.run(RULE_NAME, rule, {
+    ruleTester.run(
+      `${RULE_NAME}(${type}): works with empty properties with empty values`,
+      rule,
+      {
         valid: [
           {
             code: dedent`
@@ -326,11 +334,13 @@ describe(RULE_NAME, () => {
             ],
           },
         ],
-      })
-    })
+      },
+    )
 
-    it(`${RULE_NAME}(${type}): does not break interface docs`, () => {
-      ruleTester.run(RULE_NAME, rule, {
+    ruleTester.run(
+      `${RULE_NAME}(${type}): does not break interface docs`,
+      rule,
+      {
         valid: [],
         invalid: [
           {
@@ -396,11 +406,13 @@ describe(RULE_NAME, () => {
             ],
           },
         ],
-      })
-    })
+      },
+    )
 
-    it(`${RULE_NAME}(${type}): sorts interfaces with comments on the same line`, () => {
-      ruleTester.run(RULE_NAME, rule, {
+    ruleTester.run(
+      `${RULE_NAME}(${type}): sorts interfaces with comments on the same line`,
+      rule,
+      {
         valid: [],
         invalid: [
           {
@@ -428,11 +440,13 @@ describe(RULE_NAME, () => {
             ],
           },
         ],
-      })
-    })
+      },
+    )
 
-    it(`${RULE_NAME}(${type}): sorts interfaces with semi and comments on the same line`, () => {
-      ruleTester.run(RULE_NAME, rule, {
+    ruleTester.run(
+      `${RULE_NAME}(${type}): sorts interfaces with semi and comments on the same line`,
+      rule,
+      {
         valid: [],
         invalid: [
           {
@@ -460,11 +474,13 @@ describe(RULE_NAME, () => {
             ],
           },
         ],
-      })
-    })
+      },
+    )
 
-    it(`${RULE_NAME}(${type}): not sorts call signature declarations`, () => {
-      ruleTester.run(RULE_NAME, rule, {
+    ruleTester.run(
+      `${RULE_NAME}(${type}): not sorts call signature declarations`,
+      rule,
+      {
         valid: [
           {
             code: dedent`
@@ -482,11 +498,13 @@ describe(RULE_NAME, () => {
           },
         ],
         invalid: [],
-      })
-    })
+      },
+    )
 
-    it(`${RULE_NAME}(${type}): allows to set groups for sorting`, () => {
-      ruleTester.run(RULE_NAME, rule, {
+    ruleTester.run(
+      `${RULE_NAME}(${type}): allows to set groups for sorting`,
+      rule,
+      {
         valid: [
           {
             code: dedent`
@@ -565,8 +583,8 @@ describe(RULE_NAME, () => {
             ],
           },
         ],
-      })
-    })
+      },
+    )
   })
 
   describe(`${RULE_NAME}: sorting by natural order`, () => {
@@ -578,53 +596,53 @@ describe(RULE_NAME, () => {
       'ignore-case': false,
     }
 
-    it(`${RULE_NAME}(${type}): sorts interface properties`, () => {
-      ruleTester.run(RULE_NAME, rule, {
-        valid: [
-          {
-            code: dedent`
-              interface DossierByTwilight {
-                age: string
-                country: 'Westalis' | 'Ostania'
-                name: string
-              }
-            `,
-            options: [options],
-          },
-        ],
-        invalid: [
-          {
-            code: dedent`
-              interface DossierByTwilight {
-                name: string
-                age: string
-                country: 'Westalis' | 'Ostania'
-              }
-            `,
-            output: dedent`
-              interface DossierByTwilight {
-                age: string
-                country: 'Westalis' | 'Ostania'
-                name: string
-              }
-            `,
-            options: [options],
-            errors: [
-              {
-                messageId: 'unexpectedInterfacePropertiesOrder',
-                data: {
-                  left: 'name',
-                  right: 'age',
-                },
+    ruleTester.run(`${RULE_NAME}(${type}): sorts interface properties`, rule, {
+      valid: [
+        {
+          code: dedent`
+            interface DossierByTwilight {
+              age: string
+              country: 'Westalis' | 'Ostania'
+              name: string
+            }
+          `,
+          options: [options],
+        },
+      ],
+      invalid: [
+        {
+          code: dedent`
+            interface DossierByTwilight {
+              name: string
+              age: string
+              country: 'Westalis' | 'Ostania'
+            }
+          `,
+          output: dedent`
+            interface DossierByTwilight {
+              age: string
+              country: 'Westalis' | 'Ostania'
+              name: string
+            }
+          `,
+          options: [options],
+          errors: [
+            {
+              messageId: 'unexpectedInterfacePropertiesOrder',
+              data: {
+                left: 'name',
+                right: 'age',
               },
-            ],
-          },
-        ],
-      })
+            },
+          ],
+        },
+      ],
     })
 
-    it(`${RULE_NAME}(${type}): works with ts index signature`, () => {
-      ruleTester.run(RULE_NAME, rule, {
+    ruleTester.run(
+      `${RULE_NAME}(${type}): works with ts index signature`,
+      rule,
+      {
         valid: [
           {
             code: dedent`
@@ -662,11 +680,13 @@ describe(RULE_NAME, () => {
             ],
           },
         ],
-      })
-    })
+      },
+    )
 
-    it(`${RULE_NAME}(${type}): sorts multi-word keys by value`, () => {
-      ruleTester.run(RULE_NAME, rule, {
+    ruleTester.run(
+      `${RULE_NAME}(${type}): sorts multi-word keys by value`,
+      rule,
+      {
         valid: [
           {
             code: dedent`
@@ -717,11 +737,13 @@ describe(RULE_NAME, () => {
             ],
           },
         ],
-      })
-    })
+      },
+    )
 
-    it(`${RULE_NAME}(${type}): works with typescript index signature`, () => {
-      ruleTester.run(RULE_NAME, rule, {
+    ruleTester.run(
+      `${RULE_NAME}(${type}): works with typescript index signature`,
+      rule,
+      {
         valid: [
           {
             code: dedent`
@@ -762,11 +784,13 @@ describe(RULE_NAME, () => {
             ],
           },
         ],
-      })
-    })
+      },
+    )
 
-    it(`${RULE_NAME}(${type}): works with method and construct signatures`, () => {
-      ruleTester.run(RULE_NAME, rule, {
+    ruleTester.run(
+      `${RULE_NAME}(${type}): works with method and construct signatures`,
+      rule,
+      {
         valid: [
           {
             code: dedent`
@@ -820,11 +844,13 @@ describe(RULE_NAME, () => {
             ],
           },
         ],
-      })
-    })
+      },
+    )
 
-    it(`${RULE_NAME}(${type}): works with empty properties with empty values`, () => {
-      ruleTester.run(RULE_NAME, rule, {
+    ruleTester.run(
+      `${RULE_NAME}(${type}): works with empty properties with empty values`,
+      rule,
+      {
         valid: [
           {
             code: dedent`
@@ -878,11 +904,13 @@ describe(RULE_NAME, () => {
             ],
           },
         ],
-      })
-    })
+      },
+    )
 
-    it(`${RULE_NAME}(${type}): does not break interface docs`, () => {
-      ruleTester.run(RULE_NAME, rule, {
+    ruleTester.run(
+      `${RULE_NAME}(${type}): does not break interface docs`,
+      rule,
+      {
         valid: [],
         invalid: [
           {
@@ -948,11 +976,13 @@ describe(RULE_NAME, () => {
             ],
           },
         ],
-      })
-    })
+      },
+    )
 
-    it(`${RULE_NAME}(${type}): sorts interfaces with comments on the same line`, () => {
-      ruleTester.run(RULE_NAME, rule, {
+    ruleTester.run(
+      `${RULE_NAME}(${type}): sorts interfaces with comments on the same line`,
+      rule,
+      {
         valid: [],
         invalid: [
           {
@@ -980,11 +1010,13 @@ describe(RULE_NAME, () => {
             ],
           },
         ],
-      })
-    })
+      },
+    )
 
-    it(`${RULE_NAME}(${type}): sorts interfaces with semi and comments on the same line`, () => {
-      ruleTester.run(RULE_NAME, rule, {
+    ruleTester.run(
+      `${RULE_NAME}(${type}): sorts interfaces with semi and comments on the same line`,
+      rule,
+      {
         valid: [],
         invalid: [
           {
@@ -1012,11 +1044,13 @@ describe(RULE_NAME, () => {
             ],
           },
         ],
-      })
-    })
+      },
+    )
 
-    it(`${RULE_NAME}(${type}): not sorts call signature declarations`, () => {
-      ruleTester.run(RULE_NAME, rule, {
+    ruleTester.run(
+      `${RULE_NAME}(${type}): not sorts call signature declarations`,
+      rule,
+      {
         valid: [
           {
             code: dedent`
@@ -1034,11 +1068,13 @@ describe(RULE_NAME, () => {
           },
         ],
         invalid: [],
-      })
-    })
+      },
+    )
 
-    it(`${RULE_NAME}(${type}): allows to set groups for sorting`, () => {
-      ruleTester.run(RULE_NAME, rule, {
+    ruleTester.run(
+      `${RULE_NAME}(${type}): allows to set groups for sorting`,
+      rule,
+      {
         valid: [
           {
             code: dedent`
@@ -1117,8 +1153,8 @@ describe(RULE_NAME, () => {
             ],
           },
         ],
-      })
-    })
+      },
+    )
   })
 
   describe(`${RULE_NAME}: sorting by line length`, () => {
@@ -1129,53 +1165,53 @@ describe(RULE_NAME, () => {
       order: SortOrder.desc,
     }
 
-    it(`${RULE_NAME}(${type}): sorts interface properties`, () => {
-      ruleTester.run(RULE_NAME, rule, {
-        valid: [
-          {
-            code: dedent`
-              interface DossierByTwilight {
-                country: 'Westalis' | 'Ostania'
-                name: string
-                age: string
-              }
-            `,
-            options: [options],
-          },
-        ],
-        invalid: [
-          {
-            code: dedent`
-              interface DossierByTwilight {
-                name: string
-                age: string
-                country: 'Westalis' | 'Ostania'
-              }
-            `,
-            output: dedent`
-              interface DossierByTwilight {
-                country: 'Westalis' | 'Ostania'
-                name: string
-                age: string
-              }
-            `,
-            options: [options],
-            errors: [
-              {
-                messageId: 'unexpectedInterfacePropertiesOrder',
-                data: {
-                  left: 'age',
-                  right: 'country',
-                },
+    ruleTester.run(`${RULE_NAME}(${type}): sorts interface properties`, rule, {
+      valid: [
+        {
+          code: dedent`
+            interface DossierByTwilight {
+              country: 'Westalis' | 'Ostania'
+              name: string
+              age: string
+            }
+          `,
+          options: [options],
+        },
+      ],
+      invalid: [
+        {
+          code: dedent`
+            interface DossierByTwilight {
+              name: string
+              age: string
+              country: 'Westalis' | 'Ostania'
+            }
+          `,
+          output: dedent`
+            interface DossierByTwilight {
+              country: 'Westalis' | 'Ostania'
+              name: string
+              age: string
+            }
+          `,
+          options: [options],
+          errors: [
+            {
+              messageId: 'unexpectedInterfacePropertiesOrder',
+              data: {
+                left: 'age',
+                right: 'country',
               },
-            ],
-          },
-        ],
-      })
+            },
+          ],
+        },
+      ],
     })
 
-    it(`${RULE_NAME}(${type}): takes into account the presence of an optional operator`, () => {
-      ruleTester.run(RULE_NAME, rule, {
+    ruleTester.run(
+      `${RULE_NAME}(${type}): takes into account the presence of an optional operator`,
+      rule,
+      {
         valid: [
           {
             code: dedent`
@@ -1222,11 +1258,13 @@ describe(RULE_NAME, () => {
             ],
           },
         ],
-      })
-    })
+      },
+    )
 
-    it(`${RULE_NAME}(${type}): works with ts index signature`, () => {
-      ruleTester.run(RULE_NAME, rule, {
+    ruleTester.run(
+      `${RULE_NAME}(${type}): works with ts index signature`,
+      rule,
+      {
         valid: [
           {
             code: dedent`
@@ -1264,11 +1302,13 @@ describe(RULE_NAME, () => {
             ],
           },
         ],
-      })
-    })
+      },
+    )
 
-    it(`${RULE_NAME}(${type}): works with method and construct signatures`, () => {
-      ruleTester.run(RULE_NAME, rule, {
+    ruleTester.run(
+      `${RULE_NAME}(${type}): works with method and construct signatures`,
+      rule,
+      {
         valid: [
           {
             code: dedent`
@@ -1322,11 +1362,13 @@ describe(RULE_NAME, () => {
             ],
           },
         ],
-      })
-    })
+      },
+    )
 
-    it(`${RULE_NAME}(${type}): works with empty properties with empty values`, () => {
-      ruleTester.run(RULE_NAME, rule, {
+    ruleTester.run(
+      `${RULE_NAME}(${type}): works with empty properties with empty values`,
+      rule,
+      {
         valid: [
           {
             code: dedent`
@@ -1380,11 +1422,13 @@ describe(RULE_NAME, () => {
             ],
           },
         ],
-      })
-    })
+      },
+    )
 
-    it(`${RULE_NAME}(${type}): does not break interface docs`, () => {
-      ruleTester.run(RULE_NAME, rule, {
+    ruleTester.run(
+      `${RULE_NAME}(${type}): does not break interface docs`,
+      rule,
+      {
         valid: [],
         invalid: [
           {
@@ -1450,11 +1494,13 @@ describe(RULE_NAME, () => {
             ],
           },
         ],
-      })
-    })
+      },
+    )
 
-    it(`${RULE_NAME}(${type}): sorts interfaces with comments on the same line`, () => {
-      ruleTester.run(RULE_NAME, rule, {
+    ruleTester.run(
+      `${RULE_NAME}(${type}): sorts interfaces with comments on the same line`,
+      rule,
+      {
         valid: [],
         invalid: [
           {
@@ -1482,11 +1528,13 @@ describe(RULE_NAME, () => {
             ],
           },
         ],
-      })
-    })
+      },
+    )
 
-    it(`${RULE_NAME}(${type}): sorts interfaces with semi and comments on the same line`, () => {
-      ruleTester.run(RULE_NAME, rule, {
+    ruleTester.run(
+      `${RULE_NAME}(${type}): sorts interfaces with semi and comments on the same line`,
+      rule,
+      {
         valid: [],
         invalid: [
           {
@@ -1514,11 +1562,13 @@ describe(RULE_NAME, () => {
             ],
           },
         ],
-      })
-    })
+      },
+    )
 
-    it(`${RULE_NAME}(${type}): not sorts call signature declarations`, () => {
-      ruleTester.run(RULE_NAME, rule, {
+    ruleTester.run(
+      `${RULE_NAME}(${type}): not sorts call signature declarations`,
+      rule,
+      {
         valid: [
           {
             code: dedent`
@@ -1536,11 +1586,13 @@ describe(RULE_NAME, () => {
           },
         ],
         invalid: [],
-      })
-    })
+      },
+    )
 
-    it(`${RULE_NAME}(${type}): allows to set groups for sorting`, () => {
-      ruleTester.run(RULE_NAME, rule, {
+    ruleTester.run(
+      `${RULE_NAME}(${type}): allows to set groups for sorting`,
+      rule,
+      {
         valid: [
           {
             code: dedent`
@@ -1626,13 +1678,15 @@ describe(RULE_NAME, () => {
             ],
           },
         ],
-      })
-    })
+      },
+    )
   })
 
   describe(`${RULE_NAME}: misc`, () => {
-    it(`${RULE_NAME}: sets alphabetical asc sorting as default`, () => {
-      ruleTester.run(RULE_NAME, rule, {
+    ruleTester.run(
+      `${RULE_NAME}: sets alphabetical asc sorting as default`,
+      rule,
+      {
         valid: [
           dedent`
             interface DeathNoteValue {
@@ -1677,45 +1731,43 @@ describe(RULE_NAME, () => {
             ],
           },
         ],
-      })
-    })
+      },
+    )
 
-    it(`${RULE_NAME}: allows to ignore interfaces`, () => {
-      ruleTester.run(RULE_NAME, rule, {
-        valid: [
-          {
-            code: dedent`
-              interface UiDiclonius {
-                name: 'Lucy' | 'Nyu'
-                type: 'diclonius'
-              }
-            `,
-            options: [
-              {
-                type: SortType['line-length'],
-                order: SortOrder.desc,
-                'ignore-pattern': ['Ui*'],
-              },
-            ],
-          },
-          {
-            code: dedent`
-              interface UiDiclonius {
-                type: 'diclonius'
-                name: 'Lucy' | 'Nyu'
-              }
-            `,
-            options: [
-              {
-                type: SortType['line-length'],
-                order: SortOrder.desc,
-                'ignore-pattern': ['Ui*'],
-              },
-            ],
-          },
-        ],
-        invalid: [],
-      })
+    ruleTester.run(`${RULE_NAME}: allows to ignore interfaces`, rule, {
+      valid: [
+        {
+          code: dedent`
+            interface UiDiclonius {
+              name: 'Lucy' | 'Nyu'
+              type: 'diclonius'
+            }
+          `,
+          options: [
+            {
+              type: SortType['line-length'],
+              order: SortOrder.desc,
+              'ignore-pattern': ['Ui*'],
+            },
+          ],
+        },
+        {
+          code: dedent`
+            interface UiDiclonius {
+              type: 'diclonius'
+              name: 'Lucy' | 'Nyu'
+            }
+          `,
+          options: [
+            {
+              type: SortType['line-length'],
+              order: SortOrder.desc,
+              'ignore-pattern': ['Ui*'],
+            },
+          ],
+        },
+      ],
+      invalid: [],
     })
   })
 })

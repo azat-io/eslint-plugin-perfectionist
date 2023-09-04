@@ -26,53 +26,53 @@ describe(RULE_NAME, () => {
       'ignore-case': false,
     }
 
-    it(`${RULE_NAME}(${type}): sorts type members`, () => {
-      ruleTester.run(RULE_NAME, rule, {
-        valid: [
-          {
-            code: dedent`
-              type Mushishi = {
-                birthname: 'Yoki'
-                name: 'Ginko'
-                status: 'wanderer'
-              }
-            `,
-            options: [options],
-          },
-        ],
-        invalid: [
-          {
-            code: dedent`
-              type Mushishi = {
-                name: 'Ginko'
-                birthname: 'Yoki'
-                status: 'wanderer'
-              }
-            `,
-            output: dedent`
-              type Mushishi = {
-                birthname: 'Yoki'
-                name: 'Ginko'
-                status: 'wanderer'
-              }
-            `,
-            options: [options],
-            errors: [
-              {
-                messageId: 'unexpectedObjectTypesOrder',
-                data: {
-                  left: 'name',
-                  right: 'birthname',
-                },
+    ruleTester.run(`${RULE_NAME}(${type}): sorts type members`, rule, {
+      valid: [
+        {
+          code: dedent`
+            type Mushishi = {
+              birthname: 'Yoki'
+              name: 'Ginko'
+              status: 'wanderer'
+            }
+          `,
+          options: [options],
+        },
+      ],
+      invalid: [
+        {
+          code: dedent`
+            type Mushishi = {
+              name: 'Ginko'
+              birthname: 'Yoki'
+              status: 'wanderer'
+            }
+          `,
+          output: dedent`
+            type Mushishi = {
+              birthname: 'Yoki'
+              name: 'Ginko'
+              status: 'wanderer'
+            }
+          `,
+          options: [options],
+          errors: [
+            {
+              messageId: 'unexpectedObjectTypesOrder',
+              data: {
+                left: 'name',
+                right: 'birthname',
               },
-            ],
-          },
-        ],
-      })
+            },
+          ],
+        },
+      ],
     })
 
-    it(`${RULE_NAME}(${type}): sorts type members in function args`, () => {
-      ruleTester.run(RULE_NAME, rule, {
+    ruleTester.run(
+      `${RULE_NAME}(${type}): sorts type members in function args`,
+      rule,
+      {
         valid: [
           {
             code: dedent`
@@ -119,11 +119,13 @@ describe(RULE_NAME, () => {
             ],
           },
         ],
-      })
-    })
+      },
+    )
 
-    it(`${RULE_NAME}(${type}): sorts type members with computed keys`, () => {
-      ruleTester.run(RULE_NAME, rule, {
+    ruleTester.run(
+      `${RULE_NAME}(${type}): sorts type members with computed keys`,
+      rule,
+      {
         valid: [
           {
             code: dedent`
@@ -187,11 +189,13 @@ describe(RULE_NAME, () => {
             ],
           },
         ],
-      })
-    })
+      },
+    )
 
-    it(`${RULE_NAME}(${type}): sorts type members with any key types`, () => {
-      ruleTester.run(RULE_NAME, rule, {
+    ruleTester.run(
+      `${RULE_NAME}(${type}): sorts type members with any key types`,
+      rule,
+      {
         valid: [
           {
             code: dedent`
@@ -239,44 +243,44 @@ describe(RULE_NAME, () => {
             ],
           },
         ],
-      })
-    })
+      },
+    )
 
-    it(`${RULE_NAME}(${type}): sorts inline type members`, () => {
-      ruleTester.run(RULE_NAME, rule, {
-        valid: [
-          {
-            code: dedent`
-              addToDeathNote<{ name: string; reasonOfDeath: string }>(/* ... */)
-            `,
-            options: [options],
-          },
-        ],
-        invalid: [
-          {
-            code: dedent`
-              addToDeathNote<{ reasonOfDeath: string; name: string }>(/* ... */)
-            `,
-            output: dedent`
-              addToDeathNote<{ name: string; reasonOfDeath: string }>(/* ... */)
-            `,
-            options: [options],
-            errors: [
-              {
-                messageId: 'unexpectedObjectTypesOrder',
-                data: {
-                  left: 'reasonOfDeath',
-                  right: 'name',
-                },
+    ruleTester.run(`${RULE_NAME}(${type}): sorts inline type members`, rule, {
+      valid: [
+        {
+          code: dedent`
+            addToDeathNote<{ name: string; reasonOfDeath: string }>(/* ... */)
+          `,
+          options: [options],
+        },
+      ],
+      invalid: [
+        {
+          code: dedent`
+            addToDeathNote<{ reasonOfDeath: string; name: string }>(/* ... */)
+          `,
+          output: dedent`
+            addToDeathNote<{ name: string; reasonOfDeath: string }>(/* ... */)
+          `,
+          options: [options],
+          errors: [
+            {
+              messageId: 'unexpectedObjectTypesOrder',
+              data: {
+                left: 'reasonOfDeath',
+                right: 'name',
               },
-            ],
-          },
-        ],
-      })
+            },
+          ],
+        },
+      ],
     })
 
-    it(`${RULE_NAME}(${type}): allows to set groups for sorting`, () => {
-      ruleTester.run(RULE_NAME, rule, {
+    ruleTester.run(
+      `${RULE_NAME}(${type}): allows to set groups for sorting`,
+      rule,
+      {
         valid: [
           {
             code: dedent`
@@ -355,8 +359,8 @@ describe(RULE_NAME, () => {
             ],
           },
         ],
-      })
-    })
+      },
+    )
   })
 
   describe(`${RULE_NAME}: sorting by natural order`, () => {
@@ -368,53 +372,53 @@ describe(RULE_NAME, () => {
       'ignore-case': false,
     }
 
-    it(`${RULE_NAME}(${type}): sorts type members`, () => {
-      ruleTester.run(RULE_NAME, rule, {
-        valid: [
-          {
-            code: dedent`
-              type Mushishi = {
-                birthname: 'Yoki'
-                name: 'Ginko'
-                status: 'wanderer'
-              }
-            `,
-            options: [options],
-          },
-        ],
-        invalid: [
-          {
-            code: dedent`
-              type Mushishi = {
-                name: 'Ginko'
-                birthname: 'Yoki'
-                status: 'wanderer'
-              }
-            `,
-            output: dedent`
-              type Mushishi = {
-                birthname: 'Yoki'
-                name: 'Ginko'
-                status: 'wanderer'
-              }
-            `,
-            options: [options],
-            errors: [
-              {
-                messageId: 'unexpectedObjectTypesOrder',
-                data: {
-                  left: 'name',
-                  right: 'birthname',
-                },
+    ruleTester.run(`${RULE_NAME}(${type}): sorts type members`, rule, {
+      valid: [
+        {
+          code: dedent`
+            type Mushishi = {
+              birthname: 'Yoki'
+              name: 'Ginko'
+              status: 'wanderer'
+            }
+          `,
+          options: [options],
+        },
+      ],
+      invalid: [
+        {
+          code: dedent`
+            type Mushishi = {
+              name: 'Ginko'
+              birthname: 'Yoki'
+              status: 'wanderer'
+            }
+          `,
+          output: dedent`
+            type Mushishi = {
+              birthname: 'Yoki'
+              name: 'Ginko'
+              status: 'wanderer'
+            }
+          `,
+          options: [options],
+          errors: [
+            {
+              messageId: 'unexpectedObjectTypesOrder',
+              data: {
+                left: 'name',
+                right: 'birthname',
               },
-            ],
-          },
-        ],
-      })
+            },
+          ],
+        },
+      ],
     })
 
-    it(`${RULE_NAME}(${type}): sorts type members in function args`, () => {
-      ruleTester.run(RULE_NAME, rule, {
+    ruleTester.run(
+      `${RULE_NAME}(${type}): sorts type members in function args`,
+      rule,
+      {
         valid: [
           {
             code: dedent`
@@ -461,11 +465,13 @@ describe(RULE_NAME, () => {
             ],
           },
         ],
-      })
-    })
+      },
+    )
 
-    it(`${RULE_NAME}(${type}): sorts type members with computed keys`, () => {
-      ruleTester.run(RULE_NAME, rule, {
+    ruleTester.run(
+      `${RULE_NAME}(${type}): sorts type members with computed keys`,
+      rule,
+      {
         valid: [
           {
             code: dedent`
@@ -529,11 +535,13 @@ describe(RULE_NAME, () => {
             ],
           },
         ],
-      })
-    })
+      },
+    )
 
-    it(`${RULE_NAME}(${type}): sorts type members with any key types`, () => {
-      ruleTester.run(RULE_NAME, rule, {
+    ruleTester.run(
+      `${RULE_NAME}(${type}): sorts type members with any key types`,
+      rule,
+      {
         valid: [
           {
             code: dedent`
@@ -581,41 +589,124 @@ describe(RULE_NAME, () => {
             ],
           },
         ],
-      })
+      },
+    )
+
+    ruleTester.run(`${RULE_NAME}(${type}): sorts inline type members`, rule, {
+      valid: [
+        {
+          code: dedent`
+              addToDeathNote<{ name: string; reasonOfDeath: string }>(/* ... */)
+            `,
+          options: [options],
+        },
+      ],
+      invalid: [
+        {
+          code: dedent`
+            addToDeathNote<{ reasonOfDeath: string; name: string }>(/* ... */)
+          `,
+          output: dedent`
+            addToDeathNote<{ name: string; reasonOfDeath: string }>(/* ... */)
+          `,
+          options: [options],
+          errors: [
+            {
+              messageId: 'unexpectedObjectTypesOrder',
+              data: {
+                left: 'reasonOfDeath',
+                right: 'name',
+              },
+            },
+          ],
+        },
+      ],
     })
 
-    it(`${RULE_NAME}(${type}): sorts inline type members`, () => {
-      ruleTester.run(RULE_NAME, rule, {
+    ruleTester.run(
+      `${RULE_NAME}(${type}): allows to set groups for sorting`,
+      rule,
+      {
         valid: [
           {
             code: dedent`
-              addToDeathNote<{ name: string; reasonOfDeath: string }>(/* ... */)
+              interface Idol {
+                id: string
+                age: number
+                gender: 'female'
+                name: 'Ai Hoshino'
+                skills: {
+                  actress: number
+                  singer: number
+                }
+              }
             `,
-            options: [options],
+            options: [
+              {
+                ...options,
+                groups: ['id', 'unknown', 'multiline'],
+                'custom-groups': {
+                  id: 'id',
+                },
+              },
+            ],
           },
         ],
         invalid: [
           {
             code: dedent`
-              addToDeathNote<{ reasonOfDeath: string; name: string }>(/* ... */)
+              type Idol = {
+                age: number
+                gender: 'female'
+                id: string
+                skills: {
+                  actress: number
+                  singer: number
+                }
+                name: 'Ai Hoshino'
+              }
             `,
             output: dedent`
-              addToDeathNote<{ name: string; reasonOfDeath: string }>(/* ... */)
+              type Idol = {
+                id: string
+                age: number
+                gender: 'female'
+                name: 'Ai Hoshino'
+                skills: {
+                  actress: number
+                  singer: number
+                }
+              }
             `,
-            options: [options],
+            options: [
+              {
+                ...options,
+                groups: ['id', 'unknown', 'multiline'],
+                'custom-groups': {
+                  id: 'id',
+                },
+              },
+            ],
             errors: [
               {
                 messageId: 'unexpectedObjectTypesOrder',
                 data: {
-                  left: 'reasonOfDeath',
+                  left: 'gender',
+                  right: 'id',
+                },
+              },
+              {
+                messageId: 'unexpectedObjectTypesOrder',
+                data: {
+                  left: 'skills',
                   right: 'name',
                 },
               },
             ],
           },
         ],
-      })
-    })
+      },
+    )
   })
 
   describe(`${RULE_NAME}: sorting by line length`, () => {
@@ -626,60 +717,60 @@ describe(RULE_NAME, () => {
       order: SortOrder.desc,
     }
 
-    it(`${RULE_NAME}(${type}): sorts type members`, () => {
-      ruleTester.run(RULE_NAME, rule, {
-        valid: [
-          {
-            code: dedent`
-              type Mushishi = {
-                status: 'wanderer'
-                birthname: 'Yoki'
-                name: 'Ginko'
-              }
-            `,
-            options: [options],
-          },
-        ],
-        invalid: [
-          {
-            code: dedent`
-              type Mushishi = {
-                name: 'Ginko'
-                birthname: 'Yoki'
-                status: 'wanderer'
-              }
-            `,
-            output: dedent`
-              type Mushishi = {
-                status: 'wanderer'
-                birthname: 'Yoki'
-                name: 'Ginko'
-              }
-            `,
-            options: [options],
-            errors: [
-              {
-                messageId: 'unexpectedObjectTypesOrder',
-                data: {
-                  left: 'name',
-                  right: 'birthname',
-                },
+    ruleTester.run(`${RULE_NAME}(${type}): sorts type members`, rule, {
+      valid: [
+        {
+          code: dedent`
+            type Mushishi = {
+              status: 'wanderer'
+              birthname: 'Yoki'
+              name: 'Ginko'
+            }
+          `,
+          options: [options],
+        },
+      ],
+      invalid: [
+        {
+          code: dedent`
+            type Mushishi = {
+              name: 'Ginko'
+              birthname: 'Yoki'
+              status: 'wanderer'
+            }
+          `,
+          output: dedent`
+            type Mushishi = {
+              status: 'wanderer'
+              birthname: 'Yoki'
+              name: 'Ginko'
+            }
+          `,
+          options: [options],
+          errors: [
+            {
+              messageId: 'unexpectedObjectTypesOrder',
+              data: {
+                left: 'name',
+                right: 'birthname',
               },
-              {
-                messageId: 'unexpectedObjectTypesOrder',
-                data: {
-                  left: 'birthname',
-                  right: 'status',
-                },
+            },
+            {
+              messageId: 'unexpectedObjectTypesOrder',
+              data: {
+                left: 'birthname',
+                right: 'status',
               },
-            ],
-          },
-        ],
-      })
+            },
+          ],
+        },
+      ],
     })
 
-    it(`${RULE_NAME}(${type}): sorts type members in function args`, () => {
-      ruleTester.run(RULE_NAME, rule, {
+    ruleTester.run(
+      `${RULE_NAME}(${type}): sorts type members in function args`,
+      rule,
+      {
         valid: [
           {
             code: dedent`
@@ -726,11 +817,13 @@ describe(RULE_NAME, () => {
             ],
           },
         ],
-      })
-    })
+      },
+    )
 
-    it(`${RULE_NAME}(${type}): sorts type members with computed keys`, () => {
-      ruleTester.run(RULE_NAME, rule, {
+    ruleTester.run(
+      `${RULE_NAME}(${type}): sorts type members with computed keys`,
+      rule,
+      {
         valid: [
           {
             code: dedent`
@@ -794,11 +887,13 @@ describe(RULE_NAME, () => {
             ],
           },
         ],
-      })
-    })
+      },
+    )
 
-    it(`${RULE_NAME}(${type}): sorts type members with any key types`, () => {
-      ruleTester.run(RULE_NAME, rule, {
+    ruleTester.run(
+      `${RULE_NAME}(${type}): sorts type members with any key types`,
+      rule,
+      {
         valid: [
           {
             code: dedent`
@@ -859,70 +954,153 @@ describe(RULE_NAME, () => {
             ],
           },
         ],
-      })
+      },
+    )
+
+    ruleTester.run(`${RULE_NAME}(${type}): sorts inline type members`, rule, {
+      valid: [
+        {
+          code: dedent`
+            addToDeathNote<{ reasonOfDeath: string; name: string }>(/* ... */)
+          `,
+          options: [options],
+        },
+      ],
+      invalid: [
+        {
+          code: dedent`
+          addToDeathNote<{ name: string; reasonOfDeath: string }>(/* ... */)
+          `,
+          output: dedent`
+            addToDeathNote<{ reasonOfDeath: string; name: string }>(/* ... */)
+          `,
+          options: [options],
+          errors: [
+            {
+              messageId: 'unexpectedObjectTypesOrder',
+              data: {
+                left: 'name',
+                right: 'reasonOfDeath',
+              },
+            },
+          ],
+        },
+      ],
     })
 
-    it(`${RULE_NAME}(${type}): sorts inline type members`, () => {
-      ruleTester.run(RULE_NAME, rule, {
+    ruleTester.run(
+      `${RULE_NAME}(${type}): allows to set groups for sorting`,
+      rule,
+      {
         valid: [
           {
             code: dedent`
-              addToDeathNote<{ reasonOfDeath: string; name: string }>(/* ... */)
+              interface Idol {
+                id: string
+                age: number
+                gender: 'female'
+                name: 'Ai Hoshino'
+                skills: {
+                  actress: number
+                  singer: number
+                }
+              }
             `,
-            options: [options],
-          },
-        ],
-        invalid: [
-          {
-            code: dedent`
-            addToDeathNote<{ name: string; reasonOfDeath: string }>(/* ... */)
-            `,
-            output: dedent`
-              addToDeathNote<{ reasonOfDeath: string; name: string }>(/* ... */)
-            `,
-            options: [options],
-            errors: [
+            options: [
               {
-                messageId: 'unexpectedObjectTypesOrder',
-                data: {
-                  left: 'name',
-                  right: 'reasonOfDeath',
+                ...options,
+                groups: ['id', 'unknown', 'multiline'],
+                'custom-groups': {
+                  id: 'id',
                 },
               },
             ],
           },
         ],
-      })
-    })
+        invalid: [
+          {
+            code: dedent`
+              type Idol = {
+                gender: 'female'
+                id: string
+                age: number
+                skills: {
+                  actress: number
+                  singer: number
+                }
+                name: 'Ai Hoshino'
+              }
+            `,
+            output: dedent`
+              type Idol = {
+                id: string
+                name: 'Ai Hoshino'
+                gender: 'female'
+                age: number
+                skills: {
+                  actress: number
+                  singer: number
+                }
+              }
+            `,
+            options: [
+              {
+                ...options,
+                groups: ['id', 'unknown', 'multiline'],
+                'custom-groups': {
+                  id: 'id',
+                },
+              },
+            ],
+            errors: [
+              {
+                messageId: 'unexpectedObjectTypesOrder',
+                data: {
+                  left: 'gender',
+                  right: 'id',
+                },
+              },
+              {
+                messageId: 'unexpectedObjectTypesOrder',
+                data: {
+                  left: 'skills',
+                  right: 'name',
+                },
+              },
+            ],
+          },
+        ],
+      },
+    )
   })
 
   describe('misc', () => {
-    it(`${RULE_NAME}: ignores semi at the end of value`, () => {
-      ruleTester.run(RULE_NAME, rule, {
-        valid: [
-          dedent`
-            type OverloadedReturnType<T> = T extends {
-              (...args: any[]): infer R;
-              (...args: any[]): infer R;
-              (...args: any[]): infer R;
-              (...args: any[]): infer R;
-            }
-              ? R
-              : T extends { (...args: any[]): infer R; (...args: any[]): infer R; (...args: any[]): infer R }
-              ? R
-              : T extends { (...args: any[]): infer R; (...args: any[]): infer R }
-              ? R
-              : T extends (...args: any[]) => infer R
-              ? R
-              : any;
-            `,
-        ],
-        invalid: [],
-      })
+    ruleTester.run(`${RULE_NAME}: ignores semi at the end of value`, rule, {
+      valid: [
+        dedent`
+          type OverloadedReturnType<T> = T extends {
+            (...args: any[]): infer R;
+            (...args: any[]): infer R;
+            (...args: any[]): infer R;
+            (...args: any[]): infer R;
+          }
+            ? R
+            : T extends { (...args: any[]): infer R; (...args: any[]): infer R; (...args: any[]): infer R }
+            ? R
+            : T extends { (...args: any[]): infer R; (...args: any[]): infer R }
+            ? R
+            : T extends (...args: any[]) => infer R
+            ? R
+            : any;
+        `,
+      ],
+      invalid: [],
     })
 
-    it(`${RULE_NAME}: sets alphabetical asc sorting as default`, () => {
-      ruleTester.run(RULE_NAME, rule, {
+    ruleTester.run(
+      `${RULE_NAME}: sets alphabetical asc sorting as default`,
+      rule,
+      {
         valid: [
           dedent`
             type Calculator = {
@@ -973,7 +1151,7 @@ describe(RULE_NAME, () => {
             ],
           },
         ],
-      })
-    })
+      },
+    )
   })
 })

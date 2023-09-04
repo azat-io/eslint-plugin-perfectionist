@@ -68,21 +68,8 @@ export default createEslintRule<Options, MESSAGE_ID>({
             type: 'string',
           },
           groups: {
-            items: {
-              type: 'string',
-              enum: [
-                'private-property',
-                'static-property',
-                'private-method',
-                'static-method',
-                'constructor',
-                'property',
-                'unknown',
-                'method',
-              ],
-            },
-            uniqueItems: true,
             type: 'array',
+            default: [],
           },
         },
         additionalProperties: false,

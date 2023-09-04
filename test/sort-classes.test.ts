@@ -26,160 +26,160 @@ describe(RULE_NAME, () => {
       'ignore-case': false,
     }
 
-    it(`${RULE_NAME}(${type}): sorts class members`, () => {
-      ruleTester.run(RULE_NAME, rule, {
-        valid: [
-          {
-            code: dedent`
-              class Mob {
-                static name = 'Shigeo Kageyama'
+    ruleTester.run(`${RULE_NAME}(${type}): sorts class members`, rule, {
+      valid: [
+        {
+          code: dedent`
+            class Mob {
+              static name = 'Shigeo Kageyama'
 
-                private beloved = 'Tsubomi Takane'
+              private beloved = 'Tsubomi Takane'
 
-                alias = 'Psycho Helmet'
+              alias = 'Psycho Helmet'
 
-                placeOfWork = 'Spirits and Such Consultation Office'
+              placeOfWork = 'Spirits and Such Consultation Office'
 
-                constructor(stressLevel) {
-                  this.stressLevel = stressLevel
-                }
-
-                static greet() {
-                  console.log(\`Ohayo! My name is \${this.name}\`)
-                }
-
-                private setStressLevel(value) {
-                  this.stressLevel = value
-                }
-
-                decreaseStressLevel(level) {
-                  this.setStressLevel(this.stressLevel - (level ?? 10))
-                }
-
-                increaseStressLevel(level) {
-                  this.setStressLevel(this.stressLevel + (level ?? 10))
-                }
+              constructor(stressLevel) {
+                this.stressLevel = stressLevel
               }
-            `,
-            options: [
-              {
-                ...options,
-                groups: [
-                  'static-property',
-                  'private-property',
-                  'property',
-                  'constructor',
-                  'static-method',
-                  'private-method',
-                  'method',
-                  'unknown',
-                ],
-              },
-            ],
-          },
-        ],
-        invalid: [
-          {
-            code: dedent`
-              class Mob {
-                static name = 'Shigeo Kageyama'
 
-                private beloved = 'Tsubomi Takane'
-
-                alias = 'Psycho Helmet'
-
-                constructor(stressLevel) {
-                  this.stressLevel = stressLevel
-                }
-
-                placeOfWork = 'Spirits and Such Consultation Office'
-
-                decreaseStressLevel(level) {
-                  this.setStressLevel(this.stressLevel - (level ?? 10))
-                }
-
-                static greet() {
-                  console.log(\`Ohayo! My name is \${this.name}\`)
-                }
-
-                private setStressLevel(value) {
-                  this.stressLevel = value
-                }
-
-                increaseStressLevel(level) {
-                  this.setStressLevel(this.stressLevel + (level ?? 10))
-                }
+              static greet() {
+                console.log(\`Ohayo! My name is \${this.name}\`)
               }
-            `,
-            output: dedent`
-              class Mob {
-                static name = 'Shigeo Kageyama'
 
-                private beloved = 'Tsubomi Takane'
-
-                alias = 'Psycho Helmet'
-
-                placeOfWork = 'Spirits and Such Consultation Office'
-
-                constructor(stressLevel) {
-                  this.stressLevel = stressLevel
-                }
-
-                static greet() {
-                  console.log(\`Ohayo! My name is \${this.name}\`)
-                }
-
-                private setStressLevel(value) {
-                  this.stressLevel = value
-                }
-
-                decreaseStressLevel(level) {
-                  this.setStressLevel(this.stressLevel - (level ?? 10))
-                }
-
-                increaseStressLevel(level) {
-                  this.setStressLevel(this.stressLevel + (level ?? 10))
-                }
+              private setStressLevel(value) {
+                this.stressLevel = value
               }
-            `,
-            options: [
-              {
-                ...options,
-                groups: [
-                  'static-property',
-                  'private-property',
-                  'property',
-                  'constructor',
-                  'static-method',
-                  'private-method',
-                  'method',
-                  'unknown',
-                ],
+
+              decreaseStressLevel(level) {
+                this.setStressLevel(this.stressLevel - (level ?? 10))
+              }
+
+              increaseStressLevel(level) {
+                this.setStressLevel(this.stressLevel + (level ?? 10))
+              }
+            }
+          `,
+          options: [
+            {
+              ...options,
+              groups: [
+                'static-property',
+                'private-property',
+                'property',
+                'constructor',
+                'static-method',
+                'private-method',
+                'method',
+                'unknown',
+              ],
+            },
+          ],
+        },
+      ],
+      invalid: [
+        {
+          code: dedent`
+            class Mob {
+              static name = 'Shigeo Kageyama'
+
+              private beloved = 'Tsubomi Takane'
+
+              alias = 'Psycho Helmet'
+
+              constructor(stressLevel) {
+                this.stressLevel = stressLevel
+              }
+
+              placeOfWork = 'Spirits and Such Consultation Office'
+
+              decreaseStressLevel(level) {
+                this.setStressLevel(this.stressLevel - (level ?? 10))
+              }
+
+              static greet() {
+                console.log(\`Ohayo! My name is \${this.name}\`)
+              }
+
+              private setStressLevel(value) {
+                this.stressLevel = value
+              }
+
+              increaseStressLevel(level) {
+                this.setStressLevel(this.stressLevel + (level ?? 10))
+              }
+            }
+          `,
+          output: dedent`
+            class Mob {
+              static name = 'Shigeo Kageyama'
+
+              private beloved = 'Tsubomi Takane'
+
+              alias = 'Psycho Helmet'
+
+              placeOfWork = 'Spirits and Such Consultation Office'
+
+              constructor(stressLevel) {
+                this.stressLevel = stressLevel
+              }
+
+              static greet() {
+                console.log(\`Ohayo! My name is \${this.name}\`)
+              }
+
+              private setStressLevel(value) {
+                this.stressLevel = value
+              }
+
+              decreaseStressLevel(level) {
+                this.setStressLevel(this.stressLevel - (level ?? 10))
+              }
+
+              increaseStressLevel(level) {
+                this.setStressLevel(this.stressLevel + (level ?? 10))
+              }
+            }
+          `,
+          options: [
+            {
+              ...options,
+              groups: [
+                'static-property',
+                'private-property',
+                'property',
+                'constructor',
+                'static-method',
+                'private-method',
+                'method',
+                'unknown',
+              ],
+            },
+          ],
+          errors: [
+            {
+              messageId: 'unexpectedClassesOrder',
+              data: {
+                left: 'constructor',
+                right: 'placeOfWork',
               },
-            ],
-            errors: [
-              {
-                messageId: 'unexpectedClassesOrder',
-                data: {
-                  left: 'constructor',
-                  right: 'placeOfWork',
-                },
+            },
+            {
+              messageId: 'unexpectedClassesOrder',
+              data: {
+                left: 'decreaseStressLevel',
+                right: 'greet',
               },
-              {
-                messageId: 'unexpectedClassesOrder',
-                data: {
-                  left: 'decreaseStressLevel',
-                  right: 'greet',
-                },
-              },
-            ],
-          },
-        ],
-      })
+            },
+          ],
+        },
+      ],
     })
 
-    it(`${RULE_NAME}(${type}): sorts class and group members`, () => {
-      ruleTester.run(RULE_NAME, rule, {
+    ruleTester.run(
+      `${RULE_NAME}(${type}): sorts class and group members`,
+      rule,
+      {
         valid: [
           {
             code: dedent`
@@ -258,11 +258,13 @@ describe(RULE_NAME, () => {
             ],
           },
         ],
-      })
-    })
+      },
+    )
 
-    it(`${RULE_NAME}(${type}): sorts class with ts index signatures`, () => {
-      ruleTester.run(RULE_NAME, rule, {
+    ruleTester.run(
+      `${RULE_NAME}(${type}): sorts class with ts index signatures`,
+      rule,
+      {
         valid: [
           {
             code: dedent`
@@ -325,8 +327,8 @@ describe(RULE_NAME, () => {
             ],
           },
         ],
-      })
-    })
+      },
+    )
   })
 
   describe(`${RULE_NAME}: sorting by natural order`, () => {
@@ -338,160 +340,160 @@ describe(RULE_NAME, () => {
       'ignore-case': false,
     }
 
-    it(`${RULE_NAME}(${type}): sorts class members`, () => {
-      ruleTester.run(RULE_NAME, rule, {
-        valid: [
-          {
-            code: dedent`
-              class Mob {
-                static name = 'Shigeo Kageyama'
+    ruleTester.run(`${RULE_NAME}(${type}): sorts class members`, rule, {
+      valid: [
+        {
+          code: dedent`
+            class Mob {
+              static name = 'Shigeo Kageyama'
 
-                private beloved = 'Tsubomi Takane'
+              private beloved = 'Tsubomi Takane'
 
-                alias = 'Psycho Helmet'
+              alias = 'Psycho Helmet'
 
-                placeOfWork = 'Spirits and Such Consultation Office'
+              placeOfWork = 'Spirits and Such Consultation Office'
 
-                constructor(stressLevel) {
-                  this.stressLevel = stressLevel
-                }
-
-                static greet() {
-                  console.log(\`Ohayo! My name is \${this.name}\`)
-                }
-
-                private setStressLevel(value) {
-                  this.stressLevel = value
-                }
-
-                decreaseStressLevel(level) {
-                  this.setStressLevel(this.stressLevel - (level ?? 10))
-                }
-
-                increaseStressLevel(level) {
-                  this.setStressLevel(this.stressLevel + (level ?? 10))
-                }
+              constructor(stressLevel) {
+                this.stressLevel = stressLevel
               }
-            `,
-            options: [
-              {
-                ...options,
-                groups: [
-                  'static-property',
-                  'private-property',
-                  'property',
-                  'constructor',
-                  'static-method',
-                  'private-method',
-                  'method',
-                  'unknown',
-                ],
-              },
-            ],
-          },
-        ],
-        invalid: [
-          {
-            code: dedent`
-              class Mob {
-                static name = 'Shigeo Kageyama'
 
-                private beloved = 'Tsubomi Takane'
-
-                alias = 'Psycho Helmet'
-
-                constructor(stressLevel) {
-                  this.stressLevel = stressLevel
-                }
-
-                placeOfWork = 'Spirits and Such Consultation Office'
-
-                decreaseStressLevel(level) {
-                  this.setStressLevel(this.stressLevel - (level ?? 10))
-                }
-
-                static greet() {
-                  console.log(\`Ohayo! My name is \${this.name}\`)
-                }
-
-                private setStressLevel(value) {
-                  this.stressLevel = value
-                }
-
-                increaseStressLevel(level) {
-                  this.setStressLevel(this.stressLevel + (level ?? 10))
-                }
+              static greet() {
+                console.log(\`Ohayo! My name is \${this.name}\`)
               }
-            `,
-            output: dedent`
-              class Mob {
-                static name = 'Shigeo Kageyama'
 
-                private beloved = 'Tsubomi Takane'
-
-                alias = 'Psycho Helmet'
-
-                placeOfWork = 'Spirits and Such Consultation Office'
-
-                constructor(stressLevel) {
-                  this.stressLevel = stressLevel
-                }
-
-                static greet() {
-                  console.log(\`Ohayo! My name is \${this.name}\`)
-                }
-
-                private setStressLevel(value) {
-                  this.stressLevel = value
-                }
-
-                decreaseStressLevel(level) {
-                  this.setStressLevel(this.stressLevel - (level ?? 10))
-                }
-
-                increaseStressLevel(level) {
-                  this.setStressLevel(this.stressLevel + (level ?? 10))
-                }
+              private setStressLevel(value) {
+                this.stressLevel = value
               }
-            `,
-            options: [
-              {
-                ...options,
-                groups: [
-                  'static-property',
-                  'private-property',
-                  'property',
-                  'constructor',
-                  'static-method',
-                  'private-method',
-                  'method',
-                  'unknown',
-                ],
+
+              decreaseStressLevel(level) {
+                this.setStressLevel(this.stressLevel - (level ?? 10))
+              }
+
+              increaseStressLevel(level) {
+                this.setStressLevel(this.stressLevel + (level ?? 10))
+              }
+            }
+          `,
+          options: [
+            {
+              ...options,
+              groups: [
+                'static-property',
+                'private-property',
+                'property',
+                'constructor',
+                'static-method',
+                'private-method',
+                'method',
+                'unknown',
+              ],
+            },
+          ],
+        },
+      ],
+      invalid: [
+        {
+          code: dedent`
+            class Mob {
+              static name = 'Shigeo Kageyama'
+
+              private beloved = 'Tsubomi Takane'
+
+              alias = 'Psycho Helmet'
+
+              constructor(stressLevel) {
+                this.stressLevel = stressLevel
+              }
+
+              placeOfWork = 'Spirits and Such Consultation Office'
+
+              decreaseStressLevel(level) {
+                this.setStressLevel(this.stressLevel - (level ?? 10))
+              }
+
+              static greet() {
+                console.log(\`Ohayo! My name is \${this.name}\`)
+              }
+
+              private setStressLevel(value) {
+                this.stressLevel = value
+              }
+
+              increaseStressLevel(level) {
+                this.setStressLevel(this.stressLevel + (level ?? 10))
+              }
+            }
+          `,
+          output: dedent`
+            class Mob {
+              static name = 'Shigeo Kageyama'
+
+              private beloved = 'Tsubomi Takane'
+
+              alias = 'Psycho Helmet'
+
+              placeOfWork = 'Spirits and Such Consultation Office'
+
+              constructor(stressLevel) {
+                this.stressLevel = stressLevel
+              }
+
+              static greet() {
+                console.log(\`Ohayo! My name is \${this.name}\`)
+              }
+
+              private setStressLevel(value) {
+                this.stressLevel = value
+              }
+
+              decreaseStressLevel(level) {
+                this.setStressLevel(this.stressLevel - (level ?? 10))
+              }
+
+              increaseStressLevel(level) {
+                this.setStressLevel(this.stressLevel + (level ?? 10))
+              }
+            }
+          `,
+          options: [
+            {
+              ...options,
+              groups: [
+                'static-property',
+                'private-property',
+                'property',
+                'constructor',
+                'static-method',
+                'private-method',
+                'method',
+                'unknown',
+              ],
+            },
+          ],
+          errors: [
+            {
+              messageId: 'unexpectedClassesOrder',
+              data: {
+                left: 'constructor',
+                right: 'placeOfWork',
               },
-            ],
-            errors: [
-              {
-                messageId: 'unexpectedClassesOrder',
-                data: {
-                  left: 'constructor',
-                  right: 'placeOfWork',
-                },
+            },
+            {
+              messageId: 'unexpectedClassesOrder',
+              data: {
+                left: 'decreaseStressLevel',
+                right: 'greet',
               },
-              {
-                messageId: 'unexpectedClassesOrder',
-                data: {
-                  left: 'decreaseStressLevel',
-                  right: 'greet',
-                },
-              },
-            ],
-          },
-        ],
-      })
+            },
+          ],
+        },
+      ],
     })
 
-    it(`${RULE_NAME}(${type}): sorts class and group members`, () => {
-      ruleTester.run(RULE_NAME, rule, {
+    ruleTester.run(
+      `${RULE_NAME}(${type}): sorts class and group members`,
+      rule,
+      {
         valid: [
           {
             code: dedent`
@@ -570,11 +572,13 @@ describe(RULE_NAME, () => {
             ],
           },
         ],
-      })
-    })
+      },
+    )
 
-    it(`${RULE_NAME}(${type}): sorts class with ts index signatures`, () => {
-      ruleTester.run(RULE_NAME, rule, {
+    ruleTester.run(
+      `${RULE_NAME}(${type}): sorts class with ts index signatures`,
+      rule,
+      {
         valid: [
           {
             code: dedent`
@@ -637,8 +641,8 @@ describe(RULE_NAME, () => {
             ],
           },
         ],
-      })
-    })
+      },
+    )
   })
 
   describe(`${RULE_NAME}: sorting by line length`, () => {
@@ -649,160 +653,160 @@ describe(RULE_NAME, () => {
       order: SortOrder.desc,
     }
 
-    it(`${RULE_NAME}(${type}): sorts class members`, () => {
-      ruleTester.run(RULE_NAME, rule, {
-        valid: [
-          {
-            code: dedent`
-              class Mob {
-                static name = 'Shigeo Kageyama'
+    ruleTester.run(`${RULE_NAME}(${type}): sorts class members`, rule, {
+      valid: [
+        {
+          code: dedent`
+            class Mob {
+              static name = 'Shigeo Kageyama'
 
-                private beloved = 'Tsubomi Takane'
+              private beloved = 'Tsubomi Takane'
 
-                placeOfWork = 'Spirits and Such Consultation Office'
+              placeOfWork = 'Spirits and Such Consultation Office'
 
-                alias = 'Psycho Helmet'
+              alias = 'Psycho Helmet'
 
-                constructor(stressLevel) {
-                  this.stressLevel = stressLevel
-                }
-
-                static greet() {
-                  console.log(\`Ohayo! My name is \${this.name}\`)
-                }
-
-                private setStressLevel(value) {
-                  this.stressLevel = value
-                }
-
-                decreaseStressLevel(level) {
-                  this.setStressLevel(this.stressLevel - (level ?? 10))
-                }
-
-                increaseStressLevel(level) {
-                  this.setStressLevel(this.stressLevel + (level ?? 10))
-                }
+              constructor(stressLevel) {
+                this.stressLevel = stressLevel
               }
-            `,
-            options: [
-              {
-                ...options,
-                groups: [
-                  'static-property',
-                  'private-property',
-                  'property',
-                  'constructor',
-                  'static-method',
-                  'private-method',
-                  'method',
-                  'unknown',
-                ],
-              },
-            ],
-          },
-        ],
-        invalid: [
-          {
-            code: dedent`
-              class Mob {
-                static name = 'Shigeo Kageyama'
 
-                private beloved = 'Tsubomi Takane'
-
-                alias = 'Psycho Helmet'
-
-                constructor(stressLevel) {
-                  this.stressLevel = stressLevel
-                }
-
-                placeOfWork = 'Spirits and Such Consultation Office'
-
-                decreaseStressLevel(level) {
-                  this.setStressLevel(this.stressLevel - (level ?? 10))
-                }
-
-                static greet() {
-                  console.log(\`Ohayo! My name is \${this.name}\`)
-                }
-
-                private setStressLevel(value) {
-                  this.stressLevel = value
-                }
-
-                increaseStressLevel(level) {
-                  this.setStressLevel(this.stressLevel + (level ?? 10))
-                }
+              static greet() {
+                console.log(\`Ohayo! My name is \${this.name}\`)
               }
-            `,
-            output: dedent`
-              class Mob {
-                static name = 'Shigeo Kageyama'
 
-                private beloved = 'Tsubomi Takane'
-
-                placeOfWork = 'Spirits and Such Consultation Office'
-
-                alias = 'Psycho Helmet'
-
-                constructor(stressLevel) {
-                  this.stressLevel = stressLevel
-                }
-
-                static greet() {
-                  console.log(\`Ohayo! My name is \${this.name}\`)
-                }
-
-                private setStressLevel(value) {
-                  this.stressLevel = value
-                }
-
-                increaseStressLevel(level) {
-                  this.setStressLevel(this.stressLevel + (level ?? 10))
-                }
-
-                decreaseStressLevel(level) {
-                  this.setStressLevel(this.stressLevel - (level ?? 10))
-                }
+              private setStressLevel(value) {
+                this.stressLevel = value
               }
-            `,
-            options: [
-              {
-                ...options,
-                groups: [
-                  'static-property',
-                  'private-property',
-                  'property',
-                  'constructor',
-                  'static-method',
-                  'private-method',
-                  'method',
-                  'unknown',
-                ],
+
+              decreaseStressLevel(level) {
+                this.setStressLevel(this.stressLevel - (level ?? 10))
+              }
+
+              increaseStressLevel(level) {
+                this.setStressLevel(this.stressLevel + (level ?? 10))
+              }
+            }
+          `,
+          options: [
+            {
+              ...options,
+              groups: [
+                'static-property',
+                'private-property',
+                'property',
+                'constructor',
+                'static-method',
+                'private-method',
+                'method',
+                'unknown',
+              ],
+            },
+          ],
+        },
+      ],
+      invalid: [
+        {
+          code: dedent`
+            class Mob {
+              static name = 'Shigeo Kageyama'
+
+              private beloved = 'Tsubomi Takane'
+
+              alias = 'Psycho Helmet'
+
+              constructor(stressLevel) {
+                this.stressLevel = stressLevel
+              }
+
+              placeOfWork = 'Spirits and Such Consultation Office'
+
+              decreaseStressLevel(level) {
+                this.setStressLevel(this.stressLevel - (level ?? 10))
+              }
+
+              static greet() {
+                console.log(\`Ohayo! My name is \${this.name}\`)
+              }
+
+              private setStressLevel(value) {
+                this.stressLevel = value
+              }
+
+              increaseStressLevel(level) {
+                this.setStressLevel(this.stressLevel + (level ?? 10))
+              }
+            }
+          `,
+          output: dedent`
+            class Mob {
+              static name = 'Shigeo Kageyama'
+
+              private beloved = 'Tsubomi Takane'
+
+              placeOfWork = 'Spirits and Such Consultation Office'
+
+              alias = 'Psycho Helmet'
+
+              constructor(stressLevel) {
+                this.stressLevel = stressLevel
+              }
+
+              static greet() {
+                console.log(\`Ohayo! My name is \${this.name}\`)
+              }
+
+              private setStressLevel(value) {
+                this.stressLevel = value
+              }
+
+              increaseStressLevel(level) {
+                this.setStressLevel(this.stressLevel + (level ?? 10))
+              }
+
+              decreaseStressLevel(level) {
+                this.setStressLevel(this.stressLevel - (level ?? 10))
+              }
+            }
+          `,
+          options: [
+            {
+              ...options,
+              groups: [
+                'static-property',
+                'private-property',
+                'property',
+                'constructor',
+                'static-method',
+                'private-method',
+                'method',
+                'unknown',
+              ],
+            },
+          ],
+          errors: [
+            {
+              messageId: 'unexpectedClassesOrder',
+              data: {
+                left: 'constructor',
+                right: 'placeOfWork',
               },
-            ],
-            errors: [
-              {
-                messageId: 'unexpectedClassesOrder',
-                data: {
-                  left: 'constructor',
-                  right: 'placeOfWork',
-                },
+            },
+            {
+              messageId: 'unexpectedClassesOrder',
+              data: {
+                left: 'decreaseStressLevel',
+                right: 'greet',
               },
-              {
-                messageId: 'unexpectedClassesOrder',
-                data: {
-                  left: 'decreaseStressLevel',
-                  right: 'greet',
-                },
-              },
-            ],
-          },
-        ],
-      })
+            },
+          ],
+        },
+      ],
     })
 
-    it(`${RULE_NAME}(${type}): sorts class and group members`, () => {
-      ruleTester.run(RULE_NAME, rule, {
+    ruleTester.run(
+      `${RULE_NAME}(${type}): sorts class and group members`,
+      rule,
+      {
         valid: [
           {
             code: dedent`
@@ -881,11 +885,13 @@ describe(RULE_NAME, () => {
             ],
           },
         ],
-      })
-    })
+      },
+    )
 
-    it(`${RULE_NAME}(${type}): sorts class with ts index signatures`, () => {
-      ruleTester.run(RULE_NAME, rule, {
+    ruleTester.run(
+      `${RULE_NAME}(${type}): sorts class with ts index signatures`,
+      rule,
+      {
         valid: [
           {
             code: dedent`
@@ -948,13 +954,15 @@ describe(RULE_NAME, () => {
             ],
           },
         ],
-      })
-    })
+      },
+    )
   })
 
   describe(`${RULE_NAME}: misc`, () => {
-    it(`${RULE_NAME}: sets alphabetical asc sorting as default`, () => {
-      ruleTester.run(RULE_NAME, rule, {
+    ruleTester.run(
+      `${RULE_NAME}: sets alphabetical asc sorting as default`,
+      rule,
+      {
         valid: [
           {
             code: dedent`
@@ -1030,7 +1038,7 @@ describe(RULE_NAME, () => {
             ],
           },
         ],
-      })
-    })
+      },
+    )
   })
 })

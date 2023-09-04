@@ -32,8 +32,10 @@ describe(RULE_NAME, () => {
       'ignore-case': false,
     }
 
-    it(`${RULE_NAME}(${type}): sorts props in astro components`, () => {
-      ruleTester.run(RULE_NAME, rule, {
+    ruleTester.run(
+      `${RULE_NAME}(${type}): sorts props in astro components`,
+      rule,
+      {
         valid: [
           {
             filename: 'component.astro',
@@ -73,11 +75,13 @@ describe(RULE_NAME, () => {
             ],
           },
         ],
-      })
-    })
+      },
+    )
 
-    it(`${RULE_NAME}(${type}): split props intro groups if there is spreaded props`, () => {
-      ruleTester.run(RULE_NAME, rule, {
+    ruleTester.run(
+      `${RULE_NAME}(${type}): split props intro groups if there is spreaded props`,
+      rule,
+      {
         valid: [
           {
             filename: 'component.astro',
@@ -123,11 +127,13 @@ describe(RULE_NAME, () => {
             ],
           },
         ],
-      })
-    })
+      },
+    )
 
-    it(`${RULE_NAME}(${type}): works with literal attributes`, () => {
-      ruleTester.run(RULE_NAME, rule, {
+    ruleTester.run(
+      `${RULE_NAME}(${type}): works with literal attributes`,
+      rule,
+      {
         valid: [
           {
             filename: 'component.astro',
@@ -198,11 +204,13 @@ describe(RULE_NAME, () => {
             ],
           },
         ],
-      })
-    })
+      },
+    )
 
-    it(`${RULE_NAME}(${type}): allows to set shorthand attributes position`, () => {
-      ruleTester.run(RULE_NAME, rule, {
+    ruleTester.run(
+      `${RULE_NAME}(${type}): allows to set shorthand attributes position`,
+      rule,
+      {
         valid: [
           {
             filename: 'component.astro',
@@ -286,11 +294,13 @@ describe(RULE_NAME, () => {
             ],
           },
         ],
-      })
-    })
+      },
+    )
 
-    it(`${RULE_NAME}(${type}): allows to set multiline attributes position`, () => {
-      ruleTester.run(RULE_NAME, rule, {
+    ruleTester.run(
+      `${RULE_NAME}(${type}): allows to set multiline attributes position`,
+      rule,
+      {
         valid: [
           {
             filename: 'component.astro',
@@ -377,100 +387,98 @@ describe(RULE_NAME, () => {
             ],
           },
         ],
-      })
-    })
+      },
+    )
 
-    it(`${RULE_NAME}(${type}): allows to set custom groups`, () => {
-      ruleTester.run(RULE_NAME, rule, {
-        valid: [
-          {
-            filename: 'component.astro',
-            code: dedent`
-              <script>
-                import Suzume from '~/base/suzume.astro
-              </script>
+    ruleTester.run(`${RULE_NAME}(${type}): allows to set custom groups`, rule, {
+      valid: [
+        {
+          filename: 'component.astro',
+          code: dedent`
+            <script>
+              import Suzume from '~/base/suzume.astro
+            </script>
 
-              <Suzume
-                id="0c3cc950-181f-497e-97e2-7d0c73575ebb"
-                name="Suzume"
-                onCloseDoor={() => {
-                  /* ... */
-                }}
-                age={17}
-              />
-            `,
-            options: [
-              {
-                ...options,
-                groups: ['top', 'callback', 'unknown'],
-                'custom-groups': {
-                  top: ['id', 'name'],
-                  callback: 'on*',
-                },
+            <Suzume
+              id="0c3cc950-181f-497e-97e2-7d0c73575ebb"
+              name="Suzume"
+              onCloseDoor={() => {
+                /* ... */
+              }}
+              age={17}
+            />
+          `,
+          options: [
+            {
+              ...options,
+              groups: ['top', 'callback', 'unknown'],
+              'custom-groups': {
+                top: ['id', 'name'],
+                callback: 'on*',
               },
-            ],
-          },
-        ],
-        invalid: [
-          {
-            filename: 'component.astro',
-            code: dedent`
-              <script>
-                import Suzume from '~/base/suzume.astro
-              </script>
+            },
+          ],
+        },
+      ],
+      invalid: [
+        {
+          filename: 'component.astro',
+          code: dedent`
+            <script>
+              import Suzume from '~/base/suzume.astro
+            </script>
 
-              <Suzume
-                age={17}
-                id="0c3cc950-181f-497e-97e2-7d0c73575ebb"
-                onCloseDoor={() => {
-                  /* ... */
-                }}
-                name="Suzume"
-              />
-            `,
-            output: dedent`
-              <script>
-                import Suzume from '~/base/suzume.astro
-              </script>
+            <Suzume
+              age={17}
+              id="0c3cc950-181f-497e-97e2-7d0c73575ebb"
+              onCloseDoor={() => {
+                /* ... */
+              }}
+              name="Suzume"
+            />
+          `,
+          output: dedent`
+            <script>
+              import Suzume from '~/base/suzume.astro
+            </script>
 
-              <Suzume
-                id="0c3cc950-181f-497e-97e2-7d0c73575ebb"
-                name="Suzume"
-                onCloseDoor={() => {
-                  /* ... */
-                }}
-                age={17}
-              />
-            `,
-            options: [
-              {
-                ...options,
-                groups: ['top', 'callback', 'unknown'],
-                'custom-groups': {
-                  top: ['id', 'name'],
-                  callback: 'on*',
-                },
+            <Suzume
+              id="0c3cc950-181f-497e-97e2-7d0c73575ebb"
+              name="Suzume"
+              onCloseDoor={() => {
+                /* ... */
+              }}
+              age={17}
+            />
+          `,
+          options: [
+            {
+              ...options,
+              groups: ['top', 'callback', 'unknown'],
+              'custom-groups': {
+                top: ['id', 'name'],
+                callback: 'on*',
               },
-            ],
-            errors: [
-              {
-                messageId: 'unexpectedAstroAttributesOrder',
-                data: {
-                  left: 'age',
-                  right: 'id',
-                },
+            },
+          ],
+          errors: [
+            {
+              messageId: 'unexpectedAstroAttributesOrder',
+              data: {
+                left: 'age',
+                right: 'id',
               },
-              {
-                messageId: 'unexpectedAstroAttributesOrder',
-                data: {
-                  left: 'onCloseDoor',
-                  right: 'name',
-                },
+            },
+            {
+              messageId: 'unexpectedAstroAttributesOrder',
+              data: {
+                left: 'onCloseDoor',
+                right: 'name',
               },
-            ],
-          },
-        ],
-      })
+            },
+          ],
+        },
+      ],
     })
   })
 
@@ -483,8 +491,10 @@ describe(RULE_NAME, () => {
       'ignore-case': false,
     }
 
-    it(`${RULE_NAME}(${type}): sorts props in astro components`, () => {
-      ruleTester.run(RULE_NAME, rule, {
+    ruleTester.run(
+      `${RULE_NAME}(${type}): sorts props in astro components`,
+      rule,
+      {
         valid: [
           {
             filename: 'component.astro',
@@ -524,11 +534,13 @@ describe(RULE_NAME, () => {
             ],
           },
         ],
-      })
-    })
+      },
+    )
 
-    it(`${RULE_NAME}(${type}): split props intro groups if there is spreaded props`, () => {
-      ruleTester.run(RULE_NAME, rule, {
+    ruleTester.run(
+      `${RULE_NAME}(${type}): split props intro groups if there is spreaded props`,
+      rule,
+      {
         valid: [
           {
             filename: 'component.astro',
@@ -574,11 +586,13 @@ describe(RULE_NAME, () => {
             ],
           },
         ],
-      })
-    })
+      },
+    )
 
-    it(`${RULE_NAME}(${type}): works with literal attributes`, () => {
-      ruleTester.run(RULE_NAME, rule, {
+    ruleTester.run(
+      `${RULE_NAME}(${type}): works with literal attributes`,
+      rule,
+      {
         valid: [
           {
             filename: 'component.astro',
@@ -649,11 +663,13 @@ describe(RULE_NAME, () => {
             ],
           },
         ],
-      })
-    })
+      },
+    )
 
-    it(`${RULE_NAME}(${type}): allows to set shorthand attributes position`, () => {
-      ruleTester.run(RULE_NAME, rule, {
+    ruleTester.run(
+      `${RULE_NAME}(${type}): allows to set shorthand attributes position`,
+      rule,
+      {
         valid: [
           {
             filename: 'component.astro',
@@ -737,11 +753,13 @@ describe(RULE_NAME, () => {
             ],
           },
         ],
-      })
-    })
+      },
+    )
 
-    it(`${RULE_NAME}(${type}): allows to set multiline attributes position`, () => {
-      ruleTester.run(RULE_NAME, rule, {
+    ruleTester.run(
+      `${RULE_NAME}(${type}): allows to set multiline attributes position`,
+      rule,
+      {
         valid: [
           {
             filename: 'component.astro',
@@ -828,100 +846,98 @@ describe(RULE_NAME, () => {
             ],
           },
         ],
-      })
-    })
+      },
+    )
 
-    it(`${RULE_NAME}(${type}): allows to set custom groups`, () => {
-      ruleTester.run(RULE_NAME, rule, {
-        valid: [
-          {
-            filename: 'component.astro',
-            code: dedent`
-              <script>
-                import Suzume from '~/base/suzume.astro
-              </script>
+    ruleTester.run(`${RULE_NAME}(${type}): allows to set custom groups`, rule, {
+      valid: [
+        {
+          filename: 'component.astro',
+          code: dedent`
+            <script>
+              import Suzume from '~/base/suzume.astro
+            </script>
 
-              <Suzume
-                id="0c3cc950-181f-497e-97e2-7d0c73575ebb"
-                name="Suzume"
-                onCloseDoor={() => {
-                  /* ... */
-                }}
-                age={17}
-              />
-            `,
-            options: [
-              {
-                ...options,
-                groups: ['top', 'callback', 'unknown'],
-                'custom-groups': {
-                  top: ['id', 'name'],
-                  callback: 'on*',
-                },
+            <Suzume
+              id="0c3cc950-181f-497e-97e2-7d0c73575ebb"
+              name="Suzume"
+              onCloseDoor={() => {
+                /* ... */
+              }}
+              age={17}
+            />
+          `,
+          options: [
+            {
+              ...options,
+              groups: ['top', 'callback', 'unknown'],
+              'custom-groups': {
+                top: ['id', 'name'],
+                callback: 'on*',
               },
-            ],
-          },
-        ],
-        invalid: [
-          {
-            filename: 'component.astro',
-            code: dedent`
-              <script>
-                import Suzume from '~/base/suzume.astro
-              </script>
+            },
+          ],
+        },
+      ],
+      invalid: [
+        {
+          filename: 'component.astro',
+          code: dedent`
+            <script>
+              import Suzume from '~/base/suzume.astro
+            </script>
 
-              <Suzume
-                age={17}
-                id="0c3cc950-181f-497e-97e2-7d0c73575ebb"
-                onCloseDoor={() => {
-                  /* ... */
-                }}
-                name="Suzume"
-              />
-            `,
-            output: dedent`
-              <script>
-                import Suzume from '~/base/suzume.astro
-              </script>
+            <Suzume
+              age={17}
+              id="0c3cc950-181f-497e-97e2-7d0c73575ebb"
+              onCloseDoor={() => {
+                /* ... */
+              }}
+              name="Suzume"
+            />
+          `,
+          output: dedent`
+            <script>
+              import Suzume from '~/base/suzume.astro
+            </script>
 
-              <Suzume
-                id="0c3cc950-181f-497e-97e2-7d0c73575ebb"
-                name="Suzume"
-                onCloseDoor={() => {
-                  /* ... */
-                }}
-                age={17}
-              />
-            `,
-            options: [
-              {
-                ...options,
-                groups: ['top', 'callback', 'unknown'],
-                'custom-groups': {
-                  top: ['id', 'name'],
-                  callback: 'on*',
-                },
+            <Suzume
+              id="0c3cc950-181f-497e-97e2-7d0c73575ebb"
+              name="Suzume"
+              onCloseDoor={() => {
+                /* ... */
+              }}
+              age={17}
+            />
+          `,
+          options: [
+            {
+              ...options,
+              groups: ['top', 'callback', 'unknown'],
+              'custom-groups': {
+                top: ['id', 'name'],
+                callback: 'on*',
               },
-            ],
-            errors: [
-              {
-                messageId: 'unexpectedAstroAttributesOrder',
-                data: {
-                  left: 'age',
-                  right: 'id',
-                },
+            },
+          ],
+          errors: [
+            {
+              messageId: 'unexpectedAstroAttributesOrder',
+              data: {
+                left: 'age',
+                right: 'id',
               },
-              {
-                messageId: 'unexpectedAstroAttributesOrder',
-                data: {
-                  left: 'onCloseDoor',
-                  right: 'name',
-                },
+            },
+            {
+              messageId: 'unexpectedAstroAttributesOrder',
+              data: {
+                left: 'onCloseDoor',
+                right: 'name',
               },
-            ],
-          },
-        ],
-      })
+            },
+          ],
+        },
+      ],
     })
   })
 
@@ -933,8 +949,10 @@ describe(RULE_NAME, () => {
       order: SortOrder.desc,
     }
 
-    it(`${RULE_NAME}(${type}): sorts props in astro components`, () => {
-      ruleTester.run(RULE_NAME, rule, {
+    ruleTester.run(
+      `${RULE_NAME}(${type}): sorts props in astro components`,
+      rule,
+      {
         valid: [
           {
             filename: 'component.astro',
@@ -974,11 +992,13 @@ describe(RULE_NAME, () => {
             ],
           },
         ],
-      })
-    })
+      },
+    )
 
-    it(`${RULE_NAME}(${type}): split props intro groups if there is spreaded props`, () => {
-      ruleTester.run(RULE_NAME, rule, {
+    ruleTester.run(
+      `${RULE_NAME}(${type}): split props intro groups if there is spreaded props`,
+      rule,
+      {
         valid: [
           {
             filename: 'component.astro',
@@ -1024,11 +1044,13 @@ describe(RULE_NAME, () => {
             ],
           },
         ],
-      })
-    })
+      },
+    )
 
-    it(`${RULE_NAME}(${type}): works with literal attributes`, () => {
-      ruleTester.run(RULE_NAME, rule, {
+    ruleTester.run(
+      `${RULE_NAME}(${type}): works with literal attributes`,
+      rule,
+      {
         valid: [
           {
             filename: 'component.astro',
@@ -1092,11 +1114,13 @@ describe(RULE_NAME, () => {
             ],
           },
         ],
-      })
-    })
+      },
+    )
 
-    it(`${RULE_NAME}(${type}): allows to set shorthand attributes position`, () => {
-      ruleTester.run(RULE_NAME, rule, {
+    ruleTester.run(
+      `${RULE_NAME}(${type}): allows to set shorthand attributes position`,
+      rule,
+      {
         valid: [
           {
             filename: 'component.astro',
@@ -1180,11 +1204,13 @@ describe(RULE_NAME, () => {
             ],
           },
         ],
-      })
-    })
+      },
+    )
 
-    it(`${RULE_NAME}(${type}): allows to set multiline attributes position`, () => {
-      ruleTester.run(RULE_NAME, rule, {
+    ruleTester.run(
+      `${RULE_NAME}(${type}): allows to set multiline attributes position`,
+      rule,
+      {
         valid: [
           {
             filename: 'component.astro',
@@ -1264,117 +1290,113 @@ describe(RULE_NAME, () => {
             ],
           },
         ],
-      })
-    })
+      },
+    )
 
-    it(`${RULE_NAME}(${type}): allows to set custom groups`, () => {
-      ruleTester.run(RULE_NAME, rule, {
-        valid: [
-          {
-            filename: 'component.astro',
-            code: dedent`
-              <script>
-                import Suzume from '~/base/suzume.astro
-              </script>
+    ruleTester.run(`${RULE_NAME}(${type}): allows to set custom groups`, rule, {
+      valid: [
+        {
+          filename: 'component.astro',
+          code: dedent`
+            <script>
+              import Suzume from '~/base/suzume.astro
+            </script>
 
-              <Suzume
-                id="0c3cc950-181f-497e-97e2-7d0c73575ebb"
-                name="Suzume"
-                onCloseDoor={() => {
-                  /* ... */
-                }}
-                age={17}
-              />
-            `,
-            options: [
-              {
-                ...options,
-                groups: ['top', 'callback', 'unknown'],
-                'custom-groups': {
-                  top: ['id', 'name'],
-                  callback: 'on*',
-                },
+            <Suzume
+              id="0c3cc950-181f-497e-97e2-7d0c73575ebb"
+              name="Suzume"
+              onCloseDoor={() => {
+                /* ... */
+              }}
+              age={17}
+            />
+          `,
+          options: [
+            {
+              ...options,
+              groups: ['top', 'callback', 'unknown'],
+              'custom-groups': {
+                top: ['id', 'name'],
+                callback: 'on*',
               },
-            ],
-          },
-        ],
-        invalid: [
-          {
-            filename: 'component.astro',
-            code: dedent`
-              <script>
-                import Suzume from '~/base/suzume.astro
-              </script>
+            },
+          ],
+        },
+      ],
+      invalid: [
+        {
+          filename: 'component.astro',
+          code: dedent`
+            <script>
+              import Suzume from '~/base/suzume.astro
+            </script>
 
-              <Suzume
-                age={17}
-                id="0c3cc950-181f-497e-97e2-7d0c73575ebb"
-                onCloseDoor={() => {
-                  /* ... */
-                }}
-                name="Suzume"
-              />
-            `,
-            output: dedent`
-              <script>
-                import Suzume from '~/base/suzume.astro
-              </script>
+            <Suzume
+              age={17}
+              id="0c3cc950-181f-497e-97e2-7d0c73575ebb"
+              onCloseDoor={() => {
+                /* ... */
+              }}
+              name="Suzume"
+            />
+          `,
+          output: dedent`
+            <script>
+              import Suzume from '~/base/suzume.astro
+            </script>
 
-              <Suzume
-                id="0c3cc950-181f-497e-97e2-7d0c73575ebb"
-                name="Suzume"
-                onCloseDoor={() => {
-                  /* ... */
-                }}
-                age={17}
-              />
-            `,
-            options: [
-              {
-                ...options,
-                groups: ['top', 'callback', 'unknown'],
-                'custom-groups': {
-                  top: ['id', 'name'],
-                  callback: 'on*',
-                },
+            <Suzume
+              id="0c3cc950-181f-497e-97e2-7d0c73575ebb"
+              name="Suzume"
+              onCloseDoor={() => {
+                /* ... */
+              }}
+              age={17}
+            />
+          `,
+          options: [
+            {
+              ...options,
+              groups: ['top', 'callback', 'unknown'],
+              'custom-groups': {
+                top: ['id', 'name'],
+                callback: 'on*',
               },
-            ],
-            errors: [
-              {
-                messageId: 'unexpectedAstroAttributesOrder',
-                data: {
-                  left: 'age',
-                  right: 'id',
-                },
+            },
+          ],
+          errors: [
+            {
+              messageId: 'unexpectedAstroAttributesOrder',
+              data: {
+                left: 'age',
+                right: 'id',
               },
-              {
-                messageId: 'unexpectedAstroAttributesOrder',
-                data: {
-                  left: 'onCloseDoor',
-                  right: 'name',
-                },
+            },
+            {
+              messageId: 'unexpectedAstroAttributesOrder',
+              data: {
+                left: 'onCloseDoor',
+                right: 'name',
               },
-            ],
-          },
-        ],
-      })
+            },
+          ],
+        },
+      ],
     })
   })
 
   describe(`${RULE_NAME}: misc`, () => {
-    it(`${RULE_NAME}: works only for .astro files`, () => {
-      ruleTester.run(RULE_NAME, rule, {
-        valid: [
-          dedent`
-            <Makishima
-              gender="male"
-              height={180}
-              weight={65}
-            />
-          `,
-        ],
-        invalid: [],
-      })
+    ruleTester.run(`${RULE_NAME}: works only for .astro files`, rule, {
+      valid: [
+        dedent`
+          <Makishima
+            gender="male"
+            height={180}
+            weight={65}
+          />
+        `,
+      ],
+      invalid: [],
     })
   })
 })

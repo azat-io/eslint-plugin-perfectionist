@@ -31,65 +31,65 @@ describe(RULE_NAME, () => {
       'ignore-case': false,
     }
 
-    it(`${RULE_NAME}(${type}): sorts jsx props`, () => {
-      ruleTester.run(RULE_NAME, rule, {
-        valid: [
-          {
-            code: dedent`
-              let Odokawa = () => (
-                <Character
-                  role="taxi driver"
-                  type="walrus"
-                  variant="odd"
-                >
-                  Pew-pew
-                </Character>
-              )
-            `,
-            options: [options],
-          },
-        ],
-        invalid: [
-          {
-            code: dedent`
-              let Odokawa = () => (
-                <Character
-                  type="walrus"
-                  role="taxi driver"
-                  variant="odd"
-                >
-                  Pew-pew
-                </Character>
-              )
-            `,
-            output: dedent`
-              let Odokawa = () => (
-                <Character
-                  role="taxi driver"
-                  type="walrus"
-                  variant="odd"
-                >
-                  Pew-pew
-                </Character>
-              )
-            `,
-            options: [options],
-            errors: [
-              {
-                messageId: 'unexpectedJSXPropsOrder',
-                data: {
-                  left: 'type',
-                  right: 'role',
-                },
+    ruleTester.run(`${RULE_NAME}(${type}): sorts jsx props`, rule, {
+      valid: [
+        {
+          code: dedent`
+            let Odokawa = () => (
+              <Character
+                role="taxi driver"
+                type="walrus"
+                variant="odd"
+              >
+                Pew-pew
+              </Character>
+            )
+          `,
+          options: [options],
+        },
+      ],
+      invalid: [
+        {
+          code: dedent`
+            let Odokawa = () => (
+              <Character
+                type="walrus"
+                role="taxi driver"
+                variant="odd"
+              >
+                Pew-pew
+              </Character>
+            )
+          `,
+          output: dedent`
+            let Odokawa = () => (
+              <Character
+                role="taxi driver"
+                type="walrus"
+                variant="odd"
+              >
+                Pew-pew
+              </Character>
+            )
+          `,
+          options: [options],
+          errors: [
+            {
+              messageId: 'unexpectedJSXPropsOrder',
+              data: {
+                left: 'type',
+                right: 'role',
               },
-            ],
-          },
-        ],
-      })
+            },
+          ],
+        },
+      ],
     })
 
-    it(`${RULE_NAME}(${type}): sorts jsx props with namespaced names`, () => {
-      ruleTester.run(RULE_NAME, rule, {
+    ruleTester.run(
+      `${RULE_NAME}(${type}): sorts jsx props with namespaced names`,
+      rule,
+      {
         valid: [
           {
             code: dedent`
@@ -139,11 +139,13 @@ describe(RULE_NAME, () => {
             ],
           },
         ],
-      })
-    })
+      },
+    )
 
-    it(`${RULE_NAME}(${type}): does not break the property list`, () => {
-      ruleTester.run(RULE_NAME, rule, {
+    ruleTester.run(
+      `${RULE_NAME}(${type}): does not break the property list`,
+      rule,
+      {
         valid: [
           {
             code: dedent`
@@ -209,11 +211,13 @@ describe(RULE_NAME, () => {
             ],
           },
         ],
-      })
-    })
+      },
+    )
 
-    it(`${RULE_NAME}(${type}): allows to set shorthand props position`, () => {
-      ruleTester.run(RULE_NAME, rule, {
+    ruleTester.run(
+      `${RULE_NAME}(${type}): allows to set shorthand props position`,
+      rule,
+      {
         valid: [
           {
             code: dedent`
@@ -273,11 +277,13 @@ describe(RULE_NAME, () => {
             ],
           },
         ],
-      })
-    })
+      },
+    )
 
-    it(`${RULE_NAME}(${type}): allows to set callback props position`, () => {
-      ruleTester.run(RULE_NAME, rule, {
+    ruleTester.run(
+      `${RULE_NAME}(${type}): allows to set callback props position`,
+      rule,
+      {
         valid: [
           {
             code: dedent`
@@ -333,11 +339,13 @@ describe(RULE_NAME, () => {
             ],
           },
         ],
-      })
-    })
+      },
+    )
 
-    it(`${RULE_NAME}(${type}): allows to set multiline props position`, () => {
-      ruleTester.run(RULE_NAME, rule, {
+    ruleTester.run(
+      `${RULE_NAME}(${type}): allows to set multiline props position`,
+      rule,
+      {
         valid: [
           {
             code: dedent`
@@ -416,11 +424,13 @@ describe(RULE_NAME, () => {
             ],
           },
         ],
-      })
-    })
+      },
+    )
 
-    it(`${RULE_NAME}(${type}): allows to set priority props`, () => {
-      ruleTester.run(RULE_NAME, rule, {
+    ruleTester.run(
+      `${RULE_NAME}(${type}): allows to set priority props`,
+      rule,
+      {
         valid: [
           {
             code: dedent`
@@ -549,8 +559,8 @@ describe(RULE_NAME, () => {
             ],
           },
         ],
-      })
-    })
+      },
+    )
   })
 
   describe(`${RULE_NAME}: sorting by natural order`, () => {
@@ -562,65 +572,65 @@ describe(RULE_NAME, () => {
       'ignore-case': true,
     }
 
-    it(`${RULE_NAME}(${type}): sorts jsx props`, () => {
-      ruleTester.run(RULE_NAME, rule, {
-        valid: [
-          {
-            code: dedent`
-              let Odokawa = () => (
-                <Character
-                  role="taxi driver"
-                  type="walrus"
-                  variant="odd"
-                >
-                  Pew-pew
-                </Character>
-              )
-            `,
-            options: [options],
-          },
-        ],
-        invalid: [
-          {
-            code: dedent`
-              let Odokawa = () => (
-                <Character
-                  type="walrus"
-                  role="taxi driver"
-                  variant="odd"
-                >
-                  Pew-pew
-                </Character>
-              )
-            `,
-            output: dedent`
-              let Odokawa = () => (
-                <Character
-                  role="taxi driver"
-                  type="walrus"
-                  variant="odd"
-                >
-                  Pew-pew
-                </Character>
-              )
-            `,
-            options: [options],
-            errors: [
-              {
-                messageId: 'unexpectedJSXPropsOrder',
-                data: {
-                  left: 'type',
-                  right: 'role',
-                },
+    ruleTester.run(`${RULE_NAME}(${type}): sorts jsx props`, rule, {
+      valid: [
+        {
+          code: dedent`
+            let Odokawa = () => (
+              <Character
+                role="taxi driver"
+                type="walrus"
+                variant="odd"
+              >
+                Pew-pew
+              </Character>
+            )
+          `,
+          options: [options],
+        },
+      ],
+      invalid: [
+        {
+          code: dedent`
+            let Odokawa = () => (
+              <Character
+                type="walrus"
+                role="taxi driver"
+                variant="odd"
+              >
+                Pew-pew
+              </Character>
+            )
+          `,
+          output: dedent`
+            let Odokawa = () => (
+              <Character
+                role="taxi driver"
+                type="walrus"
+                variant="odd"
+              >
+                Pew-pew
+              </Character>
+            )
+          `,
+          options: [options],
+          errors: [
+            {
+              messageId: 'unexpectedJSXPropsOrder',
+              data: {
+                left: 'type',
+                right: 'role',
               },
-            ],
-          },
-        ],
-      })
+            },
+          ],
+        },
+      ],
     })
 
-    it(`${RULE_NAME}(${type}): sorts jsx props with namespaced names`, () => {
-      ruleTester.run(RULE_NAME, rule, {
+    ruleTester.run(
+      `${RULE_NAME}(${type}): sorts jsx props with namespaced names`,
+      rule,
+      {
         valid: [
           {
             code: dedent`
@@ -670,11 +680,13 @@ describe(RULE_NAME, () => {
             ],
           },
         ],
-      })
-    })
+      },
+    )
 
-    it(`${RULE_NAME}(${type}): does not break the property list`, () => {
-      ruleTester.run(RULE_NAME, rule, {
+    ruleTester.run(
+      `${RULE_NAME}(${type}): does not break the property list`,
+      rule,
+      {
         valid: [
           {
             code: dedent`
@@ -740,11 +752,13 @@ describe(RULE_NAME, () => {
             ],
           },
         ],
-      })
-    })
+      },
+    )
 
-    it(`${RULE_NAME}(${type}): allows to set shorthand props position`, () => {
-      ruleTester.run(RULE_NAME, rule, {
+    ruleTester.run(
+      `${RULE_NAME}(${type}): allows to set shorthand props position`,
+      rule,
+      {
         valid: [
           {
             code: dedent`
@@ -804,11 +818,13 @@ describe(RULE_NAME, () => {
             ],
           },
         ],
-      })
-    })
+      },
+    )
 
-    it(`${RULE_NAME}(${type}): allows to set callback props position`, () => {
-      ruleTester.run(RULE_NAME, rule, {
+    ruleTester.run(
+      `${RULE_NAME}(${type}): allows to set callback props position`,
+      rule,
+      {
         valid: [
           {
             code: dedent`
@@ -864,11 +880,13 @@ describe(RULE_NAME, () => {
             ],
           },
         ],
-      })
-    })
+      },
+    )
 
-    it(`${RULE_NAME}(${type}): allows to set multiline props position`, () => {
-      ruleTester.run(RULE_NAME, rule, {
+    ruleTester.run(
+      `${RULE_NAME}(${type}): allows to set multiline props position`,
+      rule,
+      {
         valid: [
           {
             code: dedent`
@@ -947,11 +965,13 @@ describe(RULE_NAME, () => {
             ],
           },
         ],
-      })
-    })
+      },
+    )
 
-    it(`${RULE_NAME}(${type}): allows to set priority props`, () => {
-      ruleTester.run(RULE_NAME, rule, {
+    ruleTester.run(
+      `${RULE_NAME}(${type}): allows to set priority props`,
+      rule,
+      {
         valid: [
           {
             code: dedent`
@@ -1080,8 +1100,8 @@ describe(RULE_NAME, () => {
             ],
           },
         ],
-      })
-    })
+      },
+    )
   })
 
   describe(`${RULE_NAME}: sorting by line length`, () => {
@@ -1092,11 +1112,10 @@ describe(RULE_NAME, () => {
       order: SortOrder.desc,
     }
 
-    it(`${RULE_NAME}(${type}): sorts jsx props`, () => {
-      ruleTester.run(RULE_NAME, rule, {
-        valid: [
-          {
-            code: dedent`
+    ruleTester.run(`${RULE_NAME}(${type}): sorts jsx props`, rule, {
+      valid: [
+        {
+          code: dedent`
               let Odokawa = () => (
                 <Character
                   role="taxi driver"
@@ -1107,50 +1126,51 @@ describe(RULE_NAME, () => {
                 </Character>
               )
             `,
-            options: [options],
-          },
-        ],
-        invalid: [
-          {
-            code: dedent`
-              let Odokawa = () => (
-                <Character
-                  type="walrus"
-                  role="taxi driver"
-                  variant="odd"
-                >
-                  Pew-pew
-                </Character>
-              )
-            `,
-            output: dedent`
-              let Odokawa = () => (
-                <Character
-                  role="taxi driver"
-                  type="walrus"
-                  variant="odd"
-                >
-                  Pew-pew
-                </Character>
-              )
-            `,
-            options: [options],
-            errors: [
-              {
-                messageId: 'unexpectedJSXPropsOrder',
-                data: {
-                  left: 'type',
-                  right: 'role',
-                },
+          options: [options],
+        },
+      ],
+      invalid: [
+        {
+          code: dedent`
+            let Odokawa = () => (
+              <Character
+                type="walrus"
+                role="taxi driver"
+                variant="odd"
+              >
+                Pew-pew
+              </Character>
+            )
+          `,
+          output: dedent`
+            let Odokawa = () => (
+              <Character
+                role="taxi driver"
+                type="walrus"
+                variant="odd"
+              >
+                Pew-pew
+              </Character>
+            )
+          `,
+          options: [options],
+          errors: [
+            {
+              messageId: 'unexpectedJSXPropsOrder',
+              data: {
+                left: 'type',
+                right: 'role',
               },
-            ],
-          },
-        ],
-      })
+            },
+          ],
+        },
+      ],
     })
 
-    it(`${RULE_NAME}(${type}): sorts jsx props with namespaced names`, () => {
-      ruleTester.run(RULE_NAME, rule, {
+    ruleTester.run(
+      `${RULE_NAME}(${type}): sorts jsx props with namespaced names`,
+      rule,
+      {
         valid: [
           {
             code: dedent`
@@ -1207,11 +1227,13 @@ describe(RULE_NAME, () => {
             ],
           },
         ],
-      })
-    })
+      },
+    )
 
-    it(`${RULE_NAME}(${type}): does not break the property list`, () => {
-      ruleTester.run(RULE_NAME, rule, {
+    ruleTester.run(
+      `${RULE_NAME}(${type}): does not break the property list`,
+      rule,
+      {
         valid: [
           {
             code: dedent`
@@ -1270,11 +1292,13 @@ describe(RULE_NAME, () => {
             ],
           },
         ],
-      })
-    })
+      },
+    )
 
-    it(`${RULE_NAME}(${type}): allows to set shorthand props position`, () => {
-      ruleTester.run(RULE_NAME, rule, {
+    ruleTester.run(
+      `${RULE_NAME}(${type}): allows to set shorthand props position`,
+      rule,
+      {
         valid: [
           {
             code: dedent`
@@ -1341,11 +1365,13 @@ describe(RULE_NAME, () => {
             ],
           },
         ],
-      })
-    })
+      },
+    )
 
-    it(`${RULE_NAME}(${type}): allows to set callback props position`, () => {
-      ruleTester.run(RULE_NAME, rule, {
+    ruleTester.run(
+      `${RULE_NAME}(${type}): allows to set callback props position`,
+      rule,
+      {
         valid: [
           {
             code: dedent`
@@ -1401,11 +1427,13 @@ describe(RULE_NAME, () => {
             ],
           },
         ],
-      })
-    })
+      },
+    )
 
-    it(`${RULE_NAME}(${type}): allows to set multiline props position`, () => {
-      ruleTester.run(RULE_NAME, rule, {
+    ruleTester.run(
+      `${RULE_NAME}(${type}): allows to set multiline props position`,
+      rule,
+      {
         valid: [
           {
             code: dedent`
@@ -1484,11 +1512,13 @@ describe(RULE_NAME, () => {
             ],
           },
         ],
-      })
-    })
+      },
+    )
 
-    it(`${RULE_NAME}(${type}): allows to set priority props`, () => {
-      ruleTester.run(RULE_NAME, rule, {
+    ruleTester.run(
+      `${RULE_NAME}(${type}): allows to set priority props`,
+      rule,
+      {
         valid: [
           {
             code: dedent`
@@ -1624,13 +1654,15 @@ describe(RULE_NAME, () => {
             ],
           },
         ],
-      })
-    })
+      },
+    )
   })
 
   describe(`${RULE_NAME}: misc`, () => {
-    it(`${RULE_NAME}: sets alphabetical asc sorting as default`, () => {
-      ruleTester.run(RULE_NAME, rule, {
+    ruleTester.run(
+      `${RULE_NAME}: sets alphabetical asc sorting as default`,
+      rule,
+      {
         valid: [
           dedent`
             let Mob = () => (
@@ -1685,7 +1717,7 @@ describe(RULE_NAME, () => {
             ],
           },
         ],
-      })
-    })
+      },
+    )
   })
 })
