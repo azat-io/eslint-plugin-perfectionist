@@ -43,7 +43,6 @@ export default createEslintRule<Options, MESSAGE_ID>({
     type: 'suggestion',
     docs: {
       description: 'enforce sorted classes',
-      recommended: false,
     },
     fixable: 'code',
     schema: [
@@ -57,6 +56,7 @@ export default createEslintRule<Options, MESSAGE_ID>({
               SortType['line-length'],
             ],
             default: SortType.alphabetical,
+            type: 'string',
           },
           'ignore-case': {
             type: 'boolean',
@@ -65,10 +65,11 @@ export default createEslintRule<Options, MESSAGE_ID>({
           order: {
             enum: [SortOrder.asc, SortOrder.desc],
             default: SortOrder.asc,
+            type: 'string',
           },
           groups: {
             type: 'array',
-            default: ['property', 'constructor', 'method', 'unknown'],
+            default: [],
           },
         },
         additionalProperties: false,

@@ -1,12 +1,19 @@
-import { ESLintUtils } from '@typescript-eslint/utils'
-import { describe, it } from 'vitest'
+import { RuleTester } from '@typescript-eslint/rule-tester'
+import { afterAll, describe, it } from 'vitest'
 import { dedent } from 'ts-dedent'
 
 import rule, { RULE_NAME } from '../rules/sort-objects'
 import { SortOrder, SortType } from '../typings'
 
 describe(RULE_NAME, () => {
-  let ruleTester = new ESLintUtils.RuleTester({
+  RuleTester.describeSkip = describe.skip
+  RuleTester.afterAll = afterAll
+  RuleTester.describe = describe
+  RuleTester.itOnly = it.only
+  RuleTester.itSkip = it.skip
+  RuleTester.it = it
+
+  let ruleTester = new RuleTester({
     parser: '@typescript-eslint/parser',
   })
 
@@ -19,8 +26,10 @@ describe(RULE_NAME, () => {
       'ignore-case': false,
     }
 
-    it(`${RULE_NAME}(${type}): sorts object with identifier and literal keys`, () => {
-      ruleTester.run(RULE_NAME, rule, {
+    ruleTester.run(
+      `${RULE_NAME}(${type}): sorts object with identifier and literal keys`,
+      rule,
+      {
         valid: [
           {
             code: dedent`
@@ -64,11 +73,13 @@ describe(RULE_NAME, () => {
             ],
           },
         ],
-      })
-    })
+      },
+    )
 
-    it(`${RULE_NAME}(${type}): sorting does not break object`, () => {
-      ruleTester.run(RULE_NAME, rule, {
+    ruleTester.run(
+      `${RULE_NAME}(${type}): sorting does not break object`,
+      rule,
+      {
         valid: [
           {
             code: dedent`
@@ -112,222 +123,218 @@ describe(RULE_NAME, () => {
             ],
           },
         ],
-      })
+      },
+    )
+
+    ruleTester.run(`${RULE_NAME}(${type}): sorts objects in objects`, rule, {
+      valid: [
+        {
+          code: dedent`
+            let enforcers = {
+              'akane-tsunemori': {
+                age: 20,
+                'crime-coefficient': 28,
+              },
+              'nobuchika-ginoza': {
+                age: 28,
+                'crime-coefficient': 86.3,
+              },
+              'shinya-kogami': {
+                age: 28,
+                'crime-coefficient': 282.6,
+              },
+            }
+          `,
+          options: [options],
+        },
+      ],
+      invalid: [
+        {
+          code: dedent`
+            let enforcers = {
+              'akane-tsunemori': {
+                'crime-coefficient': 28,
+                age: 20,
+              },
+              'shinya-kogami': {
+                'crime-coefficient': 282.6,
+                age: 28,
+              },
+              'nobuchika-ginoza': {
+                'crime-coefficient': 86.3,
+                age: 28,
+              },
+            }
+          `,
+          output: dedent`
+            let enforcers = {
+              'akane-tsunemori': {
+                'crime-coefficient': 28,
+                age: 20,
+              },
+              'nobuchika-ginoza': {
+                'crime-coefficient': 86.3,
+                age: 28,
+              },
+              'shinya-kogami': {
+                'crime-coefficient': 282.6,
+                age: 28,
+              },
+            }
+          `,
+          options: [options],
+          errors: [
+            {
+              messageId: 'unexpectedObjectsOrder',
+              data: {
+                left: 'crime-coefficient',
+                right: 'age',
+              },
+            },
+            {
+              messageId: 'unexpectedObjectsOrder',
+              data: {
+                left: 'crime-coefficient',
+                right: 'age',
+              },
+            },
+            {
+              messageId: 'unexpectedObjectsOrder',
+              data: {
+                left: 'shinya-kogami',
+                right: 'nobuchika-ginoza',
+              },
+            },
+            {
+              messageId: 'unexpectedObjectsOrder',
+              data: {
+                left: 'crime-coefficient',
+                right: 'age',
+              },
+            },
+          ],
+        },
+      ],
     })
 
-    it(`${RULE_NAME}(${type}): sorts objects in objects`, () => {
-      ruleTester.run(RULE_NAME, rule, {
-        valid: [
-          {
-            code: dedent`
-              let enforcers = {
-                'akane-tsunemori': {
-                  age: 20,
-                  'crime-coefficient': 28,
-                },
-                'nobuchika-ginoza': {
-                  age: 28,
-                  'crime-coefficient': 86.3,
-                },
-                'shinya-kogami': {
-                  age: 28,
-                  'crime-coefficient': 282.6,
-                },
-              }
-            `,
-            options: [options],
-          },
-        ],
-        invalid: [
-          {
-            code: dedent`
-              let enforcers = {
-                'akane-tsunemori': {
-                  'crime-coefficient': 28,
-                  age: 20,
-                },
-                'shinya-kogami': {
-                  'crime-coefficient': 282.6,
-                  age: 28,
-                },
-                'nobuchika-ginoza': {
-                  'crime-coefficient': 86.3,
-                  age: 28,
-                },
-              }
-            `,
-            output: dedent`
-              let enforcers = {
-                'akane-tsunemori': {
-                  'crime-coefficient': 28,
-                  age: 20,
-                },
-                'nobuchika-ginoza': {
-                  'crime-coefficient': 86.3,
-                  age: 28,
-                },
-                'shinya-kogami': {
-                  'crime-coefficient': 282.6,
-                  age: 28,
-                },
-              }
-            `,
-            options: [options],
-            errors: [
-              {
-                messageId: 'unexpectedObjectsOrder',
-                data: {
-                  left: 'crime-coefficient',
-                  right: 'age',
-                },
+    ruleTester.run(`${RULE_NAME}(${type}): sorts objects computed keys`, rule, {
+      valid: [
+        {
+          code: dedent`
+            let robots = {
+              'eva-02': 'Asuka Langley Sohryu',
+              [getTestEva()]: 'Yui Ikari',
+              [robots[1]]: 'Rei Ayanami',
+            }
+          `,
+          options: [options],
+        },
+      ],
+      invalid: [
+        {
+          code: dedent`
+            let robots = {
+              [robots[1]]: 'Rei Ayanami',
+              [getTestEva()]: 'Yui Ikari',
+              'eva-02': 'Asuka Langley Sohryu',
+            }
+          `,
+          output: dedent`
+            let robots = {
+              'eva-02': 'Asuka Langley Sohryu',
+              [getTestEva()]: 'Yui Ikari',
+              [robots[1]]: 'Rei Ayanami',
+            }
+          `,
+          options: [options],
+          errors: [
+            {
+              messageId: 'unexpectedObjectsOrder',
+              data: {
+                left: 'robots[1]',
+                right: 'getTestEva()',
               },
-              {
-                messageId: 'unexpectedObjectsOrder',
-                data: {
-                  left: 'crime-coefficient',
-                  right: 'age',
-                },
+            },
+            {
+              messageId: 'unexpectedObjectsOrder',
+              data: {
+                left: 'getTestEva()',
+                right: 'eva-02',
               },
-              {
-                messageId: 'unexpectedObjectsOrder',
-                data: {
-                  left: 'shinya-kogami',
-                  right: 'nobuchika-ginoza',
-                },
-              },
-              {
-                messageId: 'unexpectedObjectsOrder',
-                data: {
-                  left: 'crime-coefficient',
-                  right: 'age',
-                },
-              },
-            ],
-          },
-        ],
-      })
+            },
+          ],
+        },
+      ],
     })
 
-    it(`${RULE_NAME}(${type}): sorts objects computed keys`, () => {
-      ruleTester.run(RULE_NAME, rule, {
-        valid: [
-          {
-            code: dedent`
-              let robots = {
-                'eva-02': 'Asuka Langley Sohryu',
-                [getTestEva()]: 'Yui Ikari',
-                [robots[1]]: 'Rei Ayanami',
-              }
-            `,
-            options: [options],
-          },
-        ],
-        invalid: [
-          {
-            code: dedent`
-              let robots = {
-                [robots[1]]: 'Rei Ayanami',
-                [getTestEva()]: 'Yui Ikari',
-                'eva-02': 'Asuka Langley Sohryu',
-              }
-            `,
-            output: dedent`
-              let robots = {
-                'eva-02': 'Asuka Langley Sohryu',
-                [getTestEva()]: 'Yui Ikari',
-                [robots[1]]: 'Rei Ayanami',
-              }
-            `,
-            options: [options],
-            errors: [
-              {
-                messageId: 'unexpectedObjectsOrder',
-                data: {
-                  left: 'robots[1]',
-                  right: 'getTestEva()',
-                },
+    ruleTester.run(`${RULE_NAME}(${type}): allows to set priority keys`, rule, {
+      valid: [
+        {
+          code: dedent`
+            let terrorInResonance = {
+              id: 'de4d12c2-200c-49bf-a2c8-14f5b4576299',
+              name: 'Terror in Resonance',
+              episodes: 11,
+              genres: ['drama', 'mystery', 'psychological', 'thriller'],
+              romaji: 'Zankyou no Terror',
+              studio: 'Mappa'
+            }
+          `,
+          options: [
+            {
+              ...options,
+              'custom-groups': { top: ['name', 'id'] },
+              groups: ['top', 'unknown'],
+            },
+          ],
+        },
+      ],
+      invalid: [
+        {
+          code: dedent`
+            let terrorInResonance = {
+              episodes: 11,
+              genres: ['drama', 'mystery', 'psychological', 'thriller'],
+              id: 'de4d12c2-200c-49bf-a2c8-14f5b4576299',
+              name: 'Terror in Resonance',
+              romaji: 'Zankyou no Terror',
+              studio: 'Mappa'
+            }
+          `,
+          output: dedent`
+            let terrorInResonance = {
+              id: 'de4d12c2-200c-49bf-a2c8-14f5b4576299',
+              name: 'Terror in Resonance',
+              episodes: 11,
+              genres: ['drama', 'mystery', 'psychological', 'thriller'],
+              romaji: 'Zankyou no Terror',
+              studio: 'Mappa'
+            }
+          `,
+          options: [
+            {
+              ...options,
+              'custom-groups': { top: ['name', 'id'] },
+              groups: ['top', 'unknown'],
+            },
+          ],
+          errors: [
+            {
+              messageId: 'unexpectedObjectsOrder',
+              data: {
+                left: 'genres',
+                right: 'id',
               },
-              {
-                messageId: 'unexpectedObjectsOrder',
-                data: {
-                  left: 'getTestEva()',
-                  right: 'eva-02',
-                },
-              },
-            ],
-          },
-        ],
-      })
+            },
+          ],
+        },
+      ],
     })
 
-    it(`${RULE_NAME}(${type}): allows to set priority keys`, () => {
-      ruleTester.run(RULE_NAME, rule, {
-        valid: [
-          {
-            code: dedent`
-              let terrorInResonance = {
-                id: 'de4d12c2-200c-49bf-a2c8-14f5b4576299',
-                name: 'Terror in Resonance',
-                episodes: 11,
-                genres: ['drama', 'mystery', 'psychological', 'thriller'],
-                romaji: 'Zankyou no Terror',
-                studio: 'Mappa'
-              }
-            `,
-            options: [
-              {
-                ...options,
-                'custom-groups': { top: ['name', 'id'] },
-                groups: ['top', 'unknown'],
-              },
-            ],
-          },
-        ],
-        invalid: [
-          {
-            code: dedent`
-              let terrorInResonance = {
-                episodes: 11,
-                genres: ['drama', 'mystery', 'psychological', 'thriller'],
-                id: 'de4d12c2-200c-49bf-a2c8-14f5b4576299',
-                name: 'Terror in Resonance',
-                romaji: 'Zankyou no Terror',
-                studio: 'Mappa'
-              }
-            `,
-            output: dedent`
-              let terrorInResonance = {
-                id: 'de4d12c2-200c-49bf-a2c8-14f5b4576299',
-                name: 'Terror in Resonance',
-                episodes: 11,
-                genres: ['drama', 'mystery', 'psychological', 'thriller'],
-                romaji: 'Zankyou no Terror',
-                studio: 'Mappa'
-              }
-            `,
-            options: [
-              {
-                ...options,
-                'custom-groups': { top: ['name', 'id'] },
-                groups: ['top', 'unknown'],
-              },
-            ],
-            errors: [
-              {
-                messageId: 'unexpectedObjectsOrder',
-                data: {
-                  left: 'genres',
-                  right: 'id',
-                },
-              },
-            ],
-          },
-        ],
-      })
-    })
-
-    it(`${RULE_NAME}(${type}): sorts with comments on the same line`, () => {
-      ruleTester.run(RULE_NAME, rule, {
+    ruleTester.run(
+      `${RULE_NAME}(${type}): sorts with comments on the same line`,
+      rule,
+      {
         valid: [
           {
             code: dedent`
@@ -387,11 +394,13 @@ describe(RULE_NAME, () => {
             ],
           },
         ],
-      })
-    })
+      },
+    )
 
-    it(`${RULE_NAME}(${type}): do not sorts objects without a comma and with a comment in the last element`, () => {
-      ruleTester.run(RULE_NAME, rule, {
+    ruleTester.run(
+      `${RULE_NAME}(${type}): do not sorts objects without a comma and with a comment in the last element`,
+      rule,
+      {
         valid: [],
         invalid: [
           {
@@ -419,49 +428,49 @@ describe(RULE_NAME, () => {
             ],
           },
         ],
-      })
-    })
+      },
+    )
 
-    it(`${RULE_NAME}(${type}): sorts destructured object`, () => {
-      ruleTester.run(RULE_NAME, rule, {
-        valid: [],
-        invalid: [
-          {
-            code: dedent`
-              let startTerrorInResonance = ({
-                name = 'Nine',
-                bombType,
-                placeToAttack
-              }) => {
-                // ...
-              }
-            `,
-            output: dedent`
-              let startTerrorInResonance = ({
-                bombType,
-                name = 'Nine',
-                placeToAttack
-              }) => {
-                // ...
-              }
-            `,
-            options: [options],
-            errors: [
-              {
-                messageId: 'unexpectedObjectsOrder',
-                data: {
-                  left: 'name',
-                  right: 'bombType',
-                },
+    ruleTester.run(`${RULE_NAME}(${type}): sorts destructured object`, rule, {
+      valid: [],
+      invalid: [
+        {
+          code: dedent`
+            let startTerrorInResonance = ({
+              name = 'Nine',
+              bombType,
+              placeToAttack
+            }) => {
+              // ...
+            }
+          `,
+          output: dedent`
+            let startTerrorInResonance = ({
+              bombType,
+              name = 'Nine',
+              placeToAttack
+            }) => {
+              // ...
+            }
+          `,
+          options: [options],
+          errors: [
+            {
+              messageId: 'unexpectedObjectsOrder',
+              data: {
+                left: 'name',
+                right: 'bombType',
               },
-            ],
-          },
-        ],
-      })
+            },
+          ],
+        },
+      ],
     })
 
-    it(`${RULE_NAME}(${type}): does not sort keys if the right value depends on the left value`, () => {
-      ruleTester.run(RULE_NAME, rule, {
+    ruleTester.run(
+      `${RULE_NAME}(${type}): does not sort keys if the right value depends on the left value`,
+      rule,
+      {
         valid: [],
         invalid: [
           {
@@ -497,11 +506,13 @@ describe(RULE_NAME, () => {
             ],
           },
         ],
-      })
-    })
+      },
+    )
 
-    it(`${RULE_NAME}(${type}): works with complex dependencies`, () => {
-      ruleTester.run(RULE_NAME, rule, {
+    ruleTester.run(
+      `${RULE_NAME}(${type}): works with complex dependencies`,
+      rule,
+      {
         valid: [],
         invalid: [
           {
@@ -722,11 +733,13 @@ describe(RULE_NAME, () => {
             ],
           },
         ],
-      })
-    })
+      },
+    )
 
-    it(`${RULE_NAME}(${type}): allows to use partition comments`, () => {
-      ruleTester.run(RULE_NAME, rule, {
+    ruleTester.run(
+      `${RULE_NAME}(${type}): allows to use partition comments`,
+      rule,
+      {
         valid: [],
         invalid: [
           {
@@ -793,11 +806,13 @@ describe(RULE_NAME, () => {
             ],
           },
         ],
-      })
-    })
+      },
+    )
 
-    it(`${RULE_NAME}(${type}): allows to use all comments as parts`, () => {
-      ruleTester.run(RULE_NAME, rule, {
+    ruleTester.run(
+      `${RULE_NAME}(${type}): allows to use all comments as parts`,
+      rule,
+      {
         valid: [
           {
             code: dedent`
@@ -817,11 +832,13 @@ describe(RULE_NAME, () => {
           },
         ],
         invalid: [],
-      })
-    })
+      },
+    )
 
-    it(`${RULE_NAME}(${type}): allows to use multiple partition comments`, () => {
-      ruleTester.run(RULE_NAME, rule, {
+    ruleTester.run(
+      `${RULE_NAME}(${type}): allows to use multiple partition comments`,
+      rule,
+      {
         valid: [],
         invalid: [
           {
@@ -872,8 +889,8 @@ describe(RULE_NAME, () => {
             ],
           },
         ],
-      })
-    })
+      },
+    )
   })
 
   describe(`${RULE_NAME}: sorting by natural order`, () => {
@@ -885,8 +902,10 @@ describe(RULE_NAME, () => {
       'ignore-case': false,
     }
 
-    it(`${RULE_NAME}(${type}): sorts object with identifier and literal keys`, () => {
-      ruleTester.run(RULE_NAME, rule, {
+    ruleTester.run(
+      `${RULE_NAME}(${type}): sorts object with identifier and literal keys`,
+      rule,
+      {
         valid: [
           {
             code: dedent`
@@ -930,11 +949,13 @@ describe(RULE_NAME, () => {
             ],
           },
         ],
-      })
-    })
+      },
+    )
 
-    it(`${RULE_NAME}(${type}): sorting does not break object`, () => {
-      ruleTester.run(RULE_NAME, rule, {
+    ruleTester.run(
+      `${RULE_NAME}(${type}): sorting does not break object`,
+      rule,
+      {
         valid: [
           {
             code: dedent`
@@ -978,222 +999,218 @@ describe(RULE_NAME, () => {
             ],
           },
         ],
-      })
+      },
+    )
+
+    ruleTester.run(`${RULE_NAME}(${type}): sorts objects in objects`, rule, {
+      valid: [
+        {
+          code: dedent`
+            let enforcers = {
+              'akane-tsunemori': {
+                age: 20,
+                'crime-coefficient': 28,
+              },
+              'nobuchika-ginoza': {
+                age: 28,
+                'crime-coefficient': 86.3,
+              },
+              'shinya-kogami': {
+                age: 28,
+                'crime-coefficient': 282.6,
+              },
+            }
+          `,
+          options: [options],
+        },
+      ],
+      invalid: [
+        {
+          code: dedent`
+            let enforcers = {
+              'akane-tsunemori': {
+                'crime-coefficient': 28,
+                age: 20,
+              },
+              'shinya-kogami': {
+                'crime-coefficient': 282.6,
+                age: 28,
+              },
+              'nobuchika-ginoza': {
+                'crime-coefficient': 86.3,
+                age: 28,
+              },
+            }
+          `,
+          output: dedent`
+            let enforcers = {
+              'akane-tsunemori': {
+                'crime-coefficient': 28,
+                age: 20,
+              },
+              'nobuchika-ginoza': {
+                'crime-coefficient': 86.3,
+                age: 28,
+              },
+              'shinya-kogami': {
+                'crime-coefficient': 282.6,
+                age: 28,
+              },
+            }
+          `,
+          options: [options],
+          errors: [
+            {
+              messageId: 'unexpectedObjectsOrder',
+              data: {
+                left: 'crime-coefficient',
+                right: 'age',
+              },
+            },
+            {
+              messageId: 'unexpectedObjectsOrder',
+              data: {
+                left: 'crime-coefficient',
+                right: 'age',
+              },
+            },
+            {
+              messageId: 'unexpectedObjectsOrder',
+              data: {
+                left: 'shinya-kogami',
+                right: 'nobuchika-ginoza',
+              },
+            },
+            {
+              messageId: 'unexpectedObjectsOrder',
+              data: {
+                left: 'crime-coefficient',
+                right: 'age',
+              },
+            },
+          ],
+        },
+      ],
     })
 
-    it(`${RULE_NAME}(${type}): sorts objects in objects`, () => {
-      ruleTester.run(RULE_NAME, rule, {
-        valid: [
-          {
-            code: dedent`
-              let enforcers = {
-                'akane-tsunemori': {
-                  age: 20,
-                  'crime-coefficient': 28,
-                },
-                'nobuchika-ginoza': {
-                  age: 28,
-                  'crime-coefficient': 86.3,
-                },
-                'shinya-kogami': {
-                  age: 28,
-                  'crime-coefficient': 282.6,
-                },
-              }
-            `,
-            options: [options],
-          },
-        ],
-        invalid: [
-          {
-            code: dedent`
-              let enforcers = {
-                'akane-tsunemori': {
-                  'crime-coefficient': 28,
-                  age: 20,
-                },
-                'shinya-kogami': {
-                  'crime-coefficient': 282.6,
-                  age: 28,
-                },
-                'nobuchika-ginoza': {
-                  'crime-coefficient': 86.3,
-                  age: 28,
-                },
-              }
-            `,
-            output: dedent`
-              let enforcers = {
-                'akane-tsunemori': {
-                  'crime-coefficient': 28,
-                  age: 20,
-                },
-                'nobuchika-ginoza': {
-                  'crime-coefficient': 86.3,
-                  age: 28,
-                },
-                'shinya-kogami': {
-                  'crime-coefficient': 282.6,
-                  age: 28,
-                },
-              }
-            `,
-            options: [options],
-            errors: [
-              {
-                messageId: 'unexpectedObjectsOrder',
-                data: {
-                  left: 'crime-coefficient',
-                  right: 'age',
-                },
-              },
-              {
-                messageId: 'unexpectedObjectsOrder',
-                data: {
-                  left: 'crime-coefficient',
-                  right: 'age',
-                },
-              },
-              {
-                messageId: 'unexpectedObjectsOrder',
-                data: {
-                  left: 'shinya-kogami',
-                  right: 'nobuchika-ginoza',
-                },
-              },
-              {
-                messageId: 'unexpectedObjectsOrder',
-                data: {
-                  left: 'crime-coefficient',
-                  right: 'age',
-                },
-              },
-            ],
-          },
-        ],
-      })
-    })
-
-    it(`${RULE_NAME}(${type}): sorts objects computed keys`, () => {
-      ruleTester.run(RULE_NAME, rule, {
-        valid: [
-          {
-            code: dedent`
+    ruleTester.run(`${RULE_NAME}(${type}): sorts objects computed keys`, rule, {
+      valid: [
+        {
+          code: dedent`
               let robots = {
                 'eva-02': 'Asuka Langley Sohryu',
                 [getTestEva()]: 'Yui Ikari',
                 [robots[1]]: 'Rei Ayanami',
               }
             `,
-            options: [options],
-          },
-        ],
-        invalid: [
-          {
-            code: dedent`
-              let robots = {
-                [robots[1]]: 'Rei Ayanami',
-                [getTestEva()]: 'Yui Ikari',
-                'eva-02': 'Asuka Langley Sohryu',
-              }
-            `,
-            output: dedent`
-              let robots = {
-                'eva-02': 'Asuka Langley Sohryu',
-                [getTestEva()]: 'Yui Ikari',
-                [robots[1]]: 'Rei Ayanami',
-              }
-            `,
-            options: [options],
-            errors: [
-              {
-                messageId: 'unexpectedObjectsOrder',
-                data: {
-                  left: 'robots[1]',
-                  right: 'getTestEva()',
-                },
+          options: [options],
+        },
+      ],
+      invalid: [
+        {
+          code: dedent`
+            let robots = {
+              [robots[1]]: 'Rei Ayanami',
+              [getTestEva()]: 'Yui Ikari',
+              'eva-02': 'Asuka Langley Sohryu',
+            }
+          `,
+          output: dedent`
+            let robots = {
+              'eva-02': 'Asuka Langley Sohryu',
+              [getTestEva()]: 'Yui Ikari',
+              [robots[1]]: 'Rei Ayanami',
+            }
+          `,
+          options: [options],
+          errors: [
+            {
+              messageId: 'unexpectedObjectsOrder',
+              data: {
+                left: 'robots[1]',
+                right: 'getTestEva()',
               },
-              {
-                messageId: 'unexpectedObjectsOrder',
-                data: {
-                  left: 'getTestEva()',
-                  right: 'eva-02',
-                },
+            },
+            {
+              messageId: 'unexpectedObjectsOrder',
+              data: {
+                left: 'getTestEva()',
+                right: 'eva-02',
               },
-            ],
-          },
-        ],
-      })
+            },
+          ],
+        },
+      ],
     })
 
-    it(`${RULE_NAME}(${type}): allows to set priority keys`, () => {
-      ruleTester.run(RULE_NAME, rule, {
-        valid: [
-          {
-            code: dedent`
-              let terrorInResonance = {
-                id: 'de4d12c2-200c-49bf-a2c8-14f5b4576299',
-                name: 'Terror in Resonance',
-                episodes: 11,
-                genres: ['drama', 'mystery', 'psychological', 'thriller'],
-                romaji: 'Zankyou no Terror',
-                studio: 'Mappa'
-              }
-            `,
-            options: [
-              {
-                ...options,
-                'custom-groups': { top: ['name', 'id'] },
-                groups: ['top', 'unknown'],
+    ruleTester.run(`${RULE_NAME}(${type}): allows to set priority keys`, rule, {
+      valid: [
+        {
+          code: dedent`
+            let terrorInResonance = {
+              id: 'de4d12c2-200c-49bf-a2c8-14f5b4576299',
+              name: 'Terror in Resonance',
+              episodes: 11,
+              genres: ['drama', 'mystery', 'psychological', 'thriller'],
+              romaji: 'Zankyou no Terror',
+              studio: 'Mappa'
+            }
+          `,
+          options: [
+            {
+              ...options,
+              'custom-groups': { top: ['name', 'id'] },
+              groups: ['top', 'unknown'],
+            },
+          ],
+        },
+      ],
+      invalid: [
+        {
+          code: dedent`
+            let terrorInResonance = {
+              episodes: 11,
+              genres: ['drama', 'mystery', 'psychological', 'thriller'],
+              id: 'de4d12c2-200c-49bf-a2c8-14f5b4576299',
+              name: 'Terror in Resonance',
+              romaji: 'Zankyou no Terror',
+              studio: 'Mappa'
+            }
+          `,
+          output: dedent`
+            let terrorInResonance = {
+              id: 'de4d12c2-200c-49bf-a2c8-14f5b4576299',
+              name: 'Terror in Resonance',
+              episodes: 11,
+              genres: ['drama', 'mystery', 'psychological', 'thriller'],
+              romaji: 'Zankyou no Terror',
+              studio: 'Mappa'
+            }
+          `,
+          options: [
+            {
+              ...options,
+              'custom-groups': { top: ['name', 'id'] },
+              groups: ['top', 'unknown'],
+            },
+          ],
+          errors: [
+            {
+              messageId: 'unexpectedObjectsOrder',
+              data: {
+                left: 'genres',
+                right: 'id',
               },
-            ],
-          },
-        ],
-        invalid: [
-          {
-            code: dedent`
-              let terrorInResonance = {
-                episodes: 11,
-                genres: ['drama', 'mystery', 'psychological', 'thriller'],
-                id: 'de4d12c2-200c-49bf-a2c8-14f5b4576299',
-                name: 'Terror in Resonance',
-                romaji: 'Zankyou no Terror',
-                studio: 'Mappa'
-              }
-            `,
-            output: dedent`
-              let terrorInResonance = {
-                id: 'de4d12c2-200c-49bf-a2c8-14f5b4576299',
-                name: 'Terror in Resonance',
-                episodes: 11,
-                genres: ['drama', 'mystery', 'psychological', 'thriller'],
-                romaji: 'Zankyou no Terror',
-                studio: 'Mappa'
-              }
-            `,
-            options: [
-              {
-                ...options,
-                'custom-groups': { top: ['name', 'id'] },
-                groups: ['top', 'unknown'],
-              },
-            ],
-            errors: [
-              {
-                messageId: 'unexpectedObjectsOrder',
-                data: {
-                  left: 'genres',
-                  right: 'id',
-                },
-              },
-            ],
-          },
-        ],
-      })
+            },
+          ],
+        },
+      ],
     })
 
-    it(`${RULE_NAME}(${type}): sorts with comments on the same line`, () => {
-      ruleTester.run(RULE_NAME, rule, {
+    ruleTester.run(
+      `${RULE_NAME}(${type}): sorts with comments on the same line`,
+      rule,
+      {
         valid: [
           {
             code: dedent`
@@ -1253,11 +1270,13 @@ describe(RULE_NAME, () => {
             ],
           },
         ],
-      })
-    })
+      },
+    )
 
-    it(`${RULE_NAME}(${type}): do not sorts objects without a comma and with a comment in the last element`, () => {
-      ruleTester.run(RULE_NAME, rule, {
+    ruleTester.run(
+      `${RULE_NAME}(${type}): do not sorts objects without a comma and with a comment in the last element`,
+      rule,
+      {
         valid: [],
         invalid: [
           {
@@ -1285,49 +1304,49 @@ describe(RULE_NAME, () => {
             ],
           },
         ],
-      })
-    })
+      },
+    )
 
-    it(`${RULE_NAME}(${type}): sorts destructured object`, () => {
-      ruleTester.run(RULE_NAME, rule, {
-        valid: [],
-        invalid: [
-          {
-            code: dedent`
-              let startTerrorInResonance = ({
-                name = 'Nine',
-                bombType,
-                placeToAttack
-              }) => {
-                // ...
-              }
-            `,
-            output: dedent`
-              let startTerrorInResonance = ({
-                bombType,
-                name = 'Nine',
-                placeToAttack
-              }) => {
-                // ...
-              }
-            `,
-            options: [options],
-            errors: [
-              {
-                messageId: 'unexpectedObjectsOrder',
-                data: {
-                  left: 'name',
-                  right: 'bombType',
-                },
+    ruleTester.run(`${RULE_NAME}(${type}): sorts destructured object`, rule, {
+      valid: [],
+      invalid: [
+        {
+          code: dedent`
+            let startTerrorInResonance = ({
+              name = 'Nine',
+              bombType,
+              placeToAttack
+            }) => {
+              // ...
+            }
+          `,
+          output: dedent`
+            let startTerrorInResonance = ({
+              bombType,
+              name = 'Nine',
+              placeToAttack
+            }) => {
+              // ...
+            }
+          `,
+          options: [options],
+          errors: [
+            {
+              messageId: 'unexpectedObjectsOrder',
+              data: {
+                left: 'name',
+                right: 'bombType',
               },
-            ],
-          },
-        ],
-      })
+            },
+          ],
+        },
+      ],
     })
 
-    it(`${RULE_NAME}(${type}): does not sort keys if the right value depends on the left value`, () => {
-      ruleTester.run(RULE_NAME, rule, {
+    ruleTester.run(
+      `${RULE_NAME}(${type}): does not sort keys if the right value depends on the left value`,
+      rule,
+      {
         valid: [],
         invalid: [
           {
@@ -1363,11 +1382,13 @@ describe(RULE_NAME, () => {
             ],
           },
         ],
-      })
-    })
+      },
+    )
 
-    it(`${RULE_NAME}(${type}): works with complex dependencies`, () => {
-      ruleTester.run(RULE_NAME, rule, {
+    ruleTester.run(
+      `${RULE_NAME}(${type}): works with complex dependencies`,
+      rule,
+      {
         valid: [],
         invalid: [
           {
@@ -1403,11 +1424,13 @@ describe(RULE_NAME, () => {
             ],
           },
         ],
-      })
-    })
+      },
+    )
 
-    it(`${RULE_NAME}(${type}): allows to use partition comments`, () => {
-      ruleTester.run(RULE_NAME, rule, {
+    ruleTester.run(
+      `${RULE_NAME}(${type}): allows to use partition comments`,
+      rule,
+      {
         valid: [],
         invalid: [
           {
@@ -1474,11 +1497,13 @@ describe(RULE_NAME, () => {
             ],
           },
         ],
-      })
-    })
+      },
+    )
 
-    it(`${RULE_NAME}(${type}): allows to use all comments as parts`, () => {
-      ruleTester.run(RULE_NAME, rule, {
+    ruleTester.run(
+      `${RULE_NAME}(${type}): allows to use all comments as parts`,
+      rule,
+      {
         valid: [
           {
             code: dedent`
@@ -1498,11 +1523,13 @@ describe(RULE_NAME, () => {
           },
         ],
         invalid: [],
-      })
-    })
+      },
+    )
 
-    it(`${RULE_NAME}(${type}): allows to use multiple partition comments`, () => {
-      ruleTester.run(RULE_NAME, rule, {
+    ruleTester.run(
+      `${RULE_NAME}(${type}): allows to use multiple partition comments`,
+      rule,
+      {
         valid: [],
         invalid: [
           {
@@ -1553,8 +1580,8 @@ describe(RULE_NAME, () => {
             ],
           },
         ],
-      })
-    })
+      },
+    )
   })
 
   describe(`${RULE_NAME}: sorting by line length`, () => {
@@ -1565,8 +1592,10 @@ describe(RULE_NAME, () => {
       order: SortOrder.desc,
     }
 
-    it(`${RULE_NAME}(${type}): sorts object with identifier and literal keys`, () => {
-      ruleTester.run(RULE_NAME, rule, {
+    ruleTester.run(
+      `${RULE_NAME}(${type}): sorts object with identifier and literal keys`,
+      rule,
+      {
         valid: [
           {
             code: dedent`
@@ -1610,11 +1639,13 @@ describe(RULE_NAME, () => {
             ],
           },
         ],
-      })
-    })
+      },
+    )
 
-    it(`${RULE_NAME}(${type}): sorting does not break object`, () => {
-      ruleTester.run(RULE_NAME, rule, {
+    ruleTester.run(
+      `${RULE_NAME}(${type}): sorting does not break object`,
+      rule,
+      {
         valid: [
           {
             code: dedent`
@@ -1658,229 +1689,225 @@ describe(RULE_NAME, () => {
             ],
           },
         ],
-      })
+      },
+    )
+
+    ruleTester.run(`${RULE_NAME}(${type}): sorts objects in objects`, rule, {
+      valid: [
+        {
+          code: dedent`
+            let enforcers = {
+              'nobuchika-ginoza': {
+                'crime-coefficient': 86.3,
+                age: 28,
+              },
+              'shinya-kogami': {
+                'crime-coefficient': 282.6,
+                age: 28,
+              },
+              'akane-tsunemori': {
+                'crime-coefficient': 28,
+                age: 20,
+              },
+            }
+          `,
+          options: [options],
+        },
+      ],
+      invalid: [
+        {
+          code: dedent`
+            let enforcers = {
+              'shinya-kogami': {
+                age: 28,
+                'crime-coefficient': 282.6,
+              },
+              'akane-tsunemori': {
+                age: 20,
+                'crime-coefficient': 28,
+              },
+              'nobuchika-ginoza': {
+                age: 28,
+                'crime-coefficient': 86.3,
+              },
+            }
+          `,
+          output: dedent`
+            let enforcers = {
+              'nobuchika-ginoza': {
+                age: 28,
+                'crime-coefficient': 86.3,
+              },
+              'shinya-kogami': {
+                age: 28,
+                'crime-coefficient': 282.6,
+              },
+              'akane-tsunemori': {
+                age: 20,
+                'crime-coefficient': 28,
+              },
+            }
+          `,
+          options: [options],
+          errors: [
+            {
+              messageId: 'unexpectedObjectsOrder',
+              data: {
+                left: 'age',
+                right: 'crime-coefficient',
+              },
+            },
+            {
+              messageId: 'unexpectedObjectsOrder',
+              data: {
+                left: 'age',
+                right: 'crime-coefficient',
+              },
+            },
+            {
+              messageId: 'unexpectedObjectsOrder',
+              data: {
+                left: 'akane-tsunemori',
+                right: 'nobuchika-ginoza',
+              },
+            },
+            {
+              messageId: 'unexpectedObjectsOrder',
+              data: {
+                left: 'age',
+                right: 'crime-coefficient',
+              },
+            },
+          ],
+        },
+      ],
     })
 
-    it(`${RULE_NAME}(${type}): sorts objects in objects`, () => {
-      ruleTester.run(RULE_NAME, rule, {
-        valid: [
-          {
-            code: dedent`
-              let enforcers = {
-                'nobuchika-ginoza': {
-                  'crime-coefficient': 86.3,
-                  age: 28,
-                },
-                'shinya-kogami': {
-                  'crime-coefficient': 282.6,
-                  age: 28,
-                },
-                'akane-tsunemori': {
-                  'crime-coefficient': 28,
-                  age: 20,
-                },
-              }
-            `,
-            options: [options],
-          },
-        ],
-        invalid: [
-          {
-            code: dedent`
-              let enforcers = {
-                'shinya-kogami': {
-                  age: 28,
-                  'crime-coefficient': 282.6,
-                },
-                'akane-tsunemori': {
-                  age: 20,
-                  'crime-coefficient': 28,
-                },
-                'nobuchika-ginoza': {
-                  age: 28,
-                  'crime-coefficient': 86.3,
-                },
-              }
-            `,
-            output: dedent`
-              let enforcers = {
-                'nobuchika-ginoza': {
-                  age: 28,
-                  'crime-coefficient': 86.3,
-                },
-                'shinya-kogami': {
-                  age: 28,
-                  'crime-coefficient': 282.6,
-                },
-                'akane-tsunemori': {
-                  age: 20,
-                  'crime-coefficient': 28,
-                },
-              }
-            `,
-            options: [options],
-            errors: [
-              {
-                messageId: 'unexpectedObjectsOrder',
-                data: {
-                  left: 'age',
-                  right: 'crime-coefficient',
-                },
+    ruleTester.run(`${RULE_NAME}(${type}): sorts objects computed keys`, rule, {
+      valid: [
+        {
+          code: dedent`
+            let robots = {
+              'eva-02': 'Asuka Langley Sohryu',
+              [getTestEva()]: 'Yui Ikari',
+              [robots[1]]: 'Rei Ayanami',
+            }
+          `,
+          options: [options],
+        },
+      ],
+      invalid: [
+        {
+          code: dedent`
+            let robots = {
+              [robots[1]]: 'Rei Ayanami',
+              [getTestEva()]: 'Yui Ikari',
+              'eva-02': 'Asuka Langley Sohryu',
+            }
+          `,
+          output: dedent`
+            let robots = {
+              'eva-02': 'Asuka Langley Sohryu',
+              [getTestEva()]: 'Yui Ikari',
+              [robots[1]]: 'Rei Ayanami',
+            }
+          `,
+          options: [options],
+          errors: [
+            {
+              messageId: 'unexpectedObjectsOrder',
+              data: {
+                left: 'robots[1]',
+                right: 'getTestEva()',
               },
-              {
-                messageId: 'unexpectedObjectsOrder',
-                data: {
-                  left: 'age',
-                  right: 'crime-coefficient',
-                },
+            },
+            {
+              messageId: 'unexpectedObjectsOrder',
+              data: {
+                left: 'getTestEva()',
+                right: 'eva-02',
               },
-              {
-                messageId: 'unexpectedObjectsOrder',
-                data: {
-                  left: 'akane-tsunemori',
-                  right: 'nobuchika-ginoza',
-                },
-              },
-              {
-                messageId: 'unexpectedObjectsOrder',
-                data: {
-                  left: 'age',
-                  right: 'crime-coefficient',
-                },
-              },
-            ],
-          },
-        ],
-      })
+            },
+          ],
+        },
+      ],
     })
 
-    it(`${RULE_NAME}(${type}): sorts objects computed keys`, () => {
-      ruleTester.run(RULE_NAME, rule, {
-        valid: [
-          {
-            code: dedent`
-              let robots = {
-                'eva-02': 'Asuka Langley Sohryu',
-                [getTestEva()]: 'Yui Ikari',
-                [robots[1]]: 'Rei Ayanami',
-              }
-            `,
-            options: [options],
-          },
-        ],
-        invalid: [
-          {
-            code: dedent`
-              let robots = {
-                [robots[1]]: 'Rei Ayanami',
-                [getTestEva()]: 'Yui Ikari',
-                'eva-02': 'Asuka Langley Sohryu',
-              }
-            `,
-            output: dedent`
-              let robots = {
-                'eva-02': 'Asuka Langley Sohryu',
-                [getTestEva()]: 'Yui Ikari',
-                [robots[1]]: 'Rei Ayanami',
-              }
-            `,
-            options: [options],
-            errors: [
-              {
-                messageId: 'unexpectedObjectsOrder',
-                data: {
-                  left: 'robots[1]',
-                  right: 'getTestEva()',
-                },
+    ruleTester.run(`${RULE_NAME}(${type}): allows to set priority keys`, rule, {
+      valid: [
+        {
+          code: dedent`
+            let terrorInResonance = {
+              id: 'de4d12c2-200c-49bf-a2c8-14f5b4576299',
+              name: 'Terror in Resonance',
+              genres: ['drama', 'mystery', 'psychological', 'thriller'],
+              romaji: 'Zankyou no Terror',
+              studio: 'Mappa',
+              episodes: 11,
+            }
+          `,
+          options: [
+            {
+              ...options,
+              'custom-groups': { top: ['name', 'id'] },
+              groups: ['top', 'unknown'],
+            },
+          ],
+        },
+      ],
+      invalid: [
+        {
+          code: dedent`
+            let terrorInResonance = {
+              episodes: 11,
+              genres: ['drama', 'mystery', 'psychological', 'thriller'],
+              id: 'de4d12c2-200c-49bf-a2c8-14f5b4576299',
+              name: 'Terror in Resonance',
+              romaji: 'Zankyou no Terror',
+              studio: 'Mappa'
+            }
+          `,
+          output: dedent`
+            let terrorInResonance = {
+              id: 'de4d12c2-200c-49bf-a2c8-14f5b4576299',
+              name: 'Terror in Resonance',
+              genres: ['drama', 'mystery', 'psychological', 'thriller'],
+              romaji: 'Zankyou no Terror',
+              studio: 'Mappa',
+              episodes: 11
+            }
+          `,
+          options: [
+            {
+              ...options,
+              'custom-groups': { top: ['name', 'id'] },
+              groups: ['top', 'unknown'],
+            },
+          ],
+          errors: [
+            {
+              messageId: 'unexpectedObjectsOrder',
+              data: {
+                left: 'episodes',
+                right: 'genres',
               },
-              {
-                messageId: 'unexpectedObjectsOrder',
-                data: {
-                  left: 'getTestEva()',
-                  right: 'eva-02',
-                },
+            },
+            {
+              messageId: 'unexpectedObjectsOrder',
+              data: {
+                left: 'genres',
+                right: 'id',
               },
-            ],
-          },
-        ],
-      })
+            },
+          ],
+        },
+      ],
     })
 
-    it(`${RULE_NAME}(${type}): allows to set priority keys`, () => {
-      ruleTester.run(RULE_NAME, rule, {
-        valid: [
-          {
-            code: dedent`
-              let terrorInResonance = {
-                id: 'de4d12c2-200c-49bf-a2c8-14f5b4576299',
-                name: 'Terror in Resonance',
-                genres: ['drama', 'mystery', 'psychological', 'thriller'],
-                romaji: 'Zankyou no Terror',
-                studio: 'Mappa',
-                episodes: 11,
-              }
-            `,
-            options: [
-              {
-                ...options,
-                'custom-groups': { top: ['name', 'id'] },
-                groups: ['top', 'unknown'],
-              },
-            ],
-          },
-        ],
-        invalid: [
-          {
-            code: dedent`
-              let terrorInResonance = {
-                episodes: 11,
-                genres: ['drama', 'mystery', 'psychological', 'thriller'],
-                id: 'de4d12c2-200c-49bf-a2c8-14f5b4576299',
-                name: 'Terror in Resonance',
-                romaji: 'Zankyou no Terror',
-                studio: 'Mappa'
-              }
-            `,
-            output: dedent`
-              let terrorInResonance = {
-                id: 'de4d12c2-200c-49bf-a2c8-14f5b4576299',
-                name: 'Terror in Resonance',
-                genres: ['drama', 'mystery', 'psychological', 'thriller'],
-                romaji: 'Zankyou no Terror',
-                studio: 'Mappa',
-                episodes: 11
-              }
-            `,
-            options: [
-              {
-                ...options,
-                'custom-groups': { top: ['name', 'id'] },
-                groups: ['top', 'unknown'],
-              },
-            ],
-            errors: [
-              {
-                messageId: 'unexpectedObjectsOrder',
-                data: {
-                  left: 'episodes',
-                  right: 'genres',
-                },
-              },
-              {
-                messageId: 'unexpectedObjectsOrder',
-                data: {
-                  left: 'genres',
-                  right: 'id',
-                },
-              },
-            ],
-          },
-        ],
-      })
-    })
-
-    it(`${RULE_NAME}(${type}): sorts with comments on the same line`, () => {
-      ruleTester.run(RULE_NAME, rule, {
+    ruleTester.run(
+      `${RULE_NAME}(${type}): sorts with comments on the same line`,
+      rule,
+      {
         valid: [
           {
             code: dedent`
@@ -1933,11 +1960,13 @@ describe(RULE_NAME, () => {
             ],
           },
         ],
-      })
-    })
+      },
+    )
 
-    it(`${RULE_NAME}(${type}): do not sorts objects without a comma and with a comment in the last element`, () => {
-      ruleTester.run(RULE_NAME, rule, {
+    ruleTester.run(
+      `${RULE_NAME}(${type}): do not sorts objects without a comma and with a comment in the last element`,
+      rule,
+      {
         valid: [],
         invalid: [
           {
@@ -1965,49 +1994,49 @@ describe(RULE_NAME, () => {
             ],
           },
         ],
-      })
-    })
+      },
+    )
 
-    it(`${RULE_NAME}(${type}): sorts destructured object`, () => {
-      ruleTester.run(RULE_NAME, rule, {
-        valid: [],
-        invalid: [
-          {
-            code: dedent`
-              let startTerrorInResonance = ({
-                name = 'Nine',
-                bombType,
-                placeToAttack
-              }) => {
-                // ...
-              }
-            `,
-            output: dedent`
-              let startTerrorInResonance = ({
-                name = 'Nine',
-                placeToAttack,
-                bombType
-              }) => {
-                // ...
-              }
-            `,
-            options: [options],
-            errors: [
-              {
-                messageId: 'unexpectedObjectsOrder',
-                data: {
-                  left: 'bombType',
-                  right: 'placeToAttack',
-                },
+    ruleTester.run(`${RULE_NAME}(${type}): sorts destructured object`, rule, {
+      valid: [],
+      invalid: [
+        {
+          code: dedent`
+            let startTerrorInResonance = ({
+              name = 'Nine',
+              bombType,
+              placeToAttack
+            }) => {
+              // ...
+            }
+          `,
+          output: dedent`
+            let startTerrorInResonance = ({
+              name = 'Nine',
+              placeToAttack,
+              bombType
+            }) => {
+              // ...
+            }
+          `,
+          options: [options],
+          errors: [
+            {
+              messageId: 'unexpectedObjectsOrder',
+              data: {
+                left: 'bombType',
+                right: 'placeToAttack',
               },
-            ],
-          },
-        ],
-      })
+            },
+          ],
+        },
+      ],
     })
 
-    it(`${RULE_NAME}(${type}): does not sort keys if the right value depends on the left value`, () => {
-      ruleTester.run(RULE_NAME, rule, {
+    ruleTester.run(
+      `${RULE_NAME}(${type}): does not sort keys if the right value depends on the left value`,
+      rule,
+      {
         valid: [],
         invalid: [
           {
@@ -2043,11 +2072,13 @@ describe(RULE_NAME, () => {
             ],
           },
         ],
-      })
-    })
+      },
+    )
 
-    it(`${RULE_NAME}(${type}): works with complex dependencies`, () => {
-      ruleTester.run(RULE_NAME, rule, {
+    ruleTester.run(
+      `${RULE_NAME}(${type}): works with complex dependencies`,
+      rule,
+      {
         valid: [],
         invalid: [
           {
@@ -2090,11 +2121,13 @@ describe(RULE_NAME, () => {
             ],
           },
         ],
-      })
-    })
+      },
+    )
 
-    it(`${RULE_NAME}(${type}): allows to use partition comments`, () => {
-      ruleTester.run(RULE_NAME, rule, {
+    ruleTester.run(
+      `${RULE_NAME}(${type}): allows to use partition comments`,
+      rule,
+      {
         valid: [],
         invalid: [
           {
@@ -2147,11 +2180,13 @@ describe(RULE_NAME, () => {
             ],
           },
         ],
-      })
-    })
+      },
+    )
 
-    it(`${RULE_NAME}(${type}): allows to use all comments as parts`, () => {
-      ruleTester.run(RULE_NAME, rule, {
+    ruleTester.run(
+      `${RULE_NAME}(${type}): allows to use all comments as parts`,
+      rule,
+      {
         valid: [
           {
             code: dedent`
@@ -2171,11 +2206,13 @@ describe(RULE_NAME, () => {
           },
         ],
         invalid: [],
-      })
-    })
+      },
+    )
 
-    it(`${RULE_NAME}(${type}): allows to use multiple partition comments`, () => {
-      ruleTester.run(RULE_NAME, rule, {
+    ruleTester.run(
+      `${RULE_NAME}(${type}): allows to use multiple partition comments`,
+      rule,
+      {
         valid: [],
         invalid: [
           {
@@ -2226,13 +2263,15 @@ describe(RULE_NAME, () => {
             ],
           },
         ],
-      })
-    })
+      },
+    )
   })
 
   describe(`${RULE_NAME}: misc`, () => {
-    it(`${RULE_NAME}: sets alphabetical asc sorting as default`, () => {
-      ruleTester.run(RULE_NAME, rule, {
+    ruleTester.run(
+      `${RULE_NAME}: sets alphabetical asc sorting as default`,
+      rule,
+      {
         valid: [
           dedent`
             let family = {
@@ -2280,11 +2319,13 @@ describe(RULE_NAME, () => {
             ],
           },
         ],
-      })
-    })
+      },
+    )
 
-    it(`${RULE_NAME}: allow to disable rule for styled-components`, () => {
-      ruleTester.run(RULE_NAME, rule, {
+    ruleTester.run(
+      `${RULE_NAME}: allow to disable rule for styled-components`,
+      rule,
+      {
         valid: [
           {
             code: dedent`
@@ -2331,7 +2372,7 @@ describe(RULE_NAME, () => {
           },
         ],
         invalid: [],
-      })
-    })
+      },
+    )
   })
 })

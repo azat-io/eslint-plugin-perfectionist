@@ -1,12 +1,19 @@
-import { ESLintUtils } from '@typescript-eslint/utils'
-import { describe, it } from 'vitest'
+import { RuleTester } from '@typescript-eslint/rule-tester'
+import { afterAll, describe, it } from 'vitest'
 import { dedent } from 'ts-dedent'
 
 import rule, { RULE_NAME } from '../rules/sort-vue-attributes'
 import { SortOrder, SortType } from '../typings'
 
 describe(RULE_NAME, () => {
-  let ruleTester = new ESLintUtils.RuleTester({
+  RuleTester.describeSkip = describe.skip
+  RuleTester.afterAll = afterAll
+  RuleTester.describe = describe
+  RuleTester.itOnly = it.only
+  RuleTester.itSkip = it.skip
+  RuleTester.it = it
+
+  let ruleTester = new RuleTester({
     // @ts-ignore
     parser: require.resolve('vue-eslint-parser'),
     parserOptions: {
@@ -25,8 +32,10 @@ describe(RULE_NAME, () => {
       'ignore-case': false,
     }
 
-    it(`${RULE_NAME}(${type}): sorts props in Vue components`, () => {
-      ruleTester.run(RULE_NAME, rule, {
+    ruleTester.run(
+      `${RULE_NAME}(${type}): sorts props in Vue components`,
+      rule,
+      {
         valid: [
           {
             filename: 'component.vue',
@@ -96,11 +105,13 @@ describe(RULE_NAME, () => {
             ],
           },
         ],
-      })
-    })
+      },
+    )
 
-    it(`${RULE_NAME}(${type}): does not break the property list`, () => {
-      ruleTester.run(RULE_NAME, rule, {
+    ruleTester.run(
+      `${RULE_NAME}(${type}): does not break the property list`,
+      rule,
+      {
         valid: [
           {
             filename: 'component.vue',
@@ -177,11 +188,13 @@ describe(RULE_NAME, () => {
             ],
           },
         ],
-      })
-    })
+      },
+    )
 
-    it(`${RULE_NAME}(${type}): allows to sort props using groups`, () => {
-      ruleTester.run(RULE_NAME, rule, {
+    ruleTester.run(
+      `${RULE_NAME}(${type}): allows to sort props using groups`,
+      rule,
+      {
         valid: [
           {
             filename: 'component.vue',
@@ -299,8 +312,8 @@ describe(RULE_NAME, () => {
             ],
           },
         ],
-      })
-    })
+      },
+    )
   })
 
   describe(`${RULE_NAME}: sorting by natural order`, () => {
@@ -312,8 +325,10 @@ describe(RULE_NAME, () => {
       'ignore-case': false,
     }
 
-    it(`${RULE_NAME}(${type}): sorts props in Vue components`, () => {
-      ruleTester.run(RULE_NAME, rule, {
+    ruleTester.run(
+      `${RULE_NAME}(${type}): sorts props in Vue components`,
+      rule,
+      {
         valid: [
           {
             filename: 'component.vue',
@@ -383,11 +398,13 @@ describe(RULE_NAME, () => {
             ],
           },
         ],
-      })
-    })
+      },
+    )
 
-    it(`${RULE_NAME}(${type}): does not break the property list`, () => {
-      ruleTester.run(RULE_NAME, rule, {
+    ruleTester.run(
+      `${RULE_NAME}(${type}): does not break the property list`,
+      rule,
+      {
         valid: [
           {
             filename: 'component.vue',
@@ -464,11 +481,13 @@ describe(RULE_NAME, () => {
             ],
           },
         ],
-      })
-    })
+      },
+    )
 
-    it(`${RULE_NAME}(${type}): allows to sort props using groups`, () => {
-      ruleTester.run(RULE_NAME, rule, {
+    ruleTester.run(
+      `${RULE_NAME}(${type}): allows to sort props using groups`,
+      rule,
+      {
         valid: [
           {
             filename: 'component.vue',
@@ -586,8 +605,8 @@ describe(RULE_NAME, () => {
             ],
           },
         ],
-      })
-    })
+      },
+    )
   })
 
   describe(`${RULE_NAME}: sorting by line length`, () => {
@@ -598,8 +617,10 @@ describe(RULE_NAME, () => {
       order: SortOrder.desc,
     }
 
-    it(`${RULE_NAME}(${type}): sorts props in Vue components`, () => {
-      ruleTester.run(RULE_NAME, rule, {
+    ruleTester.run(
+      `${RULE_NAME}(${type}): sorts props in Vue components`,
+      rule,
+      {
         valid: [
           {
             filename: 'component.vue',
@@ -669,11 +690,13 @@ describe(RULE_NAME, () => {
             ],
           },
         ],
-      })
-    })
+      },
+    )
 
-    it(`${RULE_NAME}(${type}): does not break the property list`, () => {
-      ruleTester.run(RULE_NAME, rule, {
+    ruleTester.run(
+      `${RULE_NAME}(${type}): does not break the property list`,
+      rule,
+      {
         valid: [
           {
             filename: 'component.vue',
@@ -743,11 +766,13 @@ describe(RULE_NAME, () => {
             ],
           },
         ],
-      })
-    })
+      },
+    )
 
-    it(`${RULE_NAME}(${type}): allows to sort props using groups`, () => {
-      ruleTester.run(RULE_NAME, rule, {
+    ruleTester.run(
+      `${RULE_NAME}(${type}): allows to sort props using groups`,
+      rule,
+      {
         valid: [
           {
             filename: 'component.vue',
@@ -858,43 +883,41 @@ describe(RULE_NAME, () => {
             ],
           },
         ],
-      })
-    })
+      },
+    )
   })
 
   describe(`${RULE_NAME}: misc`, () => {
-    it(`${RULE_NAME}: works only with .vue files`, () => {
-      ruleTester.run(RULE_NAME, rule, {
-        valid: [
-          {
-            filename: 'component.ts',
-            code: dedent`
-              <script lang="ts" setup>
-                import TaxiDriver from '../jobs/TaxiDriver.vue'
-              </script>
+    ruleTester.run(`${RULE_NAME}: works only with .vue files`, rule, {
+      valid: [
+        {
+          filename: 'component.ts',
+          code: dedent`
+            <script lang="ts" setup>
+              import TaxiDriver from '../jobs/TaxiDriver.vue'
+            </script>
 
-              <template>
-                <TaxiDriver name="Kiyoshi Odokawa" birth="1980" />
-              </template>
-            `,
-            options: [
-              {
-                type: SortType.alphabetical,
-                order: SortOrder.asc,
-              },
-            ],
-          },
-        ],
-        invalid: [],
-      })
+            <template>
+              <TaxiDriver name="Kiyoshi Odokawa" birth="1980" />
+            </template>
+          `,
+          options: [
+            {
+              type: SortType.alphabetical,
+              order: SortOrder.asc,
+            },
+          ],
+        },
+      ],
+      invalid: [],
     })
 
-    it(`${RULE_NAME}: requires vue parser`, () => {
-      let tsRuleTester = new ESLintUtils.RuleTester({
+    describe('without vue parser', () => {
+      let tsRuleTester = new RuleTester({
         parser: '@typescript-eslint/parser',
       })
 
-      tsRuleTester.run(RULE_NAME, rule, {
+      tsRuleTester.run(`${RULE_NAME}: requires vue parser`, rule, {
         valid: [
           {
             filename: 'component.vue',

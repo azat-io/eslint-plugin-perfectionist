@@ -1,12 +1,19 @@
-import { ESLintUtils } from '@typescript-eslint/utils'
-import { describe, it } from 'vitest'
+import { RuleTester } from '@typescript-eslint/rule-tester'
+import { afterAll, describe, it } from 'vitest'
 import { dedent } from 'ts-dedent'
 
 import rule, { RULE_NAME } from '../rules/sort-named-exports'
 import { SortOrder, SortType } from '../typings'
 
 describe(RULE_NAME, () => {
-  let ruleTester = new ESLintUtils.RuleTester({
+  RuleTester.describeSkip = describe.skip
+  RuleTester.afterAll = afterAll
+  RuleTester.describe = describe
+  RuleTester.itOnly = it.only
+  RuleTester.itSkip = it.skip
+  RuleTester.it = it
+
+  let ruleTester = new RuleTester({
     parser: '@typescript-eslint/parser',
   })
 
@@ -19,43 +26,41 @@ describe(RULE_NAME, () => {
       'ignore-case': false,
     }
 
-    it(`${RULE_NAME}(${type}): sorts named exports`, () => {
-      ruleTester.run(RULE_NAME, rule, {
-        valid: [
-          {
-            code: 'export { ErisBoreas, Rudeus, RuijerdSuperdia }',
-            options: [options],
-          },
-        ],
-        invalid: [
-          {
-            code: dedent`
-              export {
-                Rudeus,
-                RuijerdSuperdia,
-                ErisBoreas
-              }
-            `,
-            output: dedent`
-              export {
-                ErisBoreas,
-                Rudeus,
-                RuijerdSuperdia
-              }
-            `,
-            options: [options],
-            errors: [
-              {
-                messageId: 'unexpectedNamedExportsOrder',
-                data: {
-                  left: 'RuijerdSuperdia',
-                  right: 'ErisBoreas',
-                },
+    ruleTester.run(`${RULE_NAME}(${type}): sorts named exports`, rule, {
+      valid: [
+        {
+          code: 'export { ErisBoreas, Rudeus, RuijerdSuperdia }',
+          options: [options],
+        },
+      ],
+      invalid: [
+        {
+          code: dedent`
+            export {
+              Rudeus,
+              RuijerdSuperdia,
+              ErisBoreas
+            }
+          `,
+          output: dedent`
+            export {
+              ErisBoreas,
+              Rudeus,
+              RuijerdSuperdia
+            }
+          `,
+          options: [options],
+          errors: [
+            {
+              messageId: 'unexpectedNamedExportsOrder',
+              data: {
+                left: 'RuijerdSuperdia',
+                right: 'ErisBoreas',
               },
-            ],
-          },
-        ],
-      })
+            },
+          ],
+        },
+      ],
     })
   })
 
@@ -68,43 +73,41 @@ describe(RULE_NAME, () => {
       'ignore-case': false,
     }
 
-    it(`${RULE_NAME}(${type}): sorts named exports`, () => {
-      ruleTester.run(RULE_NAME, rule, {
-        valid: [
-          {
-            code: 'export { ErisBoreas, Rudeus, RuijerdSuperdia }',
-            options: [options],
-          },
-        ],
-        invalid: [
-          {
-            code: dedent`
-              export {
-                Rudeus,
-                RuijerdSuperdia,
-                ErisBoreas
-              }
-            `,
-            output: dedent`
-              export {
-                ErisBoreas,
-                Rudeus,
-                RuijerdSuperdia
-              }
-            `,
-            options: [options],
-            errors: [
-              {
-                messageId: 'unexpectedNamedExportsOrder',
-                data: {
-                  left: 'RuijerdSuperdia',
-                  right: 'ErisBoreas',
-                },
+    ruleTester.run(`${RULE_NAME}(${type}): sorts named exports`, rule, {
+      valid: [
+        {
+          code: 'export { ErisBoreas, Rudeus, RuijerdSuperdia }',
+          options: [options],
+        },
+      ],
+      invalid: [
+        {
+          code: dedent`
+            export {
+              Rudeus,
+              RuijerdSuperdia,
+              ErisBoreas
+            }
+          `,
+          output: dedent`
+            export {
+              ErisBoreas,
+              Rudeus,
+              RuijerdSuperdia
+            }
+          `,
+          options: [options],
+          errors: [
+            {
+              messageId: 'unexpectedNamedExportsOrder',
+              data: {
+                left: 'RuijerdSuperdia',
+                right: 'ErisBoreas',
               },
-            ],
-          },
-        ],
-      })
+            },
+          ],
+        },
+      ],
     })
   })
 
@@ -116,49 +119,49 @@ describe(RULE_NAME, () => {
       order: SortOrder.desc,
     }
 
-    it(`${RULE_NAME}(${type}): sorts named exports`, () => {
-      ruleTester.run(RULE_NAME, rule, {
-        valid: [
-          {
-            code: 'export { RuijerdSuperdia, ErisBoreas, Rudeus }',
-            options: [options],
-          },
-        ],
-        invalid: [
-          {
-            code: dedent`
-              export {
-                Rudeus,
-                RuijerdSuperdia,
-                ErisBoreas
-              }
-            `,
-            output: dedent`
-              export {
-                RuijerdSuperdia,
-                ErisBoreas,
-                Rudeus
-              }
-            `,
-            options: [options],
-            errors: [
-              {
-                messageId: 'unexpectedNamedExportsOrder',
-                data: {
-                  left: 'Rudeus',
-                  right: 'RuijerdSuperdia',
-                },
+    ruleTester.run(`${RULE_NAME}(${type}): sorts named exports`, rule, {
+      valid: [
+        {
+          code: 'export { RuijerdSuperdia, ErisBoreas, Rudeus }',
+          options: [options],
+        },
+      ],
+      invalid: [
+        {
+          code: dedent`
+            export {
+              Rudeus,
+              RuijerdSuperdia,
+              ErisBoreas
+            }
+          `,
+          output: dedent`
+            export {
+              RuijerdSuperdia,
+              ErisBoreas,
+              Rudeus
+            }
+          `,
+          options: [options],
+          errors: [
+            {
+              messageId: 'unexpectedNamedExportsOrder',
+              data: {
+                left: 'Rudeus',
+                right: 'RuijerdSuperdia',
               },
-            ],
-          },
-        ],
-      })
+            },
+          ],
+        },
+      ],
     })
   })
 
   describe(`${RULE_NAME}: misc`, () => {
-    it(`${RULE_NAME}: sets alphabetical asc sorting as default`, () => {
-      ruleTester.run(RULE_NAME, rule, {
+    ruleTester.run(
+      `${RULE_NAME}: sets alphabetical asc sorting as default`,
+      rule,
+      {
         valid: [
           'export { KayoHinazuki, SatoruFujinuma }',
           {
@@ -185,7 +188,7 @@ describe(RULE_NAME, () => {
             ],
           },
         ],
-      })
-    })
+      },
+    )
   })
 })

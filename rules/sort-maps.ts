@@ -30,7 +30,6 @@ export default createEslintRule<Options, MESSAGE_ID>({
     type: 'suggestion',
     docs: {
       description: 'enforce sorted Map elements',
-      recommended: false,
     },
     fixable: 'code',
     schema: [
@@ -44,10 +43,12 @@ export default createEslintRule<Options, MESSAGE_ID>({
               SortType['line-length'],
             ],
             default: SortType.alphabetical,
+            type: 'string',
           },
           order: {
             enum: [SortOrder.asc, SortOrder.desc],
             default: SortOrder.asc,
+            type: 'string',
           },
           'ignore-case': {
             type: 'boolean',

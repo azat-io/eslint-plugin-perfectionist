@@ -1,12 +1,19 @@
-import { ESLintUtils } from '@typescript-eslint/utils'
-import { describe, it } from 'vitest'
+import { RuleTester } from '@typescript-eslint/rule-tester'
+import { afterAll, describe, it } from 'vitest'
 import { dedent } from 'ts-dedent'
 
 import rule, { RULE_NAME } from '../rules/sort-enums'
 import { SortOrder, SortType } from '../typings'
 
 describe(RULE_NAME, () => {
-  let ruleTester = new ESLintUtils.RuleTester({
+  RuleTester.describeSkip = describe.skip
+  RuleTester.afterAll = afterAll
+  RuleTester.describe = describe
+  RuleTester.itOnly = it.only
+  RuleTester.itSkip = it.skip
+  RuleTester.it = it
+
+  let ruleTester = new RuleTester({
     parser: '@typescript-eslint/parser',
   })
 
@@ -19,56 +26,56 @@ describe(RULE_NAME, () => {
       'ignore-case': false,
     }
 
-    it(`${RULE_NAME}(${type}): sorts enum members`, () => {
-      ruleTester.run(RULE_NAME, rule, {
-        valid: [
-          {
-            code: dedent`
-              enum Hinamizawa {
-                'Furude Rika' = 'Furude Rika',
-                'Ryūgū Rena' = 'Ryūgū Rena',
-                'Sonozaki Mion' = 'Sonozaki Mion',
-                'Sonozaki Shion' = 'Sonozaki Shion',
-              }
-            `,
-            options: [options],
-          },
-        ],
-        invalid: [
-          {
-            code: dedent`
-              enum Hinamizawa {
-                'Furude Rika' = 'Furude Rika',
-                'Sonozaki Mion' = 'Sonozaki Mion',
-                'Sonozaki Shion' = 'Sonozaki Shion',
-                'Ryūgū Rena' = 'Ryūgū Rena',
-              }
-            `,
-            output: dedent`
-              enum Hinamizawa {
-                'Furude Rika' = 'Furude Rika',
-                'Ryūgū Rena' = 'Ryūgū Rena',
-                'Sonozaki Mion' = 'Sonozaki Mion',
-                'Sonozaki Shion' = 'Sonozaki Shion',
-              }
-            `,
-            options: [options],
-            errors: [
-              {
-                messageId: 'unexpectedEnumsOrder',
-                data: {
-                  left: 'Sonozaki Shion',
-                  right: 'Ryūgū Rena',
-                },
+    ruleTester.run(`${RULE_NAME}(${type}): sorts enum members`, rule, {
+      valid: [
+        {
+          code: dedent`
+            enum Hinamizawa {
+              'Furude Rika' = 'Furude Rika',
+              'Ryūgū Rena' = 'Ryūgū Rena',
+              'Sonozaki Mion' = 'Sonozaki Mion',
+              'Sonozaki Shion' = 'Sonozaki Shion',
+            }
+          `,
+          options: [options],
+        },
+      ],
+      invalid: [
+        {
+          code: dedent`
+            enum Hinamizawa {
+              'Furude Rika' = 'Furude Rika',
+              'Sonozaki Mion' = 'Sonozaki Mion',
+              'Sonozaki Shion' = 'Sonozaki Shion',
+              'Ryūgū Rena' = 'Ryūgū Rena',
+            }
+          `,
+          output: dedent`
+            enum Hinamizawa {
+              'Furude Rika' = 'Furude Rika',
+              'Ryūgū Rena' = 'Ryūgū Rena',
+              'Sonozaki Mion' = 'Sonozaki Mion',
+              'Sonozaki Shion' = 'Sonozaki Shion',
+            }
+          `,
+          options: [options],
+          errors: [
+            {
+              messageId: 'unexpectedEnumsOrder',
+              data: {
+                left: 'Sonozaki Shion',
+                right: 'Ryūgū Rena',
               },
-            ],
-          },
-        ],
-      })
+            },
+          ],
+        },
+      ],
     })
 
-    it(`${RULE_NAME}(${type}): sorts enum members with number keys`, () => {
-      ruleTester.run(RULE_NAME, rule, {
+    ruleTester.run(
+      `${RULE_NAME}(${type}): sorts enum members with number keys`,
+      rule,
+      {
         valid: [
           {
             code: dedent`
@@ -112,11 +119,13 @@ describe(RULE_NAME, () => {
             ],
           },
         ],
-      })
-    })
+      },
+    )
 
-    it(`${RULE_NAME}(${type}): doesn't sorts enum members without initializer`, () => {
-      ruleTester.run(RULE_NAME, rule, {
+    ruleTester.run(
+      `${RULE_NAME}(${type}): doesn't sorts enum members without initializer`,
+      rule,
+      {
         valid: [
           {
             code: dedent`
@@ -130,11 +139,13 @@ describe(RULE_NAME, () => {
           },
         ],
         invalid: [],
-      })
-    })
+      },
+    )
 
-    it(`${RULE_NAME}(${type}): sorts enum members with boolean ids`, () => {
-      ruleTester.run(RULE_NAME, rule, {
+    ruleTester.run(
+      `${RULE_NAME}(${type}): sorts enum members with boolean ids`,
+      rule,
+      {
         valid: [
           {
             code: dedent`
@@ -172,11 +183,13 @@ describe(RULE_NAME, () => {
             ],
           },
         ],
-      })
-    })
+      },
+    )
 
-    it(`${RULE_NAME}(${type}): does not break interface docs`, () => {
-      ruleTester.run(RULE_NAME, rule, {
+    ruleTester.run(
+      `${RULE_NAME}(${type}): does not break interface docs`,
+      rule,
+      {
         valid: [],
         invalid: [
           {
@@ -216,11 +229,13 @@ describe(RULE_NAME, () => {
             ],
           },
         ],
-      })
-    })
+      },
+    )
 
-    it(`${RULE_NAME}(${type}): does not sort enums with implicit values`, () => {
-      ruleTester.run(RULE_NAME, rule, {
+    ruleTester.run(
+      `${RULE_NAME}(${type}): does not sort enums with implicit values`,
+      rule,
+      {
         valid: [
           {
             code: dedent`
@@ -235,8 +250,8 @@ describe(RULE_NAME, () => {
           },
         ],
         invalid: [],
-      })
-    })
+      },
+    )
   })
 
   describe(`${RULE_NAME}: sorting by natural order`, () => {
@@ -248,56 +263,56 @@ describe(RULE_NAME, () => {
       'ignore-case': false,
     }
 
-    it(`${RULE_NAME}(${type}): sorts enum members`, () => {
-      ruleTester.run(RULE_NAME, rule, {
-        valid: [
-          {
-            code: dedent`
-              enum Hinamizawa {
-                'Furude Rika' = 'Furude Rika',
-                'Ryūgū Rena' = 'Ryūgū Rena',
-                'Sonozaki Mion' = 'Sonozaki Mion',
-                'Sonozaki Shion' = 'Sonozaki Shion',
-              }
-            `,
-            options: [options],
-          },
-        ],
-        invalid: [
-          {
-            code: dedent`
-              enum Hinamizawa {
-                'Furude Rika' = 'Furude Rika',
-                'Sonozaki Mion' = 'Sonozaki Mion',
-                'Sonozaki Shion' = 'Sonozaki Shion',
-                'Ryūgū Rena' = 'Ryūgū Rena',
-              }
-            `,
-            output: dedent`
-              enum Hinamizawa {
-                'Furude Rika' = 'Furude Rika',
-                'Ryūgū Rena' = 'Ryūgū Rena',
-                'Sonozaki Mion' = 'Sonozaki Mion',
-                'Sonozaki Shion' = 'Sonozaki Shion',
-              }
-            `,
-            options: [options],
-            errors: [
-              {
-                messageId: 'unexpectedEnumsOrder',
-                data: {
-                  left: 'Sonozaki Shion',
-                  right: 'Ryūgū Rena',
-                },
+    ruleTester.run(`${RULE_NAME}(${type}): sorts enum members`, rule, {
+      valid: [
+        {
+          code: dedent`
+            enum Hinamizawa {
+              'Furude Rika' = 'Furude Rika',
+              'Ryūgū Rena' = 'Ryūgū Rena',
+              'Sonozaki Mion' = 'Sonozaki Mion',
+              'Sonozaki Shion' = 'Sonozaki Shion',
+            }
+          `,
+          options: [options],
+        },
+      ],
+      invalid: [
+        {
+          code: dedent`
+            enum Hinamizawa {
+              'Furude Rika' = 'Furude Rika',
+              'Sonozaki Mion' = 'Sonozaki Mion',
+              'Sonozaki Shion' = 'Sonozaki Shion',
+              'Ryūgū Rena' = 'Ryūgū Rena',
+            }
+          `,
+          output: dedent`
+            enum Hinamizawa {
+              'Furude Rika' = 'Furude Rika',
+              'Ryūgū Rena' = 'Ryūgū Rena',
+              'Sonozaki Mion' = 'Sonozaki Mion',
+              'Sonozaki Shion' = 'Sonozaki Shion',
+            }
+          `,
+          options: [options],
+          errors: [
+            {
+              messageId: 'unexpectedEnumsOrder',
+              data: {
+                left: 'Sonozaki Shion',
+                right: 'Ryūgū Rena',
               },
-            ],
-          },
-        ],
-      })
+            },
+          ],
+        },
+      ],
     })
 
-    it(`${RULE_NAME}(${type}): sorts enum members with number keys`, () => {
-      ruleTester.run(RULE_NAME, rule, {
+    ruleTester.run(
+      `${RULE_NAME}(${type}): sorts enum members with number keys`,
+      rule,
+      {
         valid: [
           {
             code: dedent`
@@ -341,11 +356,13 @@ describe(RULE_NAME, () => {
             ],
           },
         ],
-      })
-    })
+      },
+    )
 
-    it(`${RULE_NAME}(${type}): doesn't sorts enum members without initializer`, () => {
-      ruleTester.run(RULE_NAME, rule, {
+    ruleTester.run(
+      `${RULE_NAME}(${type}): doesn't sorts enum members without initializer`,
+      rule,
+      {
         valid: [
           {
             code: dedent`
@@ -359,11 +376,13 @@ describe(RULE_NAME, () => {
           },
         ],
         invalid: [],
-      })
-    })
+      },
+    )
 
-    it(`${RULE_NAME}(${type}): sorts enum members with boolean ids`, () => {
-      ruleTester.run(RULE_NAME, rule, {
+    ruleTester.run(
+      `${RULE_NAME}(${type}): sorts enum members with boolean ids`,
+      rule,
+      {
         valid: [
           {
             code: dedent`
@@ -401,11 +420,13 @@ describe(RULE_NAME, () => {
             ],
           },
         ],
-      })
-    })
+      },
+    )
 
-    it(`${RULE_NAME}(${type}): does not break interface docs`, () => {
-      ruleTester.run(RULE_NAME, rule, {
+    ruleTester.run(
+      `${RULE_NAME}(${type}): does not break interface docs`,
+      rule,
+      {
         valid: [],
         invalid: [
           {
@@ -445,11 +466,13 @@ describe(RULE_NAME, () => {
             ],
           },
         ],
-      })
-    })
+      },
+    )
 
-    it(`${RULE_NAME}(${type}): does not sort enums with implicit values`, () => {
-      ruleTester.run(RULE_NAME, rule, {
+    ruleTester.run(
+      `${RULE_NAME}(${type}): does not sort enums with implicit values`,
+      rule,
+      {
         valid: [
           {
             code: dedent`
@@ -464,8 +487,8 @@ describe(RULE_NAME, () => {
           },
         ],
         invalid: [],
-      })
-    })
+      },
+    )
   })
 
   describe(`${RULE_NAME}: sorting by line length`, () => {
@@ -476,63 +499,63 @@ describe(RULE_NAME, () => {
       order: SortOrder.desc,
     }
 
-    it(`${RULE_NAME}(${type}): sorts enum members`, () => {
-      ruleTester.run(RULE_NAME, rule, {
-        valid: [
-          {
-            code: dedent`
-              enum Hinamizawa {
-                'Sonozaki Shion' = 'Sonozaki Shion',
-                'Sonozaki Mion' = 'Sonozaki Mion',
-                'Furude Rika' = 'Furude Rika',
-                'Ryūgū Rena' = 'Ryūgū Rena',
-              }
-            `,
-            options: [options],
-          },
-        ],
-        invalid: [
-          {
-            code: dedent`
-              enum Hinamizawa {
-                'Furude Rika' = 'Furude Rika',
-                'Sonozaki Mion' = 'Sonozaki Mion',
-                'Sonozaki Shion' = 'Sonozaki Shion',
-                'Ryūgū Rena' = 'Ryūgū Rena',
-              }
-            `,
-            output: dedent`
-              enum Hinamizawa {
-                'Sonozaki Shion' = 'Sonozaki Shion',
-                'Sonozaki Mion' = 'Sonozaki Mion',
-                'Furude Rika' = 'Furude Rika',
-                'Ryūgū Rena' = 'Ryūgū Rena',
-              }
-            `,
-            options: [options],
-            errors: [
-              {
-                messageId: 'unexpectedEnumsOrder',
-                data: {
-                  left: 'Furude Rika',
-                  right: 'Sonozaki Mion',
-                },
+    ruleTester.run(`${RULE_NAME}(${type}): sorts enum members`, rule, {
+      valid: [
+        {
+          code: dedent`
+            enum Hinamizawa {
+              'Sonozaki Shion' = 'Sonozaki Shion',
+              'Sonozaki Mion' = 'Sonozaki Mion',
+              'Furude Rika' = 'Furude Rika',
+              'Ryūgū Rena' = 'Ryūgū Rena',
+            }
+          `,
+          options: [options],
+        },
+      ],
+      invalid: [
+        {
+          code: dedent`
+            enum Hinamizawa {
+              'Furude Rika' = 'Furude Rika',
+              'Sonozaki Mion' = 'Sonozaki Mion',
+              'Sonozaki Shion' = 'Sonozaki Shion',
+              'Ryūgū Rena' = 'Ryūgū Rena',
+            }
+          `,
+          output: dedent`
+            enum Hinamizawa {
+              'Sonozaki Shion' = 'Sonozaki Shion',
+              'Sonozaki Mion' = 'Sonozaki Mion',
+              'Furude Rika' = 'Furude Rika',
+              'Ryūgū Rena' = 'Ryūgū Rena',
+            }
+          `,
+          options: [options],
+          errors: [
+            {
+              messageId: 'unexpectedEnumsOrder',
+              data: {
+                left: 'Furude Rika',
+                right: 'Sonozaki Mion',
               },
-              {
-                messageId: 'unexpectedEnumsOrder',
-                data: {
-                  left: 'Sonozaki Mion',
-                  right: 'Sonozaki Shion',
-                },
+            },
+            {
+              messageId: 'unexpectedEnumsOrder',
+              data: {
+                left: 'Sonozaki Mion',
+                right: 'Sonozaki Shion',
               },
-            ],
-          },
-        ],
-      })
+            },
+          ],
+        },
+      ],
     })
 
-    it(`${RULE_NAME}(${type}): sorts enum members with number keys`, () => {
-      ruleTester.run(RULE_NAME, rule, {
+    ruleTester.run(
+      `${RULE_NAME}(${type}): sorts enum members with number keys`,
+      rule,
+      {
         valid: [
           {
             code: dedent`
@@ -576,11 +599,13 @@ describe(RULE_NAME, () => {
             ],
           },
         ],
-      })
-    })
+      },
+    )
 
-    it(`${RULE_NAME}(${type}): doesn't sorts enum members without initializer`, () => {
-      ruleTester.run(RULE_NAME, rule, {
+    ruleTester.run(
+      `${RULE_NAME}(${type}): doesn't sorts enum members without initializer`,
+      rule,
+      {
         valid: [
           {
             code: dedent`
@@ -594,11 +619,13 @@ describe(RULE_NAME, () => {
           },
         ],
         invalid: [],
-      })
-    })
+      },
+    )
 
-    it(`${RULE_NAME}(${type}): sorts enum members with boolean ids`, () => {
-      ruleTester.run(RULE_NAME, rule, {
+    ruleTester.run(
+      `${RULE_NAME}(${type}): sorts enum members with boolean ids`,
+      rule,
+      {
         valid: [
           {
             code: dedent`
@@ -636,11 +663,13 @@ describe(RULE_NAME, () => {
             ],
           },
         ],
-      })
-    })
+      },
+    )
 
-    it(`${RULE_NAME}(${type}): does not break interface docs`, () => {
-      ruleTester.run(RULE_NAME, rule, {
+    ruleTester.run(
+      `${RULE_NAME}(${type}): does not break interface docs`,
+      rule,
+      {
         valid: [],
         invalid: [
           {
@@ -680,11 +709,13 @@ describe(RULE_NAME, () => {
             ],
           },
         ],
-      })
-    })
+      },
+    )
 
-    it(`${RULE_NAME}(${type}): does not sort enums with implicit values`, () => {
-      ruleTester.run(RULE_NAME, rule, {
+    ruleTester.run(
+      `${RULE_NAME}(${type}): does not sort enums with implicit values`,
+      rule,
+      {
         valid: [
           {
             code: dedent`
@@ -699,13 +730,15 @@ describe(RULE_NAME, () => {
           },
         ],
         invalid: [],
-      })
-    })
+      },
+    )
   })
 
   describe(`${RULE_NAME}: misc`, () => {
-    it(`${RULE_NAME}: sets alphabetical asc sorting as default`, () => {
-      ruleTester.run(RULE_NAME, rule, {
+    ruleTester.run(
+      `${RULE_NAME}: sets alphabetical asc sorting as default`,
+      rule,
+      {
         valid: [
           dedent`
             enum SummerTime {
@@ -753,7 +786,7 @@ describe(RULE_NAME, () => {
             ],
           },
         ],
-      })
-    })
+      },
+    )
   })
 })

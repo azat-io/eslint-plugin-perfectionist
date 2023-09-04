@@ -1,12 +1,19 @@
-import { ESLintUtils } from '@typescript-eslint/utils'
-import { describe, it } from 'vitest'
+import { RuleTester } from '@typescript-eslint/rule-tester'
+import { afterAll, describe, it } from 'vitest'
 import { dedent } from 'ts-dedent'
 
 import rule, { RULE_NAME } from '../rules/sort-svelte-attributes'
 import { SortOrder, SortType } from '../typings'
 
 describe(RULE_NAME, () => {
-  let ruleTester = new ESLintUtils.RuleTester({
+  RuleTester.describeSkip = describe.skip
+  RuleTester.afterAll = afterAll
+  RuleTester.describe = describe
+  RuleTester.itOnly = it.only
+  RuleTester.itSkip = it.skip
+  RuleTester.it = it
+
+  let ruleTester = new RuleTester({
     // @ts-ignore
     parser: require.resolve('svelte-eslint-parser'),
     parserOptions: {
@@ -25,8 +32,10 @@ describe(RULE_NAME, () => {
       'ignore-case': false,
     }
 
-    it(`${RULE_NAME}(${type}): sorts props in svelte components`, () => {
-      ruleTester.run(RULE_NAME, rule, {
+    ruleTester.run(
+      `${RULE_NAME}(${type}): sorts props in svelte components`,
+      rule,
+      {
         valid: [
           {
             filename: 'component.svelte',
@@ -76,11 +85,13 @@ describe(RULE_NAME, () => {
             ],
           },
         ],
-      })
-    })
+      },
+    )
 
-    it(`${RULE_NAME}(${type}): works with spread attributes`, () => {
-      ruleTester.run(RULE_NAME, rule, {
+    ruleTester.run(
+      `${RULE_NAME}(${type}): works with spread attributes`,
+      rule,
+      {
         valid: [
           {
             filename: 'component.svelte',
@@ -129,83 +140,83 @@ describe(RULE_NAME, () => {
             ],
           },
         ],
-      })
+      },
+    )
+
+    ruleTester.run(`${RULE_NAME}(${type}): works with directives`, rule, {
+      valid: [
+        {
+          filename: 'component.svelte',
+          code: dedent`
+            <script>
+              import { clickOutside } from './click-outside.js'
+              import Migi from './Migi.svelte'
+
+              let showParasite = true
+            </script>
+
+            <button id="hand" on:click={() => (showParasite = true)}>Show Modal</button>
+            {#if showParasite}
+              <Migi on:outclick={() => (showParasite = false)} use:clickOutside />
+            {/if}
+          `,
+          options: [options],
+        },
+      ],
+      invalid: [
+        {
+          filename: 'component.svelte',
+          code: dedent`
+            <script>
+              import { clickOutside } from './click-outside.js'
+              import Migi from './Migi.svelte'
+
+              let showParasite = true
+            </script>
+
+            <button on:click={() => (showParasite = true)} id="hand">Show Modal</button>
+            {#if showParasite}
+              <Migi use:clickOutside on:outclick={() => (showParasite = false)} />
+            {/if}
+          `,
+          output: dedent`
+            <script>
+              import { clickOutside } from './click-outside.js'
+              import Migi from './Migi.svelte'
+
+              let showParasite = true
+            </script>
+
+            <button id="hand" on:click={() => (showParasite = true)}>Show Modal</button>
+            {#if showParasite}
+              <Migi on:outclick={() => (showParasite = false)} use:clickOutside />
+            {/if}
+          `,
+          options: [options],
+          errors: [
+            {
+              messageId: 'unexpectedSvelteAttributesOrder',
+              data: {
+                left: 'on:click',
+                right: 'id',
+              },
+            },
+            {
+              messageId: 'unexpectedSvelteAttributesOrder',
+              data: {
+                left: 'use:clickOutside',
+                right: 'on:outclick',
+              },
+            },
+          ],
+        },
+      ],
     })
 
-    it(`${RULE_NAME}(${type}): works with directives`, () => {
-      ruleTester.run(RULE_NAME, rule, {
-        valid: [
-          {
-            filename: 'component.svelte',
-            code: dedent`
-              <script>
-                import { clickOutside } from './click-outside.js'
-                import Migi from './Migi.svelte'
-
-                let showParasite = true
-              </script>
-
-              <button id="hand" on:click={() => (showParasite = true)}>Show Modal</button>
-              {#if showParasite}
-                <Migi on:outclick={() => (showParasite = false)} use:clickOutside />
-              {/if}
-            `,
-            options: [options],
-          },
-        ],
-        invalid: [
-          {
-            filename: 'component.svelte',
-            code: dedent`
-              <script>
-                import { clickOutside } from './click-outside.js'
-                import Migi from './Migi.svelte'
-
-                let showParasite = true
-              </script>
-
-              <button on:click={() => (showParasite = true)} id="hand">Show Modal</button>
-              {#if showParasite}
-                <Migi use:clickOutside on:outclick={() => (showParasite = false)} />
-              {/if}
-            `,
-            output: dedent`
-              <script>
-                import { clickOutside } from './click-outside.js'
-                import Migi from './Migi.svelte'
-
-                let showParasite = true
-              </script>
-
-              <button id="hand" on:click={() => (showParasite = true)}>Show Modal</button>
-              {#if showParasite}
-                <Migi on:outclick={() => (showParasite = false)} use:clickOutside />
-              {/if}
-            `,
-            options: [options],
-            errors: [
-              {
-                messageId: 'unexpectedSvelteAttributesOrder',
-                data: {
-                  left: 'on:click',
-                  right: 'id',
-                },
-              },
-              {
-                messageId: 'unexpectedSvelteAttributesOrder',
-                data: {
-                  left: 'use:clickOutside',
-                  right: 'on:outclick',
-                },
-              },
-            ],
-          },
-        ],
-      })
-    })
-
-    it(`${RULE_NAME}(${type}): allows to set shorthand attributes position`, () => {
-      ruleTester.run(RULE_NAME, rule, {
+    ruleTester.run(
+      `${RULE_NAME}(${type}): allows to set shorthand attributes position`,
+      rule,
+      {
         valid: [
           {
             filename: 'component.svelte',
@@ -289,11 +300,13 @@ describe(RULE_NAME, () => {
             ],
           },
         ],
-      })
-    })
+      },
+    )
 
-    it(`${RULE_NAME}(${type}): allows to set multiline attributes position`, () => {
-      ruleTester.run(RULE_NAME, rule, {
+    ruleTester.run(
+      `${RULE_NAME}(${type}): allows to set multiline attributes position`,
+      rule,
+      {
         valid: [
           {
             filename: 'component.svelte',
@@ -373,100 +386,98 @@ describe(RULE_NAME, () => {
             ],
           },
         ],
-      })
-    })
+      },
+    )
 
-    it(`${RULE_NAME}(${type}): allows to set custom groups`, () => {
-      ruleTester.run(RULE_NAME, rule, {
-        valid: [
-          {
-            filename: 'component.svelte',
-            code: dedent`
-              <script>
-                import Robot from '~/base/robot.svelte'
-              </script>
+    ruleTester.run(`${RULE_NAME}(${type}): allows to set custom groups`, rule, {
+      valid: [
+        {
+          filename: 'component.svelte',
+          code: dedent`
+            <script>
+              import Robot from '~/base/robot.svelte'
+            </script>
 
-              <Robot
-                id="42f1b85f-54ef-413d-b99e-27c9e9610fc2"
-                name="Reg"
-                handlePushHand={() => {
-                  /* ... */
-                }}
-                team="Team Riko"
-              />
-            `,
-            options: [
-              {
-                ...options,
-                groups: ['top', 'handlers', 'unknown'],
-                'custom-groups': {
-                  top: ['id', 'name'],
-                  handlers: 'handle*',
-                },
+            <Robot
+              id="42f1b85f-54ef-413d-b99e-27c9e9610fc2"
+              name="Reg"
+              handlePushHand={() => {
+                /* ... */
+              }}
+              team="Team Riko"
+            />
+          `,
+          options: [
+            {
+              ...options,
+              groups: ['top', 'handlers', 'unknown'],
+              'custom-groups': {
+                top: ['id', 'name'],
+                handlers: 'handle*',
               },
-            ],
-          },
-        ],
-        invalid: [
-          {
-            filename: 'component.svelte',
-            code: dedent`
-              <script>
-                import Robot from '~/base/robot.svelte'
-              </script>
+            },
+          ],
+        },
+      ],
+      invalid: [
+        {
+          filename: 'component.svelte',
+          code: dedent`
+            <script>
+              import Robot from '~/base/robot.svelte'
+            </script>
 
-              <Robot
-                handlePushHand={() => {
-                  /* ... */
-                }}
-                name="Reg"
-                team="Team Riko"
-                id="42f1b85f-54ef-413d-b99e-27c9e9610fc2"
-              />
-            `,
-            output: dedent`
-              <script>
-                import Robot from '~/base/robot.svelte'
-              </script>
+            <Robot
+              handlePushHand={() => {
+                /* ... */
+              }}
+              name="Reg"
+              team="Team Riko"
+              id="42f1b85f-54ef-413d-b99e-27c9e9610fc2"
+            />
+          `,
+          output: dedent`
+            <script>
+              import Robot from '~/base/robot.svelte'
+            </script>
 
-              <Robot
-                id="42f1b85f-54ef-413d-b99e-27c9e9610fc2"
-                name="Reg"
-                handlePushHand={() => {
-                  /* ... */
-                }}
-                team="Team Riko"
-              />
-            `,
-            options: [
-              {
-                ...options,
-                groups: ['top', 'handlers', 'unknown'],
-                'custom-groups': {
-                  top: ['id', 'name'],
-                  handlers: 'handle*',
-                },
+            <Robot
+              id="42f1b85f-54ef-413d-b99e-27c9e9610fc2"
+              name="Reg"
+              handlePushHand={() => {
+                /* ... */
+              }}
+              team="Team Riko"
+            />
+          `,
+          options: [
+            {
+              ...options,
+              groups: ['top', 'handlers', 'unknown'],
+              'custom-groups': {
+                top: ['id', 'name'],
+                handlers: 'handle*',
               },
-            ],
-            errors: [
-              {
-                messageId: 'unexpectedSvelteAttributesOrder',
-                data: {
-                  left: 'handlePushHand',
-                  right: 'name',
-                },
+            },
+          ],
+          errors: [
+            {
+              messageId: 'unexpectedSvelteAttributesOrder',
+              data: {
+                left: 'handlePushHand',
+                right: 'name',
               },
-              {
-                messageId: 'unexpectedSvelteAttributesOrder',
-                data: {
-                  left: 'team',
-                  right: 'id',
-                },
+            },
+            {
+              messageId: 'unexpectedSvelteAttributesOrder',
+              data: {
+                left: 'team',
+                right: 'id',
               },
-            ],
-          },
-        ],
-      })
+            },
+          ],
+        },
+      ],
     })
   })
 
@@ -479,8 +490,10 @@ describe(RULE_NAME, () => {
       'ignore-case': false,
     }
 
-    it(`${RULE_NAME}(${type}): sorts props in svelte components`, () => {
-      ruleTester.run(RULE_NAME, rule, {
+    ruleTester.run(
+      `${RULE_NAME}(${type}): sorts props in svelte components`,
+      rule,
+      {
         valid: [
           {
             filename: 'component.svelte',
@@ -530,11 +543,13 @@ describe(RULE_NAME, () => {
             ],
           },
         ],
-      })
-    })
+      },
+    )
 
-    it(`${RULE_NAME}(${type}): works with spread attributes`, () => {
-      ruleTester.run(RULE_NAME, rule, {
+    ruleTester.run(
+      `${RULE_NAME}(${type}): works with spread attributes`,
+      rule,
+      {
         valid: [
           {
             filename: 'component.svelte',
@@ -583,83 +598,83 @@ describe(RULE_NAME, () => {
             ],
           },
         ],
-      })
+      },
+    )
+
+    ruleTester.run(`${RULE_NAME}(${type}): works with directives`, rule, {
+      valid: [
+        {
+          filename: 'component.svelte',
+          code: dedent`
+            <script>
+              import { clickOutside } from './click-outside.js'
+              import Migi from './Migi.svelte'
+
+              let showParasite = true
+            </script>
+
+            <button id="hand" on:click={() => (showParasite = true)}>Show Modal</button>
+            {#if showParasite}
+              <Migi on:outclick={() => (showParasite = false)} use:clickOutside />
+            {/if}
+          `,
+          options: [options],
+        },
+      ],
+      invalid: [
+        {
+          filename: 'component.svelte',
+          code: dedent`
+            <script>
+              import { clickOutside } from './click-outside.js'
+              import Migi from './Migi.svelte'
+
+              let showParasite = true
+            </script>
+
+            <button on:click={() => (showParasite = true)} id="hand">Show Modal</button>
+            {#if showParasite}
+              <Migi use:clickOutside on:outclick={() => (showParasite = false)} />
+            {/if}
+          `,
+          output: dedent`
+            <script>
+              import { clickOutside } from './click-outside.js'
+              import Migi from './Migi.svelte'
+
+              let showParasite = true
+            </script>
+
+            <button id="hand" on:click={() => (showParasite = true)}>Show Modal</button>
+            {#if showParasite}
+              <Migi on:outclick={() => (showParasite = false)} use:clickOutside />
+            {/if}
+          `,
+          options: [options],
+          errors: [
+            {
+              messageId: 'unexpectedSvelteAttributesOrder',
+              data: {
+                left: 'on:click',
+                right: 'id',
+              },
+            },
+            {
+              messageId: 'unexpectedSvelteAttributesOrder',
+              data: {
+                left: 'use:clickOutside',
+                right: 'on:outclick',
+              },
+            },
+          ],
+        },
+      ],
     })
 
-    it(`${RULE_NAME}(${type}): works with directives`, () => {
-      ruleTester.run(RULE_NAME, rule, {
-        valid: [
-          {
-            filename: 'component.svelte',
-            code: dedent`
-              <script>
-                import { clickOutside } from './click-outside.js'
-                import Migi from './Migi.svelte'
-
-                let showParasite = true
-              </script>
-
-              <button id="hand" on:click={() => (showParasite = true)}>Show Modal</button>
-              {#if showParasite}
-                <Migi on:outclick={() => (showParasite = false)} use:clickOutside />
-              {/if}
-            `,
-            options: [options],
-          },
-        ],
-        invalid: [
-          {
-            filename: 'component.svelte',
-            code: dedent`
-              <script>
-                import { clickOutside } from './click-outside.js'
-                import Migi from './Migi.svelte'
-
-                let showParasite = true
-              </script>
-
-              <button on:click={() => (showParasite = true)} id="hand">Show Modal</button>
-              {#if showParasite}
-                <Migi use:clickOutside on:outclick={() => (showParasite = false)} />
-              {/if}
-            `,
-            output: dedent`
-              <script>
-                import { clickOutside } from './click-outside.js'
-                import Migi from './Migi.svelte'
-
-                let showParasite = true
-              </script>
-
-              <button id="hand" on:click={() => (showParasite = true)}>Show Modal</button>
-              {#if showParasite}
-                <Migi on:outclick={() => (showParasite = false)} use:clickOutside />
-              {/if}
-            `,
-            options: [options],
-            errors: [
-              {
-                messageId: 'unexpectedSvelteAttributesOrder',
-                data: {
-                  left: 'on:click',
-                  right: 'id',
-                },
-              },
-              {
-                messageId: 'unexpectedSvelteAttributesOrder',
-                data: {
-                  left: 'use:clickOutside',
-                  right: 'on:outclick',
-                },
-              },
-            ],
-          },
-        ],
-      })
-    })
-
-    it(`${RULE_NAME}(${type}): allows to set shorthand attributes position`, () => {
-      ruleTester.run(RULE_NAME, rule, {
+    ruleTester.run(
+      `${RULE_NAME}(${type}): allows to set shorthand attributes position`,
+      rule,
+      {
         valid: [
           {
             filename: 'component.svelte',
@@ -743,11 +758,13 @@ describe(RULE_NAME, () => {
             ],
           },
         ],
-      })
-    })
+      },
+    )
 
-    it(`${RULE_NAME}(${type}): allows to set multiline attributes position`, () => {
-      ruleTester.run(RULE_NAME, rule, {
+    ruleTester.run(
+      `${RULE_NAME}(${type}): allows to set multiline attributes position`,
+      rule,
+      {
         valid: [
           {
             filename: 'component.svelte',
@@ -827,100 +844,98 @@ describe(RULE_NAME, () => {
             ],
           },
         ],
-      })
-    })
+      },
+    )
 
-    it(`${RULE_NAME}(${type}): allows to set custom groups`, () => {
-      ruleTester.run(RULE_NAME, rule, {
-        valid: [
-          {
-            filename: 'component.svelte',
-            code: dedent`
-              <script>
-                import Robot from '~/base/robot.svelte'
-              </script>
+    ruleTester.run(`${RULE_NAME}(${type}): allows to set custom groups`, rule, {
+      valid: [
+        {
+          filename: 'component.svelte',
+          code: dedent`
+            <script>
+              import Robot from '~/base/robot.svelte'
+            </script>
 
-              <Robot
-                id="42f1b85f-54ef-413d-b99e-27c9e9610fc2"
-                name="Reg"
-                handlePushHand={() => {
-                  /* ... */
-                }}
-                team="Team Riko"
-              />
-            `,
-            options: [
-              {
-                ...options,
-                groups: ['top', 'handlers', 'unknown'],
-                'custom-groups': {
-                  top: ['id', 'name'],
-                  handlers: 'handle*',
-                },
+            <Robot
+              id="42f1b85f-54ef-413d-b99e-27c9e9610fc2"
+              name="Reg"
+              handlePushHand={() => {
+                /* ... */
+              }}
+              team="Team Riko"
+            />
+          `,
+          options: [
+            {
+              ...options,
+              groups: ['top', 'handlers', 'unknown'],
+              'custom-groups': {
+                top: ['id', 'name'],
+                handlers: 'handle*',
               },
-            ],
-          },
-        ],
-        invalid: [
-          {
-            filename: 'component.svelte',
-            code: dedent`
-              <script>
-                import Robot from '~/base/robot.svelte'
-              </script>
+            },
+          ],
+        },
+      ],
+      invalid: [
+        {
+          filename: 'component.svelte',
+          code: dedent`
+            <script>
+              import Robot from '~/base/robot.svelte'
+            </script>
 
-              <Robot
-                handlePushHand={() => {
-                  /* ... */
-                }}
-                name="Reg"
-                team="Team Riko"
-                id="42f1b85f-54ef-413d-b99e-27c9e9610fc2"
-              />
-            `,
-            output: dedent`
-              <script>
-                import Robot from '~/base/robot.svelte'
-              </script>
+            <Robot
+              handlePushHand={() => {
+                /* ... */
+              }}
+              name="Reg"
+              team="Team Riko"
+              id="42f1b85f-54ef-413d-b99e-27c9e9610fc2"
+            />
+          `,
+          output: dedent`
+            <script>
+              import Robot from '~/base/robot.svelte'
+            </script>
 
-              <Robot
-                id="42f1b85f-54ef-413d-b99e-27c9e9610fc2"
-                name="Reg"
-                handlePushHand={() => {
-                  /* ... */
-                }}
-                team="Team Riko"
-              />
-            `,
-            options: [
-              {
-                ...options,
-                groups: ['top', 'handlers', 'unknown'],
-                'custom-groups': {
-                  top: ['id', 'name'],
-                  handlers: 'handle*',
-                },
+            <Robot
+              id="42f1b85f-54ef-413d-b99e-27c9e9610fc2"
+              name="Reg"
+              handlePushHand={() => {
+                /* ... */
+              }}
+              team="Team Riko"
+            />
+          `,
+          options: [
+            {
+              ...options,
+              groups: ['top', 'handlers', 'unknown'],
+              'custom-groups': {
+                top: ['id', 'name'],
+                handlers: 'handle*',
               },
-            ],
-            errors: [
-              {
-                messageId: 'unexpectedSvelteAttributesOrder',
-                data: {
-                  left: 'handlePushHand',
-                  right: 'name',
-                },
+            },
+          ],
+          errors: [
+            {
+              messageId: 'unexpectedSvelteAttributesOrder',
+              data: {
+                left: 'handlePushHand',
+                right: 'name',
               },
-              {
-                messageId: 'unexpectedSvelteAttributesOrder',
-                data: {
-                  left: 'team',
-                  right: 'id',
-                },
+            },
+            {
+              messageId: 'unexpectedSvelteAttributesOrder',
+              data: {
+                left: 'team',
+                right: 'id',
               },
-            ],
-          },
-        ],
-      })
+            },
+          ],
+        },
+      ],
     })
   })
 
@@ -932,8 +947,10 @@ describe(RULE_NAME, () => {
       order: SortOrder.desc,
     }
 
-    it(`${RULE_NAME}(${type}): sorts props in svelte components`, () => {
-      ruleTester.run(RULE_NAME, rule, {
+    ruleTester.run(
+      `${RULE_NAME}(${type}): sorts props in svelte components`,
+      rule,
+      {
         valid: [
           {
             filename: 'component.svelte',
@@ -983,11 +1000,13 @@ describe(RULE_NAME, () => {
             ],
           },
         ],
-      })
-    })
+      },
+    )
 
-    it(`${RULE_NAME}(${type}): works with spread attributes`, () => {
-      ruleTester.run(RULE_NAME, rule, {
+    ruleTester.run(
+      `${RULE_NAME}(${type}): works with spread attributes`,
+      rule,
+      {
         valid: [
           {
             filename: 'component.svelte',
@@ -1036,76 +1055,76 @@ describe(RULE_NAME, () => {
             ],
           },
         ],
-      })
-    })
+      },
+    )
 
-    it(`${RULE_NAME}(${type}): works with directives`, () => {
-      ruleTester.run(RULE_NAME, rule, {
-        valid: [
-          {
-            filename: 'component.svelte',
-            code: dedent`
-              <script>
-                import { clickOutside } from './click-outside.js'
-                import Migi from './Migi.svelte'
+    ruleTester.run(`${RULE_NAME}(${type}): works with directives`, rule, {
+      valid: [
+        {
+          filename: 'component.svelte',
+          code: dedent`
+            <script>
+              import { clickOutside } from './click-outside.js'
+              import Migi from './Migi.svelte'
 
-                let showParasite = true
-              </script>
+              let showParasite = true
+            </script>
 
-              <button on:click={() => (showParasite = true)} id="hand">Show Modal</button>
-              {#if showParasite}
-                <Migi on:outclick={() => (showParasite = false)} use:clickOutside />
-              {/if}
-            `,
-            options: [options],
-          },
-        ],
-        invalid: [
-          {
-            filename: 'component.svelte',
-            code: dedent`
-              <script>
-                import { clickOutside } from './click-outside.js'
-                import Migi from './Migi.svelte'
+            <button on:click={() => (showParasite = true)} id="hand">Show Modal</button>
+            {#if showParasite}
+              <Migi on:outclick={() => (showParasite = false)} use:clickOutside />
+            {/if}
+          `,
+          options: [options],
+        },
+      ],
+      invalid: [
+        {
+          filename: 'component.svelte',
+          code: dedent`
+            <script>
+              import { clickOutside } from './click-outside.js'
+              import Migi from './Migi.svelte'
 
-                let showParasite = true
-              </script>
+              let showParasite = true
+            </script>
 
-              <button on:click={() => (showParasite = true)} id="hand">Show Modal</button>
-              {#if showParasite}
-                <Migi use:clickOutside on:outclick={() => (showParasite = false)} />
-              {/if}
-            `,
-            output: dedent`
-              <script>
-                import { clickOutside } from './click-outside.js'
-                import Migi from './Migi.svelte'
+            <button on:click={() => (showParasite = true)} id="hand">Show Modal</button>
+            {#if showParasite}
+              <Migi use:clickOutside on:outclick={() => (showParasite = false)} />
+            {/if}
+          `,
+          output: dedent`
+            <script>
+              import { clickOutside } from './click-outside.js'
+              import Migi from './Migi.svelte'
 
-                let showParasite = true
-              </script>
+              let showParasite = true
+            </script>
 
-              <button on:click={() => (showParasite = true)} id="hand">Show Modal</button>
-              {#if showParasite}
-                <Migi on:outclick={() => (showParasite = false)} use:clickOutside />
-              {/if}
-            `,
-            options: [options],
-            errors: [
-              {
-                messageId: 'unexpectedSvelteAttributesOrder',
-                data: {
-                  left: 'use:clickOutside',
-                  right: 'on:outclick',
-                },
+            <button on:click={() => (showParasite = true)} id="hand">Show Modal</button>
+            {#if showParasite}
+              <Migi on:outclick={() => (showParasite = false)} use:clickOutside />
+            {/if}
+          `,
+          options: [options],
+          errors: [
+            {
+              messageId: 'unexpectedSvelteAttributesOrder',
+              data: {
+                left: 'use:clickOutside',
+                right: 'on:outclick',
               },
-            ],
-          },
-        ],
-      })
+            },
+          ],
+        },
+      ],
     })
 
-    it(`${RULE_NAME}(${type}): allows to set shorthand attributes position`, () => {
-      ruleTester.run(RULE_NAME, rule, {
+    ruleTester.run(
+      `${RULE_NAME}(${type}): allows to set shorthand attributes position`,
+      rule,
+      {
         valid: [
           {
             filename: 'component.svelte',
@@ -1182,11 +1201,13 @@ describe(RULE_NAME, () => {
             ],
           },
         ],
-      })
-    })
+      },
+    )
 
-    it(`${RULE_NAME}(${type}): allows to set multiline attributes position`, () => {
-      ruleTester.run(RULE_NAME, rule, {
+    ruleTester.run(
+      `${RULE_NAME}(${type}): allows to set multiline attributes position`,
+      rule,
+      {
         valid: [
           {
             filename: 'component.svelte',
@@ -1266,142 +1287,136 @@ describe(RULE_NAME, () => {
             ],
           },
         ],
-      })
-    })
+      },
+    )
 
-    it(`${RULE_NAME}(${type}): allows to set custom groups`, () => {
-      ruleTester.run(RULE_NAME, rule, {
-        valid: [
-          {
-            filename: 'component.svelte',
-            code: dedent`
-              <script>
-                import Robot from '~/base/robot.svelte'
-              </script>
+    ruleTester.run(`${RULE_NAME}(${type}): allows to set custom groups`, rule, {
+      valid: [
+        {
+          filename: 'component.svelte',
+          code: dedent`
+            <script>
+              import Robot from '~/base/robot.svelte'
+            </script>
 
-              <Robot
-                id="42f1b85f-54ef-413d-b99e-27c9e9610fc2"
-                name="Reg"
-                handlePushHand={() => {
-                  /* ... */
-                }}
-                team="Team Riko"
-              />
-            `,
-            options: [
-              {
-                ...options,
-                groups: ['top', 'handlers', 'unknown'],
-                'custom-groups': {
-                  top: ['id', 'name'],
-                  handlers: 'handle*',
-                },
+            <Robot
+              id="42f1b85f-54ef-413d-b99e-27c9e9610fc2"
+              name="Reg"
+              handlePushHand={() => {
+                /* ... */
+              }}
+              team="Team Riko"
+            />
+          `,
+          options: [
+            {
+              ...options,
+              groups: ['top', 'handlers', 'unknown'],
+              'custom-groups': {
+                top: ['id', 'name'],
+                handlers: 'handle*',
               },
-            ],
-          },
-        ],
-        invalid: [
-          {
-            filename: 'component.svelte',
-            code: dedent`
-              <script>
-                import Robot from '~/base/robot.svelte'
-              </script>
+            },
+          ],
+        },
+      ],
+      invalid: [
+        {
+          filename: 'component.svelte',
+          code: dedent`
+            <script>
+              import Robot from '~/base/robot.svelte'
+            </script>
 
-              <Robot
-                handlePushHand={() => {
-                  /* ... */
-                }}
-                name="Reg"
-                team="Team Riko"
-                id="42f1b85f-54ef-413d-b99e-27c9e9610fc2"
-              />
-            `,
-            output: dedent`
-              <script>
-                import Robot from '~/base/robot.svelte'
-              </script>
+            <Robot
+              handlePushHand={() => {
+                /* ... */
+              }}
+              name="Reg"
+              team="Team Riko"
+              id="42f1b85f-54ef-413d-b99e-27c9e9610fc2"
+            />
+          `,
+          output: dedent`
+            <script>
+              import Robot from '~/base/robot.svelte'
+            </script>
 
-              <Robot
-                id="42f1b85f-54ef-413d-b99e-27c9e9610fc2"
-                name="Reg"
-                handlePushHand={() => {
-                  /* ... */
-                }}
-                team="Team Riko"
-              />
-            `,
-            options: [
-              {
-                ...options,
-                groups: ['top', 'handlers', 'unknown'],
-                'custom-groups': {
-                  top: ['id', 'name'],
-                  handlers: 'handle*',
-                },
+            <Robot
+              id="42f1b85f-54ef-413d-b99e-27c9e9610fc2"
+              name="Reg"
+              handlePushHand={() => {
+                /* ... */
+              }}
+              team="Team Riko"
+            />
+          `,
+          options: [
+            {
+              ...options,
+              groups: ['top', 'handlers', 'unknown'],
+              'custom-groups': {
+                top: ['id', 'name'],
+                handlers: 'handle*',
               },
-            ],
-            errors: [
-              {
-                messageId: 'unexpectedSvelteAttributesOrder',
-                data: {
-                  left: 'handlePushHand',
-                  right: 'name',
-                },
+            },
+          ],
+          errors: [
+            {
+              messageId: 'unexpectedSvelteAttributesOrder',
+              data: {
+                left: 'handlePushHand',
+                right: 'name',
               },
-              {
-                messageId: 'unexpectedSvelteAttributesOrder',
-                data: {
-                  left: 'team',
-                  right: 'id',
-                },
+            },
+            {
+              messageId: 'unexpectedSvelteAttributesOrder',
+              data: {
+                left: 'team',
+                right: 'id',
               },
-            ],
-          },
-        ],
-      })
+            },
+          ],
+        },
+      ],
     })
   })
 
   describe(`${RULE_NAME}: misc`, () => {
-    it(`${RULE_NAME}: works only with .svelte files`, () => {
-      ruleTester.run(RULE_NAME, rule, {
-        valid: [
-          {
-            filename: 'component.ts',
-            code: dedent`
-              <KessokuBandMember firstName="Hitori" lastName="Gotou" instrument="guitar" />
-            `,
-            options: [
-              {
-                type: SortType['line-length'],
-                order: SortOrder.desc,
-              },
-            ],
-          },
-        ],
-        invalid: [],
-      })
+    ruleTester.run(`${RULE_NAME}: works only with .svelte files`, rule, {
+      valid: [
+        {
+          filename: 'component.ts',
+          code: dedent`
+            <KessokuBandMember firstName="Hitori" lastName="Gotou" instrument="guitar" />
+          `,
+          options: [
+            {
+              type: SortType['line-length'],
+              order: SortOrder.desc,
+            },
+          ],
+        },
+      ],
+      invalid: [],
     })
 
-    it(`${RULE_NAME}: works with special directive keys`, () => {
-      ruleTester.run(RULE_NAME, rule, {
-        valid: [
-          {
-            filename: 'component.svelte',
-            code: dedent`
-              <svelte:element key={1} this={expression} />
-            `,
-            options: [
-              {
-                type: SortType.alphabetical,
-                order: SortOrder.asc,
-              },
-            ],
-          },
-        ],
-        invalid: [],
-      })
+    ruleTester.run(`${RULE_NAME}: works with special directive keys`, rule, {
+      valid: [
+        {
+          filename: 'component.svelte',
+          code: dedent`
+            <svelte:element key={1} this={expression} />
+          `,
+          options: [
+            {
+              type: SortType.alphabetical,
+              order: SortOrder.asc,
+            },
+          ],
+        },
+      ],
+      invalid: [],
     })
   })
 })

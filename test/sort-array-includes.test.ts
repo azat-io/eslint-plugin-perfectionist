@@ -1,12 +1,19 @@
-import { ESLintUtils } from '@typescript-eslint/utils'
-import { describe, it } from 'vitest'
+import { RuleTester } from '@typescript-eslint/rule-tester'
+import { afterAll, describe, it } from 'vitest'
 import { dedent } from 'ts-dedent'
 
 import rule, { RULE_NAME } from '../rules/sort-array-includes'
 import { SortOrder, SortType } from '../typings'
 
 describe(RULE_NAME, () => {
-  let ruleTester = new ESLintUtils.RuleTester({
+  RuleTester.describeSkip = describe.skip
+  RuleTester.afterAll = afterAll
+  RuleTester.describe = describe
+  RuleTester.itOnly = it.only
+  RuleTester.itSkip = it.skip
+  RuleTester.it = it
+
+  let ruleTester = new RuleTester({
     parser: '@typescript-eslint/parser',
   })
 
@@ -19,8 +26,10 @@ describe(RULE_NAME, () => {
       'ignore-case': false,
     }
 
-    it(`${RULE_NAME}(${type}): does not break the property list`, () => {
-      ruleTester.run(RULE_NAME, rule, {
+    ruleTester.run(
+      `${RULE_NAME}(${type}): does not break the property list`,
+      rule,
+      {
         valid: [
           {
             code: dedent`
@@ -70,56 +79,56 @@ describe(RULE_NAME, () => {
             ],
           },
         ],
-      })
-    })
+      },
+    )
 
-    it(`${RULE_NAME}(${type}): sorts spread elements`, () => {
-      ruleTester.run(RULE_NAME, rule, {
-        valid: [
-          {
-            code: dedent`
-              [
-                ...demons,
-                ...lowerRanks,
-                ...upperRanks,
-              ].includes('Nezuko Kamado')
-            `,
-            options: [options],
-          },
-        ],
-        invalid: [
-          {
-            code: dedent`
-              [
-                ...demons,
-                ...upperRanks,
-                ...lowerRanks,
-              ].includes('Nezuko Kamado')
-            `,
-            output: dedent`
-              [
-                ...demons,
-                ...lowerRanks,
-                ...upperRanks,
-              ].includes('Nezuko Kamado')
-            `,
-            options: [options],
-            errors: [
-              {
-                messageId: 'unexpectedArrayIncludesOrder',
-                data: {
-                  left: '...upperRanks',
-                  right: '...lowerRanks',
-                },
+    ruleTester.run(`${RULE_NAME}(${type}): sorts spread elements`, rule, {
+      valid: [
+        {
+          code: dedent`
+            [
+              ...demons,
+              ...lowerRanks,
+              ...upperRanks,
+            ].includes('Nezuko Kamado')
+          `,
+          options: [options],
+        },
+      ],
+      invalid: [
+        {
+          code: dedent`
+            [
+              ...demons,
+              ...upperRanks,
+              ...lowerRanks,
+            ].includes('Nezuko Kamado')
+          `,
+          output: dedent`
+            [
+              ...demons,
+              ...lowerRanks,
+              ...upperRanks,
+            ].includes('Nezuko Kamado')
+          `,
+          options: [options],
+          errors: [
+            {
+              messageId: 'unexpectedArrayIncludesOrder',
+              data: {
+                left: '...upperRanks',
+                right: '...lowerRanks',
               },
-            ],
-          },
-        ],
-      })
+            },
+          ],
+        },
+      ],
     })
 
-    it(`${RULE_NAME}(${type}): ignores nullable array elements`, () => {
-      ruleTester.run(RULE_NAME, rule, {
+    ruleTester.run(
+      `${RULE_NAME}(${type}): ignores nullable array elements`,
+      rule,
+      {
         valid: [
           {
             code: dedent`
@@ -148,11 +157,13 @@ describe(RULE_NAME, () => {
             ],
           },
         ],
-      })
-    })
+      },
+    )
 
-    it(`${RULE_NAME}(${type}): allow to put spread elements to the end`, () => {
-      ruleTester.run(RULE_NAME, rule, {
+    ruleTester.run(
+      `${RULE_NAME}(${type}): allow to put spread elements to the end`,
+      rule,
+      {
         valid: [
           {
             code: dedent`
@@ -191,55 +202,53 @@ describe(RULE_NAME, () => {
             ],
           },
         ],
-      })
-    })
+      },
+    )
 
-    it(`${RULE_NAME}(${type}): sorts array constructor`, () => {
-      ruleTester.run(RULE_NAME, rule, {
-        valid: [
-          {
-            code: dedent`
-              new Array(
-                'Furude Rika',
-                'Maebara Keiichi',
-                'Ryūgū Rena',
-                'Sonozaki Shion',
-              ).includes(name)
-            `,
-            options: [options],
-          },
-        ],
-        invalid: [
-          {
-            code: dedent`
-              new Array(
-                'Furude Rika',
-                'Ryūgū Rena',
-                'Sonozaki Shion',
-                'Maebara Keiichi',
-              ).includes(name)
-            `,
-            output: dedent`
-              new Array(
-                'Furude Rika',
-                'Maebara Keiichi',
-                'Ryūgū Rena',
-                'Sonozaki Shion',
-              ).includes(name)
-            `,
-            options: [options],
-            errors: [
-              {
-                messageId: 'unexpectedArrayIncludesOrder',
-                data: {
-                  left: 'Sonozaki Shion',
-                  right: 'Maebara Keiichi',
-                },
+    ruleTester.run(`${RULE_NAME}(${type}): sorts array constructor`, rule, {
+      valid: [
+        {
+          code: dedent`
+            new Array(
+              'Furude Rika',
+              'Maebara Keiichi',
+              'Ryūgū Rena',
+              'Sonozaki Shion',
+            ).includes(name)
+          `,
+          options: [options],
+        },
+      ],
+      invalid: [
+        {
+          code: dedent`
+            new Array(
+              'Furude Rika',
+              'Ryūgū Rena',
+              'Sonozaki Shion',
+              'Maebara Keiichi',
+            ).includes(name)
+          `,
+          output: dedent`
+            new Array(
+              'Furude Rika',
+              'Maebara Keiichi',
+              'Ryūgū Rena',
+              'Sonozaki Shion',
+            ).includes(name)
+          `,
+          options: [options],
+          errors: [
+            {
+              messageId: 'unexpectedArrayIncludesOrder',
+              data: {
+                left: 'Sonozaki Shion',
+                right: 'Maebara Keiichi',
               },
-            ],
-          },
-        ],
-      })
+            },
+          ],
+        },
+      ],
     })
   })
 
@@ -252,8 +261,10 @@ describe(RULE_NAME, () => {
       'ignore-case': false,
     }
 
-    it(`${RULE_NAME}(${type}): does not break the property list`, () => {
-      ruleTester.run(RULE_NAME, rule, {
+    ruleTester.run(
+      `${RULE_NAME}(${type}): does not break the property list`,
+      rule,
+      {
         valid: [
           {
             code: dedent`
@@ -303,56 +314,56 @@ describe(RULE_NAME, () => {
             ],
           },
         ],
-      })
-    })
+      },
+    )
 
-    it(`${RULE_NAME}(${type}): sorts spread elements`, () => {
-      ruleTester.run(RULE_NAME, rule, {
-        valid: [
-          {
-            code: dedent`
-              [
-                ...demons,
-                ...lowerRanks,
-                ...upperRanks,
-              ].includes('Nezuko Kamado')
-            `,
-            options: [options],
-          },
-        ],
-        invalid: [
-          {
-            code: dedent`
-              [
-                ...demons,
-                ...upperRanks,
-                ...lowerRanks,
-              ].includes('Nezuko Kamado')
-            `,
-            output: dedent`
-              [
-                ...demons,
-                ...lowerRanks,
-                ...upperRanks,
-              ].includes('Nezuko Kamado')
-            `,
-            options: [options],
-            errors: [
-              {
-                messageId: 'unexpectedArrayIncludesOrder',
-                data: {
-                  left: '...upperRanks',
-                  right: '...lowerRanks',
-                },
+    ruleTester.run(`${RULE_NAME}(${type}): sorts spread elements`, rule, {
+      valid: [
+        {
+          code: dedent`
+            [
+              ...demons,
+              ...lowerRanks,
+              ...upperRanks,
+            ].includes('Nezuko Kamado')
+          `,
+          options: [options],
+        },
+      ],
+      invalid: [
+        {
+          code: dedent`
+            [
+              ...demons,
+              ...upperRanks,
+              ...lowerRanks,
+            ].includes('Nezuko Kamado')
+          `,
+          output: dedent`
+            [
+              ...demons,
+              ...lowerRanks,
+              ...upperRanks,
+            ].includes('Nezuko Kamado')
+          `,
+          options: [options],
+          errors: [
+            {
+              messageId: 'unexpectedArrayIncludesOrder',
+              data: {
+                left: '...upperRanks',
+                right: '...lowerRanks',
               },
-            ],
-          },
-        ],
-      })
+            },
+          ],
+        },
+      ],
     })
 
-    it(`${RULE_NAME}(${type}): ignores nullable array elements`, () => {
-      ruleTester.run(RULE_NAME, rule, {
+    ruleTester.run(
+      `${RULE_NAME}(${type}): ignores nullable array elements`,
+      rule,
+      {
         valid: [
           {
             code: dedent`
@@ -381,11 +392,13 @@ describe(RULE_NAME, () => {
             ],
           },
         ],
-      })
-    })
+      },
+    )
 
-    it(`${RULE_NAME}(${type}): allow to put spread elements to the end`, () => {
-      ruleTester.run(RULE_NAME, rule, {
+    ruleTester.run(
+      `${RULE_NAME}(${type}): allow to put spread elements to the end`,
+      rule,
+      {
         valid: [
           {
             code: dedent`
@@ -424,55 +437,53 @@ describe(RULE_NAME, () => {
             ],
           },
         ],
-      })
-    })
+      },
+    )
 
-    it(`${RULE_NAME}(${type}): sorts array constructor`, () => {
-      ruleTester.run(RULE_NAME, rule, {
-        valid: [
-          {
-            code: dedent`
-              new Array(
-                'Furude Rika',
-                'Maebara Keiichi',
-                'Ryūgū Rena',
-                'Sonozaki Shion',
-              ).includes(name)
-            `,
-            options: [options],
-          },
-        ],
-        invalid: [
-          {
-            code: dedent`
-              new Array(
-                'Furude Rika',
-                'Ryūgū Rena',
-                'Sonozaki Shion',
-                'Maebara Keiichi',
-              ).includes(name)
-            `,
-            output: dedent`
-              new Array(
-                'Furude Rika',
-                'Maebara Keiichi',
-                'Ryūgū Rena',
-                'Sonozaki Shion',
-              ).includes(name)
-            `,
-            options: [options],
-            errors: [
-              {
-                messageId: 'unexpectedArrayIncludesOrder',
-                data: {
-                  left: 'Sonozaki Shion',
-                  right: 'Maebara Keiichi',
-                },
+    ruleTester.run(`${RULE_NAME}(${type}): sorts array constructor`, rule, {
+      valid: [
+        {
+          code: dedent`
+            new Array(
+              'Furude Rika',
+              'Maebara Keiichi',
+              'Ryūgū Rena',
+              'Sonozaki Shion',
+            ).includes(name)
+          `,
+          options: [options],
+        },
+      ],
+      invalid: [
+        {
+          code: dedent`
+            new Array(
+              'Furude Rika',
+              'Ryūgū Rena',
+              'Sonozaki Shion',
+              'Maebara Keiichi',
+            ).includes(name)
+          `,
+          output: dedent`
+            new Array(
+              'Furude Rika',
+              'Maebara Keiichi',
+              'Ryūgū Rena',
+              'Sonozaki Shion',
+            ).includes(name)
+          `,
+          options: [options],
+          errors: [
+            {
+              messageId: 'unexpectedArrayIncludesOrder',
+              data: {
+                left: 'Sonozaki Shion',
+                right: 'Maebara Keiichi',
               },
-            ],
-          },
-        ],
-      })
+            },
+          ],
+        },
+      ],
     })
   })
 
@@ -484,8 +495,10 @@ describe(RULE_NAME, () => {
       order: SortOrder.desc,
     }
 
-    it(`${RULE_NAME}(${type}): does not break the property list`, () => {
-      ruleTester.run(RULE_NAME, rule, {
+    ruleTester.run(
+      `${RULE_NAME}(${type}): does not break the property list`,
+      rule,
+      {
         valid: [
           {
             code: dedent`
@@ -542,56 +555,56 @@ describe(RULE_NAME, () => {
             ],
           },
         ],
-      })
-    })
+      },
+    )
 
-    it(`${RULE_NAME}(${type}): sorts spread elements`, () => {
-      ruleTester.run(RULE_NAME, rule, {
-        valid: [
-          {
-            code: dedent`
-              [
-                ...lowerRanks,
-                ...upperRanks,
-                ...demons,
-              ].includes('Nezuko Kamado')
-            `,
-            options: [options],
-          },
-        ],
-        invalid: [
-          {
-            code: dedent`
-              [
-                ...demons,
-                ...upperRanks,
-                ...lowerRanks,
-              ].includes('Nezuko Kamado')
-            `,
-            output: dedent`
-              [
-                ...lowerRanks,
-                ...upperRanks,
-                ...demons,
-              ].includes('Nezuko Kamado')
-            `,
-            options: [options],
-            errors: [
-              {
-                messageId: 'unexpectedArrayIncludesOrder',
-                data: {
-                  left: '...demons',
-                  right: '...upperRanks',
-                },
+    ruleTester.run(`${RULE_NAME}(${type}): sorts spread elements`, rule, {
+      valid: [
+        {
+          code: dedent`
+            [
+              ...lowerRanks,
+              ...upperRanks,
+              ...demons,
+            ].includes('Nezuko Kamado')
+          `,
+          options: [options],
+        },
+      ],
+      invalid: [
+        {
+          code: dedent`
+            [
+              ...demons,
+              ...upperRanks,
+              ...lowerRanks,
+            ].includes('Nezuko Kamado')
+          `,
+          output: dedent`
+            [
+              ...lowerRanks,
+              ...upperRanks,
+              ...demons,
+            ].includes('Nezuko Kamado')
+          `,
+          options: [options],
+          errors: [
+            {
+              messageId: 'unexpectedArrayIncludesOrder',
+              data: {
+                left: '...demons',
+                right: '...upperRanks',
               },
-            ],
-          },
-        ],
-      })
+            },
+          ],
+        },
+      ],
     })
 
-    it(`${RULE_NAME}(${type}): ignores nullable array elements`, () => {
-      ruleTester.run(RULE_NAME, rule, {
+    ruleTester.run(
+      `${RULE_NAME}(${type}): ignores nullable array elements`,
+      rule,
+      {
         valid: [
           {
             code: dedent`
@@ -620,11 +633,13 @@ describe(RULE_NAME, () => {
             ],
           },
         ],
-      })
-    })
+      },
+    )
 
-    it(`${RULE_NAME}(${type}): allow to put spread elements to the end`, () => {
-      ruleTester.run(RULE_NAME, rule, {
+    ruleTester.run(
+      `${RULE_NAME}(${type}): allow to put spread elements to the end`,
+      rule,
+      {
         valid: [
           {
             code: dedent`
@@ -663,68 +678,68 @@ describe(RULE_NAME, () => {
             ],
           },
         ],
-      })
-    })
+      },
+    )
 
-    it(`${RULE_NAME}(${type}): sorts array constructor`, () => {
-      ruleTester.run(RULE_NAME, rule, {
-        valid: [
-          {
-            code: dedent`
-              new Array(
-                'Maebara Keiichi',
-                'Sonozaki Shion',
-                'Furude Rika',
-                'Ryūgū Rena',
-              ).includes(name)
-            `,
-            options: [options],
-          },
-        ],
-        invalid: [
-          {
-            code: dedent`
-              new Array(
-                'Furude Rika',
-                'Ryūgū Rena',
-                'Sonozaki Shion',
-                'Maebara Keiichi',
-              ).includes(name)
-            `,
-            output: dedent`
-              new Array(
-                'Maebara Keiichi',
-                'Sonozaki Shion',
-                'Furude Rika',
-                'Ryūgū Rena',
-              ).includes(name)
-            `,
-            options: [options],
-            errors: [
-              {
-                messageId: 'unexpectedArrayIncludesOrder',
-                data: {
-                  left: 'Ryūgū Rena',
-                  right: 'Sonozaki Shion',
-                },
+    ruleTester.run(`${RULE_NAME}(${type}): sorts array constructor`, rule, {
+      valid: [
+        {
+          code: dedent`
+            new Array(
+              'Maebara Keiichi',
+              'Sonozaki Shion',
+              'Furude Rika',
+              'Ryūgū Rena',
+            ).includes(name)
+          `,
+          options: [options],
+        },
+      ],
+      invalid: [
+        {
+          code: dedent`
+            new Array(
+              'Furude Rika',
+              'Ryūgū Rena',
+              'Sonozaki Shion',
+              'Maebara Keiichi',
+            ).includes(name)
+          `,
+          output: dedent`
+            new Array(
+              'Maebara Keiichi',
+              'Sonozaki Shion',
+              'Furude Rika',
+              'Ryūgū Rena',
+            ).includes(name)
+          `,
+          options: [options],
+          errors: [
+            {
+              messageId: 'unexpectedArrayIncludesOrder',
+              data: {
+                left: 'Ryūgū Rena',
+                right: 'Sonozaki Shion',
               },
-              {
-                messageId: 'unexpectedArrayIncludesOrder',
-                data: {
-                  left: 'Sonozaki Shion',
-                  right: 'Maebara Keiichi',
-                },
+            },
+            {
+              messageId: 'unexpectedArrayIncludesOrder',
+              data: {
+                left: 'Sonozaki Shion',
+                right: 'Maebara Keiichi',
               },
-            ],
-          },
-        ],
-      })
+            },
+          ],
+        },
+      ],
     })
   })
 
   describe(`${RULE_NAME}: misc`, () => {
-    it(`${RULE_NAME}: sets alphabetical asc sorting as default`, () => {
-      ruleTester.run(RULE_NAME, rule, {
+    ruleTester.run(
+      `${RULE_NAME}: sets alphabetical asc sorting as default`,
+      rule,
+      {
         valid: [
           dedent`
             [
@@ -757,13 +772,13 @@ describe(RULE_NAME, () => {
               ].includes(enforcer)
             `,
             output: dedent`
-                [
-                  'Akane Tsunemori',
-                  'Nobuchika Ginoza',
-                  'Shusei Kagari',
-                  'Tomomi Masaoka',
-                ].includes(enforcer)
-              `,
+              [
+                'Akane Tsunemori',
+                'Nobuchika Ginoza',
+                'Shusei Kagari',
+                'Tomomi Masaoka',
+              ].includes(enforcer)
+            `,
             errors: [
               {
                 messageId: 'unexpectedArrayIncludesOrder',
@@ -782,25 +797,25 @@ describe(RULE_NAME, () => {
             ],
           },
         ],
-      })
-    })
+      },
+    )
 
-    it(`${RULE_NAME}: works consistently with an empty array or an array with one element`, () => {
-      ruleTester.run(RULE_NAME, rule, {
+    ruleTester.run(
+      `${RULE_NAME}: works consistently with an empty array or an array with one element`,
+      rule,
+      {
         valid: ['[].includes(person)', "['Decim'].includes(bartender)"],
         invalid: [],
-      })
-    })
+      },
+    )
 
-    it(`${RULE_NAME}: ignores quotes of strings`, () => {
-      ruleTester.run(RULE_NAME, rule, {
-        valid: [
-          dedent`
-            ['Burger King', "McDonald's", 'Subway'].includes(name)
-          `,
-        ],
-        invalid: [],
-      })
+    ruleTester.run(`${RULE_NAME}: ignores quotes of strings`, rule, {
+      valid: [
+        dedent`
+          ['Burger King', "McDonald's", 'Subway'].includes(name)
+        `,
+      ],
+      invalid: [],
     })
   })
 })

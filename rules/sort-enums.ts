@@ -28,7 +28,6 @@ export default createEslintRule<Options, MESSAGE_ID>({
     type: 'suggestion',
     docs: {
       description: 'enforce sorted TypeScript enums',
-      recommended: false,
     },
     fixable: 'code',
     schema: [
@@ -42,6 +41,7 @@ export default createEslintRule<Options, MESSAGE_ID>({
               SortType['line-length'],
             ],
             default: SortType.alphabetical,
+            type: 'string',
           },
           'ignore-case': {
             type: 'boolean',
@@ -50,6 +50,7 @@ export default createEslintRule<Options, MESSAGE_ID>({
           order: {
             enum: [SortOrder.asc, SortOrder.desc],
             default: SortOrder.asc,
+            type: 'string',
           },
         },
         additionalProperties: false,
