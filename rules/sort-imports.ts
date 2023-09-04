@@ -76,7 +76,6 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
     type: 'suggestion',
     docs: {
       description: 'enforce sorted imports',
-      recommended: false,
     },
     fixable: 'code',
     schema: [
@@ -102,10 +101,12 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
               SortType['line-length'],
             ],
             default: SortType.alphabetical,
+            type: 'string',
           },
           order: {
             enum: [SortOrder.asc, SortOrder.desc],
             default: SortOrder.asc,
+            type: 'string',
           },
           'ignore-case': {
             type: 'boolean',
@@ -116,8 +117,10 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
             default: [],
           },
           'internal-pattern': {
+            items: {
+              type: 'string',
+            },
             type: 'array',
-            default: ['~/**'],
           },
           'newlines-between': {
             enum: [
@@ -126,6 +129,7 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
               NewlinesBetweenValue.never,
             ],
             default: NewlinesBetweenValue.always,
+            type: 'string',
           },
         },
         additionalProperties: false,

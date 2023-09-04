@@ -39,7 +39,6 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
     type: 'suggestion',
     docs: {
       description: 'enforce sorted JSX props',
-      recommended: false,
     },
     fixable: 'code',
     schema: [
@@ -56,14 +55,15 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
               SortType['line-length'],
             ],
             default: SortType.alphabetical,
+            type: 'string',
           },
           order: {
             enum: [SortOrder.asc, SortOrder.desc],
             default: SortOrder.asc,
+            type: 'string',
           },
           groups: {
             type: 'array',
-            default: [],
           },
           'ignore-case': {
             type: 'boolean',
