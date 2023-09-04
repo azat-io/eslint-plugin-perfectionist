@@ -76,7 +76,6 @@
   },
   "dependencies": {
     "@typescript-eslint/utils": "^5.62.0",
-    "is-core-module": "^2.13.0",
     "minimatch": "^9.0.3",
     "natural-compare-lite": "^1.4.0"
   },
@@ -85,7 +84,6 @@
     "@azat-io/stylelint-config": "^0.1.0",
     "@commitlint/cli": "^17.7.1",
     "@commitlint/config-conventional": "^17.7.0",
-    "@types/is-core-module": "^2.2.0",
     "@types/natural-compare-lite": "^1.4.0",
     "@types/node": "^20.5.1",
     "@typescript-eslint/eslint-plugin": "^5.62.0",
