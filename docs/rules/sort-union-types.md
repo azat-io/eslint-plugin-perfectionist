@@ -70,6 +70,7 @@ interface Options {
   type?: 'alphabetical' | 'natural' | 'line-length'
   order?: 'asc' | 'desc'
   'ignore-case'?: boolean
+  'nullable-last'?: boolean
 }
 ```
 
@@ -93,6 +94,12 @@ interface Options {
 <sub>(default: `false`)</sub>
 
 Only affects alphabetical and natural sorting. When `true` the rule ignores the case-sensitivity of the order.
+
+### nullable-last
+
+<sub>(default: `false`)</sub>
+
+When `true` requires the types `null` and `undefined` to be last.
 
 ## ⚙️ Usage
 

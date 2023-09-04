@@ -258,6 +258,42 @@ describe(RULE_NAME, () => {
         },
       ],
     })
+
+    ruleTester.run(`${RULE_NAME}: can put nullable types to the end`, rule, {
+      valid: [],
+      invalid: [
+        {
+          code: dedent`
+            type Enemy = 'null' | null | 'r-team' | undefined | unknown
+          `,
+          output: dedent`
+            type Enemy = 'null' | 'r-team' | unknown | null | undefined
+          `,
+          options: [
+            {
+              ...options,
+              'nullable-last': true,
+            },
+          ],
+          errors: [
+            {
+              messageId: 'unexpectedUnionTypesOrder',
+              data: {
+                left: 'null',
+                right: "'r-team'",
+              },
+            },
+            {
+              messageId: 'unexpectedUnionTypesOrder',
+              data: {
+                left: 'undefined',
+                right: 'unknown',
+              },
+            },
+          ],
+        },
+      ],
+    })
   })
 
   describe(`${RULE_NAME}: sorting by natural order`, () => {
@@ -501,6 +537,42 @@ describe(RULE_NAME, () => {
         },
       ],
     })
+
+    ruleTester.run(`${RULE_NAME}: can put nullable types to the end`, rule, {
+      valid: [],
+      invalid: [
+        {
+          code: dedent`
+            type Enemy = 'null' | null | 'r-team' | undefined | unknown
+          `,
+          output: dedent`
+            type Enemy = 'null' | 'r-team' | unknown | null | undefined
+          `,
+          options: [
+            {
+              ...options,
+              'nullable-last': true,
+            },
+          ],
+          errors: [
+            {
+              messageId: 'unexpectedUnionTypesOrder',
+              data: {
+                left: 'null',
+                right: "'r-team'",
+              },
+            },
+            {
+              messageId: 'unexpectedUnionTypesOrder',
+              data: {
+                left: 'undefined',
+                right: 'unknown',
+              },
+            },
+          ],
+        },
+      ],
+    })
   })
 
   describe(`${RULE_NAME}: sorting by line length`, () => {
@@ -720,6 +792,42 @@ describe(RULE_NAME, () => {
               data: {
                 left: '5',
                 right: '100',
+              },
+            },
+          ],
+        },
+      ],
+    })
+
+    ruleTester.run(`${RULE_NAME}: can put nullable types to the end`, rule, {
+      valid: [],
+      invalid: [
+        {
+          code: dedent`
+            type Enemy = 'null' | null | 'r-team' | undefined | unknown
+          `,
+          output: dedent`
+            type Enemy = 'r-team' | unknown | 'null' | undefined | null
+          `,
+          options: [
+            {
+              ...options,
+              'nullable-last': true,
+            },
+          ],
+          errors: [
+            {
+              messageId: 'unexpectedUnionTypesOrder',
+              data: {
+                left: 'null',
+                right: "'r-team'",
+              },
+            },
+            {
+              messageId: 'unexpectedUnionTypesOrder',
+              data: {
+                left: 'undefined',
+                right: 'unknown',
               },
             },
           ],

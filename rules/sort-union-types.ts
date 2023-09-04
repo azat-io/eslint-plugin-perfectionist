@@ -14,6 +14,7 @@ type MESSAGE_ID = 'unexpectedUnionTypesOrder'
 
 type Options = [
   Partial<{
+    'nullable-last': boolean
     'ignore-case': boolean
     order: SortOrder
     type: SortType
@@ -52,6 +53,10 @@ export default createEslintRule<Options, MESSAGE_ID>({
             type: 'boolean',
             default: false,
           },
+          'nullable-last': {
+            type: 'boolean',
+            default: false,
+          },
         },
         additionalProperties: false,
       },
@@ -73,18 +78,33 @@ export default createEslintRule<Options, MESSAGE_ID>({
 
       let options = complete(context.options.at(0), {
         type: SortType.alphabetical,
+        'nullable-last': false,
         'ignore-case': false,
         order: SortOrder.asc,
       })
 
       let nodes: SortingNode[] = node.types.map(type => ({
+        group:
+          type.type === 'TSNullKeyword' || type.type === 'TSUndefinedKeyword'
+            ? 'nullable'
+            : 'unknown',
         name: source.text.slice(...type.range),
         size: rangeToDiff(type.range),
         node: type,
       }))
 
       pairwise(nodes, (left, right) => {
-        if (compare(left, right, options)) {
+        let compareValue = compare(left, right, options)
+
+        if (options['nullable-last']) {
+          if (left.group === 'nullable' && right.group === 'unknown') {
+            compareValue = true
+          } else if (left.group === 'unknown' && right.group === 'nullable') {
+            compareValue = false
+          }
+        }
+
+        if (compareValue) {
           context.report({
             messageId: 'unexpectedUnionTypesOrder',
             data: {
@@ -92,8 +112,31 @@ export default createEslintRule<Options, MESSAGE_ID>({
               right: toSingleLine(right.name),
             },
             node: right.node,
-            fix: fixer =>
-              makeFixes(fixer, nodes, sortNodes(nodes, options), source),
+            fix: fixer => {
+              let sortedNodes: SortingNode[] = []
+
+              if (options['nullable-last']) {
+                let nullable: SortingNode[] = []
+
+                let nonNullable = nodes.filter(currentNode => {
+                  if (currentNode.group === 'nullable') {
+                    nullable.push(currentNode)
+                    return false
+                  }
+
+                  return true
+                })
+
+                sortedNodes = [
+                  ...sortNodes(nonNullable, options),
+                  ...sortNodes(nullable, options),
+                ]
+              } else {
+                sortedNodes = sortNodes(nodes, options)
+              }
+
+              return makeFixes(fixer, nodes, sortedNodes, source)
+            },
           })
         }
       })
