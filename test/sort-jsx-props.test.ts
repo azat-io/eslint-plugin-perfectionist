@@ -1719,5 +1719,56 @@ describe(RULE_NAME, () => {
         ],
       },
     )
+
+    ruleTester.run(
+      `${RULE_NAME}: sets alphabetical asc sorting as default`,
+      rule,
+      {
+        valid: [
+          dedent`
+            let Mob = () => (
+              <Character
+                firstName="Shigeo"
+                lastName="Kageyama"
+                occupation={['student', 'club vice-president']}
+              />
+            )
+          `,
+          {
+            code: dedent`
+              const content = (
+                <AppBar
+                  link1="http://www.example.com"
+                  link10="http://www.example.com"
+                  link2="http://www.example.com"
+                />
+              )
+            `,
+            options: [{}],
+          },
+        ],
+        invalid: [],
+      },
+    )
+
+    // prettier-ignore
+    ;['.svelte', '.astro', '.vue'].forEach(extension => {
+      ruleTester.run(`${RULE_NAME}: not works with ${extension} files`, rule, {
+        valid: [
+          {
+            filename: 'component.vue',
+            code: dedent`
+                <Student
+                  name="Mitsumi Iwakura"
+                  age={15}
+                  gender="female"
+                  birthPlace="Ikajima, Ishikawa Prefecture"
+                />
+              `,
+          },
+        ],
+        invalid: [],
+      })
+    })
   })
 })
