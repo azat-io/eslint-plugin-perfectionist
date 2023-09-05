@@ -23,6 +23,8 @@ type Group =
   | 'private-method'
   | 'static-method'
   | 'constructor'
+  | 'get-method'
+  | 'set-method'
   | 'property'
   | 'unknown'
   | 'method'
@@ -130,6 +132,14 @@ export default createEslintRule<Options, MESSAGE_ID>({
 
             if (member.static) {
               defineGroup('static-method')
+            }
+
+            if (member.kind === 'get') {
+              defineGroup('get-method')
+            }
+
+            if (member.kind === 'set') {
+              defineGroup('set-method')
             }
 
             defineGroup('method')

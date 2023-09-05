@@ -467,6 +467,69 @@ describe(RULE_NAME, () => {
         ],
       },
     )
+
+    ruleTester.run(
+      `${RULE_NAME}(${type}): allows split methods with getters and setters`,
+      rule,
+      {
+        valid: [],
+        invalid: [
+          {
+            code: dedent`
+              class A {
+                x() {}
+                b() {}
+                get z() {}
+                set c() {}
+                get c() {}
+              }
+            `,
+            output: dedent`
+              class A {
+                b() {}
+                x() {}
+                get c() {}
+                set c() {}
+                get z() {}
+              }
+            `,
+            options: [
+              {
+                ...options,
+                groups: [
+                  'index-signature',
+                  'static-property',
+                  'private-property',
+                  'property',
+                  'constructor',
+                  'static-method',
+                  'private-method',
+                  'method',
+                  ['get-method', 'set-method'],
+                  'unknown',
+                ],
+              },
+            ],
+            errors: [
+              {
+                messageId: 'unexpectedClassesOrder',
+                data: {
+                  left: 'x',
+                  right: 'b',
+                },
+              },
+              {
+                messageId: 'unexpectedClassesOrder',
+                data: {
+                  left: 'z',
+                  right: 'c',
+                },
+              },
+            ],
+          },
+        ],
+      },
+    )
   })
 
   describe(`${RULE_NAME}: sorting by natural order`, () => {
@@ -912,6 +975,69 @@ describe(RULE_NAME, () => {
                 data: {
                   left: 'aStaticMethod',
                   right: '#aPrivateInstanceMethod',
+                },
+              },
+            ],
+          },
+        ],
+      },
+    )
+
+    ruleTester.run(
+      `${RULE_NAME}(${type}): allows split methods with getters and setters`,
+      rule,
+      {
+        valid: [],
+        invalid: [
+          {
+            code: dedent`
+              class A {
+                x() {}
+                b() {}
+                get z() {}
+                set c() {}
+                get c() {}
+              }
+            `,
+            output: dedent`
+              class A {
+                b() {}
+                x() {}
+                get c() {}
+                set c() {}
+                get z() {}
+              }
+            `,
+            options: [
+              {
+                ...options,
+                groups: [
+                  'index-signature',
+                  'static-property',
+                  'private-property',
+                  'property',
+                  'constructor',
+                  'static-method',
+                  'private-method',
+                  'method',
+                  ['get-method', 'set-method'],
+                  'unknown',
+                ],
+              },
+            ],
+            errors: [
+              {
+                messageId: 'unexpectedClassesOrder',
+                data: {
+                  left: 'x',
+                  right: 'b',
+                },
+              },
+              {
+                messageId: 'unexpectedClassesOrder',
+                data: {
+                  left: 'z',
+                  right: 'c',
                 },
               },
             ],

@@ -120,6 +120,8 @@ type Group =
   | 'private-method'
   | 'static-method'
   | 'constructor'
+  | 'get-method'
+  | 'set-method'
   | 'property'
   | 'unknown'
   | 'method'
@@ -161,18 +163,19 @@ You can set up a list of class members groups for sorting. Groups can be combine
 
 If you use [one of the configs](/configs/) exported by this plugin, you get the following import grouping settings:
 
-```js
+```json
 {
-  groups: [
-    'index-signature',
-    'static-property',
-    'private-property',
-    'property',
-    'constructor',
-    'static-method',
-    'private-method',
-    'method',
-    'unknown',
+  "groups": [
+    "index-signature",
+    "static-property",
+    "private-property",
+    "property",
+    "constructor",
+    "static-method",
+    "private-method",
+    "method",
+    ["get-method", "set-method"],
+    "unknown"
   ]
 }
 ```

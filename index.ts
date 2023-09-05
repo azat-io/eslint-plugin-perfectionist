@@ -67,6 +67,7 @@ let createConfigWithOptions = (options: {
           'static-method',
           'private-method',
           'method',
+          ['get-method', 'set-method'],
           'unknown',
         ],
       },
