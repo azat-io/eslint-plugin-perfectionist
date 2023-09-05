@@ -329,6 +329,37 @@ describe(RULE_NAME, () => {
         ],
       },
     )
+
+    ruleTester.run(
+      `${RULE_NAME}(${type}): sorts class with ts index signatures`,
+      rule,
+      {
+        valid: [
+          {
+            code: dedent`
+              class Decorations {
+                setBackground(color: number, hexFlag: boolean): this
+                setBackground(color: Color | string | CSSColor): this
+                setBackground(r: number, g: number, b: number, a?: number): this
+                setBackground(color: ColorArgument, arg1?: boolean | number, arg2?: number, arg3?: number): this {
+                    /* ... */
+                }
+              }
+            `,
+            options: [
+              {
+                ...options,
+                groups: [
+                  ['static-property', 'private-property', 'property'],
+                  'constructor',
+                ],
+              },
+            ],
+          },
+        ],
+        invalid: [],
+      },
+    )
   })
 
   describe(`${RULE_NAME}: sorting by natural order`, () => {
@@ -643,6 +674,37 @@ describe(RULE_NAME, () => {
         ],
       },
     )
+
+    ruleTester.run(
+      `${RULE_NAME}(${type}): sorts class with ts index signatures`,
+      rule,
+      {
+        valid: [
+          {
+            code: dedent`
+              class Decorations {
+                setBackground(color: number, hexFlag: boolean): this
+                setBackground(color: Color | string | CSSColor): this
+                setBackground(r: number, g: number, b: number, a?: number): this
+                setBackground(color: ColorArgument, arg1?: boolean | number, arg2?: number, arg3?: number): this {
+                    /* ... */
+                }
+              }
+            `,
+            options: [
+              {
+                ...options,
+                groups: [
+                  ['static-property', 'private-property', 'property'],
+                  'constructor',
+                ],
+              },
+            ],
+          },
+        ],
+        invalid: [],
+      },
+    )
   })
 
   describe(`${RULE_NAME}: sorting by line length`, () => {
@@ -954,6 +1016,37 @@ describe(RULE_NAME, () => {
             ],
           },
         ],
+      },
+    )
+
+    ruleTester.run(
+      `${RULE_NAME}(${type}): sorts class with ts index signatures`,
+      rule,
+      {
+        valid: [
+          {
+            code: dedent`
+              class Decorations {
+                setBackground(color: number, hexFlag: boolean): this
+                setBackground(color: Color | string | CSSColor): this
+                setBackground(r: number, g: number, b: number, a?: number): this
+                setBackground(color: ColorArgument, arg1?: boolean | number, arg2?: number, arg3?: number): this {
+                    /* ... */
+                }
+              }
+            `,
+            options: [
+              {
+                ...options,
+                groups: [
+                  ['static-property', 'private-property', 'property'],
+                  'constructor',
+                ],
+              },
+            ],
+          },
+        ],
+        invalid: [],
       },
     )
   })

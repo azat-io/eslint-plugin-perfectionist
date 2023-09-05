@@ -158,8 +158,9 @@ export default createEslintRule<Options, MESSAGE_ID>({
           let rightNum = getGroupNumber(options.groups, right)
 
           if (
-            leftNum > rightNum ||
-            (leftNum === rightNum && compare(left, right, options))
+            left.name !== right.name &&
+            (leftNum > rightNum ||
+              (leftNum === rightNum && compare(left, right, options)))
           ) {
             context.report({
               messageId: 'unexpectedClassesOrder',
