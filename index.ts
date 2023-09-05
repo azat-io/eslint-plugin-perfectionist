@@ -53,7 +53,6 @@ let createConfigWithOptions = (options: {
         },
         'newlines-between': 'always',
         'internal-pattern': ['~/**'],
-        'read-tsconfig': false,
       },
     ],
     [sortClassesName]: [
@@ -72,20 +71,10 @@ let createConfigWithOptions = (options: {
         ],
       },
     ],
-    [sortJsxPropsName]: [
-      'error',
-      {
-        'always-on-top': [],
-        shorthand: 'ignore',
-        multiline: 'first',
-        callback: 'ignore',
-      },
-    ],
     [sortObjectsName]: [
       'error',
       {
         'partition-by-comment': false,
-        'always-on-top': [],
       },
     ],
     [sortArrayIncludesName]: [
@@ -102,6 +91,7 @@ let createConfigWithOptions = (options: {
     [sortObjectTypesName]: ['error'],
     [sortUnionTypesName]: ['error'],
     [sortInterfacesName]: ['error'],
+    [sortJsxPropsName]: ['error'],
     [sortExportsName]: ['error'],
     [sortEnumsName]: ['error'],
     [sortMapsName]: ['error'],
