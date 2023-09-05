@@ -87,14 +87,15 @@ If you use the [`jsx-sort-props`](https://github.com/jsx-eslint/eslint-plugin-re
 This rule accepts an options object with the following properties:
 
 ```ts
-type Group = 'multiline' | 'shorthand' | 'unknown'
+type CustomGroup = string
+type Group = 'multiline' | 'shorthand' | 'unknown' | CustomGroup
 
 interface Options {
   type?: 'alphabetical' | 'natural' | 'line-length'
   order?: 'asc' | 'desc'
   'ignore-case'?: boolean
   groups?: (Group | Group[])[]
-  'custom-groups': { [key in T[number]]: string[] | string }
+  'custom-groups': { [key: CustomGroup]: string[] | string }
 }
 ```
 

@@ -85,14 +85,20 @@ If you use the [`sort-attributes`](https://sveltejs.github.io/eslint-plugin-svel
 This rule accepts an options object with the following properties:
 
 ```ts
-type Group = 'multiline' | 'shorthand' | 'svelte-shorthand' | 'unknown'
+type CustomGroup = string
+type Group =
+  | 'multiline'
+  | 'shorthand'
+  | 'svelte-shorthand'
+  | 'unknown'
+  | CustomGroup
 
 interface Options {
   type?: 'alphabetical' | 'natural' | 'line-length'
   order?: 'asc' | 'desc'
   'ignore-case'?: boolean
   groups?: (Group | Group[])[]
-  'custom-groups': { [key in T[number]]: string[] | string }
+  'custom-groups': { [key: CustomGroup]: string[] | string }
 }
 ```
 
@@ -123,6 +129,22 @@ Only affects alphabetical and natural sorting. When `true` the rule ignores the 
 
 You can set up a list of Svelte attribute groups for sorting. Groups can be combined. There are predefined groups: `'multiline'`, `'shorthand'`, `'svelte-shorthand'`.
 
+```svelte
+<button
+  {/* 'multiline' - Props whose length exceeds one line */}
+  on:click={event => {
+    event.preventDefault()
+    fetchDate()
+  }}
+  {/* 'shorthand' - Shorthand property for props with `true` value */}
+  autofocus
+  {/* 'svelte-shorthand' - Svelte's shorthand for replacing name={name} with {name} */}
+  {disabled}
+>
+  Click me
+</button>
+```
+
 ### custom-groups
 
 <sub>(default: `{}`)</sub>
@@ -131,11 +153,22 @@ You can define your own groups for Svelte attributes. The [minimatch](https://gi
 
 Example:
 
-```
+```json
 {
   "custom-groups": {
-    "callback": "on*"
-  }
+    "this": "this",
+    "bind-this": "bind:this",
+    "style-props": "--style-props",
+    "class": "class",
+    "bind-directives": "bind:*",
+    "use-directives": "use:*"
+  },
+  "groups": [
+    ["this", "bind-this"],
+    "style-props",
+    "class",
+    ["bind-directives", "use-directives"]
+  ]
 }
 ```
 

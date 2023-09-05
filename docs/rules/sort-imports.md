@@ -91,6 +91,7 @@ import config from './config.js'
 This rule accepts an options object with the following properties:
 
 ```ts
+type CustomGroup = string
 type Group =
   | 'builtin'
   | 'external'
@@ -109,6 +110,7 @@ type Group =
   | 'sibling-type'
   | 'index-type'
   | 'unknown'
+  | CustomGroup
 
 interface Options {
   type?: 'alphabetical' | 'natural' | 'line-length'
@@ -117,10 +119,10 @@ interface Options {
   groups?: (Group | Group[])[]
   'custom-groups'?: {
     value?: {
-      [key: string]: string | string[]
+      [key: CustomGroup]: string | string[]
     }
     type?: {
-      [key: string]: string | string[]
+      [key: CustomGroup]: string | string[]
     }
   }
   'internal-pattern'?: string[]
@@ -159,31 +161,31 @@ You can set up a list of import groups for sorting. Groups can be combined.
 import path from 'path'
 // 'external' - External modules installed in the project
 import axios from 'axios'
-// internal - Your internal modules
+// 'internal' - Your internal modules
 import Button from '~/components/Button'
-// parent - Modules from parent directory
+// 'parent' - Modules from parent directory
 import formatNumber from '../utils/format-number'
-// siblings - Modules from the same directory
+// 'siblings' - Modules from the same directory
 import config from './config'
-// side-effect - Side effect imports
+// 'side-effect' - Side effect imports
 import './set-production-env.js'
-// index - Main file from the current directory
+// 'index' - Main file from the current directory
 import main from '.'
-// object - TypeScript object-imports
+// 'object' - TypeScript object-imports
 import log = console.log
-// style - Styles
+// 'style' - Styles
 import styles from './index.module.css'
-// external-type - TypeScript type imports
+// 'external-type' - TypeScript type imports
 import type { FC } from 'react'
-// builtin-type - TypeScript type imports from Built-in Modules
+// 'builtin-type' - TypeScript type imports from Built-in Modules
 import type { Server } from 'http'
-// internal-type - TypeScript type imports from your internal modules
+// 'internal-type' - TypeScript type imports from your internal modules
 import type { User } from '~/users'
-// parent-type - TypeScript type imports from parent directory
+// 'parent-type' - TypeScript type imports from parent directory
 import type { InputProps } from '../Input'
-// sibling-type - TypeScript type imports from the same directory
+// 'sibling-type' - TypeScript type imports from the same directory
 import type { Details } from './data'
-// index-type - TypeScript type imports from main directory file
+// 'index-type' - TypeScript type imports from main directory file
 import type { BaseOptions } from './index.d.ts'
 ```
 

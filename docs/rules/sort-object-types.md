@@ -73,12 +73,15 @@ type User = {
 This rule accepts an options object with the following properties:
 
 ```ts
+type CustomGroup = string
+type Group = 'multiline' | CustomGroup
+
 interface Options {
   type?: 'alphabetical' | 'natural' | 'line-length'
   order?: 'asc' | 'desc'
   'ignore-case'?: boolean
-  groups?: (string | string[])[]
-  'custom-groups': { [key: string]: string[] | string }
+  groups?: (Group | Group[])[]
+  'custom-groups': { [key: Group]: string[] | string }
 }
 ```
 
