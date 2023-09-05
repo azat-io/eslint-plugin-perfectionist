@@ -360,6 +360,113 @@ describe(RULE_NAME, () => {
         invalid: [],
       },
     )
+
+    ruleTester.run(
+      `${RULE_NAME}(${type}): sorts private methods with hash`,
+      rule,
+      {
+        valid: [],
+        invalid: [
+          {
+            code: dedent`
+              class MyUnsortedClass {
+                someOtherProperty
+
+                someProperty = 1
+
+                constructor() {}
+
+                static #aPrivateStaticMethod () {}
+
+                #somePrivateProperty
+
+                #someOtherPrivateProperty = 2
+
+                static someStaticProperty = 3
+
+                static #someStaticPrivateProperty = 4
+
+                aInstanceMethod () {}
+
+                static aStaticMethod () {}
+
+                #aPrivateInstanceMethod () {}
+              }
+            `,
+            output: dedent`
+              class MyUnsortedClass {
+                static someStaticProperty = 3
+
+                #someOtherPrivateProperty = 2
+
+                #somePrivateProperty
+
+                static #someStaticPrivateProperty = 4
+
+                someOtherProperty
+
+                someProperty = 1
+
+                constructor() {}
+
+                aInstanceMethod () {}
+
+                #aPrivateInstanceMethod () {}
+
+                static #aPrivateStaticMethod () {}
+
+                static aStaticMethod () {}
+              }
+            `,
+            options: [
+              {
+                ...options,
+                groups: [
+                  'static-property',
+                  'private-property',
+                  'property',
+                  'constructor',
+                  'method',
+                  'private-method',
+                  'static-method',
+                  'unknown',
+                ],
+              },
+            ],
+            errors: [
+              {
+                messageId: 'unexpectedClassesOrder',
+                data: {
+                  left: '#aPrivateStaticMethod',
+                  right: '#somePrivateProperty',
+                },
+              },
+              {
+                messageId: 'unexpectedClassesOrder',
+                data: {
+                  left: '#somePrivateProperty',
+                  right: '#someOtherPrivateProperty',
+                },
+              },
+              {
+                messageId: 'unexpectedClassesOrder',
+                data: {
+                  left: '#someOtherPrivateProperty',
+                  right: 'someStaticProperty',
+                },
+              },
+              {
+                messageId: 'unexpectedClassesOrder',
+                data: {
+                  left: 'aStaticMethod',
+                  right: '#aPrivateInstanceMethod',
+                },
+              },
+            ],
+          },
+        ],
+      },
+    )
   })
 
   describe(`${RULE_NAME}: sorting by natural order`, () => {
@@ -705,6 +812,113 @@ describe(RULE_NAME, () => {
         invalid: [],
       },
     )
+
+    ruleTester.run(
+      `${RULE_NAME}(${type}): sorts private methods with hash`,
+      rule,
+      {
+        valid: [],
+        invalid: [
+          {
+            code: dedent`
+              class MyUnsortedClass {
+                someOtherProperty
+
+                someProperty = 1
+
+                constructor() {}
+
+                static #aPrivateStaticMethod () {}
+
+                #somePrivateProperty
+
+                #someOtherPrivateProperty = 2
+
+                static someStaticProperty = 3
+
+                static #someStaticPrivateProperty = 4
+
+                aInstanceMethod () {}
+
+                static aStaticMethod () {}
+
+                #aPrivateInstanceMethod () {}
+              }
+            `,
+            output: dedent`
+              class MyUnsortedClass {
+                static someStaticProperty = 3
+
+                #someOtherPrivateProperty = 2
+
+                #somePrivateProperty
+
+                static #someStaticPrivateProperty = 4
+
+                someOtherProperty
+
+                someProperty = 1
+
+                constructor() {}
+
+                aInstanceMethod () {}
+
+                #aPrivateInstanceMethod () {}
+
+                static #aPrivateStaticMethod () {}
+
+                static aStaticMethod () {}
+              }
+            `,
+            options: [
+              {
+                ...options,
+                groups: [
+                  'static-property',
+                  'private-property',
+                  'property',
+                  'constructor',
+                  'method',
+                  'private-method',
+                  'static-method',
+                  'unknown',
+                ],
+              },
+            ],
+            errors: [
+              {
+                messageId: 'unexpectedClassesOrder',
+                data: {
+                  left: '#aPrivateStaticMethod',
+                  right: '#somePrivateProperty',
+                },
+              },
+              {
+                messageId: 'unexpectedClassesOrder',
+                data: {
+                  left: '#somePrivateProperty',
+                  right: '#someOtherPrivateProperty',
+                },
+              },
+              {
+                messageId: 'unexpectedClassesOrder',
+                data: {
+                  left: '#someOtherPrivateProperty',
+                  right: 'someStaticProperty',
+                },
+              },
+              {
+                messageId: 'unexpectedClassesOrder',
+                data: {
+                  left: 'aStaticMethod',
+                  right: '#aPrivateInstanceMethod',
+                },
+              },
+            ],
+          },
+        ],
+      },
+    )
   })
 
   describe(`${RULE_NAME}: sorting by line length`, () => {
@@ -1047,6 +1261,113 @@ describe(RULE_NAME, () => {
           },
         ],
         invalid: [],
+      },
+    )
+
+    ruleTester.run(
+      `${RULE_NAME}(${type}): sorts private methods with hash`,
+      rule,
+      {
+        valid: [],
+        invalid: [
+          {
+            code: dedent`
+              class MyUnsortedClass {
+                someOtherProperty
+
+                someProperty = 1
+
+                constructor() {}
+
+                static #aPrivateStaticMethod () {}
+
+                #somePrivateProperty
+
+                #someOtherPrivateProperty = 2
+
+                static someStaticProperty = 3
+
+                static #someStaticPrivateProperty = 4
+
+                aInstanceMethod () {}
+
+                static aStaticMethod () {}
+
+                #aPrivateInstanceMethod () {}
+              }
+            `,
+            output: dedent`
+              class MyUnsortedClass {
+                static someStaticProperty = 3
+
+                static #someStaticPrivateProperty = 4
+
+                #someOtherPrivateProperty = 2
+
+                #somePrivateProperty
+
+                someOtherProperty
+
+                someProperty = 1
+
+                constructor() {}
+
+                aInstanceMethod () {}
+
+                static #aPrivateStaticMethod () {}
+
+                #aPrivateInstanceMethod () {}
+
+                static aStaticMethod () {}
+              }
+            `,
+            options: [
+              {
+                ...options,
+                groups: [
+                  'static-property',
+                  'private-property',
+                  'property',
+                  'constructor',
+                  'method',
+                  'private-method',
+                  'static-method',
+                  'unknown',
+                ],
+              },
+            ],
+            errors: [
+              {
+                messageId: 'unexpectedClassesOrder',
+                data: {
+                  left: '#aPrivateStaticMethod',
+                  right: '#somePrivateProperty',
+                },
+              },
+              {
+                messageId: 'unexpectedClassesOrder',
+                data: {
+                  left: '#somePrivateProperty',
+                  right: '#someOtherPrivateProperty',
+                },
+              },
+              {
+                messageId: 'unexpectedClassesOrder',
+                data: {
+                  left: '#someOtherPrivateProperty',
+                  right: 'someStaticProperty',
+                },
+              },
+              {
+                messageId: 'unexpectedClassesOrder',
+                data: {
+                  left: 'aStaticMethod',
+                  right: '#aPrivateInstanceMethod',
+                },
+              },
+            ],
+          },
+        ],
       },
     )
   })

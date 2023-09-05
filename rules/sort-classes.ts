@@ -117,29 +117,31 @@ export default createEslintRule<Options, MESSAGE_ID>({
             }
           }
 
+          let isPrivate = name.startsWith('_') || name.startsWith('#')
+
           if (member.type === 'MethodDefinition') {
             if (member.kind === 'constructor') {
               defineGroup('constructor')
+            }
+
+            if (member.accessibility === 'private' || isPrivate) {
+              defineGroup('private-method')
             }
 
             if (member.static) {
               defineGroup('static-method')
             }
 
-            if (member.accessibility === 'private') {
-              defineGroup('private-method')
-            }
-
             defineGroup('method')
           } else if (member.type === 'TSIndexSignature') {
             defineGroup('index-signature')
           } else if (member.type === 'PropertyDefinition') {
-            if (member.static) {
-              defineGroup('static-property')
+            if (member.accessibility === 'private' || isPrivate) {
+              defineGroup('private-property')
             }
 
-            if (member.accessibility === 'private') {
-              defineGroup('private-property')
+            if (member.static) {
+              defineGroup('static-property')
             }
 
             defineGroup('property')
