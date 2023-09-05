@@ -116,6 +116,7 @@ This rule accepts an options object with the following properties:
 type Group =
   | 'private-property'
   | 'static-property'
+  | 'index-signature'
   | 'private-method'
   | 'static-method'
   | 'constructor'
@@ -163,6 +164,7 @@ If you use [one of the configs](/configs/) exported by this plugin, you get the 
 ```js
 {
   groups: [
+    'index-signature',
     'static-property',
     'private-property',
     'property',
@@ -190,6 +192,7 @@ If you use [one of the configs](/configs/) exported by this plugin, you get the 
         "type": "natural",
         "order": "asc",
         "groups": [
+          "index-signature",
           "static-property",
           "private-property",
           "property",
@@ -220,6 +223,7 @@ export default [
           type: 'natural',
           order: 'asc',
           groups: [
+            'index-signature',
             'static-property',
             'private-property',
             'property',

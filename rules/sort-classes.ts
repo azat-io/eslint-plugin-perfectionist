@@ -19,6 +19,7 @@ type MESSAGE_ID = 'unexpectedClassesOrder'
 type Group =
   | 'private-property'
   | 'static-property'
+  | 'index-signature'
   | 'private-method'
   | 'static-method'
   | 'constructor'
@@ -130,6 +131,8 @@ export default createEslintRule<Options, MESSAGE_ID>({
             }
 
             defineGroup('method')
+          } else if (member.type === 'TSIndexSignature') {
+            defineGroup('index-signature')
           } else if (member.type === 'PropertyDefinition') {
             if (member.static) {
               defineGroup('static-property')

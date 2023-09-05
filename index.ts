@@ -60,6 +60,7 @@ let createConfigWithOptions = (options: {
       'error',
       {
         groups: [
+          'index-signature',
           'static-property',
           'private-property',
           'property',
