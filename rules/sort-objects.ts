@@ -184,16 +184,9 @@ export default createEslintRule<Options, MESSAGE_ID>({
               }
 
               if (prop.value.type === 'AssignmentPattern') {
-                let addDependencies = (
-                  value: TSESTree.AssignmentPattern,
-                  initialStart: boolean,
-                ) => {
+                let addDependencies = (value: TSESTree.AssignmentPattern) => {
                   if (value.right.type === 'Identifier') {
                     dependencies.push(value.right.name)
-                  }
-
-                  if (!initialStart && value.left.type === 'Identifier') {
-                    dependencies.push(value.left.name)
                   }
 
                   let handleComplexExpression = (
@@ -223,8 +216,6 @@ export default createEslintRule<Options, MESSAGE_ID>({
                       case 'CallExpression':
                         nodes.push(...expression.arguments)
                         break
-
-                      default:
                     }
 
                     nodes.forEach(nestedNode => {
@@ -254,7 +245,7 @@ export default createEslintRule<Options, MESSAGE_ID>({
                   }
                 }
 
-                addDependencies(prop.value, true)
+                addDependencies(prop.value)
               }
 
               setCustomGroups(options['custom-groups'], name)
