@@ -227,7 +227,7 @@ export default [
 
 ## 🚀 Version
 
-Coming soon.
+This rule was introduced in v2.0.0.
 
 ## 📚 Resources
 

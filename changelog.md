@@ -1,6 +1,54 @@
 # Changelog
 
 
+## v2.0.0
+
+[compare changes](https://github.com/azat-io/eslint-plugin-perfectionist/compare/v1.5.1...v2.0.0)
+
+### 🚀 Features
+
+- ⚠️  Rename sort-map-elements rule to sort-maps ([d371934](https://github.com/azat-io/eslint-plugin-perfectionist/commit/d371934))
+- ⚠️  Remove read-tsconfig option in sort-imports rule ([cccced1](https://github.com/azat-io/eslint-plugin-perfectionist/commit/cccced1))
+- ⚠️  Move callback, multiline and shorthand opts to groups in sort-jsx-props rule ([10d357c](https://github.com/azat-io/eslint-plugin-perfectionist/commit/10d357c))
+- Add sort-svelte-attributes rule ([409295e](https://github.com/azat-io/eslint-plugin-perfectionist/commit/409295e))
+- Add sort-astro-attributes rule ([036b41d](https://github.com/azat-io/eslint-plugin-perfectionist/commit/036b41d))
+- ⚠️  Move from always-on-top option to groups in sort-objects rule ([0bbcb5a](https://github.com/azat-io/eslint-plugin-perfectionist/commit/0bbcb5a))
+- Allow disabling sort-objects rule for styled-components ([70f2afc](https://github.com/azat-io/eslint-plugin-perfectionist/commit/70f2afc))
+- Add sort-vue-attributes rule ([e031275](https://github.com/azat-io/eslint-plugin-perfectionist/commit/e031275))
+- Add groups option to sort-interfaces rule ([903c029](https://github.com/azat-io/eslint-plugin-perfectionist/commit/903c029))
+- Add groups options in sort-object-types rule ([a219f23](https://github.com/azat-io/eslint-plugin-perfectionist/commit/a219f23))
+- Replace is-core-module dependency with builtin module ([e190c45](https://github.com/azat-io/eslint-plugin-perfectionist/commit/e190c45))
+- Move to typescript-eslint v6 ([9c61238](https://github.com/azat-io/eslint-plugin-perfectionist/commit/9c61238))
+- Add option in sort-union-types rule to put null and undefined types at end ([b313ba7](https://github.com/azat-io/eslint-plugin-perfectionist/commit/b313ba7))
+- Add index-signature group to sort-classes rule ([f857b80](https://github.com/azat-io/eslint-plugin-perfectionist/commit/f857b80))
+- Add get and set methods groups to sort-classes rule ([73132e8](https://github.com/azat-io/eslint-plugin-perfectionist/commit/73132e8))
+
+### 🐞 Bug Fixes
+
+- Disable sorting enums with implicit values ([f4a0e25](https://github.com/azat-io/eslint-plugin-perfectionist/commit/f4a0e25))
+- Ignore string quotes in sort-array-includes rule ([ec2e2f5](https://github.com/azat-io/eslint-plugin-perfectionist/commit/ec2e2f5))
+- Handle more complex expressions in sort-objects ([a7d966c](https://github.com/azat-io/eslint-plugin-perfectionist/commit/a7d966c))
+- Set alphabetical sorting as default in sort-svelte-attributes rule ([b224428](https://github.com/azat-io/eslint-plugin-perfectionist/commit/b224428))
+- Fix sorting single line union type with comment at end ([95560ab](https://github.com/azat-io/eslint-plugin-perfectionist/commit/95560ab))
+- Fix sorting class overloads ([c4939b4](https://github.com/azat-io/eslint-plugin-perfectionist/commit/c4939b4))
+- Fix loading default options for configs ([ef99f44](https://github.com/azat-io/eslint-plugin-perfectionist/commit/ef99f44))
+- Disable sort-jsx-props for vue, astro and svelte files ([afb6ecc](https://github.com/azat-io/eslint-plugin-perfectionist/commit/afb6ecc))
+- Improve determinition of static fields in sort-classes rule ([c00ac10](https://github.com/azat-io/eslint-plugin-perfectionist/commit/c00ac10))
+- Prevent order changes when adding new elements in line-length sorting ([c0e2e60](https://github.com/azat-io/eslint-plugin-perfectionist/commit/c0e2e60))
+
+#### ⚠️ Breaking Changes
+
+- ⚠️  Rename sort-map-elements rule to sort-maps ([d371934](https://github.com/azat-io/eslint-plugin-perfectionist/commit/d371934))
+- ⚠️  Remove read-tsconfig option in sort-imports rule ([cccced1](https://github.com/azat-io/eslint-plugin-perfectionist/commit/cccced1))
+- ⚠️  Move callback, multiline and shorthand opts to groups in sort-jsx-props rule ([10d357c](https://github.com/azat-io/eslint-plugin-perfectionist/commit/10d357c))
+- ⚠️  Move from always-on-top option to groups in sort-objects rule ([0bbcb5a](https://github.com/azat-io/eslint-plugin-perfectionist/commit/0bbcb5a))
+
+### ❤️ Contributors
+
+- Azat S. ([@azat-io](http://github.com/azat-io))
+- Azat S ([@azat-io](http://github.com/azat-io))
+- Martin Šťovíček
+
 ## v1.5.1
 
 [compare changes](https://github.com/azat-io/eslint-plugin-perfectionist/compare/v1.5.0...v1.5.1)
