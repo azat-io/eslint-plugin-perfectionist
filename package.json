@@ -19,7 +19,7 @@
     "release": "pnpm release:check && pnpm release:version && pnpm release:publish",
     "release:check": "pnpm test && pnpm run build",
     "release:publish": "clean-publish",
-    "release:version": "changelogen --output changelog.md --release --push && prettier --write changelog.md",
+    "release:version": "changelogen --output changelog.md --release --push",
     "test:format": "prettier --check \"**/*.{js,ts,json,md,yml}\"",
     "test:css": "stylelint \"docs/.vitepress/**/*.{css,vue}\"",
     "test:js": "eslint \"**/*.{js,ts}\"",
