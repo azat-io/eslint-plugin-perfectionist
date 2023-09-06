@@ -855,8 +855,8 @@ describe(RULE_NAME, () => {
               type SquadMember = {
                 [residence]: 'Wall Rose'
                 name: 'Levi Ackermann'
-                occupation: 'soldier'
                 [key: string]: string
+                occupation: 'soldier'
                 rank: 'captain'
                 age?: 30
               }

@@ -480,8 +480,8 @@ describe(RULE_NAME, () => {
                 x() {}
                 b() {}
                 get z() {}
-                set c() {}
                 get c() {}
+                set c() {}
               }
             `,
             output: dedent`
@@ -995,8 +995,8 @@ describe(RULE_NAME, () => {
                 x() {}
                 b() {}
                 get z() {}
-                set c() {}
                 get c() {}
+                set c() {}
               }
             `,
             output: dedent`
@@ -1161,12 +1161,12 @@ describe(RULE_NAME, () => {
                 this.stressLevel = value
               }
 
-              increaseStressLevel(level) {
-                this.setStressLevel(this.stressLevel + (level ?? 10))
-              }
-
               decreaseStressLevel(level) {
                 this.setStressLevel(this.stressLevel - (level ?? 10))
+              }
+
+              increaseStressLevel(level) {
+                this.setStressLevel(this.stressLevel + (level ?? 10))
               }
             }
           `,

@@ -9,4 +9,4 @@ export let sortNodes = <T extends SortingNode>(
     order: SortOrder
     type: SortType
   },
-): T[] => [...nodes].sort((a, b) => Number(compare(a, b, options)) || -1)
+): T[] => [...nodes].sort((a, b) => compare(a, b, options))

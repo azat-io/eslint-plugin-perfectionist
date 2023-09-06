@@ -6,6 +6,7 @@ import { createEslintRule } from '../utils/create-eslint-rule'
 import { getGroupNumber } from '../utils/get-group-number'
 import { toSingleLine } from '../utils/to-single-line'
 import { rangeToDiff } from '../utils/range-to-diff'
+import { isPositive } from '../utils/is-positive'
 import { SortOrder, SortType } from '../typings'
 import { useGroups } from '../utils/use-groups'
 import { sortNodes } from '../utils/sort-nodes'
@@ -170,7 +171,8 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
 
               if (
                 leftNum > rightNum ||
-                (leftNum === rightNum && compare(left, right, options))
+                (leftNum === rightNum &&
+                  isPositive(compare(left, right, options)))
               ) {
                 context.report({
                   messageId: 'unexpectedInterfacePropertiesOrder',

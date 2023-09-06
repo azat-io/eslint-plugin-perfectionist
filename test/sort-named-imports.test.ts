@@ -504,7 +504,7 @@ describe(RULE_NAME, () => {
             import { Kana, Reki, Rakka, Kuu } from 'haibane-renmei'
           `,
           output: dedent`
-            import { Rakka, Reki, Kana, Kuu } from 'haibane-renmei'
+            import { Rakka, Kana, Reki, Kuu } from 'haibane-renmei'
           `,
           options: [options],
           errors: [

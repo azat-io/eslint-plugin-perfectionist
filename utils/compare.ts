@@ -12,11 +12,11 @@ export let compare = (
     order: SortOrder
     type: SortType
   },
-): boolean => {
+): number => {
   if (b.dependencies?.includes(a.name)) {
-    return false
+    return -1
   } else if (a.dependencies?.includes(b.name)) {
-    return true
+    return 1
   }
 
   let orderCoefficient = options.order === 'asc' ? 1 : -1
@@ -35,5 +35,5 @@ export let compare = (
     sortingFunction = (aNode, bNode) => aNode.size - bNode.size
   }
 
-  return orderCoefficient * sortingFunction(a, b) > 0
+  return orderCoefficient * sortingFunction(a, b)
 }

@@ -520,8 +520,8 @@ describe(RULE_NAME, () => {
               [
                 'Armored Titan',
                 'Attack Titan',
-                'Cart Titan',
                 ...otherTitans,
+                'Cart Titan',
                 'Beast Titan',
                 'War Hammer Titan',
               ].includes(titan)
@@ -530,8 +530,8 @@ describe(RULE_NAME, () => {
               [
                 'War Hammer Titan',
                 'Armored Titan',
-                ...otherTitans,
                 'Attack Titan',
+                ...otherTitans,
                 'Beast Titan',
                 'Cart Titan',
               ].includes(titan)
@@ -542,7 +542,7 @@ describe(RULE_NAME, () => {
                 messageId: 'unexpectedArrayIncludesOrder',
                 data: {
                   left: 'Cart Titan',
-                  right: '...otherTitans',
+                  right: 'Beast Titan',
                 },
               },
               {
@@ -582,8 +582,8 @@ describe(RULE_NAME, () => {
           `,
           output: dedent`
             [
-              ...lowerRanks,
               ...upperRanks,
+              ...lowerRanks,
               ...demons,
             ].includes('Nezuko Kamado')
           `,
@@ -619,7 +619,7 @@ describe(RULE_NAME, () => {
               ['Genos', 'Bang', 'King',, 'Saitama'].includes(hero)
             `,
             output: dedent`
-              ['Saitama', 'Genos', 'King',, 'Bang'].includes(hero)
+              ['Saitama', 'Genos', 'Bang',, 'King'].includes(hero)
             `,
             options: [options],
             errors: [

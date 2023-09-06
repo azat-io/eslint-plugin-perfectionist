@@ -598,7 +598,7 @@ describe(RULE_NAME, () => {
             type Eternity = 'Fushi' | 'Joaan' | 'Parona' | 'Gugu'
           `,
           output: dedent`
-            type Eternity = 'Parona' | 'Joaan' | 'Fushi' | 'Gugu'
+            type Eternity = 'Parona' | 'Fushi' | 'Joaan' | 'Gugu'
           `,
           options: [options],
           errors: [
@@ -634,14 +634,14 @@ describe(RULE_NAME, () => {
           output: dedent`
             type Value =
               | undefined
-              | unknown
               | boolean
-              | bigint
-              | string
+              | unknown
               | number
+              | string
+              | bigint
               | never
-              | void
               | null
+              | void
               | any
           `,
           options: [options],
@@ -783,7 +783,7 @@ describe(RULE_NAME, () => {
             type Step = 1 | 2 | 4 | 3 | 5 | 100; // Exam step. Example: 3
           `,
           output: dedent`
-            type Step = 100 | 5 | 3 | 4 | 2 | 1; // Exam step. Example: 3
+            type Step = 100 | 1 | 2 | 4 | 3 | 5; // Exam step. Example: 3
           `,
           options: [options],
           errors: [

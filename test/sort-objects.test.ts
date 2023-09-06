@@ -2265,6 +2265,62 @@ describe(RULE_NAME, () => {
         ],
       },
     )
+
+    ruleTester.run(
+      `${RULE_NAME}(${type}): not changes order if the same length`,
+      rule,
+      {
+        valid: [],
+        invalid: [
+          {
+            code: dedent`
+              export const test = {
+                a: 'a',
+                b: 'b',
+                c: 'c',
+                d: 'd1',
+                e: 'e12',
+              }
+            `,
+            output: dedent`
+              export const test = {
+                e: 'e12',
+                d: 'd1',
+                a: 'a',
+                b: 'b',
+                c: 'c',
+              }
+            `,
+            options: [
+              {
+                ...options,
+                'partition-by-comment': [
+                  'Public Safety Bureau',
+                  'Crime Coefficient: *',
+                  'Victims',
+                ],
+              },
+            ],
+            errors: [
+              {
+                messageId: 'unexpectedObjectsOrder',
+                data: {
+                  left: 'c',
+                  right: 'd',
+                },
+              },
+              {
+                messageId: 'unexpectedObjectsOrder',
+                data: {
+                  left: 'd',
+                  right: 'e',
+                },
+              },
+            ],
+          },
+        ],
+      },
+    )
   })
 
   describe(`${RULE_NAME}: misc`, () => {
@@ -2274,40 +2330,40 @@ describe(RULE_NAME, () => {
       {
         valid: [
           dedent`
-            let family = {
-              dad: 'Loid Forger',
-              daughter: 'Anya Forger',
-              mom: 'Yor Forger',
-            }
-          `,
-          {
-            code: dedent`
-              const calculator = {
-                log: () => undefined,
-                log10: () => undefined,
-                log1p: () => undefined,
-                log2: () => undefined,
+              let family = {
+                dad: 'Loid Forger',
+                daughter: 'Anya Forger',
+                mom: 'Yor Forger',
               }
             `,
+          {
+            code: dedent`
+                const calculator = {
+                  log: () => undefined,
+                  log10: () => undefined,
+                  log1p: () => undefined,
+                  log2: () => undefined,
+                }
+              `,
             options: [{}],
           },
         ],
         invalid: [
           {
             code: dedent`
-              let family = {
-                dad: 'Loid Forger',
-                mom: 'Yor Forger',
-                daughter: 'Anya Forger',
-              }
-            `,
+                let family = {
+                  dad: 'Loid Forger',
+                  mom: 'Yor Forger',
+                  daughter: 'Anya Forger',
+                }
+              `,
             output: dedent`
-              let family = {
-                dad: 'Loid Forger',
-                daughter: 'Anya Forger',
-                mom: 'Yor Forger',
-              }
-            `,
+                let family = {
+                  dad: 'Loid Forger',
+                  daughter: 'Anya Forger',
+                  mom: 'Yor Forger',
+                }
+              `,
             errors: [
               {
                 messageId: 'unexpectedObjectsOrder',
@@ -2329,12 +2385,12 @@ describe(RULE_NAME, () => {
         valid: [
           {
             code: dedent`
-              const Box = styled.div({
-                background: "palevioletred",
-                width: "50px",
-                height: "50px",
-              })
-            `,
+                const Box = styled.div({
+                  background: "palevioletred",
+                  width: "50px",
+                  height: "50px",
+                })
+              `,
             options: [
               {
                 'styled-components': false,
@@ -2343,12 +2399,12 @@ describe(RULE_NAME, () => {
           },
           {
             code: dedent`
-              const PropsBox = styled.div((props) => ({
-                background: props.background,
-                height: "50px",
-                width: "50px",
-              }))
-            `,
+                const PropsBox = styled.div((props) => ({
+                  background: props.background,
+                  height: "50px",
+                  width: "50px",
+                }))
+              `,
             options: [
               {
                 'styled-components': false,
@@ -2357,13 +2413,13 @@ describe(RULE_NAME, () => {
           },
           {
             code: dedent`
-              export default styled('div')(() => ({
-                borderRadius: 0,
-                borderWidth: 0,
-                border: 0,
-                borderBottom: hasBorder && \`1px solid \${theme.palette.divider}\`,
-              }))
-            `,
+                export default styled('div')(() => ({
+                  borderRadius: 0,
+                  borderWidth: 0,
+                  border: 0,
+                  borderBottom: hasBorder && \`1px solid \${theme.palette.divider}\`,
+                }))
+              `,
             options: [
               {
                 'styled-components': false,

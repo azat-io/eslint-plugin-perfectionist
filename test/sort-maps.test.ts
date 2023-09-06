@@ -709,8 +709,8 @@ describe(RULE_NAME, () => {
           output: dedent`
             new Map([
               [3, 'three'],
-              [1, 'one'],
               [2, 'two'],
+              [1, 'one'],
             ])
           `,
           options: [options],
@@ -754,8 +754,8 @@ describe(RULE_NAME, () => {
           output: dedent`
             let apps = new Map([
               weatherApp,
-              musicApp,
               booksApp,
+              musicApp,
               mapsApp,
             ])
           `,

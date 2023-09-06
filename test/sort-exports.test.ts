@@ -328,8 +328,8 @@ describe(RULE_NAME, () => {
             export { Daimon1, Daimon2 } from 'police'
           `,
           output: dedent`
-            export { Daimon1, Daimon2 } from 'police'
             export { HiroshiOdokawa } from 'cab-park'
+            export { Daimon1, Daimon2 } from 'police'
             export { Shibagaki, Baba } from 'radio'
             export { Gouriki } from 'hospital'
           `,

@@ -4,6 +4,7 @@ import type { SortingNode } from '../typings'
 
 import { createEslintRule } from '../utils/create-eslint-rule'
 import { rangeToDiff } from '../utils/range-to-diff'
+import { isPositive } from '../utils/is-positive'
 import { SortOrder, SortType } from '../typings'
 import { sortNodes } from '../utils/sort-nodes'
 import { makeFixes } from '../utils/make-fixes'
@@ -104,7 +105,7 @@ export default createEslintRule<Options, MESSAGE_ID>({
 
         for (let nodes of parts) {
           pairwise(nodes, (left, right) => {
-            if (compare(left, right, options)) {
+            if (isPositive(compare(left, right, options))) {
               context.report({
                 messageId: 'unexpectedExportsOrder',
                 data: {

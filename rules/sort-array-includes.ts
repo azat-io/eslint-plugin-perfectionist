@@ -5,6 +5,7 @@ import type { SortingNode } from '../typings'
 import { createEslintRule } from '../utils/create-eslint-rule'
 import { toSingleLine } from '../utils/to-single-line'
 import { rangeToDiff } from '../utils/range-to-diff'
+import { isPositive } from '../utils/is-positive'
 import { SortOrder, SortType } from '../typings'
 import { sortNodes } from '../utils/sort-nodes'
 import { makeFixes } from '../utils/make-fixes'
@@ -137,7 +138,7 @@ export default createEslintRule<Options, MESSAGE_ID>({
             ) {
               compareValue = true
             } else {
-              compareValue = compare(left, right, options)
+              compareValue = isPositive(compare(left, right, options))
             }
 
             if (compareValue) {
