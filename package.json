@@ -109,7 +109,6 @@
     "postcss-html": "^1.5.0",
     "prettier": "^3.0.3",
     "simple-git-hooks": "^2.9.0",
-    "sitemap": "^7.1.1",
     "stylelint": "^15.10.3",
     "stylelint-config-recess-order": "^4.3.0",
     "stylelint-gamut": "^1.3.3",
