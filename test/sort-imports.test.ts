@@ -3232,5 +3232,53 @@ describe(RULE_NAME, () => {
         invalid: [],
       },
     )
+
+    ruleTester.run(
+      `${RULE_NAME}: defines prefix-only builtin modules as core node modules`,
+      rule,
+      {
+        valid: [
+          {
+            code: dedent`
+              import { writeFile } from 'node:fs/promises'
+              
+              import { useEffect } from 'react'
+            `,
+            options: [
+              {
+                groups: ['builtin', 'external'],
+              },
+            ],
+          },
+        ],
+        invalid: [
+          {
+            code: dedent`
+              import { writeFile } from 'node:fs/promises'
+              import { useEffect } from 'react'
+            `,
+            output: dedent`
+              import { writeFile } from 'node:fs/promises'
+
+              import { useEffect } from 'react'
+            `,
+            options: [
+              {
+                groups: ['builtin', 'external'],
+              },
+            ],
+            errors: [
+              {
+                messageId: 'missedSpacingBetweenImports',
+                data: {
+                  left: 'node:fs/promises',
+                  right: 'react',
+                },
+              },
+            ],
+          },
+        ],
+      },
+    )
   })
 })

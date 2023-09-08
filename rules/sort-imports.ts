@@ -201,8 +201,9 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
         tsPaths.some(pattern => minimatch(nodeElement.source.value, pattern))
 
       let isCoreModule = (value: string) =>
-        builtinModules.includes(value) ||
-        builtinModules.includes(`node:${value}`)
+        builtinModules.includes(
+          value.startsWith('node:') ? value.split('node:')[1] : value,
+        )
 
       if (node.importKind === 'type') {
         if (node.type === 'ImportDeclaration') {
