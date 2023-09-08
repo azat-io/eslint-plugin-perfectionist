@@ -1,6 +1,18 @@
 # Changelog
 
 
+## v2.0.1
+
+[compare changes](https://github.com/azat-io/eslint-plugin-perfectionist/compare/v2.0.0...v2.0.1)
+
+### 🐞 Bug Fixes
+
+- Prefix-only builtin modules are defined as external modules in sort-imports rule ([92b7240](https://github.com/azat-io/eslint-plugin-perfectionist/commit/92b7240))
+
+### ❤️ Contributors
+
+- Wondermarin
+
 ## v2.0.0
 
 [compare changes](https://github.com/azat-io/eslint-plugin-perfectionist/compare/v1.5.1...v2.0.0)
