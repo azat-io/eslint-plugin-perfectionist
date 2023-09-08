@@ -3240,9 +3240,9 @@ describe(RULE_NAME, () => {
         valid: [
           {
             code: dedent`
-              import { writeFile } from "node:fs/promises"
+              import { writeFile } from 'node:fs/promises'
               
-              import { useEffect } from "react"
+              import { useEffect } from 'react'
             `,
             options: [
               {
