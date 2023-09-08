@@ -3246,10 +3246,7 @@ describe(RULE_NAME, () => {
             `,
             options: [
               {
-                groups: [
-                  'builtin',
-                  'external'
-                ],
+                groups: ['builtin', 'external'],
               },
             ],
           },
@@ -3265,6 +3262,11 @@ describe(RULE_NAME, () => {
 
               import { useEffect } from 'react'
             `,
+            options: [
+              {
+                groups: ['builtin', 'external'],
+              },
+            ],
             errors: [
               {
                 messageId: 'missedSpacingBetweenImports',
@@ -3272,14 +3274,6 @@ describe(RULE_NAME, () => {
                   left: 'node:fs/promises',
                   right: 'react',
                 },
-              },
-            ],
-            options: [
-              {
-                groups: [
-                  'builtin',
-                  'external'
-                ],
               },
             ],
           },
