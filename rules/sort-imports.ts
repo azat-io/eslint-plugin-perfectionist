@@ -199,10 +199,24 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
           }),
         )
 
-      let isCoreModule = (value: string) =>
-        builtinModules.includes(
-          value.startsWith('node:') ? value.split('node:')[1] : value,
+      let isCoreModule = (value: string) => {
+        let bunModules = [
+          'bun',
+          'bun:ffi',
+          'bun:jsc',
+          'bun:sqlite',
+          'bun:test',
+          'bun:wrap',
+          'detect-libc',
+          'undici',
+          'ws',
+        ]
+        return (
+          builtinModules.includes(
+            value.startsWith('node:') ? value.split('node:')[1] : value,
+          ) || bunModules.includes(value)
         )
+      }
 
       if (node.importKind === 'type') {
         if (node.type === 'ImportDeclaration') {

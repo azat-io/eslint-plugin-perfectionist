@@ -3558,6 +3558,7 @@ describe(RULE_NAME, () => {
         valid: [
           {
             code: dedent`
+              import { expect, test } from 'bun:test'
               import { writeFile } from 'node:fs/promises'
 
               import { useEffect } from 'react'
@@ -3574,8 +3575,10 @@ describe(RULE_NAME, () => {
             code: dedent`
               import { writeFile } from 'node:fs/promises'
               import { useEffect } from 'react'
+              import { expect, test } from 'bun:test'
             `,
             output: dedent`
+              import { expect, test } from 'bun:test'
               import { writeFile } from 'node:fs/promises'
 
               import { useEffect } from 'react'
@@ -3591,6 +3594,13 @@ describe(RULE_NAME, () => {
                 data: {
                   left: 'node:fs/promises',
                   right: 'react',
+                },
+              },
+              {
+                messageId: 'unexpectedImportsOrder',
+                data: {
+                  left: 'react',
+                  right: 'bun:test',
                 },
               },
             ],
