@@ -21,12 +21,21 @@ export let useGroups = (groups: (string[] | string)[]) => {
       for (let [key, pattern] of Object.entries(customGroups)) {
         if (
           Array.isArray(pattern) &&
-          pattern.some(patternValue => minimatch(name, patternValue))
+          pattern.some(patternValue =>
+            minimatch(name, patternValue, {
+              nocomment: true,
+            }),
+          )
         ) {
           defineGroup(key)
         }
 
-        if (typeof pattern === 'string' && minimatch(name, pattern)) {
+        if (
+          typeof pattern === 'string' &&
+          minimatch(name, pattern, {
+            nocomment: true,
+          })
+        ) {
           defineGroup(key)
         }
       }

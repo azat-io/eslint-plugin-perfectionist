@@ -104,7 +104,9 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
 
         if (
           !options['ignore-pattern'].some(pattern =>
-            minimatch(node.id.name, pattern),
+            minimatch(node.id.name, pattern, {
+              nocomment: true,
+            }),
           )
         ) {
           let source = context.getSourceCode()

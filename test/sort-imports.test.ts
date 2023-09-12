@@ -1047,6 +1047,112 @@ describe(RULE_NAME, () => {
         ],
       },
     )
+
+    ruleTester.run(
+      `${RULE_NAME}(${type}): allows to hash symbol in internal pattern`,
+      rule,
+      {
+        valid: [
+          {
+            code: dedent`
+              import type { Characters } from 'skip-and-loafer'
+
+              import { events } from 'skip-and-loafer'
+
+              import type { Student } from '#school'
+
+              import Satonosuke from '#pets'
+              import { MitsumiIwakura, SousukeShima } from '#school'
+
+              import { Nao } from '../family'
+            `,
+            options: [
+              {
+                ...options,
+                'newlines-between': NewlinesBetweenValue.always,
+                'internal-pattern': ['#**'],
+                groups: [
+                  'type',
+                  ['builtin', 'external'],
+                  'internal-type',
+                  'internal',
+                  ['parent-type', 'sibling-type', 'index-type'],
+                  ['parent', 'sibling', 'index'],
+                  'object',
+                  'unknown',
+                ],
+              },
+            ],
+          },
+        ],
+        invalid: [
+          {
+            code: dedent`
+              import type { Student } from '#school'
+              import type { Characters } from 'skip-and-loafer'
+
+              import Satonosuke from '#pets'
+              import { events } from 'skip-and-loafer'
+              import { MitsumiIwakura, SousukeShima } from '#school'
+
+              import { Nao } from '../family'
+            `,
+            output: dedent`
+              import type { Characters } from 'skip-and-loafer'
+
+              import { events } from 'skip-and-loafer'
+
+              import type { Student } from '#school'
+
+              import Satonosuke from '#pets'
+              import { MitsumiIwakura, SousukeShima } from '#school'
+
+              import { Nao } from '../family'
+            `,
+            options: [
+              {
+                ...options,
+                'newlines-between': NewlinesBetweenValue.always,
+                'internal-pattern': ['#**'],
+                groups: [
+                  'type',
+                  ['builtin', 'external'],
+                  'internal-type',
+                  'internal',
+                  ['parent-type', 'sibling-type', 'index-type'],
+                  ['parent', 'sibling', 'index'],
+                  'object',
+                  'unknown',
+                ],
+              },
+            ],
+            errors: [
+              {
+                messageId: 'unexpectedImportsOrder',
+                data: {
+                  left: '#school',
+                  right: 'skip-and-loafer',
+                },
+              },
+              {
+                messageId: 'unexpectedImportsOrder',
+                data: {
+                  left: '#pets',
+                  right: 'skip-and-loafer',
+                },
+              },
+              {
+                messageId: 'missedSpacingBetweenImports',
+                data: {
+                  left: 'skip-and-loafer',
+                  right: '#school',
+                },
+              },
+            ],
+          },
+        ],
+      },
+    )
   })
 
   describe(`${RULE_NAME}: sorting by natural order`, () => {
@@ -2072,6 +2178,112 @@ describe(RULE_NAME, () => {
                 data: {
                   left: 'giovannis-island',
                   right: 'giovannis-island',
+                },
+              },
+            ],
+          },
+        ],
+      },
+    )
+
+    ruleTester.run(
+      `${RULE_NAME}(${type}): allows to hash symbol in internal pattern`,
+      rule,
+      {
+        valid: [
+          {
+            code: dedent`
+              import type { Characters } from 'skip-and-loafer'
+
+              import { events } from 'skip-and-loafer'
+
+              import type { Student } from '#school'
+
+              import Satonosuke from '#pets'
+              import { MitsumiIwakura, SousukeShima } from '#school'
+
+              import { Nao } from '../family'
+            `,
+            options: [
+              {
+                ...options,
+                'newlines-between': NewlinesBetweenValue.always,
+                'internal-pattern': ['#**'],
+                groups: [
+                  'type',
+                  ['builtin', 'external'],
+                  'internal-type',
+                  'internal',
+                  ['parent-type', 'sibling-type', 'index-type'],
+                  ['parent', 'sibling', 'index'],
+                  'object',
+                  'unknown',
+                ],
+              },
+            ],
+          },
+        ],
+        invalid: [
+          {
+            code: dedent`
+              import type { Student } from '#school'
+              import type { Characters } from 'skip-and-loafer'
+
+              import Satonosuke from '#pets'
+              import { events } from 'skip-and-loafer'
+              import { MitsumiIwakura, SousukeShima } from '#school'
+
+              import { Nao } from '../family'
+            `,
+            output: dedent`
+              import type { Characters } from 'skip-and-loafer'
+
+              import { events } from 'skip-and-loafer'
+
+              import type { Student } from '#school'
+
+              import Satonosuke from '#pets'
+              import { MitsumiIwakura, SousukeShima } from '#school'
+
+              import { Nao } from '../family'
+            `,
+            options: [
+              {
+                ...options,
+                'newlines-between': NewlinesBetweenValue.always,
+                'internal-pattern': ['#**'],
+                groups: [
+                  'type',
+                  ['builtin', 'external'],
+                  'internal-type',
+                  'internal',
+                  ['parent-type', 'sibling-type', 'index-type'],
+                  ['parent', 'sibling', 'index'],
+                  'object',
+                  'unknown',
+                ],
+              },
+            ],
+            errors: [
+              {
+                messageId: 'unexpectedImportsOrder',
+                data: {
+                  left: '#school',
+                  right: 'skip-and-loafer',
+                },
+              },
+              {
+                messageId: 'unexpectedImportsOrder',
+                data: {
+                  left: '#pets',
+                  right: 'skip-and-loafer',
+                },
+              },
+              {
+                messageId: 'missedSpacingBetweenImports',
+                data: {
+                  left: 'skip-and-loafer',
+                  right: '#school',
                 },
               },
             ],
@@ -3159,6 +3371,112 @@ describe(RULE_NAME, () => {
         ],
       },
     )
+
+    ruleTester.run(
+      `${RULE_NAME}(${type}): allows to hash symbol in internal pattern`,
+      rule,
+      {
+        valid: [
+          {
+            code: dedent`
+              import type { Characters } from 'skip-and-loafer'
+
+              import { events } from 'skip-and-loafer'
+
+              import type { Student } from '#school'
+
+              import { MitsumiIwakura, SousukeShima } from '#school'
+              import Satonosuke from '#pets'
+
+              import { Nao } from '../family'
+            `,
+            options: [
+              {
+                ...options,
+                'newlines-between': NewlinesBetweenValue.always,
+                'internal-pattern': ['#**'],
+                groups: [
+                  'type',
+                  ['builtin', 'external'],
+                  'internal-type',
+                  'internal',
+                  ['parent-type', 'sibling-type', 'index-type'],
+                  ['parent', 'sibling', 'index'],
+                  'object',
+                  'unknown',
+                ],
+              },
+            ],
+          },
+        ],
+        invalid: [
+          {
+            code: dedent`
+              import type { Student } from '#school'
+              import type { Characters } from 'skip-and-loafer'
+
+              import Satonosuke from '#pets'
+              import { events } from 'skip-and-loafer'
+              import { MitsumiIwakura, SousukeShima } from '#school'
+
+              import { Nao } from '../family'
+            `,
+            output: dedent`
+              import type { Characters } from 'skip-and-loafer'
+
+              import { events } from 'skip-and-loafer'
+
+              import type { Student } from '#school'
+
+              import { MitsumiIwakura, SousukeShima } from '#school'
+              import Satonosuke from '#pets'
+
+              import { Nao } from '../family'
+            `,
+            options: [
+              {
+                ...options,
+                'newlines-between': NewlinesBetweenValue.always,
+                'internal-pattern': ['#**'],
+                groups: [
+                  'type',
+                  ['builtin', 'external'],
+                  'internal-type',
+                  'internal',
+                  ['parent-type', 'sibling-type', 'index-type'],
+                  ['parent', 'sibling', 'index'],
+                  'object',
+                  'unknown',
+                ],
+              },
+            ],
+            errors: [
+              {
+                messageId: 'unexpectedImportsOrder',
+                data: {
+                  left: '#school',
+                  right: 'skip-and-loafer',
+                },
+              },
+              {
+                messageId: 'unexpectedImportsOrder',
+                data: {
+                  left: '#pets',
+                  right: 'skip-and-loafer',
+                },
+              },
+              {
+                messageId: 'missedSpacingBetweenImports',
+                data: {
+                  left: 'skip-and-loafer',
+                  right: '#school',
+                },
+              },
+            ],
+          },
+        ],
+      },
+    )
   })
 
   describe(`${RULE_NAME}: misc`, () => {
@@ -3241,7 +3559,7 @@ describe(RULE_NAME, () => {
           {
             code: dedent`
               import { writeFile } from 'node:fs/promises'
-              
+
               import { useEffect } from 'react'
             `,
             options: [

@@ -161,8 +161,6 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
       groups: [],
     })
 
-    let tsPaths: string[] = []
-
     let source = context.getSourceCode()
 
     let nodes: SortingNode[] = []
@@ -194,11 +192,12 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
       let { getGroup, defineGroup, setCustomGroups } = useGroups(options.groups)
 
       let isInternal = (nodeElement: TSESTree.ImportDeclaration) =>
-        (options['internal-pattern'].length &&
-          options['internal-pattern'].some(pattern =>
-            minimatch(nodeElement.source.value, pattern),
-          )) ||
-        tsPaths.some(pattern => minimatch(nodeElement.source.value, pattern))
+        options['internal-pattern'].length &&
+        options['internal-pattern'].some(pattern =>
+          minimatch(nodeElement.source.value, pattern, {
+            nocomment: true,
+          }),
+        )
 
       let isCoreModule = (value: string) =>
         builtinModules.includes(
