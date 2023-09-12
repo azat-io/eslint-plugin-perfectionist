@@ -18,6 +18,7 @@ import { compare } from '../utils/compare'
 type MESSAGE_ID = 'unexpectedClassesOrder'
 
 type Group =
+  | 'static-private-method'
   | 'private-property'
   | 'static-property'
   | 'index-signature'
@@ -127,11 +128,20 @@ export default createEslintRule<Options, MESSAGE_ID>({
               defineGroup('constructor')
             }
 
-            if (member.accessibility === 'private' || isPrivate) {
+            let isPrivateMethod =
+              member.accessibility === 'private' || isPrivate
+
+            let isStaticMethod = member.static
+
+            if (isPrivateMethod && isStaticMethod) {
+              defineGroup('static-private-method')
+            }
+
+            if (isPrivateMethod) {
               defineGroup('private-method')
             }
 
-            if (member.static) {
+            if (isStaticMethod) {
               defineGroup('static-method')
             }
 

@@ -114,6 +114,7 @@ This rule accepts an options object with the following properties:
 
 ```ts
 type Group =
+  | 'static-private-method'
   | 'private-property'
   | 'static-property'
   | 'index-signature'
@@ -173,6 +174,7 @@ If you use [one of the configs](/configs/) exported by this plugin, you get the 
     "constructor",
     "static-method",
     "private-method",
+    "static-private-method",
     "method",
     ["get-method", "set-method"],
     "unknown"
