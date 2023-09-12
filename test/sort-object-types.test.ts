@@ -361,6 +361,59 @@ describe(RULE_NAME, () => {
         ],
       },
     )
+
+    ruleTester.run(
+      `${RULE_NAME}(${type}): allows to use multiple partition comments`,
+      rule,
+      {
+        valid: [],
+        invalid: [
+          {
+            code: dedent`
+              class PsychoPass {
+                async incCrimeCoefficient (data: {
+                  name: string
+                  level: number
+                  reason: string | string[]
+                  callback: () => void
+                }) {
+                  updateCrimeCoefficient(data)
+                }
+              }
+            `,
+            output: dedent`
+              class PsychoPass {
+                async incCrimeCoefficient (data: {
+                  callback: () => void
+                  level: number
+                  name: string
+                  reason: string | string[]
+                }) {
+                  updateCrimeCoefficient(data)
+                }
+              }
+            `,
+            options: [options],
+            errors: [
+              {
+                messageId: 'unexpectedObjectTypesOrder',
+                data: {
+                  left: 'name',
+                  right: 'level',
+                },
+              },
+              {
+                messageId: 'unexpectedObjectTypesOrder',
+                data: {
+                  left: 'reason',
+                  right: 'callback',
+                },
+              },
+            ],
+          },
+        ],
+      },
+    )
   })
 
   describe(`${RULE_NAME}: sorting by natural order`, () => {
