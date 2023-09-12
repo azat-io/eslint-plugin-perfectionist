@@ -1,6 +1,23 @@
 # Changelog
 
 
+## v2.1.0
+
+[compare changes](https://github.com/azat-io/eslint-plugin-perfectionist/compare/v2.0.1...v2.1.0)
+
+### 🚀 Features
+
+- Add static-private-method group for sort-classes rule ([37512c9](https://github.com/azat-io/eslint-plugin-perfectionist/commit/37512c9))
+- Support bun builtin modules in sort-imports rule ([37bca14](https://github.com/azat-io/eslint-plugin-perfectionist/commit/37bca14))
+
+### 🐞 Bug Fixes
+
+- Allow internal imports starting with a hash character ([f35deef](https://github.com/azat-io/eslint-plugin-perfectionist/commit/f35deef))
+
+### ❤️ Contributors
+
+- Azat S. ([@azat-io](http://github.com/azat-io))
+
 ## v2.0.1
 
 [compare changes](https://github.com/azat-io/eslint-plugin-perfectionist/compare/v2.0.0...v2.0.1)
