@@ -222,24 +222,24 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
         if (node.type === 'ImportDeclaration') {
           setCustomGroups(options['custom-groups'].type, node.source.value)
 
-          if (isCoreModule(node.source.value)) {
-            defineGroup('builtin-type')
-          }
-
-          if (isInternal(node)) {
-            defineGroup('internal-type')
-          }
-
           if (isIndex(node.source.value)) {
             defineGroup('index-type')
+          }
+
+          if (isSibling(node.source.value)) {
+            defineGroup('sibling-type')
           }
 
           if (isParent(node.source.value)) {
             defineGroup('parent-type')
           }
 
-          if (isSibling(node.source.value)) {
-            defineGroup('sibling-type')
+          if (isInternal(node)) {
+            defineGroup('internal-type')
+          }
+
+          if (isCoreModule(node.source.value)) {
+            defineGroup('builtin-type')
           }
         }
 
@@ -250,32 +250,32 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
       if (node.type === 'ImportDeclaration') {
         setCustomGroups(options['custom-groups'].value, node.source.value)
 
-        if (isCoreModule(node.source.value)) {
-          defineGroup('builtin')
-        }
-
-        if (isInternal(node)) {
-          defineGroup('internal')
+        if (isSideEffectImport(node)) {
+          defineGroup('side-effect')
         }
 
         if (isStyle(node.source.value)) {
           defineGroup('style')
         }
 
-        if (isSideEffectImport(node)) {
-          defineGroup('side-effect')
-        }
-
         if (isIndex(node.source.value)) {
           defineGroup('index')
+        }
+
+        if (isSibling(node.source.value)) {
+          defineGroup('sibling')
         }
 
         if (isParent(node.source.value)) {
           defineGroup('parent')
         }
 
-        if (isSibling(node.source.value)) {
-          defineGroup('sibling')
+        if (isInternal(node)) {
+          defineGroup('internal')
+        }
+
+        if (isCoreModule(node.source.value)) {
+          defineGroup('builtin')
         }
 
         defineGroup('external')

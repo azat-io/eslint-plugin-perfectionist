@@ -3608,5 +3608,53 @@ describe(RULE_NAME, () => {
         ],
       },
     )
+
+    ruleTester.run(
+      `${RULE_NAME}: define side-effect import with internal pattern as side-effect import`,
+      rule,
+      {
+        valid: [
+          {
+            code: dedent`
+              import { useClient } from '~/hooks/useClient'
+
+              import '~/css/globals.css'
+            `,
+            options: [
+              {
+                groups: ['internal', 'side-effect'],
+              },
+            ],
+          },
+        ],
+        invalid: [
+          {
+            code: dedent`
+              import { useClient } from '~/hooks/useClient'
+              import '~/css/globals.css'
+            `,
+            output: dedent`
+              import { useClient } from '~/hooks/useClient'
+
+              import '~/css/globals.css'
+            `,
+            options: [
+              {
+                groups: ['internal', 'side-effect'],
+              },
+            ],
+            errors: [
+              {
+                messageId: 'missedSpacingBetweenImports',
+                data: {
+                  left: '~/hooks/useClient',
+                  right: '~/css/globals.css',
+                },
+              },
+            ],
+          },
+        ],
+      },
+    )
   })
 })
