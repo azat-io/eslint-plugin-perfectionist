@@ -75,7 +75,7 @@
     "vue-eslint-parser": ">=9.0.0"
   },
   "dependencies": {
-    "@typescript-eslint/utils": "^6.7.2",
+    "@typescript-eslint/utils": "^6.7.3",
     "minimatch": "^9.0.3",
     "natural-compare-lite": "^1.4.0"
   },
@@ -85,11 +85,11 @@
     "@commitlint/cli": "^17.7.1",
     "@commitlint/config-conventional": "^17.7.0",
     "@types/natural-compare-lite": "^1.4.0",
-    "@types/node": "^20.6.4",
-    "@typescript-eslint/eslint-plugin": "^6.7.2",
-    "@typescript-eslint/parser": "^6.7.2",
-    "@typescript-eslint/rule-tester": "^6.7.2",
-    "@typescript-eslint/types": "^6.7.2",
+    "@types/node": "^20.7.1",
+    "@typescript-eslint/eslint-plugin": "^6.7.3",
+    "@typescript-eslint/parser": "^6.7.3",
+    "@typescript-eslint/rule-tester": "^6.7.3",
+    "@typescript-eslint/types": "^6.7.3",
     "@vitest/coverage-v8": "^0.34.5",
     "astro-eslint-parser": "^0.15.0",
     "changelogen": "^0.5.5",
@@ -120,7 +120,7 @@
     "typescript": "^5.2.2",
     "vite": "^4.4.9",
     "vite-plugin-lightningcss": "^0.0.5",
-    "vitepress": "1.0.0-rc.17",
+    "vitepress": "1.0.0-rc.20",
     "vitest": "^0.34.5",
     "vue": "^3.3.4"
   }
