@@ -1,6 +1,6 @@
 import type { TSESTree } from '@typescript-eslint/types'
 
-import path from 'path'
+import path from 'node:path'
 
 import type { SortingNode } from '../typings'
 
