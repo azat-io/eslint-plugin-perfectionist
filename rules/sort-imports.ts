@@ -161,6 +161,26 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
       groups: [],
     })
 
+    let hasUnknownGroup = false
+
+    for (let group of options.groups) {
+      if (Array.isArray(group)) {
+        for (let subGroup of group) {
+          if (subGroup === 'unknown') {
+            hasUnknownGroup = true
+          }
+        }
+      } else {
+        if (group === 'unknown') {
+          hasUnknownGroup = true
+        }
+      }
+    }
+
+    if (!hasUnknownGroup) {
+      options.groups = [...options.groups, 'unknown']
+    }
+
     let source = context.getSourceCode()
 
     let nodes: SortingNode[] = []
@@ -218,6 +238,9 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
         )
       }
 
+      let isExternal = (value: string) =>
+        !(value.startsWith('.') || value.startsWith('/'))
+
       if (node.importKind === 'type') {
         if (node.type === 'ImportDeclaration') {
           setCustomGroups(options['custom-groups'].type, node.source.value)
@@ -241,9 +264,12 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
           if (isCoreModule(node.source.value)) {
             defineGroup('builtin-type')
           }
+
+          if (isExternal(node.source.value)) {
+            defineGroup('external-type')
+          }
         }
 
-        defineGroup('external-type')
         defineGroup('type')
       }
 
@@ -278,7 +304,9 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
           defineGroup('builtin')
         }
 
-        defineGroup('external')
+        if (isExternal(node.source.value)) {
+          defineGroup('external')
+        }
       }
 
       return getGroup()
