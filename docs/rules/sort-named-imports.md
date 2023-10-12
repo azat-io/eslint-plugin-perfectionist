@@ -86,6 +86,7 @@ interface Options {
   type?: 'alphabetical' | 'natural' | 'line-length'
   order?: 'asc' | 'desc'
   'ignore-case'?: boolean
+  'ignore-alias'?: boolean
 }
 ```
 
@@ -109,6 +110,12 @@ interface Options {
 <sub>(default: `false`)</sub>
 
 Only affects alphabetical and natural sorting. When `true` the rule ignores the case-sensitivity of the order.
+
+### ignore-alias
+
+<sub>(default: `true`)</sub>
+
+Use import alias as name instead of exported name.
 
 ## ⚙️ Usage
 

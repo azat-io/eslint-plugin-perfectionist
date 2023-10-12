@@ -247,6 +247,59 @@ describe(RULE_NAME, () => {
         },
       ],
     })
+
+    ruleTester.run(`${RULE_NAME}: allows to ignore import aliases`, rule, {
+      valid: [
+        {
+          code: dedent`
+          import {
+              miri,
+              kazuki as papa1,
+              rei as papa2,
+            } from 'buddy-daddies'
+          `,
+          options: [
+            {
+              ...options,
+              'ignore-alias': false,
+            },
+          ],
+        },
+      ],
+      invalid: [
+        {
+          code: dedent`
+            import {
+              kazuki as papa1,
+              miri,
+              rei as papa2,
+            } from 'buddy-daddies'
+          `,
+          output: dedent`
+            import {
+              miri,
+              kazuki as papa1,
+              rei as papa2,
+            } from 'buddy-daddies'
+          `,
+          options: [
+            {
+              ...options,
+              'ignore-alias': false,
+            },
+          ],
+          errors: [
+            {
+              messageId: 'unexpectedNamedImportsOrder',
+              data: {
+                left: 'papa1',
+                right: 'miri',
+              },
+            },
+          ],
+        },
+      ],
+    })
   })
 
   describe(`${RULE_NAME}: sorting by natural order`, () => {
@@ -473,6 +526,59 @@ describe(RULE_NAME, () => {
               data: {
                 left: 'erenYeager',
                 right: 'annieLeonhart',
+              },
+            },
+          ],
+        },
+      ],
+    })
+
+    ruleTester.run(`${RULE_NAME}: allows to ignore import aliases`, rule, {
+      valid: [
+        {
+          code: dedent`
+          import {
+              miri,
+              kazuki as papa1,
+              rei as papa2,
+            } from 'buddy-daddies'
+          `,
+          options: [
+            {
+              ...options,
+              'ignore-alias': false,
+            },
+          ],
+        },
+      ],
+      invalid: [
+        {
+          code: dedent`
+            import {
+              kazuki as papa1,
+              miri,
+              rei as papa2,
+            } from 'buddy-daddies'
+          `,
+          output: dedent`
+            import {
+              miri,
+              kazuki as papa1,
+              rei as papa2,
+            } from 'buddy-daddies'
+          `,
+          options: [
+            {
+              ...options,
+              'ignore-alias': false,
+            },
+          ],
+          errors: [
+            {
+              messageId: 'unexpectedNamedImportsOrder',
+              data: {
+                left: 'papa1',
+                right: 'miri',
               },
             },
           ],

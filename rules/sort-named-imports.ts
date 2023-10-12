@@ -14,6 +14,7 @@ type MESSAGE_ID = 'unexpectedNamedImportsOrder'
 
 type Options = [
   Partial<{
+    'ignore-alias': boolean
     'ignore-case': boolean
     order: SortOrder
     type: SortType
@@ -52,6 +53,10 @@ export default createEslintRule<Options, MESSAGE_ID>({
             type: 'boolean',
             default: false,
           },
+          'ignore-alias': {
+            type: 'boolean',
+            default: false,
+          },
         },
         additionalProperties: false,
       },
@@ -76,17 +81,26 @@ export default createEslintRule<Options, MESSAGE_ID>({
       if (specifiers.length > 1) {
         let options = complete(context.options.at(0), {
           type: SortType.alphabetical,
+          'ignore-alias': true,
           'ignore-case': false,
           order: SortOrder.asc,
         })
 
         let source = context.getSourceCode()
 
-        let nodes: SortingNode[] = specifiers.map(specifier => ({
-          size: rangeToDiff(specifier.range),
-          name: specifier.local.name,
-          node: specifier,
-        }))
+        let nodes: SortingNode[] = specifiers.map(specifier => {
+          let { name } = specifier.local
+
+          if (options['ignore-alias'] && specifier.type === 'ImportSpecifier') {
+            ;({ name } = specifier.imported)
+          }
+
+          return {
+            size: rangeToDiff(specifier.range),
+            node: specifier,
+            name,
+          }
+        })
 
         pairwise(nodes, (left, right) => {
           if (isPositive(compare(left, right, options))) {
