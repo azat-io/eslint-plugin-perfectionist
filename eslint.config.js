@@ -5,7 +5,7 @@ module.exports = [
   ...config,
   eslintPlugin,
   {
-    ignores: ['**/.vitepress/cache/**/*'],
+    ignores: ['**/.vitepress/cache/**/*', 'coverage/**/*'],
   },
   {
     rules: {
