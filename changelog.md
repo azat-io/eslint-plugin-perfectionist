@@ -1,6 +1,24 @@
 # Changelog
 
 
+## v2.2.0
+
+[compare changes](https://github.com/azat-io/eslint-plugin-perfectionist/compare/v2.1.0...v2.2.0)
+
+### 🚀 Features
+
+- Add ignore-alias option to sort-named-imports rule ([4ad560b](https://github.com/azat-io/eslint-plugin-perfectionist/commit/4ad560b))
+
+### 🐞 Bug Fixes
+
+- Side-effect import with an internal pattern are defined as internal module in sort-imports rule ([b6f4e91](https://github.com/azat-io/eslint-plugin-perfectionist/commit/b6f4e91))
+- Improve recognition of external modules ([a22eaf6](https://github.com/azat-io/eslint-plugin-perfectionist/commit/a22eaf6))
+
+### ❤️ Contributors
+
+- Azat S. ([@azat-io](http://github.com/azat-io))
+- Wondermarin
+
 ## v2.1.0
 
 [compare changes](https://github.com/azat-io/eslint-plugin-perfectionist/compare/v2.0.1...v2.1.0)
