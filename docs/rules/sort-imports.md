@@ -329,8 +329,8 @@ export default [
               nanostores: '@nanostores/**',
             },
             type: {
-              react: 'react'
-            }
+              react: 'react',
+            },
           },
           'newlines-between': 'always',
           'internal-pattern': [
