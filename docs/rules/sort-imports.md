@@ -318,7 +318,7 @@ export default [
             'internal',
             ['parent-type', 'sibling-type', 'index-type'],
             ['parent', 'sibling', 'index'],
-            'side-effect'
+            'side-effect',
             'style',
             'object',
             'unknown',
