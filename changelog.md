@@ -1,6 +1,18 @@
 # Changelog
 
 
+## v2.3.1
+
+[compare changes](https://github.com/azat-io/eslint-plugin-perfectionist/compare/v2.2.0...v2.3.1)
+
+### 🚀 Features
+
+- **sort-imports:** Max line length ([25c54b7](https://github.com/azat-io/eslint-plugin-perfectionist/commit/25c54b7))
+
+### ❤️ Contributors
+
+- Taylore <tthornton3@chewy.com>
+
 ## v2.2.0
 
 [compare changes](https://github.com/azat-io/eslint-plugin-perfectionist/compare/v2.1.0...v2.2.0)
