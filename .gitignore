@@ -1,5 +1,6 @@
 # Node.js
 node_modules/
+.nvmrc
 
 # Build
 dist/
@@ -11,6 +12,7 @@ dist/
 # VitePress
 docs/.vitepress/cache/
 docs/.vitepress/temp/
+.vitepress/
 
 # Test
 coverage/
