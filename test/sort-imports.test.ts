@@ -3,7 +3,7 @@ import { afterAll, describe, expect, it } from 'vitest'
 import { dedent } from 'ts-dedent'
 
 import rule, { NewlinesBetweenValue, RULE_NAME } from '../rules/sort-imports'
-import { areOptionsValid } from './utils/areOptionsValid'
+import { areOptionsValid } from './utils/are-options-valid'
 import { SortOrder, SortType } from '../typings'
 
 describe(RULE_NAME, () => {
@@ -3494,7 +3494,9 @@ describe(RULE_NAME, () => {
                 WowSoLong,
               } from 'app/components/Short';
               import EvenThoughThisIsLongItShouldNotBePutOntoAnyNewLinesAsThereIsOnlyOne from 'IWillNotBePutOntoNewLines';
-              import EvenThoughThereIsTwoOfMe, { WeWontBeSplitUpAsThereIsOnlyOneOfThese } from 'IWillNotBeSplitUp';
+              import ThereIsTwoOfMe, {
+                SoWeShouldSplitUpSinceWeAreInDifferentSections
+              } from 'IWillDefinitelyBeSplitUp';
             `,
             output: dedent`
               import {
@@ -3505,10 +3507,12 @@ describe(RULE_NAME, () => {
                 ThisIsTheLongestEver,
                 WowSoLong,
               } from 'app/components/Short';
+              import ThereIsTwoOfMe, {
+                SoWeShouldSplitUpSinceWeAreInDifferentSections
+              } from 'IWillDefinitelyBeSplitUp';
               import Short from 'app/components/LongName';
               import { ThisIsApprox, SeventyNine } from '~CharactersLongAndShouldNotBeSplit';
               import { EvenThoughThisIsLongItShouldNotGetSplitUpAsItThereIsOnlyOne } from 'IWillNotBeSplitUp';
-              import EvenThoughThereIsTwoOfMe, { WeWontBeSplitUpAsThereIsOnlyOneOfThese } from 'IWillNotBeSplitUp';
               import EvenThoughThisIsLongItShouldNotBePutOntoAnyNewLinesAsThereIsOnlyOne from 'IWillNotBePutOntoNewLines';
             `,
             options: [
@@ -3547,7 +3551,7 @@ describe(RULE_NAME, () => {
                 messageId: 'unexpectedImportsOrder',
                 data: {
                   left: 'IWillNotBePutOntoNewLines',
-                  right: 'IWillNotBeSplitUp',
+                  right: 'IWillDefinitelyBeSplitUp',
                 },
               },
             ],
