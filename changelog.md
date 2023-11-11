@@ -1,6 +1,23 @@
 # Changelog
 
 
+## v2.3.0
+
+[compare changes](https://github.com/azat-io/eslint-plugin-perfectionist/compare/v2.2.0...v2.3.0)
+
+### 🚀 Features
+
+- Add max line length option for multiline imports sorting ([4b81340](https://github.com/azat-io/eslint-plugin-perfectionist/commit/4b81340))
+- Add partition by new line option to sort-objects rule ([8654e44](https://github.com/azat-io/eslint-plugin-perfectionist/commit/8654e44))
+- Add partition by new line option to sort-interfaces rule ([48532ef](https://github.com/azat-io/eslint-plugin-perfectionist/commit/48532ef))
+- Add partition by new line option to sort-object-typea rule ([563c815](https://github.com/azat-io/eslint-plugin-perfectionist/commit/563c815))
+
+### ❤️ Contributors
+
+- Azat S. ([@azat-io](http://github.com/azat-io))
+- Azat S ([@azat-io](http://github.com/azat-io))
+- Tthornton3-chwy
+
 ## v2.2.0
 
 [compare changes](https://github.com/azat-io/eslint-plugin-perfectionist/compare/v2.1.0...v2.2.0)
