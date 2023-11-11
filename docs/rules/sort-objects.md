@@ -84,9 +84,10 @@ interface Options {
   order?: 'asc' | 'desc'
   'ignore-case'?: boolean
   groups?: (string | string[])[]
-  'custom-groups': { [key: string]: string[] | string }
-  'styled-components': boolean
-  'partition-by-comment': string[] | string | boolean
+  'custom-groups'?: { [key: string]: string[] | string }
+  'styled-components'?: boolean
+  'partition-by-comment'?: string[] | string | boolean
+  'partition-by-new-line'?: boolean
 }
 ```
 
@@ -146,6 +147,12 @@ When `false`, this rule will be disabled for the styled-components like librarie
 You can set comments that would separate the properties of objects into logical parts. If set to `true`, all object property comments will be treated as delimiters.
 
 The [minimatch](https://github.com/isaacs/minimatch) library is used for pattern matching.
+
+### partition-by-new-line
+
+<sub>(default: `false`)</sub>
+
+When `true`, does not sort the object's keys if there is an empty string between them.
 
 ## ⚙️ Usage
 

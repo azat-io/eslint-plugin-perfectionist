@@ -6,6 +6,7 @@ import type { PartitionComment, SortingNode } from '../typings'
 import { isPartitionComment } from '../utils/is-partition-comment'
 import { getCommentBefore } from '../utils/get-comment-before'
 import { createEslintRule } from '../utils/create-eslint-rule'
+import { getLinesBetween } from '../utils/get-lines-between'
 import { getGroupNumber } from '../utils/get-group-number'
 import { toSingleLine } from '../utils/to-single-line'
 import { rangeToDiff } from '../utils/range-to-diff'
@@ -33,6 +34,7 @@ type Options = [
   Partial<{
     'custom-groups': { [key: string]: string[] | string }
     'partition-by-comment': PartitionComment
+    'partition-by-new-line': boolean
     groups: (string[] | string)[]
     'styled-components': boolean
     'ignore-case': boolean
@@ -60,6 +62,10 @@ export default createEslintRule<Options, MESSAGE_ID>({
           },
           'partition-by-comment': {
             type: ['boolean', 'string', 'array'],
+            default: false,
+          },
+          'partition-by-new-line': {
+            type: 'boolean',
             default: false,
           },
           'styled-components': {
@@ -107,6 +113,7 @@ export default createEslintRule<Options, MESSAGE_ID>({
     ) => {
       if (node.properties.length > 1) {
         let options = complete(context.options.at(0), {
+          'partition-by-new-line': false,
           'partition-by-comment': false,
           type: SortType.alphabetical,
           'styled-components': true,
@@ -158,6 +165,7 @@ export default createEslintRule<Options, MESSAGE_ID>({
               }
 
               let comment = getCommentBefore(prop, source)
+              let lastProp = accumulator.at(-1)?.at(-1)
 
               if (
                 options['partition-by-comment'] &&
@@ -182,6 +190,20 @@ export default createEslintRule<Options, MESSAGE_ID>({
                 name = `${prop.key.value}`
               } else {
                 name = source.text.slice(...prop.key.range)
+              }
+
+              let propSortingNode = {
+                size: rangeToDiff(prop.range),
+                node: prop,
+                name,
+              }
+
+              if (
+                options['partition-by-new-line'] &&
+                lastProp &&
+                getLinesBetween(source, lastProp, propSortingNode)
+              ) {
+                accumulator.push([])
               }
 
               if (prop.value.type === 'AssignmentPattern') {
@@ -252,12 +274,10 @@ export default createEslintRule<Options, MESSAGE_ID>({
               setCustomGroups(options['custom-groups'], name)
 
               let value = {
-                size: rangeToDiff(prop.range),
+                ...propSortingNode,
                 group: getGroup(),
                 dependencies,
-                node: prop,
                 position,
-                name,
               }
 
               accumulator.at(-1)!.push(value)

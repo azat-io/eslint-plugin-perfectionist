@@ -8,6 +8,7 @@ import type { SortingNode } from '../typings'
 
 import { getCommentBefore } from '../utils/get-comment-before'
 import { createEslintRule } from '../utils/create-eslint-rule'
+import { getLinesBetween } from '../utils/get-lines-between'
 import { getGroupNumber } from '../utils/get-group-number'
 import { getNodeRange } from '../utils/get-node-range'
 import { rangeToDiff } from '../utils/range-to-diff'
@@ -393,18 +394,6 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
             },
           ).length
 
-        let getLinesBetweenImports = (
-          left: SortingNode,
-          right: SortingNode,
-        ) => {
-          let linesBetweenImports = source.lines.slice(
-            left.node.loc.end.line,
-            right.node.loc.start.line - 1,
-          )
-
-          return linesBetweenImports.filter(line => !line.trim().length).length
-        }
-
         let fix = (
           fixer: TSESLint.RuleFixer,
           nodesToFix: SortingNode[],
@@ -452,7 +441,8 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
               let nextNode = formatted.at(i + 1)
 
               if (nextNode) {
-                let linesBetweenImports = getLinesBetweenImports(
+                let linesBetweenImports = getLinesBetween(
+                  source,
                   nodesToFix.at(i)!,
                   nodesToFix.at(i + 1)!,
                 )
@@ -530,7 +520,7 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
             let leftNum = getGroupNumber(options.groups, left)
             let rightNum = getGroupNumber(options.groups, right)
 
-            let numberOfEmptyLinesBetween = getLinesBetweenImports(left, right)
+            let numberOfEmptyLinesBetween = getLinesBetween(source, left, right)
 
             if (
               !(

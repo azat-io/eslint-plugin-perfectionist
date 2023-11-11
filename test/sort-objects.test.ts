@@ -891,6 +891,82 @@ describe(RULE_NAME, () => {
         ],
       },
     )
+
+    ruleTester.run(
+      `${RULE_NAME}(${type}): allows to use new line as partition`,
+      rule,
+      {
+        valid: [
+          {
+            code: dedent`
+              let terrorist = {
+                name: 'Twelve',
+                nickname: 'Sphinx #2',
+
+                status: Status.Deceased,
+
+                height: '167 cm',
+                weight: '55 kg',
+              }
+            `,
+            options: [
+              {
+                ...options,
+                'partition-by-new-line': true,
+              },
+            ],
+          },
+        ],
+        invalid: [
+          {
+            code: dedent`
+              let terrorist = {
+                nickname: 'Sphinx #2',
+                name: 'Twelve',
+
+                status: Status.Deceased,
+
+                weight: '55 kg',
+                height: '167 cm',
+              }
+            `,
+            output: dedent`
+              let terrorist = {
+                name: 'Twelve',
+                nickname: 'Sphinx #2',
+
+                status: Status.Deceased,
+
+                height: '167 cm',
+                weight: '55 kg',
+              }
+            `,
+            options: [
+              {
+                ...options,
+                'partition-by-new-line': true,
+              },
+            ],
+            errors: [
+              {
+                messageId: 'unexpectedObjectsOrder',
+                data: {
+                  left: 'nickname',
+                  right: 'name',
+                },
+              },
+              {
+                messageId: 'unexpectedObjectsOrder',
+                data: {
+                  left: 'weight',
+                  right: 'height',
+                },
+              },
+            ],
+          },
+        ],
+      },
+    )
   })
 
   describe(`${RULE_NAME}: sorting by natural order`, () => {
@@ -1575,6 +1651,82 @@ describe(RULE_NAME, () => {
                 data: {
                   left: 'kogami',
                   right: 'ginoza',
+                },
+              },
+            ],
+          },
+        ],
+      },
+    )
+
+    ruleTester.run(
+      `${RULE_NAME}(${type}): allows to use new line as partition`,
+      rule,
+      {
+        valid: [
+          {
+            code: dedent`
+              let terrorist = {
+                name: 'Twelve',
+                nickname: 'Sphinx #2',
+
+                status: Status.Deceased,
+
+                height: '167 cm',
+                weight: '55 kg',
+              }
+            `,
+            options: [
+              {
+                ...options,
+                'partition-by-new-line': true,
+              },
+            ],
+          },
+        ],
+        invalid: [
+          {
+            code: dedent`
+              let terrorist = {
+                nickname: 'Sphinx #2',
+                name: 'Twelve',
+
+                status: Status.Deceased,
+
+                weight: '55 kg',
+                height: '167 cm',
+              }
+            `,
+            output: dedent`
+              let terrorist = {
+                name: 'Twelve',
+                nickname: 'Sphinx #2',
+
+                status: Status.Deceased,
+
+                height: '167 cm',
+                weight: '55 kg',
+              }
+            `,
+            options: [
+              {
+                ...options,
+                'partition-by-new-line': true,
+              },
+            ],
+            errors: [
+              {
+                messageId: 'unexpectedObjectsOrder',
+                data: {
+                  left: 'nickname',
+                  right: 'name',
+                },
+              },
+              {
+                messageId: 'unexpectedObjectsOrder',
+                data: {
+                  left: 'weight',
+                  right: 'height',
                 },
               },
             ],
@@ -2314,6 +2466,75 @@ describe(RULE_NAME, () => {
                 data: {
                   left: 'd',
                   right: 'e',
+                },
+              },
+            ],
+          },
+        ],
+      },
+    )
+
+    ruleTester.run(
+      `${RULE_NAME}(${type}): allows to use new line as partition`,
+      rule,
+      {
+        valid: [
+          {
+            code: dedent`
+              let terrorist = {
+                nickname: 'Sphinx #2',
+                name: 'Twelve',
+
+                status: Status.Deceased,
+
+                height: '167 cm',
+                weight: '55 kg',
+              }
+            `,
+            options: [
+              {
+                ...options,
+                'partition-by-new-line': true,
+              },
+            ],
+          },
+        ],
+        invalid: [
+          {
+            code: dedent`
+              let terrorist = {
+                nickname: 'Sphinx #2',
+                name: 'Twelve',
+
+                status: Status.Deceased,
+
+                weight: '55 kg',
+                height: '167 cm',
+              }
+            `,
+            output: dedent`
+              let terrorist = {
+                nickname: 'Sphinx #2',
+                name: 'Twelve',
+
+                status: Status.Deceased,
+
+                height: '167 cm',
+                weight: '55 kg',
+              }
+            `,
+            options: [
+              {
+                ...options,
+                'partition-by-new-line': true,
+              },
+            ],
+            errors: [
+              {
+                messageId: 'unexpectedObjectsOrder',
+                data: {
+                  left: 'weight',
+                  right: 'height',
                 },
               },
             ],
