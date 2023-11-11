@@ -3,6 +3,7 @@ import { minimatch } from 'minimatch'
 import type { SortingNode } from '../typings'
 
 import { createEslintRule } from '../utils/create-eslint-rule'
+import { getLinesBetween } from '../utils/get-lines-between'
 import { getGroupNumber } from '../utils/get-group-number'
 import { toSingleLine } from '../utils/to-single-line'
 import { rangeToDiff } from '../utils/range-to-diff'
@@ -23,6 +24,7 @@ type Options<T extends string[]> = [
   Partial<{
     'custom-groups': { [key: string]: string[] | string }
     groups: (Group<T>[] | Group<T>)[]
+    'partition-by-new-line': boolean
     'ignore-pattern': string[]
     'ignore-case': boolean
     order: SortOrder
@@ -75,6 +77,10 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
             type: 'array',
             default: [],
           },
+          'partition-by-new-line': {
+            type: 'boolean',
+            default: false,
+          },
         },
         additionalProperties: false,
       },
@@ -94,6 +100,7 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
     TSInterfaceDeclaration: node => {
       if (node.body.body.length > 1) {
         let options = complete(context.options.at(0), {
+          'partition-by-new-line': false,
           type: SortType.alphabetical,
           'ignore-case': false,
           order: SortOrder.asc,
@@ -118,6 +125,7 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
                 return accumulator
               }
 
+              let lastElement = accumulator.at(-1)?.at(-1)
               let name: string
 
               let { getGroup, defineGroup, setCustomGroups } = useGroups(
@@ -148,6 +156,20 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
                 name = source.text.slice(element.range.at(0), endIndex)
               }
 
+              let elementSortingNode = {
+                size: rangeToDiff(element.range),
+                node: element,
+                name,
+              }
+
+              if (
+                options['partition-by-new-line'] &&
+                lastElement &&
+                getLinesBetween(source, lastElement, elementSortingNode)
+              ) {
+                accumulator.push([])
+              }
+
               setCustomGroups(options['custom-groups'], name)
 
               if (element.loc.start.line !== element.loc.end.line) {
@@ -155,10 +177,8 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
               }
 
               accumulator.at(-1)!.push({
-                size: rangeToDiff(element.range),
+                ...elementSortingNode,
                 group: getGroup(),
-                node: element,
-                name,
               })
 
               return accumulator

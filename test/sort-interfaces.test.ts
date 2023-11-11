@@ -585,6 +585,88 @@ describe(RULE_NAME, () => {
         ],
       },
     )
+
+    ruleTester.run(
+      `${RULE_NAME}(${type}): allows to use new line as partition`,
+      rule,
+      {
+        valid: [
+          {
+            code: dedent`
+              interface PhantomhiveHouseResiden {
+                firstName: string
+                id: string
+                lastName: string
+
+                type: 'Human' | 'Demon'
+
+                age?: number
+                bloodType: 'Polaris' | 'Vega' | 'Canopus' | 'Sirius'
+                height: number
+              }
+            `,
+            options: [
+              {
+                ...options,
+                'partition-by-new-line': true,
+              },
+            ],
+          },
+        ],
+        invalid: [
+          {
+            code: dedent`
+              interface PhantomhiveHouseResiden {
+                id: string
+                firstName: string
+                lastName: string
+
+                type: 'Human' | 'Demon'
+
+                age?: number
+                height: number
+                bloodType: 'Polaris' | 'Vega' | 'Canopus' | 'Sirius'
+              }
+            `,
+            output: dedent`
+              interface PhantomhiveHouseResiden {
+                firstName: string
+                id: string
+                lastName: string
+
+                type: 'Human' | 'Demon'
+
+                age?: number
+                bloodType: 'Polaris' | 'Vega' | 'Canopus' | 'Sirius'
+                height: number
+              }
+            `,
+            options: [
+              {
+                ...options,
+                'partition-by-new-line': true,
+              },
+            ],
+            errors: [
+              {
+                messageId: 'unexpectedInterfacePropertiesOrder',
+                data: {
+                  left: 'id',
+                  right: 'firstName',
+                },
+              },
+              {
+                messageId: 'unexpectedInterfacePropertiesOrder',
+                data: {
+                  left: 'height',
+                  right: 'bloodType',
+                },
+              },
+            ],
+          },
+        ],
+      },
+    )
   })
 
   describe(`${RULE_NAME}: sorting by natural order`, () => {
@@ -1155,6 +1237,88 @@ describe(RULE_NAME, () => {
         ],
       },
     )
+
+    ruleTester.run(
+      `${RULE_NAME}(${type}): allows to use new line as partition`,
+      rule,
+      {
+        valid: [
+          {
+            code: dedent`
+              interface PhantomhiveHouseResiden {
+                firstName: string
+                id: string
+                lastName: string
+
+                type: 'Human' | 'Demon'
+
+                age?: number
+                bloodType: 'Polaris' | 'Vega' | 'Canopus' | 'Sirius'
+                height: number
+              }
+            `,
+            options: [
+              {
+                ...options,
+                'partition-by-new-line': true,
+              },
+            ],
+          },
+        ],
+        invalid: [
+          {
+            code: dedent`
+              interface PhantomhiveHouseResiden {
+                id: string
+                firstName: string
+                lastName: string
+
+                type: 'Human' | 'Demon'
+
+                age?: number
+                height: number
+                bloodType: 'Polaris' | 'Vega' | 'Canopus' | 'Sirius'
+              }
+            `,
+            output: dedent`
+              interface PhantomhiveHouseResiden {
+                firstName: string
+                id: string
+                lastName: string
+
+                type: 'Human' | 'Demon'
+
+                age?: number
+                bloodType: 'Polaris' | 'Vega' | 'Canopus' | 'Sirius'
+                height: number
+              }
+            `,
+            options: [
+              {
+                ...options,
+                'partition-by-new-line': true,
+              },
+            ],
+            errors: [
+              {
+                messageId: 'unexpectedInterfacePropertiesOrder',
+                data: {
+                  left: 'id',
+                  right: 'firstName',
+                },
+              },
+              {
+                messageId: 'unexpectedInterfacePropertiesOrder',
+                data: {
+                  left: 'height',
+                  right: 'bloodType',
+                },
+              },
+            ],
+          },
+        ],
+      },
+    )
   })
 
   describe(`${RULE_NAME}: sorting by line length`, () => {
@@ -1673,6 +1837,95 @@ describe(RULE_NAME, () => {
                 data: {
                   left: 'style',
                   right: 'id',
+                },
+              },
+            ],
+          },
+        ],
+      },
+    )
+
+    ruleTester.run(
+      `${RULE_NAME}(${type}): allows to use new line as partition`,
+      rule,
+      {
+        valid: [
+          {
+            code: dedent`
+              interface PhantomhiveHouseResiden {
+                firstName: string
+                lastName: string
+                id: string
+
+                type: 'Human' | 'Demon'
+
+                bloodType: 'Polaris' | 'Vega' | 'Canopus' | 'Sirius'
+                height: number
+                age?: number
+              }
+            `,
+            options: [
+              {
+                ...options,
+                'partition-by-new-line': true,
+              },
+            ],
+          },
+        ],
+        invalid: [
+          {
+            code: dedent`
+              interface PhantomhiveHouseResiden {
+                id: string
+                firstName: string
+                lastName: string
+
+                type: 'Human' | 'Demon'
+
+                age?: number
+                height: number
+                bloodType: 'Polaris' | 'Vega' | 'Canopus' | 'Sirius'
+              }
+            `,
+            output: dedent`
+              interface PhantomhiveHouseResiden {
+                firstName: string
+                lastName: string
+                id: string
+
+                type: 'Human' | 'Demon'
+
+                bloodType: 'Polaris' | 'Vega' | 'Canopus' | 'Sirius'
+                height: number
+                age?: number
+              }
+            `,
+            options: [
+              {
+                ...options,
+                'partition-by-new-line': true,
+              },
+            ],
+            errors: [
+              {
+                messageId: 'unexpectedInterfacePropertiesOrder',
+                data: {
+                  left: 'id',
+                  right: 'firstName',
+                },
+              },
+              {
+                messageId: 'unexpectedInterfacePropertiesOrder',
+                data: {
+                  left: 'age',
+                  right: 'height',
+                },
+              },
+              {
+                messageId: 'unexpectedInterfacePropertiesOrder',
+                data: {
+                  left: 'height',
+                  right: 'bloodType',
                 },
               },
             ],

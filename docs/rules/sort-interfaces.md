@@ -103,8 +103,9 @@ interface Options {
   order?: 'asc' | 'desc'
   'ignore-case'?: boolean
   groups?: (Group | Group[])[]
-  'custom-groups': { [key: Group]: string[] | string }
+  'custom-groups'?: { [key: Group]: string[] | string }
   'ignore-pattern'?: string[]
+  'partition-by-new-line'?: boolean
 }
 ```
 
@@ -158,6 +159,12 @@ Example:
 If you need to ignore a rule for some interfaces, you can specify their names or a pattern to ignore, for example: `'Component*'` to ignore all interfaces whose names begin with the word Component.
 
 The [minimatch](https://github.com/isaacs/minimatch) library is used for pattern matching.
+
+### partition-by-new-line
+
+<sub>(default: `false`)</sub>
+
+When `true`, does not sort the interface's element if there is an empty string between them.
 
 ## ⚙️ Usage
 
