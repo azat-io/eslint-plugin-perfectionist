@@ -59,6 +59,7 @@ type Options<T extends string[]> = [
     'newlines-between': NewlinesBetweenValue
     groups: (Group<T>[] | Group<T>)[]
     'internal-pattern': string[]
+    'max-line-length'?: number
     'ignore-case': boolean
     order: SortOrder
     type: SortType
@@ -81,6 +82,7 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
     fixable: 'code',
     schema: [
       {
+        id: 'sort-imports',
         type: 'object',
         properties: {
           'custom-groups': {
@@ -132,8 +134,37 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
             default: NewlinesBetweenValue.always,
             type: 'string',
           },
+          'max-line-length': {
+            type: 'integer',
+            minimum: 0,
+            exclusiveMinimum: true,
+          },
         },
+        allOf: [
+          { $ref: '#/definitions/max-line-length-requires-line-length-type' },
+        ],
         additionalProperties: false,
+        dependencies: {
+          'max-line-length': ['type'],
+        },
+        definitions: {
+          'is-line-length': {
+            properties: {
+              type: { enum: [SortType['line-length']], type: 'string' },
+            },
+            required: ['type'],
+            type: 'object',
+          },
+          'max-line-length-requires-line-length-type': {
+            anyOf: [
+              {
+                not: { required: ['max-line-length'], type: 'object' },
+                type: 'object',
+              },
+              { $ref: '#/definitions/is-line-length' },
+            ],
+          },
+        },
       },
     ],
     messages: {
@@ -312,6 +343,10 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
       return getGroup()
     }
 
+    let hasMultipleImportDeclarations = (
+      node: TSESTree.ImportDeclaration,
+    ): boolean => node.specifiers.length > 1
+
     let registerNode = (node: ModuleDeclaration) => {
       let name: string
 
@@ -333,6 +368,12 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
         group: computeGroup(node),
         name,
         node,
+        ...(options.type === SortType['line-length'] &&
+          options['max-line-length'] && {
+            hasMultipleImportDeclarations: hasMultipleImportDeclarations(
+              node as TSESTree.ImportDeclaration,
+            ),
+          }),
       })
     }
 

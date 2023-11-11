@@ -91,6 +91,7 @@
     "@typescript-eslint/rule-tester": "^6.9.1",
     "@typescript-eslint/types": "^6.9.1",
     "@vitest/coverage-v8": "^0.34.6",
+    "ajv": "^6.12.6",
     "astro-eslint-parser": "^0.16.0",
     "changelogen": "^0.5.5",
     "clean-publish": "^4.2.0",

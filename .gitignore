@@ -1,5 +1,6 @@
 # Node.js
 node_modules/
+.nvmrc
 
 # Build
 dist/

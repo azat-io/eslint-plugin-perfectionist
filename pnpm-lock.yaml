@@ -52,6 +52,9 @@ devDependencies:
   '@vitest/coverage-v8':
     specifier: ^0.34.6
     version: 0.34.6(vitest@0.34.6)
+  ajv:
+    specifier: ^6.12.6
+    version: 6.12.6
   astro-eslint-parser:
     specifier: ^0.16.0
     version: 0.16.0

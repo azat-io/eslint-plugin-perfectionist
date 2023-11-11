@@ -8,6 +8,7 @@ export let compare = (
   a: SortingNode,
   b: SortingNode,
   options: {
+    'max-line-length'?: number
     'ignore-case'?: boolean
     order: SortOrder
     type: SortType
@@ -32,7 +33,27 @@ export let compare = (
     sortingFunction = (aNode, bNode) =>
       naturalCompare(formatString(aNode.name), formatString(bNode.name))
   } else {
-    sortingFunction = (aNode, bNode) => aNode.size - bNode.size
+    sortingFunction = (aNode, bNode) => {
+      let aSize = aNode.size
+      let bSize = bNode.size
+
+      let maxLineLength = options['max-line-length']
+
+      if (maxLineLength) {
+        let isTooLong = (size: number, node: SortingNode) =>
+          size > maxLineLength! && node.hasMultipleImportDeclarations
+
+        if (isTooLong(aSize, aNode)) {
+          aSize = aNode.name.length + 10
+        }
+
+        if (isTooLong(bSize, bNode)) {
+          bSize = bNode.name.length + 10
+        }
+      }
+
+      return aSize - bSize
+    }
   }
 
   return orderCoefficient * sortingFunction(a, b)
