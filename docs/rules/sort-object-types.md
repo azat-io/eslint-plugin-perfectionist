@@ -81,7 +81,8 @@ interface Options {
   order?: 'asc' | 'desc'
   'ignore-case'?: boolean
   groups?: (Group | Group[])[]
-  'custom-groups': { [key: Group]: string[] | string }
+  'custom-groups'?: { [key: Group]: string[] | string }
+  'partition-by-new-line'?: boolean
 }
 ```
 
@@ -127,6 +128,12 @@ Example:
   }
 }
 ```
+
+### partition-by-new-line
+
+<sub>(default: `false`)</sub>
+
+When `true`, does not sort the object type's members if there is an empty string between them.
 
 ## ⚙️ Usage
 

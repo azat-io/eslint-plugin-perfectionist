@@ -414,6 +414,82 @@ describe(RULE_NAME, () => {
         ],
       },
     )
+
+    ruleTester.run(
+      `${RULE_NAME}(${type}): allows to use new line as partition`,
+      rule,
+      {
+        valid: [
+          {
+            code: dedent`
+              type Cat = {
+                age: number
+                name: 'Jiji'
+
+                gender: 'male' | 'female'
+
+                breed: string
+                color: string
+              }
+            `,
+            options: [
+              {
+                ...options,
+                'partition-by-new-line': true,
+              },
+            ],
+          },
+        ],
+        invalid: [
+          {
+            code: dedent`
+              type Cat = {
+                name: 'Jiji'
+                age: number
+
+                gender: 'male' | 'female'
+
+                color: string
+                breed: string
+              }
+            `,
+            output: dedent`
+              type Cat = {
+                age: number
+                name: 'Jiji'
+
+                gender: 'male' | 'female'
+
+                breed: string
+                color: string
+              }
+            `,
+            options: [
+              {
+                ...options,
+                'partition-by-new-line': true,
+              },
+            ],
+            errors: [
+              {
+                messageId: 'unexpectedObjectTypesOrder',
+                data: {
+                  left: 'name',
+                  right: 'age',
+                },
+              },
+              {
+                messageId: 'unexpectedObjectTypesOrder',
+                data: {
+                  left: 'color',
+                  right: 'breed',
+                },
+              },
+            ],
+          },
+        ],
+      },
+    )
   })
 
   describe(`${RULE_NAME}: sorting by natural order`, () => {
@@ -753,6 +829,82 @@ describe(RULE_NAME, () => {
                 data: {
                   left: 'skills',
                   right: 'name',
+                },
+              },
+            ],
+          },
+        ],
+      },
+    )
+
+    ruleTester.run(
+      `${RULE_NAME}(${type}): allows to use new line as partition`,
+      rule,
+      {
+        valid: [
+          {
+            code: dedent`
+              type Cat = {
+                age: number
+                name: 'Jiji'
+
+                gender: 'male' | 'female'
+
+                breed: string
+                color: string
+              }
+            `,
+            options: [
+              {
+                ...options,
+                'partition-by-new-line': true,
+              },
+            ],
+          },
+        ],
+        invalid: [
+          {
+            code: dedent`
+              type Cat = {
+                name: 'Jiji'
+                age: number
+
+                gender: 'male' | 'female'
+
+                color: string
+                breed: string
+              }
+            `,
+            output: dedent`
+              type Cat = {
+                age: number
+                name: 'Jiji'
+
+                gender: 'male' | 'female'
+
+                breed: string
+                color: string
+              }
+            `,
+            options: [
+              {
+                ...options,
+                'partition-by-new-line': true,
+              },
+            ],
+            errors: [
+              {
+                messageId: 'unexpectedObjectTypesOrder',
+                data: {
+                  left: 'name',
+                  right: 'age',
+                },
+              },
+              {
+                messageId: 'unexpectedObjectTypesOrder',
+                data: {
+                  left: 'color',
+                  right: 'breed',
                 },
               },
             ],
@@ -1117,6 +1269,75 @@ describe(RULE_NAME, () => {
                 messageId: 'unexpectedObjectTypesOrder',
                 data: {
                   left: 'skills',
+                  right: 'name',
+                },
+              },
+            ],
+          },
+        ],
+      },
+    )
+
+    ruleTester.run(
+      `${RULE_NAME}(${type}): allows to use new line as partition`,
+      rule,
+      {
+        valid: [
+          {
+            code: dedent`
+              type Cat = {
+                name: 'Jiji'
+                age: number
+
+                gender: 'male' | 'female'
+
+                breed: string
+                color: string
+              }
+            `,
+            options: [
+              {
+                ...options,
+                'partition-by-new-line': true,
+              },
+            ],
+          },
+        ],
+        invalid: [
+          {
+            code: dedent`
+              type Cat = {
+                age: number
+                name: 'Jiji'
+
+                gender: 'male' | 'female'
+
+                color: string
+                breed: string
+              }
+            `,
+            output: dedent`
+              type Cat = {
+                name: 'Jiji'
+                age: number
+
+                gender: 'male' | 'female'
+
+                color: string
+                breed: string
+              }
+            `,
+            options: [
+              {
+                ...options,
+                'partition-by-new-line': true,
+              },
+            ],
+            errors: [
+              {
+                messageId: 'unexpectedObjectTypesOrder',
+                data: {
+                  left: 'age',
                   right: 'name',
                 },
               },

@@ -1,6 +1,7 @@
 import type { SortingNode } from '../typings'
 
 import { createEslintRule } from '../utils/create-eslint-rule'
+import { getLinesBetween } from '../utils/get-lines-between'
 import { getGroupNumber } from '../utils/get-group-number'
 import { toSingleLine } from '../utils/to-single-line'
 import { rangeToDiff } from '../utils/range-to-diff'
@@ -20,6 +21,7 @@ type Group<T extends string[]> = 'multiline' | 'unknown' | T[number]
 type Options<T extends string[]> = [
   Partial<{
     groups: (Group<T>[] | Group<T>)[]
+    'partition-by-new-line': boolean
     'ignore-case': boolean
     'custom-groups': {}
     order: SortOrder
@@ -66,6 +68,10 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
             type: 'array',
             default: [],
           },
+          'partition-by-new-line': {
+            type: 'boolean',
+            default: false,
+          },
         },
         additionalProperties: false,
       },
@@ -85,6 +91,7 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
     TSTypeLiteral: node => {
       if (node.members.length > 1) {
         let options = complete(context.options.at(0), {
+          'partition-by-new-line': false,
           type: SortType.alphabetical,
           'ignore-case': false,
           order: SortOrder.asc,
@@ -94,100 +101,121 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
 
         let source = context.getSourceCode()
 
-        let nodes: SortingNode[] = node.members.map(member => {
-          let name: string
-          let raw = source.text.slice(member.range.at(0), member.range.at(1))
+        let formattedMembers: SortingNode[][] = node.members.reduce(
+          (accumulator: SortingNode[][], member) => {
+            let name: string
+            let raw = source.text.slice(member.range.at(0), member.range.at(1))
+            let lastMember = accumulator.at(-1)?.at(-1)
 
-          let { getGroup, defineGroup, setCustomGroups } = useGroups(
-            options.groups,
-          )
+            let { getGroup, defineGroup, setCustomGroups } = useGroups(
+              options.groups,
+            )
 
-          let formatName = (value: string): string =>
-            value.replace(/(,|;)$/, '')
+            let formatName = (value: string): string =>
+              value.replace(/(,|;)$/, '')
 
-          if (member.type === 'TSPropertySignature') {
-            if (member.key.type === 'Identifier') {
-              ;({ name } = member.key)
-            } else if (member.key.type === 'Literal') {
-              name = `${member.key.value}`
+            if (member.type === 'TSPropertySignature') {
+              if (member.key.type === 'Identifier') {
+                ;({ name } = member.key)
+              } else if (member.key.type === 'Literal') {
+                name = `${member.key.value}`
+              } else {
+                name = source.text.slice(
+                  member.range.at(0),
+                  member.typeAnnotation?.range.at(0),
+                )
+              }
+            } else if (member.type === 'TSIndexSignature') {
+              let endIndex: number =
+                member.typeAnnotation?.range.at(0) ?? member.range.at(1)!
+
+              name = formatName(source.text.slice(member.range.at(0), endIndex))
             } else {
-              name = source.text.slice(
-                member.range.at(0),
-                member.typeAnnotation?.range.at(0),
+              name = formatName(
+                source.text.slice(member.range.at(0), member.range.at(1)),
               )
             }
-          } else if (member.type === 'TSIndexSignature') {
-            let endIndex: number =
-              member.typeAnnotation?.range.at(0) ?? member.range.at(1)!
 
-            name = formatName(source.text.slice(member.range.at(0), endIndex))
-          } else {
-            name = formatName(
-              source.text.slice(member.range.at(0), member.range.at(1)),
-            )
-          }
+            setCustomGroups(options['custom-groups'], name)
 
-          setCustomGroups(options['custom-groups'], name)
+            if (member.loc.start.line !== member.loc.end.line) {
+              defineGroup('multiline')
+            }
 
-          if (member.loc.start.line !== member.loc.end.line) {
-            defineGroup('multiline')
-          }
+            let endsWithComma = raw.endsWith(';') || raw.endsWith(',')
+            let endSize = endsWithComma ? 1 : 0
 
-          let endsWithComma = raw.endsWith(';') || raw.endsWith(',')
-          let endSize = endsWithComma ? 1 : 0
+            let memberSortingNode = {
+              size: rangeToDiff(member.range) - endSize,
+              node: member,
+              name,
+            }
 
-          return {
-            size: rangeToDiff(member.range) - endSize,
-            group: getGroup(),
-            node: member,
-            name,
-          }
-        })
+            if (
+              options['partition-by-new-line'] &&
+              lastMember &&
+              getLinesBetween(source, lastMember, memberSortingNode)
+            ) {
+              accumulator.push([])
+            }
 
-        pairwise(nodes, (left, right) => {
-          let leftNum = getGroupNumber(options.groups, left)
-          let rightNum = getGroupNumber(options.groups, right)
-
-          if (
-            leftNum > rightNum ||
-            (leftNum === rightNum && isPositive(compare(left, right, options)))
-          ) {
-            context.report({
-              messageId: 'unexpectedObjectTypesOrder',
-              data: {
-                left: toSingleLine(left.name),
-                right: toSingleLine(right.name),
-              },
-              node: right.node,
-              fix: fixer => {
-                let grouped: {
-                  [key: string]: SortingNode[]
-                } = {}
-
-                for (let currentNode of nodes) {
-                  let groupNum = getGroupNumber(options.groups, currentNode)
-
-                  if (!(groupNum in grouped)) {
-                    grouped[groupNum] = [currentNode]
-                  } else {
-                    grouped[groupNum] = sortNodes(
-                      [...grouped[groupNum], currentNode],
-                      options,
-                    )
-                  }
-                }
-
-                let sortedNodes: SortingNode[] = []
-
-                for (let group of Object.keys(grouped).sort()) {
-                  sortedNodes.push(...sortNodes(grouped[group], options))
-                }
-
-                return makeFixes(fixer, nodes, sortedNodes, source)
-              },
+            accumulator.at(-1)?.push({
+              ...memberSortingNode,
+              group: getGroup(),
             })
-          }
-        })
+
+            return accumulator
+          },
+          [[]],
+        )
+
+        for (let nodes of formattedMembers) {
+          pairwise(nodes, (left, right) => {
+            let leftNum = getGroupNumber(options.groups, left)
+            let rightNum = getGroupNumber(options.groups, right)
+
+            if (
+              leftNum > rightNum ||
+              (leftNum === rightNum &&
+                isPositive(compare(left, right, options)))
+            ) {
+              context.report({
+                messageId: 'unexpectedObjectTypesOrder',
+                data: {
+                  left: toSingleLine(left.name),
+                  right: toSingleLine(right.name),
+                },
+                node: right.node,
+                fix: fixer => {
+                  let grouped: {
+                    [key: string]: SortingNode[]
+                  } = {}
+
+                  for (let currentNode of nodes) {
+                    let groupNum = getGroupNumber(options.groups, currentNode)
+
+                    if (!(groupNum in grouped)) {
+                      grouped[groupNum] = [currentNode]
+                    } else {
+                      grouped[groupNum] = sortNodes(
+                        [...grouped[groupNum], currentNode],
+                        options,
+                      )
+                    }
+                  }
+
+                  let sortedNodes: SortingNode[] = []
+
+                  for (let group of Object.keys(grouped).sort()) {
+                    sortedNodes.push(...sortNodes(grouped[group], options))
+                  }
+
+                  return makeFixes(fixer, nodes, sortedNodes, source)
+                },
+              })
+            }
+          })
+        }
       }
     },
   }),
