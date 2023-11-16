@@ -99,6 +99,7 @@ type Group =
   | 'parent'
   | 'sibling'
   | 'side-effect'
+  | 'side-effect-style'
   | 'index'
   | 'object'
   | 'style'
@@ -170,6 +171,8 @@ import formatNumber from '../utils/format-number'
 import config from './config'
 // 'side-effect' - Side effect imports
 import './set-production-env.js'
+// side-effect-style - Side effect style imports
+import './styles.scss'
 // 'index' - Main file from the current directory
 import main from '.'
 // 'object' - TypeScript object-imports

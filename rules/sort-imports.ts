@@ -32,6 +32,7 @@ export enum NewlinesBetweenValue {
 }
 
 type Group<T extends string[]> =
+  | 'side-effect-style'
   | 'external-type'
   | 'internal-type'
   | 'builtin-type'
@@ -307,6 +308,10 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
 
       if (node.type === 'ImportDeclaration') {
         setCustomGroups(options['custom-groups'].value, node.source.value)
+
+        if (isSideEffectImport(node) && isStyle(node.source.value)) {
+          defineGroup('side-effect-style')
+        }
 
         if (isSideEffectImport(node)) {
           defineGroup('side-effect')

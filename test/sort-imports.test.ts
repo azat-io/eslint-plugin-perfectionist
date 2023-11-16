@@ -3736,10 +3736,12 @@ describe(RULE_NAME, () => {
               import { useClient } from '~/hooks/useClient'
 
               import '~/css/globals.css'
+
+              import '~/data'
             `,
             options: [
               {
-                groups: ['internal', 'side-effect'],
+                groups: ['internal', 'side-effect-style', 'side-effect'],
               },
             ],
           },
@@ -3748,16 +3750,19 @@ describe(RULE_NAME, () => {
           {
             code: dedent`
               import { useClient } from '~/hooks/useClient'
+              import '~/data'
               import '~/css/globals.css'
             `,
             output: dedent`
               import { useClient } from '~/hooks/useClient'
 
               import '~/css/globals.css'
+
+              import '~/data'
             `,
             options: [
               {
-                groups: ['internal', 'side-effect'],
+                groups: ['internal', 'side-effect-style', 'side-effect'],
               },
             ],
             errors: [
@@ -3765,7 +3770,7 @@ describe(RULE_NAME, () => {
                 messageId: 'missedSpacingBetweenImports',
                 data: {
                   left: '~/hooks/useClient',
-                  right: '~/css/globals.css',
+                  right: '~/data',
                 },
               },
             ],
