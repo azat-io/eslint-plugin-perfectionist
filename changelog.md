@@ -1,6 +1,18 @@
 # Changelog
 
 
+## v2.4.0
+
+[compare changes](https://github.com/azat-io/eslint-plugin-perfectionist/compare/v2.3.0...v2.4.0)
+
+### 🚀 Features
+
+- Add side-effect-style import group ([32dbef8](https://github.com/azat-io/eslint-plugin-perfectionist/commit/32dbef8))
+
+### ❤️ Contributors
+
+- Azat S. ([@azat-io](http://github.com/azat-io))
+
 ## v2.3.0
 
 [compare changes](https://github.com/azat-io/eslint-plugin-perfectionist/compare/v2.2.0...v2.3.0)
