@@ -1,7 +1,7 @@
-let eslintPlugin = require('eslint-plugin-eslint-plugin/configs/all')
-let config = require('@azat-io/eslint-config-typescript')
+import eslintPlugin from 'eslint-plugin-eslint-plugin/configs/all'
+import config from '@azat-io/eslint-config-typescript'
 
-module.exports = [
+export default [
   ...config,
   eslintPlugin,
   {

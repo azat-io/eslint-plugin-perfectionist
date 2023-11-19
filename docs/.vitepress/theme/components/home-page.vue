@@ -71,8 +71,8 @@ onMounted(() => {
 
 .divider {
   inline-size: 100%;
-  block-size: 1px;
   max-inline-size: 1152px;
+  block-size: 1px;
   margin: 48px auto;
   border: 1px solid var(--vp-c-divider);
 }
@@ -119,10 +119,10 @@ onMounted(() => {
     z-index: 1;
     display: block;
     inline-size: calc(50% + 16px);
+    block-size: auto;
     overflow: hidden;
     background: var(--vp-c-bg-soft);
     border-radius: 12px;
-    block-size: auto;
   }
 
   .code-caption {
