@@ -111,7 +111,6 @@ onMounted(() => {
 
   .code-blocks {
     display: flex;
-    max-block-size: 100%;
   }
 
   .code-wrapper {
