@@ -214,8 +214,6 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
       options.groups = [...options.groups, 'unknown']
     }
 
-    let source = context.getSourceCode()
-
     let nodes: SortingNode[] = []
 
     let isSideEffectImport = (node: TSESTree.Node) =>
@@ -365,7 +363,7 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
         ) {
           name = `${node.moduleReference.expression.value}`
         } else {
-          name = source.text.slice(...node.moduleReference.range)
+          name = context.sourceCode.text.slice(...node.moduleReference.range)
         }
       }
 
@@ -391,9 +389,9 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
           left: SortingNode,
           right: SortingNode,
         ): boolean =>
-          !!source.getTokensBetween(
+          !!context.sourceCode.getTokensBetween(
             left.node,
-            getCommentBefore(right.node, source) || right.node,
+            getCommentBefore(right.node, context.sourceCode) || right.node,
             {
               includeComments: true,
             },
@@ -437,8 +435,10 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
 
             fixes.push(
               fixer.replaceTextRange(
-                getNodeRange(nodesToFix.at(i)!.node, source),
-                source.text.slice(...getNodeRange(node.node, source)),
+                getNodeRange(nodesToFix.at(i)!.node, context.sourceCode),
+                context.sourceCode.text.slice(
+                  ...getNodeRange(node.node, context.sourceCode),
+                ),
               ),
             )
 
@@ -447,7 +447,7 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
 
               if (nextNode) {
                 let linesBetweenImports = getLinesBetween(
-                  source,
+                  context.sourceCode,
                   nodesToFix.at(i)!,
                   nodesToFix.at(i + 1)!,
                 )
@@ -462,9 +462,14 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
                 ) {
                   fixes.push(
                     fixer.removeRange([
-                      getNodeRange(nodesToFix.at(i)!.node, source).at(1)!,
-                      getNodeRange(nodesToFix.at(i + 1)!.node, source).at(0)! -
-                        1,
+                      getNodeRange(
+                        nodesToFix.at(i)!.node,
+                        context.sourceCode,
+                      ).at(1)!,
+                      getNodeRange(
+                        nodesToFix.at(i + 1)!.node,
+                        context.sourceCode,
+                      ).at(0)! - 1,
                     ]),
                   )
                 }
@@ -478,10 +483,14 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
                   fixes.push(
                     fixer.replaceTextRange(
                       [
-                        getNodeRange(nodesToFix.at(i)!.node, source).at(1)!,
-                        getNodeRange(nodesToFix.at(i + 1)!.node, source).at(
-                          0,
-                        )! - 1,
+                        getNodeRange(
+                          nodesToFix.at(i)!.node,
+                          context.sourceCode,
+                        ).at(1)!,
+                        getNodeRange(
+                          nodesToFix.at(i + 1)!.node,
+                          context.sourceCode,
+                        ).at(0)! - 1,
                       ],
                       '\n',
                     ),
@@ -496,7 +505,7 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
                 ) {
                   fixes.push(
                     fixer.insertTextAfterRange(
-                      getNodeRange(nodesToFix.at(i)!.node, source),
+                      getNodeRange(nodesToFix.at(i)!.node, context.sourceCode),
                       '\n',
                     ),
                   )
@@ -525,7 +534,11 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
             let leftNum = getGroupNumber(options.groups, left)
             let rightNum = getGroupNumber(options.groups, right)
 
-            let numberOfEmptyLinesBetween = getLinesBetween(source, left, right)
+            let numberOfEmptyLinesBetween = getLinesBetween(
+              context.sourceCode,
+              left,
+              right,
+            )
 
             if (
               !(

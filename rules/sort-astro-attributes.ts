@@ -91,7 +91,7 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
   ],
   // @ts-ignore
   create: context => {
-    if (path.extname(context.getFilename()) !== '.astro') {
+    if (path.extname(context.filename) !== '.astro') {
       return {}
     }
 
@@ -108,8 +108,6 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
             groups: [],
           })
 
-          let source = context.getSourceCode()
-
           let parts: SortingNode[][] = attributes.reduce(
             (accumulator: SortingNode[][], attribute) => {
               if (attribute.type === 'JSXSpreadAttribute') {
@@ -120,7 +118,7 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
               let name =
                 typeof attribute.name.name === 'string'
                   ? attribute.name.name
-                  : source.text.slice(...attribute.name.range)
+                  : context.sourceCode.text.slice(...attribute.name.range)
 
               let { getGroup, defineGroup, setCustomGroups } = useGroups(
                 options.groups,
@@ -194,7 +192,12 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
                       sortedNodes.push(...sortNodes(grouped[group], options))
                     }
 
-                    return makeFixes(fixer, nodes, sortedNodes, source)
+                    return makeFixes(
+                      fixer,
+                      nodes,
+                      sortedNodes,
+                      context.sourceCode,
+                    )
                   },
                 })
               }

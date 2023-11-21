@@ -90,7 +90,7 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
     },
   ],
   create: context => {
-    if (path.extname(context.getFilename()) !== '.svelte') {
+    if (path.extname(context.filename) !== '.svelte') {
       return {}
     }
 
@@ -104,8 +104,6 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
             'custom-groups': {},
             groups: [],
           })
-
-          let source = context.getSourceCode()
 
           let parts: SortingNode[][] = node.attributes.reduce(
             (accumulator: SortingNode[][], attribute) => {
@@ -121,12 +119,12 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
               )
 
               if (attribute.key.type === 'SvelteSpecialDirectiveKey') {
-                name = source.text.slice(...attribute.key.range)
+                name = context.sourceCode.text.slice(...attribute.key.range)
               } else {
                 if (typeof attribute.key.name === 'string') {
                   ;({ name } = attribute.key)
                 } else {
-                  name = source.text.slice(...attribute.key.range!)
+                  name = context.sourceCode.text.slice(...attribute.key.range!)
                 }
               }
 
@@ -201,7 +199,12 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
                       sortedNodes.push(...sortNodes(grouped[group], options))
                     }
 
-                    return makeFixes(fixer, nodes, sortedNodes, source)
+                    return makeFixes(
+                      fixer,
+                      nodes,
+                      sortedNodes,
+                      context.sourceCode,
+                    )
                   },
                 })
               }

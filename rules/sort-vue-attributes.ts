@@ -90,15 +90,15 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
     },
   ],
   create: context => {
-    if (path.extname(context.getFilename()) !== '.vue') {
+    if (path.extname(context.filename) !== '.vue') {
       return {}
     }
 
-    if (!('defineTemplateBodyVisitor' in context.parserServices!)) {
+    if (!('defineTemplateBodyVisitor' in context.sourceCode.parserServices)) {
       return {}
     }
 
-    let { defineTemplateBodyVisitor } = context.parserServices as unknown as {
+    let { defineTemplateBodyVisitor } = context.sourceCode.parserServices as {
       defineTemplateBodyVisitor: (mapper: {
         [key: string]: (node: AST.VStartTag) => void
       }) => {}
@@ -114,8 +114,6 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
             'custom-groups': {},
             groups: [],
           })
-
-          let source = context.getSourceCode()
 
           let parts: SortingNode[][] = node.attributes.reduce(
             (accumulator: SortingNode[][], attribute) => {
@@ -139,7 +137,7 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
               ) {
                 name = attribute.key.rawName
               } else {
-                name = source.text.slice(...attribute.key.range)
+                name = context.sourceCode.text.slice(...attribute.key.range)
               }
 
               setCustomGroups(options['custom-groups'], name)
@@ -205,7 +203,12 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
                       sortedNodes.push(...sortNodes(grouped[group], options))
                     }
 
-                    return makeFixes(fixer, nodes, sortedNodes, source)
+                    return makeFixes(
+                      fixer,
+                      nodes,
+                      sortedNodes,
+                      context.sourceCode,
+                    )
                   },
                 })
               }

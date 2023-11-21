@@ -75,8 +75,6 @@ export default createEslintRule<Options, MESSAGE_ID>({
   ],
   create: context => ({
     TSUnionType: node => {
-      let source = context.getSourceCode()
-
       let options = complete(context.options.at(0), {
         type: SortType.alphabetical,
         'nullable-last': false,
@@ -89,7 +87,7 @@ export default createEslintRule<Options, MESSAGE_ID>({
           type.type === 'TSNullKeyword' || type.type === 'TSUndefinedKeyword'
             ? 'nullable'
             : 'unknown',
-        name: source.text.slice(...type.range),
+        name: context.sourceCode.text.slice(...type.range),
         size: rangeToDiff(type.range),
         node: type,
       }))
@@ -136,7 +134,7 @@ export default createEslintRule<Options, MESSAGE_ID>({
                 sortedNodes = sortNodes(nodes, options)
               }
 
-              return makeFixes(fixer, nodes, sortedNodes, source)
+              return makeFixes(fixer, nodes, sortedNodes, context.sourceCode)
             },
           })
         }

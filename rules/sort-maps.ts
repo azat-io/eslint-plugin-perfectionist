@@ -87,8 +87,6 @@ export default createEslintRule<Options, MESSAGE_ID>({
             order: SortOrder.asc,
           })
 
-          let source = context.getSourceCode()
-
           let parts: TSESTree.Expression[][] = elements.reduce(
             (
               accumulator: TSESTree.Expression[][],
@@ -116,10 +114,10 @@ export default createEslintRule<Options, MESSAGE_ID>({
                 } else if (left.type === 'Literal') {
                   name = left.raw
                 } else {
-                  name = source.text.slice(...left.range)
+                  name = context.sourceCode.text.slice(...left.range)
                 }
               } else {
-                name = source.text.slice(...element.range)
+                name = context.sourceCode.text.slice(...element.range)
               }
 
               return {
@@ -139,7 +137,12 @@ export default createEslintRule<Options, MESSAGE_ID>({
                   },
                   node: right.node,
                   fix: fixer =>
-                    makeFixes(fixer, nodes, sortNodes(nodes, options), source),
+                    makeFixes(
+                      fixer,
+                      nodes,
+                      sortNodes(nodes, options),
+                      context.sourceCode,
+                    ),
                 })
               }
             })

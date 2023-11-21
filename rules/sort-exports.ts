@@ -101,8 +101,6 @@ export default createEslintRule<Options, MESSAGE_ID>({
         }
       },
       'Program:exit': () => {
-        let source = context.getSourceCode()
-
         for (let nodes of parts) {
           pairwise(nodes, (left, right) => {
             if (isPositive(compare(left, right, options))) {
@@ -114,7 +112,12 @@ export default createEslintRule<Options, MESSAGE_ID>({
                 },
                 node: right.node,
                 fix: fixer =>
-                  makeFixes(fixer, nodes, sortNodes(nodes, options), source),
+                  makeFixes(
+                    fixer,
+                    nodes,
+                    sortNodes(nodes, options),
+                    context.sourceCode,
+                  ),
               })
             }
           })

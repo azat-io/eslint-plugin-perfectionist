@@ -145,8 +145,6 @@ export default createEslintRule<Options, MESSAGE_ID>({
           return
         }
 
-        let source = context.getSourceCode()
-
         let formatProperties = (
           props: (
             | TSESTree.ObjectLiteralElement
@@ -164,7 +162,7 @@ export default createEslintRule<Options, MESSAGE_ID>({
                 return accumulator
               }
 
-              let comment = getCommentBefore(prop, source)
+              let comment = getCommentBefore(prop, context.sourceCode)
               let lastProp = accumulator.at(-1)?.at(-1)
 
               if (
@@ -189,7 +187,7 @@ export default createEslintRule<Options, MESSAGE_ID>({
               } else if (prop.key.type === 'Literal') {
                 name = `${prop.key.value}`
               } else {
-                name = source.text.slice(...prop.key.range)
+                name = context.sourceCode.text.slice(...prop.key.range)
               }
 
               let propSortingNode = {
@@ -201,7 +199,7 @@ export default createEslintRule<Options, MESSAGE_ID>({
               if (
                 options['partition-by-new-line'] &&
                 lastProp &&
-                getLinesBetween(source, lastProp, propSortingNode)
+                getLinesBetween(context.sourceCode, lastProp, propSortingNode)
               ) {
                 accumulator.push([])
               }
@@ -323,9 +321,15 @@ export default createEslintRule<Options, MESSAGE_ID>({
                   sortedNodes.push(...sortNodes(grouped[group], options))
                 }
 
-                return makeFixes(fixer, nodes, sortedNodes, source, {
-                  partitionComment: options['partition-by-comment'],
-                })
+                return makeFixes(
+                  fixer,
+                  nodes,
+                  sortedNodes,
+                  context.sourceCode,
+                  {
+                    partitionComment: options['partition-by-comment'],
+                  },
+                )
               }
 
               context.report({

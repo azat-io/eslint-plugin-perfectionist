@@ -76,8 +76,6 @@ export default createEslintRule<Options, MESSAGE_ID>({
           order: SortOrder.asc,
         })
 
-        let source = context.getSourceCode()
-
         let nodes: SortingNode[] = node.specifiers.map(specifier => ({
           size: rangeToDiff(specifier.range),
           name: specifier.local.name,
@@ -94,7 +92,12 @@ export default createEslintRule<Options, MESSAGE_ID>({
               },
               node: right.node,
               fix: fixer =>
-                makeFixes(fixer, nodes, sortNodes(nodes, options), source),
+                makeFixes(
+                  fixer,
+                  nodes,
+                  sortNodes(nodes, options),
+                  context.sourceCode,
+                ),
             })
           }
         })

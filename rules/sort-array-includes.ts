@@ -96,8 +96,6 @@ export default createEslintRule<Options, MESSAGE_ID>({
             'spread-last': false,
           })
 
-          let source = context.getSourceCode()
-
           let nodes: (SortingNode & { type: string })[] = elements
             .reduce(
               (
@@ -109,7 +107,7 @@ export default createEslintRule<Options, MESSAGE_ID>({
                     name:
                       element.type === 'Literal'
                         ? `${element.value}`
-                        : source.text.slice(...element.range),
+                        : context.sourceCode.text.slice(...element.range),
                     size: rangeToDiff(element.range),
                     type: element.type,
                     node: element,
@@ -160,7 +158,12 @@ export default createEslintRule<Options, MESSAGE_ID>({
                     }
                   }
 
-                  return makeFixes(fixer, nodes, sortedNodes, source)
+                  return makeFixes(
+                    fixer,
+                    nodes,
+                    sortedNodes,
+                    context.sourceCode,
+                  )
                 },
               })
             }

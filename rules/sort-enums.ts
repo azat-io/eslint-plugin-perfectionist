@@ -79,13 +79,11 @@ export default createEslintRule<Options, MESSAGE_ID>({
           'ignore-case': false,
         })
 
-        let source = context.getSourceCode()
-
         let nodes: SortingNode[] = node.members.map(member => ({
           name:
             member.id.type === 'Literal'
               ? `${member.id.value}`
-              : `${source.text.slice(...member.id.range)}`,
+              : `${context.sourceCode.text.slice(...member.id.range)}`,
           size: rangeToDiff(member.range),
           node: member,
         }))
@@ -100,7 +98,12 @@ export default createEslintRule<Options, MESSAGE_ID>({
               },
               node: right.node,
               fix: fixer =>
-                makeFixes(fixer, nodes, sortNodes(nodes, options), source),
+                makeFixes(
+                  fixer,
+                  nodes,
+                  sortNodes(nodes, options),
+                  context.sourceCode,
+                ),
             })
           }
         })

@@ -88,9 +88,7 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
   ],
   create: context => {
     if (
-      ['.svelte', '.astro', '.vue'].includes(
-        path.extname(context.getFilename()),
-      )
+      ['.svelte', '.astro', '.vue'].includes(path.extname(context.filename))
     ) {
       return {}
     }
@@ -104,8 +102,6 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
             'custom-groups': {},
             groups: [],
           })
-
-          let source = context.getSourceCode()
 
           let parts: SortingNode[][] = node.openingElement.attributes.reduce(
             (
@@ -191,7 +187,12 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
                       sortedNodes.push(...sortNodes(grouped[group], options))
                     }
 
-                    return makeFixes(fixer, nodes, sortedNodes, source)
+                    return makeFixes(
+                      fixer,
+                      nodes,
+                      sortedNodes,
+                      context.sourceCode,
+                    )
                   },
                 })
               }

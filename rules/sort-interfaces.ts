@@ -116,8 +116,6 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
             }),
           )
         ) {
-          let source = context.getSourceCode()
-
           let formattedMembers: SortingNode[][] = node.body.body.reduce(
             (accumulator: SortingNode[][], element) => {
               if (element.type === 'TSCallSignatureDeclaration') {
@@ -142,18 +140,24 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
                     element.typeAnnotation?.range.at(0) ??
                     element.range.at(1)! - (element.optional ? '?'.length : 0)
 
-                  name = source.text.slice(element.range.at(0), end)
+                  name = context.sourceCode.text.slice(element.range.at(0), end)
                 }
               } else if (element.type === 'TSIndexSignature') {
                 let endIndex: number =
                   element.typeAnnotation?.range.at(0) ?? element.range.at(1)!
 
-                name = source.text.slice(element.range.at(0), endIndex)
+                name = context.sourceCode.text.slice(
+                  element.range.at(0),
+                  endIndex,
+                )
               } else {
                 let endIndex: number =
                   element.returnType?.range.at(0) ?? element.range.at(1)!
 
-                name = source.text.slice(element.range.at(0), endIndex)
+                name = context.sourceCode.text.slice(
+                  element.range.at(0),
+                  endIndex,
+                )
               }
 
               let elementSortingNode = {
@@ -165,7 +169,11 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
               if (
                 options['partition-by-new-line'] &&
                 lastElement &&
-                getLinesBetween(source, lastElement, elementSortingNode)
+                getLinesBetween(
+                  context.sourceCode,
+                  lastElement,
+                  elementSortingNode,
+                )
               ) {
                 accumulator.push([])
               }
@@ -227,7 +235,12 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
                       sortedNodes.push(...sortNodes(grouped[group], options))
                     }
 
-                    return makeFixes(fixer, nodes, sortedNodes, source)
+                    return makeFixes(
+                      fixer,
+                      nodes,
+                      sortedNodes,
+                      context.sourceCode,
+                    )
                   },
                 })
               }

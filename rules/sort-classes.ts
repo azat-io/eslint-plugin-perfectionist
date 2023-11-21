@@ -100,8 +100,6 @@ export default createEslintRule<Options, MESSAGE_ID>({
           groups: ['property', 'constructor', 'method', 'unknown'],
         })
 
-        let source = context.getSourceCode()
-
         let nodes: SortingNode[] = node.body.map(member => {
           let name: string
           let { getGroup, defineGroup } = useGroups(options.groups)
@@ -109,7 +107,7 @@ export default createEslintRule<Options, MESSAGE_ID>({
           if (member.type === 'StaticBlock') {
             name = 'static'
           } else if (member.type === 'TSIndexSignature') {
-            name = source.text.slice(
+            name = context.sourceCode.text.slice(
               member.range.at(0),
               member.typeAnnotation?.range.at(0) ?? member.range.at(1),
             )
@@ -117,7 +115,7 @@ export default createEslintRule<Options, MESSAGE_ID>({
             if (member.key.type === 'Identifier') {
               ;({ name } = member.key)
             } else {
-              name = source.text.slice(...member.key.range)
+              name = context.sourceCode.text.slice(...member.key.range)
             }
           }
 
@@ -232,9 +230,12 @@ export default createEslintRule<Options, MESSAGE_ID>({
                 for (let i = 0, max = formatted.length; i < max; i++) {
                   fixes.push(
                     fixer.replaceTextRange(
-                      getNodeRange(nodes.at(i)!.node, source),
-                      source.text.slice(
-                        ...getNodeRange(formatted.at(i)!.node, source),
+                      getNodeRange(nodes.at(i)!.node, context.sourceCode),
+                      context.sourceCode.text.slice(
+                        ...getNodeRange(
+                          formatted.at(i)!.node,
+                          context.sourceCode,
+                        ),
                       ),
                     ),
                   )
