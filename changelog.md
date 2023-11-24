@@ -1,6 +1,18 @@
 # Changelog
 
 
+## v2.4.1
+
+[compare changes](https://github.com/azat-io/eslint-plugin-perfectionist/compare/v2.4.0...v2.4.1)
+
+### 🐞 Bug Fixes
+
+- Fix output with a large number of groups ([6847eaf](https://github.com/azat-io/eslint-plugin-perfectionist/commit/6847eaf))
+
+### ❤️ Contributors
+
+- Azat S. ([@azat-io](http://github.com/azat-io))
+
 ## v2.4.0
 
 [compare changes](https://github.com/azat-io/eslint-plugin-perfectionist/compare/v2.3.0...v2.4.0)
