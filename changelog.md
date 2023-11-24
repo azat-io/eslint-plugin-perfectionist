@@ -1,6 +1,18 @@
 # Changelog
 
 
+## v2.4.2
+
+[compare changes](https://github.com/azat-io/eslint-plugin-perfectionist/compare/v2.4.1...v2.4.2)
+
+### 🐞 Bug Fixes
+
+- Fix cjs plugin usage ([1293490](https://github.com/azat-io/eslint-plugin-perfectionist/commit/1293490))
+
+### ❤️ Contributors
+
+- Azat S. ([@azat-io](http://github.com/azat-io))
+
 ## v2.4.1
 
 [compare changes](https://github.com/azat-io/eslint-plugin-perfectionist/compare/v2.4.0...v2.4.1)
