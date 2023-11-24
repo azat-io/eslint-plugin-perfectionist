@@ -17,5 +17,6 @@
     "docs/.vitepress/**/*.ts",
     "docs/.vitepress/config.mts"
   ],
-  "exclude": ["node_modules", "coverage"]
+  "exclude": ["node_modules", "coverage"],
+  "extends": "astro/tsconfigs/base"
 }

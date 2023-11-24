@@ -5,13 +5,12 @@ node_modules/
 # Build
 dist/
 
+# Generated types
+.astro/
+
 # Editor
 .vscode/
 .vim/
-
-# VitePress
-docs/.vitepress/cache/
-docs/.vitepress/temp/
 
 # Test
 coverage/

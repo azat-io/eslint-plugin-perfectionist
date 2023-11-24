@@ -1,4 +1,5 @@
 {
+  "plugins": ["prettier-plugin-astro"],
   "arrowParens": "avoid",
   "bracketSpacing": true,
   "endOfLine": "lf",
@@ -14,6 +15,12 @@
       "files": "index.ts",
       "options": {
         "printWidth": 120
+      }
+    },
+    {
+      "files": "*.astro",
+      "options": {
+        "parser": "astro"
       }
     }
   ]

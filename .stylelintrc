@@ -3,7 +3,7 @@
   "ignoreFiles": ["coverage/**/*", "docs/.vitepress/dist/**/*"],
   "overrides": [
     {
-      "files": ["**/*.vue"],
+      "files": ["**/*.astro"],
       "customSyntax": "postcss-html"
     }
   ]

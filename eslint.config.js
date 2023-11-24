@@ -3,7 +3,7 @@ let config = require('@azat-io/eslint-config-typescript')
 module.exports = [
   ...config,
   {
-    ignores: ['**/.vitepress/cache/**/*', 'coverage/**/*'],
+    ignores: ['coverage/**/*'],
   },
   {
     rules: {
@@ -11,9 +11,9 @@ module.exports = [
     },
   },
   {
-    files: ['**/test/*', '**/rules/*', '**/docs/.vitepress/config.ts'],
     rules: {
       'perfectionist/sort-objects': 'off',
     },
+    files: ['**/test/*', '**/rules/*'],
   },
 ]

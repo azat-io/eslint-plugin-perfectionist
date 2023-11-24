@@ -13,14 +13,14 @@
   ],
   "scripts": {
     "build": "vite build",
-    "docs:dev": "vitepress dev docs",
-    "docs:build": "vitepress build docs",
+    "docs:dev": "astro dev",
+    "docs:build": "astro build",
     "release": "pnpm release:check && pnpm release:version && pnpm release:publish",
     "release:check": "pnpm test && pnpm run build",
     "release:publish": "clean-publish",
     "release:version": "changelogen --output changelog.md --release --push",
-    "test:format": "prettier --check \"**/*.{js,ts,json,md,yml}\"",
-    "test:css": "stylelint \"docs/.vitepress/**/*.{css,vue}\"",
+    "test:format": "prettier --check \"**/*.{js,ts,astro,json,md,yml}\"",
+    "test:css": "stylelint \"docs/**/*.{astro,css}\"",
     "test:js": "eslint \"**/*.{js,ts}\"",
     "test:types": "tsc --noEmit --pretty",
     "test:unit": "vitest --run --coverage --poolOptions.threads.singleThread --pool=forks",
@@ -94,6 +94,7 @@
     "@typescript-eslint/types": "^7.2.0",
     "@vitest/coverage-v8": "^1.3.1",
     "ajv": "^6.12.6",
+    "astro": "^3.6.0",
     "astro-eslint-parser": "^0.16.3",
     "changelogen": "^0.5.5",
     "clean-publish": "^4.3.0",
@@ -110,6 +111,7 @@
     "eslint-plugin-vitest": "^0.3.25",
     "postcss-html": "^1.6.0",
     "prettier": "^3.2.5",
+    "prettier-plugin-astro": "^0.13.0",
     "simple-git-hooks": "^2.10.0",
     "stylelint": "^16.2.1",
     "stylelint-config-recess-order": "^5.0.0",
@@ -122,8 +124,6 @@
     "typescript": "^5.4.2",
     "vite": "^5.1.6",
     "vite-plugin-lightningcss": "^0.0.5",
-    "vitepress": "1.0.0-rc.45",
-    "vitest": "^1.3.1",
-    "vue": "^3.4.21"
+    "vitest": "^1.3.1"
   }
 }
