@@ -317,7 +317,9 @@ export default createEslintRule<Options, MESSAGE_ID>({
 
                 let sortedNodes: SortingNode[] = []
 
-                for (let group of Object.keys(grouped).sort()) {
+                for (let group of Object.keys(grouped).sort(
+                  (a, b) => Number(a) - Number(b),
+                )) {
                   sortedNodes.push(...sortNodes(grouped[group], options))
                 }
 

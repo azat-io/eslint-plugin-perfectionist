@@ -3778,5 +3778,211 @@ describe(RULE_NAME, () => {
         ],
       },
     )
+
+    ruleTester.run(
+      `${RULE_NAME}: works with big amount of custom groups`,
+      rule,
+      {
+        valid: [
+          {
+            code: dedent`
+              import { useCartStore } from '~/stores/cartStore.ts'
+              import { useUserStore } from '~/stores/userStore.ts'
+
+              import { getCart } from '~/services/cartService.ts'
+
+              import { connect } from '~/utils/ws.ts'
+              import { formattingDate } from '~/utils/dateTime.ts'
+
+              import { useFetch } from '~/composable/useFetch.ts'
+              import { useDebounce } from '~/composable/useDebounce.ts'
+              import { useMouseMove } from '~/composable/useMouseMove.ts'
+
+              import ComponentA from '~/components/ComponentA.vue'
+              import ComponentB from '~/components/ComponentB.vue'
+              import ComponentC from '~/components/ComponentC.vue'
+
+              import CartComponentA from './cart/CartComponentA.vue'
+              import CartComponentB from './cart/CartComponentB.vue'
+            `,
+            options: [
+              {
+                type: SortType['line-length'],
+                groups: [
+                  ['builtin', 'external'],
+                  'internal',
+                  'stores',
+                  'services',
+                  'validators',
+                  'utils',
+                  'logics',
+                  'composable',
+                  'ui',
+                  'components',
+                  'pages',
+                  'widgets',
+                  'assets',
+                  'parent',
+                  'sibling',
+                  'side-effect',
+                  'index',
+                  'style',
+                  'object',
+                  'unknown',
+                ],
+                'custom-groups': {
+                  value: {
+                    stores: ['~/stores/**'],
+                    services: ['~/services/**'],
+                    validators: ['~/validators/**'],
+                    utils: ['~/utils/**'],
+                    logics: ['~/logics/**'],
+                    composable: ['~/composable/**'],
+                    ui: ['~/ui/**'],
+                    components: ['~/components/**'],
+                    pages: ['~/pages/**'],
+                    widgets: ['~/widgets/**'],
+                    assets: ['~/assets/**'],
+                  },
+                },
+                'newlines-between': NewlinesBetweenValue.always,
+                'internal-pattern': ['~/**'],
+              },
+            ],
+          },
+        ],
+        invalid: [
+          {
+            code: dedent`
+              import CartComponentA from './cart/CartComponentA.vue'
+              import CartComponentB from './cart/CartComponentB.vue'
+
+              import { connect } from '~/utils/ws.ts'
+              import { getCart } from '~/services/cartService.ts'
+
+              import { useUserStore } from '~/stores/userStore.ts'
+              import { formattingDate } from '~/utils/dateTime.ts'
+
+              import { useFetch } from '~/composable/useFetch.ts'
+              import { useCartStore } from '~/stores/cartStore.ts'
+              import { useDebounce } from '~/composable/useDebounce.ts'
+              import { useMouseMove } from '~/composable/useMouseMove.ts'
+
+              import ComponentA from '~/components/ComponentA.vue'
+              import ComponentB from '~/components/ComponentB.vue'
+              import ComponentC from '~/components/ComponentC.vue'
+            `,
+            output: dedent`
+              import { useUserStore } from '~/stores/userStore.ts'
+              import { useCartStore } from '~/stores/cartStore.ts'
+
+              import { getCart } from '~/services/cartService.ts'
+
+              import { connect } from '~/utils/ws.ts'
+              import { formattingDate } from '~/utils/dateTime.ts'
+
+              import { useFetch } from '~/composable/useFetch.ts'
+              import { useDebounce } from '~/composable/useDebounce.ts'
+              import { useMouseMove } from '~/composable/useMouseMove.ts'
+
+              import ComponentA from '~/components/ComponentA.vue'
+              import ComponentB from '~/components/ComponentB.vue'
+              import ComponentC from '~/components/ComponentC.vue'
+
+              import CartComponentA from './cart/CartComponentA.vue'
+              import CartComponentB from './cart/CartComponentB.vue'
+            `,
+            options: [
+              {
+                type: SortType['line-length'],
+                groups: [
+                  ['builtin', 'external'],
+                  'internal',
+                  'stores',
+                  'services',
+                  'validators',
+                  'utils',
+                  'logics',
+                  'composable',
+                  'ui',
+                  'components',
+                  'pages',
+                  'widgets',
+                  'assets',
+                  'parent',
+                  'sibling',
+                  'side-effect',
+                  'index',
+                  'style',
+                  'object',
+                  'unknown',
+                ],
+                'custom-groups': {
+                  value: {
+                    stores: ['~/stores/**'],
+                    services: ['~/services/**'],
+                    validators: ['~/validators/**'],
+                    utils: ['~/utils/**'],
+                    logics: ['~/logics/**'],
+                    composable: ['~/composable/**'],
+                    ui: ['~/ui/**'],
+                    components: ['~/components/**'],
+                    pages: ['~/pages/**'],
+                    widgets: ['~/widgets/**'],
+                    assets: ['~/assets/**'],
+                  },
+                },
+                'newlines-between': NewlinesBetweenValue.always,
+                'internal-pattern': ['~/**'],
+              },
+            ],
+            errors: [
+              {
+                messageId: 'unexpectedImportsOrder',
+                data: {
+                  left: './cart/CartComponentB.vue',
+                  right: '~/utils/ws.ts',
+                },
+              },
+              {
+                messageId: 'unexpectedImportsOrder',
+                data: {
+                  left: '~/utils/ws.ts',
+                  right: '~/services/cartService.ts',
+                },
+              },
+              {
+                messageId: 'unexpectedImportsOrder',
+                data: {
+                  left: '~/services/cartService.ts',
+                  right: '~/stores/userStore.ts',
+                },
+              },
+              {
+                messageId: 'missedSpacingBetweenImports',
+                data: {
+                  left: '~/stores/userStore.ts',
+                  right: '~/utils/dateTime.ts',
+                },
+              },
+              {
+                messageId: 'unexpectedImportsOrder',
+                data: {
+                  left: '~/composable/useFetch.ts',
+                  right: '~/stores/cartStore.ts',
+                },
+              },
+              {
+                messageId: 'missedSpacingBetweenImports',
+                data: {
+                  left: '~/stores/cartStore.ts',
+                  right: '~/composable/useDebounce.ts',
+                },
+              },
+            ],
+          },
+        ],
+      },
+    )
   })
 })

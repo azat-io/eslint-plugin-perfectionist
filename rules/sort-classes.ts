@@ -218,7 +218,7 @@ export default createEslintRule<Options, MESSAGE_ID>({
                 )
 
                 let formatted = Object.keys(grouped)
-                  .sort()
+                  .sort((a, b) => Number(a) - Number(b))
                   .reduce(
                     (accumulator: SortingNode[], group: string) => [
                       ...accumulator,
