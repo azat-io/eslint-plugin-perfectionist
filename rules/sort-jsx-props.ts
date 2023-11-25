@@ -2,19 +2,9 @@ import type { TSESTree } from '@typescript-eslint/types'
 
 import path from 'node:path'
 
-import type { SortingNode } from '../typings'
-
+import { createSortingRule } from '../utils/create-sorting-rule'
 import { createEslintRule } from '../utils/create-eslint-rule'
-import { getGroupNumber } from '../utils/get-group-number'
-import { rangeToDiff } from '../utils/range-to-diff'
-import { isPositive } from '../utils/is-positive'
-import { SortOrder, SortType } from '../typings'
-import { useGroups } from '../utils/use-groups'
-import { makeFixes } from '../utils/make-fixes'
-import { sortNodes } from '../utils/sort-nodes'
-import { pairwise } from '../utils/pairwise'
 import { complete } from '../utils/complete'
-import { compare } from '../utils/compare'
 
 type MESSAGE_ID = 'unexpectedJSXPropsOrder'
 
@@ -27,10 +17,10 @@ type Group<T extends string[]> =
 type Options<T extends string[]> = [
   Partial<{
     'custom-groups': { [key in T[number]]: string[] | string }
+    type: 'alphabetical' | 'line-length' | 'natural'
     groups: (Group<T>[] | Group<T>)[]
     'ignore-case': boolean
-    order: SortOrder
-    type: SortType
+    order: 'desc' | 'asc'
   }>,
 ]
 
@@ -52,17 +42,13 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
             type: 'object',
           },
           type: {
-            enum: [
-              SortType.alphabetical,
-              SortType.natural,
-              SortType['line-length'],
-            ],
-            default: SortType.alphabetical,
+            enum: ['alphabetical', 'natural', 'line-length'],
+            default: 'alphabetical',
             type: 'string',
           },
           order: {
-            enum: [SortOrder.asc, SortOrder.desc],
-            default: SortOrder.asc,
+            enum: ['asc', 'desc'],
+            default: 'asc',
             type: 'string',
           },
           groups: {
@@ -82,8 +68,8 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
   },
   defaultOptions: [
     {
-      type: SortType.alphabetical,
-      order: SortOrder.asc,
+      type: 'alphabetical',
+      order: 'asc',
     },
   ],
   create: context => {
@@ -94,112 +80,51 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
     }
     return {
       JSXElement: node => {
-        if (node.openingElement.attributes.length > 1) {
-          let options = complete(context.options.at(0), {
-            type: SortType.alphabetical,
-            'ignore-case': false,
-            order: SortOrder.asc,
-            'custom-groups': {},
-            groups: [],
-          })
+        let options = complete(context.options.at(0), {
+          type: 'alphabetical',
+          'ignore-case': false,
+          'custom-groups': {},
+          order: 'asc',
+          groups: [],
+        })
 
-          let parts: SortingNode[][] = node.openingElement.attributes.reduce(
-            (
-              accumulator: SortingNode[][],
-              attribute: TSESTree.JSXSpreadAttribute | TSESTree.JSXAttribute,
-            ) => {
-              if (attribute.type === 'JSXSpreadAttribute') {
-                accumulator.push([])
-                return accumulator
+        let nodeParts = node.openingElement.attributes.reduce(
+          (
+            accumulator: TSESTree.JSXAttribute[][],
+            attribute: TSESTree.JSXSpreadAttribute | TSESTree.JSXAttribute,
+          ) => {
+            if (attribute.type === 'JSXSpreadAttribute') {
+              accumulator.push([])
+            } else {
+              accumulator.at(-1)!.push(attribute)
+            }
+            return accumulator
+          },
+          [[]],
+        )
+
+        for (let nodes of nodeParts) {
+          createSortingRule({
+            getName: element => {
+              if (element.name.type === 'JSXNamespacedName') {
+                return `${element.name.namespace.name}:${element.name.name.name}`
               }
-
-              let name =
-                attribute.name.type === 'JSXNamespacedName'
-                  ? `${attribute.name.namespace.name}:${attribute.name.name.name}`
-                  : attribute.name.name
-
-              let { getGroup, defineGroup, setCustomGroups } = useGroups(
-                options.groups,
-              )
-
-              setCustomGroups(options['custom-groups'], name)
-
-              if (attribute.value === null) {
-                defineGroup('shorthand')
-              }
-
-              if (attribute.loc.start.line !== attribute.loc.end.line) {
-                defineGroup('multiline')
-              }
-
-              let jsxNode = {
-                size: rangeToDiff(attribute.range),
-                group: getGroup(),
-                node: attribute,
-                name,
-              }
-
-              accumulator.at(-1)!.push(jsxNode)
-
-              return accumulator
+              return element.name.name
             },
-            [[]],
-          )
-
-          for (let nodes of parts) {
-            pairwise(nodes, (left, right) => {
-              let leftNum = getGroupNumber(options.groups, left)
-              let rightNum = getGroupNumber(options.groups, right)
-
-              if (
-                leftNum > rightNum ||
-                (leftNum === rightNum &&
-                  isPositive(compare(left, right, options)))
-              ) {
-                context.report({
-                  messageId: 'unexpectedJSXPropsOrder',
-                  data: {
-                    left: left.name,
-                    right: right.name,
-                  },
-                  node: right.node,
-                  fix: fixer => {
-                    let grouped: {
-                      [key: string]: SortingNode[]
-                    } = {}
-
-                    for (let currentNode of nodes) {
-                      let groupNum = getGroupNumber(options.groups, currentNode)
-
-                      if (!(groupNum in grouped)) {
-                        grouped[groupNum] = [currentNode]
-                      } else {
-                        grouped[groupNum] = sortNodes(
-                          [...grouped[groupNum], currentNode],
-                          options,
-                        )
-                      }
-                    }
-
-                    let sortedNodes: SortingNode[] = []
-
-                    for (let group of Object.keys(grouped).sort(
-                      (a, b) => Number(a) - Number(b),
-                    )) {
-                      sortedNodes.push(...sortNodes(grouped[group], options))
-                    }
-
-                    return makeFixes(
-                      fixer,
-                      nodes,
-                      sortedNodes,
-                      context.sourceCode,
-                    )
-                  },
-                })
+            definedGroups: element => {
+              if (element.value === null) {
+                return 'shorthand'
               }
-            })
-          }
+
+              if (element.loc.start.line !== element.loc.end.line) {
+                return 'multiline'
+              }
+            },
+            unexpectedOrderMessage: 'unexpectedJSXPropsOrder',
+            context,
+            options,
+            nodes,
+          })
         }
       },
     }

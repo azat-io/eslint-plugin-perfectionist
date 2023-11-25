@@ -1,8 +1,9 @@
 import naturalCompare from 'natural-compare-lite'
 
-import type { SortingNode, SortOrder } from '../typings'
+import type { SortingNode } from '../typings'
 
-import { SortType } from '../typings'
+type SortType = 'alphabetical' | 'line-length' | 'natural'
+type SortOrder = 'desc' | 'asc'
 
 export let compare = (
   a: SortingNode,
@@ -26,10 +27,10 @@ export let compare = (
   let formatString = (string: string) =>
     options['ignore-case'] ? string.toLowerCase() : string
 
-  if (options.type === SortType.alphabetical) {
+  if (options.type === 'alphabetical') {
     sortingFunction = (aNode, bNode) =>
       formatString(aNode.name).localeCompare(formatString(bNode.name))
-  } else if (options.type === SortType.natural) {
+  } else if (options.type === 'natural') {
     sortingFunction = (aNode, bNode) =>
       naturalCompare(formatString(aNode.name), formatString(bNode.name))
   } else {

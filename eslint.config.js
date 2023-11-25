@@ -10,6 +10,7 @@ module.exports = [
   {
     rules: {
       'eslint-plugin/require-meta-docs-url': 'off',
+      'consistent-return': 'off',
     },
   },
   {

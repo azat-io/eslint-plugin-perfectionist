@@ -1,6 +1,9 @@
-import type { SortingNode, SortOrder, SortType } from '../typings'
+import type { SortingNode } from '../typings'
 
 import { compare } from './compare'
+
+type SortType = 'alphabetical' | 'line-length' | 'natural'
+type SortOrder = 'desc' | 'asc'
 
 export let sortNodes = <T extends SortingNode>(
   nodes: T[],

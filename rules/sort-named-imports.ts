@@ -1,29 +1,19 @@
-import type { SortingNode } from '../typings'
-
+import { createSortingRule } from '../utils/create-sorting-rule'
 import { createEslintRule } from '../utils/create-eslint-rule'
-import { rangeToDiff } from '../utils/range-to-diff'
-import { isPositive } from '../utils/is-positive'
-import { SortOrder, SortType } from '../typings'
-import { sortNodes } from '../utils/sort-nodes'
-import { makeFixes } from '../utils/make-fixes'
 import { complete } from '../utils/complete'
-import { pairwise } from '../utils/pairwise'
-import { compare } from '../utils/compare'
 
 type MESSAGE_ID = 'unexpectedNamedImportsOrder'
 
-type Options = [
-  Partial<{
-    'ignore-alias': boolean
-    'ignore-case': boolean
-    order: SortOrder
-    type: SortType
-  }>,
-]
+interface Options {
+  type: 'alphabetical' | 'line-length' | 'natural'
+  'ignore-alias': boolean
+  'ignore-case': boolean
+  order: 'desc' | 'asc'
+}
 
 export const RULE_NAME = 'sort-named-imports'
 
-export default createEslintRule<Options, MESSAGE_ID>({
+export default createEslintRule<[Partial<Options>], MESSAGE_ID>({
   name: RULE_NAME,
   meta: {
     type: 'suggestion',
@@ -36,17 +26,13 @@ export default createEslintRule<Options, MESSAGE_ID>({
         type: 'object',
         properties: {
           type: {
-            enum: [
-              SortType.alphabetical,
-              SortType.natural,
-              SortType['line-length'],
-            ],
-            default: SortType.alphabetical,
+            enum: ['alphabetical', 'natural', 'line-length'],
+            default: 'alphabetical',
             type: 'string',
           },
           order: {
-            enum: [SortOrder.asc, SortOrder.desc],
-            default: SortOrder.asc,
+            enum: ['asc', 'desc'],
+            default: 'asc',
             type: 'string',
           },
           'ignore-case': {
@@ -68,8 +54,8 @@ export default createEslintRule<Options, MESSAGE_ID>({
   },
   defaultOptions: [
     {
-      type: SortType.alphabetical,
-      order: SortOrder.asc,
+      type: 'alphabetical',
+      order: 'asc',
     },
   ],
   create: context => ({
@@ -78,48 +64,26 @@ export default createEslintRule<Options, MESSAGE_ID>({
         ({ type }) => type === 'ImportSpecifier',
       )
 
-      if (specifiers.length > 1) {
-        let options = complete(context.options.at(0), {
-          type: SortType.alphabetical,
-          'ignore-alias': true,
-          'ignore-case': false,
-          order: SortOrder.asc,
-        })
+      let options = complete<Options>(context.options.at(0), {
+        type: 'alphabetical',
+        'ignore-alias': true,
+        'ignore-case': false,
+        order: 'asc',
+      })
 
-        let nodes: SortingNode[] = specifiers.map(specifier => {
-          let { name } = specifier.local
-
-          if (options['ignore-alias'] && specifier.type === 'ImportSpecifier') {
-            ;({ name } = specifier.imported)
+      return createSortingRule({
+        unexpectedOrderMessage: 'unexpectedNamedImportsOrder',
+        nodes: specifiers,
+        getName: element => {
+          if (options['ignore-alias'] && element.type === 'ImportSpecifier') {
+            return element.imported.name
           }
 
-          return {
-            size: rangeToDiff(specifier.range),
-            node: specifier,
-            name,
-          }
-        })
-
-        pairwise(nodes, (left, right) => {
-          if (isPositive(compare(left, right, options))) {
-            context.report({
-              messageId: 'unexpectedNamedImportsOrder',
-              data: {
-                left: left.name,
-                right: right.name,
-              },
-              node: right.node,
-              fix: fixer =>
-                makeFixes(
-                  fixer,
-                  nodes,
-                  sortNodes(nodes, options),
-                  context.sourceCode,
-                ),
-            })
-          }
-        })
-      }
+          return element.local.name
+        },
+        context,
+        options,
+      })
     },
   }),
 })
