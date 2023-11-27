@@ -1,31 +1,20 @@
 import type { TSESTree } from '@typescript-eslint/types'
 
-import type { SortingNode } from '../typings'
-
+import { createSortingRule } from '../utils/create-sorting-rule'
 import { createEslintRule } from '../utils/create-eslint-rule'
-import { toSingleLine } from '../utils/to-single-line'
-import { rangeToDiff } from '../utils/range-to-diff'
-import { isPositive } from '../utils/is-positive'
-import { SortOrder, SortType } from '../typings'
-import { sortNodes } from '../utils/sort-nodes'
-import { makeFixes } from '../utils/make-fixes'
 import { complete } from '../utils/complete'
-import { pairwise } from '../utils/pairwise'
-import { compare } from '../utils/compare'
 
 type MESSAGE_ID = 'unexpectedMapElementsOrder'
 
-type Options = [
-  Partial<{
-    'ignore-case': boolean
-    order: SortOrder
-    type: SortType
-  }>,
-]
+interface Options {
+  type: 'alphabetical' | 'line-length' | 'natural'
+  'ignore-case': boolean
+  order: 'desc' | 'asc'
+}
 
 export const RULE_NAME = 'sort-maps'
 
-export default createEslintRule<Options, MESSAGE_ID>({
+export default createEslintRule<[Partial<Options>], MESSAGE_ID>({
   name: RULE_NAME,
   meta: {
     type: 'suggestion',
@@ -38,17 +27,13 @@ export default createEslintRule<Options, MESSAGE_ID>({
         type: 'object',
         properties: {
           type: {
-            enum: [
-              SortType.alphabetical,
-              SortType.natural,
-              SortType['line-length'],
-            ],
-            default: SortType.alphabetical,
+            enum: ['alphabetical', 'natural', 'line-length'],
+            default: 'alphabetical',
             type: 'string',
           },
           order: {
-            enum: [SortOrder.asc, SortOrder.desc],
-            default: SortOrder.asc,
+            enum: ['asc', 'desc'],
+            default: 'asc',
             type: 'string',
           },
           'ignore-case': {
@@ -66,8 +51,8 @@ export default createEslintRule<Options, MESSAGE_ID>({
   },
   defaultOptions: [
     {
-      type: SortType.alphabetical,
-      order: SortOrder.asc,
+      type: 'alphabetical',
+      order: 'asc',
     },
   ],
   create: context => ({
@@ -80,73 +65,46 @@ export default createEslintRule<Options, MESSAGE_ID>({
       ) {
         let [{ elements }] = node.arguments
 
-        if (elements.length > 1) {
-          let options = complete(context.options.at(0), {
-            type: SortType.alphabetical,
-            'ignore-case': false,
-            order: SortOrder.asc,
-          })
+        let options = complete<Options>(context.options.at(0), {
+          type: 'alphabetical',
+          'ignore-case': false,
+          order: 'asc',
+        })
 
-          let parts: TSESTree.Expression[][] = elements.reduce(
-            (
-              accumulator: TSESTree.Expression[][],
-              element: TSESTree.SpreadElement | TSESTree.Expression | null,
-            ) => {
-              if (element === null || element.type === 'SpreadElement') {
-                accumulator.push([])
-              } else {
-                accumulator.at(-1)!.push(element)
-              }
-              return accumulator
-            },
-            [[]],
-          )
+        let nodeParts: TSESTree.Expression[][] = elements.reduce(
+          (
+            accumulator: TSESTree.Expression[][],
+            element: TSESTree.SpreadElement | TSESTree.Expression | null,
+          ) => {
+            if (element === null || element.type === 'SpreadElement') {
+              accumulator.push([])
+            } else {
+              accumulator.at(-1)!.push(element)
+            }
+            return accumulator
+          },
+          [[]],
+        )
 
-          for (let part of parts) {
-            let nodes: SortingNode[] = part.map(element => {
-              let name: string
-
+        for (let nodes of nodeParts) {
+          createSortingRule({
+            getName: element => {
               if (element.type === 'ArrayExpression') {
                 let [left] = element.elements
 
                 if (!left) {
-                  name = `${left}`
+                  return `${left}`
                 } else if (left.type === 'Literal') {
-                  name = left.raw
-                } else {
-                  name = context.sourceCode.text.slice(...left.range)
+                  return left.raw
                 }
-              } else {
-                name = context.sourceCode.text.slice(...element.range)
+                return context.sourceCode.text.slice(...left.range)
               }
-
-              return {
-                size: rangeToDiff(element.range),
-                node: element,
-                name,
-              }
-            })
-
-            pairwise(nodes, (left, right) => {
-              if (isPositive(compare(left, right, options))) {
-                context.report({
-                  messageId: 'unexpectedMapElementsOrder',
-                  data: {
-                    left: toSingleLine(left.name),
-                    right: toSingleLine(right.name),
-                  },
-                  node: right.node,
-                  fix: fixer =>
-                    makeFixes(
-                      fixer,
-                      nodes,
-                      sortNodes(nodes, options),
-                      context.sourceCode,
-                    ),
-                })
-              }
-            })
-          }
+            },
+            unexpectedOrderMessage: 'unexpectedMapElementsOrder',
+            context,
+            options,
+            nodes,
+          })
         }
       }
     },
