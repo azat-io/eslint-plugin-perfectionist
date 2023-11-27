@@ -86,6 +86,7 @@ interface Options {
   groups?: (string | string[])[]
   'custom-groups'?: { [key: string]: string[] | string }
   'styled-components'?: boolean
+  'ignore-pattern'?: string[]
   'partition-by-comment'?: string[] | string | boolean
   'partition-by-new-line'?: boolean
 }
@@ -139,6 +140,14 @@ Example:
 <sub>(default: `true`)</sub>
 
 When `false`, this rule will be disabled for the styled-components like libraries.
+
+### ignore-pattern
+
+<sub>(default: `[]`)</sub>
+
+If you need to ignore a rule for some interfaces, you can specify their names or a pattern to ignore, for example: `'Component*'` to ignore all interfaces whose names begin with the word Component.
+
+The [minimatch](https://github.com/isaacs/minimatch) library is used for pattern matching.
 
 ### partition-by-comment
 

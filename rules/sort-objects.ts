@@ -1,6 +1,8 @@
 import type { TSESTree } from '@typescript-eslint/types'
 import type { TSESLint } from '@typescript-eslint/utils'
 
+import { minimatch } from 'minimatch'
+
 import type { PartitionComment, SortingNode } from '../typings'
 
 import { isPartitionComment } from '../utils/is-partition-comment'
@@ -37,6 +39,7 @@ type Options = [
     'partition-by-new-line': boolean
     groups: (string[] | string)[]
     'styled-components': boolean
+    'ignore-pattern': string[]
     'ignore-case': boolean
     order: SortOrder
     type: SortType
@@ -90,6 +93,12 @@ export default createEslintRule<Options, MESSAGE_ID>({
             type: 'boolean',
             default: false,
           },
+          'ignore-pattern': {
+            items: {
+              type: 'string',
+            },
+            type: 'array',
+          },
           groups: {
             type: 'array',
           },
@@ -111,18 +120,35 @@ export default createEslintRule<Options, MESSAGE_ID>({
     let sortObject = (
       node: TSESTree.ObjectExpression | TSESTree.ObjectPattern,
     ) => {
-      if (node.properties.length > 1) {
-        let options = complete(context.options.at(0), {
-          'partition-by-new-line': false,
-          'partition-by-comment': false,
-          type: SortType.alphabetical,
-          'styled-components': true,
-          'ignore-case': false,
-          order: SortOrder.asc,
-          'custom-groups': {},
-          groups: [],
-        })
+      let options = complete(context.options.at(0), {
+        'partition-by-new-line': false,
+        'partition-by-comment': false,
+        type: SortType.alphabetical,
+        'styled-components': true,
+        'ignore-case': false,
+        'ignore-pattern': [],
+        order: SortOrder.asc,
+        'custom-groups': {},
+        groups: [],
+      })
 
+      let variableIdentifier =
+        node.parent.type === 'VariableDeclarator' &&
+        node.parent.id.type === 'Identifier'
+          ? node.parent.id.name
+          : null
+
+      let shouldIgnore =
+        options['ignore-pattern'].length &&
+        typeof variableIdentifier === 'string'
+          ? options['ignore-pattern'].some(pattern =>
+              minimatch(variableIdentifier!, pattern, {
+                nocomment: true,
+              }),
+            )
+          : false
+
+      if (!shouldIgnore && node.properties.length > 1) {
         let isStyledCallExpression = (identifier: TSESTree.Expression) =>
           identifier.type === 'Identifier' && identifier.name === 'styled'
 

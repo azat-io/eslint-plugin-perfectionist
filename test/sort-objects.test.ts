@@ -2651,5 +2651,27 @@ describe(RULE_NAME, () => {
         invalid: [],
       },
     )
+
+    ruleTester.run(`${RULE_NAME}: allow to ignore pattern`, rule, {
+      valid: [
+        {
+          code: dedent`
+            const buttonStyles = {
+              background: "palevioletred",
+              display: 'flex',
+              flexDirection: 'column',
+              width: "50px",
+              height: "50px",
+            }
+          `,
+          options: [
+            {
+              'ignore-pattern': ['*Styles'],
+            },
+          ],
+        },
+      ],
+      invalid: [],
+    })
   })
 })
