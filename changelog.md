@@ -1,6 +1,18 @@
 # Changelog
 
 
+## v2.5.0
+
+[compare changes](https://github.com/azat-io/eslint-plugin-perfectionist/compare/v2.4.2...v2.5.0)
+
+### 🚀 Features
+
+- Add ignore-pattern option for sort-objects rule ([ac5b240](https://github.com/azat-io/eslint-plugin-perfectionist/commit/ac5b240))
+
+### ❤️ Contributors
+
+- Azat S. ([@azat-io](http://github.com/azat-io))
+
 ## v2.4.2
 
 [compare changes](https://github.com/azat-io/eslint-plugin-perfectionist/compare/v2.4.1...v2.4.2)
