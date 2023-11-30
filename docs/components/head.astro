@@ -1,0 +1,55 @@
+---
+import '../styles/base.css'
+import '../styles/fonts.css'
+
+interface Props {
+  description: string
+  title?: string
+}
+
+let canonicalURL = new URL(Astro.url.pathname, Astro.site)
+
+let { description, title } = Astro.props
+let websiteName = 'ESLint Plugin Perfectionist'
+
+let pageTitle = title ? `${title} | ${websiteName}` : websiteName
+---
+
+<meta charset="utf-8" />
+<meta content="width=device-width,initial-scale=1" name="viewport" />
+<meta name="theme-color" content="#1b1b1b" />
+
+<link href="/favicon.ico" sizes="any" rel="icon" />
+<link type="image/svg+xml" href="/icon.svg" rel="icon" />
+<link href="/apple-touch-icon.png" rel="apple-touch-icon" />
+
+<link
+  href="/fonts/stem-regular.woff2"
+  type="font/woff"
+  rel="preload"
+  crossorigin
+  as="font"
+/>
+<link
+  href="/fonts/stem-bold.woff2"
+  type="font/woff"
+  rel="preload"
+  crossorigin
+  as="font"
+/>
+
+<link href={canonicalURL} rel="canonical" />
+
+<title>{pageTitle}</title>
+<meta content={pageTitle} name="title" />
+<meta content={description} name="description" />
+
+<meta property="og:type" content="website" />
+<meta content={Astro.url} property="og:url" />
+<meta property="og:title" content={pageTitle} />
+<meta property="og:description" content={description} />
+
+<meta content="summary_large_image" property="twitter:card" />
+<meta property="twitter:url" content={Astro.url} />
+<meta property="twitter:title" content={pageTitle} />
+<meta property="twitter:description" content={description} />

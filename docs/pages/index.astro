@@ -1,15 +1,19 @@
 ---
-
+import Head from '../components/head.astro'
 ---
 
 <html lang="en">
-  <head>
-    <meta charset="utf-8" />
-    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-    <meta name="viewport" content="width=device-width" />
-    <title>ESLint Plugin Perfectionist</title>
-  </head>
+  <Head description="ESLint Plugin Perfectionist" />
   <body>
-    <h1>Astro</h1>
+    <div class="container">
+      <h1>Perfectionist</h1>
+      <p>Take Your Code to the Beauty Salon</p>
+    </div>
+    <style>
+      .container {
+        max-inline-size: 900px;
+        margin-inline: auto;
+      }
+    </style>
   </body>
 </html>

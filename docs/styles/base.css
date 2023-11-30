@@ -1,0 +1,33 @@
+::selection {
+  background-color: oklch(55% 0.18 282 / 50%);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: 'Co Text', sans-serif;
+  font-size: 20px;
+  font-weight: 400;
+  line-height: 1.75;
+}
+
+button {
+  appearance: button;
+}
+
+button,
+input,
+select,
+optgroup,
+textarea {
+  font: inherit;
+}
+
+a,
+select:not(:disabled),
+button:not(:disabled) {
+  cursor: pointer;
+}
