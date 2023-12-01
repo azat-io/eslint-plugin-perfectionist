@@ -11,3 +11,9 @@
   src: url('/fonts/co-text-bold.woff2');
   font-display: swap;
 }
+
+@font-face {
+  font-family: 'Monaspace Neon';
+  src: url('./fonts/monaspace-neon.woff2');
+  font-display: swap;
+}

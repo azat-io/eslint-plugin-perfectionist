@@ -8,6 +8,10 @@ import Logo from './logo.astro'
     <Logo class="logo" />
     <h1 class="title">Perfectionist</h1>
     <p class="subtitle">Take Your Code to the Beauty Salon</p>
+    <div class="button-group">
+      <a class="button button-primary" href="#">Get Started</a>
+      <a class="button button-secondary" href="#">View on GitHub</a>
+    </div>
     <div class="lines lines-left">
       <div class="line line-left line-l"></div>
       <div class="line line-left line-m"></div>
@@ -29,7 +33,7 @@ import Logo from './logo.astro'
 
   .hero {
     position: relative;
-    padding-block: 48px 160px;
+    padding-block: 48px 140px;
     color: var(--color-content-primary);
     background: var(--color-background-primary);
   }
@@ -52,14 +56,41 @@ import Logo from './logo.astro'
     margin-block: 0;
   }
 
+  .button-group {
+    display: flex;
+    gap: 20px;
+    margin-block-start: 32px;
+  }
+
+  .button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    inline-size: 200px;
+    block-size: 48px;
+    padding: 0 16px;
+    font-size: 16px;
+    font-weight: 500;
+    color: var(--color-content-primary);
+    text-decoration: none;
+    background: var(--color-background-primary-hover);
+    border-radius: 6px;
+    transition: background 0.2s ease-in-out;
+  }
+
+  .button-primary {
+    color: oklch(100% 0 0);
+    background: var(--color-brand);
+  }
+
   .lines {
     position: absolute;
     inset-block-start: 50%;
     display: flex;
     flex-direction: column;
     justify-content: space-around;
-    block-size: 100%;
-    padding-block: 48px 160px;
+    block-size: 512px;
+    padding-block: 0 180px;
     transform: translateY(-50%);
   }
 
@@ -75,7 +106,7 @@ import Logo from './logo.astro'
 
   .line {
     block-size: 64px;
-    background: var(--color-background-secondary);
+    background: var(--color-background-primary-hover);
   }
 
   .line-left {

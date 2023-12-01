@@ -1,0 +1,26 @@
+---
+import Container from './container.astro'
+---
+
+<section class="section">
+  <Container>
+    <h2 class="title">Installation</h2>
+    <p>
+      <code>npm install --save-dev eslint-plugin-perfectionist</code>
+    </p>
+    <p>
+      <code>yarn add --dev eslint-plugin-perfectionist</code>
+    </p>
+  </Container>
+</section>
+
+<style>
+  .section {
+    padding-block: 120px;
+    background: var(--color-background-secondary);
+  }
+
+  .title {
+    margin-block: 0;
+  }
+</style>
