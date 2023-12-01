@@ -1,0 +1,17 @@
+:root {
+  --color-brand: oklch(44.7% 0.211 281);
+
+  --color-background-primary: oklch(99.7% 0 0);
+  --color-background-secondary: oklch(95% 0 0);
+
+  --color-content-primary: oklch(23.5% 0 0);
+}
+
+.dark:root {
+  --color-brand: oklch(44.7% 0.211 281);
+
+  --color-background-primary: oklch(23.5% 0 0);
+  --color-background-secondary: oklch(26.45% 0 0);
+
+  --color-content-primary: oklch(100% 0 0);
+}

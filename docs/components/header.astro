@@ -1,4 +1,6 @@
 ---
+import GithubLineIcon from '../icons/github-line.astro'
+import ThemeToggle from './theme-toggle.astro'
 import Logo from './logo.astro'
 ---
 
@@ -11,6 +13,16 @@ import Logo from './logo.astro'
     <a href="#" class="nav-link">Guide</a>
     <a href="#" class="nav-link">Configs</a>
     <a href="#" class="nav-link">Rules</a>
+    <hr class="hr" />
+    <ThemeToggle class="nav-link" />
+    <hr class="hr" />
+    <a
+      class="nav-link"
+      href="https://github.com/azat-io/eslint-plugin-perfectionist"
+      target="_blank"
+    >
+      <GithubLineIcon class="icon" />
+    </a>
   </nav>
 </header>
 
@@ -19,9 +31,13 @@ import Logo from './logo.astro'
     display: flex;
     gap: 8px;
     align-items: center;
+    padding: 12px;
     font-weight: 700;
     color: inherit;
     text-decoration: none;
+    border-radius: 9999px;
+    outline: none;
+    transition: background 200ms ease-in-out;
   }
 
   .header {
@@ -30,8 +46,8 @@ import Logo from './logo.astro'
     justify-content: space-between;
     padding-block: 8px;
     padding-inline: 32px;
-    color: oklch(100% 0 0);
-    background: oklch(23.5% 0 286);
+    color: var(--color-content-primary);
+    background: var(--color-background-primary);
   }
 
   .logo {
@@ -43,10 +59,36 @@ import Logo from './logo.astro'
   .nav {
     display: flex;
     gap: 20px;
+    align-items: center;
   }
 
   .nav-link {
+    display: flex;
+    padding: 0;
+    padding: 12px;
     color: inherit;
     text-decoration: none;
+    background: transparent;
+    border: 0;
+    border-radius: 9999px;
+    outline: none;
+  }
+
+  .nav-link:hover,
+  .nav-link:focus-visible,
+  .home-link:focus-visible {
+    background: var(--color-background-secondary);
+  }
+
+  .hr {
+    block-size: 28px;
+    margin-block: 4px;
+    border-color: var(--color-background-secondary);
+    border-width: 1px;
+  }
+
+  .icon {
+    inline-size: 28px;
+    block-size: 28px;
   }
 </style>
