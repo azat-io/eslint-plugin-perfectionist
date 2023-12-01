@@ -1,5 +1,6 @@
 ::selection {
-  background-color: oklch(55% 0.18 282 / 50%);
+  color: oklch(95% 0 286);
+  background-color: oklch(44.8% 0.211 281 / 99%);
 }
 
 * {

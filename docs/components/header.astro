@@ -7,6 +7,11 @@ import Logo from './logo.astro'
     <Logo class="logo" />
     <span>Perfectionist</span>
   </a>
+  <nav class="nav">
+    <a href="#" class="nav-link">Guide</a>
+    <a href="#" class="nav-link">Configs</a>
+    <a href="#" class="nav-link">Rules</a>
+  </nav>
 </header>
 
 <style>
@@ -14,6 +19,7 @@ import Logo from './logo.astro'
     display: flex;
     gap: 8px;
     align-items: center;
+    font-weight: 700;
     color: inherit;
     text-decoration: none;
   }
@@ -21,6 +27,7 @@ import Logo from './logo.astro'
   .header {
     display: flex;
     align-items: center;
+    justify-content: space-between;
     padding-block: 8px;
     padding-inline: 32px;
     color: oklch(100% 0 0);
@@ -31,5 +38,15 @@ import Logo from './logo.astro'
     inline-size: 48px;
     block-size: 48px;
     padding: 2px;
+  }
+
+  .nav {
+    display: flex;
+    gap: 20px;
+  }
+
+  .nav-link {
+    color: inherit;
+    text-decoration: none;
   }
 </style>
