@@ -1,0 +1,38 @@
+---
+import Container from './container.astro'
+import Logo from './logo.astro'
+---
+
+<div class="hero">
+  <Container class="hero-content">
+    <Logo class="logo" />
+    <h1 class="title">Perfectionist</h1>
+    <p class="subtitle">Take Your Code to the Beauty Salon</p>
+  </Container>
+</div>
+
+<style>
+  .hero {
+    padding-block: 48px 160px;
+    color: oklch(100% 0 0);
+    background: oklch(23.5% 0 286);
+  }
+
+  .hero-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+  }
+
+  .logo {
+    inline-size: 200px;
+    block-size: 200px;
+  }
+
+  .title,
+  .subtitle {
+    margin-block: 0;
+  }
+</style>

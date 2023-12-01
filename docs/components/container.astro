@@ -1,0 +1,19 @@
+---
+interface Props {
+  class?: string
+}
+
+let { class: className, ...rest } = Astro.props
+---
+
+<div class:list={['container', className]} {...rest}>
+  <slot />
+</div>
+
+<style>
+  .container {
+    max-inline-size: 900px;
+    padding-inline: 16px;
+    margin-inline: auto;
+  }
+</style>

@@ -1,19 +1,13 @@
 ---
+import Header from '../components/header.astro'
 import Head from '../components/head.astro'
+import Hero from '../components/hero.astro'
 ---
 
 <html lang="en">
   <Head description="ESLint Plugin Perfectionist" />
   <body>
-    <div class="container">
-      <h1>Perfectionist</h1>
-      <p>Take Your Code to the Beauty Salon</p>
-    </div>
-    <style>
-      .container {
-        max-inline-size: 900px;
-        margin-inline: auto;
-      }
-    </style>
+    <Header />
+    <Hero />
   </body>
 </html>

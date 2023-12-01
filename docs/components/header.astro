@@ -1,0 +1,35 @@
+---
+import Logo from './logo.astro'
+---
+
+<header class="header">
+  <a href="/" class="home-link" aria-label="Perfectionist home page">
+    <Logo class="logo" />
+    <span>Perfectionist</span>
+  </a>
+</header>
+
+<style>
+  .home-link {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+    color: inherit;
+    text-decoration: none;
+  }
+
+  .header {
+    display: flex;
+    align-items: center;
+    padding-block: 8px;
+    padding-inline: 32px;
+    color: oklch(100% 0 0);
+    background: oklch(23.5% 0 286);
+  }
+
+  .logo {
+    inline-size: 48px;
+    block-size: 48px;
+    padding: 2px;
+  }
+</style>
