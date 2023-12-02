@@ -12,11 +12,7 @@
     "strict": true,
     "noEmit": true
   },
-  "include": [
-    "**/*.ts",
-    "docs/.vitepress/**/*.ts",
-    "docs/.vitepress/config.mts"
-  ],
   "exclude": ["node_modules", "coverage"],
-  "extends": "astro/tsconfigs/base"
+  "extends": "astro/tsconfigs/base",
+  "include": ["**/*.ts"]
 }

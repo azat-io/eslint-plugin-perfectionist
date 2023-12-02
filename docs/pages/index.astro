@@ -1,6 +1,8 @@
 ---
 import Installation from '../components/installation.astro'
+import DemoWrapper from '../components/demo-wrapper.astro'
 import Header from '../components/header.astro'
+import Demo from '../components/demo.svelte'
 import Head from '../components/head.astro'
 import Hero from '../components/hero.astro'
 ---
@@ -11,5 +13,8 @@ import Hero from '../components/hero.astro'
     <Header />
     <Hero />
     <Installation />
+    <DemoWrapper>
+      <Demo client:load />
+    </DemoWrapper>
   </body>
 </html>

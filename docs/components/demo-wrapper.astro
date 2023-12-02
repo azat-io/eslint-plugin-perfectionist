@@ -1,0 +1,22 @@
+---
+import Container from './container.astro'
+---
+
+<section class="demo">
+  <Container>
+    <h2 class="title">Demo</h2>
+    <slot />
+  </Container>
+</section>
+
+<style>
+  .demo {
+    padding-block: 120px;
+    background: var(--color-background-primary);
+  }
+
+  .title {
+    margin-block: 0 32px;
+    text-align: center;
+  }
+</style>

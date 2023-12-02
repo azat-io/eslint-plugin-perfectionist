@@ -1,0 +1,23 @@
+:root {
+  --astro-code-color-text: oklch(43% 0 0);
+  --astro-code-color-background: oklch(96% 0 0);
+  --astro-code-token-constant: oklch(50% 0.211 310);
+  --astro-code-token-string: oklch(55.95% 0.182 189);
+  --astro-code-token-comment: oklch(60% 0 0);
+  --astro-code-token-keyword: oklch(50% 0.211 281);
+  --astro-code-token-parameter: oklch(65% 0.211 281);
+  --astro-code-token-function: oklch(50% 0.179 236);
+  --astro-code-token-string-expression: oklch(60% 0.216 158);
+  --astro-code-token-punctuation: oklch(80% 0 0);
+  --astro-code-token-link: oklch(65% 0.211 281);
+}
+
+.dark:root {
+  --astro-code-color-text: oklch(90% 0 0);
+  --astro-code-color-background: oklch(20.5% 0 0);
+  --astro-code-token-constant: oklch(65% 0.211 310);
+  --astro-code-token-string: oklch(85.95% 0.182 189);
+  --astro-code-token-keyword: oklch(60% 0.211 281);
+  --astro-code-token-function: oklch(72% 0.179 236);
+  --astro-code-token-string-expression: oklch(70% 0.216 158);
+}

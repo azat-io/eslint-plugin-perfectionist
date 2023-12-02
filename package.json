@@ -82,6 +82,7 @@
     "natural-compare-lite": "^1.4.0"
   },
   "devDependencies": {
+    "@astrojs/svelte": "^4.0.4",
     "@azat-io/eslint-config-typescript": "^1.7.1",
     "@azat-io/stylelint-config": "^0.1.1",
     "@commitlint/cli": "^19.0.3",
@@ -112,6 +113,7 @@
     "postcss-html": "^1.6.0",
     "prettier": "^3.2.5",
     "prettier-plugin-astro": "^0.13.0",
+    "prettier-plugin-svelte": "^3.2.2",
     "simple-git-hooks": "^2.10.0",
     "stylelint": "^16.2.1",
     "stylelint-config-recess-order": "^5.0.0",

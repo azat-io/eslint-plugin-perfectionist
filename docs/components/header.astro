@@ -27,6 +27,19 @@ import Logo from './logo.astro'
 </header>
 
 <style>
+  .header {
+    position: sticky;
+    inset-block-start: 0;
+    z-index: 1;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding-block: 8px;
+    padding-inline: 32px;
+    color: var(--color-content-primary);
+    background: var(--color-background-primary);
+  }
+
   .home-link {
     display: flex;
     gap: 8px;
@@ -38,16 +51,6 @@ import Logo from './logo.astro'
     border-radius: 6px;
     outline: none;
     transition: background 200ms ease-in-out;
-  }
-
-  .header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding-block: 8px;
-    padding-inline: 32px;
-    color: var(--color-content-primary);
-    background: var(--color-background-primary);
   }
 
   .logo {
