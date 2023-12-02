@@ -1,7 +1,14 @@
 ---
+import { getLocaleFromUrl } from '../utils/get-locale-from-url'
+import { useTranslations } from '../utils/use-translations'
 import GithubLineIcon from '../icons/github-line.astro'
+import TranslateIcon from '../icons/translate.astro'
+import LocaleSelect from './locale-select.svelte'
 import ThemeToggle from './theme-toggle.astro'
 import Logo from './logo.astro'
+
+let locale = getLocaleFromUrl(Astro.url)
+let t = useTranslations(locale)
 ---
 
 <header class="header">
@@ -10,9 +17,16 @@ import Logo from './logo.astro'
     <span>Perfectionist</span>
   </a>
   <nav class="nav">
-    <a href="#" class="nav-link">Guide</a>
-    <a href="#" class="nav-link">Configs</a>
-    <a href="#" class="nav-link">Rules</a>
+    <a href="#" class="nav-link">{t('guide')}</a>
+    <a href="#" class="nav-link">{t('configs')}</a>
+    <a href="#" class="nav-link">{t('rules')}</a>
+    <hr class="hr" />
+    <div class="nav-link-wrapper">
+      <button id="locale-select" class="nav-link">
+        <TranslateIcon class="icon" />
+      </button>
+      <LocaleSelect client:load />
+    </div>
     <hr class="hr" />
     <ThemeToggle class="nav-link" />
     <hr class="hr" />
@@ -63,6 +77,10 @@ import Logo from './logo.astro'
     display: flex;
     gap: 20px;
     align-items: center;
+  }
+
+  .nav-link-wrapper {
+    position: relative;
   }
 
   .nav-link {

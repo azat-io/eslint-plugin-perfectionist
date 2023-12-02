@@ -8,6 +8,8 @@
   --color-background-secondary: oklch(97.5% 0 0);
 
   --color-content-primary: oklch(23.5% 0 0);
+
+  --color-border-primary: oklch(95% 0 0);
 }
 
 .dark:root {
@@ -20,4 +22,6 @@
   --color-background-secondary: oklch(22.5% 0 0);
 
   --color-content-primary: oklch(100% 0 0);
+
+  --color-border-primary: oklch(21.5% 0 0);
 }

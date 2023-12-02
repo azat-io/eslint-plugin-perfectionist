@@ -14,6 +14,6 @@
 
 @font-face {
   font-family: 'Monaspace Neon';
-  src: url('./fonts/monaspace-neon.woff2');
+  src: url('/fonts/monaspace-neon.woff2');
   font-display: swap;
 }

@@ -1,0 +1,29 @@
+---
+import { getLocaleFromUrl } from '../../utils/get-locale-from-url'
+import { useTranslations } from '../../utils/use-translations'
+import Installation from '../../components/installation.astro'
+import DemoWrapper from '../../components/demo-wrapper.astro'
+import Header from '../../components/header.astro'
+import Demo from '../../components/demo.svelte'
+import Head from '../../components/head.astro'
+import Hero from '../../components/hero.astro'
+import { locales } from '../../locales'
+
+let locale = getLocaleFromUrl(Astro.url)
+let t = useTranslations(locale)
+
+export let getStaticPaths = () =>
+  locales.map(({ code }) => ({ params: { lang: code } }))
+---
+
+<html lang="en">
+  <Head description="ESLint Plugin Perfectionist" />
+  <body>
+    <Header />
+    <Hero />
+    <Installation />
+    <DemoWrapper>
+      <Demo client:load />
+    </DemoWrapper>
+  </body>
+</html>

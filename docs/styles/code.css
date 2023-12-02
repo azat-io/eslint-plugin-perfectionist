@@ -14,7 +14,7 @@
 
 .dark:root {
   --astro-code-color-text: oklch(90% 0 0);
-  --astro-code-color-background: oklch(20.5% 0 0);
+  --astro-code-color-background: oklch(22% 0 0);
   --astro-code-token-constant: oklch(65% 0.211 310);
   --astro-code-token-string: oklch(85.95% 0.182 189);
   --astro-code-token-keyword: oklch(60% 0.211 281);
