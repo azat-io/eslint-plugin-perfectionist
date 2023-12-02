@@ -1,26 +1,33 @@
 ---
+import { getLocaleFromUrl } from '../utils/get-locale-from-url'
+import { useTranslations } from '../utils/use-translations'
 import Container from './container.astro'
 import Logo from './logo.astro'
+
+let locale = getLocaleFromUrl(Astro.url)
+let t = useTranslations(locale)
 ---
 
 <div class="hero">
   <Container class="hero-content">
     <Logo class="logo" />
     <h1 class="title">Perfectionist</h1>
-    <p class="subtitle">Take Your Code to the Beauty Salon</p>
+    <p class="subtitle">{t('slogan')}</p>
     <div class="button-group">
-      <a class="button button-primary" href="#">Get Started</a>
-      <a class="button button-secondary" href="#">View on GitHub</a>
-    </div>
-    <div class="lines lines-left">
-      <div class="line line-left line-l"></div>
-      <div class="line line-left line-m"></div>
-      <div class="line line-left line-s"></div>
-    </div>
-    <div class="lines lines-right">
-      <div class="line line-right line-l"></div>
-      <div class="line line-right line-m"></div>
-      <div class="line line-right line-s"></div>
+      <a class="button button-primary" href="#">
+        {t('get-started')}
+      </a>
+      <a class="button button-secondary" href="#">{t('view-on-github')}</a>
+      <div class="lines lines-left">
+        <div class="line line-left line-l"></div>
+        <div class="line line-left line-m"></div>
+        <div class="line line-left line-s"></div>
+      </div>
+      <div class="lines lines-right">
+        <div class="line line-right line-l"></div>
+        <div class="line line-right line-m"></div>
+        <div class="line line-right line-s"></div>
+      </div>
     </div>
   </Container>
 </div>
