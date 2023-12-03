@@ -1,0 +1,51 @@
+---
+interface Props {
+  color: 'primary' | 'secondary'
+  href?: string
+  id?: string
+}
+
+let { color, ...props } = Astro.props
+
+let Element = props.href ? 'a' : 'button'
+---
+
+<Element
+  class:list={[
+    'button',
+    {
+      'button-primary': color === 'primary',
+      'button-secondary': color === 'secondary',
+    },
+  ]}
+  {...props}
+>
+  <slot />
+</Element>
+
+<style>
+  .button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    inline-size: 200px;
+    block-size: 48px;
+    padding: 0 16px;
+    font-size: 16px;
+    font-weight: 500;
+    text-decoration: none;
+    border: none;
+    border-radius: 6px;
+    transition: background 0.2s ease-in-out;
+  }
+
+  .button-primary {
+    color: oklch(100% 0 0);
+    background: var(--color-brand);
+  }
+
+  .button-secondary {
+    color: var(--color-content-primary);
+    background: var(--color-background-primary-hover);
+  }
+</style>

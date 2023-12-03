@@ -8,53 +8,10 @@ import Container from './container.astro'
   <Container>
     <h2 class="title">Installation</h2>
     <Code
-      code={`// scomcmsdkld
-import Button from '../../components/Button'
-import {
-  useId,
-  useCallback,
-  useState,
-  useEffect,
-  useMemo,
-} from 'react'
-
-interface Props {
-  children: React.ReactNode
-  className?: string
-  disabled?: boolean
-  onClick?: (event: React.MouseEvent<HTMLButtonElement>) => void
-  type?: 'button' | 'submit' | 'reset'
-}
-
-const Button = ({
-  children,
-  className,
-  disabled,
-  onClick,
-  type = 'button',
-}: Props) => {
-  const [id, setId] = useState<string | undefined>(undefined)
-  return (
-    <button
-      className={className}
-      disabled={disabled}
-      id={id}
-      onClick={onClick}
-      type={type}
-    >
-      {children}
-    </button>
-  )
-}`}
-      lang="js"
-      theme="css-variables"
-    />
-    <Code
       code="npm install --save-dev eslint-plugin-perfectionist"
       theme="css-variables"
       lang="bash"
     />
-    <code>yarn add --dev eslint-plugin-perfectionist</code>
   </Container>
 </section>
 

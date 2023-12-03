@@ -1,6 +1,7 @@
 ---
 import { getLocaleFromUrl } from '../utils/get-locale-from-url'
 import { useTranslations } from '../utils/use-translations'
+import ButtonLink from './button-link.astro'
 import Container from './container.astro'
 import Logo from './logo.astro'
 
@@ -14,10 +15,12 @@ let t = useTranslations(locale)
     <h1 class="title">Perfectionist</h1>
     <p class="subtitle">{t('slogan')}</p>
     <div class="button-group">
-      <a class="button button-primary" href="#">
+      <ButtonLink href="#" color="primary">
         {t('get-started')}
-      </a>
-      <a class="button button-secondary" href="#">{t('view-on-github')}</a>
+      </ButtonLink>
+      <ButtonLink href="#" color="secondary">
+        {t('view-on-github')}
+      </ButtonLink>
       <div class="lines lines-left">
         <div class="line line-left line-l"></div>
         <div class="line line-left line-m"></div>

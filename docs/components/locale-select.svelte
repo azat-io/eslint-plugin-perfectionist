@@ -1,4 +1,6 @@
 <script>
+  import { quintOut } from 'svelte/easing'
+  import { slide } from 'svelte/transition'
   import { onMount } from 'svelte'
 
   import { locales } from '../locales'
@@ -25,9 +27,12 @@
 </script>
 
 {#if open}
-  <div class="locale-select">
+  <div
+    class="locale-select"
+    transition:slide={{ delay: 0, duration: 400, easing: quintOut }}
+  >
     {#each locales as { name, originName, code, icon }}
-      <a class="locale" href={`/${code}`}>
+      <a class="locale" href={`/${code}`} key={code}>
         <div class="icon">{@html icon}</div>
         <div class="name-container">
           <span class="name">{name}</span>
@@ -48,9 +53,6 @@
     border: 1px solid var(--color-border-primary);
     border-radius: 0 0 6px 6px;
     padding: 16px;
-    transform: scaleY(0);
-    transform-origin: top center;
-    animation: grow-down 250ms ease-in-out forwards;
   }
 
   .locale {
@@ -88,19 +90,5 @@
 
   .origin-name {
     font-size: 13px;
-  }
-
-  @keyframes grow-down {
-    0% {
-      transform: scaleY(0);
-    }
-
-    80% {
-      transform: scaleY(1.1);
-    }
-
-    100% {
-      transform: scaleY(1);
-    }
   }
 </style>

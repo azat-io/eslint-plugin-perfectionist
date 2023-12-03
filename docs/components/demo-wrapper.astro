@@ -1,10 +1,30 @@
 ---
+import { getLocaleFromUrl } from '../utils/get-locale-from-url'
+import { useTranslations } from '../utils/use-translations'
+import ButtonLink from './button-link.astro'
 import Container from './container.astro'
+
+let locale = getLocaleFromUrl(Astro.url)
+let t = useTranslations(locale)
 ---
 
 <section class="demo">
   <Container>
-    <h2 class="title">Demo</h2>
+    <h2 class="title">{t('demo')}</h2>
+    <p class="subtitle">{t('make-magic')}</p>
+    <div class="button-list">
+      <div class="button-group">
+        <ButtonLink id="demo-sort-alphabetical" color="primary">
+          {t('sort-alphabetically')}
+        </ButtonLink>
+        <ButtonLink id="demo-sort-line-length" color="primary">
+          {t('sort-by-line-length')}
+        </ButtonLink>
+      </div>
+      <ButtonLink id="demo-sort-reset" color="secondary">
+        {t('reset')}
+      </ButtonLink>
+    </div>
     <slot />
   </Container>
 </section>
@@ -16,7 +36,23 @@ import Container from './container.astro'
   }
 
   .title {
+    margin-block: 0 8px;
+    text-align: center;
+  }
+
+  .subtitle {
     margin-block: 0 32px;
     text-align: center;
+  }
+
+  .button-list {
+    display: flex;
+    justify-content: space-between;
+    margin-block: 32px;
+  }
+
+  .button-group {
+    display: flex;
+    gap: 20px;
   }
 </style>
