@@ -82,7 +82,7 @@
     "natural-compare-lite": "^1.4.0"
   },
   "devDependencies": {
-    "@astrojs/svelte": "^4.0.4",
+    "@astrojs/svelte": "^5.0.0",
     "@azat-io/eslint-config-typescript": "^1.7.1",
     "@azat-io/stylelint-config": "^0.1.1",
     "@commitlint/cli": "^19.0.3",
@@ -95,7 +95,7 @@
     "@typescript-eslint/types": "^7.2.0",
     "@vitest/coverage-v8": "^1.3.1",
     "ajv": "^6.12.6",
-    "astro": "^3.6.0",
+    "astro": "^4.0.3",
     "astro-eslint-parser": "^0.16.3",
     "changelogen": "^0.5.5",
     "clean-publish": "^4.3.0",
