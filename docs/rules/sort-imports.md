@@ -21,6 +21,8 @@ Sorting imports ensures that imports are easily locatable and quickly scannable,
 
 :::info Important
 If you use the [`sort-imports`](https://eslint.org/docs/latest/rules/sort-imports) rule or the [`order`](https://github.com/import-js/eslint-plugin-import/blob/main/docs/rules/order.md) rule from the [`eslint-plugin-import`](https://github.com/import-js/eslint-plugin-import) plugin, it is highly recommended to [disable them](https://eslint.org/docs/latest/use/configure/rules#using-configuration-files-1) to avoid conflicts.
+
+If you use the [`prettier-plugin-sort-imports`](https://github.com/trivago/prettier-plugin-sort-imports) plugin, remove them from the prettier config to avoid conflicts.
 :::
 
 Rule `perfectionist/sort-imports` works in a similar way to rule `import/order`, but with some differences:
