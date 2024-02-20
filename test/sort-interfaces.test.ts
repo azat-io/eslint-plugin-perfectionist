@@ -673,7 +673,7 @@ describe(RULE_NAME, () => {
     let type = 'natural-order'
 
     let options = {
-      type: SortType.alphabetical,
+      type: SortType.natural,
       order: SortOrder.asc,
       'ignore-case': false,
     }
