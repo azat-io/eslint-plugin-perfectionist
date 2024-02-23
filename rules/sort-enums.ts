@@ -1,23 +1,14 @@
-import type { SortingNode } from '../typings'
-
+import { createSortingRule } from '../utils/create-sorting-rule'
 import { createEslintRule } from '../utils/create-eslint-rule'
-import { toSingleLine } from '../utils/to-single-line'
-import { rangeToDiff } from '../utils/range-to-diff'
-import { isPositive } from '../utils/is-positive'
-import { SortOrder, SortType } from '../typings'
-import { sortNodes } from '../utils/sort-nodes'
-import { makeFixes } from '../utils/make-fixes'
 import { complete } from '../utils/complete'
-import { pairwise } from '../utils/pairwise'
-import { compare } from '../utils/compare'
 
 type MESSAGE_ID = 'unexpectedEnumsOrder'
 
 type Options = [
   Partial<{
+    type: 'alphabetical' | 'line-length' | 'natural'
     'ignore-case': boolean
-    order: SortOrder
-    type: SortType
+    order: 'desc' | 'asc'
   }>,
 ]
 
@@ -36,12 +27,8 @@ export default createEslintRule<Options, MESSAGE_ID>({
         type: 'object',
         properties: {
           type: {
-            enum: [
-              SortType.alphabetical,
-              SortType.natural,
-              SortType['line-length'],
-            ],
-            default: SortType.alphabetical,
+            enum: ['alphabetical', 'natural', 'line-length'],
+            default: 'alphabetical',
             type: 'string',
           },
           'ignore-case': {
@@ -49,8 +36,8 @@ export default createEslintRule<Options, MESSAGE_ID>({
             default: false,
           },
           order: {
-            enum: [SortOrder.asc, SortOrder.desc],
-            default: SortOrder.asc,
+            enum: ['asc', 'desc'],
+            default: 'asc',
             type: 'string',
           },
         },
@@ -63,8 +50,8 @@ export default createEslintRule<Options, MESSAGE_ID>({
   },
   defaultOptions: [
     {
-      type: SortType.alphabetical,
-      order: SortOrder.asc,
+      type: 'alphabetical',
+      order: 'asc',
     },
   ],
   create: context => ({
@@ -74,38 +61,22 @@ export default createEslintRule<Options, MESSAGE_ID>({
         node.members.every(({ initializer }) => initializer)
       ) {
         let options = complete(context.options.at(0), {
-          type: SortType.alphabetical,
-          order: SortOrder.asc,
+          type: 'alphabetical',
           'ignore-case': false,
-        })
+          order: 'asc',
+        } as const)
 
-        let nodes: SortingNode[] = node.members.map(member => ({
-          name:
+        let nodes = node.members
+
+        createSortingRule({
+          getName: member =>
             member.id.type === 'Literal'
               ? `${member.id.value}`
               : `${context.sourceCode.text.slice(...member.id.range)}`,
-          size: rangeToDiff(member.range),
-          node: member,
-        }))
-
-        pairwise(nodes, (left, right) => {
-          if (isPositive(compare(left, right, options))) {
-            context.report({
-              messageId: 'unexpectedEnumsOrder',
-              data: {
-                left: toSingleLine(left.name),
-                right: toSingleLine(right.name),
-              },
-              node: right.node,
-              fix: fixer =>
-                makeFixes(
-                  fixer,
-                  nodes,
-                  sortNodes(nodes, options),
-                  context.sourceCode,
-                ),
-            })
-          }
+          unexpectedOrderMessage: 'unexpectedEnumsOrder',
+          context,
+          options,
+          nodes,
         })
       }
     },
