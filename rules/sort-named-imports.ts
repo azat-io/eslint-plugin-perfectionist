@@ -71,7 +71,7 @@ export default createEslintRule<[Partial<Options>], MESSAGE_ID>({
         order: 'asc',
       })
 
-      return createSortingRule({
+      createSortingRule({
         unexpectedOrderMessage: 'unexpectedNamedImportsOrder',
         nodes: specifiers,
         getName: element => {

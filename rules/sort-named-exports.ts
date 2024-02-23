@@ -64,7 +64,7 @@ export default createEslintRule<Options, MESSAGE_ID>({
           order: 'asc',
         } as const)
 
-        return createSortingRule({
+        createSortingRule({
           unexpectedOrderMessage: 'unexpectedNamedExportsOrder',
           getName: specifier => specifier.local.name,
           nodes: node.specifiers,
