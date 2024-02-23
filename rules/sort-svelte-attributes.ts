@@ -105,8 +105,8 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
             groups: [],
           })
 
-          let parts: SortingNode[][] = node.attributes.reduce(
-            (accumulator: SortingNode[][], attribute) => {
+          let parts: SortingNode<TSESTree.Node>[][] = node.attributes.reduce(
+            (accumulator: SortingNode<TSESTree.Node>[][], attribute) => {
               if (attribute.type === 'SvelteSpreadAttribute') {
                 accumulator.push([])
                 return accumulator
@@ -177,7 +177,7 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
                   node: right.node,
                   fix: fixer => {
                     let grouped: {
-                      [key: string]: SortingNode[]
+                      [key: string]: SortingNode<TSESTree.Node>[]
                     } = {}
 
                     for (let currentNode of nodes) {
@@ -193,7 +193,7 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
                       }
                     }
 
-                    let sortedNodes: SortingNode[] = []
+                    let sortedNodes: SortingNode<TSESTree.Node>[] = []
 
                     for (let group of Object.keys(grouped).sort(
                       (a, b) => Number(a) - Number(b),

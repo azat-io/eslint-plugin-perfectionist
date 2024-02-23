@@ -5,7 +5,7 @@ import { compare } from './compare'
 type SortType = 'alphabetical' | 'line-length' | 'natural'
 type SortOrder = 'desc' | 'asc'
 
-export let sortNodes = <T extends SortingNode>(
+export let sortNodes = <T extends SortingNode<unknown>>(
   nodes: T[],
   options: {
     'ignore-case'?: boolean

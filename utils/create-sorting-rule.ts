@@ -12,6 +12,12 @@ import { useGroups } from './use-groups'
 import { pairwise } from './pairwise'
 import { compare } from './compare'
 
+interface ESLintNode {
+  range: TSESTree.Node['range']
+  loc: TSESTree.Node['loc']
+  type: string
+}
+
 interface Options {
   'custom-groups'?: { [key: string]: string[] | string }
   type: 'alphabetical' | 'line-length' | 'natural'
@@ -21,7 +27,7 @@ interface Options {
 }
 
 interface SortingRule<
-  Node extends TSESTree.Node,
+  Node extends ESLintNode,
   DefinedGroups,
   ErrorMessages extends string,
 > {
@@ -35,7 +41,7 @@ interface SortingRule<
 
 export let createSortingRule = <
   DefinedGroups extends undefined | string,
-  Node extends TSESTree.Node,
+  Node extends ESLintNode,
   ErrorMessages extends string,
 >({
   unexpectedOrderMessage,
@@ -46,7 +52,7 @@ export let createSortingRule = <
   nodes,
 }: SortingRule<Node, DefinedGroups, ErrorMessages>) => {
   if (nodes.length > 1) {
-    let sortingNodes: SortingNode[] = nodes.map((element: Node) => {
+    let sortingNodes: SortingNode<Node>[] = nodes.map((element: Node) => {
       let name =
         getName(element) ??
         context.sourceCode.text.slice(element.range.at(0), element.range.at(1))
@@ -83,7 +89,7 @@ export let createSortingRule = <
         context.report({
           fix: fixer => {
             let grouped: {
-              [key: string]: SortingNode[]
+              [key: string]: SortingNode<Node>[]
             } = {}
 
             for (let currentNode of sortingNodes) {
@@ -99,7 +105,7 @@ export let createSortingRule = <
               }
             }
 
-            let sortedNodes: SortingNode[] = []
+            let sortedNodes: SortingNode<Node>[] = []
 
             for (let group of Object.keys(grouped).sort(
               (a, b) => Number(a) - Number(b),
@@ -118,8 +124,8 @@ export let createSortingRule = <
             right: right.name,
             left: left.name,
           },
+          node: right.node as unknown as TSESTree.Node,
           messageId: unexpectedOrderMessage,
-          node: right.node,
         })
       }
     })

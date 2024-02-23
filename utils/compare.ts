@@ -5,9 +5,9 @@ import type { SortingNode } from '../typings'
 type SortType = 'alphabetical' | 'line-length' | 'natural'
 type SortOrder = 'desc' | 'asc'
 
-export let compare = (
-  a: SortingNode,
-  b: SortingNode,
+export let compare = <Node extends unknown>(
+  a: SortingNode<Node>,
+  b: SortingNode<Node>,
   options: {
     'max-line-length'?: number
     'ignore-case'?: boolean
@@ -22,7 +22,7 @@ export let compare = (
   }
 
   let orderCoefficient = options.order === 'asc' ? 1 : -1
-  let sortingFunction: (a: SortingNode, b: SortingNode) => number
+  let sortingFunction: (a: SortingNode<Node>, b: SortingNode<Node>) => number
 
   let formatString = (string: string) =>
     options['ignore-case'] ? string.toLowerCase() : string
@@ -41,7 +41,7 @@ export let compare = (
       let maxLineLength = options['max-line-length']
 
       if (maxLineLength) {
-        let isTooLong = (size: number, node: SortingNode) =>
+        let isTooLong = (size: number, node: SortingNode<Node>) =>
           size > maxLineLength! && node.hasMultipleImportDeclarations
 
         if (isTooLong(aSize, aNode)) {

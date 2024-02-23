@@ -1,21 +1,10 @@
-import type { TSESTree } from '@typescript-eslint/types'
 import type { AST } from 'astro-eslint-parser'
 
 import path from 'node:path'
 
-import type { SortingNode } from '../typings'
-
+import { createSortingRule } from '../utils/create-sorting-rule'
 import { createEslintRule } from '../utils/create-eslint-rule'
-import { getGroupNumber } from '../utils/get-group-number'
-import { rangeToDiff } from '../utils/range-to-diff'
-import { isPositive } from '../utils/is-positive'
-import { SortOrder, SortType } from '../typings'
-import { useGroups } from '../utils/use-groups'
-import { makeFixes } from '../utils/make-fixes'
-import { sortNodes } from '../utils/sort-nodes'
-import { pairwise } from '../utils/pairwise'
 import { complete } from '../utils/complete'
-import { compare } from '../utils/compare'
 
 type Group<T extends string[]> =
   | 'astro-shorthand'
@@ -29,10 +18,10 @@ type MESSAGE_ID = 'unexpectedAstroAttributesOrder'
 type Options<T extends string[]> = [
   Partial<{
     'custom-groups': { [key in T[number]]: string[] | string }
+    type: 'alphabetical' | 'line-length' | 'natural'
     groups: (Group<T>[] | Group<T>)[]
     'ignore-case': boolean
-    order: SortOrder
-    type: SortType
+    order: 'desc' | 'asc'
   }>,
 ]
 
@@ -50,21 +39,14 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
       {
         type: 'object',
         properties: {
-          'custom-groups': {
-            type: 'object',
-          },
           type: {
-            enum: [
-              SortType.alphabetical,
-              SortType.natural,
-              SortType['line-length'],
-            ],
-            default: SortType.alphabetical,
+            enum: ['alphabetical', 'natural', 'line-length'],
+            default: 'alphabetical',
             type: 'string',
           },
           order: {
-            enum: [SortOrder.asc, SortOrder.desc],
-            default: SortOrder.asc,
+            enum: ['asc', 'desc'],
+            default: 'asc',
             type: 'string',
           },
           'ignore-case': {
@@ -73,6 +55,9 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
           },
           groups: {
             type: 'array',
+          },
+          'custom-groups': {
+            type: 'object',
           },
         },
         additionalProperties: false,
@@ -85,8 +70,8 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
   },
   defaultOptions: [
     {
-      type: SortType.alphabetical,
-      order: SortOrder.asc,
+      type: 'alphabetical',
+      order: 'asc',
     },
   ],
   // @ts-ignore
@@ -101,50 +86,26 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
 
         if (attributes.length > 1) {
           let options = complete(context.options.at(0), {
-            type: SortType.alphabetical,
-            order: SortOrder.asc,
+            type: 'alphabetical',
             'ignore-case': false,
             'custom-groups': {},
+            order: 'asc',
             groups: [],
           })
 
-          let parts: SortingNode[][] = attributes.reduce(
-            (accumulator: SortingNode[][], attribute) => {
+          type AstroAttribute =
+            | AST.AstroTemplateLiteralAttribute
+            | AST.AstroShorthandAttribute
+            | AST.JSXAttribute
+
+          let parts: AstroAttribute[][] = attributes.reduce(
+            (accumulator: AstroAttribute[][], attribute) => {
               if (attribute.type === 'JSXSpreadAttribute') {
                 accumulator.push([])
                 return accumulator
               }
 
-              let name =
-                typeof attribute.name.name === 'string'
-                  ? attribute.name.name
-                  : context.sourceCode.text.slice(...attribute.name.range)
-
-              let { getGroup, defineGroup, setCustomGroups } = useGroups(
-                options.groups,
-              )
-
-              setCustomGroups(options['custom-groups'], name)
-
-              if (attribute.type === 'AstroShorthandAttribute') {
-                defineGroup('astro-shorthand')
-                defineGroup('shorthand')
-              }
-
-              if (attribute.value === null) {
-                defineGroup('shorthand')
-              }
-
-              if (attribute.loc.start.line !== attribute.loc.end.line) {
-                defineGroup('multiline')
-              }
-
-              accumulator.at(-1)!.push({
-                size: rangeToDiff(attribute.range),
-                node: attribute as unknown as TSESTree.Node,
-                group: getGroup(),
-                name,
-              })
+              accumulator.at(-1)!.push(attribute)
 
               return accumulator
             },
@@ -152,57 +113,28 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
           )
 
           for (let nodes of parts) {
-            pairwise(nodes, (left, right) => {
-              let leftNum = getGroupNumber(options.groups, left)
-              let rightNum = getGroupNumber(options.groups, right)
+            createSortingRule({
+              getName: attribute =>
+                typeof attribute.name.name === 'string'
+                  ? attribute.name.name
+                  : context.sourceCode.text.slice(...attribute.name.range),
+              definedGroups: attribute => {
+                if (attribute.type === 'AstroShorthandAttribute') {
+                  return 'astro-shorthand'
+                }
 
-              if (
-                leftNum > rightNum ||
-                (leftNum === rightNum &&
-                  isPositive(compare(left, right, options)))
-              ) {
-                context.report({
-                  messageId: 'unexpectedAstroAttributesOrder',
-                  data: {
-                    left: left.name,
-                    right: right.name,
-                  },
-                  node: right.node,
-                  fix: fixer => {
-                    let grouped: {
-                      [key: string]: SortingNode[]
-                    } = {}
+                if (attribute.value === null) {
+                  return 'shorthand'
+                }
 
-                    for (let currentNode of nodes) {
-                      let groupNum = getGroupNumber(options.groups, currentNode)
-
-                      if (!(groupNum in grouped)) {
-                        grouped[groupNum] = [currentNode]
-                      } else {
-                        grouped[groupNum] = sortNodes(
-                          [...grouped[groupNum], currentNode],
-                          options,
-                        )
-                      }
-                    }
-
-                    let sortedNodes: SortingNode[] = []
-
-                    for (let group of Object.keys(grouped).sort(
-                      (a, b) => Number(a) - Number(b),
-                    )) {
-                      sortedNodes.push(...sortNodes(grouped[group], options))
-                    }
-
-                    return makeFixes(
-                      fixer,
-                      nodes,
-                      sortedNodes,
-                      context.sourceCode,
-                    )
-                  },
-                })
-              }
+                if (attribute.loc.start.line !== attribute.loc.end.line) {
+                  return 'multiline'
+                }
+              },
+              unexpectedOrderMessage: 'unexpectedAstroAttributesOrder',
+              context,
+              options,
+              nodes,
             })
           }
         }

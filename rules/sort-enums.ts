@@ -31,14 +31,14 @@ export default createEslintRule<Options, MESSAGE_ID>({
             default: 'alphabetical',
             type: 'string',
           },
-          'ignore-case': {
-            type: 'boolean',
-            default: false,
-          },
           order: {
             enum: ['asc', 'desc'],
             default: 'asc',
             type: 'string',
+          },
+          'ignore-case': {
+            type: 'boolean',
+            default: false,
           },
         },
         additionalProperties: false,

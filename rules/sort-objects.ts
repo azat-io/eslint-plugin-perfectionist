@@ -28,7 +28,7 @@ export enum Position {
   'ignore' = 'ignore',
 }
 
-type SortingNodeWithPosition = SortingNode & {
+type SortingNodeWithPosition = SortingNode<TSESTree.Node> & {
   position: Position
 }
 
@@ -329,7 +329,7 @@ export default createEslintRule<Options, MESSAGE_ID>({
                 | ((fixer: TSESLint.RuleFixer) => TSESLint.RuleFix[])
                 | undefined = fixer => {
                 let grouped: {
-                  [key: string]: SortingNode[]
+                  [key: string]: SortingNode<TSESTree.Node>[]
                 } = {}
 
                 for (let currentNode of nodes) {
@@ -345,7 +345,7 @@ export default createEslintRule<Options, MESSAGE_ID>({
                   }
                 }
 
-                let sortedNodes: SortingNode[] = []
+                let sortedNodes: SortingNode<TSESTree.Node>[] = []
 
                 for (let group of Object.keys(grouped).sort(
                   (a, b) => Number(a) - Number(b),

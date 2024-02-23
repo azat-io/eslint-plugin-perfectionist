@@ -1,8 +1,8 @@
 import type { SortingNode } from '../typings'
 
-export let getGroupNumber = (
+export let getGroupNumber = <Node extends unknown>(
   groups: (string[] | string)[] | undefined,
-  node: SortingNode,
+  node: SortingNode<Node>,
 ): number => {
   if (!groups) {
     return 0

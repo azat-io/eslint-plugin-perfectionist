@@ -1,4 +1,5 @@
 import type { TSESLint } from '@typescript-eslint/utils'
+import type { TSESTree } from '@typescript-eslint/types'
 
 import type { SortingNode } from '../typings'
 
@@ -107,7 +108,7 @@ export default createEslintRule<Options, MESSAGE_ID>({
           groups: ['property', 'constructor', 'method', 'unknown'],
         })
 
-        let nodes: SortingNode[] = node.body.map(member => {
+        let nodes: SortingNode<TSESTree.Node>[] = node.body.map(member => {
           let name: string
           let { getGroup, defineGroup } = useGroups(options.groups)
 
@@ -234,7 +235,7 @@ export default createEslintRule<Options, MESSAGE_ID>({
                 let grouped = nodes.reduce(
                   (
                     accumulator: {
-                      [key: string]: SortingNode[]
+                      [key: string]: SortingNode<TSESTree.Node>[]
                     },
                     sortingNode,
                   ) => {
@@ -257,10 +258,10 @@ export default createEslintRule<Options, MESSAGE_ID>({
                 let formatted = Object.keys(grouped)
                   .sort((a, b) => Number(a) - Number(b))
                   .reduce(
-                    (accumulator: SortingNode[], group: string) => [
-                      ...accumulator,
-                      ...grouped[group],
-                    ],
+                    (
+                      accumulator: SortingNode<TSESTree.Node>[],
+                      group: string,
+                    ) => [...accumulator, ...grouped[group]],
                     [],
                   )
 

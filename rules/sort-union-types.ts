@@ -1,3 +1,5 @@
+import type { TSESTree } from '@typescript-eslint/types'
+
 import type { SortingNode } from '../typings'
 
 import { createEslintRule } from '../utils/create-eslint-rule'
@@ -82,7 +84,7 @@ export default createEslintRule<Options, MESSAGE_ID>({
         order: SortOrder.asc,
       })
 
-      let nodes: SortingNode[] = node.types.map(type => ({
+      let nodes: SortingNode<TSESTree.Node>[] = node.types.map(type => ({
         group:
           type.type === 'TSNullKeyword' || type.type === 'TSUndefinedKeyword'
             ? 'nullable'
@@ -112,10 +114,10 @@ export default createEslintRule<Options, MESSAGE_ID>({
             },
             node: right.node,
             fix: fixer => {
-              let sortedNodes: SortingNode[] = []
+              let sortedNodes: SortingNode<TSESTree.Node>[] = []
 
               if (options['nullable-last']) {
-                let nullable: SortingNode[] = []
+                let nullable: SortingNode<TSESTree.Node>[] = []
 
                 let nonNullable = nodes.filter(currentNode => {
                   if (currentNode.group === 'nullable') {

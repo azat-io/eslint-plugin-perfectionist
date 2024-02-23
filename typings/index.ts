@@ -1,5 +1,3 @@
-import type { TSESTree } from '@typescript-eslint/types'
-
 export enum SortType {
   'alphabetical' = 'alphabetical',
   'line-length' = 'line-length',
@@ -13,11 +11,11 @@ export enum SortOrder {
 
 export type PartitionComment = string[] | boolean | string
 
-export interface SortingNode {
+export interface SortingNode<Node extends unknown> {
   hasMultipleImportDeclarations?: boolean
   dependencies?: string[]
-  node: TSESTree.Node
   group?: string
   name: string
   size: number
+  node: Node
 }

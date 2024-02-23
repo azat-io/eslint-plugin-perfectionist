@@ -214,7 +214,7 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
       options.groups = [...options.groups, 'unknown']
     }
 
-    let nodes: SortingNode[] = []
+    let nodes: SortingNode<TSESTree.Node>[] = []
 
     let isSideEffectImport = (node: TSESTree.Node) =>
       node.type === 'ImportDeclaration' && node.specifiers.length === 0
@@ -386,8 +386,8 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
       ImportDeclaration: registerNode,
       'Program:exit': () => {
         let hasContentBetweenNodes = (
-          left: SortingNode,
-          right: SortingNode,
+          left: SortingNode<TSESTree.Node>,
+          right: SortingNode<TSESTree.Node>,
         ): boolean =>
           !!context.sourceCode.getTokensBetween(
             left.node,
@@ -399,12 +399,12 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
 
         let fix = (
           fixer: TSESLint.RuleFixer,
-          nodesToFix: SortingNode[],
+          nodesToFix: SortingNode<TSESTree.Node>[],
         ): TSESLint.RuleFix[] => {
           let fixes: TSESLint.RuleFix[] = []
 
           let grouped: {
-            [key: string]: SortingNode[]
+            [key: string]: SortingNode<TSESTree.Node>[]
           } = {}
 
           for (let node of nodesToFix) {
@@ -423,7 +423,7 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
           let formatted = Object.keys(grouped)
             .sort((a, b) => Number(a) - Number(b))
             .reduce(
-              (accumulator: SortingNode[], group: string) => [
+              (accumulator: SortingNode<TSESTree.Node>[], group: string) => [
                 ...accumulator,
                 ...grouped[group],
               ],
@@ -517,7 +517,7 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
           return fixes
         }
 
-        let splittedNodes: SortingNode[][] = [[]]
+        let splittedNodes: SortingNode<TSESTree.Node>[][] = [[]]
 
         for (let node of nodes) {
           let lastNode = splittedNodes.at(-1)?.at(-1)
