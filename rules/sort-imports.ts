@@ -448,8 +448,8 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
               if (nextNode) {
                 let linesBetweenImports = getLinesBetween(
                   context.sourceCode,
-                  nodesToFix.at(i)!,
-                  nodesToFix.at(i + 1)!,
+                  nodesToFix.at(i)!.node,
+                  nodesToFix.at(i + 1)!.node,
                 )
 
                 if (
@@ -536,8 +536,8 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
 
             let numberOfEmptyLinesBetween = getLinesBetween(
               context.sourceCode,
-              left,
-              right,
+              left.node,
+              right.node,
             )
 
             if (

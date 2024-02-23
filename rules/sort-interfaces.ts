@@ -1,20 +1,11 @@
+import type { TSESTree } from '@typescript-eslint/types'
+
 import { minimatch } from 'minimatch'
 
-import type { SortingNode } from '../typings'
-
+import { createSortingRule } from '../utils/create-sorting-rule'
 import { createEslintRule } from '../utils/create-eslint-rule'
 import { getLinesBetween } from '../utils/get-lines-between'
-import { getGroupNumber } from '../utils/get-group-number'
-import { toSingleLine } from '../utils/to-single-line'
-import { rangeToDiff } from '../utils/range-to-diff'
-import { isPositive } from '../utils/is-positive'
-import { SortOrder, SortType } from '../typings'
-import { useGroups } from '../utils/use-groups'
-import { sortNodes } from '../utils/sort-nodes'
-import { makeFixes } from '../utils/make-fixes'
 import { complete } from '../utils/complete'
-import { pairwise } from '../utils/pairwise'
-import { compare } from '../utils/compare'
 
 type MESSAGE_ID = 'unexpectedInterfacePropertiesOrder'
 
@@ -23,12 +14,12 @@ type Group<T extends string[]> = 'multiline' | 'unknown' | T[number]
 type Options<T extends string[]> = [
   Partial<{
     'custom-groups': { [key: string]: string[] | string }
+    type: 'alphabetical' | 'line-length' | 'natural'
     groups: (Group<T>[] | Group<T>)[]
     'partition-by-new-line': boolean
     'ignore-pattern': string[]
     'ignore-case': boolean
-    order: SortOrder
-    type: SortType
+    order: 'desc' | 'asc'
   }>,
 ]
 
@@ -46,21 +37,14 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
       {
         type: 'object',
         properties: {
-          'custom-groups': {
-            type: 'object',
-          },
           type: {
-            enum: [
-              SortType.alphabetical,
-              SortType.natural,
-              SortType['line-length'],
-            ],
-            default: SortType.alphabetical,
+            enum: ['alphabetical', 'natural', 'line-length'],
+            default: 'alphabetical',
             type: 'string',
           },
           order: {
-            enum: [SortOrder.asc, SortOrder.desc],
-            default: SortOrder.asc,
+            enum: ['asc', 'desc'],
+            default: 'asc',
             type: 'string',
           },
           'ignore-case': {
@@ -77,6 +61,9 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
             type: 'array',
             default: [],
           },
+          'custom-groups': {
+            type: 'object',
+          },
           'partition-by-new-line': {
             type: 'boolean',
             default: false,
@@ -92,8 +79,8 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
   },
   defaultOptions: [
     {
-      type: SortType.alphabetical,
-      order: SortOrder.asc,
+      type: 'alphabetical',
+      order: 'asc',
     },
   ],
   create: context => ({
@@ -101,11 +88,11 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
       if (node.body.body.length > 1) {
         let options = complete(context.options.at(0), {
           'partition-by-new-line': false,
-          type: SortType.alphabetical,
+          type: 'alphabetical',
           'ignore-case': false,
-          order: SortOrder.asc,
           'ignore-pattern': [],
           'custom-groups': {},
+          order: 'asc',
           groups: [],
         })
 
@@ -116,78 +103,30 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
             }),
           )
         ) {
-          let formattedMembers: SortingNode[][] = node.body.body.reduce(
-            (accumulator: SortingNode[][], element) => {
+          type InterfaceNode =
+            | TSESTree.TSConstructSignatureDeclaration
+            | TSESTree.TSPropertySignature
+            | TSESTree.TSMethodSignature
+            | TSESTree.TSIndexSignature
+
+          let formattedMembers: InterfaceNode[][] = node.body.body.reduce(
+            (accumulator: InterfaceNode[][], element) => {
               if (element.type === 'TSCallSignatureDeclaration') {
                 accumulator.push([])
                 return accumulator
               }
 
               let lastElement = accumulator.at(-1)?.at(-1)
-              let name: string
-
-              let { getGroup, defineGroup, setCustomGroups } = useGroups(
-                options.groups,
-              )
-
-              if (element.type === 'TSPropertySignature') {
-                if (element.key.type === 'Identifier') {
-                  ;({ name } = element.key)
-                } else if (element.key.type === 'Literal') {
-                  name = `${element.key.value}`
-                } else {
-                  let end: number =
-                    element.typeAnnotation?.range.at(0) ??
-                    element.range.at(1)! - (element.optional ? '?'.length : 0)
-
-                  name = context.sourceCode.text.slice(element.range.at(0), end)
-                }
-              } else if (element.type === 'TSIndexSignature') {
-                let endIndex: number =
-                  element.typeAnnotation?.range.at(0) ?? element.range.at(1)!
-
-                name = context.sourceCode.text.slice(
-                  element.range.at(0),
-                  endIndex,
-                )
-              } else {
-                let endIndex: number =
-                  element.returnType?.range.at(0) ?? element.range.at(1)!
-
-                name = context.sourceCode.text.slice(
-                  element.range.at(0),
-                  endIndex,
-                )
-              }
-
-              let elementSortingNode = {
-                size: rangeToDiff(element.range),
-                node: element,
-                name,
-              }
 
               if (
                 options['partition-by-new-line'] &&
                 lastElement &&
-                getLinesBetween(
-                  context.sourceCode,
-                  lastElement,
-                  elementSortingNode,
-                )
+                getLinesBetween(context.sourceCode, lastElement, element)
               ) {
                 accumulator.push([])
               }
 
-              setCustomGroups(options['custom-groups'], name)
-
-              if (element.loc.start.line !== element.loc.end.line) {
-                defineGroup('multiline')
-              }
-
-              accumulator.at(-1)!.push({
-                ...elementSortingNode,
-                group: getGroup(),
-              })
+              accumulator.at(-1)!.push(element)
 
               return accumulator
             },
@@ -195,57 +134,45 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
           )
 
           for (let nodes of formattedMembers) {
-            pairwise(nodes, (left, right) => {
-              let leftNum = getGroupNumber(options.groups, left)
-              let rightNum = getGroupNumber(options.groups, right)
+            createSortingRule({
+              getName: element => {
+                if (element.type === 'TSPropertySignature') {
+                  if (element.key.type === 'Identifier') {
+                    return element.key.name
+                  } else if (element.key.type === 'Literal') {
+                    return `${element.key.value}`
+                  }
+                  let end: number =
+                    element.typeAnnotation?.range.at(0) ??
+                    element.range.at(1)! - (element.optional ? '?'.length : 0)
 
-              if (
-                leftNum > rightNum ||
-                (leftNum === rightNum &&
-                  isPositive(compare(left, right, options)))
-              ) {
-                context.report({
-                  messageId: 'unexpectedInterfacePropertiesOrder',
-                  data: {
-                    left: toSingleLine(left.name),
-                    right: toSingleLine(right.name),
-                  },
-                  node: right.node,
-                  fix: fixer => {
-                    let grouped: {
-                      [key: string]: SortingNode[]
-                    } = {}
+                  return context.sourceCode.text.slice(element.range.at(0), end)
+                } else if (element.type === 'TSIndexSignature') {
+                  let endIndex: number =
+                    element.typeAnnotation?.range.at(0) ?? element.range.at(1)!
 
-                    for (let currentNode of nodes) {
-                      let groupNum = getGroupNumber(options.groups, currentNode)
+                  return context.sourceCode.text.slice(
+                    element.range.at(0),
+                    endIndex,
+                  )
+                }
+                let endIndex: number =
+                  element.returnType?.range.at(0) ?? element.range.at(1)!
 
-                      if (!(groupNum in grouped)) {
-                        grouped[groupNum] = [currentNode]
-                      } else {
-                        grouped[groupNum] = sortNodes(
-                          [...grouped[groupNum], currentNode],
-                          options,
-                        )
-                      }
-                    }
-
-                    let sortedNodes: SortingNode[] = []
-
-                    for (let group of Object.keys(grouped).sort(
-                      (a, b) => Number(a) - Number(b),
-                    )) {
-                      sortedNodes.push(...sortNodes(grouped[group], options))
-                    }
-
-                    return makeFixes(
-                      fixer,
-                      nodes,
-                      sortedNodes,
-                      context.sourceCode,
-                    )
-                  },
-                })
-              }
+                return context.sourceCode.text.slice(
+                  element.range.at(0),
+                  endIndex,
+                )
+              },
+              definedGroups: element => {
+                if (element.loc.start.line !== element.loc.end.line) {
+                  return 'multiline'
+                }
+              },
+              unexpectedOrderMessage: 'unexpectedInterfacePropertiesOrder',
+              context,
+              options,
+              nodes,
             })
           }
         }

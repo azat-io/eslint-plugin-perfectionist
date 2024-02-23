@@ -225,7 +225,11 @@ export default createEslintRule<Options, MESSAGE_ID>({
               if (
                 options['partition-by-new-line'] &&
                 lastProp &&
-                getLinesBetween(context.sourceCode, lastProp, propSortingNode)
+                getLinesBetween(
+                  context.sourceCode,
+                  lastProp.node,
+                  propSortingNode.node,
+                )
               ) {
                 accumulator.push([])
               }
