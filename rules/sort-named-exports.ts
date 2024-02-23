@@ -1,22 +1,14 @@
-import type { SortingNode } from '../typings'
-
+import { createSortingRule } from '../utils/create-sorting-rule'
 import { createEslintRule } from '../utils/create-eslint-rule'
-import { rangeToDiff } from '../utils/range-to-diff'
-import { isPositive } from '../utils/is-positive'
-import { SortOrder, SortType } from '../typings'
-import { sortNodes } from '../utils/sort-nodes'
-import { makeFixes } from '../utils/make-fixes'
 import { complete } from '../utils/complete'
-import { pairwise } from '../utils/pairwise'
-import { compare } from '../utils/compare'
 
 type MESSAGE_ID = 'unexpectedNamedExportsOrder'
 
 type Options = [
   Partial<{
+    type: 'alphabetical' | 'line-length' | 'natural'
     'ignore-case': boolean
-    order: SortOrder
-    type: SortType
+    order: 'desc' | 'asc'
   }>,
 ]
 
@@ -35,17 +27,13 @@ export default createEslintRule<Options, MESSAGE_ID>({
         type: 'object',
         properties: {
           type: {
-            enum: [
-              SortType.alphabetical,
-              SortType.natural,
-              SortType['line-length'],
-            ],
-            default: SortType.alphabetical,
+            enum: ['alphabetical', 'natural', 'line-length'],
+            default: 'alphabetical',
             type: 'string',
           },
           order: {
-            enum: [SortOrder.asc, SortOrder.desc],
-            default: SortOrder.asc,
+            enum: ['asc', 'desc'],
+            default: 'asc',
             type: 'string',
           },
           'ignore-case': {
@@ -63,43 +51,25 @@ export default createEslintRule<Options, MESSAGE_ID>({
   },
   defaultOptions: [
     {
-      type: SortType.alphabetical,
-      order: SortOrder.asc,
+      type: 'alphabetical',
+      order: 'asc',
     },
   ],
   create: context => ({
     ExportNamedDeclaration: node => {
       if (node.specifiers.length > 1) {
         let options = complete(context.options.at(0), {
-          type: SortType.alphabetical,
           'ignore-case': false,
-          order: SortOrder.asc,
-        })
+          type: 'alphabetical',
+          order: 'asc',
+        } as const)
 
-        let nodes: SortingNode[] = node.specifiers.map(specifier => ({
-          size: rangeToDiff(specifier.range),
-          name: specifier.local.name,
-          node: specifier,
-        }))
-
-        pairwise(nodes, (left, right) => {
-          if (isPositive(compare(left, right, options))) {
-            context.report({
-              messageId: 'unexpectedNamedExportsOrder',
-              data: {
-                left: left.name,
-                right: right.name,
-              },
-              node: right.node,
-              fix: fixer =>
-                makeFixes(
-                  fixer,
-                  nodes,
-                  sortNodes(nodes, options),
-                  context.sourceCode,
-                ),
-            })
-          }
+        return createSortingRule({
+          unexpectedOrderMessage: 'unexpectedNamedExportsOrder',
+          getName: specifier => specifier.local.name,
+          nodes: node.specifiers,
+          context,
+          options,
         })
       }
     },
