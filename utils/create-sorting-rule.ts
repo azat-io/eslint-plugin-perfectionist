@@ -4,6 +4,7 @@ import type { TSESLint } from '@typescript-eslint/utils'
 import type { SortingNode } from '../typings'
 
 import { getGroupNumber } from './get-group-number'
+import { toSingleLine } from './to-single-line'
 import { rangeToDiff } from './range-to-diff'
 import { isPositive } from './is-positive'
 import { sortNodes } from './sort-nodes'
@@ -121,8 +122,8 @@ export let createSortingRule = <
             )
           },
           data: {
-            right: right.name,
-            left: left.name,
+            right: toSingleLine(right.name),
+            left: toSingleLine(left.name),
           },
           node: right.node as unknown as TSESTree.Node,
           messageId: unexpectedOrderMessage,

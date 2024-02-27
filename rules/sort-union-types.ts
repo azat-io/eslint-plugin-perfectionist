@@ -1,32 +1,24 @@
-import type { TSESTree } from '@typescript-eslint/types'
-
-import type { SortingNode } from '../typings'
-
+import { createSortingRule } from '../utils/create-sorting-rule'
 import { createEslintRule } from '../utils/create-eslint-rule'
-import { toSingleLine } from '../utils/to-single-line'
-import { rangeToDiff } from '../utils/range-to-diff'
-import { isPositive } from '../utils/is-positive'
-import { SortOrder, SortType } from '../typings'
-import { sortNodes } from '../utils/sort-nodes'
-import { makeFixes } from '../utils/make-fixes'
 import { complete } from '../utils/complete'
-import { pairwise } from '../utils/pairwise'
-import { compare } from '../utils/compare'
 
 type MESSAGE_ID = 'unexpectedUnionTypesOrder'
 
-type Options = [
+type Group<T extends string[]> = 'nullable' | T[number]
+
+type Options<T extends string[]> = [
   Partial<{
-    'nullable-last': boolean
+    'custom-groups': { [key in T[number]]: string[] | string }
+    type: 'alphabetical' | 'line-length' | 'natural'
+    groups: (Group<T>[] | Group<T>)[]
     'ignore-case': boolean
-    order: SortOrder
-    type: SortType
+    order: 'desc' | 'asc'
   }>,
 ]
 
 export const RULE_NAME = 'sort-union-types'
 
-export default createEslintRule<Options, MESSAGE_ID>({
+export default createEslintRule<Options<string[]>, MESSAGE_ID>({
   name: RULE_NAME,
   meta: {
     type: 'suggestion',
@@ -39,26 +31,24 @@ export default createEslintRule<Options, MESSAGE_ID>({
         type: 'object',
         properties: {
           type: {
-            enum: [
-              SortType.alphabetical,
-              SortType.natural,
-              SortType['line-length'],
-            ],
-            default: SortType.alphabetical,
+            enum: ['alphabetical', 'natural', 'line-length'],
+            default: 'alphabetical',
             type: 'string',
           },
           order: {
-            enum: [SortOrder.asc, SortOrder.desc],
-            default: SortOrder.asc,
+            enum: ['asc', 'desc'],
+            default: 'asc',
             type: 'string',
           },
           'ignore-case': {
             type: 'boolean',
             default: false,
           },
-          'nullable-last': {
-            type: 'boolean',
-            default: false,
+          groups: {
+            type: 'array',
+          },
+          'custom-groups': {
+            type: 'object',
           },
         },
         additionalProperties: false,
@@ -71,75 +61,36 @@ export default createEslintRule<Options, MESSAGE_ID>({
   },
   defaultOptions: [
     {
-      type: SortType.alphabetical,
-      order: SortOrder.asc,
+      type: 'alphabetical',
+      order: 'asc',
     },
   ],
   create: context => ({
     TSUnionType: node => {
       let options = complete(context.options.at(0), {
-        type: SortType.alphabetical,
-        'nullable-last': false,
+        type: 'alphabetical',
         'ignore-case': false,
-        order: SortOrder.asc,
-      })
+        'custom-groups': {},
+        order: 'asc',
+        groups: [],
+      } as const)
 
-      let nodes: SortingNode<TSESTree.Node>[] = node.types.map(type => ({
-        group:
-          type.type === 'TSNullKeyword' || type.type === 'TSUndefinedKeyword'
-            ? 'nullable'
-            : 'unknown',
-        name: context.sourceCode.text.slice(...type.range),
-        size: rangeToDiff(type.range),
-        node: type,
-      }))
+      let nodes = node.types
 
-      pairwise(nodes, (left, right) => {
-        let compareValue = isPositive(compare(left, right, options))
-
-        if (options['nullable-last']) {
-          if (left.group === 'nullable' && right.group === 'unknown') {
-            compareValue = true
-          } else if (left.group === 'unknown' && right.group === 'nullable') {
-            compareValue = false
+      createSortingRule({
+        getName: type => context.sourceCode.text.slice(...type.range),
+        definedGroups: type => {
+          if (
+            type.type === 'TSNullKeyword' ||
+            type.type === 'TSUndefinedKeyword'
+          ) {
+            return 'nullable'
           }
-        }
-
-        if (compareValue) {
-          context.report({
-            messageId: 'unexpectedUnionTypesOrder',
-            data: {
-              left: toSingleLine(left.name),
-              right: toSingleLine(right.name),
-            },
-            node: right.node,
-            fix: fixer => {
-              let sortedNodes: SortingNode<TSESTree.Node>[] = []
-
-              if (options['nullable-last']) {
-                let nullable: SortingNode<TSESTree.Node>[] = []
-
-                let nonNullable = nodes.filter(currentNode => {
-                  if (currentNode.group === 'nullable') {
-                    nullable.push(currentNode)
-                    return false
-                  }
-
-                  return true
-                })
-
-                sortedNodes = [
-                  ...sortNodes(nonNullable, options),
-                  ...sortNodes(nullable, options),
-                ]
-              } else {
-                sortedNodes = sortNodes(nodes, options)
-              }
-
-              return makeFixes(fixer, nodes, sortedNodes, context.sourceCode)
-            },
-          })
-        }
+        },
+        unexpectedOrderMessage: 'unexpectedUnionTypesOrder',
+        context,
+        options,
+        nodes,
       })
     },
   }),

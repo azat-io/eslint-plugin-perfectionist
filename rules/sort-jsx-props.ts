@@ -38,9 +38,6 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
       {
         type: 'object',
         properties: {
-          'custom-groups': {
-            type: 'object',
-          },
           type: {
             enum: ['alphabetical', 'natural', 'line-length'],
             default: 'alphabetical',
@@ -51,12 +48,15 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
             default: 'asc',
             type: 'string',
           },
-          groups: {
-            type: 'array',
-          },
           'ignore-case': {
             type: 'boolean',
             default: false,
+          },
+          groups: {
+            type: 'array',
+          },
+          'custom-groups': {
+            type: 'object',
           },
         },
         additionalProperties: false,
