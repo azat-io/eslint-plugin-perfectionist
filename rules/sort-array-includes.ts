@@ -94,9 +94,9 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
             element.type === 'Literal'
               ? `${element.value}`
               : context.sourceCode.text.slice(...element.range),
-          definedGroups: element => {
+          definedGroups: (define, element) => {
             if (element.type === 'SpreadElement') {
-              return 'spread'
+              define('spread')
             }
           },
           unexpectedOrderMessage: 'unexpectedArrayIncludesOrder',

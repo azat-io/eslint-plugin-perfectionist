@@ -79,12 +79,12 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
 
       createSortingRule({
         getName: type => context.sourceCode.text.slice(...type.range),
-        definedGroups: type => {
+        definedGroups: (define, type) => {
           if (
             type.type === 'TSNullKeyword' ||
             type.type === 'TSUndefinedKeyword'
           ) {
-            return 'nullable'
+            define('nullable')
           }
         },
         unexpectedOrderMessage: 'unexpectedUnionTypesOrder',

@@ -111,13 +111,13 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
               }
               return element.name.name
             },
-            definedGroups: element => {
+            definedGroups: (define, element) => {
               if (element.value === null) {
-                return 'shorthand'
+                define('shorthand')
               }
 
               if (element.loc.start.line !== element.loc.end.line) {
-                return 'multiline'
+                define('multiline')
               }
             },
             unexpectedOrderMessage: 'unexpectedJSXPropsOrder',

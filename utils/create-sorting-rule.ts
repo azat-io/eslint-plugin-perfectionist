@@ -27,31 +27,30 @@ interface Options {
   order: 'desc' | 'asc'
 }
 
-interface SortingRule<
-  Node extends ESLintNode,
-  DefinedGroups,
-  ErrorMessages extends string,
-> {
+interface SortingRule<Node extends ESLintNode, ErrorMessages extends string> {
+  definedGroups?:
+    | ((define: (value: string) => void, node: Node, name: string) => void)
+    | null
   context: TSESLint.RuleContext<ErrorMessages, unknown[]>
-  definedGroups?: ((node: Node) => DefinedGroups) | null
   getName: (node: Node) => undefined | string
   unexpectedOrderMessage: ErrorMessages
+  saveSameNameOrder?: boolean
   options: Options
   nodes: Node[]
 }
 
 export let createSortingRule = <
-  DefinedGroups extends undefined | string,
   Node extends ESLintNode,
   ErrorMessages extends string,
 >({
+  saveSameNameOrder = false,
   unexpectedOrderMessage,
   definedGroups = null,
   context,
   getName,
   options,
   nodes,
-}: SortingRule<Node, DefinedGroups, ErrorMessages>) => {
+}: SortingRule<Node, ErrorMessages>) => {
   if (nodes.length > 1) {
     let sortingNodes: SortingNode<Node>[] = nodes.map((element: Node) => {
       let name =
@@ -62,14 +61,7 @@ export let createSortingRule = <
 
       setCustomGroups(options['custom-groups'], name)
 
-      let group = definedGroups?.(element)
-      if (group) {
-        defineGroup(group)
-      }
-
-      if (element.loc.start.line !== element.loc.end.line) {
-        defineGroup('multiline')
-      }
+      definedGroups?.(defineGroup, element, name)
 
       return {
         size: rangeToDiff(element.range),
@@ -82,10 +74,16 @@ export let createSortingRule = <
     pairwise(sortingNodes, (left, right) => {
       let leftNum = getGroupNumber(options.groups, left)
       let rightNum = getGroupNumber(options.groups, right)
+      let hasDifferentNames = true
+
+      if (saveSameNameOrder) {
+        hasDifferentNames = left.name !== right.name
+      }
 
       if (
-        leftNum > rightNum ||
-        (leftNum === rightNum && isPositive(compare(left, right, options)))
+        hasDifferentNames &&
+        (leftNum > rightNum ||
+          (leftNum === rightNum && isPositive(compare(left, right, options))))
       ) {
         context.report({
           fix: fixer => {

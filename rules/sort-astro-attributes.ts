@@ -116,17 +116,17 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
                 typeof attribute.name.name === 'string'
                   ? attribute.name.name
                   : context.sourceCode.text.slice(...attribute.name.range),
-              definedGroups: attribute => {
+              definedGroups: (define, attribute) => {
                 if (attribute.type === 'AstroShorthandAttribute') {
-                  return 'astro-shorthand'
+                  define('astro-shorthand')
                 }
 
                 if (attribute.value === null) {
-                  return 'shorthand'
+                  define('shorthand')
                 }
 
                 if (attribute.loc.start.line !== attribute.loc.end.line) {
-                  return 'multiline'
+                  define('multiline')
                 }
               },
               unexpectedOrderMessage: 'unexpectedAstroAttributesOrder',

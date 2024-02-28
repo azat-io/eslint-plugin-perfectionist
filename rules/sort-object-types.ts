@@ -136,9 +136,9 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
                 ),
               )
             },
-            definedGroups: element => {
+            definedGroups: (define, element) => {
               if (element.loc.start.line !== element.loc.end.line) {
-                return 'multiline'
+                define('multiline')
               }
             },
             unexpectedOrderMessage: 'unexpectedObjectTypesOrder',

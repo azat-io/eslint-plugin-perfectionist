@@ -125,13 +125,13 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
                 attribute.key.type !== 'VDirectiveKey'
                   ? attribute.key.rawName
                   : context.sourceCode.text.slice(...attribute.key.range),
-              definedGroups: attribute => {
+              definedGroups: (define, attribute) => {
                 if (attribute.value === null) {
-                  return 'shorthand'
+                  define('shorthand')
                 }
 
                 if (attribute.loc.start.line !== attribute.loc.end.line) {
-                  return 'multiline'
+                  define('multiline')
                 }
               },
               unexpectedOrderMessage: 'unexpectedVueAttributesOrder',

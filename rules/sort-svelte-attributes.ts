@@ -121,20 +121,21 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
                 }
                 return context.sourceCode.text.slice(...attribute.key.range!)
               },
-              definedGroups: attribute => {
+              definedGroups: (define, attribute) => {
                 if (attribute.type === 'SvelteShorthandAttribute') {
-                  return 'svelte-shorthand'
+                  define('svelte-shorthand')
+                  define('shorthand')
                 }
 
                 if (
                   !('value' in attribute) ||
                   (Array.isArray(attribute.value) && !attribute.value.at(0))
                 ) {
-                  return 'shorthand'
+                  define('shorthand')
                 }
 
                 if (attribute.loc.start.line !== attribute.loc.end.line) {
-                  return 'multiline'
+                  define('multiline')
                 }
               },
               unexpectedOrderMessage: 'unexpectedSvelteAttributesOrder',
