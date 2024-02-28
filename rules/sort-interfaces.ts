@@ -113,21 +113,19 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
             (accumulator: InterfaceNode[][], element) => {
               if (element.type === 'TSCallSignatureDeclaration') {
                 accumulator.push([])
-                return accumulator
+              } else {
+                let lastElement = accumulator.at(-1)?.at(-1)
+
+                if (
+                  options['partition-by-new-line'] &&
+                  lastElement &&
+                  getLinesBetween(context.sourceCode, lastElement, element)
+                ) {
+                  accumulator.push([])
+                }
+
+                accumulator.at(-1)!.push(element)
               }
-
-              let lastElement = accumulator.at(-1)?.at(-1)
-
-              if (
-                options['partition-by-new-line'] &&
-                lastElement &&
-                getLinesBetween(context.sourceCode, lastElement, element)
-              ) {
-                accumulator.push([])
-              }
-
-              accumulator.at(-1)!.push(element)
-
               return accumulator
             },
             [[]],

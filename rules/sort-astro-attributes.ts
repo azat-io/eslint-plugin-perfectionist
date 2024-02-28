@@ -102,11 +102,9 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
             (accumulator: AstroAttribute[][], attribute) => {
               if (attribute.type === 'JSXSpreadAttribute') {
                 accumulator.push([])
-                return accumulator
+              } else {
+                accumulator.at(-1)!.push(attribute)
               }
-
-              accumulator.at(-1)!.push(attribute)
-
               return accumulator
             },
             [[]],

@@ -110,11 +110,9 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
                   attribute.key.name.rawName === 'bind'
                 ) {
                   accumulator.push([])
-                  return accumulator
+                } else {
+                  accumulator.at(-1)!.push(attribute)
                 }
-
-                accumulator.at(-1)!.push(attribute)
-
                 return accumulator
               },
               [[]],
