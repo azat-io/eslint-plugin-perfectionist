@@ -2,17 +2,14 @@ import naturalCompare from 'natural-compare-lite'
 
 import type { SortingNode } from '../typings'
 
-type SortType = 'alphabetical' | 'line-length' | 'natural'
-type SortOrder = 'desc' | 'asc'
-
 export let compare = <Node extends unknown>(
   a: SortingNode<Node>,
   b: SortingNode<Node>,
   options: {
+    type: 'alphabetical' | 'line-length' | 'natural'
     'max-line-length'?: number
     'ignore-case'?: boolean
-    order: SortOrder
-    type: SortType
+    order: 'desc' | 'asc'
   },
 ): number => {
   if (b.dependencies?.includes(a.name)) {
