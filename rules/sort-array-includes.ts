@@ -1,32 +1,26 @@
 import type { TSESTree } from '@typescript-eslint/types'
 
-import type { SortingNode } from '../typings'
-
+import { createSortingRule } from '../utils/create-sorting-rule'
 import { createEslintRule } from '../utils/create-eslint-rule'
-import { toSingleLine } from '../utils/to-single-line'
-import { rangeToDiff } from '../utils/range-to-diff'
-import { isPositive } from '../utils/is-positive'
-import { SortOrder, SortType } from '../typings'
-import { sortNodes } from '../utils/sort-nodes'
-import { makeFixes } from '../utils/make-fixes'
 import { complete } from '../utils/complete'
-import { pairwise } from '../utils/pairwise'
-import { compare } from '../utils/compare'
 
 type MESSAGE_ID = 'unexpectedArrayIncludesOrder'
 
-type Options = [
+type Group<T extends string[]> = T[number] | 'spread'
+
+type Options<T extends string[]> = [
   Partial<{
-    'spread-last': boolean
+    'custom-groups': { [key in T[number]]: string[] | string }
+    type: 'alphabetical' | 'line-length' | 'natural'
+    groups: (Group<T>[] | Group<T>)[]
     'ignore-case': boolean
-    order: SortOrder
-    type: SortType
+    order: 'desc' | 'asc'
   }>,
 ]
 
 export const RULE_NAME = 'sort-array-includes'
 
-export default createEslintRule<Options, MESSAGE_ID>({
+export default createEslintRule<Options<string[]>, MESSAGE_ID>({
   name: RULE_NAME,
   meta: {
     type: 'suggestion',
@@ -39,26 +33,24 @@ export default createEslintRule<Options, MESSAGE_ID>({
         type: 'object',
         properties: {
           type: {
-            enum: [
-              SortType.alphabetical,
-              SortType.natural,
-              SortType['line-length'],
-            ],
-            default: SortType.alphabetical,
+            enum: ['alphabetical', 'natural', 'line-length'],
+            default: 'alphabetical',
             type: 'string',
           },
           order: {
-            enum: [SortOrder.asc, SortOrder.desc],
-            default: SortOrder.asc,
+            enum: ['asc', 'desc'],
+            default: 'asc',
             type: 'string',
           },
           'ignore-case': {
             type: 'boolean',
             default: false,
           },
-          'spread-last': {
-            type: 'boolean',
-            default: false,
+          groups: {
+            type: 'array',
+          },
+          'custom-groups': {
+            type: 'object',
           },
         },
         additionalProperties: false,
@@ -71,8 +63,8 @@ export default createEslintRule<Options, MESSAGE_ID>({
   },
   defaultOptions: [
     {
-      type: SortType.alphabetical,
-      order: SortOrder.asc,
+      type: 'alphabetical',
+      order: 'asc',
     },
   ],
   create: context => ({
@@ -83,96 +75,35 @@ export default createEslintRule<Options, MESSAGE_ID>({
         node.property.type === 'Identifier' &&
         node.property.name === 'includes'
       ) {
-        let elements =
+        let options = complete(context.options.at(0), {
+          type: 'alphabetical',
+          'ignore-case': false,
+          'custom-groups': {},
+          order: 'asc',
+          groups: [],
+        })
+
+        let nodes = (
           node.object.type === 'ArrayExpression'
-            ? node.object.elements
+            ? node.object.elements.filter(element => element !== null)
             : node.object.arguments
+        ) as (TSESTree.SpreadElement | TSESTree.Expression)[]
 
-        if (elements.length > 1) {
-          let options = complete(context.options.at(0), {
-            type: SortType.alphabetical,
-            order: SortOrder.asc,
-            'ignore-case': false,
-            'spread-last': false,
-          })
-
-          let nodes: (SortingNode<
-            TSESTree.SpreadElement | TSESTree.Expression
-          > & { type: string })[] = elements
-            .reduce(
-              (
-                accumulator: (SortingNode<
-                  TSESTree.SpreadElement | TSESTree.Expression
-                > & { type: string })[][],
-                element: TSESTree.SpreadElement | TSESTree.Expression | null,
-              ) => {
-                if (element !== null) {
-                  accumulator.at(0)!.push({
-                    name:
-                      element.type === 'Literal'
-                        ? `${element.value}`
-                        : context.sourceCode.text.slice(...element.range),
-                    size: rangeToDiff(element.range),
-                    type: element.type,
-                    node: element,
-                  })
-                }
-
-                return accumulator
-              },
-              [[], []],
-            )
-            .flat()
-
-          pairwise(nodes, (left, right) => {
-            let compareValue: boolean
-
-            if (
-              options['spread-last'] &&
-              left.node.type === 'Literal' &&
-              right.node.type === 'SpreadElement'
-            ) {
-              compareValue = false
-            } else if (
-              options['spread-last'] &&
-              left.node.type === 'SpreadElement' &&
-              right.node.type === 'Literal'
-            ) {
-              compareValue = true
-            } else {
-              compareValue = isPositive(compare(left, right, options))
+        createSortingRule({
+          getName: element =>
+            element.type === 'Literal'
+              ? `${element.value}`
+              : context.sourceCode.text.slice(...element.range),
+          definedGroups: element => {
+            if (element.type === 'SpreadElement') {
+              return 'spread'
             }
-
-            if (compareValue) {
-              context.report({
-                messageId: 'unexpectedArrayIncludesOrder',
-                data: {
-                  left: toSingleLine(left.name),
-                  right: toSingleLine(right.name),
-                },
-                node: right.node,
-                fix: fixer => {
-                  let sortedNodes = sortNodes(nodes, options)
-
-                  if (options['spread-last']) {
-                    for (let i = 0, max = sortedNodes.length; i < max; i++) {
-                      if (sortedNodes.at(i)!.node.type === 'SpreadElement') {
-                        sortedNodes.push(sortedNodes.splice(i, 1).at(0)!)
-                      }
-                    }
-                  }
-
-                  return makeFixes(
-                    fixer,
-                    nodes,
-                    sortedNodes,
-                    context.sourceCode,
-                  )
-                },
-              })
-            }
-          })
-        }
+          },
+          unexpectedOrderMessage: 'unexpectedArrayIncludesOrder',
+          context,
+          options,
+          nodes,
+        })
       }
     },
   }),
