@@ -128,8 +128,7 @@ export default createEslintRule<Options, MESSAGE_ID>({
 
           let isPrivate = name.startsWith('_') || name.startsWith('#')
 
-          let decorated =
-            'decorators' in member && member.decorators.length > 0
+          let decorated = 'decorators' in member && member.decorators.length > 0
 
           if (member.type === 'MethodDefinition') {
             if (member.kind === 'constructor') {
