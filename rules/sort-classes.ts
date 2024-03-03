@@ -18,6 +18,13 @@ import { compare } from '../utils/compare'
 type MESSAGE_ID = 'unexpectedClassesOrder'
 
 type Group =
+  | 'decorated-accessor-property'
+  | 'decorated-method'
+  | 'decorated-property'
+  | 'decorated-set-method'
+  | 'decorated-get-method'
+  | 'private-decorated-accessor-property'
+  | 'private-decorated-property'
   | 'static-private-method'
   | 'private-property'
   | 'static-property'
@@ -121,6 +128,9 @@ export default createEslintRule<Options, MESSAGE_ID>({
 
           let isPrivate = name.startsWith('_') || name.startsWith('#')
 
+          const decorated =
+            'decorators' in member && member.decorators.length > 0
+
           if (member.type === 'MethodDefinition') {
             if (member.kind === 'constructor') {
               defineGroup('constructor')
@@ -130,6 +140,18 @@ export default createEslintRule<Options, MESSAGE_ID>({
               member.accessibility === 'private' || isPrivate
 
             let isStaticMethod = member.static
+
+            if (decorated) {
+              if (member.kind === 'get') {
+                defineGroup('decorated-get-method')
+              }
+
+              if (member.kind === 'set') {
+                defineGroup('decorated-set-method')
+              }
+
+              defineGroup('decorated-method')
+            }
 
             if (isPrivateMethod && isStaticMethod) {
               defineGroup('static-private-method')
@@ -154,7 +176,23 @@ export default createEslintRule<Options, MESSAGE_ID>({
             defineGroup('method')
           } else if (member.type === 'TSIndexSignature') {
             defineGroup('index-signature')
+          } else if (member.type === 'AccessorProperty') {
+            if (decorated) {
+              if (member.accessibility === 'private' || isPrivate) {
+                defineGroup('private-decorated-accessor-property')
+              }
+
+              defineGroup('decorated-accessor-property')
+            }
           } else if (member.type === 'PropertyDefinition') {
+            if (decorated) {
+              if (member.accessibility === 'private' || isPrivate) {
+                defineGroup('private-decorated-property')
+              }
+
+              defineGroup('decorated-property')
+            }
+
             if (member.accessibility === 'private' || isPrivate) {
               defineGroup('private-property')
             }
