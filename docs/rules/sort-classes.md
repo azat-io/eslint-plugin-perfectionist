@@ -114,14 +114,14 @@ This rule accepts an options object with the following properties:
 
 ```ts
 type Group =
-  | 'decorated-accessor-property'
-  | 'decorated-method'
-  | 'decorated-property'
-  | 'decorated-set-method'
-  | 'decorated-get-method'
   | 'private-decorated-accessor-property'
+  | 'decorated-accessor-property'
   | 'private-decorated-property'
   | 'static-private-method'
+  | 'decorated-set-method'
+  | 'decorated-get-method'
+  | 'decorated-property'
+  | 'decorated-method'
   | 'private-property'
   | 'static-property'
   | 'index-signature'

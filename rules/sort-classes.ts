@@ -18,14 +18,14 @@ import { compare } from '../utils/compare'
 type MESSAGE_ID = 'unexpectedClassesOrder'
 
 type Group =
-  | 'decorated-accessor-property'
-  | 'decorated-method'
-  | 'decorated-property'
-  | 'decorated-set-method'
-  | 'decorated-get-method'
   | 'private-decorated-accessor-property'
+  | 'decorated-accessor-property'
   | 'private-decorated-property'
   | 'static-private-method'
+  | 'decorated-set-method'
+  | 'decorated-get-method'
+  | 'decorated-property'
+  | 'decorated-method'
   | 'private-property'
   | 'static-property'
   | 'index-signature'
@@ -128,7 +128,7 @@ export default createEslintRule<Options, MESSAGE_ID>({
 
           let isPrivate = name.startsWith('_') || name.startsWith('#')
 
-          const decorated =
+          let decorated =
             'decorators' in member && member.decorators.length > 0
 
           if (member.type === 'MethodDefinition') {
