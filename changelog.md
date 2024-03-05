@@ -1,6 +1,18 @@
 # Changelog
 
 
+## v2.6.0
+
+[compare changes](https://github.com/azat-io/eslint-plugin-perfectionist/compare/v2.5.0...v2.6.0)
+
+### 🚀 Features
+
+- **sort-classes:** Add decorators support ([cbe3f4b](https://github.com/azat-io/eslint-plugin-perfectionist/commit/cbe3f4b))
+
+### ❤️ Contributors
+
+- Chirokas
+
 ## v2.5.0
 
 [compare changes](https://github.com/azat-io/eslint-plugin-perfectionist/compare/v2.4.2...v2.5.0)
