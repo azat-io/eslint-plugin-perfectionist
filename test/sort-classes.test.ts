@@ -530,6 +530,234 @@ describe(RULE_NAME, () => {
         ],
       },
     )
+
+    ruleTester.run(`${RULE_NAME}(${type}): sorts decorated properties`, rule, {
+      valid: [],
+      invalid: [
+        {
+          code: dedent`
+            class User {
+              firstName: string
+
+              id: number
+
+              @Index({ name: 'born_index' })
+              @Property()
+              born: string
+
+              @Property()
+              @Unique()
+              email: string
+
+              lastName: string
+            }`,
+          output: dedent`
+            class User {
+              firstName: string
+
+              id: number
+
+              lastName: string
+
+              @Index({ name: 'born_index' })
+              @Property()
+              born: string
+
+              @Property()
+              @Unique()
+              email: string
+            }`,
+          options: [
+            {
+              ...options,
+              groups: ['property', 'decorated-property', 'unknown'],
+            },
+          ],
+          errors: [
+            {
+              messageId: 'unexpectedClassesOrder',
+              data: {
+                left: 'email',
+                right: 'lastName',
+              },
+            },
+          ],
+        },
+        {
+          code: dedent`
+            class MyElement {
+              @property({ attribute: false })
+              data = {}
+            
+              @property()
+              greeting: string = 'Hello'
+            
+              @state()
+              private _counter = 0
+            
+              private _message = ''
+            
+              private _prop = 0
+            
+              constructor() {}
+            
+              @property()
+              get message(): string {
+                return this._message
+              }
+            
+              set message(message: string) {
+                this._message = message
+              }
+            
+              @property()
+              set prop(val: number) {
+                this._prop = Math.floor(val)
+              }
+            
+              get prop() {
+                return this._prop
+              }
+            
+              render() {}
+            }`,
+          output: dedent`
+            class MyElement {
+              @property({ attribute: false })
+              data = {}
+            
+              @property()
+              greeting: string = 'Hello'
+            
+              @state()
+              private _counter = 0
+            
+              private _message = ''
+            
+              private _prop = 0
+            
+              constructor() {}
+            
+              @property()
+              get message(): string {
+                return this._message
+              }
+            
+              @property()
+              set prop(val: number) {
+                this._prop = Math.floor(val)
+              }
+            
+              set message(message: string) {
+                this._message = message
+              }
+            
+              get prop() {
+                return this._prop
+              }
+            
+              render() {}
+            }`,
+          options: [
+            {
+              ...options,
+              groups: [
+                'decorated-property',
+                'property',
+                'private-decorated-property',
+                'private-property',
+                'constructor',
+                ['decorated-get-method', 'decorated-set-method'],
+                ['get-method', 'set-method'],
+                'unknown',
+              ],
+            },
+          ],
+          errors: [
+            {
+              messageId: 'unexpectedClassesOrder',
+              data: {
+                left: 'message',
+                right: 'prop',
+              },
+            },
+          ],
+        },
+      ],
+    })
+
+    ruleTester.run(`${RULE_NAME}(${type}): sorts decorated accessors`, rule, {
+      valid: [],
+      invalid: [
+        {
+          code: dedent`
+            class Todo {
+              id = Math.random()
+            
+              constructor() {}
+            
+              @action
+              toggle() {}
+            
+              @observable
+              accessor #active = false
+            
+              @observable
+              accessor finished = false
+            
+              @observable
+              accessor title = ''
+            }`,
+          output: dedent`
+            class Todo {
+              @observable
+              accessor finished = false
+            
+              @observable
+              accessor title = ''
+            
+              @observable
+              accessor #active = false
+            
+              id = Math.random()
+            
+              constructor() {}
+            
+              @action
+              toggle() {}
+            }`,
+          options: [
+            {
+              ...options,
+              groups: [
+                'decorated-accessor-property',
+                'private-decorated-accessor-property',
+                'property',
+                'constructor',
+                'decorated-method',
+                'unknown',
+              ],
+            },
+          ],
+          errors: [
+            {
+              messageId: 'unexpectedClassesOrder',
+              data: {
+                left: 'toggle',
+                right: '#active',
+              },
+            },
+            {
+              messageId: 'unexpectedClassesOrder',
+              data: {
+                left: '#active',
+                right: 'finished',
+              },
+            },
+          ],
+        },
+      ],
+    })
   })
 
   describe(`${RULE_NAME}: sorting by natural order`, () => {
@@ -1045,6 +1273,234 @@ describe(RULE_NAME, () => {
         ],
       },
     )
+
+    ruleTester.run(`${RULE_NAME}(${type}): sorts decorated properties`, rule, {
+      valid: [],
+      invalid: [
+        {
+          code: dedent`
+            class User {
+              firstName: string
+
+              id: number
+
+              @Index({ name: 'born_index' })
+              @Property()
+              born: string
+
+              @Property()
+              @Unique()
+              email: string
+
+              lastName: string
+            }`,
+          output: dedent`
+            class User {
+              firstName: string
+
+              id: number
+
+              lastName: string
+
+              @Index({ name: 'born_index' })
+              @Property()
+              born: string
+
+              @Property()
+              @Unique()
+              email: string
+            }`,
+          options: [
+            {
+              ...options,
+              groups: ['property', 'decorated-property', 'unknown'],
+            },
+          ],
+          errors: [
+            {
+              messageId: 'unexpectedClassesOrder',
+              data: {
+                left: 'email',
+                right: 'lastName',
+              },
+            },
+          ],
+        },
+        {
+          code: dedent`
+            class MyElement {
+              @property({ attribute: false })
+              data = {}
+            
+              @property()
+              greeting: string = 'Hello'
+            
+              @state()
+              private _counter = 0
+            
+              private _message = ''
+            
+              private _prop = 0
+            
+              constructor() {}
+            
+              @property()
+              get message(): string {
+                return this._message
+              }
+            
+              set message(message: string) {
+                this._message = message
+              }
+            
+              @property()
+              set prop(val: number) {
+                this._prop = Math.floor(val)
+              }
+            
+              get prop() {
+                return this._prop
+              }
+            
+              render() {}
+            }`,
+          output: dedent`
+            class MyElement {
+              @property({ attribute: false })
+              data = {}
+            
+              @property()
+              greeting: string = 'Hello'
+            
+              @state()
+              private _counter = 0
+            
+              private _message = ''
+            
+              private _prop = 0
+            
+              constructor() {}
+            
+              @property()
+              get message(): string {
+                return this._message
+              }
+            
+              @property()
+              set prop(val: number) {
+                this._prop = Math.floor(val)
+              }
+            
+              set message(message: string) {
+                this._message = message
+              }
+            
+              get prop() {
+                return this._prop
+              }
+            
+              render() {}
+            }`,
+          options: [
+            {
+              ...options,
+              groups: [
+                'decorated-property',
+                'property',
+                'private-decorated-property',
+                'private-property',
+                'constructor',
+                ['decorated-get-method', 'decorated-set-method'],
+                ['get-method', 'set-method'],
+                'unknown',
+              ],
+            },
+          ],
+          errors: [
+            {
+              messageId: 'unexpectedClassesOrder',
+              data: {
+                left: 'message',
+                right: 'prop',
+              },
+            },
+          ],
+        },
+      ],
+    })
+
+    ruleTester.run(`${RULE_NAME}(${type}): sorts decorated accessors`, rule, {
+      valid: [],
+      invalid: [
+        {
+          code: dedent`
+            class Todo {
+              id = Math.random()
+            
+              constructor() {}
+            
+              @action
+              toggle() {}
+            
+              @observable
+              accessor #active = false
+            
+              @observable
+              accessor finished = false
+            
+              @observable
+              accessor title = ''
+            }`,
+          output: dedent`
+            class Todo {
+              @observable
+              accessor finished = false
+            
+              @observable
+              accessor title = ''
+            
+              @observable
+              accessor #active = false
+            
+              id = Math.random()
+            
+              constructor() {}
+            
+              @action
+              toggle() {}
+            }`,
+          options: [
+            {
+              ...options,
+              groups: [
+                'decorated-accessor-property',
+                'private-decorated-accessor-property',
+                'property',
+                'constructor',
+                'decorated-method',
+                'unknown',
+              ],
+            },
+          ],
+          errors: [
+            {
+              messageId: 'unexpectedClassesOrder',
+              data: {
+                left: 'toggle',
+                right: '#active',
+              },
+            },
+            {
+              messageId: 'unexpectedClassesOrder',
+              data: {
+                left: '#active',
+                right: 'finished',
+              },
+            },
+          ],
+        },
+      ],
+    })
   })
 
   describe(`${RULE_NAME}: sorting by line length`, () => {
@@ -1496,6 +1952,234 @@ describe(RULE_NAME, () => {
         ],
       },
     )
+
+    ruleTester.run(`${RULE_NAME}(${type}): sorts decorated properties`, rule, {
+      valid: [],
+      invalid: [
+        {
+          code: dedent`
+            class User {
+              firstName: string
+
+              id: number
+
+              @Index({ name: 'born_index' })
+              @Property()
+              born: string
+
+              @Property()
+              @Unique()
+              email: string
+
+              lastName: string
+            }`,
+          output: dedent`
+            class User {
+              firstName: string
+
+              lastName: string
+
+              id: number
+
+              @Index({ name: 'born_index' })
+              @Property()
+              born: string
+
+              @Property()
+              @Unique()
+              email: string
+            }`,
+          options: [
+            {
+              ...options,
+              groups: ['property', 'decorated-property', 'unknown'],
+            },
+          ],
+          errors: [
+            {
+              messageId: 'unexpectedClassesOrder',
+              data: {
+                left: 'email',
+                right: 'lastName',
+              },
+            },
+          ],
+        },
+        {
+          code: dedent`
+            class MyElement {
+              @property({ attribute: false })
+              data = {}
+
+              @property()
+              greeting: string = 'Hello'
+
+              @state()
+              private _counter = 0
+
+              private _message = ''
+            
+              private _prop = 0
+            
+              constructor() {}
+
+              @property()
+              get message(): string {
+                return this._message
+              }
+            
+              set message(message: string) {
+                this._message = message
+              }
+            
+              @property()
+              set prop(val: number) {
+                this._prop = Math.floor(val)
+              }
+            
+              get prop() {
+                return this._prop
+              }
+            
+              render() {}
+            }`,
+          output: dedent`
+            class MyElement {
+              @property({ attribute: false })
+              data = {}
+
+              @property()
+              greeting: string = 'Hello'
+            
+              @state()
+              private _counter = 0
+            
+              private _message = ''
+            
+              private _prop = 0
+            
+              constructor() {}
+            
+              @property()
+              set prop(val: number) {
+                this._prop = Math.floor(val)
+              }
+
+              @property()
+              get message(): string {
+                return this._message
+              }
+            
+              set message(message: string) {
+                this._message = message
+              }
+            
+              get prop() {
+                return this._prop
+              }
+            
+              render() {}
+            }`,
+          options: [
+            {
+              ...options,
+              groups: [
+                'decorated-property',
+                'property',
+                'private-decorated-property',
+                'private-property',
+                'constructor',
+                ['decorated-get-method', 'decorated-set-method'],
+                ['get-method', 'set-method'],
+                'unknown',
+              ],
+            },
+          ],
+          errors: [
+            {
+              messageId: 'unexpectedClassesOrder',
+              data: {
+                left: 'message',
+                right: 'prop',
+              },
+            },
+          ],
+        },
+      ],
+    })
+
+    ruleTester.run(`${RULE_NAME}(${type}): sorts decorated accessors`, rule, {
+      valid: [],
+      invalid: [
+        {
+          code: dedent`
+            class Todo {
+              id = Math.random()
+            
+              constructor() {}
+            
+              @action
+              toggle() {}
+            
+              @observable
+              accessor #active = false
+            
+              @observable
+              accessor finished = false
+            
+              @observable
+              accessor title = ''
+            }`,
+          output: dedent`
+            class Todo {
+              @observable
+              accessor finished = false
+            
+              @observable
+              accessor title = ''
+            
+              @observable
+              accessor #active = false
+            
+              id = Math.random()
+            
+              constructor() {}
+            
+              @action
+              toggle() {}
+            }`,
+          options: [
+            {
+              ...options,
+              groups: [
+                'decorated-accessor-property',
+                'private-decorated-accessor-property',
+                'property',
+                'constructor',
+                'decorated-method',
+                'unknown',
+              ],
+            },
+          ],
+          errors: [
+            {
+              messageId: 'unexpectedClassesOrder',
+              data: {
+                left: 'toggle',
+                right: '#active',
+              },
+            },
+            {
+              messageId: 'unexpectedClassesOrder',
+              data: {
+                left: '#active',
+                right: 'finished',
+              },
+            },
+          ],
+        },
+      ],
+    })
   })
 
   describe(`${RULE_NAME}: misc`, () => {
