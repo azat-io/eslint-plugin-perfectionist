@@ -1,7 +1,7 @@
 import type { TSESTree } from '@typescript-eslint/types'
 import type { TSESLint } from '@typescript-eslint/utils'
 
-import type { SortingNode } from '../typings'
+import type { PartitionComment, SortingNode } from '../typings'
 
 import { getGroupNumber } from './get-group-number'
 import { toSingleLine } from './to-single-line'
@@ -22,6 +22,7 @@ interface ESLintNode {
 interface Options {
   'custom-groups'?: { [key: string]: string[] | string }
   type: 'alphabetical' | 'line-length' | 'natural'
+  'partition-by-comment'?: PartitionComment
   groups?: (string[] | string)[]
   'ignore-case': boolean
   order: 'desc' | 'asc'
@@ -31,9 +32,10 @@ interface SortingRule<Node extends ESLintNode, ErrorMessages extends string> {
   definedGroups?:
     | ((define: (value: string) => void, node: Node, name: string) => void)
     | null
+  getDependencies?: (define: (value: string) => void, node: Node) => void
   context: TSESLint.RuleContext<ErrorMessages, unknown[]>
-  getName: (node: Node) => undefined | string
   unexpectedOrderMessage: ErrorMessages
+  getName: (node: Node) => string
   saveSameNameOrder?: boolean
   options: Options
   nodes: Node[]
@@ -46,6 +48,7 @@ export let createSortingRule = <
   saveSameNameOrder = false,
   unexpectedOrderMessage,
   definedGroups = null,
+  getDependencies,
   context,
   getName,
   options,
@@ -53,23 +56,34 @@ export let createSortingRule = <
 }: SortingRule<Node, ErrorMessages>) => {
   if (nodes.length > 1) {
     let sortingNodes: SortingNode<Node>[] = nodes.map((element: Node) => {
-      let name =
-        getName(element) ??
-        context.sourceCode.text.slice(element.range.at(0), element.range.at(1))
+      let name = getName(element)
 
       let { setCustomGroups, defineGroup, getGroup } = useGroups(options.groups)
 
       setCustomGroups(options['custom-groups'], name)
-
       definedGroups?.(defineGroup, element, name)
+
+      let dependencies: string[] = []
+      let addDependencies = (dependency: string) => {
+        dependencies.push(dependency)
+      }
+
+      getDependencies?.(addDependencies, element)
 
       return {
         size: rangeToDiff(element.range),
         group: getGroup(),
         node: element,
+        dependencies,
         name,
       }
     })
+
+    let additionalFixOptions: { [key: string]: unknown } = {}
+
+    if (options['partition-by-comment']) {
+      additionalFixOptions.partitionComment = options['partition-by-comment']
+    }
 
     pairwise(sortingNodes, (left, right) => {
       let leftNum = getGroupNumber(options.groups, left)
@@ -117,6 +131,7 @@ export let createSortingRule = <
               sortingNodes,
               sortedNodes,
               context.sourceCode,
+              additionalFixOptions,
             )
           },
           data: {

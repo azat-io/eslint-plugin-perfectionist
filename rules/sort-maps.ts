@@ -99,6 +99,7 @@ export default createEslintRule<[Partial<Options>], MESSAGE_ID>({
                 }
                 return context.sourceCode.text.slice(...left.range)
               }
+              return context.sourceCode.text.slice(...element.range)
             },
             unexpectedOrderMessage: 'unexpectedMapElementsOrder',
             context,

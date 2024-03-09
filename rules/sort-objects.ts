@@ -1,48 +1,29 @@
 import type { TSESTree } from '@typescript-eslint/types'
-import type { TSESLint } from '@typescript-eslint/utils'
 
 import { minimatch } from 'minimatch'
 
-import type { PartitionComment, SortingNode } from '../typings'
+import type { PartitionComment } from '../typings'
 
 import { isPartitionComment } from '../utils/is-partition-comment'
+import { createSortingRule } from '../utils/create-sorting-rule'
 import { getCommentBefore } from '../utils/get-comment-before'
 import { createEslintRule } from '../utils/create-eslint-rule'
 import { getLinesBetween } from '../utils/get-lines-between'
-import { getGroupNumber } from '../utils/get-group-number'
-import { toSingleLine } from '../utils/to-single-line'
-import { rangeToDiff } from '../utils/range-to-diff'
-import { isPositive } from '../utils/is-positive'
-import { SortOrder, SortType } from '../typings'
-import { useGroups } from '../utils/use-groups'
-import { makeFixes } from '../utils/make-fixes'
-import { sortNodes } from '../utils/sort-nodes'
 import { complete } from '../utils/complete'
-import { pairwise } from '../utils/pairwise'
-import { compare } from '../utils/compare'
 
 type MESSAGE_ID = 'unexpectedObjectsOrder'
-
-export enum Position {
-  'exception' = 'exception',
-  'ignore' = 'ignore',
-}
-
-type SortingNodeWithPosition = SortingNode<TSESTree.Node> & {
-  position: Position
-}
 
 type Options = [
   Partial<{
     'custom-groups': { [key: string]: string[] | string }
+    type: 'alphabetical' | 'line-length' | 'natural'
     'partition-by-comment': PartitionComment
     'partition-by-new-line': boolean
     groups: (string[] | string)[]
     'styled-components': boolean
     'ignore-pattern': string[]
     'ignore-case': boolean
-    order: SortOrder
-    type: SortType
+    order: 'desc' | 'asc'
   }>,
 ]
 
@@ -60,33 +41,14 @@ export default createEslintRule<Options, MESSAGE_ID>({
       {
         type: 'object',
         properties: {
-          'custom-groups': {
-            type: 'object',
-          },
-          'partition-by-comment': {
-            type: ['boolean', 'string', 'array'],
-            default: false,
-          },
-          'partition-by-new-line': {
-            type: 'boolean',
-            default: false,
-          },
-          'styled-components': {
-            type: 'boolean',
-            default: true,
-          },
           type: {
-            enum: [
-              SortType.alphabetical,
-              SortType.natural,
-              SortType['line-length'],
-            ],
-            default: SortType.alphabetical,
+            enum: ['alphabetical', 'natural', 'line-length'],
+            default: 'alphabetical',
             type: 'string',
           },
           order: {
-            enum: [SortOrder.asc, SortOrder.desc],
-            default: SortOrder.asc,
+            enum: ['asc', 'desc'],
+            default: 'asc',
             type: 'string',
           },
           'ignore-case': {
@@ -102,6 +64,21 @@ export default createEslintRule<Options, MESSAGE_ID>({
           groups: {
             type: 'array',
           },
+          'custom-groups': {
+            type: 'object',
+          },
+          'partition-by-comment': {
+            type: ['boolean', 'string', 'array'],
+            default: false,
+          },
+          'partition-by-new-line': {
+            type: 'boolean',
+            default: false,
+          },
+          'styled-components': {
+            type: 'boolean',
+            default: true,
+          },
         },
         additionalProperties: false,
       },
@@ -112,8 +89,8 @@ export default createEslintRule<Options, MESSAGE_ID>({
   },
   defaultOptions: [
     {
-      type: SortType.alphabetical,
-      order: SortOrder.asc,
+      type: 'alphabetical',
+      order: 'asc',
     },
   ],
   create: context => {
@@ -123,14 +100,14 @@ export default createEslintRule<Options, MESSAGE_ID>({
       let options = complete(context.options.at(0), {
         'partition-by-new-line': false,
         'partition-by-comment': false,
-        type: SortType.alphabetical,
         'styled-components': true,
+        type: 'alphabetical',
         'ignore-case': false,
         'ignore-pattern': [],
-        order: SortOrder.asc,
         'custom-groups': {},
+        order: 'asc',
         groups: [],
-      })
+      } as const)
 
       let variableIdentifier =
         node.parent.type === 'VariableDeclarator' &&
@@ -177,9 +154,9 @@ export default createEslintRule<Options, MESSAGE_ID>({
             | TSESTree.RestElement
             | TSESTree.Property
           )[],
-        ): SortingNodeWithPosition[][] =>
+        ): TSESTree.Property[][] =>
           props.reduce(
-            (accumulator: SortingNodeWithPosition[][], prop) => {
+            (accumulator: TSESTree.Property[][], prop) => {
               if (
                 prop.type === 'SpreadElement' ||
                 prop.type === 'RestElement'
@@ -202,113 +179,15 @@ export default createEslintRule<Options, MESSAGE_ID>({
                 accumulator.push([])
               }
 
-              let name: string
-              let position: Position = Position.ignore
-              let dependencies: string[] = []
-
-              let { getGroup, setCustomGroups } = useGroups(options.groups)
-
-              if (prop.key.type === 'Identifier') {
-                ;({ name } = prop.key)
-              } else if (prop.key.type === 'Literal') {
-                name = `${prop.key.value}`
-              } else {
-                name = context.sourceCode.text.slice(...prop.key.range)
-              }
-
-              let propSortingNode = {
-                size: rangeToDiff(prop.range),
-                node: prop,
-                name,
-              }
-
               if (
                 options['partition-by-new-line'] &&
                 lastProp &&
-                getLinesBetween(
-                  context.sourceCode,
-                  lastProp.node,
-                  propSortingNode.node,
-                )
+                getLinesBetween(context.sourceCode, lastProp, prop)
               ) {
                 accumulator.push([])
               }
 
-              if (prop.value.type === 'AssignmentPattern') {
-                let addDependencies = (value: TSESTree.AssignmentPattern) => {
-                  if (value.right.type === 'Identifier') {
-                    dependencies.push(value.right.name)
-                  }
-
-                  let handleComplexExpression = (
-                    expression:
-                      | TSESTree.ArrowFunctionExpression
-                      | TSESTree.ConditionalExpression
-                      | TSESTree.LogicalExpression
-                      | TSESTree.BinaryExpression
-                      | TSESTree.CallExpression,
-                  ) => {
-                    let nodes = []
-
-                    switch (expression.type) {
-                      case 'ArrowFunctionExpression':
-                        nodes.push(expression.body)
-                        break
-
-                      case 'ConditionalExpression':
-                        nodes.push(expression.consequent, expression.alternate)
-                        break
-
-                      case 'LogicalExpression':
-                      case 'BinaryExpression':
-                        nodes.push(expression.left, expression.right)
-                        break
-
-                      case 'CallExpression':
-                        nodes.push(...expression.arguments)
-                        break
-                    }
-
-                    nodes.forEach(nestedNode => {
-                      if (nestedNode.type === 'Identifier') {
-                        dependencies.push(nestedNode.name)
-                      }
-
-                      if (
-                        nestedNode.type === 'BinaryExpression' ||
-                        nestedNode.type === 'ConditionalExpression'
-                      ) {
-                        handleComplexExpression(nestedNode)
-                      }
-                    })
-                  }
-
-                  switch (value.right.type) {
-                    case 'ArrowFunctionExpression':
-                    case 'ConditionalExpression':
-                    case 'LogicalExpression':
-                    case 'BinaryExpression':
-                    case 'CallExpression':
-                      handleComplexExpression(value.right)
-                      break
-
-                    default:
-                  }
-                }
-
-                addDependencies(prop.value)
-              }
-
-              setCustomGroups(options['custom-groups'], name)
-
-              let value = {
-                ...propSortingNode,
-                group: getGroup(),
-                dependencies,
-                position,
-              }
-
-              accumulator.at(-1)!.push(value)
+              accumulator.at(-1)!.push(prop)
 
               return accumulator
             },
@@ -316,64 +195,82 @@ export default createEslintRule<Options, MESSAGE_ID>({
           )
 
         for (let nodes of formatProperties(node.properties)) {
-          pairwise(nodes, (left, right) => {
-            let leftNum = getGroupNumber(options.groups, left)
-            let rightNum = getGroupNumber(options.groups, right)
-
-            if (
-              leftNum > rightNum ||
-              (leftNum === rightNum &&
-                isPositive(compare(left, right, options)))
-            ) {
-              let fix:
-                | ((fixer: TSESLint.RuleFixer) => TSESLint.RuleFix[])
-                | undefined = fixer => {
-                let grouped: {
-                  [key: string]: SortingNode<TSESTree.Node>[]
-                } = {}
-
-                for (let currentNode of nodes) {
-                  let groupNum = getGroupNumber(options.groups, currentNode)
-
-                  if (!(groupNum in grouped)) {
-                    grouped[groupNum] = [currentNode]
-                  } else {
-                    grouped[groupNum] = sortNodes(
-                      [...grouped[groupNum], currentNode],
-                      options,
-                    )
-                  }
-                }
-
-                let sortedNodes: SortingNode<TSESTree.Node>[] = []
-
-                for (let group of Object.keys(grouped).sort(
-                  (a, b) => Number(a) - Number(b),
-                )) {
-                  sortedNodes.push(...sortNodes(grouped[group], options))
-                }
-
-                return makeFixes(
-                  fixer,
-                  nodes,
-                  sortedNodes,
-                  context.sourceCode,
-                  {
-                    partitionComment: options['partition-by-comment'],
-                  },
-                )
+          createSortingRule({
+            getName: prop => {
+              if (prop.key.type === 'Identifier') {
+                return prop.key.name
+              } else if (prop.key.type === 'Literal') {
+                return `${prop.key.value}`
               }
+              return context.sourceCode.text.slice(...prop.key.range)
+            },
+            getDependencies: (define, prop) => {
+              if (prop.value.type === 'AssignmentPattern') {
+                let handleComplexExpression = (
+                  expression:
+                    | TSESTree.ArrowFunctionExpression
+                    | TSESTree.ConditionalExpression
+                    | TSESTree.LogicalExpression
+                    | TSESTree.BinaryExpression
+                    | TSESTree.CallExpression,
+                ) => {
+                  let nodeList = []
 
-              context.report({
-                messageId: 'unexpectedObjectsOrder',
-                data: {
-                  left: toSingleLine(left.name),
-                  right: toSingleLine(right.name),
-                },
-                node: right.node,
-                fix,
-              })
-            }
+                  switch (expression.type) {
+                    case 'ArrowFunctionExpression':
+                      nodeList.push(expression.body)
+                      break
+
+                    case 'ConditionalExpression':
+                      nodeList.push(expression.consequent, expression.alternate)
+                      break
+
+                    case 'LogicalExpression':
+                    case 'BinaryExpression':
+                      nodeList.push(expression.left, expression.right)
+                      break
+
+                    case 'CallExpression':
+                      nodeList.push(...expression.arguments)
+                      break
+                  }
+
+                  nodeList.forEach(nestedNode => {
+                    if (nestedNode.type === 'Identifier') {
+                      define(nestedNode.name)
+                    }
+
+                    if (
+                      nestedNode.type === 'BinaryExpression' ||
+                      nestedNode.type === 'ConditionalExpression'
+                    ) {
+                      handleComplexExpression(nestedNode)
+                    }
+                  })
+                }
+
+                switch (prop.value.right.type) {
+                  case 'ArrowFunctionExpression':
+                  case 'ConditionalExpression':
+                  case 'LogicalExpression':
+                  case 'BinaryExpression':
+                  case 'CallExpression':
+                    handleComplexExpression(prop.value.right)
+                    break
+
+                  case 'Identifier':
+                    define(prop.value.right.name)
+                    break
+
+                  default:
+                    break
+                }
+              }
+            },
+            unexpectedOrderMessage: 'unexpectedObjectsOrder',
+            context,
+            options,
+            nodes,
           })
         }
       }
