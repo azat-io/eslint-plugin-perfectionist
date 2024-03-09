@@ -1,14 +1,14 @@
 @font-face {
-  font-family: 'Co Text';
+  font-family: 'Museo Sans Rounded';
   font-weight: 400;
-  src: url('/fonts/co-text-regular.woff2');
+  src: url('/fonts/museo-sans-rounded-regular.woff2');
   font-display: swap;
 }
 
 @font-face {
-  font-family: 'Co Text';
+  font-family: 'Museo Sans Rounded';
   font-weight: 700;
-  src: url('/fonts/co-text-bold.woff2');
+  src: url('/fonts/museo-sans-rounded-bold.woff2');
   font-display: swap;
 }
 
