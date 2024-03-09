@@ -13,7 +13,6 @@ import { getGroupNumber } from '../utils/get-group-number'
 import { getNodeRange } from '../utils/get-node-range'
 import { rangeToDiff } from '../utils/range-to-diff'
 import { isPositive } from '../utils/is-positive'
-import { SortOrder, SortType } from '../typings'
 import { useGroups } from '../utils/use-groups'
 import { sortNodes } from '../utils/sort-nodes'
 import { complete } from '../utils/complete'
@@ -58,13 +57,13 @@ type Options<T extends string[]> = [
       value?: { [key in T[number]]: string[] | string }
       type?: { [key in T[number]]: string[] | string }
     }
+    type: 'alphabetical' | 'line-length' | 'natural'
     'newlines-between': NewlinesBetweenValue
     groups: (Group<T>[] | Group<T>)[]
     'internal-pattern': string[]
     'max-line-length'?: number
     'ignore-case': boolean
-    order: SortOrder
-    type: SortType
+    order: 'desc' | 'asc'
   }>,
 ]
 
@@ -87,6 +86,24 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
         id: 'sort-imports',
         type: 'object',
         properties: {
+          type: {
+            enum: ['alphabetical', 'natural', 'line-length'],
+            default: 'alphabetical',
+            type: 'string',
+          },
+          order: {
+            enum: ['asc', 'desc'],
+            default: 'asc',
+            type: 'string',
+          },
+          'ignore-case': {
+            type: 'boolean',
+            default: false,
+          },
+          groups: {
+            type: 'array',
+            default: [],
+          },
           'custom-groups': {
             type: 'object',
             properties: {
@@ -98,28 +115,6 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
               },
             },
             additionalProperties: false,
-          },
-          type: {
-            enum: [
-              SortType.alphabetical,
-              SortType.natural,
-              SortType['line-length'],
-            ],
-            default: SortType.alphabetical,
-            type: 'string',
-          },
-          order: {
-            enum: [SortOrder.asc, SortOrder.desc],
-            default: SortOrder.asc,
-            type: 'string',
-          },
-          'ignore-case': {
-            type: 'boolean',
-            default: false,
-          },
-          groups: {
-            type: 'array',
-            default: [],
           },
           'internal-pattern': {
             items: {
@@ -152,7 +147,7 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
         definitions: {
           'is-line-length': {
             properties: {
-              type: { enum: [SortType['line-length']], type: 'string' },
+              type: { enum: ['line-length'], type: 'string' },
             },
             required: ['type'],
             type: 'object',
@@ -179,8 +174,8 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
   },
   defaultOptions: [
     {
-      type: SortType.alphabetical,
-      order: SortOrder.asc,
+      type: 'alphabetical',
+      order: 'asc',
     },
   ],
   create: context => {
@@ -188,11 +183,11 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
       'newlines-between': NewlinesBetweenValue.always,
       'custom-groups': { type: {}, value: {} },
       'internal-pattern': ['~/**'],
-      type: SortType.alphabetical,
-      order: SortOrder.asc,
+      type: 'alphabetical',
       'ignore-case': false,
+      order: 'asc',
       groups: [],
-    })
+    } as const)
 
     let hasUnknownGroup = false
 
@@ -372,7 +367,7 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
         group: computeGroup(node),
         name,
         node,
-        ...(options.type === SortType['line-length'] &&
+        ...(options.type === 'line-length' &&
           options['max-line-length'] && {
             hasMultipleImportDeclarations: hasMultipleImportDeclarations(
               node as TSESTree.ImportDeclaration,
