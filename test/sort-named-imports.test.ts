@@ -3,7 +3,7 @@ import { afterAll, describe, it } from 'vitest'
 import { dedent } from 'ts-dedent'
 
 import rule, { RULE_NAME } from '../rules/sort-named-imports'
-import { SortOrder, SortType } from '../typings'
+import { GroupKind, SortOrder, SortType } from '../typings'
 
 describe(RULE_NAME, () => {
   RuleTester.describeSkip = describe.skip
@@ -300,6 +300,110 @@ describe(RULE_NAME, () => {
         },
       ],
     })
+
+    ruleTester.run(
+      `${RULE_NAME}: sorts named imports grouping by their kind`,
+      rule,
+      {
+        valid: [
+          {
+            code: dedent`
+              import { Kenshin, type Sakabotou, Sanosuke, type Zanbato } from 'rurouni-kenshin'
+            `,
+            options: [{ ...options, 'group-kind': GroupKind.mixed }],
+          },
+          {
+            code: dedent`
+              import { Kenshin, Sanosuke, type Sakabotou, type Zanbato } from 'rurouni-kenshin'
+            `,
+            options: [{ ...options, 'group-kind': GroupKind['values-first'] }],
+          },
+          {
+            code: dedent`
+              import { type Sakabotou, type Zanbato, Kenshin, Sanosuke } from 'rurouni-kenshin'
+            `,
+            options: [{ ...options, 'group-kind': GroupKind['types-first'] }],
+          },
+        ],
+        invalid: [
+          {
+            code: dedent`
+              import { type Zanbato, Sanosuke, type Sakabotou, Kenshin } from 'rurouni-kenshin'
+            `,
+            output: dedent`
+              import { Kenshin, type Sakabotou, Sanosuke, type Zanbato } from 'rurouni-kenshin'
+            `,
+            options: [{ ...options, 'group-kind': GroupKind.mixed }],
+            errors: [
+              {
+                messageId: 'unexpectedNamedImportsOrder',
+                data: {
+                  left: 'Zanbato',
+                  right: 'Sanosuke',
+                },
+              },
+              {
+                messageId: 'unexpectedNamedImportsOrder',
+                data: {
+                  left: 'Sanosuke',
+                  right: 'Sakabotou',
+                },
+              },
+              {
+                messageId: 'unexpectedNamedImportsOrder',
+                data: {
+                  left: 'Sakabotou',
+                  right: 'Kenshin',
+                },
+              },
+            ],
+          },
+          {
+            code: dedent`
+              import { type Zanbato, Sanosuke, type Sakabotou, Kenshin } from 'rurouni-kenshin'
+            `,
+            output: dedent`
+              import { Kenshin, Sanosuke, type Sakabotou, type Zanbato } from 'rurouni-kenshin'
+            `,
+            options: [{ ...options, 'group-kind': GroupKind['values-first'] }],
+            errors: [
+              {
+                messageId: 'unexpectedNamedImportsOrder',
+                data: {
+                  left: 'Zanbato',
+                  right: 'Sanosuke',
+                },
+              },
+              {
+                messageId: 'unexpectedNamedImportsOrder',
+                data: {
+                  left: 'Sakabotou',
+                  right: 'Kenshin',
+                },
+              },
+            ],
+          },
+          {
+            code: dedent`
+              import { type Zanbato, Sanosuke, type Sakabotou, Kenshin } from 'rurouni-kenshin'
+            `,
+            output: dedent`
+              import { type Sakabotou, type Zanbato, Kenshin, Sanosuke } from 'rurouni-kenshin'
+            `,
+            options: [{ ...options, 'group-kind': GroupKind['types-first'] }],
+            errors: [
+              {
+                messageId: 'unexpectedNamedImportsOrder',
+                data: {
+                  left: 'Sanosuke',
+                  right: 'Sakabotou',
+                },
+              },
+            ],
+          },
+        ],
+      },
+    )
   })
 
   describe(`${RULE_NAME}: sorting by natural order`, () => {
@@ -585,6 +689,110 @@ describe(RULE_NAME, () => {
         },
       ],
     })
+
+    ruleTester.run(
+      `${RULE_NAME}: sorts named imports grouping by their kind`,
+      rule,
+      {
+        valid: [
+          {
+            code: dedent`
+              import { Kenshin, type Sakabotou, Sanosuke, type Zanbato } from 'rurouni-kenshin'
+            `,
+            options: [{ ...options, 'group-kind': GroupKind.mixed }],
+          },
+          {
+            code: dedent`
+              import { Kenshin, Sanosuke, type Sakabotou, type Zanbato } from 'rurouni-kenshin'
+            `,
+            options: [{ ...options, 'group-kind': GroupKind['values-first'] }],
+          },
+          {
+            code: dedent`
+              import { type Sakabotou, type Zanbato, Kenshin, Sanosuke } from 'rurouni-kenshin'
+            `,
+            options: [{ ...options, 'group-kind': GroupKind['types-first'] }],
+          },
+        ],
+        invalid: [
+          {
+            code: dedent`
+              import { type Zanbato, Sanosuke, type Sakabotou, Kenshin } from 'rurouni-kenshin'
+            `,
+            output: dedent`
+              import { Kenshin, type Sakabotou, Sanosuke, type Zanbato } from 'rurouni-kenshin'
+            `,
+            options: [{ ...options, 'group-kind': GroupKind.mixed }],
+            errors: [
+              {
+                messageId: 'unexpectedNamedImportsOrder',
+                data: {
+                  left: 'Zanbato',
+                  right: 'Sanosuke',
+                },
+              },
+              {
+                messageId: 'unexpectedNamedImportsOrder',
+                data: {
+                  left: 'Sanosuke',
+                  right: 'Sakabotou',
+                },
+              },
+              {
+                messageId: 'unexpectedNamedImportsOrder',
+                data: {
+                  left: 'Sakabotou',
+                  right: 'Kenshin',
+                },
+              },
+            ],
+          },
+          {
+            code: dedent`
+              import { type Zanbato, Sanosuke, type Sakabotou, Kenshin } from 'rurouni-kenshin'
+            `,
+            output: dedent`
+              import { Kenshin, Sanosuke, type Sakabotou, type Zanbato } from 'rurouni-kenshin'
+            `,
+            options: [{ ...options, 'group-kind': GroupKind['values-first'] }],
+            errors: [
+              {
+                messageId: 'unexpectedNamedImportsOrder',
+                data: {
+                  left: 'Zanbato',
+                  right: 'Sanosuke',
+                },
+              },
+              {
+                messageId: 'unexpectedNamedImportsOrder',
+                data: {
+                  left: 'Sakabotou',
+                  right: 'Kenshin',
+                },
+              },
+            ],
+          },
+          {
+            code: dedent`
+              import { type Zanbato, Sanosuke, type Sakabotou, Kenshin } from 'rurouni-kenshin'
+            `,
+            output: dedent`
+              import { type Sakabotou, type Zanbato, Kenshin, Sanosuke } from 'rurouni-kenshin'
+            `,
+            options: [{ ...options, 'group-kind': GroupKind['types-first'] }],
+            errors: [
+              {
+                messageId: 'unexpectedNamedImportsOrder',
+                data: {
+                  left: 'Sanosuke',
+                  right: 'Sakabotou',
+                },
+              },
+            ],
+          },
+        ],
+      },
+    )
   })
 
   describe(`${RULE_NAME}: sorting by line length`, () => {
@@ -809,6 +1017,157 @@ describe(RULE_NAME, () => {
         },
       ],
     })
+
+    ruleTester.run(
+      `${RULE_NAME}: sorts named imports grouping by their kind`,
+      rule,
+      {
+        valid: [
+          {
+            code: dedent`
+              import {
+                Kaoru as Kamiya,
+                type Sakabotou,
+                type Zanbato,
+                Sanosuke,
+                Kenshin,
+              } from 'rurouni-kenshin'
+            `,
+            options: [{ ...options, 'group-kind': GroupKind.mixed }],
+          },
+          {
+            code: dedent`
+              import {
+                Kaoru as Kamiya,
+                Sanosuke,
+                Kenshin,
+                type Sakabotou,
+                type Zanbato,
+              } from 'rurouni-kenshin'
+            `,
+            options: [{ ...options, 'group-kind': GroupKind['values-first'] }],
+          },
+          {
+            code: dedent`
+              import {
+                type Sakabotou,
+                type Zanbato,
+                Kaoru as Kamiya,
+                Sanosuke,
+                Kenshin,
+              } from 'rurouni-kenshin'
+            `,
+            options: [{ ...options, 'group-kind': GroupKind['types-first'] }],
+          },
+        ],
+        invalid: [
+          {
+            code: dedent`
+              import {
+                Kaoru as Kamiya,
+                type Sakabotou,
+                Sanosuke,
+                type Zanbato,
+                Kenshin,
+              } from 'rurouni-kenshin'
+            `,
+            output: dedent`
+              import {
+                Kaoru as Kamiya,
+                type Sakabotou,
+                type Zanbato,
+                Sanosuke,
+                Kenshin,
+              } from 'rurouni-kenshin'
+            `,
+            options: [{ ...options, 'group-kind': GroupKind.mixed }],
+            errors: [
+              {
+                messageId: 'unexpectedNamedImportsOrder',
+                data: {
+                  left: 'Sanosuke',
+                  right: 'Zanbato',
+                },
+              },
+            ],
+          },
+          {
+            code: dedent`
+              import {
+                Kaoru as Kamiya,
+                type Sakabotou,
+                Sanosuke,
+                type Zanbato,
+                Kenshin,
+              } from 'rurouni-kenshin'
+            `,
+            output: dedent`
+              import {
+                Kaoru as Kamiya,
+                Sanosuke,
+                Kenshin,
+                type Sakabotou,
+                type Zanbato,
+              } from 'rurouni-kenshin'
+            `,
+            options: [{ ...options, 'group-kind': GroupKind['values-first'] }],
+            errors: [
+              {
+                messageId: 'unexpectedNamedImportsOrder',
+                data: {
+                  left: 'Sakabotou',
+                  right: 'Sanosuke',
+                },
+              },
+              {
+                messageId: 'unexpectedNamedImportsOrder',
+                data: {
+                  left: 'Zanbato',
+                  right: 'Kenshin',
+                },
+              },
+            ],
+          },
+          {
+            code: dedent`
+              import {
+                Kaoru as Kamiya,
+                type Sakabotou,
+                Sanosuke,
+                type Zanbato,
+                Kenshin,
+              } from 'rurouni-kenshin'
+            `,
+            output: dedent`
+              import {
+                type Sakabotou,
+                type Zanbato,
+                Kaoru as Kamiya,
+                Sanosuke,
+                Kenshin,
+              } from 'rurouni-kenshin'
+            `,
+            options: [{ ...options, 'group-kind': GroupKind['types-first'] }],
+            errors: [
+              {
+                messageId: 'unexpectedNamedImportsOrder',
+                data: {
+                  left: 'Kamiya',
+                  right: 'Sakabotou',
+                },
+              },
+              {
+                messageId: 'unexpectedNamedImportsOrder',
+                data: {
+                  left: 'Sanosuke',
+                  right: 'Zanbato',
+                },
+              },
+            ],
+          },
+        ],
+      },
+    )
   })
 
   describe(`${RULE_NAME}: misc`, () => {
