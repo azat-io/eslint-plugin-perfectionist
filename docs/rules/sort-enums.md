@@ -71,6 +71,7 @@ interface Options {
   type?: 'alphabetical' | 'natural' | 'line-length'
   order?: 'asc' | 'desc'
   'ignore-case'?: boolean
+  'partition-by-comment'?: string[] | string | boolean
 }
 ```
 

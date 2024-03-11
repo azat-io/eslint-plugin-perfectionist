@@ -1,6 +1,8 @@
-import type { SortingNode } from '../typings'
+import type { PartitionComment, SortingNode } from '../typings'
 
+import { isPartitionComment } from '../utils/is-partition-comment'
 import { createEslintRule } from '../utils/create-eslint-rule'
+import { getCommentBefore } from '../utils/get-comment-before'
 import { toSingleLine } from '../utils/to-single-line'
 import { rangeToDiff } from '../utils/range-to-diff'
 import { isPositive } from '../utils/is-positive'
@@ -15,6 +17,7 @@ type MESSAGE_ID = 'unexpectedEnumsOrder'
 
 type Options = [
   Partial<{
+    'partition-by-comment': PartitionComment
     'ignore-case': boolean
     order: SortOrder
     type: SortType
@@ -35,6 +38,10 @@ export default createEslintRule<Options, MESSAGE_ID>({
       {
         type: 'object',
         properties: {
+          'partition-by-comment': {
+            default: false,
+            type: ['boolean', 'string', 'array'],
+          },
           type: {
             enum: [
               SortType.alphabetical,
@@ -77,36 +84,61 @@ export default createEslintRule<Options, MESSAGE_ID>({
           type: SortType.alphabetical,
           order: SortOrder.asc,
           'ignore-case': false,
+          'partition-by-comment': false,
         })
 
-        let nodes: SortingNode[] = node.members.map(member => ({
-          name:
-            member.id.type === 'Literal'
-              ? `${member.id.value}`
-              : `${context.sourceCode.text.slice(...member.id.range)}`,
-          size: rangeToDiff(member.range),
-          node: member,
-        }))
+        let partitionComment = options['partition-by-comment']
 
-        pairwise(nodes, (left, right) => {
-          if (isPositive(compare(left, right, options))) {
-            context.report({
-              messageId: 'unexpectedEnumsOrder',
-              data: {
-                left: toSingleLine(left.name),
-                right: toSingleLine(right.name),
-              },
-              node: right.node,
-              fix: fixer =>
-                makeFixes(
-                  fixer,
-                  nodes,
-                  sortNodes(nodes, options),
-                  context.sourceCode,
-                ),
-            })
-          }
-        })
+        let formattedMembers: SortingNode[][] = node.members.reduce(
+          (accumulator: SortingNode[][], member) => {
+            let comment = getCommentBefore(member, context.sourceCode)
+
+            if (
+              partitionComment &&
+              comment &&
+              isPartitionComment(partitionComment, comment.value)
+            ) {
+              accumulator.push([])
+            }
+
+            let name =
+              member.id.type === 'Literal'
+                ? `${member.id.value}`
+                : `${context.sourceCode.text.slice(...member.id.range)}`
+
+            let sortingNode = {
+              name,
+              node: member,
+              size: rangeToDiff(member.range),
+            }
+            accumulator.at(-1)!.push(sortingNode)
+            return accumulator
+          },
+          [[]],
+        )
+
+        for (let nodes of formattedMembers) {
+          pairwise(nodes, (left, right) => {
+            if (isPositive(compare(left, right, options))) {
+              context.report({
+                messageId: 'unexpectedEnumsOrder',
+                data: {
+                  left: toSingleLine(left.name),
+                  right: toSingleLine(right.name),
+                },
+                node: right.node,
+                fix: fixer =>
+                  makeFixes(
+                    fixer,
+                    nodes,
+                    sortNodes(nodes, options),
+                    context.sourceCode,
+                    { partitionComment },
+                  ),
+              })
+            }
+          })
+        }
       }
     },
   }),
