@@ -12,9 +12,9 @@ export enum SortOrder {
 }
 
 export enum GroupKind {
-  'mixed' = 'mixed',
   'values-first' = 'values-first',
   'types-first' = 'types-first',
+  'mixed' = 'mixed',
 }
 
 export type PartitionComment = string[] | boolean | string

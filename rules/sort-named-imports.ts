@@ -1,25 +1,25 @@
-import { GroupKind, type SortingNode } from '../typings'
+import type { SortingNode } from '../typings'
 
 import { createEslintRule } from '../utils/create-eslint-rule'
+import { SortOrder, GroupKind, SortType } from '../typings'
+import { getGroupNumber } from '../utils/get-group-number'
 import { rangeToDiff } from '../utils/range-to-diff'
 import { isPositive } from '../utils/is-positive'
-import { SortOrder, SortType } from '../typings'
 import { sortNodes } from '../utils/sort-nodes'
 import { makeFixes } from '../utils/make-fixes'
 import { complete } from '../utils/complete'
 import { pairwise } from '../utils/pairwise'
 import { compare } from '../utils/compare'
-import { getGroupNumber } from '../utils/get-group-number'
 
 type MESSAGE_ID = 'unexpectedNamedImportsOrder'
 
 type Options = [
   Partial<{
     'ignore-alias': boolean
+    'group-kind': GroupKind
     'ignore-case': boolean
     order: SortOrder
     type: SortType
-    'group-kind': GroupKind
   }>,
 ]
 
@@ -134,7 +134,7 @@ export default createEslintRule<Options, MESSAGE_ID>({
           ) {
             let sortedNodes = shouldGroupByKind
               ? groupKindOrder
-                  .map(group => nodes.filter(node => node.group === group))
+                  .map(group => nodes.filter(n => n.group === group))
                   .map(groupedNodes => sortNodes(groupedNodes, options))
                   .flat()
               : sortNodes(nodes, options)
