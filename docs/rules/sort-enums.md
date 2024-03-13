@@ -96,6 +96,14 @@ interface Options {
 
 Only affects alphabetical and natural sorting. When `true` the rule ignores the case-sensitivity of the order.
 
+### partition-by-comment
+
+<sub>(default: `false`)</sub>
+
+You can set comments that would separate the members of enums into logical parts. If set to `true`, all enum member comments will be treated as delimiters.
+
+The [minimatch](https://github.com/isaacs/minimatch) library is used for pattern matching.
+
 ## ⚙️ Usage
 
 ::: code-group
