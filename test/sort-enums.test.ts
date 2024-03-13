@@ -252,6 +252,162 @@ describe(RULE_NAME, () => {
         invalid: [],
       },
     )
+
+    ruleTester.run(
+      `${RULE_NAME}(${type}): allows to use partition comments`,
+      rule,
+      {
+        valid: [],
+        invalid: [
+          {
+            code: dedent`
+              enum HeroAssociation {
+                // Part: S-Class
+                Blast = 'Blast',
+                Tatsumaki = 'Tatsumaki',
+                // Atomic Samurai
+                Kamikaze = 'Kamikaze',
+                // Part: A-Class
+                Sweet = 'Sweet Mask',
+                Iaian = 'Iaian',
+                // Part: B-Class
+                'Mountain-Ape' = 'Mountain Ape',
+                // Member of the Blizzard Group
+                Eyelashes = 'Eyelashes',
+              }
+            `,
+            output: dedent`
+              enum HeroAssociation {
+                // Part: S-Class
+                Blast = 'Blast',
+                // Atomic Samurai
+                Kamikaze = 'Kamikaze',
+                Tatsumaki = 'Tatsumaki',
+                // Part: A-Class
+                Iaian = 'Iaian',
+                Sweet = 'Sweet Mask',
+                // Part: B-Class
+                // Member of the Blizzard Group
+                Eyelashes = 'Eyelashes',
+                'Mountain-Ape' = 'Mountain Ape',
+              }
+            `,
+            options: [
+              {
+                ...options,
+                'partition-by-comment': 'Part**',
+              },
+            ],
+            errors: [
+              {
+                messageId: 'unexpectedEnumsOrder',
+                data: {
+                  left: 'Tatsumaki',
+                  right: 'Kamikaze',
+                },
+              },
+              {
+                messageId: 'unexpectedEnumsOrder',
+                data: {
+                  left: 'Sweet',
+                  right: 'Iaian',
+                },
+              },
+              {
+                messageId: 'unexpectedEnumsOrder',
+                data: {
+                  left: 'Mountain-Ape',
+                  right: 'Eyelashes',
+                },
+              },
+            ],
+          },
+        ],
+      },
+    )
+
+    ruleTester.run(
+      `${RULE_NAME}(${type}): allows to use all comments as parts`,
+      rule,
+      {
+        valid: [
+          {
+            code: dedent`
+              enum Brothers {
+                // Older brother
+                Edward = 'Edward Elric',
+                // Younger brother
+                Alphonse = 'Alphonse Elric',
+              }
+            `,
+            options: [
+              {
+                ...options,
+                'partition-by-comment': true,
+              },
+            ],
+          },
+        ],
+        invalid: [],
+      },
+    )
+
+    ruleTester.run(
+      `${RULE_NAME}(${type}): allows to use multiple partition comments`,
+      rule,
+      {
+        valid: [],
+        invalid: [
+          {
+            code: dedent`
+              enum PsychoPass {
+                /* Public Safety Bureau */
+                // Crime Coefficient: Low
+                Tsunemori = 'Akane Tsunemori',
+                // Crime Coefficient: High
+                Kogami = 'Shinya Kogami',
+                Ginoza = 'Nobuchika Ginoza',
+                Masaoka = 'Tomomi Masaoka',
+                /* Victims */
+                Makishima = 'Shogo Makishima',
+              }
+            `,
+            output: dedent`
+              enum PsychoPass {
+                /* Public Safety Bureau */
+                // Crime Coefficient: Low
+                Tsunemori = 'Akane Tsunemori',
+                // Crime Coefficient: High
+                Ginoza = 'Nobuchika Ginoza',
+                Kogami = 'Shinya Kogami',
+                Masaoka = 'Tomomi Masaoka',
+                /* Victims */
+                Makishima = 'Shogo Makishima',
+              }
+            `,
+            options: [
+              {
+                ...options,
+                'partition-by-comment': [
+                  'Public Safety Bureau',
+                  'Crime Coefficient: *',
+                  'Victims',
+                ],
+              },
+            ],
+            errors: [
+              {
+                messageId: 'unexpectedEnumsOrder',
+                data: {
+                  left: 'Kogami',
+                  right: 'Ginoza',
+                },
+              },
+            ],
+          },
+        ],
+      },
+    )
   })
 
   describe(`${RULE_NAME}: sorting by natural order`, () => {
@@ -487,6 +643,162 @@ describe(RULE_NAME, () => {
           },
         ],
         invalid: [],
+      },
+    )
+
+    ruleTester.run(
+      `${RULE_NAME}(${type}): allows to use partition comments`,
+      rule,
+      {
+        valid: [],
+        invalid: [
+          {
+            code: dedent`
+              enum HeroAssociation {
+                // Part: S-Class
+                Blast = 'Blast',
+                Tatsumaki = 'Tatsumaki',
+                // Atomic Samurai
+                Kamikaze = 'Kamikaze',
+                // Part: A-Class
+                Sweet = 'Sweet Mask',
+                Iaian = 'Iaian',
+                // Part: B-Class
+                'Mountain-Ape' = 'Mountain Ape',
+                // Member of the Blizzard Group
+                Eyelashes = 'Eyelashes',
+              }
+            `,
+            output: dedent`
+              enum HeroAssociation {
+                // Part: S-Class
+                Blast = 'Blast',
+                // Atomic Samurai
+                Kamikaze = 'Kamikaze',
+                Tatsumaki = 'Tatsumaki',
+                // Part: A-Class
+                Iaian = 'Iaian',
+                Sweet = 'Sweet Mask',
+                // Part: B-Class
+                // Member of the Blizzard Group
+                Eyelashes = 'Eyelashes',
+                'Mountain-Ape' = 'Mountain Ape',
+              }
+            `,
+            options: [
+              {
+                ...options,
+                'partition-by-comment': 'Part**',
+              },
+            ],
+            errors: [
+              {
+                messageId: 'unexpectedEnumsOrder',
+                data: {
+                  left: 'Tatsumaki',
+                  right: 'Kamikaze',
+                },
+              },
+              {
+                messageId: 'unexpectedEnumsOrder',
+                data: {
+                  left: 'Sweet',
+                  right: 'Iaian',
+                },
+              },
+              {
+                messageId: 'unexpectedEnumsOrder',
+                data: {
+                  left: 'Mountain-Ape',
+                  right: 'Eyelashes',
+                },
+              },
+            ],
+          },
+        ],
+      },
+    )
+
+    ruleTester.run(
+      `${RULE_NAME}(${type}): allows to use all comments as parts`,
+      rule,
+      {
+        valid: [
+          {
+            code: dedent`
+              enum Brothers {
+                // Older brother
+                Edward = 'Edward Elric',
+                // Younger brother
+                Alphonse = 'Alphonse Elric',
+              }
+            `,
+            options: [
+              {
+                ...options,
+                'partition-by-comment': true,
+              },
+            ],
+          },
+        ],
+        invalid: [],
+      },
+    )
+
+    ruleTester.run(
+      `${RULE_NAME}(${type}): allows to use multiple partition comments`,
+      rule,
+      {
+        valid: [],
+        invalid: [
+          {
+            code: dedent`
+              enum PsychoPass {
+                /* Public Safety Bureau */
+                // Crime Coefficient: Low
+                Tsunemori = 'Akane Tsunemori',
+                // Crime Coefficient: High
+                Kogami = 'Shinya Kogami',
+                Ginoza = 'Nobuchika Ginoza',
+                Masaoka = 'Tomomi Masaoka',
+                /* Victims */
+                Makishima = 'Shogo Makishima',
+              }
+            `,
+            output: dedent`
+              enum PsychoPass {
+                /* Public Safety Bureau */
+                // Crime Coefficient: Low
+                Tsunemori = 'Akane Tsunemori',
+                // Crime Coefficient: High
+                Ginoza = 'Nobuchika Ginoza',
+                Kogami = 'Shinya Kogami',
+                Masaoka = 'Tomomi Masaoka',
+                /* Victims */
+                Makishima = 'Shogo Makishima',
+              }
+            `,
+            options: [
+              {
+                ...options,
+                'partition-by-comment': [
+                  'Public Safety Bureau',
+                  'Crime Coefficient: *',
+                  'Victims',
+                ],
+              },
+            ],
+            errors: [
+              {
+                messageId: 'unexpectedEnumsOrder',
+                data: {
+                  left: 'Kogami',
+                  right: 'Ginoza',
+                },
+              },
+            ],
+          },
+        ],
       },
     )
   })
@@ -730,6 +1042,148 @@ describe(RULE_NAME, () => {
           },
         ],
         invalid: [],
+      },
+    )
+
+    ruleTester.run(
+      `${RULE_NAME}(${type}): allows to use partition comments`,
+      rule,
+      {
+        valid: [],
+        invalid: [
+          {
+            code: dedent`
+              enum HeroAssociation {
+                // Part: S-Class
+                Blast = 'Blast',
+                Tatsumaki = 'Tatsumaki',
+                // Atomic Samurai
+                Kamikaze = 'Kamikaze',
+                // Part: A-Class
+                Sweet = 'Sweet Mask',
+                Iaian = 'Iaian',
+                // Part: B-Class
+                'Mountain-Ape' = 'Mountain Ape',
+                // Member of the Blizzard Group
+                Eyelashes = 'Eyelashes',
+              }
+            `,
+            output: dedent`
+              enum HeroAssociation {
+                // Part: S-Class
+                Tatsumaki = 'Tatsumaki',
+                // Atomic Samurai
+                Kamikaze = 'Kamikaze',
+                Blast = 'Blast',
+                // Part: A-Class
+                Sweet = 'Sweet Mask',
+                Iaian = 'Iaian',
+                // Part: B-Class
+                'Mountain-Ape' = 'Mountain Ape',
+                // Member of the Blizzard Group
+                Eyelashes = 'Eyelashes',
+              }
+            `,
+            options: [
+              {
+                ...options,
+                'partition-by-comment': 'Part**',
+              },
+            ],
+            errors: [
+              {
+                messageId: 'unexpectedEnumsOrder',
+                data: {
+                  left: 'Blast',
+                  right: 'Tatsumaki',
+                },
+              },
+            ],
+          },
+        ],
+      },
+    )
+
+    ruleTester.run(
+      `${RULE_NAME}(${type}): allows to use all comments as parts`,
+      rule,
+      {
+        valid: [
+          {
+            code: dedent`
+              enum Brothers {
+                // Older brother
+                Edward = 'Edward Elric',
+                // Younger brother
+                Alphonse = 'Alphonse Elric',
+              }
+            `,
+            options: [
+              {
+                ...options,
+                'partition-by-comment': true,
+              },
+            ],
+          },
+        ],
+        invalid: [],
+      },
+    )
+
+    ruleTester.run(
+      `${RULE_NAME}(${type}): allows to use multiple partition comments`,
+      rule,
+      {
+        valid: [],
+        invalid: [
+          {
+            code: dedent`
+              enum PsychoPass {
+                /* Public Safety Bureau */
+                // Crime Coefficient: Low
+                Tsunemori = 'Akane Tsunemori',
+                // Crime Coefficient: High
+                Kogami = 'Shinya Kogami',
+                Ginoza = 'Nobuchika Ginoza',
+                Masaoka = 'Tomomi Masaoka',
+                /* Victims */
+                Makishima = 'Shogo Makishima',
+              }
+            `,
+            output: dedent`
+              enum PsychoPass {
+                /* Public Safety Bureau */
+                // Crime Coefficient: Low
+                Tsunemori = 'Akane Tsunemori',
+                // Crime Coefficient: High
+                Ginoza = 'Nobuchika Ginoza',
+                Masaoka = 'Tomomi Masaoka',
+                Kogami = 'Shinya Kogami',
+                /* Victims */
+                Makishima = 'Shogo Makishima',
+              }
+            `,
+            options: [
+              {
+                ...options,
+                'partition-by-comment': [
+                  'Public Safety Bureau',
+                  'Crime Coefficient: *',
+                  'Victims',
+                ],
+              },
+            ],
+            errors: [
+              {
+                messageId: 'unexpectedEnumsOrder',
+                data: {
+                  left: 'Kogami',
+                  right: 'Ginoza',
+                },
+              },
+            ],
+          },
+        ],
       },
     )
   })
