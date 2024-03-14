@@ -69,6 +69,7 @@ This rule accepts an options object with the following properties:
 interface Options {
   type?: 'alphabetical' | 'natural' | 'line-length'
   order?: 'asc' | 'desc'
+  'group-kind'?: 'mixed' | 'values-first' | 'types-first'
   'ignore-case'?: boolean
 }
 ```
@@ -87,6 +88,16 @@ interface Options {
 
 - `asc` - enforce properties to be in ascending order.
 - `desc` - enforce properties to be in descending order.
+
+### group-kind
+
+<sub>(default: `'mixed'`)</sub>
+
+Allows to group named exports by their kind, with value exports coming either before or after type exports.
+
+- `mixed` - does not group named exports by their kind
+- `values-first` - groups all value exports before type exports
+- `types-first` - groups all type exports before value exports
 
 ### ignore-case
 

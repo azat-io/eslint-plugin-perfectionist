@@ -85,6 +85,7 @@ This rule accepts an options object with the following properties:
 interface Options {
   type?: 'alphabetical' | 'natural' | 'line-length'
   order?: 'asc' | 'desc'
+  'group-kind'?: 'mixed' | 'values-first' | 'types-first'
   'ignore-case'?: boolean
   'ignore-alias'?: boolean
 }
@@ -104,6 +105,16 @@ interface Options {
 
 - `asc` - enforce properties to be in ascending order.
 - `desc` - enforce properties to be in descending order.
+
+### group-kind
+
+<sub>(default: `'mixed'`)</sub>
+
+Allows to group named imports by their kind, with value imports coming either before or after type imports.
+
+- `mixed` - does not group named imports by their kind
+- `values-first` - groups all value imports before type imports
+- `types-first` - groups all type imports before value imports
 
 ### ignore-case
 

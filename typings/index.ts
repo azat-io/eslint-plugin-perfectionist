@@ -11,6 +11,12 @@ export enum SortOrder {
   'asc' = 'asc',
 }
 
+export enum GroupKind {
+  'values-first' = 'values-first',
+  'types-first' = 'types-first',
+  'mixed' = 'mixed',
+}
+
 export type PartitionComment = string[] | boolean | string
 
 export interface SortingNode {

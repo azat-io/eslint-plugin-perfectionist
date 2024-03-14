@@ -1,9 +1,10 @@
 import type { SortingNode } from '../typings'
 
 import { createEslintRule } from '../utils/create-eslint-rule'
+import { SortOrder, GroupKind, SortType } from '../typings'
+import { getGroupNumber } from '../utils/get-group-number'
 import { rangeToDiff } from '../utils/range-to-diff'
 import { isPositive } from '../utils/is-positive'
-import { SortOrder, SortType } from '../typings'
 import { sortNodes } from '../utils/sort-nodes'
 import { makeFixes } from '../utils/make-fixes'
 import { complete } from '../utils/complete'
@@ -14,6 +15,7 @@ type MESSAGE_ID = 'unexpectedNamedExportsOrder'
 
 type Options = [
   Partial<{
+    'group-kind': GroupKind
     'ignore-case': boolean
     order: SortOrder
     type: SortType
@@ -52,6 +54,15 @@ export default createEslintRule<Options, MESSAGE_ID>({
             type: 'boolean',
             default: false,
           },
+          'group-kind': {
+            enum: [
+              GroupKind.mixed,
+              GroupKind['values-first'],
+              GroupKind['types-first'],
+            ],
+            default: GroupKind.mixed,
+            type: 'string',
+          },
         },
         additionalProperties: false,
       },
@@ -74,16 +85,38 @@ export default createEslintRule<Options, MESSAGE_ID>({
           type: SortType.alphabetical,
           'ignore-case': false,
           order: SortOrder.asc,
+          'group-kind': GroupKind.mixed,
         })
 
         let nodes: SortingNode[] = node.specifiers.map(specifier => ({
           size: rangeToDiff(specifier.range),
           name: specifier.local.name,
           node: specifier,
+          group: specifier.exportKind,
         }))
 
+        let shouldGroupByKind = options['group-kind'] !== GroupKind.mixed
+        let groupKindOrder =
+          options['group-kind'] === GroupKind['values-first']
+            ? ['value', 'type']
+            : ['type', 'value']
+
         pairwise(nodes, (left, right) => {
-          if (isPositive(compare(left, right, options))) {
+          let leftNum = getGroupNumber(groupKindOrder, left)
+          let rightNum = getGroupNumber(groupKindOrder, right)
+
+          if (
+            (shouldGroupByKind && leftNum > rightNum) ||
+            ((!shouldGroupByKind || leftNum === rightNum) &&
+              isPositive(compare(left, right, options)))
+          ) {
+            let sortedNodes = shouldGroupByKind
+              ? groupKindOrder
+                  .map(group => nodes.filter(n => n.group === group))
+                  .map(groupedNodes => sortNodes(groupedNodes, options))
+                  .flat()
+              : sortNodes(nodes, options)
+
             context.report({
               messageId: 'unexpectedNamedExportsOrder',
               data: {
@@ -92,12 +125,7 @@ export default createEslintRule<Options, MESSAGE_ID>({
               },
               node: right.node,
               fix: fixer =>
-                makeFixes(
-                  fixer,
-                  nodes,
-                  sortNodes(nodes, options),
-                  context.sourceCode,
-                ),
+                makeFixes(fixer, nodes, sortedNodes, context.sourceCode),
             })
           }
         })
