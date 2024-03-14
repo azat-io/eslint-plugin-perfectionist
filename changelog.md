@@ -1,6 +1,20 @@
 # Changelog
 
 
+## v2.7.0
+
+[compare changes](https://github.com/azat-io/eslint-plugin-perfectionist/compare/v2.6.0...v2.7.0)
+
+### 🚀 Features
+
+- **sort-enums:** Add `partition-by-comment` option ([ec3d11c](https://github.com/azat-io/eslint-plugin-perfectionist/commit/ec3d11c))
+- Add group-kind option on sort-named-imports and sort-named-exports ([eb78461](https://github.com/azat-io/eslint-plugin-perfectionist/commit/eb78461))
+
+### ❤️ Contributors
+
+- Renato Böhler <renato.bohler@gmail.com>
+- Chirokas ([@chirokas](http://github.com/chirokas))
+
 ## v2.6.0
 
 [compare changes](https://github.com/azat-io/eslint-plugin-perfectionist/compare/v2.5.0...v2.6.0)
