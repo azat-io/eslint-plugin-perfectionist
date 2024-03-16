@@ -1,4 +1,4 @@
-name: test
+name: Test
 
 on:
   push:
@@ -7,29 +7,72 @@ on:
   pull_request:
 
 jobs:
-  test:
+  css:
+    name: CSS
     runs-on: ubuntu-latest
 
     steps:
-      - name: checkout
-        uses: actions/checkout@v2
+      - name: Checkout
+        uses: actions/checkout@v4
 
-      - name: install pnpm
-        uses: pnpm/action-setup@v2
-        with:
-          version: 8
+      - name: Install Tools & Dependencies
+        uses: ./.github/actions/install
 
-      - name: install node
-        uses: actions/setup-node@v3
-        with:
-          node-version: 20
-          cache: pnpm
+      - name: Test
+        run: pnpm test:css
 
-      - name: install dependencies
-        run: pnpm install --frozen-lockfile --ignore-scripts
+  format:
+    name: Format
+    runs-on: ubuntu-latest
 
-      - name: build
-        run: pnpm build
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
 
-      - name: test
-        run: pnpm test
+      - name: Install Tools & Dependencies
+        uses: ./.github/actions/install
+
+      - name: Test
+        run: pnpm test:format
+
+  js:
+    name: JS
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install Tools & Dependencies
+        uses: ./.github/actions/install
+
+      - name: Test
+        run: pnpm test:js
+
+  types:
+    name: Types
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install Tools & Dependencies
+        uses: ./.github/actions/install
+
+      - name: Test
+        run: pnpm test:types
+
+  unit:
+    name: Unit
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install Tools & Dependencies
+        uses: ./.github/actions/install
+
+      - name: Test
+        run: pnpm test:unit

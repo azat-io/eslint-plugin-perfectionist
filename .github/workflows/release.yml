@@ -1,4 +1,4 @@
-name: release
+name: Release
 
 on:
   push:
@@ -8,24 +8,17 @@ on:
 
 jobs:
   release:
+    name: Release
     runs-on: ubuntu-latest
 
     steps:
-      - name: checkout
-        uses: actions/checkout@v3
-        with:
-          fetch-depth: 0
+      - name: Checkout
+        uses: actions/checkout@v4
 
-      - name: install pnpm
-        uses: pnpm/action-setup@v2
-        with:
-          version: 8
+      - name: Install Tools & Dependencies
+        uses: ./.github/actions/install
 
-      - name: install node
-        uses: actions/setup-node@v3
-        with:
-          node-version: 20
-
-      - run: pnpx changelogithub
+      - name: Create GitHub Release
+        run: pnpx changelogithub
         env:
           GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
