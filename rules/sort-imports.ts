@@ -13,7 +13,6 @@ import { getGroupNumber } from '../utils/get-group-number'
 import { getNodeRange } from '../utils/get-node-range'
 import { rangeToDiff } from '../utils/range-to-diff'
 import { isPositive } from '../utils/is-positive'
-import { SortOrder, SortType } from '../typings'
 import { useGroups } from '../utils/use-groups'
 import { sortNodes } from '../utils/sort-nodes'
 import { complete } from '../utils/complete'
@@ -58,13 +57,13 @@ type Options<T extends string[]> = [
       value?: { [key in T[number]]: string[] | string }
       type?: { [key in T[number]]: string[] | string }
     }
+    type: 'alphabetical' | 'line-length' | 'natural'
     'newlines-between': NewlinesBetweenValue
     groups: (Group<T>[] | Group<T>)[]
     'internal-pattern': string[]
     'max-line-length'?: number
     'ignore-case': boolean
-    order: SortOrder
-    type: SortType
+    order: 'desc' | 'asc'
   }>,
 ]
 
@@ -87,6 +86,24 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
         id: 'sort-imports',
         type: 'object',
         properties: {
+          type: {
+            enum: ['alphabetical', 'natural', 'line-length'],
+            default: 'alphabetical',
+            type: 'string',
+          },
+          order: {
+            enum: ['asc', 'desc'],
+            default: 'asc',
+            type: 'string',
+          },
+          'ignore-case': {
+            type: 'boolean',
+            default: false,
+          },
+          groups: {
+            type: 'array',
+            default: [],
+          },
           'custom-groups': {
             type: 'object',
             properties: {
@@ -98,28 +115,6 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
               },
             },
             additionalProperties: false,
-          },
-          type: {
-            enum: [
-              SortType.alphabetical,
-              SortType.natural,
-              SortType['line-length'],
-            ],
-            default: SortType.alphabetical,
-            type: 'string',
-          },
-          order: {
-            enum: [SortOrder.asc, SortOrder.desc],
-            default: SortOrder.asc,
-            type: 'string',
-          },
-          'ignore-case': {
-            type: 'boolean',
-            default: false,
-          },
-          groups: {
-            type: 'array',
-            default: [],
           },
           'internal-pattern': {
             items: {
@@ -152,7 +147,7 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
         definitions: {
           'is-line-length': {
             properties: {
-              type: { enum: [SortType['line-length']], type: 'string' },
+              type: { enum: ['line-length'], type: 'string' },
             },
             required: ['type'],
             type: 'object',
@@ -179,8 +174,8 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
   },
   defaultOptions: [
     {
-      type: SortType.alphabetical,
-      order: SortOrder.asc,
+      type: 'alphabetical',
+      order: 'asc',
     },
   ],
   create: context => {
@@ -188,11 +183,11 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
       'newlines-between': NewlinesBetweenValue.always,
       'custom-groups': { type: {}, value: {} },
       'internal-pattern': ['~/**'],
-      type: SortType.alphabetical,
-      order: SortOrder.asc,
+      type: 'alphabetical',
       'ignore-case': false,
+      order: 'asc',
       groups: [],
-    })
+    } as const)
 
     let hasUnknownGroup = false
 
@@ -214,7 +209,7 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
       options.groups = [...options.groups, 'unknown']
     }
 
-    let nodes: SortingNode[] = []
+    let nodes: SortingNode<TSESTree.Node>[] = []
 
     let isSideEffectImport = (node: TSESTree.Node) =>
       node.type === 'ImportDeclaration' && node.specifiers.length === 0
@@ -372,7 +367,7 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
         group: computeGroup(node),
         name,
         node,
-        ...(options.type === SortType['line-length'] &&
+        ...(options.type === 'line-length' &&
           options['max-line-length'] && {
             hasMultipleImportDeclarations: hasMultipleImportDeclarations(
               node as TSESTree.ImportDeclaration,
@@ -386,8 +381,8 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
       ImportDeclaration: registerNode,
       'Program:exit': () => {
         let hasContentBetweenNodes = (
-          left: SortingNode,
-          right: SortingNode,
+          left: SortingNode<TSESTree.Node>,
+          right: SortingNode<TSESTree.Node>,
         ): boolean =>
           !!context.sourceCode.getTokensBetween(
             left.node,
@@ -399,12 +394,12 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
 
         let fix = (
           fixer: TSESLint.RuleFixer,
-          nodesToFix: SortingNode[],
+          nodesToFix: SortingNode<TSESTree.Node>[],
         ): TSESLint.RuleFix[] => {
           let fixes: TSESLint.RuleFix[] = []
 
           let grouped: {
-            [key: string]: SortingNode[]
+            [key: string]: SortingNode<TSESTree.Node>[]
           } = {}
 
           for (let node of nodesToFix) {
@@ -423,7 +418,7 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
           let formatted = Object.keys(grouped)
             .sort((a, b) => Number(a) - Number(b))
             .reduce(
-              (accumulator: SortingNode[], group: string) => [
+              (accumulator: SortingNode<TSESTree.Node>[], group: string) => [
                 ...accumulator,
                 ...grouped[group],
               ],
@@ -448,8 +443,8 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
               if (nextNode) {
                 let linesBetweenImports = getLinesBetween(
                   context.sourceCode,
-                  nodesToFix.at(i)!,
-                  nodesToFix.at(i + 1)!,
+                  nodesToFix.at(i)!.node,
+                  nodesToFix.at(i + 1)!.node,
                 )
 
                 if (
@@ -517,7 +512,7 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
           return fixes
         }
 
-        let splittedNodes: SortingNode[][] = [[]]
+        let splittedNodes: SortingNode<TSESTree.Node>[][] = [[]]
 
         for (let node of nodes) {
           let lastNode = splittedNodes.at(-1)?.at(-1)
@@ -536,8 +531,8 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
 
             let numberOfEmptyLinesBetween = getLinesBetween(
               context.sourceCode,
-              left,
-              right,
+              left.node,
+              right.node,
             )
 
             if (

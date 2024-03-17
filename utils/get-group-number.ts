@@ -1,9 +1,12 @@
 import type { SortingNode } from '../typings'
 
-export let getGroupNumber = (
-  groups: (string[] | string)[],
-  node: SortingNode,
+export let getGroupNumber = <Node extends unknown>(
+  groups: (string[] | string)[] | undefined,
+  node: SortingNode<Node>,
 ): number => {
+  if (!groups) {
+    return 0
+  }
   for (let i = 0, max = groups.length; i < max; i++) {
     let currentGroup = groups[i]
 

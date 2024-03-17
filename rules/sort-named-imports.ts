@@ -1,31 +1,21 @@
-import type { SortingNode } from '../typings'
-
+import { createSortingRule } from '../utils/create-sorting-rule'
 import { createEslintRule } from '../utils/create-eslint-rule'
-import { SortOrder, GroupKind, SortType } from '../typings'
-import { getGroupNumber } from '../utils/get-group-number'
-import { rangeToDiff } from '../utils/range-to-diff'
-import { isPositive } from '../utils/is-positive'
-import { sortNodes } from '../utils/sort-nodes'
-import { makeFixes } from '../utils/make-fixes'
 import { complete } from '../utils/complete'
-import { pairwise } from '../utils/pairwise'
-import { compare } from '../utils/compare'
+import { GroupKind } from '../typings'
 
 type MESSAGE_ID = 'unexpectedNamedImportsOrder'
 
-type Options = [
-  Partial<{
-    'ignore-alias': boolean
-    'group-kind': GroupKind
-    'ignore-case': boolean
-    order: SortOrder
-    type: SortType
-  }>,
-]
+interface Options {
+  type: 'alphabetical' | 'line-length' | 'natural'
+  'group-kind': GroupKind
+  'ignore-alias': boolean
+  'ignore-case': boolean
+  order: 'desc' | 'asc'
+}
 
 export const RULE_NAME = 'sort-named-imports'
 
-export default createEslintRule<Options, MESSAGE_ID>({
+export default createEslintRule<[Partial<Options>], MESSAGE_ID>({
   name: RULE_NAME,
   meta: {
     type: 'suggestion',
@@ -38,17 +28,13 @@ export default createEslintRule<Options, MESSAGE_ID>({
         type: 'object',
         properties: {
           type: {
-            enum: [
-              SortType.alphabetical,
-              SortType.natural,
-              SortType['line-length'],
-            ],
-            default: SortType.alphabetical,
+            enum: ['alphabetical', 'natural', 'line-length'],
+            default: 'alphabetical',
             type: 'string',
           },
           order: {
-            enum: [SortOrder.asc, SortOrder.desc],
-            default: SortOrder.asc,
+            enum: ['asc', 'desc'],
+            default: 'asc',
             type: 'string',
           },
           'ignore-case': {
@@ -79,79 +65,59 @@ export default createEslintRule<Options, MESSAGE_ID>({
   },
   defaultOptions: [
     {
-      type: SortType.alphabetical,
-      order: SortOrder.asc,
+      type: 'alphabetical',
+      order: 'asc',
     },
   ],
   create: context => ({
     ImportDeclaration: node => {
+      type Type = 'alphabetical' | 'line-length' | 'natural'
+      type Order = 'desc' | 'asc'
+
       let specifiers = node.specifiers.filter(
         ({ type }) => type === 'ImportSpecifier',
       )
 
-      if (specifiers.length > 1) {
-        let options = complete(context.options.at(0), {
-          type: SortType.alphabetical,
+      let options = complete(
+        Object.assign({ groups: [] }, context.options.at(0)),
+        {
+          'group-kind': GroupKind.mixed,
+          type: 'alphabetical' as Type,
+          groups: [] as string[],
+          order: 'asc' as Order,
           'ignore-alias': true,
           'ignore-case': false,
-          order: SortOrder.asc,
-          'group-kind': GroupKind.mixed,
-        })
+        },
+      )
 
-        let nodes: SortingNode[] = specifiers.map(specifier => {
-          let group
-          let { name } = specifier.local
+      let shouldGroupByKind = options['group-kind'] !== GroupKind.mixed
+      let groupKindOrder =
+        options['group-kind'] === GroupKind['values-first']
+          ? ['value', 'type']
+          : ['type', 'value']
 
-          if (specifier.type === 'ImportSpecifier') {
-            if (options['ignore-alias']) {
-              ;({ name } = specifier.imported)
-            }
-            group = specifier.importKind
-          }
-
-          return {
-            size: rangeToDiff(specifier.range),
-            node: specifier,
-            name,
-            group,
-          }
-        })
-
-        let shouldGroupByKind = options['group-kind'] !== GroupKind.mixed
-        let groupKindOrder =
-          options['group-kind'] === GroupKind['values-first']
-            ? ['value', 'type']
-            : ['type', 'value']
-
-        pairwise(nodes, (left, right) => {
-          let leftNum = getGroupNumber(groupKindOrder, left)
-          let rightNum = getGroupNumber(groupKindOrder, right)
-
-          if (
-            (shouldGroupByKind && leftNum > rightNum) ||
-            ((!shouldGroupByKind || leftNum === rightNum) &&
-              isPositive(compare(left, right, options)))
-          ) {
-            let sortedNodes = shouldGroupByKind
-              ? groupKindOrder
-                  .map(group => nodes.filter(n => n.group === group))
-                  .map(groupedNodes => sortNodes(groupedNodes, options))
-                  .flat()
-              : sortNodes(nodes, options)
-
-            context.report({
-              messageId: 'unexpectedNamedImportsOrder',
-              data: {
-                left: left.name,
-                right: right.name,
-              },
-              node: right.node,
-              fix: fixer =>
-                makeFixes(fixer, nodes, sortedNodes, context.sourceCode),
-            })
-          }
-        })
+      if (shouldGroupByKind) {
+        options.groups = groupKindOrder
       }
+
+      createSortingRule({
+        unexpectedOrderMessage: 'unexpectedNamedImportsOrder',
+        nodes: specifiers,
+        getName: element => {
+          if (options['ignore-alias'] && element.type === 'ImportSpecifier') {
+            return element.imported.name
+          }
+
+          return element.local.name
+        },
+        definedGroups: (define, specifier) => {
+          if ('importKind' in specifier) {
+            define(specifier.importKind)
+          }
+        },
+        context,
+        options,
+      })
     },
   }),
 })

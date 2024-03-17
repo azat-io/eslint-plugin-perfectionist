@@ -6,10 +6,16 @@ import type { PartitionComment, SortingNode } from '../typings'
 import { getCommentAfter } from './get-comment-after'
 import { getNodeRange } from './get-node-range'
 
+interface ESLintNode {
+  range: TSESTree.Node['range']
+  loc: TSESTree.Node['loc']
+  type: string
+}
+
 export let makeFixes = (
   fixer: TSESLint.RuleFixer,
-  nodes: SortingNode[],
-  sortedNodes: SortingNode[],
+  nodes: SortingNode<ESLintNode>[],
+  sortedNodes: SortingNode<ESLintNode>[],
   source: TSESLint.SourceCode,
   additionalOptions?: {
     partitionComment?: PartitionComment
@@ -32,7 +38,10 @@ export let makeFixes = (
       ),
     )
 
-    let commentAfter = getCommentAfter(sortedNodes.at(i)!.node, source)
+    let commentAfter = getCommentAfter(
+      sortedNodes.at(i)!.node as TSESTree.Node,
+      source,
+    )
 
     if (commentAfter && !isSingleline) {
       let tokenBefore = source.getTokenBefore(commentAfter)
@@ -44,13 +53,13 @@ export let makeFixes = (
 
       fixes.push(fixer.replaceTextRange(range, ''))
 
-      let tokenAfterNode = source.getTokenAfter(node)
+      let tokenAfterNode = source.getTokenAfter(node as TSESTree.Node)
 
       fixes.push(
         fixer.insertTextAfter(
           tokenAfterNode?.loc.end.line === node.loc.end.line
             ? tokenAfterNode
-            : node,
+            : (node as TSESTree.Node),
           source.text.slice(...range),
         ),
       )

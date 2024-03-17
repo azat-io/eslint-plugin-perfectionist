@@ -1,24 +1,16 @@
-import type { SortingNode } from '../typings'
-
+import { createSortingRule } from '../utils/create-sorting-rule'
 import { createEslintRule } from '../utils/create-eslint-rule'
-import { SortOrder, GroupKind, SortType } from '../typings'
-import { getGroupNumber } from '../utils/get-group-number'
-import { rangeToDiff } from '../utils/range-to-diff'
-import { isPositive } from '../utils/is-positive'
-import { sortNodes } from '../utils/sort-nodes'
-import { makeFixes } from '../utils/make-fixes'
 import { complete } from '../utils/complete'
-import { pairwise } from '../utils/pairwise'
-import { compare } from '../utils/compare'
+import { GroupKind } from '../typings'
 
 type MESSAGE_ID = 'unexpectedNamedExportsOrder'
 
 type Options = [
   Partial<{
+    type: 'alphabetical' | 'line-length' | 'natural'
     'group-kind': GroupKind
     'ignore-case': boolean
-    order: SortOrder
-    type: SortType
+    order: 'desc' | 'asc'
   }>,
 ]
 
@@ -37,17 +29,13 @@ export default createEslintRule<Options, MESSAGE_ID>({
         type: 'object',
         properties: {
           type: {
-            enum: [
-              SortType.alphabetical,
-              SortType.natural,
-              SortType['line-length'],
-            ],
-            default: SortType.alphabetical,
+            enum: ['alphabetical', 'natural', 'line-length'],
+            default: 'alphabetical',
             type: 'string',
           },
           order: {
-            enum: [SortOrder.asc, SortOrder.desc],
-            default: SortOrder.asc,
+            enum: ['asc', 'desc'],
+            default: 'asc',
             type: 'string',
           },
           'ignore-case': {
@@ -74,26 +62,26 @@ export default createEslintRule<Options, MESSAGE_ID>({
   },
   defaultOptions: [
     {
-      type: SortType.alphabetical,
-      order: SortOrder.asc,
+      type: 'alphabetical',
+      order: 'asc',
     },
   ],
   create: context => ({
     ExportNamedDeclaration: node => {
       if (node.specifiers.length > 1) {
-        let options = complete(context.options.at(0), {
-          type: SortType.alphabetical,
-          'ignore-case': false,
-          order: SortOrder.asc,
-          'group-kind': GroupKind.mixed,
-        })
+        type Type = 'alphabetical' | 'line-length' | 'natural'
+        type Order = 'desc' | 'asc'
 
-        let nodes: SortingNode[] = node.specifiers.map(specifier => ({
-          size: rangeToDiff(specifier.range),
-          name: specifier.local.name,
-          node: specifier,
-          group: specifier.exportKind,
-        }))
+        let options = complete(
+          Object.assign({ groups: [] }, context.options.at(0)),
+          {
+            'group-kind': GroupKind.mixed,
+            type: 'alphabetical' as Type,
+            groups: [] as string[],
+            order: 'asc' as Order,
+            'ignore-case': false,
+          },
+        )
 
         let shouldGroupByKind = options['group-kind'] !== GroupKind.mixed
         let groupKindOrder =
@@ -101,33 +89,19 @@ export default createEslintRule<Options, MESSAGE_ID>({
             ? ['value', 'type']
             : ['type', 'value']
 
-        pairwise(nodes, (left, right) => {
-          let leftNum = getGroupNumber(groupKindOrder, left)
-          let rightNum = getGroupNumber(groupKindOrder, right)
+        if (shouldGroupByKind) {
+          options.groups = groupKindOrder
+        }
 
-          if (
-            (shouldGroupByKind && leftNum > rightNum) ||
-            ((!shouldGroupByKind || leftNum === rightNum) &&
-              isPositive(compare(left, right, options)))
-          ) {
-            let sortedNodes = shouldGroupByKind
-              ? groupKindOrder
-                  .map(group => nodes.filter(n => n.group === group))
-                  .map(groupedNodes => sortNodes(groupedNodes, options))
-                  .flat()
-              : sortNodes(nodes, options)
-
-            context.report({
-              messageId: 'unexpectedNamedExportsOrder',
-              data: {
-                left: left.name,
-                right: right.name,
-              },
-              node: right.node,
-              fix: fixer =>
-                makeFixes(fixer, nodes, sortedNodes, context.sourceCode),
-            })
-          }
+        createSortingRule({
+          unexpectedOrderMessage: 'unexpectedNamedExportsOrder',
+          getName: specifier => specifier.local.name,
+          nodes: node.specifiers,
+          definedGroups: (define, specifier) => {
+            define(specifier.exportKind)
+          },
+          context,
+          options,
         })
       }
     },

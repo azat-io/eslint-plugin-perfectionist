@@ -1,17 +1,15 @@
 import naturalCompare from 'natural-compare-lite'
 
-import type { SortingNode, SortOrder } from '../typings'
+import type { SortingNode } from '../typings'
 
-import { SortType } from '../typings'
-
-export let compare = (
-  a: SortingNode,
-  b: SortingNode,
+export let compare = <Node extends unknown>(
+  a: SortingNode<Node>,
+  b: SortingNode<Node>,
   options: {
+    type: 'alphabetical' | 'line-length' | 'natural'
     'max-line-length'?: number
     'ignore-case'?: boolean
-    order: SortOrder
-    type: SortType
+    order: 'desc' | 'asc'
   },
 ): number => {
   if (b.dependencies?.includes(a.name)) {
@@ -21,15 +19,15 @@ export let compare = (
   }
 
   let orderCoefficient = options.order === 'asc' ? 1 : -1
-  let sortingFunction: (a: SortingNode, b: SortingNode) => number
+  let sortingFunction: (a: SortingNode<Node>, b: SortingNode<Node>) => number
 
   let formatString = (string: string) =>
     options['ignore-case'] ? string.toLowerCase() : string
 
-  if (options.type === SortType.alphabetical) {
+  if (options.type === 'alphabetical') {
     sortingFunction = (aNode, bNode) =>
       formatString(aNode.name).localeCompare(formatString(bNode.name))
-  } else if (options.type === SortType.natural) {
+  } else if (options.type === 'natural') {
     sortingFunction = (aNode, bNode) =>
       naturalCompare(formatString(aNode.name), formatString(bNode.name))
   } else {
@@ -40,8 +38,8 @@ export let compare = (
       let maxLineLength = options['max-line-length']
 
       if (maxLineLength) {
-        let isTooLong = (size: number, node: SortingNode) =>
-          size > maxLineLength! && node.hasMultipleImportDeclarations
+        let isTooLong = (size: number, node: SortingNode<Node>) =>
+          size > maxLineLength && node.hasMultipleImportDeclarations
 
         if (isTooLong(aSize, aNode)) {
           aSize = aNode.name.length + 10

@@ -1,24 +1,16 @@
 import type { TSESTree } from '@typescript-eslint/types'
 
-import type { SortingNode } from '../typings'
-
+import { createSortingRule } from '../utils/create-sorting-rule'
 import { createEslintRule } from '../utils/create-eslint-rule'
-import { rangeToDiff } from '../utils/range-to-diff'
-import { isPositive } from '../utils/is-positive'
-import { SortOrder, SortType } from '../typings'
-import { sortNodes } from '../utils/sort-nodes'
-import { makeFixes } from '../utils/make-fixes'
 import { complete } from '../utils/complete'
-import { pairwise } from '../utils/pairwise'
-import { compare } from '../utils/compare'
 
 type MESSAGE_ID = 'unexpectedExportsOrder'
 
 type Options = [
   Partial<{
+    type: 'alphabetical' | 'line-length' | 'natural'
     'ignore-case': boolean
-    order: SortOrder
-    type: SortType
+    order: 'desc' | 'asc'
   }>,
 ]
 
@@ -37,17 +29,13 @@ export default createEslintRule<Options, MESSAGE_ID>({
         type: 'object',
         properties: {
           type: {
-            enum: [
-              SortType.alphabetical,
-              SortType.natural,
-              SortType['line-length'],
-            ],
-            default: SortType.alphabetical,
+            enum: ['alphabetical', 'natural', 'line-length'],
+            default: 'alphabetical',
             type: 'string',
           },
           order: {
-            enum: [SortOrder.asc, SortOrder.desc],
-            default: SortOrder.asc,
+            enum: ['asc', 'desc'],
+            default: 'asc',
             type: 'string',
           },
           'ignore-case': {
@@ -64,18 +52,18 @@ export default createEslintRule<Options, MESSAGE_ID>({
   },
   defaultOptions: [
     {
-      type: SortType.alphabetical,
-      order: SortOrder.asc,
+      type: 'alphabetical',
+      order: 'asc',
     },
   ],
   create: context => {
     let options = complete(context.options.at(0), {
-      type: SortType.alphabetical,
-      order: SortOrder.asc,
       'ignore-case': false,
-    })
+      type: 'alphabetical',
+      order: 'asc',
+    } as const)
 
-    let parts: SortingNode[][] = [[]]
+    let parts: TSESTree.ExportNamedDeclarationWithSource[][] = [[]]
 
     let registerNode = (
       node:
@@ -85,11 +73,7 @@ export default createEslintRule<Options, MESSAGE_ID>({
       if (node.type === 'ExportAllDeclaration' && node.exported === null) {
         parts.push([])
       } else {
-        parts.at(-1)!.push({
-          size: rangeToDiff(node.range),
-          name: node.source.value,
-          node,
-        })
+        parts.at(-1)!.push(node as TSESTree.ExportNamedDeclarationWithSource)
       }
     }
 
@@ -102,24 +86,12 @@ export default createEslintRule<Options, MESSAGE_ID>({
       },
       'Program:exit': () => {
         for (let nodes of parts) {
-          pairwise(nodes, (left, right) => {
-            if (isPositive(compare(left, right, options))) {
-              context.report({
-                messageId: 'unexpectedExportsOrder',
-                data: {
-                  left: left.name,
-                  right: right.name,
-                },
-                node: right.node,
-                fix: fixer =>
-                  makeFixes(
-                    fixer,
-                    nodes,
-                    sortNodes(nodes, options),
-                    context.sourceCode,
-                  ),
-              })
-            }
+          createSortingRule({
+            unexpectedOrderMessage: 'unexpectedExportsOrder',
+            getName: node => node.source.value,
+            context,
+            options,
+            nodes,
           })
         }
       },

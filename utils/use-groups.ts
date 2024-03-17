@@ -1,6 +1,6 @@
 import { minimatch } from 'minimatch'
 
-export let useGroups = (groups: (string[] | string)[]) => {
+export let useGroups = (groups: (string[] | string)[] = []) => {
   let group: undefined | string
 
   let defineGroup = (value: string) => {
