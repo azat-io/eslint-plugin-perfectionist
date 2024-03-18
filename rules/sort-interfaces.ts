@@ -2,13 +2,14 @@ import { minimatch } from 'minimatch'
 
 import type { SortingNode } from '../typings'
 
+import { OptionalityOrder, SortOrder, SortType } from '../typings'
 import { createEslintRule } from '../utils/create-eslint-rule'
+import { isMemberOptional } from '../utils/is-member-optional'
 import { getLinesBetween } from '../utils/get-lines-between'
 import { getGroupNumber } from '../utils/get-group-number'
 import { toSingleLine } from '../utils/to-single-line'
 import { rangeToDiff } from '../utils/range-to-diff'
 import { isPositive } from '../utils/is-positive'
-import { SortOrder, SortType } from '../typings'
 import { useGroups } from '../utils/use-groups'
 import { sortNodes } from '../utils/sort-nodes'
 import { makeFixes } from '../utils/make-fixes'
@@ -23,6 +24,7 @@ type Group<T extends string[]> = 'multiline' | 'unknown' | T[number]
 type Options<T extends string[]> = [
   Partial<{
     'custom-groups': { [key: string]: string[] | string }
+    optionalityOrder: OptionalityOrder
     groups: (Group<T>[] | Group<T>)[]
     'partition-by-new-line': boolean
     'ignore-pattern': string[]
@@ -48,6 +50,15 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
         properties: {
           'custom-groups': {
             type: 'object',
+          },
+          optionalityOrder: {
+            enum: [
+              OptionalityOrder.ignore,
+              OptionalityOrder['optional-first'],
+              OptionalityOrder['required-first'],
+            ],
+            default: OptionalityOrder.ignore,
+            type: 'string',
           },
           type: {
             enum: [
@@ -100,6 +111,7 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
     TSInterfaceDeclaration: node => {
       if (node.body.body.length > 1) {
         let options = complete(context.options.at(0), {
+          optionalityOrder: OptionalityOrder.ignore,
           'partition-by-new-line': false,
           type: SortType.alphabetical,
           'ignore-case': false,
@@ -194,16 +206,81 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
             [[]],
           )
 
-          for (let nodes of formattedMembers) {
-            pairwise(nodes, (left, right) => {
-              let leftNum = getGroupNumber(options.groups, left)
-              let rightNum = getGroupNumber(options.groups, right)
+          let toSorted = (nodes: SortingNode[]) => {
+            let grouped: {
+              [key: string]: SortingNode[]
+            } = {}
 
-              if (
-                leftNum > rightNum ||
-                (leftNum === rightNum &&
-                  isPositive(compare(left, right, options)))
-              ) {
+            for (let currentNode of nodes) {
+              let groupNum = getGroupNumber(options.groups, currentNode)
+
+              if (!(groupNum in grouped)) {
+                grouped[groupNum] = [currentNode]
+              } else {
+                grouped[groupNum] = sortNodes(
+                  [...grouped[groupNum], currentNode],
+                  options,
+                )
+              }
+            }
+
+            let sortedNodes: SortingNode[] = []
+
+            for (let group of Object.keys(grouped).sort(
+              (a, b) => Number(a) - Number(b),
+            )) {
+              sortedNodes.push(...sortNodes(grouped[group], options))
+            }
+
+            return sortedNodes
+          }
+
+          let checkGroupSort = (left: SortingNode, right: SortingNode) => {
+            let leftNum = getGroupNumber(options.groups, left)
+            let rightNum = getGroupNumber(options.groups, right)
+
+            return (
+              leftNum > rightNum ||
+              (leftNum === rightNum &&
+                isPositive(compare(left, right, options)))
+            )
+          }
+
+          let checkOrder = (
+            members: SortingNode[],
+            left: SortingNode,
+            right: SortingNode,
+            iteration: number,
+          ) => {
+            if (options.optionalityOrder === OptionalityOrder.ignore) {
+              return checkGroupSort(left, right)
+            }
+
+            let switchIndex = members.findIndex(
+              (_, i) =>
+                i &&
+                isMemberOptional(members[i - 1].node) !==
+                  isMemberOptional(members[i].node),
+            )
+
+            if (iteration < switchIndex && iteration + 1 !== switchIndex) {
+              return checkGroupSort(left, right)
+            }
+
+            if (isMemberOptional(left.node) !== isMemberOptional(right.node)) {
+              return (
+                isMemberOptional(left.node) !==
+                (options.optionalityOrder ===
+                  OptionalityOrder['optional-first'])
+              )
+            }
+
+            return checkGroupSort(left, right)
+          }
+
+          for (let nodes of formattedMembers) {
+            pairwise(nodes, (left, right, iteration) => {
+              if (checkOrder(nodes, left, right, iteration)) {
                 context.report({
                   messageId: 'unexpectedInterfacePropertiesOrder',
                   data: {
@@ -212,29 +289,29 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
                   },
                   node: right.node,
                   fix: fixer => {
-                    let grouped: {
-                      [key: string]: SortingNode[]
-                    } = {}
+                    let sortedNodes
 
-                    for (let currentNode of nodes) {
-                      let groupNum = getGroupNumber(options.groups, currentNode)
+                    if (options.optionalityOrder !== OptionalityOrder.ignore) {
+                      let optionalNodes = nodes.filter(member =>
+                        isMemberOptional(member.node),
+                      )
+                      let requiredNodes = nodes.filter(
+                        member => !isMemberOptional(member.node),
+                      )
 
-                      if (!(groupNum in grouped)) {
-                        grouped[groupNum] = [currentNode]
-                      } else {
-                        grouped[groupNum] = sortNodes(
-                          [...grouped[groupNum], currentNode],
-                          options,
-                        )
-                      }
-                    }
-
-                    let sortedNodes: SortingNode[] = []
-
-                    for (let group of Object.keys(grouped).sort(
-                      (a, b) => Number(a) - Number(b),
-                    )) {
-                      sortedNodes.push(...sortNodes(grouped[group], options))
+                      sortedNodes =
+                        options.optionalityOrder ===
+                        OptionalityOrder['optional-first']
+                          ? [
+                              ...toSorted(optionalNodes),
+                              ...toSorted(requiredNodes),
+                            ]
+                          : [
+                              ...toSorted(requiredNodes),
+                              ...toSorted(optionalNodes),
+                            ]
+                    } else {
+                      sortedNodes = toSorted(nodes)
                     }
 
                     return makeFixes(
