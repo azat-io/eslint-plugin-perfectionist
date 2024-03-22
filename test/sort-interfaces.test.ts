@@ -2,8 +2,8 @@ import { RuleTester } from '@typescript-eslint/rule-tester'
 import { afterAll, describe, it } from 'vitest'
 import { dedent } from 'ts-dedent'
 
+import { OptionalityOrder, SortOrder, SortType } from '../typings'
 import rule, { RULE_NAME } from '../rules/sort-interfaces'
-import { SortOrder, SortType } from '../typings'
 
 describe(RULE_NAME, () => {
   RuleTester.describeSkip = describe.skip
@@ -667,6 +667,369 @@ describe(RULE_NAME, () => {
         ],
       },
     )
+
+    describe(`${RULE_NAME}(${type}): sorting optional members first`, () => {
+      ruleTester.run('sorts interface properties', rule, {
+        valid: [
+          {
+            code: dedent`
+              interface X {
+                a?: string
+                [index: number]: string
+              }
+            `,
+            options: [
+              {
+                ...options,
+                optionalityOrder: OptionalityOrder['optional-first'],
+              },
+            ],
+          },
+        ],
+        invalid: [
+          {
+            code: dedent`
+              interface ButtonProps {
+                backgroundColor?: string
+                label: string
+                primary?: boolean
+                size?: 'large' | 'medium' | 'small'
+                onClick?(): void
+              }
+            `,
+            output: dedent`
+              interface ButtonProps {
+                backgroundColor?: string
+                onClick?(): void
+                primary?: boolean
+                size?: 'large' | 'medium' | 'small'
+                label: string
+              }
+            `,
+            options: [
+              {
+                ...options,
+                optionalityOrder: OptionalityOrder['optional-first'],
+              },
+            ],
+            errors: [
+              {
+                messageId: 'unexpectedInterfacePropertiesOrder',
+                data: {
+                  left: 'label',
+                  right: 'primary',
+                },
+              },
+              {
+                messageId: 'unexpectedInterfacePropertiesOrder',
+                data: {
+                  left: 'size',
+                  right: 'onClick?()',
+                },
+              },
+            ],
+          },
+        ],
+      })
+
+      ruleTester.run('allows to set groups for sorting', rule, {
+        valid: [],
+        invalid: [
+          {
+            code: dedent`
+              interface ButtonProps {
+                backgroundColor?: string
+                label: string
+                primary?: boolean
+                size?: 'large' | 'medium' | 'small'
+                onClick?(): void
+              }
+            `,
+            output: dedent`
+              interface ButtonProps {
+                backgroundColor?: string
+                primary?: boolean
+                size?: 'large' | 'medium' | 'small'
+                onClick?(): void
+                label: string
+              }
+            `,
+            options: [
+              {
+                ...options,
+                'custom-groups': {
+                  callback: 'on*',
+                },
+                groups: ['unknown', 'callback'],
+                optionalityOrder: OptionalityOrder['optional-first'],
+              },
+            ],
+            errors: [
+              {
+                messageId: 'unexpectedInterfacePropertiesOrder',
+                data: {
+                  left: 'label',
+                  right: 'primary',
+                },
+              },
+            ],
+          },
+        ],
+      })
+
+      ruleTester.run('allows to use new line as partition', rule, {
+        valid: [],
+        invalid: [
+          {
+            code: dedent`
+              interface User {
+                email: string
+                firstName?: string
+                id: number
+                lastName?: string
+                password: string
+                username: string
+              
+                biography?: string
+                avatarUrl?: string
+                createdAt: Date
+                updatedAt: Date
+              }
+            `,
+            output: dedent`
+              interface User {
+                firstName?: string
+                lastName?: string
+                email: string
+                id: number
+                password: string
+                username: string
+              
+                avatarUrl?: string
+                biography?: string
+                createdAt: Date
+                updatedAt: Date
+              }
+            `,
+            options: [
+              {
+                ...options,
+                optionalityOrder: OptionalityOrder['optional-first'],
+                'partition-by-new-line': true,
+              },
+            ],
+            errors: [
+              {
+                messageId: 'unexpectedInterfacePropertiesOrder',
+                data: {
+                  left: 'email',
+                  right: 'firstName',
+                },
+              },
+              {
+                messageId: 'unexpectedInterfacePropertiesOrder',
+                data: {
+                  left: 'id',
+                  right: 'lastName',
+                },
+              },
+              {
+                messageId: 'unexpectedInterfacePropertiesOrder',
+                data: {
+                  left: 'biography',
+                  right: 'avatarUrl',
+                },
+              },
+            ],
+          },
+        ],
+      })
+    })
+
+    describe(`${RULE_NAME}(${type}): sorting required members first`, () => {
+      ruleTester.run('sorts interface properties', rule, {
+        valid: [
+          {
+            code: dedent`
+              interface X {
+                [index: number]: string
+                a?: string
+              }
+            `,
+            options: [
+              {
+                ...options,
+                optionalityOrder: OptionalityOrder['required-first'],
+              },
+            ],
+          },
+        ],
+        invalid: [
+          {
+            code: dedent`
+              interface ButtonProps {
+                backgroundColor?: string
+                label: string
+                primary?: boolean
+                size?: 'large' | 'medium' | 'small'
+                onClick?(): void
+              }
+            `,
+            output: dedent`
+              interface ButtonProps {
+                label: string
+                backgroundColor?: string
+                onClick?(): void
+                primary?: boolean
+                size?: 'large' | 'medium' | 'small'
+              }
+            `,
+            options: [
+              {
+                ...options,
+                optionalityOrder: OptionalityOrder['required-first'],
+              },
+            ],
+            errors: [
+              {
+                messageId: 'unexpectedInterfacePropertiesOrder',
+                data: {
+                  left: 'backgroundColor',
+                  right: 'label',
+                },
+              },
+              {
+                messageId: 'unexpectedInterfacePropertiesOrder',
+                data: {
+                  left: 'size',
+                  right: 'onClick?()',
+                },
+              },
+            ],
+          },
+        ],
+      })
+
+      ruleTester.run('allows to set groups for sorting', rule, {
+        valid: [],
+        invalid: [
+          {
+            code: dedent`
+              interface ButtonProps {
+                backgroundColor?: string
+                label: string
+                primary?: boolean
+                size?: 'large' | 'medium' | 'small'
+                onClick?(): void
+              }
+            `,
+            output: dedent`
+              interface ButtonProps {
+                label: string
+                backgroundColor?: string
+                primary?: boolean
+                size?: 'large' | 'medium' | 'small'
+                onClick?(): void
+              }
+            `,
+            options: [
+              {
+                ...options,
+                'custom-groups': {
+                  callback: 'on*',
+                },
+                groups: ['unknown', 'callback'],
+                optionalityOrder: OptionalityOrder['required-first'],
+              },
+            ],
+            errors: [
+              {
+                messageId: 'unexpectedInterfacePropertiesOrder',
+                data: {
+                  left: 'backgroundColor',
+                  right: 'label',
+                },
+              },
+            ],
+          },
+        ],
+      })
+
+      ruleTester.run('allows to use new line as partition', rule, {
+        valid: [],
+        invalid: [
+          {
+            code: dedent`
+              interface User {
+                email: string
+                firstName?: string
+                id: number
+                lastName?: string
+                password: string
+                username: string
+              
+                biography?: string
+                avatarUrl?: string
+                createdAt: Date
+                updatedAt: Date
+              }
+            `,
+            output: dedent`
+              interface User {
+                email: string
+                id: number
+                password: string
+                username: string
+                firstName?: string
+                lastName?: string
+              
+                createdAt: Date
+                updatedAt: Date
+                avatarUrl?: string
+                biography?: string
+              }
+            `,
+            options: [
+              {
+                ...options,
+                optionalityOrder: OptionalityOrder['required-first'],
+                'partition-by-new-line': true,
+              },
+            ],
+            errors: [
+              {
+                messageId: 'unexpectedInterfacePropertiesOrder',
+                data: {
+                  left: 'firstName',
+                  right: 'id',
+                },
+              },
+              {
+                messageId: 'unexpectedInterfacePropertiesOrder',
+                data: {
+                  left: 'lastName',
+                  right: 'password',
+                },
+              },
+              {
+                messageId: 'unexpectedInterfacePropertiesOrder',
+                data: {
+                  left: 'biography',
+                  right: 'avatarUrl',
+                },
+              },
+              {
+                messageId: 'unexpectedInterfacePropertiesOrder',
+                data: {
+                  left: 'avatarUrl',
+                  right: 'createdAt',
+                },
+              },
+            ],
+          },
+        ],
+      })
+    })
   })
 
   describe(`${RULE_NAME}: sorting by natural order`, () => {
@@ -1319,6 +1682,369 @@ describe(RULE_NAME, () => {
         ],
       },
     )
+
+    describe(`${RULE_NAME}(${type}): sorting optional members first`, () => {
+      ruleTester.run('sorts interface properties', rule, {
+        valid: [
+          {
+            code: dedent`
+              interface X {
+                a?: string
+                [index: number]: string
+              }
+            `,
+            options: [
+              {
+                ...options,
+                optionalityOrder: OptionalityOrder['optional-first'],
+              },
+            ],
+          },
+        ],
+        invalid: [
+          {
+            code: dedent`
+              interface ButtonProps {
+                backgroundColor?: string
+                label: string
+                primary?: boolean
+                size?: 'large' | 'medium' | 'small'
+                onClick?(): void
+              }
+            `,
+            output: dedent`
+              interface ButtonProps {
+                backgroundColor?: string
+                onClick?(): void
+                primary?: boolean
+                size?: 'large' | 'medium' | 'small'
+                label: string
+              }
+            `,
+            options: [
+              {
+                ...options,
+                optionalityOrder: OptionalityOrder['optional-first'],
+              },
+            ],
+            errors: [
+              {
+                messageId: 'unexpectedInterfacePropertiesOrder',
+                data: {
+                  left: 'label',
+                  right: 'primary',
+                },
+              },
+              {
+                messageId: 'unexpectedInterfacePropertiesOrder',
+                data: {
+                  left: 'size',
+                  right: 'onClick?()',
+                },
+              },
+            ],
+          },
+        ],
+      })
+
+      ruleTester.run('allows to set groups for sorting', rule, {
+        valid: [],
+        invalid: [
+          {
+            code: dedent`
+              interface ButtonProps {
+                backgroundColor?: string
+                label: string
+                primary?: boolean
+                size?: 'large' | 'medium' | 'small'
+                onClick?(): void
+              }
+            `,
+            output: dedent`
+              interface ButtonProps {
+                backgroundColor?: string
+                primary?: boolean
+                size?: 'large' | 'medium' | 'small'
+                onClick?(): void
+                label: string
+              }
+            `,
+            options: [
+              {
+                ...options,
+                'custom-groups': {
+                  callback: 'on*',
+                },
+                groups: ['unknown', 'callback'],
+                optionalityOrder: OptionalityOrder['optional-first'],
+              },
+            ],
+            errors: [
+              {
+                messageId: 'unexpectedInterfacePropertiesOrder',
+                data: {
+                  left: 'label',
+                  right: 'primary',
+                },
+              },
+            ],
+          },
+        ],
+      })
+
+      ruleTester.run('allows to use new line as partition', rule, {
+        valid: [],
+        invalid: [
+          {
+            code: dedent`
+              interface User {
+                email: string
+                firstName?: string
+                id: number
+                lastName?: string
+                password: string
+                username: string
+              
+                biography?: string
+                avatarUrl?: string
+                createdAt: Date
+                updatedAt: Date
+              }
+            `,
+            output: dedent`
+              interface User {
+                firstName?: string
+                lastName?: string
+                email: string
+                id: number
+                password: string
+                username: string
+              
+                avatarUrl?: string
+                biography?: string
+                createdAt: Date
+                updatedAt: Date
+              }
+            `,
+            options: [
+              {
+                ...options,
+                optionalityOrder: OptionalityOrder['optional-first'],
+                'partition-by-new-line': true,
+              },
+            ],
+            errors: [
+              {
+                messageId: 'unexpectedInterfacePropertiesOrder',
+                data: {
+                  left: 'email',
+                  right: 'firstName',
+                },
+              },
+              {
+                messageId: 'unexpectedInterfacePropertiesOrder',
+                data: {
+                  left: 'id',
+                  right: 'lastName',
+                },
+              },
+              {
+                messageId: 'unexpectedInterfacePropertiesOrder',
+                data: {
+                  left: 'biography',
+                  right: 'avatarUrl',
+                },
+              },
+            ],
+          },
+        ],
+      })
+    })
+
+    describe(`${RULE_NAME}(${type}): sorting required members first`, () => {
+      ruleTester.run('sorts interface properties', rule, {
+        valid: [
+          {
+            code: dedent`
+              interface X {
+                [index: number]: string
+                a?: string
+              }
+            `,
+            options: [
+              {
+                ...options,
+                optionalityOrder: OptionalityOrder['required-first'],
+              },
+            ],
+          },
+        ],
+        invalid: [
+          {
+            code: dedent`
+              interface ButtonProps {
+                backgroundColor?: string
+                label: string
+                primary?: boolean
+                size?: 'large' | 'medium' | 'small'
+                onClick?(): void
+              }
+            `,
+            output: dedent`
+              interface ButtonProps {
+                label: string
+                backgroundColor?: string
+                onClick?(): void
+                primary?: boolean
+                size?: 'large' | 'medium' | 'small'
+              }
+            `,
+            options: [
+              {
+                ...options,
+                optionalityOrder: OptionalityOrder['required-first'],
+              },
+            ],
+            errors: [
+              {
+                messageId: 'unexpectedInterfacePropertiesOrder',
+                data: {
+                  left: 'backgroundColor',
+                  right: 'label',
+                },
+              },
+              {
+                messageId: 'unexpectedInterfacePropertiesOrder',
+                data: {
+                  left: 'size',
+                  right: 'onClick?()',
+                },
+              },
+            ],
+          },
+        ],
+      })
+
+      ruleTester.run('allows to set groups for sorting', rule, {
+        valid: [],
+        invalid: [
+          {
+            code: dedent`
+              interface ButtonProps {
+                backgroundColor?: string
+                label: string
+                primary?: boolean
+                size?: 'large' | 'medium' | 'small'
+                onClick?(): void
+              }
+            `,
+            output: dedent`
+              interface ButtonProps {
+                label: string
+                backgroundColor?: string
+                primary?: boolean
+                size?: 'large' | 'medium' | 'small'
+                onClick?(): void
+              }
+            `,
+            options: [
+              {
+                ...options,
+                'custom-groups': {
+                  callback: 'on*',
+                },
+                groups: ['unknown', 'callback'],
+                optionalityOrder: OptionalityOrder['required-first'],
+              },
+            ],
+            errors: [
+              {
+                messageId: 'unexpectedInterfacePropertiesOrder',
+                data: {
+                  left: 'backgroundColor',
+                  right: 'label',
+                },
+              },
+            ],
+          },
+        ],
+      })
+
+      ruleTester.run('allows to use new line as partition', rule, {
+        valid: [],
+        invalid: [
+          {
+            code: dedent`
+              interface User {
+                email: string
+                firstName?: string
+                id: number
+                lastName?: string
+                password: string
+                username: string
+              
+                biography?: string
+                avatarUrl?: string
+                createdAt: Date
+                updatedAt: Date
+              }
+            `,
+            output: dedent`
+              interface User {
+                email: string
+                id: number
+                password: string
+                username: string
+                firstName?: string
+                lastName?: string
+              
+                createdAt: Date
+                updatedAt: Date
+                avatarUrl?: string
+                biography?: string
+              }
+            `,
+            options: [
+              {
+                ...options,
+                optionalityOrder: OptionalityOrder['required-first'],
+                'partition-by-new-line': true,
+              },
+            ],
+            errors: [
+              {
+                messageId: 'unexpectedInterfacePropertiesOrder',
+                data: {
+                  left: 'firstName',
+                  right: 'id',
+                },
+              },
+              {
+                messageId: 'unexpectedInterfacePropertiesOrder',
+                data: {
+                  left: 'lastName',
+                  right: 'password',
+                },
+              },
+              {
+                messageId: 'unexpectedInterfacePropertiesOrder',
+                data: {
+                  left: 'biography',
+                  right: 'avatarUrl',
+                },
+              },
+              {
+                messageId: 'unexpectedInterfacePropertiesOrder',
+                data: {
+                  left: 'avatarUrl',
+                  right: 'createdAt',
+                },
+              },
+            ],
+          },
+        ],
+      })
+    })
   })
 
   describe(`${RULE_NAME}: sorting by line length`, () => {
@@ -1933,6 +2659,369 @@ describe(RULE_NAME, () => {
         ],
       },
     )
+
+    describe(`${RULE_NAME}(${type}): sorting optional members first`, () => {
+      ruleTester.run('sorts interface properties', rule, {
+        valid: [
+          {
+            code: dedent`
+              interface X {
+                a?: string
+                [index: number]: string
+              }
+            `,
+            options: [
+              {
+                ...options,
+                optionalityOrder: OptionalityOrder['optional-first'],
+              },
+            ],
+          },
+        ],
+        invalid: [
+          {
+            code: dedent`
+              interface ButtonProps {
+                backgroundColor?: string
+                label: string
+                primary?: boolean
+                size?: 'large' | 'medium' | 'small'
+                onClick?(): void
+              }
+            `,
+            output: dedent`
+              interface ButtonProps {
+                size?: 'large' | 'medium' | 'small'
+                backgroundColor?: string
+                primary?: boolean
+                onClick?(): void
+                label: string
+              }
+            `,
+            options: [
+              {
+                ...options,
+                optionalityOrder: OptionalityOrder['optional-first'],
+              },
+            ],
+            errors: [
+              {
+                messageId: 'unexpectedInterfacePropertiesOrder',
+                data: {
+                  left: 'label',
+                  right: 'primary',
+                },
+              },
+              {
+                messageId: 'unexpectedInterfacePropertiesOrder',
+                data: {
+                  left: 'primary',
+                  right: 'size',
+                },
+              },
+            ],
+          },
+        ],
+      })
+
+      ruleTester.run('allows to set groups for sorting', rule, {
+        valid: [],
+        invalid: [
+          {
+            code: dedent`
+              interface ButtonProps {
+                backgroundColor?: string
+                label: string
+                primary?: boolean
+                size?: 'large' | 'medium' | 'small'
+                onClick?(): void
+              }
+            `,
+            output: dedent`
+              interface ButtonProps {
+                size?: 'large' | 'medium' | 'small'
+                backgroundColor?: string
+                primary?: boolean
+                onClick?(): void
+                label: string
+              }
+            `,
+            options: [
+              {
+                ...options,
+                'custom-groups': {
+                  callback: 'on*',
+                },
+                groups: ['unknown', 'callback'],
+                optionalityOrder: OptionalityOrder['optional-first'],
+              },
+            ],
+            errors: [
+              {
+                messageId: 'unexpectedInterfacePropertiesOrder',
+                data: {
+                  left: 'label',
+                  right: 'primary',
+                },
+              },
+              {
+                messageId: 'unexpectedInterfacePropertiesOrder',
+                data: {
+                  left: 'primary',
+                  right: 'size',
+                },
+              },
+            ],
+          },
+        ],
+      })
+
+      ruleTester.run('allows to use new line as partition', rule, {
+        valid: [],
+        invalid: [
+          {
+            code: dedent`
+              interface User {
+                email: string
+                firstName?: string
+                id: number
+                lastName?: string
+                password: string
+                username: string
+              
+                biography?: string
+                avatarUrl?: string
+                createdAt: Date
+                updatedAt: Date
+              }
+            `,
+            output: dedent`
+              interface User {
+                firstName?: string
+                lastName?: string
+                password: string
+                username: string
+                email: string
+                id: number
+              
+                biography?: string
+                avatarUrl?: string
+                createdAt: Date
+                updatedAt: Date
+              }
+            `,
+            options: [
+              {
+                ...options,
+                optionalityOrder: OptionalityOrder['optional-first'],
+                'partition-by-new-line': true,
+              },
+            ],
+            errors: [
+              {
+                messageId: 'unexpectedInterfacePropertiesOrder',
+                data: {
+                  left: 'email',
+                  right: 'firstName',
+                },
+              },
+              {
+                messageId: 'unexpectedInterfacePropertiesOrder',
+                data: {
+                  left: 'id',
+                  right: 'lastName',
+                },
+              },
+            ],
+          },
+        ],
+      })
+    })
+
+    describe(`${RULE_NAME}(${type}): sorting required members first`, () => {
+      ruleTester.run('sorts interface properties', rule, {
+        valid: [
+          {
+            code: dedent`
+              interface X {
+                [index: number]: string
+                a?: string
+              }
+            `,
+            options: [
+              {
+                ...options,
+                optionalityOrder: OptionalityOrder['required-first'],
+              },
+            ],
+          },
+        ],
+        invalid: [
+          {
+            code: dedent`
+              interface ButtonProps {
+                backgroundColor?: string
+                label: string
+                primary?: boolean
+                size?: 'large' | 'medium' | 'small'
+                onClick?(): void
+              }
+            `,
+            output: dedent`
+              interface ButtonProps {
+                label: string
+                size?: 'large' | 'medium' | 'small'
+                backgroundColor?: string
+                primary?: boolean
+                onClick?(): void
+              }
+            `,
+            options: [
+              {
+                ...options,
+                optionalityOrder: OptionalityOrder['required-first'],
+              },
+            ],
+            errors: [
+              {
+                messageId: 'unexpectedInterfacePropertiesOrder',
+                data: {
+                  left: 'backgroundColor',
+                  right: 'label',
+                },
+              },
+              {
+                messageId: 'unexpectedInterfacePropertiesOrder',
+                data: {
+                  left: 'primary',
+                  right: 'size',
+                },
+              },
+            ],
+          },
+        ],
+      })
+
+      ruleTester.run('allows to set groups for sorting', rule, {
+        valid: [],
+        invalid: [
+          {
+            code: dedent`
+              interface ButtonProps {
+                backgroundColor?: string
+                label: string
+                primary?: boolean
+                size?: 'large' | 'medium' | 'small'
+                onClick?(): void
+              }
+            `,
+            output: dedent`
+              interface ButtonProps {
+                label: string
+                size?: 'large' | 'medium' | 'small'
+                backgroundColor?: string
+                primary?: boolean
+                onClick?(): void
+              }
+            `,
+            options: [
+              {
+                ...options,
+                'custom-groups': {
+                  callback: 'on*',
+                },
+                groups: ['unknown', 'callback'],
+                optionalityOrder: OptionalityOrder['required-first'],
+              },
+            ],
+            errors: [
+              {
+                messageId: 'unexpectedInterfacePropertiesOrder',
+                data: {
+                  left: 'backgroundColor',
+                  right: 'label',
+                },
+              },
+              {
+                messageId: 'unexpectedInterfacePropertiesOrder',
+                data: {
+                  left: 'primary',
+                  right: 'size',
+                },
+              },
+            ],
+          },
+        ],
+      })
+
+      ruleTester.run('allows to use new line as partition', rule, {
+        valid: [],
+        invalid: [
+          {
+            code: dedent`
+              interface User {
+                email: string
+                firstName?: string
+                id: number
+                lastName?: string
+                password: string
+                username: string
+              
+                biography?: string
+                avatarUrl?: string
+                createdAt: Date
+                updatedAt: Date
+              }
+            `,
+            output: dedent`
+              interface User {
+                password: string
+                username: string
+                email: string
+                id: number
+                firstName?: string
+                lastName?: string
+              
+                createdAt: Date
+                updatedAt: Date
+                biography?: string
+                avatarUrl?: string
+              }
+            `,
+            options: [
+              {
+                ...options,
+                optionalityOrder: OptionalityOrder['required-first'],
+                'partition-by-new-line': true,
+              },
+            ],
+            errors: [
+              {
+                messageId: 'unexpectedInterfacePropertiesOrder',
+                data: {
+                  left: 'firstName',
+                  right: 'id',
+                },
+              },
+              {
+                messageId: 'unexpectedInterfacePropertiesOrder',
+                data: {
+                  left: 'lastName',
+                  right: 'password',
+                },
+              },
+              {
+                messageId: 'unexpectedInterfacePropertiesOrder',
+                data: {
+                  left: 'avatarUrl',
+                  right: 'createdAt',
+                },
+              },
+            ],
+          },
+        ],
+      })
+    })
   })
 
   describe(`${RULE_NAME}: misc`, () => {

@@ -17,6 +17,12 @@ export enum GroupKind {
   'mixed' = 'mixed',
 }
 
+export enum OptionalityOrder {
+  'optional-first' = 'optional-first',
+  'required-first' = 'required-first',
+  'ignore' = 'ignore',
+}
+
 export type PartitionComment = string[] | boolean | string
 
 export interface SortingNode {
