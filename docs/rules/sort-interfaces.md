@@ -100,7 +100,7 @@ type Group = 'multiline' | CustomGroup
 
 interface Options {
   type?: 'alphabetical' | 'natural' | 'line-length'
-  optionalityOrder?: 'ignore' | 'optional-first' | 'required-first'
+  'optionality-order'?: 'ignore' | 'optional-first' | 'required-first'
   order?: 'asc' | 'desc'
   'ignore-case'?: boolean
   groups?: (Group | Group[])[]
@@ -118,7 +118,7 @@ interface Options {
 - `natural` - sort in natural order.
 - `line-length` - sort by code line length.
 
-### optionalityOrder
+### optionality-order
 
 <sub>(default: `'ignore'`)</sub>
 
