@@ -681,7 +681,7 @@ describe(RULE_NAME, () => {
             options: [
               {
                 ...options,
-                optionalityOrder: OptionalityOrder['optional-first'],
+                'optionality-order': OptionalityOrder['optional-first'],
               },
             ],
           },
@@ -709,7 +709,7 @@ describe(RULE_NAME, () => {
             options: [
               {
                 ...options,
-                optionalityOrder: OptionalityOrder['optional-first'],
+                'optionality-order': OptionalityOrder['optional-first'],
               },
             ],
             errors: [
@@ -761,7 +761,7 @@ describe(RULE_NAME, () => {
                   callback: 'on*',
                 },
                 groups: ['unknown', 'callback'],
-                optionalityOrder: OptionalityOrder['optional-first'],
+                'optionality-order': OptionalityOrder['optional-first'],
               },
             ],
             errors: [
@@ -814,7 +814,7 @@ describe(RULE_NAME, () => {
             options: [
               {
                 ...options,
-                optionalityOrder: OptionalityOrder['optional-first'],
+                'optionality-order': OptionalityOrder['optional-first'],
                 'partition-by-new-line': true,
               },
             ],
@@ -859,7 +859,7 @@ describe(RULE_NAME, () => {
             options: [
               {
                 ...options,
-                optionalityOrder: OptionalityOrder['required-first'],
+                'optionality-order': OptionalityOrder['required-first'],
               },
             ],
           },
@@ -887,7 +887,7 @@ describe(RULE_NAME, () => {
             options: [
               {
                 ...options,
-                optionalityOrder: OptionalityOrder['required-first'],
+                'optionality-order': OptionalityOrder['required-first'],
               },
             ],
             errors: [
@@ -939,7 +939,7 @@ describe(RULE_NAME, () => {
                   callback: 'on*',
                 },
                 groups: ['unknown', 'callback'],
-                optionalityOrder: OptionalityOrder['required-first'],
+                'optionality-order': OptionalityOrder['required-first'],
               },
             ],
             errors: [
@@ -992,7 +992,7 @@ describe(RULE_NAME, () => {
             options: [
               {
                 ...options,
-                optionalityOrder: OptionalityOrder['required-first'],
+                'optionality-order': OptionalityOrder['required-first'],
                 'partition-by-new-line': true,
               },
             ],
@@ -1696,7 +1696,7 @@ describe(RULE_NAME, () => {
             options: [
               {
                 ...options,
-                optionalityOrder: OptionalityOrder['optional-first'],
+                'optionality-order': OptionalityOrder['optional-first'],
               },
             ],
           },
@@ -1724,7 +1724,7 @@ describe(RULE_NAME, () => {
             options: [
               {
                 ...options,
-                optionalityOrder: OptionalityOrder['optional-first'],
+                'optionality-order': OptionalityOrder['optional-first'],
               },
             ],
             errors: [
@@ -1776,7 +1776,7 @@ describe(RULE_NAME, () => {
                   callback: 'on*',
                 },
                 groups: ['unknown', 'callback'],
-                optionalityOrder: OptionalityOrder['optional-first'],
+                'optionality-order': OptionalityOrder['optional-first'],
               },
             ],
             errors: [
@@ -1829,7 +1829,7 @@ describe(RULE_NAME, () => {
             options: [
               {
                 ...options,
-                optionalityOrder: OptionalityOrder['optional-first'],
+                'optionality-order': OptionalityOrder['optional-first'],
                 'partition-by-new-line': true,
               },
             ],
@@ -1874,7 +1874,7 @@ describe(RULE_NAME, () => {
             options: [
               {
                 ...options,
-                optionalityOrder: OptionalityOrder['required-first'],
+                'optionality-order': OptionalityOrder['required-first'],
               },
             ],
           },
@@ -1902,7 +1902,7 @@ describe(RULE_NAME, () => {
             options: [
               {
                 ...options,
-                optionalityOrder: OptionalityOrder['required-first'],
+                'optionality-order': OptionalityOrder['required-first'],
               },
             ],
             errors: [
@@ -1954,7 +1954,7 @@ describe(RULE_NAME, () => {
                   callback: 'on*',
                 },
                 groups: ['unknown', 'callback'],
-                optionalityOrder: OptionalityOrder['required-first'],
+                'optionality-order': OptionalityOrder['required-first'],
               },
             ],
             errors: [
@@ -2007,7 +2007,7 @@ describe(RULE_NAME, () => {
             options: [
               {
                 ...options,
-                optionalityOrder: OptionalityOrder['required-first'],
+                'optionality-order': OptionalityOrder['required-first'],
                 'partition-by-new-line': true,
               },
             ],
@@ -2673,7 +2673,7 @@ describe(RULE_NAME, () => {
             options: [
               {
                 ...options,
-                optionalityOrder: OptionalityOrder['optional-first'],
+                'optionality-order': OptionalityOrder['optional-first'],
               },
             ],
           },
@@ -2701,7 +2701,7 @@ describe(RULE_NAME, () => {
             options: [
               {
                 ...options,
-                optionalityOrder: OptionalityOrder['optional-first'],
+                'optionality-order': OptionalityOrder['optional-first'],
               },
             ],
             errors: [
@@ -2753,7 +2753,7 @@ describe(RULE_NAME, () => {
                   callback: 'on*',
                 },
                 groups: ['unknown', 'callback'],
-                optionalityOrder: OptionalityOrder['optional-first'],
+                'optionality-order': OptionalityOrder['optional-first'],
               },
             ],
             errors: [
@@ -2813,7 +2813,7 @@ describe(RULE_NAME, () => {
             options: [
               {
                 ...options,
-                optionalityOrder: OptionalityOrder['optional-first'],
+                'optionality-order': OptionalityOrder['optional-first'],
                 'partition-by-new-line': true,
               },
             ],
@@ -2851,7 +2851,7 @@ describe(RULE_NAME, () => {
             options: [
               {
                 ...options,
-                optionalityOrder: OptionalityOrder['required-first'],
+                'optionality-order': OptionalityOrder['required-first'],
               },
             ],
           },
@@ -2879,7 +2879,7 @@ describe(RULE_NAME, () => {
             options: [
               {
                 ...options,
-                optionalityOrder: OptionalityOrder['required-first'],
+                'optionality-order': OptionalityOrder['required-first'],
               },
             ],
             errors: [
@@ -2931,7 +2931,7 @@ describe(RULE_NAME, () => {
                   callback: 'on*',
                 },
                 groups: ['unknown', 'callback'],
-                optionalityOrder: OptionalityOrder['required-first'],
+                'optionality-order': OptionalityOrder['required-first'],
               },
             ],
             errors: [
@@ -2991,7 +2991,7 @@ describe(RULE_NAME, () => {
             options: [
               {
                 ...options,
-                optionalityOrder: OptionalityOrder['required-first'],
+                'optionality-order': OptionalityOrder['required-first'],
                 'partition-by-new-line': true,
               },
             ],

@@ -24,7 +24,7 @@ type Group<T extends string[]> = 'multiline' | 'unknown' | T[number]
 type Options<T extends string[]> = [
   Partial<{
     'custom-groups': { [key: string]: string[] | string }
-    optionalityOrder: OptionalityOrder
+    'optionality-order': OptionalityOrder
     groups: (Group<T>[] | Group<T>)[]
     'partition-by-new-line': boolean
     'ignore-pattern': string[]
@@ -51,7 +51,7 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
           'custom-groups': {
             type: 'object',
           },
-          optionalityOrder: {
+          'optionality-order': {
             enum: [
               OptionalityOrder.ignore,
               OptionalityOrder['optional-first'],
@@ -111,7 +111,7 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
     TSInterfaceDeclaration: node => {
       if (node.body.body.length > 1) {
         let options = complete(context.options.at(0), {
-          optionalityOrder: OptionalityOrder.ignore,
+          'optionality-order': OptionalityOrder.ignore,
           'partition-by-new-line': false,
           type: SortType.alphabetical,
           'ignore-case': false,
@@ -246,13 +246,15 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
             )
           }
 
+          let optionalityOrder = options['optionality-order']
+
           let checkOrder = (
             members: SortingNode[],
             left: SortingNode,
             right: SortingNode,
             iteration: number,
           ) => {
-            if (options.optionalityOrder === OptionalityOrder.ignore) {
+            if (optionalityOrder === OptionalityOrder.ignore) {
               return checkGroupSort(left, right)
             }
 
@@ -270,8 +272,7 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
             if (isMemberOptional(left.node) !== isMemberOptional(right.node)) {
               return (
                 isMemberOptional(left.node) !==
-                (options.optionalityOrder ===
-                  OptionalityOrder['optional-first'])
+                (optionalityOrder === OptionalityOrder['optional-first'])
               )
             }
 
@@ -291,7 +292,7 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
                   fix: fixer => {
                     let sortedNodes
 
-                    if (options.optionalityOrder !== OptionalityOrder.ignore) {
+                    if (optionalityOrder !== OptionalityOrder.ignore) {
                       let optionalNodes = nodes.filter(member =>
                         isMemberOptional(member.node),
                       )
@@ -300,8 +301,7 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
                       )
 
                       sortedNodes =
-                        options.optionalityOrder ===
-                        OptionalityOrder['optional-first']
+                        optionalityOrder === OptionalityOrder['optional-first']
                           ? [
                               ...toSorted(optionalNodes),
                               ...toSorted(requiredNodes),
