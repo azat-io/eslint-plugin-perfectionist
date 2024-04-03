@@ -15,8 +15,11 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Install Tools & Dependencies
-        uses: ./.github/actions/install
+      - name: Install Tools
+        uses: ./.github/actions/install-tools
+
+      - name: Install Dependencies
+        uses: ./.github/actions/install-dependencies
 
       - name: Test
         run: pnpm test:css
@@ -29,8 +32,11 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Install Tools & Dependencies
-        uses: ./.github/actions/install
+      - name: Install Tools
+        uses: ./.github/actions/install-tools
+
+      - name: Install Dependencies
+        uses: ./.github/actions/install-dependencies
 
       - name: Test
         run: pnpm test:format
@@ -43,8 +49,11 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Install Tools & Dependencies
-        uses: ./.github/actions/install
+      - name: Install Tools
+        uses: ./.github/actions/install-tools
+
+      - name: Install Dependencies
+        uses: ./.github/actions/install-dependencies
 
       - name: Test
         run: pnpm test:js
@@ -57,8 +66,11 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Install Tools & Dependencies
-        uses: ./.github/actions/install
+      - name: Install Tools
+        uses: ./.github/actions/install-tools
+
+      - name: Install Dependencies
+        uses: ./.github/actions/install-dependencies
 
       - name: Test
         run: pnpm test:types
@@ -71,8 +83,11 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Install Tools & Dependencies
-        uses: ./.github/actions/install
+      - name: Install Tools
+        uses: ./.github/actions/install-tools
+
+      - name: Install Dependencies
+        uses: ./.github/actions/install-dependencies
 
       - name: Test
         run: pnpm test:unit

@@ -17,8 +17,8 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Install Tools & Dependencies
-        uses: ./.github/actions/install
+      - name: Install Tools
+        uses: ./.github/actions/install-tools
 
       - name: Create GitHub Release
         run: pnpx changelogithub
