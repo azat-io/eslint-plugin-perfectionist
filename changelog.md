@@ -1,6 +1,22 @@
 # Changelog
 
 
+## v2.8.0
+
+[compare changes](https://github.com/azat-io/eslint-plugin-perfectionist/compare/v2.7.0...v2.8.0)
+
+### 🚀 Features
+
+- **sort-interfaces:** Add `optionalityOrder` option ([e142c39](https://github.com/azat-io/eslint-plugin-perfectionist/commit/e142c39))
+
+### 🐞 Bug Fixes
+
+- Convert `optionalityOrder` to kebab case ([7726294](https://github.com/azat-io/eslint-plugin-perfectionist/commit/7726294))
+
+### ❤️ Contributors
+
+- Chirokas ([@chirokas](http://github.com/chirokas))
+
 ## v2.7.0
 
 [compare changes](https://github.com/azat-io/eslint-plugin-perfectionist/compare/v2.6.0...v2.7.0)
