@@ -1,3 +1,4 @@
+import sortIntersectionTypes, { RULE_NAME as sortIntersectionTypesName } from './rules/sort-intersection-types'
 import sortSvelteAttributes, { RULE_NAME as sortSvelteAttributesName } from './rules/sort-svelte-attributes'
 import sortAstroAttributes, { RULE_NAME as sortAstroAttributesName } from './rules/sort-astro-attributes'
 import sortArrayIncludes, { RULE_NAME as sortArrayIncludesName } from './rules/sort-array-includes'
@@ -84,6 +85,7 @@ let createConfigWithOptions = (options: {
         'spread-last': true,
       },
     ],
+    [sortIntersectionTypesName]: ['error'],
     [sortSvelteAttributesName]: ['error'],
     [sortAstroAttributesName]: ['error'],
     [sortVueAttributesName]: ['error'],
@@ -125,6 +127,7 @@ export default {
     [sortObjectTypesName]: sortObjectTypes,
     [sortObjectsName]: sortObjects,
     [sortSvelteAttributesName]: sortSvelteAttributes,
+    [sortIntersectionTypesName]: sortIntersectionTypes,
     [sortUnionTypesName]: sortUnionTypes,
     [sortVueAttributesName]: sortVueAttributes,
   },
