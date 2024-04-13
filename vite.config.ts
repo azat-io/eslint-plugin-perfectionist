@@ -19,10 +19,15 @@ export default defineConfig({
 
         return `${directory}${entryName}.${format === 'es' ? 'mjs' : 'js'}`
       },
+      name: 'eslint-plugin-perfectionist',
       formats: ['cjs', 'es'],
     },
     rollupOptions: {
       external: (id: string) => !id.startsWith('.') && !path.isAbsolute(id),
+      output: {
+        preserveModules: true,
+      },
     },
+    minify: false,
   },
 })
