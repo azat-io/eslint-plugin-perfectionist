@@ -1,6 +1,27 @@
 # Changelog
 
 
+## v2.9.0
+
+[compare changes](https://github.com/azat-io/eslint-plugin-perfectionist/compare/v2.8.0...v2.9.0)
+
+### 🚀 Features
+
+- Add sort-intersection-types rule ([3ad40ff](https://github.com/azat-io/eslint-plugin-perfectionist/commit/3ad40ff))
+- Use preserve modules for package build ([be13a21](https://github.com/azat-io/eslint-plugin-perfectionist/commit/be13a21))
+
+### 🐞 Bug Fixes
+
+- Sort-objects ignore-pattern add property type ([3de399f](https://github.com/azat-io/eslint-plugin-perfectionist/commit/3de399f))
+- **sort-exports:** Work with star exports ([ce76606](https://github.com/azat-io/eslint-plugin-perfectionist/commit/ce76606))
+
+### ❤️ Contributors
+
+- Azat S. ([@azat-io](http://github.com/azat-io))
+- Chirokas ([@chirokas](http://github.com/chirokas))
+- Sergio ([@KID-joker](http://github.com/KID-joker))
+- Josh Goldberg ✨ <git@joshuakgoldberg.com>
+
 ## v2.8.0
 
 [compare changes](https://github.com/azat-io/eslint-plugin-perfectionist/compare/v2.7.0...v2.8.0)
