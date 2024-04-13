@@ -2867,7 +2867,60 @@ describe(RULE_NAME, () => {
           ],
         },
       ],
-      invalid: [],
+      invalid: [
+        {
+          code: dedent`
+            export default {
+              methods: {
+                foo() {},
+                bar() {},
+                baz() {},
+              },
+              data() {
+                return {
+                  background: "palevioletred",
+                  display: 'flex',
+                  flexDirection: 'column',
+                  width: "50px",
+                  height: "50px",
+                }
+              },
+            }
+          `,
+          output: dedent`
+            export default {
+              data() {
+                return {
+                  background: "palevioletred",
+                  display: 'flex',
+                  flexDirection: 'column',
+                  width: "50px",
+                  height: "50px",
+                }
+              },
+              methods: {
+                foo() {},
+                bar() {},
+                baz() {},
+              },
+            }
+          `,
+          options: [
+            {
+              ignorePattern: ['data', 'methods'],
+            },
+          ],
+          errors: [
+            {
+              messageId: 'unexpectedObjectsOrder',
+              data: {
+                left: 'methods',
+                right: 'data',
+              },
+            },
+          ],
+        },
+      ],
     })
   })
 })

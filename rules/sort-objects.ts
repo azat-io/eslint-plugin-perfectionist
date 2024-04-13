@@ -38,6 +38,7 @@ type Options = [
     customGroups: { [key: string]: string[] | string }
     type: 'alphabetical' | 'line-length' | 'natural'
     partitionByComment: string[] | boolean | string
+    customIgnore: { [key: string]: Function }
     groups: (string[] | string)[]
     partitionByNewLine: boolean
     styledComponents: boolean
@@ -99,6 +100,9 @@ export default createEslintRule<Options, MESSAGE_ID>({
           groups: {
             type: 'array',
           },
+          customIgnore: {
+            type: 'object',
+          },
         },
         additionalProperties: false,
       },
@@ -125,11 +129,21 @@ export default createEslintRule<Options, MESSAGE_ID>({
         ignorePattern: [],
         ignoreCase: true,
         customGroups: {},
+        customIgnore: {},
         order: 'asc',
         groups: [],
       } as const)
 
       let shouldIgnore = false
+
+      let ignoreFunctions = Object.values(options.customIgnore)
+      if (
+        ignoreFunctions.length &&
+        ignoreFunctions.some(fn => fn(node, context.filename))
+      ) {
+        shouldIgnore = true
+      }
+
       if (options.ignorePattern.length) {
         let varParent = getNodeParent(node, ['VariableDeclarator', 'Property'])
         let parentId =
