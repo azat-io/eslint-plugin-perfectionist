@@ -73,52 +73,55 @@ describe(RULE_NAME, () => {
       ],
     })
 
-    ruleTester.run(
-      `${RULE_NAME}(${type}): sorts all-exports only if export kind is value`,
-      rule,
-      {
-        valid: [
-          {
-            code: dedent`
-              export { SuzuHoujou } from './houjou'
-              export * as Kuromura from './kuromura'
-              export { TetsuMizuhara } from './mizuhara'
-              export * from 'hiroshima'
-              export { Shuusaku } from './shuusaku'
-            `,
-            options: [options],
-          },
-        ],
-        invalid: [
-          {
-            code: dedent`
-              export * as Kuromura from './kuromura'
-              export { SuzuHoujou } from './houjou'
-              export { TetsuMizuhara } from './mizuhara'
-              export * from 'hiroshima'
-              export { Shuusaku } from './shuusaku'
-            `,
-            output: dedent`
-              export { SuzuHoujou } from './houjou'
-              export * as Kuromura from './kuromura'
-              export { TetsuMizuhara } from './mizuhara'
-              export * from 'hiroshima'
-              export { Shuusaku } from './shuusaku'
-            `,
-            options: [options],
-            errors: [
-              {
-                messageId: 'unexpectedExportsOrder',
-                data: {
-                  left: './kuromura',
-                  right: './houjou',
-                },
+    ruleTester.run(`${RULE_NAME}(${type}): sorts all-exports`, rule, {
+      valid: [
+        {
+          code: dedent`
+            export { SuzuHoujou } from './houjou'
+            export * as Kuromura from './kuromura'
+            export { TetsuMizuhara } from './mizuhara'
+            export { Shuusaku } from './shuusaku'
+            export * from 'hiroshima'
+          `,
+          options: [options],
+        },
+      ],
+      invalid: [
+        {
+          code: dedent`
+            export * as Kuromura from './kuromura'
+            export { SuzuHoujou } from './houjou'
+            export { TetsuMizuhara } from './mizuhara'
+            export * from 'hiroshima'
+            export { Shuusaku } from './shuusaku'
+          `,
+          output: dedent`
+            export { SuzuHoujou } from './houjou'
+            export * as Kuromura from './kuromura'
+            export { TetsuMizuhara } from './mizuhara'
+            export { Shuusaku } from './shuusaku'
+            export * from 'hiroshima'
+          `,
+          options: [options],
+          errors: [
+            {
+              messageId: 'unexpectedExportsOrder',
+              data: {
+                left: './kuromura',
+                right: './houjou',
               },
-            ],
-          },
-        ],
-      },
-    )
+            },
+            {
+              messageId: 'unexpectedExportsOrder',
+              data: {
+                left: 'hiroshima',
+                right: './shuusaku',
+              },
+            },
+          ],
+        },
+      ],
+    })
 
     ruleTester.run(`${RULE_NAME}(${type}): works with export aliases`, rule, {
       valid: [
@@ -214,52 +217,55 @@ describe(RULE_NAME, () => {
       ],
     })
 
-    ruleTester.run(
-      `${RULE_NAME}(${type}): sorts all-exports only if export kind is value`,
-      rule,
-      {
-        valid: [
-          {
-            code: dedent`
-              export { SuzuHoujou } from './houjou'
-              export * as Kuromura from './kuromura'
-              export { TetsuMizuhara } from './mizuhara'
-              export * from 'hiroshima'
-              export { Shuusaku } from './shuusaku'
-            `,
-            options: [options],
-          },
-        ],
-        invalid: [
-          {
-            code: dedent`
-              export * as Kuromura from './kuromura'
-              export { SuzuHoujou } from './houjou'
-              export { TetsuMizuhara } from './mizuhara'
-              export * from 'hiroshima'
-              export { Shuusaku } from './shuusaku'
-            `,
-            output: dedent`
-              export { SuzuHoujou } from './houjou'
-              export * as Kuromura from './kuromura'
-              export { TetsuMizuhara } from './mizuhara'
-              export * from 'hiroshima'
-              export { Shuusaku } from './shuusaku'
-            `,
-            options: [options],
-            errors: [
-              {
-                messageId: 'unexpectedExportsOrder',
-                data: {
-                  left: './kuromura',
-                  right: './houjou',
-                },
+    ruleTester.run(`${RULE_NAME}(${type}): sorts all-exports`, rule, {
+      valid: [
+        {
+          code: dedent`
+            export { SuzuHoujou } from './houjou'
+            export * as Kuromura from './kuromura'
+            export { TetsuMizuhara } from './mizuhara'
+            export { Shuusaku } from './shuusaku'
+            export * from 'hiroshima'
+          `,
+          options: [options],
+        },
+      ],
+      invalid: [
+        {
+          code: dedent`
+            export * as Kuromura from './kuromura'
+            export { SuzuHoujou } from './houjou'
+            export { TetsuMizuhara } from './mizuhara'
+            export * from 'hiroshima'
+            export { Shuusaku } from './shuusaku'
+          `,
+          output: dedent`
+            export { SuzuHoujou } from './houjou'
+            export * as Kuromura from './kuromura'
+            export { TetsuMizuhara } from './mizuhara'
+            export { Shuusaku } from './shuusaku'
+            export * from 'hiroshima'
+          `,
+          options: [options],
+          errors: [
+            {
+              messageId: 'unexpectedExportsOrder',
+              data: {
+                left: './kuromura',
+                right: './houjou',
               },
-            ],
-          },
-        ],
-      },
-    )
+            },
+            {
+              messageId: 'unexpectedExportsOrder',
+              data: {
+                left: 'hiroshima',
+                right: './shuusaku',
+              },
+            },
+          ],
+        },
+      ],
+    })
 
     ruleTester.run(`${RULE_NAME}(${type}): works with export aliases`, rule, {
       valid: [
@@ -354,52 +360,55 @@ describe(RULE_NAME, () => {
       ],
     })
 
-    ruleTester.run(
-      `${RULE_NAME}(${type}): sorts all-exports only if export kind is value`,
-      rule,
-      {
-        valid: [
-          {
-            code: dedent`
-              export { TetsuMizuhara } from './mizuhara'
-              export * as Kuromura from './kuromura'
-              export { SuzuHoujou } from './houjou'
-              export * from 'hiroshima'
-              export { Shuusaku } from './shuusaku'
-            `,
-            options: [options],
-          },
-        ],
-        invalid: [
-          {
-            code: dedent`
-              export * as Kuromura from './kuromura'
-              export { SuzuHoujou } from './houjou'
-              export { TetsuMizuhara } from './mizuhara'
-              export * from 'hiroshima'
-              export { Shuusaku } from './shuusaku'
-            `,
-            output: dedent`
-              export { TetsuMizuhara } from './mizuhara'
-              export * as Kuromura from './kuromura'
-              export { SuzuHoujou } from './houjou'
-              export * from 'hiroshima'
-              export { Shuusaku } from './shuusaku'
-            `,
-            options: [options],
-            errors: [
-              {
-                messageId: 'unexpectedExportsOrder',
-                data: {
-                  left: './houjou',
-                  right: './mizuhara',
-                },
+    ruleTester.run(`${RULE_NAME}(${type}): sorts all-exports`, rule, {
+      valid: [
+        {
+          code: dedent`
+            export { TetsuMizuhara } from './mizuhara'
+            export * as Kuromura from './kuromura'
+            export { SuzuHoujou } from './houjou'
+            export { Shuusaku } from './shuusaku'
+            export * from 'hiroshima'
+          `,
+          options: [options],
+        },
+      ],
+      invalid: [
+        {
+          code: dedent`
+            export * as Kuromura from './kuromura'
+            export { SuzuHoujou } from './houjou'
+            export { TetsuMizuhara } from './mizuhara'
+            export * from 'hiroshima'
+            export { Shuusaku } from './shuusaku'
+          `,
+          output: dedent`
+            export { TetsuMizuhara } from './mizuhara'
+            export * as Kuromura from './kuromura'
+            export { SuzuHoujou } from './houjou'
+            export { Shuusaku } from './shuusaku'
+            export * from 'hiroshima'
+          `,
+          options: [options],
+          errors: [
+            {
+              messageId: 'unexpectedExportsOrder',
+              data: {
+                left: './houjou',
+                right: './mizuhara',
               },
-            ],
-          },
-        ],
-      },
-    )
+            },
+            {
+              messageId: 'unexpectedExportsOrder',
+              data: {
+                left: 'hiroshima',
+                right: './shuusaku',
+              },
+            },
+          ],
+        },
+      ],
+    })
 
     ruleTester.run(`${RULE_NAME}(${type}): works with export aliases`, rule, {
       valid: [

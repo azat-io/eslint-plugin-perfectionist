@@ -82,15 +82,11 @@ export default createEslintRule<Options, MESSAGE_ID>({
         | TSESTree.ExportNamedDeclarationWithSource
         | TSESTree.ExportAllDeclaration,
     ) => {
-      if (node.type === 'ExportAllDeclaration' && node.exported === null) {
-        parts.push([])
-      } else {
-        parts.at(-1)!.push({
-          size: rangeToDiff(node.range),
-          name: node.source.value,
-          node,
-        })
-      }
+      parts.at(-1)!.push({
+        size: rangeToDiff(node.range),
+        name: node.source.value,
+        node,
+      })
     }
 
     return {
