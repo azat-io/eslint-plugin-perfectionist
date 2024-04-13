@@ -10,6 +10,7 @@ import { getCommentBefore } from '../utils/get-comment-before'
 import { createEslintRule } from '../utils/create-eslint-rule'
 import { getLinesBetween } from '../utils/get-lines-between'
 import { getGroupNumber } from '../utils/get-group-number'
+import { getNodeParent } from '../utils/get-node-parent'
 import { toSingleLine } from '../utils/to-single-line'
 import { rangeToDiff } from '../utils/range-to-diff'
 import { isPositive } from '../utils/is-positive'
@@ -132,21 +133,27 @@ export default createEslintRule<Options, MESSAGE_ID>({
         groups: [],
       })
 
-      let variableIdentifier =
-        node.parent.type === 'VariableDeclarator' &&
-        node.parent.id.type === 'Identifier'
-          ? node.parent.id.name
-          : null
+      let shouldIgnore = false
+      if (options['ignore-pattern'].length) {
+        let parent = getNodeParent(node, ['VariableDeclarator', 'Property'])
+        let parentId =
+          parent?.type === 'VariableDeclarator'
+            ? parent.id
+            : (parent as TSESTree.Property | null)?.key
+        let variableIdentifier =
+          parentId?.type === 'Identifier' ? parentId.name : null
 
-      let shouldIgnore =
-        options['ignore-pattern'].length &&
-        typeof variableIdentifier === 'string'
-          ? options['ignore-pattern'].some(pattern =>
-              minimatch(variableIdentifier!, pattern, {
-                nocomment: true,
-              }),
-            )
-          : false
+        if (
+          typeof variableIdentifier === 'string' &&
+          options['ignore-pattern'].some(pattern =>
+            minimatch(variableIdentifier!, pattern, {
+              nocomment: true,
+            }),
+          )
+        ) {
+          shouldIgnore = true
+        }
+      }
 
       if (!shouldIgnore && node.properties.length > 1) {
         let isStyledCallExpression = (identifier: TSESTree.Expression) =>
