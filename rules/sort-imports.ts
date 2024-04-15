@@ -217,7 +217,10 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
     let nodes: SortingNode[] = []
 
     let isSideEffectImport = (node: TSESTree.Node) =>
-      node.type === 'ImportDeclaration' && node.specifiers.length === 0
+      node.type === 'ImportDeclaration' &&
+      node.specifiers.length === 0 &&
+      /* Avoid matching on named imports without specifiers */
+      !/}\s*from\s+/.test(context.sourceCode.getText(node))
 
     let computeGroup = (node: ModuleDeclaration): Group<string[]> => {
       let isStyle = (value: string) =>

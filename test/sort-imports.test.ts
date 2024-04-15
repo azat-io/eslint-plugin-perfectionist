@@ -3984,5 +3984,28 @@ describe(RULE_NAME, () => {
         ],
       },
     )
+
+    ruleTester.run(
+      `${RULE_NAME}: does not consider empty named imports to be side-effects`,
+      rule,
+      {
+        valid: [
+          {
+            code: dedent`
+              import {} from 'node:os'
+              import { hinaAmano } from 'weathering-with-you'
+              import 'node:os'
+            `,
+            options: [
+              {
+                'newlines-between': NewlinesBetweenValue.never,
+                groups: ['builtin', 'external', 'side-effect'],
+              },
+            ],
+          },
+        ],
+        invalid: [],
+      },
+    )
   })
 })
