@@ -1,3 +1,5 @@
+import type { TSESTree } from '@typescript-eslint/types'
+
 import { RuleTester } from '@typescript-eslint/rule-tester'
 import { afterAll, describe, it } from 'vitest'
 import { dedent } from 'ts-dedent'
@@ -2866,6 +2868,32 @@ describe(RULE_NAME, () => {
             },
           ],
         },
+        {
+          code: dedent`
+            const buttonStyles = {
+              background: "palevioletred",
+              display: 'flex',
+              flexDirection: 'column',
+              width: "50px",
+              height: "50px",
+            }
+          `,
+          options: [
+            {
+              'ignore-function': {
+                ignoreButtonStyles: (node: TSESTree.ObjectExpression) => {
+                  if (
+                    node.parent.type === 'VariableDeclarator' &&
+                    node.parent.id.type === 'Identifier'
+                  ) {
+                    return node.parent.id.name === 'buttonStyles'
+                  }
+                  return false
+                },
+              },
+            },
+          ],
+        },
       ],
       invalid: [
         {
@@ -2916,6 +2944,42 @@ describe(RULE_NAME, () => {
               data: {
                 left: 'methods',
                 right: 'data',
+              },
+            },
+          ],
+        },
+        {
+          code: dedent`
+            const buttonStyles = {
+              background: "palevioletred",
+              display: 'flex',
+              flexDirection: 'column',
+              width: "50px",
+              height: "50px",
+            }
+          `,
+          output: dedent`
+            const buttonStyles = {
+              background: "palevioletred",
+              display: 'flex',
+              flexDirection: 'column',
+              height: "50px",
+              width: "50px",
+            }
+          `,
+          options: [
+            {
+              'ignore-function': {
+                ignoreButtonStyles: () => false,
+              },
+            },
+          ],
+          errors: [
+            {
+              messageId: 'unexpectedObjectsOrder',
+              data: {
+                left: 'width',
+                right: 'height',
               },
             },
           ],

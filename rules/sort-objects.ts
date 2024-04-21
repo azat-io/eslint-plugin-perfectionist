@@ -97,6 +97,9 @@ export default createEslintRule<Options, MESSAGE_ID>({
             },
             type: 'array',
           },
+          'ignore-function': {
+            type: 'object',
+          },
           groups: {
             type: 'array',
           },
@@ -136,7 +139,6 @@ export default createEslintRule<Options, MESSAGE_ID>({
 
       let shouldIgnore = false
 
-      let ignoreFunctions = Object.values(options.customIgnore)
       if (
         ignoreFunctions.length &&
         ignoreFunctions.some(fn => fn(node, context.filename))
