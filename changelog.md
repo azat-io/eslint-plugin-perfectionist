@@ -1,6 +1,23 @@
 # Changelog
 
 
+## v2.10.0
+
+[compare changes](https://github.com/azat-io/eslint-plugin-perfectionist/compare/v2.9.0...v2.10.0)
+
+### 🚀 Features
+
+- Allow typescript-eslint v7 ([ccdaeb8](https://github.com/azat-io/eslint-plugin-perfectionist/commit/ccdaeb8))
+
+### 🐞 Bug Fixes
+
+- **sort-imports:** Empty named imports being considered side-effect imports ([ca69069](https://github.com/azat-io/eslint-plugin-perfectionist/commit/ca69069))
+
+### ❤️ Contributors
+
+- Josh Goldberg ✨ <git@joshuakgoldberg.com>
+- Hampus ([@hampus-stravito](http://github.com/hampus-stravito))
+
 ## v2.9.0
 
 [compare changes](https://github.com/azat-io/eslint-plugin-perfectionist/compare/v2.8.0...v2.9.0)
