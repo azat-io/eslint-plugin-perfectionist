@@ -140,7 +140,7 @@ export default [
 
 ## 🚀 Version
 
-This rule was introduced in v0.4.0.
+This rule was introduced in v2.9.0.
 
 ## 📚 Resources
 
