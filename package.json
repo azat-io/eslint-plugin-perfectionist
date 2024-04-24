@@ -75,7 +75,7 @@
     "vue-eslint-parser": ">=9.0.0"
   },
   "dependencies": {
-    "@typescript-eslint/utils": "^6.13.0",
+    "@typescript-eslint/utils": "^6.13.0 || ^7.0.0",
     "minimatch": "^9.0.3",
     "natural-compare-lite": "^1.4.0"
   },
