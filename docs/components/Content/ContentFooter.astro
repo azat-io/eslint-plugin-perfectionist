@@ -1,0 +1,26 @@
+---
+
+---
+
+<footer class="footer">
+  <hr class="hr" />
+  <slot />
+</footer>
+
+<style>
+  .footer {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-l);
+    align-items: start;
+    margin-block: var(--space-xl) var(--space-l);
+  }
+
+  .hr {
+    inline-size: 100%;
+    margin-block: var(--space-s);
+    border: 0;
+    border-block-start: 1px solid var(--color-border-inverse);
+    opacity: 50%;
+  }
+</style>

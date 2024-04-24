@@ -1,0 +1,11 @@
+---
+interface Props {
+  class?: string
+}
+
+let { props } = Astro
+---
+
+<body {...props}>
+  <slot />
+</body>

@@ -1,0 +1,194 @@
+---
+import Typography from './Typography.astro'
+import Container from './Container.astro'
+import Logo from './Logo.astro'
+
+let footerLinks = [
+  {
+    links: [
+      {
+        title: 'Guide',
+        url: '/guide',
+      },
+      {
+        title: 'Configs',
+        url: '/configs',
+      },
+      {
+        title: 'Rules',
+        url: '/rules',
+      },
+    ],
+    title: 'Docs',
+  },
+  {
+    links: [
+      {
+        url: '/configs/recommended-alphabetical',
+        title: 'Alphabetical',
+      },
+      {
+        url: '/configs/recommended-natural',
+        title: 'Natural',
+      },
+      {
+        url: '/configs/recommended-line-length',
+        title: 'Line Length',
+      },
+    ],
+    title: 'Configs',
+  },
+  {
+    links: [
+      {
+        url: 'https://github.com/azat-io/eslint-plugin-perfectionist/blob/main/contributing.md',
+        title: 'Contributing Guide',
+      },
+      {
+        url: 'https://github.com/azat-io/eslint-plugin-perfectionist/blob/main/changelog.md',
+        title: 'Changelog',
+      },
+    ],
+    title: 'Development',
+  },
+  {
+    links: [
+      {
+        url: 'https://github.com/azat-io/eslint-plugin-perfectionist',
+        title: 'GitHub',
+      },
+    ],
+    title: 'Community',
+  },
+]
+---
+
+<footer class="footer">
+  <Container class="data">
+    <div class="logo-wrapper">
+      <Logo class="logo" />
+      <Typography size="xl" bold> Perfectionist </Typography>
+    </div>
+    <div class="links">
+      {
+        footerLinks.map(({ title, links }) => (
+          <div>
+            <Typography class="title" size="m" mbe="m">
+              {title}
+            </Typography>
+            <ul class="list">
+              {links.map(({ title: linkTitle, url }) => {
+                let isInternal = url.startsWith('/')
+                return (
+                  <li class="item">
+                    <a
+                      target={isInternal ? '_self' : '_blank'}
+                      class="link"
+                      href={url}
+                    >
+                      <Typography size="xs">{linkTitle}</Typography>
+                    </a>
+                  </li>
+                )
+              })}
+            </ul>
+          </div>
+        ))
+      }
+    </div>
+  </Container>
+  <Container class="license">
+    <Typography size="xs" mbe="2xs" mbs="xl">
+      Released under the MIT License
+    </Typography>
+    <Typography size="xs">
+      Copyright © 2024 Azat S. & Contributors
+    </Typography>
+  </Container>
+</footer>
+
+<style>
+  .footer {
+    padding: 64px var(--space-m) var(--space-xl);
+    background: var(--color-background-primary);
+    container-type: inline-size;
+  }
+
+  .data {
+    display: flex;
+    flex-direction: column;
+    grid-template-columns: 1fr;
+    gap: var(--space-l);
+    align-items: start;
+    justify-content: space-between;
+    margin-block-end: var(--space-xl);
+
+    @container (inline-size >= 940px) {
+      flex-direction: row-reverse;
+    }
+  }
+
+  .links {
+    display: grid;
+    grid-template-columns: repeat(var(--columns), 1fr);
+    gap: var(--space-l);
+    inline-size: 100%;
+    --columns: 1;
+
+    @container (inline-size >= 320px) {
+      --columns: 2;
+    }
+
+    @container (inline-size >= 640px) {
+      --columns: 4;
+    }
+  }
+
+  .title {
+    font-family: var(--font-family-title);
+  }
+
+  .list {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2xs);
+    padding-inline-start: 0;
+    margin-block: 0;
+    list-style: none;
+  }
+
+  .item {
+    margin-block: 0;
+  }
+
+  .link {
+    display: inline-flex;
+    color: var(--color-content-primary);
+    text-decoration: none;
+
+    @media (hover: hover) {
+      &:hover {
+        color: var(--color-content-secondary);
+      }
+    }
+  }
+
+  .logo-wrapper {
+    display: flex;
+    gap: var(--space-xs);
+    align-items: center;
+  }
+
+  .logo {
+    inline-size: 36px;
+    block-size: 36px;
+  }
+
+  .license {
+    text-align: start;
+
+    @container (inline-size >= 480px) {
+      text-align: center;
+    }
+  }
+</style>

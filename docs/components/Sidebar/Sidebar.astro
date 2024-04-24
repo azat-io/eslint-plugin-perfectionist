@@ -1,0 +1,134 @@
+---
+import SidebarLinkBlock from './SidebarLinkBlock.astro'
+import { pages } from '../../utils/pages'
+import Icon from '../Icon.astro'
+
+interface Props {
+  isMobileOnly?: boolean
+}
+
+let { isMobileOnly = false } = Astro.props
+---
+
+<aside class:list={['sidebar', isMobileOnly && 'menu-mobile-only']} id="menu">
+  <header class="header">
+    <button
+      aria-label="Toggle navigation"
+      id="menu-close-button"
+      class="menu-button"
+    >
+      <Icon name="cross" size="m" />
+    </button>
+  </header>
+  {
+    pages.map(linkBlock => (
+      <SidebarLinkBlock class="menu-item" {...linkBlock} />
+    ))
+  }
+</aside>
+
+<script>
+  import { toggleMenu, menuOpen } from '../../stores/menu-open'
+
+  let initMenu = async () => {
+    let menu = document.getElementById('menu')!
+
+    menuOpen.set(false)
+    menuOpen.subscribe(menuOpenValue => {
+      if (menuOpenValue) {
+        menu.classList.add('menu-open')
+      } else {
+        setTimeout(() => {
+          menu.classList.remove('menu-open')
+        }, 200)
+      }
+    })
+
+    document
+      .getElementById('menu-close-button')!
+      .addEventListener('click', toggleMenu)
+  }
+
+  document.addEventListener('astro:after-swap', initMenu)
+  initMenu()
+</script>
+
+<style>
+  .sidebar {
+    position: fixed;
+    inset: 0;
+    z-index: 3;
+    display: none;
+    flex-direction: column;
+    inline-size: 100%;
+    block-size: 100dvb;
+    padding: var(--space-s);
+    padding-block-end: calc(var(--space-xl) + var(--space-m));
+    overflow: scroll;
+    background: var(--color-background-secondary);
+    border-inline-end: 1px solid var(--color-border-primary);
+    scrollbar-width: thin;
+
+    @media (width >= 800px) {
+      position: sticky;
+      inset-block-start: var(--header-block-size);
+      display: flex;
+      inline-size: 320px;
+      block-size: calc(100dvb - var(--header-block-size));
+
+      &.menu-mobile-only {
+        display: none;
+      }
+    }
+  }
+
+  .menu-open {
+    display: flex;
+  }
+
+  body:has(.menu-open) {
+    container-type: normal;
+  }
+
+  .header {
+    block-size: var(--header-block-size);
+    padding: 0 calc(var(--space-m) - var(--space-s));
+
+    @media (width >= 800px) {
+      display: none;
+    }
+  }
+
+  .menu-button {
+    display: inline-flex;
+    inline-size: fit-content;
+    padding: var(--space-2xs) var(--space-s);
+    margin-inline-start: calc(0px - var(--space-xs));
+    color: inherit;
+    background: transparent;
+    border: 0;
+    border-radius: var(--border-radius);
+    outline: none;
+    transition: background 300ms;
+
+    @media (hover: hover) {
+      &:hover {
+        background: var(--color-background-primary-hover);
+      }
+    }
+
+    &:focus-visible {
+      background: var(--color-overlay-brand);
+      box-shadow: 0 0 0 3px var(--color-border-brand);
+      transition: box-shadow 200ms;
+    }
+  }
+
+  html:has(.menu-open) {
+    overflow: hidden;
+
+    @media (width >= 800px) {
+      overflow: visible;
+    }
+  }
+</style>

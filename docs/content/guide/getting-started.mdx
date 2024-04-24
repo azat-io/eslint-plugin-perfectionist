@@ -1,0 +1,133 @@
+---
+title: Getting Started
+description: Get started with our ESLint Plugin Perfectionist by following this comprehensive guide. Learn how to install, configure, and use our tool to maintain a consistent and high-quality codebase
+keywords:
+  - eslint
+  - introduction
+  - eslint plugin
+  - coding standards
+  - code quality
+  - javascript linting
+  - code consistency
+  - plugin features
+  - installation guide
+  - configuration guide
+---
+
+import CodeTabs from '../../components/CodeTabs.svelte'
+import { dedent } from 'ts-dedent'
+
+# Getting Started
+
+Before you start, take a moment to support the project by giving us a star on [GitHub](https://github.com/azat-io/eslint-plugin-perfectionist).
+
+Your support helps the continued development and improvement of this project.
+
+## Installation
+
+Okay, let's get started. You'll first need to install [ESLint](https://eslint.org/):
+
+<CodeTabs
+  code={[
+    {
+      source: 'npm install --save-dev eslint',
+      name: 'npm',
+      value: 'npm',
+    },
+    {
+      source: 'pnpm add --save-dev eslint',
+      name: 'pnpm',
+      value: 'pnpm',
+    },
+    {
+      source: 'yarn add --dev eslint',
+      name: 'yarn',
+      value: 'yarn',
+    },
+    {
+      source: 'bun install --dev eslint',
+      name: 'bun',
+      value: 'bun',
+    },
+  ]}
+  type="package-manager"
+  client:load
+  lang="bash"
+/>
+
+Next, install `eslint-plugin-perfectionist`:
+
+<CodeTabs
+  code={[
+    {
+      source: 'npm install --save-dev eslint-plugin-perfectionist',
+      name: 'npm',
+      value: 'npm',
+    },
+    {
+      source: 'pnpm add --save-dev eslint-plugin-perfectionist',
+      name: 'pnpm',
+      value: 'pnpm',
+    },
+    {
+      source: 'yarn add --dev eslint-plugin-perfectionist',
+      name: 'yarn',
+      value: 'yarn',
+    },
+    {
+      source: 'bun install --dev eslint-plugin-perfectionist',
+      name: 'bun',
+      value: 'bun',
+    },
+  ]}
+  type="package-manager"
+  client:load
+  lang="bash"
+/>
+
+## Usage
+
+Add `perfectionist` to the plugins section of your ESLint configuration. Then configure the rules you want to use under the rules section.
+
+<CodeTabs
+  code={[
+    {
+      source: dedent`
+        // eslint.config.js
+        import perfectionist from 'eslint-plugin-perfectionist'
+
+        export default [
+          {
+            plugins: {
+              perfectionist,
+            },
+            rules: {
+              'perfectionist/sort-imports': 'error',
+            },
+          },
+        ]
+      `,
+      name: 'Flat Config',
+      value: 'flat',
+    },
+    {
+      source: dedent`
+        // .eslintrc.js
+        export default {
+          plugins: [
+            'perfectionist',
+          ],
+          rules: {
+            'perfectionist/sort-imports': 'error',
+          },
+        }
+      `,
+      name: 'Legacy Config',
+      value: 'legacy',
+    },
+
+]}
+type="config-type"
+client:load
+lang="js"
+/>

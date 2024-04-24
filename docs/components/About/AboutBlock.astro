@@ -1,0 +1,83 @@
+---
+import AboutElement from './AboutElement.astro'
+import Typography from '../Typography.astro'
+import Container from '../Container.astro'
+import Title from '../Title.astro'
+
+let data = [
+  {
+    description:
+      'Automatically fix all errors safely. No manual intervention needed!',
+    title: 'Fixable Rules',
+    icon: 'tool',
+  },
+  {
+    description:
+      'Achieve a consistent code style for better readability and maintenance.',
+    title: 'Code Uniformity',
+    icon: 'code',
+  },
+  {
+    description:
+      'Flexible configuration to match your preferences. Seamless editor integration.',
+    title: 'Easy to Use',
+    icon: 'rocket-ship',
+  },
+  {
+    description:
+      'Enjoy aesthetically pleasing code. Make it look really awesome.',
+    title: "It's Just Beautiful",
+    icon: 'color-palette',
+  },
+]
+---
+
+<section class="about">
+  <Container class="about-container" size="m">
+    <Title>ESLint Plugin</Title>
+    <Typography align="center" class="info" size="l" mbe="m">
+      Automatically sort and organize objects, imports, types, enums, and JSX
+      props. Ensure a clean and maintainable codebase with minimal effort.
+    </Typography>
+    <div class="data">
+      {data.map(item => <AboutElement {...item} />)}
+    </div>
+  </Container>
+
+  <style>
+    .about {
+      padding-block: 64px;
+      background: var(--color-background-secondary);
+
+      @container (inline-size >= 560px) {
+        padding-block: 64px 120px;
+      }
+    }
+
+    .about-container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .info {
+      max-inline-size: 768px;
+    }
+
+    .data {
+      display: grid;
+      grid-template-columns: repeat(var(--columns), 1fr);
+      gap: var(--space-l);
+      margin-block-start: var(--space-xl);
+      --columns: 1;
+
+      @container (inline-size >= 560px) {
+        --columns: 2;
+      }
+
+      @container (inline-size >= 1020px) {
+        --columns: 4;
+      }
+    }
+  </style>
+</section>

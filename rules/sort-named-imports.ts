@@ -99,7 +99,7 @@ export default createEslintRule<Options, MESSAGE_ID>({
         })
 
         let nodes: SortingNode[] = specifiers.map(specifier => {
-          let group
+          let group = 'unknown'
           let { name } = specifier.local
 
           if (specifier.type === 'ImportSpecifier') {

@@ -1,0 +1,86 @@
+---
+type Props = {
+  color: 'secondary' | 'primary'
+  target?: string
+  href?: string
+  id?: string
+} & ({ target?: string; href?: string; tag: 'a' } | { tag?: 'button' })
+
+let { tag = 'button', color, ...props } = Astro.props
+
+let Tag = tag
+---
+
+<Tag
+  class:list={[
+    'button',
+    {
+      'button-secondary': color === 'secondary',
+      'button-primary': color === 'primary',
+    },
+  ]}
+  {...props}
+>
+  <slot />
+</Tag>
+
+<style>
+  .button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    inline-size: 180px;
+    block-size: 48px;
+    padding: 0 var(--space-s);
+    font: var(--font-s);
+    font-weight: 500;
+    text-decoration: none;
+    border: none;
+    border-radius: var(--border-radius);
+    outline: none;
+    transition: all 200ms ease-in-out;
+
+    @media (width >= 480px) {
+      inline-size: 200px;
+    }
+
+    &:focus-visible {
+      text-decoration: none;
+      box-shadow: 0 0 0 3px var(--color-border-brand);
+    }
+
+    &:active {
+      transform: scale(95%);
+    }
+  }
+
+  .button-primary {
+    color: oklch(100% 0 0);
+    background: var(--color-background-brand);
+
+    &:focus-visible {
+      background: var(--color-background-brand-hover);
+    }
+
+    @media (hover: hover) {
+      &:hover {
+        background: var(--color-background-brand-hover);
+      }
+    }
+  }
+
+  .button-secondary {
+    color: var(--color-content-inverse);
+    background: var(--color-background-inverse);
+
+    &:focus-visible {
+      background: var(--color-background-inverse-hover);
+    }
+
+    @media (hover: hover) {
+      &:hover {
+        background: var(--color-background-inverse-hover);
+      }
+    }
+  }
+</style>

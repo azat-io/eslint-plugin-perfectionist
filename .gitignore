@@ -9,9 +9,8 @@ dist/
 .vscode/
 .vim/
 
-# VitePress
-docs/.vitepress/cache/
-docs/.vitepress/temp/
+# Astro
+.astro/
 
 # Test
 coverage/

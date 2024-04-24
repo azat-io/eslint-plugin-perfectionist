@@ -1,0 +1,334 @@
+---
+title: sort-classes
+description: Maintain a consistent order of class members with this ESLint rule. Improve readability and make it easier to navigate through your class structures
+shortDescription: Enforce sorted classes
+keywords:
+  - eslint
+  - sort classes
+  - class methods order
+  - eslint rule
+  - coding standards
+  - code quality
+  - javascript linting
+  - class members sorting
+---
+
+import CodeExample from '../../components/CodeExample.svelte'
+import CodeTabs from '../../components/CodeTabs.svelte'
+import { dedent } from 'ts-dedent'
+
+Enforce sorted class members.
+
+Organizing class members in a consistent order improves both readability and maintainability.
+
+This rule helps developers quickly locate class members and understand the overall structure of the class.
+
+By sorting class members systematically, confusion is minimized, and the code becomes more intuitive to navigate. This practice not only aids in individual productivity but also enhances team collaboration by establishing clear and predictable coding standards.
+
+## Try it out
+
+<CodeExample
+  alphabetical={dedent`
+    class User {
+      constructor(username: string, email: string, isActive: boolean) {
+        this.username = username
+        this.email = email
+        this.isActive = isActive
+        this.roles = []
+      }
+
+      activate() {
+        this.isActive = true
+      }
+
+      addRole(role: string) {
+        this.roles.push(role)
+      }
+
+      deactivate() {
+        this.isActive = false
+      }
+
+      getProfile() {
+        return {
+          username: this.username,
+          email: this.email,
+          isActive: this.isActive,
+          roles: this.roles,
+        }
+      }
+
+      removeRole(role: string) {
+        this.roles = this.roles.filter(r => r !== role)
+      }
+
+      setEmail(newEmail: string) {
+        this.email = newEmail
+      }
+    }
+  `}
+  lineLength={dedent`
+    class User {
+      constructor(username: string, email: string, isActive: boolean) {
+        this.username = username
+        this.email = email
+        this.isActive = isActive
+        this.roles = []
+      }
+
+      getProfile() {
+        return {
+          username: this.username,
+          email: this.email,
+          isActive: this.isActive,
+          roles: this.roles,
+        }
+      }
+
+      removeRole(role: string) {
+        this.roles = this.roles.filter(r => r !== role)
+      }
+
+      setEmail(newEmail: string) {
+        this.email = newEmail
+      }
+
+      addRole(role: string) {
+        this.roles.push(role)
+      }
+
+      deactivate() {
+        this.isActive = false
+      }
+
+      activate() {
+        this.isActive = true
+      }
+    }
+  `}
+  initial={dedent`
+    class User {
+      constructor(username: string, email: string, isActive: boolean) {
+        this.username = username
+        this.email = email
+        this.isActive = isActive
+        this.roles = []
+      }
+
+      addRole(role: string) {
+        this.roles.push(role)
+      }
+
+      deactivate() {
+        this.isActive = false
+      }
+
+      setEmail(newEmail: string) {
+        this.email = newEmail
+      }
+
+      activate() {
+        this.isActive = true
+      }
+
+      removeRole(role: string) {
+        this.roles = this.roles.filter(r => r !== role)
+      }
+
+      getProfile() {
+        return {
+          username: this.username,
+          email: this.email,
+          isActive: this.isActive,
+          roles: this.roles,
+        }
+      }
+    }
+  `}
+  client:load
+  lang="ts"
+/>
+
+## Options
+
+This rule accepts an options object with the following properties:
+
+```ts
+type Group =
+  | 'private-decorated-accessor-property'
+  | 'decorated-accessor-property'
+  | 'private-decorated-property'
+  | 'static-private-method'
+  | 'decorated-set-method'
+  | 'decorated-get-method'
+  | 'decorated-property'
+  | 'decorated-method'
+  | 'private-property'
+  | 'static-property'
+  | 'index-signature'
+  | 'private-method'
+  | 'static-method'
+  | 'constructor'
+  | 'get-method'
+  | 'set-method'
+  | 'property'
+  | 'unknown'
+  | 'method'
+
+interface Options {
+  type?: 'alphabetical' | 'natural' | 'line-length'
+  order?: 'asc' | 'desc'
+  'ignore-case'?: boolean
+  groups?: (Group | Group[])[]
+  'custom-groups'?: { [key: string]: string[] | string }
+}
+```
+
+### type
+
+<sub>(default: `'alphabetical'`)</sub>
+
+- `alphabetical` — sort alphabetically.
+- `natural` — sort in natural order.
+- `line-length` — sort by code line length.
+
+### order
+
+<sub>(default: `'asc'`)</sub>
+
+- `asc` — enforce properties to be in ascending order.
+- `desc` — enforce properties to be in descending order.
+
+### ignore-case
+
+<sub>(default: `false`)</sub>
+
+Only affects alphabetical and natural sorting. When `true` the rule ignores the case-sensitivity of the order.
+
+### groups
+
+<sub>(default: `['property', 'constructor', 'method', 'unknown']`)</sub>
+
+You can set up a list of class members groups for sorting. Groups can be combined.
+
+If you use [one of the configs](/configs/) exported by this plugin, you get the following import grouping settings:
+
+```json
+{
+  "groups": [
+    "index-signature",
+    "static-property",
+    "private-property",
+    "property",
+    "constructor",
+    "static-method",
+    "private-method",
+    "static-private-method",
+    "method",
+    ["get-method", "set-method"],
+    "unknown"
+  ]
+}
+```
+
+### custom-groups
+
+<sub>(default: `{}`)</sub>
+
+You can define your own groups for object keys. The [minimatch](https://github.com/isaacs/minimatch) library is used for pattern matching.
+
+Example:
+
+```json
+{
+  "custom-groups": {
+    "top": "id"
+  }
+}
+```
+
+## Usage
+
+<CodeTabs
+  code={[
+    {
+      source: dedent`
+        // eslint.config.js
+        import perfectionist from 'eslint-plugin-perfectionist'
+
+        export default [
+          {
+            plugins: {
+              perfectionist,
+            },
+            rules: {
+              'perfectionist/sort-classes': [
+                'error',
+                {
+                  type: 'natural',
+                  order: 'asc',
+                  groups: [
+                    'index-signature',
+                    'static-property',
+                    'private-property',
+                    'property',
+                    'constructor',
+                    'static-method',
+                    'private-method',
+                    'method',
+                  ],
+                },
+              ],
+            },
+          },
+        ]
+      `,
+      name: 'Flat Config',
+      value: 'flat',
+    },
+    {
+      source: dedent`
+        // .eslintrc.js
+        export default {
+          plugins: [
+            'perfectionist',
+          ],
+          rules: {
+            'perfectionist/sort-classes': [
+              'error',
+              {
+                type: 'natural',
+                order: 'asc',
+                groups: [
+                  'index-signature',
+                  'static-property',
+                  'private-property',
+                  'property',
+                  'constructor',
+                  'static-method',
+                  'private-method',
+                  'method',
+                ],
+              },
+            ],
+          },
+        }
+      `,
+      name: 'Legacy Config',
+      value: 'legacy',
+    },
+
+]}
+type="config-type"
+client:load
+lang="ts"
+/>
+
+## Version
+
+This rule was introduced in [v0.11.0](https://github.com/azat-io/eslint-plugin-perfectionist/releases/tag/v0.11.0).
+
+## Resources
+
+- [Rule source](https://github.com/azat-io/eslint-plugin-perfectionist/blob/main/rules/sort-classes.ts)
+- [Test source](https://github.com/azat-io/eslint-plugin-perfectionist/blob/main/test/sort-classes.test.ts)

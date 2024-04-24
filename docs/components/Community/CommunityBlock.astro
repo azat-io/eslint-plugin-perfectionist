@@ -1,0 +1,89 @@
+---
+import { execa } from 'execa'
+
+import Typography from '../Typography.astro'
+import Container from '../Container.astro'
+import Title from '../Title.astro'
+
+let { stdout: releases } = await execa('git tag | wc -l', {
+  shell: true,
+})
+
+let stars = '1.7k'
+let downloads = '1M'
+---
+
+<section class="section">
+  <Container class="container">
+    <div>
+      <Title align="start" mbe="l">Loved by Community</Title>
+      <div class="community">
+        <div class="element">
+          <Typography size="xl" tag="h3">{stars}</Typography>
+          <Typography>Stars on GitHub</Typography>
+        </div>
+        <div class="element">
+          <Typography size="xl" tag="h3">{downloads}</Typography>
+          <Typography>Monthly Downloads</Typography>
+        </div>
+        <div class="element">
+          <Typography size="xl" tag="h3">{releases}</Typography>
+          <Typography>Versions released</Typography>
+        </div>
+      </div>
+    </div>
+
+    <div>
+      <Title align="start" mbe="l">Focus on Buisness Logic</Title>
+      <Typography align="start" size="m" mbe="m">
+        Spend less time on code formatting and more on creating value. Our tool
+        ensures your code stays clean and organized.
+      </Typography>
+    </div>
+  </Container>
+</section>
+
+<style>
+  .section {
+    padding-block: 64px;
+    background: var(--color-background-primary);
+
+    @container (inline-size >= 560px) {
+      padding-block: 120px;
+    }
+  }
+
+  .container {
+    display: grid;
+    grid-template-columns: var(--columns);
+    gap: var(--gap);
+    --columns: 1fr;
+    --gap: calc(var(--space-xl) * 2);
+
+    @container (inline-size >= 1200px) {
+      --columns: minmax(0, 3fr) minmax(0, 2fr);
+      --gap: var(--space-xl);
+    }
+  }
+
+  .element {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-xs);
+    padding: var(--space-s);
+    background: var(--color-background-primary-hover);
+    border-radius: var(--border-radius);
+  }
+
+  .community {
+    display: grid;
+    grid-template-columns: repeat(var(--columns), 1fr);
+    gap: var(--space-l);
+    margin-inline: auto;
+    --columns: 1;
+
+    @container (inline-size >= 560px) {
+      --columns: 3;
+    }
+  }
+</style>

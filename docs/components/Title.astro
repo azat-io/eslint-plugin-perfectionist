@@ -1,0 +1,20 @@
+---
+import Typography from './Typography.astro'
+
+interface Props {
+  mbe?: '2xs' | 'xs' | 'xl' | 's' | 'm' | 'l'
+  align?: 'center' | 'start' | 'end'
+  class?: string
+}
+
+let {
+  class: className = '',
+  align = 'center',
+  mbe = 'l',
+  ...props
+} = Astro.props
+---
+
+<Typography class={className} size="3xl" tag="h2" {align} {mbe} {...props}>
+  <slot />
+</Typography>

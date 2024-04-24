@@ -1,0 +1,39 @@
+---
+interface Props {
+  class?: string
+  title: string
+}
+
+let { class: className, title, ...props } = Astro.props
+---
+
+<figure class:list={['wrapper', className]} {...props}>
+  <figcaption class="caption">{title}</figcaption>
+  <slot />
+</figure>
+
+<style>
+  .wrapper {
+    position: relative;
+    inline-size: fit-content;
+    block-size: 320px;
+    padding: calc(var(--space-m) + var(--space-s)) var(--space-m) var(--space-m);
+    margin: 0;
+    background: var(--color-background-secondary-hover);
+    border-radius: var(--border-radius);
+  }
+
+  .caption {
+    position: absolute;
+    inset-block-start: 0;
+    inset-inline-start: 0;
+    padding: 4px var(--space-xs);
+    font: var(--font-xs);
+    font-family: var(--font-family-title);
+    line-height: 1;
+    color: oklch(100% 0 0);
+    background: var(--color-background-brand);
+    border-start-start-radius: var(--border-radius);
+    border-end-end-radius: var(--border-radius);
+  }
+</style>

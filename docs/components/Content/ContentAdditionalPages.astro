@@ -1,0 +1,110 @@
+---
+import ContentFooterLink from './ContentFooterLink.astro'
+import { pages } from '../../utils/pages'
+
+interface Page {
+  redirect?: boolean
+  title: string
+  url: string
+}
+
+let { pathname } = Astro.url
+let activeLink = pathname.replace(/\.html$/, '')
+
+let flatPages: Page[] = pages
+  .reduce(
+    (accumulator: Page[], page: { links: Page[] } & Page) => [
+      ...accumulator,
+      {
+        redirect: page.redirect ?? false,
+        title: page.title,
+        url: page.url,
+      },
+      ...page.links,
+    ],
+    [],
+  )
+  .filter(page => !page.redirect)
+
+let currentPageIndex = flatPages.findIndex(page => page.url === activeLink)
+let previousPage =
+  currentPageIndex === 0 ? null : flatPages[currentPageIndex - 1]
+let nextPage =
+  currentPageIndex === flatPages.length - 1
+    ? null
+    : flatPages[currentPageIndex + 1]
+---
+
+<div class="additional">
+  {
+    previousPage ? (
+      <div class="previous-wrapper">
+        <ContentFooterLink
+          url={previousPage.url}
+          title="Previous page"
+          icon="arrow-left"
+        >
+          {previousPage.title}
+        </ContentFooterLink>
+      </div>
+    ) : (
+      <div class="previous-empty" />
+    )
+  }
+  {
+    nextPage && (
+      <div class="next-wrapper">
+        <ContentFooterLink
+          url={nextPage.url}
+          icon="arrow-right"
+          title="Next page"
+          class="next"
+        >
+          {nextPage.title}
+        </ContentFooterLink>
+      </div>
+    )
+  }
+</div>
+
+<style>
+  .additional {
+    display: grid;
+    grid-template-columns: repeat(var(--columns), 1fr);
+    gap: var(--space-l);
+    inline-size: 100%;
+    --columns: 1;
+
+    @container (inline-size >= 600px) {
+      --columns: 2;
+    }
+  }
+
+  .previous-wrapper {
+    text-align: start;
+  }
+
+  .previous-empty {
+    display: none;
+
+    @container (inline-size >= 600px) {
+      display: block;
+    }
+  }
+
+  .next-wrapper {
+    text-align: start;
+
+    @container (inline-size >= 600px) {
+      text-align: end;
+    }
+  }
+
+  .next {
+    flex-direction: row;
+
+    @container (inline-size >= 600px) {
+      flex-direction: row-reverse;
+    }
+  }
+</style>

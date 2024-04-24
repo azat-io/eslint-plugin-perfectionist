@@ -1,0 +1,65 @@
+---
+title: recommended-line-length
+description: Check out the recommended line-length ESLint configuration to maintain optimal line lengths in your code. Enhance readability and consistency with this setup
+shortDescription: All plugin rules with sorting by line length in descending order
+keywords:
+  - eslint
+  - recommended line length config
+  - eslint configuration
+  - coding standards
+  - code quality
+  - javascript linting
+  - line length sorting
+  - line length configuration
+  - eslint-plugin-perfectionist
+  - eslint line length
+  - line length rules
+  - line length configuration
+  - line length settings
+  - line length options
+  - line length best practices
+  - line length guidelines
+  - line length recommendations
+---
+
+import CodeTabs from '../../components/CodeTabs.svelte'
+import { dedent } from 'ts-dedent'
+
+Configuration for the `eslint-plugin-perfectionist` plugin, which provides all plugin rules with preset options: sorting by string length in descending order.
+
+This configuration will make your code prettier and more pleasing to the eye.
+
+## Usage
+
+<CodeTabs
+  code={[
+    {
+      source: dedent`
+        // eslint.config.js
+        import perfectionistLineLength from 'eslint-plugin-perfectionist/configs/recommended-line-length'
+
+        export default [
+          perfectionistLineLength,
+        ]
+      `,
+      name: 'Flat Config',
+      value: 'flat',
+    },
+    {
+      source: dedent`
+        // .eslintrc.js
+        export default {
+          extends: [
+            'plugin:perfectionist/recommended-line-length',
+          ],
+        }
+      `,
+      name: 'Legacy Config',
+      value: 'legacy',
+    },
+
+]}
+type="config-type"
+client:load
+lang="js"
+/>

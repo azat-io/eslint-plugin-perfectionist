@@ -1,0 +1,175 @@
+---
+title: sort-exports
+description: Enforce a consistent order of exports to enhance code readability and maintainability. Use this ESLint rule to keep your exports well-organized
+shortDescription: Enforce sorted exports
+keywords:
+  - eslint
+  - sort exports
+  - eslint rule
+  - coding standards
+  - code quality
+  - javascript linting
+  - module exports sorting
+---
+
+import CodeExample from '../../components/CodeExample.svelte'
+import CodeTabs from '../../components/CodeTabs.svelte'
+import { dedent } from 'ts-dedent'
+
+Enforce sorted exports.
+
+Sorting exports in a consistent manner can greatly enhance the readability and maintainability of your codebase. By alphabetically ordering exports, developers can quickly identify and correct any missing or incorrect exports.
+
+This rule promotes a structured approach to exporting modules, which simplifies code management and improves the overall quality of the project.
+
+## Try it out
+
+<CodeExample
+  alphabetical={dedent`
+    export { createUser } from './actions/create-user'
+    export { deleteUser } from './actions/delete-user'
+    export { fetchUser } from './actions/fetch-user'
+    export { updateUser } from './actions/update-user'
+    export { Footer } from './components/Footer'
+    export { Header } from './components/Header'
+    export { MainContent } from './components/MainContent'
+    export { Sidebar } from './components/Sidebar'
+    export { calculateAge } from './utils/calculate-age'
+    export { debounce } from './utils/debounce'
+    export { formatDate } from './utils/format-date'
+    export { generateUUID } from './utils/generate-uuid'
+    export { parseQueryString } from './utils/parse-query-string'
+  `}
+  lineLength={dedent`
+    export { parseQueryString } from './utils/parse-query-string'
+    export { MainContent } from './components/MainContent'
+    export { calculateAge } from './utils/calculate-age'
+    export { generateUUID } from './utils/generate-uuid'
+    export { createUser } from './actions/create-user'
+    export { deleteUser } from './actions/delete-user'
+    export { updateUser } from './actions/update-user'
+    export { fetchUser } from './actions/fetch-user'
+    export { formatDate } from './utils/format-date'
+    export { Sidebar } from './components/Sidebar'
+    export { Footer } from './components/Footer'
+    export { Header } from './components/Header'
+    export { debounce } from './utils/debounce'
+  `}
+  initial={dedent`
+    export { MainContent } from './components/MainContent'
+    export { calculateAge } from './utils/calculateAge'
+    export { Sidebar } from './components/Sidebar'
+    export { deleteUser } from './actions/deleteUser'
+    export { Footer } from './components/Footer'
+    export { debounce } from './utils/debounce'
+    export { generateUUID } from './utils/generateUUID'
+    export { formatDate } from './utils/formatDate'
+    export { updateUser } from './actions/updateUser'
+    export { fetchUser } from './actions/fetchUser'
+    export { Header } from './components/Header'
+    export { createUser } from './actions/createUser'
+    export { parseQueryString } from './utils/parseQueryString'
+  `}
+  client:load
+  lang="ts"
+/>
+
+## Options
+
+This rule accepts an options object with the following properties:
+
+```ts
+interface Options {
+  type?: 'alphabetical' | 'natural' | 'line-length'
+  order?: 'asc' | 'desc'
+  'ignore-case'?: boolean
+}
+```
+
+### type
+
+<sub>(default: `'alphabetical'`)</sub>
+
+- `alphabetical` — sort alphabetically.
+- `natural` — sort in natural order.
+- `line-length` — sort by code line length.
+
+### order
+
+<sub>(default: `'asc'`)</sub>
+
+- `asc` — enforce properties to be in ascending order.
+- `desc` — enforce properties to be in descending order.
+
+### ignore-case
+
+<sub>(default: `false`)</sub>
+
+Only affects alphabetical and natural sorting. When `true` the rule ignores the case-sensitivity of the order.
+
+## Usage
+
+<CodeTabs
+  code={[
+    {
+      source: dedent`
+        // eslint.config.js
+        import perfectionist from 'eslint-plugin-perfectionist'
+
+        export default [
+          {
+            plugins: {
+              perfectionist,
+            },
+            rules: {
+              'perfectionist/sort-exports': [
+                'error',
+                {
+                  type: 'natural',
+                  order: 'asc',
+                },
+              ],
+            },
+          },
+        ]
+      `,
+      name: 'Flat Config',
+      value: 'flat',
+    },
+    {
+      source: dedent`
+        // .eslintrc.js
+        export default {
+          plugins: [
+            'perfectionist',
+          ],
+          rules: {
+            'perfectionist/sort-exports': [
+              'error',
+              {
+                type: 'natural',
+                order: 'asc',
+              },
+            ],
+          },
+        }
+      `,
+      name: 'Legacy Config',
+      value: 'legacy',
+    },
+
+]}
+type="config-type"
+client:load
+lang="ts"
+/>
+
+
+## Version
+
+This rule was introduced in [v1.2.0](https://github.com/azat-io/eslint-plugin-perfectionist/releases/tag/v1.2.0).
+
+## Resources
+
+- [Rule source](https://github.com/azat-io/eslint-plugin-perfectionist/blob/main/rules/sort-exports.ts)
+- [Test source](https://github.com/azat-io/eslint-plugin-perfectionist/blob/main/test/sort-exports.test.ts)

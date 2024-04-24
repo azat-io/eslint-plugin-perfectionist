@@ -1,0 +1,71 @@
+---
+import CodeStyleFigureOutput from './CodeStyleFigureOutput.astro'
+import CodeStyleFigureInput from './CodeStyleFigureInput.astro'
+import Typography from '../Typography.astro'
+import Container from '../Container.astro'
+import Title from '../Title.astro'
+---
+
+<section class="preview">
+  <Container class="container" size="m">
+    <div>
+      <Title class="title" align="start"> Identical Code Style </Title>
+      <Typography class="description" mbe="m">
+        Consistent code style fosters collaboration and improves quality.
+        Uniform style makes code readable and manageable, enabling quick
+        understanding and contribution.
+      </Typography>
+      <Typography class="description">
+        Our tool helps enforce these standards, ensuring that your codebase
+        stays neat and organized.
+      </Typography>
+    </div>
+    <div class="figures">
+      <CodeStyleFigureInput class="figure-start" />
+      <CodeStyleFigureOutput class="figure-end" />
+    </div>
+  </Container>
+</section>
+
+<style>
+  .preview {
+    padding-block: 64px;
+    background: var(--color-background-secondary);
+
+    @container (inline-size >= 560px) {
+      padding-block: 120px;
+    }
+  }
+
+  .container {
+    display: grid;
+    grid-template-columns: var(--columns);
+    gap: var(--gap);
+    --columns: 1fr;
+    --gap: calc(var(--space-xl) * 2);
+
+    @container (inline-size >= 1080px) {
+      --columns: minmax(0, 2fr) minmax(0, 3fr);
+      --gap: var(--space-xl);
+    }
+  }
+
+  .figures {
+    display: none;
+
+    @container (inline-size >= 680px) {
+      display: flex;
+      justify-content: start;
+      inline-size: 100%;
+    }
+
+    @container (inline-size >= 1080px) {
+      justify-content: end;
+    }
+  }
+
+  .figure-end {
+    margin-block-start: var(--space-l);
+    margin-inline-start: -80px;
+  }
+</style>

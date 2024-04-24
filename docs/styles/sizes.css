@@ -1,0 +1,11 @@
+:root {
+  --size-icon-xs: clamp(1rem, 0.9432rem + 0.23vi, 1.125rem);
+  --size-icon-s: clamp(1.25rem, 1.19rem + 0.23vi, 1.375rem);
+  --size-icon-m: clamp(1.625rem, 1.56rem + 0.23vi, 1.75rem);
+  --size-icon-l: clamp(2.25rem, 2.08rem + 0.68vi, 2.625rem);
+  --header-block-size: 64px;
+
+  @media (width >= 800px) {
+    --header-block-size: 76px;
+  }
+}

@@ -1,0 +1,144 @@
+---
+import { ViewTransitions } from 'astro:transitions'
+
+import '../styles/base.css'
+import '../styles/fonts.css'
+import '../styles/sizes.css'
+import '../styles/colors.css'
+import '../styles/spaces.css'
+import 'shiki-magic-move/style.css'
+
+interface Props {
+  type?: 'article' | 'website'
+  description: string
+  keywords?: string[]
+  title?: string
+}
+
+let canonicalURL = new URL(Astro.url.pathname, Astro.site)
+
+let { type = 'website', description, keywords, title } = Astro.props
+let websiteName = 'ESLint Plugin Perfectionist'
+
+let pageTitle = title ? `${title} | ${websiteName}` : websiteName
+
+let image = `${Astro.url.pathname === '/' ? '' : Astro.url.pathname.replace(/\.html$/, '')}/open-graph.png`
+let author = 'Azat S.'
+---
+
+<head>
+  <meta charset="utf-8" />
+  <meta content="width=device-width,initial-scale=1" name="viewport" />
+  <meta name="theme-color" content="#232428" />
+
+  <link href="/favicon.ico" sizes="any" rel="icon" />
+  <link type="image/svg+xml" href="/favicon.svg" rel="icon" />
+  <link href="/apple-touch-icon.png" rel="apple-touch-icon" />
+  <link href="/manifest.webmanifest" rel="manifest" />
+
+  <link
+    href="/fonts/space-grotesk-medium.woff2"
+    type="font/woff2"
+    rel="preload"
+    crossorigin
+    as="font"
+  />
+  <link
+    href="/fonts/space-grotesk-bold.woff2"
+    type="font/woff2"
+    rel="preload"
+    crossorigin
+    as="font"
+  />
+  <link
+    href="/fonts/inter-regular.woff2"
+    type="font/woff2"
+    rel="preload"
+    crossorigin
+    as="font"
+  />
+  <link
+    href="/fonts/inter-bold.woff2"
+    type="font/woff2"
+    rel="preload"
+    crossorigin
+    as="font"
+  />
+  <link
+    href="/fonts/space-mono-regular.woff2"
+    type="font/woff2"
+    rel="preload"
+    crossorigin
+    as="font"
+  />
+
+  <link href="/sitemap-index.xml" rel="sitemap" />
+  <link href={canonicalURL} rel="canonical" />
+
+  <title>{pageTitle}</title>
+  <meta content={pageTitle} name="title" />
+  <meta content={description} name="description" />
+  {
+    keywords && keywords.length > 0 && (
+      <meta content={keywords.join(', ')} name="keywords" />
+    )
+  }
+  <meta content={author} name="author" />
+
+  <meta property="og:locale" content="en" />
+  <meta property="og:type" content={type} />
+  <meta
+    content={Astro.url.toString().replace(/\.html/, '')}
+    property="og:url"
+  />
+  <meta property="og:title" content={pageTitle} />
+  <meta property="og:description" content={description} />
+  <meta property="og:image" content={image} />
+  <meta property="og:image:type" content="image/png" />
+  <meta property="og:image:width" content="1200" />
+  <meta property="og:image:height" content="630" />
+  <meta content={`Cover for ${title}`} property="og:image:alt" />
+
+  {
+    type === 'article' && (
+      <>
+        <meta property="article:author" content={author} />
+        {keywords?.map(keyword => (
+          <meta property="article:tag" content={keyword} />
+        ))}
+        <meta property="article:section" content="Technology" />
+        <meta property="article:opinion" content="true" />
+      </>
+    )
+  }
+
+  <meta content="summary_large_image" property="twitter:card" />
+  <meta property="twitter:url" content={Astro.url} />
+  <meta name="twitter:creator" content="@azat_io_en" />
+  <meta property="twitter:title" content={pageTitle} />
+  <meta property="twitter:description" content={description} />
+  <meta property="twitter:image" content={image} />
+
+  <script is:inline>
+    let initialize = () => {
+      let theme
+      if (localStorage.getItem('theme') === 'light') {
+        theme = 'light'
+      } else if (localStorage.getItem('theme') === 'dark') {
+        theme = 'dark'
+      } else {
+        let systemTheme = window.matchMedia('(prefers-color-scheme: dark)')
+          .matches
+          ? 'dark'
+          : 'light'
+        theme = systemTheme
+      }
+      document.documentElement.setAttribute('data-theme', theme)
+      localStorage.setItem('theme', theme)
+    }
+    initialize()
+    document.addEventListener('astro:after-swap', initialize)
+  </script>
+
+  <ViewTransitions />
+</head>

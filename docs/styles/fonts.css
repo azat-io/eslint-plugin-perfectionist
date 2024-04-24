@@ -1,0 +1,102 @@
+@font-face {
+  font-family: Inter;
+  font-weight: 400;
+  src: url('/fonts/inter-regular.woff2');
+  font-display: swap;
+}
+
+@font-face {
+  font-family: Inter;
+  font-weight: 700;
+  src: url('/fonts/inter-bold.woff2');
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Space Grotesk';
+  font-weight: 500;
+  src: url('/fonts/space-grotesk-medium.woff2');
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Space Grotesk';
+  font-weight: 700;
+  src: url('/fonts/space-grotesk-bold.woff2');
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Mono Punctuators';
+  font-weight: 400;
+  src: url('/fonts/consolas.woff2');
+  font-display: swap;
+  unicode-range: U+40, U+7B, U+7D, U+28, U+29;
+}
+
+@font-face {
+  font-family: 'Space Mono';
+  src: url('/fonts/space-mono-regular.woff2');
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Inter Fallback';
+  font-style: normal;
+  font-weight: 400;
+  src: local('Arial');
+  size-adjust: 107.64%;
+  ascent-override: 90%;
+  descent-override: 22.43%;
+  line-gap-override: 0%;
+}
+
+@font-face {
+  font-family: 'Space Grotesk Fallback';
+  font-style: normal;
+  font-weight: 400;
+  src: local('Arial');
+  size-adjust: 110.89%;
+  ascent-override: 88.74%;
+  descent-override: 26.33%;
+  line-gap-override: 0%;
+}
+
+@font-face {
+  font-family: 'Space Mono Fallback';
+  font-style: normal;
+  font-weight: 400;
+  src: local('Courier New');
+  size-adjust: 101.98%;
+  ascent-override: 109.82%;
+  descent-override: 35.4%;
+  line-gap-override: 0%;
+}
+
+:root {
+  --font-family-base: 'Inter', 'Inter Fallback', sans-serif;
+  --font-family-title: 'Space Grotesk', 'Space Grotesk Fallback', sans-serif;
+  --font-family-code: 'Mono Punctuators', 'Space Mono', 'Space Mono Fallback',
+    monospace;
+
+  --font-size-2xs: 0.95rem;
+  --font-size-xs: clamp(1.03rem, -0.15vi + 1.07rem, 0.95rem);
+  --font-size-s: clamp(1.06rem, -0.12vi + 1.09rem, 1rem);
+  --font-size-m: clamp(1.09rem, 0.04vi + 1.08rem, 1.12rem);
+  --font-size-l: clamp(1.13rem, 0.23vi + 1.07rem, 1.25rem);
+  --font-size-xl: clamp(1.16rem, 0.44vi + 1.05rem, 1.4rem);
+  --font-size-2xl: clamp(1.23rem, 0.96vi + 0.99rem, 1.76rem);
+  --font-size-3xl: clamp(1.5rem, 1.2vi + 1.2rem, 2.16rem);
+  --font-size-4xl: clamp(2.06rem, 1.29vi + 1.74rem, 2.76rem);
+  --font-size-code: clamp(0.88rem, 0.11vi + 0.85rem, 0.94rem);
+
+  --font-xs: 400 var(--font-size-xs) / 1.65 var(--font-family-base);
+  --font-s: 400 var(--font-size-s) / 1.75 var(--font-family-base);
+  --font-m: 400 var(--font-size-m) / 1.75 var(--font-family-base);
+  --font-l: 400 var(--font-size-l) / 1.75 var(--font-family-base);
+  --font-xl: 600 var(--font-size-xl) / 1.75 var(--font-family-title);
+  --font-2xl: 600 var(--font-size-2xl) / 1.5 var(--font-family-title);
+  --font-3xl: 600 var(--font-size-3xl) / 1.5 var(--font-family-title);
+  --font-4xl: 600 var(--font-size-4xl) / 1.5 var(--font-family-title);
+  --font-code: 400 var(--font-size-code) / 1.7 var(--font-family-code);
+}

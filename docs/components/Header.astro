@@ -1,0 +1,147 @@
+---
+import SkipToContent from './SkipToContent.astro'
+import Navigation from './Navigation.astro'
+import Icon from './Icon.astro'
+import Logo from './Logo.astro'
+
+interface Props {
+  border?: boolean
+}
+
+let { border = false } = Astro.props
+---
+
+<header class:list={['header', border && 'border']}>
+  <SkipToContent />
+  <div class="home">
+    <button aria-label="Toggle navigation" class="menu-button" id="menu-button">
+      <Icon name="menu" size="m" />
+    </button>
+    <a aria-label="Perfectionist home page" class="home-link" href="/">
+      <Logo class="logo" />
+      <span class="title">Perfectionist</span>
+    </a>
+  </div>
+  <Navigation />
+</header>
+
+<script>
+  import { toggleMenu } from '../stores/menu-open'
+
+  let initMenu = () => {
+    document
+      .getElementById('menu-button')!
+      .addEventListener('click', toggleMenu)
+  }
+
+  document.addEventListener('astro:after-swap', initMenu)
+  initMenu()
+</script>
+
+<script>
+  let initHeader = () => {
+    let header = document.querySelector('.header')!
+
+    document.addEventListener('scroll', () => {
+      let scrollY = window.scrollY
+
+      if (!header.classList.contains('border')) {
+        if (scrollY > 24) {
+          header.classList.add('scroll')
+        } else {
+          header.classList.remove('scroll')
+        }
+      }
+    })
+  }
+
+  document.addEventListener('astro:after-swap', initHeader)
+  initHeader()
+</script>
+
+<style>
+  .header {
+    position: sticky;
+    inset-block-start: 0;
+    z-index: 2;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    block-size: var(--header-block-size);
+    padding: var(--space-s) var(--space-m);
+    color: var(--color-content-primary);
+    background: var(--color-background-primary);
+    container-type: inline-size;
+    border-block-end: 1px solid transparent;
+  }
+
+  .scroll {
+    transition: border-block-end-color 300ms;
+  }
+
+  .border,
+  .scroll {
+    border-block-end-color: var(--color-border-primary);
+  }
+
+  .home {
+    display: flex;
+    align-items: center;
+  }
+
+  .menu-button {
+    display: flex;
+    padding: var(--space-2xs) var(--space-s);
+    margin-inline-start: calc(0px - var(--space-xs));
+    color: inherit;
+    background: transparent;
+    border: 0;
+    border-radius: var(--border-radius);
+    outline: none;
+    transition: background 300ms;
+
+    @media (width >= 800px) {
+      display: none;
+    }
+
+    @media (hover: hover) {
+      &:hover {
+        background: var(--color-background-primary-hover);
+      }
+    }
+
+    &:focus-visible {
+      background: var(--color-overlay-brand);
+      box-shadow: 0 0 0 3px var(--color-border-brand);
+      transition: box-shadow 200ms;
+    }
+  }
+
+  .home-link {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+    padding: var(--space-2xs) var(--space-2xs);
+    color: inherit;
+    text-decoration: none;
+    outline: none;
+  }
+
+  .logo {
+    inline-size: 36px;
+    block-size: 36px;
+    padding: 2px;
+  }
+
+  .title {
+    display: none;
+
+    @media (width >= 800px) {
+      display: block;
+      font-family: var(--font-family-title);
+      font-size: 20px;
+      font-weight: 500;
+      line-height: 1;
+    }
+  }
+</style>

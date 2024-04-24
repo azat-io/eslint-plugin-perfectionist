@@ -1,0 +1,125 @@
+---
+import { repository } from '../../package.json'
+import Icon from './Icon.astro'
+---
+
+<nav class="navigation">
+  <ul class="list">
+    <li class="item item-text">
+      <a href="/guide/introduction" class="link">Guide</a>
+    </li>
+    <li class="item item-text">
+      <a href="/configs" class="link">Configs</a>
+    </li>
+    <li class="item item-text">
+      <a href="/rules" class="link">Rules</a>
+    </li>
+    <li>
+      <hr class="hr" />
+    </li>
+    <li class="item">
+      <button aria-label="Toggle theme" id="toggle-theme" class="link">
+        <Icon class="icon icon-dark" name="sun" />
+        <Icon class="icon icon-light" name="moon" />
+      </button>
+    </li>
+    <li>
+      <hr class="hr" />
+    </li>
+    <li class="item">
+      <a
+        href={`https://github.com/${repository}`}
+        aria-label="GitHub"
+        target="_blank"
+        class="link"
+      >
+        <Icon name="github" class="icon" />
+      </a>
+    </li>
+  </ul>
+</nav>
+
+<script>
+  import { toggleTheme } from '../stores/theme'
+
+  let initToggleTheme = () => {
+    document
+      .getElementById('toggle-theme')!
+      .addEventListener('click', toggleTheme)
+  }
+
+  document.addEventListener('astro:after-swap', initToggleTheme)
+  initToggleTheme()
+</script>
+
+<style>
+  .navigation {
+    display: flex;
+  }
+
+  .list {
+    display: flex;
+    gap: var(--space-2xs);
+    align-items: center;
+    padding-inline-start: 0;
+    margin-block: 0;
+    font: var(--font-s);
+    list-style-type: none;
+  }
+
+  .link {
+    display: flex;
+    padding: var(--space-2xs) var(--space-s);
+    color: var(--color-content-primary);
+    text-decoration: none;
+    background: transparent;
+    border: 0;
+    border-radius: var(--border-radius);
+    outline: none;
+    transition: background 300ms;
+
+    @media (hover: hover) {
+      &:hover {
+        background: var(--color-background-primary-hover);
+      }
+    }
+
+    &:focus-visible {
+      background: var(--color-overlay-brand);
+      box-shadow: 0 0 0 3px var(--color-border-brand);
+      transition: box-shadow 200ms;
+    }
+  }
+
+  .hr,
+  .item-text {
+    display: none;
+  }
+
+  .icon-dark {
+    display: none;
+  }
+
+  :global([data-theme='dark']) {
+    .icon-dark {
+      display: block;
+    }
+
+    .icon-light {
+      display: none;
+    }
+  }
+
+  @media (width >= 800px) {
+    .hr {
+      block-size: var(--space-l);
+      border: 0;
+      border-inline-start: 1px solid var(--color-border-inverse);
+    }
+
+    .hr,
+    .item-text {
+      display: block;
+    }
+  }
+</style>

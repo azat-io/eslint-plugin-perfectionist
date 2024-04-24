@@ -1,0 +1,129 @@
+---
+import Typography from './Typography.astro'
+import Container from './Container.astro'
+import Button from './Button.astro'
+import Logo from './Logo.astro'
+---
+
+<main class="hero">
+  <Container class="hero-content">
+    <Logo class="logo" />
+    <Typography size="4xl" tag="h1" bold>Perfectionist</Typography>
+    <Typography size="l">Take Your Code to a Beauty Salon</Typography>
+    <div class="button-group">
+      <Button href="/guide/getting-started" color="primary" tag="a">
+        Get Started
+      </Button>
+      <Button
+        href="https://github.com/azat-io/eslint-plugin-perfectionist"
+        color="secondary"
+        target="_blank"
+        tag="a"
+      >
+        View on GitHub
+      </Button>
+    </div>
+  </Container>
+  <div class="lines lines-start">
+    <div class="line line-start line-l"></div>
+    <div class="line line-start line-m"></div>
+    <div class="line line-start line-s"></div>
+  </div>
+  <div class="lines lines-end">
+    <div class="line line-end line-l"></div>
+    <div class="line line-end line-m"></div>
+    <div class="line line-end line-s"></div>
+  </div>
+</main>
+
+<style>
+  :root {
+    --line-margin: clamp(15.625rem, 18.75vi + 10rem, 25rem);
+    --line-step: clamp(1.5rem, 9.5vi + -1.35rem, 6.25rem);
+  }
+
+  .hero {
+    position: relative;
+    padding-block: calc(var(--space-l) * 2) calc(var(--space-xl) * 2);
+    color: var(--color-content-primary);
+    background: var(--color-background-primary);
+    outline: none;
+
+    @container (inline-size >= 560px) {
+      padding-block-start: var(--space-l);
+    }
+  }
+
+  .hero-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+  }
+
+  .logo {
+    inline-size: 160px;
+    block-size: 160px;
+
+    @container (inline-size >= 480px) {
+      inline-size: 200px;
+      block-size: 200px;
+    }
+  }
+
+  .button-group {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    margin-block-start: var(--space-l);
+
+    @container (inline-size >= 480px) {
+      flex-direction: row;
+    }
+  }
+
+  .lines {
+    position: absolute;
+    inset-block-start: calc(var(--space-l) + 18px);
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-xl);
+    block-size: 512px;
+  }
+
+  .lines-start {
+    inset-inline-start: 0;
+    align-items: start;
+  }
+
+  .lines-end {
+    inset-inline-end: 0;
+    align-items: end;
+  }
+
+  .line {
+    block-size: 64px;
+    background: var(--color-background-primary-hover);
+  }
+
+  .line-start {
+    border-radius: 0 var(--border-radius) var(--border-radius) 0;
+  }
+
+  .line-end {
+    border-radius: var(--border-radius) 0 0 var(--border-radius);
+  }
+
+  .line-l {
+    inline-size: calc((100vi - var(--line-margin)) / 2 - var(--line-step));
+  }
+
+  .line-m {
+    inline-size: calc((100vi - var(--line-margin)) / 2 - var(--line-step) * 2);
+  }
+
+  .line-s {
+    inline-size: calc((100vi - var(--line-margin)) / 2 - var(--line-step) * 3);
+  }
+</style>

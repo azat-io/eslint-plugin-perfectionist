@@ -1,0 +1,55 @@
+---
+import Icon from './Icon.astro'
+
+interface Props {
+  path: {
+    href: string
+    name: string
+  }[]
+}
+
+let { path } = Astro.props
+---
+
+{
+  path.length ? (
+    <div class="breadcrumbs">
+      <a aria-label="Homepage" class="link" href="/">
+        <Icon name="home" size="xs" />
+      </a>
+      {path.map(({ href, name }) => (
+        <>
+          <Icon name="chevron-right" size="s" />
+          <a class="link" href={href}>
+            {name}
+          </a>
+        </>
+      ))}
+    </div>
+  ) : null
+}
+
+<style>
+  .breadcrumbs {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    margin-inline-start: calc(0px - var(--space-xs));
+  }
+
+  .link {
+    padding: var(--space-2xs) var(--space-xs);
+    font: var(--font-xs);
+    color: var(--color-content-primary);
+    text-decoration: none;
+    border-radius: var(--border-radius);
+    transition: all 300ms;
+
+    @media (hover: hover) {
+      &:hover {
+        color: var(--color-content-secondary);
+        background: var(--color-background-primary-hover);
+      }
+    }
+  }
+</style>

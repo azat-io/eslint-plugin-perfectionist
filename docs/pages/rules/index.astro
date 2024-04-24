@@ -1,0 +1,98 @@
+---
+import { getCollection } from 'astro:content'
+
+import Typography from '../../components/Typography.astro'
+import ContentLayout from '../../layouts/Content.astro'
+import Icon from '../../components/Icon.astro'
+
+let rules = await getCollection('rules')
+---
+
+<ContentLayout
+  keywords={[
+    'eslint',
+    'eslint rules',
+    'eslint plugin',
+    'coding standards',
+    'code quality',
+    'linting rules',
+    'javascript linting',
+    'code consistency',
+    'eslint setup',
+    'codebase maintenance',
+  ]}
+  description="Explore our extensive list of ESLint Plugin Perfectionist rules to enforce coding standards and improve code quality. Learn how each rule can help you maintain a consistent and error-free codebase."
+  path={[
+    {
+      name: 'Rules',
+      href: '/rules',
+    },
+  ]}
+  title="Rules"
+>
+  <h1>Rules</h1>
+  <p>Check out the list of all ESLint rules that this plugin includes.</p>
+  <p>
+    If you have any ideas what rules this plugin is missing, feel free to <a
+      href="https://github.com/azat-io/eslint-plugin-perfectionist/issues/new?labels=enhancement&template=new-rule.yml&title=Feature%3A+%28fill+in%29"
+      >create an issue on GitHub</a
+    >.
+  </p>
+  <div class="definition">
+    <Icon name="tool" size="s" />
+    <Typography
+      >Automatically fixable by the
+      <a href="https://eslint.org/docs/latest/use/command-line-interface#--fix">
+        <code>--fix</code> CLI option
+      </a>.</Typography
+    >
+  </div>
+  <div class="definition">
+    <Icon name="star" size="s" />
+    <Typography>
+      Used in all <a href="/configs">recommended configurations</a>.
+    </Typography>
+  </div>
+
+  <table class="table">
+    <thead>
+      <tr>
+        <th>Rule</th>
+        <th>Description</th>
+        <th></th>
+        <th></th>
+      </tr>
+    </thead>
+    <tbody>
+      {
+        rules.map(rule => (
+          <tr>
+            <td>
+              <a href={`/rules/${rule.slug}`}>{rule.data.title}</a>
+            </td>
+            <td>{rule.data.shortDescription}</td>
+            <td>
+              <Icon name="tool" size="s" />
+            </td>
+            <td>
+              <Icon name="star" size="s" />
+            </td>
+          </tr>
+        ))
+      }
+    </tbody>
+  </table>
+</ContentLayout>
+
+<style>
+  .definition {
+    display: flex;
+    gap: var(--space-xs);
+    align-items: center;
+    margin-block: var(--space-m);
+  }
+
+  .table {
+    margin-block-start: var(--space-xl);
+  }
+</style>

@@ -1,0 +1,17 @@
+---
+import ContentFooterLink from './ContentFooterLink.astro'
+
+interface Props {
+  url: undefined | string
+}
+
+let { url } = Astro.props
+---
+
+{
+  url && (
+    <ContentFooterLink icon="pencil" url={url}>
+      Edit this page
+    </ContentFooterLink>
+  )
+}

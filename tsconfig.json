@@ -1,8 +1,12 @@
 {
+  "include": ["**/*.svelte", "**/*.astro", "**/*.ts"],
+  "exclude": ["node_modules", "coverage"],
+  "extends": "astro/tsconfigs/strictest",
   "compilerOptions": {
     "forceConsistentCasingInFileNames": true,
     "moduleResolution": "bundler",
     "verbatimModuleSyntax": true,
+    "strictNullChecks": true,
     "esModuleInterop": true,
     "skipLibCheck": true,
     "module": "esnext",
@@ -11,11 +15,5 @@
     "allowJs": true,
     "strict": true,
     "noEmit": true
-  },
-  "include": [
-    "**/*.ts",
-    "docs/.vitepress/**/*.ts",
-    "docs/.vitepress/config.mts"
-  ],
-  "exclude": ["node_modules", "coverage"]
+  }
 }

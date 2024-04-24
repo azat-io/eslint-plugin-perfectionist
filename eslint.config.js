@@ -1,21 +1,22 @@
 let eslintPlugin = require('eslint-plugin-eslint-plugin/configs/all')
-let config = require('@azat-io/eslint-config-typescript')
+let config = require('@azat-io/eslint-config-astro')
 
 module.exports = [
   ...config,
   eslintPlugin,
   {
-    ignores: ['**/.vitepress/cache/**/*', 'coverage/**/*'],
+    ignores: ['coverage/**/*', '**/.astro/**/*'],
   },
   {
     rules: {
       'eslint-plugin/require-meta-docs-url': 'off',
+      'astro/prefer-class-list-directive': 'off',
     },
   },
   {
-    files: ['**/test/*', '**/rules/*', '**/docs/.vitepress/config.ts'],
     rules: {
       'perfectionist/sort-objects': 'off',
     },
+    files: ['**/test/*', '**/rules/*'],
   },
 ]
