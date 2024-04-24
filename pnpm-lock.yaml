@@ -6,7 +6,7 @@ settings:
 
 dependencies:
   '@typescript-eslint/utils':
-    specifier: ^6.13.0
+    specifier: ^6.13.0 || ^7.0.0
     version: 6.13.0(eslint@8.54.0)(typescript@5.3.2)
   minimatch:
     specifier: ^9.0.3
