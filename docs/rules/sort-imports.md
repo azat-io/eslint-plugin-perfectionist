@@ -169,7 +169,7 @@ import axios from 'axios'
 import Button from '~/components/Button'
 // 'parent' - Modules from parent directory
 import formatNumber from '../utils/format-number'
-// 'siblings' - Modules from the same directory
+// 'sibling' - Modules from the same directory
 import config from './config'
 // 'side-effect' - Side effect imports
 import './set-production-env.js'
