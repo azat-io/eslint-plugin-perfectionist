@@ -84,7 +84,7 @@ devDependencies:
     version: 1.0.4(eslint@8.54.0)
   eslint-plugin-perfectionist:
     specifier: ^2.4.2
-    version: 2.4.2(astro-eslint-parser@1.0.2)(eslint@8.54.0)(svelte-eslint-parser@0.33.1)(svelte@4.2.7)(typescript@5.3.2)(vue-eslint-parser@9.3.2)
+    version: 2.4.2(astro-eslint-parser@1.0.2)(eslint@8.54.0)(svelte-eslint-parser@0.36.0)(svelte@4.2.17)(typescript@5.3.2)(vue-eslint-parser@9.3.2)
   eslint-plugin-prefer-arrow:
     specifier: ^1.2.3
     version: 1.2.3(eslint@8.54.0)
@@ -128,11 +128,11 @@ devDependencies:
     specifier: ^0.13.2
     version: 0.13.2(stylelint@15.11.0)
   svelte:
-    specifier: ^4.2.7
-    version: 4.2.7
+    specifier: ^4.2.17
+    version: 4.2.17
   svelte-eslint-parser:
-    specifier: ^0.33.1
-    version: 0.33.1(svelte@4.2.7)
+    specifier: ^0.36.0
+    version: 0.36.0(svelte@4.2.17)
   ts-dedent:
     specifier: ^2.2.0
     version: 2.2.0
@@ -330,7 +330,7 @@ packages:
       eslint-import-resolver-typescript: 3.6.1(@typescript-eslint/parser@6.13.0)(eslint-plugin-import@2.29.0)(eslint@8.54.0)
       eslint-plugin-import: 2.29.0(@typescript-eslint/parser@6.13.0)(eslint@8.54.0)
       eslint-plugin-n: 16.3.1(eslint@8.54.0)
-      eslint-plugin-perfectionist: 2.4.2(astro-eslint-parser@1.0.2)(eslint@8.54.0)(svelte-eslint-parser@0.33.1)(svelte@4.2.7)(typescript@5.3.2)(vue-eslint-parser@9.3.2)
+      eslint-plugin-perfectionist: 2.4.2(astro-eslint-parser@1.0.2)(eslint@8.54.0)(svelte-eslint-parser@0.36.0)(svelte@4.2.17)(typescript@5.3.2)(vue-eslint-parser@9.3.2)
       eslint-plugin-prefer-arrow: 1.2.3(eslint@8.54.0)
       eslint-plugin-prefer-let: 3.0.1
       eslint-plugin-promise: 6.1.1(eslint@8.54.0)
@@ -363,7 +363,7 @@ packages:
       eslint-plugin-import: 2.29.0(@typescript-eslint/parser@6.13.0)(eslint@8.54.0)
       eslint-plugin-n: 16.3.1(eslint@8.54.0)
       eslint-plugin-node-import: 1.0.4(eslint@8.54.0)
-      eslint-plugin-perfectionist: 2.4.2(astro-eslint-parser@1.0.2)(eslint@8.54.0)(svelte-eslint-parser@0.33.1)(svelte@4.2.7)(typescript@5.3.2)(vue-eslint-parser@9.3.2)
+      eslint-plugin-perfectionist: 2.4.2(astro-eslint-parser@1.0.2)(eslint@8.54.0)(svelte-eslint-parser@0.36.0)(svelte@4.2.17)(typescript@5.3.2)(vue-eslint-parser@9.3.2)
       eslint-plugin-prefer-arrow: 1.2.3(eslint@8.54.0)
       eslint-plugin-prefer-let: 3.0.1
       eslint-plugin-promise: 6.1.1(eslint@8.54.0)
@@ -1907,8 +1907,8 @@ packages:
     engines: {node: '>= 0.4'}
     dev: true
 
-  /axobject-query@3.2.1:
-    resolution: {integrity: sha512-jsyHu61e6N4Vbz/v18DHwWYKK0bSWLqn47eeDSKPB7m8tqMHF9YJ+mhIk2lVteyZrY8tnSj/jHOv4YiTCuCJgg==}
+  /axobject-query@4.0.0:
+    resolution: {integrity: sha512-+60uv1hiVFhHZeO+Lz0RYzsVHy5Wr1ayX0mwda9KPDVLNJgZ1T9Ny7VmFbLDzxsH0D87I86vgj3gFrjTJUYznw==}
     dependencies:
       dequal: 2.0.3
     dev: true
@@ -2182,7 +2182,7 @@ packages:
     dependencies:
       '@jridgewell/sourcemap-codec': 1.4.15
       '@types/estree': 1.0.5
-      acorn: 8.11.2
+      acorn: 8.11.3
       estree-walker: 3.0.3
       periscopic: 3.1.0
     dev: true
@@ -2883,7 +2883,7 @@ packages:
       eslint: 8.54.0
     dev: true
 
-  /eslint-plugin-perfectionist@2.4.2(astro-eslint-parser@1.0.2)(eslint@8.54.0)(svelte-eslint-parser@0.33.1)(svelte@4.2.7)(typescript@5.3.2)(vue-eslint-parser@9.3.2):
+  /eslint-plugin-perfectionist@2.4.2(astro-eslint-parser@1.0.2)(eslint@8.54.0)(svelte-eslint-parser@0.36.0)(svelte@4.2.17)(typescript@5.3.2)(vue-eslint-parser@9.3.2):
     resolution: {integrity: sha512-PaNwDCH+VYvG9uACKF4Vb3jBM8SjCPJXBpiFvTKUuJI07aqKWp+Q4NEa1hD4dj+ZVE0oYqAKX7DviEidiBlqIg==}
     peerDependencies:
       astro-eslint-parser: ^0.16.0
@@ -2906,8 +2906,8 @@ packages:
       eslint: 8.54.0
       minimatch: 9.0.3
       natural-compare-lite: 1.4.0
-      svelte: 4.2.7
-      svelte-eslint-parser: 0.33.1(svelte@4.2.7)
+      svelte: 4.2.17
+      svelte-eslint-parser: 0.36.0(svelte@4.2.17)
       vue-eslint-parser: 9.3.2(eslint@8.54.0)
     transitivePeerDependencies:
       - supports-color
@@ -4801,13 +4801,13 @@ packages:
       postcss: 8.4.31
     dev: true
 
-  /postcss-scss@4.0.9(postcss@8.4.31):
+  /postcss-scss@4.0.9(postcss@8.4.38):
     resolution: {integrity: sha512-AjKOeiwAitL/MXxQW2DliT28EKukvvbEWx3LBmJIRN8KfBGZbRTxNYW0kSqi1COiTZ57nZ9NW06S6ux//N1c9A==}
     engines: {node: '>=12.0'}
     peerDependencies:
       postcss: ^8.4.29
     dependencies:
-      postcss: 8.4.31
+      postcss: 8.4.38
     dev: true
 
   /postcss-selector-parser@6.0.13:
@@ -4837,6 +4837,15 @@ packages:
       nanoid: 3.3.7
       picocolors: 1.0.0
       source-map-js: 1.0.2
+    dev: true
+
+  /postcss@8.4.38:
+    resolution: {integrity: sha512-Wglpdk03BSfXkHoQa3b/oulrotAkwrlLDRSOb9D0bN86FdRyE9lppSp33aHNPgBa0JKCoB+drFLZkQoRRYae5A==}
+    engines: {node: ^10 || ^12 || >=14}
+    dependencies:
+      nanoid: 3.3.7
+      picocolors: 1.0.0
+      source-map-js: 1.2.0
     dev: true
 
   /preact@10.19.2:
@@ -5211,6 +5220,11 @@ packages:
     engines: {node: '>=0.10.0'}
     dev: true
 
+  /source-map-js@1.2.0:
+    resolution: {integrity: sha512-itJW8lvSA0TXEphiRoawsCksnlf8SyvmFzIhltqAHluXd88pkCd+cXJVHTDwdCr0IzwptSm035IHQktUu1QUMg==}
+    engines: {node: '>=0.10.0'}
+    dev: true
+
   /source-map@0.6.1:
     resolution: {integrity: sha512-UjgapumWlbMhkBgzT7Ykc5YXUT46F0iKu8SGXq0bcwP5dz/h0Plj6enJqjz1Zbq2l5WaqYnrVbwWOWMyF3F47g==}
     engines: {node: '>=0.10.0'}
@@ -5471,11 +5485,11 @@ packages:
     engines: {node: '>= 0.4'}
     dev: true
 
-  /svelte-eslint-parser@0.33.1(svelte@4.2.7):
-    resolution: {integrity: sha512-vo7xPGTlKBGdLH8T5L64FipvTrqv3OQRx9d2z5X05KKZDlF4rQk8KViZO4flKERY+5BiVdOh7zZ7JGJWo5P0uA==}
+  /svelte-eslint-parser@0.36.0(svelte@4.2.17):
+    resolution: {integrity: sha512-/6YmUSr0FAVxW8dXNdIMydBnddPMHzaHirAZ7RrT21XYdgGGZMh0LQG6CZsvAFS4r2Y4ItUuCQc8TQ3urB30mQ==}
     engines: {node: ^12.22.0 || ^14.17.0 || >=16.0.0}
     peerDependencies:
-      svelte: ^3.37.0 || ^4.0.0
+      svelte: ^3.37.0 || ^4.0.0 || ^5.0.0-next.115
     peerDependenciesMeta:
       svelte:
         optional: true
@@ -5483,21 +5497,22 @@ packages:
       eslint-scope: 7.2.2
       eslint-visitor-keys: 3.4.3
       espree: 9.6.1
-      postcss: 8.4.31
-      postcss-scss: 4.0.9(postcss@8.4.31)
-      svelte: 4.2.7
+      postcss: 8.4.38
+      postcss-scss: 4.0.9(postcss@8.4.38)
+      svelte: 4.2.17
     dev: true
 
-  /svelte@4.2.7:
-    resolution: {integrity: sha512-UExR1KS7raTdycsUrKLtStayu4hpdV3VZQgM0akX8XbXgLBlosdE/Sf3crOgyh9xIjqSYB3UEBuUlIQKRQX2hg==}
+  /svelte@4.2.17:
+    resolution: {integrity: sha512-N7m1YnoXtRf5wya5Gyx3TWuTddI4nAyayyIWFojiWV5IayDYNV5i2mRp/7qNGol4DtxEYxljmrbgp1HM6hUbmQ==}
     engines: {node: '>=16'}
     dependencies:
       '@ampproject/remapping': 2.2.1
       '@jridgewell/sourcemap-codec': 1.4.15
       '@jridgewell/trace-mapping': 0.3.20
-      acorn: 8.11.2
+      '@types/estree': 1.0.5
+      acorn: 8.11.3
       aria-query: 5.3.0
-      axobject-query: 3.2.1
+      axobject-query: 4.0.0
       code-red: 1.0.4
       css-tree: 2.3.1
       estree-walker: 3.0.3
