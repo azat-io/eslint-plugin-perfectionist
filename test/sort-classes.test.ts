@@ -2121,6 +2121,9 @@ describe(RULE_NAME, () => {
 
               constructor() {}
 
+              @observable
+              customFirstGroupProperty = 1
+
               @action
               toggle() {}
 
@@ -2132,9 +2135,13 @@ describe(RULE_NAME, () => {
 
               @observable
               accessor title = ''
+
             }`,
           output: dedent`
             class Todo {
+              @observable
+              customFirstGroupProperty = 1
+
               @observable
               accessor finished = false
 
@@ -2153,14 +2160,17 @@ describe(RULE_NAME, () => {
 
               @observable
               customLastGroupProperty = 1
+
             }`,
           options: [
             {
               ...options,
               'custom-groups': {
-                'my-last-group': 'custom*',
+                'my-first-group': 'customFirst*',
+                'my-last-group': 'customLast*',
               },
               groups: [
+                'my-first-group',
                 'decorated-accessor-property',
                 'private-decorated-accessor-property',
                 'property',
@@ -2177,6 +2187,13 @@ describe(RULE_NAME, () => {
               data: {
                 left: 'customLastGroupProperty',
                 right: 'id',
+              },
+            },
+            {
+              messageId: 'unexpectedClassesOrder',
+              data: {
+                left: 'constructor',
+                right: 'customFirstGroupProperty',
               },
             },
             {
