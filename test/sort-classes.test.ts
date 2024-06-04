@@ -2157,8 +2157,8 @@ describe(RULE_NAME, () => {
           options: [
             {
               ...options,
-              "custom-groups": {
-                'my-last-group': 'custom*'
+              'custom-groups': {
+                'my-last-group': 'custom*',
               },
               groups: [
                 'decorated-accessor-property',
