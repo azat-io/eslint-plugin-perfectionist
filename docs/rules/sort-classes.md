@@ -139,6 +139,7 @@ interface Options {
   order?: 'asc' | 'desc'
   'ignore-case'?: boolean
   groups?: (Group | Group[])[]
+  'custom-groups'?: { [key: string]: string[] | string }
 }
 ```
 
@@ -186,6 +187,22 @@ If you use [one of the configs](/configs/) exported by this plugin, you get the 
     ["get-method", "set-method"],
     "unknown"
   ]
+}
+```
+
+### custom-groups
+
+<sub>(default: `{}`)</sub>
+
+You can define your own groups for object keys. The [minimatch](https://github.com/isaacs/minimatch) library is used for pattern matching.
+
+Example:
+
+```
+{
+  "custom-groups": {
+    "top": "id"
+  }
 }
 ```
 

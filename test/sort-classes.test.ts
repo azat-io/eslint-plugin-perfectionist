@@ -588,74 +588,74 @@ describe(RULE_NAME, () => {
             class MyElement {
               @property({ attribute: false })
               data = {}
-            
+
               @property()
               greeting: string = 'Hello'
-            
+
               @state()
               private _counter = 0
-            
+
               private _message = ''
-            
+
               private _prop = 0
-            
+
               constructor() {}
-            
+
               @property()
               get message(): string {
                 return this._message
               }
-            
+
               set message(message: string) {
                 this._message = message
               }
-            
+
               @property()
               set prop(val: number) {
                 this._prop = Math.floor(val)
               }
-            
+
               get prop() {
                 return this._prop
               }
-            
+
               render() {}
             }`,
           output: dedent`
             class MyElement {
               @property({ attribute: false })
               data = {}
-            
+
               @property()
               greeting: string = 'Hello'
-            
+
               @state()
               private _counter = 0
-            
+
               private _message = ''
-            
+
               private _prop = 0
-            
+
               constructor() {}
-            
+
               @property()
               get message(): string {
                 return this._message
               }
-            
+
               @property()
               set prop(val: number) {
                 this._prop = Math.floor(val)
               }
-            
+
               set message(message: string) {
                 this._message = message
               }
-            
+
               get prop() {
                 return this._prop
               }
-            
+
               render() {}
             }`,
           options: [
@@ -693,18 +693,18 @@ describe(RULE_NAME, () => {
           code: dedent`
             class Todo {
               id = Math.random()
-            
+
               constructor() {}
-            
+
               @action
               toggle() {}
-            
+
               @observable
               accessor #active = false
-            
+
               @observable
               accessor finished = false
-            
+
               @observable
               accessor title = ''
             }`,
@@ -712,17 +712,17 @@ describe(RULE_NAME, () => {
             class Todo {
               @observable
               accessor finished = false
-            
+
               @observable
               accessor title = ''
-            
+
               @observable
               accessor #active = false
-            
+
               id = Math.random()
-            
+
               constructor() {}
-            
+
               @action
               toggle() {}
             }`,
@@ -1331,74 +1331,74 @@ describe(RULE_NAME, () => {
             class MyElement {
               @property({ attribute: false })
               data = {}
-            
+
               @property()
               greeting: string = 'Hello'
-            
+
               @state()
               private _counter = 0
-            
+
               private _message = ''
-            
+
               private _prop = 0
-            
+
               constructor() {}
-            
+
               @property()
               get message(): string {
                 return this._message
               }
-            
+
               set message(message: string) {
                 this._message = message
               }
-            
+
               @property()
               set prop(val: number) {
                 this._prop = Math.floor(val)
               }
-            
+
               get prop() {
                 return this._prop
               }
-            
+
               render() {}
             }`,
           output: dedent`
             class MyElement {
               @property({ attribute: false })
               data = {}
-            
+
               @property()
               greeting: string = 'Hello'
-            
+
               @state()
               private _counter = 0
-            
+
               private _message = ''
-            
+
               private _prop = 0
-            
+
               constructor() {}
-            
+
               @property()
               get message(): string {
                 return this._message
               }
-            
+
               @property()
               set prop(val: number) {
                 this._prop = Math.floor(val)
               }
-            
+
               set message(message: string) {
                 this._message = message
               }
-            
+
               get prop() {
                 return this._prop
               }
-            
+
               render() {}
             }`,
           options: [
@@ -1436,18 +1436,18 @@ describe(RULE_NAME, () => {
           code: dedent`
             class Todo {
               id = Math.random()
-            
+
               constructor() {}
-            
+
               @action
               toggle() {}
-            
+
               @observable
               accessor #active = false
-            
+
               @observable
               accessor finished = false
-            
+
               @observable
               accessor title = ''
             }`,
@@ -1455,17 +1455,17 @@ describe(RULE_NAME, () => {
             class Todo {
               @observable
               accessor finished = false
-            
+
               @observable
               accessor title = ''
-            
+
               @observable
               accessor #active = false
-            
+
               id = Math.random()
-            
+
               constructor() {}
-            
+
               @action
               toggle() {}
             }`,
@@ -2018,29 +2018,29 @@ describe(RULE_NAME, () => {
               private _counter = 0
 
               private _message = ''
-            
+
               private _prop = 0
-            
+
               constructor() {}
 
               @property()
               get message(): string {
                 return this._message
               }
-            
+
               set message(message: string) {
                 this._message = message
               }
-            
+
               @property()
               set prop(val: number) {
                 this._prop = Math.floor(val)
               }
-            
+
               get prop() {
                 return this._prop
               }
-            
+
               render() {}
             }`,
           output: dedent`
@@ -2050,16 +2050,16 @@ describe(RULE_NAME, () => {
 
               @property()
               greeting: string = 'Hello'
-            
+
               @state()
               private _counter = 0
-            
+
               private _message = ''
-            
+
               private _prop = 0
-            
+
               constructor() {}
-            
+
               @property()
               set prop(val: number) {
                 this._prop = Math.floor(val)
@@ -2069,15 +2069,15 @@ describe(RULE_NAME, () => {
               get message(): string {
                 return this._message
               }
-            
+
               set message(message: string) {
                 this._message = message
               }
-            
+
               get prop() {
                 return this._prop
               }
-            
+
               render() {}
             }`,
           options: [
@@ -2114,19 +2114,22 @@ describe(RULE_NAME, () => {
         {
           code: dedent`
             class Todo {
+              @observable
+              customLastGroupProperty = 1
+
               id = Math.random()
-            
+
               constructor() {}
-            
+
               @action
               toggle() {}
-            
+
               @observable
               accessor #active = false
-            
+
               @observable
               accessor finished = false
-            
+
               @observable
               accessor title = ''
             }`,
@@ -2134,23 +2137,29 @@ describe(RULE_NAME, () => {
             class Todo {
               @observable
               accessor finished = false
-            
+
               @observable
               accessor title = ''
-            
+
               @observable
               accessor #active = false
-            
+
               id = Math.random()
-            
+
               constructor() {}
-            
+
               @action
               toggle() {}
+
+              @observable
+              customLastGroupProperty = 1
             }`,
           options: [
             {
               ...options,
+              "custom-groups": {
+                'my-last-group': 'custom*'
+              },
               groups: [
                 'decorated-accessor-property',
                 'private-decorated-accessor-property',
@@ -2158,10 +2167,18 @@ describe(RULE_NAME, () => {
                 'constructor',
                 'decorated-method',
                 'unknown',
+                'my-last-group',
               ],
             },
           ],
           errors: [
+            {
+              messageId: 'unexpectedClassesOrder',
+              data: {
+                left: 'customLastGroupProperty',
+                right: 'id',
+              },
+            },
             {
               messageId: 'unexpectedClassesOrder',
               data: {

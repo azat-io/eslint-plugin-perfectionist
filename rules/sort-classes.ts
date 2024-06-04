@@ -37,9 +37,11 @@ type Group =
   | 'property'
   | 'unknown'
   | 'method'
+  | string
 
 type Options = [
   Partial<{
+    'custom-groups': { [key: string]: string[] | string }
     groups: (Group[] | Group)[]
     'ignore-case': boolean
     order: SortOrder
@@ -61,6 +63,9 @@ export default createEslintRule<Options, MESSAGE_ID>({
       {
         type: 'object',
         properties: {
+          'custom-groups': {
+            type: 'object',
+          },
           type: {
             enum: [
               SortType.alphabetical,
@@ -105,11 +110,14 @@ export default createEslintRule<Options, MESSAGE_ID>({
           order: SortOrder.asc,
           'ignore-case': false,
           groups: ['property', 'constructor', 'method', 'unknown'],
+          'custom-groups': {},
         })
 
         let nodes: SortingNode[] = node.body.map(member => {
           let name: string
-          let { getGroup, defineGroup } = useGroups(options.groups)
+          let { getGroup, defineGroup, setCustomGroups } = useGroups(
+            options.groups,
+          )
 
           if (member.type === 'StaticBlock') {
             name = 'static'
@@ -127,7 +135,6 @@ export default createEslintRule<Options, MESSAGE_ID>({
           }
 
           let isPrivate = name.startsWith('_') || name.startsWith('#')
-
           let decorated = 'decorators' in member && member.decorators.length > 0
 
           if (member.type === 'MethodDefinition') {
@@ -202,6 +209,10 @@ export default createEslintRule<Options, MESSAGE_ID>({
 
             defineGroup('property')
           }
+
+          setCustomGroups(options['custom-groups'], name, {
+            override: true,
+          })
 
           return {
             size: rangeToDiff(member.range),
