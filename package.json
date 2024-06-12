@@ -16,7 +16,6 @@
     "docs:dev": "vitepress dev docs",
     "docs:generate": "eslint-doc-generator --rule-list-columns name,description,fixable,hasSuggestions,deprecated --path-rule-list readme.md --url-rule-doc https://eslint-plugin-perfectionist.azat.io/rules/{name} --url-configs https://eslint-plugin-perfectionist.azat.io/configs && eslint-doc-generator --rule-list-columns name,description,fixable,hasSuggestions,deprecated --rule-doc-title-format name --path-rule-list ./docs/rules/index.md --url-rule-doc /rules/{name} --url-configs /configs/ && prettier --write readme.md ./docs/rules/index.md",
     "docs:build": "vitepress build docs",
-    "format:fix": "prettier --write \"**/*.{js,ts,json,md,yml}\"",
     "release": "pnpm release:check && pnpm release:version && pnpm release:publish",
     "release:check": "pnpm test && pnpm run build",
     "release:publish": "clean-publish",
