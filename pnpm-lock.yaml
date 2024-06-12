@@ -84,7 +84,7 @@ devDependencies:
     version: 1.0.4(eslint@8.54.0)
   eslint-plugin-perfectionist:
     specifier: ^2.4.2
-    version: 2.4.2(astro-eslint-parser@1.0.2)(eslint@8.54.0)(svelte-eslint-parser@0.36.0)(svelte@4.2.17)(typescript@5.3.2)(vue-eslint-parser@9.3.2)
+    version: 2.4.2(astro-eslint-parser@1.0.2)(eslint@8.54.0)(svelte-eslint-parser@0.37.0)(svelte@4.2.18)(typescript@5.3.2)(vue-eslint-parser@9.3.2)
   eslint-plugin-prefer-arrow:
     specifier: ^1.2.3
     version: 1.2.3(eslint@8.54.0)
@@ -128,11 +128,11 @@ devDependencies:
     specifier: ^0.13.2
     version: 0.13.2(stylelint@15.11.0)
   svelte:
-    specifier: ^4.2.17
-    version: 4.2.17
+    specifier: ^4.2.18
+    version: 4.2.18
   svelte-eslint-parser:
-    specifier: ^0.36.0
-    version: 0.36.0(svelte@4.2.17)
+    specifier: ^0.37.0
+    version: 0.37.0(svelte@4.2.18)
   ts-dedent:
     specifier: ^2.2.0
     version: 2.2.0
@@ -330,7 +330,7 @@ packages:
       eslint-import-resolver-typescript: 3.6.1(@typescript-eslint/parser@6.13.0)(eslint-plugin-import@2.29.0)(eslint@8.54.0)
       eslint-plugin-import: 2.29.0(@typescript-eslint/parser@6.13.0)(eslint@8.54.0)
       eslint-plugin-n: 16.3.1(eslint@8.54.0)
-      eslint-plugin-perfectionist: 2.4.2(astro-eslint-parser@1.0.2)(eslint@8.54.0)(svelte-eslint-parser@0.36.0)(svelte@4.2.17)(typescript@5.3.2)(vue-eslint-parser@9.3.2)
+      eslint-plugin-perfectionist: 2.4.2(astro-eslint-parser@1.0.2)(eslint@8.54.0)(svelte-eslint-parser@0.37.0)(svelte@4.2.18)(typescript@5.3.2)(vue-eslint-parser@9.3.2)
       eslint-plugin-prefer-arrow: 1.2.3(eslint@8.54.0)
       eslint-plugin-prefer-let: 3.0.1
       eslint-plugin-promise: 6.1.1(eslint@8.54.0)
@@ -363,7 +363,7 @@ packages:
       eslint-plugin-import: 2.29.0(@typescript-eslint/parser@6.13.0)(eslint@8.54.0)
       eslint-plugin-n: 16.3.1(eslint@8.54.0)
       eslint-plugin-node-import: 1.0.4(eslint@8.54.0)
-      eslint-plugin-perfectionist: 2.4.2(astro-eslint-parser@1.0.2)(eslint@8.54.0)(svelte-eslint-parser@0.36.0)(svelte@4.2.17)(typescript@5.3.2)(vue-eslint-parser@9.3.2)
+      eslint-plugin-perfectionist: 2.4.2(astro-eslint-parser@1.0.2)(eslint@8.54.0)(svelte-eslint-parser@0.37.0)(svelte@4.2.18)(typescript@5.3.2)(vue-eslint-parser@9.3.2)
       eslint-plugin-prefer-arrow: 1.2.3(eslint@8.54.0)
       eslint-plugin-prefer-let: 3.0.1
       eslint-plugin-promise: 6.1.1(eslint@8.54.0)
@@ -2883,7 +2883,7 @@ packages:
       eslint: 8.54.0
     dev: true
 
-  /eslint-plugin-perfectionist@2.4.2(astro-eslint-parser@1.0.2)(eslint@8.54.0)(svelte-eslint-parser@0.36.0)(svelte@4.2.17)(typescript@5.3.2)(vue-eslint-parser@9.3.2):
+  /eslint-plugin-perfectionist@2.4.2(astro-eslint-parser@1.0.2)(eslint@8.54.0)(svelte-eslint-parser@0.37.0)(svelte@4.2.18)(typescript@5.3.2)(vue-eslint-parser@9.3.2):
     resolution: {integrity: sha512-PaNwDCH+VYvG9uACKF4Vb3jBM8SjCPJXBpiFvTKUuJI07aqKWp+Q4NEa1hD4dj+ZVE0oYqAKX7DviEidiBlqIg==}
     peerDependencies:
       astro-eslint-parser: ^0.16.0
@@ -2906,8 +2906,8 @@ packages:
       eslint: 8.54.0
       minimatch: 9.0.3
       natural-compare-lite: 1.4.0
-      svelte: 4.2.17
-      svelte-eslint-parser: 0.36.0(svelte@4.2.17)
+      svelte: 4.2.18
+      svelte-eslint-parser: 0.37.0(svelte@4.2.18)
       vue-eslint-parser: 9.3.2(eslint@8.54.0)
     transitivePeerDependencies:
       - supports-color
@@ -5485,8 +5485,8 @@ packages:
     engines: {node: '>= 0.4'}
     dev: true
 
-  /svelte-eslint-parser@0.36.0(svelte@4.2.17):
-    resolution: {integrity: sha512-/6YmUSr0FAVxW8dXNdIMydBnddPMHzaHirAZ7RrT21XYdgGGZMh0LQG6CZsvAFS4r2Y4ItUuCQc8TQ3urB30mQ==}
+  /svelte-eslint-parser@0.37.0(svelte@4.2.18):
+    resolution: {integrity: sha512-AXd5ar7dcOK+H86JomxcSaWevhs2J7o/xOwg+kDQu98uuATpm+tE5Twp7u8UQCdbWKB34Idu/CZyHmTOxfSQMw==}
     engines: {node: ^12.22.0 || ^14.17.0 || >=16.0.0}
     peerDependencies:
       svelte: ^3.37.0 || ^4.0.0 || ^5.0.0-next.115
@@ -5499,11 +5499,11 @@ packages:
       espree: 9.6.1
       postcss: 8.4.38
       postcss-scss: 4.0.9(postcss@8.4.38)
-      svelte: 4.2.17
+      svelte: 4.2.18
     dev: true
 
-  /svelte@4.2.17:
-    resolution: {integrity: sha512-N7m1YnoXtRf5wya5Gyx3TWuTddI4nAyayyIWFojiWV5IayDYNV5i2mRp/7qNGol4DtxEYxljmrbgp1HM6hUbmQ==}
+  /svelte@4.2.18:
+    resolution: {integrity: sha512-d0FdzYIiAePqRJEb90WlJDkjUEx42xhivxN8muUBmfZnP+tzUgz12DJ2hRJi8sIHCME7jeK1PTMgKPSfTd8JrA==}
     engines: {node: '>=16'}
     dependencies:
       '@ampproject/remapping': 2.2.1
