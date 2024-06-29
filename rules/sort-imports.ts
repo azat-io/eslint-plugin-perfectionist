@@ -360,10 +360,7 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
       if (node.type === 'ImportDeclaration') {
         name = node.source.value
       } else {
-        if (
-          node.moduleReference.type === 'TSExternalModuleReference' &&
-          node.moduleReference.expression.type === 'Literal'
-        ) {
+        if (node.moduleReference.type === 'TSExternalModuleReference') {
           name = `${node.moduleReference.expression.value}`
         } else {
           name = context.sourceCode.text.slice(...node.moduleReference.range)

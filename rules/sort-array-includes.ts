@@ -96,10 +96,10 @@ export default createEslintRule<Options, MESSAGE_ID>({
             'spread-last': false,
           })
 
-          let nodes: (SortingNode & { type: string })[] = elements
+          let nodes: ({ type: string } & SortingNode)[] = elements
             .reduce(
               (
-                accumulator: (SortingNode & { type: string })[][],
+                accumulator: ({ type: string } & SortingNode)[][],
                 element: TSESTree.SpreadElement | TSESTree.Expression | null,
               ) => {
                 if (element !== null) {

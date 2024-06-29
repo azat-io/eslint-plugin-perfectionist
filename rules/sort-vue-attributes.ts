@@ -94,7 +94,11 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
       return {}
     }
 
-    if (!('defineTemplateBodyVisitor' in context.sourceCode.parserServices)) {
+    if (
+      !(
+        'defineTemplateBodyVisitor' in (context.sourceCode.parserServices ?? {})
+      )
+    ) {
       return {}
     }
 
@@ -178,6 +182,7 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
                     left: left.name,
                     right: right.name,
                   },
+                  // @ts-ignore
                   node: right.node,
                   fix: fixer => {
                     let grouped: {
