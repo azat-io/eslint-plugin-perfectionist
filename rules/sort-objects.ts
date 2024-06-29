@@ -29,9 +29,9 @@ export enum Position {
   'ignore' = 'ignore',
 }
 
-type SortingNodeWithPosition = SortingNode & {
+type SortingNodeWithPosition = {
   position: Position
-}
+} & SortingNode
 
 type Options = [
   Partial<{
@@ -146,7 +146,7 @@ export default createEslintRule<Options, MESSAGE_ID>({
         if (
           typeof variableIdentifier === 'string' &&
           options['ignore-pattern'].some(pattern =>
-            minimatch(variableIdentifier!, pattern, {
+            minimatch(variableIdentifier, pattern, {
               nocomment: true,
             }),
           )
