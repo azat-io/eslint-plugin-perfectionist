@@ -41,7 +41,7 @@ export let compare = (
 
       if (maxLineLength) {
         let isTooLong = (size: number, node: SortingNode) =>
-          size > maxLineLength! && node.hasMultipleImportDeclarations
+          size > maxLineLength && node.hasMultipleImportDeclarations
 
         if (isTooLong(aSize, aNode)) {
           aSize = aNode.name.length + 10
