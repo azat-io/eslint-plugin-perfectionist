@@ -3,8 +3,8 @@ import { minimatch } from 'minimatch'
 export let useGroups = (groups: (string[] | string)[]) => {
   let group: undefined | string
 
-  let defineGroup = (value: string) => {
-    if (!group && groups.flat().includes(value)) {
+  let defineGroup = (value: string, override = false) => {
+    if ((!group || override) && groups.flat().includes(value)) {
       group = value
     }
   }
@@ -16,6 +16,7 @@ export let useGroups = (groups: (string[] | string)[]) => {
         }
       | undefined,
     name: string,
+    params: { override?: boolean } = {},
   ) => {
     if (customGroups) {
       for (let [key, pattern] of Object.entries(customGroups)) {
@@ -27,7 +28,7 @@ export let useGroups = (groups: (string[] | string)[]) => {
             }),
           )
         ) {
-          defineGroup(key)
+          defineGroup(key, params.override)
         }
 
         if (
@@ -36,7 +37,7 @@ export let useGroups = (groups: (string[] | string)[]) => {
             nocomment: true,
           })
         ) {
-          defineGroup(key)
+          defineGroup(key, params.override)
         }
       }
     }

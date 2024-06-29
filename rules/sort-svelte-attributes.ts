@@ -124,7 +124,7 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
                 if (typeof attribute.key.name === 'string') {
                   ;({ name } = attribute.key)
                 } else {
-                  name = context.sourceCode.text.slice(...attribute.key.range!)
+                  name = context.sourceCode.text.slice(...attribute.key.range)
                 }
               }
 

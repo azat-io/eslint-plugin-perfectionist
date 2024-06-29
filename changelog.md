@@ -1,6 +1,20 @@
 # Changelog
 
 
+## v2.11.0
+
+[compare changes](https://github.com/azat-io/eslint-plugin-perfectionist/compare/v2.10.0...v2.11.0)
+
+### 🚀 Features
+
+- Update svelte ([861a381](https://github.com/azat-io/eslint-plugin-perfectionist/commit/861a381))
+- **sort-classes:** Add custom-group to sort-classes rule ([1773ffb](https://github.com/azat-io/eslint-plugin-perfectionist/commit/1773ffb))
+
+### ❤️ Contributors
+
+- Gustavo Pedroni ([@gustavopedroni](http://github.com/gustavopedroni))
+- Tkhs ([@tkhs0813](http://github.com/tkhs0813))
+
 ## v2.10.0
 
 [compare changes](https://github.com/azat-io/eslint-plugin-perfectionist/compare/v2.9.0...v2.10.0)
