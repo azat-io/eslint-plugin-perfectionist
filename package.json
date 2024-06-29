@@ -27,6 +27,9 @@
     "test:unit": "vitest --run --coverage --single-thread --no-threads",
     "test": "pnpm run /^test:/"
   },
+  "engines": {
+    "node": "^18.0.0 || >=20.0.0"
+  },
   "publishConfig": {
     "access": "public"
   },
