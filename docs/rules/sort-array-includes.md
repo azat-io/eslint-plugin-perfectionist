@@ -148,7 +148,7 @@ export default [
         {
           type: 'natural',
           order: 'asc',
-          spread-last: true,
+          'spread-last': true,
         },
       ],
     },
