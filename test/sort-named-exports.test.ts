@@ -23,7 +23,7 @@ describe(RULE_NAME, () => {
     let options = {
       type: SortType.alphabetical,
       order: SortOrder.asc,
-      'ignore-case': false,
+      ignoreCase: false,
     }
 
     ruleTester.run(`${RULE_NAME}(${type}): sorts named exports`, rule, {
@@ -72,19 +72,19 @@ describe(RULE_NAME, () => {
             code: dedent`
               export { Kenshin, type Sakabotou, Sanosuke, type Zanbato }
             `,
-            options: [{ ...options, 'group-kind': GroupKind.mixed }],
+            options: [{ ...options, groupKind: GroupKind.mixed }],
           },
           {
             code: dedent`
               export { Kenshin, Sanosuke, type Sakabotou, type Zanbato }
             `,
-            options: [{ ...options, 'group-kind': GroupKind['values-first'] }],
+            options: [{ ...options, groupKind: GroupKind['values-first'] }],
           },
           {
             code: dedent`
               export { type Sakabotou, type Zanbato, Kenshin, Sanosuke }
             `,
-            options: [{ ...options, 'group-kind': GroupKind['types-first'] }],
+            options: [{ ...options, groupKind: GroupKind['types-first'] }],
           },
         ],
         invalid: [
@@ -95,7 +95,7 @@ describe(RULE_NAME, () => {
             output: dedent`
              export { Kenshin, type Sakabotou, Sanosuke, type Zanbato }
             `,
-            options: [{ ...options, 'group-kind': GroupKind.mixed }],
+            options: [{ ...options, groupKind: GroupKind.mixed }],
             errors: [
               {
                 messageId: 'unexpectedNamedExportsOrder',
@@ -127,7 +127,7 @@ describe(RULE_NAME, () => {
             output: dedent`
               export { Kenshin, Sanosuke, type Sakabotou, type Zanbato }
             `,
-            options: [{ ...options, 'group-kind': GroupKind['values-first'] }],
+            options: [{ ...options, groupKind: GroupKind['values-first'] }],
             errors: [
               {
                 messageId: 'unexpectedNamedExportsOrder',
@@ -152,7 +152,7 @@ describe(RULE_NAME, () => {
             output: dedent`
               export { type Sakabotou, type Zanbato, Kenshin, Sanosuke }
             `,
-            options: [{ ...options, 'group-kind': GroupKind['types-first'] }],
+            options: [{ ...options, groupKind: GroupKind['types-first'] }],
             errors: [
               {
                 messageId: 'unexpectedNamedExportsOrder',
@@ -174,7 +174,7 @@ describe(RULE_NAME, () => {
     let options = {
       type: SortType.natural,
       order: SortOrder.asc,
-      'ignore-case': false,
+      ignoreCase: false,
     }
 
     ruleTester.run(`${RULE_NAME}(${type}): sorts named exports`, rule, {
@@ -223,19 +223,19 @@ describe(RULE_NAME, () => {
             code: dedent`
               export { Kenshin, type Sakabotou, Sanosuke, type Zanbato }
             `,
-            options: [{ ...options, 'group-kind': GroupKind.mixed }],
+            options: [{ ...options, groupKind: GroupKind.mixed }],
           },
           {
             code: dedent`
               export { Kenshin, Sanosuke, type Sakabotou, type Zanbato }
             `,
-            options: [{ ...options, 'group-kind': GroupKind['values-first'] }],
+            options: [{ ...options, groupKind: GroupKind['values-first'] }],
           },
           {
             code: dedent`
               export { type Sakabotou, type Zanbato, Kenshin, Sanosuke }
             `,
-            options: [{ ...options, 'group-kind': GroupKind['types-first'] }],
+            options: [{ ...options, groupKind: GroupKind['types-first'] }],
           },
         ],
         invalid: [
@@ -246,7 +246,7 @@ describe(RULE_NAME, () => {
             output: dedent`
              export { Kenshin, type Sakabotou, Sanosuke, type Zanbato }
             `,
-            options: [{ ...options, 'group-kind': GroupKind.mixed }],
+            options: [{ ...options, groupKind: GroupKind.mixed }],
             errors: [
               {
                 messageId: 'unexpectedNamedExportsOrder',
@@ -278,7 +278,7 @@ describe(RULE_NAME, () => {
             output: dedent`
               export { Kenshin, Sanosuke, type Sakabotou, type Zanbato }
             `,
-            options: [{ ...options, 'group-kind': GroupKind['values-first'] }],
+            options: [{ ...options, groupKind: GroupKind['values-first'] }],
             errors: [
               {
                 messageId: 'unexpectedNamedExportsOrder',
@@ -303,7 +303,7 @@ describe(RULE_NAME, () => {
             output: dedent`
               export { type Sakabotou, type Zanbato, Kenshin, Sanosuke }
             `,
-            options: [{ ...options, 'group-kind': GroupKind['types-first'] }],
+            options: [{ ...options, groupKind: GroupKind['types-first'] }],
             errors: [
               {
                 messageId: 'unexpectedNamedExportsOrder',
@@ -379,7 +379,7 @@ describe(RULE_NAME, () => {
                 Kenshin,
               }
             `,
-            options: [{ ...options, 'group-kind': GroupKind.mixed }],
+            options: [{ ...options, groupKind: GroupKind.mixed }],
           },
           {
             code: dedent`
@@ -391,7 +391,7 @@ describe(RULE_NAME, () => {
                 type Zanbato,
               }
             `,
-            options: [{ ...options, 'group-kind': GroupKind['values-first'] }],
+            options: [{ ...options, groupKind: GroupKind['values-first'] }],
           },
           {
             code: dedent`
@@ -403,7 +403,7 @@ describe(RULE_NAME, () => {
                 Kenshin,
               }
             `,
-            options: [{ ...options, 'group-kind': GroupKind['types-first'] }],
+            options: [{ ...options, groupKind: GroupKind['types-first'] }],
           },
         ],
         invalid: [
@@ -426,7 +426,7 @@ describe(RULE_NAME, () => {
                 Kenshin,
               }
             `,
-            options: [{ ...options, 'group-kind': GroupKind.mixed }],
+            options: [{ ...options, groupKind: GroupKind.mixed }],
             errors: [
               {
                 messageId: 'unexpectedNamedExportsOrder',
@@ -456,7 +456,7 @@ describe(RULE_NAME, () => {
                 type Zanbato,
               }
             `,
-            options: [{ ...options, 'group-kind': GroupKind['values-first'] }],
+            options: [{ ...options, groupKind: GroupKind['values-first'] }],
             errors: [
               {
                 messageId: 'unexpectedNamedExportsOrder',
@@ -493,7 +493,7 @@ describe(RULE_NAME, () => {
                 Kenshin,
               }
             `,
-            options: [{ ...options, 'group-kind': GroupKind['types-first'] }],
+            options: [{ ...options, groupKind: GroupKind['types-first'] }],
             errors: [
               {
                 messageId: 'unexpectedNamedExportsOrder',

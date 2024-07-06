@@ -23,7 +23,7 @@ describe(RULE_NAME, () => {
     let options = {
       type: SortType.alphabetical,
       order: SortOrder.asc,
-      'ignore-case': false,
+      ignoreCase: false,
     }
 
     ruleTester.run(`${RULE_NAME}(${type}): sorts interface properties`, rule, {
@@ -523,7 +523,7 @@ describe(RULE_NAME, () => {
               {
                 ...options,
                 groups: ['id', 'multiline', 'unknown'],
-                'custom-groups': {
+                customGroups: {
                   id: 'id',
                 },
               },
@@ -560,7 +560,7 @@ describe(RULE_NAME, () => {
               {
                 ...options,
                 groups: ['id', 'multiline', 'unknown'],
-                'custom-groups': {
+                customGroups: {
                   id: 'id',
                 },
               },
@@ -608,7 +608,7 @@ describe(RULE_NAME, () => {
             options: [
               {
                 ...options,
-                'partition-by-new-line': true,
+                partitionByNewLine: true,
               },
             ],
           },
@@ -644,7 +644,7 @@ describe(RULE_NAME, () => {
             options: [
               {
                 ...options,
-                'partition-by-new-line': true,
+                partitionByNewLine: true,
               },
             ],
             errors: [
@@ -681,7 +681,7 @@ describe(RULE_NAME, () => {
             options: [
               {
                 ...options,
-                'optionality-order': OptionalityOrder['optional-first'],
+                optionalityOrder: OptionalityOrder['optional-first'],
               },
             ],
           },
@@ -709,7 +709,7 @@ describe(RULE_NAME, () => {
             options: [
               {
                 ...options,
-                'optionality-order': OptionalityOrder['optional-first'],
+                optionalityOrder: OptionalityOrder['optional-first'],
               },
             ],
             errors: [
@@ -757,11 +757,11 @@ describe(RULE_NAME, () => {
             options: [
               {
                 ...options,
-                'custom-groups': {
+                customGroups: {
                   callback: 'on*',
                 },
                 groups: ['unknown', 'callback'],
-                'optionality-order': OptionalityOrder['optional-first'],
+                optionalityOrder: OptionalityOrder['optional-first'],
               },
             ],
             errors: [
@@ -789,7 +789,7 @@ describe(RULE_NAME, () => {
                 lastName?: string
                 password: string
                 username: string
-              
+
                 biography?: string
                 avatarUrl?: string
                 createdAt: Date
@@ -804,7 +804,7 @@ describe(RULE_NAME, () => {
                 id: number
                 password: string
                 username: string
-              
+
                 avatarUrl?: string
                 biography?: string
                 createdAt: Date
@@ -814,8 +814,8 @@ describe(RULE_NAME, () => {
             options: [
               {
                 ...options,
-                'optionality-order': OptionalityOrder['optional-first'],
-                'partition-by-new-line': true,
+                optionalityOrder: OptionalityOrder['optional-first'],
+                partitionByNewLine: true,
               },
             ],
             errors: [
@@ -859,7 +859,7 @@ describe(RULE_NAME, () => {
             options: [
               {
                 ...options,
-                'optionality-order': OptionalityOrder['required-first'],
+                optionalityOrder: OptionalityOrder['required-first'],
               },
             ],
           },
@@ -887,7 +887,7 @@ describe(RULE_NAME, () => {
             options: [
               {
                 ...options,
-                'optionality-order': OptionalityOrder['required-first'],
+                optionalityOrder: OptionalityOrder['required-first'],
               },
             ],
             errors: [
@@ -935,11 +935,11 @@ describe(RULE_NAME, () => {
             options: [
               {
                 ...options,
-                'custom-groups': {
+                customGroups: {
                   callback: 'on*',
                 },
                 groups: ['unknown', 'callback'],
-                'optionality-order': OptionalityOrder['required-first'],
+                optionalityOrder: OptionalityOrder['required-first'],
               },
             ],
             errors: [
@@ -967,7 +967,7 @@ describe(RULE_NAME, () => {
                 lastName?: string
                 password: string
                 username: string
-              
+
                 biography?: string
                 avatarUrl?: string
                 createdAt: Date
@@ -982,7 +982,7 @@ describe(RULE_NAME, () => {
                 username: string
                 firstName?: string
                 lastName?: string
-              
+
                 createdAt: Date
                 updatedAt: Date
                 avatarUrl?: string
@@ -992,8 +992,8 @@ describe(RULE_NAME, () => {
             options: [
               {
                 ...options,
-                'optionality-order': OptionalityOrder['required-first'],
-                'partition-by-new-line': true,
+                optionalityOrder: OptionalityOrder['required-first'],
+                partitionByNewLine: true,
               },
             ],
             errors: [
@@ -1038,7 +1038,7 @@ describe(RULE_NAME, () => {
     let options = {
       type: SortType.natural,
       order: SortOrder.asc,
-      'ignore-case': false,
+      ignoreCase: false,
     }
 
     ruleTester.run(`${RULE_NAME}(${type}): sorts interface properties`, rule, {
@@ -1538,7 +1538,7 @@ describe(RULE_NAME, () => {
               {
                 ...options,
                 groups: ['id', 'multiline', 'unknown'],
-                'custom-groups': {
+                customGroups: {
                   id: 'id',
                 },
               },
@@ -1575,7 +1575,7 @@ describe(RULE_NAME, () => {
               {
                 ...options,
                 groups: ['id', 'multiline', 'unknown'],
-                'custom-groups': {
+                customGroups: {
                   id: 'id',
                 },
               },
@@ -1623,7 +1623,7 @@ describe(RULE_NAME, () => {
             options: [
               {
                 ...options,
-                'partition-by-new-line': true,
+                partitionByNewLine: true,
               },
             ],
           },
@@ -1659,7 +1659,7 @@ describe(RULE_NAME, () => {
             options: [
               {
                 ...options,
-                'partition-by-new-line': true,
+                partitionByNewLine: true,
               },
             ],
             errors: [
@@ -1696,7 +1696,7 @@ describe(RULE_NAME, () => {
             options: [
               {
                 ...options,
-                'optionality-order': OptionalityOrder['optional-first'],
+                optionalityOrder: OptionalityOrder['optional-first'],
               },
             ],
           },
@@ -1724,7 +1724,7 @@ describe(RULE_NAME, () => {
             options: [
               {
                 ...options,
-                'optionality-order': OptionalityOrder['optional-first'],
+                optionalityOrder: OptionalityOrder['optional-first'],
               },
             ],
             errors: [
@@ -1772,11 +1772,11 @@ describe(RULE_NAME, () => {
             options: [
               {
                 ...options,
-                'custom-groups': {
+                customGroups: {
                   callback: 'on*',
                 },
                 groups: ['unknown', 'callback'],
-                'optionality-order': OptionalityOrder['optional-first'],
+                optionalityOrder: OptionalityOrder['optional-first'],
               },
             ],
             errors: [
@@ -1804,7 +1804,7 @@ describe(RULE_NAME, () => {
                 lastName?: string
                 password: string
                 username: string
-              
+
                 biography?: string
                 avatarUrl?: string
                 createdAt: Date
@@ -1819,7 +1819,7 @@ describe(RULE_NAME, () => {
                 id: number
                 password: string
                 username: string
-              
+
                 avatarUrl?: string
                 biography?: string
                 createdAt: Date
@@ -1829,8 +1829,8 @@ describe(RULE_NAME, () => {
             options: [
               {
                 ...options,
-                'optionality-order': OptionalityOrder['optional-first'],
-                'partition-by-new-line': true,
+                optionalityOrder: OptionalityOrder['optional-first'],
+                partitionByNewLine: true,
               },
             ],
             errors: [
@@ -1874,7 +1874,7 @@ describe(RULE_NAME, () => {
             options: [
               {
                 ...options,
-                'optionality-order': OptionalityOrder['required-first'],
+                optionalityOrder: OptionalityOrder['required-first'],
               },
             ],
           },
@@ -1902,7 +1902,7 @@ describe(RULE_NAME, () => {
             options: [
               {
                 ...options,
-                'optionality-order': OptionalityOrder['required-first'],
+                optionalityOrder: OptionalityOrder['required-first'],
               },
             ],
             errors: [
@@ -1950,11 +1950,11 @@ describe(RULE_NAME, () => {
             options: [
               {
                 ...options,
-                'custom-groups': {
+                customGroups: {
                   callback: 'on*',
                 },
                 groups: ['unknown', 'callback'],
-                'optionality-order': OptionalityOrder['required-first'],
+                optionalityOrder: OptionalityOrder['required-first'],
               },
             ],
             errors: [
@@ -1982,7 +1982,7 @@ describe(RULE_NAME, () => {
                 lastName?: string
                 password: string
                 username: string
-              
+
                 biography?: string
                 avatarUrl?: string
                 createdAt: Date
@@ -1997,7 +1997,7 @@ describe(RULE_NAME, () => {
                 username: string
                 firstName?: string
                 lastName?: string
-              
+
                 createdAt: Date
                 updatedAt: Date
                 avatarUrl?: string
@@ -2007,8 +2007,8 @@ describe(RULE_NAME, () => {
             options: [
               {
                 ...options,
-                'optionality-order': OptionalityOrder['required-first'],
-                'partition-by-new-line': true,
+                optionalityOrder: OptionalityOrder['required-first'],
+                partitionByNewLine: true,
               },
             ],
             errors: [
@@ -2501,7 +2501,7 @@ describe(RULE_NAME, () => {
               {
                 ...options,
                 groups: ['id', 'multiline', 'unknown'],
-                'custom-groups': {
+                customGroups: {
                   id: 'id',
                 },
               },
@@ -2538,7 +2538,7 @@ describe(RULE_NAME, () => {
               {
                 ...options,
                 groups: ['id', 'multiline', 'unknown'],
-                'custom-groups': {
+                customGroups: {
                   id: 'id',
                 },
               },
@@ -2593,7 +2593,7 @@ describe(RULE_NAME, () => {
             options: [
               {
                 ...options,
-                'partition-by-new-line': true,
+                partitionByNewLine: true,
               },
             ],
           },
@@ -2629,7 +2629,7 @@ describe(RULE_NAME, () => {
             options: [
               {
                 ...options,
-                'partition-by-new-line': true,
+                partitionByNewLine: true,
               },
             ],
             errors: [
@@ -2673,7 +2673,7 @@ describe(RULE_NAME, () => {
             options: [
               {
                 ...options,
-                'optionality-order': OptionalityOrder['optional-first'],
+                optionalityOrder: OptionalityOrder['optional-first'],
               },
             ],
           },
@@ -2701,7 +2701,7 @@ describe(RULE_NAME, () => {
             options: [
               {
                 ...options,
-                'optionality-order': OptionalityOrder['optional-first'],
+                optionalityOrder: OptionalityOrder['optional-first'],
               },
             ],
             errors: [
@@ -2749,11 +2749,11 @@ describe(RULE_NAME, () => {
             options: [
               {
                 ...options,
-                'custom-groups': {
+                customGroups: {
                   callback: 'on*',
                 },
                 groups: ['unknown', 'callback'],
-                'optionality-order': OptionalityOrder['optional-first'],
+                optionalityOrder: OptionalityOrder['optional-first'],
               },
             ],
             errors: [
@@ -2788,7 +2788,7 @@ describe(RULE_NAME, () => {
                 lastName?: string
                 password: string
                 username: string
-              
+
                 biography?: string
                 avatarUrl?: string
                 createdAt: Date
@@ -2803,7 +2803,7 @@ describe(RULE_NAME, () => {
                 username: string
                 email: string
                 id: number
-              
+
                 biography?: string
                 avatarUrl?: string
                 createdAt: Date
@@ -2813,8 +2813,8 @@ describe(RULE_NAME, () => {
             options: [
               {
                 ...options,
-                'optionality-order': OptionalityOrder['optional-first'],
-                'partition-by-new-line': true,
+                optionalityOrder: OptionalityOrder['optional-first'],
+                partitionByNewLine: true,
               },
             ],
             errors: [
@@ -2851,7 +2851,7 @@ describe(RULE_NAME, () => {
             options: [
               {
                 ...options,
-                'optionality-order': OptionalityOrder['required-first'],
+                optionalityOrder: OptionalityOrder['required-first'],
               },
             ],
           },
@@ -2879,7 +2879,7 @@ describe(RULE_NAME, () => {
             options: [
               {
                 ...options,
-                'optionality-order': OptionalityOrder['required-first'],
+                optionalityOrder: OptionalityOrder['required-first'],
               },
             ],
             errors: [
@@ -2927,11 +2927,11 @@ describe(RULE_NAME, () => {
             options: [
               {
                 ...options,
-                'custom-groups': {
+                customGroups: {
                   callback: 'on*',
                 },
                 groups: ['unknown', 'callback'],
-                'optionality-order': OptionalityOrder['required-first'],
+                optionalityOrder: OptionalityOrder['required-first'],
               },
             ],
             errors: [
@@ -2966,7 +2966,7 @@ describe(RULE_NAME, () => {
                 lastName?: string
                 password: string
                 username: string
-              
+
                 biography?: string
                 avatarUrl?: string
                 createdAt: Date
@@ -2981,7 +2981,7 @@ describe(RULE_NAME, () => {
                 id: number
                 firstName?: string
                 lastName?: string
-              
+
                 createdAt: Date
                 updatedAt: Date
                 biography?: string
@@ -2991,8 +2991,8 @@ describe(RULE_NAME, () => {
             options: [
               {
                 ...options,
-                'optionality-order': OptionalityOrder['required-first'],
-                'partition-by-new-line': true,
+                optionalityOrder: OptionalityOrder['required-first'],
+                partitionByNewLine: true,
               },
             ],
             errors: [
@@ -3089,7 +3089,7 @@ describe(RULE_NAME, () => {
             {
               type: SortType['line-length'],
               order: SortOrder.desc,
-              'ignore-pattern': ['Ui*'],
+              ignorePattern: ['Ui*'],
             },
           ],
         },
@@ -3104,7 +3104,7 @@ describe(RULE_NAME, () => {
             {
               type: SortType['line-length'],
               order: SortOrder.desc,
-              'ignore-pattern': ['Ui*'],
+              ignorePattern: ['Ui*'],
             },
           ],
         },

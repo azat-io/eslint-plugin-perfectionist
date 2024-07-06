@@ -102,10 +102,10 @@ type Group = 'multiline' | CustomGroup
 interface Options {
   type?: 'alphabetical' | 'natural' | 'line-length'
   order?: 'asc' | 'desc'
-  'ignore-case'?: boolean
+  ignoreCase?: boolean
   groups?: (Group | Group[])[]
-  'custom-groups'?: { [key: Group]: string[] | string }
-  'partition-by-new-line'?: boolean
+  customGroups?: { [key: Group]: string[] | string }
+  partitionByNewLine?: boolean
 }
 ```
 
@@ -124,7 +124,7 @@ interface Options {
 - `asc` — enforce properties to be in ascending order.
 - `desc` — enforce properties to be in descending order.
 
-### ignore-case
+### ignoreCase
 
 <sub>(default: `false`)</sub>
 
@@ -136,7 +136,7 @@ Only affects alphabetical and natural sorting. When `true` the rule ignores the 
 
 You can set up a list of type properties groups for sorting. Groups can be combined. There are predefined group: `'multiline'`.
 
-### custom-groups
+### customGroups
 
 <sub>(default: `{}`)</sub>
 
@@ -146,13 +146,13 @@ Example:
 
 ```json
 {
-  "custom-groups": {
+  "customGroups": {
     "callback": "on*"
   }
 }
 ```
 
-### partition-by-new-line
+### partitionByNewLine
 
 <sub>(default: `false`)</sub>
 
@@ -178,7 +178,6 @@ When `true`, does not sort the object type's members if there is an empty string
                 {
                   type: 'natural',
                   order: 'asc',
-                  'always-on-top': ['id'],
                 },
               ],
             },
@@ -201,7 +200,6 @@ When `true`, does not sort the object type's members if there is an empty string
               {
                 type: 'natural',
                 order: 'asc',
-                'always-on-top': ['id'],
               },
             ],
           },
@@ -210,11 +208,10 @@ When `true`, does not sort the object type's members if there is an empty string
       name: 'Legacy Config',
       value: 'legacy',
     },
-
-]}
-type="config-type"
-client:load
-lang="ts"
+  ]}
+  type="config-type"
+  client:load
+  lang="ts"
 />
 
 ## Version

@@ -23,7 +23,7 @@ describe(RULE_NAME, () => {
     let options = {
       type: SortType.alphabetical,
       order: SortOrder.asc,
-      'ignore-case': false,
+      ignoreCase: false,
     }
 
     ruleTester.run(`${RULE_NAME}(${type}): sorts named imports`, rule, {
@@ -261,7 +261,7 @@ describe(RULE_NAME, () => {
           options: [
             {
               ...options,
-              'ignore-alias': false,
+              ignoreAlias: false,
             },
           ],
         },
@@ -285,7 +285,7 @@ describe(RULE_NAME, () => {
           options: [
             {
               ...options,
-              'ignore-alias': false,
+              ignoreAlias: false,
             },
           ],
           errors: [
@@ -310,19 +310,19 @@ describe(RULE_NAME, () => {
             code: dedent`
               import { Kenshin, type Sakabotou, Sanosuke, type Zanbato } from 'rurouni-kenshin'
             `,
-            options: [{ ...options, 'group-kind': GroupKind.mixed }],
+            options: [{ ...options, groupKind: GroupKind.mixed }],
           },
           {
             code: dedent`
               import { Kenshin, Sanosuke, type Sakabotou, type Zanbato } from 'rurouni-kenshin'
             `,
-            options: [{ ...options, 'group-kind': GroupKind['values-first'] }],
+            options: [{ ...options, groupKind: GroupKind['values-first'] }],
           },
           {
             code: dedent`
               import { type Sakabotou, type Zanbato, Kenshin, Sanosuke } from 'rurouni-kenshin'
             `,
-            options: [{ ...options, 'group-kind': GroupKind['types-first'] }],
+            options: [{ ...options, groupKind: GroupKind['types-first'] }],
           },
         ],
         invalid: [
@@ -333,7 +333,7 @@ describe(RULE_NAME, () => {
             output: dedent`
               import { Kenshin, type Sakabotou, Sanosuke, type Zanbato } from 'rurouni-kenshin'
             `,
-            options: [{ ...options, 'group-kind': GroupKind.mixed }],
+            options: [{ ...options, groupKind: GroupKind.mixed }],
             errors: [
               {
                 messageId: 'unexpectedNamedImportsOrder',
@@ -365,7 +365,7 @@ describe(RULE_NAME, () => {
             output: dedent`
               import { Kenshin, Sanosuke, type Sakabotou, type Zanbato } from 'rurouni-kenshin'
             `,
-            options: [{ ...options, 'group-kind': GroupKind['values-first'] }],
+            options: [{ ...options, groupKind: GroupKind['values-first'] }],
             errors: [
               {
                 messageId: 'unexpectedNamedImportsOrder',
@@ -390,7 +390,7 @@ describe(RULE_NAME, () => {
             output: dedent`
               import { type Sakabotou, type Zanbato, Kenshin, Sanosuke } from 'rurouni-kenshin'
             `,
-            options: [{ ...options, 'group-kind': GroupKind['types-first'] }],
+            options: [{ ...options, groupKind: GroupKind['types-first'] }],
             errors: [
               {
                 messageId: 'unexpectedNamedImportsOrder',
@@ -412,7 +412,7 @@ describe(RULE_NAME, () => {
     let options = {
       type: SortType.natural,
       order: SortOrder.asc,
-      'ignore-case': false,
+      ignoreCase: false,
     }
 
     ruleTester.run(`${RULE_NAME}(${type}): sorts named imports`, rule, {
@@ -650,7 +650,7 @@ describe(RULE_NAME, () => {
           options: [
             {
               ...options,
-              'ignore-alias': false,
+              ignoreAlias: false,
             },
           ],
         },
@@ -674,7 +674,7 @@ describe(RULE_NAME, () => {
           options: [
             {
               ...options,
-              'ignore-alias': false,
+              ignoreAlias: false,
             },
           ],
           errors: [
@@ -699,19 +699,19 @@ describe(RULE_NAME, () => {
             code: dedent`
               import { Kenshin, type Sakabotou, Sanosuke, type Zanbato } from 'rurouni-kenshin'
             `,
-            options: [{ ...options, 'group-kind': GroupKind.mixed }],
+            options: [{ ...options, groupKind: GroupKind.mixed }],
           },
           {
             code: dedent`
               import { Kenshin, Sanosuke, type Sakabotou, type Zanbato } from 'rurouni-kenshin'
             `,
-            options: [{ ...options, 'group-kind': GroupKind['values-first'] }],
+            options: [{ ...options, groupKind: GroupKind['values-first'] }],
           },
           {
             code: dedent`
               import { type Sakabotou, type Zanbato, Kenshin, Sanosuke } from 'rurouni-kenshin'
             `,
-            options: [{ ...options, 'group-kind': GroupKind['types-first'] }],
+            options: [{ ...options, groupKind: GroupKind['types-first'] }],
           },
         ],
         invalid: [
@@ -722,7 +722,7 @@ describe(RULE_NAME, () => {
             output: dedent`
               import { Kenshin, type Sakabotou, Sanosuke, type Zanbato } from 'rurouni-kenshin'
             `,
-            options: [{ ...options, 'group-kind': GroupKind.mixed }],
+            options: [{ ...options, groupKind: GroupKind.mixed }],
             errors: [
               {
                 messageId: 'unexpectedNamedImportsOrder',
@@ -754,7 +754,7 @@ describe(RULE_NAME, () => {
             output: dedent`
               import { Kenshin, Sanosuke, type Sakabotou, type Zanbato } from 'rurouni-kenshin'
             `,
-            options: [{ ...options, 'group-kind': GroupKind['values-first'] }],
+            options: [{ ...options, groupKind: GroupKind['values-first'] }],
             errors: [
               {
                 messageId: 'unexpectedNamedImportsOrder',
@@ -779,7 +779,7 @@ describe(RULE_NAME, () => {
             output: dedent`
               import { type Sakabotou, type Zanbato, Kenshin, Sanosuke } from 'rurouni-kenshin'
             `,
-            options: [{ ...options, 'group-kind': GroupKind['types-first'] }],
+            options: [{ ...options, groupKind: GroupKind['types-first'] }],
             errors: [
               {
                 messageId: 'unexpectedNamedImportsOrder',
@@ -1033,7 +1033,7 @@ describe(RULE_NAME, () => {
                 Kenshin,
               } from 'rurouni-kenshin'
             `,
-            options: [{ ...options, 'group-kind': GroupKind.mixed }],
+            options: [{ ...options, groupKind: GroupKind.mixed }],
           },
           {
             code: dedent`
@@ -1045,7 +1045,7 @@ describe(RULE_NAME, () => {
                 type Zanbato,
               } from 'rurouni-kenshin'
             `,
-            options: [{ ...options, 'group-kind': GroupKind['values-first'] }],
+            options: [{ ...options, groupKind: GroupKind['values-first'] }],
           },
           {
             code: dedent`
@@ -1057,7 +1057,7 @@ describe(RULE_NAME, () => {
                 Kenshin,
               } from 'rurouni-kenshin'
             `,
-            options: [{ ...options, 'group-kind': GroupKind['types-first'] }],
+            options: [{ ...options, groupKind: GroupKind['types-first'] }],
           },
         ],
         invalid: [
@@ -1080,7 +1080,7 @@ describe(RULE_NAME, () => {
                 Kenshin,
               } from 'rurouni-kenshin'
             `,
-            options: [{ ...options, 'group-kind': GroupKind.mixed }],
+            options: [{ ...options, groupKind: GroupKind.mixed }],
             errors: [
               {
                 messageId: 'unexpectedNamedImportsOrder',
@@ -1110,7 +1110,7 @@ describe(RULE_NAME, () => {
                 type Zanbato,
               } from 'rurouni-kenshin'
             `,
-            options: [{ ...options, 'group-kind': GroupKind['values-first'] }],
+            options: [{ ...options, groupKind: GroupKind['values-first'] }],
             errors: [
               {
                 messageId: 'unexpectedNamedImportsOrder',
@@ -1147,7 +1147,7 @@ describe(RULE_NAME, () => {
                 Kenshin,
               } from 'rurouni-kenshin'
             `,
-            options: [{ ...options, 'group-kind': GroupKind['types-first'] }],
+            options: [{ ...options, groupKind: GroupKind['types-first'] }],
             errors: [
               {
                 messageId: 'unexpectedNamedImportsOrder',

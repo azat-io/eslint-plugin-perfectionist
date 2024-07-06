@@ -29,7 +29,7 @@ describe(RULE_NAME, () => {
     let options = {
       type: SortType.alphabetical,
       order: SortOrder.asc,
-      'ignore-case': false,
+      ignoreCase: false,
     }
 
     ruleTester.run(
@@ -224,7 +224,7 @@ describe(RULE_NAME, () => {
               {
                 ...options,
                 groups: ['multiline', 'directives', 'unknown', 'shorthand'],
-                'custom-groups': {
+                customGroups: {
                   directives: 'v-*',
                 },
               },
@@ -282,7 +282,7 @@ describe(RULE_NAME, () => {
               {
                 ...options,
                 groups: ['multiline', 'directives', 'unknown', 'shorthand'],
-                'custom-groups': {
+                customGroups: {
                   directives: 'v-*',
                 },
               },
@@ -322,7 +322,7 @@ describe(RULE_NAME, () => {
     let options = {
       type: SortType.natural,
       order: SortOrder.asc,
-      'ignore-case': false,
+      ignoreCase: false,
     }
 
     ruleTester.run(
@@ -517,7 +517,7 @@ describe(RULE_NAME, () => {
               {
                 ...options,
                 groups: ['multiline', 'directives', 'unknown', 'shorthand'],
-                'custom-groups': {
+                customGroups: {
                   directives: 'v-*',
                 },
               },
@@ -575,7 +575,7 @@ describe(RULE_NAME, () => {
               {
                 ...options,
                 groups: ['multiline', 'directives', 'unknown', 'shorthand'],
-                'custom-groups': {
+                customGroups: {
                   directives: 'v-*',
                 },
               },
@@ -802,7 +802,7 @@ describe(RULE_NAME, () => {
               {
                 ...options,
                 groups: ['multiline', 'directives', 'unknown', 'shorthand'],
-                'custom-groups': {
+                customGroups: {
                   directives: 'v-*',
                 },
               },
@@ -860,7 +860,7 @@ describe(RULE_NAME, () => {
               {
                 ...options,
                 groups: ['multiline', 'directives', 'unknown', 'shorthand'],
-                'custom-groups': {
+                customGroups: {
                   directives: 'v-*',
                 },
               },

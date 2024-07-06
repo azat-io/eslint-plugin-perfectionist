@@ -21,9 +21,9 @@ type Group<T extends string[]> = 'multiline' | 'unknown' | T[number]
 type Options<T extends string[]> = [
   Partial<{
     groups: (Group<T>[] | Group<T>)[]
-    'partition-by-new-line': boolean
-    'ignore-case': boolean
-    'custom-groups': {}
+    partitionByNewLine: boolean
+    ignoreCase: boolean
+    customGroups: {}
     order: SortOrder
     type: SortType
   }>,
@@ -43,7 +43,7 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
       {
         type: 'object',
         properties: {
-          'custom-groups': {
+          customGroups: {
             type: 'object',
           },
           type: {
@@ -60,7 +60,7 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
             default: SortOrder.asc,
             type: 'string',
           },
-          'ignore-case': {
+          ignoreCase: {
             type: 'boolean',
             default: false,
           },
@@ -68,7 +68,7 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
             type: 'array',
             default: [],
           },
-          'partition-by-new-line': {
+          partitionByNewLine: {
             type: 'boolean',
             default: false,
           },
@@ -91,11 +91,11 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
     TSTypeLiteral: node => {
       if (node.members.length > 1) {
         let options = complete(context.options.at(0), {
-          'partition-by-new-line': false,
+          partitionByNewLine: false,
           type: SortType.alphabetical,
-          'ignore-case': false,
+          ignoreCase: false,
           order: SortOrder.asc,
-          'custom-groups': {},
+          customGroups: {},
           groups: [],
         })
 
@@ -142,7 +142,7 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
               )
             }
 
-            setCustomGroups(options['custom-groups'], name)
+            setCustomGroups(options.customGroups, name)
 
             if (member.loc.start.line !== member.loc.end.line) {
               defineGroup('multiline')
@@ -158,7 +158,7 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
             }
 
             if (
-              options['partition-by-new-line'] &&
+              options.partitionByNewLine &&
               lastMember &&
               getLinesBetween(context.sourceCode, lastMember, memberSortingNode)
             ) {

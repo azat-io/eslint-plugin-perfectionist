@@ -28,9 +28,9 @@ type MESSAGE_ID = 'unexpectedAstroAttributesOrder'
 
 type Options<T extends string[]> = [
   Partial<{
-    'custom-groups': { [key in T[number]]: string[] | string }
+    customGroups: { [key in T[number]]: string[] | string }
     groups: (Group<T>[] | Group<T>)[]
-    'ignore-case': boolean
+    ignoreCase: boolean
     order: SortOrder
     type: SortType
   }>,
@@ -50,7 +50,7 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
       {
         type: 'object',
         properties: {
-          'custom-groups': {
+          customGroups: {
             type: 'object',
           },
           type: {
@@ -67,7 +67,7 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
             default: SortOrder.asc,
             type: 'string',
           },
-          'ignore-case': {
+          ignoreCase: {
             type: 'boolean',
             default: false,
           },
@@ -103,8 +103,8 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
           let options = complete(context.options.at(0), {
             type: SortType.alphabetical,
             order: SortOrder.asc,
-            'ignore-case': false,
-            'custom-groups': {},
+            ignoreCase: false,
+            customGroups: {},
             groups: [],
           })
 
@@ -124,7 +124,7 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
                 options.groups,
               )
 
-              setCustomGroups(options['custom-groups'], name)
+              setCustomGroups(options.customGroups, name)
 
               if (attribute.type === 'AstroShorthandAttribute') {
                 defineGroup('astro-shorthand')

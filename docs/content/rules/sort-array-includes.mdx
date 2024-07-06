@@ -123,8 +123,8 @@ This rule accepts an options object with the following properties:
 interface Options {
   type?: 'alphabetical' | 'natural' | 'line-length'
   order?: 'asc' | 'desc'
-  'ignore-case'?: boolean
-  'spread-last'?: boolean
+  ignoreCase?: boolean
+  spreadLast?: boolean
 }
 ```
 
@@ -143,13 +143,13 @@ interface Options {
 - `asc` — enforce properties to be in ascending order.
 - `desc` — enforce properties to be in descending order.
 
-### ignore-case
+### ignoreCase
 
 <sub>(default: `false`)</sub>
 
 Only affects alphabetical and natural sorting. When `true` the rule ignores the case-sensitivity of the order.
 
-### spread-last
+### spreadLast
 
 <sub>(default: `false`)</sub>
 
@@ -175,7 +175,7 @@ When `true` enforce spread elements in array to be last.
                 {
                   type: 'natural',
                   order: 'asc',
-                  'spread-last': true,
+                  spreadLast: true,
                 },
               ],
             },
@@ -198,7 +198,7 @@ When `true` enforce spread elements in array to be last.
               {
                 type: 'natural',
                 order: 'asc',
-                'spread-last': true,
+                spreadLast: true,
               },
             ],
           },
@@ -207,11 +207,10 @@ When `true` enforce spread elements in array to be last.
       name: 'Legacy Config',
       value: 'legacy',
     },
-
-]}
-type="config-type"
-client:load
-lang="ts"
+  ]}
+  type="config-type"
+  client:load
+  lang="ts"
 />
 
 ## Version

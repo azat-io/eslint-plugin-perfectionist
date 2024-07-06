@@ -16,7 +16,7 @@ type MESSAGE_ID = 'unexpectedExportsOrder'
 
 type Options = [
   Partial<{
-    'ignore-case': boolean
+    ignoreCase: boolean
     order: SortOrder
     type: SortType
   }>,
@@ -50,7 +50,7 @@ export default createEslintRule<Options, MESSAGE_ID>({
             default: SortOrder.asc,
             type: 'string',
           },
-          'ignore-case': {
+          ignoreCase: {
             type: 'boolean',
             default: false,
           },
@@ -72,7 +72,7 @@ export default createEslintRule<Options, MESSAGE_ID>({
     let options = complete(context.options.at(0), {
       type: SortType.alphabetical,
       order: SortOrder.asc,
-      'ignore-case': false,
+      ignoreCase: false,
     })
 
     let parts: SortingNode[][] = [[]]
