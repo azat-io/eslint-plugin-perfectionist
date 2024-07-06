@@ -339,7 +339,7 @@ export default createEslintRule<Options, MESSAGE_ID>({
                     grouped[groupNum] = [currentNode]
                   } else {
                     grouped[groupNum] = sortNodes(
-                      [...(grouped[groupNum] ?? []), currentNode],
+                      [...grouped[groupNum], currentNode],
                       options,
                     )
                   }
@@ -350,7 +350,7 @@ export default createEslintRule<Options, MESSAGE_ID>({
                 for (let group of Object.keys(grouped).sort(
                   (a, b) => Number(a) - Number(b),
                 )) {
-                  sortedNodes.push(...sortNodes(grouped[group] ?? [], options))
+                  sortedNodes.push(...sortNodes(grouped[group], options))
                 }
 
                 return makeFixes(

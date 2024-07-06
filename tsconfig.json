@@ -1,7 +1,6 @@
 {
   "include": ["**/*.svelte", "**/*.astro", "**/*.ts"],
   "exclude": ["node_modules", "coverage"],
-  "extends": "astro/tsconfigs/strictest",
   "compilerOptions": {
     "forceConsistentCasingInFileNames": true,
     "moduleResolution": "bundler",

@@ -29,8 +29,9 @@ let extractSvgAttributes = (svgString: string): SvgAttributes => {
     let attributeMatch
 
     while ((attributeMatch = attributeRegex.exec(match[1]))) {
-      attributes[attributeMatch[1] as keyof SvgAttributes] =
-        attributeMatch[2] ?? ''
+      if (attributeMatch[1]) {
+        attributes[attributeMatch[1]] = attributeMatch[2] || ''
+      }
     }
   }
 
@@ -40,7 +41,7 @@ let extractSvgAttributes = (svgString: string): SvgAttributes => {
 let stripSvgWrapper = (svgString: string): string => {
   let regex = /<svg[^>]*>([\S\s]*?)<\/svg>/
   let match = svgString.match(regex)
-  return match ? (match[1] ?? '').trim() : svgString
+  return match ? (match[1] || '').trim() : svgString
 }
 ---
 
