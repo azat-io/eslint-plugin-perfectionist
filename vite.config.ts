@@ -30,4 +30,9 @@ export default defineConfig({
     },
     minify: false,
   },
+  test: {
+    coverage: {
+      all: false,
+    },
+  },
 })
