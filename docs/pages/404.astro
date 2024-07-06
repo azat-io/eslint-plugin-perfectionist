@@ -1,0 +1,26 @@
+---
+import Typography from '../components/Typography.astro'
+import LayoutContent from '../layouts/Content.astro'
+import Title from '../components/Title.astro'
+---
+
+<LayoutContent description="Page not found" title="404">
+  <div class="wrapper">
+    <Title>Page not Found</Title>
+    <Typography align="center">
+      Back to <a href="/">Home</a>.
+    </Typography>
+  </div>
+</LayoutContent>
+
+<style>
+  .wrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    block-size: 100%;
+    background: var(--color-background-secondary);
+    transform: translateY(calc(0px - var(--space-l)));
+  }
+</style>

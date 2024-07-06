@@ -1,0 +1,23 @@
+---
+import Typography from './Typography.astro'
+---
+
+<div class="important">
+  <Typography class="title" size="l" bold> Important</Typography>
+  <slot />
+</div>
+
+<style>
+  .important {
+    position: relative;
+    inline-size: 100%;
+    padding: var(--space-m);
+    background: var(--color-background-secondary-hover);
+    border: 2px solid var(--color-background-secondary-hover);
+    border-radius: var(--border-radius);
+
+    & :global(p:last-child) {
+      margin-block-end: 0;
+    }
+  }
+</style>

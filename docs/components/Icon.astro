@@ -1,0 +1,86 @@
+---
+import { optimize } from 'svgo'
+
+interface Props {
+  size?: 'xs' | 's' | 'm' | 'l'
+  class?: string
+  name: string
+}
+
+type SvgAttributes = Record<string, string>
+
+let { class: className, size = 'm', name, ...props } = Astro.props
+
+let iconRaw = (await import(`../icons/${name}.svg?raw`)).default
+let icon = optimize(iconRaw, { plugins: ['preset-default'] }).data
+let classList: Record<string, true> = {}
+
+if (className) {
+  classList[className] = true
+}
+
+let extractSvgAttributes = (svgString: string): SvgAttributes => {
+  let attributes: SvgAttributes = {}
+  let regex = /<svg\s([^>]*)>/
+  let match = svgString.match(regex)
+
+  if (match?.[1]) {
+    let attributeRegex = /(\w+)=["']([^"']+)["']/g
+    let attributeMatch
+
+    while ((attributeMatch = attributeRegex.exec(match[1]))) {
+      attributes[attributeMatch[1] as keyof SvgAttributes] =
+        attributeMatch[2] ?? ''
+    }
+  }
+
+  return attributes
+}
+
+let stripSvgWrapper = (svgString: string): string => {
+  let regex = /<svg[^>]*>([\S\s]*?)<\/svg>/
+  let match = svgString.match(regex)
+  return match ? (match[1] ?? '').trim() : svgString
+}
+---
+
+<svg
+  class:list={{
+    [`size-${size}`]: true,
+    icon: true,
+    ...classList,
+  }}
+  {...extractSvgAttributes(icon)}
+  {...props}
+>
+  <Fragment set:html={stripSvgWrapper(icon)} />
+</svg>
+
+<style>
+  .icon {
+    display: flex;
+    flex-shrink: 0;
+    inline-size: var(--size);
+    block-size: var(--size);
+
+    @media print {
+      color: var(--color-content-print);
+    }
+  }
+
+  .size-xs {
+    --size: var(--size-icon-xs);
+  }
+
+  .size-s {
+    --size: var(--size-icon-s);
+  }
+
+  .size-m {
+    --size: var(--size-icon-m);
+  }
+
+  .size-l {
+    --size: var(--size-icon-l);
+  }
+</style>

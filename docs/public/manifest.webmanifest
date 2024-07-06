@@ -1,0 +1,23 @@
+{
+  "name": "ESLint Plugin Perfectionist",
+  "short_name": "Perfectionist.",
+  "description": "ESLint plugin for sorting various data such as objects, imports, types, enums, JSX props, etc.",
+  "display": "standalone",
+  "start_url": "/",
+  "theme_color": "#1e1e1e",
+  "background_color": "#1e1e1e",
+  "icons": [
+    {
+      "src": "/icon-192.png",
+      "type": "image/png",
+      "sizes": "192x192",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/icon-512.png",
+      "type": "image/png",
+      "sizes": "512x512",
+      "purpose": "any maskable"
+    }
+  ]
+}

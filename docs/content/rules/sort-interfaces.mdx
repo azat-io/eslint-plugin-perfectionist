@@ -1,0 +1,280 @@
+---
+title: sort-interfaces
+description: Enforce sorting of TypeScript interface properties for a clear and predictable code structure. Use this ESLint rule to maintain consistency in your interfaces
+shortDescription: Enforce sorted interface properties
+keywords:
+  - eslint
+  - sort interfaces
+  - eslint rule
+  - coding standards
+  - code quality
+  - javascript linting
+  - typescript interfaces sorting
+---
+
+import CodeExample from '../../components/CodeExample.svelte'
+import Important from '../../components/Important.astro'
+import CodeTabs from '../../components/CodeTabs.svelte'
+import { dedent } from 'ts-dedent'
+
+Enforce sorted TypeScript interface properties.
+
+Sorting interface properties in TypeScript provides a clear and predictable structure to the codebase. This rule helps developers locate various properties defined within an interface more easily, promoting consistency and enabling efficient maintenance and collaboration.
+
+Additionally, it ensures that property comments are sorted along with the properties themselves, preserving documentation clarity.
+
+<Important>
+  If you use the
+  [`adjacent-overload-signatures`](https://typescript-eslint.io/rules/adjacent-overload-signatures)
+  rule from the
+  [`@typescript-eslint/eslint-plugin`](https://typescript-eslint.io) plugin, it
+  is highly recommended to [disable
+  it](https://eslint.org/docs/latest/use/configure/rules#using-configuration-files-1)
+  to avoid conflicts.
+</Important>
+
+It's **safe**. If you document interface properties line by line, property comments will also be sorted.
+
+## Try it out
+
+<CodeExample
+  alphabetical={dedent`
+    interface Address {
+      apartmentNumber?: string
+      city: string
+      country: string
+      postalCode: string
+      street: string
+    }
+
+    interface User {
+      address: Address
+      email: string
+      firstName: string
+      id: string
+      login: string
+      phoneNumber?: string
+      roles: string[]
+    }
+
+    interface Project {
+      budget: number
+      description: string
+      id: string
+      name: string
+      projectTeamMembers: User[]
+      startDate: Date
+      status: string
+    }
+  `}
+  lineLength={dedent`
+    interface Address {
+      apartmentNumber?: string
+      postalCode: string
+      country: string
+      street: string
+      city: string
+    }
+
+    interface User {
+      phoneNumber?: string
+      firstName: string
+      address: Address
+      roles: string[]
+      email: string
+      login: string
+      id: string
+    }
+
+    interface Project {
+      projectTeamMembers: User[]
+      description: string
+      startDate: Date
+      budget: number
+      status: string
+      name: string
+      id: string
+    }
+  `}
+  initial={dedent`
+    interface Address {
+      street: string
+      city: string
+      country: string
+      postalCode: string
+      apartmentNumber?: string
+    }
+
+    interface User {
+      firstName: string
+      email: string
+      roles: string[]
+      login: string
+      phoneNumber?: string
+      address: Address
+      id: string
+    }
+
+    interface Project {
+      startDate: Date
+      budget: number
+      description: string
+      id: string
+      projectTeamMembers: User[]
+      name: string
+      status: string
+    }
+  `}
+  client:load
+  lang="tsx"
+/>
+
+## Options
+
+This rule accepts an options object with the following properties:
+
+```ts
+type CustomGroup = string
+type Group = 'multiline' | CustomGroup
+
+interface Options {
+  type?: 'alphabetical' | 'natural' | 'line-length'
+  'optionality-order'?: 'ignore' | 'optional-first' | 'required-first'
+  order?: 'asc' | 'desc'
+  'ignore-case'?: boolean
+  groups?: (Group | Group[])[]
+  'custom-groups'?: { [key: Group]: string[] | string }
+  'ignore-pattern'?: string[]
+  'partition-by-new-line'?: boolean
+}
+```
+
+### type
+
+<sub>(default: `'alphabetical'`)</sub>
+
+- `alphabetical` — sort alphabetically.
+- `natural` — sort in natural order.
+- `line-length` — sort by code line length.
+
+### optionality-order
+
+<sub>(default: `'ignore'`)</sub>
+
+- `optional-first` — put all optional members first.
+- `required-first` — put all required members first.
+
+### order
+
+<sub>(default: `'asc'`)</sub>
+
+- `asc` — enforce properties to be in ascending order.
+- `desc` - enforce properties to be in descending order.
+
+### ignore-case
+
+<sub>(default: `false`)</sub>
+
+Only affects alphabetical and natural sorting. When `true` the rule ignores the case-sensitivity of the order.
+
+### groups
+
+<sub>(default: `[]`)</sub>
+
+You can set up a list of interface groups for sorting. Groups can be combined. There are predefined group: `'multiline'`.
+
+### custom-groups
+
+<sub>(default: `{}`)</sub>
+
+You can define your own groups for object keys. The [minimatch](https://github.com/isaacs/minimatch) library is used for pattern matching.
+
+Example:
+
+```json
+{
+  "custom-groups": {
+    "top": "id"
+  }
+}
+```
+
+### ignore-pattern
+
+<sub>(default: `[]`)</sub>
+
+If you need to ignore a rule for some interfaces, you can specify their names or a pattern to ignore, for example: `'Component*'` to ignore all interfaces whose names begin with the word Component.
+
+The [minimatch](https://github.com/isaacs/minimatch) library is used for pattern matching.
+
+### partition-by-new-line
+
+<sub>(default: `false`)</sub>
+
+When `true`, does not sort the interface's element if there is an empty string between them.
+
+## Usage
+
+<CodeTabs
+  code={[
+    {
+      source: dedent`
+        // eslint.config.js
+        import perfectionist from 'eslint-plugin-perfectionist'
+
+        export default [
+          {
+            plugins: {
+              perfectionist,
+            },
+            rules: {
+              'perfectionist/sort-interfaces': [
+                'error',
+                {
+                  type: 'natural',
+                  order: 'asc',
+                },
+              ],
+            },
+          },
+        ]
+      `,
+      name: 'Flat Config',
+      value: 'flat',
+    },
+    {
+      source: dedent`
+        // .eslintrc.js
+        export default {
+          plugins: [
+            'perfectionist',
+          ],
+          rules: {
+            'perfectionist/sort-interfaces': [
+              'error',
+              {
+                type: 'natural',
+                order: 'asc',
+              },
+            ],
+          },
+        }
+      `,
+      name: 'Legacy Config',
+      value: 'legacy',
+    },
+
+]}
+type="config-type"
+client:load
+lang="ts"
+/>
+
+## Version
+
+This rule was introduced in [v0.1.0](https://github.com/azat-io/eslint-plugin-perfectionist/releases/tag/v0.1.0).
+
+## Resources
+
+- [Rule source](https://github.com/azat-io/eslint-plugin-perfectionist/blob/main/rules/sort-interfaces.ts)
+- [Test source](https://github.com/azat-io/eslint-plugin-perfectionist/blob/main/test/sort-interfaces.test.ts)

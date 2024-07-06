@@ -1,0 +1,189 @@
+---
+title: sort-enums
+description: Ensure TypeScript enum members are sorted for better readability and maintainability. Use this ESLint rule to keep your enums organized
+shortDescription: Enforce sorted TypeScript enums
+keywords:
+  - eslint
+  - sort enums
+  - eslint rule
+  - coding standards
+  - code quality
+  - javascript linting
+  - typescript enums sorting
+---
+
+import CodeExample from '../../components/CodeExample.svelte'
+import CodeTabs from '../../components/CodeTabs.svelte'
+import { dedent } from 'ts-dedent'
+
+Enforce sorted TypeScript enum members.
+
+Enums are essential for defining a set of named constants, and keeping them in a consistent and predictable order is a best practice for readability and maintainability.
+
+This rule ensures that TypeScript enum members are sorted, making it easier to reason about their values and identify any missing or duplicate entries. Sorted enums enhance the clarity of your code, making it more straightforward to understand and maintain.
+
+## Try it out
+
+<CodeExample
+  alphabetical={dedent`
+    enum Priority {
+      Critical = 'Critical',
+      High = 'High',
+      Low = 'Low',
+      Medium = 'Medium',
+      None = 'None',
+    }
+
+    enum Status {
+      Cancelled = 'Cancelled',
+      Completed = 'Completed',
+      InProgress = 'In Progress',
+      NotStarted = 'Not Started',
+      OnHold = 'On Hold',
+    }
+  `}
+  lineLength={dedent`
+    enum Priority {
+      Critical = 'Critical',
+      Medium = 'Medium',
+      High = 'High',
+      None = 'None',
+      Low = 'Low',
+    }
+
+    enum Status {
+      NotStarted = 'Not Started',
+      InProgress = 'In Progress',
+      Completed = 'Completed',
+      Cancelled = 'Cancelled',
+      OnHold = 'On Hold',
+    }
+  `}
+  initial={dedent`
+    enum Priority {
+      Critical = 'Critical',
+      None = 'None',
+      Low = 'Low',
+      High = 'High',
+      Medium = 'Medium',
+    }
+
+    enum Status {
+      InProgress = 'In Progress',
+      Completed = 'Completed',
+      OnHold = 'On Hold',
+      Cancelled = 'Cancelled',
+      NotStarted = 'Not Started',
+    }
+  `}
+  client:load
+  lang="ts"
+/>
+
+## Options
+
+This rule accepts an options object with the following properties:
+
+```ts
+interface Options {
+  type?: 'alphabetical' | 'natural' | 'line-length'
+  order?: 'asc' | 'desc'
+  'ignore-case'?: boolean
+  'partition-by-comment'?: string[] | string | boolean
+}
+```
+
+### type
+
+<sub>(default: `'alphabetical'`)</sub>
+
+- `alphabetical` — sort alphabetically.
+- `natural` — sort in natural order.
+- `line-length` — sort by code line length.
+
+### order
+
+<sub>(default: `'asc'`)</sub>
+
+- `asc` — enforce properties to be in ascending order.
+- `desc` — enforce properties to be in descending order.
+
+### ignore-case
+
+<sub>(default: `false`)</sub>
+
+Only affects alphabetical and natural sorting. When `true` the rule ignores the case-sensitivity of the order.
+
+### partition-by-comment
+
+<sub>(default: `false`)</sub>
+
+You can set comments that would separate the members of enums into logical parts. If set to `true`, all enum member comments will be treated as delimiters.
+
+The [minimatch](https://github.com/isaacs/minimatch) library is used for pattern matching.
+
+## Usage
+
+<CodeTabs
+  code={[
+    {
+      source: dedent`
+        // eslint.config.js
+        import perfectionist from 'eslint-plugin-perfectionist'
+
+        export default [
+          {
+            plugins: {
+              perfectionist,
+            },
+            rules: {
+              'perfectionist/sort-enums': [
+                'error',
+                {
+                  type: 'natural',
+                  order: 'asc',
+                },
+              ],
+            },
+          },
+        ]
+      `,
+      name: 'Flat Config',
+      value: 'flat',
+    },
+    {
+      source: dedent`
+        // .eslintrc.js
+        export default {
+          plugins: [
+            'perfectionist',
+          ],
+          rules: {
+            'perfectionist/sort-enums': [
+              'error',
+              {
+                type: 'natural',
+                order: 'asc',
+              },
+            ],
+          },
+        }
+      `,
+      name: 'Legacy Config',
+      value: 'legacy',
+    },
+
+]}
+type="config-type"
+client:load
+lang="ts"
+/>
+
+## Version
+
+This rule was introduced in [v0.8.0](https://github.com/azat-io/eslint-plugin-perfectionist/releases/tag/v0.8.0).
+
+## Resources
+
+- [Rule source](https://github.com/azat-io/eslint-plugin-perfectionist/blob/main/rules/sort-enums.ts)
+- [Test source](https://github.com/azat-io/eslint-plugin-perfectionist/blob/main/test/sort-enums.test.ts)

@@ -1,4 +1,5 @@
 {
+  "plugins": ["prettier-plugin-astro", "prettier-plugin-svelte"],
   "arrowParens": "avoid",
   "bracketSpacing": true,
   "endOfLine": "lf",
@@ -10,6 +11,18 @@
   "trailingComma": "all",
   "useTabs": false,
   "overrides": [
+    {
+      "files": "*.astro",
+      "options": {
+        "parser": "astro"
+      }
+    },
+    {
+      "files": "*.svelte",
+      "options": {
+        "parser": "svelte"
+      }
+    },
     {
       "files": "index.ts",
       "options": {

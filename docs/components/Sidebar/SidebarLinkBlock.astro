@@ -1,0 +1,46 @@
+---
+import SidebarLink from './SidebarLink.astro'
+import Typography from '../Typography.astro'
+
+interface Link {
+  title: string
+  url: string
+}
+
+interface Props {
+  class?: string
+  title: string
+  links: Link[]
+  url: string
+}
+
+let { class: className, title, links, url, ...props } = Astro.props
+---
+
+<a class:list={['title-link', className]} href={url} {...props}>
+  <Typography class="title" size="m" tag="h2">
+    {title}
+  </Typography>
+</a>
+{links.map(link => <SidebarLink class:list={[className]} {...link} />)}
+
+<style>
+  .title-link {
+    margin-block-start: var(--space-s);
+    color: var(--color-content-primary);
+    text-decoration: none;
+    border-radius: var(--border-radius);
+
+    @media (hover: hover) {
+      &:hover {
+        color: var(--color-content-secondary);
+        background: var(--color-background-primary-hover);
+      }
+    }
+  }
+
+  .title {
+    padding: var(--space-2xs) var(--space-xs);
+    font-family: var(--font-family-title);
+  }
+</style>

@@ -267,7 +267,7 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
         ]
         return (
           builtinModules.includes(
-            value.startsWith('node:') ? value.split('node:')[1] : value,
+            value.startsWith('node:') ? value.split('node:')[1]! : value,
           ) || bunModules.includes(value)
         )
       }
@@ -414,7 +414,7 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
               grouped[groupNum] = [node]
             } else {
               grouped[groupNum] = sortNodes(
-                [...grouped[groupNum], node],
+                [...(grouped[groupNum] ?? []), node],
                 options,
               )
             }
@@ -425,7 +425,7 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
             .reduce(
               (accumulator: SortingNode[], group: string) => [
                 ...accumulator,
-                ...grouped[group],
+                ...(grouped[group] ?? []),
               ],
               [],
             )

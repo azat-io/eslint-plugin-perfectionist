@@ -1,0 +1,170 @@
+---
+title: sort-intersection-types
+description: ESEnsure intersection types in TypeScript are sorted for cleaner and more maintainable code. This ESLint rule promotes a standardized ordering of intersection types
+shortDescription: Enforce sorted intersection types
+keywords:
+  - eslint
+  - sort intersection types
+  - eslint rule
+  - coding standards
+  - code quality
+  - typescript linting
+  - intersection types sorting
+  - typescript types
+  - typescript linting
+  - typescript-eslint
+---
+
+import CodeExample from '../../components/CodeExample.svelte'
+import Important from '../../components/Important.astro'
+import CodeTabs from '../../components/CodeTabs.svelte'
+import { dedent } from 'ts-dedent'
+
+Enforce sorted intersection types in TypeScript.
+
+Adhering to the `sort-intersection-types` rule enables developers to ensure that intersection types are consistently sorted, resulting in cleaner and more maintainable code.
+
+This rule promotes a standardized ordering of intersection types, making it easier for developers to navigate and understand the structure of type intersections within the codebase.
+
+<Important>
+If you use the [`sort-type-constituents`](https://typescript-eslint.io/rules/sort-type-constituents) rule from the [`@typescript-eslint/eslint-plugin`](https://typescript-eslint.io) plugin, it is highly recommended to [disable it](https://eslint.org/docs/latest/use/configure/rules#using-configuration-files-1) to avoid conflicts.
+</Important>
+
+## Try it out
+
+<CodeExample
+  alphabetical={dedent`
+    type Employee = Address & ContactInfo & PersonalInfo & {
+      employeeId: string
+      isActive: boolean
+    }
+
+    type TeamMember = Employee & {
+      teamId: string
+      name: string
+    }
+  `}
+  lineLength={dedent`
+    type Employee = {
+      employeeId: string
+      isActive: boolean
+    } & PersonalInfo & ContactInfo & Address
+
+    type TeamMember = {
+      teamId: string
+      name: string
+    } & Employee
+  `}
+  initial={dedent`
+    type Employee = Address & {
+      employeeId: string
+      isActive: boolean
+    } & PersonalInfo & ContactInfo
+
+    type TeamMember = {
+      teamId: string
+      name: string
+    } & Employee
+  `}
+  client:load
+  lang="ts"
+/>
+
+## Options
+
+This rule accepts an options object with the following properties:
+
+```ts
+interface Options {
+  type?: 'alphabetical' | 'natural' | 'line-length'
+  order?: 'asc' | 'desc'
+  'ignore-case'?: boolean
+}
+```
+
+### type
+
+<sub>(default: `'alphabetical'`)</sub>
+
+- `alphabetical` — sort alphabetically.
+- `natural` — sort in natural order.
+- `line-length` — sort by code line length.
+
+### order
+
+<sub>(default: `'asc'`)</sub>
+
+- `asc` — enforce properties to be in ascending order.
+- `desc` — enforce properties to be in descending order.
+
+### ignore-case
+
+<sub>(default: `false`)</sub>
+
+Only affects alphabetical and natural sorting. When `true` the rule ignores the case-sensitivity of the order.
+
+## Usage
+
+<CodeTabs
+  code={[
+    {
+      source: dedent`
+        // eslint.config.js
+        import perfectionist from 'eslint-plugin-perfectionist'
+
+        export default [
+          {
+            plugins: {
+              perfectionist,
+            },
+            rules: {
+              'perfectionist/sort-intersection-types': [
+                'error',
+                {
+                  type: 'natural',
+                  order: 'asc',
+                },
+              ],
+            },
+          },
+        ]
+      `,
+      name: 'Flat Config',
+      value: 'flat',
+    },
+    {
+      source: dedent`
+        // .eslintrc.js
+        export default {
+          plugins: [
+            'perfectionist',
+          ],
+          rules: {
+            'perfectionist/sort-intersection-types': [
+              'error',
+              {
+                type: 'natural',
+                order: 'asc',
+              },
+            ],
+          },
+        }
+      `,
+      name: 'Legacy Config',
+      value: 'legacy',
+    },
+
+]}
+type="config-type"
+client:load
+lang="ts"
+/>
+
+## Version
+
+This rule was introduced in [v2.9.0](https://github.com/azat-io/eslint-plugin-perfectionist/releases/tag/v2.9.0).
+
+## Resources
+
+- [Rule source](https://github.com/azat-io/eslint-plugin-perfectionist/blob/main/rules/sort-intersection-types.ts)
+- [Test source](https://github.com/azat-io/eslint-plugin-perfectionist/blob/main/test/sort-intersection-types.test.ts)

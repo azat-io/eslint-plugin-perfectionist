@@ -1,0 +1,11 @@
+/*
+  content-security-policy: default-src 'self'; script-src 'self' analytics.azat.io 'unsafe-inline' 'unsafe-eval'; style-src 'self' analytics.azat.io 'unsafe-inline'; connect-src 'self' analytics.azat.io; img-src 'self' data: img.shields.io;
+  strict-transport-security: max-age=63072000; includeSubDomains; preload;
+
+/_astro/*
+  cache-control: max-age=31536000
+  cache-control: immutable
+
+/fonts/*
+  cache-control: max-age=31536000
+  cache-control: immutable

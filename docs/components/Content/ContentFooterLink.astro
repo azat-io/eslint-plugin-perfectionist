@@ -1,0 +1,49 @@
+---
+import Icon from '../Icon.astro'
+
+interface Props {
+  title?: string
+  class?: string
+  icon: string
+  url: string
+}
+
+let { class: className, title, icon, url, ...props } = Astro.props
+---
+
+<a class:list={['link', className]} href={url} {...props}>
+  <Icon name={icon} size="s" />
+  <div class="content">
+    {title && <span class="title">{title}</span>}
+    <span class="text">
+      <slot />
+    </span>
+  </div>
+
+  <style>
+    .link {
+      display: inline-flex;
+      gap: var(--space-s);
+      align-items: center;
+      font: var(--font-xs);
+      text-decoration: none;
+    }
+
+    .content {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-2xs);
+    }
+
+    .title {
+      font-size: var(--font-size-2xs);
+      line-height: 1;
+      color: var(--color-content-secondary);
+      text-decoration: none;
+    }
+
+    .text {
+      text-decoration: underline;
+    }
+  </style>
+</a>

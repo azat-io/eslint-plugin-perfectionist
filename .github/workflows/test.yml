@@ -7,6 +7,23 @@ on:
   pull_request:
 
 jobs:
+  astro:
+    name: Astro
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install Tools
+        uses: ./.github/actions/install-tools
+
+      - name: Install Dependencies
+        uses: ./.github/actions/install-dependencies
+
+      - name: Test
+        run: pnpm test:astro
+
   css:
     name: CSS
     runs-on: ubuntu-latest
@@ -57,6 +74,23 @@ jobs:
 
       - name: Test
         run: pnpm test:js
+
+  svelte:
+    name: Svelte
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install Tools
+        uses: ./.github/actions/install-tools
+
+      - name: Install Dependencies
+        uses: ./.github/actions/install-dependencies
+
+      - name: Test
+        run: pnpm test:svelte
 
   types:
     name: Types

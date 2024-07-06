@@ -1,0 +1,64 @@
+---
+title: recommended-natural
+description: Discover the recommended natural ESLint configuration designed to enhance code readability and maintain a natural order in your codebase. Keep your code organized with this setup
+shortDescription: All plugin rules with natural sorting in ascending order
+keywords:
+  - eslint
+  - recommended natural config
+  - eslint configuration
+  - coding standards
+  - code quality
+  - javascript linting
+  - natural sorting
+  - eslint-plugin-perfectionist
+  - eslint natural sorting
+  - natural sorting rules
+  - natural sorting configuration
+---
+
+import CodeTabs from '../../components/CodeTabs.svelte'
+import { dedent } from 'ts-dedent'
+
+Configuration for the `eslint-plugin-perfectionist` plugin, which provides all plugin rules with predefined options: natural sorting in ascending order.
+
+What is the difference between natural sorting and alphabetical sorting? Natural sort compares strings containing a mixture of letters and numbers, just as a human would do when sorting. For example: `item-1`, `item-2`, `item-10`.
+
+Read more about [natural sort algorithm](https://en.wikipedia.org/wiki/Natural_sort_order).
+
+This configuration will allow you to navigate through your code faster because all the data that can be safely sorted will be in order.
+
+## Usage
+
+<CodeTabs
+  code={[
+    {
+      source: dedent`
+        // eslint.config.js
+        import perfectionistNatural from 'eslint-plugin-perfectionist/configs/recommended-natural'
+
+        export default [
+          perfectionistNatural,
+        ]
+      `,
+      name: 'Flat Config',
+      value: 'flat',
+    },
+    {
+      source: dedent`
+        // .eslintrc.js
+        export default {
+          extends: [
+            'plugin:perfectionist/recommended-natural',
+          ],
+        }
+      `,
+      name: 'Legacy Config',
+      value: 'legacy',
+    },
+
+]}
+type="config-type"
+client:load
+lang="js"
+/>
+

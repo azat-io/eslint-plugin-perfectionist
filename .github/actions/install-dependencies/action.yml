@@ -19,3 +19,7 @@ runs:
     - name: Install dependencies
       run: pnpm install --frozen-lockfile --ignore-scripts
       shell: bash
+
+    - name: Generate content collection types
+      run: pnpm exec astro sync
+      shell: bash

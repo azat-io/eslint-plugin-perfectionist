@@ -1,0 +1,69 @@
+---
+import Icon from './Icon.astro'
+---
+
+<script is:inline>
+  let initSkipLink = () => {
+    let skipLink = document.getElementById('skip-link')
+    skipLink.addEventListener('click', event => {
+      event.preventDefault()
+      let main = document.querySelector('main')
+      main.setAttribute('tabindex', '-1')
+      main.focus()
+    })
+  }
+
+  document.addEventListener('astro:after-swap', initSkipLink)
+  document.addEventListener('DOMContentLoaded', initSkipLink)
+</script>
+
+<a class="skip-link" id="skip-link" href="#main">
+  Skip to main content
+  <Icon name="arrow-turn-right-down" size="s" />
+</a>
+
+<style>
+  .skip-link {
+    position: absolute;
+    inset-block-start: var(--space-m);
+    inset-inline-start: var(--space-m);
+    z-index: 1;
+    display: flex;
+    gap: var(--space-xs);
+    align-items: center;
+    padding: var(--space-2xs) var(--space-xs);
+    font: var(--font-s);
+    color: var(--color-content-primary);
+    text-decoration: none;
+    background: var(--color-background-primary);
+    background-image: linear-gradient(
+        to right,
+        var(--color-overlay-brand),
+        var(--color-overlay-brand)
+      ),
+      linear-gradient(
+        to right,
+        var(--color-background-primary),
+        var(--color-background-primary)
+      );
+    border-radius: var(--border-radius);
+    opacity: 100%;
+    transition: box-shadow 200ms;
+
+    &:focus {
+      opacity: 100%;
+
+      & + :global(#logo) {
+        opacity: 0%;
+      }
+    }
+
+    &:not(:focus) {
+      inline-size: 0;
+      block-size: 0;
+      padding: 0;
+      overflow: hidden;
+      transition: none;
+    }
+  }
+</style>
