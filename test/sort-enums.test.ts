@@ -23,7 +23,7 @@ describe(RULE_NAME, () => {
     let options = {
       type: SortType.alphabetical,
       order: SortOrder.asc,
-      'ignore-case': false,
+      ignoreCase: false,
     }
 
     ruleTester.run(`${RULE_NAME}(${type}): sorts enum members`, rule, {
@@ -295,7 +295,7 @@ describe(RULE_NAME, () => {
             options: [
               {
                 ...options,
-                'partition-by-comment': 'Part**',
+                partitionByComment: 'Part**',
               },
             ],
             errors: [
@@ -343,7 +343,7 @@ describe(RULE_NAME, () => {
             options: [
               {
                 ...options,
-                'partition-by-comment': true,
+                partitionByComment: true,
               },
             ],
           },
@@ -388,7 +388,7 @@ describe(RULE_NAME, () => {
             options: [
               {
                 ...options,
-                'partition-by-comment': [
+                partitionByComment: [
                   'Public Safety Bureau',
                   'Crime Coefficient: *',
                   'Victims',
@@ -416,7 +416,7 @@ describe(RULE_NAME, () => {
     let options = {
       type: SortType.natural,
       order: SortOrder.asc,
-      'ignore-case': false,
+      ignoreCase: false,
     }
 
     ruleTester.run(`${RULE_NAME}(${type}): sorts enum members`, rule, {
@@ -688,7 +688,7 @@ describe(RULE_NAME, () => {
             options: [
               {
                 ...options,
-                'partition-by-comment': 'Part**',
+                partitionByComment: 'Part**',
               },
             ],
             errors: [
@@ -736,7 +736,7 @@ describe(RULE_NAME, () => {
             options: [
               {
                 ...options,
-                'partition-by-comment': true,
+                partitionByComment: true,
               },
             ],
           },
@@ -781,7 +781,7 @@ describe(RULE_NAME, () => {
             options: [
               {
                 ...options,
-                'partition-by-comment': [
+                partitionByComment: [
                   'Public Safety Bureau',
                   'Crime Coefficient: *',
                   'Victims',
@@ -1087,7 +1087,7 @@ describe(RULE_NAME, () => {
             options: [
               {
                 ...options,
-                'partition-by-comment': 'Part**',
+                partitionByComment: 'Part**',
               },
             ],
             errors: [
@@ -1121,7 +1121,7 @@ describe(RULE_NAME, () => {
             options: [
               {
                 ...options,
-                'partition-by-comment': true,
+                partitionByComment: true,
               },
             ],
           },
@@ -1166,7 +1166,7 @@ describe(RULE_NAME, () => {
             options: [
               {
                 ...options,
-                'partition-by-comment': [
+                partitionByComment: [
                   'Public Safety Bureau',
                   'Crime Coefficient: *',
                   'Victims',

@@ -178,9 +178,9 @@ type Group =
 interface Options {
   type?: 'alphabetical' | 'natural' | 'line-length'
   order?: 'asc' | 'desc'
-  'ignore-case'?: boolean
+  ignoreCase?: boolean
   groups?: (Group | Group[])[]
-  'custom-groups'?: { [key: string]: string[] | string }
+  customGroups?: { [key: string]: string[] | string }
 }
 ```
 
@@ -199,7 +199,7 @@ interface Options {
 - `asc` — enforce properties to be in ascending order.
 - `desc` — enforce properties to be in descending order.
 
-### ignore-case
+### ignoreCase
 
 <sub>(default: `false`)</sub>
 
@@ -231,7 +231,7 @@ If you use [one of the configs](/configs/) exported by this plugin, you get the 
 }
 ```
 
-### custom-groups
+### customGroups
 
 <sub>(default: `{}`)</sub>
 
@@ -241,7 +241,7 @@ Example:
 
 ```json
 {
-  "custom-groups": {
+  "customGroups": {
     "top": "id"
   }
 }
@@ -317,11 +317,10 @@ Example:
       name: 'Legacy Config',
       value: 'legacy',
     },
-
-]}
-type="config-type"
-client:load
-lang="ts"
+  ]}
+  type="config-type"
+  client:load
+  lang="ts"
 />
 
 ## Version

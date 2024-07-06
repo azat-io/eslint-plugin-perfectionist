@@ -23,7 +23,7 @@ describe(RULE_NAME, () => {
     let options = {
       type: SortType.alphabetical,
       order: SortOrder.asc,
-      'ignore-case': false,
+      ignoreCase: false,
     }
 
     ruleTester.run(
@@ -283,7 +283,7 @@ describe(RULE_NAME, () => {
           options: [
             {
               ...options,
-              'custom-groups': { top: ['name', 'id'] },
+              customGroups: { top: ['name', 'id'] },
               groups: ['top', 'unknown'],
             },
           ],
@@ -314,7 +314,7 @@ describe(RULE_NAME, () => {
           options: [
             {
               ...options,
-              'custom-groups': { top: ['name', 'id'] },
+              customGroups: { top: ['name', 'id'] },
               groups: ['top', 'unknown'],
             },
           ],
@@ -347,7 +347,7 @@ describe(RULE_NAME, () => {
             options: [
               {
                 ...options,
-                'custom-groups': { top: ['name', 'id'] },
+                customGroups: { top: ['name', 'id'] },
                 groups: ['top', 'unknown'],
               },
             ],
@@ -372,7 +372,7 @@ describe(RULE_NAME, () => {
             options: [
               {
                 ...options,
-                'custom-groups': { top: ['name', 'id'] },
+                customGroups: { top: ['name', 'id'] },
                 groups: ['top', 'unknown'],
               },
             ],
@@ -778,7 +778,7 @@ describe(RULE_NAME, () => {
             options: [
               {
                 ...options,
-                'partition-by-comment': 'Part**',
+                partitionByComment: 'Part**',
               },
             ],
             errors: [
@@ -826,7 +826,7 @@ describe(RULE_NAME, () => {
             options: [
               {
                 ...options,
-                'partition-by-comment': true,
+                partitionByComment: true,
               },
             ],
           },
@@ -871,7 +871,7 @@ describe(RULE_NAME, () => {
             options: [
               {
                 ...options,
-                'partition-by-comment': [
+                partitionByComment: [
                   'Public Safety Bureau',
                   'Crime Coefficient: *',
                   'Victims',
@@ -912,7 +912,7 @@ describe(RULE_NAME, () => {
             options: [
               {
                 ...options,
-                'partition-by-new-line': true,
+                partitionByNewLine: true,
               },
             ],
           },
@@ -944,7 +944,7 @@ describe(RULE_NAME, () => {
             options: [
               {
                 ...options,
-                'partition-by-new-line': true,
+                partitionByNewLine: true,
               },
             ],
             errors: [
@@ -975,7 +975,7 @@ describe(RULE_NAME, () => {
     let options = {
       type: SortType.natural,
       order: SortOrder.asc,
-      'ignore-case': false,
+      ignoreCase: false,
     }
 
     ruleTester.run(
@@ -1235,7 +1235,7 @@ describe(RULE_NAME, () => {
           options: [
             {
               ...options,
-              'custom-groups': { top: ['name', 'id'] },
+              customGroups: { top: ['name', 'id'] },
               groups: ['top', 'unknown'],
             },
           ],
@@ -1266,7 +1266,7 @@ describe(RULE_NAME, () => {
           options: [
             {
               ...options,
-              'custom-groups': { top: ['name', 'id'] },
+              customGroups: { top: ['name', 'id'] },
               groups: ['top', 'unknown'],
             },
           ],
@@ -1299,7 +1299,7 @@ describe(RULE_NAME, () => {
             options: [
               {
                 ...options,
-                'custom-groups': { top: ['name', 'id'] },
+                customGroups: { top: ['name', 'id'] },
                 groups: ['top', 'unknown'],
               },
             ],
@@ -1324,7 +1324,7 @@ describe(RULE_NAME, () => {
             options: [
               {
                 ...options,
-                'custom-groups': { top: ['name', 'id'] },
+                customGroups: { top: ['name', 'id'] },
                 groups: ['top', 'unknown'],
               },
             ],
@@ -1545,7 +1545,7 @@ describe(RULE_NAME, () => {
             options: [
               {
                 ...options,
-                'partition-by-comment': 'Part**',
+                partitionByComment: 'Part**',
               },
             ],
             errors: [
@@ -1593,7 +1593,7 @@ describe(RULE_NAME, () => {
             options: [
               {
                 ...options,
-                'partition-by-comment': true,
+                partitionByComment: true,
               },
             ],
           },
@@ -1638,7 +1638,7 @@ describe(RULE_NAME, () => {
             options: [
               {
                 ...options,
-                'partition-by-comment': [
+                partitionByComment: [
                   'Public Safety Bureau',
                   'Crime Coefficient: *',
                   'Victims',
@@ -1679,7 +1679,7 @@ describe(RULE_NAME, () => {
             options: [
               {
                 ...options,
-                'partition-by-new-line': true,
+                partitionByNewLine: true,
               },
             ],
           },
@@ -1711,7 +1711,7 @@ describe(RULE_NAME, () => {
             options: [
               {
                 ...options,
-                'partition-by-new-line': true,
+                partitionByNewLine: true,
               },
             ],
             errors: [
@@ -2001,7 +2001,7 @@ describe(RULE_NAME, () => {
           options: [
             {
               ...options,
-              'custom-groups': { top: ['name', 'id'] },
+              customGroups: { top: ['name', 'id'] },
               groups: ['top', 'unknown'],
             },
           ],
@@ -2032,7 +2032,7 @@ describe(RULE_NAME, () => {
           options: [
             {
               ...options,
-              'custom-groups': { top: ['name', 'id'] },
+              customGroups: { top: ['name', 'id'] },
               groups: ['top', 'unknown'],
             },
           ],
@@ -2072,7 +2072,7 @@ describe(RULE_NAME, () => {
             options: [
               {
                 ...options,
-                'custom-groups': { top: ['name', 'id'] },
+                customGroups: { top: ['name', 'id'] },
                 groups: ['top', 'unknown'],
               },
             ],
@@ -2097,7 +2097,7 @@ describe(RULE_NAME, () => {
             options: [
               {
                 ...options,
-                'custom-groups': { top: ['name', 'id'] },
+                customGroups: { top: ['name', 'id'] },
                 groups: ['top', 'unknown'],
               },
             ],
@@ -2318,7 +2318,7 @@ describe(RULE_NAME, () => {
             options: [
               {
                 ...options,
-                'partition-by-comment': 'Part**',
+                partitionByComment: 'Part**',
               },
             ],
             errors: [
@@ -2352,7 +2352,7 @@ describe(RULE_NAME, () => {
             options: [
               {
                 ...options,
-                'partition-by-comment': true,
+                partitionByComment: true,
               },
             ],
           },
@@ -2397,7 +2397,7 @@ describe(RULE_NAME, () => {
             options: [
               {
                 ...options,
-                'partition-by-comment': [
+                partitionByComment: [
                   'Public Safety Bureau',
                   'Crime Coefficient: *',
                   'Victims',
@@ -2446,7 +2446,7 @@ describe(RULE_NAME, () => {
             options: [
               {
                 ...options,
-                'partition-by-comment': [
+                partitionByComment: [
                   'Public Safety Bureau',
                   'Crime Coefficient: *',
                   'Victims',
@@ -2494,7 +2494,7 @@ describe(RULE_NAME, () => {
             options: [
               {
                 ...options,
-                'partition-by-new-line': true,
+                partitionByNewLine: true,
               },
             ],
           },
@@ -2526,7 +2526,7 @@ describe(RULE_NAME, () => {
             options: [
               {
                 ...options,
-                'partition-by-new-line': true,
+                partitionByNewLine: true,
               },
             ],
             errors: [
@@ -2600,7 +2600,7 @@ describe(RULE_NAME, () => {
     )
 
     ruleTester.run(
-      `${RULE_NAME}: allow to disable rule for styled-components`,
+      `${RULE_NAME}: allow to disable rule for styledComponents`,
       rule,
       {
         valid: [
@@ -2614,7 +2614,7 @@ describe(RULE_NAME, () => {
               `,
             options: [
               {
-                'styled-components': false,
+                styledComponents: false,
               },
             ],
           },
@@ -2628,7 +2628,7 @@ describe(RULE_NAME, () => {
               `,
             options: [
               {
-                'styled-components': false,
+                styledComponents: false,
               },
             ],
           },
@@ -2643,7 +2643,7 @@ describe(RULE_NAME, () => {
               `,
             options: [
               {
-                'styled-components': false,
+                styledComponents: false,
               },
             ],
           },
@@ -2666,7 +2666,7 @@ describe(RULE_NAME, () => {
           `,
           options: [
             {
-              'ignore-pattern': ['*Styles'],
+              ignorePattern: ['*Styles'],
             },
           ],
         },
@@ -2711,7 +2711,7 @@ describe(RULE_NAME, () => {
           `,
           options: [
             {
-              'ignore-pattern': ['data', 'methods'],
+              ignorePattern: ['data', 'methods'],
             },
           ],
           errors: [

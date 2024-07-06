@@ -26,9 +26,9 @@ type Group<T extends string[]> =
 
 type Options<T extends string[]> = [
   Partial<{
-    'custom-groups': { [key in T[number]]: string[] | string }
+    customGroups: { [key in T[number]]: string[] | string }
     groups: (Group<T>[] | Group<T>)[]
-    'ignore-case': boolean
+    ignoreCase: boolean
     order: SortOrder
     type: SortType
   }>,
@@ -48,7 +48,7 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
       {
         type: 'object',
         properties: {
-          'custom-groups': {
+          customGroups: {
             type: 'object',
           },
           type: {
@@ -68,7 +68,7 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
           groups: {
             type: 'array',
           },
-          'ignore-case': {
+          ignoreCase: {
             type: 'boolean',
             default: false,
           },
@@ -97,9 +97,9 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
         if (node.openingElement.attributes.length > 1) {
           let options = complete(context.options.at(0), {
             type: SortType.alphabetical,
-            'ignore-case': false,
+            ignoreCase: false,
             order: SortOrder.asc,
-            'custom-groups': {},
+            customGroups: {},
             groups: [],
           })
 
@@ -122,7 +122,7 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
                 options.groups,
               )
 
-              setCustomGroups(options['custom-groups'], name)
+              setCustomGroups(options.customGroups, name)
 
               if (attribute.value === null) {
                 defineGroup('shorthand')

@@ -101,8 +101,8 @@ This rule accepts an options object with the following properties:
 interface Options {
   type?: 'alphabetical' | 'natural' | 'line-length'
   order?: 'asc' | 'desc'
-  'group-kind'?: 'mixed' | 'values-first' | 'types-first'
-  'ignore-case'?: boolean
+  groupKind?: 'mixed' | 'values-first' | 'types-first'
+  ignoreCase?: boolean
 }
 ```
 
@@ -121,7 +121,7 @@ interface Options {
 - `asc` — enforce properties to be in ascending order.
 - `desc` — enforce properties to be in descending order.
 
-### group-kind
+### groupKind
 
 <sub>(default: `'mixed'`)</sub>
 
@@ -131,7 +131,7 @@ Allows to group named exports by their kind, with value exports coming either be
 - `values-first` — groups all value exports before type exports
 - `types-first` — groups all type exports before value exports
 
-### ignore-case
+### ignoreCase
 
 <sub>(default: `false`)</sub>
 
@@ -187,11 +187,10 @@ Only affects alphabetical and natural sorting. When `true` the rule ignores the 
       name: 'Legacy Config',
       value: 'legacy',
     },
-
-]}
-type="config-type"
-client:load
-lang="ts"
+  ]}
+  type="config-type"
+  client:load
+  lang="ts"
 />
 
 ## Version

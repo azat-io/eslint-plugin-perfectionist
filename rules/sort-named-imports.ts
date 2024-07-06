@@ -15,9 +15,9 @@ type MESSAGE_ID = 'unexpectedNamedImportsOrder'
 
 type Options = [
   Partial<{
-    'ignore-alias': boolean
-    'group-kind': GroupKind
-    'ignore-case': boolean
+    ignoreAlias: boolean
+    groupKind: GroupKind
+    ignoreCase: boolean
     order: SortOrder
     type: SortType
   }>,
@@ -51,15 +51,15 @@ export default createEslintRule<Options, MESSAGE_ID>({
             default: SortOrder.asc,
             type: 'string',
           },
-          'ignore-case': {
+          ignoreCase: {
             type: 'boolean',
             default: false,
           },
-          'ignore-alias': {
+          ignoreAlias: {
             type: 'boolean',
             default: false,
           },
-          'group-kind': {
+          groupKind: {
             enum: [
               GroupKind.mixed,
               GroupKind['values-first'],
@@ -92,10 +92,10 @@ export default createEslintRule<Options, MESSAGE_ID>({
       if (specifiers.length > 1) {
         let options = complete(context.options.at(0), {
           type: SortType.alphabetical,
-          'ignore-alias': true,
-          'ignore-case': false,
+          ignoreAlias: true,
+          ignoreCase: false,
           order: SortOrder.asc,
-          'group-kind': GroupKind.mixed,
+          groupKind: GroupKind.mixed,
         })
 
         let nodes: SortingNode[] = specifiers.map(specifier => {
@@ -103,7 +103,7 @@ export default createEslintRule<Options, MESSAGE_ID>({
           let { name } = specifier.local
 
           if (specifier.type === 'ImportSpecifier') {
-            if (options['ignore-alias']) {
+            if (options.ignoreAlias) {
               ;({ name } = specifier.imported)
             }
             group = specifier.importKind
@@ -117,9 +117,9 @@ export default createEslintRule<Options, MESSAGE_ID>({
           }
         })
 
-        let shouldGroupByKind = options['group-kind'] !== GroupKind.mixed
+        let shouldGroupByKind = options.groupKind !== GroupKind.mixed
         let groupKindOrder =
-          options['group-kind'] === GroupKind['values-first']
+          options.groupKind === GroupKind['values-first']
             ? ['value', 'type']
             : ['type', 'value']
 

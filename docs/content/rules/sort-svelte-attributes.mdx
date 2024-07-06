@@ -115,9 +115,9 @@ type Group =
 interface Options {
   type?: 'alphabetical' | 'natural' | 'line-length'
   order?: 'asc' | 'desc'
-  'ignore-case'?: boolean
+  ignoreCase?: boolean
   groups?: (Group | Group[])[]
-  'custom-groups': { [key: CustomGroup]: string[] | string }
+  customGroups: { [key: CustomGroup]: string[] | string }
 }
 ```
 
@@ -136,7 +136,7 @@ interface Options {
 - `asc` — enforce properties to be in ascending order.
 - `desc` — enforce properties to be in descending order.
 
-### ignore-case
+### ignoreCase
 
 <sub>(default: `false`)</sub>
 
@@ -164,7 +164,7 @@ You can set up a list of Svelte attribute groups for sorting. Groups can be comb
 </button>
 ```
 
-### custom-groups
+### customGroups
 
 <sub>(default: `{}`)</sub>
 
@@ -174,7 +174,7 @@ Example:
 
 ```json
 {
-  "custom-groups": {
+  "customGroups": {
     "this": "this",
     "bind-this": "bind:this",
     "style-props": "--style-props",
@@ -293,11 +293,10 @@ In order to start using this rule, you need to install additional dependency:
       name: 'Legacy Config',
       value: 'legacy',
     },
-
-]}
-type="config-type"
-client:load
-lang="ts"
+  ]}
+  type="config-type"
+  client:load
+  lang="ts"
 />
 
 ## Version

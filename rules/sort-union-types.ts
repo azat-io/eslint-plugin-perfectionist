@@ -15,8 +15,8 @@ type MESSAGE_ID = 'unexpectedUnionTypesOrder'
 
 type Options = [
   Partial<{
-    'nullable-last': boolean
-    'ignore-case': boolean
+    nullableLast: boolean
+    ignoreCase: boolean
     order: SortOrder
     type: SortType
   }>,
@@ -50,11 +50,11 @@ export default createEslintRule<Options, MESSAGE_ID>({
             default: SortOrder.asc,
             type: 'string',
           },
-          'ignore-case': {
+          ignoreCase: {
             type: 'boolean',
             default: false,
           },
-          'nullable-last': {
+          nullableLast: {
             type: 'boolean',
             default: false,
           },
@@ -77,8 +77,8 @@ export default createEslintRule<Options, MESSAGE_ID>({
     TSUnionType: node => {
       let options = complete(context.options.at(0), {
         type: SortType.alphabetical,
-        'nullable-last': false,
-        'ignore-case': false,
+        nullableLast: false,
+        ignoreCase: false,
         order: SortOrder.asc,
       })
 
@@ -95,7 +95,7 @@ export default createEslintRule<Options, MESSAGE_ID>({
       pairwise(nodes, (left, right) => {
         let compareValue = isPositive(compare(left, right, options))
 
-        if (options['nullable-last']) {
+        if (options.nullableLast) {
           if (left.group === 'nullable' && right.group === 'unknown') {
             compareValue = true
           } else if (left.group === 'unknown' && right.group === 'nullable') {
@@ -114,7 +114,7 @@ export default createEslintRule<Options, MESSAGE_ID>({
             fix: fixer => {
               let sortedNodes: SortingNode[] = []
 
-              if (options['nullable-last']) {
+              if (options.nullableLast) {
                 let nullable: SortingNode[] = []
 
                 let nonNullable = nodes.filter(currentNode => {

@@ -17,7 +17,7 @@ type MESSAGE_ID = 'unexpectedMapElementsOrder'
 
 type Options = [
   Partial<{
-    'ignore-case': boolean
+    ignoreCase: boolean
     order: SortOrder
     type: SortType
   }>,
@@ -51,7 +51,7 @@ export default createEslintRule<Options, MESSAGE_ID>({
             default: SortOrder.asc,
             type: 'string',
           },
-          'ignore-case': {
+          ignoreCase: {
             type: 'boolean',
             default: false,
           },
@@ -83,7 +83,7 @@ export default createEslintRule<Options, MESSAGE_ID>({
         if (elements.length > 1) {
           let options = complete(context.options.at(0), {
             type: SortType.alphabetical,
-            'ignore-case': false,
+            ignoreCase: false,
             order: SortOrder.asc,
           })
 

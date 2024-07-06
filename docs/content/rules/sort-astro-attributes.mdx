@@ -120,9 +120,9 @@ type Group =
 interface Options {
   type?: 'alphabetical' | 'natural' | 'line-length'
   order?: 'asc' | 'desc'
-  'ignore-case'?: boolean
+  ignoreCase?: boolean
   groups?: (Group | Group[])[]
-  'custom-groups': { [key: CustomGroup]: string[] | string }
+  customGroups: { [key: CustomGroup]: string[] | string }
 }
 ```
 
@@ -141,7 +141,7 @@ interface Options {
 - `asc` — enforce properties to be in ascending order.
 - `desc` — enforce properties to be in descending order.
 
-### ignore-case
+### ignoreCase
 
 <sub>(default: `false`)</sub>
 
@@ -153,7 +153,7 @@ Only affects alphabetical and natural sorting. When `true` the rule ignores the 
 
 You can set up a list of Astro attribute groups for sorting. Groups can be combined. There are predefined groups: `'multiline'`, `'shorthand'`, `'astro-shorthand'`.
 
-### custom-groups
+### customGroups
 
 <sub>(default: `{}`)</sub>
 
@@ -163,7 +163,7 @@ Example:
 
 ```json
 {
-  "custom-groups": {
+  "customGroups": {
     "callback": "on*"
   }
 }
@@ -271,11 +271,10 @@ In order to start using this rule, you need to install additional dependency:
       name: 'Legacy Config',
       value: 'legacy',
     },
-
-]}
-type="config-type"
-client:load
-lang="ts"
+  ]}
+  type="config-type"
+  client:load
+  lang="ts"
 />
 
 ## Version

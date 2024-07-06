@@ -23,7 +23,7 @@ describe(RULE_NAME, () => {
     let options = {
       type: SortType.alphabetical,
       order: SortOrder.asc,
-      'ignore-case': false,
+      ignoreCase: false,
     }
 
     ruleTester.run(`${RULE_NAME}(${type}: sorts intersection types`, rule, {
@@ -270,7 +270,7 @@ describe(RULE_NAME, () => {
     let options = {
       type: SortType.alphabetical,
       order: SortOrder.asc,
-      'ignore-case': false,
+      ignoreCase: false,
     }
 
     ruleTester.run(`${RULE_NAME}(${type}: sorts intersection types`, rule, {

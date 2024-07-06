@@ -41,9 +41,9 @@ type Group =
 
 type Options = [
   Partial<{
-    'custom-groups': { [key: string]: string[] | string }
+    customGroups: { [key: string]: string[] | string }
     groups: (Group[] | Group)[]
-    'ignore-case': boolean
+    ignoreCase: boolean
     order: SortOrder
     type: SortType
   }>,
@@ -63,7 +63,7 @@ export default createEslintRule<Options, MESSAGE_ID>({
       {
         type: 'object',
         properties: {
-          'custom-groups': {
+          customGroups: {
             type: 'object',
           },
           type: {
@@ -75,7 +75,7 @@ export default createEslintRule<Options, MESSAGE_ID>({
             default: SortType.alphabetical,
             type: 'string',
           },
-          'ignore-case': {
+          ignoreCase: {
             type: 'boolean',
             default: false,
           },
@@ -108,9 +108,9 @@ export default createEslintRule<Options, MESSAGE_ID>({
         let options = complete(context.options.at(0), {
           type: SortType.alphabetical,
           order: SortOrder.asc,
-          'ignore-case': false,
+          ignoreCase: false,
           groups: ['property', 'constructor', 'method', 'unknown'],
-          'custom-groups': {},
+          customGroups: {},
         })
 
         let nodes: SortingNode[] = node.body.map(member => {
@@ -210,7 +210,7 @@ export default createEslintRule<Options, MESSAGE_ID>({
             defineGroup('property')
           }
 
-          setCustomGroups(options['custom-groups'], name, {
+          setCustomGroups(options.customGroups, name, {
             override: true,
           })
 

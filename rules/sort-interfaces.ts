@@ -23,12 +23,12 @@ type Group<T extends string[]> = 'multiline' | 'unknown' | T[number]
 
 type Options<T extends string[]> = [
   Partial<{
-    'custom-groups': { [key: string]: string[] | string }
-    'optionality-order': OptionalityOrder
+    customGroups: { [key: string]: string[] | string }
+    optionalityOrder: OptionalityOrder
     groups: (Group<T>[] | Group<T>)[]
-    'partition-by-new-line': boolean
-    'ignore-pattern': string[]
-    'ignore-case': boolean
+    partitionByNewLine: boolean
+    ignorePattern: string[]
+    ignoreCase: boolean
     order: SortOrder
     type: SortType
   }>,
@@ -48,10 +48,10 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
       {
         type: 'object',
         properties: {
-          'custom-groups': {
+          customGroups: {
             type: 'object',
           },
-          'optionality-order': {
+          optionalityOrder: {
             enum: [
               OptionalityOrder.ignore,
               OptionalityOrder['optional-first'],
@@ -74,11 +74,11 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
             default: SortOrder.asc,
             type: 'string',
           },
-          'ignore-case': {
+          ignoreCase: {
             type: 'boolean',
             default: false,
           },
-          'ignore-pattern': {
+          ignorePattern: {
             items: {
               type: 'string',
             },
@@ -88,7 +88,7 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
             type: 'array',
             default: [],
           },
-          'partition-by-new-line': {
+          partitionByNewLine: {
             type: 'boolean',
             default: false,
           },
@@ -111,18 +111,18 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
     TSInterfaceDeclaration: node => {
       if (node.body.body.length > 1) {
         let options = complete(context.options.at(0), {
-          'optionality-order': OptionalityOrder.ignore,
-          'partition-by-new-line': false,
+          optionalityOrder: OptionalityOrder.ignore,
+          partitionByNewLine: false,
           type: SortType.alphabetical,
-          'ignore-case': false,
+          ignoreCase: false,
           order: SortOrder.asc,
-          'ignore-pattern': [],
-          'custom-groups': {},
+          ignorePattern: [],
+          customGroups: {},
           groups: [],
         })
 
         if (
-          !options['ignore-pattern'].some(pattern =>
+          !options.ignorePattern.some(pattern =>
             minimatch(node.id.name, pattern, {
               nocomment: true,
             }),
@@ -179,7 +179,7 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
               }
 
               if (
-                options['partition-by-new-line'] &&
+                options.partitionByNewLine &&
                 lastElement &&
                 getLinesBetween(
                   context.sourceCode,
@@ -190,7 +190,7 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
                 accumulator.push([])
               }
 
-              setCustomGroups(options['custom-groups'], name)
+              setCustomGroups(options.customGroups, name)
 
               if (element.loc.start.line !== element.loc.end.line) {
                 defineGroup('multiline')
@@ -246,7 +246,7 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
             )
           }
 
-          let optionalityOrder = options['optionality-order']
+          let { optionalityOrder } = options
 
           let checkOrder = (
             members: SortingNode[],

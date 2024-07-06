@@ -35,13 +35,13 @@ type SortingNodeWithPosition = {
 
 type Options = [
   Partial<{
-    'custom-groups': { [key: string]: string[] | string }
-    'partition-by-comment': PartitionComment
-    'partition-by-new-line': boolean
+    customGroups: { [key: string]: string[] | string }
+    partitionByComment: PartitionComment
     groups: (string[] | string)[]
-    'styled-components': boolean
-    'ignore-pattern': string[]
-    'ignore-case': boolean
+    partitionByNewLine: boolean
+    styledComponents: boolean
+    ignorePattern: string[]
+    ignoreCase: boolean
     order: SortOrder
     type: SortType
   }>,
@@ -61,18 +61,18 @@ export default createEslintRule<Options, MESSAGE_ID>({
       {
         type: 'object',
         properties: {
-          'custom-groups': {
+          customGroups: {
             type: 'object',
           },
-          'partition-by-comment': {
+          partitionByComment: {
             type: ['boolean', 'string', 'array'],
             default: false,
           },
-          'partition-by-new-line': {
+          partitionByNewLine: {
             type: 'boolean',
             default: false,
           },
-          'styled-components': {
+          styledComponents: {
             type: 'boolean',
             default: true,
           },
@@ -90,11 +90,11 @@ export default createEslintRule<Options, MESSAGE_ID>({
             default: SortOrder.asc,
             type: 'string',
           },
-          'ignore-case': {
+          ignoreCase: {
             type: 'boolean',
             default: false,
           },
-          'ignore-pattern': {
+          ignorePattern: {
             items: {
               type: 'string',
             },
@@ -122,19 +122,19 @@ export default createEslintRule<Options, MESSAGE_ID>({
       node: TSESTree.ObjectExpression | TSESTree.ObjectPattern,
     ) => {
       let options = complete(context.options.at(0), {
-        'partition-by-new-line': false,
-        'partition-by-comment': false,
+        partitionByNewLine: false,
+        partitionByComment: false,
         type: SortType.alphabetical,
-        'styled-components': true,
-        'ignore-case': false,
-        'ignore-pattern': [],
+        styledComponents: true,
+        ignoreCase: false,
+        ignorePattern: [],
         order: SortOrder.asc,
-        'custom-groups': {},
+        customGroups: {},
         groups: [],
       })
 
       let shouldIgnore = false
-      if (options['ignore-pattern'].length) {
+      if (options.ignorePattern.length) {
         let parent = getNodeParent(node, ['VariableDeclarator', 'Property'])
         let parentId =
           parent?.type === 'VariableDeclarator'
@@ -145,7 +145,7 @@ export default createEslintRule<Options, MESSAGE_ID>({
 
         if (
           typeof variableIdentifier === 'string' &&
-          options['ignore-pattern'].some(pattern =>
+          options.ignorePattern.some(pattern =>
             minimatch(variableIdentifier, pattern, {
               nocomment: true,
             }),
@@ -170,7 +170,7 @@ export default createEslintRule<Options, MESSAGE_ID>({
               isStyledCallExpression(styledNode.callee.callee)))
 
         if (
-          !options['styled-components'] &&
+          !options.styledComponents &&
           (isStyledComponents(node.parent) ||
             (node.parent.type === 'ArrowFunctionExpression' &&
               isStyledComponents(node.parent.parent)))
@@ -199,12 +199,9 @@ export default createEslintRule<Options, MESSAGE_ID>({
               let lastProp = accumulator.at(-1)?.at(-1)
 
               if (
-                options['partition-by-comment'] &&
+                options.partitionByComment &&
                 comment &&
-                isPartitionComment(
-                  options['partition-by-comment'],
-                  comment.value,
-                )
+                isPartitionComment(options.partitionByComment, comment.value)
               ) {
                 accumulator.push([])
               }
@@ -230,7 +227,7 @@ export default createEslintRule<Options, MESSAGE_ID>({
               }
 
               if (
-                options['partition-by-new-line'] &&
+                options.partitionByNewLine &&
                 lastProp &&
                 getLinesBetween(context.sourceCode, lastProp, propSortingNode)
               ) {
@@ -302,7 +299,7 @@ export default createEslintRule<Options, MESSAGE_ID>({
                 addDependencies(prop.value)
               }
 
-              setCustomGroups(options['custom-groups'], name)
+              setCustomGroups(options.customGroups, name)
 
               let value = {
                 ...propSortingNode,
@@ -362,7 +359,7 @@ export default createEslintRule<Options, MESSAGE_ID>({
                   sortedNodes,
                   context.sourceCode,
                   {
-                    partitionComment: options['partition-by-comment'],
+                    partitionComment: options.partitionByComment,
                   },
                 )
               }

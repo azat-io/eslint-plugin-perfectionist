@@ -54,15 +54,15 @@ type Group<T extends string[]> =
 
 type Options<T extends string[]> = [
   Partial<{
-    'custom-groups': {
+    customGroups: {
       value?: { [key in T[number]]: string[] | string }
       type?: { [key in T[number]]: string[] | string }
     }
-    'newlines-between': NewlinesBetweenValue
+    newlinesBetween: NewlinesBetweenValue
     groups: (Group<T>[] | Group<T>)[]
-    'internal-pattern': string[]
-    'max-line-length'?: number
-    'ignore-case': boolean
+    internalPattern: string[]
+    maxLineLength?: number
+    ignoreCase: boolean
     order: SortOrder
     type: SortType
   }>,
@@ -87,7 +87,7 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
         id: 'sort-imports',
         type: 'object',
         properties: {
-          'custom-groups': {
+          customGroups: {
             type: 'object',
             properties: {
               type: {
@@ -113,7 +113,7 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
             default: SortOrder.asc,
             type: 'string',
           },
-          'ignore-case': {
+          ignoreCase: {
             type: 'boolean',
             default: false,
           },
@@ -121,13 +121,13 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
             type: 'array',
             default: [],
           },
-          'internal-pattern': {
+          internalPattern: {
             items: {
               type: 'string',
             },
             type: 'array',
           },
-          'newlines-between': {
+          newlinesBetween: {
             enum: [
               NewlinesBetweenValue.ignore,
               NewlinesBetweenValue.always,
@@ -136,18 +136,20 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
             default: NewlinesBetweenValue.always,
             type: 'string',
           },
-          'max-line-length': {
+          maxLineLength: {
             type: 'integer',
             minimum: 0,
             exclusiveMinimum: true,
           },
         },
         allOf: [
-          { $ref: '#/definitions/max-line-length-requires-line-length-type' },
+          {
+            $ref: '#/definitions/max-line-length-requires-line-length-type',
+          },
         ],
         additionalProperties: false,
         dependencies: {
-          'max-line-length': ['type'],
+          maxLineLength: ['type'],
         },
         definitions: {
           'is-line-length': {
@@ -160,10 +162,15 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
           'max-line-length-requires-line-length-type': {
             anyOf: [
               {
-                not: { required: ['max-line-length'], type: 'object' },
+                not: {
+                  required: ['maxLineLength'],
+                  type: 'object',
+                },
                 type: 'object',
               },
-              { $ref: '#/definitions/is-line-length' },
+              {
+                $ref: '#/definitions/is-line-length',
+              },
             ],
           },
         },
@@ -185,12 +192,12 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
   ],
   create: context => {
     let options = complete(context.options.at(0), {
-      'newlines-between': NewlinesBetweenValue.always,
-      'custom-groups': { type: {}, value: {} },
-      'internal-pattern': ['~/**'],
+      newlinesBetween: NewlinesBetweenValue.always,
+      customGroups: { type: {}, value: {} },
+      internalPattern: ['~/**'],
       type: SortType.alphabetical,
       order: SortOrder.asc,
-      'ignore-case': false,
+      ignoreCase: false,
       groups: [],
     })
 
@@ -246,8 +253,8 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
       let { getGroup, defineGroup, setCustomGroups } = useGroups(options.groups)
 
       let isInternal = (nodeElement: TSESTree.ImportDeclaration) =>
-        options['internal-pattern'].length &&
-        options['internal-pattern'].some(pattern =>
+        options.internalPattern.length &&
+        options.internalPattern.some(pattern =>
           minimatch(nodeElement.source.value, pattern, {
             nocomment: true,
           }),
@@ -277,7 +284,7 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
 
       if (node.importKind === 'type') {
         if (node.type === 'ImportDeclaration') {
-          setCustomGroups(options['custom-groups'].type, node.source.value)
+          setCustomGroups(options.customGroups.type, node.source.value)
 
           if (isIndex(node.source.value)) {
             defineGroup('index-type')
@@ -308,7 +315,7 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
       }
 
       if (node.type === 'ImportDeclaration') {
-        setCustomGroups(options['custom-groups'].value, node.source.value)
+        setCustomGroups(options.customGroups.value, node.source.value)
 
         if (isSideEffectImport(node) && isStyle(node.source.value)) {
           defineGroup('side-effect-style')
@@ -373,7 +380,7 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
         name,
         node,
         ...(options.type === SortType['line-length'] &&
-          options['max-line-length'] && {
+          options.maxLineLength && {
             hasMultipleImportDeclarations: hasMultipleImportDeclarations(
               node as TSESTree.ImportDeclaration,
             ),
@@ -442,7 +449,7 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
               ),
             )
 
-            if (options['newlines-between'] !== 'ignore') {
+            if (options.newlinesBetween !== 'ignore') {
               let nextNode = formatted.at(i + 1)
 
               if (nextNode) {
@@ -453,11 +460,11 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
                 )
 
                 if (
-                  (options['newlines-between'] === 'always' &&
+                  (options.newlinesBetween === 'always' &&
                     getGroupNumber(options.groups, node) ===
                       getGroupNumber(options.groups, nextNode) &&
                     linesBetweenImports !== 0) ||
-                  (options['newlines-between'] === 'never' &&
+                  (options.newlinesBetween === 'never' &&
                     linesBetweenImports > 0)
                 ) {
                   fixes.push(
@@ -475,7 +482,7 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
                 }
 
                 if (
-                  options['newlines-between'] === 'always' &&
+                  options.newlinesBetween === 'always' &&
                   getGroupNumber(options.groups, node) !==
                     getGroupNumber(options.groups, nextNode) &&
                   linesBetweenImports > 1
@@ -498,7 +505,7 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
                 }
 
                 if (
-                  options['newlines-between'] === 'always' &&
+                  options.newlinesBetween === 'always' &&
                   getGroupNumber(options.groups, node) !==
                     getGroupNumber(options.groups, nextNode) &&
                   linesBetweenImports === 0
@@ -561,7 +568,7 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
             }
 
             if (
-              options['newlines-between'] === 'never' &&
+              options.newlinesBetween === 'never' &&
               numberOfEmptyLinesBetween > 0
             ) {
               context.report({
@@ -575,7 +582,7 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
               })
             }
 
-            if (options['newlines-between'] === 'always') {
+            if (options.newlinesBetween === 'always') {
               if (leftNum < rightNum && numberOfEmptyLinesBetween === 0) {
                 context.report({
                   messageId: 'missedSpacingBetweenImports',

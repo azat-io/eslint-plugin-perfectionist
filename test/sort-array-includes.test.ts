@@ -23,7 +23,7 @@ describe(RULE_NAME, () => {
     let options = {
       type: SortType.alphabetical,
       order: SortOrder.asc,
-      'ignore-case': false,
+      ignoreCase: false,
     }
 
     ruleTester.run(
@@ -172,7 +172,7 @@ describe(RULE_NAME, () => {
             options: [
               {
                 ...options,
-                'spread-last': true,
+                spreadLast: true,
               },
             ],
           },
@@ -188,7 +188,7 @@ describe(RULE_NAME, () => {
             options: [
               {
                 ...options,
-                'spread-last': true,
+                spreadLast: true,
               },
             ],
             errors: [
@@ -258,7 +258,7 @@ describe(RULE_NAME, () => {
     let options = {
       type: SortType.natural,
       order: SortOrder.asc,
-      'ignore-case': false,
+      ignoreCase: false,
     }
 
     ruleTester.run(
@@ -407,7 +407,7 @@ describe(RULE_NAME, () => {
             options: [
               {
                 ...options,
-                'spread-last': true,
+                spreadLast: true,
               },
             ],
           },
@@ -423,7 +423,7 @@ describe(RULE_NAME, () => {
             options: [
               {
                 ...options,
-                'spread-last': true,
+                spreadLast: true,
               },
             ],
             errors: [
@@ -648,7 +648,7 @@ describe(RULE_NAME, () => {
             options: [
               {
                 ...options,
-                'spread-last': true,
+                spreadLast: true,
               },
             ],
           },
@@ -664,7 +664,7 @@ describe(RULE_NAME, () => {
             options: [
               {
                 ...options,
-                'spread-last': true,
+                spreadLast: true,
               },
             ],
             errors: [

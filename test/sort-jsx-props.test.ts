@@ -28,7 +28,7 @@ describe(RULE_NAME, () => {
     let options = {
       type: SortType.alphabetical,
       order: SortOrder.asc,
-      'ignore-case': false,
+      ignoreCase: false,
     }
 
     ruleTester.run(`${RULE_NAME}(${type}): sorts jsx props`, rule, {
@@ -297,7 +297,7 @@ describe(RULE_NAME, () => {
             options: [
               {
                 ...options,
-                'custom-groups': { callback: 'on*' },
+                customGroups: { callback: 'on*' },
                 groups: ['unknown', 'callback'],
               },
             ],
@@ -324,7 +324,7 @@ describe(RULE_NAME, () => {
             options: [
               {
                 ...options,
-                'custom-groups': { callback: 'on*' },
+                customGroups: { callback: 'on*' },
                 groups: ['unknown', 'callback'],
               },
             ],
@@ -446,7 +446,7 @@ describe(RULE_NAME, () => {
             options: [
               {
                 ...options,
-                'custom-groups': { top: ['id', 'name'] },
+                customGroups: { top: ['id', 'name'] },
                 groups: ['top', 'unknown'],
               },
             ],
@@ -477,7 +477,7 @@ describe(RULE_NAME, () => {
             options: [
               {
                 ...options,
-                'custom-groups': { top: ['id', 'name'] },
+                customGroups: { top: ['id', 'name'] },
                 groups: ['top', 'unknown'],
               },
             ],
@@ -514,7 +514,7 @@ describe(RULE_NAME, () => {
             options: [
               {
                 ...options,
-                'custom-groups': { top: ['id'] },
+                customGroups: { top: ['id'] },
                 groups: ['top', 'unknown'],
               },
             ],
@@ -544,7 +544,7 @@ describe(RULE_NAME, () => {
             options: [
               {
                 ...options,
-                'custom-groups': { top: ['id'] },
+                customGroups: { top: ['id'] },
                 groups: ['top', 'unknown'],
               },
             ],
@@ -569,7 +569,7 @@ describe(RULE_NAME, () => {
     let options = {
       type: SortType.natural,
       order: SortOrder.asc,
-      'ignore-case': true,
+      ignoreCase: true,
     }
 
     ruleTester.run(`${RULE_NAME}(${type}): sorts jsx props`, rule, {
@@ -838,7 +838,7 @@ describe(RULE_NAME, () => {
             options: [
               {
                 ...options,
-                'custom-groups': { callback: 'on*' },
+                customGroups: { callback: 'on*' },
                 groups: ['unknown', 'callback'],
               },
             ],
@@ -865,7 +865,7 @@ describe(RULE_NAME, () => {
             options: [
               {
                 ...options,
-                'custom-groups': { callback: 'on*' },
+                customGroups: { callback: 'on*' },
                 groups: ['unknown', 'callback'],
               },
             ],
@@ -987,7 +987,7 @@ describe(RULE_NAME, () => {
             options: [
               {
                 ...options,
-                'custom-groups': { top: ['id', 'name'] },
+                customGroups: { top: ['id', 'name'] },
                 groups: ['top', 'unknown'],
               },
             ],
@@ -1018,7 +1018,7 @@ describe(RULE_NAME, () => {
             options: [
               {
                 ...options,
-                'custom-groups': { top: ['id', 'name'] },
+                customGroups: { top: ['id', 'name'] },
                 groups: ['top', 'unknown'],
               },
             ],
@@ -1055,7 +1055,7 @@ describe(RULE_NAME, () => {
             options: [
               {
                 ...options,
-                'custom-groups': { top: ['id'] },
+                customGroups: { top: ['id'] },
                 groups: ['top', 'unknown'],
               },
             ],
@@ -1085,7 +1085,7 @@ describe(RULE_NAME, () => {
             options: [
               {
                 ...options,
-                'custom-groups': { top: ['id'] },
+                customGroups: { top: ['id'] },
                 groups: ['top', 'unknown'],
               },
             ],
@@ -1385,7 +1385,7 @@ describe(RULE_NAME, () => {
             options: [
               {
                 ...options,
-                'custom-groups': { callback: 'on*' },
+                customGroups: { callback: 'on*' },
                 groups: ['unknown', 'callback'],
               },
             ],
@@ -1412,7 +1412,7 @@ describe(RULE_NAME, () => {
             options: [
               {
                 ...options,
-                'custom-groups': { callback: 'on*' },
+                customGroups: { callback: 'on*' },
                 groups: ['unknown', 'callback'],
               },
             ],
@@ -1534,7 +1534,7 @@ describe(RULE_NAME, () => {
             options: [
               {
                 ...options,
-                'custom-groups': { top: ['id', 'name'] },
+                customGroups: { top: ['id', 'name'] },
                 groups: ['top', 'unknown'],
               },
             ],
@@ -1565,7 +1565,7 @@ describe(RULE_NAME, () => {
             options: [
               {
                 ...options,
-                'custom-groups': { top: ['id', 'name'] },
+                customGroups: { top: ['id', 'name'] },
                 groups: ['top', 'unknown'],
               },
             ],
@@ -1609,7 +1609,7 @@ describe(RULE_NAME, () => {
             options: [
               {
                 ...options,
-                'custom-groups': { top: ['id', 'name'] },
+                customGroups: { top: ['id', 'name'] },
                 groups: ['top', 'unknown'],
               },
             ],
@@ -1639,7 +1639,7 @@ describe(RULE_NAME, () => {
             options: [
               {
                 ...options,
-                'custom-groups': { top: ['id', 'name'] },
+                customGroups: { top: ['id', 'name'] },
                 groups: ['top', 'unknown'],
               },
             ],

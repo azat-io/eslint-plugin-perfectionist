@@ -29,7 +29,7 @@ describe(RULE_NAME, () => {
     let options = {
       type: SortType.alphabetical,
       order: SortOrder.asc,
-      'ignore-case': false,
+      ignoreCase: false,
     }
 
     ruleTester.run(
@@ -412,7 +412,7 @@ describe(RULE_NAME, () => {
             {
               ...options,
               groups: ['top', 'callback', 'unknown'],
-              'custom-groups': {
+              customGroups: {
                 top: ['id', 'name'],
                 callback: 'on*',
               },
@@ -455,7 +455,7 @@ describe(RULE_NAME, () => {
             {
               ...options,
               groups: ['top', 'callback', 'unknown'],
-              'custom-groups': {
+              customGroups: {
                 top: ['id', 'name'],
                 callback: 'on*',
               },
@@ -488,7 +488,7 @@ describe(RULE_NAME, () => {
     let options = {
       type: SortType.natural,
       order: SortOrder.asc,
-      'ignore-case': false,
+      ignoreCase: false,
     }
 
     ruleTester.run(
@@ -871,7 +871,7 @@ describe(RULE_NAME, () => {
             {
               ...options,
               groups: ['top', 'callback', 'unknown'],
-              'custom-groups': {
+              customGroups: {
                 top: ['id', 'name'],
                 callback: 'on*',
               },
@@ -914,7 +914,7 @@ describe(RULE_NAME, () => {
             {
               ...options,
               groups: ['top', 'callback', 'unknown'],
-              'custom-groups': {
+              customGroups: {
                 top: ['id', 'name'],
                 callback: 'on*',
               },
@@ -1315,7 +1315,7 @@ describe(RULE_NAME, () => {
             {
               ...options,
               groups: ['top', 'callback', 'unknown'],
-              'custom-groups': {
+              customGroups: {
                 top: ['id', 'name'],
                 callback: 'on*',
               },
@@ -1358,7 +1358,7 @@ describe(RULE_NAME, () => {
             {
               ...options,
               groups: ['top', 'callback', 'unknown'],
-              'custom-groups': {
+              customGroups: {
                 top: ['id', 'name'],
                 callback: 'on*',
               },

@@ -23,7 +23,7 @@ describe(RULE_NAME, () => {
     let options = {
       type: SortType.alphabetical,
       order: SortOrder.asc,
-      'ignore-case': false,
+      ignoreCase: false,
     }
 
     ruleTester.run(`${RULE_NAME}(${type}): sorts type members`, rule, {
@@ -299,7 +299,7 @@ describe(RULE_NAME, () => {
               {
                 ...options,
                 groups: ['id', 'unknown', 'multiline'],
-                'custom-groups': {
+                customGroups: {
                   id: 'id',
                 },
               },
@@ -336,7 +336,7 @@ describe(RULE_NAME, () => {
               {
                 ...options,
                 groups: ['id', 'unknown', 'multiline'],
-                'custom-groups': {
+                customGroups: {
                   id: 'id',
                 },
               },
@@ -435,7 +435,7 @@ describe(RULE_NAME, () => {
             options: [
               {
                 ...options,
-                'partition-by-new-line': true,
+                partitionByNewLine: true,
               },
             ],
           },
@@ -467,7 +467,7 @@ describe(RULE_NAME, () => {
             options: [
               {
                 ...options,
-                'partition-by-new-line': true,
+                partitionByNewLine: true,
               },
             ],
             errors: [
@@ -498,7 +498,7 @@ describe(RULE_NAME, () => {
     let options = {
       type: SortType.natural,
       order: SortOrder.asc,
-      'ignore-case': false,
+      ignoreCase: false,
     }
 
     ruleTester.run(`${RULE_NAME}(${type}): sorts type members`, rule, {
@@ -774,7 +774,7 @@ describe(RULE_NAME, () => {
               {
                 ...options,
                 groups: ['id', 'unknown', 'multiline'],
-                'custom-groups': {
+                customGroups: {
                   id: 'id',
                 },
               },
@@ -811,7 +811,7 @@ describe(RULE_NAME, () => {
               {
                 ...options,
                 groups: ['id', 'unknown', 'multiline'],
-                'custom-groups': {
+                customGroups: {
                   id: 'id',
                 },
               },
@@ -857,7 +857,7 @@ describe(RULE_NAME, () => {
             options: [
               {
                 ...options,
-                'partition-by-new-line': true,
+                partitionByNewLine: true,
               },
             ],
           },
@@ -889,7 +889,7 @@ describe(RULE_NAME, () => {
             options: [
               {
                 ...options,
-                'partition-by-new-line': true,
+                partitionByNewLine: true,
               },
             ],
             errors: [
@@ -1215,7 +1215,7 @@ describe(RULE_NAME, () => {
               {
                 ...options,
                 groups: ['id', 'unknown', 'multiline'],
-                'custom-groups': {
+                customGroups: {
                   id: 'id',
                 },
               },
@@ -1252,7 +1252,7 @@ describe(RULE_NAME, () => {
               {
                 ...options,
                 groups: ['id', 'unknown', 'multiline'],
-                'custom-groups': {
+                customGroups: {
                   id: 'id',
                 },
               },
@@ -1298,7 +1298,7 @@ describe(RULE_NAME, () => {
             options: [
               {
                 ...options,
-                'partition-by-new-line': true,
+                partitionByNewLine: true,
               },
             ],
           },
@@ -1330,7 +1330,7 @@ describe(RULE_NAME, () => {
             options: [
               {
                 ...options,
-                'partition-by-new-line': true,
+                partitionByNewLine: true,
               },
             ],
             errors: [
