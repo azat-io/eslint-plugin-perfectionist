@@ -136,9 +136,9 @@ type Group =
 interface Options {
   type?: 'alphabetical' | 'natural' | 'line-length'
   order?: 'asc' | 'desc'
-  'ignore-case'?: boolean
+  ignoreCase?: boolean
   groups?: (Group | Group[])[]
-  'custom-groups'?: {
+  customGroups?: {
     value?: {
       [key: CustomGroup]: string | string[]
     }
@@ -146,9 +146,9 @@ interface Options {
       [key: CustomGroup]: string | string[]
     }
   }
-  'internal-pattern'?: string[]
-  'newlines-between'?: 'always' | 'ignore' | 'never'
-  'max-line-length'?: number
+  internalPattern?: string[]
+  newlinesBetween?: 'always' | 'ignore' | 'never'
+  maxLineLength?: number
 ```
 
 ### type
@@ -166,7 +166,7 @@ interface Options {
 - `asc` — enforce properties to be in ascending order.
 - `desc` — enforce properties to be in descending order.
 
-### ignore-case
+### ignoreCase
 
 <sub>(default: `false`)</sub>
 
@@ -230,7 +230,7 @@ If you use [one of the configs](/configs/) exported by this plugin, you get the 
 }
 ```
 
-### custom-groups
+### customGroups
 
 <sub>(default: `{ value: {}, type: {} }`)</sub>
 
@@ -240,7 +240,7 @@ Example:
 
 ```
 {
-  "custom-groups": {
+  "customGroups": {
     "value": {
       "react": ["react", "react-*"],
       "lodash": "lodash"
@@ -252,7 +252,7 @@ Example:
 }
 ```
 
-### internal-pattern
+### internalPattern
 
 <sub>(default: `['~/**']`)</sub>
 
@@ -260,7 +260,7 @@ You can specify a pattern for internal imports.
 
 The [minimatch](https://github.com/isaacs/minimatch) library is used for pattern matching.
 
-### newlines-between
+### newlinesBetween
 
 <sub>(default: `'always'`)</sub>
 
@@ -268,7 +268,7 @@ The [minimatch](https://github.com/isaacs/minimatch) library is used for pattern
 - `always` - one new line between each group will be enforced, and new lines inside a group will be forbidden.
 - `never` - no new lines are allowed in the entire import section.
 
-### max-line-length\*
+### maxLineLength\*
 
 <sub>(default: `undefined`)</sub>
 
@@ -310,7 +310,7 @@ You can use this to sort by the import name only, excluding the elements, when t
                     'object',
                     'unknown',
                   ],
-                  'custom-groups': {
+                  customGroups: {
                     value: {
                       react: ['react', 'react-*'],
                       nanostores: '@nanostores/**',
@@ -319,8 +319,8 @@ You can use this to sort by the import name only, excluding the elements, when t
                       react: 'react',
                     },
                   },
-                  'newlines-between': 'always',
-                  'internal-pattern': [
+                  newlinesBetween: 'always',
+                  internalPattern: [
                     '@/components/**',
                     '@/stores/**',
                     '@/pages/**',
@@ -362,7 +362,7 @@ You can use this to sort by the import name only, excluding the elements, when t
                   'object',
                   'unknown',
                 ],
-                'custom-groups': {
+                customGroups: {
                   value: {
                     react: ['react', 'react-*'],
                     nanostores: '@nanostores/**',
@@ -371,8 +371,8 @@ You can use this to sort by the import name only, excluding the elements, when t
                     react: 'react',
                   },
                 },
-                'newlines-between': 'always',
-                'internal-pattern': [
+                newlinesBetween: 'always',
+                internalPattern: [
                   '@/components/**',
                   '@/stores/**',
                   '@/pages/**',
@@ -386,11 +386,10 @@ You can use this to sort by the import name only, excluding the elements, when t
       name: 'Legacy Config',
       value: 'legacy',
     },
-
-]}
-type="config-type"
-client:load
-lang="ts"
+  ]}
+  type="config-type"
+  client:load
+  lang="ts"
 />
 
 ## Version

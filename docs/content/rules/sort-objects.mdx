@@ -157,13 +157,13 @@ This rule accepts an options object with the following properties:
 interface Options {
   type?: 'alphabetical' | 'natural' | 'line-length'
   order?: 'asc' | 'desc'
-  'ignore-case'?: boolean
+  ignoreCase?: boolean
   groups?: (string | string[])[]
-  'custom-groups'?: { [key: string]: string[] | string }
-  'styled-components'?: boolean
-  'ignore-pattern'?: string[]
-  'partition-by-comment'?: string[] | string | boolean
-  'partition-by-new-line'?: boolean
+  customGroups?: { [key: string]: string[] | string }
+  styledComponents?: boolean
+  ignorePattern?: string[]
+  partitionByComment?: string[] | string | boolean
+  partitionByNewLine?: boolean
 }
 ```
 
@@ -182,7 +182,7 @@ interface Options {
 - `asc` — enforce properties to be in ascending order.
 - `desc` — enforce properties to be in descending order.
 
-### ignore-case
+### ignoreCase
 
 <sub>(default: `false`)</sub>
 
@@ -194,7 +194,7 @@ Only affects alphabetical and natural sorting. When `true` the rule ignores the 
 
 You can set up a list of object keys groups for sorting. Groups can be combined. There are no predefined groups.
 
-### custom-groups
+### customGroups
 
 <sub>(default: `{}`)</sub>
 
@@ -204,19 +204,19 @@ Example:
 
 ```json
 {
-  "custom-groups": {
+  "customGroups": {
     "top": "id"
   }
 }
 ```
 
-### styled-components
+### styledComponents
 
 <sub>(default: `true`)</sub>
 
 When `false`, this rule will be disabled for the styled-components like libraries.
 
-### ignore-pattern
+### ignorePattern
 
 <sub>(default: `[]`)</sub>
 
@@ -224,7 +224,7 @@ If you need to ignore a rule for some interfaces, you can specify their names or
 
 The [minimatch](https://github.com/isaacs/minimatch) library is used for pattern matching.
 
-### partition-by-comment
+### partitionByComment
 
 <sub>(default: `false`)</sub>
 
@@ -232,7 +232,7 @@ You can set comments that would separate the properties of objects into logical 
 
 The [minimatch](https://github.com/isaacs/minimatch) library is used for pattern matching.
 
-### partition-by-new-line
+### partitionByNewLine
 
 <sub>(default: `false`)</sub>
 
@@ -258,9 +258,9 @@ When `true`, does not sort the object's keys if there is an empty string between
                 {
                   type: 'natural',
                   order: 'asc',
-                  'partition-by-comment': 'Part:**',
+                  partitionByComment': 'Part:**',
                   groups: ['id', 'unknown'],
-                  'custom-groups': {
+                  customGroups: {
                     id: 'id',
                   },
                 },
@@ -285,9 +285,9 @@ When `true`, does not sort the object's keys if there is an empty string between
               {
                 type: 'natural',
                 order: 'asc',
-                'partition-by-comment': 'Part:**',
+                partitionByComment: 'Part:**',
                 groups: ['id', 'unknown'],
-                'custom-groups': {
+                customGroups: {
                   id: 'id',
                 },
               },
@@ -298,11 +298,10 @@ When `true`, does not sort the object's keys if there is an empty string between
       name: 'Legacy Config',
       value: 'legacy',
     },
-
-]}
-type="config-type"
-client:load
-lang="ts"
+  ]}
+  type="config-type"
+  client:load
+  lang="ts"
 />
 
 ## Version

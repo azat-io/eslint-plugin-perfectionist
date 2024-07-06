@@ -17,8 +17,8 @@ type MESSAGE_ID = 'unexpectedArrayIncludesOrder'
 
 type Options = [
   Partial<{
-    'spread-last': boolean
-    'ignore-case': boolean
+    spreadLast: boolean
+    ignoreCase: boolean
     order: SortOrder
     type: SortType
   }>,
@@ -52,11 +52,11 @@ export default createEslintRule<Options, MESSAGE_ID>({
             default: SortOrder.asc,
             type: 'string',
           },
-          'ignore-case': {
+          ignoreCase: {
             type: 'boolean',
             default: false,
           },
-          'spread-last': {
+          spreadLast: {
             type: 'boolean',
             default: false,
           },
@@ -92,8 +92,8 @@ export default createEslintRule<Options, MESSAGE_ID>({
           let options = complete(context.options.at(0), {
             type: SortType.alphabetical,
             order: SortOrder.asc,
-            'ignore-case': false,
-            'spread-last': false,
+            ignoreCase: false,
+            spreadLast: false,
           })
 
           let nodes: ({ type: string } & SortingNode)[] = elements
@@ -124,13 +124,13 @@ export default createEslintRule<Options, MESSAGE_ID>({
             let compareValue: boolean
 
             if (
-              options['spread-last'] &&
+              options.spreadLast &&
               left.node.type === 'Literal' &&
               right.node.type === 'SpreadElement'
             ) {
               compareValue = false
             } else if (
-              options['spread-last'] &&
+              options.spreadLast &&
               left.node.type === 'SpreadElement' &&
               right.node.type === 'Literal'
             ) {
@@ -150,7 +150,7 @@ export default createEslintRule<Options, MESSAGE_ID>({
                 fix: fixer => {
                   let sortedNodes = sortNodes(nodes, options)
 
-                  if (options['spread-last']) {
+                  if (options.spreadLast) {
                     for (let i = 0, max = sortedNodes.length; i < max; i++) {
                       if (sortedNodes.at(i)!.node.type === 'SpreadElement') {
                         sortedNodes.push(sortedNodes.splice(i, 1).at(0)!)

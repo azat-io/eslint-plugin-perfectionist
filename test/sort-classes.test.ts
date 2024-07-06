@@ -23,7 +23,7 @@ describe(RULE_NAME, () => {
     let options = {
       type: SortType.alphabetical,
       order: SortOrder.asc,
-      'ignore-case': false,
+      ignoreCase: false,
     }
 
     ruleTester.run(`${RULE_NAME}(${type}): sorts class members`, rule, {
@@ -766,7 +766,7 @@ describe(RULE_NAME, () => {
     let options = {
       type: SortType.natural,
       order: SortOrder.asc,
-      'ignore-case': false,
+      ignoreCase: false,
     }
 
     ruleTester.run(`${RULE_NAME}(${type}): sorts class members`, rule, {
@@ -2165,7 +2165,7 @@ describe(RULE_NAME, () => {
           options: [
             {
               ...options,
-              'custom-groups': {
+              customGroups: {
                 'my-first-group': 'customFirst*',
                 'my-last-group': 'customLast*',
               },

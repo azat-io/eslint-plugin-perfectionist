@@ -17,8 +17,8 @@ type MESSAGE_ID = 'unexpectedEnumsOrder'
 
 type Options = [
   Partial<{
-    'partition-by-comment': PartitionComment
-    'ignore-case': boolean
+    partitionByComment: PartitionComment
+    ignoreCase: boolean
     order: SortOrder
     type: SortType
   }>,
@@ -38,7 +38,7 @@ export default createEslintRule<Options, MESSAGE_ID>({
       {
         type: 'object',
         properties: {
-          'partition-by-comment': {
+          partitionByComment: {
             default: false,
             type: ['boolean', 'string', 'array'],
           },
@@ -51,7 +51,7 @@ export default createEslintRule<Options, MESSAGE_ID>({
             default: SortType.alphabetical,
             type: 'string',
           },
-          'ignore-case': {
+          ignoreCase: {
             type: 'boolean',
             default: false,
           },
@@ -83,11 +83,11 @@ export default createEslintRule<Options, MESSAGE_ID>({
         let options = complete(context.options.at(0), {
           type: SortType.alphabetical,
           order: SortOrder.asc,
-          'ignore-case': false,
-          'partition-by-comment': false,
+          ignoreCase: false,
+          partitionByComment: false,
         })
 
-        let partitionComment = options['partition-by-comment']
+        let partitionComment = options.partitionByComment
 
         let formattedMembers: SortingNode[][] = node.members.reduce(
           (accumulator: SortingNode[][], member) => {

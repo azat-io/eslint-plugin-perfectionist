@@ -8,8 +8,8 @@ export let compare = (
   a: SortingNode,
   b: SortingNode,
   options: {
-    'max-line-length'?: number
-    'ignore-case'?: boolean
+    maxLineLength?: number
+    ignoreCase?: boolean
     order: SortOrder
     type: SortType
   },
@@ -24,7 +24,7 @@ export let compare = (
   let sortingFunction: (a: SortingNode, b: SortingNode) => number
 
   let formatString = (string: string) =>
-    options['ignore-case'] ? string.toLowerCase() : string
+    options.ignoreCase ? string.toLowerCase() : string
 
   if (options.type === SortType.alphabetical) {
     sortingFunction = (aNode, bNode) =>
@@ -37,7 +37,7 @@ export let compare = (
       let aSize = aNode.size
       let bSize = bNode.size
 
-      let maxLineLength = options['max-line-length']
+      let { maxLineLength } = options
 
       if (maxLineLength) {
         let isTooLong = (size: number, node: SortingNode) =>

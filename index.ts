@@ -23,7 +23,7 @@ type RuleSeverity = 'error' | 'warn' | 'off'
 type RuleDeclaration = [RuleSeverity, { [key: string]: unknown }?]
 
 let createConfigWithOptions = (options: {
-  'ignore-case'?: boolean
+  ignoreCase?: boolean
   order: SortOrder
   type: SortType
 }): {
@@ -48,12 +48,12 @@ let createConfigWithOptions = (options: {
           'object',
           'unknown',
         ],
-        'custom-groups': {
+        customGroups: {
           value: {},
           type: {},
         },
-        'newlines-between': 'always',
-        'internal-pattern': ['~/**'],
+        newlinesBetween: 'always',
+        internalPattern: ['~/**'],
       },
     ],
     [sortClassesName]: [
@@ -76,13 +76,13 @@ let createConfigWithOptions = (options: {
     [sortObjectsName]: [
       'error',
       {
-        'partition-by-comment': false,
+        partitionByComment: false,
       },
     ],
     [sortArrayIncludesName]: [
       'error',
       {
-        'spread-last': true,
+        spreadLast: true,
       },
     ],
     [sortIntersectionTypesName]: ['error'],
@@ -135,12 +135,12 @@ export default {
     'recommended-alphabetical': createConfigWithOptions({
       type: SortType.alphabetical,
       order: SortOrder.asc,
-      'ignore-case': false,
+      ignoreCase: false,
     }),
     'recommended-natural': createConfigWithOptions({
       type: SortType.natural,
       order: SortOrder.asc,
-      'ignore-case': false,
+      ignoreCase: false,
     }),
     'recommended-line-length': createConfigWithOptions({
       type: SortType['line-length'],

@@ -24,7 +24,7 @@ describe(RULE_NAME, () => {
     let options = {
       type: SortType.alphabetical,
       order: SortOrder.asc,
-      'ignore-case': false,
+      ignoreCase: false,
     }
 
     ruleTester.run(`${RULE_NAME}(${type}): sorts imports`, rule, {
@@ -93,8 +93,8 @@ describe(RULE_NAME, () => {
           options: [
             {
               ...options,
-              'newlines-between': NewlinesBetweenValue.always,
-              'internal-pattern': ['~/**'],
+              newlinesBetween: NewlinesBetweenValue.always,
+              internalPattern: ['~/**'],
               groups: [
                 'type',
                 ['builtin', 'external'],
@@ -163,8 +163,8 @@ describe(RULE_NAME, () => {
           options: [
             {
               ...options,
-              'newlines-between': NewlinesBetweenValue.always,
-              'internal-pattern': ['~/**'],
+              newlinesBetween: NewlinesBetweenValue.always,
+              internalPattern: ['~/**'],
               groups: [
                 'type',
                 ['builtin', 'external'],
@@ -284,8 +284,8 @@ describe(RULE_NAME, () => {
             options: [
               {
                 ...options,
-                'newlines-between': NewlinesBetweenValue.never,
-                'internal-pattern': ['~/**'],
+                newlinesBetween: NewlinesBetweenValue.never,
+                internalPattern: ['~/**'],
                 groups: [
                   'type',
                   ['builtin', 'external'],
@@ -323,8 +323,8 @@ describe(RULE_NAME, () => {
             options: [
               {
                 ...options,
-                'newlines-between': NewlinesBetweenValue.never,
-                'internal-pattern': ['~/**'],
+                newlinesBetween: NewlinesBetweenValue.never,
+                internalPattern: ['~/**'],
                 groups: [
                   'type',
                   ['builtin', 'external'],
@@ -378,8 +378,8 @@ describe(RULE_NAME, () => {
           options: [
             {
               ...options,
-              'newlines-between': NewlinesBetweenValue.always,
-              'internal-pattern': ['~/**'],
+              newlinesBetween: NewlinesBetweenValue.always,
+              internalPattern: ['~/**'],
               groups: [
                 'type',
                 ['builtin', 'external'],
@@ -415,8 +415,8 @@ describe(RULE_NAME, () => {
           options: [
             {
               ...options,
-              'newlines-between': NewlinesBetweenValue.always,
-              'internal-pattern': ['~/**'],
+              newlinesBetween: NewlinesBetweenValue.always,
+              internalPattern: ['~/**'],
               groups: [
                 'type',
                 ['builtin', 'external'],
@@ -468,8 +468,8 @@ describe(RULE_NAME, () => {
             options: [
               {
                 ...options,
-                'newlines-between': NewlinesBetweenValue.always,
-                'internal-pattern': ['~/**'],
+                newlinesBetween: NewlinesBetweenValue.always,
+                internalPattern: ['~/**'],
                 groups: [
                   'type',
                   ['builtin', 'external'],
@@ -508,8 +508,8 @@ describe(RULE_NAME, () => {
             options: [
               {
                 ...options,
-                'newlines-between': NewlinesBetweenValue.always,
-                'internal-pattern': ['~/**'],
+                newlinesBetween: NewlinesBetweenValue.always,
+                internalPattern: ['~/**'],
                 groups: [
                   'type',
                   ['builtin', 'external'],
@@ -557,8 +557,8 @@ describe(RULE_NAME, () => {
             options: [
               {
                 ...options,
-                'newlines-between': NewlinesBetweenValue.always,
-                'internal-pattern': ['~/**'],
+                newlinesBetween: NewlinesBetweenValue.always,
+                internalPattern: ['~/**'],
                 groups: [
                   'type',
                   ['builtin', 'external'],
@@ -586,8 +586,8 @@ describe(RULE_NAME, () => {
             options: [
               {
                 ...options,
-                'newlines-between': NewlinesBetweenValue.always,
-                'internal-pattern': ['~/**'],
+                newlinesBetween: NewlinesBetweenValue.always,
+                internalPattern: ['~/**'],
                 groups: [
                   'type',
                   ['builtin', 'external'],
@@ -636,8 +636,8 @@ describe(RULE_NAME, () => {
           options: [
             {
               ...options,
-              'newlines-between': NewlinesBetweenValue.always,
-              'internal-pattern': ['~/**'],
+              newlinesBetween: NewlinesBetweenValue.always,
+              internalPattern: ['~/**'],
               groups: [
                 'type',
                 ['builtin', 'external'],
@@ -670,8 +670,8 @@ describe(RULE_NAME, () => {
             options: [
               {
                 ...options,
-                'newlines-between': NewlinesBetweenValue.always,
-                'internal-pattern': ['~/**'],
+                newlinesBetween: NewlinesBetweenValue.always,
+                internalPattern: ['~/**'],
                 groups: [
                   'type',
                   ['builtin', 'external'],
@@ -706,8 +706,8 @@ describe(RULE_NAME, () => {
             options: [
               {
                 ...options,
-                'newlines-between': NewlinesBetweenValue.always,
-                'internal-pattern': ['~/**'],
+                newlinesBetween: NewlinesBetweenValue.always,
+                internalPattern: ['~/**'],
                 groups: [
                   'type',
                   ['builtin', 'external'],
@@ -741,8 +741,8 @@ describe(RULE_NAME, () => {
             options: [
               {
                 ...options,
-                'newlines-between': NewlinesBetweenValue.always,
-                'internal-pattern': ['~/**'],
+                newlinesBetween: NewlinesBetweenValue.always,
+                internalPattern: ['~/**'],
                 groups: [
                   'type',
                   ['builtin', 'external'],
@@ -778,8 +778,8 @@ describe(RULE_NAME, () => {
             options: [
               {
                 ...options,
-                'newlines-between': NewlinesBetweenValue.always,
-                'internal-pattern': ['~/**'],
+                newlinesBetween: NewlinesBetweenValue.always,
+                internalPattern: ['~/**'],
                 groups: [
                   'type',
                   ['builtin', 'external'],
@@ -813,8 +813,8 @@ describe(RULE_NAME, () => {
             options: [
               {
                 ...options,
-                'newlines-between': NewlinesBetweenValue.always,
-                'internal-pattern': ['~/**'],
+                newlinesBetween: NewlinesBetweenValue.always,
+                internalPattern: ['~/**'],
                 groups: ['builtin-type', 'type'],
               },
             ],
@@ -843,8 +843,8 @@ describe(RULE_NAME, () => {
             options: [
               {
                 ...options,
-                'newlines-between': NewlinesBetweenValue.always,
-                'internal-pattern': ['~/**'],
+                newlinesBetween: NewlinesBetweenValue.always,
+                internalPattern: ['~/**'],
                 groups: [
                   'type',
                   ['builtin', 'external'],
@@ -963,7 +963,7 @@ describe(RULE_NAME, () => {
             options: [
               {
                 ...options,
-                'custom-groups': {
+                customGroups: {
                   type: {
                     titans: ['titans', '@titans/**'],
                   },
@@ -1026,7 +1026,7 @@ describe(RULE_NAME, () => {
             options: [
               {
                 ...options,
-                'custom-groups': {
+                customGroups: {
                   value: {
                     giovanni: ['giovannis-island'],
                   },
@@ -1069,8 +1069,8 @@ describe(RULE_NAME, () => {
             options: [
               {
                 ...options,
-                'newlines-between': NewlinesBetweenValue.always,
-                'internal-pattern': ['#**'],
+                newlinesBetween: NewlinesBetweenValue.always,
+                internalPattern: ['#**'],
                 groups: [
                   'type',
                   ['builtin', 'external'],
@@ -1112,8 +1112,8 @@ describe(RULE_NAME, () => {
             options: [
               {
                 ...options,
-                'newlines-between': NewlinesBetweenValue.always,
-                'internal-pattern': ['#**'],
+                newlinesBetween: NewlinesBetweenValue.always,
+                internalPattern: ['#**'],
                 groups: [
                   'type',
                   ['builtin', 'external'],
@@ -1161,7 +1161,7 @@ describe(RULE_NAME, () => {
     let options = {
       type: SortType.natural,
       order: SortOrder.asc,
-      'ignore-case': false,
+      ignoreCase: false,
     }
 
     ruleTester.run(`${RULE_NAME}(${type}): sorts imports`, rule, {
@@ -1230,8 +1230,8 @@ describe(RULE_NAME, () => {
           options: [
             {
               ...options,
-              'newlines-between': NewlinesBetweenValue.always,
-              'internal-pattern': ['~/**'],
+              newlinesBetween: NewlinesBetweenValue.always,
+              internalPattern: ['~/**'],
               groups: [
                 'type',
                 ['builtin', 'external'],
@@ -1300,8 +1300,8 @@ describe(RULE_NAME, () => {
           options: [
             {
               ...options,
-              'newlines-between': NewlinesBetweenValue.always,
-              'internal-pattern': ['~/**'],
+              newlinesBetween: NewlinesBetweenValue.always,
+              internalPattern: ['~/**'],
               groups: [
                 'type',
                 ['builtin', 'external'],
@@ -1421,8 +1421,8 @@ describe(RULE_NAME, () => {
             options: [
               {
                 ...options,
-                'newlines-between': NewlinesBetweenValue.never,
-                'internal-pattern': ['~/**'],
+                newlinesBetween: NewlinesBetweenValue.never,
+                internalPattern: ['~/**'],
                 groups: [
                   'type',
                   ['builtin', 'external'],
@@ -1460,8 +1460,8 @@ describe(RULE_NAME, () => {
             options: [
               {
                 ...options,
-                'newlines-between': NewlinesBetweenValue.never,
-                'internal-pattern': ['~/**'],
+                newlinesBetween: NewlinesBetweenValue.never,
+                internalPattern: ['~/**'],
                 groups: [
                   'type',
                   ['builtin', 'external'],
@@ -1515,8 +1515,8 @@ describe(RULE_NAME, () => {
           options: [
             {
               ...options,
-              'newlines-between': NewlinesBetweenValue.always,
-              'internal-pattern': ['~/**'],
+              newlinesBetween: NewlinesBetweenValue.always,
+              internalPattern: ['~/**'],
               groups: [
                 'type',
                 ['builtin', 'external'],
@@ -1552,8 +1552,8 @@ describe(RULE_NAME, () => {
           options: [
             {
               ...options,
-              'newlines-between': NewlinesBetweenValue.always,
-              'internal-pattern': ['~/**'],
+              newlinesBetween: NewlinesBetweenValue.always,
+              internalPattern: ['~/**'],
               groups: [
                 'type',
                 ['builtin', 'external'],
@@ -1605,8 +1605,8 @@ describe(RULE_NAME, () => {
             options: [
               {
                 ...options,
-                'newlines-between': NewlinesBetweenValue.always,
-                'internal-pattern': ['~/**'],
+                newlinesBetween: NewlinesBetweenValue.always,
+                internalPattern: ['~/**'],
                 groups: [
                   'type',
                   ['builtin', 'external'],
@@ -1645,8 +1645,8 @@ describe(RULE_NAME, () => {
             options: [
               {
                 ...options,
-                'newlines-between': NewlinesBetweenValue.always,
-                'internal-pattern': ['~/**'],
+                newlinesBetween: NewlinesBetweenValue.always,
+                internalPattern: ['~/**'],
                 groups: [
                   'type',
                   ['builtin', 'external'],
@@ -1694,8 +1694,8 @@ describe(RULE_NAME, () => {
             options: [
               {
                 ...options,
-                'newlines-between': NewlinesBetweenValue.always,
-                'internal-pattern': ['~/**'],
+                newlinesBetween: NewlinesBetweenValue.always,
+                internalPattern: ['~/**'],
                 groups: [
                   'type',
                   ['builtin', 'external'],
@@ -1723,8 +1723,8 @@ describe(RULE_NAME, () => {
             options: [
               {
                 ...options,
-                'newlines-between': NewlinesBetweenValue.always,
-                'internal-pattern': ['~/**'],
+                newlinesBetween: NewlinesBetweenValue.always,
+                internalPattern: ['~/**'],
                 groups: [
                   'type',
                   ['builtin', 'external'],
@@ -1773,8 +1773,8 @@ describe(RULE_NAME, () => {
           options: [
             {
               ...options,
-              'newlines-between': NewlinesBetweenValue.always,
-              'internal-pattern': ['~/**'],
+              newlinesBetween: NewlinesBetweenValue.always,
+              internalPattern: ['~/**'],
               groups: [
                 'type',
                 ['builtin', 'external'],
@@ -1807,8 +1807,8 @@ describe(RULE_NAME, () => {
             options: [
               {
                 ...options,
-                'newlines-between': NewlinesBetweenValue.always,
-                'internal-pattern': ['~/**'],
+                newlinesBetween: NewlinesBetweenValue.always,
+                internalPattern: ['~/**'],
                 groups: [
                   'type',
                   ['builtin', 'external'],
@@ -1843,8 +1843,8 @@ describe(RULE_NAME, () => {
             options: [
               {
                 ...options,
-                'newlines-between': NewlinesBetweenValue.always,
-                'internal-pattern': ['~/**'],
+                newlinesBetween: NewlinesBetweenValue.always,
+                internalPattern: ['~/**'],
                 groups: [
                   'type',
                   ['builtin', 'external'],
@@ -1878,8 +1878,8 @@ describe(RULE_NAME, () => {
             options: [
               {
                 ...options,
-                'newlines-between': NewlinesBetweenValue.always,
-                'internal-pattern': ['~/**'],
+                newlinesBetween: NewlinesBetweenValue.always,
+                internalPattern: ['~/**'],
                 groups: [
                   'type',
                   ['builtin', 'external'],
@@ -1915,8 +1915,8 @@ describe(RULE_NAME, () => {
             options: [
               {
                 ...options,
-                'newlines-between': NewlinesBetweenValue.always,
-                'internal-pattern': ['~/**'],
+                newlinesBetween: NewlinesBetweenValue.always,
+                internalPattern: ['~/**'],
                 groups: [
                   'type',
                   ['builtin', 'external'],
@@ -1950,8 +1950,8 @@ describe(RULE_NAME, () => {
             options: [
               {
                 ...options,
-                'newlines-between': NewlinesBetweenValue.always,
-                'internal-pattern': ['~/**'],
+                newlinesBetween: NewlinesBetweenValue.always,
+                internalPattern: ['~/**'],
                 groups: ['builtin-type', 'type'],
               },
             ],
@@ -1980,8 +1980,8 @@ describe(RULE_NAME, () => {
             options: [
               {
                 ...options,
-                'newlines-between': NewlinesBetweenValue.always,
-                'internal-pattern': ['~/**'],
+                newlinesBetween: NewlinesBetweenValue.always,
+                internalPattern: ['~/**'],
                 groups: [
                   'type',
                   ['builtin', 'external'],
@@ -2100,7 +2100,7 @@ describe(RULE_NAME, () => {
             options: [
               {
                 ...options,
-                'custom-groups': {
+                customGroups: {
                   type: {
                     titans: ['titans', '@titans/**'],
                   },
@@ -2163,7 +2163,7 @@ describe(RULE_NAME, () => {
             options: [
               {
                 ...options,
-                'custom-groups': {
+                customGroups: {
                   value: {
                     giovanni: ['giovannis-island'],
                   },
@@ -2206,8 +2206,8 @@ describe(RULE_NAME, () => {
             options: [
               {
                 ...options,
-                'newlines-between': NewlinesBetweenValue.always,
-                'internal-pattern': ['#**'],
+                newlinesBetween: NewlinesBetweenValue.always,
+                internalPattern: ['#**'],
                 groups: [
                   'type',
                   ['builtin', 'external'],
@@ -2249,8 +2249,8 @@ describe(RULE_NAME, () => {
             options: [
               {
                 ...options,
-                'newlines-between': NewlinesBetweenValue.always,
-                'internal-pattern': ['#**'],
+                newlinesBetween: NewlinesBetweenValue.always,
+                internalPattern: ['#**'],
                 groups: [
                   'type',
                   ['builtin', 'external'],
@@ -2366,8 +2366,8 @@ describe(RULE_NAME, () => {
           options: [
             {
               ...options,
-              'newlines-between': NewlinesBetweenValue.always,
-              'internal-pattern': ['~/**'],
+              newlinesBetween: NewlinesBetweenValue.always,
+              internalPattern: ['~/**'],
               groups: [
                 'type',
                 ['builtin', 'external'],
@@ -2436,8 +2436,8 @@ describe(RULE_NAME, () => {
           options: [
             {
               ...options,
-              'newlines-between': NewlinesBetweenValue.always,
-              'internal-pattern': ['~/**'],
+              newlinesBetween: NewlinesBetweenValue.always,
+              internalPattern: ['~/**'],
               groups: [
                 'type',
                 ['builtin', 'external'],
@@ -2571,8 +2571,8 @@ describe(RULE_NAME, () => {
             options: [
               {
                 ...options,
-                'newlines-between': NewlinesBetweenValue.never,
-                'internal-pattern': ['~/**'],
+                newlinesBetween: NewlinesBetweenValue.never,
+                internalPattern: ['~/**'],
                 groups: [
                   'type',
                   ['builtin', 'external'],
@@ -2610,8 +2610,8 @@ describe(RULE_NAME, () => {
             options: [
               {
                 ...options,
-                'newlines-between': NewlinesBetweenValue.never,
-                'internal-pattern': ['~/**'],
+                newlinesBetween: NewlinesBetweenValue.never,
+                internalPattern: ['~/**'],
                 groups: [
                   'type',
                   ['builtin', 'external'],
@@ -2679,8 +2679,8 @@ describe(RULE_NAME, () => {
           options: [
             {
               ...options,
-              'newlines-between': NewlinesBetweenValue.always,
-              'internal-pattern': ['~/**'],
+              newlinesBetween: NewlinesBetweenValue.always,
+              internalPattern: ['~/**'],
               groups: [
                 'type',
                 ['builtin', 'external'],
@@ -2716,8 +2716,8 @@ describe(RULE_NAME, () => {
           options: [
             {
               ...options,
-              'newlines-between': NewlinesBetweenValue.always,
-              'internal-pattern': ['~/**'],
+              newlinesBetween: NewlinesBetweenValue.always,
+              internalPattern: ['~/**'],
               groups: [
                 'type',
                 ['builtin', 'external'],
@@ -2776,8 +2776,8 @@ describe(RULE_NAME, () => {
             options: [
               {
                 ...options,
-                'newlines-between': NewlinesBetweenValue.always,
-                'internal-pattern': ['~/**'],
+                newlinesBetween: NewlinesBetweenValue.always,
+                internalPattern: ['~/**'],
                 groups: [
                   'type',
                   ['builtin', 'external'],
@@ -2816,8 +2816,8 @@ describe(RULE_NAME, () => {
             options: [
               {
                 ...options,
-                'newlines-between': NewlinesBetweenValue.always,
-                'internal-pattern': ['~/**'],
+                newlinesBetween: NewlinesBetweenValue.always,
+                internalPattern: ['~/**'],
                 groups: [
                   'type',
                   ['builtin', 'external'],
@@ -2865,8 +2865,8 @@ describe(RULE_NAME, () => {
             options: [
               {
                 ...options,
-                'newlines-between': NewlinesBetweenValue.always,
-                'internal-pattern': ['~/**'],
+                newlinesBetween: NewlinesBetweenValue.always,
+                internalPattern: ['~/**'],
                 groups: [
                   'type',
                   ['builtin', 'external'],
@@ -2894,8 +2894,8 @@ describe(RULE_NAME, () => {
             options: [
               {
                 ...options,
-                'newlines-between': NewlinesBetweenValue.always,
-                'internal-pattern': ['~/**'],
+                newlinesBetween: NewlinesBetweenValue.always,
+                internalPattern: ['~/**'],
                 groups: [
                   'type',
                   ['builtin', 'external'],
@@ -2951,8 +2951,8 @@ describe(RULE_NAME, () => {
           options: [
             {
               ...options,
-              'newlines-between': NewlinesBetweenValue.always,
-              'internal-pattern': ['~/**'],
+              newlinesBetween: NewlinesBetweenValue.always,
+              internalPattern: ['~/**'],
               groups: [
                 'type',
                 ['builtin', 'external'],
@@ -2985,8 +2985,8 @@ describe(RULE_NAME, () => {
             options: [
               {
                 ...options,
-                'newlines-between': NewlinesBetweenValue.always,
-                'internal-pattern': ['~/**'],
+                newlinesBetween: NewlinesBetweenValue.always,
+                internalPattern: ['~/**'],
                 groups: [
                   'type',
                   ['builtin', 'external'],
@@ -3021,8 +3021,8 @@ describe(RULE_NAME, () => {
             options: [
               {
                 ...options,
-                'newlines-between': NewlinesBetweenValue.always,
-                'internal-pattern': ['~/**'],
+                newlinesBetween: NewlinesBetweenValue.always,
+                internalPattern: ['~/**'],
                 groups: [
                   'type',
                   ['builtin', 'external'],
@@ -3056,8 +3056,8 @@ describe(RULE_NAME, () => {
             options: [
               {
                 ...options,
-                'newlines-between': NewlinesBetweenValue.always,
-                'internal-pattern': ['~/**'],
+                newlinesBetween: NewlinesBetweenValue.always,
+                internalPattern: ['~/**'],
                 groups: [
                   'type',
                   ['builtin', 'external'],
@@ -3093,8 +3093,8 @@ describe(RULE_NAME, () => {
             options: [
               {
                 ...options,
-                'newlines-between': NewlinesBetweenValue.always,
-                'internal-pattern': ['~/**'],
+                newlinesBetween: NewlinesBetweenValue.always,
+                internalPattern: ['~/**'],
                 groups: [
                   'type',
                   ['builtin', 'external'],
@@ -3128,8 +3128,8 @@ describe(RULE_NAME, () => {
             options: [
               {
                 ...options,
-                'newlines-between': NewlinesBetweenValue.always,
-                'internal-pattern': ['~/**'],
+                newlinesBetween: NewlinesBetweenValue.always,
+                internalPattern: ['~/**'],
                 groups: ['builtin-type', 'type'],
               },
             ],
@@ -3158,8 +3158,8 @@ describe(RULE_NAME, () => {
             options: [
               {
                 ...options,
-                'newlines-between': NewlinesBetweenValue.always,
-                'internal-pattern': ['~/**'],
+                newlinesBetween: NewlinesBetweenValue.always,
+                internalPattern: ['~/**'],
                 groups: [
                   'type',
                   ['builtin', 'external'],
@@ -3278,7 +3278,7 @@ describe(RULE_NAME, () => {
             options: [
               {
                 ...options,
-                'custom-groups': {
+                customGroups: {
                   type: {
                     titans: ['titans', '@titans/**'],
                   },
@@ -3348,7 +3348,7 @@ describe(RULE_NAME, () => {
             options: [
               {
                 ...options,
-                'custom-groups': {
+                customGroups: {
                   value: {
                     giovanni: ['giovannis-island'],
                   },
@@ -3391,8 +3391,8 @@ describe(RULE_NAME, () => {
             options: [
               {
                 ...options,
-                'newlines-between': NewlinesBetweenValue.always,
-                'internal-pattern': ['#**'],
+                newlinesBetween: NewlinesBetweenValue.always,
+                internalPattern: ['#**'],
                 groups: [
                   'type',
                   ['builtin', 'external'],
@@ -3434,8 +3434,8 @@ describe(RULE_NAME, () => {
             options: [
               {
                 ...options,
-                'newlines-between': NewlinesBetweenValue.always,
-                'internal-pattern': ['#**'],
+                newlinesBetween: NewlinesBetweenValue.always,
+                internalPattern: ['#**'],
                 groups: [
                   'type',
                   ['builtin', 'external'],
@@ -3519,7 +3519,7 @@ describe(RULE_NAME, () => {
               {
                 ...options,
                 order: SortOrder.asc,
-                'max-line-length': 80,
+                maxLineLength: 80,
                 groups: [
                   'type',
                   ['builtin', 'external'],
@@ -3561,37 +3561,37 @@ describe(RULE_NAME, () => {
 
       let subType = 'schema'
 
-      it(`${subType} -- type must be set if 'max-line-length' is`, () => {
+      it(`${subType} -- type must be set if max line length is`, () => {
         expect(
           areOptionsValid(rule, {
             ...options,
             type: undefined,
-            'max-line-length': 80,
+            maxLineLength: 80,
           }),
         ).toBe(
-          'data[0] should have property type when property max-line-length is present',
+          'data[0] should have property type when property maxLineLength is present',
         )
       })
 
-      it(`${subType} -- type must be set to 'line-length' if 'max-line-length' is set`, () => {
+      it(`${subType} -- type must be set to 'line-length' if 'max line length' is set`, () => {
         expect(
           areOptionsValid(rule, {
             ...options,
             type: SortType.alphabetical,
-            'max-line-length': 80,
+            maxLineLength: 80,
           }),
         ).toBe(
           'data[0] should NOT be valid, data[0].type should be equal to one of the allowed values, data[0] should match some schema in anyOf',
         )
       })
 
-      it(`${subType} -- if it's set, 'max-line-length' must be greater than 0`, () => {
+      it(`${subType} -- if it's set, max line length must be greater than 0`, () => {
         expect(
           areOptionsValid(rule, {
             ...options,
-            'max-line-length': 0,
+            maxLineLength: 0,
           }),
-        ).toBe("data[0]['max-line-length'] should be > 0")
+        ).toBe('data[0].maxLineLength should be > 0')
       })
     })
   })
@@ -3830,7 +3830,7 @@ describe(RULE_NAME, () => {
                   'object',
                   'unknown',
                 ],
-                'custom-groups': {
+                customGroups: {
                   value: {
                     stores: ['~/stores/**'],
                     services: ['~/services/**'],
@@ -3845,8 +3845,8 @@ describe(RULE_NAME, () => {
                     assets: ['~/assets/**'],
                   },
                 },
-                'newlines-between': NewlinesBetweenValue.always,
-                'internal-pattern': ['~/**'],
+                newlinesBetween: NewlinesBetweenValue.always,
+                internalPattern: ['~/**'],
               },
             ],
           },
@@ -3917,7 +3917,7 @@ describe(RULE_NAME, () => {
                   'object',
                   'unknown',
                 ],
-                'custom-groups': {
+                customGroups: {
                   value: {
                     stores: ['~/stores/**'],
                     services: ['~/services/**'],
@@ -3932,8 +3932,8 @@ describe(RULE_NAME, () => {
                     assets: ['~/assets/**'],
                   },
                 },
-                'newlines-between': NewlinesBetweenValue.always,
-                'internal-pattern': ['~/**'],
+                newlinesBetween: NewlinesBetweenValue.always,
+                internalPattern: ['~/**'],
               },
             ],
             errors: [
@@ -3998,7 +3998,7 @@ describe(RULE_NAME, () => {
             `,
             options: [
               {
-                'newlines-between': NewlinesBetweenValue.never,
+                newlinesBetween: NewlinesBetweenValue.never,
                 groups: ['builtin', 'external', 'side-effect'],
               },
             ],
