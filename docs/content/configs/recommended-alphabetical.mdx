@@ -1,0 +1,57 @@
+---
+title: recommended-alphabetical
+description: Explore the recommended alphabetical ESLint Plugin Perfectionist configuration for sorting and organizing your code. Improve code readability and maintain a consistent coding style with this setup
+shortDescription: All plugin rules with alphabetical sorting in ascending order
+keywords:
+  - eslint
+  - recommended alphabetical config
+  - eslint configuration
+  - coding standards
+  - code quality
+  - javascript linting
+  - alphabetical sorting
+  - eslint-plugin-perfectionist
+---
+
+import CodeTabs from '../../components/CodeTabs.svelte'
+import { dedent } from 'ts-dedent'
+
+Configuration for the `eslint-plugin-perfectionist` plugin, which provides all plugin rules with predefined options: alphabetical sorting in ascending order.
+
+It makes it just a tiny bit faster to find a declaration in a large list. Remember, you read code far more than you write it.
+
+## Usage
+
+<CodeTabs
+  code={[
+    {
+      source: dedent`
+        // eslint.config.js
+        import perfectionistAlphabetical from 'eslint-plugin-perfectionist/configs/recommended-alphabetical'
+
+        export default [
+          perfectionistAlphabetical,
+        ]
+      `,
+      name: 'Flat Config',
+      value: 'flat',
+    },
+    {
+      source: dedent`
+        // .eslintrc.js
+        export default {
+          extends: [
+            'plugin:perfectionist/recommended-alphabetical',
+          ],
+        }
+      `,
+      name: 'Legacy Config',
+      value: 'legacy',
+    },
+
+]}
+type="config-type"
+client:load
+lang="js"
+/>
+

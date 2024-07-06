@@ -1,0 +1,161 @@
+---
+interface Props {
+  size?: '4xl' | '3xl' | '2xl' | 'xl' | 'xs' | 'l' | 'm' | 's'
+  color?: 'secondary' | 'primary' | 'inherit' | 'brand'
+  mbs?: '2xs' | 'xs' | 'xl' | 's' | 'm' | 'l'
+  mbe?: '2xs' | 'xs' | 'xl' | 's' | 'm' | 'l'
+  align?: 'center' | 'start' | 'end'
+  noWrap?: boolean
+  bold?: boolean
+  class?: string
+  tag?: string
+  id?: string
+}
+
+let {
+  color = 'primary',
+  class: className,
+  noWrap = false,
+  bold = false,
+  size = 'm',
+  tag = 'p',
+  align,
+  mbs,
+  mbe,
+  ...props
+} = Astro.props
+
+let Tag = tag
+---
+
+<Tag
+  class:list={[
+    'typography',
+    `size-${size}`,
+    `color-${color}`,
+    {
+      'weight-normal': !bold,
+      'weight-bold': bold,
+      'no-wrap': noWrap,
+    },
+    align && `align-${align}`,
+    mbs && `mbs-${mbs}`,
+    mbe && `mbe-${mbe}`,
+    className,
+  ]}
+  {...props}
+>
+  <slot />
+</Tag>
+
+<style>
+  .typography {
+    margin-block: 0;
+  }
+
+  .size-xs {
+    font: var(--font-xs);
+  }
+
+  .size-s {
+    font: var(--font-s);
+  }
+
+  .size-m {
+    font: var(--font-m);
+  }
+
+  .size-l {
+    font: var(--font-l);
+  }
+
+  .size-xl {
+    font: var(--font-xl);
+  }
+
+  .size-2xl {
+    font: var(--font-2xl);
+  }
+
+  .size-3xl {
+    font: var(--font-3xl);
+  }
+
+  .size-4xl {
+    font: var(--font-4xl);
+  }
+
+  .weight-bold {
+    font-weight: 600;
+  }
+
+  .weight-normal {
+    font-weight: 400;
+  }
+
+  .no-wrap {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .mbs-2xs {
+    margin-block-start: var(--space-2xs);
+  }
+
+  .mbs-xs {
+    margin-block-start: var(--space-xs);
+  }
+
+  .mbs-s {
+    margin-block-start: var(--space-s);
+  }
+
+  .mbs-m {
+    margin-block-start: var(--space-m);
+  }
+
+  .mbs-l {
+    margin-block-start: var(--space-l);
+  }
+
+  .mbs-xl {
+    margin-block-start: var(--space-xl);
+  }
+
+  .mbe-2xs {
+    margin-block-end: var(--space-2xs);
+  }
+
+  .mbe-xs {
+    margin-block-end: var(--space-xs);
+  }
+
+  .mbe-s {
+    margin-block-end: var(--space-s);
+  }
+
+  .mbe-m {
+    margin-block-end: var(--space-m);
+  }
+
+  .mbe-l {
+    margin-block-end: var(--space-l);
+  }
+
+  .mbe-xl {
+    margin-block-end: var(--space-xl);
+  }
+
+  .align-start {
+    text-align: start;
+  }
+
+  .align-center {
+    text-align: center;
+  }
+
+  .align-end {
+    text-align: end;
+  }
+</style>

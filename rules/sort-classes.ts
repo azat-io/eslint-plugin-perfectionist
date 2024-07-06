@@ -255,7 +255,7 @@ export default createEslintRule<Options, MESSAGE_ID>({
                       accumulator[groupNum] = [sortingNode]
                     } else {
                       accumulator[groupNum] = sortNodes(
-                        [...accumulator[groupNum], sortingNode],
+                        [...(accumulator[groupNum] ?? []), sortingNode],
                         options,
                       )
                     }
@@ -270,7 +270,7 @@ export default createEslintRule<Options, MESSAGE_ID>({
                   .reduce(
                     (accumulator: SortingNode[], group: string) => [
                       ...accumulator,
-                      ...grouped[group],
+                      ...(grouped[group] ?? []),
                     ],
                     [],
                   )

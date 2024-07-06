@@ -1,0 +1,127 @@
+---
+import TableOfContentsHeading from './TableOfContentsHeading.astro'
+import Typography from '../Typography.astro'
+
+interface Heading {
+  depth: number
+  slug: string
+  text: string
+}
+
+interface Props {
+  headings?: Heading[] | undefined
+}
+
+let { headings } = Astro.props
+
+let buildToc = (
+  headingsValue?: Heading[],
+): ({ subheadings: Heading[] } & Heading)[] => {
+  if (!headingsValue) {
+    return []
+  }
+  let toc: ({ subheadings: Heading[] } & Heading)[] = []
+  let parentHeadings = new Map()
+  headingsValue.forEach(h => {
+    let heading = { ...h, subheadings: [] }
+    parentHeadings.set(heading.depth, heading)
+    if (heading.depth === 2) {
+      toc.push(heading)
+    } else {
+      parentHeadings.get(heading.depth - 1)?.subheadings.push(heading)
+    }
+  })
+  return toc
+}
+
+let toc = buildToc(headings)
+---
+
+{
+  toc.length > 0 && (
+    <div class="table-of-content">
+      <Typography class="title" tag="h2" size="m" mbs="s">
+        {' '}
+        Table of Contents{' '}
+      </Typography>
+      <ul class="list">
+        {toc.map(heading => (
+          <TableOfContentsHeading heading={heading} />
+        ))}
+      </ul>
+    </div>
+  )
+}
+
+<script>
+  let initToc = () => {
+    let observer = new IntersectionObserver(
+      entries => {
+        if (window.scrollY === 0) {
+          let firstTocItem = document.querySelector('.table-of-content a')
+          let previouslyActivatedItem = document.querySelector('.active')
+          previouslyActivatedItem?.classList.remove('active')
+          firstTocItem?.classList.add('active')
+          return
+        }
+
+        for (let entry of entries) {
+          let headingFragment = `#${entry.target.id}`
+          let tocItem = document.querySelector(
+            `.table-of-content a[href="${headingFragment}"]`,
+          )
+          if (entry.isIntersecting) {
+            let previouslyActivatedItem = document.querySelector('.active')
+            previouslyActivatedItem?.classList.remove('active')
+            tocItem?.classList.add('active')
+          } else {
+            let isAnyOtherEntryIntersecting = entries.some(
+              e => e.target.id !== entry.target.id && e.isIntersecting,
+            )
+
+            if (isAnyOtherEntryIntersecting) {
+              tocItem?.classList.remove('active')
+            }
+          }
+        }
+      },
+      { root: null, rootMargin: '0px', threshold: [1] },
+    )
+    let sectionHeadings = document.querySelectorAll('article h2, article h3')
+    for (let heading of sectionHeadings) {
+      observer.observe(heading)
+    }
+  }
+  document.addEventListener('astro:after-swap', initToc)
+  initToc()
+</script>
+
+<style>
+  .table-of-content {
+    position: sticky;
+    inset-block-start: var(--header-block-size);
+    display: none;
+    flex-direction: column;
+    inline-size: 320px;
+    max-block-size: calc(100dvb - var(--header-block-size));
+    padding: var(--space-s);
+    overflow: scroll;
+    scrollbar-width: none;
+
+    @media (width >= 1300px) {
+      display: flex;
+    }
+  }
+
+  .title {
+    padding: var(--space-2xs) var(--space-xs);
+    font-family: var(--font-family-title);
+  }
+
+  .list {
+    inline-size: 100%;
+    padding-inline-start: 0;
+    margin-block: 0;
+    list-style-type: none;
+  }
+</style>

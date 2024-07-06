@@ -26,7 +26,7 @@ jobs:
       - name: Deploy to Netlify
         uses: nwtgck/actions-netlify@v1.2
         with:
-          publish-dir: './docs/.vitepress/dist'
+          publish-dir: './dist'
           production-branch: main
           deploy-message: 'deploy from github actions'
           enable-pull-request-comment: false

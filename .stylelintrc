@@ -1,9 +1,9 @@
 {
   "extends": "@azat-io/stylelint-config",
-  "ignoreFiles": ["coverage/**/*", "docs/.vitepress/dist/**/*"],
+  "ignoreFiles": ["coverage/**/*"],
   "overrides": [
     {
-      "files": ["**/*.vue"],
+      "files": ["**/*.astro", "**/*.svelte"],
       "customSyntax": "postcss-html"
     }
   ]

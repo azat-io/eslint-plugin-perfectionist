@@ -1,0 +1,42 @@
+---
+import type { CollectionEntry } from 'astro:content'
+
+import { getCollection } from 'astro:content'
+
+import ContentLayout from '../../../layouts/Content.astro'
+
+type Props = CollectionEntry<'rules'>
+
+let rule = Astro.props
+
+let { headings, Content } = await rule.render()
+
+export let getStaticPaths = async () => {
+  let rules = await getCollection('rules')
+  return rules.map(currentRule => ({
+    params: {
+      slug: currentRule.slug,
+    },
+    props: currentRule,
+  }))
+}
+---
+
+<ContentLayout
+  path={[
+    {
+      href: '/rules',
+      name: 'Rules',
+    },
+    {
+      href: `/rules/${rule.slug}`,
+      name: rule.data.title,
+    },
+  ]}
+  editLink={`https://github.com/azat-io/eslint-plugin-perfectionist/tree/main/docs/content/rules/${rule.slug}.mdx`}
+  {headings}
+  {...rule.data}
+>
+  <h1>{rule.data.title}</h1>
+  <Content />
+</ContentLayout>

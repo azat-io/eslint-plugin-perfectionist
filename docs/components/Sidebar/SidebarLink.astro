@@ -1,0 +1,50 @@
+---
+import Typography from '../Typography.astro'
+
+interface Props {
+  class?: undefined | string
+  title: string
+  url: string
+}
+
+let { pathname } = Astro.url
+let { class: className, title, url, ...props } = Astro.props
+---
+
+<a
+  class:list={[
+    'link',
+    className,
+    pathname.replace(/\.html$/, '') === url && 'active-link',
+  ]}
+  href={url}
+  {...props}
+>
+  <Typography tag="span" size="xs">{title}</Typography>
+</a>
+
+<style>
+  .link {
+    padding: calc(var(--space-2xs) / 1.5) var(--space-xs);
+    color: var(--color-content-primary);
+    text-decoration: none;
+    border-radius: var(--border-radius);
+
+    @media (hover: hover) {
+      &:hover {
+        color: var(--color-content-secondary);
+        background: var(--color-background-primary-hover);
+      }
+    }
+  }
+
+  .active-link {
+    color: var(--color-content-brand);
+
+    @media (hover: hover) {
+      &:hover {
+        color: var(--color-content-brand-hover);
+      }
+    }
+  }
+</style>

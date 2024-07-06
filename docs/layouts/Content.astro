@@ -1,0 +1,90 @@
+---
+import ContentAdditionalPages from '../components/Content/ContentAdditionalPages.astro'
+import TableOfContents from '../components/TableOfContents/TableOfContents.astro'
+import ContentEditLink from '../components/Content/ContentEditLink.astro'
+import ContentFooter from '../components/Content/ContentFooter.astro'
+import Sidebar from '../components/Sidebar/Sidebar.astro'
+import Breadcrumbs from '../components/Breadcrumbs.astro'
+import Container from '../components/Container.astro'
+import Header from '../components/Header.astro'
+import Head from '../components/Head.astro'
+import Html from '../components/Html.astro'
+import Body from '../components/Body.astro'
+
+interface Props {
+  headings?: {
+    depth: number
+    slug: string
+    text: string
+  }[]
+  path?: {
+    href: string
+    name: string
+  }[]
+  keywords?: undefined | string[]
+  description: string
+  editLink?: string
+  title: string
+}
+
+let {
+  keywords = [],
+  description,
+  path = [],
+  editLink,
+  headings,
+  title,
+} = Astro.props
+---
+
+<Html>
+  <Head type="article" {description} {keywords} {title} />
+  <Body class="app">
+    <Header border />
+    <div class="wrapper">
+      <Sidebar />
+      <Container class="container" tag="article" size="s">
+        <Breadcrumbs {path} />
+        <main class="main">
+          <slot />
+        </main>
+        <ContentFooter>
+          <ContentEditLink url={editLink} />
+          <ContentAdditionalPages />
+        </ContentFooter>
+      </Container>
+      <TableOfContents {headings} />
+    </div>
+  </Body>
+</Html>
+
+<style>
+  .app {
+    display: grid;
+    grid-template-rows: min-content 1fr min-content;
+    min-block-size: 100dvb;
+  }
+
+  .wrapper {
+    display: grid;
+    grid-template-columns: 1fr;
+    background: var(--color-background-secondary);
+
+    @media (width >= 800px) {
+      container-type: inline-size;
+      grid-template-columns: 320px 1fr;
+    }
+
+    @media (width >= 1300px) {
+      grid-template-columns: 320px 1fr 320px;
+    }
+  }
+
+  .main {
+    outline: none;
+  }
+
+  :global(.container) {
+    padding-block: calc(var(--space-s) * 2) var(--space-xl);
+  }
+</style>

@@ -1,0 +1,41 @@
+---
+import type { CollectionEntry } from 'astro:content'
+
+import { getCollection } from 'astro:content'
+
+import ContentLayout from '../../../layouts/Content.astro'
+
+type Props = CollectionEntry<'guide'>
+
+let guide = Astro.props
+
+let { headings, Content } = await guide.render()
+
+export let getStaticPaths = async () => {
+  let guides = await getCollection('guide')
+  return guides.map(currentGuide => ({
+    params: {
+      slug: currentGuide.slug,
+    },
+    props: currentGuide,
+  }))
+}
+---
+
+<ContentLayout
+  path={[
+    {
+      href: '/guide',
+      name: 'Guide',
+    },
+    {
+      href: `/guide/${guide.slug}`,
+      name: guide.data.title,
+    },
+  ]}
+  editLink={`https://github.com/azat-io/eslint-plugin-perfectionist/tree/main/docs/content/guide/${guide.slug}.mdx`}
+  {headings}
+  {...guide.data}
+>
+  <Content />
+</ContentLayout>

@@ -76,7 +76,7 @@ export default createEslintRule<Options, MESSAGE_ID>({
         node.callee.type === 'Identifier' &&
         node.callee.name === 'Map' &&
         node.arguments.length &&
-        node.arguments[0].type === 'ArrayExpression'
+        node.arguments[0]?.type === 'ArrayExpression'
       ) {
         let [{ elements }] = node.arguments
 

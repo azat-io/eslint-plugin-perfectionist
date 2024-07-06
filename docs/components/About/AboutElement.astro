@@ -1,0 +1,34 @@
+---
+import Typography from '../Typography.astro'
+import Icon from '../Icon.astro'
+
+interface Props {
+  description: string
+  title: string
+  icon: string
+}
+
+let { description, title, icon } = Astro.props
+---
+
+<section class="element">
+  <Icon class="icon" name={icon} size="l" />
+  <Typography size="xl" tag="h3">{title}</Typography>
+  <Typography size="s">{description}</Typography>
+</section>
+
+<style>
+  .element {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-xs);
+    padding: var(--space-l) var(--space-m);
+    background: var(--color-background-secondary-hover);
+    border: 2px solid var(--color-background-secondary-hover);
+    border-radius: var(--border-radius);
+  }
+
+  .icon {
+    margin-block-end: var(--space-xs);
+  }
+</style>

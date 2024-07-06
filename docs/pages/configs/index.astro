@@ -1,0 +1,96 @@
+---
+import ContentLayout from '../../layouts/Content.astro'
+
+let configs = [
+  {
+    description:
+      'All plugin rules with alphabetical sorting in ascending order',
+    url: '/configs/recommended-alphabetical',
+    name: 'recommended-alphabetical',
+  },
+  {
+    description: 'All plugin rules with natural sorting in ascending order',
+    url: '/configs/recommended-natural',
+    name: 'recommended-natural',
+  },
+  {
+    description:
+      'All plugin rules with sorting by line length in descending order',
+    url: '/configs/recommended-line-length',
+    name: 'recommended-line-length',
+  },
+]
+---
+
+<ContentLayout
+  keywords={[
+    'eslint',
+    'eslint configurations',
+    'eslint plugin',
+    'code style',
+    'coding standards',
+    'config options',
+    'code quality',
+    'javascript linting',
+    'linting configurations',
+    'eslint setup',
+  ]}
+  description="Discover our list of ready-to-use ESLint Plugin Perfectionist configurations. Enhance your coding standards and maintain a consistent code style with our carefully curated config options."
+  path={[
+    {
+      href: '/configs',
+      name: 'Configs',
+    },
+  ]}
+  title="Configs"
+>
+  <h1>Configs</h1>
+  <p>
+    The easiest way to use eslint-plugin-perfectionist is to use ready-made
+    configs. Config files use all the rules of the current plugin, but you can
+    override them.
+  </p>
+
+  <p>This plugin provides three configs out of the box.</p>
+
+  <p>
+    See the <a
+      href="https://eslint.org/docs/latest/use/configure/configuration-files#extending-configuration-files"
+      >ESLint docs</a
+    > for more information about extending config files.
+  </p>
+
+  <table class="table">
+    <thead>
+      <tr>
+        <th>Config</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      {
+        configs.map(({ description, name, url }) => (
+          <tr>
+            <td>
+              <a href={url}>{name}</a>
+            </td>
+            <td>{description}</td>
+          </tr>
+        ))
+      }
+    </tbody>
+  </table>
+</ContentLayout>
+
+<style>
+  .definition {
+    display: flex;
+    gap: var(--space-xs);
+    align-items: center;
+    margin-block: var(--space-m);
+  }
+
+  .table {
+    margin-block-start: var(--space-xl);
+  }
+</style>

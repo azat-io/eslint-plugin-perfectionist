@@ -1,0 +1,36 @@
+---
+import CommunityBlock from '../components/Community/CommunityBlock.astro'
+import CodeStyle from '../components/CodeStyle/CodeStyle.astro'
+import AboutBlock from '../components/About/AboutBlock.astro'
+import Installation from '../components/Installation.astro'
+import DemoBlock from '../components/Demo/DemoBlock.astro'
+import Sidebar from '../components/Sidebar/Sidebar.astro'
+import Footer from '../components/Footer.astro'
+import Header from '../components/Header.astro'
+import Head from '../components/Head.astro'
+import Hero from '../components/Hero.astro'
+import Html from '../components/Html.astro'
+import Body from '../components/Body.astro'
+
+interface Props {
+  keywords?: string[]
+  description: string
+}
+
+let { keywords = [], description } = Astro.props
+---
+
+<Html>
+  <Head type="website" {description} {keywords} />
+  <Body>
+    <Header />
+    <Sidebar isMobileOnly />
+    <Hero />
+    <AboutBlock />
+    <Installation />
+    <CodeStyle />
+    <CommunityBlock />
+    <DemoBlock />
+    <Footer />
+  </Body>
+</Html>

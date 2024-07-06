@@ -1,0 +1,88 @@
+---
+import Typography from './Typography.astro'
+import Container from './Container.astro'
+import CodeTabs from './CodeTabs.svelte'
+import Title from './Title.astro'
+import Icon from './Icon.astro'
+---
+
+<section class="section">
+  <Container class="container">
+    <div>
+      <Title align="start">Installation</Title>
+      <CodeTabs
+        code={[
+          {
+            source: 'npm install --save-dev eslint-plugin-perfectionist',
+            value: 'npm',
+            name: 'npm',
+          },
+          {
+            source: 'pnpm add --save-dev eslint-plugin-perfectionist',
+            value: 'pnpm',
+            name: 'pnpm',
+          },
+          {
+            source: 'yarn add --dev eslint-plugin-perfectionist',
+            value: 'yarn',
+            name: 'yarn',
+          },
+          {
+            source: 'bun install --dev eslint-plugin-perfectionist',
+            value: 'bun',
+            name: 'bun',
+          },
+        ]}
+        type="package-manager"
+        client:load
+        lang="bash"
+      />
+    </div>
+    <div>
+      <Title class="title" align="start">
+        Effortless Setup <Icon name="sparkle" size="l" />
+      </Title>
+      <Typography class="description">
+        Getting started is a breeze. With straightforward installation and
+        intuitive configuration options, you can quickly integrate our tool into
+        your workflow.
+      </Typography>
+    </div>
+  </Container>
+</section>
+
+<style>
+  .section {
+    padding-block: 64px;
+    background: var(--color-background-primary);
+
+    @container (inline-size >= 560px) {
+      padding-block: 120px;
+    }
+  }
+
+  .container {
+    display: flex;
+    flex-direction: column;
+    gap: var(--gap);
+    --columns: 1fr;
+    --gap: calc(var(--space-xl) * 2);
+
+    @container (inline-size >= 960px) {
+      display: grid;
+      grid-template-columns: 3fr 2fr;
+      --gap: var(--space-xl);
+    }
+  }
+
+  .title {
+    display: flex;
+    gap: var(--space-s);
+    align-items: center;
+  }
+
+  .description {
+    max-inline-size: 760px;
+    margin-block-start: var(--space-2xs);
+  }
+</style>

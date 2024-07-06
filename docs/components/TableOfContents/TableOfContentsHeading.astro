@@ -1,0 +1,65 @@
+---
+import Typography from '../Typography.astro'
+
+interface Heading {
+  depth: number
+  slug: string
+  text: string
+}
+
+interface Props {
+  heading: {
+    subheadings?: Heading[]
+  } & Heading
+}
+
+const { heading } = Astro.props
+---
+
+<li class="item">
+  <a href={'#' + heading.slug} class="link">
+    <Typography tag="span" size="xs">
+      {heading.text}
+    </Typography>
+  </a>
+  {
+    heading.subheadings && heading.subheadings.length > 0 && (
+      <ul class="subheadings-list">
+        {heading.subheadings.map(subheading => (
+          <Astro.self heading={subheading} />
+        ))}
+      </ul>
+    )
+  }
+</li>
+
+<style>
+  .link {
+    display: flex;
+    padding: calc(var(--space-2xs) / 1.5) var(--space-xs);
+    color: var(--color-content-primary);
+    text-decoration: none;
+    border-radius: var(--border-radius);
+
+    @media (hover: hover) {
+      &:hover {
+        color: var(--color-content-secondary);
+        background: var(--color-background-primary-hover);
+      }
+    }
+
+    &:global(.active) {
+      color: var(--color-content-brand);
+    }
+  }
+
+  .item {
+    margin-block: 0;
+  }
+
+  .subheadings-list {
+    padding-inline-start: var(--space-m);
+    margin-block: 0;
+    list-style-type: none;
+  }
+</style>
