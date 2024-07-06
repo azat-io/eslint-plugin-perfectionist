@@ -4,7 +4,7 @@ export let getNodeParent = (
   node: TSESTree.Node,
   type: string[] | string,
 ): TSESTree.Node | null => {
-  let types = Array.isArray(type) ? type : [type]
+  let types = type
   let { parent } = node as { parent: TSESTree.Node | null }
   while (parent) {
     if (types.includes(parent.type)) {

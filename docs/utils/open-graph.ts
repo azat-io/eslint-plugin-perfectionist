@@ -3,14 +3,14 @@ import fs from 'node:fs/promises'
 import path from 'node:path'
 
 export let openGraph = async (title: string): Promise<ImageResponse> => {
-  let [inter, spaceGrotesk] = await Promise.all(
+  let [inter, spaceGrotesk] = (await Promise.all(
     ['inter-regular', 'space-grotesk-bold'].map(
       async font =>
         await fs.readFile(
           path.join(process.cwd(), `./docs/public/fonts/${font}.ttf`),
         ),
     ),
-  )
+  )) as [Buffer, Buffer]
   let logo = await fs.readFile(
     path.join(process.cwd(), './docs/public/logo.svg'),
   )
@@ -186,11 +186,11 @@ export let openGraph = async (title: string): Promise<ImageResponse> => {
       fonts: [
         {
           name: 'Inter',
-          data: inter!,
+          data: inter,
         },
         {
           name: 'Space Grotesk',
-          data: spaceGrotesk!,
+          data: spaceGrotesk,
         },
       ],
       width: 1200,
