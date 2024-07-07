@@ -3,7 +3,6 @@ import { afterAll, describe, it } from 'vitest'
 import { dedent } from 'ts-dedent'
 
 import rule, { RULE_NAME } from '../rules/sort-jsx-props'
-import { SortOrder, SortType } from '../typings'
 
 describe(RULE_NAME, () => {
   RuleTester.describeSkip = describe.skip
@@ -26,10 +25,10 @@ describe(RULE_NAME, () => {
     let type = 'alphabetical-order'
 
     let options = {
-      type: SortType.alphabetical,
-      order: SortOrder.asc,
+      type: 'alphabetical',
       ignoreCase: false,
-    }
+      order: 'asc',
+    } as const
 
     ruleTester.run(`${RULE_NAME}(${type}): sorts jsx props`, rule, {
       valid: [
@@ -567,10 +566,10 @@ describe(RULE_NAME, () => {
     let type = 'natural-order'
 
     let options = {
-      type: SortType.natural,
-      order: SortOrder.asc,
       ignoreCase: true,
-    }
+      type: 'natural',
+      order: 'asc',
+    } as const
 
     ruleTester.run(`${RULE_NAME}(${type}): sorts jsx props`, rule, {
       valid: [
@@ -1108,9 +1107,9 @@ describe(RULE_NAME, () => {
     let type = 'line-length-order'
 
     let options = {
-      type: SortType['line-length'],
-      order: SortOrder.desc,
-    }
+      type: 'line-length',
+      order: 'desc',
+    } as const
 
     ruleTester.run(`${RULE_NAME}(${type}): sorts jsx props`, rule, {
       valid: [

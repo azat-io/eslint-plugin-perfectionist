@@ -6,7 +6,6 @@ import { getGroupNumber } from '../utils/get-group-number'
 import { toSingleLine } from '../utils/to-single-line'
 import { rangeToDiff } from '../utils/range-to-diff'
 import { isPositive } from '../utils/is-positive'
-import { SortOrder, SortType } from '../typings'
 import { sortNodes } from '../utils/sort-nodes'
 import { makeFixes } from '../utils/make-fixes'
 import { useGroups } from '../utils/use-groups'
@@ -20,12 +19,12 @@ type Group<T extends string[]> = 'multiline' | 'unknown' | T[number]
 
 type Options<T extends string[]> = [
   Partial<{
+    type: 'alphabetical' | 'line-length' | 'natural'
     groups: (Group<T>[] | Group<T>)[]
     partitionByNewLine: boolean
+    order: 'desc' | 'asc'
     ignoreCase: boolean
     customGroups: {}
-    order: SortOrder
-    type: SortType
   }>,
 ]
 
@@ -47,17 +46,13 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
             type: 'object',
           },
           type: {
-            enum: [
-              SortType.alphabetical,
-              SortType.natural,
-              SortType['line-length'],
-            ],
-            default: SortType.alphabetical,
+            enum: ['alphabetical', 'natural', 'line-length'],
+            default: 'alphabetical',
             type: 'string',
           },
           order: {
-            enum: [SortOrder.asc, SortOrder.desc],
-            default: SortOrder.asc,
+            enum: ['asc', 'desc'],
+            default: 'asc',
             type: 'string',
           },
           ignoreCase: {
@@ -83,8 +78,8 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
   },
   defaultOptions: [
     {
-      type: SortType.alphabetical,
-      order: SortOrder.asc,
+      type: 'alphabetical',
+      order: 'asc',
     },
   ],
   create: context => ({
@@ -92,12 +87,12 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
       if (node.members.length > 1) {
         let options = complete(context.options.at(0), {
           partitionByNewLine: false,
-          type: SortType.alphabetical,
+          type: 'alphabetical',
           ignoreCase: false,
-          order: SortOrder.asc,
           customGroups: {},
+          order: 'asc',
           groups: [],
-        })
+        } as const)
 
         let formattedMembers: SortingNode[][] = node.members.reduce(
           (accumulator: SortingNode[][], member) => {

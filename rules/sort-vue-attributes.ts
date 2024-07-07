@@ -9,7 +9,6 @@ import { createEslintRule } from '../utils/create-eslint-rule'
 import { getGroupNumber } from '../utils/get-group-number'
 import { rangeToDiff } from '../utils/range-to-diff'
 import { isPositive } from '../utils/is-positive'
-import { SortOrder, SortType } from '../typings'
 import { useGroups } from '../utils/use-groups'
 import { sortNodes } from '../utils/sort-nodes'
 import { makeFixes } from '../utils/make-fixes'
@@ -28,10 +27,10 @@ type Group<T extends string[]> =
 type Options<T extends string[]> = [
   Partial<{
     customGroups: { [key in T[number]]: string[] | string }
+    type: 'alphabetical' | 'line-length' | 'natural'
     groups: (Group<T>[] | Group<T>)[]
+    order: 'desc' | 'asc'
     ignoreCase: boolean
-    order: SortOrder
-    type: SortType
   }>,
 ]
 
@@ -53,17 +52,13 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
             type: 'object',
           },
           type: {
-            enum: [
-              SortType.alphabetical,
-              SortType.natural,
-              SortType['line-length'],
-            ],
-            default: SortType.alphabetical,
+            enum: ['alphabetical', 'natural', 'line-length'],
+            default: 'alphabetical',
             type: 'string',
           },
           order: {
-            enum: [SortOrder.asc, SortOrder.desc],
-            default: SortOrder.asc,
+            enum: ['asc', 'desc'],
+            default: 'asc',
             type: 'string',
           },
           ignoreCase: {
@@ -85,8 +80,8 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
   },
   defaultOptions: [
     {
-      type: SortType.alphabetical,
-      order: SortOrder.asc,
+      type: 'alphabetical',
+      order: 'asc',
     },
   ],
   create: context => {
@@ -108,12 +103,12 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
       VStartTag: (node: AST.VStartTag) => {
         if (node.attributes.length > 1) {
           let options = complete(context.options.at(0), {
-            type: SortType.alphabetical,
-            order: SortOrder.asc,
+            type: 'alphabetical',
             ignoreCase: false,
             customGroups: {},
+            order: 'asc',
             groups: [],
-          })
+          } as const)
 
           let parts: SortingNode[][] = node.attributes.reduce(
             (accumulator: SortingNode[][], attribute) => {

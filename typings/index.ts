@@ -1,22 +1,5 @@
 import type { TSESTree } from '@typescript-eslint/types'
 
-export enum SortType {
-  'alphabetical' = 'alphabetical',
-  'line-length' = 'line-length',
-  'natural' = 'natural',
-}
-
-export enum SortOrder {
-  'desc' = 'desc',
-  'asc' = 'asc',
-}
-
-export enum GroupKind {
-  'values-first' = 'values-first',
-  'types-first' = 'types-first',
-  'mixed' = 'mixed',
-}
-
 export enum OptionalityOrder {
   'optional-first' = 'optional-first',
   'required-first' = 'required-first',

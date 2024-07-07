@@ -1,17 +1,15 @@
 import naturalCompare from 'natural-compare-lite'
 
-import type { SortingNode, SortOrder } from '../typings'
-
-import { SortType } from '../typings'
+import type { SortingNode } from '../typings'
 
 export let compare = (
   a: SortingNode,
   b: SortingNode,
   options: {
+    type: 'alphabetical' | 'line-length' | 'natural'
     maxLineLength?: number
+    order: 'desc' | 'asc'
     ignoreCase?: boolean
-    order: SortOrder
-    type: SortType
   },
 ): number => {
   if (b.dependencies?.includes(a.name)) {
@@ -26,10 +24,10 @@ export let compare = (
   let formatString = (string: string) =>
     options.ignoreCase ? string.toLowerCase() : string
 
-  if (options.type === SortType.alphabetical) {
+  if (options.type === 'alphabetical') {
     sortingFunction = (aNode, bNode) =>
       formatString(aNode.name).localeCompare(formatString(bNode.name))
-  } else if (options.type === SortType.natural) {
+  } else if (options.type === 'natural') {
     sortingFunction = (aNode, bNode) =>
       naturalCompare(formatString(aNode.name), formatString(bNode.name))
   } else {
