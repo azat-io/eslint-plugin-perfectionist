@@ -6,7 +6,6 @@ import { createEslintRule } from '../utils/create-eslint-rule'
 import { toSingleLine } from '../utils/to-single-line'
 import { rangeToDiff } from '../utils/range-to-diff'
 import { isPositive } from '../utils/is-positive'
-import { SortOrder, SortType } from '../typings'
 import { sortNodes } from '../utils/sort-nodes'
 import { makeFixes } from '../utils/make-fixes'
 import { complete } from '../utils/complete'
@@ -17,10 +16,10 @@ type MESSAGE_ID = 'unexpectedArrayIncludesOrder'
 
 type Options = [
   Partial<{
+    type: 'alphabetical' | 'line-length' | 'natural'
+    order: 'desc' | 'asc'
     spreadLast: boolean
     ignoreCase: boolean
-    order: SortOrder
-    type: SortType
   }>,
 ]
 
@@ -39,17 +38,13 @@ export default createEslintRule<Options, MESSAGE_ID>({
         type: 'object',
         properties: {
           type: {
-            enum: [
-              SortType.alphabetical,
-              SortType.natural,
-              SortType['line-length'],
-            ],
-            default: SortType.alphabetical,
+            enum: ['alphabetical', 'natural', 'line-length'],
+            default: 'alphabetical',
             type: 'string',
           },
           order: {
-            enum: [SortOrder.asc, SortOrder.desc],
-            default: SortOrder.asc,
+            enum: ['asc', 'desc'],
+            default: 'asc',
             type: 'string',
           },
           ignoreCase: {
@@ -71,8 +66,8 @@ export default createEslintRule<Options, MESSAGE_ID>({
   },
   defaultOptions: [
     {
-      type: SortType.alphabetical,
-      order: SortOrder.asc,
+      type: 'alphabetical',
+      order: 'asc',
     },
   ],
   create: context => ({
@@ -90,11 +85,11 @@ export default createEslintRule<Options, MESSAGE_ID>({
 
         if (elements.length > 1) {
           let options = complete(context.options.at(0), {
-            type: SortType.alphabetical,
-            order: SortOrder.asc,
+            type: 'alphabetical',
+            order: 'asc',
             ignoreCase: false,
             spreadLast: false,
-          })
+          } as const)
 
           let nodes: ({ type: string } & SortingNode)[] = elements
             .reduce(

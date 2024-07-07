@@ -15,7 +15,6 @@ import sortObjects, { RULE_NAME as sortObjectsName } from './rules/sort-objects'
 import sortClasses, { RULE_NAME as sortClassesName } from './rules/sort-classes'
 import sortEnums, { RULE_NAME as sortEnumsName } from './rules/sort-enums'
 import sortMaps, { RULE_NAME as sortMapsName } from './rules/sort-maps'
-import { SortOrder, SortType } from './typings'
 import { name } from './package.json'
 
 type RuleSeverity = 'error' | 'warn' | 'off'
@@ -23,9 +22,9 @@ type RuleSeverity = 'error' | 'warn' | 'off'
 type RuleDeclaration = [RuleSeverity, { [key: string]: unknown }?]
 
 let createConfigWithOptions = (options: {
+  type: 'alphabetical' | 'line-length' | 'natural'
+  order: 'desc' | 'asc'
   ignoreCase?: boolean
-  order: SortOrder
-  type: SortType
 }): {
   rules: {
     [key: string]: RuleDeclaration
@@ -133,18 +132,18 @@ export default {
   },
   configs: {
     'recommended-alphabetical': createConfigWithOptions({
-      type: SortType.alphabetical,
-      order: SortOrder.asc,
+      type: 'alphabetical',
+      order: 'asc',
       ignoreCase: false,
     }),
     'recommended-natural': createConfigWithOptions({
-      type: SortType.natural,
-      order: SortOrder.asc,
+      type: 'natural',
+      order: 'asc',
       ignoreCase: false,
     }),
     'recommended-line-length': createConfigWithOptions({
-      type: SortType['line-length'],
-      order: SortOrder.desc,
+      type: 'line-length',
+      order: 'desc',
     }),
   },
   name,

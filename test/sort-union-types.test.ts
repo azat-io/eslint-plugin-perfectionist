@@ -3,7 +3,6 @@ import { afterAll, describe, it } from 'vitest'
 import { dedent } from 'ts-dedent'
 
 import rule, { RULE_NAME } from '../rules/sort-union-types'
-import { SortOrder, SortType } from '../typings'
 
 describe(RULE_NAME, () => {
   RuleTester.describeSkip = describe.skip
@@ -21,10 +20,10 @@ describe(RULE_NAME, () => {
     let type = 'alphabetical-order'
 
     let options = {
-      type: SortType.alphabetical,
-      order: SortOrder.asc,
+      type: 'alphabetical',
       ignoreCase: false,
-    }
+      order: 'asc',
+    } as const
 
     ruleTester.run(`${RULE_NAME}(${type}: sorts union types`, rule, {
       valid: [
@@ -300,10 +299,10 @@ describe(RULE_NAME, () => {
     let type = 'natural-order'
 
     let options = {
-      type: SortType.alphabetical,
-      order: SortOrder.asc,
       ignoreCase: false,
-    }
+      type: 'natural',
+      order: 'asc',
+    } as const
 
     ruleTester.run(`${RULE_NAME}(${type}: sorts union types`, rule, {
       valid: [
@@ -515,7 +514,7 @@ describe(RULE_NAME, () => {
             type Step = 1 | 2 | 4 | 3 | 5 | 100; // Exam step. Example: 3
           `,
           output: dedent`
-            type Step = 1 | 100 | 2 | 3 | 4 | 5; // Exam step. Example: 3
+            type Step = 1 | 2 | 3 | 4 | 5 | 100; // Exam step. Example: 3
           `,
           options: [options],
           errors: [
@@ -524,13 +523,6 @@ describe(RULE_NAME, () => {
               data: {
                 left: '4',
                 right: '3',
-              },
-            },
-            {
-              messageId: 'unexpectedUnionTypesOrder',
-              data: {
-                left: '5',
-                right: '100',
               },
             },
           ],
@@ -579,9 +571,9 @@ describe(RULE_NAME, () => {
     let type = 'line-length-order'
 
     let options = {
-      type: SortType['line-length'],
-      order: SortOrder.desc,
-    }
+      type: 'line-length',
+      order: 'desc',
+    } as const
 
     ruleTester.run(`${RULE_NAME}(${type}: sorts union types`, rule, {
       valid: [
