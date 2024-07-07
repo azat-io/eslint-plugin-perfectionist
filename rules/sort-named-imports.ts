@@ -1,7 +1,6 @@
 import type { SortingNode } from '../typings'
 
 import { createEslintRule } from '../utils/create-eslint-rule'
-import { SortOrder, GroupKind, SortType } from '../typings'
 import { getGroupNumber } from '../utils/get-group-number'
 import { rangeToDiff } from '../utils/range-to-diff'
 import { isPositive } from '../utils/is-positive'
@@ -15,11 +14,11 @@ type MESSAGE_ID = 'unexpectedNamedImportsOrder'
 
 type Options = [
   Partial<{
+    groupKind: 'values-first' | 'types-first' | 'mixed'
+    type: 'alphabetical' | 'line-length' | 'natural'
+    order: 'desc' | 'asc'
     ignoreAlias: boolean
-    groupKind: GroupKind
     ignoreCase: boolean
-    order: SortOrder
-    type: SortType
   }>,
 ]
 
@@ -38,17 +37,13 @@ export default createEslintRule<Options, MESSAGE_ID>({
         type: 'object',
         properties: {
           type: {
-            enum: [
-              SortType.alphabetical,
-              SortType.natural,
-              SortType['line-length'],
-            ],
-            default: SortType.alphabetical,
+            enum: ['alphabetical', 'natural', 'line-length'],
+            default: 'alphabetical',
             type: 'string',
           },
           order: {
-            enum: [SortOrder.asc, SortOrder.desc],
-            default: SortOrder.asc,
+            enum: ['asc', 'desc'],
+            default: 'asc',
             type: 'string',
           },
           ignoreCase: {
@@ -60,12 +55,8 @@ export default createEslintRule<Options, MESSAGE_ID>({
             default: false,
           },
           groupKind: {
-            enum: [
-              GroupKind.mixed,
-              GroupKind['values-first'],
-              GroupKind['types-first'],
-            ],
-            default: GroupKind.mixed,
+            enum: ['mixed', 'values-first', 'types-first'],
+            default: 'mixed',
             type: 'string',
           },
         },
@@ -79,8 +70,8 @@ export default createEslintRule<Options, MESSAGE_ID>({
   },
   defaultOptions: [
     {
-      type: SortType.alphabetical,
-      order: SortOrder.asc,
+      type: 'alphabetical',
+      order: 'asc',
     },
   ],
   create: context => ({
@@ -91,12 +82,12 @@ export default createEslintRule<Options, MESSAGE_ID>({
 
       if (specifiers.length > 1) {
         let options = complete(context.options.at(0), {
-          type: SortType.alphabetical,
+          type: 'alphabetical',
           ignoreAlias: true,
           ignoreCase: false,
-          order: SortOrder.asc,
-          groupKind: GroupKind.mixed,
-        })
+          groupKind: 'mixed',
+          order: 'asc',
+        } as const)
 
         let nodes: SortingNode[] = specifiers.map(specifier => {
           let group = 'unknown'
@@ -117,9 +108,9 @@ export default createEslintRule<Options, MESSAGE_ID>({
           }
         })
 
-        let shouldGroupByKind = options.groupKind !== GroupKind.mixed
+        let shouldGroupByKind = options.groupKind !== 'mixed'
         let groupKindOrder =
-          options.groupKind === GroupKind['values-first']
+          options.groupKind === 'values-first'
             ? ['value', 'type']
             : ['type', 'value']
 

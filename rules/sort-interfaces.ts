@@ -2,7 +2,6 @@ import { minimatch } from 'minimatch'
 
 import type { SortingNode } from '../typings'
 
-import { OptionalityOrder, SortOrder, SortType } from '../typings'
 import { createEslintRule } from '../utils/create-eslint-rule'
 import { isMemberOptional } from '../utils/is-member-optional'
 import { getLinesBetween } from '../utils/get-lines-between'
@@ -13,6 +12,7 @@ import { isPositive } from '../utils/is-positive'
 import { useGroups } from '../utils/use-groups'
 import { sortNodes } from '../utils/sort-nodes'
 import { makeFixes } from '../utils/make-fixes'
+import { OptionalityOrder } from '../typings'
 import { complete } from '../utils/complete'
 import { pairwise } from '../utils/pairwise'
 import { compare } from '../utils/compare'
@@ -24,13 +24,13 @@ type Group<T extends string[]> = 'multiline' | 'unknown' | T[number]
 type Options<T extends string[]> = [
   Partial<{
     customGroups: { [key: string]: string[] | string }
+    type: 'alphabetical' | 'line-length' | 'natural'
     optionalityOrder: OptionalityOrder
     groups: (Group<T>[] | Group<T>)[]
     partitionByNewLine: boolean
     ignorePattern: string[]
+    order: 'desc' | 'asc'
     ignoreCase: boolean
-    order: SortOrder
-    type: SortType
   }>,
 ]
 
@@ -61,17 +61,13 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
             type: 'string',
           },
           type: {
-            enum: [
-              SortType.alphabetical,
-              SortType.natural,
-              SortType['line-length'],
-            ],
-            default: SortType.alphabetical,
+            enum: ['alphabetical', 'natural', 'line-length'],
+            default: 'alphabetical',
             type: 'string',
           },
           order: {
-            enum: [SortOrder.asc, SortOrder.desc],
-            default: SortOrder.asc,
+            enum: ['asc', 'desc'],
+            default: 'asc',
             type: 'string',
           },
           ignoreCase: {
@@ -103,8 +99,8 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
   },
   defaultOptions: [
     {
-      type: SortType.alphabetical,
-      order: SortOrder.asc,
+      type: 'alphabetical',
+      order: 'asc',
     },
   ],
   create: context => ({
@@ -113,13 +109,13 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
         let options = complete(context.options.at(0), {
           optionalityOrder: OptionalityOrder.ignore,
           partitionByNewLine: false,
-          type: SortType.alphabetical,
+          type: 'alphabetical',
           ignoreCase: false,
-          order: SortOrder.asc,
           ignorePattern: [],
           customGroups: {},
+          order: 'asc',
           groups: [],
-        })
+        } as const)
 
         if (
           !options.ignorePattern.some(pattern =>

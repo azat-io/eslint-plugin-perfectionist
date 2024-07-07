@@ -4,7 +4,6 @@ import { dedent } from 'ts-dedent'
 
 import rule, { NewlinesBetweenValue, RULE_NAME } from '../rules/sort-imports'
 import { areOptionsValid } from './utils/are-options-valid'
-import { SortOrder, SortType } from '../typings'
 
 describe(RULE_NAME, () => {
   RuleTester.describeSkip = describe.skip
@@ -22,10 +21,10 @@ describe(RULE_NAME, () => {
     let type = 'alphabetical-order'
 
     let options = {
-      type: SortType.alphabetical,
-      order: SortOrder.asc,
+      type: 'alphabetical',
       ignoreCase: false,
-    }
+      order: 'asc',
+    } as const
 
     ruleTester.run(`${RULE_NAME}(${type}): sorts imports`, rule, {
       valid: [
@@ -1159,10 +1158,10 @@ describe(RULE_NAME, () => {
     let type = 'natural-order'
 
     let options = {
-      type: SortType.natural,
-      order: SortOrder.asc,
       ignoreCase: false,
-    }
+      type: 'natural',
+      order: 'asc',
+    } as const
 
     ruleTester.run(`${RULE_NAME}(${type}): sorts imports`, rule, {
       valid: [
@@ -2296,9 +2295,9 @@ describe(RULE_NAME, () => {
     let type = 'line-length-order'
 
     let options = {
-      type: SortType['line-length'],
-      order: SortOrder.desc,
-    }
+      type: 'line-length',
+      order: 'desc',
+    } as const
 
     ruleTester.run(`${RULE_NAME}(${type}): sorts imports`, rule, {
       valid: [
@@ -3518,8 +3517,8 @@ describe(RULE_NAME, () => {
             options: [
               {
                 ...options,
-                order: SortOrder.asc,
                 maxLineLength: 80,
+                order: 'asc',
                 groups: [
                   'type',
                   ['builtin', 'external'],
@@ -3577,7 +3576,7 @@ describe(RULE_NAME, () => {
         expect(
           areOptionsValid(rule, {
             ...options,
-            type: SortType.alphabetical,
+            type: 'alphabetical',
             maxLineLength: 80,
           }),
         ).toBe(
@@ -3807,7 +3806,7 @@ describe(RULE_NAME, () => {
             `,
             options: [
               {
-                type: SortType['line-length'],
+                type: 'line-length',
                 groups: [
                   ['builtin', 'external'],
                   'internal',
@@ -3894,7 +3893,7 @@ describe(RULE_NAME, () => {
             `,
             options: [
               {
-                type: SortType['line-length'],
+                type: 'line-length',
                 groups: [
                   ['builtin', 'external'],
                   'internal',

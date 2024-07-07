@@ -14,7 +14,6 @@ import { getNodeParent } from '../utils/get-node-parent'
 import { toSingleLine } from '../utils/to-single-line'
 import { rangeToDiff } from '../utils/range-to-diff'
 import { isPositive } from '../utils/is-positive'
-import { SortOrder, SortType } from '../typings'
 import { useGroups } from '../utils/use-groups'
 import { makeFixes } from '../utils/make-fixes'
 import { sortNodes } from '../utils/sort-nodes'
@@ -36,14 +35,14 @@ type SortingNodeWithPosition = {
 type Options = [
   Partial<{
     customGroups: { [key: string]: string[] | string }
+    type: 'alphabetical' | 'line-length' | 'natural'
     partitionByComment: PartitionComment
     groups: (string[] | string)[]
     partitionByNewLine: boolean
     styledComponents: boolean
     ignorePattern: string[]
+    order: 'desc' | 'asc'
     ignoreCase: boolean
-    order: SortOrder
-    type: SortType
   }>,
 ]
 
@@ -77,17 +76,13 @@ export default createEslintRule<Options, MESSAGE_ID>({
             default: true,
           },
           type: {
-            enum: [
-              SortType.alphabetical,
-              SortType.natural,
-              SortType['line-length'],
-            ],
-            default: SortType.alphabetical,
+            enum: ['alphabetical', 'natural', 'line-length'],
+            default: 'alphabetical',
             type: 'string',
           },
           order: {
-            enum: [SortOrder.asc, SortOrder.desc],
-            default: SortOrder.asc,
+            enum: ['asc', 'desc'],
+            default: 'asc',
             type: 'string',
           },
           ignoreCase: {
@@ -113,8 +108,8 @@ export default createEslintRule<Options, MESSAGE_ID>({
   },
   defaultOptions: [
     {
-      type: SortType.alphabetical,
-      order: SortOrder.asc,
+      type: 'alphabetical',
+      order: 'asc',
     },
   ],
   create: context => {
@@ -124,14 +119,14 @@ export default createEslintRule<Options, MESSAGE_ID>({
       let options = complete(context.options.at(0), {
         partitionByNewLine: false,
         partitionByComment: false,
-        type: SortType.alphabetical,
         styledComponents: true,
+        type: 'alphabetical',
         ignoreCase: false,
         ignorePattern: [],
-        order: SortOrder.asc,
         customGroups: {},
+        order: 'asc',
         groups: [],
-      })
+      } as const)
 
       let shouldIgnore = false
       if (options.ignorePattern.length) {

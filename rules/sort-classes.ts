@@ -8,7 +8,6 @@ import { getNodeRange } from '../utils/get-node-range'
 import { toSingleLine } from '../utils/to-single-line'
 import { rangeToDiff } from '../utils/range-to-diff'
 import { isPositive } from '../utils/is-positive'
-import { SortOrder, SortType } from '../typings'
 import { useGroups } from '../utils/use-groups'
 import { sortNodes } from '../utils/sort-nodes'
 import { complete } from '../utils/complete'
@@ -42,10 +41,10 @@ type Group =
 type Options = [
   Partial<{
     customGroups: { [key: string]: string[] | string }
+    type: 'alphabetical' | 'line-length' | 'natural'
     groups: (Group[] | Group)[]
+    order: 'desc' | 'asc'
     ignoreCase: boolean
-    order: SortOrder
-    type: SortType
   }>,
 ]
 
@@ -67,12 +66,8 @@ export default createEslintRule<Options, MESSAGE_ID>({
             type: 'object',
           },
           type: {
-            enum: [
-              SortType.alphabetical,
-              SortType.natural,
-              SortType['line-length'],
-            ],
-            default: SortType.alphabetical,
+            enum: ['alphabetical', 'natural', 'line-length'],
+            default: 'alphabetical',
             type: 'string',
           },
           ignoreCase: {
@@ -80,8 +75,8 @@ export default createEslintRule<Options, MESSAGE_ID>({
             default: false,
           },
           order: {
-            enum: [SortOrder.asc, SortOrder.desc],
-            default: SortOrder.asc,
+            enum: ['asc', 'desc'],
+            default: 'asc',
             type: 'string',
           },
           groups: {
@@ -98,20 +93,20 @@ export default createEslintRule<Options, MESSAGE_ID>({
   },
   defaultOptions: [
     {
-      type: SortType.alphabetical,
-      order: SortOrder.asc,
+      type: 'alphabetical',
+      order: 'asc',
     },
   ],
   create: context => ({
     ClassBody: node => {
       if (node.body.length > 1) {
         let options = complete(context.options.at(0), {
-          type: SortType.alphabetical,
-          order: SortOrder.asc,
-          ignoreCase: false,
           groups: ['property', 'constructor', 'method', 'unknown'],
+          type: 'alphabetical',
+          ignoreCase: false,
           customGroups: {},
-        })
+          order: 'asc',
+        } as const)
 
         let nodes: SortingNode[] = node.body.map(member => {
           let name: string
