@@ -29,34 +29,24 @@ describe(RULE_NAME, () => {
       valid: [
         {
           code: dedent`
-            class Mob {
-              static name = 'Shigeo Kageyama'
+            class Class {
+              static a = 'a'
 
-              private beloved = 'Tsubomi Takane'
+              private b = 'b'
 
-              alias = 'Psycho Helmet'
+              c = 'c'
 
-              placeOfWork = 'Spirits and Such Consultation Office'
+              d = 'd'
 
-              constructor(stressLevel) {
-                this.stressLevel = stressLevel
-              }
+              constructor() {}
 
-              static greet() {
-                console.log(\`Ohayo! My name is \${this.name}\`)
-              }
+              static e() {}
 
-              private setStressLevel(value) {
-                this.stressLevel = value
-              }
+              private f() {}
 
-              decreaseStressLevel(level) {
-                this.setStressLevel(this.stressLevel - (level ?? 10))
-              }
+              g() {}
 
-              increaseStressLevel(level) {
-                this.setStressLevel(this.stressLevel + (level ?? 10))
-              }
+              h() {}
             }
           `,
           options: [
@@ -79,65 +69,45 @@ describe(RULE_NAME, () => {
       invalid: [
         {
           code: dedent`
-            class Mob {
-              static name = 'Shigeo Kageyama'
+            class Class {
+              static a = 'a'
 
-              private beloved = 'Tsubomi Takane'
+              private b = 'b'
 
-              alias = 'Psycho Helmet'
+              d = 'd'
 
-              constructor(stressLevel) {
-                this.stressLevel = stressLevel
-              }
+              c = 'c'
 
-              placeOfWork = 'Spirits and Such Consultation Office'
+              static e() {}
 
-              decreaseStressLevel(level) {
-                this.setStressLevel(this.stressLevel - (level ?? 10))
-              }
+              constructor() {}
 
-              static greet() {
-                console.log(\`Ohayo! My name is \${this.name}\`)
-              }
+              private f() {}
 
-              private setStressLevel(value) {
-                this.stressLevel = value
-              }
+              g() {}
 
-              increaseStressLevel(level) {
-                this.setStressLevel(this.stressLevel + (level ?? 10))
-              }
+              h() {}
             }
           `,
           output: dedent`
-            class Mob {
-              static name = 'Shigeo Kageyama'
+            class Class {
+              static a = 'a'
 
-              private beloved = 'Tsubomi Takane'
+              private b = 'b'
 
-              alias = 'Psycho Helmet'
+              c = 'c'
 
-              placeOfWork = 'Spirits and Such Consultation Office'
+              d = 'd'
 
-              constructor(stressLevel) {
-                this.stressLevel = stressLevel
-              }
+              constructor() {}
 
-              static greet() {
-                console.log(\`Ohayo! My name is \${this.name}\`)
-              }
+              static e() {}
 
-              private setStressLevel(value) {
-                this.stressLevel = value
-              }
+              private f() {}
 
-              decreaseStressLevel(level) {
-                this.setStressLevel(this.stressLevel - (level ?? 10))
-              }
+              g() {}
 
-              increaseStressLevel(level) {
-                this.setStressLevel(this.stressLevel + (level ?? 10))
-              }
+              h() {}
             }
           `,
           options: [
@@ -159,15 +129,15 @@ describe(RULE_NAME, () => {
             {
               messageId: 'unexpectedClassesOrder',
               data: {
-                left: 'constructor',
-                right: 'placeOfWork',
+                left: 'd',
+                right: 'c',
               },
             },
             {
               messageId: 'unexpectedClassesOrder',
               data: {
-                left: 'decreaseStressLevel',
-                right: 'greet',
+                left: 'e',
+                right: 'constructor',
               },
             },
           ],
@@ -182,15 +152,15 @@ describe(RULE_NAME, () => {
         valid: [
           {
             code: dedent`
-              class ParadisIsland {
-                [key in Attractions]
+              class Class {
+                static a
 
-                static status
+                static b = 'b'
 
-                static territory = 'Eldia'
+                [key in O]
 
                 static {
-                  this.status = 'Destroyed'
+                  this.a = 'd'
                 }
               }
             `,
@@ -210,28 +180,28 @@ describe(RULE_NAME, () => {
         invalid: [
           {
             code: dedent`
-              class ParadisIsland {
-                [key in Attractions]
+              class Class {
+                [key in O]
 
-                static territory = 'Eldia'
+                static b = 'b'
 
-                static status
+                static a
 
                 static {
-                  this.status = 'Destroyed'
+                  this.a = 'd'
                 }
               }
             `,
             output: dedent`
-              class ParadisIsland {
-                [key in Attractions]
+              class Class {
+                static a
 
-                static status
+                static b = 'b'
 
-                static territory = 'Eldia'
+                [key in O]
 
                 static {
-                  this.status = 'Destroyed'
+                  this.a = 'd'
                 }
               }
             `,
@@ -250,8 +220,15 @@ describe(RULE_NAME, () => {
               {
                 messageId: 'unexpectedClassesOrder',
                 data: {
-                  left: 'territory',
-                  right: 'status',
+                  left: 'key in O',
+                  right: 'b',
+                },
+              },
+              {
+                messageId: 'unexpectedClassesOrder',
+                data: {
+                  left: 'b',
+                  right: 'a',
                 },
               },
             ],
@@ -267,8 +244,8 @@ describe(RULE_NAME, () => {
         valid: [
           {
             code: dedent`
-              class Another {
-                static name = 'Mei Misaki';
+              class Class {
+                static a = 'a';
 
                 [k: string]: any;
 
@@ -289,17 +266,17 @@ describe(RULE_NAME, () => {
         invalid: [
           {
             code: dedent`
-              class Another {
+              class Class {
                 [k: string]: any;
 
                 [k: string];
 
-                static name = 'Mei Misaki';
+                static a = 'a';
               }
             `,
             output: dedent`
-              class Another {
-                static name = 'Mei Misaki';
+              class Class {
+                static a = 'a';
 
                 [k: string]: any;
 
@@ -320,7 +297,7 @@ describe(RULE_NAME, () => {
                 messageId: 'unexpectedClassesOrder',
                 data: {
                   left: '[k: string];',
-                  right: 'name',
+                  right: 'a',
                 },
               },
             ],
@@ -772,34 +749,24 @@ describe(RULE_NAME, () => {
       valid: [
         {
           code: dedent`
-            class Mob {
-              static name = 'Shigeo Kageyama'
+            class Class {
+              static a = 'a'
 
-              private beloved = 'Tsubomi Takane'
+              private b = 'b'
 
-              alias = 'Psycho Helmet'
+              c = 'c'
 
-              placeOfWork = 'Spirits and Such Consultation Office'
+              d = 'd'
 
-              constructor(stressLevel) {
-                this.stressLevel = stressLevel
-              }
+              constructor() {}
 
-              static greet() {
-                console.log(\`Ohayo! My name is \${this.name}\`)
-              }
+              static e() {}
 
-              private setStressLevel(value) {
-                this.stressLevel = value
-              }
+              private f() {}
 
-              decreaseStressLevel(level) {
-                this.setStressLevel(this.stressLevel - (level ?? 10))
-              }
+              g() {}
 
-              increaseStressLevel(level) {
-                this.setStressLevel(this.stressLevel + (level ?? 10))
-              }
+              h() {}
             }
           `,
           options: [
@@ -822,65 +789,45 @@ describe(RULE_NAME, () => {
       invalid: [
         {
           code: dedent`
-            class Mob {
-              static name = 'Shigeo Kageyama'
+            class Class {
+              static a = 'a'
 
-              private beloved = 'Tsubomi Takane'
+              private b = 'b'
 
-              alias = 'Psycho Helmet'
+              d = 'd'
 
-              constructor(stressLevel) {
-                this.stressLevel = stressLevel
-              }
+              c = 'c'
 
-              placeOfWork = 'Spirits and Such Consultation Office'
+              static e() {}
 
-              decreaseStressLevel(level) {
-                this.setStressLevel(this.stressLevel - (level ?? 10))
-              }
+              constructor() {}
 
-              static greet() {
-                console.log(\`Ohayo! My name is \${this.name}\`)
-              }
+              private f() {}
 
-              private setStressLevel(value) {
-                this.stressLevel = value
-              }
+              g() {}
 
-              increaseStressLevel(level) {
-                this.setStressLevel(this.stressLevel + (level ?? 10))
-              }
+              h() {}
             }
           `,
           output: dedent`
-            class Mob {
-              static name = 'Shigeo Kageyama'
+            class Class {
+              static a = 'a'
 
-              private beloved = 'Tsubomi Takane'
+              private b = 'b'
 
-              alias = 'Psycho Helmet'
+              c = 'c'
 
-              placeOfWork = 'Spirits and Such Consultation Office'
+              d = 'd'
 
-              constructor(stressLevel) {
-                this.stressLevel = stressLevel
-              }
+              constructor() {}
 
-              static greet() {
-                console.log(\`Ohayo! My name is \${this.name}\`)
-              }
+              static e() {}
 
-              private setStressLevel(value) {
-                this.stressLevel = value
-              }
+              private f() {}
 
-              decreaseStressLevel(level) {
-                this.setStressLevel(this.stressLevel - (level ?? 10))
-              }
+              g() {}
 
-              increaseStressLevel(level) {
-                this.setStressLevel(this.stressLevel + (level ?? 10))
-              }
+              h() {}
             }
           `,
           options: [
@@ -902,15 +849,15 @@ describe(RULE_NAME, () => {
             {
               messageId: 'unexpectedClassesOrder',
               data: {
-                left: 'constructor',
-                right: 'placeOfWork',
+                left: 'd',
+                right: 'c',
               },
             },
             {
               messageId: 'unexpectedClassesOrder',
               data: {
-                left: 'decreaseStressLevel',
-                right: 'greet',
+                left: 'e',
+                right: 'constructor',
               },
             },
           ],
@@ -925,15 +872,15 @@ describe(RULE_NAME, () => {
         valid: [
           {
             code: dedent`
-              class ParadisIsland {
-                [key in Attractions]
+              class Class {
+                static a
 
-                static status
+                static b = 'b'
 
-                static territory = 'Eldia'
+                [key in O]
 
                 static {
-                  this.status = 'Destroyed'
+                  this.a = 'd'
                 }
               }
             `,
@@ -953,28 +900,28 @@ describe(RULE_NAME, () => {
         invalid: [
           {
             code: dedent`
-              class ParadisIsland {
-                [key in Attractions]
+              class Class {
+                [key in O]
 
-                static territory = 'Eldia'
+                static b = 'b'
 
-                static status
+                static a
 
                 static {
-                  this.status = 'Destroyed'
+                  this.a = 'd'
                 }
               }
             `,
             output: dedent`
-              class ParadisIsland {
-                [key in Attractions]
+              class Class {
+                static a
 
-                static status
+                static b = 'b'
 
-                static territory = 'Eldia'
+                [key in O]
 
                 static {
-                  this.status = 'Destroyed'
+                  this.a = 'd'
                 }
               }
             `,
@@ -993,8 +940,15 @@ describe(RULE_NAME, () => {
               {
                 messageId: 'unexpectedClassesOrder',
                 data: {
-                  left: 'territory',
-                  right: 'status',
+                  left: 'key in O',
+                  right: 'b',
+                },
+              },
+              {
+                messageId: 'unexpectedClassesOrder',
+                data: {
+                  left: 'b',
+                  right: 'a',
                 },
               },
             ],
@@ -1010,8 +964,8 @@ describe(RULE_NAME, () => {
         valid: [
           {
             code: dedent`
-              class Another {
-                static name = 'Mei Misaki';
+              class Class {
+                static a = 'a';
 
                 [k: string]: any;
 
@@ -1032,17 +986,17 @@ describe(RULE_NAME, () => {
         invalid: [
           {
             code: dedent`
-              class Another {
+              class Class {
                 [k: string]: any;
 
                 [k: string];
 
-                static name = 'Mei Misaki';
+                static a = 'a';
               }
             `,
             output: dedent`
-              class Another {
-                static name = 'Mei Misaki';
+              class Class {
+                static a = 'a';
 
                 [k: string]: any;
 
@@ -1063,7 +1017,7 @@ describe(RULE_NAME, () => {
                 messageId: 'unexpectedClassesOrder',
                 data: {
                   left: '[k: string];',
-                  right: 'name',
+                  right: 'a',
                 },
               },
             ],
@@ -1514,34 +1468,24 @@ describe(RULE_NAME, () => {
       valid: [
         {
           code: dedent`
-            class Mob {
-              static name = 'Shigeo Kageyama'
+            class Class {
+              static a = 'a'
 
-              private beloved = 'Tsubomi Takane'
+              private b = 'b'
 
-              placeOfWork = 'Spirits and Such Consultation Office'
+              c = 'c'
 
-              alias = 'Psycho Helmet'
+              d = 'd'
 
-              constructor(stressLevel) {
-                this.stressLevel = stressLevel
-              }
+              constructor() {}
 
-              static greet() {
-                console.log(\`Ohayo! My name is \${this.name}\`)
-              }
+              static e() {}
 
-              private setStressLevel(value) {
-                this.stressLevel = value
-              }
+              private f() {}
 
-              decreaseStressLevel(level) {
-                this.setStressLevel(this.stressLevel - (level ?? 10))
-              }
+              g() {}
 
-              increaseStressLevel(level) {
-                this.setStressLevel(this.stressLevel + (level ?? 10))
-              }
+              h() {}
             }
           `,
           options: [
@@ -1564,65 +1508,45 @@ describe(RULE_NAME, () => {
       invalid: [
         {
           code: dedent`
-            class Mob {
-              static name = 'Shigeo Kageyama'
+            class Class {
+              static a = 'a'
 
-              private beloved = 'Tsubomi Takane'
+              private b = 'b'
 
-              alias = 'Psycho Helmet'
+              d = 'd'
 
-              constructor(stressLevel) {
-                this.stressLevel = stressLevel
-              }
+              c = 'c'
 
-              placeOfWork = 'Spirits and Such Consultation Office'
+              static e() {}
 
-              decreaseStressLevel(level) {
-                this.setStressLevel(this.stressLevel - (level ?? 10))
-              }
+              constructor() {}
 
-              static greet() {
-                console.log(\`Ohayo! My name is \${this.name}\`)
-              }
+              private f() {}
 
-              private setStressLevel(value) {
-                this.stressLevel = value
-              }
+              g() {}
 
-              increaseStressLevel(level) {
-                this.setStressLevel(this.stressLevel + (level ?? 10))
-              }
+              h() {}
             }
           `,
           output: dedent`
-            class Mob {
-              static name = 'Shigeo Kageyama'
+            class Class {
+              static a = 'a'
 
-              private beloved = 'Tsubomi Takane'
+              private b = 'b'
 
-              placeOfWork = 'Spirits and Such Consultation Office'
+              d = 'd'
 
-              alias = 'Psycho Helmet'
+              c = 'c'
 
-              constructor(stressLevel) {
-                this.stressLevel = stressLevel
-              }
+              constructor() {}
 
-              static greet() {
-                console.log(\`Ohayo! My name is \${this.name}\`)
-              }
+              static e() {}
 
-              private setStressLevel(value) {
-                this.stressLevel = value
-              }
+              private f() {}
 
-              decreaseStressLevel(level) {
-                this.setStressLevel(this.stressLevel - (level ?? 10))
-              }
+              g() {}
 
-              increaseStressLevel(level) {
-                this.setStressLevel(this.stressLevel + (level ?? 10))
-              }
+              h() {}
             }
           `,
           options: [
@@ -1644,15 +1568,8 @@ describe(RULE_NAME, () => {
             {
               messageId: 'unexpectedClassesOrder',
               data: {
-                left: 'constructor',
-                right: 'placeOfWork',
-              },
-            },
-            {
-              messageId: 'unexpectedClassesOrder',
-              data: {
-                left: 'decreaseStressLevel',
-                right: 'greet',
+                left: 'e',
+                right: 'constructor',
               },
             },
           ],
@@ -1667,15 +1584,15 @@ describe(RULE_NAME, () => {
         valid: [
           {
             code: dedent`
-              class ParadisIsland {
-                static territory = 'Eldia'
+              class Class {
+                static b = 'b'
 
-                [key in Attractions]
+                [key in O]
 
-                static status
+                static a
 
                 static {
-                  this.status = 'Destroyed'
+                  this.a = 'd'
                 }
               }
             `,
@@ -1695,28 +1612,28 @@ describe(RULE_NAME, () => {
         invalid: [
           {
             code: dedent`
-              class ParadisIsland {
-                [key in Attractions]
+              class Class {
+                [key in O]
 
-                static territory = 'Eldia'
+                static b = 'b'
 
-                static status
+                static a
 
                 static {
-                  this.status = 'Destroyed'
+                  this.a = 'd'
                 }
               }
             `,
             output: dedent`
-              class ParadisIsland {
-                static territory = 'Eldia'
+              class Class {
+                static b = 'b'
 
-                [key in Attractions]
+                [key in O]
 
-                static status
+                static a
 
                 static {
-                  this.status = 'Destroyed'
+                  this.a = 'd'
                 }
               }
             `,
@@ -1735,8 +1652,8 @@ describe(RULE_NAME, () => {
               {
                 messageId: 'unexpectedClassesOrder',
                 data: {
-                  left: 'key in Attractions',
-                  right: 'territory',
+                  left: 'key in O',
+                  right: 'b',
                 },
               },
             ],
@@ -1752,8 +1669,8 @@ describe(RULE_NAME, () => {
         valid: [
           {
             code: dedent`
-              class Another {
-                static name = 'Mei Misaki';
+              class Class {
+                static a = 'a';
 
                 [k: string]: any;
 
@@ -1774,17 +1691,17 @@ describe(RULE_NAME, () => {
         invalid: [
           {
             code: dedent`
-              class Another {
+              class Class {
                 [k: string]: any;
 
                 [k: string];
 
-                static name = 'Mei Misaki';
+                static a = 'a';
               }
             `,
             output: dedent`
-              class Another {
-                static name = 'Mei Misaki';
+              class Class {
+                static a = 'a';
 
                 [k: string]: any;
 
@@ -1805,7 +1722,7 @@ describe(RULE_NAME, () => {
                 messageId: 'unexpectedClassesOrder',
                 data: {
                   left: '[k: string];',
-                  right: 'name',
+                  right: 'a',
                 },
               },
             ],

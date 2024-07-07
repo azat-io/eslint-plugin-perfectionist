@@ -29,7 +29,7 @@ describe(RULE_NAME, () => {
       valid: [
         {
           code: dedent`
-            type Eternity = 'Fushi' | 'Gugu' | 'Joaan' | 'Parona'
+            type Type = 'aaaa' | 'bbb' | 'cc' | 'd'
           `,
           options: [options],
         },
@@ -37,18 +37,18 @@ describe(RULE_NAME, () => {
       invalid: [
         {
           code: dedent`
-            type Eternity = 'Fushi' | 'Joaan' | 'Parona' | 'Gugu'
+            type Type = 'aaaa' | 'cc' | 'bbb' | 'd'
           `,
           output: dedent`
-            type Eternity = 'Fushi' | 'Gugu' | 'Joaan' | 'Parona'
+            type Type = 'aaaa' | 'bbb' | 'cc' | 'd'
           `,
           options: [options],
           errors: [
             {
               messageId: 'unexpectedUnionTypesOrder',
               data: {
-                left: "'Parona'",
-                right: "'Gugu'",
+                left: "'cc'",
+                right: "'bbb'",
               },
             },
           ],
@@ -125,15 +125,15 @@ describe(RULE_NAME, () => {
       valid: [],
       invalid: [
         {
-          code: "Omit<Arataka, 'psychic-abilities' | 'power'>",
-          output: "Omit<Arataka, 'power' | 'psychic-abilities'>",
+          code: "Omit<T, 'b' | 'aa'>",
+          output: "Omit<T, 'aa' | 'b'>",
           options: [options],
           errors: [
             {
               messageId: 'unexpectedUnionTypesOrder',
               data: {
-                left: "'psychic-abilities'",
-                right: "'power'",
+                left: "'b'",
+                right: "'aa'",
               },
             },
           ],
@@ -145,15 +145,22 @@ describe(RULE_NAME, () => {
       valid: [],
       invalid: [
         {
-          code: 'type DemonSlayer = Tanjiro | Zenitsu | Inosuke',
-          output: 'type DemonSlayer = Inosuke | Tanjiro | Zenitsu',
+          code: 'type Type = c | bb | aaa',
+          output: 'type Type = aaa | bb | c',
           options: [options],
           errors: [
             {
               messageId: 'unexpectedUnionTypesOrder',
               data: {
-                left: 'Zenitsu',
-                right: 'Inosuke',
+                left: 'c',
+                right: 'bb',
+              },
+            },
+            {
+              messageId: 'unexpectedUnionTypesOrder',
+              data: {
+                left: 'bb',
+                right: 'aaa',
               },
             },
           ],
@@ -166,22 +173,22 @@ describe(RULE_NAME, () => {
       invalid: [
         {
           code: dedent`
-            type Character =
-              | { name: 'Intelligent Titan', status: 'titan' }
-              | { name: 'Eren Yeager', species: 'human' }
+            type Type =
+              | { name: 'b', status: 'success' }
+              | { name: 'aa', status: 'success' }
           `,
           output: dedent`
-            type Character =
-              | { name: 'Eren Yeager', species: 'human' }
-              | { name: 'Intelligent Titan', status: 'titan' }
+            type Type =
+              | { name: 'aa', status: 'success' }
+              | { name: 'b', status: 'success' }
           `,
           options: [options],
           errors: [
             {
               messageId: 'unexpectedUnionTypesOrder',
               data: {
-                left: "{ name: 'Intelligent Titan', status: 'titan' }",
-                right: "{ name: 'Eren Yeager', species: 'human' }",
+                left: "{ name: 'b', status: 'success' }",
+                right: "{ name: 'aa', status: 'success' }",
               },
             },
           ],
@@ -194,23 +201,23 @@ describe(RULE_NAME, () => {
       invalid: [
         {
           code: dedent`
-            type HeroAssociation = {
-              team:
-                | Saitama
+            type Type = {
+              x:
+                | A
                 | ((
-                    superstrike: () => void,
-                  ) => Hero[] | Saitama)
-                | Hero[]
+                    value: () => void,
+                  ) => D | E)
+                | B[]
             }
           `,
           output: dedent`
-            type HeroAssociation = {
-              team:
+            type Type = {
+              x:
                 | ((
-                    superstrike: () => void,
-                  ) => Hero[] | Saitama)
-                | Hero[]
-                | Saitama
+                    value: () => void,
+                  ) => D | E)
+                | A
+                | B[]
             }
           `,
           options: [options],
@@ -218,8 +225,8 @@ describe(RULE_NAME, () => {
             {
               messageId: 'unexpectedUnionTypesOrder',
               data: {
-                left: 'Saitama',
-                right: '( superstrike: () => void, ) => Hero[] | Saitama',
+                left: 'A',
+                right: '( value: () => void, ) => D | E',
               },
             },
           ],
@@ -232,10 +239,10 @@ describe(RULE_NAME, () => {
       invalid: [
         {
           code: dedent`
-            type Step = 1 | 2 | 4 | 3 | 5 | 100; // Exam step. Example: 3
+            type Step = 1 | 2 | 4 | 3 | 5 | 100; // Comment
           `,
           output: dedent`
-            type Step = 1 | 100 | 2 | 3 | 4 | 5; // Exam step. Example: 3
+            type Step = 1 | 100 | 2 | 3 | 4 | 5; // Comment
           `,
           options: [options],
           errors: [
@@ -263,10 +270,10 @@ describe(RULE_NAME, () => {
       invalid: [
         {
           code: dedent`
-            type Enemy = 'null' | null | 'r-team' | undefined | unknown
+            type Type = 'null' | null | 'a' | undefined | unknown
           `,
           output: dedent`
-            type Enemy = 'null' | 'r-team' | unknown | null | undefined
+            type Type = 'a' | 'null' | unknown | null | undefined
           `,
           options: [
             {
@@ -279,7 +286,7 @@ describe(RULE_NAME, () => {
               messageId: 'unexpectedUnionTypesOrder',
               data: {
                 left: 'null',
-                right: "'r-team'",
+                right: "'a'",
               },
             },
             {
@@ -308,7 +315,7 @@ describe(RULE_NAME, () => {
       valid: [
         {
           code: dedent`
-            type Eternity = 'Fushi' | 'Gugu' | 'Joaan' | 'Parona'
+            type Type = 'aaaa' | 'bbb' | 'cc' | 'd'
           `,
           options: [options],
         },
@@ -316,18 +323,18 @@ describe(RULE_NAME, () => {
       invalid: [
         {
           code: dedent`
-            type Eternity = 'Fushi' | 'Joaan' | 'Parona' | 'Gugu'
+            type Type = 'aaaa' | 'cc' | 'bbb' | 'd'
           `,
           output: dedent`
-            type Eternity = 'Fushi' | 'Gugu' | 'Joaan' | 'Parona'
+            type Type = 'aaaa' | 'bbb' | 'cc' | 'd'
           `,
           options: [options],
           errors: [
             {
               messageId: 'unexpectedUnionTypesOrder',
               data: {
-                left: "'Parona'",
-                right: "'Gugu'",
+                left: "'cc'",
+                right: "'bbb'",
               },
             },
           ],
@@ -404,15 +411,15 @@ describe(RULE_NAME, () => {
       valid: [],
       invalid: [
         {
-          code: "Omit<Arataka, 'psychic-abilities' | 'power'>",
-          output: "Omit<Arataka, 'power' | 'psychic-abilities'>",
+          code: "Omit<T, 'b' | 'aa'>",
+          output: "Omit<T, 'aa' | 'b'>",
           options: [options],
           errors: [
             {
               messageId: 'unexpectedUnionTypesOrder',
               data: {
-                left: "'psychic-abilities'",
-                right: "'power'",
+                left: "'b'",
+                right: "'aa'",
               },
             },
           ],
@@ -424,15 +431,22 @@ describe(RULE_NAME, () => {
       valid: [],
       invalid: [
         {
-          code: 'type DemonSlayer = Tanjiro | Zenitsu | Inosuke',
-          output: 'type DemonSlayer = Inosuke | Tanjiro | Zenitsu',
+          code: 'type Type = c | bb | aaa',
+          output: 'type Type = aaa | bb | c',
           options: [options],
           errors: [
             {
               messageId: 'unexpectedUnionTypesOrder',
               data: {
-                left: 'Zenitsu',
-                right: 'Inosuke',
+                left: 'c',
+                right: 'bb',
+              },
+            },
+            {
+              messageId: 'unexpectedUnionTypesOrder',
+              data: {
+                left: 'bb',
+                right: 'aaa',
               },
             },
           ],
@@ -445,22 +459,22 @@ describe(RULE_NAME, () => {
       invalid: [
         {
           code: dedent`
-            type Character =
-              | { name: 'Intelligent Titan', status: 'titan' }
-              | { name: 'Eren Yeager', species: 'human' }
+            type Type =
+              | { name: 'b', status: 'success' }
+              | { name: 'aa', status: 'success' }
           `,
           output: dedent`
-            type Character =
-              | { name: 'Eren Yeager', species: 'human' }
-              | { name: 'Intelligent Titan', status: 'titan' }
+            type Type =
+              | { name: 'aa', status: 'success' }
+              | { name: 'b', status: 'success' }
           `,
           options: [options],
           errors: [
             {
               messageId: 'unexpectedUnionTypesOrder',
               data: {
-                left: "{ name: 'Intelligent Titan', status: 'titan' }",
-                right: "{ name: 'Eren Yeager', species: 'human' }",
+                left: "{ name: 'b', status: 'success' }",
+                right: "{ name: 'aa', status: 'success' }",
               },
             },
           ],
@@ -473,23 +487,23 @@ describe(RULE_NAME, () => {
       invalid: [
         {
           code: dedent`
-            type HeroAssociation = {
-              team:
-                | Saitama
+            type Type = {
+              x:
+                | A
                 | ((
-                    superstrike: () => void,
-                  ) => Hero[] | Saitama)
-                | Hero[]
+                    value: () => void,
+                  ) => D | E)
+                | B[]
             }
           `,
           output: dedent`
-            type HeroAssociation = {
-              team:
+            type Type = {
+              x:
                 | ((
-                    superstrike: () => void,
-                  ) => Hero[] | Saitama)
-                | Hero[]
-                | Saitama
+                    value: () => void,
+                  ) => D | E)
+                | A
+                | B[]
             }
           `,
           options: [options],
@@ -497,8 +511,8 @@ describe(RULE_NAME, () => {
             {
               messageId: 'unexpectedUnionTypesOrder',
               data: {
-                left: 'Saitama',
-                right: '( superstrike: () => void, ) => Hero[] | Saitama',
+                left: 'A',
+                right: '( value: () => void, ) => D | E',
               },
             },
           ],
@@ -511,10 +525,10 @@ describe(RULE_NAME, () => {
       invalid: [
         {
           code: dedent`
-            type Step = 1 | 2 | 4 | 3 | 5 | 100; // Exam step. Example: 3
+            type Step = 1 | 2 | 4 | 3 | 5 | 100; // Comment
           `,
           output: dedent`
-            type Step = 1 | 2 | 3 | 4 | 5 | 100; // Exam step. Example: 3
+            type Step = 1 | 2 | 3 | 4 | 5 | 100; // Comment
           `,
           options: [options],
           errors: [
@@ -535,10 +549,10 @@ describe(RULE_NAME, () => {
       invalid: [
         {
           code: dedent`
-            type Enemy = 'null' | null | 'r-team' | undefined | unknown
+            type Type = 'null' | null | 'a' | undefined | unknown
           `,
           output: dedent`
-            type Enemy = 'null' | 'r-team' | unknown | null | undefined
+            type Type = 'a' | 'null' | unknown | null | undefined
           `,
           options: [
             {
@@ -551,7 +565,7 @@ describe(RULE_NAME, () => {
               messageId: 'unexpectedUnionTypesOrder',
               data: {
                 left: 'null',
-                right: "'r-team'",
+                right: "'a'",
               },
             },
             {
@@ -579,26 +593,26 @@ describe(RULE_NAME, () => {
       valid: [
         {
           code: dedent`
-              type Eternity = 'Parona' | 'Joaan' | 'Fushi' | 'Gugu'
-            `,
+            type Type = 'aaaa' | 'bbb' | 'cc' | 'd'
+          `,
           options: [options],
         },
       ],
       invalid: [
         {
           code: dedent`
-            type Eternity = 'Fushi' | 'Joaan' | 'Parona' | 'Gugu'
+            type Type = 'aaaa' | 'cc' | 'bbb' | 'd'
           `,
           output: dedent`
-            type Eternity = 'Parona' | 'Fushi' | 'Joaan' | 'Gugu'
+            type Type = 'aaaa' | 'bbb' | 'cc' | 'd'
           `,
           options: [options],
           errors: [
             {
               messageId: 'unexpectedUnionTypesOrder',
               data: {
-                left: "'Joaan'",
-                right: "'Parona'",
+                left: "'cc'",
+                right: "'bbb'",
               },
             },
           ],
@@ -668,15 +682,15 @@ describe(RULE_NAME, () => {
       valid: [],
       invalid: [
         {
-          code: "Omit<Arataka, 'power' | 'psychic-abilities'>",
-          output: "Omit<Arataka, 'psychic-abilities' | 'power'>",
+          code: "Omit<T, 'b' | 'aa'>",
+          output: "Omit<T, 'aa' | 'b'>",
           options: [options],
           errors: [
             {
               messageId: 'unexpectedUnionTypesOrder',
               data: {
-                left: "'power'",
-                right: "'psychic-abilities'",
+                left: "'b'",
+                right: "'aa'",
               },
             },
           ],
@@ -685,13 +699,30 @@ describe(RULE_NAME, () => {
     })
 
     ruleTester.run(`${RULE_NAME}: works with type references`, rule, {
-      valid: [
+      valid: [],
+      invalid: [
         {
-          code: 'type DemonSlayer = Tanjiro | Zenitsu | Inosuke',
+          code: 'type Type = c | bb | aaa',
+          output: 'type Type = aaa | bb | c',
           options: [options],
+          errors: [
+            {
+              messageId: 'unexpectedUnionTypesOrder',
+              data: {
+                left: 'c',
+                right: 'bb',
+              },
+            },
+            {
+              messageId: 'unexpectedUnionTypesOrder',
+              data: {
+                left: 'bb',
+                right: 'aaa',
+              },
+            },
+          ],
         },
       ],
-      invalid: [],
     })
 
     ruleTester.run(`${RULE_NAME}: works with type references`, rule, {
@@ -699,22 +730,22 @@ describe(RULE_NAME, () => {
       invalid: [
         {
           code: dedent`
-            type Character =
-              | { name: 'Eren Yeager', species: 'human' }
-              | { name: 'Intelligent Titan', status: 'titan' }
+            type Type =
+              | { name: 'b', status: 'success' }
+              | { name: 'aa', status: 'success' }
           `,
           output: dedent`
-            type Character =
-              | { name: 'Intelligent Titan', status: 'titan' }
-              | { name: 'Eren Yeager', species: 'human' }
+            type Type =
+              | { name: 'aa', status: 'success' }
+              | { name: 'b', status: 'success' }
           `,
           options: [options],
           errors: [
             {
               messageId: 'unexpectedUnionTypesOrder',
               data: {
-                left: "{ name: 'Eren Yeager', species: 'human' }",
-                right: "{ name: 'Intelligent Titan', status: 'titan' }",
+                left: "{ name: 'b', status: 'success' }",
+                right: "{ name: 'aa', status: 'success' }",
               },
             },
           ],
@@ -727,23 +758,23 @@ describe(RULE_NAME, () => {
       invalid: [
         {
           code: dedent`
-            type HeroAssociation = {
-              team:
-                | Saitama
+            type Type = {
+              x:
+                | A
                 | ((
-                    superstrike: () => void,
-                  ) => Hero[] | Saitama)
-                | Hero[]
+                    value: () => void,
+                  ) => D | E)
+                | B[]
             }
           `,
           output: dedent`
-            type HeroAssociation = {
-              team:
+            type Type = {
+              x:
                 | ((
-                    superstrike: () => void,
-                  ) => Hero[] | Saitama)
-                | Saitama
-                | Hero[]
+                    value: () => void,
+                  ) => D | E)
+                | B[]
+                | A
             }
           `,
           options: [options],
@@ -751,15 +782,8 @@ describe(RULE_NAME, () => {
             {
               messageId: 'unexpectedUnionTypesOrder',
               data: {
-                left: 'Saitama',
-                right: '( superstrike: () => void, ) => Hero[] | Saitama',
-              },
-            },
-            {
-              messageId: 'unexpectedUnionTypesOrder',
-              data: {
-                left: 'Hero[]',
-                right: 'Saitama',
+                left: 'A',
+                right: '( value: () => void, ) => D | E',
               },
             },
           ],
@@ -772,10 +796,10 @@ describe(RULE_NAME, () => {
       invalid: [
         {
           code: dedent`
-            type Step = 1 | 2 | 4 | 3 | 5 | 100; // Exam step. Example: 3
+            type Step = 1 | 2 | 4 | 3 | 5 | 100; // Comment
           `,
           output: dedent`
-            type Step = 100 | 1 | 2 | 4 | 3 | 5; // Exam step. Example: 3
+            type Step = 100 | 1 | 2 | 4 | 3 | 5; // Comment
           `,
           options: [options],
           errors: [
@@ -796,10 +820,10 @@ describe(RULE_NAME, () => {
       invalid: [
         {
           code: dedent`
-            type Enemy = 'null' | null | 'r-team' | undefined | unknown
+            type Type = 'null' | null | 'a' | undefined | unknown
           `,
           output: dedent`
-            type Enemy = 'r-team' | unknown | 'null' | undefined | null
+            type Type = unknown | 'null' | 'a' | undefined | null
           `,
           options: [
             {
@@ -812,7 +836,7 @@ describe(RULE_NAME, () => {
               messageId: 'unexpectedUnionTypesOrder',
               data: {
                 left: 'null',
-                right: "'r-team'",
+                right: "'a'",
               },
             },
             {

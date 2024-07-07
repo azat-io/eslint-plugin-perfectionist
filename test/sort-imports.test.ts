@@ -30,8 +30,8 @@ describe(RULE_NAME, () => {
       valid: [
         {
           code: dedent`
-            import { SpiritedAway, HowlsMovingCastle } from 'hayao-miyazaki'
-            import { Suzume } from 'makoto-shinkai'
+            import { a1, a2 } from 'a'
+            import { b1 } from 'b'
           `,
           options: [options],
         },
@@ -39,20 +39,20 @@ describe(RULE_NAME, () => {
       invalid: [
         {
           code: dedent`
-            import { Suzume } from 'makoto-shinkai'
-            import { SpiritedAway, HowlsMovingCastle } from 'hayao-miyazaki'
+            import { b1 } from 'b'
+            import { a1, a2 } from 'a'
           `,
           output: dedent`
-            import { SpiritedAway, HowlsMovingCastle } from 'hayao-miyazaki'
-            import { Suzume } from 'makoto-shinkai'
+            import { a1, a2 } from 'a'
+            import { b1 } from 'b'
           `,
           options: [options],
           errors: [
             {
               messageId: 'unexpectedImportsOrder',
               data: {
-                left: 'makoto-shinkai',
-                right: 'hayao-miyazaki',
+                left: 'b',
+                right: 'a',
               },
             },
           ],
@@ -64,29 +64,29 @@ describe(RULE_NAME, () => {
       valid: [
         {
           code: dedent`
-            import type { Chairman } from 'hunter'
+            import type { T } from 't'
 
+            import { c1, c2, c3, c4 } from 'c'
+            import { e1 } from 'e/a'
+            import { e2 } from 'e/b'
             import fs from 'fs'
-            import { GingFreecss } from 'hunter/freecss'
-            import { Netero } from 'hunter/netero'
             import path from 'path'
-            import { Feitan, Phinks, Shalnark, Pakunoda } from 'phantom-troupe'
 
-            import type { Hunter } from '~/hunter-association'
+            import type { I } from '~/i'
 
-            import { Gon, Kurapika, Leorio } from '~/hunter-association'
-            import { Knuckle, Shoot } from '~/hunters/beast-hunters'
-            import { CheadleYorkshire } from '~/hunters/virus-hunters'
+            import { b1, b2 } from '~/b'
+            import { c1 } from '~/c'
+            import { i1, i2, i3 } from '~/i'
 
-            import type { Association } from '.'
-            import type { ChimeraAnt } from '../ants'
-            import type { IHero } from './association-data'
-            import type { HeroList } from './index.d.ts'
+            import type { A } from '.'
+            import type { F } from '../f'
+            import type { D } from './d'
+            import type { H } from './index.d.ts'
 
-            import association from '.'
-            import hisoka from '../../hunters/histoka'
-            import { Meruem, Neferpitou, Shaiapouf } from '../ants'
-            import { ChimeraAntQueen } from '../ants'
+            import a from '.'
+            import h from '../../h'
+            import { j } from '../j'
+            import { K, L, M } from '../k'
             import './style.css'
           `,
           options: [
@@ -111,52 +111,53 @@ describe(RULE_NAME, () => {
       invalid: [
         {
           code: dedent`
-            import { GingFreecss } from 'hunter/freecss'
-            import { Netero } from 'hunter/netero'
-
-            import type { Hunter } from '~/hunter-association'
-            import { Gon, Kurapika, Leorio } from '~/hunter-association'
-            import { Feitan, Phinks, Shalnark, Pakunoda } from 'phantom-troupe'
-            import type { Association } from '.'
-            import { Meruem, Neferpitou, Shaiapouf } from '../ants'
+            import { c1, c2, c3, c4 } from 'c'
+            import { e2 } from 'e/b'
+            import { e1 } from 'e/a'
             import path from 'path'
-            import fs from 'fs'
-            import type { ChimeraAnt } from '../ants'
-            import type { IHero } from './association-data'
-            import { Knuckle, Shoot } from '~/hunters/beast-hunters'
-            import { CheadleYorkshire } from '~/hunters/virus-hunters'
-            import type { HeroList } from './index.d.ts'
-            import './style.css'
-            import type { Chairman } from 'hunter'
 
-            import association from '.'
-            import { ChimeraAntQueen } from '../ants'
-            import hisoka from '../../hunters/histoka'
+            import { b1, b2 } from '~/b'
+            import type { I } from '~/i'
+            import type { D } from './d'
+            import fs from 'fs'
+            import { c1 } from '~/c'
+            import { i1, i2, i3 } from '~/i'
+
+            import type { A } from '.'
+            import type { F } from '../f'
+            import h from '../../h'
+            import type { H } from './index.d.ts'
+
+            import a from '.'
+            import type { T } from 't'
+            import './style.css'
+            import { j } from '../j'
+            import { K, L, M } from '../k'
           `,
           output: dedent`
-            import type { Chairman } from 'hunter'
+            import type { T } from 't'
 
+            import { c1, c2, c3, c4 } from 'c'
+            import { e1 } from 'e/a'
+            import { e2 } from 'e/b'
             import fs from 'fs'
-            import { GingFreecss } from 'hunter/freecss'
-            import { Netero } from 'hunter/netero'
             import path from 'path'
-            import { Feitan, Phinks, Shalnark, Pakunoda } from 'phantom-troupe'
 
-            import type { Hunter } from '~/hunter-association'
+            import type { I } from '~/i'
 
-            import { Gon, Kurapika, Leorio } from '~/hunter-association'
-            import { Knuckle, Shoot } from '~/hunters/beast-hunters'
-            import { CheadleYorkshire } from '~/hunters/virus-hunters'
+            import { b1, b2 } from '~/b'
+            import { c1 } from '~/c'
+            import { i1, i2, i3 } from '~/i'
 
-            import type { Association } from '.'
-            import type { ChimeraAnt } from '../ants'
-            import type { IHero } from './association-data'
-            import type { HeroList } from './index.d.ts'
+            import type { A } from '.'
+            import type { F } from '../f'
+            import type { D } from './d'
+            import type { H } from './index.d.ts'
 
-            import association from '.'
-            import hisoka from '../../hunters/histoka'
-            import { Meruem, Neferpitou, Shaiapouf } from '../ants'
-            import { ChimeraAntQueen } from '../ants'
+            import a from '.'
+            import h from '../../h'
+            import { j } from '../j'
+            import { K, L, M } from '../k'
             import './style.css'
           `,
           options: [
@@ -178,44 +179,30 @@ describe(RULE_NAME, () => {
           ],
           errors: [
             {
-              messageId: 'missedSpacingBetweenImports',
+              messageId: 'unexpectedImportsOrder',
               data: {
-                left: '~/hunter-association',
-                right: '~/hunter-association',
+                left: 'e/b',
+                right: 'e/a',
               },
             },
             {
               messageId: 'unexpectedImportsOrder',
               data: {
-                left: '~/hunter-association',
-                right: 'phantom-troupe',
+                left: '~/b',
+                right: '~/i',
               },
             },
             {
               messageId: 'missedSpacingBetweenImports',
               data: {
-                left: 'phantom-troupe',
-                right: '.',
-              },
-            },
-            {
-              messageId: 'missedSpacingBetweenImports',
-              data: {
-                left: '.',
-                right: '../ants',
+                left: '~/i',
+                right: './d',
               },
             },
             {
               messageId: 'unexpectedImportsOrder',
               data: {
-                left: '../ants',
-                right: 'path',
-              },
-            },
-            {
-              messageId: 'unexpectedImportsOrder',
-              data: {
-                left: 'path',
+                left: './d',
                 right: 'fs',
               },
             },
@@ -223,27 +210,34 @@ describe(RULE_NAME, () => {
               messageId: 'missedSpacingBetweenImports',
               data: {
                 left: 'fs',
-                right: '../ants',
+                right: '~/c',
+              },
+            },
+            {
+              messageId: 'missedSpacingBetweenImports',
+              data: {
+                left: '../f',
+                right: '../../h',
               },
             },
             {
               messageId: 'unexpectedImportsOrder',
               data: {
-                left: './association-data',
-                right: '~/hunters/beast-hunters',
-              },
-            },
-            {
-              messageId: 'missedSpacingBetweenImports',
-              data: {
-                left: '~/hunters/virus-hunters',
+                left: '../../h',
                 right: './index.d.ts',
               },
             },
             {
+              messageId: 'unexpectedImportsOrder',
+              data: {
+                left: '.',
+                right: 't',
+              },
+            },
+            {
               messageId: 'missedSpacingBetweenImports',
               data: {
-                left: './index.d.ts',
+                left: 't',
                 right: './style.css',
               },
             },
@@ -251,14 +245,7 @@ describe(RULE_NAME, () => {
               messageId: 'unexpectedImportsOrder',
               data: {
                 left: './style.css',
-                right: 'hunter',
-              },
-            },
-            {
-              messageId: 'unexpectedImportsOrder',
-              data: {
-                left: '../ants',
-                right: '../../hunters/histoka',
+                right: '../j',
               },
             },
           ],
@@ -273,12 +260,12 @@ describe(RULE_NAME, () => {
         valid: [
           {
             code: dedent`
-              import type { JujutsuSorcerer } from 'jujutsu-kaisen'
-              import { Satoru, Kiyotaka, Masamichi } from 'jujutsu-kaisen'
-              import { Yuji, Megumi } from '~/tokyo-high/1st-year'
-              import { Maki, Panda, Toge } from '~/tokyo-high/2nd-year'
-              import Sukunа from '.'
-              import { Aoi, Kokichi, Yoshinobu } from '../../kyoto-high/data'
+              import type { T } from 't'
+              import { a1, a2, a3 } from 'a'
+              import { b1, b2 } from '~/b'
+              import { c1, c2, c3 } from '~/c'
+              import d from '.'
+              import { e1, e2, e3 } from '../../e'
             `,
             options: [
               {
@@ -302,22 +289,22 @@ describe(RULE_NAME, () => {
         invalid: [
           {
             code: dedent`
-              import type { JujutsuSorcerer } from 'jujutsu-kaisen'
-              import { Yuji, Megumi } from '~/tokyo-high/1st-year'
+              import d from '.'
+              import { a1, a2, a3 } from 'a'
+              import { c1, c2, c3 } from '~/c'
 
-              import { Maki, Panda, Toge } from '~/tokyo-high/2nd-year'
-              import { Satoru, Kiyotaka, Masamichi } from 'jujutsu-kaisen'
+              import type { T } from 't'
+              import { e1, e2, e3 } from '../../e'
 
-              import Sukunа from '.'
-              import { Aoi, Kokichi, Yoshinobu } from '../../kyoto-high/data'
+              import { b1, b2 } from '~/b'
             `,
             output: dedent`
-              import type { JujutsuSorcerer } from 'jujutsu-kaisen'
-              import { Satoru, Kiyotaka, Masamichi } from 'jujutsu-kaisen'
-              import { Yuji, Megumi } from '~/tokyo-high/1st-year'
-              import { Maki, Panda, Toge } from '~/tokyo-high/2nd-year'
-              import Sukunа from '.'
-              import { Aoi, Kokichi, Yoshinobu } from '../../kyoto-high/data'
+              import type { T } from 't'
+              import { a1, a2, a3 } from 'a'
+              import { b1, b2 } from '~/b'
+              import { c1, c2, c3 } from '~/c'
+              import d from '.'
+              import { e1, e2, e3 } from '../../e'
             `,
             options: [
               {
@@ -338,24 +325,38 @@ describe(RULE_NAME, () => {
             ],
             errors: [
               {
-                messageId: 'extraSpacingBetweenImports',
+                messageId: 'unexpectedImportsOrder',
                 data: {
-                  left: '~/tokyo-high/1st-year',
-                  right: '~/tokyo-high/2nd-year',
+                  left: '.',
+                  right: 'a',
                 },
               },
               {
                 messageId: 'unexpectedImportsOrder',
                 data: {
-                  left: '~/tokyo-high/2nd-year',
-                  right: 'jujutsu-kaisen',
+                  left: '~/c',
+                  right: 't',
                 },
               },
               {
                 messageId: 'extraSpacingBetweenImports',
                 data: {
-                  left: 'jujutsu-kaisen',
-                  right: '.',
+                  left: '~/c',
+                  right: 't',
+                },
+              },
+              {
+                messageId: 'unexpectedImportsOrder',
+                data: {
+                  left: '../../e',
+                  right: '~/b',
+                },
+              },
+              {
+                messageId: 'extraSpacingBetweenImports',
+                data: {
+                  left: '../../e',
+                  right: '~/b',
                 },
               },
             ],
@@ -368,11 +369,11 @@ describe(RULE_NAME, () => {
       valid: [
         {
           code: dedent`
-              import { Faputa } from 'narehate'
+              import { A } from 'a'
 
-              import Nanachi from '~/team/nanachi'
-              import Reg from '~/team/reg'
-              import Riko from '~/team/riko'
+              import b from '~/b'
+              import c from '~/c'
+              import d from '~/d'
             `,
           options: [
             {
@@ -396,20 +397,20 @@ describe(RULE_NAME, () => {
       invalid: [
         {
           code: dedent`
-            import { Faputa } from 'narehate'
+            import { A } from 'a'
 
 
-            import Nanachi from '~/team/nanachi'
+            import b from '~/b'
+            import c from '~/c'
 
-            import Reg from '~/team/reg'
-            import Riko from '~/team/riko'
+            import d from '~/d'
           `,
           output: dedent`
-            import { Faputa } from 'narehate'
+            import { A } from 'a'
 
-            import Nanachi from '~/team/nanachi'
-            import Reg from '~/team/reg'
-            import Riko from '~/team/riko'
+            import b from '~/b'
+            import c from '~/c'
+            import d from '~/d'
           `,
           options: [
             {
@@ -432,15 +433,15 @@ describe(RULE_NAME, () => {
             {
               messageId: 'extraSpacingBetweenImports',
               data: {
-                left: 'narehate',
-                right: '~/team/nanachi',
+                left: 'a',
+                right: '~/b',
               },
             },
             {
               messageId: 'extraSpacingBetweenImports',
               data: {
-                left: '~/team/nanachi',
-                right: '~/team/reg',
+                left: '~/c',
+                right: '~/d',
               },
             },
           ],
@@ -455,14 +456,14 @@ describe(RULE_NAME, () => {
         valid: [
           {
             code: dedent`
-              import type DaigoClan = require("A")
+              import type T = require("T")
 
-              import { Hyakkimaru } from 'daigo'
+              import { A } from 'a'
 
-              import { Dororo } from '../town'
+              import { B } from '../b'
 
+              import c = require('c/c')
               import log = console.log
-              import Tahomaru = require('daigo/tahomaru')
             `,
             options: [
               {
@@ -486,23 +487,23 @@ describe(RULE_NAME, () => {
         invalid: [
           {
             code: dedent`
-              import type DaigoClan = require("A")
+              import type T = require("T")
 
-              import { Dororo } from '../town'
+              import { A } from 'a'
+              import { B } from '../b'
 
               import log = console.log
-              import { Hyakkimaru } from 'daigo'
-              import Tahomaru = require('daigo/tahomaru')
+              import c = require('c/c')
             `,
             output: dedent`
-              import type DaigoClan = require("A")
+              import type T = require("T")
 
-              import { Hyakkimaru } from 'daigo'
+              import { A } from 'a'
 
-              import { Dororo } from '../town'
+              import { B } from '../b'
 
+              import c = require('c/c')
               import log = console.log
-              import Tahomaru = require('daigo/tahomaru')
             `,
             options: [
               {
@@ -523,17 +524,17 @@ describe(RULE_NAME, () => {
             ],
             errors: [
               {
-                messageId: 'unexpectedImportsOrder',
+                messageId: 'missedSpacingBetweenImports',
                 data: {
-                  left: 'console.log',
-                  right: 'daigo',
+                  left: 'a',
+                  right: '../b',
                 },
               },
               {
-                messageId: 'missedSpacingBetweenImports',
+                messageId: 'unexpectedImportsOrder',
                 data: {
-                  left: 'daigo',
-                  right: 'daigo/tahomaru',
+                  left: 'console.log',
+                  right: 'c/c',
                 },
               },
             ],
@@ -549,9 +550,9 @@ describe(RULE_NAME, () => {
         valid: [
           {
             code: dedent`
-              import type { Jiji } from '../cats'
-              import type { Kiki } from '~/delivery-service'
-              import type { SeniorWitch } from 'witches'
+              import type { T } from '../t'
+              import type { U } from '~/u'
+              import type { V } from 'v'
             `,
             options: [
               {
@@ -571,16 +572,16 @@ describe(RULE_NAME, () => {
         invalid: [
           {
             code: dedent`
-              import type { Jiji } from '../cats'
+              import type { T } from '../t'
 
-              import type { Kiki } from '~/delivery-service'
+              import type { U } from '~/u'
 
-              import type { SeniorWitch } from 'witches'
+              import type { V } from 'v'
             `,
             output: dedent`
-              import type { Jiji } from '../cats'
-              import type { Kiki } from '~/delivery-service'
-              import type { SeniorWitch } from 'witches'
+              import type { T } from '../t'
+              import type { U } from '~/u'
+              import type { V } from 'v'
             `,
             options: [
               {
@@ -599,15 +600,15 @@ describe(RULE_NAME, () => {
               {
                 messageId: 'extraSpacingBetweenImports',
                 data: {
-                  left: '../cats',
-                  right: '~/delivery-service',
+                  left: '../t',
+                  right: '~/u',
                 },
               },
               {
                 messageId: 'extraSpacingBetweenImports',
                 data: {
-                  left: '~/delivery-service',
-                  right: 'witches',
+                  left: '~/u',
+                  right: 'v',
                 },
               },
             ],
@@ -620,17 +621,14 @@ describe(RULE_NAME, () => {
       valid: [
         {
           code: dedent`
-            import { SebastianMichaelis, Grell } from 'butlers'
+            import { b1, b2 } from 'b'
 
             /**
-             * The story follows the two along with their other servants, as
-             * they work to unravel the plot behind Ciel's parents' murder,
-             * and the horrendous tragedies that befell Ciel in the month
-             * directly after.
+             * Comment
              */
 
-            import { MeyRin } from 'maids'
-            import { Ciel } from 'phantomhive'
+            import { a } from 'a'
+            import { c } from 'c'
           `,
           options: [
             {
@@ -661,10 +659,10 @@ describe(RULE_NAME, () => {
         valid: [
           {
             code: dedent`
-              import type { SunshineGirl } from 'weathering-with-you'
+              import type { T } from 't'
 
               // @ts-expect-error missing types
-              import { hinaAmano } from 'weathering-with-you'
+              import { t } from 't'
             `,
             options: [
               {
@@ -696,11 +694,11 @@ describe(RULE_NAME, () => {
         valid: [
           {
             code: dedent`
-              import type { Totoro } from 'gods-of-forest'
+              import type { V } from 'v'
 
-              export type { KonekoBus } from 'bus-station'
+              export type { U } from 'u'
 
-              import type { Satsuki, Mei } from './data/users'
+              import type { T1, T2 } from 't'
             `,
             options: [
               {
@@ -732,10 +730,10 @@ describe(RULE_NAME, () => {
         valid: [
           {
             code: dedent`
-              import { MatsuriShihou, AonoMorimiya } from 'sola'
+              import { a1, a2 } from 'a'
 
-              import styles from '../sunrise.css'
-              import './sky.css'
+              import styles from '../s.css'
+              import './t.css'
             `,
             options: [
               {
@@ -768,11 +766,11 @@ describe(RULE_NAME, () => {
         valid: [
           {
             code: dedent`
-              import { ShōyaIshida } from '../edu/kuise-hairdressing-school'
-              import { ShoukoNishimiya } from './salon-stray-cat'
+              import { A } from '../a'
+              import { b } from './b'
 
-              import '../edu/prepare-students.js'
-              import './load-memories'
+              import '../c.js'
+              import './d'
             `,
             options: [
               {
@@ -807,7 +805,7 @@ describe(RULE_NAME, () => {
             code: dedent`
               import type { Server } from 'http'
 
-              import express, { static as serveStatic } from 'express'
+              import a from 'a'
             `,
             options: [
               {
@@ -831,13 +829,13 @@ describe(RULE_NAME, () => {
         invalid: [
           {
             code: dedent`
-            import TakakiTohno from '5-cm-per-second';
-            import AkariShinohara from './index';
-          `,
+              import a from 'a';
+              import b from './index';
+            `,
             output: dedent`
-              import TakakiTohno from '5-cm-per-second';
+              import a from 'a';
 
-              import AkariShinohara from './index';
+              import b from './index';
             `,
             options: [
               {
@@ -859,7 +857,7 @@ describe(RULE_NAME, () => {
               {
                 messageId: 'missedSpacingBetweenImports',
                 data: {
-                  left: '5-cm-per-second',
+                  left: 'a',
                   right: './index',
                 },
               },
@@ -874,20 +872,20 @@ describe(RULE_NAME, () => {
       invalid: [
         {
           code: dedent`
-            import { RintarouOkabe } from 'scientists'
+            import { a } from 'a'
 
 
-            import { ItaruHashida } from './universities/tokyo-denki'
+            import { b } from './b'
 
 
 
-            import { MayuriShiina } from 'prepatory-academy'
+            import { c } from 'c'
           `,
           output: dedent`
-            import { MayuriShiina } from 'prepatory-academy'
-            import { RintarouOkabe } from 'scientists'
+            import { a } from 'a'
+            import { c } from 'c'
 
-            import { ItaruHashida } from './universities/tokyo-denki'
+            import { b } from './b'
           `,
           options: [
             {
@@ -908,22 +906,22 @@ describe(RULE_NAME, () => {
             {
               messageId: 'extraSpacingBetweenImports',
               data: {
-                left: 'scientists',
-                right: './universities/tokyo-denki',
+                left: 'a',
+                right: './b',
               },
             },
             {
               messageId: 'unexpectedImportsOrder',
               data: {
-                left: './universities/tokyo-denki',
-                right: 'prepatory-academy',
+                left: './b',
+                right: 'c',
               },
             },
             {
               messageId: 'extraSpacingBetweenImports',
               data: {
-                left: './universities/tokyo-denki',
-                right: 'prepatory-academy',
+                left: './b',
+                right: 'c',
               },
             },
           ],
@@ -939,42 +937,42 @@ describe(RULE_NAME, () => {
         invalid: [
           {
             code: dedent`
-              import type { Titan } from 'titans'
+              import type { T } from 't'
 
-              import Armin from '@scout-regiment/armin'
-              import Mikasa from '@scout-regiment/mikasa'
-              import Reiner from '@titans/armored-titan'
-              import Eren from '@titans/attack-titan'
-              import Zeke from '@titans/beast-titan'
-              import { KennyAckermann } from 'military-police'
+              import a1 from '@a/a1'
+              import a2 from '@a/a2'
+              import b1 from '@b/b1'
+              import b2 from '@b/b2'
+              import b3 from '@b/b3'
+              import { c } from 'c'
             `,
             output: dedent`
-              import Reiner from '@titans/armored-titan'
-              import Eren from '@titans/attack-titan'
-              import Zeke from '@titans/beast-titan'
-              import type { Titan } from 'titans'
+              import a1 from '@a/a1'
+              import a2 from '@a/a2'
+              import type { T } from 't'
 
-              import Armin from '@scout-regiment/armin'
-              import Mikasa from '@scout-regiment/mikasa'
+              import b1 from '@b/b1'
+              import b2 from '@b/b2'
+              import b3 from '@b/b3'
 
-              import { KennyAckermann } from 'military-police'
+              import { c } from 'c'
             `,
             options: [
               {
                 ...options,
                 customGroups: {
                   type: {
-                    titans: ['titans', '@titans/**'],
+                    primary: ['t', '@a/**'],
                   },
                   value: {
-                    titans: ['titans', '@titans/**'],
-                    scouts: '@scout-regiment/**',
+                    primary: ['t', '@a/**'],
+                    secondary: '@b/**',
                   },
                 },
                 groups: [
                   'type',
-                  'titans',
-                  'scouts',
+                  'primary',
+                  'secondary',
                   ['builtin', 'external'],
                   'internal-type',
                   'internal',
@@ -989,15 +987,29 @@ describe(RULE_NAME, () => {
               {
                 messageId: 'unexpectedImportsOrder',
                 data: {
-                  left: '@scout-regiment/mikasa',
-                  right: '@titans/armored-titan',
+                  left: 't',
+                  right: '@a/a1',
+                },
+              },
+              {
+                messageId: 'extraSpacingBetweenImports',
+                data: {
+                  left: 't',
+                  right: '@a/a1',
                 },
               },
               {
                 messageId: 'missedSpacingBetweenImports',
                 data: {
-                  left: '@titans/beast-titan',
-                  right: 'military-police',
+                  left: '@a/a2',
+                  right: '@b/b1',
+                },
+              },
+              {
+                messageId: 'missedSpacingBetweenImports',
+                data: {
+                  left: '@b/b3',
+                  right: 'c',
                 },
               },
             ],
@@ -1014,31 +1026,31 @@ describe(RULE_NAME, () => {
         invalid: [
           {
             code: dedent`
-              import type { Child } from 'giovannis-island'
-              import { Kanta, Junpei } from 'giovannis-island'
+              import type { A } from 'a'
+              import { a } from 'a'
             `,
             output: dedent`
-              import type { Child } from 'giovannis-island'
+              import type { A } from 'a'
 
-              import { Kanta, Junpei } from 'giovannis-island'
+              import { a } from 'a'
             `,
             options: [
               {
                 ...options,
                 customGroups: {
                   value: {
-                    giovanni: ['giovannis-island'],
+                    primary: ['a'],
                   },
                 },
-                groups: ['type', 'giovanni'],
+                groups: ['type', 'primary'],
               },
             ],
             errors: [
               {
                 messageId: 'missedSpacingBetweenImports',
                 data: {
-                  left: 'giovannis-island',
-                  right: 'giovannis-island',
+                  left: 'a',
+                  right: 'a',
                 },
               },
             ],
@@ -1048,22 +1060,22 @@ describe(RULE_NAME, () => {
     )
 
     ruleTester.run(
-      `${RULE_NAME}(${type}): allows to hash symbol in internal pattern`,
+      `${RULE_NAME}(${type}): allows hash symbol in internal pattern`,
       rule,
       {
         valid: [
           {
             code: dedent`
-              import type { Characters } from 'skip-and-loafer'
+              import type { T } from 'a'
 
-              import { events } from 'skip-and-loafer'
+              import { a } from 'a'
 
-              import type { Student } from '#school'
+              import type { S } from '#b'
 
-              import Satonosuke from '#pets'
-              import { MitsumiIwakura, SousukeShima } from '#school'
+              import { b1, b2 } from '#b'
+              import c from '#c'
 
-              import { Nao } from '../family'
+              import { d } from '../d'
             `,
             options: [
               {
@@ -1087,26 +1099,27 @@ describe(RULE_NAME, () => {
         invalid: [
           {
             code: dedent`
-              import type { Student } from '#school'
-              import type { Characters } from 'skip-and-loafer'
+              import type { T } from 'a'
 
-              import Satonosuke from '#pets'
-              import { events } from 'skip-and-loafer'
-              import { MitsumiIwakura, SousukeShima } from '#school'
+              import { a } from 'a'
 
-              import { Nao } from '../family'
+              import type { S } from '#b'
+              import c from '#c'
+              import { b1, b2 } from '#b'
+
+              import { d } from '../d'
             `,
             output: dedent`
-              import type { Characters } from 'skip-and-loafer'
+              import type { T } from 'a'
 
-              import { events } from 'skip-and-loafer'
+              import { a } from 'a'
 
-              import type { Student } from '#school'
+              import type { S } from '#b'
 
-              import Satonosuke from '#pets'
-              import { MitsumiIwakura, SousukeShima } from '#school'
+              import { b1, b2 } from '#b'
+              import c from '#c'
 
-              import { Nao } from '../family'
+              import { d } from '../d'
             `,
             options: [
               {
@@ -1127,24 +1140,17 @@ describe(RULE_NAME, () => {
             ],
             errors: [
               {
-                messageId: 'unexpectedImportsOrder',
-                data: {
-                  left: '#school',
-                  right: 'skip-and-loafer',
-                },
-              },
-              {
-                messageId: 'unexpectedImportsOrder',
-                data: {
-                  left: '#pets',
-                  right: 'skip-and-loafer',
-                },
-              },
-              {
                 messageId: 'missedSpacingBetweenImports',
                 data: {
-                  left: 'skip-and-loafer',
-                  right: '#school',
+                  left: '#b',
+                  right: '#c',
+                },
+              },
+              {
+                messageId: 'unexpectedImportsOrder',
+                data: {
+                  left: '#c',
+                  right: '#b',
                 },
               },
             ],
@@ -1167,8 +1173,8 @@ describe(RULE_NAME, () => {
       valid: [
         {
           code: dedent`
-            import { SpiritedAway, HowlsMovingCastle } from 'hayao-miyazaki'
-            import { Suzume } from 'makoto-shinkai'
+            import { a1, a2 } from 'a'
+            import { b1 } from 'b'
           `,
           options: [options],
         },
@@ -1176,20 +1182,20 @@ describe(RULE_NAME, () => {
       invalid: [
         {
           code: dedent`
-            import { Suzume } from 'makoto-shinkai'
-            import { SpiritedAway, HowlsMovingCastle } from 'hayao-miyazaki'
+            import { b1 } from 'b'
+            import { a1, a2 } from 'a'
           `,
           output: dedent`
-            import { SpiritedAway, HowlsMovingCastle } from 'hayao-miyazaki'
-            import { Suzume } from 'makoto-shinkai'
+            import { a1, a2 } from 'a'
+            import { b1 } from 'b'
           `,
           options: [options],
           errors: [
             {
               messageId: 'unexpectedImportsOrder',
               data: {
-                left: 'makoto-shinkai',
-                right: 'hayao-miyazaki',
+                left: 'b',
+                right: 'a',
               },
             },
           ],
@@ -1201,29 +1207,29 @@ describe(RULE_NAME, () => {
       valid: [
         {
           code: dedent`
-            import type { Chairman } from 'hunter'
+            import type { T } from 't'
 
+            import { c1, c2, c3, c4 } from 'c'
+            import { e1 } from 'e/a'
+            import { e2 } from 'e/b'
             import fs from 'fs'
-            import { GingFreecss } from 'hunter/freecss'
-            import { Netero } from 'hunter/netero'
             import path from 'path'
-            import { Feitan, Phinks, Shalnark, Pakunoda } from 'phantom-troupe'
 
-            import type { Hunter } from '~/hunter-association'
+            import type { I } from '~/i'
 
-            import { Gon, Kurapika, Leorio } from '~/hunter-association'
-            import { Knuckle, Shoot } from '~/hunters/beast-hunters'
-            import { CheadleYorkshire } from '~/hunters/virus-hunters'
+            import { b1, b2 } from '~/b'
+            import { c1 } from '~/c'
+            import { i1, i2, i3 } from '~/i'
 
-            import type { Association } from '.'
-            import type { ChimeraAnt } from '../ants'
-            import type { IHero } from './association-data'
-            import type { HeroList } from './index.d.ts'
+            import type { A } from '.'
+            import type { F } from '../f'
+            import type { D } from './d'
+            import type { H } from './index.d.ts'
 
-            import association from '.'
-            import hisoka from '../../hunters/histoka'
-            import { Meruem, Neferpitou, Shaiapouf } from '../ants'
-            import { ChimeraAntQueen } from '../ants'
+            import a from '.'
+            import h from '../../h'
+            import { j } from '../j'
+            import { K, L, M } from '../k'
             import './style.css'
           `,
           options: [
@@ -1248,52 +1254,53 @@ describe(RULE_NAME, () => {
       invalid: [
         {
           code: dedent`
-            import { GingFreecss } from 'hunter/freecss'
-            import { Netero } from 'hunter/netero'
-
-            import type { Hunter } from '~/hunter-association'
-            import { Gon, Kurapika, Leorio } from '~/hunter-association'
-            import { Feitan, Phinks, Shalnark, Pakunoda } from 'phantom-troupe'
-            import type { Association } from '.'
-            import { Meruem, Neferpitou, Shaiapouf } from '../ants'
+            import { c1, c2, c3, c4 } from 'c'
+            import { e2 } from 'e/b'
+            import { e1 } from 'e/a'
             import path from 'path'
-            import fs from 'fs'
-            import type { ChimeraAnt } from '../ants'
-            import type { IHero } from './association-data'
-            import { Knuckle, Shoot } from '~/hunters/beast-hunters'
-            import { CheadleYorkshire } from '~/hunters/virus-hunters'
-            import type { HeroList } from './index.d.ts'
-            import './style.css'
-            import type { Chairman } from 'hunter'
 
-            import association from '.'
-            import { ChimeraAntQueen } from '../ants'
-            import hisoka from '../../hunters/histoka'
+            import { b1, b2 } from '~/b'
+            import type { I } from '~/i'
+            import type { D } from './d'
+            import fs from 'fs'
+            import { c1 } from '~/c'
+            import { i1, i2, i3 } from '~/i'
+
+            import type { A } from '.'
+            import type { F } from '../f'
+            import h from '../../h'
+            import type { H } from './index.d.ts'
+
+            import a from '.'
+            import type { T } from 't'
+            import './style.css'
+            import { j } from '../j'
+            import { K, L, M } from '../k'
           `,
           output: dedent`
-            import type { Chairman } from 'hunter'
+            import type { T } from 't'
 
+            import { c1, c2, c3, c4 } from 'c'
+            import { e1 } from 'e/a'
+            import { e2 } from 'e/b'
             import fs from 'fs'
-            import { GingFreecss } from 'hunter/freecss'
-            import { Netero } from 'hunter/netero'
             import path from 'path'
-            import { Feitan, Phinks, Shalnark, Pakunoda } from 'phantom-troupe'
 
-            import type { Hunter } from '~/hunter-association'
+            import type { I } from '~/i'
 
-            import { Gon, Kurapika, Leorio } from '~/hunter-association'
-            import { Knuckle, Shoot } from '~/hunters/beast-hunters'
-            import { CheadleYorkshire } from '~/hunters/virus-hunters'
+            import { b1, b2 } from '~/b'
+            import { c1 } from '~/c'
+            import { i1, i2, i3 } from '~/i'
 
-            import type { Association } from '.'
-            import type { ChimeraAnt } from '../ants'
-            import type { IHero } from './association-data'
-            import type { HeroList } from './index.d.ts'
+            import type { A } from '.'
+            import type { F } from '../f'
+            import type { D } from './d'
+            import type { H } from './index.d.ts'
 
-            import association from '.'
-            import hisoka from '../../hunters/histoka'
-            import { Meruem, Neferpitou, Shaiapouf } from '../ants'
-            import { ChimeraAntQueen } from '../ants'
+            import a from '.'
+            import h from '../../h'
+            import { j } from '../j'
+            import { K, L, M } from '../k'
             import './style.css'
           `,
           options: [
@@ -1315,44 +1322,30 @@ describe(RULE_NAME, () => {
           ],
           errors: [
             {
-              messageId: 'missedSpacingBetweenImports',
+              messageId: 'unexpectedImportsOrder',
               data: {
-                left: '~/hunter-association',
-                right: '~/hunter-association',
+                left: 'e/b',
+                right: 'e/a',
               },
             },
             {
               messageId: 'unexpectedImportsOrder',
               data: {
-                left: '~/hunter-association',
-                right: 'phantom-troupe',
+                left: '~/b',
+                right: '~/i',
               },
             },
             {
               messageId: 'missedSpacingBetweenImports',
               data: {
-                left: 'phantom-troupe',
-                right: '.',
-              },
-            },
-            {
-              messageId: 'missedSpacingBetweenImports',
-              data: {
-                left: '.',
-                right: '../ants',
+                left: '~/i',
+                right: './d',
               },
             },
             {
               messageId: 'unexpectedImportsOrder',
               data: {
-                left: '../ants',
-                right: 'path',
-              },
-            },
-            {
-              messageId: 'unexpectedImportsOrder',
-              data: {
-                left: 'path',
+                left: './d',
                 right: 'fs',
               },
             },
@@ -1360,27 +1353,34 @@ describe(RULE_NAME, () => {
               messageId: 'missedSpacingBetweenImports',
               data: {
                 left: 'fs',
-                right: '../ants',
+                right: '~/c',
+              },
+            },
+            {
+              messageId: 'missedSpacingBetweenImports',
+              data: {
+                left: '../f',
+                right: '../../h',
               },
             },
             {
               messageId: 'unexpectedImportsOrder',
               data: {
-                left: './association-data',
-                right: '~/hunters/beast-hunters',
-              },
-            },
-            {
-              messageId: 'missedSpacingBetweenImports',
-              data: {
-                left: '~/hunters/virus-hunters',
+                left: '../../h',
                 right: './index.d.ts',
               },
             },
             {
+              messageId: 'unexpectedImportsOrder',
+              data: {
+                left: '.',
+                right: 't',
+              },
+            },
+            {
               messageId: 'missedSpacingBetweenImports',
               data: {
-                left: './index.d.ts',
+                left: 't',
                 right: './style.css',
               },
             },
@@ -1388,14 +1388,7 @@ describe(RULE_NAME, () => {
               messageId: 'unexpectedImportsOrder',
               data: {
                 left: './style.css',
-                right: 'hunter',
-              },
-            },
-            {
-              messageId: 'unexpectedImportsOrder',
-              data: {
-                left: '../ants',
-                right: '../../hunters/histoka',
+                right: '../j',
               },
             },
           ],
@@ -1410,12 +1403,12 @@ describe(RULE_NAME, () => {
         valid: [
           {
             code: dedent`
-              import type { JujutsuSorcerer } from 'jujutsu-kaisen'
-              import { Satoru, Kiyotaka, Masamichi } from 'jujutsu-kaisen'
-              import { Yuji, Megumi } from '~/tokyo-high/1st-year'
-              import { Maki, Panda, Toge } from '~/tokyo-high/2nd-year'
-              import Sukunа from '.'
-              import { Aoi, Kokichi, Yoshinobu } from '../../kyoto-high/data'
+              import type { T } from 't'
+              import { a1, a2, a3 } from 'a'
+              import { b1, b2 } from '~/b'
+              import { c1, c2, c3 } from '~/c'
+              import d from '.'
+              import { e1, e2, e3 } from '../../e'
             `,
             options: [
               {
@@ -1439,22 +1432,22 @@ describe(RULE_NAME, () => {
         invalid: [
           {
             code: dedent`
-              import type { JujutsuSorcerer } from 'jujutsu-kaisen'
-              import { Yuji, Megumi } from '~/tokyo-high/1st-year'
+              import d from '.'
+              import { a1, a2, a3 } from 'a'
+              import { c1, c2, c3 } from '~/c'
 
-              import { Maki, Panda, Toge } from '~/tokyo-high/2nd-year'
-              import { Satoru, Kiyotaka, Masamichi } from 'jujutsu-kaisen'
+              import type { T } from 't'
+              import { e1, e2, e3 } from '../../e'
 
-              import Sukunа from '.'
-              import { Aoi, Kokichi, Yoshinobu } from '../../kyoto-high/data'
+              import { b1, b2 } from '~/b'
             `,
             output: dedent`
-              import type { JujutsuSorcerer } from 'jujutsu-kaisen'
-              import { Satoru, Kiyotaka, Masamichi } from 'jujutsu-kaisen'
-              import { Yuji, Megumi } from '~/tokyo-high/1st-year'
-              import { Maki, Panda, Toge } from '~/tokyo-high/2nd-year'
-              import Sukunа from '.'
-              import { Aoi, Kokichi, Yoshinobu } from '../../kyoto-high/data'
+              import type { T } from 't'
+              import { a1, a2, a3 } from 'a'
+              import { b1, b2 } from '~/b'
+              import { c1, c2, c3 } from '~/c'
+              import d from '.'
+              import { e1, e2, e3 } from '../../e'
             `,
             options: [
               {
@@ -1475,24 +1468,38 @@ describe(RULE_NAME, () => {
             ],
             errors: [
               {
-                messageId: 'extraSpacingBetweenImports',
+                messageId: 'unexpectedImportsOrder',
                 data: {
-                  left: '~/tokyo-high/1st-year',
-                  right: '~/tokyo-high/2nd-year',
+                  left: '.',
+                  right: 'a',
                 },
               },
               {
                 messageId: 'unexpectedImportsOrder',
                 data: {
-                  left: '~/tokyo-high/2nd-year',
-                  right: 'jujutsu-kaisen',
+                  left: '~/c',
+                  right: 't',
                 },
               },
               {
                 messageId: 'extraSpacingBetweenImports',
                 data: {
-                  left: 'jujutsu-kaisen',
-                  right: '.',
+                  left: '~/c',
+                  right: 't',
+                },
+              },
+              {
+                messageId: 'unexpectedImportsOrder',
+                data: {
+                  left: '../../e',
+                  right: '~/b',
+                },
+              },
+              {
+                messageId: 'extraSpacingBetweenImports',
+                data: {
+                  left: '../../e',
+                  right: '~/b',
                 },
               },
             ],
@@ -1505,12 +1512,12 @@ describe(RULE_NAME, () => {
       valid: [
         {
           code: dedent`
-            import { Faputa } from 'narehate'
+              import { A } from 'a'
 
-            import Nanachi from '~/team/nanachi'
-            import Reg from '~/team/reg'
-            import Riko from '~/team/riko'
-          `,
+              import b from '~/b'
+              import c from '~/c'
+              import d from '~/d'
+            `,
           options: [
             {
               ...options,
@@ -1533,20 +1540,20 @@ describe(RULE_NAME, () => {
       invalid: [
         {
           code: dedent`
-            import { Faputa } from 'narehate'
+            import { A } from 'a'
 
 
-            import Nanachi from '~/team/nanachi'
+            import b from '~/b'
+            import c from '~/c'
 
-            import Reg from '~/team/reg'
-            import Riko from '~/team/riko'
+            import d from '~/d'
           `,
           output: dedent`
-            import { Faputa } from 'narehate'
+            import { A } from 'a'
 
-            import Nanachi from '~/team/nanachi'
-            import Reg from '~/team/reg'
-            import Riko from '~/team/riko'
+            import b from '~/b'
+            import c from '~/c'
+            import d from '~/d'
           `,
           options: [
             {
@@ -1569,15 +1576,15 @@ describe(RULE_NAME, () => {
             {
               messageId: 'extraSpacingBetweenImports',
               data: {
-                left: 'narehate',
-                right: '~/team/nanachi',
+                left: 'a',
+                right: '~/b',
               },
             },
             {
               messageId: 'extraSpacingBetweenImports',
               data: {
-                left: '~/team/nanachi',
-                right: '~/team/reg',
+                left: '~/c',
+                right: '~/d',
               },
             },
           ],
@@ -1592,14 +1599,14 @@ describe(RULE_NAME, () => {
         valid: [
           {
             code: dedent`
-              import type DaigoClan = require("A")
+              import type T = require("T")
 
-              import { Hyakkimaru } from 'daigo'
+              import { A } from 'a'
 
-              import { Dororo } from '../town'
+              import { B } from '../b'
 
+              import c = require('c/c')
               import log = console.log
-              import Tahomaru = require('daigo/tahomaru')
             `,
             options: [
               {
@@ -1623,23 +1630,23 @@ describe(RULE_NAME, () => {
         invalid: [
           {
             code: dedent`
-              import type DaigoClan = require("A")
+              import type T = require("T")
 
-              import { Dororo } from '../town'
+              import { A } from 'a'
+              import { B } from '../b'
 
               import log = console.log
-              import { Hyakkimaru } from 'daigo'
-              import Tahomaru = require('daigo/tahomaru')
+              import c = require('c/c')
             `,
             output: dedent`
-              import type DaigoClan = require("A")
+              import type T = require("T")
 
-              import { Hyakkimaru } from 'daigo'
+              import { A } from 'a'
 
-              import { Dororo } from '../town'
+              import { B } from '../b'
 
+              import c = require('c/c')
               import log = console.log
-              import Tahomaru = require('daigo/tahomaru')
             `,
             options: [
               {
@@ -1660,17 +1667,17 @@ describe(RULE_NAME, () => {
             ],
             errors: [
               {
-                messageId: 'unexpectedImportsOrder',
+                messageId: 'missedSpacingBetweenImports',
                 data: {
-                  left: 'console.log',
-                  right: 'daigo',
+                  left: 'a',
+                  right: '../b',
                 },
               },
               {
-                messageId: 'missedSpacingBetweenImports',
+                messageId: 'unexpectedImportsOrder',
                 data: {
-                  left: 'daigo',
-                  right: 'daigo/tahomaru',
+                  left: 'console.log',
+                  right: 'c/c',
                 },
               },
             ],
@@ -1686,9 +1693,9 @@ describe(RULE_NAME, () => {
         valid: [
           {
             code: dedent`
-              import type { Jiji } from '../cats'
-              import type { Kiki } from '~/delivery-service'
-              import type { SeniorWitch } from 'witches'
+              import type { T } from '../t'
+              import type { U } from '~/u'
+              import type { V } from 'v'
             `,
             options: [
               {
@@ -1708,16 +1715,16 @@ describe(RULE_NAME, () => {
         invalid: [
           {
             code: dedent`
-              import type { Jiji } from '../cats'
+              import type { T } from '../t'
 
-              import type { Kiki } from '~/delivery-service'
+              import type { U } from '~/u'
 
-              import type { SeniorWitch } from 'witches'
+              import type { V } from 'v'
             `,
             output: dedent`
-              import type { Jiji } from '../cats'
-              import type { Kiki } from '~/delivery-service'
-              import type { SeniorWitch } from 'witches'
+              import type { T } from '../t'
+              import type { U } from '~/u'
+              import type { V } from 'v'
             `,
             options: [
               {
@@ -1736,15 +1743,15 @@ describe(RULE_NAME, () => {
               {
                 messageId: 'extraSpacingBetweenImports',
                 data: {
-                  left: '../cats',
-                  right: '~/delivery-service',
+                  left: '../t',
+                  right: '~/u',
                 },
               },
               {
                 messageId: 'extraSpacingBetweenImports',
                 data: {
-                  left: '~/delivery-service',
-                  right: 'witches',
+                  left: '~/u',
+                  right: 'v',
                 },
               },
             ],
@@ -1757,17 +1764,14 @@ describe(RULE_NAME, () => {
       valid: [
         {
           code: dedent`
-            import { SebastianMichaelis, Grell } from 'butlers'
+            import { b1, b2 } from 'b'
 
             /**
-             * The story follows the two along with their other servants, as
-             * they work to unravel the plot behind Ciel's parents' murder,
-             * and the horrendous tragedies that befell Ciel in the month
-             * directly after.
+             * Comment
              */
 
-            import { MeyRin } from 'maids'
-            import { Ciel } from 'phantomhive'
+            import { a } from 'a'
+            import { c } from 'c'
           `,
           options: [
             {
@@ -1798,10 +1802,10 @@ describe(RULE_NAME, () => {
         valid: [
           {
             code: dedent`
-              import type { SunshineGirl } from 'weathering-with-you'
+              import type { T } from 't'
 
               // @ts-expect-error missing types
-              import { hinaAmano } from 'weathering-with-you'
+              import { t } from 't'
             `,
             options: [
               {
@@ -1833,11 +1837,11 @@ describe(RULE_NAME, () => {
         valid: [
           {
             code: dedent`
-              import type { Totoro } from 'gods-of-forest'
+              import type { V } from 'v'
 
-              export type { KonekoBus } from 'bus-station'
+              export type { U } from 'u'
 
-              import type { Satsuki, Mei } from './data/users'
+              import type { T1, T2 } from 't'
             `,
             options: [
               {
@@ -1869,10 +1873,10 @@ describe(RULE_NAME, () => {
         valid: [
           {
             code: dedent`
-              import { MatsuriShihou, AonoMorimiya } from 'sola'
+              import { a1, a2 } from 'a'
 
-              import styles from '../sunrise.css'
-              import './sky.css'
+              import styles from '../s.css'
+              import './t.css'
             `,
             options: [
               {
@@ -1905,11 +1909,11 @@ describe(RULE_NAME, () => {
         valid: [
           {
             code: dedent`
-              import { ShōyaIshida } from '../edu/kuise-hairdressing-school'
-              import { ShoukoNishimiya } from './salon-stray-cat'
+              import { A } from '../a'
+              import { b } from './b'
 
-              import '../edu/prepare-students.js'
-              import './load-memories'
+              import '../c.js'
+              import './d'
             `,
             options: [
               {
@@ -1944,7 +1948,7 @@ describe(RULE_NAME, () => {
             code: dedent`
               import type { Server } from 'http'
 
-              import express, { static as serveStatic } from 'express'
+              import a from 'a'
             `,
             options: [
               {
@@ -1968,13 +1972,13 @@ describe(RULE_NAME, () => {
         invalid: [
           {
             code: dedent`
-            import TakakiTohno from '5-cm-per-second';
-            import AkariShinohara from './index';
-          `,
+              import a from 'a';
+              import b from './index';
+            `,
             output: dedent`
-              import TakakiTohno from '5-cm-per-second';
+              import a from 'a';
 
-              import AkariShinohara from './index';
+              import b from './index';
             `,
             options: [
               {
@@ -1996,7 +2000,7 @@ describe(RULE_NAME, () => {
               {
                 messageId: 'missedSpacingBetweenImports',
                 data: {
-                  left: '5-cm-per-second',
+                  left: 'a',
                   right: './index',
                 },
               },
@@ -2011,20 +2015,20 @@ describe(RULE_NAME, () => {
       invalid: [
         {
           code: dedent`
-            import { RintarouOkabe } from 'scientists'
+            import { a } from 'a'
 
 
-            import { ItaruHashida } from './universities/tokyo-denki'
+            import { b } from './b'
 
 
 
-            import { MayuriShiina } from 'prepatory-academy'
+            import { c } from 'c'
           `,
           output: dedent`
-            import { MayuriShiina } from 'prepatory-academy'
-            import { RintarouOkabe } from 'scientists'
+            import { a } from 'a'
+            import { c } from 'c'
 
-            import { ItaruHashida } from './universities/tokyo-denki'
+            import { b } from './b'
           `,
           options: [
             {
@@ -2045,22 +2049,22 @@ describe(RULE_NAME, () => {
             {
               messageId: 'extraSpacingBetweenImports',
               data: {
-                left: 'scientists',
-                right: './universities/tokyo-denki',
+                left: 'a',
+                right: './b',
               },
             },
             {
               messageId: 'unexpectedImportsOrder',
               data: {
-                left: './universities/tokyo-denki',
-                right: 'prepatory-academy',
+                left: './b',
+                right: 'c',
               },
             },
             {
               messageId: 'extraSpacingBetweenImports',
               data: {
-                left: './universities/tokyo-denki',
-                right: 'prepatory-academy',
+                left: './b',
+                right: 'c',
               },
             },
           ],
@@ -2076,42 +2080,42 @@ describe(RULE_NAME, () => {
         invalid: [
           {
             code: dedent`
-              import type { Titan } from 'titans'
+              import type { T } from 't'
 
-              import Armin from '@scout-regiment/armin'
-              import Mikasa from '@scout-regiment/mikasa'
-              import Reiner from '@titans/armored-titan'
-              import Eren from '@titans/attack-titan'
-              import Zeke from '@titans/beast-titan'
-              import { KennyAckermann } from 'military-police'
+              import a1 from '@a/a1'
+              import a2 from '@a/a2'
+              import b1 from '@b/b1'
+              import b2 from '@b/b2'
+              import b3 from '@b/b3'
+              import { c } from 'c'
             `,
             output: dedent`
-              import Reiner from '@titans/armored-titan'
-              import Eren from '@titans/attack-titan'
-              import Zeke from '@titans/beast-titan'
-              import type { Titan } from 'titans'
+              import a1 from '@a/a1'
+              import a2 from '@a/a2'
+              import type { T } from 't'
 
-              import Armin from '@scout-regiment/armin'
-              import Mikasa from '@scout-regiment/mikasa'
+              import b1 from '@b/b1'
+              import b2 from '@b/b2'
+              import b3 from '@b/b3'
 
-              import { KennyAckermann } from 'military-police'
+              import { c } from 'c'
             `,
             options: [
               {
                 ...options,
                 customGroups: {
                   type: {
-                    titans: ['titans', '@titans/**'],
+                    primary: ['t', '@a/**'],
                   },
                   value: {
-                    titans: ['titans', '@titans/**'],
-                    scouts: '@scout-regiment/**',
+                    primary: ['t', '@a/**'],
+                    secondary: '@b/**',
                   },
                 },
                 groups: [
                   'type',
-                  'titans',
-                  'scouts',
+                  'primary',
+                  'secondary',
                   ['builtin', 'external'],
                   'internal-type',
                   'internal',
@@ -2126,15 +2130,29 @@ describe(RULE_NAME, () => {
               {
                 messageId: 'unexpectedImportsOrder',
                 data: {
-                  left: '@scout-regiment/mikasa',
-                  right: '@titans/armored-titan',
+                  left: 't',
+                  right: '@a/a1',
+                },
+              },
+              {
+                messageId: 'extraSpacingBetweenImports',
+                data: {
+                  left: 't',
+                  right: '@a/a1',
                 },
               },
               {
                 messageId: 'missedSpacingBetweenImports',
                 data: {
-                  left: '@titans/beast-titan',
-                  right: 'military-police',
+                  left: '@a/a2',
+                  right: '@b/b1',
+                },
+              },
+              {
+                messageId: 'missedSpacingBetweenImports',
+                data: {
+                  left: '@b/b3',
+                  right: 'c',
                 },
               },
             ],
@@ -2151,31 +2169,31 @@ describe(RULE_NAME, () => {
         invalid: [
           {
             code: dedent`
-              import type { Child } from 'giovannis-island'
-              import { Kanta, Junpei } from 'giovannis-island'
+              import type { A } from 'a'
+              import { a } from 'a'
             `,
             output: dedent`
-              import type { Child } from 'giovannis-island'
+              import type { A } from 'a'
 
-              import { Kanta, Junpei } from 'giovannis-island'
+              import { a } from 'a'
             `,
             options: [
               {
                 ...options,
                 customGroups: {
                   value: {
-                    giovanni: ['giovannis-island'],
+                    primary: ['a'],
                   },
                 },
-                groups: ['type', 'giovanni'],
+                groups: ['type', 'primary'],
               },
             ],
             errors: [
               {
                 messageId: 'missedSpacingBetweenImports',
                 data: {
-                  left: 'giovannis-island',
-                  right: 'giovannis-island',
+                  left: 'a',
+                  right: 'a',
                 },
               },
             ],
@@ -2185,22 +2203,22 @@ describe(RULE_NAME, () => {
     )
 
     ruleTester.run(
-      `${RULE_NAME}(${type}): allows to hash symbol in internal pattern`,
+      `${RULE_NAME}(${type}): allows hash symbol in internal pattern`,
       rule,
       {
         valid: [
           {
             code: dedent`
-              import type { Characters } from 'skip-and-loafer'
+              import type { T } from 'a'
 
-              import { events } from 'skip-and-loafer'
+              import { a } from 'a'
 
-              import type { Student } from '#school'
+              import type { S } from '#b'
 
-              import Satonosuke from '#pets'
-              import { MitsumiIwakura, SousukeShima } from '#school'
+              import { b1, b2 } from '#b'
+              import c from '#c'
 
-              import { Nao } from '../family'
+              import { d } from '../d'
             `,
             options: [
               {
@@ -2224,26 +2242,27 @@ describe(RULE_NAME, () => {
         invalid: [
           {
             code: dedent`
-              import type { Student } from '#school'
-              import type { Characters } from 'skip-and-loafer'
+              import type { T } from 'a'
 
-              import Satonosuke from '#pets'
-              import { events } from 'skip-and-loafer'
-              import { MitsumiIwakura, SousukeShima } from '#school'
+              import { a } from 'a'
 
-              import { Nao } from '../family'
+              import type { S } from '#b'
+              import c from '#c'
+              import { b1, b2 } from '#b'
+
+              import { d } from '../d'
             `,
             output: dedent`
-              import type { Characters } from 'skip-and-loafer'
+              import type { T } from 'a'
 
-              import { events } from 'skip-and-loafer'
+              import { a } from 'a'
 
-              import type { Student } from '#school'
+              import type { S } from '#b'
 
-              import Satonosuke from '#pets'
-              import { MitsumiIwakura, SousukeShima } from '#school'
+              import { b1, b2 } from '#b'
+              import c from '#c'
 
-              import { Nao } from '../family'
+              import { d } from '../d'
             `,
             options: [
               {
@@ -2264,24 +2283,17 @@ describe(RULE_NAME, () => {
             ],
             errors: [
               {
-                messageId: 'unexpectedImportsOrder',
-                data: {
-                  left: '#school',
-                  right: 'skip-and-loafer',
-                },
-              },
-              {
-                messageId: 'unexpectedImportsOrder',
-                data: {
-                  left: '#pets',
-                  right: 'skip-and-loafer',
-                },
-              },
-              {
                 messageId: 'missedSpacingBetweenImports',
                 data: {
-                  left: 'skip-and-loafer',
-                  right: '#school',
+                  left: '#b',
+                  right: '#c',
+                },
+              },
+              {
+                messageId: 'unexpectedImportsOrder',
+                data: {
+                  left: '#c',
+                  right: '#b',
                 },
               },
             ],
@@ -2303,8 +2315,8 @@ describe(RULE_NAME, () => {
       valid: [
         {
           code: dedent`
-            import { SpiritedAway, HowlsMovingCastle } from 'hayao-miyazaki'
-            import { Suzume } from 'makoto-shinkai'
+            import { a1, a2 } from 'a'
+            import { b1 } from 'b'
           `,
           options: [options],
         },
@@ -2312,20 +2324,20 @@ describe(RULE_NAME, () => {
       invalid: [
         {
           code: dedent`
-            import { Suzume } from 'makoto-shinkai'
-            import { SpiritedAway, HowlsMovingCastle } from 'hayao-miyazaki'
+            import { b1 } from 'b'
+            import { a1, a2 } from 'a'
           `,
           output: dedent`
-            import { SpiritedAway, HowlsMovingCastle } from 'hayao-miyazaki'
-            import { Suzume } from 'makoto-shinkai'
+            import { a1, a2 } from 'a'
+            import { b1 } from 'b'
           `,
           options: [options],
           errors: [
             {
               messageId: 'unexpectedImportsOrder',
               data: {
-                left: 'makoto-shinkai',
-                right: 'hayao-miyazaki',
+                left: 'b',
+                right: 'a',
               },
             },
           ],
@@ -2337,30 +2349,30 @@ describe(RULE_NAME, () => {
       valid: [
         {
           code: dedent`
-            import type { Chairman } from 'hunter'
+            import type { T } from 't'
 
-            import { Feitan, Phinks, Shalnark, Pakunoda } from 'phantom-troupe'
-            import { GingFreecss } from 'hunter/freecss'
-            import { Netero } from 'hunter/netero'
+            import { c1, c2, c3, c4 } from 'c'
+            import { e1 } from 'e/a'
+            import { e2 } from 'e/b'
             import path from 'path'
             import fs from 'fs'
 
-            import type { Hunter } from '~/hunter-association'
+            import type { I } from '~/i'
 
-            import { Gon, Kurapika, Leorio } from '~/hunter-association'
-            import { CheadleYorkshire } from '~/hunters/virus-hunters'
-            import { Knuckle, Shoot } from '~/hunters/beast-hunters'
+            import { i1, i2, i3 } from '~/i'
+            import { b1, b2 } from '~/b'
+            import { c1 } from '~/c'
 
-            import type { IHero } from './association-data'
-            import type { HeroList } from './index.d.ts'
-            import type { ChimeraAnt } from '../ants'
-            import type { Association } from '.'
+            import type { H } from './index.d.ts'
+            import type { F } from '../f'
+            import type { D } from './d'
+            import type { A } from '.'
 
-            import { Meruem, Neferpitou, Shaiapouf } from '../ants'
-            import hisoka from '../../hunters/histoka'
-            import { ChimeraAntQueen } from '../ants'
-            import association from '.'
+            import { K, L, M } from '../k'
+            import { j } from '../j'
+            import h from '../../h'
             import './style.css'
+            import a from '.'
           `,
           options: [
             {
@@ -2384,53 +2396,54 @@ describe(RULE_NAME, () => {
       invalid: [
         {
           code: dedent`
-            import { GingFreecss } from 'hunter/freecss'
-            import { Netero } from 'hunter/netero'
-
-            import type { Hunter } from '~/hunter-association'
-            import { Gon, Kurapika, Leorio } from '~/hunter-association'
-            import { Feitan, Phinks, Shalnark, Pakunoda } from 'phantom-troupe'
-            import type { Association } from '.'
-            import { Meruem, Neferpitou, Shaiapouf } from '../ants'
+            import { c1, c2, c3, c4 } from 'c'
+            import { e2 } from 'e/b'
+            import { e1 } from 'e/a'
             import path from 'path'
-            import fs from 'fs'
-            import type { ChimeraAnt } from '../ants'
-            import type { IHero } from './association-data'
-            import { Knuckle, Shoot } from '~/hunters/beast-hunters'
-            import { CheadleYorkshire } from '~/hunters/virus-hunters'
-            import type { HeroList } from './index.d.ts'
-            import './style.css'
-            import type { Chairman } from 'hunter'
 
-            import association from '.'
-            import { ChimeraAntQueen } from '../ants'
-            import hisoka from '../../hunters/histoka'
+            import { b1, b2 } from '~/b'
+            import type { I } from '~/i'
+            import type { D } from './d'
+            import fs from 'fs'
+            import { c1 } from '~/c'
+            import { i1, i2, i3 } from '~/i'
+
+            import type { A } from '.'
+            import type { F } from '../f'
+            import h from '../../h'
+            import type { H } from './index.d.ts'
+
+            import a from '.'
+            import type { T } from 't'
+            import './style.css'
+            import { j } from '../j'
+            import { K, L, M } from '../k'
           `,
           output: dedent`
-            import type { Chairman } from 'hunter'
+            import type { T } from 't'
 
-            import { Feitan, Phinks, Shalnark, Pakunoda } from 'phantom-troupe'
-            import { GingFreecss } from 'hunter/freecss'
-            import { Netero } from 'hunter/netero'
+            import { c1, c2, c3, c4 } from 'c'
+            import { e2 } from 'e/b'
+            import { e1 } from 'e/a'
             import path from 'path'
             import fs from 'fs'
 
-            import type { Hunter } from '~/hunter-association'
+            import type { I } from '~/i'
 
-            import { Gon, Kurapika, Leorio } from '~/hunter-association'
-            import { CheadleYorkshire } from '~/hunters/virus-hunters'
-            import { Knuckle, Shoot } from '~/hunters/beast-hunters'
+            import { i1, i2, i3 } from '~/i'
+            import { b1, b2 } from '~/b'
+            import { c1 } from '~/c'
 
-            import type { IHero } from './association-data'
-            import type { HeroList } from './index.d.ts'
-            import type { ChimeraAnt } from '../ants'
-            import type { Association } from '.'
+            import type { H } from './index.d.ts'
+            import type { F } from '../f'
+            import type { D } from './d'
+            import type { A } from '.'
 
-            import { Meruem, Neferpitou, Shaiapouf } from '../ants'
-            import hisoka from '../../hunters/histoka'
-            import { ChimeraAntQueen } from '../ants'
-            import association from '.'
+            import { K, L, M } from '../k'
+            import { j } from '../j'
+            import h from '../../h'
             import './style.css'
+            import a from '.'
           `,
           options: [
             {
@@ -2451,79 +2464,72 @@ describe(RULE_NAME, () => {
           ],
           errors: [
             {
+              messageId: 'unexpectedImportsOrder',
+              data: {
+                left: '~/b',
+                right: '~/i',
+              },
+            },
+            {
               messageId: 'missedSpacingBetweenImports',
               data: {
-                left: '~/hunter-association',
-                right: '~/hunter-association',
+                left: '~/i',
+                right: './d',
               },
             },
             {
               messageId: 'unexpectedImportsOrder',
               data: {
-                left: '~/hunter-association',
-                right: 'phantom-troupe',
-              },
-            },
-            {
-              messageId: 'missedSpacingBetweenImports',
-              data: {
-                left: 'phantom-troupe',
-                right: '.',
-              },
-            },
-            {
-              messageId: 'missedSpacingBetweenImports',
-              data: {
-                left: '.',
-                right: '../ants',
-              },
-            },
-            {
-              messageId: 'unexpectedImportsOrder',
-              data: {
-                left: '../ants',
-                right: 'path',
+                left: './d',
+                right: 'fs',
               },
             },
             {
               messageId: 'missedSpacingBetweenImports',
               data: {
                 left: 'fs',
-                right: '../ants',
+                right: '~/c',
               },
             },
             {
               messageId: 'unexpectedImportsOrder',
               data: {
-                left: '../ants',
-                right: './association-data',
+                left: '~/c',
+                right: '~/i',
               },
             },
             {
               messageId: 'unexpectedImportsOrder',
               data: {
-                left: './association-data',
-                right: '~/hunters/beast-hunters',
-              },
-            },
-            {
-              messageId: 'unexpectedImportsOrder',
-              data: {
-                left: '~/hunters/beast-hunters',
-                right: '~/hunters/virus-hunters',
+                left: '.',
+                right: '../f',
               },
             },
             {
               messageId: 'missedSpacingBetweenImports',
               data: {
-                left: '~/hunters/virus-hunters',
+                left: '../f',
+                right: '../../h',
+              },
+            },
+            {
+              messageId: 'unexpectedImportsOrder',
+              data: {
+                left: '../../h',
                 right: './index.d.ts',
               },
             },
             {
+              messageId: 'unexpectedImportsOrder',
+              data: {
+                left: '.',
+                right: 't',
+              },
+            },
+            {
               messageId: 'missedSpacingBetweenImports',
               data: {
-                left: './index.d.ts',
+                left: 't',
                 right: './style.css',
               },
             },
@@ -2531,21 +2537,14 @@ describe(RULE_NAME, () => {
               messageId: 'unexpectedImportsOrder',
               data: {
                 left: './style.css',
-                right: 'hunter',
+                right: '../j',
               },
             },
             {
               messageId: 'unexpectedImportsOrder',
               data: {
-                left: '.',
-                right: '../ants',
-              },
-            },
-            {
-              messageId: 'unexpectedImportsOrder',
-              data: {
-                left: '../ants',
-                right: '../../hunters/histoka',
+                left: '../j',
+                right: '../k',
               },
             },
           ],
@@ -2560,12 +2559,12 @@ describe(RULE_NAME, () => {
         valid: [
           {
             code: dedent`
-              import type { JujutsuSorcerer } from 'jujutsu-kaisen'
-              import { Satoru, Kiyotaka, Masamichi } from 'jujutsu-kaisen'
-              import { Maki, Panda, Toge } from '~/tokyo-high/2nd-year'
-              import { Yuji, Megumi } from '~/tokyo-high/1st-year'
-              import { Aoi, Kokichi, Yoshinobu } from '../../kyoto-high/data'
-              import Sukunа from '.'
+              import type { T } from 't'
+              import { a1, a2, a3 } from 'a'
+              import { c1, c2, c3 } from '~/c'
+              import { b1, b2 } from '~/b'
+              import { e1, e2, e3 } from '../../e'
+              import d from '.'
             `,
             options: [
               {
@@ -2589,22 +2588,22 @@ describe(RULE_NAME, () => {
         invalid: [
           {
             code: dedent`
-              import type { JujutsuSorcerer } from 'jujutsu-kaisen'
-              import { Yuji, Megumi } from '~/tokyo-high/1st-year'
+              import d from '.'
+              import { a1, a2, a3 } from 'a'
+              import { c1, c2, c3 } from '~/c'
 
-              import { Maki, Panda, Toge } from '~/tokyo-high/2nd-year'
-              import { Satoru, Kiyotaka, Masamichi } from 'jujutsu-kaisen'
+              import type { T } from 't'
+              import { e1, e2, e3 } from '../../e'
 
-              import Sukunа from '.'
-              import { Aoi, Kokichi, Yoshinobu } from '../../kyoto-high/data'
+              import { b1, b2 } from '~/b'
             `,
             output: dedent`
-              import type { JujutsuSorcerer } from 'jujutsu-kaisen'
-              import { Satoru, Kiyotaka, Masamichi } from 'jujutsu-kaisen'
-              import { Maki, Panda, Toge } from '~/tokyo-high/2nd-year'
-              import { Yuji, Megumi } from '~/tokyo-high/1st-year'
-              import { Aoi, Kokichi, Yoshinobu } from '../../kyoto-high/data'
-              import Sukunа from '.'
+              import type { T } from 't'
+              import { a1, a2, a3 } from 'a'
+              import { c1, c2, c3 } from '~/c'
+              import { b1, b2 } from '~/b'
+              import { e1, e2, e3 } from '../../e'
+              import d from '.'
             `,
             options: [
               {
@@ -2627,36 +2626,36 @@ describe(RULE_NAME, () => {
               {
                 messageId: 'unexpectedImportsOrder',
                 data: {
-                  left: '~/tokyo-high/1st-year',
-                  right: '~/tokyo-high/2nd-year',
-                },
-              },
-              {
-                messageId: 'extraSpacingBetweenImports',
-                data: {
-                  left: '~/tokyo-high/1st-year',
-                  right: '~/tokyo-high/2nd-year',
-                },
-              },
-              {
-                messageId: 'unexpectedImportsOrder',
-                data: {
-                  left: '~/tokyo-high/2nd-year',
-                  right: 'jujutsu-kaisen',
-                },
-              },
-              {
-                messageId: 'extraSpacingBetweenImports',
-                data: {
-                  left: 'jujutsu-kaisen',
-                  right: '.',
-                },
-              },
-              {
-                messageId: 'unexpectedImportsOrder',
-                data: {
                   left: '.',
-                  right: '../../kyoto-high/data',
+                  right: 'a',
+                },
+              },
+              {
+                messageId: 'unexpectedImportsOrder',
+                data: {
+                  left: '~/c',
+                  right: 't',
+                },
+              },
+              {
+                messageId: 'extraSpacingBetweenImports',
+                data: {
+                  left: '~/c',
+                  right: 't',
+                },
+              },
+              {
+                messageId: 'unexpectedImportsOrder',
+                data: {
+                  left: '../../e',
+                  right: '~/b',
+                },
+              },
+              {
+                messageId: 'extraSpacingBetweenImports',
+                data: {
+                  left: '../../e',
+                  right: '~/b',
                 },
               },
             ],
@@ -2669,12 +2668,12 @@ describe(RULE_NAME, () => {
       valid: [
         {
           code: dedent`
-            import { Faputa } from 'narehate'
+              import { A } from 'a'
 
-            import Nanachi from '~/team/nanachi'
-            import Riko from '~/team/riko'
-            import Reg from '~/team/reg'
-          `,
+              import b from '~/b'
+              import c from '~/c'
+              import d from '~/d'
+            `,
           options: [
             {
               ...options,
@@ -2697,20 +2696,20 @@ describe(RULE_NAME, () => {
       invalid: [
         {
           code: dedent`
-            import { Faputa } from 'narehate'
+            import { A } from 'a'
 
 
-            import Nanachi from '~/team/nanachi'
+            import b from '~/b'
+            import c from '~/c'
 
-            import Reg from '~/team/reg'
-            import Riko from '~/team/riko'
+            import d from '~/d'
           `,
           output: dedent`
-            import { Faputa } from 'narehate'
+            import { A } from 'a'
 
-            import Nanachi from '~/team/nanachi'
-            import Riko from '~/team/riko'
-            import Reg from '~/team/reg'
+            import b from '~/b'
+            import c from '~/c'
+            import d from '~/d'
           `,
           options: [
             {
@@ -2733,22 +2732,15 @@ describe(RULE_NAME, () => {
             {
               messageId: 'extraSpacingBetweenImports',
               data: {
-                left: 'narehate',
-                right: '~/team/nanachi',
+                left: 'a',
+                right: '~/b',
               },
             },
             {
               messageId: 'extraSpacingBetweenImports',
               data: {
-                left: '~/team/nanachi',
-                right: '~/team/reg',
-              },
-            },
-            {
-              messageId: 'unexpectedImportsOrder',
-              data: {
-                left: '~/team/reg',
-                right: '~/team/riko',
+                left: '~/c',
+                right: '~/d',
               },
             },
           ],
@@ -2763,13 +2755,13 @@ describe(RULE_NAME, () => {
         valid: [
           {
             code: dedent`
-              import type DaigoClan = require("A")
+              import type T = require("T")
 
-              import { Hyakkimaru } from 'daigo'
+              import { A } from 'a'
 
-              import { Dororo } from '../town'
+              import { B } from '../b'
 
-              import Tahomaru = require('daigo/tahomaru')
+              import c = require('c/c')
               import log = console.log
             `,
             options: [
@@ -2794,22 +2786,22 @@ describe(RULE_NAME, () => {
         invalid: [
           {
             code: dedent`
-              import type DaigoClan = require("A")
+              import type T = require("T")
 
-              import { Dororo } from '../town'
+              import { A } from 'a'
+              import { B } from '../b'
 
               import log = console.log
-              import { Hyakkimaru } from 'daigo'
-              import Tahomaru = require('daigo/tahomaru')
+              import c = require('c/c')
             `,
             output: dedent`
-              import type DaigoClan = require("A")
+              import type T = require("T")
 
-              import { Hyakkimaru } from 'daigo'
+              import { A } from 'a'
 
-              import { Dororo } from '../town'
+              import { B } from '../b'
 
-              import Tahomaru = require('daigo/tahomaru')
+              import c = require('c/c')
               import log = console.log
             `,
             options: [
@@ -2831,17 +2823,17 @@ describe(RULE_NAME, () => {
             ],
             errors: [
               {
-                messageId: 'unexpectedImportsOrder',
+                messageId: 'missedSpacingBetweenImports',
                 data: {
-                  left: 'console.log',
-                  right: 'daigo',
+                  left: 'a',
+                  right: '../b',
                 },
               },
               {
-                messageId: 'missedSpacingBetweenImports',
+                messageId: 'unexpectedImportsOrder',
                 data: {
-                  left: 'daigo',
-                  right: 'daigo/tahomaru',
+                  left: 'console.log',
+                  right: 'c/c',
                 },
               },
             ],
@@ -2857,9 +2849,9 @@ describe(RULE_NAME, () => {
         valid: [
           {
             code: dedent`
-              import type { Kiki } from '~/delivery-service'
-              import type { SeniorWitch } from 'witches'
-              import type { Jiji } from '../cats'
+              import type { T } from '../t'
+              import type { U } from '~/u'
+              import type { V } from 'v'
             `,
             options: [
               {
@@ -2879,16 +2871,16 @@ describe(RULE_NAME, () => {
         invalid: [
           {
             code: dedent`
-              import type { Jiji } from '../cats'
+              import type { T } from '../t'
 
-              import type { Kiki } from '~/delivery-service'
+              import type { U } from '~/u'
 
-              import type { SeniorWitch } from 'witches'
+              import type { V } from 'v'
             `,
             output: dedent`
-              import type { Kiki } from '~/delivery-service'
-              import type { SeniorWitch } from 'witches'
-              import type { Jiji } from '../cats'
+              import type { T } from '../t'
+              import type { U } from '~/u'
+              import type { V } from 'v'
             `,
             options: [
               {
@@ -2905,24 +2897,17 @@ describe(RULE_NAME, () => {
             ],
             errors: [
               {
-                messageId: 'unexpectedImportsOrder',
+                messageId: 'extraSpacingBetweenImports',
                 data: {
-                  left: '../cats',
-                  right: '~/delivery-service',
+                  left: '../t',
+                  right: '~/u',
                 },
               },
               {
                 messageId: 'extraSpacingBetweenImports',
                 data: {
-                  left: '../cats',
-                  right: '~/delivery-service',
-                },
-              },
-              {
-                messageId: 'extraSpacingBetweenImports',
-                data: {
-                  left: '~/delivery-service',
-                  right: 'witches',
+                  left: '~/u',
+                  right: 'v',
                 },
               },
             ],
@@ -2935,17 +2920,14 @@ describe(RULE_NAME, () => {
       valid: [
         {
           code: dedent`
-            import { SebastianMichaelis, Grell } from 'butlers'
+            import { b1, b2 } from 'b'
 
             /**
-             * The story follows the two along with their other servants, as
-             * they work to unravel the plot behind Ciel's parents' murder,
-             * and the horrendous tragedies that befell Ciel in the month
-             * directly after.
+             * Comment
              */
 
-            import { Ciel } from 'phantomhive'
-            import { MeyRin } from 'maids'
+            import { a } from 'a'
+            import { c } from 'c'
           `,
           options: [
             {
@@ -2976,10 +2958,10 @@ describe(RULE_NAME, () => {
         valid: [
           {
             code: dedent`
-              import type { SunshineGirl } from 'weathering-with-you'
+              import type { T } from 't'
 
               // @ts-expect-error missing types
-              import { hinaAmano } from 'weathering-with-you'
+              import { t } from 't'
             `,
             options: [
               {
@@ -3011,11 +2993,11 @@ describe(RULE_NAME, () => {
         valid: [
           {
             code: dedent`
-              import type { Totoro } from 'gods-of-forest'
+              import type { V } from 'v'
 
-              export type { KonekoBus } from 'bus-station'
+              export type { U } from 'u'
 
-              import type { Satsuki, Mei } from './data/users'
+              import type { T1, T2 } from 't'
             `,
             options: [
               {
@@ -3047,10 +3029,10 @@ describe(RULE_NAME, () => {
         valid: [
           {
             code: dedent`
-              import { MatsuriShihou, AonoMorimiya } from 'sola'
+              import { a1, a2 } from 'a'
 
-              import styles from '../sunrise.css'
-              import './sky.css'
+              import styles from '../s.css'
+              import './t.css'
             `,
             options: [
               {
@@ -3083,11 +3065,11 @@ describe(RULE_NAME, () => {
         valid: [
           {
             code: dedent`
-              import { ShōyaIshida } from '../edu/kuise-hairdressing-school'
-              import { ShoukoNishimiya } from './salon-stray-cat'
+              import { A } from '../a'
+              import { b } from './b'
 
-              import '../edu/prepare-students.js'
-              import './load-memories'
+              import '../c.js'
+              import './d'
             `,
             options: [
               {
@@ -3122,7 +3104,7 @@ describe(RULE_NAME, () => {
             code: dedent`
               import type { Server } from 'http'
 
-              import express, { static as serveStatic } from 'express'
+              import a from 'a'
             `,
             options: [
               {
@@ -3146,13 +3128,13 @@ describe(RULE_NAME, () => {
         invalid: [
           {
             code: dedent`
-            import TakakiTohno from '5-cm-per-second';
-            import AkariShinohara from './index';
-          `,
+              import a from 'a';
+              import b from './index';
+            `,
             output: dedent`
-              import TakakiTohno from '5-cm-per-second';
+              import a from 'a';
 
-              import AkariShinohara from './index';
+              import b from './index';
             `,
             options: [
               {
@@ -3174,7 +3156,7 @@ describe(RULE_NAME, () => {
               {
                 messageId: 'missedSpacingBetweenImports',
                 data: {
-                  left: '5-cm-per-second',
+                  left: 'a',
                   right: './index',
                 },
               },
@@ -3189,20 +3171,20 @@ describe(RULE_NAME, () => {
       invalid: [
         {
           code: dedent`
-            import { RintarouOkabe } from 'scientists'
+            import { a } from 'a'
 
 
-            import { ItaruHashida } from './universities/tokyo-denki'
+            import { b } from './b'
 
 
 
-            import { MayuriShiina } from 'prepatory-academy'
+            import { c } from 'c'
           `,
           output: dedent`
-            import { MayuriShiina } from 'prepatory-academy'
-            import { RintarouOkabe } from 'scientists'
+            import { a } from 'a'
+            import { c } from 'c'
 
-            import { ItaruHashida } from './universities/tokyo-denki'
+            import { b } from './b'
           `,
           options: [
             {
@@ -3223,22 +3205,22 @@ describe(RULE_NAME, () => {
             {
               messageId: 'extraSpacingBetweenImports',
               data: {
-                left: 'scientists',
-                right: './universities/tokyo-denki',
+                left: 'a',
+                right: './b',
               },
             },
             {
               messageId: 'unexpectedImportsOrder',
               data: {
-                left: './universities/tokyo-denki',
-                right: 'prepatory-academy',
+                left: './b',
+                right: 'c',
               },
             },
             {
               messageId: 'extraSpacingBetweenImports',
               data: {
-                left: './universities/tokyo-denki',
-                right: 'prepatory-academy',
+                left: './b',
+                right: 'c',
               },
             },
           ],
@@ -3254,42 +3236,42 @@ describe(RULE_NAME, () => {
         invalid: [
           {
             code: dedent`
-              import type { Titan } from 'titans'
+              import type { T } from 't'
 
-              import Armin from '@scout-regiment/armin'
-              import Mikasa from '@scout-regiment/mikasa'
-              import Reiner from '@titans/armored-titan'
-              import Eren from '@titans/attack-titan'
-              import Zeke from '@titans/beast-titan'
-              import { KennyAckermann } from 'military-police'
+              import a1 from '@a/a1'
+              import a2 from '@a/a2'
+              import b1 from '@b/b1'
+              import b2 from '@b/b2'
+              import b3 from '@b/b3'
+              import { c } from 'c'
             `,
             output: dedent`
-              import Reiner from '@titans/armored-titan'
-              import Eren from '@titans/attack-titan'
-              import Zeke from '@titans/beast-titan'
-              import type { Titan } from 'titans'
+              import type { T } from 't'
+              import a1 from '@a/a1'
+              import a2 from '@a/a2'
 
-              import Mikasa from '@scout-regiment/mikasa'
-              import Armin from '@scout-regiment/armin'
+              import b1 from '@b/b1'
+              import b2 from '@b/b2'
+              import b3 from '@b/b3'
 
-              import { KennyAckermann } from 'military-police'
+              import { c } from 'c'
             `,
             options: [
               {
                 ...options,
                 customGroups: {
                   type: {
-                    titans: ['titans', '@titans/**'],
+                    primary: ['t', '@a/**'],
                   },
                   value: {
-                    titans: ['titans', '@titans/**'],
-                    scouts: '@scout-regiment/**',
+                    primary: ['t', '@a/**'],
+                    secondary: '@b/**',
                   },
                 },
                 groups: [
                   'type',
-                  'titans',
-                  'scouts',
+                  'primary',
+                  'secondary',
                   ['builtin', 'external'],
                   'internal-type',
                   'internal',
@@ -3302,24 +3284,24 @@ describe(RULE_NAME, () => {
             ],
             errors: [
               {
-                messageId: 'unexpectedImportsOrder',
+                messageId: 'extraSpacingBetweenImports',
                 data: {
-                  left: '@scout-regiment/armin',
-                  right: '@scout-regiment/mikasa',
-                },
-              },
-              {
-                messageId: 'unexpectedImportsOrder',
-                data: {
-                  left: '@scout-regiment/mikasa',
-                  right: '@titans/armored-titan',
+                  left: 't',
+                  right: '@a/a1',
                 },
               },
               {
                 messageId: 'missedSpacingBetweenImports',
                 data: {
-                  left: '@titans/beast-titan',
-                  right: 'military-police',
+                  left: '@a/a2',
+                  right: '@b/b1',
+                },
+              },
+              {
+                messageId: 'missedSpacingBetweenImports',
+                data: {
+                  left: '@b/b3',
+                  right: 'c',
                 },
               },
             ],
@@ -3336,31 +3318,31 @@ describe(RULE_NAME, () => {
         invalid: [
           {
             code: dedent`
-              import type { Child } from 'giovannis-island'
-              import { Kanta, Junpei } from 'giovannis-island'
+              import type { A } from 'a'
+              import { a } from 'a'
             `,
             output: dedent`
-              import type { Child } from 'giovannis-island'
+              import type { A } from 'a'
 
-              import { Kanta, Junpei } from 'giovannis-island'
+              import { a } from 'a'
             `,
             options: [
               {
                 ...options,
                 customGroups: {
                   value: {
-                    giovanni: ['giovannis-island'],
+                    primary: ['a'],
                   },
                 },
-                groups: ['type', 'giovanni'],
+                groups: ['type', 'primary'],
               },
             ],
             errors: [
               {
                 messageId: 'missedSpacingBetweenImports',
                 data: {
-                  left: 'giovannis-island',
-                  right: 'giovannis-island',
+                  left: 'a',
+                  right: 'a',
                 },
               },
             ],
@@ -3370,22 +3352,22 @@ describe(RULE_NAME, () => {
     )
 
     ruleTester.run(
-      `${RULE_NAME}(${type}): allows to hash symbol in internal pattern`,
+      `${RULE_NAME}(${type}): allows hash symbol in internal pattern`,
       rule,
       {
         valid: [
           {
             code: dedent`
-              import type { Characters } from 'skip-and-loafer'
+              import type { T } from 'a'
 
-              import { events } from 'skip-and-loafer'
+              import { a } from 'a'
 
-              import type { Student } from '#school'
+              import type { S } from '#b'
 
-              import { MitsumiIwakura, SousukeShima } from '#school'
-              import Satonosuke from '#pets'
+              import { b1, b2 } from '#b'
+              import c from '#c'
 
-              import { Nao } from '../family'
+              import { d } from '../d'
             `,
             options: [
               {
@@ -3409,26 +3391,27 @@ describe(RULE_NAME, () => {
         invalid: [
           {
             code: dedent`
-              import type { Student } from '#school'
-              import type { Characters } from 'skip-and-loafer'
+              import type { T } from 'a'
 
-              import Satonosuke from '#pets'
-              import { events } from 'skip-and-loafer'
-              import { MitsumiIwakura, SousukeShima } from '#school'
+              import { a } from 'a'
 
-              import { Nao } from '../family'
+              import type { S } from '#b'
+              import c from '#c'
+              import { b1, b2 } from '#b'
+
+              import { d } from '../d'
             `,
             output: dedent`
-              import type { Characters } from 'skip-and-loafer'
+              import type { T } from 'a'
 
-              import { events } from 'skip-and-loafer'
+              import { a } from 'a'
 
-              import type { Student } from '#school'
+              import type { S } from '#b'
 
-              import { MitsumiIwakura, SousukeShima } from '#school'
-              import Satonosuke from '#pets'
+              import { b1, b2 } from '#b'
+              import c from '#c'
 
-              import { Nao } from '../family'
+              import { d } from '../d'
             `,
             options: [
               {
@@ -3449,24 +3432,17 @@ describe(RULE_NAME, () => {
             ],
             errors: [
               {
-                messageId: 'unexpectedImportsOrder',
-                data: {
-                  left: '#school',
-                  right: 'skip-and-loafer',
-                },
-              },
-              {
-                messageId: 'unexpectedImportsOrder',
-                data: {
-                  left: '#pets',
-                  right: 'skip-and-loafer',
-                },
-              },
-              {
                 messageId: 'missedSpacingBetweenImports',
                 data: {
-                  left: 'skip-and-loafer',
-                  right: '#school',
+                  left: '#b',
+                  right: '#c',
+                },
+              },
+              {
+                messageId: 'unexpectedImportsOrder',
+                data: {
+                  left: '#c',
+                  right: '#b',
                 },
               },
             ],
@@ -3602,10 +3578,10 @@ describe(RULE_NAME, () => {
       {
         valid: [
           dedent`
-            import Hizuru from '~/higotoshima/hizuru'
-            import Mio from '~/higotoshima/mio'
-            import Shinpei from '~/higotoshima/shinpei'
-            import Ushio from '~/higotoshima/ushio'
+            import a from '~/a'
+            import b from '~/b'
+            import c from '~/c'
+            import d from '~/d'
           `,
           {
             code: dedent`
@@ -3620,30 +3596,23 @@ describe(RULE_NAME, () => {
         invalid: [
           {
             code: dedent`
-              import Shinpei from '~/higotoshima/shinpei'
-              import Mio from '~/higotoshima/mio'
-              import Ushio from '~/higotoshima/ushio'
-              import Hizuru from '~/higotoshima/hizuru'
+              import a from '~/a'
+              import c from '~/c'
+              import b from '~/b'
+              import d from '~/d'
             `,
             output: dedent`
-              import Hizuru from '~/higotoshima/hizuru'
-              import Mio from '~/higotoshima/mio'
-              import Shinpei from '~/higotoshima/shinpei'
-              import Ushio from '~/higotoshima/ushio'
+              import a from '~/a'
+              import b from '~/b'
+              import c from '~/c'
+              import d from '~/d'
             `,
             errors: [
               {
                 messageId: 'unexpectedImportsOrder',
                 data: {
-                  left: '~/higotoshima/shinpei',
-                  right: '~/higotoshima/mio',
-                },
-              },
-              {
-                messageId: 'unexpectedImportsOrder',
-                data: {
-                  left: '~/higotoshima/ushio',
-                  right: '~/higotoshima/hizuru',
+                  left: '~/c',
+                  right: '~/b',
                 },
               },
             ],
@@ -3992,7 +3961,7 @@ describe(RULE_NAME, () => {
           {
             code: dedent`
               import {} from 'node:os'
-              import { hinaAmano } from 'weathering-with-you'
+              import { c } from 'c'
               import 'node:os'
             `,
             options: [

@@ -34,14 +34,14 @@ describe(RULE_NAME, () => {
       valid: [
         {
           code: dedent`
-            let Odokawa = () => (
-              <Character
-                role="taxi driver"
-                type="walrus"
-                variant="odd"
+            let Component = () => (
+              <Element
+                a="aaa"
+                b="bb"
+                c="c"
               >
-                Pew-pew
-              </Character>
+                Value
+              </Element>
             )
           `,
           options: [options],
@@ -50,25 +50,25 @@ describe(RULE_NAME, () => {
       invalid: [
         {
           code: dedent`
-            let Odokawa = () => (
-              <Character
-                type="walrus"
-                role="taxi driver"
-                variant="odd"
+            let Component = () => (
+              <Element
+                a="aaa"
+                c="c"
+                b="bb"
               >
-                Pew-pew
-              </Character>
+                Value
+              </Element>
             )
           `,
           output: dedent`
-            let Odokawa = () => (
-              <Character
-                role="taxi driver"
-                type="walrus"
-                variant="odd"
+            let Component = () => (
+              <Element
+                a="aaa"
+                b="bb"
+                c="c"
               >
-                Pew-pew
-              </Character>
+                Value
+              </Element>
             )
           `,
           options: [options],
@@ -76,8 +76,8 @@ describe(RULE_NAME, () => {
             {
               messageId: 'unexpectedJSXPropsOrder',
               data: {
-                left: 'type',
-                right: 'role',
+                left: 'c',
+                right: 'b',
               },
             },
           ],
@@ -92,12 +92,12 @@ describe(RULE_NAME, () => {
         valid: [
           {
             code: dedent`
-              let Protagonist = () => (
-                <User
-                  age={16}
-                  name="Shinichi Izumi"
-                  parasite:name="Migi"
-                  school="West High"
+              let Component = () => (
+                <Element
+                  a="aaa"
+                  b="bb"
+                  c="c"
+                  d:e="d"
                 />
               )
             `,
@@ -107,22 +107,22 @@ describe(RULE_NAME, () => {
         invalid: [
           {
             code: dedent`
-              let Protagonist = () => (
-                <User
-                  age={16}
-                  parasite:name="Migi"
-                  name="Shinichi Izumi"
-                  school="West High"
+              let Component = () => (
+                <Element
+                  a="aaa"
+                  d:e="d"
+                  b="bb"
+                  c="c"
                 />
               )
             `,
             output: dedent`
-              let Protagonist = () => (
-                <User
-                  age={16}
-                  name="Shinichi Izumi"
-                  parasite:name="Migi"
-                  school="West High"
+              let Component = () => (
+                <Element
+                  a="aaa"
+                  b="bb"
+                  c="c"
+                  d:e="d"
                 />
               )
             `,
@@ -131,8 +131,8 @@ describe(RULE_NAME, () => {
               {
                 messageId: 'unexpectedJSXPropsOrder',
                 data: {
-                  left: 'parasite:name',
-                  right: 'name',
+                  left: 'd:e',
+                  right: 'b',
                 },
               },
             ],
@@ -148,15 +148,15 @@ describe(RULE_NAME, () => {
         valid: [
           {
             code: dedent`
-              let ArmorBoy = () => (
-                <Alchemist
-                  big
-                  firstName="Alphonse"
-                  lastName="Elric"
+              let Component = () => (
+                <Element
+                  d
+                  e="e"
+                  f="f"
                   {...data}
-                  age={14}
-                  occupation="Alchemist"
-                  weapon={['fists']}
+                  a="a"
+                  b="b"
+                  c="c"
                 />
               )
             `,
@@ -166,28 +166,28 @@ describe(RULE_NAME, () => {
         invalid: [
           {
             code: dedent`
-              let ArmorBoy = () => (
-                <Alchemist
-                  firstName="Alphonse"
-                  lastName="Elric"
-                  big
+              let Component = () => (
+                <Element
+                  e="e"
+                  d
+                  f="f"
                   {...data}
-                  occupation="Alchemist"
-                  age={14}
-                  weapon={['fists']}
+                  b="b"
+                  a="a"
+                  c="c"
                 />
               )
             `,
             output: dedent`
-              let ArmorBoy = () => (
-                <Alchemist
-                  big
-                  firstName="Alphonse"
-                  lastName="Elric"
+              let Component = () => (
+                <Element
+                  d
+                  e="e"
+                  f="f"
                   {...data}
-                  age={14}
-                  occupation="Alchemist"
-                  weapon={['fists']}
+                  a="a"
+                  b="b"
+                  c="c"
                 />
               )
             `,
@@ -196,15 +196,15 @@ describe(RULE_NAME, () => {
               {
                 messageId: 'unexpectedJSXPropsOrder',
                 data: {
-                  left: 'lastName',
-                  right: 'big',
+                  left: 'e',
+                  right: 'd',
                 },
               },
               {
                 messageId: 'unexpectedJSXPropsOrder',
                 data: {
-                  left: 'occupation',
-                  right: 'age',
+                  left: 'b',
+                  right: 'a',
                 },
               },
             ],
@@ -220,12 +220,12 @@ describe(RULE_NAME, () => {
         valid: [
           {
             code: dedent`
-              let Spike = () => (
-                <Hunter
-                  age={27}
-                  bloodType={0}
-                  origin="Mars"
-                  isFromCowboyBebop
+              let Component = () => (
+                <Element
+                  b="b"
+                  c="c"
+                  d="d"
+                  aaaaaa
                 />
               )
             `,
@@ -240,22 +240,22 @@ describe(RULE_NAME, () => {
         invalid: [
           {
             code: dedent`
-              let Spike = () => (
-                <Hunter
-                  age={27}
-                  bloodType={0}
-                  isFromCowboyBebop
-                  origin="Mars"
+              let Component = () => (
+                <Element
+                  aaaaaa
+                  b="b"
+                  c="c"
+                  d="d"
                 />
               )
             `,
             output: dedent`
-              let Spike = () => (
-                <Hunter
-                  age={27}
-                  bloodType={0}
-                  origin="Mars"
-                  isFromCowboyBebop
+              let Component = () => (
+                <Element
+                  b="b"
+                  c="c"
+                  d="d"
+                  aaaaaa
                 />
               )
             `,
@@ -269,8 +269,8 @@ describe(RULE_NAME, () => {
               {
                 messageId: 'unexpectedJSXPropsOrder',
                 data: {
-                  left: 'isFromCowboyBebop',
-                  right: 'origin',
+                  left: 'aaaaaa',
+                  right: 'b',
                 },
               },
             ],
@@ -286,11 +286,10 @@ describe(RULE_NAME, () => {
         valid: [
           {
             code: dedent`
-              <DeathNote
-                author="Light Yagami"
-                list={deathNotes}
-                shinigami="Ryuk"
-                onChange={updateDeathNotes}
+              <Element
+                a="a"
+                b="b"
+                onChange={handleChange}
               />
             `,
             options: [
@@ -305,19 +304,17 @@ describe(RULE_NAME, () => {
         invalid: [
           {
             code: dedent`
-              <DeathNote
-                author="Light Yagami"
-                list={deathNotes}
-                onChange={updateDeathNotes}
-                shinigami="Ryuk"
+              <Element
+                onChange={handleChange}
+                a="a"
+                b="b"
               />
             `,
             output: dedent`
-              <DeathNote
-                author="Light Yagami"
-                list={deathNotes}
-                shinigami="Ryuk"
-                onChange={updateDeathNotes}
+              <Element
+                a="a"
+                b="b"
+                onChange={handleChange}
               />
             `,
             options: [
@@ -332,7 +329,7 @@ describe(RULE_NAME, () => {
                 messageId: 'unexpectedJSXPropsOrder',
                 data: {
                   left: 'onChange',
-                  right: 'shinigami',
+                  right: 'a',
                 },
               },
             ],
@@ -348,17 +345,17 @@ describe(RULE_NAME, () => {
         valid: [
           {
             code: dedent`
-              <Holo
-                handleTransform={(type: 'Human' | 'Wolf') => {
-                  toogleForm(form)
+              <Element
+                d={() => {
+                  fn()
                 }}
-                style={{
-                  position: 'absolute',
-                  color: 'red',
+                e={{
+                  f: 'f',
+                  g: 'g',
                 }}
-                form={form}
-                residence="Pasloe"
-                title="Wisewolf"
+                a="aaa"
+                b="bb"
+                c="c"
               />
             `,
             options: [
@@ -372,31 +369,31 @@ describe(RULE_NAME, () => {
         invalid: [
           {
             code: dedent`
-              <Holo
-                form={form}
-                handleTransform={(type: 'Human' | 'Wolf') => {
-                  toogleForm(form)
+              <Element
+                a="aaa"
+                b="bb"
+                c="c"
+                d={() => {
+                  fn()
                 }}
-                residence="Pasloe"
-                style={{
-                  position: 'absolute',
-                  color: 'red',
+                e={{
+                  f: 'f',
+                  g: 'g',
                 }}
-                title="Wisewolf"
               />
             `,
             output: dedent`
-              <Holo
-                handleTransform={(type: 'Human' | 'Wolf') => {
-                  toogleForm(form)
+              <Element
+                d={() => {
+                  fn()
                 }}
-                style={{
-                  position: 'absolute',
-                  color: 'red',
+                e={{
+                  f: 'f',
+                  g: 'g',
                 }}
-                form={form}
-                residence="Pasloe"
-                title="Wisewolf"
+                a="aaa"
+                b="bb"
+                c="c"
               />
             `,
             options: [
@@ -409,15 +406,8 @@ describe(RULE_NAME, () => {
               {
                 messageId: 'unexpectedJSXPropsOrder',
                 data: {
-                  left: 'form',
-                  right: 'handleTransform',
-                },
-              },
-              {
-                messageId: 'unexpectedJSXPropsOrder',
-                data: {
-                  left: 'residence',
-                  right: 'style',
+                  left: 'c',
+                  right: 'd',
                 },
               },
             ],
@@ -433,19 +423,18 @@ describe(RULE_NAME, () => {
         valid: [
           {
             code: dedent`
-              <Hero
-                id="ed2cc26e-ec5a-41da-aab0-51a61d6a919f"
-                name="Saitama"
-                age={25}
-                height={175}
-                nickname="One-Punch Man"
-                weight={70}
+              <Element
+                d="ddd"
+                e="ee"
+                a="aaaa"
+                b="bbb"
+                c="cc"
               />
             `,
             options: [
               {
                 ...options,
-                customGroups: { top: ['id', 'name'] },
+                customGroups: { top: ['d', 'e'] },
                 groups: ['top', 'unknown'],
               },
             ],
@@ -454,29 +443,27 @@ describe(RULE_NAME, () => {
         invalid: [
           {
             code: dedent`
-              <Hero
-                age={25}
-                nickname="One-Punch Man"
-                name="Saitama"
-                id="ed2cc26e-ec5a-41da-aab0-51a61d6a919f"
-                height={175}
-                weight={70}
+              <Element
+                a="aaaa"
+                b="bbb"
+                c="cc"
+                d="ddd"
+                e="ee"
               />
             `,
             output: dedent`
-              <Hero
-                id="ed2cc26e-ec5a-41da-aab0-51a61d6a919f"
-                name="Saitama"
-                age={25}
-                height={175}
-                nickname="One-Punch Man"
-                weight={70}
+              <Element
+                d="ddd"
+                e="ee"
+                a="aaaa"
+                b="bbb"
+                c="cc"
               />
             `,
             options: [
               {
                 ...options,
-                customGroups: { top: ['id', 'name'] },
+                customGroups: { top: ['d', 'e'] },
                 groups: ['top', 'unknown'],
               },
             ],
@@ -484,75 +471,8 @@ describe(RULE_NAME, () => {
               {
                 messageId: 'unexpectedJSXPropsOrder',
                 data: {
-                  left: 'nickname',
-                  right: 'name',
-                },
-              },
-              {
-                messageId: 'unexpectedJSXPropsOrder',
-                data: {
-                  left: 'name',
-                  right: 'id',
-                },
-              },
-            ],
-          },
-          {
-            code: dedent`
-              <Hero
-                name="Genos"
-                id="dabd9d43-a165-419a-bfc8-061533bf40bd"
-              />
-            `,
-            output: dedent`
-              <Hero
-                id="dabd9d43-a165-419a-bfc8-061533bf40bd"
-                name="Genos"
-              />
-            `,
-            options: [
-              {
-                ...options,
-                customGroups: { top: ['id'] },
-                groups: ['top', 'unknown'],
-              },
-            ],
-            errors: [
-              {
-                messageId: 'unexpectedJSXPropsOrder',
-                data: {
-                  left: 'name',
-                  right: 'id',
-                },
-              },
-            ],
-          },
-          {
-            code: dedent`
-              <Hero
-                name="King"
-                id="5bcd11c7-bb04-4046-b986-a4e4796fa624"
-              />
-            `,
-            output: dedent`
-              <Hero
-                id="5bcd11c7-bb04-4046-b986-a4e4796fa624"
-                name="King"
-              />
-            `,
-            options: [
-              {
-                ...options,
-                customGroups: { top: ['id'] },
-                groups: ['top', 'unknown'],
-              },
-            ],
-            errors: [
-              {
-                messageId: 'unexpectedJSXPropsOrder',
-                data: {
-                  left: 'name',
-                  right: 'id',
+                  left: 'c',
+                  right: 'd',
                 },
               },
             ],
@@ -575,14 +495,14 @@ describe(RULE_NAME, () => {
       valid: [
         {
           code: dedent`
-            let Odokawa = () => (
-              <Character
-                role="taxi driver"
-                type="walrus"
-                variant="odd"
+            let Component = () => (
+              <Element
+                a="aaa"
+                b="bb"
+                c="c"
               >
-                Pew-pew
-              </Character>
+                Value
+              </Element>
             )
           `,
           options: [options],
@@ -591,25 +511,25 @@ describe(RULE_NAME, () => {
       invalid: [
         {
           code: dedent`
-            let Odokawa = () => (
-              <Character
-                type="walrus"
-                role="taxi driver"
-                variant="odd"
+            let Component = () => (
+              <Element
+                a="aaa"
+                c="c"
+                b="bb"
               >
-                Pew-pew
-              </Character>
+                Value
+              </Element>
             )
           `,
           output: dedent`
-            let Odokawa = () => (
-              <Character
-                role="taxi driver"
-                type="walrus"
-                variant="odd"
+            let Component = () => (
+              <Element
+                a="aaa"
+                b="bb"
+                c="c"
               >
-                Pew-pew
-              </Character>
+                Value
+              </Element>
             )
           `,
           options: [options],
@@ -617,8 +537,8 @@ describe(RULE_NAME, () => {
             {
               messageId: 'unexpectedJSXPropsOrder',
               data: {
-                left: 'type',
-                right: 'role',
+                left: 'c',
+                right: 'b',
               },
             },
           ],
@@ -633,12 +553,12 @@ describe(RULE_NAME, () => {
         valid: [
           {
             code: dedent`
-              let Protagonist = () => (
-                <User
-                  age={16}
-                  name="Shinichi Izumi"
-                  parasite:name="Migi"
-                  school="West High"
+              let Component = () => (
+                <Element
+                  a="aaa"
+                  b="bb"
+                  c="c"
+                  d:e="d"
                 />
               )
             `,
@@ -648,22 +568,22 @@ describe(RULE_NAME, () => {
         invalid: [
           {
             code: dedent`
-              let Protagonist = () => (
-                <User
-                  age={16}
-                  parasite:name="Migi"
-                  name="Shinichi Izumi"
-                  school="West High"
+              let Component = () => (
+                <Element
+                  a="aaa"
+                  d:e="d"
+                  b="bb"
+                  c="c"
                 />
               )
             `,
             output: dedent`
-              let Protagonist = () => (
-                <User
-                  age={16}
-                  name="Shinichi Izumi"
-                  parasite:name="Migi"
-                  school="West High"
+              let Component = () => (
+                <Element
+                  a="aaa"
+                  b="bb"
+                  c="c"
+                  d:e="d"
                 />
               )
             `,
@@ -672,8 +592,8 @@ describe(RULE_NAME, () => {
               {
                 messageId: 'unexpectedJSXPropsOrder',
                 data: {
-                  left: 'parasite:name',
-                  right: 'name',
+                  left: 'd:e',
+                  right: 'b',
                 },
               },
             ],
@@ -689,15 +609,15 @@ describe(RULE_NAME, () => {
         valid: [
           {
             code: dedent`
-              let ArmorBoy = () => (
-                <Alchemist
-                  big
-                  firstName="Alphonse"
-                  lastName="Elric"
+              let Component = () => (
+                <Element
+                  d
+                  e="e"
+                  f="f"
                   {...data}
-                  age={14}
-                  occupation="Alchemist"
-                  weapon={['fists']}
+                  a="a"
+                  b="b"
+                  c="c"
                 />
               )
             `,
@@ -707,28 +627,28 @@ describe(RULE_NAME, () => {
         invalid: [
           {
             code: dedent`
-              let ArmorBoy = () => (
-                <Alchemist
-                  firstName="Alphonse"
-                  lastName="Elric"
-                  big
+              let Component = () => (
+                <Element
+                  e="e"
+                  d
+                  f="f"
                   {...data}
-                  occupation="Alchemist"
-                  age={14}
-                  weapon={['fists']}
+                  b="b"
+                  a="a"
+                  c="c"
                 />
               )
             `,
             output: dedent`
-              let ArmorBoy = () => (
-                <Alchemist
-                  big
-                  firstName="Alphonse"
-                  lastName="Elric"
+              let Component = () => (
+                <Element
+                  d
+                  e="e"
+                  f="f"
                   {...data}
-                  age={14}
-                  occupation="Alchemist"
-                  weapon={['fists']}
+                  a="a"
+                  b="b"
+                  c="c"
                 />
               )
             `,
@@ -737,15 +657,15 @@ describe(RULE_NAME, () => {
               {
                 messageId: 'unexpectedJSXPropsOrder',
                 data: {
-                  left: 'lastName',
-                  right: 'big',
+                  left: 'e',
+                  right: 'd',
                 },
               },
               {
                 messageId: 'unexpectedJSXPropsOrder',
                 data: {
-                  left: 'occupation',
-                  right: 'age',
+                  left: 'b',
+                  right: 'a',
                 },
               },
             ],
@@ -761,12 +681,12 @@ describe(RULE_NAME, () => {
         valid: [
           {
             code: dedent`
-              let Spike = () => (
-                <Hunter
-                  age={27}
-                  bloodType={0}
-                  origin="Mars"
-                  isFromCowboyBebop
+              let Component = () => (
+                <Element
+                  b="b"
+                  c="c"
+                  d="d"
+                  aaaaaa
                 />
               )
             `,
@@ -781,22 +701,22 @@ describe(RULE_NAME, () => {
         invalid: [
           {
             code: dedent`
-              let Spike = () => (
-                <Hunter
-                  age={27}
-                  bloodType={0}
-                  isFromCowboyBebop
-                  origin="Mars"
+              let Component = () => (
+                <Element
+                  aaaaaa
+                  b="b"
+                  c="c"
+                  d="d"
                 />
               )
             `,
             output: dedent`
-              let Spike = () => (
-                <Hunter
-                  age={27}
-                  bloodType={0}
-                  origin="Mars"
-                  isFromCowboyBebop
+              let Component = () => (
+                <Element
+                  b="b"
+                  c="c"
+                  d="d"
+                  aaaaaa
                 />
               )
             `,
@@ -810,8 +730,8 @@ describe(RULE_NAME, () => {
               {
                 messageId: 'unexpectedJSXPropsOrder',
                 data: {
-                  left: 'isFromCowboyBebop',
-                  right: 'origin',
+                  left: 'aaaaaa',
+                  right: 'b',
                 },
               },
             ],
@@ -827,11 +747,10 @@ describe(RULE_NAME, () => {
         valid: [
           {
             code: dedent`
-              <DeathNote
-                author="Light Yagami"
-                list={deathNotes}
-                shinigami="Ryuk"
-                onChange={updateDeathNotes}
+              <Element
+                a="a"
+                b="b"
+                onChange={handleChange}
               />
             `,
             options: [
@@ -846,19 +765,17 @@ describe(RULE_NAME, () => {
         invalid: [
           {
             code: dedent`
-              <DeathNote
-                author="Light Yagami"
-                list={deathNotes}
-                onChange={updateDeathNotes}
-                shinigami="Ryuk"
+              <Element
+                onChange={handleChange}
+                a="a"
+                b="b"
               />
             `,
             output: dedent`
-              <DeathNote
-                author="Light Yagami"
-                list={deathNotes}
-                shinigami="Ryuk"
-                onChange={updateDeathNotes}
+              <Element
+                a="a"
+                b="b"
+                onChange={handleChange}
               />
             `,
             options: [
@@ -873,7 +790,7 @@ describe(RULE_NAME, () => {
                 messageId: 'unexpectedJSXPropsOrder',
                 data: {
                   left: 'onChange',
-                  right: 'shinigami',
+                  right: 'a',
                 },
               },
             ],
@@ -889,17 +806,17 @@ describe(RULE_NAME, () => {
         valid: [
           {
             code: dedent`
-              <Holo
-                handleTransform={(type: 'Human' | 'Wolf') => {
-                  toogleForm(form)
+              <Element
+                d={() => {
+                  fn()
                 }}
-                style={{
-                  position: 'absolute',
-                  color: 'red',
+                e={{
+                  f: 'f',
+                  g: 'g',
                 }}
-                form={form}
-                residence="Pasloe"
-                title="Wisewolf"
+                a="aaa"
+                b="bb"
+                c="c"
               />
             `,
             options: [
@@ -913,31 +830,31 @@ describe(RULE_NAME, () => {
         invalid: [
           {
             code: dedent`
-              <Holo
-                form={form}
-                handleTransform={(type: 'Human' | 'Wolf') => {
-                  toogleForm(form)
+              <Element
+                a="aaa"
+                b="bb"
+                c="c"
+                d={() => {
+                  fn()
                 }}
-                residence="Pasloe"
-                style={{
-                  position: 'absolute',
-                  color: 'red',
+                e={{
+                  f: 'f',
+                  g: 'g',
                 }}
-                title="Wisewolf"
               />
             `,
             output: dedent`
-              <Holo
-                handleTransform={(type: 'Human' | 'Wolf') => {
-                  toogleForm(form)
+              <Element
+                d={() => {
+                  fn()
                 }}
-                style={{
-                  position: 'absolute',
-                  color: 'red',
+                e={{
+                  f: 'f',
+                  g: 'g',
                 }}
-                form={form}
-                residence="Pasloe"
-                title="Wisewolf"
+                a="aaa"
+                b="bb"
+                c="c"
               />
             `,
             options: [
@@ -950,15 +867,8 @@ describe(RULE_NAME, () => {
               {
                 messageId: 'unexpectedJSXPropsOrder',
                 data: {
-                  left: 'form',
-                  right: 'handleTransform',
-                },
-              },
-              {
-                messageId: 'unexpectedJSXPropsOrder',
-                data: {
-                  left: 'residence',
-                  right: 'style',
+                  left: 'c',
+                  right: 'd',
                 },
               },
             ],
@@ -974,19 +884,18 @@ describe(RULE_NAME, () => {
         valid: [
           {
             code: dedent`
-              <Hero
-                id="ed2cc26e-ec5a-41da-aab0-51a61d6a919f"
-                name="Saitama"
-                age={25}
-                height={175}
-                nickname="One-Punch Man"
-                weight={70}
+              <Element
+                d="ddd"
+                e="ee"
+                a="aaaa"
+                b="bbb"
+                c="cc"
               />
             `,
             options: [
               {
                 ...options,
-                customGroups: { top: ['id', 'name'] },
+                customGroups: { top: ['d', 'e'] },
                 groups: ['top', 'unknown'],
               },
             ],
@@ -995,29 +904,27 @@ describe(RULE_NAME, () => {
         invalid: [
           {
             code: dedent`
-              <Hero
-                age={25}
-                nickname="One-Punch Man"
-                name="Saitama"
-                id="ed2cc26e-ec5a-41da-aab0-51a61d6a919f"
-                height={175}
-                weight={70}
+              <Element
+                a="aaaa"
+                b="bbb"
+                c="cc"
+                d="ddd"
+                e="ee"
               />
             `,
             output: dedent`
-              <Hero
-                id="ed2cc26e-ec5a-41da-aab0-51a61d6a919f"
-                name="Saitama"
-                age={25}
-                height={175}
-                nickname="One-Punch Man"
-                weight={70}
+              <Element
+                d="ddd"
+                e="ee"
+                a="aaaa"
+                b="bbb"
+                c="cc"
               />
             `,
             options: [
               {
                 ...options,
-                customGroups: { top: ['id', 'name'] },
+                customGroups: { top: ['d', 'e'] },
                 groups: ['top', 'unknown'],
               },
             ],
@@ -1025,75 +932,8 @@ describe(RULE_NAME, () => {
               {
                 messageId: 'unexpectedJSXPropsOrder',
                 data: {
-                  left: 'nickname',
-                  right: 'name',
-                },
-              },
-              {
-                messageId: 'unexpectedJSXPropsOrder',
-                data: {
-                  left: 'name',
-                  right: 'id',
-                },
-              },
-            ],
-          },
-          {
-            code: dedent`
-              <Hero
-                name="Genos"
-                id="dabd9d43-a165-419a-bfc8-061533bf40bd"
-              />
-            `,
-            output: dedent`
-              <Hero
-                id="dabd9d43-a165-419a-bfc8-061533bf40bd"
-                name="Genos"
-              />
-            `,
-            options: [
-              {
-                ...options,
-                customGroups: { top: ['id'] },
-                groups: ['top', 'unknown'],
-              },
-            ],
-            errors: [
-              {
-                messageId: 'unexpectedJSXPropsOrder',
-                data: {
-                  left: 'name',
-                  right: 'id',
-                },
-              },
-            ],
-          },
-          {
-            code: dedent`
-              <Hero
-                name="King"
-                id="5bcd11c7-bb04-4046-b986-a4e4796fa624"
-              />
-            `,
-            output: dedent`
-              <Hero
-                id="5bcd11c7-bb04-4046-b986-a4e4796fa624"
-                name="King"
-              />
-            `,
-            options: [
-              {
-                ...options,
-                customGroups: { top: ['id'] },
-                groups: ['top', 'unknown'],
-              },
-            ],
-            errors: [
-              {
-                messageId: 'unexpectedJSXPropsOrder',
-                data: {
-                  left: 'name',
-                  right: 'id',
+                  left: 'c',
+                  right: 'd',
                 },
               },
             ],
@@ -1115,41 +955,41 @@ describe(RULE_NAME, () => {
       valid: [
         {
           code: dedent`
-              let Odokawa = () => (
-                <Character
-                  role="taxi driver"
-                  type="walrus"
-                  variant="odd"
-                >
-                  Pew-pew
-                </Character>
-              )
-            `,
+            let Component = () => (
+              <Element
+                a="aaa"
+                b="bb"
+                c="c"
+              >
+                Value
+              </Element>
+            )
+          `,
           options: [options],
         },
       ],
       invalid: [
         {
           code: dedent`
-            let Odokawa = () => (
-              <Character
-                type="walrus"
-                role="taxi driver"
-                variant="odd"
+            let Component = () => (
+              <Element
+                a="aaa"
+                c="c"
+                b="bb"
               >
-                Pew-pew
-              </Character>
+                Value
+              </Element>
             )
           `,
           output: dedent`
-            let Odokawa = () => (
-              <Character
-                role="taxi driver"
-                type="walrus"
-                variant="odd"
+            let Component = () => (
+              <Element
+                a="aaa"
+                b="bb"
+                c="c"
               >
-                Pew-pew
-              </Character>
+                Value
+              </Element>
             )
           `,
           options: [options],
@@ -1157,8 +997,8 @@ describe(RULE_NAME, () => {
             {
               messageId: 'unexpectedJSXPropsOrder',
               data: {
-                left: 'type',
-                right: 'role',
+                left: 'c',
+                right: 'b',
               },
             },
           ],
@@ -1173,12 +1013,12 @@ describe(RULE_NAME, () => {
         valid: [
           {
             code: dedent`
-              let Protagonist = () => (
-                <User
-                  name="Shinichi Izumi"
-                  parasite:name="Migi"
-                  school="West High"
-                  age={16}
+              let Component = () => (
+                <Element
+                  a="aaa"
+                  d:e="d"
+                  b="bb"
+                  c="c"
                 />
               )
             `,
@@ -1188,22 +1028,22 @@ describe(RULE_NAME, () => {
         invalid: [
           {
             code: dedent`
-              let Protagonist = () => (
-                <User
-                  age={16}
-                  parasite:name="Migi"
-                  name="Shinichi Izumi"
-                  school="West High"
+              let Component = () => (
+                <Element
+                  a="aaa"
+                  b="bb"
+                  d:e="d"
+                  c="c"
                 />
               )
             `,
             output: dedent`
-              let Protagonist = () => (
-                <User
-                  name="Shinichi Izumi"
-                  parasite:name="Migi"
-                  school="West High"
-                  age={16}
+              let Component = () => (
+                <Element
+                  a="aaa"
+                  d:e="d"
+                  b="bb"
+                  c="c"
                 />
               )
             `,
@@ -1212,15 +1052,8 @@ describe(RULE_NAME, () => {
               {
                 messageId: 'unexpectedJSXPropsOrder',
                 data: {
-                  left: 'age',
-                  right: 'parasite:name',
-                },
-              },
-              {
-                messageId: 'unexpectedJSXPropsOrder',
-                data: {
-                  left: 'parasite:name',
-                  right: 'name',
+                  left: 'b',
+                  right: 'd:e',
                 },
               },
             ],
@@ -1236,15 +1069,15 @@ describe(RULE_NAME, () => {
         valid: [
           {
             code: dedent`
-              let ArmorBoy = () => (
-                <Alchemist
-                  firstName="Alphonse"
-                  lastName="Elric"
-                  big
+              let Component = () => (
+                <Element
+                  e="ee"
+                  f="f"
+                  d
                   {...data}
-                  occupation="Alchemist"
-                  weapon={['fists']}
-                  age={14}
+                  a="aaa"
+                  b="bb"
+                  c="c"
                 />
               )
             `,
@@ -1254,28 +1087,28 @@ describe(RULE_NAME, () => {
         invalid: [
           {
             code: dedent`
-              let ArmorBoy = () => (
-                <Alchemist
-                  firstName="Alphonse"
-                  lastName="Elric"
-                  big
+              let Component = () => (
+                <Element
+                  e="ee"
+                  d
+                  f="f"
                   {...data}
-                  occupation="Alchemist"
-                  age={14}
-                  weapon={['fists']}
+                  b="bb"
+                  a="aaa"
+                  c="c"
                 />
               )
             `,
             output: dedent`
-              let ArmorBoy = () => (
-                <Alchemist
-                  firstName="Alphonse"
-                  lastName="Elric"
-                  big
+              let Component = () => (
+                <Element
+                  e="ee"
+                  f="f"
+                  d
                   {...data}
-                  occupation="Alchemist"
-                  weapon={['fists']}
-                  age={14}
+                  a="aaa"
+                  b="bb"
+                  c="c"
                 />
               )
             `,
@@ -1284,8 +1117,15 @@ describe(RULE_NAME, () => {
               {
                 messageId: 'unexpectedJSXPropsOrder',
                 data: {
-                  left: 'age',
-                  right: 'weapon',
+                  left: 'd',
+                  right: 'f',
+                },
+              },
+              {
+                messageId: 'unexpectedJSXPropsOrder',
+                data: {
+                  left: 'b',
+                  right: 'a',
                 },
               },
             ],
@@ -1301,12 +1141,12 @@ describe(RULE_NAME, () => {
         valid: [
           {
             code: dedent`
-              let Spike = () => (
-                <Hunter
-                  bloodType={0}
-                  origin="Mars"
-                  age={27}
-                  isFromCowboyBebop
+              let Component = () => (
+                <Element
+                  b="b"
+                  c="c"
+                  d="d"
+                  aaaaaa
                 />
               )
             `,
@@ -1321,22 +1161,22 @@ describe(RULE_NAME, () => {
         invalid: [
           {
             code: dedent`
-              let Spike = () => (
-                <Hunter
-                  age={27}
-                  bloodType={0}
-                  isFromCowboyBebop
-                  origin="Mars"
+              let Component = () => (
+                <Element
+                  aaaaaa
+                  b="b"
+                  c="c"
+                  d="d"
                 />
               )
             `,
             output: dedent`
-              let Spike = () => (
-                <Hunter
-                  bloodType={0}
-                  origin="Mars"
-                  age={27}
-                  isFromCowboyBebop
+              let Component = () => (
+                <Element
+                  b="b"
+                  c="c"
+                  d="d"
+                  aaaaaa
                 />
               )
             `,
@@ -1350,15 +1190,8 @@ describe(RULE_NAME, () => {
               {
                 messageId: 'unexpectedJSXPropsOrder',
                 data: {
-                  left: 'age',
-                  right: 'bloodType',
-                },
-              },
-              {
-                messageId: 'unexpectedJSXPropsOrder',
-                data: {
-                  left: 'isFromCowboyBebop',
-                  right: 'origin',
+                  left: 'aaaaaa',
+                  right: 'b',
                 },
               },
             ],
@@ -1374,11 +1207,10 @@ describe(RULE_NAME, () => {
         valid: [
           {
             code: dedent`
-              <DeathNote
-                author="Light Yagami"
-                list={deathNotes}
-                shinigami="Ryuk"
-                onChange={updateDeathNotes}
+              <Element
+                a="a"
+                b="b"
+                onChange={handleChange}
               />
             `,
             options: [
@@ -1393,19 +1225,17 @@ describe(RULE_NAME, () => {
         invalid: [
           {
             code: dedent`
-              <DeathNote
-                author="Light Yagami"
-                list={deathNotes}
-                onChange={updateDeathNotes}
-                shinigami="Ryuk"
+              <Element
+                onChange={handleChange}
+                a="a"
+                b="b"
               />
             `,
             output: dedent`
-              <DeathNote
-                author="Light Yagami"
-                list={deathNotes}
-                shinigami="Ryuk"
-                onChange={updateDeathNotes}
+              <Element
+                a="a"
+                b="b"
+                onChange={handleChange}
               />
             `,
             options: [
@@ -1420,7 +1250,7 @@ describe(RULE_NAME, () => {
                 messageId: 'unexpectedJSXPropsOrder',
                 data: {
                   left: 'onChange',
-                  right: 'shinigami',
+                  right: 'a',
                 },
               },
             ],
@@ -1436,17 +1266,17 @@ describe(RULE_NAME, () => {
         valid: [
           {
             code: dedent`
-              <Holo
-                handleTransform={(type: 'Human' | 'Wolf') => {
-                  toogleForm(form)
+              <Element
+                e={{
+                  f: 'f',
+                  g: 'g',
                 }}
-                style={{
-                  position: 'absolute',
-                  color: 'red',
+                d={() => {
+                  fn()
                 }}
-                residence="Pasloe"
-                title="Wisewolf"
-                form={form}
+                a="aaa"
+                b="bb"
+                c="c"
               />
             `,
             options: [
@@ -1460,31 +1290,31 @@ describe(RULE_NAME, () => {
         invalid: [
           {
             code: dedent`
-              <Holo
-                form={form}
-                handleTransform={(type: 'Human' | 'Wolf') => {
-                  toogleForm(form)
+              <Element
+                a="aaa"
+                b="bb"
+                c="c"
+                d={() => {
+                  fn()
                 }}
-                residence="Pasloe"
-                style={{
-                  position: 'absolute',
-                  color: 'red',
+                e={{
+                  f: 'f',
+                  g: 'g',
                 }}
-                title="Wisewolf"
               />
             `,
             output: dedent`
-              <Holo
-                handleTransform={(type: 'Human' | 'Wolf') => {
-                  toogleForm(form)
+              <Element
+                e={{
+                  f: 'f',
+                  g: 'g',
                 }}
-                style={{
-                  position: 'absolute',
-                  color: 'red',
+                d={() => {
+                  fn()
                 }}
-                residence="Pasloe"
-                title="Wisewolf"
-                form={form}
+                a="aaa"
+                b="bb"
+                c="c"
               />
             `,
             options: [
@@ -1497,15 +1327,15 @@ describe(RULE_NAME, () => {
               {
                 messageId: 'unexpectedJSXPropsOrder',
                 data: {
-                  left: 'form',
-                  right: 'handleTransform',
+                  left: 'c',
+                  right: 'd',
                 },
               },
               {
                 messageId: 'unexpectedJSXPropsOrder',
                 data: {
-                  left: 'residence',
-                  right: 'style',
+                  left: 'd',
+                  right: 'e',
                 },
               },
             ],
@@ -1521,19 +1351,18 @@ describe(RULE_NAME, () => {
         valid: [
           {
             code: dedent`
-              <Hero
-                id="ed2cc26e-ec5a-41da-aab0-51a61d6a919f"
-                name="Saitama"
-                nickname="One-Punch Man"
-                height={175}
-                weight={70}
-                age={25}
+              <Element
+                d="ddd"
+                e="ee"
+                a="aaaa"
+                b="bbb"
+                c="cc"
               />
             `,
             options: [
               {
                 ...options,
-                customGroups: { top: ['id', 'name'] },
+                customGroups: { top: ['d', 'e'] },
                 groups: ['top', 'unknown'],
               },
             ],
@@ -1542,29 +1371,27 @@ describe(RULE_NAME, () => {
         invalid: [
           {
             code: dedent`
-              <Hero
-                age={25}
-                nickname="One-Punch Man"
-                name="Saitama"
-                id="ed2cc26e-ec5a-41da-aab0-51a61d6a919f"
-                height={175}
-                weight={70}
+              <Element
+                a="aaaa"
+                b="bbb"
+                c="cc"
+                d="ddd"
+                e="ee"
               />
             `,
             output: dedent`
-              <Hero
-                id="ed2cc26e-ec5a-41da-aab0-51a61d6a919f"
-                name="Saitama"
-                nickname="One-Punch Man"
-                height={175}
-                weight={70}
-                age={25}
+              <Element
+                d="ddd"
+                e="ee"
+                a="aaaa"
+                b="bbb"
+                c="cc"
               />
             `,
             options: [
               {
                 ...options,
-                customGroups: { top: ['id', 'name'] },
+                customGroups: { top: ['d', 'e'] },
                 groups: ['top', 'unknown'],
               },
             ],
@@ -1572,82 +1399,8 @@ describe(RULE_NAME, () => {
               {
                 messageId: 'unexpectedJSXPropsOrder',
                 data: {
-                  left: 'age',
-                  right: 'nickname',
-                },
-              },
-              {
-                messageId: 'unexpectedJSXPropsOrder',
-                data: {
-                  left: 'nickname',
-                  right: 'name',
-                },
-              },
-              {
-                messageId: 'unexpectedJSXPropsOrder',
-                data: {
-                  left: 'name',
-                  right: 'id',
-                },
-              },
-            ],
-          },
-          {
-            code: dedent`
-              <Hero
-                name="Genos"
-                id="dabd9d43-a165-419a-bfc8-061533bf40bd"
-              />
-            `,
-            output: dedent`
-              <Hero
-                id="dabd9d43-a165-419a-bfc8-061533bf40bd"
-                name="Genos"
-              />
-            `,
-            options: [
-              {
-                ...options,
-                customGroups: { top: ['id', 'name'] },
-                groups: ['top', 'unknown'],
-              },
-            ],
-            errors: [
-              {
-                messageId: 'unexpectedJSXPropsOrder',
-                data: {
-                  left: 'name',
-                  right: 'id',
-                },
-              },
-            ],
-          },
-          {
-            code: dedent`
-              <Hero
-                name="King"
-                id="5bcd11c7-bb04-4046-b986-a4e4796fa624"
-              />
-            `,
-            output: dedent`
-              <Hero
-                id="5bcd11c7-bb04-4046-b986-a4e4796fa624"
-                name="King"
-              />
-            `,
-            options: [
-              {
-                ...options,
-                customGroups: { top: ['id', 'name'] },
-                groups: ['top', 'unknown'],
-              },
-            ],
-            errors: [
-              {
-                messageId: 'unexpectedJSXPropsOrder',
-                data: {
-                  left: 'name',
-                  right: 'id',
+                  left: 'c',
+                  right: 'd',
                 },
               },
             ],
@@ -1664,82 +1417,21 @@ describe(RULE_NAME, () => {
       {
         valid: [
           dedent`
-            let Mob = () => (
-              <Character
-                firstName="Shigeo"
-                lastName="Kageyama"
-                occupation={['student', 'club vice-president']}
+            let Component = () => (
+              <Element
+                a="a"
+                b="b"
+                c="c"
               />
             )
           `,
           {
             code: dedent`
-              const content = (
-                <AppBar
-                  link1="http://www.example.com"
-                  link10="http://www.example.com"
-                  link2="http://www.example.com"
-                />
-              )
-            `,
-            options: [{}],
-          },
-        ],
-        invalid: [
-          {
-            code: dedent`
-              let Mob = () => (
-                <Character
-                  occupation={['student', 'club vice-president']}
-                  firstName="Shigeo"
-                  lastName="Kageyama"
-                />
-              )
-            `,
-            output: dedent`
-              let Mob = () => (
-                <Character
-                  firstName="Shigeo"
-                  lastName="Kageyama"
-                  occupation={['student', 'club vice-president']}
-                />
-              )
-            `,
-            errors: [
-              {
-                messageId: 'unexpectedJSXPropsOrder',
-                data: {
-                  left: 'occupation',
-                  right: 'firstName',
-                },
-              },
-            ],
-          },
-        ],
-      },
-    )
-
-    ruleTester.run(
-      `${RULE_NAME}: sets alphabetical asc sorting as default`,
-      rule,
-      {
-        valid: [
-          dedent`
-            let Mob = () => (
-              <Character
-                firstName="Shigeo"
-                lastName="Kageyama"
-                occupation={['student', 'club vice-president']}
-              />
-            )
-          `,
-          {
-            code: dedent`
-              const content = (
-                <AppBar
-                  link1="http://www.example.com"
-                  link10="http://www.example.com"
-                  link2="http://www.example.com"
+              const Component = (
+                <Element
+                  link1="value"
+                  link10="value"
+                  link2="value"
                 />
               )
             `,
@@ -1755,13 +1447,12 @@ describe(RULE_NAME, () => {
       ruleTester.run(`${RULE_NAME}: not works with ${extension} files`, rule, {
         valid: [
           {
-            filename: 'component.vue',
+            filename: `component${extension}`,
             code: dedent`
-                <Student
-                  name="Mitsumi Iwakura"
-                  age={15}
-                  gender="female"
-                  birthPlace="Ikajima, Ishikawa Prefecture"
+                <Element
+                  c="c"
+                  b="bb"
+                  a="aaa"
                 />
               `,
           },

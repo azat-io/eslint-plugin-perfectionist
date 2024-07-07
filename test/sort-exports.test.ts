@@ -29,10 +29,10 @@ describe(RULE_NAME, () => {
       valid: [
         {
           code: dedent`
-            export { HiroshiOdokawa } from 'cab-park'
-            export { Gouriki } from 'hospital'
-            export { Daimon1, Daimon2 } from 'police'
-            export { Shibagaki, Baba } from 'radio'
+            export { a1 } from 'a'
+            export { b1, b2 } from 'b'
+            export { c1, c2, c3 } from 'c'
+            export { d1, d2 } from 'd'
           `,
           options: [options],
         },
@@ -40,31 +40,31 @@ describe(RULE_NAME, () => {
       invalid: [
         {
           code: dedent`
-            export { Gouriki } from 'hospital'
-            export { HiroshiOdokawa } from 'cab-park'
-            export { Shibagaki, Baba } from 'radio'
-            export { Daimon1, Daimon2 } from 'police'
+            export { b1, b2 } from 'b'
+            export { a1 } from 'a'
+            export { d1, d2 } from 'd'
+            export { c1, c2, c3 } from 'c'
           `,
           output: dedent`
-            export { HiroshiOdokawa } from 'cab-park'
-            export { Gouriki } from 'hospital'
-            export { Daimon1, Daimon2 } from 'police'
-            export { Shibagaki, Baba } from 'radio'
+            export { a1 } from 'a'
+            export { b1, b2 } from 'b'
+            export { c1, c2, c3 } from 'c'
+            export { d1, d2 } from 'd'
           `,
           options: [options],
           errors: [
             {
               messageId: 'unexpectedExportsOrder',
               data: {
-                left: 'hospital',
-                right: 'cab-park',
+                left: 'b',
+                right: 'a',
               },
             },
             {
               messageId: 'unexpectedExportsOrder',
               data: {
-                left: 'radio',
-                right: 'police',
+                left: 'd',
+                right: 'c',
               },
             },
           ],
@@ -76,11 +76,11 @@ describe(RULE_NAME, () => {
       valid: [
         {
           code: dedent`
-            export { SuzuHoujou } from './houjou'
-            export * as Kuromura from './kuromura'
-            export { TetsuMizuhara } from './mizuhara'
-            export { Shuusaku } from './shuusaku'
-            export * from 'hiroshima'
+            export { a1 } from './a'
+            export * as b from './b'
+            export { c1, c2 } from './c'
+            export { d } from './d'
+            export * from 'e'
           `,
           options: [options],
         },
@@ -88,33 +88,33 @@ describe(RULE_NAME, () => {
       invalid: [
         {
           code: dedent`
-            export * as Kuromura from './kuromura'
-            export { SuzuHoujou } from './houjou'
-            export { TetsuMizuhara } from './mizuhara'
-            export * from 'hiroshima'
-            export { Shuusaku } from './shuusaku'
+            export * as b from './b'
+            export { a1 } from './a'
+            export { c1, c2 } from './c'
+            export * from 'e'
+            export { d } from './d'
           `,
           output: dedent`
-            export { SuzuHoujou } from './houjou'
-            export * as Kuromura from './kuromura'
-            export { TetsuMizuhara } from './mizuhara'
-            export { Shuusaku } from './shuusaku'
-            export * from 'hiroshima'
+            export { a1 } from './a'
+            export * as b from './b'
+            export { c1, c2 } from './c'
+            export { d } from './d'
+            export * from 'e'
           `,
           options: [options],
           errors: [
             {
               messageId: 'unexpectedExportsOrder',
               data: {
-                left: './kuromura',
-                right: './houjou',
+                left: './b',
+                right: './a',
               },
             },
             {
               messageId: 'unexpectedExportsOrder',
               data: {
-                left: 'hiroshima',
-                right: './shuusaku',
+                left: 'e',
+                right: './d',
               },
             },
           ],
@@ -126,9 +126,9 @@ describe(RULE_NAME, () => {
       valid: [
         {
           code: dedent`
-            export { student as MeiKamino } from './laboratory'
-            export { default as Gojira } from './monsters/gojira'
-            export { Yun, Haberu } from './otaki-factory'
+            export { a1 as aX } from './a'
+            export { default as b } from './b'
+            export { c1, c2 } from './c'
           `,
           options: [options],
         },
@@ -136,22 +136,22 @@ describe(RULE_NAME, () => {
       invalid: [
         {
           code: dedent`
-            export { default as Gojira } from './monsters/gojira'
-            export { Yun, Haberu } from './otaki-factory'
-            export { student as MeiKamino } from './laboratory'
+            export { a1 as aX } from './a'
+            export { c1, c2 } from './c'
+            export { default as b } from './b'
           `,
           output: dedent`
-            export { student as MeiKamino } from './laboratory'
-            export { default as Gojira } from './monsters/gojira'
-            export { Yun, Haberu } from './otaki-factory'
+            export { a1 as aX } from './a'
+            export { default as b } from './b'
+            export { c1, c2 } from './c'
           `,
           options: [options],
           errors: [
             {
               messageId: 'unexpectedExportsOrder',
               data: {
-                left: './otaki-factory',
-                right: './laboratory',
+                left: './c',
+                right: './b',
               },
             },
           ],
@@ -173,10 +173,10 @@ describe(RULE_NAME, () => {
       valid: [
         {
           code: dedent`
-            export { HiroshiOdokawa } from 'cab-park'
-            export { Gouriki } from 'hospital'
-            export { Daimon1, Daimon2 } from 'police'
-            export { Shibagaki, Baba } from 'radio'
+            export { a1 } from 'a'
+            export { b1, b2 } from 'b'
+            export { c1, c2, c3 } from 'c'
+            export { d1, d2 } from 'd'
           `,
           options: [options],
         },
@@ -184,31 +184,31 @@ describe(RULE_NAME, () => {
       invalid: [
         {
           code: dedent`
-            export { Gouriki } from 'hospital'
-            export { HiroshiOdokawa } from 'cab-park'
-            export { Shibagaki, Baba } from 'radio'
-            export { Daimon1, Daimon2 } from 'police'
+            export { b1, b2 } from 'b'
+            export { a1 } from 'a'
+            export { d1, d2 } from 'd'
+            export { c1, c2, c3 } from 'c'
           `,
           output: dedent`
-            export { HiroshiOdokawa } from 'cab-park'
-            export { Gouriki } from 'hospital'
-            export { Daimon1, Daimon2 } from 'police'
-            export { Shibagaki, Baba } from 'radio'
+            export { a1 } from 'a'
+            export { b1, b2 } from 'b'
+            export { c1, c2, c3 } from 'c'
+            export { d1, d2 } from 'd'
           `,
           options: [options],
           errors: [
             {
               messageId: 'unexpectedExportsOrder',
               data: {
-                left: 'hospital',
-                right: 'cab-park',
+                left: 'b',
+                right: 'a',
               },
             },
             {
               messageId: 'unexpectedExportsOrder',
               data: {
-                left: 'radio',
-                right: 'police',
+                left: 'd',
+                right: 'c',
               },
             },
           ],
@@ -220,11 +220,11 @@ describe(RULE_NAME, () => {
       valid: [
         {
           code: dedent`
-            export { SuzuHoujou } from './houjou'
-            export * as Kuromura from './kuromura'
-            export { TetsuMizuhara } from './mizuhara'
-            export { Shuusaku } from './shuusaku'
-            export * from 'hiroshima'
+            export { a1 } from './a'
+            export * as b from './b'
+            export { c1, c2 } from './c'
+            export { d } from './d'
+            export * from 'e'
           `,
           options: [options],
         },
@@ -232,33 +232,33 @@ describe(RULE_NAME, () => {
       invalid: [
         {
           code: dedent`
-            export * as Kuromura from './kuromura'
-            export { SuzuHoujou } from './houjou'
-            export { TetsuMizuhara } from './mizuhara'
-            export * from 'hiroshima'
-            export { Shuusaku } from './shuusaku'
+            export * as b from './b'
+            export { a1 } from './a'
+            export { c1, c2 } from './c'
+            export * from 'e'
+            export { d } from './d'
           `,
           output: dedent`
-            export { SuzuHoujou } from './houjou'
-            export * as Kuromura from './kuromura'
-            export { TetsuMizuhara } from './mizuhara'
-            export { Shuusaku } from './shuusaku'
-            export * from 'hiroshima'
+            export { a1 } from './a'
+            export * as b from './b'
+            export { c1, c2 } from './c'
+            export { d } from './d'
+            export * from 'e'
           `,
           options: [options],
           errors: [
             {
               messageId: 'unexpectedExportsOrder',
               data: {
-                left: './kuromura',
-                right: './houjou',
+                left: './b',
+                right: './a',
               },
             },
             {
               messageId: 'unexpectedExportsOrder',
               data: {
-                left: 'hiroshima',
-                right: './shuusaku',
+                left: 'e',
+                right: './d',
               },
             },
           ],
@@ -270,9 +270,9 @@ describe(RULE_NAME, () => {
       valid: [
         {
           code: dedent`
-            export { student as MeiKamino } from './laboratory'
-            export { default as Gojira } from './monsters/gojira'
-            export { Yun, Haberu } from './otaki-factory'
+            export { a1 as aX } from './a'
+            export { default as b } from './b'
+            export { c1, c2 } from './c'
           `,
           options: [options],
         },
@@ -280,22 +280,22 @@ describe(RULE_NAME, () => {
       invalid: [
         {
           code: dedent`
-            export { default as Gojira } from './monsters/gojira'
-            export { Yun, Haberu } from './otaki-factory'
-            export { student as MeiKamino } from './laboratory'
+            export { a1 as aX } from './a'
+            export { c1, c2 } from './c'
+            export { default as b } from './b'
           `,
           output: dedent`
-            export { student as MeiKamino } from './laboratory'
-            export { default as Gojira } from './monsters/gojira'
-            export { Yun, Haberu } from './otaki-factory'
+            export { a1 as aX } from './a'
+            export { default as b } from './b'
+            export { c1, c2 } from './c'
           `,
           options: [options],
           errors: [
             {
               messageId: 'unexpectedExportsOrder',
               data: {
-                left: './otaki-factory',
-                right: './laboratory',
+                left: './c',
+                right: './b',
               },
             },
           ],
@@ -316,10 +316,10 @@ describe(RULE_NAME, () => {
       valid: [
         {
           code: dedent`
-            export { HiroshiOdokawa } from 'cab-park'
-            export { Daimon1, Daimon2 } from 'police'
-            export { Shibagaki, Baba } from 'radio'
-            export { Gouriki } from 'hospital'
+            export { c1, c2, c3 } from 'c'
+            export { b1, b2 } from 'b'
+            export { d1, d2 } from 'd'
+            export { a1 } from 'a'
           `,
           options: [options],
         },
@@ -327,31 +327,31 @@ describe(RULE_NAME, () => {
       invalid: [
         {
           code: dedent`
-            export { Gouriki } from 'hospital'
-            export { HiroshiOdokawa } from 'cab-park'
-            export { Shibagaki, Baba } from 'radio'
-            export { Daimon1, Daimon2 } from 'police'
+            export { b1, b2 } from 'b'
+            export { a1 } from 'a'
+            export { d1, d2 } from 'd'
+            export { c1, c2, c3 } from 'c'
           `,
           output: dedent`
-            export { HiroshiOdokawa } from 'cab-park'
-            export { Daimon1, Daimon2 } from 'police'
-            export { Shibagaki, Baba } from 'radio'
-            export { Gouriki } from 'hospital'
+            export { c1, c2, c3 } from 'c'
+            export { b1, b2 } from 'b'
+            export { d1, d2 } from 'd'
+            export { a1 } from 'a'
           `,
           options: [options],
           errors: [
             {
               messageId: 'unexpectedExportsOrder',
               data: {
-                left: 'hospital',
-                right: 'cab-park',
+                left: 'a',
+                right: 'd',
               },
             },
             {
               messageId: 'unexpectedExportsOrder',
               data: {
-                left: 'radio',
-                right: 'police',
+                left: 'd',
+                right: 'c',
               },
             },
           ],
@@ -363,11 +363,11 @@ describe(RULE_NAME, () => {
       valid: [
         {
           code: dedent`
-            export { TetsuMizuhara } from './mizuhara'
-            export * as Kuromura from './kuromura'
-            export { SuzuHoujou } from './houjou'
-            export { Shuusaku } from './shuusaku'
-            export * from 'hiroshima'
+            export { c1, c2 } from './c'
+            export { a1 } from './a'
+            export * as b from './b'
+            export { d } from './d'
+            export * from 'e'
           `,
           options: [options],
         },
@@ -375,33 +375,33 @@ describe(RULE_NAME, () => {
       invalid: [
         {
           code: dedent`
-            export * as Kuromura from './kuromura'
-            export { SuzuHoujou } from './houjou'
-            export { TetsuMizuhara } from './mizuhara'
-            export * from 'hiroshima'
-            export { Shuusaku } from './shuusaku'
+            export * as b from './b'
+            export { a1 } from './a'
+            export { c1, c2 } from './c'
+            export * from 'e'
+            export { d } from './d'
           `,
           output: dedent`
-            export { TetsuMizuhara } from './mizuhara'
-            export * as Kuromura from './kuromura'
-            export { SuzuHoujou } from './houjou'
-            export { Shuusaku } from './shuusaku'
-            export * from 'hiroshima'
+            export { c1, c2 } from './c'
+            export * as b from './b'
+            export { a1 } from './a'
+            export { d } from './d'
+            export * from 'e'
           `,
           options: [options],
           errors: [
             {
               messageId: 'unexpectedExportsOrder',
               data: {
-                left: './houjou',
-                right: './mizuhara',
+                left: './a',
+                right: './c',
               },
             },
             {
               messageId: 'unexpectedExportsOrder',
               data: {
-                left: 'hiroshima',
-                right: './shuusaku',
+                left: 'e',
+                right: './d',
               },
             },
           ],
@@ -413,9 +413,9 @@ describe(RULE_NAME, () => {
       valid: [
         {
           code: dedent`
-            export { default as Gojira } from './monsters/gojira'
-            export { student as MeiKamino } from './laboratory'
-            export { Yun, Haberu } from './otaki-factory'
+            export { default as b } from './b'
+            export { a1 as aX } from './a'
+            export { c1, c2 } from './c'
           `,
           options: [options],
         },
@@ -423,22 +423,22 @@ describe(RULE_NAME, () => {
       invalid: [
         {
           code: dedent`
-            export { default as Gojira } from './monsters/gojira'
-            export { Yun, Haberu } from './otaki-factory'
-            export { student as MeiKamino } from './laboratory'
+            export { a1 as aX } from './a'
+            export { c1, c2 } from './c'
+            export { default as b } from './b'
           `,
           output: dedent`
-            export { default as Gojira } from './monsters/gojira'
-            export { student as MeiKamino } from './laboratory'
-            export { Yun, Haberu } from './otaki-factory'
+            export { default as b } from './b'
+            export { a1 as aX } from './a'
+            export { c1, c2 } from './c'
           `,
           options: [options],
           errors: [
             {
               messageId: 'unexpectedExportsOrder',
               data: {
-                left: './otaki-factory',
-                right: './laboratory',
+                left: './c',
+                right: './b',
               },
             },
           ],
@@ -454,10 +454,10 @@ describe(RULE_NAME, () => {
       {
         valid: [
           dedent`
-            export { Hizuru } from '~/higotoshima/hizuru'
-            export { Mio } from '~/higotoshima/mio'
-            export { Shinpei } from '~/higotoshima/shinpei'
-            export { Ushio } from '~/higotoshima/ushio'
+            export { a } from '~/a'
+            export { b } from '~/b'
+            export { c } from '~/c'
+            export { d } from '~/d'
           `,
           {
             code: dedent`
@@ -472,30 +472,23 @@ describe(RULE_NAME, () => {
         invalid: [
           {
             code: dedent`
-              export { Shinpei } from '~/higotoshima/shinpei'
-              export { Mio } from '~/higotoshima/mio'
-              export { Ushio } from '~/higotoshima/ushio'
-              export { Hizuru } from '~/higotoshima/hizuru'
+              export { a } from '~/a'
+              export { c } from '~/c'
+              export { b } from '~/b'
+              export { d } from '~/d'
             `,
             output: dedent`
-              export { Hizuru } from '~/higotoshima/hizuru'
-              export { Mio } from '~/higotoshima/mio'
-              export { Shinpei } from '~/higotoshima/shinpei'
-              export { Ushio } from '~/higotoshima/ushio'
+              export { a } from '~/a'
+              export { b } from '~/b'
+              export { c } from '~/c'
+              export { d } from '~/d'
             `,
             errors: [
               {
                 messageId: 'unexpectedExportsOrder',
                 data: {
-                  left: '~/higotoshima/shinpei',
-                  right: '~/higotoshima/mio',
-                },
-              },
-              {
-                messageId: 'unexpectedExportsOrder',
-                data: {
-                  left: '~/higotoshima/ushio',
-                  right: '~/higotoshima/hizuru',
+                  left: '~/c',
+                  right: '~/b',
                 },
               },
             ],
@@ -510,15 +503,15 @@ describe(RULE_NAME, () => {
       {
         valid: [
           dedent`
-            export let jajankenAttack = () => {
+            export let a = () => {
               // ...
             }
 
-            export let transformGon = () => {
+            export let b = () => {
               // ...
             }
 
-            export let name = 'Gon Freecss'
+            export let c = ''
           `,
         ],
         invalid: [],

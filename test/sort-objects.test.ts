@@ -32,11 +32,11 @@ describe(RULE_NAME, () => {
         valid: [
           {
             code: dedent`
-              let wisewolf = {
-                age: undefined,
-                'eye-color': '#f00',
-                [hometown]: 'Yoitsu',
-                name: 'Holo',
+              let Obj = {
+                a: 'aaaa',
+                b: 'bbb',
+                [c]: 'cc',
+                d: 'd',
               }
             `,
             options: [options],
@@ -45,19 +45,19 @@ describe(RULE_NAME, () => {
         invalid: [
           {
             code: dedent`
-              let wisewolf = {
-                age: undefined,
-                [hometown]: 'Yoitsu',
-                'eye-color': '#f00',
-                name: 'Holo',
+              let Obj = {
+                a: 'aaaa',
+                [c]: 'cc',
+                b: 'bbb',
+                d: 'd',
               }
             `,
             output: dedent`
-              let wisewolf = {
-                age: undefined,
-                'eye-color': '#f00',
-                [hometown]: 'Yoitsu',
-                name: 'Holo',
+              let Obj = {
+                a: 'aaaa',
+                b: 'bbb',
+                [c]: 'cc',
+                d: 'd',
               }
             `,
             options: [options],
@@ -65,8 +65,8 @@ describe(RULE_NAME, () => {
               {
                 messageId: 'unexpectedObjectsOrder',
                 data: {
-                  left: 'hometown',
-                  right: 'eye-color',
+                  left: 'c',
+                  right: 'b',
                 },
               },
             ],
@@ -82,11 +82,11 @@ describe(RULE_NAME, () => {
         valid: [
           {
             code: dedent`
-              let bebop = {
-                dog: 'Ein',
-                hunter: 'Spike Spiegel',
-                ...teamMembers,
-                hacker: 'Ed',
+              let Obj = {
+                b: 'bb',
+                c: 'c',
+                ...rest,
+                a: 'aaa',
               }
             `,
             options: [options],
@@ -95,19 +95,19 @@ describe(RULE_NAME, () => {
         invalid: [
           {
             code: dedent`
-              let bebop = {
-                hunter: 'Spike Spiegel',
-                dog: 'Ein',
-                ...teamMembers,
-                hacker: 'Ed',
+              let Obj = {
+                c: 'c',
+                b: 'bb',
+                ...rest,
+                a: 'aaa',
               }
             `,
             output: dedent`
-              let bebop = {
-                dog: 'Ein',
-                hunter: 'Spike Spiegel',
-                ...teamMembers,
-                hacker: 'Ed',
+              let Obj = {
+                b: 'bb',
+                c: 'c',
+                ...rest,
+                a: 'aaa',
               }
             `,
             options: [options],
@@ -115,8 +115,8 @@ describe(RULE_NAME, () => {
               {
                 messageId: 'unexpectedObjectsOrder',
                 data: {
-                  left: 'hunter',
-                  right: 'dog',
+                  left: 'c',
+                  right: 'b',
                 },
               },
             ],
@@ -129,18 +129,14 @@ describe(RULE_NAME, () => {
       valid: [
         {
           code: dedent`
-            let enforcers = {
-              'akane-tsunemori': {
-                age: 20,
-                'crime-coefficient': 28,
+            let Obj = {
+              x: {
+                a: 'aa',
+                b: 'b',
               },
-              'nobuchika-ginoza': {
-                age: 28,
-                'crime-coefficient': 86.3,
-              },
-              'shinya-kogami': {
-                age: 28,
-                'crime-coefficient': 282.6,
+              y: {
+                a: 'aa',
+                b: 'b',
               },
             }
           `,
@@ -150,34 +146,26 @@ describe(RULE_NAME, () => {
       invalid: [
         {
           code: dedent`
-            let enforcers = {
-              'akane-tsunemori': {
-                'crime-coefficient': 28,
-                age: 20,
+            let Obj = {
+              y: {
+                b: 'b',
+                a: 'aa',
               },
-              'shinya-kogami': {
-                'crime-coefficient': 282.6,
-                age: 28,
-              },
-              'nobuchika-ginoza': {
-                'crime-coefficient': 86.3,
-                age: 28,
+              x: {
+                b: 'b',
+                a: 'aa',
               },
             }
           `,
           output: dedent`
-            let enforcers = {
-              'akane-tsunemori': {
-                'crime-coefficient': 28,
-                age: 20,
+            let Obj = {
+              x: {
+                b: 'b',
+                a: 'aa',
               },
-              'nobuchika-ginoza': {
-                'crime-coefficient': 86.3,
-                age: 28,
-              },
-              'shinya-kogami': {
-                'crime-coefficient': 282.6,
-                age: 28,
+              y: {
+                b: 'b',
+                a: 'aa',
               },
             }
           `,
@@ -186,29 +174,22 @@ describe(RULE_NAME, () => {
             {
               messageId: 'unexpectedObjectsOrder',
               data: {
-                left: 'crime-coefficient',
-                right: 'age',
+                left: 'b',
+                right: 'a',
               },
             },
             {
               messageId: 'unexpectedObjectsOrder',
               data: {
-                left: 'crime-coefficient',
-                right: 'age',
+                left: 'y',
+                right: 'x',
               },
             },
             {
               messageId: 'unexpectedObjectsOrder',
               data: {
-                left: 'shinya-kogami',
-                right: 'nobuchika-ginoza',
-              },
-            },
-            {
-              messageId: 'unexpectedObjectsOrder',
-              data: {
-                left: 'crime-coefficient',
-                right: 'age',
+                left: 'b',
+                right: 'a',
               },
             },
           ],
@@ -220,10 +201,10 @@ describe(RULE_NAME, () => {
       valid: [
         {
           code: dedent`
-            let robots = {
-              'eva-02': 'Asuka Langley Sohryu',
-              [getTestEva()]: 'Yui Ikari',
-              [robots[1]]: 'Rei Ayanami',
+            let Obj = {
+              'a': 'aaa',
+              [b()]: 'bb',
+              [c[1]]: 'c',
             }
           `,
           options: [options],
@@ -232,17 +213,17 @@ describe(RULE_NAME, () => {
       invalid: [
         {
           code: dedent`
-            let robots = {
-              [robots[1]]: 'Rei Ayanami',
-              [getTestEva()]: 'Yui Ikari',
-              'eva-02': 'Asuka Langley Sohryu',
+            let Obj = {
+              [c[1]]: 'c',
+              [b()]: 'bb',
+              'a': 'aaa',
             }
           `,
           output: dedent`
-            let robots = {
-              'eva-02': 'Asuka Langley Sohryu',
-              [getTestEva()]: 'Yui Ikari',
-              [robots[1]]: 'Rei Ayanami',
+            let Obj = {
+              'a': 'aaa',
+              [b()]: 'bb',
+              [c[1]]: 'c',
             }
           `,
           options: [options],
@@ -250,15 +231,15 @@ describe(RULE_NAME, () => {
             {
               messageId: 'unexpectedObjectsOrder',
               data: {
-                left: 'robots[1]',
-                right: 'getTestEva()',
+                left: 'c[1]',
+                right: 'b()',
               },
             },
             {
               messageId: 'unexpectedObjectsOrder',
               data: {
-                left: 'getTestEva()',
-                right: 'eva-02',
+                left: 'b()',
+                right: 'a',
               },
             },
           ],
@@ -270,19 +251,17 @@ describe(RULE_NAME, () => {
       valid: [
         {
           code: dedent`
-            let terrorInResonance = {
-              id: 'de4d12c2-200c-49bf-a2c8-14f5b4576299',
-              name: 'Terror in Resonance',
-              episodes: 11,
-              genres: ['drama', 'mystery', 'psychological', 'thriller'],
-              romaji: 'Zankyou no Terror',
-              studio: 'Mappa'
+            let Obj = {
+              b: 'bb',
+              c: 'ccc',
+              a: 'aaaa',
+              d: 'd',
             }
           `,
           options: [
             {
               ...options,
-              customGroups: { top: ['name', 'id'] },
+              customGroups: { top: ['c', 'b'] },
               groups: ['top', 'unknown'],
             },
           ],
@@ -291,29 +270,25 @@ describe(RULE_NAME, () => {
       invalid: [
         {
           code: dedent`
-            let terrorInResonance = {
-              episodes: 11,
-              genres: ['drama', 'mystery', 'psychological', 'thriller'],
-              id: 'de4d12c2-200c-49bf-a2c8-14f5b4576299',
-              name: 'Terror in Resonance',
-              romaji: 'Zankyou no Terror',
-              studio: 'Mappa'
+            let Obj = {
+              a: 'aaaa',
+              b: 'bb',
+              c: 'ccc',
+              d: 'd',
             }
           `,
           output: dedent`
-            let terrorInResonance = {
-              id: 'de4d12c2-200c-49bf-a2c8-14f5b4576299',
-              name: 'Terror in Resonance',
-              episodes: 11,
-              genres: ['drama', 'mystery', 'psychological', 'thriller'],
-              romaji: 'Zankyou no Terror',
-              studio: 'Mappa'
+            let Obj = {
+              b: 'bb',
+              c: 'ccc',
+              a: 'aaaa',
+              d: 'd',
             }
           `,
           options: [
             {
               ...options,
-              customGroups: { top: ['name', 'id'] },
+              customGroups: { top: ['c', 'b'] },
               groups: ['top', 'unknown'],
             },
           ],
@@ -321,8 +296,8 @@ describe(RULE_NAME, () => {
             {
               messageId: 'unexpectedObjectsOrder',
               data: {
-                left: 'genres',
-                right: 'id',
+                left: 'a',
+                right: 'b',
               },
             },
           ],
@@ -337,57 +312,38 @@ describe(RULE_NAME, () => {
         valid: [
           {
             code: dedent`
-              let yokokawaFamily = {
-                brother: 'Seita', // Seita is responsible, mature, and tough
-                'mrs-yokokawa': 'Mrs. Yokokawa', // Seita's and Setsuko's mother
-                sister: 'Setsuko' // Setsuko completely adores her older brother Seita
+              let Obj = {
+                a: 'aaa', // Comment A
+                b: 'bb', // Comment B
+                c: 'c' // Comment C
               }
             `,
-            options: [
-              {
-                ...options,
-                customGroups: { top: ['name', 'id'] },
-                groups: ['top', 'unknown'],
-              },
-            ],
+            options: [options],
           },
         ],
         invalid: [
           {
             code: dedent`
-              let yokokawaFamily = {
-                sister: 'Setsuko',// Setsuko completely adores her older brother Seita
-                'mrs-yokokawa': 'Mrs. Yokokawa', // Seita's and Setsuko's mother
-                brother: 'Seita', // Seita is responsible, mature, and tough
+              let Obj = {
+                a: 'aaa', // Comment A
+                c: 'c', // Comment C
+                b: 'bb', // Comment B
               }
             `,
             output: dedent`
-              let yokokawaFamily = {
-                brother: 'Seita', // Seita is responsible, mature, and tough
-                'mrs-yokokawa': 'Mrs. Yokokawa', // Seita's and Setsuko's mother
-                sister: 'Setsuko',// Setsuko completely adores her older brother Seita
+              let Obj = {
+                a: 'aaa', // Comment A
+                b: 'bb', // Comment B
+                c: 'c', // Comment C
               }
             `,
-            options: [
-              {
-                ...options,
-                customGroups: { top: ['name', 'id'] },
-                groups: ['top', 'unknown'],
-              },
-            ],
+            options: [options],
             errors: [
               {
                 messageId: 'unexpectedObjectsOrder',
                 data: {
-                  left: 'sister',
-                  right: 'mrs-yokokawa',
-                },
-              },
-              {
-                messageId: 'unexpectedObjectsOrder',
-                data: {
-                  left: 'mrs-yokokawa',
-                  right: 'brother',
+                  left: 'c',
+                  right: 'b',
                 },
               },
             ],
@@ -404,15 +360,15 @@ describe(RULE_NAME, () => {
         invalid: [
           {
             code: dedent`
-              let daddies = {
-                rei: 'Rei Suwa', // daddy #1
-                kazuki: 'Kazuki Kurusu' // daddy #2
+              let Obj = {
+                b: 'b', // Comment B
+                a: 'aa' // Comment A
               }
             `,
             output: dedent`
-              let daddies = {
-                kazuki: 'Kazuki Kurusu', // daddy #2
-                rei: 'Rei Suwa' // daddy #1
+              let Obj = {
+                a: 'aa', // Comment A
+                b: 'b' // Comment B
               }
             `,
             options: [options],
@@ -420,8 +376,8 @@ describe(RULE_NAME, () => {
               {
                 messageId: 'unexpectedObjectsOrder',
                 data: {
-                  left: 'rei',
-                  right: 'kazuki',
+                  left: 'b',
+                  right: 'a',
                 },
               },
             ],
@@ -435,19 +391,19 @@ describe(RULE_NAME, () => {
       invalid: [
         {
           code: dedent`
-            let startTerrorInResonance = ({
-              name = 'Nine',
-              bombType,
-              placeToAttack
+            let Func = ({
+              c,
+              a = 'aa',
+              b
             }) => {
               // ...
             }
           `,
           output: dedent`
-            let startTerrorInResonance = ({
-              bombType,
-              name = 'Nine',
-              placeToAttack
+            let Func = ({
+              a = 'aa',
+              b,
+              c
             }) => {
               // ...
             }
@@ -457,8 +413,8 @@ describe(RULE_NAME, () => {
             {
               messageId: 'unexpectedObjectsOrder',
               data: {
-                left: 'name',
-                right: 'bombType',
+                left: 'c',
+                right: 'a',
               },
             },
           ],
@@ -474,21 +430,21 @@ describe(RULE_NAME, () => {
         invalid: [
           {
             code: dedent`
-              let getPartiallyParasite = ({
-                parasite,
-                name = parasite,
-                school = 'West Heigh',
-                gender,
+              let Func = ({
+                c,
+                b = c,
+                a = 'a',
+                d,
               }) => {
                 // ...
               }
             `,
             output: dedent`
-              let getPartiallyParasite = ({
-                gender,
-                parasite,
-                name = parasite,
-                school = 'West Heigh',
+              let Func = ({
+                a = 'a',
+                c,
+                b = c,
+                d,
               }) => {
                 // ...
               }
@@ -498,8 +454,8 @@ describe(RULE_NAME, () => {
               {
                 messageId: 'unexpectedObjectsOrder',
                 data: {
-                  left: 'school',
-                  right: 'gender',
+                  left: 'b',
+                  right: 'a',
                 },
               },
             ],
@@ -516,21 +472,21 @@ describe(RULE_NAME, () => {
         invalid: [
           {
             code: dedent`
-              let countPrisonSchoolGrade = ({
-                biology,
-                finalScore = biology + math + naturalScience,
-                math,
-                naturalScience,
+              let Func = ({
+                a,
+                b = a + c + d,
+                c,
+                d,
               }) => {
                 // ...
               }
             `,
             output: dedent`
-              let countPrisonSchoolGrade = ({
-                biology,
-                math,
-                naturalScience,
-                finalScore = biology + math + naturalScience,
+              let Func = ({
+                a,
+                c,
+                d,
+                b = a + c + d,
               }) => {
                 // ...
               }
@@ -540,29 +496,93 @@ describe(RULE_NAME, () => {
               {
                 messageId: 'unexpectedObjectsOrder',
                 data: {
-                  left: 'finalScore',
-                  right: 'math',
+                  left: 'b',
+                  right: 'c',
                 },
               },
             ],
           },
           {
             code: dedent`
-              let countPrisonSchoolGrade = ({
-                biology,
-                finalScore = () => biology + math,
-                math,
-                naturalScience,
+              let Func = ({
+                a,
+                b = () => a + c,
+                c,
+                d,
               }) => {
                 // ...
               }
             `,
             output: dedent`
-              let countPrisonSchoolGrade = ({
-                biology,
-                math,
-                finalScore = () => biology + math,
-                naturalScience,
+              let Func = ({
+                a,
+                c,
+                b = () => a + c,
+                d,
+              }) => {
+                // ...
+              }
+            `,
+            options: [options],
+            errors: [
+              {
+                messageId: 'unexpectedObjectsOrder',
+                data: {
+                  left: 'b',
+                  right: 'c',
+                },
+              },
+            ],
+          },
+          {
+            code: dedent`
+              let Func = ({
+                a,
+                c = 1 === 1 ? 1 === 1 ? a : b : b,
+                b,
+                d,
+              }) => {
+                // ...
+              }
+            `,
+            output: dedent`
+              let Func = ({
+                a,
+                b,
+                c = 1 === 1 ? 1 === 1 ? a : b : b,
+                d,
+              }) => {
+                // ...
+              }
+            `,
+            options: [options],
+            errors: [
+              {
+                messageId: 'unexpectedObjectsOrder',
+                data: {
+                  left: 'c',
+                  right: 'b',
+                },
+              },
+            ],
+          },
+          {
+            code: dedent`
+              let Func = ({
+                a,
+                b = ['a', 'b', 'c'].includes(d, c, a),
+                c,
+                d,
+              }) => {
+                // ...
+              }
+            `,
+            output: dedent`
+              let Func = ({
+                a,
+                c,
+                d,
+                b = ['a', 'b', 'c'].includes(d, c, a),
               }) => {
                 // ...
               }
@@ -577,156 +597,72 @@ describe(RULE_NAME, () => {
               {
                 messageId: 'unexpectedObjectsOrder',
                 data: {
-                  left: 'finalScore',
-                  right: 'math',
+                  left: 'b',
+                  right: 'c',
                 },
               },
             ],
           },
           {
             code: dedent`
-              let countPrisonSchoolGrade = ({
-                biology,
-                finalScore = 1 === 1 ? 1 === 1 ? math : biology : biology,
-                math,
-                naturalScience,
+              let Func = ({
+                a,
+                b = c || c,
+                c,
+                d,
               }) => {
                 // ...
               }
             `,
             output: dedent`
-              let countPrisonSchoolGrade = ({
-                biology,
-                math,
-                finalScore = 1 === 1 ? 1 === 1 ? math : biology : biology,
-                naturalScience,
+              let Func = ({
+                a,
+                c,
+                b = c || c,
+                d,
               }) => {
                 // ...
               }
             `,
-            options: [
-              {
-                type: 'alphabetical',
-                order: 'asc',
-              },
-            ],
+            options: [options],
             errors: [
               {
                 messageId: 'unexpectedObjectsOrder',
                 data: {
-                  left: 'finalScore',
-                  right: 'math',
+                  left: 'b',
+                  right: 'c',
                 },
               },
             ],
           },
           {
             code: dedent`
-              let countPrisonSchoolGrade = ({
-                biology,
-                finalScore = ['a', 'b', 'c'].includes(naturalScience, math, biology),
-                math,
-                naturalScience,
+              let Func = ({
+                a,
+                b = 1 === 1 ? a : c,
+                c,
+                d,
               }) => {
                 // ...
               }
             `,
             output: dedent`
-              let countPrisonSchoolGrade = ({
-                biology,
-                math,
-                naturalScience,
-                finalScore = ['a', 'b', 'c'].includes(naturalScience, math, biology),
+              let Func = ({
+                a,
+                c,
+                b = 1 === 1 ? a : c,
+                d,
               }) => {
                 // ...
               }
             `,
-            options: [
-              {
-                type: 'alphabetical',
-                order: 'asc',
-              },
-            ],
+            options: [options],
             errors: [
               {
                 messageId: 'unexpectedObjectsOrder',
                 data: {
-                  left: 'finalScore',
-                  right: 'math',
-                },
-              },
-            ],
-          },
-          {
-            code: dedent`
-              let countPrisonSchoolGrade = ({
-                biology,
-                finalScore = math || biology,
-                math,
-                naturalScience,
-              }) => {
-                // ...
-              }
-            `,
-            output: dedent`
-              let countPrisonSchoolGrade = ({
-                biology,
-                math,
-                finalScore = math || biology,
-                naturalScience,
-              }) => {
-                // ...
-              }
-            `,
-            options: [
-              {
-                type: 'alphabetical',
-                order: 'asc',
-              },
-            ],
-            errors: [
-              {
-                messageId: 'unexpectedObjectsOrder',
-                data: {
-                  left: 'finalScore',
-                  right: 'math',
-                },
-              },
-            ],
-          },
-          {
-            code: dedent`
-              let countPrisonSchoolGrade = ({
-                biology,
-                finalScore = 1 === 1 ? math : biology,
-                math,
-                naturalScience,
-              }) => {
-                // ...
-              }
-            `,
-            output: dedent`
-              let countPrisonSchoolGrade = ({
-                biology,
-                math,
-                finalScore = 1 === 1 ? math : biology,
-                naturalScience,
-              }) => {
-                // ...
-              }
-            `,
-            options: [
-              {
-                type: 'alphabetical',
-                order: 'asc',
-              },
-            ],
-            errors: [
-              {
-                messageId: 'unexpectedObjectsOrder',
-                data: {
-                  left: 'finalScore',
-                  right: 'math',
+                  left: 'b',
+                  right: 'c',
                 },
               },
             ],
@@ -743,35 +679,31 @@ describe(RULE_NAME, () => {
         invalid: [
           {
             code: dedent`
-              let heroAssociation = {
-                // Part: S-Class
-                blast: 'Blast',
-                tatsumaki: 'Tatsumaki',
-                // Atomic Samurai
-                kamikaze: 'Kamikaze',
-                // Part: A-Class
-                sweet: 'Sweet Mask',
-                iaian: 'Iaian',
-                // Part: B-Class
-                'mountain-ape': 'Mountain Ape',
-                // Member of the Blizzard Group
-                eyelashes: 'Eyelashes',
+              let Obj = {
+                // Part: 1
+                e: 'ee',
+                d: 'ddd',
+                // Part: 2
+                f: 'f',
+                // Part: 3
+                a: 'aaaaaa',
+                c: 'cccc',
+                // Not partition comment
+                b: 'bbbbb',
               }
             `,
             output: dedent`
-              let heroAssociation = {
-                // Part: S-Class
-                blast: 'Blast',
-                // Atomic Samurai
-                kamikaze: 'Kamikaze',
-                tatsumaki: 'Tatsumaki',
-                // Part: A-Class
-                iaian: 'Iaian',
-                sweet: 'Sweet Mask',
-                // Part: B-Class
-                // Member of the Blizzard Group
-                eyelashes: 'Eyelashes',
-                'mountain-ape': 'Mountain Ape',
+              let Obj = {
+                // Part: 1
+                d: 'ddd',
+                e: 'ee',
+                // Part: 2
+                f: 'f',
+                // Part: 3
+                a: 'aaaaaa',
+                // Not partition comment
+                b: 'bbbbb',
+                c: 'cccc',
               }
             `,
             options: [
@@ -784,22 +716,15 @@ describe(RULE_NAME, () => {
               {
                 messageId: 'unexpectedObjectsOrder',
                 data: {
-                  left: 'tatsumaki',
-                  right: 'kamikaze',
+                  left: 'e',
+                  right: 'd',
                 },
               },
               {
                 messageId: 'unexpectedObjectsOrder',
                 data: {
-                  left: 'sweet',
-                  right: 'iaian',
-                },
-              },
-              {
-                messageId: 'unexpectedObjectsOrder',
-                data: {
-                  left: 'mountain-ape',
-                  right: 'eyelashes',
+                  left: 'c',
+                  right: 'b',
                 },
               },
             ],
@@ -815,11 +740,11 @@ describe(RULE_NAME, () => {
         valid: [
           {
             code: dedent`
-              let brothers = {
-                // Older brother
-                edward: 'Edward Elric',
-                // Younger brother
-                alphonse: 'Alphonse Elric',
+              let Obj = {
+                // Some comment
+                b: 'b',
+                // Other comment
+                a: 'aa',
               }
             `,
             options: [
@@ -842,47 +767,43 @@ describe(RULE_NAME, () => {
         invalid: [
           {
             code: dedent`
-              let psychoPass = {
-                /* Public Safety Bureau */
-                // Crime Coefficient: Low
-                tsunemori: 'Akane Tsunemori',
-                // Crime Coefficient: High
-                kogami: 'Shinya Kogami',
-                ginoza: 'Nobuchika Ginoza',
-                masaoka: 'Tomomi Masaoka',
-                /* Victims */
-                makishima: 'Shogo Makishima',
+              let Object = {
+                /* Partition Comment */
+                // Part: 1
+                c: 'cc',
+                // Part: 2
+                b: 'bbb',
+                a: 'aaaa',
+                d: 'd',
+                /* Part: 3 */
+                e: 'e',
               }
             `,
             output: dedent`
-              let psychoPass = {
-                /* Public Safety Bureau */
-                // Crime Coefficient: Low
-                tsunemori: 'Akane Tsunemori',
-                // Crime Coefficient: High
-                ginoza: 'Nobuchika Ginoza',
-                kogami: 'Shinya Kogami',
-                masaoka: 'Tomomi Masaoka',
-                /* Victims */
-                makishima: 'Shogo Makishima',
+              let Object = {
+                /* Partition Comment */
+                // Part: 1
+                c: 'cc',
+                // Part: 2
+                a: 'aaaa',
+                b: 'bbb',
+                d: 'd',
+                /* Part: 3 */
+                e: 'e',
               }
             `,
             options: [
               {
                 ...options,
-                partitionByComment: [
-                  'Public Safety Bureau',
-                  'Crime Coefficient: *',
-                  'Victims',
-                ],
+                partitionByComment: ['Partition Comment', 'Part: *'],
               },
             ],
             errors: [
               {
                 messageId: 'unexpectedObjectsOrder',
                 data: {
-                  left: 'kogami',
-                  right: 'ginoza',
+                  left: 'b',
+                  right: 'a',
                 },
               },
             ],
@@ -898,14 +819,14 @@ describe(RULE_NAME, () => {
         valid: [
           {
             code: dedent`
-              let terrorist = {
-                name: 'Twelve',
-                nickname: 'Sphinx #2',
+              let Obj = {
+                d: 'dd',
+                e: 'e',
 
-                status: Status.Deceased,
+                c: 'ccc',
 
-                height: '167 cm',
-                weight: '55 kg',
+                a: 'aaaaa',
+                b: 'bbbb',
               }
             `,
             options: [
@@ -919,25 +840,25 @@ describe(RULE_NAME, () => {
         invalid: [
           {
             code: dedent`
-              let terrorist = {
-                nickname: 'Sphinx #2',
-                name: 'Twelve',
+              let Obj = {
+                e: 'e',
+                d: 'dd',
 
-                status: Status.Deceased,
+                c: 'ccc',
 
-                weight: '55 kg',
-                height: '167 cm',
+                b: 'bbbb',
+                a: 'aaaaa',
               }
             `,
             output: dedent`
-              let terrorist = {
-                name: 'Twelve',
-                nickname: 'Sphinx #2',
+              let Obj = {
+                d: 'dd',
+                e: 'e',
 
-                status: Status.Deceased,
+                c: 'ccc',
 
-                height: '167 cm',
-                weight: '55 kg',
+                a: 'aaaaa',
+                b: 'bbbb',
               }
             `,
             options: [
@@ -950,15 +871,15 @@ describe(RULE_NAME, () => {
               {
                 messageId: 'unexpectedObjectsOrder',
                 data: {
-                  left: 'nickname',
-                  right: 'name',
+                  left: 'e',
+                  right: 'd',
                 },
               },
               {
                 messageId: 'unexpectedObjectsOrder',
                 data: {
-                  left: 'weight',
-                  right: 'height',
+                  left: 'b',
+                  right: 'a',
                 },
               },
             ],
@@ -984,11 +905,11 @@ describe(RULE_NAME, () => {
         valid: [
           {
             code: dedent`
-              let wisewolf = {
-                age: undefined,
-                'eye-color': '#f00',
-                [hometown]: 'Yoitsu',
-                name: 'Holo',
+              let Obj = {
+                a: 'aaaa',
+                b: 'bbb',
+                [c]: 'cc',
+                d: 'd',
               }
             `,
             options: [options],
@@ -997,19 +918,19 @@ describe(RULE_NAME, () => {
         invalid: [
           {
             code: dedent`
-              let wisewolf = {
-                age: undefined,
-                [hometown]: 'Yoitsu',
-                'eye-color': '#f00',
-                name: 'Holo',
+              let Obj = {
+                a: 'aaaa',
+                [c]: 'cc',
+                b: 'bbb',
+                d: 'd',
               }
             `,
             output: dedent`
-              let wisewolf = {
-                age: undefined,
-                'eye-color': '#f00',
-                [hometown]: 'Yoitsu',
-                name: 'Holo',
+              let Obj = {
+                a: 'aaaa',
+                b: 'bbb',
+                [c]: 'cc',
+                d: 'd',
               }
             `,
             options: [options],
@@ -1017,8 +938,8 @@ describe(RULE_NAME, () => {
               {
                 messageId: 'unexpectedObjectsOrder',
                 data: {
-                  left: 'hometown',
-                  right: 'eye-color',
+                  left: 'c',
+                  right: 'b',
                 },
               },
             ],
@@ -1034,11 +955,11 @@ describe(RULE_NAME, () => {
         valid: [
           {
             code: dedent`
-              let bebop = {
-                dog: 'Ein',
-                hunter: 'Spike Spiegel',
-                ...teamMembers,
-                hacker: 'Ed',
+              let Obj = {
+                b: 'bb',
+                c: 'c',
+                ...rest,
+                a: 'aaa',
               }
             `,
             options: [options],
@@ -1047,19 +968,19 @@ describe(RULE_NAME, () => {
         invalid: [
           {
             code: dedent`
-              let bebop = {
-                hunter: 'Spike Spiegel',
-                dog: 'Ein',
-                ...teamMembers,
-                hacker: 'Ed',
+              let Obj = {
+                c: 'c',
+                b: 'bb',
+                ...rest,
+                a: 'aaa',
               }
             `,
             output: dedent`
-              let bebop = {
-                dog: 'Ein',
-                hunter: 'Spike Spiegel',
-                ...teamMembers,
-                hacker: 'Ed',
+              let Obj = {
+                b: 'bb',
+                c: 'c',
+                ...rest,
+                a: 'aaa',
               }
             `,
             options: [options],
@@ -1067,8 +988,8 @@ describe(RULE_NAME, () => {
               {
                 messageId: 'unexpectedObjectsOrder',
                 data: {
-                  left: 'hunter',
-                  right: 'dog',
+                  left: 'c',
+                  right: 'b',
                 },
               },
             ],
@@ -1081,18 +1002,14 @@ describe(RULE_NAME, () => {
       valid: [
         {
           code: dedent`
-            let enforcers = {
-              'akane-tsunemori': {
-                age: 20,
-                'crime-coefficient': 28,
+            let Obj = {
+              x: {
+                a: 'aa',
+                b: 'b',
               },
-              'nobuchika-ginoza': {
-                age: 28,
-                'crime-coefficient': 86.3,
-              },
-              'shinya-kogami': {
-                age: 28,
-                'crime-coefficient': 282.6,
+              y: {
+                a: 'aa',
+                b: 'b',
               },
             }
           `,
@@ -1102,34 +1019,26 @@ describe(RULE_NAME, () => {
       invalid: [
         {
           code: dedent`
-            let enforcers = {
-              'akane-tsunemori': {
-                'crime-coefficient': 28,
-                age: 20,
+            let Obj = {
+              y: {
+                b: 'b',
+                a: 'aa',
               },
-              'shinya-kogami': {
-                'crime-coefficient': 282.6,
-                age: 28,
-              },
-              'nobuchika-ginoza': {
-                'crime-coefficient': 86.3,
-                age: 28,
+              x: {
+                b: 'b',
+                a: 'aa',
               },
             }
           `,
           output: dedent`
-            let enforcers = {
-              'akane-tsunemori': {
-                'crime-coefficient': 28,
-                age: 20,
+            let Obj = {
+              x: {
+                b: 'b',
+                a: 'aa',
               },
-              'nobuchika-ginoza': {
-                'crime-coefficient': 86.3,
-                age: 28,
-              },
-              'shinya-kogami': {
-                'crime-coefficient': 282.6,
-                age: 28,
+              y: {
+                b: 'b',
+                a: 'aa',
               },
             }
           `,
@@ -1138,29 +1047,22 @@ describe(RULE_NAME, () => {
             {
               messageId: 'unexpectedObjectsOrder',
               data: {
-                left: 'crime-coefficient',
-                right: 'age',
+                left: 'b',
+                right: 'a',
               },
             },
             {
               messageId: 'unexpectedObjectsOrder',
               data: {
-                left: 'crime-coefficient',
-                right: 'age',
+                left: 'y',
+                right: 'x',
               },
             },
             {
               messageId: 'unexpectedObjectsOrder',
               data: {
-                left: 'shinya-kogami',
-                right: 'nobuchika-ginoza',
-              },
-            },
-            {
-              messageId: 'unexpectedObjectsOrder',
-              data: {
-                left: 'crime-coefficient',
-                right: 'age',
+                left: 'b',
+                right: 'a',
               },
             },
           ],
@@ -1172,29 +1074,29 @@ describe(RULE_NAME, () => {
       valid: [
         {
           code: dedent`
-              let robots = {
-                'eva-02': 'Asuka Langley Sohryu',
-                [getTestEva()]: 'Yui Ikari',
-                [robots[1]]: 'Rei Ayanami',
-              }
-            `,
+            let Obj = {
+              'a': 'aaa',
+              [b()]: 'bb',
+              [c[1]]: 'c',
+            }
+          `,
           options: [options],
         },
       ],
       invalid: [
         {
           code: dedent`
-            let robots = {
-              [robots[1]]: 'Rei Ayanami',
-              [getTestEva()]: 'Yui Ikari',
-              'eva-02': 'Asuka Langley Sohryu',
+            let Obj = {
+              [c[1]]: 'c',
+              [b()]: 'bb',
+              'a': 'aaa',
             }
           `,
           output: dedent`
-            let robots = {
-              'eva-02': 'Asuka Langley Sohryu',
-              [getTestEva()]: 'Yui Ikari',
-              [robots[1]]: 'Rei Ayanami',
+            let Obj = {
+              'a': 'aaa',
+              [b()]: 'bb',
+              [c[1]]: 'c',
             }
           `,
           options: [options],
@@ -1202,15 +1104,15 @@ describe(RULE_NAME, () => {
             {
               messageId: 'unexpectedObjectsOrder',
               data: {
-                left: 'robots[1]',
-                right: 'getTestEva()',
+                left: 'c[1]',
+                right: 'b()',
               },
             },
             {
               messageId: 'unexpectedObjectsOrder',
               data: {
-                left: 'getTestEva()',
-                right: 'eva-02',
+                left: 'b()',
+                right: 'a',
               },
             },
           ],
@@ -1222,19 +1124,17 @@ describe(RULE_NAME, () => {
       valid: [
         {
           code: dedent`
-            let terrorInResonance = {
-              id: 'de4d12c2-200c-49bf-a2c8-14f5b4576299',
-              name: 'Terror in Resonance',
-              episodes: 11,
-              genres: ['drama', 'mystery', 'psychological', 'thriller'],
-              romaji: 'Zankyou no Terror',
-              studio: 'Mappa'
+            let Obj = {
+              b: 'bb',
+              c: 'ccc',
+              a: 'aaaa',
+              d: 'd',
             }
           `,
           options: [
             {
               ...options,
-              customGroups: { top: ['name', 'id'] },
+              customGroups: { top: ['c', 'b'] },
               groups: ['top', 'unknown'],
             },
           ],
@@ -1243,29 +1143,25 @@ describe(RULE_NAME, () => {
       invalid: [
         {
           code: dedent`
-            let terrorInResonance = {
-              episodes: 11,
-              genres: ['drama', 'mystery', 'psychological', 'thriller'],
-              id: 'de4d12c2-200c-49bf-a2c8-14f5b4576299',
-              name: 'Terror in Resonance',
-              romaji: 'Zankyou no Terror',
-              studio: 'Mappa'
+            let Obj = {
+              a: 'aaaa',
+              b: 'bb',
+              c: 'ccc',
+              d: 'd',
             }
           `,
           output: dedent`
-            let terrorInResonance = {
-              id: 'de4d12c2-200c-49bf-a2c8-14f5b4576299',
-              name: 'Terror in Resonance',
-              episodes: 11,
-              genres: ['drama', 'mystery', 'psychological', 'thriller'],
-              romaji: 'Zankyou no Terror',
-              studio: 'Mappa'
+            let Obj = {
+              b: 'bb',
+              c: 'ccc',
+              a: 'aaaa',
+              d: 'd',
             }
           `,
           options: [
             {
               ...options,
-              customGroups: { top: ['name', 'id'] },
+              customGroups: { top: ['c', 'b'] },
               groups: ['top', 'unknown'],
             },
           ],
@@ -1273,8 +1169,8 @@ describe(RULE_NAME, () => {
             {
               messageId: 'unexpectedObjectsOrder',
               data: {
-                left: 'genres',
-                right: 'id',
+                left: 'a',
+                right: 'b',
               },
             },
           ],
@@ -1289,57 +1185,38 @@ describe(RULE_NAME, () => {
         valid: [
           {
             code: dedent`
-              let yokokawaFamily = {
-                brother: 'Seita', // Seita is responsible, mature, and tough
-                'mrs-yokokawa': 'Mrs. Yokokawa', // Seita's and Setsuko's mother
-                sister: 'Setsuko' // Setsuko completely adores her older brother Seita
+              let Obj = {
+                a: 'aaa', // Comment A
+                b: 'bb', // Comment B
+                c: 'c', // Comment C
               }
             `,
-            options: [
-              {
-                ...options,
-                customGroups: { top: ['name', 'id'] },
-                groups: ['top', 'unknown'],
-              },
-            ],
+            options: [options],
           },
         ],
         invalid: [
           {
             code: dedent`
-              let yokokawaFamily = {
-                sister: 'Setsuko', // Setsuko completely adores her older brother Seita
-                'mrs-yokokawa': 'Mrs. Yokokawa', // Seita's and Setsuko's mother
-                brother: 'Seita', // Seita is responsible, mature, and tough
+              let Obj = {
+                a: 'aaa', // Comment A
+                c: 'c', // Comment C
+                b: 'bb', // Comment B
               }
             `,
             output: dedent`
-              let yokokawaFamily = {
-                brother: 'Seita', // Seita is responsible, mature, and tough
-                'mrs-yokokawa': 'Mrs. Yokokawa', // Seita's and Setsuko's mother
-                sister: 'Setsuko', // Setsuko completely adores her older brother Seita
+              let Obj = {
+                a: 'aaa', // Comment A
+                b: 'bb', // Comment B
+                c: 'c', // Comment C
               }
             `,
-            options: [
-              {
-                ...options,
-                customGroups: { top: ['name', 'id'] },
-                groups: ['top', 'unknown'],
-              },
-            ],
+            options: [options],
             errors: [
               {
                 messageId: 'unexpectedObjectsOrder',
                 data: {
-                  left: 'sister',
-                  right: 'mrs-yokokawa',
-                },
-              },
-              {
-                messageId: 'unexpectedObjectsOrder',
-                data: {
-                  left: 'mrs-yokokawa',
-                  right: 'brother',
+                  left: 'c',
+                  right: 'b',
                 },
               },
             ],
@@ -1356,15 +1233,15 @@ describe(RULE_NAME, () => {
         invalid: [
           {
             code: dedent`
-              let daddies = {
-                rei: 'Rei Suwa', // daddy #1
-                kazuki: 'Kazuki Kurusu' // daddy #2
+              let Obj = {
+                b: 'b', // Comment B
+                a: 'aa' // Comment A
               }
             `,
             output: dedent`
-              let daddies = {
-                kazuki: 'Kazuki Kurusu', // daddy #2
-                rei: 'Rei Suwa' // daddy #1
+              let Obj = {
+                a: 'aa', // Comment A
+                b: 'b' // Comment B
               }
             `,
             options: [options],
@@ -1372,8 +1249,8 @@ describe(RULE_NAME, () => {
               {
                 messageId: 'unexpectedObjectsOrder',
                 data: {
-                  left: 'rei',
-                  right: 'kazuki',
+                  left: 'b',
+                  right: 'a',
                 },
               },
             ],
@@ -1387,19 +1264,19 @@ describe(RULE_NAME, () => {
       invalid: [
         {
           code: dedent`
-            let startTerrorInResonance = ({
-              name = 'Nine',
-              bombType,
-              placeToAttack
+            let Func = ({
+              c,
+              a = 'aa',
+              b
             }) => {
               // ...
             }
           `,
           output: dedent`
-            let startTerrorInResonance = ({
-              bombType,
-              name = 'Nine',
-              placeToAttack
+            let Func = ({
+              a = 'aa',
+              b,
+              c
             }) => {
               // ...
             }
@@ -1409,8 +1286,8 @@ describe(RULE_NAME, () => {
             {
               messageId: 'unexpectedObjectsOrder',
               data: {
-                left: 'name',
-                right: 'bombType',
+                left: 'c',
+                right: 'a',
               },
             },
           ],
@@ -1426,21 +1303,21 @@ describe(RULE_NAME, () => {
         invalid: [
           {
             code: dedent`
-              let getPartiallyParasite = ({
-                parasite,
-                name = parasite,
-                school = 'West Heigh',
-                gender,
+              let Func = ({
+                c,
+                b = c,
+                a = 'a',
+                d,
               }) => {
                 // ...
               }
             `,
             output: dedent`
-              let getPartiallyParasite = ({
-                gender,
-                parasite,
-                name = parasite,
-                school = 'West Heigh',
+              let Func = ({
+                a = 'a',
+                c,
+                b = c,
+                d,
               }) => {
                 // ...
               }
@@ -1450,8 +1327,8 @@ describe(RULE_NAME, () => {
               {
                 messageId: 'unexpectedObjectsOrder',
                 data: {
-                  left: 'school',
-                  right: 'gender',
+                  left: 'b',
+                  right: 'a',
                 },
               },
             ],
@@ -1468,21 +1345,21 @@ describe(RULE_NAME, () => {
         invalid: [
           {
             code: dedent`
-              let countPrisonSchoolGrade = ({
-                biology,
-                finalScore = biology + math + naturalScience,
-                math,
-                naturalScience,
+              let Func = ({
+                a,
+                b = a + c + d,
+                c,
+                d,
               }) => {
                 // ...
               }
             `,
             output: dedent`
-              let countPrisonSchoolGrade = ({
-                biology,
-                math,
-                naturalScience,
-                finalScore = biology + math + naturalScience,
+              let Func = ({
+                a,
+                c,
+                d,
+                b = a + c + d,
               }) => {
                 // ...
               }
@@ -1492,8 +1369,173 @@ describe(RULE_NAME, () => {
               {
                 messageId: 'unexpectedObjectsOrder',
                 data: {
-                  left: 'finalScore',
-                  right: 'math',
+                  left: 'b',
+                  right: 'c',
+                },
+              },
+            ],
+          },
+          {
+            code: dedent`
+              let Func = ({
+                a,
+                b = () => a + c,
+                c,
+                d,
+              }) => {
+                // ...
+              }
+            `,
+            output: dedent`
+              let Func = ({
+                a,
+                c,
+                b = () => a + c,
+                d,
+              }) => {
+                // ...
+              }
+            `,
+            options: [options],
+            errors: [
+              {
+                messageId: 'unexpectedObjectsOrder',
+                data: {
+                  left: 'b',
+                  right: 'c',
+                },
+              },
+            ],
+          },
+          {
+            code: dedent`
+              let Func = ({
+                a,
+                c = 1 === 1 ? 1 === 1 ? a : b : b,
+                b,
+                d,
+              }) => {
+                // ...
+              }
+            `,
+            output: dedent`
+              let Func = ({
+                a,
+                b,
+                c = 1 === 1 ? 1 === 1 ? a : b : b,
+                d,
+              }) => {
+                // ...
+              }
+            `,
+            options: [options],
+            errors: [
+              {
+                messageId: 'unexpectedObjectsOrder',
+                data: {
+                  left: 'c',
+                  right: 'b',
+                },
+              },
+            ],
+          },
+          {
+            code: dedent`
+              let Func = ({
+                a,
+                b = ['a', 'b', 'c'].includes(d, c, a),
+                c,
+                d,
+              }) => {
+                // ...
+              }
+            `,
+            output: dedent`
+              let Func = ({
+                a,
+                c,
+                d,
+                b = ['a', 'b', 'c'].includes(d, c, a),
+              }) => {
+                // ...
+              }
+            `,
+            options: [
+              {
+                type: 'alphabetical',
+                order: 'asc',
+              },
+            ],
+            errors: [
+              {
+                messageId: 'unexpectedObjectsOrder',
+                data: {
+                  left: 'b',
+                  right: 'c',
+                },
+              },
+            ],
+          },
+          {
+            code: dedent`
+              let Func = ({
+                a,
+                b = c || c,
+                c,
+                d,
+              }) => {
+                // ...
+              }
+            `,
+            output: dedent`
+              let Func = ({
+                a,
+                c,
+                b = c || c,
+                d,
+              }) => {
+                // ...
+              }
+            `,
+            options: [options],
+            errors: [
+              {
+                messageId: 'unexpectedObjectsOrder',
+                data: {
+                  left: 'b',
+                  right: 'c',
+                },
+              },
+            ],
+          },
+          {
+            code: dedent`
+              let Func = ({
+                a,
+                b = 1 === 1 ? a : c,
+                c,
+                d,
+              }) => {
+                // ...
+              }
+            `,
+            output: dedent`
+              let Func = ({
+                a,
+                c,
+                b = 1 === 1 ? a : c,
+                d,
+              }) => {
+                // ...
+              }
+            `,
+            options: [options],
+            errors: [
+              {
+                messageId: 'unexpectedObjectsOrder',
+                data: {
+                  left: 'b',
+                  right: 'c',
                 },
               },
             ],
@@ -1510,35 +1552,31 @@ describe(RULE_NAME, () => {
         invalid: [
           {
             code: dedent`
-              let heroAssociation = {
-                // Part: S-Class
-                blast: 'Blast',
-                tatsumaki: 'Tatsumaki',
-                // Atomic Samurai
-                kamikaze: 'Kamikaze',
-                // Part: A-Class
-                sweet: 'Sweet Mask',
-                iaian: 'Iaian',
-                // Part: B-Class
-                'mountain-ape': 'Mountain Ape',
-                // Member of the Blizzard Group
-                eyelashes: 'Eyelashes',
+              let Obj = {
+                // Part: 1
+                e: 'ee',
+                d: 'ddd',
+                // Part: 2
+                f: 'f',
+                // Part: 3
+                a: 'aaaaaa',
+                c: 'cccc',
+                // Not partition comment
+                b: 'bbbbb',
               }
             `,
             output: dedent`
-              let heroAssociation = {
-                // Part: S-Class
-                blast: 'Blast',
-                // Atomic Samurai
-                kamikaze: 'Kamikaze',
-                tatsumaki: 'Tatsumaki',
-                // Part: A-Class
-                iaian: 'Iaian',
-                sweet: 'Sweet Mask',
-                // Part: B-Class
-                // Member of the Blizzard Group
-                eyelashes: 'Eyelashes',
-                'mountain-ape': 'Mountain Ape',
+              let Obj = {
+                // Part: 1
+                d: 'ddd',
+                e: 'ee',
+                // Part: 2
+                f: 'f',
+                // Part: 3
+                a: 'aaaaaa',
+                // Not partition comment
+                b: 'bbbbb',
+                c: 'cccc',
               }
             `,
             options: [
@@ -1551,22 +1589,15 @@ describe(RULE_NAME, () => {
               {
                 messageId: 'unexpectedObjectsOrder',
                 data: {
-                  left: 'tatsumaki',
-                  right: 'kamikaze',
+                  left: 'e',
+                  right: 'd',
                 },
               },
               {
                 messageId: 'unexpectedObjectsOrder',
                 data: {
-                  left: 'sweet',
-                  right: 'iaian',
-                },
-              },
-              {
-                messageId: 'unexpectedObjectsOrder',
-                data: {
-                  left: 'mountain-ape',
-                  right: 'eyelashes',
+                  left: 'c',
+                  right: 'b',
                 },
               },
             ],
@@ -1582,11 +1613,11 @@ describe(RULE_NAME, () => {
         valid: [
           {
             code: dedent`
-              let brothers = {
-                // Older brother
-                edward: 'Edward Elric',
-                // Younger brother
-                alphonse: 'Alphonse Elric',
+              let Obj = {
+                // Some comment
+                b: 'b',
+                // Other comment
+                a: 'aa',
               }
             `,
             options: [
@@ -1609,47 +1640,43 @@ describe(RULE_NAME, () => {
         invalid: [
           {
             code: dedent`
-              let psychoPass = {
-                /* Public Safety Bureau */
-                // Crime Coefficient: Low
-                tsunemori: 'Akane Tsunemori',
-                // Crime Coefficient: High
-                kogami: 'Shinya Kogami',
-                ginoza: 'Nobuchika Ginoza',
-                masaoka: 'Tomomi Masaoka',
-                /* Victims */
-                makishima: 'Shogo Makishima',
+              let Object = {
+                /* Partition Comment */
+                // Part: 1
+                c: 'cc',
+                // Part: 2
+                b: 'bbb',
+                a: 'aaaa',
+                d: 'd',
+                /* Part: 3 */
+                e: 'e',
               }
             `,
             output: dedent`
-              let psychoPass = {
-                /* Public Safety Bureau */
-                // Crime Coefficient: Low
-                tsunemori: 'Akane Tsunemori',
-                // Crime Coefficient: High
-                ginoza: 'Nobuchika Ginoza',
-                kogami: 'Shinya Kogami',
-                masaoka: 'Tomomi Masaoka',
-                /* Victims */
-                makishima: 'Shogo Makishima',
+              let Object = {
+                /* Partition Comment */
+                // Part: 1
+                c: 'cc',
+                // Part: 2
+                a: 'aaaa',
+                b: 'bbb',
+                d: 'd',
+                /* Part: 3 */
+                e: 'e',
               }
             `,
             options: [
               {
                 ...options,
-                partitionByComment: [
-                  'Public Safety Bureau',
-                  'Crime Coefficient: *',
-                  'Victims',
-                ],
+                partitionByComment: ['Partition Comment', 'Part: *'],
               },
             ],
             errors: [
               {
                 messageId: 'unexpectedObjectsOrder',
                 data: {
-                  left: 'kogami',
-                  right: 'ginoza',
+                  left: 'b',
+                  right: 'a',
                 },
               },
             ],
@@ -1665,14 +1692,14 @@ describe(RULE_NAME, () => {
         valid: [
           {
             code: dedent`
-              let terrorist = {
-                name: 'Twelve',
-                nickname: 'Sphinx #2',
+              let Obj = {
+                d: 'dd',
+                e: 'e',
 
-                status: Status.Deceased,
+                c: 'ccc',
 
-                height: '167 cm',
-                weight: '55 kg',
+                a: 'aaaaa',
+                b: 'bbbb',
               }
             `,
             options: [
@@ -1686,25 +1713,25 @@ describe(RULE_NAME, () => {
         invalid: [
           {
             code: dedent`
-              let terrorist = {
-                nickname: 'Sphinx #2',
-                name: 'Twelve',
+              let Obj = {
+                e: 'e',
+                d: 'dd',
 
-                status: Status.Deceased,
+                c: 'ccc',
 
-                weight: '55 kg',
-                height: '167 cm',
+                b: 'bbbb',
+                a: 'aaaaa',
               }
             `,
             output: dedent`
-              let terrorist = {
-                name: 'Twelve',
-                nickname: 'Sphinx #2',
+              let Obj = {
+                d: 'dd',
+                e: 'e',
 
-                status: Status.Deceased,
+                c: 'ccc',
 
-                height: '167 cm',
-                weight: '55 kg',
+                a: 'aaaaa',
+                b: 'bbbb',
               }
             `,
             options: [
@@ -1717,15 +1744,15 @@ describe(RULE_NAME, () => {
               {
                 messageId: 'unexpectedObjectsOrder',
                 data: {
-                  left: 'nickname',
-                  right: 'name',
+                  left: 'e',
+                  right: 'd',
                 },
               },
               {
                 messageId: 'unexpectedObjectsOrder',
                 data: {
-                  left: 'weight',
-                  right: 'height',
+                  left: 'b',
+                  right: 'a',
                 },
               },
             ],
@@ -1750,11 +1777,11 @@ describe(RULE_NAME, () => {
         valid: [
           {
             code: dedent`
-              let wisewolf = {
-                [hometown]: 'Yoitsu',
-                'eye-color': '#f00',
-                age: undefined,
-                name: 'Holo',
+              let Obj = {
+                a: 'aaaa',
+                [c]: 'cc',
+                b: 'bbb',
+                d: 'd',
               }
             `,
             options: [options],
@@ -1763,19 +1790,19 @@ describe(RULE_NAME, () => {
         invalid: [
           {
             code: dedent`
-              let wisewolf = {
-                age: undefined,
-                [hometown]: 'Yoitsu',
-                'eye-color': '#f00',
-                name: 'Holo',
+              let Obj = {
+                a: 'aaaa',
+                b: 'bbb',
+                d: 'd',
+                [c]: 'cc',
               }
             `,
             output: dedent`
-              let wisewolf = {
-                [hometown]: 'Yoitsu',
-                'eye-color': '#f00',
-                age: undefined,
-                name: 'Holo',
+              let Obj = {
+                a: 'aaaa',
+                [c]: 'cc',
+                b: 'bbb',
+                d: 'd',
               }
             `,
             options: [options],
@@ -1783,8 +1810,8 @@ describe(RULE_NAME, () => {
               {
                 messageId: 'unexpectedObjectsOrder',
                 data: {
-                  left: 'age',
-                  right: 'hometown',
+                  left: 'd',
+                  right: 'c',
                 },
               },
             ],
@@ -1800,11 +1827,11 @@ describe(RULE_NAME, () => {
         valid: [
           {
             code: dedent`
-              let bebop = {
-                hunter: 'Spike Spiegel',
-                dog: 'Ein',
-                ...teamMembers,
-                hacker: 'Ed',
+              let Obj = {
+                b: 'bb',
+                c: 'c',
+                ...rest,
+                a: 'aaa',
               }
             `,
             options: [options],
@@ -1813,19 +1840,19 @@ describe(RULE_NAME, () => {
         invalid: [
           {
             code: dedent`
-              let bebop = {
-                dog: 'Ein',
-                hunter: 'Spike Spiegel',
-                ...teamMembers,
-                hacker: 'Ed',
+              let Obj = {
+                c: 'c',
+                b: 'bb',
+                ...rest,
+                a: 'aaa',
               }
             `,
             output: dedent`
-              let bebop = {
-                hunter: 'Spike Spiegel',
-                dog: 'Ein',
-                ...teamMembers,
-                hacker: 'Ed',
+              let Obj = {
+                b: 'bb',
+                c: 'c',
+                ...rest,
+                a: 'aaa',
               }
             `,
             options: [options],
@@ -1833,8 +1860,8 @@ describe(RULE_NAME, () => {
               {
                 messageId: 'unexpectedObjectsOrder',
                 data: {
-                  left: 'dog',
-                  right: 'hunter',
+                  left: 'c',
+                  right: 'b',
                 },
               },
             ],
@@ -1847,18 +1874,14 @@ describe(RULE_NAME, () => {
       valid: [
         {
           code: dedent`
-            let enforcers = {
-              'nobuchika-ginoza': {
-                'crime-coefficient': 86.3,
-                age: 28,
+            let Obj = {
+              x: {
+                a: 'aa',
+                b: 'b',
               },
-              'shinya-kogami': {
-                'crime-coefficient': 282.6,
-                age: 28,
-              },
-              'akane-tsunemori': {
-                'crime-coefficient': 28,
-                age: 20,
+              y: {
+                a: 'aa',
+                b: 'b',
               },
             }
           `,
@@ -1868,34 +1891,26 @@ describe(RULE_NAME, () => {
       invalid: [
         {
           code: dedent`
-            let enforcers = {
-              'shinya-kogami': {
-                age: 28,
-                'crime-coefficient': 282.6,
+            let Obj = {
+              x: {
+                b: 'b',
+                a: 'aa',
               },
-              'akane-tsunemori': {
-                age: 20,
-                'crime-coefficient': 28,
-              },
-              'nobuchika-ginoza': {
-                age: 28,
-                'crime-coefficient': 86.3,
+              y: {
+                b: 'b',
+                a: 'aa',
               },
             }
           `,
           output: dedent`
-            let enforcers = {
-              'nobuchika-ginoza': {
-                age: 28,
-                'crime-coefficient': 86.3,
+            let Obj = {
+              x: {
+                a: 'aa',
+                b: 'b',
               },
-              'shinya-kogami': {
-                age: 28,
-                'crime-coefficient': 282.6,
-              },
-              'akane-tsunemori': {
-                age: 20,
-                'crime-coefficient': 28,
+              y: {
+                a: 'aa',
+                b: 'b',
               },
             }
           `,
@@ -1904,29 +1919,15 @@ describe(RULE_NAME, () => {
             {
               messageId: 'unexpectedObjectsOrder',
               data: {
-                left: 'age',
-                right: 'crime-coefficient',
+                left: 'b',
+                right: 'a',
               },
             },
             {
               messageId: 'unexpectedObjectsOrder',
               data: {
-                left: 'age',
-                right: 'crime-coefficient',
-              },
-            },
-            {
-              messageId: 'unexpectedObjectsOrder',
-              data: {
-                left: 'akane-tsunemori',
-                right: 'nobuchika-ginoza',
-              },
-            },
-            {
-              messageId: 'unexpectedObjectsOrder',
-              data: {
-                left: 'age',
-                right: 'crime-coefficient',
+                left: 'b',
+                right: 'a',
               },
             },
           ],
@@ -1938,10 +1939,10 @@ describe(RULE_NAME, () => {
       valid: [
         {
           code: dedent`
-            let robots = {
-              'eva-02': 'Asuka Langley Sohryu',
-              [getTestEva()]: 'Yui Ikari',
-              [robots[1]]: 'Rei Ayanami',
+            let Obj = {
+              [b()]: 'bb',
+              [c[1]]: 'c',
+              'a': 'aaa',
             }
           `,
           options: [options],
@@ -1950,17 +1951,17 @@ describe(RULE_NAME, () => {
       invalid: [
         {
           code: dedent`
-            let robots = {
-              [robots[1]]: 'Rei Ayanami',
-              [getTestEva()]: 'Yui Ikari',
-              'eva-02': 'Asuka Langley Sohryu',
+            let Obj = {
+              'a': 'aaa',
+              [b()]: 'bb',
+              [c[1]]: 'c',
             }
           `,
           output: dedent`
-            let robots = {
-              'eva-02': 'Asuka Langley Sohryu',
-              [getTestEva()]: 'Yui Ikari',
-              [robots[1]]: 'Rei Ayanami',
+            let Obj = {
+              [b()]: 'bb',
+              [c[1]]: 'c',
+              'a': 'aaa',
             }
           `,
           options: [options],
@@ -1968,15 +1969,8 @@ describe(RULE_NAME, () => {
             {
               messageId: 'unexpectedObjectsOrder',
               data: {
-                left: 'robots[1]',
-                right: 'getTestEva()',
-              },
-            },
-            {
-              messageId: 'unexpectedObjectsOrder',
-              data: {
-                left: 'getTestEva()',
-                right: 'eva-02',
+                left: 'a',
+                right: 'b()',
               },
             },
           ],
@@ -1988,19 +1982,17 @@ describe(RULE_NAME, () => {
       valid: [
         {
           code: dedent`
-            let terrorInResonance = {
-              id: 'de4d12c2-200c-49bf-a2c8-14f5b4576299',
-              name: 'Terror in Resonance',
-              genres: ['drama', 'mystery', 'psychological', 'thriller'],
-              romaji: 'Zankyou no Terror',
-              studio: 'Mappa',
-              episodes: 11,
+            let Obj = {
+              c: 'ccc',
+              b: 'bb',
+              a: 'aaaa',
+              d: 'd',
             }
           `,
           options: [
             {
               ...options,
-              customGroups: { top: ['name', 'id'] },
+              customGroups: { top: ['c', 'b'] },
               groups: ['top', 'unknown'],
             },
           ],
@@ -2009,29 +2001,25 @@ describe(RULE_NAME, () => {
       invalid: [
         {
           code: dedent`
-            let terrorInResonance = {
-              episodes: 11,
-              genres: ['drama', 'mystery', 'psychological', 'thriller'],
-              id: 'de4d12c2-200c-49bf-a2c8-14f5b4576299',
-              name: 'Terror in Resonance',
-              romaji: 'Zankyou no Terror',
-              studio: 'Mappa'
+            let Obj = {
+              a: 'aaaa',
+              b: 'bb',
+              c: 'ccc',
+              d: 'd',
             }
           `,
           output: dedent`
-            let terrorInResonance = {
-              id: 'de4d12c2-200c-49bf-a2c8-14f5b4576299',
-              name: 'Terror in Resonance',
-              genres: ['drama', 'mystery', 'psychological', 'thriller'],
-              romaji: 'Zankyou no Terror',
-              studio: 'Mappa',
-              episodes: 11
+            let Obj = {
+              c: 'ccc',
+              b: 'bb',
+              a: 'aaaa',
+              d: 'd',
             }
           `,
           options: [
             {
               ...options,
-              customGroups: { top: ['name', 'id'] },
+              customGroups: { top: ['c', 'b'] },
               groups: ['top', 'unknown'],
             },
           ],
@@ -2039,15 +2027,15 @@ describe(RULE_NAME, () => {
             {
               messageId: 'unexpectedObjectsOrder',
               data: {
-                left: 'episodes',
-                right: 'genres',
+                left: 'a',
+                right: 'b',
               },
             },
             {
               messageId: 'unexpectedObjectsOrder',
               data: {
-                left: 'genres',
-                right: 'id',
+                left: 'b',
+                right: 'c',
               },
             },
           ],
@@ -2062,50 +2050,38 @@ describe(RULE_NAME, () => {
         valid: [
           {
             code: dedent`
-              let yokokawaFamily = {
-                'mrs-yokokawa': 'Mrs. Yokokawa', // Seita's and Setsuko's mother
-                sister: 'Setsuko', // Setsuko completely adores her older brother Seita
-                brother: 'Seita', // Seita is responsible, mature, and tough
+              let Obj = {
+                a: 'aaa', // Comment A
+                b: 'bb', // Comment B
+                c: 'c' // Comment C
               }
             `,
-            options: [
-              {
-                ...options,
-                customGroups: { top: ['name', 'id'] },
-                groups: ['top', 'unknown'],
-              },
-            ],
+            options: [options],
           },
         ],
         invalid: [
           {
             code: dedent`
-              let yokokawaFamily = {
-                sister: 'Setsuko', // Setsuko completely adores her older brother Seita
-                'mrs-yokokawa': 'Mrs. Yokokawa', // Seita's and Setsuko's mother
-                brother: 'Seita', // Seita is responsible, mature, and tough
+              let Obj = {
+                a: 'aaa', // Comment A
+                c: 'c', // Comment C
+                b: 'bb', // Comment B
               }
             `,
             output: dedent`
-              let yokokawaFamily = {
-                'mrs-yokokawa': 'Mrs. Yokokawa', // Seita's and Setsuko's mother
-                sister: 'Setsuko', // Setsuko completely adores her older brother Seita
-                brother: 'Seita', // Seita is responsible, mature, and tough
+              let Obj = {
+                a: 'aaa', // Comment A
+                b: 'bb', // Comment B
+                c: 'c', // Comment C
               }
             `,
-            options: [
-              {
-                ...options,
-                customGroups: { top: ['name', 'id'] },
-                groups: ['top', 'unknown'],
-              },
-            ],
+            options: [options],
             errors: [
               {
                 messageId: 'unexpectedObjectsOrder',
                 data: {
-                  left: 'sister',
-                  right: 'mrs-yokokawa',
+                  left: 'c',
+                  right: 'b',
                 },
               },
             ],
@@ -2122,15 +2098,15 @@ describe(RULE_NAME, () => {
         invalid: [
           {
             code: dedent`
-              let daddies = {
-                rei: 'Rei Suwa', // daddy #1
-                kazuki: 'Kazuki Kurusu' // daddy #2
+              let Obj = {
+                b: 'b', // Comment B
+                a: 'aa' // Comment A
               }
             `,
             output: dedent`
-              let daddies = {
-                kazuki: 'Kazuki Kurusu', // daddy #2
-                rei: 'Rei Suwa' // daddy #1
+              let Obj = {
+                a: 'aa', // Comment A
+                b: 'b' // Comment B
               }
             `,
             options: [options],
@@ -2138,8 +2114,8 @@ describe(RULE_NAME, () => {
               {
                 messageId: 'unexpectedObjectsOrder',
                 data: {
-                  left: 'rei',
-                  right: 'kazuki',
+                  left: 'b',
+                  right: 'a',
                 },
               },
             ],
@@ -2153,19 +2129,19 @@ describe(RULE_NAME, () => {
       invalid: [
         {
           code: dedent`
-            let startTerrorInResonance = ({
-              name = 'Nine',
-              bombType,
-              placeToAttack
+            let Func = ({
+              c,
+              a = 'aa',
+              b
             }) => {
               // ...
             }
           `,
           output: dedent`
-            let startTerrorInResonance = ({
-              name = 'Nine',
-              placeToAttack,
-              bombType
+            let Func = ({
+              a = 'aa',
+              c,
+              b
             }) => {
               // ...
             }
@@ -2175,8 +2151,8 @@ describe(RULE_NAME, () => {
             {
               messageId: 'unexpectedObjectsOrder',
               data: {
-                left: 'bombType',
-                right: 'placeToAttack',
+                left: 'c',
+                right: 'a',
               },
             },
           ],
@@ -2192,21 +2168,21 @@ describe(RULE_NAME, () => {
         invalid: [
           {
             code: dedent`
-              let getPartiallyParasite = ({
-                parasite,
-                name = parasite,
-                school = 'West Heigh',
-                gender,
+              let Func = ({
+                c,
+                b = c,
+                a = 'a',
+                d,
               }) => {
                 // ...
               }
             `,
             output: dedent`
-              let getPartiallyParasite = ({
-                school = 'West Heigh',
-                parasite,
-                name = parasite,
-                gender,
+              let Func = ({
+                a = 'a',
+                c,
+                b = c,
+                d,
               }) => {
                 // ...
               }
@@ -2216,8 +2192,8 @@ describe(RULE_NAME, () => {
               {
                 messageId: 'unexpectedObjectsOrder',
                 data: {
-                  left: 'name',
-                  right: 'school',
+                  left: 'b',
+                  right: 'a',
                 },
               },
             ],
@@ -2234,21 +2210,21 @@ describe(RULE_NAME, () => {
         invalid: [
           {
             code: dedent`
-              let countPrisonSchoolGrade = ({
-                biology,
-                finalScore = biology + math + naturalScience,
-                math,
-                naturalScience,
+              let Func = ({
+                a,
+                b = a + c + d,
+                c,
+                d,
               }) => {
                 // ...
               }
             `,
             output: dedent`
-              let countPrisonSchoolGrade = ({
-                naturalScience,
-                biology,
-                math,
-                finalScore = biology + math + naturalScience,
+              let Func = ({
+                a,
+                c,
+                d,
+                b = a + c + d,
               }) => {
                 // ...
               }
@@ -2258,15 +2234,141 @@ describe(RULE_NAME, () => {
               {
                 messageId: 'unexpectedObjectsOrder',
                 data: {
-                  left: 'finalScore',
-                  right: 'math',
+                  left: 'b',
+                  right: 'c',
                 },
               },
+            ],
+          },
+          {
+            code: dedent`
+              let Func = ({
+                a,
+                b = () => a + c,
+                c,
+                d,
+              }) => {
+                // ...
+              }
+            `,
+            output: dedent`
+              let Func = ({
+                a,
+                c,
+                b = () => a + c,
+                d,
+              }) => {
+                // ...
+              }
+            `,
+            options: [options],
+            errors: [
               {
                 messageId: 'unexpectedObjectsOrder',
                 data: {
-                  left: 'math',
-                  right: 'naturalScience',
+                  left: 'b',
+                  right: 'c',
+                },
+              },
+            ],
+          },
+          {
+            code: dedent`
+              let Func = ({
+                a,
+                c = 1 === 1 ? 1 === 1 ? a : b : b,
+                b,
+                d,
+              }) => {
+                // ...
+              }
+            `,
+            output: dedent`
+              let Func = ({
+                a,
+                b,
+                c = 1 === 1 ? 1 === 1 ? a : b : b,
+                d,
+              }) => {
+                // ...
+              }
+            `,
+            options: [options],
+            errors: [
+              {
+                messageId: 'unexpectedObjectsOrder',
+                data: {
+                  left: 'c',
+                  right: 'b',
+                },
+              },
+            ],
+          },
+          {
+            code: dedent`
+              let Func = ({
+                a,
+                b = ['a', 'b', 'c'].includes(d, c, a),
+                c,
+                d,
+              }) => {
+                // ...
+              }
+            `,
+            output: dedent`
+              let Func = ({
+                a,
+                c,
+                d,
+                b = ['a', 'b', 'c'].includes(d, c, a),
+              }) => {
+                // ...
+              }
+            `,
+            options: [
+              {
+                type: 'alphabetical',
+                order: 'asc',
+              },
+            ],
+            errors: [
+              {
+                messageId: 'unexpectedObjectsOrder',
+                data: {
+                  left: 'b',
+                  right: 'c',
+                },
+              },
+            ],
+          },
+          {
+            code: dedent`
+              let Func = ({
+                a,
+                b = 1 === 1 ? a : c,
+                c,
+                d,
+              }) => {
+                // ...
+              }
+            `,
+            output: dedent`
+              let Func = ({
+                a,
+                c,
+                b = 1 === 1 ? a : c,
+                d,
+              }) => {
+                // ...
+              }
+            `,
+            options: [options],
+            errors: [
+              {
+                messageId: 'unexpectedObjectsOrder',
+                data: {
+                  left: 'b',
+                  right: 'c',
                 },
               },
             ],
@@ -2283,35 +2385,31 @@ describe(RULE_NAME, () => {
         invalid: [
           {
             code: dedent`
-              let heroAssociation = {
-                // Part: S-Class
-                blast: 'Blast',
-                tatsumaki: 'Tatsumaki',
-                // Atomic Samurai
-                kamikaze: 'Kamikaze',
-                // Part: A-Class
-                sweet: 'Sweet Mask',
-                iaian: 'Iaian',
-                // Part: B-Class
-                'mountain-ape': 'Mountain Ape',
-                // Member of the Blizzard Group
-                eyelashes: 'Eyelashes',
+              let Obj = {
+                // Part: 1
+                e: 'ee',
+                d: 'ddd',
+                // Part: 2
+                f: 'f',
+                // Part: 3
+                a: 'aaaaaa',
+                c: 'cccc',
+                // Not partition comment
+                b: 'bbbbb',
               }
             `,
             output: dedent`
-              let heroAssociation = {
-                // Part: S-Class
-                tatsumaki: 'Tatsumaki',
-                // Atomic Samurai
-                kamikaze: 'Kamikaze',
-                blast: 'Blast',
-                // Part: A-Class
-                sweet: 'Sweet Mask',
-                iaian: 'Iaian',
-                // Part: B-Class
-                'mountain-ape': 'Mountain Ape',
-                // Member of the Blizzard Group
-                eyelashes: 'Eyelashes',
+              let Obj = {
+                // Part: 1
+                d: 'ddd',
+                e: 'ee',
+                // Part: 2
+                f: 'f',
+                // Part: 3
+                a: 'aaaaaa',
+                // Not partition comment
+                b: 'bbbbb',
+                c: 'cccc',
               }
             `,
             options: [
@@ -2324,8 +2422,15 @@ describe(RULE_NAME, () => {
               {
                 messageId: 'unexpectedObjectsOrder',
                 data: {
-                  left: 'blast',
-                  right: 'tatsumaki',
+                  left: 'e',
+                  right: 'd',
+                },
+              },
+              {
+                messageId: 'unexpectedObjectsOrder',
+                data: {
+                  left: 'c',
+                  right: 'b',
                 },
               },
             ],
@@ -2341,11 +2446,11 @@ describe(RULE_NAME, () => {
         valid: [
           {
             code: dedent`
-              let brothers = {
-                // Older brother
-                edward: 'Edward Elric',
-                // Younger brother
-                alphonse: 'Alphonse Elric',
+              let Obj = {
+                // Some comment
+                b: 'b',
+                // Other comment
+                a: 'aa',
               }
             `,
             options: [
@@ -2368,47 +2473,43 @@ describe(RULE_NAME, () => {
         invalid: [
           {
             code: dedent`
-              let psychoPass = {
-                /* Public Safety Bureau */
-                // Crime Coefficient: Low
-                tsunemori: 'Akane Tsunemori',
-                // Crime Coefficient: High
-                kogami: 'Shinya Kogami',
-                ginoza: 'Nobuchika Ginoza',
-                masaoka: 'Tomomi Masaoka',
-                /* Victims */
-                makishima: 'Shogo Makishima',
+              let Object = {
+                /* Partition Comment */
+                // Part: 1
+                c: 'cc',
+                // Part: 2
+                b: 'bbb',
+                a: 'aaaa',
+                d: 'd',
+                /* Part: 3 */
+                e: 'e',
               }
             `,
             output: dedent`
-              let psychoPass = {
-                /* Public Safety Bureau */
-                // Crime Coefficient: Low
-                tsunemori: 'Akane Tsunemori',
-                // Crime Coefficient: High
-                ginoza: 'Nobuchika Ginoza',
-                masaoka: 'Tomomi Masaoka',
-                kogami: 'Shinya Kogami',
-                /* Victims */
-                makishima: 'Shogo Makishima',
+              let Object = {
+                /* Partition Comment */
+                // Part: 1
+                c: 'cc',
+                // Part: 2
+                a: 'aaaa',
+                b: 'bbb',
+                d: 'd',
+                /* Part: 3 */
+                e: 'e',
               }
             `,
             options: [
               {
                 ...options,
-                partitionByComment: [
-                  'Public Safety Bureau',
-                  'Crime Coefficient: *',
-                  'Victims',
-                ],
+                partitionByComment: ['Partition Comment', 'Part: *'],
               },
             ],
             errors: [
               {
                 messageId: 'unexpectedObjectsOrder',
                 data: {
-                  left: 'kogami',
-                  right: 'ginoza',
+                  left: 'b',
+                  right: 'a',
                 },
               },
             ],
@@ -2480,14 +2581,14 @@ describe(RULE_NAME, () => {
         valid: [
           {
             code: dedent`
-              let terrorist = {
-                nickname: 'Sphinx #2',
-                name: 'Twelve',
+              let Obj = {
+                d: 'dd',
+                e: 'e',
 
-                status: Status.Deceased,
+                c: 'ccc',
 
-                height: '167 cm',
-                weight: '55 kg',
+                a: 'aaaaa',
+                b: 'bbbb',
               }
             `,
             options: [
@@ -2501,25 +2602,25 @@ describe(RULE_NAME, () => {
         invalid: [
           {
             code: dedent`
-              let terrorist = {
-                nickname: 'Sphinx #2',
-                name: 'Twelve',
+              let Obj = {
+                e: 'e',
+                d: 'dd',
 
-                status: Status.Deceased,
+                c: 'ccc',
 
-                weight: '55 kg',
-                height: '167 cm',
+                b: 'bbbb',
+                a: 'aaaaa',
               }
             `,
             output: dedent`
-              let terrorist = {
-                nickname: 'Sphinx #2',
-                name: 'Twelve',
+              let Obj = {
+                d: 'dd',
+                e: 'e',
 
-                status: Status.Deceased,
+                c: 'ccc',
 
-                height: '167 cm',
-                weight: '55 kg',
+                a: 'aaaaa',
+                b: 'bbbb',
               }
             `,
             options: [
@@ -2532,8 +2633,15 @@ describe(RULE_NAME, () => {
               {
                 messageId: 'unexpectedObjectsOrder',
                 data: {
-                  left: 'weight',
-                  right: 'height',
+                  left: 'e',
+                  right: 'd',
+                },
+              },
+              {
+                messageId: 'unexpectedObjectsOrder',
+                data: {
+                  left: 'b',
+                  right: 'a',
                 },
               },
             ],
@@ -2550,10 +2658,10 @@ describe(RULE_NAME, () => {
       {
         valid: [
           dedent`
-              let family = {
-                dad: 'Loid Forger',
-                daughter: 'Anya Forger',
-                mom: 'Yor Forger',
+              let Obj = {
+                a: 'a',
+                b: 'b',
+                c: 'c',
               }
             `,
           {
@@ -2571,25 +2679,25 @@ describe(RULE_NAME, () => {
         invalid: [
           {
             code: dedent`
-                let family = {
-                  dad: 'Loid Forger',
-                  mom: 'Yor Forger',
-                  daughter: 'Anya Forger',
+                let Obj = {
+                  a: 'a',
+                  c: 'c',
+                  b: 'b',
                 }
               `,
             output: dedent`
-                let family = {
-                  dad: 'Loid Forger',
-                  daughter: 'Anya Forger',
-                  mom: 'Yor Forger',
+                let Obj = {
+                  a: 'a',
+                  b: 'b',
+                  c: 'c',
                 }
               `,
             errors: [
               {
                 messageId: 'unexpectedObjectsOrder',
                 data: {
-                  left: 'mom',
-                  right: 'daughter',
+                  left: 'c',
+                  right: 'b',
                 },
               },
             ],
@@ -2606,7 +2714,7 @@ describe(RULE_NAME, () => {
           {
             code: dedent`
                 const Box = styled.div({
-                  background: "palevioletred",
+                  background: "red",
                   width: "50px",
                   height: "50px",
                 })
@@ -2656,7 +2764,7 @@ describe(RULE_NAME, () => {
         {
           code: dedent`
             const buttonStyles = {
-              background: "palevioletred",
+              background: "red",
               display: 'flex',
               flexDirection: 'column',
               width: "50px",
@@ -2681,7 +2789,7 @@ describe(RULE_NAME, () => {
               },
               data() {
                 return {
-                  background: "palevioletred",
+                  background: "red",
                   display: 'flex',
                   flexDirection: 'column',
                   width: "50px",
@@ -2694,7 +2802,7 @@ describe(RULE_NAME, () => {
             export default {
               data() {
                 return {
-                  background: "palevioletred",
+                  background: "red",
                   display: 'flex',
                   flexDirection: 'column',
                   width: "50px",

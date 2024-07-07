@@ -29,10 +29,10 @@ describe(RULE_NAME, () => {
       valid: [
         {
           code: dedent`
-            type Mushishi = {
-              birthname: 'Yoki'
-              name: 'Ginko'
-              status: 'wanderer'
+            type Type = {
+              a: 'aaa'
+              b: 'bb'
+              c: 'c'
             }
           `,
           options: [options],
@@ -41,17 +41,17 @@ describe(RULE_NAME, () => {
       invalid: [
         {
           code: dedent`
-            type Mushishi = {
-              name: 'Ginko'
-              birthname: 'Yoki'
-              status: 'wanderer'
+            type Type = {
+              a: 'aaa'
+              c: 'c'
+              b: 'bb'
             }
           `,
           output: dedent`
-            type Mushishi = {
-              birthname: 'Yoki'
-              name: 'Ginko'
-              status: 'wanderer'
+            type Type = {
+              a: 'aaa'
+              b: 'bb'
+              c: 'c'
             }
           `,
           options: [options],
@@ -59,8 +59,8 @@ describe(RULE_NAME, () => {
             {
               messageId: 'unexpectedObjectTypesOrder',
               data: {
-                left: 'name',
-                right: 'birthname',
+                left: 'c',
+                right: 'b',
               },
             },
           ],
@@ -75,10 +75,10 @@ describe(RULE_NAME, () => {
         valid: [
           {
             code: dedent`
-              let handleDemonSlayerAttack = (attack: {
-                attackType: string
-                demon: string
-                slayerName: string
+              let Func = (arguments: {
+                a: 'aaa'
+                b: 'bb'
+                c: 'c'
               }) => {
                 // ...
               }
@@ -89,19 +89,19 @@ describe(RULE_NAME, () => {
         invalid: [
           {
             code: dedent`
-              let handleDemonSlayerAttack = (attack: {
-                slayerName: string
-                attackType: string
-                demon: string
+              let Func = (arguments: {
+                b: 'bb'
+                a: 'aaa'
+                c: 'c'
               }) => {
                 // ...
               }
             `,
             output: dedent`
-              let handleDemonSlayerAttack = (attack: {
-                attackType: string
-                demon: string
-                slayerName: string
+              let Func = (arguments: {
+                a: 'aaa'
+                b: 'bb'
+                c: 'c'
               }) => {
                 // ...
               }
@@ -111,8 +111,8 @@ describe(RULE_NAME, () => {
               {
                 messageId: 'unexpectedObjectTypesOrder',
                 data: {
-                  left: 'slayerName',
-                  right: 'attackType',
+                  left: 'b',
+                  right: 'a',
                 },
               },
             ],
@@ -128,13 +128,12 @@ describe(RULE_NAME, () => {
         valid: [
           {
             code: dedent`
-              type SquadMember = {
+              type Type = {
                 [key: string]: string
-                age?: 30
-                name: 'Levi Ackermann'
-                occupation: 'soldier'
-                rank: 'captain'
-                [residence]: 'Wall Rose'
+                a?: 'aaa'
+                b: 'bb'
+                c: 'c'
+                [value]: string
               }
             `,
             options: [options],
@@ -143,23 +142,21 @@ describe(RULE_NAME, () => {
         invalid: [
           {
             code: dedent`
-              type SquadMember = {
-                age?: 30
+              type Type = {
+                a?: 'aaa'
                 [key: string]: string
-                occupation: 'soldier'
-                name: 'Levi Ackermann'
-                [residence]: 'Wall Rose'
-                rank: 'captain'
+                b: 'bb'
+                [value]: string
+                c: 'c'
               }
             `,
             output: dedent`
-              type SquadMember = {
+              type Type = {
                 [key: string]: string
-                age?: 30
-                name: 'Levi Ackermann'
-                occupation: 'soldier'
-                rank: 'captain'
-                [residence]: 'Wall Rose'
+                a?: 'aaa'
+                b: 'bb'
+                c: 'c'
+                [value]: string
               }
             `,
             options: [options],
@@ -167,22 +164,15 @@ describe(RULE_NAME, () => {
               {
                 messageId: 'unexpectedObjectTypesOrder',
                 data: {
-                  left: 'age',
+                  left: 'a',
                   right: '[key: string]',
                 },
               },
               {
                 messageId: 'unexpectedObjectTypesOrder',
                 data: {
-                  left: 'occupation',
-                  right: 'name',
-                },
-              },
-              {
-                messageId: 'unexpectedObjectTypesOrder',
-                data: {
-                  left: 'residence',
-                  right: 'rank',
+                  left: 'value',
+                  right: 'c',
                 },
               },
             ],
@@ -198,13 +188,13 @@ describe(RULE_NAME, () => {
         valid: [
           {
             code: dedent`
-              type ParanoiaAgent = {
-                [...kills]
+              type Type = {
+                [...values]
                 [[data]]: string
-                [name in victims]?
-                [8]: Victim
-                goldenBatAttack(): void
-                hide?: () => void
+                [name in v]?
+                [8]: Value
+                arrowFunc?: () => void
+                func(): void
               }
             `,
             options: [options],
@@ -213,21 +203,23 @@ describe(RULE_NAME, () => {
         invalid: [
           {
             code: dedent`
-              type ParanoiaAgent = {
-                [...kills]
+              type Type = {
+                [...values]
                 [[data]]: string
-                goldenBatAttack(): void
-                [8]: Victim
-                hide?: () => void
+                [name in v]?
+                [8]: Value
+                func(): void
+                arrowFunc?: () => void
               }
             `,
             output: dedent`
-              type ParanoiaAgent = {
-                [...kills]
+              type Type = {
+                [...values]
                 [[data]]: string
-                [8]: Victim
-                goldenBatAttack(): void
-                hide?: () => void
+                [name in v]?
+                [8]: Value
+                arrowFunc?: () => void
+                func(): void
               }
             `,
             options: [options],
@@ -235,8 +227,8 @@ describe(RULE_NAME, () => {
               {
                 messageId: 'unexpectedObjectTypesOrder',
                 data: {
-                  left: 'goldenBatAttack(): void',
-                  right: '8',
+                  left: 'func(): void',
+                  right: 'arrowFunc',
                 },
               },
             ],
@@ -249,7 +241,7 @@ describe(RULE_NAME, () => {
       valid: [
         {
           code: dedent`
-            addToDeathNote<{ name: string; reasonOfDeath: string }>(/* ... */)
+            func<{ a: 'aa'; b: 'b' }>(/* ... */)
           `,
           options: [options],
         },
@@ -257,18 +249,18 @@ describe(RULE_NAME, () => {
       invalid: [
         {
           code: dedent`
-            addToDeathNote<{ reasonOfDeath: string; name: string }>(/* ... */)
+            func<{ b: 'b'; a: 'aa' }>(/* ... */)
           `,
           output: dedent`
-            addToDeathNote<{ name: string; reasonOfDeath: string }>(/* ... */)
+            func<{ a: 'aa'; b: 'b' }>(/* ... */)
           `,
           options: [options],
           errors: [
             {
               messageId: 'unexpectedObjectTypesOrder',
               data: {
-                left: 'reasonOfDeath',
-                right: 'name',
+                left: 'b',
+                right: 'a',
               },
             },
           ],
@@ -283,23 +275,22 @@ describe(RULE_NAME, () => {
         valid: [
           {
             code: dedent`
-              interface Idol {
-                id: string
-                age: number
-                gender: 'female'
-                name: 'Ai Hoshino'
-                skills: {
-                  actress: number
-                  singer: number
+              type Type = {
+                b: 'bb'
+                a: 'aaa'
+                c: 'c'
+                d: {
+                  e: 'ee'
+                  f: 'f'
                 }
               }
             `,
             options: [
               {
                 ...options,
-                groups: ['id', 'unknown', 'multiline'],
+                groups: ['b', 'unknown', 'multiline'],
                 customGroups: {
-                  id: 'id',
+                  b: 'b',
                 },
               },
             ],
@@ -308,35 +299,33 @@ describe(RULE_NAME, () => {
         invalid: [
           {
             code: dedent`
-              type Idol = {
-                age: number
-                gender: 'female'
-                id: string
-                skills: {
-                  actress: number
-                  singer: number
+              type Type = {
+                a: 'aaa'
+                b: 'bb'
+                c: 'c'
+                d: {
+                  f: 'f'
+                  e: 'ee'
                 }
-                name: 'Ai Hoshino'
               }
             `,
             output: dedent`
-              type Idol = {
-                id: string
-                age: number
-                gender: 'female'
-                name: 'Ai Hoshino'
-                skills: {
-                  actress: number
-                  singer: number
+              type Type = {
+                b: 'bb'
+                a: 'aaa'
+                c: 'c'
+                d: {
+                  f: 'f'
+                  e: 'ee'
                 }
               }
             `,
             options: [
               {
                 ...options,
-                groups: ['id', 'unknown', 'multiline'],
+                groups: ['b', 'unknown', 'multiline'],
                 customGroups: {
-                  id: 'id',
+                  b: 'b',
                 },
               },
             ],
@@ -344,15 +333,15 @@ describe(RULE_NAME, () => {
               {
                 messageId: 'unexpectedObjectTypesOrder',
                 data: {
-                  left: 'gender',
-                  right: 'id',
+                  left: 'a',
+                  right: 'b',
                 },
               },
               {
                 messageId: 'unexpectedObjectTypesOrder',
                 data: {
-                  left: 'skills',
-                  right: 'name',
+                  left: 'f',
+                  right: 'e',
                 },
               },
             ],
@@ -362,34 +351,28 @@ describe(RULE_NAME, () => {
     )
 
     ruleTester.run(
-      `${RULE_NAME}(${type}): allows to use multiple partition comments`,
+      `${RULE_NAME}(${type}): allows to use in class methods`,
       rule,
       {
         valid: [],
         invalid: [
           {
             code: dedent`
-              class PsychoPass {
-                async incCrimeCoefficient (data: {
-                  name: string
-                  level: number
-                  reason: string | string[]
-                  callback: () => void
-                }) {
-                  updateCrimeCoefficient(data)
-                }
+              class Class {
+                async method (data: {
+                  b: 'bb'
+                  a: 'aaa'
+                  c: 'c'
+                }) {}
               }
             `,
             output: dedent`
-              class PsychoPass {
-                async incCrimeCoefficient (data: {
-                  callback: () => void
-                  level: number
-                  name: string
-                  reason: string | string[]
-                }) {
-                  updateCrimeCoefficient(data)
-                }
+              class Class {
+                async method (data: {
+                  a: 'aaa'
+                  b: 'bb'
+                  c: 'c'
+                }) {}
               }
             `,
             options: [options],
@@ -397,15 +380,8 @@ describe(RULE_NAME, () => {
               {
                 messageId: 'unexpectedObjectTypesOrder',
                 data: {
-                  left: 'name',
-                  right: 'level',
-                },
-              },
-              {
-                messageId: 'unexpectedObjectTypesOrder',
-                data: {
-                  left: 'reason',
-                  right: 'callback',
+                  left: 'b',
+                  right: 'a',
                 },
               },
             ],
@@ -421,14 +397,14 @@ describe(RULE_NAME, () => {
         valid: [
           {
             code: dedent`
-              type Cat = {
-                age: number
-                name: 'Jiji'
+              type Type = {
+                d: 'dd'
+                e: 'e'
 
-                gender: 'male' | 'female'
+                c: 'ccc'
 
-                breed: string
-                color: string
+                a: 'aaaaa'
+                b: 'bbbb'
               }
             `,
             options: [
@@ -442,25 +418,25 @@ describe(RULE_NAME, () => {
         invalid: [
           {
             code: dedent`
-              type Cat = {
-                name: 'Jiji'
-                age: number
+              type Type = {
+                e: 'e'
+                d: 'dd'
 
-                gender: 'male' | 'female'
+                c: 'ccc'
 
-                color: string
-                breed: string
+                b: 'bbbb'
+                a: 'aaaaa'
               }
             `,
             output: dedent`
-              type Cat = {
-                age: number
-                name: 'Jiji'
+              type Type = {
+                d: 'dd'
+                e: 'e'
 
-                gender: 'male' | 'female'
+                c: 'ccc'
 
-                breed: string
-                color: string
+                a: 'aaaaa'
+                b: 'bbbb'
               }
             `,
             options: [
@@ -473,15 +449,15 @@ describe(RULE_NAME, () => {
               {
                 messageId: 'unexpectedObjectTypesOrder',
                 data: {
-                  left: 'name',
-                  right: 'age',
+                  left: 'e',
+                  right: 'd',
                 },
               },
               {
                 messageId: 'unexpectedObjectTypesOrder',
                 data: {
-                  left: 'color',
-                  right: 'breed',
+                  left: 'b',
+                  right: 'a',
                 },
               },
             ],
@@ -504,10 +480,10 @@ describe(RULE_NAME, () => {
       valid: [
         {
           code: dedent`
-            type Mushishi = {
-              birthname: 'Yoki'
-              name: 'Ginko'
-              status: 'wanderer'
+            type Type = {
+              a: 'aaa'
+              b: 'bb'
+              c: 'c'
             }
           `,
           options: [options],
@@ -516,17 +492,17 @@ describe(RULE_NAME, () => {
       invalid: [
         {
           code: dedent`
-            type Mushishi = {
-              name: 'Ginko'
-              birthname: 'Yoki'
-              status: 'wanderer'
+            type Type = {
+              a: 'aaa'
+              c: 'c'
+              b: 'bb'
             }
           `,
           output: dedent`
-            type Mushishi = {
-              birthname: 'Yoki'
-              name: 'Ginko'
-              status: 'wanderer'
+            type Type = {
+              a: 'aaa'
+              b: 'bb'
+              c: 'c'
             }
           `,
           options: [options],
@@ -534,8 +510,8 @@ describe(RULE_NAME, () => {
             {
               messageId: 'unexpectedObjectTypesOrder',
               data: {
-                left: 'name',
-                right: 'birthname',
+                left: 'c',
+                right: 'b',
               },
             },
           ],
@@ -550,10 +526,10 @@ describe(RULE_NAME, () => {
         valid: [
           {
             code: dedent`
-              let handleDemonSlayerAttack = (attack: {
-                attackType: string
-                demon: string
-                slayerName: string
+              let Func = (arguments: {
+                a: 'aaa'
+                b: 'bb'
+                c: 'c'
               }) => {
                 // ...
               }
@@ -564,19 +540,19 @@ describe(RULE_NAME, () => {
         invalid: [
           {
             code: dedent`
-              let handleDemonSlayerAttack = (attack: {
-                slayerName: string
-                attackType: string
-                demon: string
+              let Func = (arguments: {
+                b: 'bb'
+                a: 'aaa'
+                c: 'c'
               }) => {
                 // ...
               }
             `,
             output: dedent`
-              let handleDemonSlayerAttack = (attack: {
-                attackType: string
-                demon: string
-                slayerName: string
+              let Func = (arguments: {
+                a: 'aaa'
+                b: 'bb'
+                c: 'c'
               }) => {
                 // ...
               }
@@ -586,8 +562,8 @@ describe(RULE_NAME, () => {
               {
                 messageId: 'unexpectedObjectTypesOrder',
                 data: {
-                  left: 'slayerName',
-                  right: 'attackType',
+                  left: 'b',
+                  right: 'a',
                 },
               },
             ],
@@ -603,13 +579,12 @@ describe(RULE_NAME, () => {
         valid: [
           {
             code: dedent`
-              type SquadMember = {
+              type Type = {
                 [key: string]: string
-                age?: 30
-                name: 'Levi Ackermann'
-                occupation: 'soldier'
-                rank: 'captain'
-                [residence]: 'Wall Rose'
+                a?: 'aaa'
+                b: 'bb'
+                c: 'c'
+                [value]: string
               }
             `,
             options: [options],
@@ -618,23 +593,21 @@ describe(RULE_NAME, () => {
         invalid: [
           {
             code: dedent`
-              type SquadMember = {
-                age?: 30
+              type Type = {
+                a?: 'aaa'
                 [key: string]: string
-                occupation: 'soldier'
-                name: 'Levi Ackermann'
-                [residence]: 'Wall Rose'
-                rank: 'captain'
+                b: 'bb'
+                [value]: string
+                c: 'c'
               }
             `,
             output: dedent`
-              type SquadMember = {
+              type Type = {
                 [key: string]: string
-                age?: 30
-                name: 'Levi Ackermann'
-                occupation: 'soldier'
-                rank: 'captain'
-                [residence]: 'Wall Rose'
+                a?: 'aaa'
+                b: 'bb'
+                c: 'c'
+                [value]: string
               }
             `,
             options: [options],
@@ -642,22 +615,15 @@ describe(RULE_NAME, () => {
               {
                 messageId: 'unexpectedObjectTypesOrder',
                 data: {
-                  left: 'age',
+                  left: 'a',
                   right: '[key: string]',
                 },
               },
               {
                 messageId: 'unexpectedObjectTypesOrder',
                 data: {
-                  left: 'occupation',
-                  right: 'name',
-                },
-              },
-              {
-                messageId: 'unexpectedObjectTypesOrder',
-                data: {
-                  left: 'residence',
-                  right: 'rank',
+                  left: 'value',
+                  right: 'c',
                 },
               },
             ],
@@ -673,13 +639,13 @@ describe(RULE_NAME, () => {
         valid: [
           {
             code: dedent`
-              type ParanoiaAgent = {
-                [...kills]
+              type Type = {
+                [...values]
                 [[data]]: string
-                [name in victims]?
-                [8]: Victim
-                goldenBatAttack(): void
-                hide?: () => void
+                [name in v]?
+                [8]: Value
+                arrowFunc?: () => void
+                func(): void
               }
             `,
             options: [options],
@@ -688,21 +654,23 @@ describe(RULE_NAME, () => {
         invalid: [
           {
             code: dedent`
-              type ParanoiaAgent = {
-                [...kills]
+              type Type = {
+                [...values]
                 [[data]]: string
-                goldenBatAttack(): void
-                [8]: Victim
-                hide?: () => void
+                [name in v]?
+                [8]: Value
+                func(): void
+                arrowFunc?: () => void
               }
             `,
             output: dedent`
-              type ParanoiaAgent = {
-                [...kills]
+              type Type = {
+                [...values]
                 [[data]]: string
-                [8]: Victim
-                goldenBatAttack(): void
-                hide?: () => void
+                [name in v]?
+                [8]: Value
+                arrowFunc?: () => void
+                func(): void
               }
             `,
             options: [options],
@@ -710,8 +678,8 @@ describe(RULE_NAME, () => {
               {
                 messageId: 'unexpectedObjectTypesOrder',
                 data: {
-                  left: 'goldenBatAttack(): void',
-                  right: '8',
+                  left: 'func(): void',
+                  right: 'arrowFunc',
                 },
               },
             ],
@@ -724,26 +692,26 @@ describe(RULE_NAME, () => {
       valid: [
         {
           code: dedent`
-              addToDeathNote<{ name: string; reasonOfDeath: string }>(/* ... */)
-            `,
+            func<{ a: 'aa'; b: 'b' }>(/* ... */)
+          `,
           options: [options],
         },
       ],
       invalid: [
         {
           code: dedent`
-            addToDeathNote<{ reasonOfDeath: string; name: string }>(/* ... */)
+            func<{ b: 'b'; a: 'aa' }>(/* ... */)
           `,
           output: dedent`
-            addToDeathNote<{ name: string; reasonOfDeath: string }>(/* ... */)
+            func<{ a: 'aa'; b: 'b' }>(/* ... */)
           `,
           options: [options],
           errors: [
             {
               messageId: 'unexpectedObjectTypesOrder',
               data: {
-                left: 'reasonOfDeath',
-                right: 'name',
+                left: 'b',
+                right: 'a',
               },
             },
           ],
@@ -758,23 +726,22 @@ describe(RULE_NAME, () => {
         valid: [
           {
             code: dedent`
-              interface Idol {
-                id: string
-                age: number
-                gender: 'female'
-                name: 'Ai Hoshino'
-                skills: {
-                  actress: number
-                  singer: number
+              type Type = {
+                b: 'bb'
+                a: 'aaa'
+                c: 'c'
+                d: {
+                  e: 'ee'
+                  f: 'f'
                 }
               }
             `,
             options: [
               {
                 ...options,
-                groups: ['id', 'unknown', 'multiline'],
+                groups: ['b', 'unknown', 'multiline'],
                 customGroups: {
-                  id: 'id',
+                  b: 'b',
                 },
               },
             ],
@@ -783,35 +750,33 @@ describe(RULE_NAME, () => {
         invalid: [
           {
             code: dedent`
-              type Idol = {
-                age: number
-                gender: 'female'
-                id: string
-                skills: {
-                  actress: number
-                  singer: number
+              type Type = {
+                a: 'aaa'
+                b: 'bb'
+                c: 'c'
+                d: {
+                  f: 'f'
+                  e: 'ee'
                 }
-                name: 'Ai Hoshino'
               }
             `,
             output: dedent`
-              type Idol = {
-                id: string
-                age: number
-                gender: 'female'
-                name: 'Ai Hoshino'
-                skills: {
-                  actress: number
-                  singer: number
+              type Type = {
+                b: 'bb'
+                a: 'aaa'
+                c: 'c'
+                d: {
+                  f: 'f'
+                  e: 'ee'
                 }
               }
             `,
             options: [
               {
                 ...options,
-                groups: ['id', 'unknown', 'multiline'],
+                groups: ['b', 'unknown', 'multiline'],
                 customGroups: {
-                  id: 'id',
+                  b: 'b',
                 },
               },
             ],
@@ -819,15 +784,15 @@ describe(RULE_NAME, () => {
               {
                 messageId: 'unexpectedObjectTypesOrder',
                 data: {
-                  left: 'gender',
-                  right: 'id',
+                  left: 'a',
+                  right: 'b',
                 },
               },
               {
                 messageId: 'unexpectedObjectTypesOrder',
                 data: {
-                  left: 'skills',
-                  right: 'name',
+                  left: 'f',
+                  right: 'e',
                 },
               },
             ],
@@ -843,14 +808,14 @@ describe(RULE_NAME, () => {
         valid: [
           {
             code: dedent`
-              type Cat = {
-                age: number
-                name: 'Jiji'
+              type Type = {
+                d: 'dd'
+                e: 'e'
 
-                gender: 'male' | 'female'
+                c: 'ccc'
 
-                breed: string
-                color: string
+                a: 'aaaaa'
+                b: 'bbbb'
               }
             `,
             options: [
@@ -864,25 +829,25 @@ describe(RULE_NAME, () => {
         invalid: [
           {
             code: dedent`
-              type Cat = {
-                name: 'Jiji'
-                age: number
+              type Type = {
+                e: 'e'
+                d: 'dd'
 
-                gender: 'male' | 'female'
+                c: 'ccc'
 
-                color: string
-                breed: string
+                b: 'bbbb'
+                a: 'aaaaa'
               }
             `,
             output: dedent`
-              type Cat = {
-                age: number
-                name: 'Jiji'
+              type Type = {
+                d: 'dd'
+                e: 'e'
 
-                gender: 'male' | 'female'
+                c: 'ccc'
 
-                breed: string
-                color: string
+                a: 'aaaaa'
+                b: 'bbbb'
               }
             `,
             options: [
@@ -895,15 +860,15 @@ describe(RULE_NAME, () => {
               {
                 messageId: 'unexpectedObjectTypesOrder',
                 data: {
-                  left: 'name',
-                  right: 'age',
+                  left: 'e',
+                  right: 'd',
                 },
               },
               {
                 messageId: 'unexpectedObjectTypesOrder',
                 data: {
-                  left: 'color',
-                  right: 'breed',
+                  left: 'b',
+                  right: 'a',
                 },
               },
             ],
@@ -925,10 +890,10 @@ describe(RULE_NAME, () => {
       valid: [
         {
           code: dedent`
-            type Mushishi = {
-              status: 'wanderer'
-              birthname: 'Yoki'
-              name: 'Ginko'
+            type Type = {
+              a: 'aaa'
+              b: 'bb'
+              c: 'c'
             }
           `,
           options: [options],
@@ -937,17 +902,17 @@ describe(RULE_NAME, () => {
       invalid: [
         {
           code: dedent`
-            type Mushishi = {
-              name: 'Ginko'
-              birthname: 'Yoki'
-              status: 'wanderer'
+            type Type = {
+              a: 'aaa'
+              c: 'c'
+              b: 'bb'
             }
           `,
           output: dedent`
-            type Mushishi = {
-              status: 'wanderer'
-              birthname: 'Yoki'
-              name: 'Ginko'
+            type Type = {
+              a: 'aaa'
+              b: 'bb'
+              c: 'c'
             }
           `,
           options: [options],
@@ -955,15 +920,8 @@ describe(RULE_NAME, () => {
             {
               messageId: 'unexpectedObjectTypesOrder',
               data: {
-                left: 'name',
-                right: 'birthname',
-              },
-            },
-            {
-              messageId: 'unexpectedObjectTypesOrder',
-              data: {
-                left: 'birthname',
-                right: 'status',
+                left: 'c',
+                right: 'b',
               },
             },
           ],
@@ -978,10 +936,10 @@ describe(RULE_NAME, () => {
         valid: [
           {
             code: dedent`
-              let handleDemonSlayerAttack = (attack: {
-                attackType: string
-                slayerName: string
-                demon: string
+              let Func = (arguments: {
+                a: 'aaa'
+                b: 'bb'
+                c: 'c'
               }) => {
                 // ...
               }
@@ -992,19 +950,19 @@ describe(RULE_NAME, () => {
         invalid: [
           {
             code: dedent`
-              let handleDemonSlayerAttack = (attack: {
-                slayerName: string
-                demon: string
-                attackType: string
+              let Func = (arguments: {
+                b: 'bb'
+                a: 'aaa'
+                c: 'c'
               }) => {
                 // ...
               }
             `,
             output: dedent`
-              let handleDemonSlayerAttack = (attack: {
-                slayerName: string
-                attackType: string
-                demon: string
+              let Func = (arguments: {
+                a: 'aaa'
+                b: 'bb'
+                c: 'c'
               }) => {
                 // ...
               }
@@ -1014,8 +972,8 @@ describe(RULE_NAME, () => {
               {
                 messageId: 'unexpectedObjectTypesOrder',
                 data: {
-                  left: 'demon',
-                  right: 'attackType',
+                  left: 'b',
+                  right: 'a',
                 },
               },
             ],
@@ -1031,13 +989,12 @@ describe(RULE_NAME, () => {
         valid: [
           {
             code: dedent`
-              type SquadMember = {
-                [residence]: 'Wall Rose'
-                name: 'Levi Ackermann'
+              type Type = {
                 [key: string]: string
-                occupation: 'soldier'
-                rank: 'captain'
-                age?: 30
+                [value]: string
+                a?: 'aaa'
+                b: 'bb'
+                c: 'c'
               }
             `,
             options: [options],
@@ -1046,23 +1003,21 @@ describe(RULE_NAME, () => {
         invalid: [
           {
             code: dedent`
-              type SquadMember = {
-                age?: 30
+              type Type = {
+                a?: 'aaa'
                 [key: string]: string
-                occupation: 'soldier'
-                name: 'Levi Ackermann'
-                [residence]: 'Wall Rose'
-                rank: 'captain'
+                b: 'bb'
+                [value]: string
+                c: 'c'
               }
             `,
             output: dedent`
-              type SquadMember = {
-                [residence]: 'Wall Rose'
-                name: 'Levi Ackermann'
+              type Type = {
                 [key: string]: string
-                occupation: 'soldier'
-                rank: 'captain'
-                age?: 30
+                [value]: string
+                a?: 'aaa'
+                b: 'bb'
+                c: 'c'
               }
             `,
             options: [options],
@@ -1070,22 +1025,15 @@ describe(RULE_NAME, () => {
               {
                 messageId: 'unexpectedObjectTypesOrder',
                 data: {
-                  left: 'age',
+                  left: 'a',
                   right: '[key: string]',
                 },
               },
               {
                 messageId: 'unexpectedObjectTypesOrder',
                 data: {
-                  left: 'occupation',
-                  right: 'name',
-                },
-              },
-              {
-                messageId: 'unexpectedObjectTypesOrder',
-                data: {
-                  left: 'name',
-                  right: 'residence',
+                  left: 'b',
+                  right: 'value',
                 },
               },
             ],
@@ -1101,12 +1049,13 @@ describe(RULE_NAME, () => {
         valid: [
           {
             code: dedent`
-              type ParanoiaAgent = {
-                goldenBatAttack(): void
-                hide?: () => void
+              type Type = {
+                arrowFunc?: () => void
                 [[data]]: string
-                [8]: Victim
-                [...kills]
+                [name in v]?
+                func(): void
+                [...values]
+                [8]: Value
               }
             `,
             options: [options],
@@ -1115,21 +1064,23 @@ describe(RULE_NAME, () => {
         invalid: [
           {
             code: dedent`
-              type ParanoiaAgent = {
-                [...kills]
+              type Type = {
+                [...values]
                 [[data]]: string
-                goldenBatAttack(): void
-                [8]: Victim
-                hide?: () => void
+                [name in v]?
+                [8]: Value
+                func(): void
+                arrowFunc?: () => void
               }
             `,
             output: dedent`
-              type ParanoiaAgent = {
-                goldenBatAttack(): void
-                hide?: () => void
+              type Type = {
+                arrowFunc?: () => void
                 [[data]]: string
-                [8]: Victim
-                [...kills]
+                [name in v]?
+                func(): void
+                [...values]
+                [8]: Value
               }
             `,
             options: [options],
@@ -1137,22 +1088,22 @@ describe(RULE_NAME, () => {
               {
                 messageId: 'unexpectedObjectTypesOrder',
                 data: {
-                  left: '[...kills]',
+                  left: '[...values]',
                   right: '[[data]]',
                 },
               },
               {
                 messageId: 'unexpectedObjectTypesOrder',
                 data: {
-                  left: '[[data]]',
-                  right: 'goldenBatAttack(): void',
+                  left: '8',
+                  right: 'func(): void',
                 },
               },
               {
                 messageId: 'unexpectedObjectTypesOrder',
                 data: {
-                  left: '8',
-                  right: 'hide',
+                  left: 'func(): void',
+                  right: 'arrowFunc',
                 },
               },
             ],
@@ -1165,7 +1116,7 @@ describe(RULE_NAME, () => {
       valid: [
         {
           code: dedent`
-            addToDeathNote<{ reasonOfDeath: string; name: string }>(/* ... */)
+            func<{ a: 'aa'; b: 'b' }>(/* ... */)
           `,
           options: [options],
         },
@@ -1173,18 +1124,18 @@ describe(RULE_NAME, () => {
       invalid: [
         {
           code: dedent`
-          addToDeathNote<{ name: string; reasonOfDeath: string }>(/* ... */)
+            func<{ b: 'b'; a: 'aa' }>(/* ... */)
           `,
           output: dedent`
-            addToDeathNote<{ reasonOfDeath: string; name: string }>(/* ... */)
+            func<{ a: 'aa'; b: 'b' }>(/* ... */)
           `,
           options: [options],
           errors: [
             {
               messageId: 'unexpectedObjectTypesOrder',
               data: {
-                left: 'name',
-                right: 'reasonOfDeath',
+                left: 'b',
+                right: 'a',
               },
             },
           ],
@@ -1199,23 +1150,22 @@ describe(RULE_NAME, () => {
         valid: [
           {
             code: dedent`
-              interface Idol {
-                id: string
-                age: number
-                gender: 'female'
-                name: 'Ai Hoshino'
-                skills: {
-                  actress: number
-                  singer: number
+              type Type = {
+                b: 'bb'
+                a: 'aaa'
+                c: 'c'
+                d: {
+                  e: 'ee'
+                  f: 'f'
                 }
               }
             `,
             options: [
               {
                 ...options,
-                groups: ['id', 'unknown', 'multiline'],
+                groups: ['b', 'unknown', 'multiline'],
                 customGroups: {
-                  id: 'id',
+                  b: 'b',
                 },
               },
             ],
@@ -1224,35 +1174,33 @@ describe(RULE_NAME, () => {
         invalid: [
           {
             code: dedent`
-              type Idol = {
-                gender: 'female'
-                id: string
-                age: number
-                skills: {
-                  actress: number
-                  singer: number
+              type Type = {
+                a: 'aaa'
+                b: 'bb'
+                c: 'c'
+                d: {
+                  f: 'f'
+                  e: 'ee'
                 }
-                name: 'Ai Hoshino'
               }
             `,
             output: dedent`
-              type Idol = {
-                id: string
-                name: 'Ai Hoshino'
-                gender: 'female'
-                age: number
-                skills: {
-                  actress: number
-                  singer: number
+              type Type = {
+                b: 'bb'
+                a: 'aaa'
+                c: 'c'
+                d: {
+                  f: 'f'
+                  e: 'ee'
                 }
               }
             `,
             options: [
               {
                 ...options,
-                groups: ['id', 'unknown', 'multiline'],
+                groups: ['b', 'unknown', 'multiline'],
                 customGroups: {
-                  id: 'id',
+                  b: 'b',
                 },
               },
             ],
@@ -1260,15 +1208,15 @@ describe(RULE_NAME, () => {
               {
                 messageId: 'unexpectedObjectTypesOrder',
                 data: {
-                  left: 'gender',
-                  right: 'id',
+                  left: 'a',
+                  right: 'b',
                 },
               },
               {
                 messageId: 'unexpectedObjectTypesOrder',
                 data: {
-                  left: 'skills',
-                  right: 'name',
+                  left: 'f',
+                  right: 'e',
                 },
               },
             ],
@@ -1284,14 +1232,14 @@ describe(RULE_NAME, () => {
         valid: [
           {
             code: dedent`
-              type Cat = {
-                name: 'Jiji'
-                age: number
+              type Type = {
+                d: 'dd'
+                e: 'e'
 
-                gender: 'male' | 'female'
+                c: 'ccc'
 
-                breed: string
-                color: string
+                a: 'aaaaa'
+                b: 'bbbb'
               }
             `,
             options: [
@@ -1305,25 +1253,25 @@ describe(RULE_NAME, () => {
         invalid: [
           {
             code: dedent`
-              type Cat = {
-                age: number
-                name: 'Jiji'
+              type Type = {
+                e: 'e'
+                d: 'dd'
 
-                gender: 'male' | 'female'
+                c: 'ccc'
 
-                color: string
-                breed: string
+                b: 'bbbb'
+                a: 'aaaaa'
               }
             `,
             output: dedent`
-              type Cat = {
-                name: 'Jiji'
-                age: number
+              type Type = {
+                d: 'dd'
+                e: 'e'
 
-                gender: 'male' | 'female'
+                c: 'ccc'
 
-                color: string
-                breed: string
+                a: 'aaaaa'
+                b: 'bbbb'
               }
             `,
             options: [
@@ -1336,8 +1284,15 @@ describe(RULE_NAME, () => {
               {
                 messageId: 'unexpectedObjectTypesOrder',
                 data: {
-                  left: 'age',
-                  right: 'name',
+                  left: 'e',
+                  right: 'd',
+                },
+              },
+              {
+                messageId: 'unexpectedObjectTypesOrder',
+                data: {
+                  left: 'b',
+                  right: 'a',
                 },
               },
             ],
@@ -1351,7 +1306,7 @@ describe(RULE_NAME, () => {
     ruleTester.run(`${RULE_NAME}: ignores semi at the end of value`, rule, {
       valid: [
         dedent`
-          type OverloadedReturnType<T> = T extends {
+          type Type<T> = T extends {
             (...args: any[]): infer R;
             (...args: any[]): infer R;
             (...args: any[]): infer R;
