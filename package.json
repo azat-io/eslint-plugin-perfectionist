@@ -79,8 +79,8 @@
     "vue-eslint-parser": ">=9.0.0"
   },
   "dependencies": {
-    "@typescript-eslint/types": "^7.15.0",
-    "@typescript-eslint/utils": "^7.15.0",
+    "@typescript-eslint/types": "^7.16.0",
+    "@typescript-eslint/utils": "^7.16.0",
     "minimatch": "^9.0.5",
     "natural-compare-lite": "^1.4.0"
   },
@@ -101,12 +101,12 @@
     "@types/natural-compare-lite": "^1.4.2",
     "@types/node": "^20.14.10",
     "@types/unist": "^3.0.2",
-    "@typescript-eslint/eslint-plugin": "^7.15.0",
-    "@typescript-eslint/parser": "^7.15.0",
-    "@typescript-eslint/rule-tester": "^7.15.0",
+    "@typescript-eslint/eslint-plugin": "^7.16.0",
+    "@typescript-eslint/parser": "^7.16.0",
+    "@typescript-eslint/rule-tester": "^7.16.0",
     "@typescript-eslint/types": "^6.13.0",
     "@vercel/og": "^0.6.2",
-    "@vitest/coverage-v8": "^1.6.0",
+    "@vitest/coverage-v8": "^2.0.2",
     "ajv": "^6.12.6",
     "astro": "^4.11.5",
     "astro-eslint-parser": "^1.0.2",
@@ -155,6 +155,6 @@
     "unist-util-visit": "^5.0.0",
     "vite": "^5.3.3",
     "vite-plugin-lightningcss": "^0.0.5",
-    "vitest": "^1.6.0"
+    "vitest": "^2.0.2"
   }
 }
