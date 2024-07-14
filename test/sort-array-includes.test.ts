@@ -724,7 +724,11 @@ describe(RULE_NAME, () => {
                 'v2.png',
               ].includes(value)
             `,
-            options: [{}],
+            options: [
+              {
+                ignoreCase: false,
+              },
+            ],
           },
         ],
         invalid: [
