@@ -32,12 +32,12 @@ describe(RULE_NAME, () => {
         valid: [
           {
             code: dedent`
-              let routes = new Map([
-                ['sign-in', '/auth/sign-in'],
-                ['sign-up', '/auth/sign-up'],
-                ...authErrors,
-                ['reset-password', '/auth/reset-password'],
-                ['sign-out', '/auth/sign-out'],
+              new Map([
+                ['c', 'cc'],
+                ['d', 'd'],
+                ...rest,
+                ['a', 'aa'],
+                ['b', 'b'],
               ])
             `,
             options: [options],
@@ -46,23 +46,21 @@ describe(RULE_NAME, () => {
         invalid: [
           {
             code: dedent`
-              let map = new Map([
-                ['products', '/products'],
-                ['product', '/product/:id'],
-                ...cartRouters,
-                ['categories', '/categories'],
-                ['category', '/categories/:id'],
-                ['contacts', '/contacts'],
+              new Map([
+                ['c', 'cc'],
+                ['d', 'd'],
+                ...rest,
+                ['b', 'b'],
+                ['a', 'aa'],
               ])
             `,
             output: dedent`
-              let map = new Map([
-                ['product', '/product/:id'],
-                ['products', '/products'],
-                ...cartRouters,
-                ['categories', '/categories'],
-                ['category', '/categories/:id'],
-                ['contacts', '/contacts'],
+              new Map([
+                ['c', 'cc'],
+                ['d', 'd'],
+                ...rest,
+                ['a', 'aa'],
+                ['b', 'b'],
               ])
             `,
             options: [options],
@@ -70,8 +68,8 @@ describe(RULE_NAME, () => {
               {
                 messageId: 'unexpectedMapElementsOrder',
                 data: {
-                  left: "'products'",
-                  right: "'product'",
+                  left: "'b'",
+                  right: "'a'",
                 },
               },
             ],
@@ -85,8 +83,8 @@ describe(RULE_NAME, () => {
         {
           code: dedent`
             new Map([
-              ...developers,
-              ...designers,
+              ...aaa,
+              ...bb,
             ])
           `,
           options: [options],
@@ -94,8 +92,8 @@ describe(RULE_NAME, () => {
         {
           code: dedent`
             new Map([
-              ...designers,
-              ...developers,
+              ...bb,
+              ...aaa,
             ])
           `,
           options: [options],
@@ -112,8 +110,8 @@ describe(RULE_NAME, () => {
           {
             code: dedent`
               new Map([
-                [jessieName, jessieData],
-                [raymondName, raymondData],
+                [aa, aa],
+                [b, b],
               ])
             `,
             options: [options],
@@ -123,14 +121,14 @@ describe(RULE_NAME, () => {
           {
             code: dedent`
               new Map([
-                [raymondName, raymondData],
-                [jessieName, jessieData],
+                [b, b],
+                [aa, aa],
               ])
             `,
             output: dedent`
               new Map([
-                [jessieName, jessieData],
-                [raymondName, raymondData],
+                [aa, aa],
+                [b, b],
               ])
             `,
             options: [options],
@@ -138,8 +136,8 @@ describe(RULE_NAME, () => {
               {
                 messageId: 'unexpectedMapElementsOrder',
                 data: {
-                  left: 'raymondName',
-                  right: 'jessieName',
+                  left: 'b',
+                  right: 'aa',
                 },
               },
             ],
@@ -195,11 +193,11 @@ describe(RULE_NAME, () => {
       valid: [
         {
           code: dedent`
-            let apps = new Map([
-              booksApp,
-              mapsApp,
-              musicApp,
-              weatherApp,
+            new Map([
+              aaaa,
+              bbb,
+              cc,
+              d,
             ])
           `,
           options: [options],
@@ -208,19 +206,19 @@ describe(RULE_NAME, () => {
       invalid: [
         {
           code: dedent`
-            let apps = new Map([
-              mapsApp,
-              booksApp,
-              weatherApp,
-              musicApp,
+            new Map([
+              aaaa,
+              d,
+              cc,
+              bbb,
             ])
           `,
           output: dedent`
-            let apps = new Map([
-              booksApp,
-              mapsApp,
-              musicApp,
-              weatherApp,
+            new Map([
+              aaaa,
+              bbb,
+              cc,
+              d,
             ])
           `,
           options: [options],
@@ -228,15 +226,15 @@ describe(RULE_NAME, () => {
             {
               messageId: 'unexpectedMapElementsOrder',
               data: {
-                left: 'mapsApp',
-                right: 'booksApp',
+                left: 'd',
+                right: 'cc',
               },
             },
             {
               messageId: 'unexpectedMapElementsOrder',
               data: {
-                left: 'weatherApp',
-                right: 'musicApp',
+                left: 'cc',
+                right: 'bbb',
               },
             },
           ],
@@ -261,12 +259,12 @@ describe(RULE_NAME, () => {
         valid: [
           {
             code: dedent`
-              let routes = new Map([
-                ['sign-in', '/auth/sign-in'],
-                ['sign-up', '/auth/sign-up'],
-                ...authErrors,
-                ['reset-password', '/auth/reset-password'],
-                ['sign-out', '/auth/sign-out'],
+              new Map([
+                ['c', 'cc'],
+                ['d', 'd'],
+                ...rest,
+                ['a', 'aa'],
+                ['b', 'b'],
               ])
             `,
             options: [options],
@@ -275,23 +273,21 @@ describe(RULE_NAME, () => {
         invalid: [
           {
             code: dedent`
-              let map = new Map([
-                ['products', '/products'],
-                ['product', '/product/:id'],
-                ...cartRouters,
-                ['categories', '/categories'],
-                ['category', '/categories/:id'],
-                ['contacts', '/contacts'],
+              new Map([
+                ['c', 'cc'],
+                ['d', 'd'],
+                ...rest,
+                ['b', 'b'],
+                ['a', 'aa'],
               ])
             `,
             output: dedent`
-              let map = new Map([
-                ['product', '/product/:id'],
-                ['products', '/products'],
-                ...cartRouters,
-                ['categories', '/categories'],
-                ['category', '/categories/:id'],
-                ['contacts', '/contacts'],
+              new Map([
+                ['c', 'cc'],
+                ['d', 'd'],
+                ...rest,
+                ['a', 'aa'],
+                ['b', 'b'],
               ])
             `,
             options: [options],
@@ -299,8 +295,8 @@ describe(RULE_NAME, () => {
               {
                 messageId: 'unexpectedMapElementsOrder',
                 data: {
-                  left: "'products'",
-                  right: "'product'",
+                  left: "'b'",
+                  right: "'a'",
                 },
               },
             ],
@@ -314,8 +310,8 @@ describe(RULE_NAME, () => {
         {
           code: dedent`
             new Map([
-              ...developers,
-              ...designers,
+              ...aaa,
+              ...bb,
             ])
           `,
           options: [options],
@@ -323,8 +319,8 @@ describe(RULE_NAME, () => {
         {
           code: dedent`
             new Map([
-              ...designers,
-              ...developers,
+              ...bb,
+              ...aaa,
             ])
           `,
           options: [options],
@@ -341,8 +337,8 @@ describe(RULE_NAME, () => {
           {
             code: dedent`
               new Map([
-                [jessieName, jessieData],
-                [raymondName, raymondData],
+                [aa, aa],
+                [b, b],
               ])
             `,
             options: [options],
@@ -352,14 +348,14 @@ describe(RULE_NAME, () => {
           {
             code: dedent`
               new Map([
-                [raymondName, raymondData],
-                [jessieName, jessieData],
+                [b, b],
+                [aa, aa],
               ])
             `,
             output: dedent`
               new Map([
-                [jessieName, jessieData],
-                [raymondName, raymondData],
+                [aa, aa],
+                [b, b],
               ])
             `,
             options: [options],
@@ -367,8 +363,8 @@ describe(RULE_NAME, () => {
               {
                 messageId: 'unexpectedMapElementsOrder',
                 data: {
-                  left: 'raymondName',
-                  right: 'jessieName',
+                  left: 'b',
+                  right: 'aa',
                 },
               },
             ],
@@ -424,11 +420,11 @@ describe(RULE_NAME, () => {
       valid: [
         {
           code: dedent`
-            let apps = new Map([
-              booksApp,
-              mapsApp,
-              musicApp,
-              weatherApp,
+            new Map([
+              aaaa,
+              bbb,
+              cc,
+              d,
             ])
           `,
           options: [options],
@@ -437,19 +433,19 @@ describe(RULE_NAME, () => {
       invalid: [
         {
           code: dedent`
-            let apps = new Map([
-              mapsApp,
-              booksApp,
-              weatherApp,
-              musicApp,
+            new Map([
+              aaaa,
+              d,
+              cc,
+              bbb,
             ])
           `,
           output: dedent`
-            let apps = new Map([
-              booksApp,
-              mapsApp,
-              musicApp,
-              weatherApp,
+            new Map([
+              aaaa,
+              bbb,
+              cc,
+              d,
             ])
           `,
           options: [options],
@@ -457,15 +453,15 @@ describe(RULE_NAME, () => {
             {
               messageId: 'unexpectedMapElementsOrder',
               data: {
-                left: 'mapsApp',
-                right: 'booksApp',
+                left: 'd',
+                right: 'cc',
               },
             },
             {
               messageId: 'unexpectedMapElementsOrder',
               data: {
-                left: 'weatherApp',
-                right: 'musicApp',
+                left: 'cc',
+                right: 'bbb',
               },
             },
           ],
@@ -489,12 +485,12 @@ describe(RULE_NAME, () => {
         valid: [
           {
             code: dedent`
-              let routes = new Map([
-                ['sign-in', '/auth/sign-in'],
-                ['sign-up', '/auth/sign-up'],
-                ...authErrors,
-                ['reset-password', '/auth/reset-password'],
-                ['sign-out', '/auth/sign-out'],
+              new Map([
+                ['c', 'cc'],
+                ['d', 'd'],
+                ...rest,
+                ['a', 'aa'],
+                ['b', 'b'],
               ])
             `,
             options: [options],
@@ -503,23 +499,21 @@ describe(RULE_NAME, () => {
         invalid: [
           {
             code: dedent`
-              let map = new Map([
-                ['products', '/products'],
-                ['product', '/product/:id'],
-                ...cartRouters,
-                ['categories', '/categories'],
-                ['category', '/categories/:id'],
-                ['contacts', '/contacts'],
+              new Map([
+                ['c', 'cc'],
+                ['d', 'd'],
+                ...rest,
+                ['b', 'b'],
+                ['a', 'aa'],
               ])
             `,
             output: dedent`
-              let map = new Map([
-                ['product', '/product/:id'],
-                ['products', '/products'],
-                ...cartRouters,
-                ['category', '/categories/:id'],
-                ['categories', '/categories'],
-                ['contacts', '/contacts'],
+              new Map([
+                ['c', 'cc'],
+                ['d', 'd'],
+                ...rest,
+                ['a', 'aa'],
+                ['b', 'b'],
               ])
             `,
             options: [options],
@@ -527,15 +521,8 @@ describe(RULE_NAME, () => {
               {
                 messageId: 'unexpectedMapElementsOrder',
                 data: {
-                  left: "'products'",
-                  right: "'product'",
-                },
-              },
-              {
-                messageId: 'unexpectedMapElementsOrder',
-                data: {
-                  left: "'categories'",
-                  right: "'category'",
+                  left: "'b'",
+                  right: "'a'",
                 },
               },
             ],
@@ -620,8 +607,8 @@ describe(RULE_NAME, () => {
         {
           code: dedent`
             new Map([
-              ...developers,
-              ...designers,
+              ...aaa,
+              ...bb,
             ])
           `,
           options: [options],
@@ -629,8 +616,8 @@ describe(RULE_NAME, () => {
         {
           code: dedent`
             new Map([
-              ...designers,
-              ...developers,
+              ...bb,
+              ...aaa,
             ])
           `,
           options: [options],
@@ -647,8 +634,8 @@ describe(RULE_NAME, () => {
           {
             code: dedent`
               new Map([
-                [raymondName, raymondData],
-                [jessieName, jessieData],
+                [aa, aa],
+                [b, b],
               ])
             `,
             options: [options],
@@ -658,14 +645,14 @@ describe(RULE_NAME, () => {
           {
             code: dedent`
               new Map([
-                [jessieName, jessieData],
-                [raymondName, raymondData],
+                [b, b],
+                [aa, aa],
               ])
             `,
             output: dedent`
               new Map([
-                [raymondName, raymondData],
-                [jessieName, jessieData],
+                [aa, aa],
+                [b, b],
               ])
             `,
             options: [options],
@@ -673,8 +660,8 @@ describe(RULE_NAME, () => {
               {
                 messageId: 'unexpectedMapElementsOrder',
                 data: {
-                  left: 'jessieName',
-                  right: 'raymondName',
+                  left: 'b',
+                  right: 'aa',
                 },
               },
             ],
@@ -730,11 +717,11 @@ describe(RULE_NAME, () => {
       valid: [
         {
           code: dedent`
-            let apps = new Map([
-              weatherApp,
-              booksApp,
-              musicApp,
-              mapsApp,
+            new Map([
+              aaaa,
+              bbb,
+              cc,
+              d,
             ])
           `,
           options: [options],
@@ -743,19 +730,19 @@ describe(RULE_NAME, () => {
       invalid: [
         {
           code: dedent`
-            let apps = new Map([
-              mapsApp,
-              booksApp,
-              weatherApp,
-              musicApp,
+            new Map([
+              aaaa,
+              d,
+              cc,
+              bbb,
             ])
           `,
           output: dedent`
-            let apps = new Map([
-              weatherApp,
-              booksApp,
-              musicApp,
-              mapsApp,
+            new Map([
+              aaaa,
+              bbb,
+              cc,
+              d,
             ])
           `,
           options: [options],
@@ -763,15 +750,15 @@ describe(RULE_NAME, () => {
             {
               messageId: 'unexpectedMapElementsOrder',
               data: {
-                left: 'mapsApp',
-                right: 'booksApp',
+                left: 'd',
+                right: 'cc',
               },
             },
             {
               messageId: 'unexpectedMapElementsOrder',
               data: {
-                left: 'booksApp',
-                right: 'weatherApp',
+                left: 'cc',
+                right: 'bbb',
               },
             },
           ],
@@ -798,10 +785,10 @@ describe(RULE_NAME, () => {
           {
             code: dedent`
               new Map([
-                ['img1.png', 'http://www.example.com/img1.png'],
-                ['img10.png', 'http://www.example.com/img10.png'],
-                ['img12.png', 'http://www.example.com/img12.png'],
-                ['img2.png', 'http://www.example.com/img2.png']
+                ['img1.png', '/img1.png'],
+                ['img10.png', '/img10.png'],
+                ['img12.png', '/img12.png'],
+                ['img2.png', '/img2.png']
               ])
             `,
             options: [{}],

@@ -13,7 +13,6 @@ describe(RULE_NAME, () => {
   RuleTester.it = it
 
   let ruleTester = new RuleTester({
-    // @ts-ignore
     parser: require.resolve('svelte-eslint-parser'),
     parserOptions: {
       parser: {
@@ -40,10 +39,10 @@ describe(RULE_NAME, () => {
             filename: 'component.svelte',
             code: dedent`
               <script>
-                import HeavenChild from '../takahara-academy/HeavenChild.svelte'
+                import Component from '../Component.svelte'
               </script>
 
-              <HeavenChild age={14} name="Tokio" partner="Kona" sick />
+              <Component a="aaa" b="bb" c="c" d />
             `,
             options: [options],
           },
@@ -53,32 +52,32 @@ describe(RULE_NAME, () => {
             filename: 'component.svelte',
             code: dedent`
               <script>
-                import HeavenChild from '../takahara-academy/HeavenChild.svelte'
+                import Component from '../Component.svelte'
               </script>
 
-              <HeavenChild partner="Kona" name="Tokio" age={14} sick />
+              <Component b="bb" a="aaa" d c="c" />
             `,
             output: dedent`
               <script>
-                import HeavenChild from '../takahara-academy/HeavenChild.svelte'
+                import Component from '../Component.svelte'
               </script>
 
-              <HeavenChild age={14} name="Tokio" partner="Kona" sick />
+              <Component a="aaa" b="bb" c="c" d />
             `,
             options: [options],
             errors: [
               {
                 messageId: 'unexpectedSvelteAttributesOrder',
                 data: {
-                  left: 'partner',
-                  right: 'name',
+                  left: 'b',
+                  right: 'a',
                 },
               },
               {
                 messageId: 'unexpectedSvelteAttributesOrder',
                 data: {
-                  left: 'name',
-                  right: 'age',
+                  left: 'd',
+                  right: 'c',
                 },
               },
             ],
@@ -96,12 +95,12 @@ describe(RULE_NAME, () => {
             filename: 'component.svelte',
             code: dedent`
               <script>
-                import Sorcerer from '../Sorcerer.svelte'
+                import Component from '../Component.svelte'
 
                 let data = {}
               </script>
 
-              <Sorcerer isAlive {...data} firstName="Satoru" lastName="Gojo" />
+              <Component c {...data} a="aa" b="b" />
             `,
             options: [options],
           },
@@ -111,29 +110,29 @@ describe(RULE_NAME, () => {
             filename: 'component.svelte',
             code: dedent`
               <script>
-                import Sorcerer from '../Sorcerer.svelte'
+                import Component from '../Component.svelte'
 
                 let data = {}
               </script>
 
-              <Sorcerer isAlive {...data} lastName="Gojo" firstName="Satoru" />
+              <Component c {...data} b="b" a="aa" />
             `,
             output: dedent`
               <script>
-                import Sorcerer from '../Sorcerer.svelte'
+                import Component from '../Component.svelte'
 
                 let data = {}
               </script>
 
-              <Sorcerer isAlive {...data} firstName="Satoru" lastName="Gojo" />
+              <Component c {...data} a="aa" b="b" />
             `,
             options: [options],
             errors: [
               {
                 messageId: 'unexpectedSvelteAttributesOrder',
                 data: {
-                  left: 'lastName',
-                  right: 'firstName',
+                  left: 'b',
+                  right: 'a',
                 },
               },
             ],
@@ -149,14 +148,14 @@ describe(RULE_NAME, () => {
           code: dedent`
             <script>
               import { clickOutside } from './click-outside.js'
-              import Migi from './Migi.svelte'
+              import Component from './Component.svelte'
 
-              let showParasite = true
+              let s = true
             </script>
 
-            <button id="hand" on:click={() => (showParasite = true)}>Show Modal</button>
-            {#if showParasite}
-              <Migi on:outclick={() => (showParasite = false)} use:clickOutside />
+            <button a="aa" on:click={() => (s = true)}>Show</button>
+            {#if s}
+              <Component on:outClick={() => (s = false)} use:clickOutside />
             {/if}
           `,
           options: [options],
@@ -168,27 +167,27 @@ describe(RULE_NAME, () => {
           code: dedent`
             <script>
               import { clickOutside } from './click-outside.js'
-              import Migi from './Migi.svelte'
+              import Component from './Component.svelte'
 
-              let showParasite = true
+              let s = true
             </script>
 
-            <button on:click={() => (showParasite = true)} id="hand">Show Modal</button>
-            {#if showParasite}
-              <Migi use:clickOutside on:outclick={() => (showParasite = false)} />
+            <button a="aa" on:click={() => (s = true)}>Show</button>
+            {#if s}
+              <Component use:clickOutside on:outClick={() => (s = false)} />
             {/if}
           `,
           output: dedent`
             <script>
               import { clickOutside } from './click-outside.js'
-              import Migi from './Migi.svelte'
+              import Component from './Component.svelte'
 
-              let showParasite = true
+              let s = true
             </script>
 
-            <button id="hand" on:click={() => (showParasite = true)}>Show Modal</button>
-            {#if showParasite}
-              <Migi on:outclick={() => (showParasite = false)} use:clickOutside />
+            <button a="aa" on:click={() => (s = true)}>Show</button>
+            {#if s}
+              <Component on:outClick={() => (s = false)} use:clickOutside />
             {/if}
           `,
           options: [options],
@@ -196,15 +195,8 @@ describe(RULE_NAME, () => {
             {
               messageId: 'unexpectedSvelteAttributesOrder',
               data: {
-                left: 'on:click',
-                right: 'id',
-              },
-            },
-            {
-              messageId: 'unexpectedSvelteAttributesOrder',
-              data: {
                 left: 'use:clickOutside',
-                right: 'on:outclick',
+                right: 'on:outClick',
               },
             },
           ],
@@ -221,17 +213,16 @@ describe(RULE_NAME, () => {
             filename: 'component.svelte',
             code: dedent`
               <script>
-                import Reborn from '../components/Reborn.svelte'
+                import Component from '../components/Component.svelte'
 
-                let isAlive = true
+                let c = true
               </script>
 
-              <Reborn
-                age={23}
-                firstName="Rudeus"
-                lastName="Greyrat"
-                {isAlive}
-                reincarnated
+              <Component
+                a="aa"
+                b="b"
+                {c}
+                d
               />
             `,
             options: [
@@ -247,32 +238,30 @@ describe(RULE_NAME, () => {
             filename: 'component.svelte',
             code: dedent`
               <script>
-                import Reborn from '../components/Reborn.svelte'
+                import Component from '../components/Component.svelte'
 
-                let isAlive = true
+                let c = true
               </script>
 
-              <Reborn
-                age={23}
-                reincarnated
-                {isAlive}
-                firstName="Rudeus"
-                lastName="Greyrat"
+              <Component
+                a="aa"
+                d
+                {c}
+                b="b"
               />
             `,
             output: dedent`
               <script>
-                import Reborn from '../components/Reborn.svelte'
+                import Component from '../components/Component.svelte'
 
-                let isAlive = true
+                let c = true
               </script>
 
-              <Reborn
-                age={23}
-                firstName="Rudeus"
-                lastName="Greyrat"
-                {isAlive}
-                reincarnated
+              <Component
+                a="aa"
+                b="b"
+                {c}
+                d
               />
             `,
             options: [
@@ -285,15 +274,15 @@ describe(RULE_NAME, () => {
               {
                 messageId: 'unexpectedSvelteAttributesOrder',
                 data: {
-                  left: 'reincarnated',
-                  right: 'isAlive',
+                  left: 'd',
+                  right: 'c',
                 },
               },
               {
                 messageId: 'unexpectedSvelteAttributesOrder',
                 data: {
-                  left: 'isAlive',
-                  right: 'firstName',
+                  left: 'c',
+                  right: 'b',
                 },
               },
             ],
@@ -311,18 +300,18 @@ describe(RULE_NAME, () => {
             filename: 'component.svelte',
             code: dedent`
               <script>
-                import Hero from '../components/Hero.svelte'
+                import Component from '../components/Component.svelte'
 
-                let frags = 0
+                let c = 0
               </script>
 
-              <Reborn
-                onAttack={() => {
-                  frags += 1
+              <Component
+                onClick={() => {
+                  c += 1
                 }}
-                frags={frags}
-                name="One-Punch Man"
-                realName="Saitama"
+                a="aa"
+                b="b"
+                c={c}
               />
             `,
             options: [
@@ -338,34 +327,34 @@ describe(RULE_NAME, () => {
             filename: 'component.svelte',
             code: dedent`
               <script>
-                import Hero from '../components/Hero.svelte'
+                import Component from '../components/Component.svelte'
 
-                let frags = 0
+                let c = 0
               </script>
 
-              <Reborn
-                frags={frags}
-                onAttack={() => {
-                  frags += 1
+              <Component
+                a="aa"
+                b="b"
+                c={c}
+                onClick={() => {
+                  c += 1
                 }}
-                name="One-Punch Man"
-                realName="Saitama"
               />
             `,
             output: dedent`
               <script>
-                import Hero from '../components/Hero.svelte'
+                import Component from '../components/Component.svelte'
 
-                let frags = 0
+                let c = 0
               </script>
 
-              <Reborn
-                onAttack={() => {
-                  frags += 1
+              <Component
+                onClick={() => {
+                  c += 1
                 }}
-                frags={frags}
-                name="One-Punch Man"
-                realName="Saitama"
+                a="aa"
+                b="b"
+                c={c}
               />
             `,
             options: [
@@ -378,8 +367,8 @@ describe(RULE_NAME, () => {
               {
                 messageId: 'unexpectedSvelteAttributesOrder',
                 data: {
-                  left: 'frags',
-                  right: 'onAttack',
+                  left: 'c',
+                  right: 'onClick',
                 },
               },
             ],
@@ -394,25 +383,25 @@ describe(RULE_NAME, () => {
           filename: 'component.svelte',
           code: dedent`
             <script>
-              import Robot from '~/base/robot.svelte'
+              import Component from '~/Component.svelte'
             </script>
 
-            <Robot
-              id="42f1b85f-54ef-413d-b99e-27c9e9610fc2"
-              name="Reg"
-              handlePushHand={() => {
+            <Component
+              c="c"
+              d={() => {
                 /* ... */
               }}
-              team="Team Riko"
+              a="aaa"
+              b="bb"
             />
           `,
           options: [
             {
               ...options,
-              groups: ['top', 'handlers', 'unknown'],
+              groups: ['ce', 'd', 'unknown'],
               customGroups: {
-                top: ['id', 'name'],
-                handlers: 'handle*',
+                ce: ['c', 'e'],
+                d: 'd',
               },
             },
           ],
@@ -423,39 +412,39 @@ describe(RULE_NAME, () => {
           filename: 'component.svelte',
           code: dedent`
             <script>
-              import Robot from '~/base/robot.svelte'
+              import Component from '~/Component.svelte'
             </script>
 
-            <Robot
-              handlePushHand={() => {
+            <Component
+              a="aaa"
+              b="bb"
+              c="c"
+              d={() => {
                 /* ... */
               }}
-              name="Reg"
-              team="Team Riko"
-              id="42f1b85f-54ef-413d-b99e-27c9e9610fc2"
             />
           `,
           output: dedent`
             <script>
-              import Robot from '~/base/robot.svelte'
+              import Component from '~/Component.svelte'
             </script>
 
-            <Robot
-              id="42f1b85f-54ef-413d-b99e-27c9e9610fc2"
-              name="Reg"
-              handlePushHand={() => {
+            <Component
+              c="c"
+              d={() => {
                 /* ... */
               }}
-              team="Team Riko"
+              a="aaa"
+              b="bb"
             />
           `,
           options: [
             {
               ...options,
-              groups: ['top', 'handlers', 'unknown'],
+              groups: ['ce', 'd', 'unknown'],
               customGroups: {
-                top: ['id', 'name'],
-                handlers: 'handle*',
+                ce: ['c', 'e'],
+                d: 'd',
               },
             },
           ],
@@ -463,15 +452,8 @@ describe(RULE_NAME, () => {
             {
               messageId: 'unexpectedSvelteAttributesOrder',
               data: {
-                left: 'handlePushHand',
-                right: 'name',
-              },
-            },
-            {
-              messageId: 'unexpectedSvelteAttributesOrder',
-              data: {
-                left: 'team',
-                right: 'id',
+                left: 'b',
+                right: 'c',
               },
             },
           ],
@@ -498,10 +480,10 @@ describe(RULE_NAME, () => {
             filename: 'component.svelte',
             code: dedent`
               <script>
-                import HeavenChild from '../takahara-academy/HeavenChild.svelte'
+                import Component from '../Component.svelte'
               </script>
 
-              <HeavenChild age={14} name="Tokio" partner="Kona" sick />
+              <Component a="aaa" b="bb" c="c" d />
             `,
             options: [options],
           },
@@ -511,32 +493,32 @@ describe(RULE_NAME, () => {
             filename: 'component.svelte',
             code: dedent`
               <script>
-                import HeavenChild from '../takahara-academy/HeavenChild.svelte'
+                import Component from '../Component.svelte'
               </script>
 
-              <HeavenChild partner="Kona" name="Tokio" age={14} sick />
+              <Component b="bb" a="aaa" d c="c" />
             `,
             output: dedent`
               <script>
-                import HeavenChild from '../takahara-academy/HeavenChild.svelte'
+                import Component from '../Component.svelte'
               </script>
 
-              <HeavenChild age={14} name="Tokio" partner="Kona" sick />
+              <Component a="aaa" b="bb" c="c" d />
             `,
             options: [options],
             errors: [
               {
                 messageId: 'unexpectedSvelteAttributesOrder',
                 data: {
-                  left: 'partner',
-                  right: 'name',
+                  left: 'b',
+                  right: 'a',
                 },
               },
               {
                 messageId: 'unexpectedSvelteAttributesOrder',
                 data: {
-                  left: 'name',
-                  right: 'age',
+                  left: 'd',
+                  right: 'c',
                 },
               },
             ],
@@ -554,12 +536,12 @@ describe(RULE_NAME, () => {
             filename: 'component.svelte',
             code: dedent`
               <script>
-                import Sorcerer from '../Sorcerer.svelte'
+                import Component from '../Component.svelte'
 
                 let data = {}
               </script>
 
-              <Sorcerer isAlive {...data} firstName="Satoru" lastName="Gojo" />
+              <Component c {...data} a="aa" b="b" />
             `,
             options: [options],
           },
@@ -569,29 +551,29 @@ describe(RULE_NAME, () => {
             filename: 'component.svelte',
             code: dedent`
               <script>
-                import Sorcerer from '../Sorcerer.svelte'
+                import Component from '../Component.svelte'
 
                 let data = {}
               </script>
 
-              <Sorcerer isAlive {...data} lastName="Gojo" firstName="Satoru" />
+              <Component c {...data} b="b" a="aa" />
             `,
             output: dedent`
               <script>
-                import Sorcerer from '../Sorcerer.svelte'
+                import Component from '../Component.svelte'
 
                 let data = {}
               </script>
 
-              <Sorcerer isAlive {...data} firstName="Satoru" lastName="Gojo" />
+              <Component c {...data} a="aa" b="b" />
             `,
             options: [options],
             errors: [
               {
                 messageId: 'unexpectedSvelteAttributesOrder',
                 data: {
-                  left: 'lastName',
-                  right: 'firstName',
+                  left: 'b',
+                  right: 'a',
                 },
               },
             ],
@@ -607,14 +589,14 @@ describe(RULE_NAME, () => {
           code: dedent`
             <script>
               import { clickOutside } from './click-outside.js'
-              import Migi from './Migi.svelte'
+              import Component from './Component.svelte'
 
-              let showParasite = true
+              let s = true
             </script>
 
-            <button id="hand" on:click={() => (showParasite = true)}>Show Modal</button>
-            {#if showParasite}
-              <Migi on:outclick={() => (showParasite = false)} use:clickOutside />
+            <button a="aa" on:click={() => (s = true)}>Show</button>
+            {#if s}
+              <Component on:outClick={() => (s = false)} use:clickOutside />
             {/if}
           `,
           options: [options],
@@ -626,27 +608,27 @@ describe(RULE_NAME, () => {
           code: dedent`
             <script>
               import { clickOutside } from './click-outside.js'
-              import Migi from './Migi.svelte'
+              import Component from './Component.svelte'
 
-              let showParasite = true
+              let s = true
             </script>
 
-            <button on:click={() => (showParasite = true)} id="hand">Show Modal</button>
-            {#if showParasite}
-              <Migi use:clickOutside on:outclick={() => (showParasite = false)} />
+            <button a="aa" on:click={() => (s = true)}>Show</button>
+            {#if s}
+              <Component use:clickOutside on:outClick={() => (s = false)} />
             {/if}
           `,
           output: dedent`
             <script>
               import { clickOutside } from './click-outside.js'
-              import Migi from './Migi.svelte'
+              import Component from './Component.svelte'
 
-              let showParasite = true
+              let s = true
             </script>
 
-            <button id="hand" on:click={() => (showParasite = true)}>Show Modal</button>
-            {#if showParasite}
-              <Migi on:outclick={() => (showParasite = false)} use:clickOutside />
+            <button a="aa" on:click={() => (s = true)}>Show</button>
+            {#if s}
+              <Component on:outClick={() => (s = false)} use:clickOutside />
             {/if}
           `,
           options: [options],
@@ -654,15 +636,8 @@ describe(RULE_NAME, () => {
             {
               messageId: 'unexpectedSvelteAttributesOrder',
               data: {
-                left: 'on:click',
-                right: 'id',
-              },
-            },
-            {
-              messageId: 'unexpectedSvelteAttributesOrder',
-              data: {
                 left: 'use:clickOutside',
-                right: 'on:outclick',
+                right: 'on:outClick',
               },
             },
           ],
@@ -679,23 +654,22 @@ describe(RULE_NAME, () => {
             filename: 'component.svelte',
             code: dedent`
               <script>
-                import Reborn from '../components/Reborn.svelte'
+                import Component from '../components/Component.svelte'
 
-                let isAlive = true
+                let c = true
               </script>
 
-              <Reborn
-                age={23}
-                firstName="Rudeus"
-                lastName="Greyrat"
-                {isAlive}
-                reincarnated
+              <Component
+                a="aa"
+                b="b"
+                {c}
+                d
               />
             `,
             options: [
               {
                 ...options,
-                groups: ['unknown', 'shorthand'],
+                groups: ['unknown', ['svelte-shorthand', 'shorthand']],
               },
             ],
           },
@@ -705,53 +679,51 @@ describe(RULE_NAME, () => {
             filename: 'component.svelte',
             code: dedent`
               <script>
-                import Reborn from '../components/Reborn.svelte'
+                import Component from '../components/Component.svelte'
 
-                let isAlive = true
+                let c = true
               </script>
 
-              <Reborn
-                age={23}
-                reincarnated
-                {isAlive}
-                firstName="Rudeus"
-                lastName="Greyrat"
+              <Component
+                a="aa"
+                d
+                {c}
+                b="b"
               />
             `,
             output: dedent`
               <script>
-                import Reborn from '../components/Reborn.svelte'
+                import Component from '../components/Component.svelte'
 
-                let isAlive = true
+                let c = true
               </script>
 
-              <Reborn
-                age={23}
-                firstName="Rudeus"
-                lastName="Greyrat"
-                {isAlive}
-                reincarnated
+              <Component
+                a="aa"
+                b="b"
+                {c}
+                d
               />
             `,
             options: [
               {
                 ...options,
-                groups: ['unknown', 'shorthand'],
+                groups: ['unknown', ['svelte-shorthand', 'shorthand']],
               },
             ],
             errors: [
               {
                 messageId: 'unexpectedSvelteAttributesOrder',
                 data: {
-                  left: 'reincarnated',
-                  right: 'isAlive',
+                  left: 'd',
+                  right: 'c',
                 },
               },
               {
                 messageId: 'unexpectedSvelteAttributesOrder',
                 data: {
-                  left: 'isAlive',
-                  right: 'firstName',
+                  left: 'c',
+                  right: 'b',
                 },
               },
             ],
@@ -769,18 +741,18 @@ describe(RULE_NAME, () => {
             filename: 'component.svelte',
             code: dedent`
               <script>
-                import Hero from '../components/Hero.svelte'
+                import Component from '../components/Component.svelte'
 
-                let frags = 0
+                let c = 0
               </script>
 
-              <Reborn
-                onAttack={() => {
-                  frags += 1
+              <Component
+                onClick={() => {
+                  c += 1
                 }}
-                frags={frags}
-                name="One-Punch Man"
-                realName="Saitama"
+                a="aa"
+                b="b"
+                c={c}
               />
             `,
             options: [
@@ -796,34 +768,34 @@ describe(RULE_NAME, () => {
             filename: 'component.svelte',
             code: dedent`
               <script>
-                import Hero from '../components/Hero.svelte'
+                import Component from '../components/Component.svelte'
 
-                let frags = 0
+                let c = 0
               </script>
 
-              <Reborn
-                frags={frags}
-                onAttack={() => {
-                  frags += 1
+              <Component
+                a="aa"
+                b="b"
+                c={c}
+                onClick={() => {
+                  c += 1
                 }}
-                name="One-Punch Man"
-                realName="Saitama"
               />
             `,
             output: dedent`
               <script>
-                import Hero from '../components/Hero.svelte'
+                import Component from '../components/Component.svelte'
 
-                let frags = 0
+                let c = 0
               </script>
 
-              <Reborn
-                onAttack={() => {
-                  frags += 1
+              <Component
+                onClick={() => {
+                  c += 1
                 }}
-                frags={frags}
-                name="One-Punch Man"
-                realName="Saitama"
+                a="aa"
+                b="b"
+                c={c}
               />
             `,
             options: [
@@ -836,8 +808,8 @@ describe(RULE_NAME, () => {
               {
                 messageId: 'unexpectedSvelteAttributesOrder',
                 data: {
-                  left: 'frags',
-                  right: 'onAttack',
+                  left: 'c',
+                  right: 'onClick',
                 },
               },
             ],
@@ -852,25 +824,25 @@ describe(RULE_NAME, () => {
           filename: 'component.svelte',
           code: dedent`
             <script>
-              import Robot from '~/base/robot.svelte'
+              import Component from '~/Component.svelte'
             </script>
 
-            <Robot
-              id="42f1b85f-54ef-413d-b99e-27c9e9610fc2"
-              name="Reg"
-              handlePushHand={() => {
+            <Component
+              c="c"
+              d={() => {
                 /* ... */
               }}
-              team="Team Riko"
+              a="aaa"
+              b="bb"
             />
           `,
           options: [
             {
               ...options,
-              groups: ['top', 'handlers', 'unknown'],
+              groups: ['ce', 'd', 'unknown'],
               customGroups: {
-                top: ['id', 'name'],
-                handlers: 'handle*',
+                ce: ['c', 'e'],
+                d: 'd',
               },
             },
           ],
@@ -881,39 +853,39 @@ describe(RULE_NAME, () => {
           filename: 'component.svelte',
           code: dedent`
             <script>
-              import Robot from '~/base/robot.svelte'
+              import Component from '~/Component.svelte'
             </script>
 
-            <Robot
-              handlePushHand={() => {
+            <Component
+              a="aaa"
+              b="bb"
+              c="c"
+              d={() => {
                 /* ... */
               }}
-              name="Reg"
-              team="Team Riko"
-              id="42f1b85f-54ef-413d-b99e-27c9e9610fc2"
             />
           `,
           output: dedent`
             <script>
-              import Robot from '~/base/robot.svelte'
+              import Component from '~/Component.svelte'
             </script>
 
-            <Robot
-              id="42f1b85f-54ef-413d-b99e-27c9e9610fc2"
-              name="Reg"
-              handlePushHand={() => {
+            <Component
+              c="c"
+              d={() => {
                 /* ... */
               }}
-              team="Team Riko"
+              a="aaa"
+              b="bb"
             />
           `,
           options: [
             {
               ...options,
-              groups: ['top', 'handlers', 'unknown'],
+              groups: ['ce', 'd', 'unknown'],
               customGroups: {
-                top: ['id', 'name'],
-                handlers: 'handle*',
+                ce: ['c', 'e'],
+                d: 'd',
               },
             },
           ],
@@ -921,15 +893,8 @@ describe(RULE_NAME, () => {
             {
               messageId: 'unexpectedSvelteAttributesOrder',
               data: {
-                left: 'handlePushHand',
-                right: 'name',
-              },
-            },
-            {
-              messageId: 'unexpectedSvelteAttributesOrder',
-              data: {
-                left: 'team',
-                right: 'id',
+                left: 'b',
+                right: 'c',
               },
             },
           ],
@@ -955,10 +920,10 @@ describe(RULE_NAME, () => {
             filename: 'component.svelte',
             code: dedent`
               <script>
-                import HeavenChild from '../takahara-academy/HeavenChild.svelte'
+                import Component from '../Component.svelte'
               </script>
 
-              <HeavenChild partner="Kona" name="Tokio" age={14} sick />
+              <Component a="aaa" b="bb" c="c" d />
             `,
             options: [options],
           },
@@ -968,32 +933,32 @@ describe(RULE_NAME, () => {
             filename: 'component.svelte',
             code: dedent`
               <script>
-                import HeavenChild from '../takahara-academy/HeavenChild.svelte'
+                import Component from '../Component.svelte'
               </script>
 
-              <HeavenChild age={14} name="Tokio" partner="Kona" sick />
+              <Component b="bb" a="aaa" d c="c" />
             `,
             output: dedent`
               <script>
-                import HeavenChild from '../takahara-academy/HeavenChild.svelte'
+                import Component from '../Component.svelte'
               </script>
 
-              <HeavenChild partner="Kona" name="Tokio" age={14} sick />
+              <Component a="aaa" b="bb" c="c" d />
             `,
             options: [options],
             errors: [
               {
                 messageId: 'unexpectedSvelteAttributesOrder',
                 data: {
-                  left: 'age',
-                  right: 'name',
+                  left: 'b',
+                  right: 'a',
                 },
               },
               {
                 messageId: 'unexpectedSvelteAttributesOrder',
                 data: {
-                  left: 'name',
-                  right: 'partner',
+                  left: 'd',
+                  right: 'c',
                 },
               },
             ],
@@ -1011,12 +976,12 @@ describe(RULE_NAME, () => {
             filename: 'component.svelte',
             code: dedent`
               <script>
-                import Sorcerer from '../Sorcerer.svelte'
+                import Component from '../Component.svelte'
 
                 let data = {}
               </script>
 
-              <Sorcerer isAlive {...data} firstName="Satoru" lastName="Gojo" />
+              <Component c {...data} a="aa" b="b" />
             `,
             options: [options],
           },
@@ -1026,29 +991,29 @@ describe(RULE_NAME, () => {
             filename: 'component.svelte',
             code: dedent`
               <script>
-                import Sorcerer from '../Sorcerer.svelte'
+                import Component from '../Component.svelte'
 
                 let data = {}
               </script>
 
-              <Sorcerer isAlive {...data} lastName="Gojo" firstName="Satoru" />
+              <Component c {...data} b="b" a="aa" />
             `,
             output: dedent`
               <script>
-                import Sorcerer from '../Sorcerer.svelte'
+                import Component from '../Component.svelte'
 
                 let data = {}
               </script>
 
-              <Sorcerer isAlive {...data} firstName="Satoru" lastName="Gojo" />
+              <Component c {...data} a="aa" b="b" />
             `,
             options: [options],
             errors: [
               {
                 messageId: 'unexpectedSvelteAttributesOrder',
                 data: {
-                  left: 'lastName',
-                  right: 'firstName',
+                  left: 'b',
+                  right: 'a',
                 },
               },
             ],
@@ -1064,14 +1029,14 @@ describe(RULE_NAME, () => {
           code: dedent`
             <script>
               import { clickOutside } from './click-outside.js'
-              import Migi from './Migi.svelte'
+              import Component from './Component.svelte'
 
-              let showParasite = true
+              let s = true
             </script>
 
-            <button on:click={() => (showParasite = true)} id="hand">Show Modal</button>
-            {#if showParasite}
-              <Migi on:outclick={() => (showParasite = false)} use:clickOutside />
+            <button on:click={() => (s = true)} a="aa">Show</button>
+            {#if s}
+              <Component on:outClick={() => (s = false)} use:clickOutside />
             {/if}
           `,
           options: [options],
@@ -1083,27 +1048,27 @@ describe(RULE_NAME, () => {
           code: dedent`
             <script>
               import { clickOutside } from './click-outside.js'
-              import Migi from './Migi.svelte'
+              import Component from './Component.svelte'
 
-              let showParasite = true
+              let s = true
             </script>
 
-            <button on:click={() => (showParasite = true)} id="hand">Show Modal</button>
-            {#if showParasite}
-              <Migi use:clickOutside on:outclick={() => (showParasite = false)} />
+            <button a="aa" on:click={() => (s = true)}>Show</button>
+            {#if s}
+              <Component on:outClick={() => (s = false)} use:clickOutside />
             {/if}
           `,
           output: dedent`
             <script>
               import { clickOutside } from './click-outside.js'
-              import Migi from './Migi.svelte'
+              import Component from './Component.svelte'
 
-              let showParasite = true
+              let s = true
             </script>
 
-            <button on:click={() => (showParasite = true)} id="hand">Show Modal</button>
-            {#if showParasite}
-              <Migi on:outclick={() => (showParasite = false)} use:clickOutside />
+            <button on:click={() => (s = true)} a="aa">Show</button>
+            {#if s}
+              <Component on:outClick={() => (s = false)} use:clickOutside />
             {/if}
           `,
           options: [options],
@@ -1111,8 +1076,8 @@ describe(RULE_NAME, () => {
             {
               messageId: 'unexpectedSvelteAttributesOrder',
               data: {
-                left: 'use:clickOutside',
-                right: 'on:outclick',
+                left: 'a',
+                right: 'on:click',
               },
             },
           ],
@@ -1129,23 +1094,22 @@ describe(RULE_NAME, () => {
             filename: 'component.svelte',
             code: dedent`
               <script>
-                import Reborn from '../components/Reborn.svelte'
+                import Component from '../components/Component.svelte'
 
-                let isAlive = true
+                let c = true
               </script>
 
-              <Reborn
-                firstName="Rudeus"
-                lastName="Greyrat"
-                age={23}
-                reincarnated
-                {isAlive}
+              <Component
+                a="aa"
+                b="b"
+                {c}
+                d
               />
             `,
             options: [
               {
                 ...options,
-                groups: ['unknown', 'shorthand'],
+                groups: ['unknown', ['svelte-shorthand', 'shorthand']],
               },
             ],
           },
@@ -1155,32 +1119,30 @@ describe(RULE_NAME, () => {
             filename: 'component.svelte',
             code: dedent`
               <script>
-                import Reborn from '../components/Reborn.svelte'
+                import Component from '../components/Component.svelte'
 
-                let isAlive = true
+                let c = true
               </script>
 
-              <Reborn
-                age={23}
-                reincarnated
-                {isAlive}
-                firstName="Rudeus"
-                lastName="Greyrat"
+              <Component
+                a="aa"
+                d
+                {c}
+                b="b"
               />
             `,
             output: dedent`
               <script>
-                import Reborn from '../components/Reborn.svelte'
+                import Component from '../components/Component.svelte'
 
-                let isAlive = true
+                let c = true
               </script>
 
-              <Reborn
-                firstName="Rudeus"
-                lastName="Greyrat"
-                age={23}
-                reincarnated
-                {isAlive}
+              <Component
+                a="aa"
+                b="b"
+                {c}
+                d
               />
             `,
             options: [
@@ -1193,8 +1155,15 @@ describe(RULE_NAME, () => {
               {
                 messageId: 'unexpectedSvelteAttributesOrder',
                 data: {
-                  left: 'isAlive',
-                  right: 'firstName',
+                  left: 'd',
+                  right: 'c',
+                },
+              },
+              {
+                messageId: 'unexpectedSvelteAttributesOrder',
+                data: {
+                  left: 'c',
+                  right: 'b',
                 },
               },
             ],
@@ -1212,18 +1181,18 @@ describe(RULE_NAME, () => {
             filename: 'component.svelte',
             code: dedent`
               <script>
-                import Hero from '../components/Hero.svelte'
+                import Component from '../components/Component.svelte'
 
-                let frags = 0
+                let c = 0
               </script>
 
-              <Reborn
-                onAttack={() => {
-                  frags += 1
+              <Component
+                onClick={() => {
+                  c += 1
                 }}
-                name="One-Punch Man"
-                realName="Saitama"
-                frags={frags}
+                a="aa"
+                b="b"
+                c={c}
               />
             `,
             options: [
@@ -1239,34 +1208,34 @@ describe(RULE_NAME, () => {
             filename: 'component.svelte',
             code: dedent`
               <script>
-                import Hero from '../components/Hero.svelte'
+                import Component from '../components/Component.svelte'
 
-                let frags = 0
+                let c = 0
               </script>
 
-              <Reborn
-                frags={frags}
-                onAttack={() => {
-                  frags += 1
+              <Component
+                a="aa"
+                b="b"
+                c={c}
+                onClick={() => {
+                  c += 1
                 }}
-                name="One-Punch Man"
-                realName="Saitama"
               />
             `,
             output: dedent`
               <script>
-                import Hero from '../components/Hero.svelte'
+                import Component from '../components/Component.svelte'
 
-                let frags = 0
+                let c = 0
               </script>
 
-              <Reborn
-                onAttack={() => {
-                  frags += 1
+              <Component
+                onClick={() => {
+                  c += 1
                 }}
-                name="One-Punch Man"
-                realName="Saitama"
-                frags={frags}
+                a="aa"
+                b="b"
+                c={c}
               />
             `,
             options: [
@@ -1279,8 +1248,8 @@ describe(RULE_NAME, () => {
               {
                 messageId: 'unexpectedSvelteAttributesOrder',
                 data: {
-                  left: 'frags',
-                  right: 'onAttack',
+                  left: 'c',
+                  right: 'onClick',
                 },
               },
             ],
@@ -1295,25 +1264,25 @@ describe(RULE_NAME, () => {
           filename: 'component.svelte',
           code: dedent`
             <script>
-              import Robot from '~/base/robot.svelte'
+              import Component from '~/Component.svelte'
             </script>
 
-            <Robot
-              id="42f1b85f-54ef-413d-b99e-27c9e9610fc2"
-              name="Reg"
-              handlePushHand={() => {
+            <Component
+              c="c"
+              d={() => {
                 /* ... */
               }}
-              team="Team Riko"
+              a="aaa"
+              b="bb"
             />
           `,
           options: [
             {
               ...options,
-              groups: ['top', 'handlers', 'unknown'],
+              groups: ['ce', 'd', 'unknown'],
               customGroups: {
-                top: ['id', 'name'],
-                handlers: 'handle*',
+                ce: ['c', 'e'],
+                d: 'd',
               },
             },
           ],
@@ -1324,39 +1293,39 @@ describe(RULE_NAME, () => {
           filename: 'component.svelte',
           code: dedent`
             <script>
-              import Robot from '~/base/robot.svelte'
+              import Component from '~/Component.svelte'
             </script>
 
-            <Robot
-              handlePushHand={() => {
+            <Component
+              a="aaa"
+              b="bb"
+              c="c"
+              d={() => {
                 /* ... */
               }}
-              name="Reg"
-              team="Team Riko"
-              id="42f1b85f-54ef-413d-b99e-27c9e9610fc2"
             />
           `,
           output: dedent`
             <script>
-              import Robot from '~/base/robot.svelte'
+              import Component from '~/Component.svelte'
             </script>
 
-            <Robot
-              id="42f1b85f-54ef-413d-b99e-27c9e9610fc2"
-              name="Reg"
-              handlePushHand={() => {
+            <Component
+              c="c"
+              d={() => {
                 /* ... */
               }}
-              team="Team Riko"
+              a="aaa"
+              b="bb"
             />
           `,
           options: [
             {
               ...options,
-              groups: ['top', 'handlers', 'unknown'],
+              groups: ['ce', 'd', 'unknown'],
               customGroups: {
-                top: ['id', 'name'],
-                handlers: 'handle*',
+                ce: ['c', 'e'],
+                d: 'd',
               },
             },
           ],
@@ -1364,15 +1333,8 @@ describe(RULE_NAME, () => {
             {
               messageId: 'unexpectedSvelteAttributesOrder',
               data: {
-                left: 'handlePushHand',
-                right: 'name',
-              },
-            },
-            {
-              messageId: 'unexpectedSvelteAttributesOrder',
-              data: {
-                left: 'team',
-                right: 'id',
+                left: 'b',
+                right: 'c',
               },
             },
           ],
@@ -1387,7 +1349,7 @@ describe(RULE_NAME, () => {
         {
           filename: 'component.ts',
           code: dedent`
-            <KessokuBandMember firstName="Hitori" lastName="Gotou" instrument="guitar" />
+            <Component c="c" b="bb" a="aaa" />
           `,
           options: [
             {

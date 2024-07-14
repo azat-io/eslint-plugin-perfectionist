@@ -13,7 +13,6 @@ describe(RULE_NAME, () => {
   RuleTester.it = it
 
   let ruleTester = new RuleTester({
-    // @ts-ignore
     parser: require.resolve('vue-eslint-parser'),
     parserOptions: {
       parser: {
@@ -40,17 +39,17 @@ describe(RULE_NAME, () => {
             filename: 'component.vue',
             code: dedent`
               <script lang="ts" setup>
-                import JujutsuSorcerer from '../elements/Sorcerer.vue'
+                import Component from '../Component.vue'
 
-                let name = 'Yuuji Itadori'
+                let b = 'b'
               </script>
 
               <template>
                 <jujutsu-sorcerer
-                  :age="15"
-                  :name="name"
-                  affiliation="Jujutsu High"
-                  vessel
+                  :a="a"
+                  :b="b"
+                  c="c"
+                  d
                 />
               </template>
             `,
@@ -62,33 +61,33 @@ describe(RULE_NAME, () => {
             filename: 'component.vue',
             code: dedent`
               <script lang="ts" setup>
-                import JujutsuSorcerer from '../elements/Sorcerer.vue'
+                import Component from '../Component.vue'
 
-                let name = 'Yuuji Itadori'
+                let b = 'b'
               </script>
 
               <template>
                 <jujutsu-sorcerer
-                  :name="name"
-                  :age="15"
-                  affiliation="Jujutsu High"
-                  vessel
+                  :b="b"
+                  c="c"
+                  :a="a"
+                  d
                 />
               </template>
             `,
             output: dedent`
               <script lang="ts" setup>
-                import JujutsuSorcerer from '../elements/Sorcerer.vue'
+                import Component from '../Component.vue'
 
-                let name = 'Yuuji Itadori'
+                let b = 'b'
               </script>
 
               <template>
                 <jujutsu-sorcerer
-                  :age="15"
-                  :name="name"
-                  affiliation="Jujutsu High"
-                  vessel
+                  :a="a"
+                  :b="b"
+                  c="c"
+                  d
                 />
               </template>
             `,
@@ -97,8 +96,8 @@ describe(RULE_NAME, () => {
               {
                 messageId: 'unexpectedVueAttributesOrder',
                 data: {
-                  left: ':name',
-                  right: ':age',
+                  left: 'c',
+                  right: ':a',
                 },
               },
             ],
@@ -116,18 +115,18 @@ describe(RULE_NAME, () => {
             filename: 'component.vue',
             code: dedent`
               <script lang="ts" setup>
-                import Daddy from '@/characters/buddy-daddies.vue'
+                import Component from '@/Component.vue'
               </script>
 
               <template>
-                <daddy
-                  :age="29"
-                  firstName="Kazuki"
-                  lastName="Kurusu"
-                  v-bind="{ firstName: 'Rei', lastName: 'Suwa' }"
-                  cover-job="Stand-up comedian"
-                  job="assassin"
-                ></daddy>
+                <component
+                  :c="cc"
+                  d="d"
+                  e="e"
+                  v-bind="{ f: 'f' }"
+                  a="aaaa"
+                  b="bbb"
+                ></component>
               </template>
             `,
             options: [options],
@@ -138,34 +137,34 @@ describe(RULE_NAME, () => {
             filename: 'component.vue',
             code: dedent`
               <script lang="ts" setup>
-                import Daddy from '@/characters/buddy-daddies.vue'
+                import Component from '@/Component.vue'
               </script>
 
               <template>
-                <daddy
-                  firstName="Kazuki"
-                  lastName="Kurusu"
-                  :age="29"
-                  v-bind="{ firstName: 'Rei', lastName: 'Suwa' }"
-                  job="assassin"
-                  cover-job="Stand-up comedian"
-                ></daddy>
+                <component
+                  :c="cc"
+                  d="d"
+                  e="e"
+                  v-bind="{ f: 'f' }"
+                  b="bbb"
+                  a="aaaa"
+                ></component>
               </template>
             `,
             output: dedent`
               <script lang="ts" setup>
-                import Daddy from '@/characters/buddy-daddies.vue'
+                import Component from '@/Component.vue'
               </script>
 
               <template>
-                <daddy
-                  :age="29"
-                  firstName="Kazuki"
-                  lastName="Kurusu"
-                  v-bind="{ firstName: 'Rei', lastName: 'Suwa' }"
-                  cover-job="Stand-up comedian"
-                  job="assassin"
-                ></daddy>
+                <component
+                  :c="cc"
+                  d="d"
+                  e="e"
+                  v-bind="{ f: 'f' }"
+                  a="aaaa"
+                  b="bbb"
+                ></component>
               </template>
             `,
             options: [options],
@@ -173,15 +172,8 @@ describe(RULE_NAME, () => {
               {
                 messageId: 'unexpectedVueAttributesOrder',
                 data: {
-                  left: 'lastName',
-                  right: ':age',
-                },
-              },
-              {
-                messageId: 'unexpectedVueAttributesOrder',
-                data: {
-                  left: 'job',
-                  right: 'cover-job',
+                  left: 'b',
+                  right: 'a',
                 },
               },
             ],
@@ -201,22 +193,21 @@ describe(RULE_NAME, () => {
               <script lang="ts" setup>
                 import { useRef } from 'vue'
 
-                import Titan from '../components/Titan.vue'
+                import Component from '../Component.vue'
 
-                let isTitan = useRef(false)
-                let isAlive = true
+                let eF = useRef(false)
+                let g = true
               </script>
 
               <template>
-                <titan
-                  @transform="() => {
-                    isTitan.value = false
+                <component
+                  @a="() => {
+                    g.value = false
                   }"
-                  name="Armin Arlelt"
-                  occupation="soldier"
-                  team="Scout Regiment"
-                  is-titan
-                ></titan>
+                  b="bb"
+                  c="c"
+                  e-f
+                ></component>
               </template>
             `,
             options: [
@@ -237,44 +228,42 @@ describe(RULE_NAME, () => {
               <script lang="ts" setup>
                 import { useRef } from 'vue'
 
-                import Titan from '../components/Titan.vue'
+                import Component from '../Component.vue'
 
-                let isTitan = useRef(false)
-                let isAlive = true
+                let eF = useRef(false)
+                let g = true
               </script>
 
               <template>
-                <titan
-                  occupation="soldier"
-                  name="Armin Arlelt"
-                  is-titan
-                  team="Scout Regiment"
-                  @transform="() => {
-                    isTitan.value = false
+                <component
+                  b="bb"
+                  @a="() => {
+                    g.value = false
                   }"
-                ></titan>
+                  e-f
+                  c="c"
+                ></component>
               </template>
             `,
             output: dedent`
               <script lang="ts" setup>
                 import { useRef } from 'vue'
 
-                import Titan from '../components/Titan.vue'
+                import Component from '../Component.vue'
 
-                let isTitan = useRef(false)
-                let isAlive = true
+                let eF = useRef(false)
+                let g = true
               </script>
 
               <template>
-                <titan
-                  @transform="() => {
-                    isTitan.value = false
+                <component
+                  @a="() => {
+                    g.value = false
                   }"
-                  name="Armin Arlelt"
-                  occupation="soldier"
-                  team="Scout Regiment"
-                  is-titan
-                ></titan>
+                  b="bb"
+                  c="c"
+                  e-f
+                ></component>
               </template>
             `,
             options: [
@@ -290,22 +279,15 @@ describe(RULE_NAME, () => {
               {
                 messageId: 'unexpectedVueAttributesOrder',
                 data: {
-                  left: 'occupation',
-                  right: 'name',
+                  left: 'b',
+                  right: '@a',
                 },
               },
               {
                 messageId: 'unexpectedVueAttributesOrder',
                 data: {
-                  left: 'is-titan',
-                  right: 'team',
-                },
-              },
-              {
-                messageId: 'unexpectedVueAttributesOrder',
-                data: {
-                  left: 'team',
-                  right: '@transform',
+                  left: 'e-f',
+                  right: 'c',
                 },
               },
             ],
@@ -333,17 +315,17 @@ describe(RULE_NAME, () => {
             filename: 'component.vue',
             code: dedent`
               <script lang="ts" setup>
-                import JujutsuSorcerer from '../elements/Sorcerer.vue'
+                import Component from '../Component.vue'
 
-                let name = 'Yuuji Itadori'
+                let b = 'b'
               </script>
 
               <template>
                 <jujutsu-sorcerer
-                  :age="15"
-                  :name="name"
-                  affiliation="Jujutsu High"
-                  vessel
+                  :a="a"
+                  :b="b"
+                  c="c"
+                  d
                 />
               </template>
             `,
@@ -355,33 +337,33 @@ describe(RULE_NAME, () => {
             filename: 'component.vue',
             code: dedent`
               <script lang="ts" setup>
-                import JujutsuSorcerer from '../elements/Sorcerer.vue'
+                import Component from '../Component.vue'
 
-                let name = 'Yuuji Itadori'
+                let b = 'b'
               </script>
 
               <template>
                 <jujutsu-sorcerer
-                  :name="name"
-                  :age="15"
-                  affiliation="Jujutsu High"
-                  vessel
+                  :b="b"
+                  c="c"
+                  :a="a"
+                  d
                 />
               </template>
             `,
             output: dedent`
               <script lang="ts" setup>
-                import JujutsuSorcerer from '../elements/Sorcerer.vue'
+                import Component from '../Component.vue'
 
-                let name = 'Yuuji Itadori'
+                let b = 'b'
               </script>
 
               <template>
                 <jujutsu-sorcerer
-                  :age="15"
-                  :name="name"
-                  affiliation="Jujutsu High"
-                  vessel
+                  :a="a"
+                  :b="b"
+                  c="c"
+                  d
                 />
               </template>
             `,
@@ -390,8 +372,8 @@ describe(RULE_NAME, () => {
               {
                 messageId: 'unexpectedVueAttributesOrder',
                 data: {
-                  left: ':name',
-                  right: ':age',
+                  left: 'c',
+                  right: ':a',
                 },
               },
             ],
@@ -409,18 +391,18 @@ describe(RULE_NAME, () => {
             filename: 'component.vue',
             code: dedent`
               <script lang="ts" setup>
-                import Daddy from '@/characters/buddy-daddies.vue'
+                import Component from '@/Component.vue'
               </script>
 
               <template>
-                <daddy
-                  :age="29"
-                  firstName="Kazuki"
-                  lastName="Kurusu"
-                  v-bind="{ firstName: 'Rei', lastName: 'Suwa' }"
-                  cover-job="Stand-up comedian"
-                  job="assassin"
-                ></daddy>
+                <component
+                  :c="cc"
+                  d="d"
+                  e="e"
+                  v-bind="{ f: 'f' }"
+                  a="aaaa"
+                  b="bbb"
+                ></component>
               </template>
             `,
             options: [options],
@@ -431,34 +413,34 @@ describe(RULE_NAME, () => {
             filename: 'component.vue',
             code: dedent`
               <script lang="ts" setup>
-                import Daddy from '@/characters/buddy-daddies.vue'
+                import Component from '@/Component.vue'
               </script>
 
               <template>
-                <daddy
-                  firstName="Kazuki"
-                  lastName="Kurusu"
-                  :age="29"
-                  v-bind="{ firstName: 'Rei', lastName: 'Suwa' }"
-                  job="assassin"
-                  cover-job="Stand-up comedian"
-                ></daddy>
+                <component
+                  :c="cc"
+                  d="d"
+                  e="e"
+                  v-bind="{ f: 'f' }"
+                  b="bbb"
+                  a="aaaa"
+                ></component>
               </template>
             `,
             output: dedent`
               <script lang="ts" setup>
-                import Daddy from '@/characters/buddy-daddies.vue'
+                import Component from '@/Component.vue'
               </script>
 
               <template>
-                <daddy
-                  :age="29"
-                  firstName="Kazuki"
-                  lastName="Kurusu"
-                  v-bind="{ firstName: 'Rei', lastName: 'Suwa' }"
-                  cover-job="Stand-up comedian"
-                  job="assassin"
-                ></daddy>
+                <component
+                  :c="cc"
+                  d="d"
+                  e="e"
+                  v-bind="{ f: 'f' }"
+                  a="aaaa"
+                  b="bbb"
+                ></component>
               </template>
             `,
             options: [options],
@@ -466,15 +448,8 @@ describe(RULE_NAME, () => {
               {
                 messageId: 'unexpectedVueAttributesOrder',
                 data: {
-                  left: 'lastName',
-                  right: ':age',
-                },
-              },
-              {
-                messageId: 'unexpectedVueAttributesOrder',
-                data: {
-                  left: 'job',
-                  right: 'cover-job',
+                  left: 'b',
+                  right: 'a',
                 },
               },
             ],
@@ -494,22 +469,21 @@ describe(RULE_NAME, () => {
               <script lang="ts" setup>
                 import { useRef } from 'vue'
 
-                import Titan from '../components/Titan.vue'
+                import Component from '../Component.vue'
 
-                let isTitan = useRef(false)
-                let isAlive = true
+                let eF = useRef(false)
+                let g = true
               </script>
 
               <template>
-                <titan
-                  @transform="() => {
-                    isTitan.value = false
+                <component
+                  @a="() => {
+                    g.value = false
                   }"
-                  name="Armin Arlelt"
-                  occupation="soldier"
-                  team="Scout Regiment"
-                  is-titan
-                ></titan>
+                  b="bb"
+                  c="c"
+                  e-f
+                ></component>
               </template>
             `,
             options: [
@@ -530,44 +504,42 @@ describe(RULE_NAME, () => {
               <script lang="ts" setup>
                 import { useRef } from 'vue'
 
-                import Titan from '../components/Titan.vue'
+                import Component from '../Component.vue'
 
-                let isTitan = useRef(false)
-                let isAlive = true
+                let eF = useRef(false)
+                let g = true
               </script>
 
               <template>
-                <titan
-                  occupation="soldier"
-                  name="Armin Arlelt"
-                  is-titan
-                  team="Scout Regiment"
-                  @transform="() => {
-                    isTitan.value = false
+                <component
+                  b="bb"
+                  @a="() => {
+                    g.value = false
                   }"
-                ></titan>
+                  e-f
+                  c="c"
+                ></component>
               </template>
             `,
             output: dedent`
               <script lang="ts" setup>
                 import { useRef } from 'vue'
 
-                import Titan from '../components/Titan.vue'
+                import Component from '../Component.vue'
 
-                let isTitan = useRef(false)
-                let isAlive = true
+                let eF = useRef(false)
+                let g = true
               </script>
 
               <template>
-                <titan
-                  @transform="() => {
-                    isTitan.value = false
+                <component
+                  @a="() => {
+                    g.value = false
                   }"
-                  name="Armin Arlelt"
-                  occupation="soldier"
-                  team="Scout Regiment"
-                  is-titan
-                ></titan>
+                  b="bb"
+                  c="c"
+                  e-f
+                ></component>
               </template>
             `,
             options: [
@@ -583,22 +555,15 @@ describe(RULE_NAME, () => {
               {
                 messageId: 'unexpectedVueAttributesOrder',
                 data: {
-                  left: 'occupation',
-                  right: 'name',
+                  left: 'b',
+                  right: '@a',
                 },
               },
               {
                 messageId: 'unexpectedVueAttributesOrder',
                 data: {
-                  left: 'is-titan',
-                  right: 'team',
-                },
-              },
-              {
-                messageId: 'unexpectedVueAttributesOrder',
-                data: {
-                  left: 'team',
-                  right: '@transform',
+                  left: 'e-f',
+                  right: 'c',
                 },
               },
             ],
@@ -625,17 +590,17 @@ describe(RULE_NAME, () => {
             filename: 'component.vue',
             code: dedent`
               <script lang="ts" setup>
-                import JujutsuSorcerer from '../elements/Sorcerer.vue'
+                import Component from '../Component.vue'
 
-                let name = 'Yuuji Itadori'
+                let b = 'b'
               </script>
 
               <template>
                 <jujutsu-sorcerer
-                  affiliation="Jujutsu High"
-                  :name="name"
-                  :age="15"
-                  vessel
+                  :a="a"
+                  :b="b"
+                  c="c"
+                  d
                 />
               </template>
             `,
@@ -647,33 +612,33 @@ describe(RULE_NAME, () => {
             filename: 'component.vue',
             code: dedent`
               <script lang="ts" setup>
-                import JujutsuSorcerer from '../elements/Sorcerer.vue'
+                import Component from '../Component.vue'
 
-                let name = 'Yuuji Itadori'
+                let b = 'b'
               </script>
 
               <template>
                 <jujutsu-sorcerer
-                  :name="name"
-                  :age="15"
-                  affiliation="Jujutsu High"
-                  vessel
+                  :b="b"
+                  c="c"
+                  :a="a"
+                  d
                 />
               </template>
             `,
             output: dedent`
               <script lang="ts" setup>
-                import JujutsuSorcerer from '../elements/Sorcerer.vue'
+                import Component from '../Component.vue'
 
-                let name = 'Yuuji Itadori'
+                let b = 'b'
               </script>
 
               <template>
                 <jujutsu-sorcerer
-                  affiliation="Jujutsu High"
-                  :name="name"
-                  :age="15"
-                  vessel
+                  :b="b"
+                  :a="a"
+                  c="c"
+                  d
                 />
               </template>
             `,
@@ -682,8 +647,8 @@ describe(RULE_NAME, () => {
               {
                 messageId: 'unexpectedVueAttributesOrder',
                 data: {
-                  left: ':age',
-                  right: 'affiliation',
+                  left: 'c',
+                  right: ':a',
                 },
               },
             ],
@@ -701,18 +666,18 @@ describe(RULE_NAME, () => {
             filename: 'component.vue',
             code: dedent`
               <script lang="ts" setup>
-                import Daddy from '@/characters/buddy-daddies.vue'
+                import Component from '@/Component.vue'
               </script>
 
               <template>
-                <daddy
-                  firstName="Kazuki"
-                  lastName="Kurusu"
-                    :age="29"
-                  v-bind="{ firstName: 'Rei', lastName: 'Suwa' }"
-                  cover-job="Stand-up comedian"
-                  job="assassin"
-                ></daddy>
+                <component
+                  :c="cc"
+                  d="d"
+                  e="e"
+                  v-bind="{ f: 'f' }"
+                  a="aaaa"
+                  b="bbb"
+                ></component>
               </template>
             `,
             options: [options],
@@ -723,34 +688,34 @@ describe(RULE_NAME, () => {
             filename: 'component.vue',
             code: dedent`
               <script lang="ts" setup>
-                import Daddy from '@/characters/buddy-daddies.vue'
+                import Component from '@/Component.vue'
               </script>
 
               <template>
-                <daddy
-                  firstName="Kazuki"
-                  lastName="Kurusu"
-                  :age="29"
-                  v-bind="{ firstName: 'Rei', lastName: 'Suwa' }"
-                  job="assassin"
-                  cover-job="Stand-up comedian"
-                ></daddy>
+                <component
+                  :c="cc"
+                  d="d"
+                  e="e"
+                  v-bind="{ f: 'f' }"
+                  b="bbb"
+                  a="aaaa"
+                ></component>
               </template>
             `,
             output: dedent`
               <script lang="ts" setup>
-                import Daddy from '@/characters/buddy-daddies.vue'
+                import Component from '@/Component.vue'
               </script>
 
               <template>
-                <daddy
-                  firstName="Kazuki"
-                  lastName="Kurusu"
-                  :age="29"
-                  v-bind="{ firstName: 'Rei', lastName: 'Suwa' }"
-                  cover-job="Stand-up comedian"
-                  job="assassin"
-                ></daddy>
+                <component
+                  :c="cc"
+                  d="d"
+                  e="e"
+                  v-bind="{ f: 'f' }"
+                  a="aaaa"
+                  b="bbb"
+                ></component>
               </template>
             `,
             options: [options],
@@ -758,8 +723,8 @@ describe(RULE_NAME, () => {
               {
                 messageId: 'unexpectedVueAttributesOrder',
                 data: {
-                  left: 'job',
-                  right: 'cover-job',
+                  left: 'b',
+                  right: 'a',
                 },
               },
             ],
@@ -779,22 +744,21 @@ describe(RULE_NAME, () => {
               <script lang="ts" setup>
                 import { useRef } from 'vue'
 
-                import Titan from '../components/Titan.vue'
+                import Component from '../Component.vue'
 
-                let isTitan = useRef(false)
-                let isAlive = true
+                let eF = useRef(false)
+                let g = true
               </script>
 
               <template>
-                <titan
-                  @transform="() => {
-                    isTitan.value = false
+                <component
+                  @a="() => {
+                    g.value = false
                   }"
-                  team="Scout Regiment"
-                  occupation="soldier"
-                  name="Armin Arlelt"
-                  is-titan
-                ></titan>
+                  b="bb"
+                  c="c"
+                  e-f
+                ></component>
               </template>
             `,
             options: [
@@ -815,44 +779,42 @@ describe(RULE_NAME, () => {
               <script lang="ts" setup>
                 import { useRef } from 'vue'
 
-                import Titan from '../components/Titan.vue'
+                import Component from '../Component.vue'
 
-                let isTitan = useRef(false)
-                let isAlive = true
+                let eF = useRef(false)
+                let g = true
               </script>
 
               <template>
-                <titan
-                  occupation="soldier"
-                  name="Armin Arlelt"
-                  is-titan
-                  team="Scout Regiment"
-                  @transform="() => {
-                    isTitan.value = false
+                <component
+                  b="bb"
+                  @a="() => {
+                    g.value = false
                   }"
-                ></titan>
+                  e-f
+                  c="c"
+                ></component>
               </template>
             `,
             output: dedent`
               <script lang="ts" setup>
                 import { useRef } from 'vue'
 
-                import Titan from '../components/Titan.vue'
+                import Component from '../Component.vue'
 
-                let isTitan = useRef(false)
-                let isAlive = true
+                let eF = useRef(false)
+                let g = true
               </script>
 
               <template>
-                <titan
-                  @transform="() => {
-                    isTitan.value = false
+                <component
+                  @a="() => {
+                    g.value = false
                   }"
-                  team="Scout Regiment"
-                  occupation="soldier"
-                  name="Armin Arlelt"
-                  is-titan
-                ></titan>
+                  b="bb"
+                  c="c"
+                  e-f
+                ></component>
               </template>
             `,
             options: [
@@ -868,15 +830,15 @@ describe(RULE_NAME, () => {
               {
                 messageId: 'unexpectedVueAttributesOrder',
                 data: {
-                  left: 'is-titan',
-                  right: 'team',
+                  left: 'b',
+                  right: '@a',
                 },
               },
               {
                 messageId: 'unexpectedVueAttributesOrder',
                 data: {
-                  left: 'team',
-                  right: '@transform',
+                  left: 'e-f',
+                  right: 'c',
                 },
               },
             ],
@@ -893,11 +855,11 @@ describe(RULE_NAME, () => {
           filename: 'component.ts',
           code: dedent`
             <script lang="ts" setup>
-              import TaxiDriver from '../jobs/TaxiDriver.vue'
+              import Component from '../Component.vue'
             </script>
 
             <template>
-              <TaxiDriver name="Kiyoshi Odokawa" birth="1980" />
+              <Component b="b" a="aa" />
             </template>
           `,
           options: [
