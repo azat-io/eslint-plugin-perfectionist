@@ -28,7 +28,7 @@ describe(RULE_NAME, () => {
     ruleTester.run(`${RULE_NAME}(${type}): sorts named exports`, rule, {
       valid: [
         {
-          code: 'export { ErisBoreas, Rudeus, RuijerdSuperdia }',
+          code: 'export { aaa, bb, c }',
           options: [options],
         },
       ],
@@ -36,16 +36,16 @@ describe(RULE_NAME, () => {
         {
           code: dedent`
             export {
-              Rudeus,
-              RuijerdSuperdia,
-              ErisBoreas
+              aaa,
+              c,
+              bb
             }
           `,
           output: dedent`
             export {
-              ErisBoreas,
-              Rudeus,
-              RuijerdSuperdia
+              aaa,
+              bb,
+              c
             }
           `,
           options: [options],
@@ -53,8 +53,8 @@ describe(RULE_NAME, () => {
             {
               messageId: 'unexpectedNamedExportsOrder',
               data: {
-                left: 'RuijerdSuperdia',
-                right: 'ErisBoreas',
+                left: 'c',
+                right: 'bb',
               },
             },
           ],
@@ -69,19 +69,19 @@ describe(RULE_NAME, () => {
         valid: [
           {
             code: dedent`
-              export { Kenshin, type Sakabotou, Sanosuke, type Zanbato }
+              export { AAA, type BB, BB, type C }
             `,
             options: [{ ...options, groupKind: 'mixed' }],
           },
           {
             code: dedent`
-              export { Kenshin, Sanosuke, type Sakabotou, type Zanbato }
+              export { AAA, BB, type BB, type C }
             `,
             options: [{ ...options, groupKind: 'values-first' }],
           },
           {
             code: dedent`
-              export { type Sakabotou, type Zanbato, Kenshin, Sanosuke }
+              export { type BB, type C, AAA, BB }
             `,
             options: [{ ...options, groupKind: 'types-first' }],
           },
@@ -89,75 +89,61 @@ describe(RULE_NAME, () => {
         invalid: [
           {
             code: dedent`
-              export { type Zanbato, Sanosuke, type Sakabotou, Kenshin }
+              export { AAA, type C, type BB, BB }
             `,
             output: dedent`
-             export { Kenshin, type Sakabotou, Sanosuke, type Zanbato }
+              export { AAA, type BB, BB, type C }
             `,
             options: [{ ...options, groupKind: 'mixed' }],
             errors: [
               {
                 messageId: 'unexpectedNamedExportsOrder',
                 data: {
-                  left: 'Zanbato',
-                  right: 'Sanosuke',
-                },
-              },
-              {
-                messageId: 'unexpectedNamedExportsOrder',
-                data: {
-                  left: 'Sanosuke',
-                  right: 'Sakabotou',
-                },
-              },
-              {
-                messageId: 'unexpectedNamedExportsOrder',
-                data: {
-                  left: 'Sakabotou',
-                  right: 'Kenshin',
+                  left: 'C',
+                  right: 'BB',
                 },
               },
             ],
           },
           {
             code: dedent`
-              export { type Zanbato, Sanosuke, type Sakabotou, Kenshin }
+              export { type BB, AAA, type C, BB }
             `,
             output: dedent`
-              export { Kenshin, Sanosuke, type Sakabotou, type Zanbato }
+              export { AAA, BB, type BB, type C }
             `,
             options: [{ ...options, groupKind: 'values-first' }],
             errors: [
               {
                 messageId: 'unexpectedNamedExportsOrder',
                 data: {
-                  left: 'Zanbato',
-                  right: 'Sanosuke',
+                  left: 'BB',
+                  right: 'AAA',
                 },
               },
               {
                 messageId: 'unexpectedNamedExportsOrder',
                 data: {
-                  left: 'Sakabotou',
-                  right: 'Kenshin',
+                  left: 'C',
+                  right: 'BB',
                 },
               },
             ],
           },
           {
             code: dedent`
-              export { type Zanbato, Sanosuke, type Sakabotou, Kenshin }
+              export { type BB, AAA, type C, BB }
             `,
             output: dedent`
-              export { type Sakabotou, type Zanbato, Kenshin, Sanosuke }
+              export { type BB, type C, AAA, BB }
             `,
             options: [{ ...options, groupKind: 'types-first' }],
             errors: [
               {
                 messageId: 'unexpectedNamedExportsOrder',
                 data: {
-                  left: 'Sanosuke',
-                  right: 'Sakabotou',
+                  left: 'AAA',
+                  right: 'C',
                 },
               },
             ],
@@ -179,7 +165,7 @@ describe(RULE_NAME, () => {
     ruleTester.run(`${RULE_NAME}(${type}): sorts named exports`, rule, {
       valid: [
         {
-          code: 'export { ErisBoreas, Rudeus, RuijerdSuperdia }',
+          code: 'export { aaa, bb, c }',
           options: [options],
         },
       ],
@@ -187,16 +173,16 @@ describe(RULE_NAME, () => {
         {
           code: dedent`
             export {
-              Rudeus,
-              RuijerdSuperdia,
-              ErisBoreas
+              aaa,
+              c,
+              bb
             }
           `,
           output: dedent`
             export {
-              ErisBoreas,
-              Rudeus,
-              RuijerdSuperdia
+              aaa,
+              bb,
+              c
             }
           `,
           options: [options],
@@ -204,8 +190,8 @@ describe(RULE_NAME, () => {
             {
               messageId: 'unexpectedNamedExportsOrder',
               data: {
-                left: 'RuijerdSuperdia',
-                right: 'ErisBoreas',
+                left: 'c',
+                right: 'bb',
               },
             },
           ],
@@ -220,19 +206,19 @@ describe(RULE_NAME, () => {
         valid: [
           {
             code: dedent`
-              export { Kenshin, type Sakabotou, Sanosuke, type Zanbato }
+              export { AAA, type BB, BB, type C }
             `,
             options: [{ ...options, groupKind: 'mixed' }],
           },
           {
             code: dedent`
-              export { Kenshin, Sanosuke, type Sakabotou, type Zanbato }
+              export { AAA, BB, type BB, type C }
             `,
             options: [{ ...options, groupKind: 'values-first' }],
           },
           {
             code: dedent`
-              export { type Sakabotou, type Zanbato, Kenshin, Sanosuke }
+              export { type BB, type C, AAA, BB }
             `,
             options: [{ ...options, groupKind: 'types-first' }],
           },
@@ -240,75 +226,61 @@ describe(RULE_NAME, () => {
         invalid: [
           {
             code: dedent`
-              export { type Zanbato, Sanosuke, type Sakabotou, Kenshin }
+              export { AAA, type C, type BB, BB }
             `,
             output: dedent`
-             export { Kenshin, type Sakabotou, Sanosuke, type Zanbato }
+              export { AAA, type BB, BB, type C }
             `,
             options: [{ ...options, groupKind: 'mixed' }],
             errors: [
               {
                 messageId: 'unexpectedNamedExportsOrder',
                 data: {
-                  left: 'Zanbato',
-                  right: 'Sanosuke',
-                },
-              },
-              {
-                messageId: 'unexpectedNamedExportsOrder',
-                data: {
-                  left: 'Sanosuke',
-                  right: 'Sakabotou',
-                },
-              },
-              {
-                messageId: 'unexpectedNamedExportsOrder',
-                data: {
-                  left: 'Sakabotou',
-                  right: 'Kenshin',
+                  left: 'C',
+                  right: 'BB',
                 },
               },
             ],
           },
           {
             code: dedent`
-              export { type Zanbato, Sanosuke, type Sakabotou, Kenshin }
+              export { type BB, AAA, type C, BB }
             `,
             output: dedent`
-              export { Kenshin, Sanosuke, type Sakabotou, type Zanbato }
+              export { AAA, BB, type BB, type C }
             `,
             options: [{ ...options, groupKind: 'values-first' }],
             errors: [
               {
                 messageId: 'unexpectedNamedExportsOrder',
                 data: {
-                  left: 'Zanbato',
-                  right: 'Sanosuke',
+                  left: 'BB',
+                  right: 'AAA',
                 },
               },
               {
                 messageId: 'unexpectedNamedExportsOrder',
                 data: {
-                  left: 'Sakabotou',
-                  right: 'Kenshin',
+                  left: 'C',
+                  right: 'BB',
                 },
               },
             ],
           },
           {
             code: dedent`
-              export { type Zanbato, Sanosuke, type Sakabotou, Kenshin }
+              export { type BB, AAA, type C, BB }
             `,
             output: dedent`
-              export { type Sakabotou, type Zanbato, Kenshin, Sanosuke }
+              export { type BB, type C, AAA, BB }
             `,
             options: [{ ...options, groupKind: 'types-first' }],
             errors: [
               {
                 messageId: 'unexpectedNamedExportsOrder',
                 data: {
-                  left: 'Sanosuke',
-                  right: 'Sakabotou',
+                  left: 'AAA',
+                  right: 'C',
                 },
               },
             ],
@@ -329,7 +301,7 @@ describe(RULE_NAME, () => {
     ruleTester.run(`${RULE_NAME}(${type}): sorts named exports`, rule, {
       valid: [
         {
-          code: 'export { RuijerdSuperdia, ErisBoreas, Rudeus }',
+          code: 'export { aaa, bb, c }',
           options: [options],
         },
       ],
@@ -337,16 +309,16 @@ describe(RULE_NAME, () => {
         {
           code: dedent`
             export {
-              Rudeus,
-              RuijerdSuperdia,
-              ErisBoreas
+              aaa,
+              c,
+              bb
             }
           `,
           output: dedent`
             export {
-              RuijerdSuperdia,
-              ErisBoreas,
-              Rudeus
+              aaa,
+              bb,
+              c
             }
           `,
           options: [options],
@@ -354,8 +326,8 @@ describe(RULE_NAME, () => {
             {
               messageId: 'unexpectedNamedExportsOrder',
               data: {
-                left: 'Rudeus',
-                right: 'RuijerdSuperdia',
+                left: 'c',
+                right: 'bb',
               },
             },
           ],
@@ -370,37 +342,19 @@ describe(RULE_NAME, () => {
         valid: [
           {
             code: dedent`
-              export {
-                Kaoru as Kamiya,
-                type Sakabotou,
-                type Zanbato,
-                Sanosuke,
-                Kenshin,
-              }
+              export { type BB, type C, AAA, BB }
             `,
             options: [{ ...options, groupKind: 'mixed' }],
           },
           {
             code: dedent`
-              export {
-                Kaoru as Kamiya,
-                Sanosuke,
-                Kenshin,
-                type Sakabotou,
-                type Zanbato,
-              }
+              export { AAA, BB, type BB, type C }
             `,
             options: [{ ...options, groupKind: 'values-first' }],
           },
           {
             code: dedent`
-              export {
-                type Sakabotou,
-                type Zanbato,
-                Kaoru as Kamiya,
-                Sanosuke,
-                Kenshin,
-              }
+              export { type BB, type C, AAA, BB }
             `,
             options: [{ ...options, groupKind: 'types-first' }],
           },
@@ -408,104 +362,68 @@ describe(RULE_NAME, () => {
         invalid: [
           {
             code: dedent`
-              export {
-                Kaoru as Kamiya,
-                type Sakabotou,
-                Sanosuke,
-                type Zanbato,
-                Kenshin,
-              }
+              export { AAA, type C, type BB, BB }
             `,
             output: dedent`
-              export {
-                Kaoru as Kamiya,
-                type Sakabotou,
-                type Zanbato,
-                Sanosuke,
-                Kenshin,
-              }
+              export { type BB, type C, AAA, BB }
             `,
             options: [{ ...options, groupKind: 'mixed' }],
             errors: [
               {
                 messageId: 'unexpectedNamedExportsOrder',
                 data: {
-                  left: 'Sanosuke',
-                  right: 'Zanbato',
+                  left: 'AAA',
+                  right: 'C',
+                },
+              },
+              {
+                messageId: 'unexpectedNamedExportsOrder',
+                data: {
+                  left: 'C',
+                  right: 'BB',
                 },
               },
             ],
           },
           {
             code: dedent`
-              export {
-                Kaoru as Kamiya,
-                type Sakabotou,
-                Sanosuke,
-                type Zanbato,
-                Kenshin,
-              }
+              export { type BB, AAA, type C, BB }
             `,
             output: dedent`
-              export {
-                Kaoru as Kamiya,
-                Sanosuke,
-                Kenshin,
-                type Sakabotou,
-                type Zanbato,
-              }
+              export { AAA, BB, type BB, type C }
             `,
             options: [{ ...options, groupKind: 'values-first' }],
             errors: [
               {
                 messageId: 'unexpectedNamedExportsOrder',
                 data: {
-                  left: 'Sakabotou',
-                  right: 'Sanosuke',
+                  left: 'BB',
+                  right: 'AAA',
                 },
               },
               {
                 messageId: 'unexpectedNamedExportsOrder',
                 data: {
-                  left: 'Zanbato',
-                  right: 'Kenshin',
+                  left: 'C',
+                  right: 'BB',
                 },
               },
             ],
           },
           {
             code: dedent`
-              export {
-                Kaoru as Kamiya,
-                type Sakabotou,
-                Sanosuke,
-                type Zanbato,
-                Kenshin,
-              }
+              export { type BB, AAA, type C, BB }
             `,
             output: dedent`
-              export {
-                type Sakabotou,
-                type Zanbato,
-                Kaoru as Kamiya,
-                Sanosuke,
-                Kenshin,
-              }
+              export { type BB, type C, AAA, BB }
             `,
             options: [{ ...options, groupKind: 'types-first' }],
             errors: [
               {
                 messageId: 'unexpectedNamedExportsOrder',
                 data: {
-                  left: 'Kaoru',
-                  right: 'Sakabotou',
-                },
-              },
-              {
-                messageId: 'unexpectedNamedExportsOrder',
-                data: {
-                  left: 'Sanosuke',
-                  right: 'Zanbato',
+                  left: 'AAA',
+                  right: 'C',
                 },
               },
             ],
@@ -521,7 +439,7 @@ describe(RULE_NAME, () => {
       rule,
       {
         valid: [
-          'export { KayoHinazuki, SatoruFujinuma }',
+          'export { A, B }',
           {
             code: 'export { log, log10, log1p, log2 }',
             options: [{}],
@@ -530,17 +448,17 @@ describe(RULE_NAME, () => {
         invalid: [
           {
             code: dedent`
-              export { SatoruFujinuma, KayoHinazuki }
+              export { B, A }
             `,
             output: dedent`
-              export { KayoHinazuki, SatoruFujinuma }
+              export { A, B }
             `,
             errors: [
               {
                 messageId: 'unexpectedNamedExportsOrder',
                 data: {
-                  left: 'SatoruFujinuma',
-                  right: 'KayoHinazuki',
+                  left: 'B',
+                  right: 'A',
                 },
               },
             ],

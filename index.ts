@@ -15,7 +15,6 @@ import sortObjects, { RULE_NAME as sortObjectsName } from './rules/sort-objects'
 import sortClasses, { RULE_NAME as sortClassesName } from './rules/sort-classes'
 import sortEnums, { RULE_NAME as sortEnumsName } from './rules/sort-enums'
 import sortMaps, { RULE_NAME as sortMapsName } from './rules/sort-maps'
-import { name } from './package.json'
 
 type RuleSeverity = 'error' | 'warn' | 'off'
 
@@ -146,5 +145,5 @@ export default {
       order: 'desc',
     }),
   },
-  name,
+  name: 'eslint-plugin-perfectionist',
 }

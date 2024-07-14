@@ -29,7 +29,7 @@ describe(RULE_NAME, () => {
       valid: [
         {
           code: dedent`
-            type Eternity = { label: Fushi } & { label: Gugu } & { label: Joaan } & { label: Parona }
+            type Type = { label: 'aaa' } & { label: 'bb' } & { label: 'c' }
           `,
           options: [options],
         },
@@ -37,18 +37,18 @@ describe(RULE_NAME, () => {
       invalid: [
         {
           code: dedent`
-            type Eternity = { label: Fushi } & { label: Joaan } & { label: Parona } & { label: Gugu }
+            type Type = { label: 'aaa' } & { label: 'c' } & { label: 'bb' }
           `,
           output: dedent`
-            type Eternity = { label: Fushi } & { label: Gugu } & { label: Joaan } & { label: Parona }
+            type Type = { label: 'aaa' } & { label: 'bb' } & { label: 'c' }
           `,
           options: [options],
           errors: [
             {
               messageId: 'unexpectedIntersectionTypesOrder',
               data: {
-                left: '{ label: Parona }',
-                right: '{ label: Gugu }',
+                left: "{ label: 'c' }",
+                right: "{ label: 'bb' }",
               },
             },
           ],
@@ -125,15 +125,15 @@ describe(RULE_NAME, () => {
       valid: [],
       invalid: [
         {
-          code: 'Omit<Arataka, PsychicAbilities & Power>',
-          output: 'Omit<Arataka, Power & PsychicAbilities>',
+          code: 'Omit<T, B & AA>',
+          output: 'Omit<T, AA & B>',
           options: [options],
           errors: [
             {
               messageId: 'unexpectedIntersectionTypesOrder',
               data: {
-                left: 'PsychicAbilities',
-                right: 'Power',
+                left: 'B',
+                right: 'AA',
               },
             },
           ],
@@ -145,15 +145,15 @@ describe(RULE_NAME, () => {
       valid: [],
       invalid: [
         {
-          code: 'type DemonSlayer = Tanjiro & Zenitsu & Inosuke',
-          output: 'type DemonSlayer = Inosuke & Tanjiro & Zenitsu',
+          code: 'type Type = A & C & B',
+          output: 'type Type = A & B & C',
           options: [options],
           errors: [
             {
               messageId: 'unexpectedIntersectionTypesOrder',
               data: {
-                left: 'Zenitsu',
-                right: 'Inosuke',
+                left: 'C',
+                right: 'B',
               },
             },
           ],
@@ -166,22 +166,22 @@ describe(RULE_NAME, () => {
       invalid: [
         {
           code: dedent`
-            type Character =
-              & { name: IntelligentTitan, status: 'titan' }
-              & { name: ErenYeager, species: 'human' }
+            type Type =
+              & { name: B, status: 'b' }
+              & { name: A, status: 'aa' }
           `,
           output: dedent`
-            type Character =
-              & { name: ErenYeager, species: 'human' }
-              & { name: IntelligentTitan, status: 'titan' }
+            type Type =
+              & { name: A, status: 'aa' }
+              & { name: B, status: 'b' }
           `,
           options: [options],
           errors: [
             {
               messageId: 'unexpectedIntersectionTypesOrder',
               data: {
-                left: "{ name: IntelligentTitan, status: 'titan' }",
-                right: "{ name: ErenYeager, species: 'human' }",
+                left: "{ name: B, status: 'b' }",
+                right: "{ name: A, status: 'aa' }",
               },
             },
           ],
@@ -194,23 +194,23 @@ describe(RULE_NAME, () => {
       invalid: [
         {
           code: dedent`
-            type HeroAssociation = {
-              team:
-                & Saitama
+            type Type = {
+              t:
+                & B
                 & ((
-                    superstrike: () => void,
-                  ) => Hero & Saitama)
-                & Hero
+                    A: () => void,
+                  ) => B & C)
+                & C
             }
           `,
           output: dedent`
-            type HeroAssociation = {
-              team:
+            type Type = {
+              t:
                 & ((
-                    superstrike: () => void,
-                  ) => Hero & Saitama)
-                & Hero
-                & Saitama
+                    A: () => void,
+                  ) => B & C)
+                & B
+                & C
             }
           `,
           options: [options],
@@ -218,8 +218,8 @@ describe(RULE_NAME, () => {
             {
               messageId: 'unexpectedIntersectionTypesOrder',
               data: {
-                left: 'Saitama',
-                right: '( superstrike: () => void, ) => Hero & Saitama',
+                left: 'B',
+                right: '( A: () => void, ) => B & C',
               },
             },
           ],
@@ -235,10 +235,10 @@ describe(RULE_NAME, () => {
         invalid: [
           {
             code: dedent`
-            type Step =  { value1: 1 } & { value2: 2 } & { value4: 4 } & { value3: 3 } & { value5: 5 } & { value100: 100 }; // Exam step. Example: 3
+            type Step =  { value1: 1 } & { value2: 2 } & { value4: 4 } & { value3: 3 } & { value5: 5 } & { value100: 100 }; // Comment
           `,
             output: dedent`
-            type Step =  { value1: 1 } & { value100: 100 } & { value2: 2 } & { value3: 3 } & { value4: 4 } & { value5: 5 }; // Exam step. Example: 3
+            type Step =  { value1: 1 } & { value100: 100 } & { value2: 2 } & { value3: 3 } & { value4: 4 } & { value5: 5 }; // Comment
           `,
             options: [options],
             errors: [
@@ -276,7 +276,7 @@ describe(RULE_NAME, () => {
       valid: [
         {
           code: dedent`
-            type Eternity = Fushi & Gugu & Joaan & Parona
+            type Type = { label: 'aaa' } & { label: 'bb' } & { label: 'c' }
           `,
           options: [options],
         },
@@ -284,18 +284,18 @@ describe(RULE_NAME, () => {
       invalid: [
         {
           code: dedent`
-            type Eternity = Fushi & Joaan & Parona & Gugu
+            type Type = { label: 'aaa' } & { label: 'c' } & { label: 'bb' }
           `,
           output: dedent`
-            type Eternity = Fushi & Gugu & Joaan & Parona
+            type Type = { label: 'aaa' } & { label: 'bb' } & { label: 'c' }
           `,
           options: [options],
           errors: [
             {
               messageId: 'unexpectedIntersectionTypesOrder',
               data: {
-                left: 'Parona',
-                right: 'Gugu',
+                left: "{ label: 'c' }",
+                right: "{ label: 'bb' }",
               },
             },
           ],
@@ -372,35 +372,15 @@ describe(RULE_NAME, () => {
       valid: [],
       invalid: [
         {
-          code: 'Omit<Arataka, PsychicAbilities & Power>',
-          output: 'Omit<Arataka, Power & PsychicAbilities>',
+          code: 'Omit<T, B & AA>',
+          output: 'Omit<T, AA & B>',
           options: [options],
           errors: [
             {
               messageId: 'unexpectedIntersectionTypesOrder',
               data: {
-                left: 'PsychicAbilities',
-                right: 'Power',
-              },
-            },
-          ],
-        },
-      ],
-    })
-
-    ruleTester.run(`${RULE_NAME}: works with type references`, rule, {
-      valid: [],
-      invalid: [
-        {
-          code: 'type DemonSlayer = Tanjiro & Zenitsu & Inosuke',
-          output: 'type DemonSlayer = Inosuke & Tanjiro & Zenitsu',
-          options: [options],
-          errors: [
-            {
-              messageId: 'unexpectedIntersectionTypesOrder',
-              data: {
-                left: 'Zenitsu',
-                right: 'Inosuke',
+                left: 'B',
+                right: 'AA',
               },
             },
           ],
@@ -413,22 +393,22 @@ describe(RULE_NAME, () => {
       invalid: [
         {
           code: dedent`
-            type Character =
-              & { name: IntelligentTitan, status: 'titan' }
-              & { name: ErenYeager, species: 'human' }
+            type Type =
+              & { name: B, status: 'b' }
+              & { name: A, status: 'aa' }
           `,
           output: dedent`
-            type Character =
-              & { name: ErenYeager, species: 'human' }
-              & { name: IntelligentTitan, status: 'titan' }
+            type Type =
+              & { name: A, status: 'aa' }
+              & { name: B, status: 'b' }
           `,
           options: [options],
           errors: [
             {
               messageId: 'unexpectedIntersectionTypesOrder',
               data: {
-                left: "{ name: IntelligentTitan, status: 'titan' }",
-                right: "{ name: ErenYeager, species: 'human' }",
+                left: "{ name: B, status: 'b' }",
+                right: "{ name: A, status: 'aa' }",
               },
             },
           ],
@@ -441,23 +421,23 @@ describe(RULE_NAME, () => {
       invalid: [
         {
           code: dedent`
-            type HeroAssociation = {
-              team:
-                & Saitama
+            type Type = {
+              t:
+                & B
                 & ((
-                    superstrike: () => void,
-                  ) => Hero & Saitama)
-                & Hero
+                    A: () => void,
+                  ) => B & C)
+                & C
             }
           `,
           output: dedent`
-            type HeroAssociation = {
-              team:
+            type Type = {
+              t:
                 & ((
-                    superstrike: () => void,
-                  ) => Hero & Saitama)
-                & Hero
-                & Saitama
+                    A: () => void,
+                  ) => B & C)
+                & B
+                & C
             }
           `,
           options: [options],
@@ -465,8 +445,8 @@ describe(RULE_NAME, () => {
             {
               messageId: 'unexpectedIntersectionTypesOrder',
               data: {
-                left: 'Saitama',
-                right: '( superstrike: () => void, ) => Hero & Saitama',
+                left: 'B',
+                right: '( A: () => void, ) => B & C',
               },
             },
           ],
@@ -482,10 +462,10 @@ describe(RULE_NAME, () => {
         invalid: [
           {
             code: dedent`
-            type Step = { value1: 1 } & { value2: 2 } & { value4: 4 } & { value3: 3 } & { value5: 5 } & { value100: 100 }; // Exam step. Example: 3
+            type Step = { value1: 1 } & { value2: 2 } & { value4: 4 } & { value3: 3 } & { value5: 5 } & { value100: 100 }; // Comment
           `,
             output: dedent`
-            type Step = { value1: 1 } & { value100: 100 } & { value2: 2 } & { value3: 3 } & { value4: 4 } & { value5: 5 }; // Exam step. Example: 3
+            type Step = { value1: 1 } & { value100: 100 } & { value2: 2 } & { value3: 3 } & { value4: 4 } & { value5: 5 }; // Comment
           `,
             options: [options],
             errors: [
@@ -522,26 +502,26 @@ describe(RULE_NAME, () => {
       valid: [
         {
           code: dedent`
-              type Eternity = Parona & Joaan & Fushi & Gugu
-            `,
+            type Type = { label: 'aaa' } & { label: 'bb' } & { label: 'c' }
+          `,
           options: [options],
         },
       ],
       invalid: [
         {
           code: dedent`
-            type Eternity = Fushi & Joaan & Parona & Gugu
+            type Type = { label: 'aaa' } & { label: 'c' } & { label: 'bb' }
           `,
           output: dedent`
-            type Eternity = Parona & Fushi & Joaan & Gugu
+            type Type = { label: 'aaa' } & { label: 'bb' } & { label: 'c' }
           `,
           options: [options],
           errors: [
             {
               messageId: 'unexpectedIntersectionTypesOrder',
               data: {
-                left: 'Joaan',
-                right: 'Parona',
+                left: "{ label: 'c' }",
+                right: "{ label: 'bb' }",
               },
             },
           ],
@@ -611,15 +591,15 @@ describe(RULE_NAME, () => {
       valid: [],
       invalid: [
         {
-          code: 'Omit<Arataka, Power & PsychicAbilities>',
-          output: 'Omit<Arataka, PsychicAbilities & Power>',
+          code: 'Omit<T, B & AA>',
+          output: 'Omit<T, AA & B>',
           options: [options],
           errors: [
             {
               messageId: 'unexpectedIntersectionTypesOrder',
               data: {
-                left: 'Power',
-                right: 'PsychicAbilities',
+                left: 'B',
+                right: 'AA',
               },
             },
           ],
@@ -630,7 +610,7 @@ describe(RULE_NAME, () => {
     ruleTester.run(`${RULE_NAME}: works with type references`, rule, {
       valid: [
         {
-          code: 'type DemonSlayer = Tanjiro & Zenitsu & Inosuke',
+          code: 'type DemonSlayer = A & B & C',
           options: [options],
         },
       ],
@@ -642,22 +622,22 @@ describe(RULE_NAME, () => {
       invalid: [
         {
           code: dedent`
-            type Character =
-              & { name: ErenYeager, species: 'human' }
-              & { name: IntelligentTitan, status: 'titan' }
+            type Type =
+              & { name: B, status: 'b' }
+              & { name: A, status: 'aa' }
           `,
           output: dedent`
-            type Character =
-              & { name: IntelligentTitan, status: 'titan' }
-              & { name: ErenYeager, species: 'human' }
+            type Type =
+              & { name: A, status: 'aa' }
+              & { name: B, status: 'b' }
           `,
           options: [options],
           errors: [
             {
               messageId: 'unexpectedIntersectionTypesOrder',
               data: {
-                left: "{ name: ErenYeager, species: 'human' }",
-                right: "{ name: IntelligentTitan, status: 'titan' }",
+                left: "{ name: B, status: 'b' }",
+                right: "{ name: A, status: 'aa' }",
               },
             },
           ],
@@ -670,23 +650,23 @@ describe(RULE_NAME, () => {
       invalid: [
         {
           code: dedent`
-            type HeroAssociation = {
-              team:
-                & Saitama
+            type Type = {
+              t:
+                & B
                 & ((
-                    superstrike: () => void,
-                  ) => Hero & Saitama)
-                & Hero
+                    A: () => void,
+                  ) => B & C)
+                & C
             }
           `,
           output: dedent`
-            type HeroAssociation = {
-              team:
+            type Type = {
+              t:
                 & ((
-                    superstrike: () => void,
-                  ) => Hero & Saitama)
-                & Saitama
-                & Hero
+                    A: () => void,
+                  ) => B & C)
+                & B
+                & C
             }
           `,
           options: [options],
@@ -694,15 +674,8 @@ describe(RULE_NAME, () => {
             {
               messageId: 'unexpectedIntersectionTypesOrder',
               data: {
-                left: 'Saitama',
-                right: '( superstrike: () => void, ) => Hero & Saitama',
-              },
-            },
-            {
-              messageId: 'unexpectedIntersectionTypesOrder',
-              data: {
-                left: 'Hero',
-                right: 'Saitama',
+                left: 'B',
+                right: '( A: () => void, ) => B & C',
               },
             },
           ],
@@ -718,10 +691,10 @@ describe(RULE_NAME, () => {
         invalid: [
           {
             code: dedent`
-            type Step = { value1: 1 } & { value2: 2 } & { value4: 4 } & { value3: 3 } & { value5: 5 } & { value100: 100 }; // Exam step. Example: 3
+            type Step = { value1: 1 } & { value2: 2 } & { value4: 4 } & { value3: 3 } & { value5: 5 } & { value100: 100 }; // Comment
           `,
             output: dedent`
-            type Step = { value100: 100 } & { value1: 1 } & { value2: 2 } & { value4: 4 } & { value3: 3 } & { value5: 5 }; // Exam step. Example: 3
+            type Step = { value100: 100 } & { value1: 1 } & { value2: 2 } & { value4: 4 } & { value3: 3 } & { value5: 5 }; // Comment
           `,
             options: [options],
             errors: [

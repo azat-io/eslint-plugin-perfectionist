@@ -13,7 +13,6 @@ describe(RULE_NAME, () => {
   RuleTester.it = it
 
   let ruleTester = new RuleTester({
-    // @ts-ignore
     parser: require.resolve('astro-eslint-parser'),
     parserOptions: {
       parser: {
@@ -39,10 +38,10 @@ describe(RULE_NAME, () => {
           {
             filename: 'component.astro',
             code: dedent`
-              <script>
-                import HeavenChild from '../takahara-academy/HeavenChild.astro'
-              </script>
-              <HeavenChild age={14} name="Tokio" partner="Kona" sick />
+              ---
+                import Component from '../Component.astro'
+              ---
+              <Component a="a" bb="b" ccc="c" d />
             `,
             options: [options],
           },
@@ -51,24 +50,24 @@ describe(RULE_NAME, () => {
           {
             filename: 'component.astro',
             code: dedent`
-              <script>
-                import HeavenChild from '../takahara-academy/HeavenChild.astro'
-              </script>
-              <HeavenChild name="Tokio" partner="Kona" age={14} sick />
+              ---
+                import Component from '../Component.astro'
+              ---
+              <Component a="a" ccc="c" bb="b" d />
             `,
             output: dedent`
-              <script>
-                import HeavenChild from '../takahara-academy/HeavenChild.astro'
-              </script>
-              <HeavenChild age={14} name="Tokio" partner="Kona" sick />
+              ---
+                import Component from '../Component.astro'
+              ---
+              <Component a="a" bb="b" ccc="c" d />
             `,
             options: [options],
             errors: [
               {
                 messageId: 'unexpectedAstroAttributesOrder',
                 data: {
-                  left: 'partner',
-                  right: 'age',
+                  left: 'ccc',
+                  right: 'bb',
                 },
               },
             ],
@@ -78,19 +77,19 @@ describe(RULE_NAME, () => {
     )
 
     ruleTester.run(
-      `${RULE_NAME}(${type}): split props intro groups if there is spreaded props`,
+      `${RULE_NAME}(${type}): split props intro groups if there is spread props`,
       rule,
       {
         valid: [
           {
             filename: 'component.astro',
             code: dedent`
-              <script>
-                import Mushishi from '../characters/Mushishi.astro'
+              ---
+                import Component from '../Component.astro'
 
-                import ginko from './data.json'
-              </script>
-              <Mushishi name="Yoki" {...ginko} occupation="Mushishi" status="wanderer" />
+                import data from './data.json'
+              ---
+              <Component bb="b" {...data} a="a" ccc="c" />
             `,
             options: [options],
           },
@@ -99,28 +98,28 @@ describe(RULE_NAME, () => {
           {
             filename: 'component.astro',
             code: dedent`
-              <script>
-                import Mushishi from '../characters/Mushishi.astro'
+              ---
+                import Component from '../Component.astro'
 
-                import ginko from './data.json'
-              </script>
-              <Mushishi name="Yoki" {...ginko} status="wanderer" occupation="Mushishi" />
+                import data from './data.json'
+              ---
+              <Component bb="b" {...data} ccc="c" a="a" />
             `,
             output: dedent`
-              <script>
-                import Mushishi from '../characters/Mushishi.astro'
+              ---
+                import Component from '../Component.astro'
 
-                import ginko from './data.json'
-              </script>
-              <Mushishi name="Yoki" {...ginko} occupation="Mushishi" status="wanderer" />
+                import data from './data.json'
+              ---
+              <Component bb="b" {...data} a="a" ccc="c" />
             `,
             options: [options],
             errors: [
               {
                 messageId: 'unexpectedAstroAttributesOrder',
                 data: {
-                  left: 'status',
-                  right: 'occupation',
+                  left: 'ccc',
+                  right: 'a',
                 },
               },
             ],
@@ -137,17 +136,17 @@ describe(RULE_NAME, () => {
           {
             filename: 'component.astro',
             code: dedent`
-              <script>
-                import Haruka from './rumbling-hearts/haruka-suzumiya.astro'
+              ---
+                import Component from './Component.astro'
 
-                let name = 'Haruka Suzumiya'
-                let greeting = 'Konnichiwa!'
-              </script>
-              <Haruka
-                color="#FF0000"
-                diagnosis="anterograde amnesia"
-                {name}
-                set:html={greeting}
+                let ccc = 'c'
+                let dddd = 'd'
+              ---
+              <Component
+                a="a"
+                bb="b"
+                {ccc}
+                set:html={dddd}
               />
             `,
             options: [options],
@@ -157,31 +156,31 @@ describe(RULE_NAME, () => {
           {
             filename: 'component.astro',
             code: dedent`
-              <script>
-                import Haruka from './rumbling-hearts/haruka-suzumiya.astro'
+              ---
+                import Component from './Component.astro'
 
-                let name = 'Haruka Suzumiya'
-                let greeting = 'Konnichiwa!'
-              </script>
-              <Haruka
-                set:html={greeting}
-                color="#FF0000"
-                {name}
-                diagnosis="anterograde amnesia"
+                let ccc = 'c'
+                let dddd = 'd'
+              ---
+              <Component
+                set:html={dddd}
+                a="a"
+                bb="b"
+                {ccc}
               />
             `,
             output: dedent`
-              <script>
-                import Haruka from './rumbling-hearts/haruka-suzumiya.astro'
+              ---
+                import Component from './Component.astro'
 
-                let name = 'Haruka Suzumiya'
-                let greeting = 'Konnichiwa!'
-              </script>
-              <Haruka
-                color="#FF0000"
-                diagnosis="anterograde amnesia"
-                {name}
-                set:html={greeting}
+                let ccc = 'c'
+                let dddd = 'd'
+              ---
+              <Component
+                a="a"
+                bb="b"
+                {ccc}
+                set:html={dddd}
               />
             `,
             options: [options],
@@ -190,14 +189,7 @@ describe(RULE_NAME, () => {
                 messageId: 'unexpectedAstroAttributesOrder',
                 data: {
                   left: 'set:html',
-                  right: 'color',
-                },
-              },
-              {
-                messageId: 'unexpectedAstroAttributesOrder',
-                data: {
-                  left: 'name',
-                  right: 'diagnosis',
+                  right: 'a',
                 },
               },
             ],
@@ -214,18 +206,17 @@ describe(RULE_NAME, () => {
           {
             filename: 'component.astro',
             code: dedent`
-              <script>
-                import Shinobi from '../components/Shinobi.astro'
+              ---
+                import Component from '../Component.astro'
 
-                let clan = 'Iwagakure'
-              </script>
-
-              <Shinobi
-                alias="Hollow"
-                elemental="Fire"
-                name="Gabimaru"
-                {clan}
-                immortal
+                let d = 'd'
+              ---
+              <Component
+                a="a"
+                dd="d"
+                eee="e"
+                {b}
+                c
               />
             `,
             options: [
@@ -240,33 +231,31 @@ describe(RULE_NAME, () => {
           {
             filename: 'component.astro',
             code: dedent`
-              <script>
-                import Shinobi from '../components/Shinobi.astro'
+              ---
+                import Component from '../Component.astro'
 
-                let clan = 'Iwagakure'
-              </script>
-
-              <Shinobi
-                alias="Hollow"
-                {clan}
-                elemental="Fire"
-                immortal
-                name="Gabimaru"
+                let d = 'd'
+              ---
+              <Component
+                a="a"
+                {b}
+                c
+                dd="d"
+                eee="e"
               />
             `,
             output: dedent`
-              <script>
-                import Shinobi from '../components/Shinobi.astro'
+              ---
+                import Component from '../Component.astro'
 
-                let clan = 'Iwagakure'
-              </script>
-
-              <Shinobi
-                alias="Hollow"
-                elemental="Fire"
-                name="Gabimaru"
-                {clan}
-                immortal
+                let d = 'd'
+              ---
+              <Component
+                a="a"
+                dd="d"
+                eee="e"
+                {b}
+                c
               />
             `,
             options: [
@@ -279,15 +268,8 @@ describe(RULE_NAME, () => {
               {
                 messageId: 'unexpectedAstroAttributesOrder',
                 data: {
-                  left: 'clan',
-                  right: 'elemental',
-                },
-              },
-              {
-                messageId: 'unexpectedAstroAttributesOrder',
-                data: {
-                  left: 'immortal',
-                  right: 'name',
+                  left: 'c',
+                  right: 'dd',
                 },
               },
             ],
@@ -304,19 +286,18 @@ describe(RULE_NAME, () => {
           {
             filename: 'component.astro',
             code: dedent`
-              <script>
-                import Rocker from '../components/Rocker.svelte'
+              ---
+                import Component from '../Component.astro'
 
-                let isPlaying = false
-              </script>
-
-              <Rocker
-                onPlay={() => {
-                  isPlaying = true
+                let c = false
+              ---
+              <Component
+                b={() => {
+                  c = true
                 }}
-                {isPlaying}
-                name="Ikuyo Kita"
-                role={['guitar', 'vocal']}
+                a="a"
+                {c}
+                d={['d', 'd']}
               />
             `,
             options: [
@@ -331,35 +312,33 @@ describe(RULE_NAME, () => {
           {
             filename: 'component.astro',
             code: dedent`
-              <script>
-                import Rocker from '../components/Rocker.svelte'
+              ---
+                import Component from '../Component.astro'
 
-                let isPlaying = false
-              </script>
-
-              <Rocker
-                name="Ikuyo Kita"
-                onPlay={() => {
-                  isPlaying = true
+                let c = false
+              ---
+              <Component
+                a="a"
+                b={() => {
+                  c = true
                 }}
-                role={['guitar', 'vocal']}
-                {isPlaying}
+                {c}
+                d={['d', 'd']}
               />
             `,
             output: dedent`
-              <script>
-                import Rocker from '../components/Rocker.svelte'
+              ---
+                import Component from '../Component.astro'
 
-                let isPlaying = false
-              </script>
-
-              <Rocker
-                onPlay={() => {
-                  isPlaying = true
+                let c = false
+              ---
+              <Component
+                b={() => {
+                  c = true
                 }}
-                {isPlaying}
-                name="Ikuyo Kita"
-                role={['guitar', 'vocal']}
+                a="a"
+                {c}
+                d={['d', 'd']}
               />
             `,
             options: [
@@ -372,15 +351,8 @@ describe(RULE_NAME, () => {
               {
                 messageId: 'unexpectedAstroAttributesOrder',
                 data: {
-                  left: 'name',
-                  right: 'onPlay',
-                },
-              },
-              {
-                messageId: 'unexpectedAstroAttributesOrder',
-                data: {
-                  left: 'role',
-                  right: 'isPlaying',
+                  left: 'a',
+                  right: 'b',
                 },
               },
             ],
@@ -394,26 +366,25 @@ describe(RULE_NAME, () => {
         {
           filename: 'component.astro',
           code: dedent`
-            <script>
-              import Suzume from '~/base/suzume.astro
-            </script>
-
-            <Suzume
-              id="0c3cc950-181f-497e-97e2-7d0c73575ebb"
-              name="Suzume"
-              onCloseDoor={() => {
+            ---
+              import Component from '~/Component.astro'
+            ---
+            <Component
+              b="b"
+              d="d"
+              a="a"
+              c={() => {
                 /* ... */
               }}
-              age={17}
             />
           `,
           options: [
             {
               ...options,
-              groups: ['top', 'callback', 'unknown'],
+              groups: ['primary', 'secondary', 'unknown'],
               customGroups: {
-                top: ['id', 'name'],
-                callback: 'on*',
+                primary: ['b'],
+                secondary: 'd',
               },
             },
           ],
@@ -423,40 +394,38 @@ describe(RULE_NAME, () => {
         {
           filename: 'component.astro',
           code: dedent`
-            <script>
-              import Suzume from '~/base/suzume.astro
-            </script>
-
-            <Suzume
-              age={17}
-              id="0c3cc950-181f-497e-97e2-7d0c73575ebb"
-              onCloseDoor={() => {
+            ---
+              import Component from '~/Component.astro'
+            ---
+            <Component
+              a="a"
+              b="b"
+              c={() => {
                 /* ... */
               }}
-              name="Suzume"
+              d="d"
             />
           `,
           output: dedent`
-            <script>
-              import Suzume from '~/base/suzume.astro
-            </script>
-
-            <Suzume
-              id="0c3cc950-181f-497e-97e2-7d0c73575ebb"
-              name="Suzume"
-              onCloseDoor={() => {
+            ---
+              import Component from '~/Component.astro'
+            ---
+            <Component
+              b="b"
+              d="d"
+              a="a"
+              c={() => {
                 /* ... */
               }}
-              age={17}
             />
           `,
           options: [
             {
               ...options,
-              groups: ['top', 'callback', 'unknown'],
+              groups: ['primary', 'secondary', 'unknown'],
               customGroups: {
-                top: ['id', 'name'],
-                callback: 'on*',
+                primary: ['b'],
+                secondary: 'd',
               },
             },
           ],
@@ -464,15 +433,15 @@ describe(RULE_NAME, () => {
             {
               messageId: 'unexpectedAstroAttributesOrder',
               data: {
-                left: 'age',
-                right: 'id',
+                left: 'a',
+                right: 'b',
               },
             },
             {
               messageId: 'unexpectedAstroAttributesOrder',
               data: {
-                left: 'onCloseDoor',
-                right: 'name',
+                left: 'c',
+                right: 'd',
               },
             },
           ],
@@ -498,10 +467,10 @@ describe(RULE_NAME, () => {
           {
             filename: 'component.astro',
             code: dedent`
-              <script>
-                import HeavenChild from '../takahara-academy/HeavenChild.astro'
-              </script>
-              <HeavenChild age={14} name="Tokio" partner="Kona" sick />
+              ---
+                import Component from '../Component.astro'
+              ---
+              <Component a="a" bb="b" ccc="c" d />
             `,
             options: [options],
           },
@@ -510,24 +479,24 @@ describe(RULE_NAME, () => {
           {
             filename: 'component.astro',
             code: dedent`
-              <script>
-                import HeavenChild from '../takahara-academy/HeavenChild.astro'
-              </script>
-              <HeavenChild name="Tokio" partner="Kona" age={14} sick />
+              ---
+                import Component from '../Component.astro'
+              ---
+              <Component a="a" ccc="c" bb="b" d />
             `,
             output: dedent`
-              <script>
-                import HeavenChild from '../takahara-academy/HeavenChild.astro'
-              </script>
-              <HeavenChild age={14} name="Tokio" partner="Kona" sick />
+              ---
+                import Component from '../Component.astro'
+              ---
+              <Component a="a" bb="b" ccc="c" d />
             `,
             options: [options],
             errors: [
               {
                 messageId: 'unexpectedAstroAttributesOrder',
                 data: {
-                  left: 'partner',
-                  right: 'age',
+                  left: 'ccc',
+                  right: 'bb',
                 },
               },
             ],
@@ -537,19 +506,19 @@ describe(RULE_NAME, () => {
     )
 
     ruleTester.run(
-      `${RULE_NAME}(${type}): split props intro groups if there is spreaded props`,
+      `${RULE_NAME}(${type}): split props intro groups if there is spread props`,
       rule,
       {
         valid: [
           {
             filename: 'component.astro',
             code: dedent`
-              <script>
-                import Mushishi from '../characters/Mushishi.astro'
+              ---
+                import Component from '../Component.astro'
 
-                import ginko from './data.json'
-              </script>
-              <Mushishi name="Yoki" {...ginko} occupation="Mushishi" status="wanderer" />
+                import data from './data.json'
+              ---
+              <Component bb="b" {...data} a="a" ccc="c" />
             `,
             options: [options],
           },
@@ -558,28 +527,28 @@ describe(RULE_NAME, () => {
           {
             filename: 'component.astro',
             code: dedent`
-              <script>
-                import Mushishi from '../characters/Mushishi.astro'
+              ---
+                import Component from '../Component.astro'
 
-                import ginko from './data.json'
-              </script>
-              <Mushishi name="Yoki" {...ginko} status="wanderer" occupation="Mushishi" />
+                import data from './data.json'
+              ---
+              <Component bb="b" {...data} ccc="c" a="a" />
             `,
             output: dedent`
-              <script>
-                import Mushishi from '../characters/Mushishi.astro'
+              ---
+                import Component from '../Component.astro'
 
-                import ginko from './data.json'
-              </script>
-              <Mushishi name="Yoki" {...ginko} occupation="Mushishi" status="wanderer" />
+                import data from './data.json'
+              ---
+              <Component bb="b" {...data} a="a" ccc="c" />
             `,
             options: [options],
             errors: [
               {
                 messageId: 'unexpectedAstroAttributesOrder',
                 data: {
-                  left: 'status',
-                  right: 'occupation',
+                  left: 'ccc',
+                  right: 'a',
                 },
               },
             ],
@@ -596,17 +565,17 @@ describe(RULE_NAME, () => {
           {
             filename: 'component.astro',
             code: dedent`
-              <script>
-                import Haruka from './rumbling-hearts/haruka-suzumiya.astro'
+              ---
+                import Component from './Component.astro'
 
-                let name = 'Haruka Suzumiya'
-                let greeting = 'Konnichiwa!'
-              </script>
-              <Haruka
-                color="#FF0000"
-                diagnosis="anterograde amnesia"
-                {name}
-                set:html={greeting}
+                let ccc = 'c'
+                let dddd = 'd'
+              ---
+              <Component
+                a="a"
+                bb="b"
+                {ccc}
+                set:html={dddd}
               />
             `,
             options: [options],
@@ -616,31 +585,31 @@ describe(RULE_NAME, () => {
           {
             filename: 'component.astro',
             code: dedent`
-              <script>
-                import Haruka from './rumbling-hearts/haruka-suzumiya.astro'
+              ---
+                import Component from './Component.astro'
 
-                let name = 'Haruka Suzumiya'
-                let greeting = 'Konnichiwa!'
-              </script>
-              <Haruka
-                set:html={greeting}
-                color="#FF0000"
-                {name}
-                diagnosis="anterograde amnesia"
+                let ccc = 'c'
+                let dddd = 'd'
+              ---
+              <Component
+                set:html={dddd}
+                a="a"
+                bb="b"
+                {ccc}
               />
             `,
             output: dedent`
-              <script>
-                import Haruka from './rumbling-hearts/haruka-suzumiya.astro'
+              ---
+                import Component from './Component.astro'
 
-                let name = 'Haruka Suzumiya'
-                let greeting = 'Konnichiwa!'
-              </script>
-              <Haruka
-                color="#FF0000"
-                diagnosis="anterograde amnesia"
-                {name}
-                set:html={greeting}
+                let ccc = 'c'
+                let dddd = 'd'
+              ---
+              <Component
+                a="a"
+                bb="b"
+                {ccc}
+                set:html={dddd}
               />
             `,
             options: [options],
@@ -649,14 +618,7 @@ describe(RULE_NAME, () => {
                 messageId: 'unexpectedAstroAttributesOrder',
                 data: {
                   left: 'set:html',
-                  right: 'color',
-                },
-              },
-              {
-                messageId: 'unexpectedAstroAttributesOrder',
-                data: {
-                  left: 'name',
-                  right: 'diagnosis',
+                  right: 'a',
                 },
               },
             ],
@@ -673,18 +635,17 @@ describe(RULE_NAME, () => {
           {
             filename: 'component.astro',
             code: dedent`
-              <script>
-                import Shinobi from '../components/Shinobi.astro'
+              ---
+                import Component from '../Component.astro'
 
-                let clan = 'Iwagakure'
-              </script>
-
-              <Shinobi
-                alias="Hollow"
-                elemental="Fire"
-                name="Gabimaru"
-                {clan}
-                immortal
+                let d = 'd'
+              ---
+              <Component
+                a="a"
+                dd="d"
+                eee="e"
+                {b}
+                c
               />
             `,
             options: [
@@ -699,33 +660,31 @@ describe(RULE_NAME, () => {
           {
             filename: 'component.astro',
             code: dedent`
-              <script>
-                import Shinobi from '../components/Shinobi.astro'
+              ---
+                import Component from '../Component.astro'
 
-                let clan = 'Iwagakure'
-              </script>
-
-              <Shinobi
-                alias="Hollow"
-                {clan}
-                elemental="Fire"
-                immortal
-                name="Gabimaru"
+                let d = 'd'
+              ---
+              <Component
+                a="a"
+                {b}
+                c
+                dd="d"
+                eee="e"
               />
             `,
             output: dedent`
-              <script>
-                import Shinobi from '../components/Shinobi.astro'
+              ---
+                import Component from '../Component.astro'
 
-                let clan = 'Iwagakure'
-              </script>
-
-              <Shinobi
-                alias="Hollow"
-                elemental="Fire"
-                name="Gabimaru"
-                {clan}
-                immortal
+                let d = 'd'
+              ---
+              <Component
+                a="a"
+                dd="d"
+                eee="e"
+                {b}
+                c
               />
             `,
             options: [
@@ -738,15 +697,8 @@ describe(RULE_NAME, () => {
               {
                 messageId: 'unexpectedAstroAttributesOrder',
                 data: {
-                  left: 'clan',
-                  right: 'elemental',
-                },
-              },
-              {
-                messageId: 'unexpectedAstroAttributesOrder',
-                data: {
-                  left: 'immortal',
-                  right: 'name',
+                  left: 'c',
+                  right: 'dd',
                 },
               },
             ],
@@ -763,19 +715,19 @@ describe(RULE_NAME, () => {
           {
             filename: 'component.astro',
             code: dedent`
-              <script>
-                import Rocker from '../components/Rocker.svelte'
+              ---
+                import Component from '../Component.astro'
 
-                let isPlaying = false
-              </script>
+                let c = false
+              ---
 
-              <Rocker
-                onPlay={() => {
-                  isPlaying = true
+              <Component
+                b={() => {
+                  c = true
                 }}
-                {isPlaying}
-                name="Ikuyo Kita"
-                role={['guitar', 'vocal']}
+                a="a"
+                {c}
+                d={['d', 'd']}
               />
             `,
             options: [
@@ -790,35 +742,35 @@ describe(RULE_NAME, () => {
           {
             filename: 'component.astro',
             code: dedent`
-              <script>
-                import Rocker from '../components/Rocker.svelte'
+              ---
+                import Component from '../Component.astro'
 
-                let isPlaying = false
-              </script>
+                let c = false
+              ---
 
-              <Rocker
-                name="Ikuyo Kita"
-                onPlay={() => {
-                  isPlaying = true
+              <Component
+                a="a"
+                b={() => {
+                  c = true
                 }}
-                role={['guitar', 'vocal']}
-                {isPlaying}
+                {c}
+                d={['d', 'd']}
               />
             `,
             output: dedent`
-              <script>
-                import Rocker from '../components/Rocker.svelte'
+              ---
+                import Component from '../Component.astro'
 
-                let isPlaying = false
-              </script>
+                let c = false
+              ---
 
-              <Rocker
-                onPlay={() => {
-                  isPlaying = true
+              <Component
+                b={() => {
+                  c = true
                 }}
-                {isPlaying}
-                name="Ikuyo Kita"
-                role={['guitar', 'vocal']}
+                a="a"
+                {c}
+                d={['d', 'd']}
               />
             `,
             options: [
@@ -831,15 +783,8 @@ describe(RULE_NAME, () => {
               {
                 messageId: 'unexpectedAstroAttributesOrder',
                 data: {
-                  left: 'name',
-                  right: 'onPlay',
-                },
-              },
-              {
-                messageId: 'unexpectedAstroAttributesOrder',
-                data: {
-                  left: 'role',
-                  right: 'isPlaying',
+                  left: 'a',
+                  right: 'b',
                 },
               },
             ],
@@ -853,26 +798,25 @@ describe(RULE_NAME, () => {
         {
           filename: 'component.astro',
           code: dedent`
-            <script>
-              import Suzume from '~/base/suzume.astro
-            </script>
-
-            <Suzume
-              id="0c3cc950-181f-497e-97e2-7d0c73575ebb"
-              name="Suzume"
-              onCloseDoor={() => {
+            ---
+              import Component from '~/Component.astro'
+            ---
+            <Component
+              b="b"
+              d="d"
+              a="a"
+              c={() => {
                 /* ... */
               }}
-              age={17}
             />
           `,
           options: [
             {
               ...options,
-              groups: ['top', 'callback', 'unknown'],
+              groups: ['primary', 'secondary', 'unknown'],
               customGroups: {
-                top: ['id', 'name'],
-                callback: 'on*',
+                primary: ['b'],
+                secondary: 'd',
               },
             },
           ],
@@ -882,40 +826,38 @@ describe(RULE_NAME, () => {
         {
           filename: 'component.astro',
           code: dedent`
-            <script>
-              import Suzume from '~/base/suzume.astro
-            </script>
-
-            <Suzume
-              age={17}
-              id="0c3cc950-181f-497e-97e2-7d0c73575ebb"
-              onCloseDoor={() => {
+            ---
+              import Component from '~/Component.astro'
+            ---
+            <Component
+              a="a"
+              b="b"
+              c={() => {
                 /* ... */
               }}
-              name="Suzume"
+              d="d"
             />
           `,
           output: dedent`
-            <script>
-              import Suzume from '~/base/suzume.astro
-            </script>
-
-            <Suzume
-              id="0c3cc950-181f-497e-97e2-7d0c73575ebb"
-              name="Suzume"
-              onCloseDoor={() => {
+            ---
+              import Component from '~/Component.astro'
+            ---
+            <Component
+              b="b"
+              d="d"
+              a="a"
+              c={() => {
                 /* ... */
               }}
-              age={17}
             />
           `,
           options: [
             {
               ...options,
-              groups: ['top', 'callback', 'unknown'],
+              groups: ['primary', 'secondary', 'unknown'],
               customGroups: {
-                top: ['id', 'name'],
-                callback: 'on*',
+                primary: ['b'],
+                secondary: 'd',
               },
             },
           ],
@@ -923,15 +865,15 @@ describe(RULE_NAME, () => {
             {
               messageId: 'unexpectedAstroAttributesOrder',
               data: {
-                left: 'age',
-                right: 'id',
+                left: 'a',
+                right: 'b',
               },
             },
             {
               messageId: 'unexpectedAstroAttributesOrder',
               data: {
-                left: 'onCloseDoor',
-                right: 'name',
+                left: 'c',
+                right: 'd',
               },
             },
           ],
@@ -956,10 +898,10 @@ describe(RULE_NAME, () => {
           {
             filename: 'component.astro',
             code: dedent`
-              <script>
-                import HeavenChild from '../takahara-academy/HeavenChild.astro'
-              </script>
-              <HeavenChild partner="Kona" name="Tokio" age={14} sick />
+              ---
+                import Component from '../Component.astro'
+              ---
+              <Component ccc="c" bb="b" a="a" d />
             `,
             options: [options],
           },
@@ -968,24 +910,24 @@ describe(RULE_NAME, () => {
           {
             filename: 'component.astro',
             code: dedent`
-              <script>
-                import HeavenChild from '../takahara-academy/HeavenChild.astro'
-              </script>
-              <HeavenChild name="Tokio" partner="Kona" age={14} sick />
+              ---
+                import Component from '../Component.astro'
+              ---
+              <Component a="a" ccc="c" bb="b" d />
             `,
             output: dedent`
-              <script>
-                import HeavenChild from '../takahara-academy/HeavenChild.astro'
-              </script>
-              <HeavenChild partner="Kona" name="Tokio" age={14} sick />
+              ---
+                import Component from '../Component.astro'
+              ---
+              <Component ccc="c" bb="b" a="a" d />
             `,
             options: [options],
             errors: [
               {
                 messageId: 'unexpectedAstroAttributesOrder',
                 data: {
-                  left: 'name',
-                  right: 'partner',
+                  left: 'a',
+                  right: 'ccc',
                 },
               },
             ],
@@ -995,19 +937,19 @@ describe(RULE_NAME, () => {
     )
 
     ruleTester.run(
-      `${RULE_NAME}(${type}): split props intro groups if there is spreaded props`,
+      `${RULE_NAME}(${type}): split props intro groups if there is spread props`,
       rule,
       {
         valid: [
           {
             filename: 'component.astro',
             code: dedent`
-              <script>
-                import Mushishi from '../characters/Mushishi.astro'
+              ---
+                import Component from '../Component.astro'
 
-                import ginko from './data.json'
-              </script>
-              <Mushishi name="Yoki" {...ginko} occupation="Mushishi" status="wanderer" />
+                import data from './data.json'
+              ---
+              <Component bb="b" {...data} ccc="c" a="a" />
             `,
             options: [options],
           },
@@ -1016,28 +958,28 @@ describe(RULE_NAME, () => {
           {
             filename: 'component.astro',
             code: dedent`
-              <script>
-                import Mushishi from '../characters/Mushishi.astro'
+              ---
+                import Component from '../Component.astro'
 
-                import ginko from './data.json'
-              </script>
-              <Mushishi name="Yoki" {...ginko} status="wanderer" occupation="Mushishi" />
+                import data from './data.json'
+              ---
+              <Component bb="b" {...data} a="a" ccc="c" />
             `,
             output: dedent`
-              <script>
-                import Mushishi from '../characters/Mushishi.astro'
+              ---
+                import Component from '../Component.astro'
 
-                import ginko from './data.json'
-              </script>
-              <Mushishi name="Yoki" {...ginko} occupation="Mushishi" status="wanderer" />
+                import data from './data.json'
+              ---
+              <Component bb="b" {...data} ccc="c" a="a" />
             `,
             options: [options],
             errors: [
               {
                 messageId: 'unexpectedAstroAttributesOrder',
                 data: {
-                  left: 'status',
-                  right: 'occupation',
+                  left: 'a',
+                  right: 'ccc',
                 },
               },
             ],
@@ -1054,17 +996,17 @@ describe(RULE_NAME, () => {
           {
             filename: 'component.astro',
             code: dedent`
-              <script>
-                import Haruka from './rumbling-hearts/haruka-suzumiya.astro'
+              ---
+                import Component from './Component.astro'
 
-                let name = 'Haruka Suzumiya'
-                let greeting = 'Konnichiwa!'
-              </script>
-              <Haruka
-                diagnosis="anterograde amnesia"
-                set:html={greeting}
-                color="#FF0000"
-                {name}
+                let ccc = 'c'
+                let dddd = 'd'
+              ---
+              <Component
+                set:html={dddd}
+                bb="b"
+                a="a"
+                {ccc}
               />
             `,
             options: [options],
@@ -1074,31 +1016,31 @@ describe(RULE_NAME, () => {
           {
             filename: 'component.astro',
             code: dedent`
-              <script>
-                import Haruka from './rumbling-hearts/haruka-suzumiya.astro'
+              ---
+                import Component from './Component.astro'
 
-                let name = 'Haruka Suzumiya'
-                let greeting = 'Konnichiwa!'
-              </script>
-              <Haruka
-                set:html={greeting}
-                color="#FF0000"
-                {name}
-                diagnosis="anterograde amnesia"
+                let ccc = 'c'
+                let dddd = 'd'
+              ---
+              <Component
+                bb="b"
+                set:html={dddd}
+                a="a"
+                {ccc}
               />
             `,
             output: dedent`
-              <script>
-                import Haruka from './rumbling-hearts/haruka-suzumiya.astro'
+              ---
+                import Component from './Component.astro'
 
-                let name = 'Haruka Suzumiya'
-                let greeting = 'Konnichiwa!'
-              </script>
-              <Haruka
-                diagnosis="anterograde amnesia"
-                set:html={greeting}
-                color="#FF0000"
-                {name}
+                let ccc = 'c'
+                let dddd = 'd'
+              ---
+              <Component
+                set:html={dddd}
+                bb="b"
+                a="a"
+                {ccc}
               />
             `,
             options: [options],
@@ -1106,8 +1048,8 @@ describe(RULE_NAME, () => {
               {
                 messageId: 'unexpectedAstroAttributesOrder',
                 data: {
-                  left: 'name',
-                  right: 'diagnosis',
+                  left: 'bb',
+                  right: 'set:html',
                 },
               },
             ],
@@ -1124,18 +1066,17 @@ describe(RULE_NAME, () => {
           {
             filename: 'component.astro',
             code: dedent`
-              <script>
-                import Shinobi from '../components/Shinobi.astro'
+              ---
+                import Component from '../Component.astro'
 
-                let clan = 'Iwagakure'
-              </script>
-
-              <Shinobi
-                elemental="Fire"
-                name="Gabimaru"
-                alias="Hollow"
-                immortal
-                {clan}
+                let d = 'd'
+              ---
+              <Component
+                eee="e"
+                dd="d"
+                a="a"
+                {b}
+                c
               />
             `,
             options: [
@@ -1150,33 +1091,31 @@ describe(RULE_NAME, () => {
           {
             filename: 'component.astro',
             code: dedent`
-              <script>
-                import Shinobi from '../components/Shinobi.astro'
+              ---
+                import Component from '../Component.astro'
 
-                let clan = 'Iwagakure'
-              </script>
-
-              <Shinobi
-                alias="Hollow"
-                {clan}
-                elemental="Fire"
-                immortal
-                name="Gabimaru"
+                let d = 'd'
+              ---
+              <Component
+                a="a"
+                {b}
+                c
+                dd="d"
+                eee="e"
               />
             `,
             output: dedent`
-              <script>
-                import Shinobi from '../components/Shinobi.astro'
+              ---
+                import Component from '../Component.astro'
 
-                let clan = 'Iwagakure'
-              </script>
-
-              <Shinobi
-                elemental="Fire"
-                name="Gabimaru"
-                alias="Hollow"
-                immortal
-                {clan}
+                let d = 'd'
+              ---
+              <Component
+                eee="e"
+                dd="d"
+                a="a"
+                {b}
+                c
               />
             `,
             options: [
@@ -1189,15 +1128,15 @@ describe(RULE_NAME, () => {
               {
                 messageId: 'unexpectedAstroAttributesOrder',
                 data: {
-                  left: 'clan',
-                  right: 'elemental',
+                  left: 'c',
+                  right: 'dd',
                 },
               },
               {
                 messageId: 'unexpectedAstroAttributesOrder',
                 data: {
-                  left: 'immortal',
-                  right: 'name',
+                  left: 'dd',
+                  right: 'eee',
                 },
               },
             ],
@@ -1214,19 +1153,18 @@ describe(RULE_NAME, () => {
           {
             filename: 'component.astro',
             code: dedent`
-              <script>
-                import Rocker from '../components/Rocker.svelte'
+              ---
+                import Component from '../Component.astro'
 
-                let isPlaying = false
-              </script>
-
-              <Rocker
-                onPlay={() => {
-                  isPlaying = true
+                let c = false
+              ---
+              <Component
+                b={() => {
+                  c = true
                 }}
-                role={['guitar', 'vocal']}
-                name="Ikuyo Kita"
-                {isPlaying}
+                d={['d', 'd']}
+                a="a"
+                {c}
               />
             `,
             options: [
@@ -1241,35 +1179,33 @@ describe(RULE_NAME, () => {
           {
             filename: 'component.astro',
             code: dedent`
-              <script>
-                import Rocker from '../components/Rocker.svelte'
+              ---
+                import Component from '../Component.astro'
 
-                let isPlaying = false
-              </script>
-
-              <Rocker
-                name="Ikuyo Kita"
-                onPlay={() => {
-                  isPlaying = true
+                let c = false
+              ---
+              <Component
+                a="a"
+                b={() => {
+                  c = true
                 }}
-                role={['guitar', 'vocal']}
-                {isPlaying}
+                {c}
+                d={['d', 'd']}
               />
             `,
             output: dedent`
-              <script>
-                import Rocker from '../components/Rocker.svelte'
+              ---
+                import Component from '../Component.astro'
 
-                let isPlaying = false
-              </script>
-
-              <Rocker
-                onPlay={() => {
-                  isPlaying = true
+                let c = false
+              ---
+              <Component
+                b={() => {
+                  c = true
                 }}
-                role={['guitar', 'vocal']}
-                name="Ikuyo Kita"
-                {isPlaying}
+                d={['d', 'd']}
+                a="a"
+                {c}
               />
             `,
             options: [
@@ -1282,8 +1218,15 @@ describe(RULE_NAME, () => {
               {
                 messageId: 'unexpectedAstroAttributesOrder',
                 data: {
-                  left: 'name',
-                  right: 'onPlay',
+                  left: 'a',
+                  right: 'b',
+                },
+              },
+              {
+                messageId: 'unexpectedAstroAttributesOrder',
+                data: {
+                  left: 'c',
+                  right: 'd',
                 },
               },
             ],
@@ -1297,26 +1240,25 @@ describe(RULE_NAME, () => {
         {
           filename: 'component.astro',
           code: dedent`
-            <script>
-              import Suzume from '~/base/suzume.astro
-            </script>
-
-            <Suzume
-              id="0c3cc950-181f-497e-97e2-7d0c73575ebb"
-              name="Suzume"
-              onCloseDoor={() => {
+            ---
+              import Component from '~/Component.astro'
+            ---
+            <Component
+              b="b"
+              d="d"
+              c={() => {
                 /* ... */
               }}
-              age={17}
+              a="a"
             />
           `,
           options: [
             {
               ...options,
-              groups: ['top', 'callback', 'unknown'],
+              groups: ['primary', 'secondary', 'unknown'],
               customGroups: {
-                top: ['id', 'name'],
-                callback: 'on*',
+                primary: ['b'],
+                secondary: 'd',
               },
             },
           ],
@@ -1326,40 +1268,38 @@ describe(RULE_NAME, () => {
         {
           filename: 'component.astro',
           code: dedent`
-            <script>
-              import Suzume from '~/base/suzume.astro
-            </script>
-
-            <Suzume
-              age={17}
-              id="0c3cc950-181f-497e-97e2-7d0c73575ebb"
-              onCloseDoor={() => {
+            ---
+              import Component from '~/Component.astro'
+            ---
+            <Component
+              a="a"
+              b="b"
+              c={() => {
                 /* ... */
               }}
-              name="Suzume"
+              d="d"
             />
           `,
           output: dedent`
-            <script>
-              import Suzume from '~/base/suzume.astro
-            </script>
-
-            <Suzume
-              id="0c3cc950-181f-497e-97e2-7d0c73575ebb"
-              name="Suzume"
-              onCloseDoor={() => {
+            ---
+              import Component from '~/Component.astro'
+            ---
+            <Component
+              b="b"
+              d="d"
+              c={() => {
                 /* ... */
               }}
-              age={17}
+              a="a"
             />
           `,
           options: [
             {
               ...options,
-              groups: ['top', 'callback', 'unknown'],
+              groups: ['primary', 'secondary', 'unknown'],
               customGroups: {
-                top: ['id', 'name'],
-                callback: 'on*',
+                primary: ['b'],
+                secondary: 'd',
               },
             },
           ],
@@ -1367,15 +1307,15 @@ describe(RULE_NAME, () => {
             {
               messageId: 'unexpectedAstroAttributesOrder',
               data: {
-                left: 'age',
-                right: 'id',
+                left: 'a',
+                right: 'b',
               },
             },
             {
               messageId: 'unexpectedAstroAttributesOrder',
               data: {
-                left: 'onCloseDoor',
-                right: 'name',
+                left: 'c',
+                right: 'd',
               },
             },
           ],
@@ -1388,10 +1328,10 @@ describe(RULE_NAME, () => {
     ruleTester.run(`${RULE_NAME}: works only for .astro files`, rule, {
       valid: [
         dedent`
-          <Makishima
-            gender="male"
-            height={180}
-            weight={65}
+          <Component
+            c="c"
+            b="b"
+            a="a"
           />
         `,
       ],

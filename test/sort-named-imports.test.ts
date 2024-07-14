@@ -29,7 +29,7 @@ describe(RULE_NAME, () => {
       valid: [
         {
           code: dedent`
-            import { Kana, Kuu, Rakka, Reki } from 'haibane-renmei'
+            import { AAA, BB, C } from 'module'
           `,
           options: [options],
         },
@@ -37,25 +37,18 @@ describe(RULE_NAME, () => {
       invalid: [
         {
           code: dedent`
-            import { Kana, Reki, Rakka, Kuu } from 'haibane-renmei'
+            import { BB, AAA, C } from 'module'
           `,
           output: dedent`
-            import { Kana, Kuu, Rakka, Reki } from 'haibane-renmei'
+            import { AAA, BB, C } from 'module'
           `,
           options: [options],
           errors: [
             {
               messageId: 'unexpectedNamedImportsOrder',
               data: {
-                left: 'Reki',
-                right: 'Rakka',
-              },
-            },
-            {
-              messageId: 'unexpectedNamedImportsOrder',
-              data: {
-                left: 'Rakka',
-                right: 'Kuu',
+                left: 'BB',
+                right: 'AAA',
               },
             },
           ],
@@ -68,13 +61,11 @@ describe(RULE_NAME, () => {
         {
           code: dedent`
             import {
-              AnnieLeonhart,
-              BertholdtHoover,
-              FalcoGrice,
-              GabiBraun,
-              Gross,
-              ReinerBraun,
-            } from 'marleyan-military'
+              AAAA,
+              BBB,
+              CC,
+              D,
+            } from 'module'
           `,
           options: [options],
         },
@@ -83,45 +74,27 @@ describe(RULE_NAME, () => {
         {
           code: dedent`
             import {
-              GabiBraun,
-              ReinerBraun,
-              FalcoGrice,
-              AnnieLeonhart,
-              Gross,
-              BertholdtHoover,
-            } from 'marleyan-military'
+              AAAA,
+              CC,
+              BBB,
+              D,
+            } from 'module'
           `,
           output: dedent`
             import {
-              AnnieLeonhart,
-              BertholdtHoover,
-              FalcoGrice,
-              GabiBraun,
-              Gross,
-              ReinerBraun,
-            } from 'marleyan-military'
+              AAAA,
+              BBB,
+              CC,
+              D,
+            } from 'module'
           `,
           options: [options],
           errors: [
             {
               messageId: 'unexpectedNamedImportsOrder',
               data: {
-                left: 'ReinerBraun',
-                right: 'FalcoGrice',
-              },
-            },
-            {
-              messageId: 'unexpectedNamedImportsOrder',
-              data: {
-                left: 'FalcoGrice',
-                right: 'AnnieLeonhart',
-              },
-            },
-            {
-              messageId: 'unexpectedNamedImportsOrder',
-              data: {
-                left: 'Gross',
-                right: 'BertholdtHoover',
+                left: 'CC',
+                right: 'BBB',
               },
             },
           ],
@@ -134,10 +107,10 @@ describe(RULE_NAME, () => {
         {
           code: dedent`
             import {
-              ReiAyanami as Eva0,
-              ShinjiIkari as Eva1,
-              GendouIkari
-            } from 'nerv'
+              C,
+              BB as X0,
+              A as X1
+            } from 'module'
           `,
           options: [options],
         },
@@ -146,25 +119,32 @@ describe(RULE_NAME, () => {
         {
           code: dedent`
             import {
-              GendouIkari,
-              ReiAyanami as Eva0,
-              ShinjiIkari as Eva1
-            } from 'nerv'
+              A as X1,
+              BB as X0,
+              C
+            } from 'module'
           `,
           output: dedent`
             import {
-              ReiAyanami as Eva0,
-              ShinjiIkari as Eva1,
-              GendouIkari
-            } from 'nerv'
+              C,
+              BB as X0,
+              A as X1
+            } from 'module'
           `,
           options: [options],
           errors: [
             {
               messageId: 'unexpectedNamedImportsOrder',
               data: {
-                left: 'GendouIkari',
-                right: 'Eva0',
+                left: 'X1',
+                right: 'X0',
+              },
+            },
+            {
+              messageId: 'unexpectedNamedImportsOrder',
+              data: {
+                left: 'X0',
+                right: 'C',
               },
             },
           ],
@@ -176,7 +156,7 @@ describe(RULE_NAME, () => {
       valid: [
         {
           code: dedent`
-            import spiritedAway, { protagonist as chihiro } from 'spirited-away'
+            import C, { b as A } from 'module'
           `,
           options: [options],
         },
@@ -188,13 +168,12 @@ describe(RULE_NAME, () => {
       valid: [
         {
           code: dedent`
-            import titan, {
-              femaleTitan as annieLeonhart,
-              colossusTitan,
-              attackTitan as erenYeager,
-              armoredTitan as reinerBraun,
-              beastTitan as zekeYeager,
-            } from '~/titans'
+            import U, {
+              aaa as A,
+              B,
+              cc as C,
+              d as D,
+            } from 'module'
           `,
           options: [options],
         },
@@ -202,44 +181,35 @@ describe(RULE_NAME, () => {
       invalid: [
         {
           code: dedent`
-            import titan, {
-              armoredTitan as reinerBraun,
-              colossusTitan,
-              beastTitan as zekeYeager,
-              attackTitan as erenYeager,
-              femaleTitan as annieLeonhart,
-            } from '~/titans'
+            import U, {
+              B,
+              aaa as A,
+              d as D,
+              cc as C,
+            } from 'module'
           `,
           output: dedent`
-            import titan, {
-              femaleTitan as annieLeonhart,
-              colossusTitan,
-              attackTitan as erenYeager,
-              armoredTitan as reinerBraun,
-              beastTitan as zekeYeager,
-            } from '~/titans'
+            import U, {
+              aaa as A,
+              B,
+              cc as C,
+              d as D,
+            } from 'module'
           `,
           options: [options],
           errors: [
             {
               messageId: 'unexpectedNamedImportsOrder',
               data: {
-                left: 'reinerBraun',
-                right: 'colossusTitan',
+                left: 'B',
+                right: 'A',
               },
             },
             {
               messageId: 'unexpectedNamedImportsOrder',
               data: {
-                left: 'zekeYeager',
-                right: 'erenYeager',
-              },
-            },
-            {
-              messageId: 'unexpectedNamedImportsOrder',
-              data: {
-                left: 'erenYeager',
-                right: 'annieLeonhart',
+                left: 'D',
+                right: 'C',
               },
             },
           ],
@@ -252,10 +222,10 @@ describe(RULE_NAME, () => {
         {
           code: dedent`
           import {
-              miri,
-              kazuki as papa1,
-              rei as papa2,
-            } from 'buddy-daddies'
+              x as a,
+              y as b,
+              c,
+            } from 'module'
           `,
           options: [
             {
@@ -269,17 +239,17 @@ describe(RULE_NAME, () => {
         {
           code: dedent`
             import {
-              kazuki as papa1,
-              miri,
-              rei as papa2,
-            } from 'buddy-daddies'
+              c,
+              x as a,
+              y as b,
+            } from 'module'
           `,
           output: dedent`
             import {
-              miri,
-              kazuki as papa1,
-              rei as papa2,
-            } from 'buddy-daddies'
+              x as a,
+              y as b,
+              c,
+            } from 'module'
           `,
           options: [
             {
@@ -291,8 +261,8 @@ describe(RULE_NAME, () => {
             {
               messageId: 'unexpectedNamedImportsOrder',
               data: {
-                left: 'papa1',
-                right: 'miri',
+                left: 'c',
+                right: 'a',
               },
             },
           ],
@@ -307,19 +277,19 @@ describe(RULE_NAME, () => {
         valid: [
           {
             code: dedent`
-              import { Kenshin, type Sakabotou, Sanosuke, type Zanbato } from 'rurouni-kenshin'
+              import { AAA, type BB, BB, type C } from 'module'
             `,
             options: [{ ...options, groupKind: 'mixed' }],
           },
           {
             code: dedent`
-              import { Kenshin, Sanosuke, type Sakabotou, type Zanbato } from 'rurouni-kenshin'
+              import { AAA, BB, type BB, type C } from 'module'
             `,
             options: [{ ...options, groupKind: 'values-first' }],
           },
           {
             code: dedent`
-              import { type Sakabotou, type Zanbato, Kenshin, Sanosuke } from 'rurouni-kenshin'
+              import { type BB, type C, AAA, BB } from 'module'
             `,
             options: [{ ...options, groupKind: 'types-first' }],
           },
@@ -327,75 +297,61 @@ describe(RULE_NAME, () => {
         invalid: [
           {
             code: dedent`
-              import { type Zanbato, Sanosuke, type Sakabotou, Kenshin } from 'rurouni-kenshin'
+              import { AAA, type BB, type C, BB } from 'module'
             `,
             output: dedent`
-              import { Kenshin, type Sakabotou, Sanosuke, type Zanbato } from 'rurouni-kenshin'
+              import { AAA, type BB, BB, type C } from 'module'
             `,
             options: [{ ...options, groupKind: 'mixed' }],
             errors: [
               {
                 messageId: 'unexpectedNamedImportsOrder',
                 data: {
-                  left: 'Zanbato',
-                  right: 'Sanosuke',
-                },
-              },
-              {
-                messageId: 'unexpectedNamedImportsOrder',
-                data: {
-                  left: 'Sanosuke',
-                  right: 'Sakabotou',
-                },
-              },
-              {
-                messageId: 'unexpectedNamedImportsOrder',
-                data: {
-                  left: 'Sakabotou',
-                  right: 'Kenshin',
+                  left: 'C',
+                  right: 'BB',
                 },
               },
             ],
           },
           {
             code: dedent`
-              import { type Zanbato, Sanosuke, type Sakabotou, Kenshin } from 'rurouni-kenshin'
+              import { AAA, type BB, BB, type C } from 'module'
             `,
             output: dedent`
-              import { Kenshin, Sanosuke, type Sakabotou, type Zanbato } from 'rurouni-kenshin'
+              import { AAA, BB, type BB, type C } from 'module'
             `,
             options: [{ ...options, groupKind: 'values-first' }],
             errors: [
               {
                 messageId: 'unexpectedNamedImportsOrder',
                 data: {
-                  left: 'Zanbato',
-                  right: 'Sanosuke',
-                },
-              },
-              {
-                messageId: 'unexpectedNamedImportsOrder',
-                data: {
-                  left: 'Sakabotou',
-                  right: 'Kenshin',
+                  left: 'BB',
+                  right: 'BB',
                 },
               },
             ],
           },
           {
             code: dedent`
-              import { type Zanbato, Sanosuke, type Sakabotou, Kenshin } from 'rurouni-kenshin'
+              import { AAA, type BB, BB, type C } from 'module'
             `,
             output: dedent`
-              import { type Sakabotou, type Zanbato, Kenshin, Sanosuke } from 'rurouni-kenshin'
+              import { type BB, type C, AAA, BB } from 'module'
             `,
             options: [{ ...options, groupKind: 'types-first' }],
             errors: [
               {
                 messageId: 'unexpectedNamedImportsOrder',
                 data: {
-                  left: 'Sanosuke',
-                  right: 'Sakabotou',
+                  left: 'AAA',
+                  right: 'BB',
+                },
+              },
+              {
+                messageId: 'unexpectedNamedImportsOrder',
+                data: {
+                  left: 'BB',
+                  right: 'C',
                 },
               },
             ],
@@ -418,7 +374,7 @@ describe(RULE_NAME, () => {
       valid: [
         {
           code: dedent`
-            import { Kana, Kuu, Rakka, Reki } from 'haibane-renmei'
+            import { AAA, BB, C } from 'module'
           `,
           options: [options],
         },
@@ -426,25 +382,18 @@ describe(RULE_NAME, () => {
       invalid: [
         {
           code: dedent`
-            import { Kana, Reki, Rakka, Kuu } from 'haibane-renmei'
+            import { BB, AAA, C } from 'module'
           `,
           output: dedent`
-            import { Kana, Kuu, Rakka, Reki } from 'haibane-renmei'
+            import { AAA, BB, C } from 'module'
           `,
           options: [options],
           errors: [
             {
               messageId: 'unexpectedNamedImportsOrder',
               data: {
-                left: 'Reki',
-                right: 'Rakka',
-              },
-            },
-            {
-              messageId: 'unexpectedNamedImportsOrder',
-              data: {
-                left: 'Rakka',
-                right: 'Kuu',
+                left: 'BB',
+                right: 'AAA',
               },
             },
           ],
@@ -457,13 +406,11 @@ describe(RULE_NAME, () => {
         {
           code: dedent`
             import {
-              AnnieLeonhart,
-              BertholdtHoover,
-              FalcoGrice,
-              GabiBraun,
-              Gross,
-              ReinerBraun,
-            } from 'marleyan-military'
+              AAAA,
+              BBB,
+              CC,
+              D,
+            } from 'module'
           `,
           options: [options],
         },
@@ -472,45 +419,27 @@ describe(RULE_NAME, () => {
         {
           code: dedent`
             import {
-              GabiBraun,
-              ReinerBraun,
-              FalcoGrice,
-              AnnieLeonhart,
-              Gross,
-              BertholdtHoover,
-            } from 'marleyan-military'
+              AAAA,
+              CC,
+              BBB,
+              D,
+            } from 'module'
           `,
           output: dedent`
             import {
-              AnnieLeonhart,
-              BertholdtHoover,
-              FalcoGrice,
-              GabiBraun,
-              Gross,
-              ReinerBraun,
-            } from 'marleyan-military'
+              AAAA,
+              BBB,
+              CC,
+              D,
+            } from 'module'
           `,
           options: [options],
           errors: [
             {
               messageId: 'unexpectedNamedImportsOrder',
               data: {
-                left: 'ReinerBraun',
-                right: 'FalcoGrice',
-              },
-            },
-            {
-              messageId: 'unexpectedNamedImportsOrder',
-              data: {
-                left: 'FalcoGrice',
-                right: 'AnnieLeonhart',
-              },
-            },
-            {
-              messageId: 'unexpectedNamedImportsOrder',
-              data: {
-                left: 'Gross',
-                right: 'BertholdtHoover',
+                left: 'CC',
+                right: 'BBB',
               },
             },
           ],
@@ -523,10 +452,10 @@ describe(RULE_NAME, () => {
         {
           code: dedent`
             import {
-              ReiAyanami as Eva0,
-              ShinjiIkari as Eva1,
-              GendouIkari
-            } from 'nerv'
+              C,
+              BB as X0,
+              A as X1
+            } from 'module'
           `,
           options: [options],
         },
@@ -535,25 +464,32 @@ describe(RULE_NAME, () => {
         {
           code: dedent`
             import {
-              GendouIkari,
-              ReiAyanami as Eva0,
-              ShinjiIkari as Eva1
-            } from 'nerv'
+              A as X1,
+              BB as X0,
+              C
+            } from 'module'
           `,
           output: dedent`
             import {
-              ReiAyanami as Eva0,
-              ShinjiIkari as Eva1,
-              GendouIkari
-            } from 'nerv'
+              C,
+              BB as X0,
+              A as X1
+            } from 'module'
           `,
           options: [options],
           errors: [
             {
               messageId: 'unexpectedNamedImportsOrder',
               data: {
-                left: 'GendouIkari',
-                right: 'Eva0',
+                left: 'X1',
+                right: 'X0',
+              },
+            },
+            {
+              messageId: 'unexpectedNamedImportsOrder',
+              data: {
+                left: 'X0',
+                right: 'C',
               },
             },
           ],
@@ -565,7 +501,7 @@ describe(RULE_NAME, () => {
       valid: [
         {
           code: dedent`
-            import spiritedAway, { protagonist as chihiro } from 'spirited-away'
+            import C, { b as A } from 'module'
           `,
           options: [options],
         },
@@ -577,13 +513,12 @@ describe(RULE_NAME, () => {
       valid: [
         {
           code: dedent`
-            import titan, {
-              femaleTitan as annieLeonhart,
-              colossusTitan,
-              attackTitan as erenYeager,
-              armoredTitan as reinerBraun,
-              beastTitan as zekeYeager,
-            } from '~/titans'
+            import U, {
+              aaa as A,
+              B,
+              cc as C,
+              d as D,
+            } from 'module'
           `,
           options: [options],
         },
@@ -591,44 +526,35 @@ describe(RULE_NAME, () => {
       invalid: [
         {
           code: dedent`
-            import titan, {
-              armoredTitan as reinerBraun,
-              colossusTitan,
-              beastTitan as zekeYeager,
-              attackTitan as erenYeager,
-              femaleTitan as annieLeonhart,
-            } from '~/titans'
+            import U, {
+              B,
+              aaa as A,
+              d as D,
+              cc as C,
+            } from 'module'
           `,
           output: dedent`
-            import titan, {
-              femaleTitan as annieLeonhart,
-              colossusTitan,
-              attackTitan as erenYeager,
-              armoredTitan as reinerBraun,
-              beastTitan as zekeYeager,
-            } from '~/titans'
+            import U, {
+              aaa as A,
+              B,
+              cc as C,
+              d as D,
+            } from 'module'
           `,
           options: [options],
           errors: [
             {
               messageId: 'unexpectedNamedImportsOrder',
               data: {
-                left: 'reinerBraun',
-                right: 'colossusTitan',
+                left: 'B',
+                right: 'A',
               },
             },
             {
               messageId: 'unexpectedNamedImportsOrder',
               data: {
-                left: 'zekeYeager',
-                right: 'erenYeager',
-              },
-            },
-            {
-              messageId: 'unexpectedNamedImportsOrder',
-              data: {
-                left: 'erenYeager',
-                right: 'annieLeonhart',
+                left: 'D',
+                right: 'C',
               },
             },
           ],
@@ -641,10 +567,10 @@ describe(RULE_NAME, () => {
         {
           code: dedent`
           import {
-              miri,
-              kazuki as papa1,
-              rei as papa2,
-            } from 'buddy-daddies'
+              x as a,
+              y as b,
+              c,
+            } from 'module'
           `,
           options: [
             {
@@ -658,17 +584,17 @@ describe(RULE_NAME, () => {
         {
           code: dedent`
             import {
-              kazuki as papa1,
-              miri,
-              rei as papa2,
-            } from 'buddy-daddies'
+              c,
+              x as a,
+              y as b,
+            } from 'module'
           `,
           output: dedent`
             import {
-              miri,
-              kazuki as papa1,
-              rei as papa2,
-            } from 'buddy-daddies'
+              x as a,
+              y as b,
+              c,
+            } from 'module'
           `,
           options: [
             {
@@ -680,8 +606,8 @@ describe(RULE_NAME, () => {
             {
               messageId: 'unexpectedNamedImportsOrder',
               data: {
-                left: 'papa1',
-                right: 'miri',
+                left: 'c',
+                right: 'a',
               },
             },
           ],
@@ -696,19 +622,19 @@ describe(RULE_NAME, () => {
         valid: [
           {
             code: dedent`
-              import { Kenshin, type Sakabotou, Sanosuke, type Zanbato } from 'rurouni-kenshin'
+              import { AAA, type BB, BB, type C } from 'module'
             `,
             options: [{ ...options, groupKind: 'mixed' }],
           },
           {
             code: dedent`
-              import { Kenshin, Sanosuke, type Sakabotou, type Zanbato } from 'rurouni-kenshin'
+              import { AAA, BB, type BB, type C } from 'module'
             `,
             options: [{ ...options, groupKind: 'values-first' }],
           },
           {
             code: dedent`
-              import { type Sakabotou, type Zanbato, Kenshin, Sanosuke } from 'rurouni-kenshin'
+              import { type BB, type C, AAA, BB } from 'module'
             `,
             options: [{ ...options, groupKind: 'types-first' }],
           },
@@ -716,75 +642,61 @@ describe(RULE_NAME, () => {
         invalid: [
           {
             code: dedent`
-              import { type Zanbato, Sanosuke, type Sakabotou, Kenshin } from 'rurouni-kenshin'
+              import { AAA, type BB, type C, BB } from 'module'
             `,
             output: dedent`
-              import { Kenshin, type Sakabotou, Sanosuke, type Zanbato } from 'rurouni-kenshin'
+              import { AAA, type BB, BB, type C } from 'module'
             `,
             options: [{ ...options, groupKind: 'mixed' }],
             errors: [
               {
                 messageId: 'unexpectedNamedImportsOrder',
                 data: {
-                  left: 'Zanbato',
-                  right: 'Sanosuke',
-                },
-              },
-              {
-                messageId: 'unexpectedNamedImportsOrder',
-                data: {
-                  left: 'Sanosuke',
-                  right: 'Sakabotou',
-                },
-              },
-              {
-                messageId: 'unexpectedNamedImportsOrder',
-                data: {
-                  left: 'Sakabotou',
-                  right: 'Kenshin',
+                  left: 'C',
+                  right: 'BB',
                 },
               },
             ],
           },
           {
             code: dedent`
-              import { type Zanbato, Sanosuke, type Sakabotou, Kenshin } from 'rurouni-kenshin'
+              import { AAA, type BB, BB, type C } from 'module'
             `,
             output: dedent`
-              import { Kenshin, Sanosuke, type Sakabotou, type Zanbato } from 'rurouni-kenshin'
+              import { AAA, BB, type BB, type C } from 'module'
             `,
             options: [{ ...options, groupKind: 'values-first' }],
             errors: [
               {
                 messageId: 'unexpectedNamedImportsOrder',
                 data: {
-                  left: 'Zanbato',
-                  right: 'Sanosuke',
-                },
-              },
-              {
-                messageId: 'unexpectedNamedImportsOrder',
-                data: {
-                  left: 'Sakabotou',
-                  right: 'Kenshin',
+                  left: 'BB',
+                  right: 'BB',
                 },
               },
             ],
           },
           {
             code: dedent`
-              import { type Zanbato, Sanosuke, type Sakabotou, Kenshin } from 'rurouni-kenshin'
+              import { AAA, type BB, BB, type C } from 'module'
             `,
             output: dedent`
-              import { type Sakabotou, type Zanbato, Kenshin, Sanosuke } from 'rurouni-kenshin'
+              import { type BB, type C, AAA, BB } from 'module'
             `,
             options: [{ ...options, groupKind: 'types-first' }],
             errors: [
               {
                 messageId: 'unexpectedNamedImportsOrder',
                 data: {
-                  left: 'Sanosuke',
-                  right: 'Sakabotou',
+                  left: 'AAA',
+                  right: 'BB',
+                },
+              },
+              {
+                messageId: 'unexpectedNamedImportsOrder',
+                data: {
+                  left: 'BB',
+                  right: 'C',
                 },
               },
             ],
@@ -806,7 +718,7 @@ describe(RULE_NAME, () => {
       valid: [
         {
           code: dedent`
-            import { Rakka, Reki, Kana, Kuu } from 'haibane-renmei'
+            import { AAA, BB, C } from 'module'
           `,
           options: [options],
         },
@@ -814,18 +726,18 @@ describe(RULE_NAME, () => {
       invalid: [
         {
           code: dedent`
-            import { Kana, Reki, Rakka, Kuu } from 'haibane-renmei'
+            import { BB, AAA, C } from 'module'
           `,
           output: dedent`
-            import { Rakka, Kana, Reki, Kuu } from 'haibane-renmei'
+            import { AAA, BB, C } from 'module'
           `,
           options: [options],
           errors: [
             {
               messageId: 'unexpectedNamedImportsOrder',
               data: {
-                left: 'Reki',
-                right: 'Rakka',
+                left: 'BB',
+                right: 'AAA',
               },
             },
           ],
@@ -838,13 +750,11 @@ describe(RULE_NAME, () => {
         {
           code: dedent`
             import {
-              BertholdtHoover,
-              AnnieLeonhart,
-              ReinerBraun,
-              FalcoGrice,
-              GabiBraun,
-              Gross,
-            } from 'marleyan-military'
+              AAAA,
+              BBB,
+              CC,
+              D,
+            } from 'module'
           `,
           options: [options],
         },
@@ -853,38 +763,27 @@ describe(RULE_NAME, () => {
         {
           code: dedent`
             import {
-              AnnieLeonhart,
-              BertholdtHoover,
-              FalcoGrice,
-              GabiBraun,
-              Gross,
-              ReinerBraun,
-            } from 'marleyan-military'
+              AAAA,
+              CC,
+              BBB,
+              D,
+            } from 'module'
           `,
           output: dedent`
             import {
-              BertholdtHoover,
-              AnnieLeonhart,
-              ReinerBraun,
-              FalcoGrice,
-              GabiBraun,
-              Gross,
-            } from 'marleyan-military'
+              AAAA,
+              BBB,
+              CC,
+              D,
+            } from 'module'
           `,
           options: [options],
           errors: [
             {
               messageId: 'unexpectedNamedImportsOrder',
               data: {
-                left: 'AnnieLeonhart',
-                right: 'BertholdtHoover',
-              },
-            },
-            {
-              messageId: 'unexpectedNamedImportsOrder',
-              data: {
-                left: 'Gross',
-                right: 'ReinerBraun',
+                left: 'CC',
+                right: 'BBB',
               },
             },
           ],
@@ -897,10 +796,10 @@ describe(RULE_NAME, () => {
         {
           code: dedent`
             import {
-              ShinjiIkari as Eva1,
-              ReiAyanami as Eva0,
-              GendouIkari
-            } from 'nerv'
+              BB as X0,
+              A as X1,
+              C
+            } from 'module'
           `,
           options: [options],
         },
@@ -909,32 +808,25 @@ describe(RULE_NAME, () => {
         {
           code: dedent`
             import {
-              GendouIkari,
-              ReiAyanami as Eva0,
-              ShinjiIkari as Eva1
-            } from 'nerv'
+              A as X1,
+              BB as X0,
+              C
+            } from 'module'
           `,
           output: dedent`
             import {
-              ShinjiIkari as Eva1,
-              ReiAyanami as Eva0,
-              GendouIkari
-            } from 'nerv'
+              BB as X0,
+              A as X1,
+              C
+            } from 'module'
           `,
           options: [options],
           errors: [
             {
               messageId: 'unexpectedNamedImportsOrder',
               data: {
-                left: 'GendouIkari',
-                right: 'Eva0',
-              },
-            },
-            {
-              messageId: 'unexpectedNamedImportsOrder',
-              data: {
-                left: 'Eva0',
-                right: 'Eva1',
+                left: 'X1',
+                right: 'X0',
               },
             },
           ],
@@ -946,7 +838,7 @@ describe(RULE_NAME, () => {
       valid: [
         {
           code: dedent`
-            import spiritedAway, { protagonist as chihiro } from 'spirited-away'
+            import C, { b as A } from 'module'
           `,
           options: [options],
         },
@@ -958,13 +850,12 @@ describe(RULE_NAME, () => {
       valid: [
         {
           code: dedent`
-            import titan, {
-              femaleTitan as annieLeonhart,
-              armoredTitan as reinerBraun,
-              attackTitan as erenYeager,
-              beastTitan as zekeYeager,
-              colossusTitan,
-            } from '~/titans'
+            import U, {
+              aaa as A,
+              cc as C,
+              d as D,
+              B,
+            } from 'module'
           `,
           options: [options],
         },
@@ -972,44 +863,35 @@ describe(RULE_NAME, () => {
       invalid: [
         {
           code: dedent`
-            import titan, {
-              armoredTitan as reinerBraun,
-              colossusTitan,
-              beastTitan as zekeYeager,
-              attackTitan as erenYeager,
-              femaleTitan as annieLeonhart,
-            } from '~/titans'
+            import U, {
+              B,
+              aaa as A,
+              d as D,
+              cc as C,
+            } from 'module'
           `,
           output: dedent`
-            import titan, {
-              femaleTitan as annieLeonhart,
-              armoredTitan as reinerBraun,
-              attackTitan as erenYeager,
-              beastTitan as zekeYeager,
-              colossusTitan,
-            } from '~/titans'
+            import U, {
+              aaa as A,
+              cc as C,
+              d as D,
+              B,
+            } from 'module'
           `,
           options: [options],
           errors: [
             {
               messageId: 'unexpectedNamedImportsOrder',
               data: {
-                left: 'colossusTitan',
-                right: 'zekeYeager',
+                left: 'B',
+                right: 'A',
               },
             },
             {
               messageId: 'unexpectedNamedImportsOrder',
               data: {
-                left: 'zekeYeager',
-                right: 'erenYeager',
-              },
-            },
-            {
-              messageId: 'unexpectedNamedImportsOrder',
-              data: {
-                left: 'erenYeager',
-                right: 'annieLeonhart',
+                left: 'D',
+                right: 'C',
               },
             },
           ],
@@ -1024,37 +906,19 @@ describe(RULE_NAME, () => {
         valid: [
           {
             code: dedent`
-              import {
-                Kaoru as Kamiya,
-                type Sakabotou,
-                type Zanbato,
-                Sanosuke,
-                Kenshin,
-              } from 'rurouni-kenshin'
+              import { type BB, type C, AAA, BB } from 'module'
             `,
             options: [{ ...options, groupKind: 'mixed' }],
           },
           {
             code: dedent`
-              import {
-                Kaoru as Kamiya,
-                Sanosuke,
-                Kenshin,
-                type Sakabotou,
-                type Zanbato,
-              } from 'rurouni-kenshin'
+              import { AAA, BB, type BB, type C } from 'module'
             `,
             options: [{ ...options, groupKind: 'values-first' }],
           },
           {
             code: dedent`
-              import {
-                type Sakabotou,
-                type Zanbato,
-                Kaoru as Kamiya,
-                Sanosuke,
-                Kenshin,
-              } from 'rurouni-kenshin'
+              import { type BB, type C, AAA, BB } from 'module'
             `,
             options: [{ ...options, groupKind: 'types-first' }],
           },
@@ -1062,104 +926,61 @@ describe(RULE_NAME, () => {
         invalid: [
           {
             code: dedent`
-              import {
-                Kaoru as Kamiya,
-                type Sakabotou,
-                Sanosuke,
-                type Zanbato,
-                Kenshin,
-              } from 'rurouni-kenshin'
+              import { AAA, type BB, type C, BB } from 'module'
             `,
             output: dedent`
-              import {
-                Kaoru as Kamiya,
-                type Sakabotou,
-                type Zanbato,
-                Sanosuke,
-                Kenshin,
-              } from 'rurouni-kenshin'
+              import { type BB, type C, AAA, BB } from 'module'
             `,
             options: [{ ...options, groupKind: 'mixed' }],
             errors: [
               {
                 messageId: 'unexpectedNamedImportsOrder',
                 data: {
-                  left: 'Sanosuke',
-                  right: 'Zanbato',
+                  left: 'AAA',
+                  right: 'BB',
                 },
               },
             ],
           },
           {
             code: dedent`
-              import {
-                Kaoru as Kamiya,
-                type Sakabotou,
-                Sanosuke,
-                type Zanbato,
-                Kenshin,
-              } from 'rurouni-kenshin'
+              import { AAA, type BB, BB, type C } from 'module'
             `,
             output: dedent`
-              import {
-                Kaoru as Kamiya,
-                Sanosuke,
-                Kenshin,
-                type Sakabotou,
-                type Zanbato,
-              } from 'rurouni-kenshin'
+              import { AAA, BB, type BB, type C } from 'module'
             `,
             options: [{ ...options, groupKind: 'values-first' }],
             errors: [
               {
                 messageId: 'unexpectedNamedImportsOrder',
                 data: {
-                  left: 'Sakabotou',
-                  right: 'Sanosuke',
-                },
-              },
-              {
-                messageId: 'unexpectedNamedImportsOrder',
-                data: {
-                  left: 'Zanbato',
-                  right: 'Kenshin',
+                  left: 'BB',
+                  right: 'BB',
                 },
               },
             ],
           },
           {
             code: dedent`
-              import {
-                Kaoru as Kamiya,
-                type Sakabotou,
-                Sanosuke,
-                type Zanbato,
-                Kenshin,
-              } from 'rurouni-kenshin'
+              import { AAA, type BB, BB, type C } from 'module'
             `,
             output: dedent`
-              import {
-                type Sakabotou,
-                type Zanbato,
-                Kaoru as Kamiya,
-                Sanosuke,
-                Kenshin,
-              } from 'rurouni-kenshin'
+              import { type BB, type C, AAA, BB } from 'module'
             `,
             options: [{ ...options, groupKind: 'types-first' }],
             errors: [
               {
                 messageId: 'unexpectedNamedImportsOrder',
                 data: {
-                  left: 'Kamiya',
-                  right: 'Sakabotou',
+                  left: 'AAA',
+                  right: 'BB',
                 },
               },
               {
                 messageId: 'unexpectedNamedImportsOrder',
                 data: {
-                  left: 'Sanosuke',
-                  right: 'Zanbato',
+                  left: 'BB',
+                  right: 'C',
                 },
               },
             ],
@@ -1175,26 +996,26 @@ describe(RULE_NAME, () => {
       rule,
       {
         valid: [
-          "import { David, Maine, Rebecca } from 'cyberpunks-edgerunners'",
+          "import { A, B, C } from 'module'",
           {
-            code: "import { log, log10, log1p, log2 } from 'calculator'",
+            code: "import { log, log10, log1p, log2 } from 'module'",
             options: [{}],
           },
         ],
         invalid: [
           {
             code: dedent`
-              import { David, Rebecca, Maine } from 'cyberpunks-edgerunners'
+              import { B, C, A } from 'module'
             `,
             output: dedent`
-              import { David, Maine, Rebecca } from 'cyberpunks-edgerunners'
+              import { A, B, C } from 'module'
             `,
             errors: [
               {
                 messageId: 'unexpectedNamedImportsOrder',
                 data: {
-                  left: 'Rebecca',
-                  right: 'Maine',
+                  left: 'C',
+                  right: 'A',
                 },
               },
             ],

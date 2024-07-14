@@ -30,10 +30,10 @@ describe(RULE_NAME, () => {
       valid: [
         {
           code: dedent`
-            interface DossierByTwilight {
-              age: string
-              country: 'Westalis' | 'Ostania',
-              name: string
+            interface Interface {
+              a: string
+              b: 'b1' | 'b2',
+              c: string
             }
           `,
           options: [options],
@@ -42,17 +42,17 @@ describe(RULE_NAME, () => {
       invalid: [
         {
           code: dedent`
-            interface DossierByTwilight {
-              name: string
-              age: string
-              country: 'Westalis' | 'Ostania'
+            interface Interface {
+              a: string
+              c: string
+              b: 'b1' | 'b2',
             }
           `,
           output: dedent`
-            interface DossierByTwilight {
-              age: string
-              country: 'Westalis' | 'Ostania'
-              name: string
+            interface Interface {
+              a: string
+              b: 'b1' | 'b2',
+              c: string
             }
           `,
           options: [options],
@@ -60,8 +60,8 @@ describe(RULE_NAME, () => {
             {
               messageId: 'unexpectedInterfacePropertiesOrder',
               data: {
-                left: 'name',
-                right: 'age',
+                left: 'c',
+                right: 'b',
               },
             },
           ],
@@ -76,9 +76,9 @@ describe(RULE_NAME, () => {
         valid: [
           {
             code: dedent`
-              interface JujutsuHigh {
-                [key in Sorcerer]: string
-                yuuji: 'Yuuji Itadori'
+              interface Interface {
+                [key in Object]: string
+                a: 'a'
               }
             `,
             options: [options],
@@ -87,15 +87,15 @@ describe(RULE_NAME, () => {
         invalid: [
           {
             code: dedent`
-              interface JujutsuHigh {
-                yuuji: 'Yuuji Itadori'
-                [key in Sorcerer]: string
+              interface Interface {
+                a: 'a'
+                [key in Object]: string
               }
             `,
             output: dedent`
-              interface JujutsuHigh {
-                [key in Sorcerer]: string
-                yuuji: 'Yuuji Itadori'
+              interface Interface {
+                [key in Object]: string
+                a: 'a'
               }
             `,
             options: [options],
@@ -103,8 +103,8 @@ describe(RULE_NAME, () => {
               {
                 messageId: 'unexpectedInterfacePropertiesOrder',
                 data: {
-                  left: 'yuuji',
-                  right: '[key in Sorcerer]',
+                  left: 'a',
+                  right: '[key in Object]',
                 },
               },
             ],
@@ -120,11 +120,11 @@ describe(RULE_NAME, () => {
         valid: [
           {
             code: dedent`
-              interface CowboyBebop {
-                ein: Dog
-                'faye-valentine': Hunter
-                jet: Hunter
-                'spike-spiegel': Hunter
+              interface Interface {
+                a: Value
+                'b-b': string
+                c: string
+                'd-d': string
               }
             `,
             options: [options],
@@ -133,19 +133,19 @@ describe(RULE_NAME, () => {
         invalid: [
           {
             code: dedent`
-              interface CowboyBebop {
-                'spike-spiegel': Hunter
-                ein: Dog
-                jet: Hunter
-                'faye-valentine': Hunter
+              interface Interface {
+                'b-b': string
+                a: Value
+                'd-d': string
+                c: string
               }
             `,
             output: dedent`
-              interface CowboyBebop {
-                ein: Dog
-                'faye-valentine': Hunter
-                jet: Hunter
-                'spike-spiegel': Hunter
+              interface Interface {
+                a: Value
+                'b-b': string
+                c: string
+                'd-d': string
               }
             `,
             options: [options],
@@ -153,15 +153,15 @@ describe(RULE_NAME, () => {
               {
                 messageId: 'unexpectedInterfacePropertiesOrder',
                 data: {
-                  left: 'spike-spiegel',
-                  right: 'ein',
+                  left: 'b-b',
+                  right: 'a',
                 },
               },
               {
                 messageId: 'unexpectedInterfacePropertiesOrder',
                 data: {
-                  left: 'jet',
-                  right: 'faye-valentine',
+                  left: 'd-d',
+                  right: 'c',
                 },
               },
             ],
@@ -177,10 +177,10 @@ describe(RULE_NAME, () => {
         valid: [
           {
             code: dedent`
-              interface Evangelion {
+              interface Interface {
                 [key: string]: string
-                'evangelion-owner': string
-                name: string
+                a: string
+                b: string
               }
             `,
             options: [options],
@@ -189,17 +189,17 @@ describe(RULE_NAME, () => {
         invalid: [
           {
             code: dedent`
-              interface Evangelion {
-                'evangelion-owner': string
+              interface Interface {
+                a: string
                 [key: string]: string
-                name: string
+                b: string
               }
             `,
             output: dedent`
-              interface Evangelion {
+              interface Interface {
                 [key: string]: string
-                'evangelion-owner': string
-                name: string
+                a: string
+                b: string
               }
             `,
             options: [options],
@@ -207,7 +207,7 @@ describe(RULE_NAME, () => {
               {
                 messageId: 'unexpectedInterfacePropertiesOrder',
                 data: {
-                  left: 'evangelion-owner',
+                  left: 'a',
                   right: '[key: string]',
                 },
               },
@@ -224,12 +224,12 @@ describe(RULE_NAME, () => {
         valid: [
           {
             code: dedent`
-              interface Zenitsu {
-                age: number
-                airSpin: () => void
-                godspeed(): number
-                name: string
-                sixfold()
+              interface Interface {
+                a: number
+                b: () => void
+                c(): number
+                d: string
+                e()
               }
             `,
             options: [options],
@@ -238,21 +238,21 @@ describe(RULE_NAME, () => {
         invalid: [
           {
             code: dedent`
-              interface Zenitsu {
-                age: number
-                godspeed(): number
-                airSpin: () => void
-                sixfold()
-                name: string
+              interface Interface {
+                c(): number
+                a: number
+                b: () => void
+                e()
+                d: string
               }
             `,
             output: dedent`
-              interface Zenitsu {
-                age: number
-                airSpin: () => void
-                godspeed(): number
-                name: string
-                sixfold()
+              interface Interface {
+                a: number
+                b: () => void
+                c(): number
+                d: string
+                e()
               }
             `,
             options: [options],
@@ -260,15 +260,15 @@ describe(RULE_NAME, () => {
               {
                 messageId: 'unexpectedInterfacePropertiesOrder',
                 data: {
-                  left: 'godspeed()',
-                  right: 'airSpin',
+                  left: 'c()',
+                  right: 'a',
                 },
               },
               {
                 messageId: 'unexpectedInterfacePropertiesOrder',
                 data: {
-                  left: 'sixfold()',
-                  right: 'name',
+                  left: 'e()',
+                  right: 'd',
                 },
               },
             ],
@@ -284,12 +284,12 @@ describe(RULE_NAME, () => {
         valid: [
           {
             code: dedent`
-              interface SatoruFujinuma {
-                [...memories]
-                [days in daysDiff]
-                [value in stories]?
-                age: 10 | 29
-                job: 'Mangaka'
+              interface Interface {
+                [...other]
+                [d in D]
+                [v in V]?
+                a: 10 | 20 | 30
+                b: string
               }
             `,
             options: [options],
@@ -298,21 +298,21 @@ describe(RULE_NAME, () => {
         invalid: [
           {
             code: dedent`
-              interface SatoruFujinuma {
-                [days in daysDiff]
-                age: 10 | 29
-                [...memories]
-                job: 'Mangaka'
-                [value in stories]?
+              interface Interface {
+                [d in D]
+                a: 10 | 20 | 30
+                [...other]
+                b: string
+                [v in V]?
               }
             `,
             output: dedent`
-              interface SatoruFujinuma {
-                [...memories]
-                [days in daysDiff]
-                [value in stories]?
-                age: 10 | 29
-                job: 'Mangaka'
+              interface Interface {
+                [...other]
+                [d in D]
+                [v in V]?
+                a: 10 | 20 | 30
+                b: string
               }
             `,
             options: [options],
@@ -320,15 +320,15 @@ describe(RULE_NAME, () => {
               {
                 messageId: 'unexpectedInterfacePropertiesOrder',
                 data: {
-                  left: 'age',
-                  right: '[...memories]',
+                  left: 'a',
+                  right: '[...other]',
                 },
               },
               {
                 messageId: 'unexpectedInterfacePropertiesOrder',
                 data: {
-                  left: 'job',
-                  right: '[value in stories]',
+                  left: 'b',
+                  right: '[v in V]',
                 },
               },
             ],
@@ -345,39 +345,35 @@ describe(RULE_NAME, () => {
         invalid: [
           {
             code: dedent`
-              interface SpiritsAndSuchConsultation {
+              interface Interface {
                 /**
-                 * Ekubo is a self-proclaimed upper-class evil spirit who has aligned himself with Mob after being defeated by him.
-                 *
-                 * Ekubo wants to be a god. Specifically, he wants to be worshipped by all humanity.
+                 * Comment B
                  */
-                spirit: 'Ekubo'
+                b: Array
                 /**
-                 * Mob's mentor and boss in the Mob Psycho 100 series. He owns a business exorcising ghosts and is a self-proclaimed psychic.
+                 * Comment A
                  */
-                owner: 'Arataka Reigen'
-                // He is an extremely powerful Esper who was formerly a part of the Super 5 of Claw. He now works at the agency alongside Reigen and Mob.
-                esper: 'Katsuya Serizawa'
-                /* He is the assistant and disciple of Arataka Reigen. He is also the newest member of the Body Improvement Club. */
-                assistant: 'Shigeo Kageyama'
+                a: string
+                // Comment D
+                d: string
+                /* Comment C */
+                c: string | number
               }
             `,
             output: dedent`
-              interface SpiritsAndSuchConsultation {
-                /* He is the assistant and disciple of Arataka Reigen. He is also the newest member of the Body Improvement Club. */
-                assistant: 'Shigeo Kageyama'
-                // He is an extremely powerful Esper who was formerly a part of the Super 5 of Claw. He now works at the agency alongside Reigen and Mob.
-                esper: 'Katsuya Serizawa'
+              interface Interface {
                 /**
-                 * Mob's mentor and boss in the Mob Psycho 100 series. He owns a business exorcising ghosts and is a self-proclaimed psychic.
+                 * Comment A
                  */
-                owner: 'Arataka Reigen'
+                a: string
                 /**
-                 * Ekubo is a self-proclaimed upper-class evil spirit who has aligned himself with Mob after being defeated by him.
-                 *
-                 * Ekubo wants to be a god. Specifically, he wants to be worshipped by all humanity.
+                 * Comment B
                  */
-                spirit: 'Ekubo'
+                b: Array
+                /* Comment C */
+                c: string | number
+                // Comment D
+                d: string
               }
             `,
             options: [options],
@@ -385,22 +381,15 @@ describe(RULE_NAME, () => {
               {
                 messageId: 'unexpectedInterfacePropertiesOrder',
                 data: {
-                  left: 'spirit',
-                  right: 'owner',
+                  left: 'b',
+                  right: 'a',
                 },
               },
               {
                 messageId: 'unexpectedInterfacePropertiesOrder',
                 data: {
-                  left: 'owner',
-                  right: 'esper',
-                },
-              },
-              {
-                messageId: 'unexpectedInterfacePropertiesOrder',
-                data: {
-                  left: 'esper',
-                  right: 'assistant',
+                  left: 'd',
+                  right: 'c',
                 },
               },
             ],
@@ -417,15 +406,15 @@ describe(RULE_NAME, () => {
         invalid: [
           {
             code: dedent`
-              interface NHK {
-                rescuer: 'Misaki Nakahara' // Misaki is a mysterious girl who decides to help Tatsuhiro Satou escape his hikikomori lifestyle
-                hikikomori: 'Tatsuhiro Satou' // Satou Tatsuhiro is a 22 year old, socially withdrawn, parasitic hikikomori
+              interface Interface {
+                b: string // Comment B
+                a: string | number // Comment A
               }
             `,
             output: dedent`
-              interface NHK {
-                hikikomori: 'Tatsuhiro Satou' // Satou Tatsuhiro is a 22 year old, socially withdrawn, parasitic hikikomori
-                rescuer: 'Misaki Nakahara' // Misaki is a mysterious girl who decides to help Tatsuhiro Satou escape his hikikomori lifestyle
+              interface Interface {
+                a: string | number // Comment A
+                b: string // Comment B
               }
             `,
             options: [options],
@@ -433,8 +422,8 @@ describe(RULE_NAME, () => {
               {
                 messageId: 'unexpectedInterfacePropertiesOrder',
                 data: {
-                  left: 'rescuer',
-                  right: 'hikikomori',
+                  left: 'b',
+                  right: 'a',
                 },
               },
             ],
@@ -451,15 +440,15 @@ describe(RULE_NAME, () => {
         invalid: [
           {
             code: dedent`
-              interface Researcher {
-                rescuer: 'Tokita Kōsaku'; // Character
-                occupation: string; // Professional direction
+              interface Interface {
+                b: 'b'; // Comment B
+                a: 'aaa'; // Comment A
               }
             `,
             output: dedent`
-              interface Researcher {
-                occupation: string; // Professional direction
-                rescuer: 'Tokita Kōsaku'; // Character
+              interface Interface {
+                a: 'aaa'; // Comment A
+                b: 'b'; // Comment B
               }
             `,
             options: [options],
@@ -467,8 +456,8 @@ describe(RULE_NAME, () => {
               {
                 messageId: 'unexpectedInterfacePropertiesOrder',
                 data: {
-                  left: 'rescuer',
-                  right: 'occupation',
+                  left: 'b',
+                  right: 'a',
                 },
               },
             ],
@@ -484,13 +473,13 @@ describe(RULE_NAME, () => {
         valid: [
           {
             code: dedent`
-              interface Abilities {
+              interface Interface {
                 <Parameters extends Record<string, number | string>>(
-                  input: AbilityFunction<[Parameters], string>
+                  input: AFunction<[Parameters], string>
                 ): Alternatives<Parameters>
-                <Ability extends CountAbility>(input: Input): AbilityFunction<
+                <A extends CountA>(input: Input): AFunction<
                   [number],
-                  Ability[keyof Ability]
+                  A[keyof A]
                 >
               }
             `,
@@ -508,23 +497,23 @@ describe(RULE_NAME, () => {
         valid: [
           {
             code: dedent`
-              interface DemonSlayer {
-                id: string
-                style: {
-                  'combat-style': string
-                  rank: number
+              interface Interface {
+                g: 'g'
+                d: {
+                  e: 'e'
+                  f: 'f'
                 }
-                age: number
-                gender: 'male' | 'female'
-                onAttack: (enemyId: string) => void
+                a: 'aaa'
+                b: 'bb'
+                c: 'c'
               }
             `,
             options: [
               {
                 ...options,
-                groups: ['id', 'multiline', 'unknown'],
+                groups: ['g', 'multiline', 'unknown'],
                 customGroups: {
-                  id: 'id',
+                  g: 'g',
                 },
               },
             ],
@@ -533,35 +522,35 @@ describe(RULE_NAME, () => {
         invalid: [
           {
             code: dedent`
-              interface DemonSlayer {
-                age: number
-                onAttack: (enemyId: string) => void
-                style: {
-                  'combat-style': string
-                  rank: number
+              interface Interface {
+                a: 'aaa'
+                b: 'bb'
+                c: 'c'
+                d: {
+                  e: 'e'
+                  f: 'f'
                 }
-                id: string
-                gender: 'male' | 'female'
+                g: 'g'
               }
             `,
             output: dedent`
-              interface DemonSlayer {
-                id: string
-                style: {
-                  'combat-style': string
-                  rank: number
+              interface Interface {
+                g: 'g'
+                d: {
+                  e: 'e'
+                  f: 'f'
                 }
-                age: number
-                gender: 'male' | 'female'
-                onAttack: (enemyId: string) => void
+                a: 'aaa'
+                b: 'bb'
+                c: 'c'
               }
             `,
             options: [
               {
                 ...options,
-                groups: ['id', 'multiline', 'unknown'],
+                groups: ['g', 'multiline', 'unknown'],
                 customGroups: {
-                  id: 'id',
+                  g: 'g',
                 },
               },
             ],
@@ -569,15 +558,15 @@ describe(RULE_NAME, () => {
               {
                 messageId: 'unexpectedInterfacePropertiesOrder',
                 data: {
-                  left: 'onAttack',
-                  right: 'style',
+                  left: 'c',
+                  right: 'd',
                 },
               },
               {
                 messageId: 'unexpectedInterfacePropertiesOrder',
                 data: {
-                  left: 'style',
-                  right: 'id',
+                  left: 'd',
+                  right: 'g',
                 },
               },
             ],
@@ -593,16 +582,16 @@ describe(RULE_NAME, () => {
         valid: [
           {
             code: dedent`
-              interface PhantomhiveHouseResiden {
-                firstName: string
-                id: string
-                lastName: string
+              interface Interface {
+                e: 'eee'
+                f: 'ff'
+                g: 'g'
 
-                type: 'Human' | 'Demon'
+                a: 'aaa'
 
-                age?: number
-                bloodType: 'Polaris' | 'Vega' | 'Canopus' | 'Sirius'
-                height: number
+                b?: 'bbb'
+                c: 'cc'
+                d: 'd'
               }
             `,
             options: [
@@ -616,29 +605,29 @@ describe(RULE_NAME, () => {
         invalid: [
           {
             code: dedent`
-              interface PhantomhiveHouseResiden {
-                id: string
-                firstName: string
-                lastName: string
+              interface Interface {
+                f: 'ff'
+                e: 'eee'
+                g: 'g'
 
-                type: 'Human' | 'Demon'
+                a: 'aaa'
 
-                age?: number
-                height: number
-                bloodType: 'Polaris' | 'Vega' | 'Canopus' | 'Sirius'
+                b?: 'bbb'
+                d: 'd'
+                c: 'cc'
               }
             `,
             output: dedent`
-              interface PhantomhiveHouseResiden {
-                firstName: string
-                id: string
-                lastName: string
+              interface Interface {
+                e: 'eee'
+                f: 'ff'
+                g: 'g'
 
-                type: 'Human' | 'Demon'
+                a: 'aaa'
 
-                age?: number
-                bloodType: 'Polaris' | 'Vega' | 'Canopus' | 'Sirius'
-                height: number
+                b?: 'bbb'
+                c: 'cc'
+                d: 'd'
               }
             `,
             options: [
@@ -651,15 +640,15 @@ describe(RULE_NAME, () => {
               {
                 messageId: 'unexpectedInterfacePropertiesOrder',
                 data: {
-                  left: 'id',
-                  right: 'firstName',
+                  left: 'f',
+                  right: 'e',
                 },
               },
               {
                 messageId: 'unexpectedInterfacePropertiesOrder',
                 data: {
-                  left: 'height',
-                  right: 'bloodType',
+                  left: 'd',
+                  right: 'c',
                 },
               },
             ],
@@ -668,99 +657,94 @@ describe(RULE_NAME, () => {
       },
     )
 
-    describe(`${RULE_NAME}(${type}): sorting optional members first`, () => {
-      ruleTester.run('sorts interface properties', rule, {
-        valid: [
-          {
-            code: dedent`
-              interface X {
+    ruleTester.run(`${RULE_NAME}(${type}): sorts interface properties`, rule, {
+      valid: [
+        {
+          code: dedent`
+              interface Interface {
                 a?: string
                 [index: number]: string
               }
             `,
-            options: [
-              {
-                ...options,
-                optionalityOrder: OptionalityOrder['optional-first'],
-              },
-            ],
-          },
-        ],
-        invalid: [
-          {
-            code: dedent`
-              interface ButtonProps {
-                backgroundColor?: string
-                label: string
-                primary?: boolean
-                size?: 'large' | 'medium' | 'small'
-                onClick?(): void
+          options: [
+            {
+              ...options,
+              optionalityOrder: OptionalityOrder['optional-first'],
+            },
+          ],
+        },
+      ],
+      invalid: [
+        {
+          code: dedent`
+              interface Interface {
+                a?: string
+                b: string
+                c?: string
+                d?: string
+                e?(): void
               }
             `,
-            output: dedent`
-              interface ButtonProps {
-                backgroundColor?: string
-                onClick?(): void
-                primary?: boolean
-                size?: 'large' | 'medium' | 'small'
-                label: string
+          output: dedent`
+              interface Interface {
+                a?: string
+                c?: string
+                d?: string
+                e?(): void
+                b: string
               }
             `,
-            options: [
-              {
-                ...options,
-                optionalityOrder: OptionalityOrder['optional-first'],
+          options: [
+            {
+              ...options,
+              optionalityOrder: OptionalityOrder['optional-first'],
+            },
+          ],
+          errors: [
+            {
+              messageId: 'unexpectedInterfacePropertiesOrder',
+              data: {
+                left: 'b',
+                right: 'c',
               },
-            ],
-            errors: [
-              {
-                messageId: 'unexpectedInterfacePropertiesOrder',
-                data: {
-                  left: 'label',
-                  right: 'primary',
-                },
-              },
-              {
-                messageId: 'unexpectedInterfacePropertiesOrder',
-                data: {
-                  left: 'size',
-                  right: 'onClick?()',
-                },
-              },
-            ],
-          },
-        ],
-      })
+            },
+          ],
+        },
+      ],
+    })
 
-      ruleTester.run('allows to set groups for sorting', rule, {
+    ruleTester.run(
+      `${RULE_NAME}(${type}): allows to set groups for sorting`,
+      rule,
+      {
         valid: [],
         invalid: [
           {
             code: dedent`
-              interface ButtonProps {
-                backgroundColor?: string
-                label: string
-                primary?: boolean
-                size?: 'large' | 'medium' | 'small'
-                onClick?(): void
+              interface Interface {
+                a: string
+                b: string
+                c?: string
+                d?: string
+                e: string
               }
             `,
             output: dedent`
-              interface ButtonProps {
-                backgroundColor?: string
-                primary?: boolean
-                size?: 'large' | 'medium' | 'small'
-                onClick?(): void
-                label: string
+              interface Interface {
+                c?: string
+                d?: string
+                b: string
+                e: string
+                a: string
               }
             `,
             options: [
               {
                 ...options,
                 customGroups: {
-                  callback: 'on*',
+                  last: 'a',
                 },
-                groups: ['unknown', 'callback'],
+                groups: ['unknown', 'last'],
                 optionalityOrder: OptionalityOrder['optional-first'],
               },
             ],
@@ -768,268 +752,22 @@ describe(RULE_NAME, () => {
               {
                 messageId: 'unexpectedInterfacePropertiesOrder',
                 data: {
-                  left: 'label',
-                  right: 'primary',
+                  left: 'a',
+                  right: 'b',
+                },
+              },
+              {
+                messageId: 'unexpectedInterfacePropertiesOrder',
+                data: {
+                  left: 'b',
+                  right: 'c',
                 },
               },
             ],
           },
         ],
-      })
-
-      ruleTester.run('allows to use new line as partition', rule, {
-        valid: [],
-        invalid: [
-          {
-            code: dedent`
-              interface User {
-                email: string
-                firstName?: string
-                id: number
-                lastName?: string
-                password: string
-                username: string
-
-                biography?: string
-                avatarUrl?: string
-                createdAt: Date
-                updatedAt: Date
-              }
-            `,
-            output: dedent`
-              interface User {
-                firstName?: string
-                lastName?: string
-                email: string
-                id: number
-                password: string
-                username: string
-
-                avatarUrl?: string
-                biography?: string
-                createdAt: Date
-                updatedAt: Date
-              }
-            `,
-            options: [
-              {
-                ...options,
-                optionalityOrder: OptionalityOrder['optional-first'],
-                partitionByNewLine: true,
-              },
-            ],
-            errors: [
-              {
-                messageId: 'unexpectedInterfacePropertiesOrder',
-                data: {
-                  left: 'email',
-                  right: 'firstName',
-                },
-              },
-              {
-                messageId: 'unexpectedInterfacePropertiesOrder',
-                data: {
-                  left: 'id',
-                  right: 'lastName',
-                },
-              },
-              {
-                messageId: 'unexpectedInterfacePropertiesOrder',
-                data: {
-                  left: 'biography',
-                  right: 'avatarUrl',
-                },
-              },
-            ],
-          },
-        ],
-      })
-    })
-
-    describe(`${RULE_NAME}(${type}): sorting required members first`, () => {
-      ruleTester.run('sorts interface properties', rule, {
-        valid: [
-          {
-            code: dedent`
-              interface X {
-                [index: number]: string
-                a?: string
-              }
-            `,
-            options: [
-              {
-                ...options,
-                optionalityOrder: OptionalityOrder['required-first'],
-              },
-            ],
-          },
-        ],
-        invalid: [
-          {
-            code: dedent`
-              interface ButtonProps {
-                backgroundColor?: string
-                label: string
-                primary?: boolean
-                size?: 'large' | 'medium' | 'small'
-                onClick?(): void
-              }
-            `,
-            output: dedent`
-              interface ButtonProps {
-                label: string
-                backgroundColor?: string
-                onClick?(): void
-                primary?: boolean
-                size?: 'large' | 'medium' | 'small'
-              }
-            `,
-            options: [
-              {
-                ...options,
-                optionalityOrder: OptionalityOrder['required-first'],
-              },
-            ],
-            errors: [
-              {
-                messageId: 'unexpectedInterfacePropertiesOrder',
-                data: {
-                  left: 'backgroundColor',
-                  right: 'label',
-                },
-              },
-              {
-                messageId: 'unexpectedInterfacePropertiesOrder',
-                data: {
-                  left: 'size',
-                  right: 'onClick?()',
-                },
-              },
-            ],
-          },
-        ],
-      })
-
-      ruleTester.run('allows to set groups for sorting', rule, {
-        valid: [],
-        invalid: [
-          {
-            code: dedent`
-              interface ButtonProps {
-                backgroundColor?: string
-                label: string
-                primary?: boolean
-                size?: 'large' | 'medium' | 'small'
-                onClick?(): void
-              }
-            `,
-            output: dedent`
-              interface ButtonProps {
-                label: string
-                backgroundColor?: string
-                primary?: boolean
-                size?: 'large' | 'medium' | 'small'
-                onClick?(): void
-              }
-            `,
-            options: [
-              {
-                ...options,
-                customGroups: {
-                  callback: 'on*',
-                },
-                groups: ['unknown', 'callback'],
-                optionalityOrder: OptionalityOrder['required-first'],
-              },
-            ],
-            errors: [
-              {
-                messageId: 'unexpectedInterfacePropertiesOrder',
-                data: {
-                  left: 'backgroundColor',
-                  right: 'label',
-                },
-              },
-            ],
-          },
-        ],
-      })
-
-      ruleTester.run('allows to use new line as partition', rule, {
-        valid: [],
-        invalid: [
-          {
-            code: dedent`
-              interface User {
-                email: string
-                firstName?: string
-                id: number
-                lastName?: string
-                password: string
-                username: string
-
-                biography?: string
-                avatarUrl?: string
-                createdAt: Date
-                updatedAt: Date
-              }
-            `,
-            output: dedent`
-              interface User {
-                email: string
-                id: number
-                password: string
-                username: string
-                firstName?: string
-                lastName?: string
-
-                createdAt: Date
-                updatedAt: Date
-                avatarUrl?: string
-                biography?: string
-              }
-            `,
-            options: [
-              {
-                ...options,
-                optionalityOrder: OptionalityOrder['required-first'],
-                partitionByNewLine: true,
-              },
-            ],
-            errors: [
-              {
-                messageId: 'unexpectedInterfacePropertiesOrder',
-                data: {
-                  left: 'firstName',
-                  right: 'id',
-                },
-              },
-              {
-                messageId: 'unexpectedInterfacePropertiesOrder',
-                data: {
-                  left: 'lastName',
-                  right: 'password',
-                },
-              },
-              {
-                messageId: 'unexpectedInterfacePropertiesOrder',
-                data: {
-                  left: 'biography',
-                  right: 'avatarUrl',
-                },
-              },
-              {
-                messageId: 'unexpectedInterfacePropertiesOrder',
-                data: {
-                  left: 'avatarUrl',
-                  right: 'createdAt',
-                },
-              },
-            ],
-          },
-        ],
-      })
-    })
+      },
+    )
   })
 
   describe(`${RULE_NAME}: sorting by natural order`, () => {
@@ -1045,10 +783,10 @@ describe(RULE_NAME, () => {
       valid: [
         {
           code: dedent`
-            interface DossierByTwilight {
-              age: string
-              country: 'Westalis' | 'Ostania'
-              name: string
+            interface Interface {
+              a: string
+              b: 'b1' | 'b2',
+              c: string
             }
           `,
           options: [options],
@@ -1057,17 +795,17 @@ describe(RULE_NAME, () => {
       invalid: [
         {
           code: dedent`
-            interface DossierByTwilight {
-              name: string
-              age: string
-              country: 'Westalis' | 'Ostania'
+            interface Interface {
+              a: string
+              c: string
+              b: 'b1' | 'b2',
             }
           `,
           output: dedent`
-            interface DossierByTwilight {
-              age: string
-              country: 'Westalis' | 'Ostania'
-              name: string
+            interface Interface {
+              a: string
+              b: 'b1' | 'b2',
+              c: string
             }
           `,
           options: [options],
@@ -1075,8 +813,8 @@ describe(RULE_NAME, () => {
             {
               messageId: 'unexpectedInterfacePropertiesOrder',
               data: {
-                left: 'name',
-                right: 'age',
+                left: 'c',
+                right: 'b',
               },
             },
           ],
@@ -1091,9 +829,9 @@ describe(RULE_NAME, () => {
         valid: [
           {
             code: dedent`
-              interface JujutsuHigh {
-                [key in Sorcerer]: string
-                yuuji: 'Yuuji Itadori'
+              interface Interface {
+                [key in Object]: string
+                a: 'a'
               }
             `,
             options: [options],
@@ -1102,15 +840,15 @@ describe(RULE_NAME, () => {
         invalid: [
           {
             code: dedent`
-              interface JujutsuHigh {
-                yuuji: 'Yuuji Itadori'
-                [key in Sorcerer]: string
+              interface Interface {
+                a: 'a'
+                [key in Object]: string
               }
             `,
             output: dedent`
-              interface JujutsuHigh {
-                [key in Sorcerer]: string
-                yuuji: 'Yuuji Itadori'
+              interface Interface {
+                [key in Object]: string
+                a: 'a'
               }
             `,
             options: [options],
@@ -1118,8 +856,8 @@ describe(RULE_NAME, () => {
               {
                 messageId: 'unexpectedInterfacePropertiesOrder',
                 data: {
-                  left: 'yuuji',
-                  right: '[key in Sorcerer]',
+                  left: 'a',
+                  right: '[key in Object]',
                 },
               },
             ],
@@ -1135,11 +873,11 @@ describe(RULE_NAME, () => {
         valid: [
           {
             code: dedent`
-              interface CowboyBebop {
-                ein: Dog
-                'faye-valentine': Hunter
-                jet: Hunter
-                'spike-spiegel': Hunter
+              interface Interface {
+                a: Value
+                'b-b': string
+                c: string
+                'd-d': string
               }
             `,
             options: [options],
@@ -1148,19 +886,19 @@ describe(RULE_NAME, () => {
         invalid: [
           {
             code: dedent`
-              interface CowboyBebop {
-                'spike-spiegel': Hunter
-                ein: Dog
-                jet: Hunter
-                'faye-valentine': Hunter
+              interface Interface {
+                'b-b': string
+                a: Value
+                'd-d': string
+                c: string
               }
             `,
             output: dedent`
-              interface CowboyBebop {
-                ein: Dog
-                'faye-valentine': Hunter
-                jet: Hunter
-                'spike-spiegel': Hunter
+              interface Interface {
+                a: Value
+                'b-b': string
+                c: string
+                'd-d': string
               }
             `,
             options: [options],
@@ -1168,15 +906,15 @@ describe(RULE_NAME, () => {
               {
                 messageId: 'unexpectedInterfacePropertiesOrder',
                 data: {
-                  left: 'spike-spiegel',
-                  right: 'ein',
+                  left: 'b-b',
+                  right: 'a',
                 },
               },
               {
                 messageId: 'unexpectedInterfacePropertiesOrder',
                 data: {
-                  left: 'jet',
-                  right: 'faye-valentine',
+                  left: 'd-d',
+                  right: 'c',
                 },
               },
             ],
@@ -1192,10 +930,10 @@ describe(RULE_NAME, () => {
         valid: [
           {
             code: dedent`
-              interface Evangelion {
+              interface Interface {
                 [key: string]: string
-                'evangelion-owner': string
-                name: string
+                a: string
+                b: string
               }
             `,
             options: [options],
@@ -1204,17 +942,17 @@ describe(RULE_NAME, () => {
         invalid: [
           {
             code: dedent`
-              interface Evangelion {
-                'evangelion-owner': string
+              interface Interface {
+                a: string
                 [key: string]: string
-                name: string
+                b: string
               }
             `,
             output: dedent`
-              interface Evangelion {
+              interface Interface {
                 [key: string]: string
-                'evangelion-owner': string
-                name: string
+                a: string
+                b: string
               }
             `,
             options: [options],
@@ -1222,7 +960,7 @@ describe(RULE_NAME, () => {
               {
                 messageId: 'unexpectedInterfacePropertiesOrder',
                 data: {
-                  left: 'evangelion-owner',
+                  left: 'a',
                   right: '[key: string]',
                 },
               },
@@ -1239,12 +977,12 @@ describe(RULE_NAME, () => {
         valid: [
           {
             code: dedent`
-              interface Zenitsu {
-                age: number
-                airSpin: () => void
-                godspeed(): number
-                name: string
-                sixfold()
+              interface Interface {
+                a: number
+                b: () => void
+                c(): number
+                d: string
+                e()
               }
             `,
             options: [options],
@@ -1253,21 +991,21 @@ describe(RULE_NAME, () => {
         invalid: [
           {
             code: dedent`
-              interface Zenitsu {
-                age: number
-                godspeed(): number
-                airSpin: () => void
-                sixfold()
-                name: string
+              interface Interface {
+                c(): number
+                a: number
+                b: () => void
+                e()
+                d: string
               }
             `,
             output: dedent`
-              interface Zenitsu {
-                age: number
-                airSpin: () => void
-                godspeed(): number
-                name: string
-                sixfold()
+              interface Interface {
+                a: number
+                b: () => void
+                c(): number
+                d: string
+                e()
               }
             `,
             options: [options],
@@ -1275,15 +1013,15 @@ describe(RULE_NAME, () => {
               {
                 messageId: 'unexpectedInterfacePropertiesOrder',
                 data: {
-                  left: 'godspeed()',
-                  right: 'airSpin',
+                  left: 'c()',
+                  right: 'a',
                 },
               },
               {
                 messageId: 'unexpectedInterfacePropertiesOrder',
                 data: {
-                  left: 'sixfold()',
-                  right: 'name',
+                  left: 'e()',
+                  right: 'd',
                 },
               },
             ],
@@ -1299,12 +1037,12 @@ describe(RULE_NAME, () => {
         valid: [
           {
             code: dedent`
-              interface SatoruFujinuma {
-                [...memories]
-                [days in daysDiff]
-                [value in stories]?
-                age: 10 | 29
-                job: 'Mangaka'
+              interface Interface {
+                [...other]
+                [d in D]
+                [v in V]?
+                a: 10 | 20 | 30
+                b: string
               }
             `,
             options: [options],
@@ -1313,21 +1051,21 @@ describe(RULE_NAME, () => {
         invalid: [
           {
             code: dedent`
-              interface SatoruFujinuma {
-                [days in daysDiff]
-                age: 10 | 29
-                [...memories]
-                job: 'Mangaka'
-                [value in stories]?
+              interface Interface {
+                [d in D]
+                a: 10 | 20 | 30
+                [...other]
+                b: string
+                [v in V]?
               }
             `,
             output: dedent`
-              interface SatoruFujinuma {
-                [...memories]
-                [days in daysDiff]
-                [value in stories]?
-                age: 10 | 29
-                job: 'Mangaka'
+              interface Interface {
+                [...other]
+                [d in D]
+                [v in V]?
+                a: 10 | 20 | 30
+                b: string
               }
             `,
             options: [options],
@@ -1335,15 +1073,15 @@ describe(RULE_NAME, () => {
               {
                 messageId: 'unexpectedInterfacePropertiesOrder',
                 data: {
-                  left: 'age',
-                  right: '[...memories]',
+                  left: 'a',
+                  right: '[...other]',
                 },
               },
               {
                 messageId: 'unexpectedInterfacePropertiesOrder',
                 data: {
-                  left: 'job',
-                  right: '[value in stories]',
+                  left: 'b',
+                  right: '[v in V]',
                 },
               },
             ],
@@ -1360,39 +1098,35 @@ describe(RULE_NAME, () => {
         invalid: [
           {
             code: dedent`
-              interface SpiritsAndSuchConsultation {
+              interface Interface {
                 /**
-                 * Ekubo is a self-proclaimed upper-class evil spirit who has aligned himself with Mob after being defeated by him.
-                 *
-                 * Ekubo wants to be a god. Specifically, he wants to be worshipped by all humanity.
+                 * Comment B
                  */
-                spirit: 'Ekubo'
+                b: Array
                 /**
-                 * Mob's mentor and boss in the Mob Psycho 100 series. He owns a business exorcising ghosts and is a self-proclaimed psychic.
+                 * Comment A
                  */
-                owner: 'Arataka Reigen'
-                // He is an extremely powerful Esper who was formerly a part of the Super 5 of Claw. He now works at the agency alongside Reigen and Mob.
-                esper: 'Katsuya Serizawa'
-                /* He is the assistant and disciple of Arataka Reigen. He is also the newest member of the Body Improvement Club. */
-                assistant: 'Shigeo Kageyama'
+                a: string
+                // Comment D
+                d: string
+                /* Comment C */
+                c: string | number
               }
             `,
             output: dedent`
-              interface SpiritsAndSuchConsultation {
-                /* He is the assistant and disciple of Arataka Reigen. He is also the newest member of the Body Improvement Club. */
-                assistant: 'Shigeo Kageyama'
-                // He is an extremely powerful Esper who was formerly a part of the Super 5 of Claw. He now works at the agency alongside Reigen and Mob.
-                esper: 'Katsuya Serizawa'
+              interface Interface {
                 /**
-                 * Mob's mentor and boss in the Mob Psycho 100 series. He owns a business exorcising ghosts and is a self-proclaimed psychic.
+                 * Comment A
                  */
-                owner: 'Arataka Reigen'
+                a: string
                 /**
-                 * Ekubo is a self-proclaimed upper-class evil spirit who has aligned himself with Mob after being defeated by him.
-                 *
-                 * Ekubo wants to be a god. Specifically, he wants to be worshipped by all humanity.
+                 * Comment B
                  */
-                spirit: 'Ekubo'
+                b: Array
+                /* Comment C */
+                c: string | number
+                // Comment D
+                d: string
               }
             `,
             options: [options],
@@ -1400,22 +1134,15 @@ describe(RULE_NAME, () => {
               {
                 messageId: 'unexpectedInterfacePropertiesOrder',
                 data: {
-                  left: 'spirit',
-                  right: 'owner',
+                  left: 'b',
+                  right: 'a',
                 },
               },
               {
                 messageId: 'unexpectedInterfacePropertiesOrder',
                 data: {
-                  left: 'owner',
-                  right: 'esper',
-                },
-              },
-              {
-                messageId: 'unexpectedInterfacePropertiesOrder',
-                data: {
-                  left: 'esper',
-                  right: 'assistant',
+                  left: 'd',
+                  right: 'c',
                 },
               },
             ],
@@ -1432,15 +1159,15 @@ describe(RULE_NAME, () => {
         invalid: [
           {
             code: dedent`
-              interface NHK {
-                rescuer: 'Misaki Nakahara' // Misaki is a mysterious girl who decides to help Tatsuhiro Satou escape his hikikomori lifestyle
-                hikikomori: 'Tatsuhiro Satou' // Satou Tatsuhiro is a 22 year old, socially withdrawn, parasitic hikikomori
+              interface Interface {
+                b: string // Comment B
+                a: string | number // Comment A
               }
             `,
             output: dedent`
-              interface NHK {
-                hikikomori: 'Tatsuhiro Satou' // Satou Tatsuhiro is a 22 year old, socially withdrawn, parasitic hikikomori
-                rescuer: 'Misaki Nakahara' // Misaki is a mysterious girl who decides to help Tatsuhiro Satou escape his hikikomori lifestyle
+              interface Interface {
+                a: string | number // Comment A
+                b: string // Comment B
               }
             `,
             options: [options],
@@ -1448,8 +1175,8 @@ describe(RULE_NAME, () => {
               {
                 messageId: 'unexpectedInterfacePropertiesOrder',
                 data: {
-                  left: 'rescuer',
-                  right: 'hikikomori',
+                  left: 'b',
+                  right: 'a',
                 },
               },
             ],
@@ -1466,15 +1193,15 @@ describe(RULE_NAME, () => {
         invalid: [
           {
             code: dedent`
-              interface Researcher {
-                rescuer: 'Tokita Kōsaku'; // Character
-                occupation: string; // Professional direction
+              interface Interface {
+                b: 'b'; // Comment B
+                a: 'aaa'; // Comment A
               }
             `,
             output: dedent`
-              interface Researcher {
-                occupation: string; // Professional direction
-                rescuer: 'Tokita Kōsaku'; // Character
+              interface Interface {
+                a: 'aaa'; // Comment A
+                b: 'b'; // Comment B
               }
             `,
             options: [options],
@@ -1482,8 +1209,8 @@ describe(RULE_NAME, () => {
               {
                 messageId: 'unexpectedInterfacePropertiesOrder',
                 data: {
-                  left: 'rescuer',
-                  right: 'occupation',
+                  left: 'b',
+                  right: 'a',
                 },
               },
             ],
@@ -1499,13 +1226,13 @@ describe(RULE_NAME, () => {
         valid: [
           {
             code: dedent`
-              interface Abilities {
+              interface Interface {
                 <Parameters extends Record<string, number | string>>(
-                  input: AbilityFunction<[Parameters], string>
+                  input: AFunction<[Parameters], string>
                 ): Alternatives<Parameters>
-                <Ability extends CountAbility>(input: Input): AbilityFunction<
+                <A extends CountA>(input: Input): AFunction<
                   [number],
-                  Ability[keyof Ability]
+                  A[keyof A]
                 >
               }
             `,
@@ -1517,107 +1244,22 @@ describe(RULE_NAME, () => {
     )
 
     ruleTester.run(
-      `${RULE_NAME}(${type}): allows to set groups for sorting`,
-      rule,
-      {
-        valid: [
-          {
-            code: dedent`
-              interface DemonSlayer {
-                id: string
-                style: {
-                  'combat-style': string
-                  rank: number
-                }
-                age: number
-                gender: 'male' | 'female'
-                onAttack: (enemyId: string) => void
-              }
-            `,
-            options: [
-              {
-                ...options,
-                groups: ['id', 'multiline', 'unknown'],
-                customGroups: {
-                  id: 'id',
-                },
-              },
-            ],
-          },
-        ],
-        invalid: [
-          {
-            code: dedent`
-              interface DemonSlayer {
-                age: number
-                onAttack: (enemyId: string) => void
-                style: {
-                  'combat-style': string
-                  rank: number
-                }
-                id: string
-                gender: 'male' | 'female'
-              }
-            `,
-            output: dedent`
-              interface DemonSlayer {
-                id: string
-                style: {
-                  'combat-style': string
-                  rank: number
-                }
-                age: number
-                gender: 'male' | 'female'
-                onAttack: (enemyId: string) => void
-              }
-            `,
-            options: [
-              {
-                ...options,
-                groups: ['id', 'multiline', 'unknown'],
-                customGroups: {
-                  id: 'id',
-                },
-              },
-            ],
-            errors: [
-              {
-                messageId: 'unexpectedInterfacePropertiesOrder',
-                data: {
-                  left: 'onAttack',
-                  right: 'style',
-                },
-              },
-              {
-                messageId: 'unexpectedInterfacePropertiesOrder',
-                data: {
-                  left: 'style',
-                  right: 'id',
-                },
-              },
-            ],
-          },
-        ],
-      },
-    )
-
-    ruleTester.run(
       `${RULE_NAME}(${type}): allows to use new line as partition`,
       rule,
       {
         valid: [
           {
             code: dedent`
-              interface PhantomhiveHouseResiden {
-                firstName: string
-                id: string
-                lastName: string
+              interface Interface {
+                e: 'eee'
+                f: 'ff'
+                g: 'g'
 
-                type: 'Human' | 'Demon'
+                a: 'aaa'
 
-                age?: number
-                bloodType: 'Polaris' | 'Vega' | 'Canopus' | 'Sirius'
-                height: number
+                b?: 'bbb'
+                c: 'cc'
+                d: 'd'
               }
             `,
             options: [
@@ -1631,29 +1273,29 @@ describe(RULE_NAME, () => {
         invalid: [
           {
             code: dedent`
-              interface PhantomhiveHouseResiden {
-                id: string
-                firstName: string
-                lastName: string
+              interface Interface {
+                f: 'ff'
+                e: 'eee'
+                g: 'g'
 
-                type: 'Human' | 'Demon'
+                a: 'aaa'
 
-                age?: number
-                height: number
-                bloodType: 'Polaris' | 'Vega' | 'Canopus' | 'Sirius'
+                b?: 'bbb'
+                d: 'd'
+                c: 'cc'
               }
             `,
             output: dedent`
-              interface PhantomhiveHouseResiden {
-                firstName: string
-                id: string
-                lastName: string
+              interface Interface {
+                e: 'eee'
+                f: 'ff'
+                g: 'g'
 
-                type: 'Human' | 'Demon'
+                a: 'aaa'
 
-                age?: number
-                bloodType: 'Polaris' | 'Vega' | 'Canopus' | 'Sirius'
-                height: number
+                b?: 'bbb'
+                c: 'cc'
+                d: 'd'
               }
             `,
             options: [
@@ -1666,15 +1308,15 @@ describe(RULE_NAME, () => {
               {
                 messageId: 'unexpectedInterfacePropertiesOrder',
                 data: {
-                  left: 'id',
-                  right: 'firstName',
+                  left: 'f',
+                  right: 'e',
                 },
               },
               {
                 messageId: 'unexpectedInterfacePropertiesOrder',
                 data: {
-                  left: 'height',
-                  right: 'bloodType',
+                  left: 'd',
+                  right: 'c',
                 },
               },
             ],
@@ -1683,367 +1325,60 @@ describe(RULE_NAME, () => {
       },
     )
 
-    describe(`${RULE_NAME}(${type}): sorting optional members first`, () => {
-      ruleTester.run('sorts interface properties', rule, {
-        valid: [
-          {
-            code: dedent`
-              interface X {
+    ruleTester.run(`${RULE_NAME}(${type}): sorts interface properties`, rule, {
+      valid: [
+        {
+          code: dedent`
+              interface Interface {
                 a?: string
                 [index: number]: string
               }
             `,
-            options: [
-              {
-                ...options,
-                optionalityOrder: OptionalityOrder['optional-first'],
-              },
-            ],
-          },
-        ],
-        invalid: [
-          {
-            code: dedent`
-              interface ButtonProps {
-                backgroundColor?: string
-                label: string
-                primary?: boolean
-                size?: 'large' | 'medium' | 'small'
-                onClick?(): void
-              }
-            `,
-            output: dedent`
-              interface ButtonProps {
-                backgroundColor?: string
-                onClick?(): void
-                primary?: boolean
-                size?: 'large' | 'medium' | 'small'
-                label: string
-              }
-            `,
-            options: [
-              {
-                ...options,
-                optionalityOrder: OptionalityOrder['optional-first'],
-              },
-            ],
-            errors: [
-              {
-                messageId: 'unexpectedInterfacePropertiesOrder',
-                data: {
-                  left: 'label',
-                  right: 'primary',
-                },
-              },
-              {
-                messageId: 'unexpectedInterfacePropertiesOrder',
-                data: {
-                  left: 'size',
-                  right: 'onClick?()',
-                },
-              },
-            ],
-          },
-        ],
-      })
-
-      ruleTester.run('allows to set groups for sorting', rule, {
-        valid: [],
-        invalid: [
-          {
-            code: dedent`
-              interface ButtonProps {
-                backgroundColor?: string
-                label: string
-                primary?: boolean
-                size?: 'large' | 'medium' | 'small'
-                onClick?(): void
-              }
-            `,
-            output: dedent`
-              interface ButtonProps {
-                backgroundColor?: string
-                primary?: boolean
-                size?: 'large' | 'medium' | 'small'
-                onClick?(): void
-                label: string
-              }
-            `,
-            options: [
-              {
-                ...options,
-                customGroups: {
-                  callback: 'on*',
-                },
-                groups: ['unknown', 'callback'],
-                optionalityOrder: OptionalityOrder['optional-first'],
-              },
-            ],
-            errors: [
-              {
-                messageId: 'unexpectedInterfacePropertiesOrder',
-                data: {
-                  left: 'label',
-                  right: 'primary',
-                },
-              },
-            ],
-          },
-        ],
-      })
-
-      ruleTester.run('allows to use new line as partition', rule, {
-        valid: [],
-        invalid: [
-          {
-            code: dedent`
-              interface User {
-                email: string
-                firstName?: string
-                id: number
-                lastName?: string
-                password: string
-                username: string
-
-                biography?: string
-                avatarUrl?: string
-                createdAt: Date
-                updatedAt: Date
-              }
-            `,
-            output: dedent`
-              interface User {
-                firstName?: string
-                lastName?: string
-                email: string
-                id: number
-                password: string
-                username: string
-
-                avatarUrl?: string
-                biography?: string
-                createdAt: Date
-                updatedAt: Date
-              }
-            `,
-            options: [
-              {
-                ...options,
-                optionalityOrder: OptionalityOrder['optional-first'],
-                partitionByNewLine: true,
-              },
-            ],
-            errors: [
-              {
-                messageId: 'unexpectedInterfacePropertiesOrder',
-                data: {
-                  left: 'email',
-                  right: 'firstName',
-                },
-              },
-              {
-                messageId: 'unexpectedInterfacePropertiesOrder',
-                data: {
-                  left: 'id',
-                  right: 'lastName',
-                },
-              },
-              {
-                messageId: 'unexpectedInterfacePropertiesOrder',
-                data: {
-                  left: 'biography',
-                  right: 'avatarUrl',
-                },
-              },
-            ],
-          },
-        ],
-      })
-    })
-
-    describe(`${RULE_NAME}(${type}): sorting required members first`, () => {
-      ruleTester.run('sorts interface properties', rule, {
-        valid: [
-          {
-            code: dedent`
-              interface X {
-                [index: number]: string
+          options: [
+            {
+              ...options,
+              optionalityOrder: OptionalityOrder['optional-first'],
+            },
+          ],
+        },
+      ],
+      invalid: [
+        {
+          code: dedent`
+              interface Interface {
                 a?: string
+                b: string
+                c?: string
+                d?: string
+                e?(): void
               }
             `,
-            options: [
-              {
-                ...options,
-                optionalityOrder: OptionalityOrder['required-first'],
-              },
-            ],
-          },
-        ],
-        invalid: [
-          {
-            code: dedent`
-              interface ButtonProps {
-                backgroundColor?: string
-                label: string
-                primary?: boolean
-                size?: 'large' | 'medium' | 'small'
-                onClick?(): void
+          output: dedent`
+              interface Interface {
+                a?: string
+                c?: string
+                d?: string
+                e?(): void
+                b: string
               }
             `,
-            output: dedent`
-              interface ButtonProps {
-                label: string
-                backgroundColor?: string
-                onClick?(): void
-                primary?: boolean
-                size?: 'large' | 'medium' | 'small'
-              }
-            `,
-            options: [
-              {
-                ...options,
-                optionalityOrder: OptionalityOrder['required-first'],
+          options: [
+            {
+              ...options,
+              optionalityOrder: OptionalityOrder['optional-first'],
+            },
+          ],
+          errors: [
+            {
+              messageId: 'unexpectedInterfacePropertiesOrder',
+              data: {
+                left: 'b',
+                right: 'c',
               },
-            ],
-            errors: [
-              {
-                messageId: 'unexpectedInterfacePropertiesOrder',
-                data: {
-                  left: 'backgroundColor',
-                  right: 'label',
-                },
-              },
-              {
-                messageId: 'unexpectedInterfacePropertiesOrder',
-                data: {
-                  left: 'size',
-                  right: 'onClick?()',
-                },
-              },
-            ],
-          },
-        ],
-      })
-
-      ruleTester.run('allows to set groups for sorting', rule, {
-        valid: [],
-        invalid: [
-          {
-            code: dedent`
-              interface ButtonProps {
-                backgroundColor?: string
-                label: string
-                primary?: boolean
-                size?: 'large' | 'medium' | 'small'
-                onClick?(): void
-              }
-            `,
-            output: dedent`
-              interface ButtonProps {
-                label: string
-                backgroundColor?: string
-                primary?: boolean
-                size?: 'large' | 'medium' | 'small'
-                onClick?(): void
-              }
-            `,
-            options: [
-              {
-                ...options,
-                customGroups: {
-                  callback: 'on*',
-                },
-                groups: ['unknown', 'callback'],
-                optionalityOrder: OptionalityOrder['required-first'],
-              },
-            ],
-            errors: [
-              {
-                messageId: 'unexpectedInterfacePropertiesOrder',
-                data: {
-                  left: 'backgroundColor',
-                  right: 'label',
-                },
-              },
-            ],
-          },
-        ],
-      })
-
-      ruleTester.run('allows to use new line as partition', rule, {
-        valid: [],
-        invalid: [
-          {
-            code: dedent`
-              interface User {
-                email: string
-                firstName?: string
-                id: number
-                lastName?: string
-                password: string
-                username: string
-
-                biography?: string
-                avatarUrl?: string
-                createdAt: Date
-                updatedAt: Date
-              }
-            `,
-            output: dedent`
-              interface User {
-                email: string
-                id: number
-                password: string
-                username: string
-                firstName?: string
-                lastName?: string
-
-                createdAt: Date
-                updatedAt: Date
-                avatarUrl?: string
-                biography?: string
-              }
-            `,
-            options: [
-              {
-                ...options,
-                optionalityOrder: OptionalityOrder['required-first'],
-                partitionByNewLine: true,
-              },
-            ],
-            errors: [
-              {
-                messageId: 'unexpectedInterfacePropertiesOrder',
-                data: {
-                  left: 'firstName',
-                  right: 'id',
-                },
-              },
-              {
-                messageId: 'unexpectedInterfacePropertiesOrder',
-                data: {
-                  left: 'lastName',
-                  right: 'password',
-                },
-              },
-              {
-                messageId: 'unexpectedInterfacePropertiesOrder',
-                data: {
-                  left: 'biography',
-                  right: 'avatarUrl',
-                },
-              },
-              {
-                messageId: 'unexpectedInterfacePropertiesOrder',
-                data: {
-                  left: 'avatarUrl',
-                  right: 'createdAt',
-                },
-              },
-            ],
-          },
-        ],
-      })
+            },
+          ],
+        },
+      ],
     })
   })
 
@@ -2059,10 +1394,10 @@ describe(RULE_NAME, () => {
       valid: [
         {
           code: dedent`
-            interface DossierByTwilight {
-              country: 'Westalis' | 'Ostania'
-              name: string
-              age: string
+            interface Interface {
+              b: 'b1' | 'b2',
+              a: string
+              c: string
             }
           `,
           options: [options],
@@ -2071,17 +1406,17 @@ describe(RULE_NAME, () => {
       invalid: [
         {
           code: dedent`
-            interface DossierByTwilight {
-              name: string
-              age: string
-              country: 'Westalis' | 'Ostania'
+            interface Interface {
+              a: string
+              c: string
+              b: 'b1' | 'b2',
             }
           `,
           output: dedent`
-            interface DossierByTwilight {
-              country: 'Westalis' | 'Ostania'
-              name: string
-              age: string
+            interface Interface {
+              b: 'b1' | 'b2',
+              a: string
+              c: string
             }
           `,
           options: [options],
@@ -2089,8 +1424,8 @@ describe(RULE_NAME, () => {
             {
               messageId: 'unexpectedInterfacePropertiesOrder',
               data: {
-                left: 'age',
-                right: 'country',
+                left: 'c',
+                right: 'b',
               },
             },
           ],
@@ -2105,18 +1440,18 @@ describe(RULE_NAME, () => {
         valid: [
           {
             code: dedent`
-              interface TotoroMessage {
-                color: 'purple' | 'blue' | 'green'
-                align: 'left' | 'center' | 'right'
+              interface Interface {
+                a: string
+                b: string
               }
             `,
             options: [options],
           },
           {
             code: dedent`
-              interface TotoroMessage {
-                align: 'left' | 'center' | 'right'
-                color: 'purple' | 'blue' | 'green'
+              interface Interface {
+                b: string
+                a: string
               }
             `,
             options: [options],
@@ -2125,15 +1460,15 @@ describe(RULE_NAME, () => {
         invalid: [
           {
             code: dedent`
-              interface TotoroMessage {
-                color: 'purple' | 'blue' | 'green'
-                align?: 'left' | 'center' | 'right'
+              interface Interface {
+                a: string
+                b?: string
               }
             `,
             output: dedent`
-              interface TotoroMessage {
-                align?: 'left' | 'center' | 'right'
-                color: 'purple' | 'blue' | 'green'
+              interface Interface {
+                b?: string
+                a: string
               }
             `,
             options: [options],
@@ -2141,8 +1476,8 @@ describe(RULE_NAME, () => {
               {
                 messageId: 'unexpectedInterfacePropertiesOrder',
                 data: {
-                  left: 'color',
-                  right: 'align',
+                  left: 'a',
+                  right: 'b',
                 },
               },
             ],
@@ -2158,9 +1493,9 @@ describe(RULE_NAME, () => {
         valid: [
           {
             code: dedent`
-              interface JujutsuHigh {
-                [key in Sorcerer]: string
-                yuuji: 'Yuuji Itadori'
+              interface Interface {
+                [key in Object]: string
+                a: 'a'
               }
             `,
             options: [options],
@@ -2169,15 +1504,15 @@ describe(RULE_NAME, () => {
         invalid: [
           {
             code: dedent`
-              interface JujutsuHigh {
-                yuuji: 'Yuuji Itadori'
-                [key in Sorcerer]: string
+              interface Interface {
+                a: 'a'
+                [key in Object]: string
               }
             `,
             output: dedent`
-              interface JujutsuHigh {
-                [key in Sorcerer]: string
-                yuuji: 'Yuuji Itadori'
+              interface Interface {
+                [key in Object]: string
+                a: 'a'
               }
             `,
             options: [options],
@@ -2185,8 +1520,8 @@ describe(RULE_NAME, () => {
               {
                 messageId: 'unexpectedInterfacePropertiesOrder',
                 data: {
-                  left: 'yuuji',
-                  right: '[key in Sorcerer]',
+                  left: 'a',
+                  right: '[key in Object]',
                 },
               },
             ],
@@ -2202,12 +1537,12 @@ describe(RULE_NAME, () => {
         valid: [
           {
             code: dedent`
-              interface Zenitsu {
-                airSpin: () => void
-                godspeed(): number
-                sixfold(): void
-                name: string
-                age: number
+              interface Interface {
+                b: () => void
+                c(): number
+                a: number
+                d: string
+                e()
               }
             `,
             options: [options],
@@ -2216,21 +1551,21 @@ describe(RULE_NAME, () => {
         invalid: [
           {
             code: dedent`
-              interface Zenitsu {
-                age: number
-                godspeed(): number
-                airSpin: () => void
-                sixfold(): void
-                name: string
+              interface Interface {
+                b: () => void
+                d: string
+                a: number
+                c(): number
+                e()
               }
             `,
             output: dedent`
-              interface Zenitsu {
-                airSpin: () => void
-                godspeed(): number
-                sixfold(): void
-                name: string
-                age: number
+              interface Interface {
+                b: () => void
+                c(): number
+                d: string
+                a: number
+                e()
               }
             `,
             options: [options],
@@ -2238,15 +1573,8 @@ describe(RULE_NAME, () => {
               {
                 messageId: 'unexpectedInterfacePropertiesOrder',
                 data: {
-                  left: 'age',
-                  right: 'godspeed()',
-                },
-              },
-              {
-                messageId: 'unexpectedInterfacePropertiesOrder',
-                data: {
-                  left: 'godspeed()',
-                  right: 'airSpin',
+                  left: 'a',
+                  right: 'c()',
                 },
               },
             ],
@@ -2262,12 +1590,12 @@ describe(RULE_NAME, () => {
         valid: [
           {
             code: dedent`
-              interface SatoruFujinuma {
-                [value in stories]?
-                [days in daysDiff]
-                job: 'Mangaka'
-                [...memories]
-                age: 10 | 29
+              interface Interface {
+                a: 10 | 20 | 30
+                [...other]
+                [v in V]?
+                b: string
+                [d in D]
               }
             `,
             options: [options],
@@ -2276,21 +1604,21 @@ describe(RULE_NAME, () => {
         invalid: [
           {
             code: dedent`
-              interface SatoruFujinuma {
-                [days in daysDiff]
-                [value in stories]?
-                [...memories]
-                job: 'Mangaka'
-                age: 10 | 29
+              interface Interface {
+                [d in D]
+                a: 10 | 20 | 30
+                [...other]
+                b: string
+                [v in V]?
               }
             `,
             output: dedent`
-              interface SatoruFujinuma {
-                [value in stories]?
-                [days in daysDiff]
-                job: 'Mangaka'
-                [...memories]
-                age: 10 | 29
+              interface Interface {
+                a: 10 | 20 | 30
+                [...other]
+                b: string
+                [v in V]?
+                [d in D]
               }
             `,
             options: [options],
@@ -2298,15 +1626,8 @@ describe(RULE_NAME, () => {
               {
                 messageId: 'unexpectedInterfacePropertiesOrder',
                 data: {
-                  left: '[days in daysDiff]',
-                  right: '[value in stories]',
-                },
-              },
-              {
-                messageId: 'unexpectedInterfacePropertiesOrder',
-                data: {
-                  left: '[...memories]',
-                  right: 'job',
+                  left: '[d in D]',
+                  right: 'a',
                 },
               },
             ],
@@ -2323,39 +1644,35 @@ describe(RULE_NAME, () => {
         invalid: [
           {
             code: dedent`
-              interface SpiritsAndSuchConsultation {
+              interface Interface {
                 /**
-                 * Ekubo is a self-proclaimed upper-class evil spirit who has aligned himself with Mob after being defeated by him.
-                 *
-                 * Ekubo wants to be a god. Specifically, he wants to be worshipped by all humanity.
+                 * Comment B
                  */
-                spirit: 'Ekubo'
+                b: Array
                 /**
-                 * Mob's mentor and boss in the Mob Psycho 100 series. He owns a business exorcising ghosts and is a self-proclaimed psychic.
+                 * Comment A
                  */
-                owner: 'Arataka Reigen'
-                // He is an extremely powerful Esper who was formerly a part of the Super 5 of Claw. He now works at the agency alongside Reigen and Mob.
-                esper: 'Katsuya Serizawa'
-                /* He is the assistant and disciple of Arataka Reigen. He is also the newest member of the Body Improvement Club. */
-                assistant: 'Shigeo Kageyama'
+                a: string
+                // Comment D
+                d: string
+                /* Comment C */
+                c: string | number
               }
             `,
             output: dedent`
-              interface SpiritsAndSuchConsultation {
-                /* He is the assistant and disciple of Arataka Reigen. He is also the newest member of the Body Improvement Club. */
-                assistant: 'Shigeo Kageyama'
-                // He is an extremely powerful Esper who was formerly a part of the Super 5 of Claw. He now works at the agency alongside Reigen and Mob.
-                esper: 'Katsuya Serizawa'
+              interface Interface {
+                /* Comment C */
+                c: string | number
                 /**
-                 * Mob's mentor and boss in the Mob Psycho 100 series. He owns a business exorcising ghosts and is a self-proclaimed psychic.
+                 * Comment A
                  */
-                owner: 'Arataka Reigen'
+                a: string
+                // Comment D
+                d: string
                 /**
-                 * Ekubo is a self-proclaimed upper-class evil spirit who has aligned himself with Mob after being defeated by him.
-                 *
-                 * Ekubo wants to be a god. Specifically, he wants to be worshipped by all humanity.
+                 * Comment B
                  */
-                spirit: 'Ekubo'
+                b: Array
               }
             `,
             options: [options],
@@ -2363,22 +1680,15 @@ describe(RULE_NAME, () => {
               {
                 messageId: 'unexpectedInterfacePropertiesOrder',
                 data: {
-                  left: 'spirit',
-                  right: 'owner',
+                  left: 'b',
+                  right: 'a',
                 },
               },
               {
                 messageId: 'unexpectedInterfacePropertiesOrder',
                 data: {
-                  left: 'owner',
-                  right: 'esper',
-                },
-              },
-              {
-                messageId: 'unexpectedInterfacePropertiesOrder',
-                data: {
-                  left: 'esper',
-                  right: 'assistant',
+                  left: 'd',
+                  right: 'c',
                 },
               },
             ],
@@ -2395,15 +1705,15 @@ describe(RULE_NAME, () => {
         invalid: [
           {
             code: dedent`
-              interface NHK {
-                rescuer: 'Misaki Nakahara' // Misaki is a mysterious girl who decides to help Tatsuhiro Satou escape his hikikomori lifestyle
-                hikikomori: 'Tatsuhiro Satou' // Satou Tatsuhiro is a 22 year old, socially withdrawn, parasitic hikikomori
+              interface Interface {
+                b: string // Comment B
+                a: string | number // Comment A
               }
             `,
             output: dedent`
-              interface NHK {
-                hikikomori: 'Tatsuhiro Satou' // Satou Tatsuhiro is a 22 year old, socially withdrawn, parasitic hikikomori
-                rescuer: 'Misaki Nakahara' // Misaki is a mysterious girl who decides to help Tatsuhiro Satou escape his hikikomori lifestyle
+              interface Interface {
+                a: string | number // Comment A
+                b: string // Comment B
               }
             `,
             options: [options],
@@ -2411,8 +1721,8 @@ describe(RULE_NAME, () => {
               {
                 messageId: 'unexpectedInterfacePropertiesOrder',
                 data: {
-                  left: 'rescuer',
-                  right: 'hikikomori',
+                  left: 'b',
+                  right: 'a',
                 },
               },
             ],
@@ -2429,15 +1739,15 @@ describe(RULE_NAME, () => {
         invalid: [
           {
             code: dedent`
-              interface Researcher {
-                occupation: string; // Professional direction
-                rescuer: 'Tokita Kōsaku'; // Character
+              interface Interface {
+                b: 'b'; // Comment B
+                a: 'aaa'; // Comment A
               }
             `,
             output: dedent`
-              interface Researcher {
-                rescuer: 'Tokita Kōsaku'; // Character
-                occupation: string; // Professional direction
+              interface Interface {
+                a: 'aaa'; // Comment A
+                b: 'b'; // Comment B
               }
             `,
             options: [options],
@@ -2445,8 +1755,8 @@ describe(RULE_NAME, () => {
               {
                 messageId: 'unexpectedInterfacePropertiesOrder',
                 data: {
-                  left: 'occupation',
-                  right: 'rescuer',
+                  left: 'b',
+                  right: 'a',
                 },
               },
             ],
@@ -2462,13 +1772,13 @@ describe(RULE_NAME, () => {
         valid: [
           {
             code: dedent`
-              interface Abilities {
+              interface Interface {
                 <Parameters extends Record<string, number | string>>(
-                  input: AbilityFunction<[Parameters], string>
+                  input: AFunction<[Parameters], string>
                 ): Alternatives<Parameters>
-                <Ability extends CountAbility>(input: Input): AbilityFunction<
+                <A extends CountA>(input: Input): AFunction<
                   [number],
-                  Ability[keyof Ability]
+                  A[keyof A]
                 >
               }
             `,
@@ -2486,23 +1796,23 @@ describe(RULE_NAME, () => {
         valid: [
           {
             code: dedent`
-              interface DemonSlayer {
-                id: string
-                style: {
-                  'combat-style': string
-                  rank: number
+              interface Interface {
+                g: 'g'
+                d: {
+                  e: 'e'
+                  f: 'f'
                 }
-                onAttack: (enemyId: string) => void
-                gender: 'male' | 'female'
-                age: number
+                a: 'aaa'
+                b: 'bb'
+                c: 'c'
               }
             `,
             options: [
               {
                 ...options,
-                groups: ['id', 'multiline', 'unknown'],
+                groups: ['g', 'multiline', 'unknown'],
                 customGroups: {
-                  id: 'id',
+                  g: 'g',
                 },
               },
             ],
@@ -2511,35 +1821,35 @@ describe(RULE_NAME, () => {
         invalid: [
           {
             code: dedent`
-              interface DemonSlayer {
-                age: number
-                onAttack: (enemyId: string) => void
-                style: {
-                  'combat-style': string
-                  rank: number
+              interface Interface {
+                a: 'aaa'
+                b: 'bb'
+                c: 'c'
+                d: {
+                  e: 'e'
+                  f: 'f'
                 }
-                id: string
-                gender: 'male' | 'female'
+                g: 'g'
               }
             `,
             output: dedent`
-              interface DemonSlayer {
-                id: string
-                style: {
-                  'combat-style': string
-                  rank: number
+              interface Interface {
+                g: 'g'
+                d: {
+                  e: 'e'
+                  f: 'f'
                 }
-                onAttack: (enemyId: string) => void
-                gender: 'male' | 'female'
-                age: number
+                a: 'aaa'
+                b: 'bb'
+                c: 'c'
               }
             `,
             options: [
               {
                 ...options,
-                groups: ['id', 'multiline', 'unknown'],
+                groups: ['g', 'multiline', 'unknown'],
                 customGroups: {
-                  id: 'id',
+                  g: 'g',
                 },
               },
             ],
@@ -2547,22 +1857,15 @@ describe(RULE_NAME, () => {
               {
                 messageId: 'unexpectedInterfacePropertiesOrder',
                 data: {
-                  left: 'age',
-                  right: 'onAttack',
+                  left: 'c',
+                  right: 'd',
                 },
               },
               {
                 messageId: 'unexpectedInterfacePropertiesOrder',
                 data: {
-                  left: 'onAttack',
-                  right: 'style',
-                },
-              },
-              {
-                messageId: 'unexpectedInterfacePropertiesOrder',
-                data: {
-                  left: 'style',
-                  right: 'id',
+                  left: 'd',
+                  right: 'g',
                 },
               },
             ],
@@ -2578,16 +1881,16 @@ describe(RULE_NAME, () => {
         valid: [
           {
             code: dedent`
-              interface PhantomhiveHouseResiden {
-                firstName: string
-                lastName: string
-                id: string
+              interface Interface {
+                e: 'eee'
+                f: 'ff'
+                g: 'g'
 
-                type: 'Human' | 'Demon'
+                a: 'aaa'
 
-                bloodType: 'Polaris' | 'Vega' | 'Canopus' | 'Sirius'
-                height: number
-                age?: number
+                b?: 'bbb'
+                c: 'cc'
+                d: 'd'
               }
             `,
             options: [
@@ -2601,29 +1904,29 @@ describe(RULE_NAME, () => {
         invalid: [
           {
             code: dedent`
-              interface PhantomhiveHouseResiden {
-                id: string
-                firstName: string
-                lastName: string
+              interface Interface {
+                f: 'ff'
+                e: 'eee'
+                g: 'g'
 
-                type: 'Human' | 'Demon'
+                a: 'aaa'
 
-                age?: number
-                height: number
-                bloodType: 'Polaris' | 'Vega' | 'Canopus' | 'Sirius'
+                b?: 'bbb'
+                d: 'd'
+                c: 'cc'
               }
             `,
             output: dedent`
-              interface PhantomhiveHouseResiden {
-                firstName: string
-                lastName: string
-                id: string
+              interface Interface {
+                e: 'eee'
+                f: 'ff'
+                g: 'g'
 
-                type: 'Human' | 'Demon'
+                a: 'aaa'
 
-                bloodType: 'Polaris' | 'Vega' | 'Canopus' | 'Sirius'
-                height: number
-                age?: number
+                b?: 'bbb'
+                c: 'cc'
+                d: 'd'
               }
             `,
             options: [
@@ -2636,22 +1939,15 @@ describe(RULE_NAME, () => {
               {
                 messageId: 'unexpectedInterfacePropertiesOrder',
                 data: {
-                  left: 'id',
-                  right: 'firstName',
+                  left: 'f',
+                  right: 'e',
                 },
               },
               {
                 messageId: 'unexpectedInterfacePropertiesOrder',
                 data: {
-                  left: 'age',
-                  right: 'height',
-                },
-              },
-              {
-                messageId: 'unexpectedInterfacePropertiesOrder',
-                data: {
-                  left: 'height',
-                  right: 'bloodType',
+                  left: 'd',
+                  right: 'c',
                 },
               },
             ],
@@ -2660,205 +1956,82 @@ describe(RULE_NAME, () => {
       },
     )
 
-    describe(`${RULE_NAME}(${type}): sorting optional members first`, () => {
-      ruleTester.run('sorts interface properties', rule, {
-        valid: [
-          {
-            code: dedent`
-              interface X {
+    ruleTester.run(`${RULE_NAME}(${type}): sorts interface properties`, rule, {
+      valid: [
+        {
+          code: dedent`
+              interface Interface {
                 a?: string
                 [index: number]: string
               }
             `,
-            options: [
-              {
-                ...options,
-                optionalityOrder: OptionalityOrder['optional-first'],
-              },
-            ],
-          },
-        ],
-        invalid: [
-          {
-            code: dedent`
-              interface ButtonProps {
-                backgroundColor?: string
-                label: string
-                primary?: boolean
-                size?: 'large' | 'medium' | 'small'
-                onClick?(): void
+          options: [
+            {
+              ...options,
+              optionalityOrder: OptionalityOrder['optional-first'],
+            },
+          ],
+        },
+      ],
+      invalid: [
+        {
+          code: dedent`
+              interface Interface {
+                a?: string
+                b: string
+                c?: string
+                d?: string
+                e?(): void
               }
             `,
-            output: dedent`
-              interface ButtonProps {
-                size?: 'large' | 'medium' | 'small'
-                backgroundColor?: string
-                primary?: boolean
-                onClick?(): void
-                label: string
+          output: dedent`
+              interface Interface {
+                a?: string
+                c?: string
+                d?: string
+                e?(): void
+                b: string
               }
             `,
-            options: [
-              {
-                ...options,
-                optionalityOrder: OptionalityOrder['optional-first'],
+          options: [
+            {
+              ...options,
+              optionalityOrder: OptionalityOrder['optional-first'],
+            },
+          ],
+          errors: [
+            {
+              messageId: 'unexpectedInterfacePropertiesOrder',
+              data: {
+                left: 'b',
+                right: 'c',
               },
-            ],
-            errors: [
-              {
-                messageId: 'unexpectedInterfacePropertiesOrder',
-                data: {
-                  left: 'label',
-                  right: 'primary',
-                },
-              },
-              {
-                messageId: 'unexpectedInterfacePropertiesOrder',
-                data: {
-                  left: 'primary',
-                  right: 'size',
-                },
-              },
-            ],
-          },
-        ],
-      })
-
-      ruleTester.run('allows to set groups for sorting', rule, {
-        valid: [],
-        invalid: [
-          {
-            code: dedent`
-              interface ButtonProps {
-                backgroundColor?: string
-                label: string
-                primary?: boolean
-                size?: 'large' | 'medium' | 'small'
-                onClick?(): void
-              }
-            `,
-            output: dedent`
-              interface ButtonProps {
-                size?: 'large' | 'medium' | 'small'
-                backgroundColor?: string
-                primary?: boolean
-                onClick?(): void
-                label: string
-              }
-            `,
-            options: [
-              {
-                ...options,
-                customGroups: {
-                  callback: 'on*',
-                },
-                groups: ['unknown', 'callback'],
-                optionalityOrder: OptionalityOrder['optional-first'],
-              },
-            ],
-            errors: [
-              {
-                messageId: 'unexpectedInterfacePropertiesOrder',
-                data: {
-                  left: 'label',
-                  right: 'primary',
-                },
-              },
-              {
-                messageId: 'unexpectedInterfacePropertiesOrder',
-                data: {
-                  left: 'primary',
-                  right: 'size',
-                },
-              },
-            ],
-          },
-        ],
-      })
-
-      ruleTester.run('allows to use new line as partition', rule, {
-        valid: [],
-        invalid: [
-          {
-            code: dedent`
-              interface User {
-                email: string
-                firstName?: string
-                id: number
-                lastName?: string
-                password: string
-                username: string
-
-                biography?: string
-                avatarUrl?: string
-                createdAt: Date
-                updatedAt: Date
-              }
-            `,
-            output: dedent`
-              interface User {
-                firstName?: string
-                lastName?: string
-                password: string
-                username: string
-                email: string
-                id: number
-
-                biography?: string
-                avatarUrl?: string
-                createdAt: Date
-                updatedAt: Date
-              }
-            `,
-            options: [
-              {
-                ...options,
-                optionalityOrder: OptionalityOrder['optional-first'],
-                partitionByNewLine: true,
-              },
-            ],
-            errors: [
-              {
-                messageId: 'unexpectedInterfacePropertiesOrder',
-                data: {
-                  left: 'email',
-                  right: 'firstName',
-                },
-              },
-              {
-                messageId: 'unexpectedInterfacePropertiesOrder',
-                data: {
-                  left: 'id',
-                  right: 'lastName',
-                },
-              },
-            ],
-          },
-        ],
-      })
+            },
+          ],
+        },
+      ],
     })
 
-    describe(`${RULE_NAME}(${type}): sorting required members first`, () => {
-      ruleTester.run('sorts interface properties', rule, {
-        valid: [
-          {
-            code: dedent`
+    ruleTester.run(`${RULE_NAME}(${type}): sorts interface properties`, rule, {
+      valid: [
+        {
+          code: dedent`
               interface X {
                 [index: number]: string
                 a?: string
               }
             `,
-            options: [
-              {
-                ...options,
-                optionalityOrder: OptionalityOrder['required-first'],
-              },
-            ],
-          },
-        ],
-        invalid: [
-          {
-            code: dedent`
+          options: [
+            {
+              ...options,
+              optionalityOrder: OptionalityOrder['required-first'],
+            },
+          ],
+        },
+      ],
+      invalid: [
+        {
+          code: dedent`
               interface ButtonProps {
                 backgroundColor?: string
                 label: string
@@ -2867,7 +2040,7 @@ describe(RULE_NAME, () => {
                 onClick?(): void
               }
             `,
-            output: dedent`
+          output: dedent`
               interface ButtonProps {
                 label: string
                 size?: 'large' | 'medium' | 'small'
@@ -2876,33 +2049,36 @@ describe(RULE_NAME, () => {
                 onClick?(): void
               }
             `,
-            options: [
-              {
-                ...options,
-                optionalityOrder: OptionalityOrder['required-first'],
+          options: [
+            {
+              ...options,
+              optionalityOrder: OptionalityOrder['required-first'],
+            },
+          ],
+          errors: [
+            {
+              messageId: 'unexpectedInterfacePropertiesOrder',
+              data: {
+                left: 'backgroundColor',
+                right: 'label',
               },
-            ],
-            errors: [
-              {
-                messageId: 'unexpectedInterfacePropertiesOrder',
-                data: {
-                  left: 'backgroundColor',
-                  right: 'label',
-                },
+            },
+            {
+              messageId: 'unexpectedInterfacePropertiesOrder',
+              data: {
+                left: 'primary',
+                right: 'size',
               },
-              {
-                messageId: 'unexpectedInterfacePropertiesOrder',
-                data: {
-                  left: 'primary',
-                  right: 'size',
-                },
-              },
-            ],
-          },
-        ],
-      })
+            },
+          ],
+        },
+      ],
+    })
 
-      ruleTester.run('allows to set groups for sorting', rule, {
+    ruleTester.run(
+      `${RULE_NAME}(${type}): allows to set groups for sorting`,
+      rule,
+      {
         valid: [],
         invalid: [
           {
@@ -2952,9 +2128,13 @@ describe(RULE_NAME, () => {
             ],
           },
         ],
-      })
+      },
+    )
 
-      ruleTester.run('allows to use new line as partition', rule, {
+    ruleTester.run(
+      `${RULE_NAME}(${type}): allows to use new line as partition`,
+      rule,
+      {
         valid: [],
         invalid: [
           {
@@ -3020,8 +2200,8 @@ describe(RULE_NAME, () => {
             ],
           },
         ],
-      })
-    })
+      },
+    )
   })
 
   describe(`${RULE_NAME}: misc`, () => {
@@ -3031,9 +2211,9 @@ describe(RULE_NAME, () => {
       {
         valid: [
           dedent`
-            interface DeathNoteValue {
-              causeOfDeath: string
-              name: string
+            interface Interface {
+              a: string
+              b: string
             }
           `,
           {
@@ -3051,23 +2231,23 @@ describe(RULE_NAME, () => {
         invalid: [
           {
             code: dedent`
-              interface DeathNoteValue {
-                name: string
-                causeOfDeath: string
+              interface Interface {
+                b: string
+                a: string
               }
             `,
             output: dedent`
-              interface DeathNoteValue {
-                causeOfDeath: string
-                name: string
+              interface Interface {
+                a: string
+                b: string
               }
             `,
             errors: [
               {
                 messageId: 'unexpectedInterfacePropertiesOrder',
                 data: {
-                  left: 'name',
-                  right: 'causeOfDeath',
+                  left: 'b',
+                  right: 'a',
                 },
               },
             ],
@@ -3080,29 +2260,14 @@ describe(RULE_NAME, () => {
       valid: [
         {
           code: dedent`
-            interface UiDiclonius {
-              name: 'Lucy' | 'Nyu'
-              type: 'diclonius'
+            interface IgnoreInterface {
+              b: 'b'
+              a: 'aaa'
             }
           `,
           options: [
             {
-              ignorePattern: ['Ui*'],
-              type: 'line-length',
-              order: 'desc',
-            },
-          ],
-        },
-        {
-          code: dedent`
-            interface UiDiclonius {
-              type: 'diclonius'
-              name: 'Lucy' | 'Nyu'
-            }
-          `,
-          options: [
-            {
-              ignorePattern: ['Ui*'],
+              ignorePattern: ['Ignore*'],
               type: 'line-length',
               order: 'desc',
             },

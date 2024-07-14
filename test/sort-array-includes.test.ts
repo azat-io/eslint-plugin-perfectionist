@@ -33,13 +33,13 @@ describe(RULE_NAME, () => {
           {
             code: dedent`
               [
-                ...otherTitans,
-                'Armored Titan',
-                'Attack Titan',
-                'Beast Titan',
-                'Cart Titan',
-                'War Hammer Titan',
-              ].includes(titan)
+                ...other,
+                'a',
+                'b',
+                'c',
+                'd',
+                'e',
+              ].includes(value)
             `,
             options: [options],
           },
@@ -48,31 +48,31 @@ describe(RULE_NAME, () => {
           {
             code: dedent`
               [
-                'Armored Titan',
-                'Attack Titan',
-                'Cart Titan',
-                ...otherTitans,
-                'Beast Titan',
-                'War Hammer Titan',
-              ].includes(titan)
+                'a',
+                'b',
+                'c',
+                ...other,
+                'd',
+                'e',
+              ].includes(value)
             `,
             output: dedent`
               [
-                ...otherTitans,
-                'Armored Titan',
-                'Attack Titan',
-                'Beast Titan',
-                'Cart Titan',
-                'War Hammer Titan',
-              ].includes(titan)
+                ...other,
+                'a',
+                'b',
+                'c',
+                'd',
+                'e',
+              ].includes(value)
             `,
             options: [options],
             errors: [
               {
                 messageId: 'unexpectedArrayIncludesOrder',
                 data: {
-                  left: 'Cart Titan',
-                  right: '...otherTitans',
+                  left: 'c',
+                  right: '...other',
                 },
               },
             ],
@@ -86,10 +86,10 @@ describe(RULE_NAME, () => {
         {
           code: dedent`
             [
-              ...demons,
-              ...lowerRanks,
-              ...upperRanks,
-            ].includes('Nezuko Kamado')
+              ...aaa,
+              ...bbbb,
+              ...ccc,
+            ].includes(value)
           `,
           options: [options],
         },
@@ -98,25 +98,25 @@ describe(RULE_NAME, () => {
         {
           code: dedent`
             [
-              ...demons,
-              ...upperRanks,
-              ...lowerRanks,
-            ].includes('Nezuko Kamado')
+              ...aaa,
+              ...ccc,
+              ...bbbb,
+            ].includes(value)
           `,
           output: dedent`
             [
-              ...demons,
-              ...lowerRanks,
-              ...upperRanks,
-            ].includes('Nezuko Kamado')
+              ...aaa,
+              ...bbbb,
+              ...ccc,
+            ].includes(value)
           `,
           options: [options],
           errors: [
             {
               messageId: 'unexpectedArrayIncludesOrder',
               data: {
-                left: '...upperRanks',
-                right: '...lowerRanks',
+                left: '...ccc',
+                right: '...bbbb',
               },
             },
           ],
@@ -131,7 +131,7 @@ describe(RULE_NAME, () => {
         valid: [
           {
             code: dedent`
-              ['Bang', 'Genos', 'King',, 'Saitama'].includes(hero)
+              ['a', 'b', 'c',, 'd'].includes(value)
             `,
             options: [options],
           },
@@ -139,18 +139,18 @@ describe(RULE_NAME, () => {
         invalid: [
           {
             code: dedent`
-              ['Genos', 'Bang', 'King',, 'Saitama'].includes(hero)
+              ['b', 'a', 'c',, 'd'].includes(value)
             `,
             output: dedent`
-              ['Bang', 'Genos', 'King',, 'Saitama'].includes(hero)
+              ['a', 'b', 'c',, 'd'].includes(value)
             `,
             options: [options],
             errors: [
               {
                 messageId: 'unexpectedArrayIncludesOrder',
                 data: {
-                  left: 'Genos',
-                  right: 'Bang',
+                  left: 'b',
+                  right: 'a',
                 },
               },
             ],
@@ -166,7 +166,7 @@ describe(RULE_NAME, () => {
         valid: [
           {
             code: dedent`
-              ['Emma', 'Norman', 'Ray', ...graceFieldOrphans].includes(child)
+              ['a', 'b', 'c', ...other].includes(value)
             `,
             options: [
               {
@@ -179,10 +179,10 @@ describe(RULE_NAME, () => {
         invalid: [
           {
             code: dedent`
-              ['Emma', ...graceFieldOrphans, 'Norman', 'Ray'].includes(child)
+              ['a', 'b', ...other, 'c'].includes(value)
             `,
             output: dedent`
-              ['Emma', 'Norman', 'Ray', ...graceFieldOrphans].includes(child)
+              ['a', 'b', 'c', ...other].includes(value)
             `,
             options: [
               {
@@ -194,8 +194,8 @@ describe(RULE_NAME, () => {
               {
                 messageId: 'unexpectedArrayIncludesOrder',
                 data: {
-                  left: '...graceFieldOrphans',
-                  right: 'Norman',
+                  left: '...other',
+                  right: 'c',
                 },
               },
             ],
@@ -209,11 +209,11 @@ describe(RULE_NAME, () => {
         {
           code: dedent`
             new Array(
-              'Furude Rika',
-              'Maebara Keiichi',
-              'Ryūgū Rena',
-              'Sonozaki Shion',
-            ).includes(name)
+              'a',
+              'b',
+              'c',
+              'd',
+            ).includes(value)
           `,
           options: [options],
         },
@@ -222,27 +222,27 @@ describe(RULE_NAME, () => {
         {
           code: dedent`
             new Array(
-              'Furude Rika',
-              'Ryūgū Rena',
-              'Sonozaki Shion',
-              'Maebara Keiichi',
-            ).includes(name)
+              'a',
+              'c',
+              'b',
+              'd',
+            ).includes(value)
           `,
           output: dedent`
             new Array(
-              'Furude Rika',
-              'Maebara Keiichi',
-              'Ryūgū Rena',
-              'Sonozaki Shion',
-            ).includes(name)
+              'a',
+              'b',
+              'c',
+              'd',
+            ).includes(value)
           `,
           options: [options],
           errors: [
             {
               messageId: 'unexpectedArrayIncludesOrder',
               data: {
-                left: 'Sonozaki Shion',
-                right: 'Maebara Keiichi',
+                left: 'c',
+                right: 'b',
               },
             },
           ],
@@ -268,13 +268,13 @@ describe(RULE_NAME, () => {
           {
             code: dedent`
               [
-                ...otherTitans,
-                'Armored Titan',
-                'Attack Titan',
-                'Beast Titan',
-                'Cart Titan',
-                'War Hammer Titan',
-              ].includes(titan)
+                ...other,
+                'a',
+                'b',
+                'c',
+                'd',
+                'e',
+              ].includes(value)
             `,
             options: [options],
           },
@@ -283,31 +283,31 @@ describe(RULE_NAME, () => {
           {
             code: dedent`
               [
-                'Armored Titan',
-                'Attack Titan',
-                'Cart Titan',
-                ...otherTitans,
-                'Beast Titan',
-                'War Hammer Titan',
-              ].includes(titan)
+                'a',
+                'b',
+                'c',
+                ...other,
+                'd',
+                'e',
+              ].includes(value)
             `,
             output: dedent`
               [
-                ...otherTitans,
-                'Armored Titan',
-                'Attack Titan',
-                'Beast Titan',
-                'Cart Titan',
-                'War Hammer Titan',
-              ].includes(titan)
+                ...other,
+                'a',
+                'b',
+                'c',
+                'd',
+                'e',
+              ].includes(value)
             `,
             options: [options],
             errors: [
               {
                 messageId: 'unexpectedArrayIncludesOrder',
                 data: {
-                  left: 'Cart Titan',
-                  right: '...otherTitans',
+                  left: 'c',
+                  right: '...other',
                 },
               },
             ],
@@ -321,10 +321,10 @@ describe(RULE_NAME, () => {
         {
           code: dedent`
             [
-              ...demons,
-              ...lowerRanks,
-              ...upperRanks,
-            ].includes('Nezuko Kamado')
+              ...aaa,
+              ...bbbb,
+              ...ccc,
+            ].includes(value)
           `,
           options: [options],
         },
@@ -333,25 +333,25 @@ describe(RULE_NAME, () => {
         {
           code: dedent`
             [
-              ...demons,
-              ...upperRanks,
-              ...lowerRanks,
-            ].includes('Nezuko Kamado')
+              ...aaa,
+              ...ccc,
+              ...bbbb,
+            ].includes(value)
           `,
           output: dedent`
             [
-              ...demons,
-              ...lowerRanks,
-              ...upperRanks,
-            ].includes('Nezuko Kamado')
+              ...aaa,
+              ...bbbb,
+              ...ccc,
+            ].includes(value)
           `,
           options: [options],
           errors: [
             {
               messageId: 'unexpectedArrayIncludesOrder',
               data: {
-                left: '...upperRanks',
-                right: '...lowerRanks',
+                left: '...ccc',
+                right: '...bbbb',
               },
             },
           ],
@@ -366,7 +366,7 @@ describe(RULE_NAME, () => {
         valid: [
           {
             code: dedent`
-              ['Bang', 'Genos', 'King',, 'Saitama'].includes(hero)
+              ['a', 'b', 'c',, 'd'].includes(value)
             `,
             options: [options],
           },
@@ -374,18 +374,18 @@ describe(RULE_NAME, () => {
         invalid: [
           {
             code: dedent`
-              ['Genos', 'Bang', 'King',, 'Saitama'].includes(hero)
+              ['b', 'a', 'c',, 'd'].includes(value)
             `,
             output: dedent`
-              ['Bang', 'Genos', 'King',, 'Saitama'].includes(hero)
+              ['a', 'b', 'c',, 'd'].includes(value)
             `,
             options: [options],
             errors: [
               {
                 messageId: 'unexpectedArrayIncludesOrder',
                 data: {
-                  left: 'Genos',
-                  right: 'Bang',
+                  left: 'b',
+                  right: 'a',
                 },
               },
             ],
@@ -401,7 +401,7 @@ describe(RULE_NAME, () => {
         valid: [
           {
             code: dedent`
-              ['Emma', 'Norman', 'Ray', ...graceFieldOrphans].includes(child)
+              ['a', 'b', 'c', ...other].includes(value)
             `,
             options: [
               {
@@ -414,10 +414,10 @@ describe(RULE_NAME, () => {
         invalid: [
           {
             code: dedent`
-              ['Emma', ...graceFieldOrphans, 'Norman', 'Ray'].includes(child)
+              ['a', 'b', ...other, 'c'].includes(value)
             `,
             output: dedent`
-              ['Emma', 'Norman', 'Ray', ...graceFieldOrphans].includes(child)
+              ['a', 'b', 'c', ...other].includes(value)
             `,
             options: [
               {
@@ -429,8 +429,8 @@ describe(RULE_NAME, () => {
               {
                 messageId: 'unexpectedArrayIncludesOrder',
                 data: {
-                  left: '...graceFieldOrphans',
-                  right: 'Norman',
+                  left: '...other',
+                  right: 'c',
                 },
               },
             ],
@@ -444,11 +444,11 @@ describe(RULE_NAME, () => {
         {
           code: dedent`
             new Array(
-              'Furude Rika',
-              'Maebara Keiichi',
-              'Ryūgū Rena',
-              'Sonozaki Shion',
-            ).includes(name)
+              'a',
+              'b',
+              'c',
+              'd',
+            ).includes(value)
           `,
           options: [options],
         },
@@ -457,27 +457,27 @@ describe(RULE_NAME, () => {
         {
           code: dedent`
             new Array(
-              'Furude Rika',
-              'Ryūgū Rena',
-              'Sonozaki Shion',
-              'Maebara Keiichi',
-            ).includes(name)
+              'a',
+              'c',
+              'b',
+              'd',
+            ).includes(value)
           `,
           output: dedent`
             new Array(
-              'Furude Rika',
-              'Maebara Keiichi',
-              'Ryūgū Rena',
-              'Sonozaki Shion',
-            ).includes(name)
+              'a',
+              'b',
+              'c',
+              'd',
+            ).includes(value)
           `,
           options: [options],
           errors: [
             {
               messageId: 'unexpectedArrayIncludesOrder',
               data: {
-                left: 'Sonozaki Shion',
-                right: 'Maebara Keiichi',
+                left: 'c',
+                right: 'b',
               },
             },
           ],
@@ -502,13 +502,13 @@ describe(RULE_NAME, () => {
           {
             code: dedent`
               [
-                'War Hammer Titan',
-                'Armored Titan',
-                ...otherTitans,
-                'Attack Titan',
-                'Beast Titan',
-                'Cart Titan',
-              ].includes(titan)
+                ...other,
+                'a',
+                'b',
+                'c',
+                'd',
+                'e',
+              ].includes(value)
             `,
             options: [options],
           },
@@ -517,38 +517,31 @@ describe(RULE_NAME, () => {
           {
             code: dedent`
               [
-                'Armored Titan',
-                'Attack Titan',
-                ...otherTitans,
-                'Cart Titan',
-                'Beast Titan',
-                'War Hammer Titan',
-              ].includes(titan)
+                'a',
+                'b',
+                'c',
+                ...other,
+                'd',
+                'e',
+              ].includes(value)
             `,
             output: dedent`
               [
-                'War Hammer Titan',
-                'Armored Titan',
-                'Attack Titan',
-                ...otherTitans,
-                'Beast Titan',
-                'Cart Titan',
-              ].includes(titan)
+                ...other,
+                'a',
+                'b',
+                'c',
+                'd',
+                'e',
+              ].includes(value)
             `,
             options: [options],
             errors: [
               {
                 messageId: 'unexpectedArrayIncludesOrder',
                 data: {
-                  left: 'Cart Titan',
-                  right: 'Beast Titan',
-                },
-              },
-              {
-                messageId: 'unexpectedArrayIncludesOrder',
-                data: {
-                  left: 'Beast Titan',
-                  right: 'War Hammer Titan',
+                  left: 'c',
+                  right: '...other',
                 },
               },
             ],
@@ -562,10 +555,10 @@ describe(RULE_NAME, () => {
         {
           code: dedent`
             [
-              ...lowerRanks,
-              ...upperRanks,
-              ...demons,
-            ].includes('Nezuko Kamado')
+              ...bbbb,
+              ...aaa,
+              ...ccc,
+            ].includes(value)
           `,
           options: [options],
         },
@@ -574,25 +567,25 @@ describe(RULE_NAME, () => {
         {
           code: dedent`
             [
-              ...demons,
-              ...upperRanks,
-              ...lowerRanks,
-            ].includes('Nezuko Kamado')
+              ...aaa,
+              ...bbbb,
+              ...ccc,
+            ].includes(value)
           `,
           output: dedent`
             [
-              ...upperRanks,
-              ...lowerRanks,
-              ...demons,
-            ].includes('Nezuko Kamado')
+              ...bbbb,
+              ...aaa,
+              ...ccc,
+            ].includes(value)
           `,
           options: [options],
           errors: [
             {
               messageId: 'unexpectedArrayIncludesOrder',
               data: {
-                left: '...demons',
-                right: '...upperRanks',
+                left: '...aaa',
+                right: '...bbbb',
               },
             },
           ],
@@ -607,31 +600,12 @@ describe(RULE_NAME, () => {
         valid: [
           {
             code: dedent`
-              ['Saitama', 'Genos', 'King',, 'Bang'].includes(hero)
+              ['a', 'b', 'c',, 'd'].includes(value)
             `,
             options: [options],
           },
         ],
-        invalid: [
-          {
-            code: dedent`
-              ['Genos', 'Bang', 'King',, 'Saitama'].includes(hero)
-            `,
-            output: dedent`
-              ['Saitama', 'Genos', 'Bang',, 'King'].includes(hero)
-            `,
-            options: [options],
-            errors: [
-              {
-                messageId: 'unexpectedArrayIncludesOrder',
-                data: {
-                  left: 'King',
-                  right: 'Saitama',
-                },
-              },
-            ],
-          },
-        ],
+        invalid: [],
       },
     )
 
@@ -642,7 +616,7 @@ describe(RULE_NAME, () => {
         valid: [
           {
             code: dedent`
-              ['Norman', 'Emma', 'Ray', ...graceFieldOrphans].includes(child)
+              ['a', 'b', 'c', ...other].includes(value)
             `,
             options: [
               {
@@ -655,10 +629,10 @@ describe(RULE_NAME, () => {
         invalid: [
           {
             code: dedent`
-              ['Emma', ...graceFieldOrphans, 'Norman', 'Ray'].includes(child)
+              ['a', 'b', ...other, 'c'].includes(value)
             `,
             output: dedent`
-              ['Norman', 'Emma', 'Ray', ...graceFieldOrphans].includes(child)
+              ['a', 'b', 'c', ...other].includes(value)
             `,
             options: [
               {
@@ -670,8 +644,8 @@ describe(RULE_NAME, () => {
               {
                 messageId: 'unexpectedArrayIncludesOrder',
                 data: {
-                  left: '...graceFieldOrphans',
-                  right: 'Norman',
+                  left: '...other',
+                  right: 'c',
                 },
               },
             ],
@@ -685,11 +659,11 @@ describe(RULE_NAME, () => {
         {
           code: dedent`
             new Array(
-              'Maebara Keiichi',
-              'Sonozaki Shion',
-              'Furude Rika',
-              'Ryūgū Rena',
-            ).includes(name)
+              'aaaa',
+              'bbb',
+              'cc',
+              'd',
+            ).includes(value)
           `,
           options: [options],
         },
@@ -698,34 +672,27 @@ describe(RULE_NAME, () => {
         {
           code: dedent`
             new Array(
-              'Furude Rika',
-              'Ryūgū Rena',
-              'Sonozaki Shion',
-              'Maebara Keiichi',
-            ).includes(name)
+              'aaaa',
+              'cc',
+              'bbb',
+              'd',
+            ).includes(value)
           `,
           output: dedent`
             new Array(
-              'Maebara Keiichi',
-              'Sonozaki Shion',
-              'Furude Rika',
-              'Ryūgū Rena',
-            ).includes(name)
+              'aaaa',
+              'bbb',
+              'cc',
+              'd',
+            ).includes(value)
           `,
           options: [options],
           errors: [
             {
               messageId: 'unexpectedArrayIncludesOrder',
               data: {
-                left: 'Ryūgū Rena',
-                right: 'Sonozaki Shion',
-              },
-            },
-            {
-              messageId: 'unexpectedArrayIncludesOrder',
-              data: {
-                left: 'Sonozaki Shion',
-                right: 'Maebara Keiichi',
+                left: 'cc',
+                right: 'bbb',
               },
             },
           ],
@@ -742,20 +709,20 @@ describe(RULE_NAME, () => {
         valid: [
           dedent`
             [
-              'Akane Tsunemori',
-              'Nobuchika Ginoza',
-              'Shusei Kagari',
-              'Tomomi Masaoka',
-            ].includes(enforcer)
+              'a',
+              'b',
+              'c',
+              'd',
+            ].includes(value)
           `,
           {
             code: dedent`
               [
-                'img1.png',
-                'img10.png',
-                'img12.png',
-                'img2.png',
-              ].includes(filename)
+                'v1.png',
+                'v10.png',
+                'v12.png',
+                'v2.png',
+              ].includes(value)
             `,
             options: [{}],
           },
@@ -764,33 +731,33 @@ describe(RULE_NAME, () => {
           {
             code: dedent`
               [
-                'Shusei Kagari',
-                'Akane Tsunemori',
-                'Tomomi Masaoka',
-                'Nobuchika Ginoza',
-              ].includes(enforcer)
+                'b',
+                'a',
+                'd',
+                'c',
+              ].includes(value)
             `,
             output: dedent`
               [
-                'Akane Tsunemori',
-                'Nobuchika Ginoza',
-                'Shusei Kagari',
-                'Tomomi Masaoka',
-              ].includes(enforcer)
+                'a',
+                'b',
+                'c',
+                'd',
+              ].includes(value)
             `,
             errors: [
               {
                 messageId: 'unexpectedArrayIncludesOrder',
                 data: {
-                  left: 'Shusei Kagari',
-                  right: 'Akane Tsunemori',
+                  left: 'b',
+                  right: 'a',
                 },
               },
               {
                 messageId: 'unexpectedArrayIncludesOrder',
                 data: {
-                  left: 'Tomomi Masaoka',
-                  right: 'Nobuchika Ginoza',
+                  left: 'd',
+                  right: 'c',
                 },
               },
             ],
@@ -803,7 +770,7 @@ describe(RULE_NAME, () => {
       `${RULE_NAME}: works consistently with an empty array or an array with one element`,
       rule,
       {
-        valid: ['[].includes(person)', "['Decim'].includes(bartender)"],
+        valid: ['[].includes(value)', "['a'].includes(value)"],
         invalid: [],
       },
     )
@@ -811,7 +778,7 @@ describe(RULE_NAME, () => {
     ruleTester.run(`${RULE_NAME}: ignores quotes of strings`, rule, {
       valid: [
         dedent`
-          ['Burger King', "McDonald's", 'Subway'].includes(name)
+          ['a', "b", 'c'].includes(value)
         `,
       ],
       invalid: [],

@@ -29,11 +29,11 @@ describe(RULE_NAME, () => {
       valid: [
         {
           code: dedent`
-            enum Hinamizawa {
-              'Furude Rika' = 'Furude Rika',
-              'Ryūgū Rena' = 'Ryūgū Rena',
-              'Sonozaki Mion' = 'Sonozaki Mion',
-              'Sonozaki Shion' = 'Sonozaki Shion',
+            enum Enum {
+              aaaa = 'a',
+              bbb = 'b',
+              cc = 'c',
+              d = 'd',
             }
           `,
           options: [options],
@@ -42,19 +42,19 @@ describe(RULE_NAME, () => {
       invalid: [
         {
           code: dedent`
-            enum Hinamizawa {
-              'Furude Rika' = 'Furude Rika',
-              'Sonozaki Mion' = 'Sonozaki Mion',
-              'Sonozaki Shion' = 'Sonozaki Shion',
-              'Ryūgū Rena' = 'Ryūgū Rena',
+            enum Enum {
+              aaaa = 'a',
+              cc = 'c',
+              bbb = 'b',
+              d = 'd',
             }
           `,
           output: dedent`
-            enum Hinamizawa {
-              'Furude Rika' = 'Furude Rika',
-              'Ryūgū Rena' = 'Ryūgū Rena',
-              'Sonozaki Mion' = 'Sonozaki Mion',
-              'Sonozaki Shion' = 'Sonozaki Shion',
+            enum Enum {
+              aaaa = 'a',
+              bbb = 'b',
+              cc = 'c',
+              d = 'd',
             }
           `,
           options: [options],
@@ -62,8 +62,8 @@ describe(RULE_NAME, () => {
             {
               messageId: 'unexpectedEnumsOrder',
               data: {
-                left: 'Sonozaki Shion',
-                right: 'Ryūgū Rena',
+                left: 'cc',
+                right: 'bbb',
               },
             },
           ],
@@ -78,11 +78,11 @@ describe(RULE_NAME, () => {
         valid: [
           {
             code: dedent`
-              enum Kuroko {
-                1 = 'Riko Aida',
-                12 = 'Tetsuya Kuroko',
-                2 = 'Teppei Kiyoshi',
-                8 = 'Daiki Aomine',
+              enum Enum {
+                1 = 'a',
+                12 = 'b',
+                2 = 'c',
+                8 = 'c',
               }
             `,
             options: [options],
@@ -91,19 +91,19 @@ describe(RULE_NAME, () => {
         invalid: [
           {
             code: dedent`
-              enum Kuroko {
-                1 = 'Riko Aida',
-                2 = 'Teppei Kiyoshi',
-                8 = 'Daiki Aomine',
-                12 = 'Tetsuya Kuroko',
+              enum Enum {
+                1 = 'a',
+                2 = 'c',
+                8 = 'c',
+                12 = 'b',
               }
             `,
             output: dedent`
-              enum Kuroko {
-                1 = 'Riko Aida',
-                12 = 'Tetsuya Kuroko',
-                2 = 'Teppei Kiyoshi',
-                8 = 'Daiki Aomine',
+              enum Enum {
+                1 = 'a',
+                12 = 'b',
+                2 = 'c',
+                8 = 'c',
               }
             `,
             options: [options],
@@ -128,10 +128,10 @@ describe(RULE_NAME, () => {
         valid: [
           {
             code: dedent`
-              enum TokyoGodfathers {
-                Gin,
-                Hana = 'Hana',
-                Miyuki,
+              enum Enum {
+                aaa,
+                bb = 'bb',
+                c,
               }
             `,
             options: [options],
@@ -148,9 +148,9 @@ describe(RULE_NAME, () => {
         valid: [
           {
             code: dedent`
-              enum ChainsawMan {
-                false = 'Pochita',
-                true = 'Denji',
+              enum Enum {
+                false = 'b',
+                true = 'a',
               }
             `,
             options: [options],
@@ -159,15 +159,15 @@ describe(RULE_NAME, () => {
         invalid: [
           {
             code: dedent`
-              enum ChainsawMan {
-                true = 'Denji',
-                false = 'Pochita',
+              enum Enum {
+                true = 'a',
+                false = 'b',
               }
             `,
             output: dedent`
-              enum ChainsawMan {
-                false = 'Pochita',
-                true = 'Denji',
+              enum Enum {
+                false = 'b',
+                true = 'a',
               }
             `,
             options: [options],
@@ -193,27 +193,27 @@ describe(RULE_NAME, () => {
         invalid: [
           {
             code: dedent`
-              enum LastTourGirls {
+              enum Enum {
                 /**
-                 * Yuuri is a care-free, fun-loving girl. She is the direct foil and companion of Chito. She carries an Arisaka type 38 rifle and loves food more than anything else in the world.
+                 * Comment B
                  */
-                Yuu = 'Yuuri',
+                b = 'b',
                 /**
-                 * She travels with Yuuri on their Kettenkrad. She can read and write in the current language, but not in kanji or Latin alphabets, because they became old languages in this world. She loves reading and collecting books she finds during traveling.
+                 * Comment A
                  */
-                'Chi-Chii' = 'Chito',
+                'aaa' = 'a',
               }
             `,
             output: dedent`
-              enum LastTourGirls {
+              enum Enum {
                 /**
-                 * She travels with Yuuri on their Kettenkrad. She can read and write in the current language, but not in kanji or Latin alphabets, because they became old languages in this world. She loves reading and collecting books she finds during traveling.
+                 * Comment A
                  */
-                'Chi-Chii' = 'Chito',
+                'aaa' = 'a',
                 /**
-                 * Yuuri is a care-free, fun-loving girl. She is the direct foil and companion of Chito. She carries an Arisaka type 38 rifle and loves food more than anything else in the world.
+                 * Comment B
                  */
-                Yuu = 'Yuuri',
+                b = 'b',
               }
             `,
             options: [options],
@@ -221,8 +221,8 @@ describe(RULE_NAME, () => {
               {
                 messageId: 'unexpectedEnumsOrder',
                 data: {
-                  left: 'Yuu',
-                  right: 'Chi-Chii',
+                  left: 'b',
+                  right: 'aaa',
                 },
               },
             ],
@@ -238,11 +238,11 @@ describe(RULE_NAME, () => {
         valid: [
           {
             code: dedent`
-              export enum KessokuBand {
-                HitoriGotou, // implicit value: 0
-                NijikaIjichi, // implicit value: 1
-                RyouYamada, // implicit value: 2
-                IkuyoKita, // implicit value: 3
+              export enum Enum {
+                d, // implicit value: 0
+                cc, // implicit value: 1
+                bbb, // implicit value: 2
+                aaaa, // implicit value: 3
               }
             `,
             options: [options],
@@ -260,35 +260,35 @@ describe(RULE_NAME, () => {
         invalid: [
           {
             code: dedent`
-              enum HeroAssociation {
-                // Part: S-Class
-                Blast = 'Blast',
-                Tatsumaki = 'Tatsumaki',
-                // Atomic Samurai
-                Kamikaze = 'Kamikaze',
-                // Part: A-Class
-                Sweet = 'Sweet Mask',
-                Iaian = 'Iaian',
-                // Part: B-Class
-                'Mountain-Ape' = 'Mountain Ape',
-                // Member of the Blizzard Group
-                Eyelashes = 'Eyelashes',
+              enum Enum {
+                // Part: A
+                cc = 'c',
+                d = 'd',
+                // Not partition comment
+                bbb = 'b',
+                // Part: B
+                aaaa = 'a',
+                e = 'e',
+                // Part: C
+                'gg' = 'g',
+                // Not partition comment
+                fff = 'f',
               }
             `,
             output: dedent`
-              enum HeroAssociation {
-                // Part: S-Class
-                Blast = 'Blast',
-                // Atomic Samurai
-                Kamikaze = 'Kamikaze',
-                Tatsumaki = 'Tatsumaki',
-                // Part: A-Class
-                Iaian = 'Iaian',
-                Sweet = 'Sweet Mask',
-                // Part: B-Class
-                // Member of the Blizzard Group
-                Eyelashes = 'Eyelashes',
-                'Mountain-Ape' = 'Mountain Ape',
+              enum Enum {
+                // Part: A
+                // Not partition comment
+                bbb = 'b',
+                cc = 'c',
+                d = 'd',
+                // Part: B
+                aaaa = 'a',
+                e = 'e',
+                // Part: C
+                // Not partition comment
+                fff = 'f',
+                'gg' = 'g',
               }
             `,
             options: [
@@ -301,22 +301,15 @@ describe(RULE_NAME, () => {
               {
                 messageId: 'unexpectedEnumsOrder',
                 data: {
-                  left: 'Tatsumaki',
-                  right: 'Kamikaze',
+                  left: 'd',
+                  right: 'bbb',
                 },
               },
               {
                 messageId: 'unexpectedEnumsOrder',
                 data: {
-                  left: 'Sweet',
-                  right: 'Iaian',
-                },
-              },
-              {
-                messageId: 'unexpectedEnumsOrder',
-                data: {
-                  left: 'Mountain-Ape',
-                  right: 'Eyelashes',
+                  left: 'gg',
+                  right: 'fff',
                 },
               },
             ],
@@ -332,11 +325,11 @@ describe(RULE_NAME, () => {
         valid: [
           {
             code: dedent`
-              enum Brothers {
-                // Older brother
-                Edward = 'Edward Elric',
-                // Younger brother
-                Alphonse = 'Alphonse Elric',
+              enum Enum {
+                // Comment
+                bb = 'b',
+                // Other comment
+                a = 'a',
               }
             `,
             options: [
@@ -359,47 +352,43 @@ describe(RULE_NAME, () => {
         invalid: [
           {
             code: dedent`
-              enum PsychoPass {
-                /* Public Safety Bureau */
-                // Crime Coefficient: Low
-                Tsunemori = 'Akane Tsunemori',
-                // Crime Coefficient: High
-                Kogami = 'Shinya Kogami',
-                Ginoza = 'Nobuchika Ginoza',
-                Masaoka = 'Tomomi Masaoka',
-                /* Victims */
-                Makishima = 'Shogo Makishima',
+              enum Enum {
+                /* Partition Comment */
+                // Part: A
+                d = 'd',
+                // Part: B
+                aaa = 'a',
+                c = 'c',
+                bb = 'b',
+                /* Other */
+                e = 'e',
               }
             `,
             output: dedent`
-              enum PsychoPass {
-                /* Public Safety Bureau */
-                // Crime Coefficient: Low
-                Tsunemori = 'Akane Tsunemori',
-                // Crime Coefficient: High
-                Ginoza = 'Nobuchika Ginoza',
-                Kogami = 'Shinya Kogami',
-                Masaoka = 'Tomomi Masaoka',
-                /* Victims */
-                Makishima = 'Shogo Makishima',
+              enum Enum {
+                /* Partition Comment */
+                // Part: A
+                d = 'd',
+                // Part: B
+                aaa = 'a',
+                bb = 'b',
+                c = 'c',
+                /* Other */
+                e = 'e',
               }
             `,
             options: [
               {
                 ...options,
-                partitionByComment: [
-                  'Public Safety Bureau',
-                  'Crime Coefficient: *',
-                  'Victims',
-                ],
+                partitionByComment: ['Partition Comment', 'Part: *', 'Other'],
               },
             ],
             errors: [
               {
                 messageId: 'unexpectedEnumsOrder',
                 data: {
-                  left: 'Kogami',
-                  right: 'Ginoza',
+                  left: 'c',
+                  right: 'bb',
                 },
               },
             ],
@@ -422,11 +411,11 @@ describe(RULE_NAME, () => {
       valid: [
         {
           code: dedent`
-            enum Hinamizawa {
-              'Furude Rika' = 'Furude Rika',
-              'Ryūgū Rena' = 'Ryūgū Rena',
-              'Sonozaki Mion' = 'Sonozaki Mion',
-              'Sonozaki Shion' = 'Sonozaki Shion',
+            enum Enum {
+              aaaa = 'a',
+              bbb = 'b',
+              cc = 'c',
+              d = 'd',
             }
           `,
           options: [options],
@@ -435,19 +424,19 @@ describe(RULE_NAME, () => {
       invalid: [
         {
           code: dedent`
-            enum Hinamizawa {
-              'Furude Rika' = 'Furude Rika',
-              'Sonozaki Mion' = 'Sonozaki Mion',
-              'Sonozaki Shion' = 'Sonozaki Shion',
-              'Ryūgū Rena' = 'Ryūgū Rena',
+            enum Enum {
+              aaaa = 'a',
+              cc = 'c',
+              bbb = 'b',
+              d = 'd',
             }
           `,
           output: dedent`
-            enum Hinamizawa {
-              'Furude Rika' = 'Furude Rika',
-              'Ryūgū Rena' = 'Ryūgū Rena',
-              'Sonozaki Mion' = 'Sonozaki Mion',
-              'Sonozaki Shion' = 'Sonozaki Shion',
+            enum Enum {
+              aaaa = 'a',
+              bbb = 'b',
+              cc = 'c',
+              d = 'd',
             }
           `,
           options: [options],
@@ -455,8 +444,8 @@ describe(RULE_NAME, () => {
             {
               messageId: 'unexpectedEnumsOrder',
               data: {
-                left: 'Sonozaki Shion',
-                right: 'Ryūgū Rena',
+                left: 'cc',
+                right: 'bbb',
               },
             },
           ],
@@ -471,11 +460,11 @@ describe(RULE_NAME, () => {
         valid: [
           {
             code: dedent`
-              enum Kuroko {
-                1 = 'Riko Aida',
-                2 = 'Teppei Kiyoshi',
-                8 = 'Daiki Aomine',
-                12 = 'Tetsuya Kuroko',
+              enum Enum {
+                1 = 'a',
+                2 = 'c',
+                8 = 'c',
+                12 = 'b',
               }
             `,
             options: [options],
@@ -484,19 +473,19 @@ describe(RULE_NAME, () => {
         invalid: [
           {
             code: dedent`
-              enum Kuroko {
-                1 = 'Riko Aida',
-                12 = 'Tetsuya Kuroko',
-                2 = 'Teppei Kiyoshi',
-                8 = 'Daiki Aomine',
+              enum Enum {
+                1 = 'a',
+                12 = 'b',
+                2 = 'c',
+                8 = 'c',
               }
             `,
             output: dedent`
-              enum Kuroko {
-                1 = 'Riko Aida',
-                2 = 'Teppei Kiyoshi',
-                8 = 'Daiki Aomine',
-                12 = 'Tetsuya Kuroko',
+              enum Enum {
+                1 = 'a',
+                2 = 'c',
+                8 = 'c',
+                12 = 'b',
               }
             `,
             options: [options],
@@ -521,10 +510,10 @@ describe(RULE_NAME, () => {
         valid: [
           {
             code: dedent`
-              enum TokyoGodfathers {
-                Gin,
-                Hana = 'Hana',
-                Miyuki,
+              enum Enum {
+                aaa,
+                bb = 'bb',
+                c,
               }
             `,
             options: [options],
@@ -541,9 +530,9 @@ describe(RULE_NAME, () => {
         valid: [
           {
             code: dedent`
-              enum ChainsawMan {
-                false = 'Pochita',
-                true = 'Denji',
+              enum Enum {
+                false = 'b',
+                true = 'a',
               }
             `,
             options: [options],
@@ -552,15 +541,15 @@ describe(RULE_NAME, () => {
         invalid: [
           {
             code: dedent`
-              enum ChainsawMan {
-                true = 'Denji',
-                false = 'Pochita',
+              enum Enum {
+                true = 'a',
+                false = 'b',
               }
             `,
             output: dedent`
-              enum ChainsawMan {
-                false = 'Pochita',
-                true = 'Denji',
+              enum Enum {
+                false = 'b',
+                true = 'a',
               }
             `,
             options: [options],
@@ -586,27 +575,27 @@ describe(RULE_NAME, () => {
         invalid: [
           {
             code: dedent`
-              enum LastTourGirls {
+              enum Enum {
                 /**
-                 * Yuuri is a care-free, fun-loving girl. She is the direct foil and companion of Chito. She carries an Arisaka type 38 rifle and loves food more than anything else in the world.
+                 * Comment B
                  */
-                Yuu = 'Yuuri',
+                b = 'b',
                 /**
-                 * She travels with Yuuri on their Kettenkrad. She can read and write in the current language, but not in kanji or Latin alphabets, because they became old languages in this world. She loves reading and collecting books she finds during traveling.
+                 * Comment A
                  */
-                'Chi-Chii' = 'Chito',
+                'aaa' = 'a',
               }
             `,
             output: dedent`
-              enum LastTourGirls {
+              enum Enum {
                 /**
-                 * She travels with Yuuri on their Kettenkrad. She can read and write in the current language, but not in kanji or Latin alphabets, because they became old languages in this world. She loves reading and collecting books she finds during traveling.
+                 * Comment A
                  */
-                'Chi-Chii' = 'Chito',
+                'aaa' = 'a',
                 /**
-                 * Yuuri is a care-free, fun-loving girl. She is the direct foil and companion of Chito. She carries an Arisaka type 38 rifle and loves food more than anything else in the world.
+                 * Comment B
                  */
-                Yuu = 'Yuuri',
+                b = 'b',
               }
             `,
             options: [options],
@@ -614,8 +603,8 @@ describe(RULE_NAME, () => {
               {
                 messageId: 'unexpectedEnumsOrder',
                 data: {
-                  left: 'Yuu',
-                  right: 'Chi-Chii',
+                  left: 'b',
+                  right: 'aaa',
                 },
               },
             ],
@@ -631,11 +620,11 @@ describe(RULE_NAME, () => {
         valid: [
           {
             code: dedent`
-              export enum KessokuBand {
-                HitoriGotou, // implicit value: 0
-                NijikaIjichi, // implicit value: 1
-                RyouYamada, // implicit value: 2
-                IkuyoKita, // implicit value: 3
+              export enum Enum {
+                d, // implicit value: 0
+                cc, // implicit value: 1
+                bbb, // implicit value: 2
+                aaaa, // implicit value: 3
               }
             `,
             options: [options],
@@ -653,35 +642,35 @@ describe(RULE_NAME, () => {
         invalid: [
           {
             code: dedent`
-              enum HeroAssociation {
-                // Part: S-Class
-                Blast = 'Blast',
-                Tatsumaki = 'Tatsumaki',
-                // Atomic Samurai
-                Kamikaze = 'Kamikaze',
-                // Part: A-Class
-                Sweet = 'Sweet Mask',
-                Iaian = 'Iaian',
-                // Part: B-Class
-                'Mountain-Ape' = 'Mountain Ape',
-                // Member of the Blizzard Group
-                Eyelashes = 'Eyelashes',
+              enum Enum {
+                // Part: A
+                cc = 'c',
+                d = 'd',
+                // Not partition comment
+                bbb = 'b',
+                // Part: B
+                aaaa = 'a',
+                e = 'e',
+                // Part: C
+                'gg' = 'g',
+                // Not partition comment
+                fff = 'f',
               }
             `,
             output: dedent`
-              enum HeroAssociation {
-                // Part: S-Class
-                Blast = 'Blast',
-                // Atomic Samurai
-                Kamikaze = 'Kamikaze',
-                Tatsumaki = 'Tatsumaki',
-                // Part: A-Class
-                Iaian = 'Iaian',
-                Sweet = 'Sweet Mask',
-                // Part: B-Class
-                // Member of the Blizzard Group
-                Eyelashes = 'Eyelashes',
-                'Mountain-Ape' = 'Mountain Ape',
+              enum Enum {
+                // Part: A
+                // Not partition comment
+                bbb = 'b',
+                cc = 'c',
+                d = 'd',
+                // Part: B
+                aaaa = 'a',
+                e = 'e',
+                // Part: C
+                // Not partition comment
+                fff = 'f',
+                'gg' = 'g',
               }
             `,
             options: [
@@ -694,22 +683,15 @@ describe(RULE_NAME, () => {
               {
                 messageId: 'unexpectedEnumsOrder',
                 data: {
-                  left: 'Tatsumaki',
-                  right: 'Kamikaze',
+                  left: 'd',
+                  right: 'bbb',
                 },
               },
               {
                 messageId: 'unexpectedEnumsOrder',
                 data: {
-                  left: 'Sweet',
-                  right: 'Iaian',
-                },
-              },
-              {
-                messageId: 'unexpectedEnumsOrder',
-                data: {
-                  left: 'Mountain-Ape',
-                  right: 'Eyelashes',
+                  left: 'gg',
+                  right: 'fff',
                 },
               },
             ],
@@ -725,11 +707,11 @@ describe(RULE_NAME, () => {
         valid: [
           {
             code: dedent`
-              enum Brothers {
-                // Older brother
-                Edward = 'Edward Elric',
-                // Younger brother
-                Alphonse = 'Alphonse Elric',
+              enum Enum {
+                // Comment
+                bb = 'b',
+                // Other comment
+                a = 'a',
               }
             `,
             options: [
@@ -752,47 +734,43 @@ describe(RULE_NAME, () => {
         invalid: [
           {
             code: dedent`
-              enum PsychoPass {
-                /* Public Safety Bureau */
-                // Crime Coefficient: Low
-                Tsunemori = 'Akane Tsunemori',
-                // Crime Coefficient: High
-                Kogami = 'Shinya Kogami',
-                Ginoza = 'Nobuchika Ginoza',
-                Masaoka = 'Tomomi Masaoka',
-                /* Victims */
-                Makishima = 'Shogo Makishima',
+              enum Enum {
+                /* Partition Comment */
+                // Part: A
+                d = 'd',
+                // Part: B
+                aaa = 'a',
+                c = 'c',
+                bb = 'b',
+                /* Other */
+                e = 'e',
               }
             `,
             output: dedent`
-              enum PsychoPass {
-                /* Public Safety Bureau */
-                // Crime Coefficient: Low
-                Tsunemori = 'Akane Tsunemori',
-                // Crime Coefficient: High
-                Ginoza = 'Nobuchika Ginoza',
-                Kogami = 'Shinya Kogami',
-                Masaoka = 'Tomomi Masaoka',
-                /* Victims */
-                Makishima = 'Shogo Makishima',
+              enum Enum {
+                /* Partition Comment */
+                // Part: A
+                d = 'd',
+                // Part: B
+                aaa = 'a',
+                bb = 'b',
+                c = 'c',
+                /* Other */
+                e = 'e',
               }
             `,
             options: [
               {
                 ...options,
-                partitionByComment: [
-                  'Public Safety Bureau',
-                  'Crime Coefficient: *',
-                  'Victims',
-                ],
+                partitionByComment: ['Partition Comment', 'Part: *', 'Other'],
               },
             ],
             errors: [
               {
                 messageId: 'unexpectedEnumsOrder',
                 data: {
-                  left: 'Kogami',
-                  right: 'Ginoza',
+                  left: 'c',
+                  right: 'bb',
                 },
               },
             ],
@@ -814,11 +792,11 @@ describe(RULE_NAME, () => {
       valid: [
         {
           code: dedent`
-            enum Hinamizawa {
-              'Sonozaki Shion' = 'Sonozaki Shion',
-              'Sonozaki Mion' = 'Sonozaki Mion',
-              'Furude Rika' = 'Furude Rika',
-              'Ryūgū Rena' = 'Ryūgū Rena',
+            enum Enum {
+              aaaa = 'a',
+              bbb = 'b',
+              cc = 'c',
+              d = 'd',
             }
           `,
           options: [options],
@@ -827,19 +805,19 @@ describe(RULE_NAME, () => {
       invalid: [
         {
           code: dedent`
-            enum Hinamizawa {
-              'Furude Rika' = 'Furude Rika',
-              'Sonozaki Mion' = 'Sonozaki Mion',
-              'Sonozaki Shion' = 'Sonozaki Shion',
-              'Ryūgū Rena' = 'Ryūgū Rena',
+            enum Enum {
+              aaaa = 'a',
+              cc = 'c',
+              bbb = 'b',
+              d = 'd',
             }
           `,
           output: dedent`
-            enum Hinamizawa {
-              'Sonozaki Shion' = 'Sonozaki Shion',
-              'Sonozaki Mion' = 'Sonozaki Mion',
-              'Furude Rika' = 'Furude Rika',
-              'Ryūgū Rena' = 'Ryūgū Rena',
+            enum Enum {
+              aaaa = 'a',
+              bbb = 'b',
+              cc = 'c',
+              d = 'd',
             }
           `,
           options: [options],
@@ -847,15 +825,8 @@ describe(RULE_NAME, () => {
             {
               messageId: 'unexpectedEnumsOrder',
               data: {
-                left: 'Furude Rika',
-                right: 'Sonozaki Mion',
-              },
-            },
-            {
-              messageId: 'unexpectedEnumsOrder',
-              data: {
-                left: 'Sonozaki Mion',
-                right: 'Sonozaki Shion',
+                left: 'cc',
+                right: 'bbb',
               },
             },
           ],
@@ -870,11 +841,11 @@ describe(RULE_NAME, () => {
         valid: [
           {
             code: dedent`
-              enum Kuroko {
-                12 = 'Tetsuya Kuroko',
-                2 = 'Teppei Kiyoshi',
-                8 = 'Daiki Aomine',
-                1 = 'Riko Aida',
+              enum Enum {
+                12 = 'b',
+                1 = 'a',
+                2 = 'c',
+                8 = 'c',
               }
             `,
             options: [options],
@@ -883,19 +854,19 @@ describe(RULE_NAME, () => {
         invalid: [
           {
             code: dedent`
-              enum Kuroko {
-                1 = 'Riko Aida',
-                12 = 'Tetsuya Kuroko',
-                2 = 'Teppei Kiyoshi',
-                8 = 'Daiki Aomine',
+              enum Enum {
+                1 = 'a',
+                12 = 'b',
+                2 = 'c',
+                8 = 'c',
               }
             `,
             output: dedent`
-              enum Kuroko {
-                12 = 'Tetsuya Kuroko',
-                2 = 'Teppei Kiyoshi',
-                8 = 'Daiki Aomine',
-                1 = 'Riko Aida',
+              enum Enum {
+                12 = 'b',
+                1 = 'a',
+                2 = 'c',
+                8 = 'c',
               }
             `,
             options: [options],
@@ -920,10 +891,10 @@ describe(RULE_NAME, () => {
         valid: [
           {
             code: dedent`
-              enum TokyoGodfathers {
-                Hana = 'Hana',
-                Miyuki,
-                Gin,
+              enum Enum {
+                aaa,
+                bb = 'bb',
+                c,
               }
             `,
             options: [options],
@@ -940,9 +911,9 @@ describe(RULE_NAME, () => {
         valid: [
           {
             code: dedent`
-              enum ChainsawMan {
-                false = 'Pochita',
-                true = 'Denji',
+              enum Enum {
+                false = 'b',
+                true = 'a',
               }
             `,
             options: [options],
@@ -951,15 +922,15 @@ describe(RULE_NAME, () => {
         invalid: [
           {
             code: dedent`
-              enum ChainsawMan {
-                true = 'Denji',
-                false = 'Pochita',
+              enum Enum {
+                true = 'a',
+                false = 'b',
               }
             `,
             output: dedent`
-              enum ChainsawMan {
-                false = 'Pochita',
-                true = 'Denji',
+              enum Enum {
+                false = 'b',
+                true = 'a',
               }
             `,
             options: [options],
@@ -985,27 +956,27 @@ describe(RULE_NAME, () => {
         invalid: [
           {
             code: dedent`
-              enum LastTourGirls {
+              enum Enum {
                 /**
-                 * Yuuri is a care-free, fun-loving girl. She is the direct foil and companion of Chito. She carries an Arisaka type 38 rifle and loves food more than anything else in the world.
+                 * Comment B
                  */
-                Yuu = 'Yuuri',
+                b = 'b',
                 /**
-                 * She travels with Yuuri on their Kettenkrad. She can read and write in the current language, but not in kanji or Latin alphabets, because they became old languages in this world. She loves reading and collecting books she finds during traveling.
+                 * Comment A
                  */
-                'Chi-Chii' = 'Chito',
+                'aaa' = 'a',
               }
             `,
             output: dedent`
-              enum LastTourGirls {
+              enum Enum {
                 /**
-                 * She travels with Yuuri on their Kettenkrad. She can read and write in the current language, but not in kanji or Latin alphabets, because they became old languages in this world. She loves reading and collecting books she finds during traveling.
+                 * Comment A
                  */
-                'Chi-Chii' = 'Chito',
+                'aaa' = 'a',
                 /**
-                 * Yuuri is a care-free, fun-loving girl. She is the direct foil and companion of Chito. She carries an Arisaka type 38 rifle and loves food more than anything else in the world.
+                 * Comment B
                  */
-                Yuu = 'Yuuri',
+                b = 'b',
               }
             `,
             options: [options],
@@ -1013,8 +984,8 @@ describe(RULE_NAME, () => {
               {
                 messageId: 'unexpectedEnumsOrder',
                 data: {
-                  left: 'Yuu',
-                  right: 'Chi-Chii',
+                  left: 'b',
+                  right: 'aaa',
                 },
               },
             ],
@@ -1030,11 +1001,11 @@ describe(RULE_NAME, () => {
         valid: [
           {
             code: dedent`
-              export enum KessokuBand {
-                HitoriGotou, // implicit value: 0
-                NijikaIjichi, // implicit value: 1
-                RyouYamada, // implicit value: 2
-                IkuyoKita, // implicit value: 3
+              export enum Enum {
+                d, // implicit value: 0
+                cc, // implicit value: 1
+                bbb, // implicit value: 2
+                aaaa, // implicit value: 3
               }
             `,
             options: [options],
@@ -1052,35 +1023,35 @@ describe(RULE_NAME, () => {
         invalid: [
           {
             code: dedent`
-              enum HeroAssociation {
-                // Part: S-Class
-                Blast = 'Blast',
-                Tatsumaki = 'Tatsumaki',
-                // Atomic Samurai
-                Kamikaze = 'Kamikaze',
-                // Part: A-Class
-                Sweet = 'Sweet Mask',
-                Iaian = 'Iaian',
-                // Part: B-Class
-                'Mountain-Ape' = 'Mountain Ape',
-                // Member of the Blizzard Group
-                Eyelashes = 'Eyelashes',
+              enum Enum {
+                // Part: A
+                cc = 'c',
+                d = 'd',
+                // Not partition comment
+                bbb = 'b',
+                // Part: B
+                aaaa = 'a',
+                e = 'e',
+                // Part: C
+                'gg' = 'g',
+                // Not partition comment
+                fff = 'f',
               }
             `,
             output: dedent`
-              enum HeroAssociation {
-                // Part: S-Class
-                Tatsumaki = 'Tatsumaki',
-                // Atomic Samurai
-                Kamikaze = 'Kamikaze',
-                Blast = 'Blast',
-                // Part: A-Class
-                Sweet = 'Sweet Mask',
-                Iaian = 'Iaian',
-                // Part: B-Class
-                'Mountain-Ape' = 'Mountain Ape',
-                // Member of the Blizzard Group
-                Eyelashes = 'Eyelashes',
+              enum Enum {
+                // Part: A
+                // Not partition comment
+                bbb = 'b',
+                cc = 'c',
+                d = 'd',
+                // Part: B
+                aaaa = 'a',
+                e = 'e',
+                // Part: C
+                'gg' = 'g',
+                // Not partition comment
+                fff = 'f',
               }
             `,
             options: [
@@ -1093,8 +1064,8 @@ describe(RULE_NAME, () => {
               {
                 messageId: 'unexpectedEnumsOrder',
                 data: {
-                  left: 'Blast',
-                  right: 'Tatsumaki',
+                  left: 'd',
+                  right: 'bbb',
                 },
               },
             ],
@@ -1110,11 +1081,11 @@ describe(RULE_NAME, () => {
         valid: [
           {
             code: dedent`
-              enum Brothers {
-                // Older brother
-                Edward = 'Edward Elric',
-                // Younger brother
-                Alphonse = 'Alphonse Elric',
+              enum Enum {
+                // Comment
+                bb = 'b',
+                // Other comment
+                a = 'a',
               }
             `,
             options: [
@@ -1137,47 +1108,43 @@ describe(RULE_NAME, () => {
         invalid: [
           {
             code: dedent`
-              enum PsychoPass {
-                /* Public Safety Bureau */
-                // Crime Coefficient: Low
-                Tsunemori = 'Akane Tsunemori',
-                // Crime Coefficient: High
-                Kogami = 'Shinya Kogami',
-                Ginoza = 'Nobuchika Ginoza',
-                Masaoka = 'Tomomi Masaoka',
-                /* Victims */
-                Makishima = 'Shogo Makishima',
+              enum Enum {
+                /* Partition Comment */
+                // Part: A
+                d = 'd',
+                // Part: B
+                aaa = 'a',
+                c = 'c',
+                bb = 'b',
+                /* Other */
+                e = 'e',
               }
             `,
             output: dedent`
-              enum PsychoPass {
-                /* Public Safety Bureau */
-                // Crime Coefficient: Low
-                Tsunemori = 'Akane Tsunemori',
-                // Crime Coefficient: High
-                Ginoza = 'Nobuchika Ginoza',
-                Masaoka = 'Tomomi Masaoka',
-                Kogami = 'Shinya Kogami',
-                /* Victims */
-                Makishima = 'Shogo Makishima',
+              enum Enum {
+                /* Partition Comment */
+                // Part: A
+                d = 'd',
+                // Part: B
+                aaa = 'a',
+                bb = 'b',
+                c = 'c',
+                /* Other */
+                e = 'e',
               }
             `,
             options: [
               {
                 ...options,
-                partitionByComment: [
-                  'Public Safety Bureau',
-                  'Crime Coefficient: *',
-                  'Victims',
-                ],
+                partitionByComment: ['Partition Comment', 'Part: *', 'Other'],
               },
             ],
             errors: [
               {
                 messageId: 'unexpectedEnumsOrder',
                 data: {
-                  left: 'Kogami',
-                  right: 'Ginoza',
+                  left: 'c',
+                  right: 'bb',
                 },
               },
             ],
@@ -1194,10 +1161,10 @@ describe(RULE_NAME, () => {
       {
         valid: [
           dedent`
-            enum SummerTime {
-              'Mio Kofune' = 'Mio Kofune',
-              'Shinpei Ajiro' = 'Shinpei Ajiro',
-              'Ushio Kofune' = 'Ushio Kofune',
+            enum Enum {
+              'a' = 'a',
+              'b' = 'b',
+              'c' = 'c',
             }
           `,
           {
@@ -1215,25 +1182,25 @@ describe(RULE_NAME, () => {
         invalid: [
           {
             code: dedent`
-              enum SummerTime {
-                'Shinpei Ajiro' = 'Shinpei Ajiro',
-                'Ushio Kofune' = 'Ushio Kofune',
-                'Mio Kofune' = 'Mio Kofune'
+              enum Enum {
+                'b' = 'b',
+                'a' = 'a',
+                'c' = 'c',
               }
             `,
             output: dedent`
-              enum SummerTime {
-                'Mio Kofune' = 'Mio Kofune',
-                'Shinpei Ajiro' = 'Shinpei Ajiro',
-                'Ushio Kofune' = 'Ushio Kofune'
+              enum Enum {
+                'a' = 'a',
+                'b' = 'b',
+                'c' = 'c',
               }
             `,
             errors: [
               {
                 messageId: 'unexpectedEnumsOrder',
                 data: {
-                  left: 'Ushio Kofune',
-                  right: 'Mio Kofune',
+                  left: 'b',
+                  right: 'a',
                 },
               },
             ],
