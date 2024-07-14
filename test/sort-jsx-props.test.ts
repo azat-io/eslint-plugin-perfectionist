@@ -1364,6 +1364,7 @@ describe(RULE_NAME, () => {
                 ...options,
                 customGroups: { top: ['d', 'e'] },
                 groups: ['top', 'unknown'],
+                ignoreCase: true,
               },
             ],
           },
@@ -1441,8 +1442,6 @@ describe(RULE_NAME, () => {
         invalid: [],
       },
     )
-
-    // prettier-ignore
     ;['.svelte', '.astro', '.vue'].forEach(extension => {
       ruleTester.run(`${RULE_NAME}: not works with ${extension} files`, rule, {
         valid: [
@@ -1460,5 +1459,53 @@ describe(RULE_NAME, () => {
         invalid: [],
       })
     })
+
+    ruleTester.run(`${RULE_NAME}: does not work with empty props`, rule, {
+      valid: [
+        dedent`
+          let Component = () => (
+            <Element />
+          )
+        `,
+      ],
+      invalid: [],
+    })
+
+    ruleTester.run(`${RULE_NAME}: does not work with single prop`, rule, {
+      valid: [
+        dedent`
+          let Component = () => (
+            <Element a="a" />
+          )
+        `,
+      ],
+      invalid: [],
+    })
+
+    ruleTester.run(
+      `${RULE_NAME}: allow to disable rule for some JSX elements`,
+      rule,
+      {
+        valid: [
+          {
+            code: dedent`
+              let Component = () => (
+                <Element
+                  c="c"
+                  b="bb"
+                  a="aaa"
+                />
+              )
+            `,
+            options: [
+              {
+                ignorePattern: ['Element'],
+              },
+            ],
+          },
+        ],
+        invalid: [],
+      },
+    )
   })
 })
