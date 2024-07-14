@@ -1,0 +1,40 @@
+{
+  "dictionaries": ["css", "html", "node", "npm", "typescript"],
+  "useGitignore": true,
+  "language": "en",
+  "ignorePaths": [
+    ".github",
+    "changelog.md",
+    "license",
+    "pnpm-lock.yaml",
+    "tsconfig.json"
+  ],
+  "words": [
+    "astro",
+    "astrojs",
+    "azat",
+    "browserslistrc",
+    "changelogen",
+    "execa",
+    "grotesk",
+    "joshuakgoldberg",
+    "keyux",
+    "libc",
+    "lightningcss",
+    "mdast",
+    "nanostores",
+    "nocomment",
+    "pcss",
+    "playform",
+    "poppanator",
+    "rehype",
+    "renminbi",
+    "shiki",
+    "sonarjs",
+    "specv",
+    "styl",
+    "tses",
+    "undici",
+    "vimrc"
+  ]
+}

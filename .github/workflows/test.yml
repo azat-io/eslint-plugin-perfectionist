@@ -75,6 +75,23 @@ jobs:
       - name: Test
         run: pnpm test:js
 
+  spelling:
+    name: Spelling
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install Tools
+        uses: ./.github/actions/install-tools
+
+      - name: Install Dependencies
+        uses: ./.github/actions/install-dependencies
+
+      - name: Test
+        run: pnpm test:spelling
+
   svelte:
     name: Svelte
     runs-on: ubuntu-latest
