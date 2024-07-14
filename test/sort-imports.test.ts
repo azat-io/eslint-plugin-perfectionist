@@ -1158,6 +1158,54 @@ describe(RULE_NAME, () => {
         ],
       },
     )
+
+    ruleTester.run(`${RULE_NAME}(${type}): allows to use bun modules`, rule, {
+      valid: [
+        {
+          code: dedent`
+            import { expect } from 'bun:test'
+            import { a } from 'a'
+          `,
+          options: [
+            {
+              ...options,
+              newlinesBetween: NewlinesBetweenValue.never,
+              groups: ['builtin', 'external', 'unknown'],
+              environment: 'bun',
+            },
+          ],
+        },
+      ],
+      invalid: [
+        {
+          code: dedent`
+            import { a } from 'a'
+            import { expect } from 'bun:test'
+          `,
+          output: dedent`
+            import { expect } from 'bun:test'
+            import { a } from 'a'
+          `,
+          options: [
+            {
+              ...options,
+              newlinesBetween: NewlinesBetweenValue.never,
+              groups: ['builtin', 'external', 'unknown'],
+              environment: 'bun',
+            },
+          ],
+          errors: [
+            {
+              messageId: 'unexpectedImportsOrder',
+              data: {
+                left: 'a',
+                right: 'bun:test',
+              },
+            },
+          ],
+        },
+      ],
+    })
   })
 
   describe(`${RULE_NAME}: sorting by natural order`, () => {
@@ -2301,6 +2349,54 @@ describe(RULE_NAME, () => {
         ],
       },
     )
+
+    ruleTester.run(`${RULE_NAME}(${type}): allows to use bun modules`, rule, {
+      valid: [
+        {
+          code: dedent`
+            import { expect } from 'bun:test'
+            import { a } from 'a'
+          `,
+          options: [
+            {
+              ...options,
+              newlinesBetween: NewlinesBetweenValue.never,
+              groups: ['builtin', 'external', 'unknown'],
+              environment: 'bun',
+            },
+          ],
+        },
+      ],
+      invalid: [
+        {
+          code: dedent`
+            import { a } from 'a'
+            import { expect } from 'bun:test'
+          `,
+          output: dedent`
+            import { expect } from 'bun:test'
+            import { a } from 'a'
+          `,
+          options: [
+            {
+              ...options,
+              newlinesBetween: NewlinesBetweenValue.never,
+              groups: ['builtin', 'external', 'unknown'],
+              environment: 'bun',
+            },
+          ],
+          errors: [
+            {
+              messageId: 'unexpectedImportsOrder',
+              data: {
+                left: 'a',
+                right: 'bun:test',
+              },
+            },
+          ],
+        },
+      ],
+    })
   })
 
   describe(`${RULE_NAME}: sorting by line length`, () => {
@@ -3569,6 +3665,54 @@ describe(RULE_NAME, () => {
         ).toBe('data[0].maxLineLength should be > 0')
       })
     })
+
+    ruleTester.run(`${RULE_NAME}(${type}): allows to use bun modules`, rule, {
+      valid: [
+        {
+          code: dedent`
+            import { expect } from 'bun:test'
+            import { a } from 'a'
+          `,
+          options: [
+            {
+              ...options,
+              newlinesBetween: NewlinesBetweenValue.never,
+              groups: ['builtin', 'external', 'unknown'],
+              environment: 'bun',
+            },
+          ],
+        },
+      ],
+      invalid: [
+        {
+          code: dedent`
+            import { a } from 'a'
+            import { expect } from 'bun:test'
+          `,
+          output: dedent`
+            import { expect } from 'bun:test'
+            import { a } from 'a'
+          `,
+          options: [
+            {
+              ...options,
+              newlinesBetween: NewlinesBetweenValue.never,
+              groups: ['builtin', 'external', 'unknown'],
+              environment: 'bun',
+            },
+          ],
+          errors: [
+            {
+              messageId: 'unexpectedImportsOrder',
+              data: {
+                left: 'a',
+                right: 'bun:test',
+              },
+            },
+          ],
+        },
+      ],
+    })
   })
 
   describe(`${RULE_NAME}: misc`, () => {
@@ -3643,7 +3787,6 @@ describe(RULE_NAME, () => {
         valid: [
           {
             code: dedent`
-              import { expect, test } from 'bun:test'
               import { writeFile } from 'node:fs/promises'
 
               import { useEffect } from 'react'
@@ -3660,10 +3803,8 @@ describe(RULE_NAME, () => {
             code: dedent`
               import { writeFile } from 'node:fs/promises'
               import { useEffect } from 'react'
-              import { expect, test } from 'bun:test'
             `,
             output: dedent`
-              import { expect, test } from 'bun:test'
               import { writeFile } from 'node:fs/promises'
 
               import { useEffect } from 'react'
@@ -3679,13 +3820,6 @@ describe(RULE_NAME, () => {
                 data: {
                   left: 'node:fs/promises',
                   right: 'react',
-                },
-              },
-              {
-                messageId: 'unexpectedImportsOrder',
-                data: {
-                  left: 'react',
-                  right: 'bun:test',
                 },
               },
             ],
