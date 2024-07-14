@@ -60,6 +60,7 @@ type Options<T extends string[]> = [
     type: 'alphabetical' | 'line-length' | 'natural'
     newlinesBetween: NewlinesBetweenValue
     groups: (Group<T>[] | Group<T>)[]
+    environment: 'node' | 'bun'
     internalPattern: string[]
     maxLineLength?: number
     order: 'desc' | 'asc'
@@ -136,6 +137,11 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
             minimum: 0,
             exclusiveMinimum: true,
           },
+          environment: {
+            enum: ['node', 'bun'],
+            default: 'node',
+            type: 'string',
+          },
         },
         allOf: [
           {
@@ -191,6 +197,7 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
       customGroups: { type: {}, value: {} },
       internalPattern: ['~/**'],
       type: 'alphabetical',
+      environment: 'node',
       ignoreCase: true,
       order: 'asc',
       groups: [],
@@ -270,7 +277,8 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
         return (
           builtinModules.includes(
             value.startsWith('node:') ? value.split('node:')[1] : value,
-          ) || bunModules.includes(value)
+          ) ||
+          (options.environment === 'bun' ? bunModules.includes(value) : false)
         )
       }
 
