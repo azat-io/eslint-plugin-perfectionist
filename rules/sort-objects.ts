@@ -154,16 +154,19 @@ export default createEslintRule<Options, MESSAGE_ID>({
         let isStyledCallExpression = (identifier: TSESTree.Expression) =>
           identifier.type === 'Identifier' && identifier.name === 'styled'
 
+        let isCssCallExpression = (identifier: TSESTree.Expression) =>
+          identifier.type === 'Identifier' && identifier.name === 'css'
+
         let isStyledComponents = (
           styledNode: TSESTree.Node | undefined,
         ): boolean =>
           styledNode !== undefined &&
           styledNode.type === 'CallExpression' &&
-          ((styledNode.callee.type === 'MemberExpression' &&
-            isStyledCallExpression(styledNode.callee.object)) ||
+          (isCssCallExpression(styledNode.callee) ||
+            (styledNode.callee.type === 'MemberExpression' &&
+              isStyledCallExpression(styledNode.callee.object)) ||
             (styledNode.callee.type === 'CallExpression' &&
               isStyledCallExpression(styledNode.callee.callee)))
-
         if (
           !options.styledComponents &&
           (isStyledComponents(node.parent) ||

@@ -2754,6 +2754,22 @@ describe(RULE_NAME, () => {
               },
             ],
           },
+          {
+            code: dedent`
+              const headerClass = css({
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'space-between',
+                marginTop: '3',
+                gridGap: '8',
+              });
+            `,
+            options: [
+              {
+                styledComponents: false,
+              },
+            ],
+          },
         ],
         invalid: [],
       },
