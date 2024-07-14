@@ -76,7 +76,7 @@
     "astro-eslint-parser": "^1.0.2",
     "eslint": ">=8.0.0",
     "svelte": ">=3.0.0",
-    "svelte-eslint-parser": "^0.37.0",
+    "svelte-eslint-parser": "^0.40.0",
     "vue-eslint-parser": ">=9.0.0"
   },
   "dependencies": {
@@ -149,7 +149,7 @@
     "stylelint-plugin-logical-css": "^1.2.1",
     "svelte": "5.0.0-next.133",
     "svelte-check": "^3.8.4",
-    "svelte-eslint-parser": "^0.39.2",
+    "svelte-eslint-parser": "^0.40.0",
     "svgo": "^3.3.2",
     "ts-dedent": "^2.2.0",
     "typescript": "^5.5.3",
