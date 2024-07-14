@@ -57,7 +57,7 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
           },
           ignoreCase: {
             type: 'boolean',
-            default: false,
+            default: true,
           },
           groups: {
             type: 'array',
@@ -88,7 +88,7 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
         let options = complete(context.options.at(0), {
           partitionByNewLine: false,
           type: 'alphabetical',
-          ignoreCase: false,
+          ignoreCase: true,
           customGroups: {},
           order: 'asc',
           groups: [],

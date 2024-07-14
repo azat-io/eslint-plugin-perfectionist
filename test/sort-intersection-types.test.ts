@@ -21,7 +21,7 @@ describe(RULE_NAME, () => {
 
     let options = {
       type: 'alphabetical',
-      ignoreCase: false,
+      ignoreCase: true,
       order: 'asc',
     } as const
 
@@ -268,7 +268,7 @@ describe(RULE_NAME, () => {
 
     let options = {
       type: 'alphabetical',
-      ignoreCase: false,
+      ignoreCase: true,
       order: 'asc',
     } as const
 

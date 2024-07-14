@@ -110,7 +110,7 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
           },
           ignoreCase: {
             type: 'boolean',
-            default: false,
+            default: true,
           },
           groups: {
             type: 'array',
@@ -191,7 +191,7 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
       customGroups: { type: {}, value: {} },
       internalPattern: ['~/**'],
       type: 'alphabetical',
-      ignoreCase: false,
+      ignoreCase: true,
       order: 'asc',
       groups: [],
     } as const)

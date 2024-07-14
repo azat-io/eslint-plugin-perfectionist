@@ -20,8 +20,8 @@ describe(RULE_NAME, () => {
     let type = 'alphabetical-order'
 
     let options = {
-      ignoreCase: false,
       type: 'alphabetical',
+      ignoreCase: true,
       order: 'asc',
     } as const
 
@@ -402,7 +402,7 @@ describe(RULE_NAME, () => {
     let type = 'natural-order'
 
     let options = {
-      ignoreCase: false,
+      ignoreCase: true,
       type: 'natural',
       order: 'asc',
     } as const
