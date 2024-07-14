@@ -87,7 +87,7 @@ export default createEslintRule<Options, MESSAGE_ID>({
           },
           ignoreCase: {
             type: 'boolean',
-            default: false,
+            default: true,
           },
           ignorePattern: {
             items: {
@@ -121,8 +121,8 @@ export default createEslintRule<Options, MESSAGE_ID>({
         partitionByComment: false,
         styledComponents: true,
         type: 'alphabetical',
-        ignoreCase: false,
         ignorePattern: [],
+        ignoreCase: true,
         customGroups: {},
         order: 'asc',
         groups: [],

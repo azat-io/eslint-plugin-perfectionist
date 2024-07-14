@@ -49,7 +49,7 @@ export default createEslintRule<Options, MESSAGE_ID>({
           },
           ignoreCase: {
             type: 'boolean',
-            default: false,
+            default: true,
           },
           spreadLast: {
             type: 'boolean',
@@ -87,8 +87,8 @@ export default createEslintRule<Options, MESSAGE_ID>({
           let options = complete(context.options.at(0), {
             type: 'alphabetical',
             order: 'asc',
-            ignoreCase: false,
             spreadLast: false,
+            ignoreCase: true,
           } as const)
 
           let nodes: ({ type: string } & SortingNode)[] = elements

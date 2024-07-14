@@ -47,7 +47,7 @@ export default createEslintRule<Options, MESSAGE_ID>({
           },
           ignoreCase: {
             type: 'boolean',
-            default: false,
+            default: true,
           },
           groupKind: {
             enum: ['mixed', 'values-first', 'types-first'],
@@ -74,9 +74,9 @@ export default createEslintRule<Options, MESSAGE_ID>({
       if (node.specifiers.length > 1) {
         let options = complete(context.options.at(0), {
           type: 'alphabetical',
-          ignoreCase: false,
-          order: 'asc',
           groupKind: 'mixed',
+          ignoreCase: true,
+          order: 'asc',
         } as const)
 
         let nodes: SortingNode[] = node.specifiers.map(specifier => ({

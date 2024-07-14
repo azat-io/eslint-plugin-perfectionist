@@ -133,12 +133,12 @@ export default {
     'recommended-alphabetical': createConfigWithOptions({
       type: 'alphabetical',
       order: 'asc',
-      ignoreCase: false,
+      ignoreCase: true,
     }),
     'recommended-natural': createConfigWithOptions({
       type: 'natural',
       order: 'asc',
-      ignoreCase: false,
+      ignoreCase: true,
     }),
     'recommended-line-length': createConfigWithOptions({
       type: 'line-length',

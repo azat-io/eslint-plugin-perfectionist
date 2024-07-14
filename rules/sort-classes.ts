@@ -72,7 +72,7 @@ export default createEslintRule<Options, MESSAGE_ID>({
           },
           ignoreCase: {
             type: 'boolean',
-            default: false,
+            default: true,
           },
           order: {
             enum: ['asc', 'desc'],
@@ -103,7 +103,7 @@ export default createEslintRule<Options, MESSAGE_ID>({
         let options = complete(context.options.at(0), {
           groups: ['property', 'constructor', 'method', 'unknown'],
           type: 'alphabetical',
-          ignoreCase: false,
+          ignoreCase: true,
           customGroups: {},
           order: 'asc',
         } as const)

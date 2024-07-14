@@ -47,7 +47,7 @@ export default createEslintRule<Options, MESSAGE_ID>({
           },
           ignoreCase: {
             type: 'boolean',
-            default: false,
+            default: true,
           },
         },
         additionalProperties: false,
@@ -66,7 +66,7 @@ export default createEslintRule<Options, MESSAGE_ID>({
   create: context => {
     let options = complete(context.options.at(0), {
       type: 'alphabetical',
-      ignoreCase: false,
+      ignoreCase: true,
       order: 'asc',
     } as const)
 
