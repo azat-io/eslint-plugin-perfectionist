@@ -2849,5 +2849,25 @@ describe(RULE_NAME, () => {
         },
       ],
     })
+
+    ruleTester.run(`${RULE_NAME}: allow to ignore pattern`, rule, {
+      valid: [
+        {
+          code: dedent`
+            ignore({
+              c: 'c',
+              b: 'bb',
+              a: 'aaa',
+            })
+          `,
+          options: [
+            {
+              ignorePattern: ['ignore'],
+            },
+          ],
+        },
+      ],
+      invalid: [],
+    })
   })
 })
