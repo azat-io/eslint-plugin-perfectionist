@@ -130,22 +130,34 @@ export default createEslintRule<Options, MESSAGE_ID>({
 
       let shouldIgnore = false
       if (options.ignorePattern.length) {
-        let parent = getNodeParent(node, ['VariableDeclarator', 'Property'])
+        let varParent = getNodeParent(node, ['VariableDeclarator', 'Property'])
         let parentId =
-          parent?.type === 'VariableDeclarator'
-            ? parent.id
-            : (parent as TSESTree.Property | null)?.key
-        let variableIdentifier =
+          varParent?.type === 'VariableDeclarator'
+            ? varParent.id
+            : (varParent as TSESTree.Property | null)?.key
+
+        let varIdentifier =
           parentId?.type === 'Identifier' ? parentId.name : null
 
-        if (
-          typeof variableIdentifier === 'string' &&
+        let checkMatch = (identifier: string) =>
           options.ignorePattern.some(pattern =>
-            minimatch(variableIdentifier, pattern, {
+            minimatch(identifier, pattern, {
               nocomment: true,
             }),
           )
-        ) {
+
+        if (typeof varIdentifier === 'string' && checkMatch(varIdentifier)) {
+          shouldIgnore = true
+        }
+
+        let callParent = getNodeParent(node, ['CallExpression'])
+        let callIdentifier =
+          callParent?.type === 'CallExpression' &&
+          callParent.callee.type === 'Identifier'
+            ? callParent.callee.name
+            : null
+
+        if (callIdentifier && checkMatch(callIdentifier)) {
           shouldIgnore = true
         }
       }
