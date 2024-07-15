@@ -34,10 +34,10 @@ This configuration will allow you to navigate through your code faster because a
     {
       source: dedent`
         // eslint.config.js
-        import perfectionistNatural from 'eslint-plugin-perfectionist/configs/recommended-natural'
+        import perfectionist from 'eslint-plugin-perfectionist'
 
         export default [
-          perfectionistNatural,
+          perfectionist.configs['recommended-natural'],
         ]
       `,
       name: 'Flat Config',
@@ -48,7 +48,7 @@ This configuration will allow you to navigate through your code faster because a
         // .eslintrc.js
         export default {
           extends: [
-            'plugin:perfectionist/recommended-natural',
+            'plugin:perfectionist/recommended-natural-legacy',
           ],
         }
       `,
