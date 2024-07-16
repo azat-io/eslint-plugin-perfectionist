@@ -27,10 +27,10 @@ It makes it just a tiny bit faster to find a declaration in a large list. Rememb
     {
       source: dedent`
         // eslint.config.js
-        import perfectionistAlphabetical from 'eslint-plugin-perfectionist/configs/recommended-alphabetical'
+        import perfectionist from 'eslint-plugin-perfectionist'
 
         export default [
-          perfectionistAlphabetical,
+          perfectionist.configs['recommended-alphabetical'],
         ]
       `,
       name: 'Flat Config',
@@ -41,7 +41,7 @@ It makes it just a tiny bit faster to find a declaration in a large list. Rememb
         // .eslintrc.js
         export default {
           extends: [
-            'plugin:perfectionist/recommended-alphabetical',
+            'plugin:perfectionist/recommended-alphabetical-legacy',
           ],
         }
       `,
