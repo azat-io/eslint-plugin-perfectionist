@@ -74,9 +74,16 @@ export default defineConfig({
       formats: ['cjs', 'es'],
     },
     rollupOptions: {
+      onwarn: (warning, warn) => {
+        let suppressedCodes = ['MIXED_EXPORTS']
+
+        if (!suppressedCodes.includes(warning.code ?? '')) {
+          warn(warning)
+        }
+      },
       output: {
         preserveModules: true,
-        exports: 'named',
+        exports: 'auto',
       },
       external: (id: string) => !id.startsWith('.') && !path.isAbsolute(id),
     },

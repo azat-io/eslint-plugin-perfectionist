@@ -26,7 +26,12 @@ interface BaseOptions {
 
 type RuleSeverity = 'error' | 'warn' | 'off'
 
-type RuleDeclaration = [RuleSeverity, { [key: string]: unknown }?]
+type RuleDeclaration = [RuleSeverity, Record<string, unknown>?]
+
+let name = 'perfectionist'
+
+let formatRuleNames = <T extends unknown>(rules: Record<string, T>) =>
+  Object.fromEntries(Object.entries(rules).map(([key, value]) => [`${name}/${key}`, value]))
 
 let plugin = {
   rules: {
@@ -49,17 +54,11 @@ let plugin = {
     [sortEnumsName]: sortEnums,
     [sortMapsName]: sortMaps,
   },
-  name: 'perfectionist',
+  name,
 } as unknown as ESLint.Plugin
 
-let getRules = (
-  options: BaseOptions,
-): {
-  [key: string]: RuleDeclaration
-} => {
-  let recommendedRules: {
-    [key: string]: RuleDeclaration
-  } = {
+let getRules = (options: BaseOptions): Record<string, RuleDeclaration> => {
+  let recommendedRules: Record<string, RuleDeclaration> = {
     [sortImportsName]: [
       'error',
       {
@@ -125,9 +124,10 @@ let getRules = (
     [sortEnumsName]: ['error'],
     [sortMapsName]: ['error'],
   }
+
   return Object.fromEntries(
-    Object.entries(recommendedRules).map(([key, [message, baseOptions = {}]]) => [
-      `perfectionist/${key}`,
+    Object.entries(formatRuleNames(recommendedRules)).map(([key, [message, baseOptions = {}]]) => [
+      key,
       [message, Object.assign(baseOptions, options)],
     ]),
   )
@@ -135,14 +135,14 @@ let getRules = (
 
 let createConfig = (options: BaseOptions): Linter.FlatConfig => ({
   plugins: {
-    perfectionist: plugin,
+    [name]: plugin,
   },
   rules: getRules(options),
 })
 
 let createLegacyConfig = (options: BaseOptions): Linter.Config => ({
-  plugins: ['perfectionist'],
   rules: getRules(options),
+  plugins: [name],
 })
 
 export default {
