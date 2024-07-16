@@ -36,10 +36,10 @@ This configuration will make your code prettier and more pleasing to the eye.
     {
       source: dedent`
         // eslint.config.js
-        import perfectionistLineLength from 'eslint-plugin-perfectionist/configs/recommended-line-length'
+        import perfectionist from 'eslint-plugin-perfectionist'
 
         export default [
-          perfectionistLineLength,
+          perfectionist.configs['recommended-line-length'],
         ]
       `,
       name: 'Flat Config',
@@ -50,7 +50,7 @@ This configuration will make your code prettier and more pleasing to the eye.
         // .eslintrc.js
         export default {
           extends: [
-            'plugin:perfectionist/recommended-line-length',
+            'plugin:perfectionist/recommended-line-length-legacy',
           ],
         }
       `,

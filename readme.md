@@ -55,27 +55,7 @@ npm install --save-dev eslint-plugin-perfectionist
 
 Add `eslint-plugin-perfectionist` to the plugins section of the ESLint configuration file and define the list of rules you will use.
 
-### Legacy Config ([`.eslintrc`](https://eslint.org/docs/latest/use/configure/configuration-files))
-
-<!-- prettier-ignore -->
-```json
-{
-  "plugins": [
-    "perfectionist"
-  ],
-  "rules": {
-    "perfectionist/sort-objects": [
-      "error",
-      {
-        "type": "natural",
-        "order": "asc"
-      }
-    ]
-  }
-}
-```
-
-### Flat Config ([`eslint.config.js`](https://eslint.org/docs/latest/use/configure/configuration-files-new)) (requires eslint >= v8.23.0)
+### Flat Config ([`eslint.config.js`](https://eslint.org/docs/latest/use/configure/configuration-files))
 
 ```js
 import perfectionist from 'eslint-plugin-perfectionist'
@@ -98,30 +78,50 @@ export default [
 ]
 ```
 
+### Legacy Config ([`.eslintrc`](https://eslint.org/docs/latest/use/configure/configuration-files-deprecated))
+
+<!-- prettier-ignore -->
+```json
+{
+  "plugins": [
+    "perfectionist"
+  ],
+  "rules": {
+    "perfectionist/sort-objects": [
+      "error",
+      {
+        "type": "natural",
+        "order": "asc"
+      }
+    ]
+  }
+}
+```
+
 ## ⚙️ Configs
 
 The easiest way to use `eslint-plugin-perfectionist` is to use ready-made configs. Config files use all the rules of the current plugin, but you can override them.
 
-### Legacy Config ([`.eslintrc`](https://eslint.org/docs/latest/use/configure/configuration-files))
+### Flat Config ([`eslint.config.js`](https://eslint.org/docs/latest/use/configure/configuration-files))
+
+<!-- prettier-ignore -->
+```js
+import perfectionist from 'eslint-plugin-perfectionist'
+
+export default [
+  perfectionist.configs['recommended-natural'],
+]
+```
+
+### Legacy Config ([`.eslintrc`](https://eslint.org/docs/latest/use/configure/configuration-files-deprecated))
 
 <!-- prettier-ignore -->
 ```json
 {
   "extends": [
-    "plugin:perfectionist/recommended-natural"
+    "plugin:perfectionist/recommended-natural-legacy"
   ]
 }
-```
-
-### Flat Config ([`eslint.config.js`](https://eslint.org/docs/latest/use/configure/configuration-files-new))
-
-<!-- prettier-ignore -->
-```js
-import perfectionistNatural from 'eslint-plugin-perfectionist/configs/recommended-natural'
-
-export default [
-  perfectionistNatural,
-]
 ```
 
 ### List of Configs

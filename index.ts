@@ -16,19 +16,42 @@ import sortClasses, { RULE_NAME as sortClassesName } from './rules/sort-classes'
 import sortEnums, { RULE_NAME as sortEnumsName } from './rules/sort-enums'
 import sortMaps, { RULE_NAME as sortMapsName } from './rules/sort-maps'
 
+interface BaseOptions {
+  type: 'alphabetical' | 'line-length' | 'natural'
+  order: 'desc' | 'asc'
+}
+
 type RuleSeverity = 'error' | 'warn' | 'off'
 
 type RuleDeclaration = [RuleSeverity, { [key: string]: unknown }?]
 
-let createConfigWithOptions = (options: {
-  type: 'alphabetical' | 'line-length' | 'natural'
-  order: 'desc' | 'asc'
-  ignoreCase?: boolean
-}): {
+let plugin = {
   rules: {
-    [key: string]: RuleDeclaration
-  }
-  plugins: ['perfectionist']
+    [sortIntersectionTypesName]: sortIntersectionTypes,
+    [sortSvelteAttributesName]: sortSvelteAttributes,
+    [sortAstroAttributesName]: sortAstroAttributes,
+    [sortArrayIncludesName]: sortArrayIncludes,
+    [sortVueAttributesName]: sortVueAttributes,
+    [sortNamedExportsName]: sortNamedExports,
+    [sortNamedImportsName]: sortNamedImports,
+    [sortObjectTypesName]: sortObjectTypes,
+    [sortInterfacesName]: sortInterfaces,
+    [sortUnionTypesName]: sortUnionTypes,
+    [sortJsxPropsName]: sortJsxProps,
+    [sortClassesName]: sortClasses,
+    [sortExportsName]: sortExports,
+    [sortImportsName]: sortImports,
+    [sortObjectsName]: sortObjects,
+    [sortEnumsName]: sortEnums,
+    [sortMapsName]: sortMaps,
+  },
+  name: 'perfectionist',
+}
+
+let getRules = (
+  options: BaseOptions,
+): {
+  [key: string]: RuleDeclaration
 } => {
   let recommendedRules: {
     [key: string]: RuleDeclaration
@@ -97,53 +120,52 @@ let createConfigWithOptions = (options: {
     [sortEnumsName]: ['error'],
     [sortMapsName]: ['error'],
   }
-  return {
-    rules: Object.fromEntries(
-      Object.entries(recommendedRules).map(([key, [message, baseOptions = {}]]) => [
-        `perfectionist/${key}`,
-        [message, Object.assign(baseOptions, options)],
-      ]),
-    ),
-    plugins: ['perfectionist'],
-  }
+  return Object.fromEntries(
+    Object.entries(recommendedRules).map(([key, [message, baseOptions = {}]]) => [
+      `perfectionist/${key}`,
+      [message, Object.assign(baseOptions, options)],
+    ]),
+  )
 }
 
-/* eslint-disable perfectionist/sort-objects */
-export default {
-  rules: {
-    [sortArrayIncludesName]: sortArrayIncludes,
-    [sortAstroAttributesName]: sortAstroAttributes,
-    [sortClassesName]: sortClasses,
-    [sortEnumsName]: sortEnums,
-    [sortExportsName]: sortExports,
-    [sortImportsName]: sortImports,
-    [sortInterfacesName]: sortInterfaces,
-    [sortJsxPropsName]: sortJsxProps,
-    [sortMapsName]: sortMaps,
-    [sortNamedExportsName]: sortNamedExports,
-    [sortNamedImportsName]: sortNamedImports,
-    [sortObjectTypesName]: sortObjectTypes,
-    [sortObjectsName]: sortObjects,
-    [sortSvelteAttributesName]: sortSvelteAttributes,
-    [sortIntersectionTypesName]: sortIntersectionTypes,
-    [sortUnionTypesName]: sortUnionTypes,
-    [sortVueAttributesName]: sortVueAttributes,
+let createConfig = (options: BaseOptions) => ({
+  plugins: {
+    perfectionist: plugin,
   },
+  rules: getRules(options),
+})
+
+let createLegacyConfig = (options: BaseOptions) => ({
+  plugins: ['perfectionist'],
+  rules: getRules(options),
+})
+
+export default {
+  ...plugin,
   configs: {
-    'recommended-alphabetical': createConfigWithOptions({
+    'recommended-alphabetical-legacy': createLegacyConfig({
       type: 'alphabetical',
       order: 'asc',
-      ignoreCase: true,
     }),
-    'recommended-natural': createConfigWithOptions({
-      type: 'natural',
-      order: 'asc',
-      ignoreCase: true,
-    }),
-    'recommended-line-length': createConfigWithOptions({
+    'recommended-line-length-legacy': createLegacyConfig({
       type: 'line-length',
       order: 'desc',
     }),
+    'recommended-natural-legacy': createLegacyConfig({
+      type: 'natural',
+      order: 'asc',
+    }),
+    'recommended-alphabetical': createConfig({
+      type: 'alphabetical',
+      order: 'asc',
+    }),
+    'recommended-line-length': createConfig({
+      type: 'line-length',
+      order: 'desc',
+    }),
+    'recommended-natural': createConfig({
+      type: 'natural',
+      order: 'asc',
+    }),
   },
-  name: 'eslint-plugin-perfectionist',
 }

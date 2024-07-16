@@ -44,18 +44,6 @@
       "require": "./dist/index.js",
       "import": "./dist/index.mjs"
     },
-    "./configs/recommended-alphabetical": {
-      "require": "./dist/configs/recommended-alphabetical.js",
-      "import": "./dist/configs/recommended-alphabetical.mjs"
-    },
-    "./configs/recommended-line-length": {
-      "require": "./dist/configs/recommended-line-length.js",
-      "import": "./dist/configs/recommended-line-length.mjs"
-    },
-    "./configs/recommended-natural": {
-      "require": "./dist/configs/recommended-natural.js",
-      "import": "./dist/configs/recommended-natural.mjs"
-    },
     "./package.json": "./package.json"
   },
   "peerDependenciesMeta": {
