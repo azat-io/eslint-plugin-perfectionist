@@ -8,11 +8,11 @@ export enum OptionalityOrder {
 
 export type PartitionComment = string[] | boolean | string
 
-export interface SortingNode {
+export interface SortingNode<Node extends TSESTree.Node = TSESTree.Node> {
   hasMultipleImportDeclarations?: boolean
   dependencies?: string[]
-  node: TSESTree.Node
   group?: string
   name: string
   size: number
+  node: Node
 }
