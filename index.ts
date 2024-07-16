@@ -6,6 +6,7 @@ import sortVueAttributes, { RULE_NAME as sortVueAttributesName } from './rules/s
 import sortNamedExports, { RULE_NAME as sortNamedExportsName } from './rules/sort-named-exports'
 import sortNamedImports, { RULE_NAME as sortNamedImportsName } from './rules/sort-named-imports'
 import sortObjectTypes, { RULE_NAME as sortObjectTypesName } from './rules/sort-object-types'
+import sortSwitchCase, { RULE_NAME as sortSwitchCaseName } from './rules/sort-switch-case'
 import sortUnionTypes, { RULE_NAME as sortUnionTypesName } from './rules/sort-union-types'
 import sortInterfaces, { RULE_NAME as sortInterfacesName } from './rules/sort-interfaces'
 import sortJsxProps, { RULE_NAME as sortJsxPropsName } from './rules/sort-jsx-props'
@@ -36,6 +37,7 @@ let plugin = {
     [sortNamedImportsName]: sortNamedImports,
     [sortObjectTypesName]: sortObjectTypes,
     [sortInterfacesName]: sortInterfaces,
+    [sortSwitchCaseName]: sortSwitchCase,
     [sortUnionTypesName]: sortUnionTypes,
     [sortJsxPropsName]: sortJsxProps,
     [sortClassesName]: sortClasses,
@@ -115,6 +117,7 @@ let getRules = (
     [sortObjectTypesName]: ['error'],
     [sortUnionTypesName]: ['error'],
     [sortInterfacesName]: ['error'],
+    [sortSwitchCaseName]: ['error'],
     [sortJsxPropsName]: ['error'],
     [sortExportsName]: ['error'],
     [sortEnumsName]: ['error'],
