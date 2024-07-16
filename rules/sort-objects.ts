@@ -10,6 +10,7 @@ import { getCommentBefore } from '../utils/get-comment-before'
 import { createEslintRule } from '../utils/create-eslint-rule'
 import { getLinesBetween } from '../utils/get-lines-between'
 import { getGroupNumber } from '../utils/get-group-number'
+import { getSourceCode } from '../utils/get-source-code'
 import { getNodeParent } from '../utils/get-node-parent'
 import { toSingleLine } from '../utils/to-single-line'
 import { rangeToDiff } from '../utils/range-to-diff'
@@ -188,6 +189,7 @@ export default createEslintRule<Options, MESSAGE_ID>({
           return
         }
 
+        let sourceCode = getSourceCode(context)
         let formatProperties = (
           props: (
             | TSESTree.ObjectLiteralElement
@@ -205,7 +207,7 @@ export default createEslintRule<Options, MESSAGE_ID>({
                 return accumulator
               }
 
-              let comment = getCommentBefore(prop, context.sourceCode)
+              let comment = getCommentBefore(prop, sourceCode)
               let lastProp = accumulator.at(-1)?.at(-1)
 
               if (
@@ -227,7 +229,7 @@ export default createEslintRule<Options, MESSAGE_ID>({
               } else if (prop.key.type === 'Literal') {
                 name = `${prop.key.value}`
               } else {
-                name = context.sourceCode.text.slice(...prop.key.range)
+                name = sourceCode.text.slice(...prop.key.range)
               }
 
               let propSortingNode = {
@@ -239,7 +241,7 @@ export default createEslintRule<Options, MESSAGE_ID>({
               if (
                 options.partitionByNewLine &&
                 lastProp &&
-                getLinesBetween(context.sourceCode, lastProp, propSortingNode)
+                getLinesBetween(sourceCode, lastProp, propSortingNode)
               ) {
                 accumulator.push([])
               }
@@ -363,15 +365,9 @@ export default createEslintRule<Options, MESSAGE_ID>({
                   sortedNodes.push(...sortNodes(grouped[group], options))
                 }
 
-                return makeFixes(
-                  fixer,
-                  nodes,
-                  sortedNodes,
-                  context.sourceCode,
-                  {
-                    partitionComment: options.partitionByComment,
-                  },
-                )
+                return makeFixes(fixer, nodes, sortedNodes, sourceCode, {
+                  partitionComment: options.partitionByComment,
+                })
               }
 
               context.report({

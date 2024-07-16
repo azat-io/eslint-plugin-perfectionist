@@ -3,6 +3,7 @@ import type { SortingNode } from '../typings'
 import { createEslintRule } from '../utils/create-eslint-rule'
 import { getLinesBetween } from '../utils/get-lines-between'
 import { getGroupNumber } from '../utils/get-group-number'
+import { getSourceCode } from '../utils/get-source-code'
 import { toSingleLine } from '../utils/to-single-line'
 import { rangeToDiff } from '../utils/range-to-diff'
 import { isPositive } from '../utils/is-positive'
@@ -94,10 +95,12 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
           groups: [],
         } as const)
 
+        let sourceCode = getSourceCode(context)
+
         let formattedMembers: SortingNode[][] = node.members.reduce(
           (accumulator: SortingNode[][], member) => {
             let name: string
-            let raw = context.sourceCode.text.slice(
+            let raw = sourceCode.text.slice(
               member.range.at(0),
               member.range.at(1),
             )
@@ -116,7 +119,7 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
               } else if (member.key.type === 'Literal') {
                 name = `${member.key.value}`
               } else {
-                name = context.sourceCode.text.slice(
+                name = sourceCode.text.slice(
                   member.range.at(0),
                   member.typeAnnotation?.range.at(0),
                 )
@@ -126,14 +129,11 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
                 member.typeAnnotation?.range.at(0) ?? member.range.at(1)!
 
               name = formatName(
-                context.sourceCode.text.slice(member.range.at(0), endIndex),
+                sourceCode.text.slice(member.range.at(0), endIndex),
               )
             } else {
               name = formatName(
-                context.sourceCode.text.slice(
-                  member.range.at(0),
-                  member.range.at(1),
-                ),
+                sourceCode.text.slice(member.range.at(0), member.range.at(1)),
               )
             }
 
@@ -155,7 +155,7 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
             if (
               options.partitionByNewLine &&
               lastMember &&
-              getLinesBetween(context.sourceCode, lastMember, memberSortingNode)
+              getLinesBetween(sourceCode, lastMember, memberSortingNode)
             ) {
               accumulator.push([])
             }
@@ -213,12 +213,7 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
                     sortedNodes.push(...sortNodes(grouped[group], options))
                   }
 
-                  return makeFixes(
-                    fixer,
-                    nodes,
-                    sortedNodes,
-                    context.sourceCode,
-                  )
+                  return makeFixes(fixer, nodes, sortedNodes, sourceCode)
                 },
               })
             }

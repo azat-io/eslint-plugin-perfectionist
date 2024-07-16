@@ -6,6 +6,7 @@ import { createEslintRule } from '../utils/create-eslint-rule'
 import { isMemberOptional } from '../utils/is-member-optional'
 import { getLinesBetween } from '../utils/get-lines-between'
 import { getGroupNumber } from '../utils/get-group-number'
+import { getSourceCode } from '../utils/get-source-code'
 import { toSingleLine } from '../utils/to-single-line'
 import { rangeToDiff } from '../utils/range-to-diff'
 import { isPositive } from '../utils/is-positive'
@@ -117,6 +118,8 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
           groups: [],
         } as const)
 
+        let sourceCode = getSourceCode(context)
+
         if (
           !options.ignorePattern.some(pattern =>
             minimatch(node.id.name, pattern, {
@@ -148,24 +151,18 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
                     element.typeAnnotation?.range.at(0) ??
                     element.range.at(1)! - (element.optional ? '?'.length : 0)
 
-                  name = context.sourceCode.text.slice(element.range.at(0), end)
+                  name = sourceCode.text.slice(element.range.at(0), end)
                 }
               } else if (element.type === 'TSIndexSignature') {
                 let endIndex: number =
                   element.typeAnnotation?.range.at(0) ?? element.range.at(1)!
 
-                name = context.sourceCode.text.slice(
-                  element.range.at(0),
-                  endIndex,
-                )
+                name = sourceCode.text.slice(element.range.at(0), endIndex)
               } else {
                 let endIndex: number =
                   element.returnType?.range.at(0) ?? element.range.at(1)!
 
-                name = context.sourceCode.text.slice(
-                  element.range.at(0),
-                  endIndex,
-                )
+                name = sourceCode.text.slice(element.range.at(0), endIndex)
               }
 
               let elementSortingNode = {
@@ -177,11 +174,7 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
               if (
                 options.partitionByNewLine &&
                 lastElement &&
-                getLinesBetween(
-                  context.sourceCode,
-                  lastElement,
-                  elementSortingNode,
-                )
+                getLinesBetween(sourceCode, lastElement, elementSortingNode)
               ) {
                 accumulator.push([])
               }
@@ -310,12 +303,7 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
                       sortedNodes = toSorted(nodes)
                     }
 
-                    return makeFixes(
-                      fixer,
-                      nodes,
-                      sortedNodes,
-                      context.sourceCode,
-                    )
+                    return makeFixes(fixer, nodes, sortedNodes, sourceCode)
                   },
                 })
               }

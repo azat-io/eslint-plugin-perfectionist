@@ -2,6 +2,7 @@ import type { SortingNode } from '../typings'
 
 import { createEslintRule } from '../utils/create-eslint-rule'
 import { getGroupNumber } from '../utils/get-group-number'
+import { getSourceCode } from '../utils/get-source-code'
 import { rangeToDiff } from '../utils/range-to-diff'
 import { isPositive } from '../utils/is-positive'
 import { sortNodes } from '../utils/sort-nodes'
@@ -79,6 +80,8 @@ export default createEslintRule<Options, MESSAGE_ID>({
           order: 'asc',
         } as const)
 
+        let sourceCode = getSourceCode(context)
+
         let nodes: SortingNode[] = node.specifiers.map(specifier => ({
           size: rangeToDiff(specifier.range),
           name: specifier.local.name,
@@ -115,8 +118,7 @@ export default createEslintRule<Options, MESSAGE_ID>({
                 right: right.name,
               },
               node: right.node,
-              fix: fixer =>
-                makeFixes(fixer, nodes, sortedNodes, context.sourceCode),
+              fix: fixer => makeFixes(fixer, nodes, sortedNodes, sourceCode),
             })
           }
         })

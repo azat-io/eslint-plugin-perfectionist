@@ -7,6 +7,7 @@ import type { SortingNode } from '../typings'
 
 import { createEslintRule } from '../utils/create-eslint-rule'
 import { getGroupNumber } from '../utils/get-group-number'
+import { getSourceCode } from '../utils/get-source-code'
 import { rangeToDiff } from '../utils/range-to-diff'
 import { isPositive } from '../utils/is-positive'
 import { useGroups } from '../utils/use-groups'
@@ -107,9 +108,11 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
             groups: [],
           } as const)
 
+          let sourceCode = getSourceCode(context)
+
           let shouldIgnore = false
           if (options.ignorePattern.length) {
-            let tagName = context.sourceCode.text.slice(
+            let tagName = sourceCode.text.slice(
               ...node.openingElement.name.range,
             )
             shouldIgnore = options.ignorePattern.some(pattern =>
@@ -207,12 +210,7 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
                         sortedNodes.push(...sortNodes(grouped[group], options))
                       }
 
-                      return makeFixes(
-                        fixer,
-                        nodes,
-                        sortedNodes,
-                        context.sourceCode,
-                      )
+                      return makeFixes(fixer, nodes, sortedNodes, sourceCode)
                     },
                   })
                 }

@@ -7,6 +7,7 @@ import type { SortingNode } from '../typings'
 
 import { createEslintRule } from '../utils/create-eslint-rule'
 import { getGroupNumber } from '../utils/get-group-number'
+import { getSourceCode } from '../utils/get-source-code'
 import { rangeToDiff } from '../utils/range-to-diff'
 import { isPositive } from '../utils/is-positive'
 import { useGroups } from '../utils/use-groups'
@@ -85,15 +86,17 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
     },
   ],
   create: context => {
+    let sourceCode = getSourceCode(context)
+
     if (path.extname(context.filename) !== '.vue') {
       return {}
     }
 
-    if (!('defineTemplateBodyVisitor' in context.sourceCode.parserServices!)) {
+    if (!('defineTemplateBodyVisitor' in sourceCode.parserServices!)) {
       return {}
     }
 
-    let { defineTemplateBodyVisitor } = context.sourceCode.parserServices as {
+    let { defineTemplateBodyVisitor } = sourceCode.parserServices as {
       defineTemplateBodyVisitor: (mapper: {
         [key: string]: (node: AST.VStartTag) => void
       }) => {}
@@ -132,7 +135,7 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
               ) {
                 name = attribute.key.rawName
               } else {
-                name = context.sourceCode.text.slice(...attribute.key.range)
+                name = sourceCode.text.slice(...attribute.key.range)
               }
 
               setCustomGroups(options.customGroups, name)
@@ -201,12 +204,7 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
                       sortedNodes.push(...sortNodes(grouped[group], options))
                     }
 
-                    return makeFixes(
-                      fixer,
-                      nodes,
-                      sortedNodes,
-                      context.sourceCode,
-                    )
+                    return makeFixes(fixer, nodes, sortedNodes, sourceCode)
                   },
                 })
               }

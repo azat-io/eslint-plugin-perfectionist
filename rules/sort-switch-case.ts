@@ -3,6 +3,7 @@ import type { TSESTree } from '@typescript-eslint/types'
 import type { SortingNode } from '../typings'
 
 import { createEslintRule } from '../utils/create-eslint-rule'
+import { getSourceCode } from '../utils/get-source-code'
 import { rangeToDiff } from '../utils/range-to-diff'
 import { isPositive } from '../utils/is-positive'
 import { makeFixes } from '../utils/make-fixes'
@@ -71,6 +72,8 @@ export default createEslintRule<Options, MESSAGE_ID>({
         ignoreCase: false,
         order: 'asc',
       } as const)
+
+      let sourceCode = getSourceCode(context)
 
       let isDiscriminantIdentifier = node.discriminant.type === 'Identifier'
       let isCasesHasBreak = node.cases
@@ -187,7 +190,7 @@ export default createEslintRule<Options, MESSAGE_ID>({
                   }
                 }
 
-                return makeFixes(fixer, nodes, sortedNodes, context.sourceCode)
+                return makeFixes(fixer, nodes, sortedNodes, sourceCode)
               },
             })
           }

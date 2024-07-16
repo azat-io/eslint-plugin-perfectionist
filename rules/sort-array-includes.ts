@@ -3,6 +3,7 @@ import type { TSESTree } from '@typescript-eslint/types'
 import type { SortingNode } from '../typings'
 
 import { createEslintRule } from '../utils/create-eslint-rule'
+import { getSourceCode } from '../utils/get-source-code'
 import { toSingleLine } from '../utils/to-single-line'
 import { rangeToDiff } from '../utils/range-to-diff'
 import { isPositive } from '../utils/is-positive'
@@ -91,6 +92,7 @@ export default createEslintRule<Options, MESSAGE_ID>({
             ignoreCase: true,
           } as const)
 
+          let sourceCode = getSourceCode(context)
           let nodes: ({ type: string } & SortingNode)[] = elements
             .reduce(
               (
@@ -102,7 +104,7 @@ export default createEslintRule<Options, MESSAGE_ID>({
                     name:
                       element.type === 'Literal'
                         ? `${element.value}`
-                        : context.sourceCode.text.slice(...element.range),
+                        : sourceCode.text.slice(...element.range),
                     size: rangeToDiff(element.range),
                     type: element.type,
                     node: element,
@@ -153,12 +155,7 @@ export default createEslintRule<Options, MESSAGE_ID>({
                     }
                   }
 
-                  return makeFixes(
-                    fixer,
-                    nodes,
-                    sortedNodes,
-                    context.sourceCode,
-                  )
+                  return makeFixes(fixer, nodes, sortedNodes, sourceCode)
                 },
               })
             }
