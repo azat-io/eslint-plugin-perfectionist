@@ -3,6 +3,7 @@ import type { TSESTree } from '@typescript-eslint/types'
 import type { SortingNode } from '../typings'
 
 import { createEslintRule } from '../utils/create-eslint-rule'
+import { getSourceCode } from '../utils/get-source-code'
 import { rangeToDiff } from '../utils/range-to-diff'
 import { isPositive } from '../utils/is-positive'
 import { sortNodes } from '../utils/sort-nodes'
@@ -92,6 +93,8 @@ export default createEslintRule<Options, MESSAGE_ID>({
         }
       },
       'Program:exit': () => {
+        let sourceCode = getSourceCode(context)
+
         for (let nodes of parts) {
           pairwise(nodes, (left, right) => {
             if (isPositive(compare(left, right, options))) {
@@ -107,7 +110,7 @@ export default createEslintRule<Options, MESSAGE_ID>({
                     fixer,
                     nodes,
                     sortNodes(nodes, options),
-                    context.sourceCode,
+                    sourceCode,
                   ),
               })
             }

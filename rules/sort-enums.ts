@@ -3,6 +3,7 @@ import type { PartitionComment, SortingNode } from '../typings'
 import { isPartitionComment } from '../utils/is-partition-comment'
 import { createEslintRule } from '../utils/create-eslint-rule'
 import { getCommentBefore } from '../utils/get-comment-before'
+import { getSourceCode } from '../utils/get-source-code'
 import { toSingleLine } from '../utils/to-single-line'
 import { rangeToDiff } from '../utils/range-to-diff'
 import { isPositive } from '../utils/is-positive'
@@ -82,11 +83,12 @@ export default createEslintRule<Options, MESSAGE_ID>({
           order: 'asc',
         } as const)
 
+        let sourceCode = getSourceCode(context)
         let partitionComment = options.partitionByComment
 
         let formattedMembers: SortingNode[][] = node.members.reduce(
           (accumulator: SortingNode[][], member) => {
-            let comment = getCommentBefore(member, context.sourceCode)
+            let comment = getCommentBefore(member, sourceCode)
 
             if (
               partitionComment &&
@@ -99,7 +101,7 @@ export default createEslintRule<Options, MESSAGE_ID>({
             let name =
               member.id.type === 'Literal'
                 ? `${member.id.value}`
-                : `${context.sourceCode.text.slice(...member.id.range)}`
+                : `${sourceCode.text.slice(...member.id.range)}`
 
             let sortingNode = {
               name,
@@ -127,7 +129,7 @@ export default createEslintRule<Options, MESSAGE_ID>({
                     fixer,
                     nodes,
                     sortNodes(nodes, options),
-                    context.sourceCode,
+                    sourceCode,
                     { partitionComment },
                   ),
               })

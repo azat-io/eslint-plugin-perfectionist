@@ -4,6 +4,7 @@ import type { SortingNode } from '../typings'
 
 import { createEslintRule } from '../utils/create-eslint-rule'
 import { getGroupNumber } from '../utils/get-group-number'
+import { getSourceCode } from '../utils/get-source-code'
 import { getNodeRange } from '../utils/get-node-range'
 import { toSingleLine } from '../utils/to-single-line'
 import { rangeToDiff } from '../utils/range-to-diff'
@@ -108,6 +109,8 @@ export default createEslintRule<Options, MESSAGE_ID>({
           order: 'asc',
         } as const)
 
+        let sourceCode = getSourceCode(context)
+
         let nodes: SortingNode[] = node.body.map(member => {
           let name: string
           let { getGroup, defineGroup, setCustomGroups } = useGroups(
@@ -117,7 +120,7 @@ export default createEslintRule<Options, MESSAGE_ID>({
           if (member.type === 'StaticBlock') {
             name = 'static'
           } else if (member.type === 'TSIndexSignature') {
-            name = context.sourceCode.text.slice(
+            name = sourceCode.text.slice(
               member.range.at(0),
               member.typeAnnotation?.range.at(0) ?? member.range.at(1),
             )
@@ -125,7 +128,7 @@ export default createEslintRule<Options, MESSAGE_ID>({
             if (member.key.type === 'Identifier') {
               ;({ name } = member.key)
             } else {
-              name = context.sourceCode.text.slice(...member.key.range)
+              name = sourceCode.text.slice(...member.key.range)
             }
           }
 
@@ -273,12 +276,9 @@ export default createEslintRule<Options, MESSAGE_ID>({
                 for (let i = 0, max = formatted.length; i < max; i++) {
                   fixes.push(
                     fixer.replaceTextRange(
-                      getNodeRange(nodes.at(i)!.node, context.sourceCode),
-                      context.sourceCode.text.slice(
-                        ...getNodeRange(
-                          formatted.at(i)!.node,
-                          context.sourceCode,
-                        ),
+                      getNodeRange(nodes.at(i)!.node, sourceCode),
+                      sourceCode.text.slice(
+                        ...getNodeRange(formatted.at(i)!.node, sourceCode),
                       ),
                     ),
                   )

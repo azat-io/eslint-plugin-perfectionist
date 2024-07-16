@@ -7,6 +7,7 @@ import type { SortingNode } from '../typings'
 
 import { createEslintRule } from '../utils/create-eslint-rule'
 import { getGroupNumber } from '../utils/get-group-number'
+import { getSourceCode } from '../utils/get-source-code'
 import { rangeToDiff } from '../utils/range-to-diff'
 import { isPositive } from '../utils/is-positive'
 import { useGroups } from '../utils/use-groups'
@@ -100,6 +101,8 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
             groups: [],
           } as const)
 
+          let sourceCode = getSourceCode(context)
+
           let parts: SortingNode[][] = node.attributes.reduce(
             (accumulator: SortingNode[][], attribute) => {
               if (attribute.type === 'SvelteSpreadAttribute') {
@@ -114,12 +117,12 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
               )
 
               if (attribute.key.type === 'SvelteSpecialDirectiveKey') {
-                name = context.sourceCode.text.slice(...attribute.key.range)
+                name = sourceCode.text.slice(...attribute.key.range)
               } else {
                 if (typeof attribute.key.name === 'string') {
                   ;({ name } = attribute.key)
                 } else {
-                  name = context.sourceCode.text.slice(...attribute.key.range)
+                  name = sourceCode.text.slice(...attribute.key.range)
                 }
               }
 
@@ -196,12 +199,7 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
                       sortedNodes.push(...sortNodes(grouped[group], options))
                     }
 
-                    return makeFixes(
-                      fixer,
-                      nodes,
-                      sortedNodes,
-                      context.sourceCode,
-                    )
+                    return makeFixes(fixer, nodes, sortedNodes, sourceCode)
                   },
                 })
               }

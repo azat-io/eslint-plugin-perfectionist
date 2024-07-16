@@ -1,6 +1,7 @@
 import type { SortingNode } from '../typings'
 
 import { createEslintRule } from '../utils/create-eslint-rule'
+import { getSourceCode } from '../utils/get-source-code'
 import { toSingleLine } from '../utils/to-single-line'
 import { rangeToDiff } from '../utils/range-to-diff'
 import { isPositive } from '../utils/is-positive'
@@ -77,12 +78,14 @@ export default createEslintRule<Options, MESSAGE_ID>({
         order: 'asc',
       } as const)
 
+      let sourceCode = getSourceCode(context)
+
       let nodes: SortingNode[] = node.types.map(type => ({
         group:
           type.type === 'TSNullKeyword' || type.type === 'TSUndefinedKeyword'
             ? 'nullable'
             : 'unknown',
-        name: context.sourceCode.text.slice(...type.range),
+        name: sourceCode.text.slice(...type.range),
         size: rangeToDiff(type.range),
         node: type,
       }))
@@ -129,7 +132,7 @@ export default createEslintRule<Options, MESSAGE_ID>({
                 sortedNodes = sortNodes(nodes, options)
               }
 
-              return makeFixes(fixer, nodes, sortedNodes, context.sourceCode)
+              return makeFixes(fixer, nodes, sortedNodes, sourceCode)
             },
           })
         }
