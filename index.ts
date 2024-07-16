@@ -1,3 +1,5 @@
+import type { Linter, ESLint } from 'eslint'
+
 import sortIntersectionTypes, { RULE_NAME as sortIntersectionTypesName } from './rules/sort-intersection-types'
 import sortSvelteAttributes, { RULE_NAME as sortSvelteAttributesName } from './rules/sort-svelte-attributes'
 import sortAstroAttributes, { RULE_NAME as sortAstroAttributesName } from './rules/sort-astro-attributes'
@@ -48,7 +50,7 @@ let plugin = {
     [sortMapsName]: sortMaps,
   },
   name: 'perfectionist',
-}
+} as unknown as ESLint.Plugin
 
 let getRules = (
   options: BaseOptions,
@@ -131,14 +133,14 @@ let getRules = (
   )
 }
 
-let createConfig = (options: BaseOptions) => ({
+let createConfig = (options: BaseOptions): Linter.FlatConfig => ({
   plugins: {
     perfectionist: plugin,
   },
   rules: getRules(options),
 })
 
-let createLegacyConfig = (options: BaseOptions) => ({
+let createLegacyConfig = (options: BaseOptions): Linter.Config => ({
   plugins: ['perfectionist'],
   rules: getRules(options),
 })
