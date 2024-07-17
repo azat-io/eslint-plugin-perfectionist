@@ -216,14 +216,6 @@ Example:
 
 When `false`, this rule will be disabled for the styled-components like libraries.
 
-### ignorePattern
-
-<sub>(default: `[]`)</sub>
-
-If you need to ignore a rule for some interfaces, you can specify their names or a pattern to ignore, for example: `'Component*'` to ignore all interfaces whose names begin with the word Component.
-
-The [minimatch](https://github.com/isaacs/minimatch) library is used for pattern matching.
-
 ### partitionByComment
 
 <sub>(default: `false`)</sub>
@@ -237,6 +229,34 @@ The [minimatch](https://github.com/isaacs/minimatch) library is used for pattern
 <sub>(default: `false`)</sub>
 
 When `true`, does not sort the object's keys if there is an empty string between them.
+
+### ignorePattern
+
+<sub>(default: `[]`)</sub>
+
+If you need to ignore a rule for some interfaces, you can specify their names or a pattern to ignore, for example: `'Component*'` to ignore all interfaces whose names begin with the word Component.
+
+The [minimatch](https://github.com/isaacs/minimatch) library is used for pattern matching.
+
+### customIgnore
+
+<sub>(default: `[]`)</sub>
+
+If you need to ignore certain objects using a more complex algorithm, you can write your own function.
+
+This function takes two parameters as input: an object in the context of an abstract syntax tree and a filename. When writing this function I recommend you use [AST Explorer](https://astexplorer.net/), use TypeScript ESLint Parser. The function should return `true` if the object should be ignored.
+
+For example, if you want to use this rule only when destructuring objects, you can use this function:
+
+```js
+{
+  customIgnore: [
+    (object, fileName) => {
+      return node.type !== 'ObjectPattern'
+    },
+  ]
+}
+```
 
 ## Usage
 

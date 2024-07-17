@@ -2866,8 +2866,185 @@ describe(RULE_NAME, () => {
             },
           ],
         },
+        {
+          code: dedent`
+            const buttonStyles = {
+              background: "palevioletred",
+              display: 'flex',
+              flexDirection: 'column',
+              width: "50px",
+              height: "50px",
+            }
+          `,
+          options: [
+            {
+              customIgnore: [
+                node => {
+                  if (
+                    node.parent.type === 'VariableDeclarator' &&
+                    node.parent.id.type === 'Identifier'
+                  ) {
+                    return node.parent.id.name === 'buttonStyles'
+                  }
+                  return false
+                },
+              ],
+            },
+          ],
+        },
       ],
-      invalid: [],
+      invalid: [
+        {
+          code: dedent`
+            export default {
+              methods: {
+                foo() {},
+                bar() {},
+                baz() {},
+              },
+              data() {
+                return {
+                  background: "palevioletred",
+                  display: 'flex',
+                  flexDirection: 'column',
+                  width: "50px",
+                  height: "50px",
+                }
+              },
+            }
+          `,
+          output: dedent`
+            export default {
+              data() {
+                return {
+                  background: "palevioletred",
+                  display: 'flex',
+                  flexDirection: 'column',
+                  width: "50px",
+                  height: "50px",
+                }
+              },
+              methods: {
+                foo() {},
+                bar() {},
+                baz() {},
+              },
+            }
+          `,
+          options: [
+            {
+              ignorePattern: ['data', 'methods'],
+            },
+          ],
+          errors: [
+            {
+              messageId: 'unexpectedObjectsOrder',
+              data: {
+                left: 'methods',
+                right: 'data',
+              },
+            },
+          ],
+        },
+        {
+          code: dedent`
+            const buttonStyles = {
+              background: "palevioletred",
+              display: 'flex',
+              flexDirection: 'column',
+              width: "50px",
+              height: "50px",
+            }
+          `,
+          output: dedent`
+            const buttonStyles = {
+              background: "palevioletred",
+              display: 'flex',
+              flexDirection: 'column',
+              height: "50px",
+              width: "50px",
+            }
+          `,
+          options: [
+            {
+              customIgnore: [() => false],
+            },
+          ],
+          errors: [
+            {
+              messageId: 'unexpectedObjectsOrder',
+              data: {
+                left: 'width',
+                right: 'height',
+              },
+            },
+          ],
+        },
+      ],
+    })
+
+    ruleTester.run(`${RULE_NAME}: allow to use for destructuring only`, rule, {
+      valid: [
+        {
+          code: dedent`
+            let obj = {
+              c: 'c',
+              b: 'b',
+              a: 'a',
+            }
+
+            let { a, b, c } = obj
+          `,
+          options: [
+            {
+              customIgnore: [node => node.type !== 'ObjectPattern'],
+            },
+          ],
+        },
+      ],
+      invalid: [
+        {
+          code: dedent`
+            let obj = {
+              c: 'c',
+              b: 'b',
+              a: 'a',
+            }
+
+            let { c, b, a } = obj
+          `,
+          output: dedent`
+            let obj = {
+              c: 'c',
+              b: 'b',
+              a: 'a',
+            }
+
+            let { a, b, c } = obj
+          `,
+          options: [
+            {
+              customIgnore: [node => node.type !== 'ObjectPattern'],
+            },
+          ],
+          errors: [
+            {
+              messageId: 'unexpectedObjectsOrder',
+              data: {
+                left: 'c',
+                right: 'b',
+              },
+            },
+            {
+              messageId: 'unexpectedObjectsOrder',
+              data: {
+                left: 'b',
+                right: 'a',
+              },
+            },
+          ],
+        },
+      ],
     })
   })
 })
