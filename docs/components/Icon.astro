@@ -46,11 +46,15 @@ let stripSvgWrapper = (svgString: string): string => {
 ---
 
 <svg
-  class:list={{
-    [`size-${size}`]: true,
-    icon: true,
-    ...classList,
-  }}
+  class:list={Array.from(
+    new Set([
+      `size-${size}`,
+      'icon',
+      ...Object.keys(classList)
+        .map(currentClass => currentClass.split(' '))
+        .flat(),
+    ]),
+  )}
   {...extractSvgAttributes(icon)}
   {...props}
 >

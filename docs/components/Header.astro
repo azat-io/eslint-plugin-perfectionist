@@ -14,7 +14,12 @@ let { border = false } = Astro.props
 <header class:list={['header', border && 'border']}>
   <SkipToContent />
   <div class="home">
-    <button aria-label="Toggle navigation" class="menu-button" id="menu-button">
+    <button
+      aria-label="Toggle navigation"
+      class="menu-button"
+      id="menu-button"
+      type="button"
+    >
       <Icon name="menu" size="m" />
     </button>
     <a aria-label="Perfectionist home page" class="home-link" href="/">

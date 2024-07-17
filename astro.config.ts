@@ -15,6 +15,7 @@ import { remarkHeadings } from './docs/plugins/remark-headings'
 import { colorTheme } from './docs/utils/shiki-theme'
 
 let dirname = fileURLToPath(path.dirname(import.meta.url))
+let site = 'https://perfectionist.dev'
 
 export default defineConfig({
   markdown: {
@@ -40,6 +41,25 @@ export default defineConfig({
     ],
     remarkPlugins: [remarkSectionize, remarkHeadings],
   },
+  integrations: [
+    compress({
+      JavaScript: true,
+      Image: true,
+      CSS: false,
+      HTML: true,
+      SVG: true,
+    }),
+    svelte({
+      compilerOptions: {
+        cssHash: ({ hash, css }) => `s-${hash(css)}`,
+        discloseVersion: false,
+      },
+    }),
+    sitemap({
+      filter: page => !new RegExp(`^${site}/guide$`).test(page),
+    }),
+    mdx(),
+  ],
   vite: {
     css: {
       lightningcss: {
@@ -56,23 +76,6 @@ export default defineConfig({
       svelteSvg(),
     ],
   },
-  integrations: [
-    compress({
-      JavaScript: true,
-      Image: true,
-      CSS: false,
-      HTML: true,
-      SVG: true,
-    }),
-    svelte({
-      compilerOptions: {
-        cssHash: ({ hash, css }) => `s-${hash(css)}`,
-        discloseVersion: false,
-      },
-    }),
-    sitemap(),
-    mdx(),
-  ],
   prefetch: {
     defaultStrategy: 'viewport',
     prefetchAll: true,
@@ -91,6 +94,6 @@ export default defineConfig({
   },
   srcDir: path.join(dirname, './docs'),
   root: path.join(dirname, './docs'),
-  site: 'https://perfectionist.dev',
   compressHTML: true,
+  site,
 })

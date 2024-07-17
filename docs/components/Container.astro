@@ -10,7 +10,16 @@ let { class: className, tag = 'div', size = 'm', ...rest } = Astro.props
 let Tag = tag
 ---
 
-<Tag class:list={['container', `size-${size}`, className]} {...rest}>
+<Tag
+  class:list={Array.from(
+    new Set([
+      'container',
+      `size-${size}`,
+      ...(className?.split(' ').flat() ?? []),
+    ]),
+  )}
+  {...rest}
+>
   <slot />
 </Tag>
 
