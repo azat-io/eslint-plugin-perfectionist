@@ -3,7 +3,7 @@ import type { TSESLint } from '@typescript-eslint/utils'
 
 import { minimatch } from 'minimatch'
 
-import type { PartitionComment, SortingNode } from '../typings'
+import type { SortingNode } from '../typings'
 
 import { isPartitionComment } from '../utils/is-partition-comment'
 import { getCommentBefore } from '../utils/get-comment-before'
@@ -37,7 +37,7 @@ type Options = [
   Partial<{
     customGroups: { [key: string]: string[] | string }
     type: 'alphabetical' | 'line-length' | 'natural'
-    partitionByComment: PartitionComment
+    partitionByComment: string[] | boolean | string
     groups: (string[] | string)[]
     partitionByNewLine: boolean
     styledComponents: boolean

@@ -3,7 +3,6 @@ import { afterAll, describe, it } from 'vitest'
 import { dedent } from 'ts-dedent'
 
 import rule, { RULE_NAME } from '../rules/sort-interfaces'
-import { OptionalityOrder } from '../typings'
 
 describe(RULE_NAME, () => {
   RuleTester.describeSkip = describe.skip
@@ -669,7 +668,7 @@ describe(RULE_NAME, () => {
           options: [
             {
               ...options,
-              optionalityOrder: OptionalityOrder['optional-first'],
+              optionalityOrder: 'optional-first',
             },
           ],
         },
@@ -697,7 +696,7 @@ describe(RULE_NAME, () => {
           options: [
             {
               ...options,
-              optionalityOrder: OptionalityOrder['optional-first'],
+              optionalityOrder: 'optional-first',
             },
           ],
           errors: [
@@ -745,7 +744,7 @@ describe(RULE_NAME, () => {
                   last: 'a',
                 },
                 groups: ['unknown', 'last'],
-                optionalityOrder: OptionalityOrder['optional-first'],
+                optionalityOrder: 'optional-first',
               },
             ],
             errors: [
@@ -1337,7 +1336,7 @@ describe(RULE_NAME, () => {
           options: [
             {
               ...options,
-              optionalityOrder: OptionalityOrder['optional-first'],
+              optionalityOrder: 'optional-first',
             },
           ],
         },
@@ -1365,7 +1364,7 @@ describe(RULE_NAME, () => {
           options: [
             {
               ...options,
-              optionalityOrder: OptionalityOrder['optional-first'],
+              optionalityOrder: 'optional-first',
             },
           ],
           errors: [
@@ -1968,7 +1967,7 @@ describe(RULE_NAME, () => {
           options: [
             {
               ...options,
-              optionalityOrder: OptionalityOrder['optional-first'],
+              optionalityOrder: 'optional-first',
             },
           ],
         },
@@ -1996,7 +1995,7 @@ describe(RULE_NAME, () => {
           options: [
             {
               ...options,
-              optionalityOrder: OptionalityOrder['optional-first'],
+              optionalityOrder: 'optional-first',
             },
           ],
           errors: [
@@ -2024,7 +2023,7 @@ describe(RULE_NAME, () => {
           options: [
             {
               ...options,
-              optionalityOrder: OptionalityOrder['required-first'],
+              optionalityOrder: 'required-first',
             },
           ],
         },
@@ -2052,7 +2051,7 @@ describe(RULE_NAME, () => {
           options: [
             {
               ...options,
-              optionalityOrder: OptionalityOrder['required-first'],
+              optionalityOrder: 'required-first',
             },
           ],
           errors: [
@@ -2107,7 +2106,7 @@ describe(RULE_NAME, () => {
                   callback: 'on*',
                 },
                 groups: ['unknown', 'callback'],
-                optionalityOrder: OptionalityOrder['required-first'],
+                optionalityOrder: 'required-first',
               },
             ],
             errors: [
@@ -2171,7 +2170,7 @@ describe(RULE_NAME, () => {
             options: [
               {
                 ...options,
-                optionalityOrder: OptionalityOrder['required-first'],
+                optionalityOrder: 'required-first',
                 partitionByNewLine: true,
               },
             ],

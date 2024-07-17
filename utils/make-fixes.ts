@@ -1,7 +1,7 @@
 import type { TSESTree } from '@typescript-eslint/types'
 import type { TSESLint } from '@typescript-eslint/utils'
 
-import type { PartitionComment, SortingNode } from '../typings'
+import type { SortingNode } from '../typings'
 
 import { getCommentAfter } from './get-comment-after'
 import { getNodeRange } from './get-node-range'
@@ -12,7 +12,7 @@ export let makeFixes = (
   sortedNodes: SortingNode[],
   source: TSESLint.SourceCode,
   additionalOptions?: {
-    partitionComment?: PartitionComment
+    partitionComment?: string[] | boolean | string
   },
 ) => {
   let fixes: TSESLint.RuleFix[] = []

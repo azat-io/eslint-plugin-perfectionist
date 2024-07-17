@@ -1,4 +1,4 @@
-import type { PartitionComment, SortingNode } from '../typings'
+import type { SortingNode } from '../typings'
 
 import { isPartitionComment } from '../utils/is-partition-comment'
 import { createEslintRule } from '../utils/create-eslint-rule'
@@ -18,7 +18,7 @@ type MESSAGE_ID = 'unexpectedEnumsOrder'
 type Options = [
   Partial<{
     type: 'alphabetical' | 'line-length' | 'natural'
-    partitionByComment: PartitionComment
+    partitionByComment: string[] | boolean | string
     order: 'desc' | 'asc'
     ignoreCase: boolean
   }>,
