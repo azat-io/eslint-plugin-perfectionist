@@ -832,5 +832,71 @@ describe(RULE_NAME, () => {
       valid: ['new Map([[], []])', 'new Map()'],
       invalid: [],
     })
+
+    ruleTester.run(
+      `${RULE_NAME}: respect numeric separators with natural sorting`,
+      rule,
+      {
+        valid: [
+          {
+            code: dedent`
+               new Map([
+                [1, "first"],
+                [2, "second"],
+                [3, "third"],
+                [100, "hundredth"],
+                [1_000, "thousandth"],
+                [1_000_000, "millionth"]
+              ])
+            `,
+            options: [
+              {
+                type: 'natural',
+                order: 'asc',
+              },
+            ],
+          },
+        ],
+        invalid: [
+          {
+            code: dedent`
+               new Map([
+                [1, "first"],
+                [2, "second"],
+                [3, "third"],
+                [1_000, "thousandth"],
+                [100, "hundredth"],
+                [1_000_000, "millionth"]
+              ])
+            `,
+            output: dedent`
+               new Map([
+                [1, "first"],
+                [2, "second"],
+                [3, "third"],
+                [100, "hundredth"],
+                [1_000, "thousandth"],
+                [1_000_000, "millionth"]
+              ])
+            `,
+            options: [
+              {
+                type: 'natural',
+                order: 'asc',
+              },
+            ],
+            errors: [
+              {
+                messageId: 'unexpectedMapElementsOrder',
+                data: {
+                  left: '1_000',
+                  right: '100',
+                },
+              },
+            ],
+          },
+        ],
+      },
+    )
   })
 })

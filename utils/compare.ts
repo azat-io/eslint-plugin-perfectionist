@@ -28,8 +28,18 @@ export let compare = (
     sortingFunction = (aNode, bNode) =>
       formatString(aNode.name).localeCompare(formatString(bNode.name))
   } else if (options.type === 'natural') {
+    let prepareNumeric = (string: string) => {
+      let formattedNumberPattern = /^[+-]?[\d ,_]+(\.[\d ,_]+)?$/
+      if (formattedNumberPattern.test(string)) {
+        return string.replaceAll(/[ ,_]/g, '')
+      }
+      return string
+    }
     sortingFunction = (aNode, bNode) =>
-      naturalCompare(formatString(aNode.name), formatString(bNode.name))
+      naturalCompare(
+        prepareNumeric(formatString(aNode.name)),
+        prepareNumeric(formatString(bNode.name)),
+      )
   } else {
     sortingFunction = (aNode, bNode) => {
       let aSize = aNode.size
