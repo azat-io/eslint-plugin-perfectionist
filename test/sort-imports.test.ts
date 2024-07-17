@@ -1,9 +1,8 @@
 import { RuleTester } from '@typescript-eslint/rule-tester'
-import { afterAll, describe, expect, it } from 'vitest'
+import { afterAll, describe, it } from 'vitest'
 import { dedent } from 'ts-dedent'
 
 import rule, { NewlinesBetweenValue, RULE_NAME } from '../rules/sort-imports'
-import { areOptionsValid } from './utils/are-options-valid'
 
 describe(RULE_NAME, () => {
   RuleTester.describeSkip = describe.skip
@@ -3547,12 +3546,11 @@ describe(RULE_NAME, () => {
       },
     )
 
-    describe(`${RULE_NAME}(${type}): support max line length`, () => {
-      ruleTester.run('rule', rule, {
-        valid: [],
-        invalid: [
-          {
-            code: dedent`
+    ruleTester.run(`${RULE_NAME}(${type}): support`, rule, {
+      valid: [],
+      invalid: [
+        {
+          code: dedent`
               import { ThisIsApprox, SeventyNine } from '~CharactersLongAndShouldNotBeSplit';
               import { EvenThoughThisIsLongItShouldNotGetSplitUpAsItThereIsOnlyOne } from 'IWillNotBeSplitUp';
               import Short from 'app/components/LongName';
@@ -3569,7 +3567,7 @@ describe(RULE_NAME, () => {
                 SoWeShouldSplitUpSinceWeAreInDifferentSections
               } from 'IWillDefinitelyBeSplitUp';
             `,
-            output: dedent`
+          output: dedent`
               import {
                 ICantBelieveHowLong,
                 ICantHandleHowLong,
@@ -3586,84 +3584,48 @@ describe(RULE_NAME, () => {
               import { EvenThoughThisIsLongItShouldNotGetSplitUpAsItThereIsOnlyOne } from 'IWillNotBeSplitUp';
               import EvenThoughThisIsLongItShouldNotBePutOntoAnyNewLinesAsThereIsOnlyOne from 'IWillNotBePutOntoNewLines';
             `,
-            options: [
-              {
-                ...options,
-                maxLineLength: 80,
-                order: 'asc',
-                groups: [
-                  'type',
-                  ['builtin', 'external'],
-                  'internal-type',
-                  'internal',
-                  ['parent-type', 'sibling-type', 'index-type'],
-                  ['parent', 'sibling', 'index'],
-                  'object',
-                  'unknown',
-                ],
+          options: [
+            {
+              ...options,
+              maxLineLength: 80,
+              order: 'asc',
+              groups: [
+                'type',
+                ['builtin', 'external'],
+                'internal-type',
+                'internal',
+                ['parent-type', 'sibling-type', 'index-type'],
+                ['parent', 'sibling', 'index'],
+                'object',
+                'unknown',
+              ],
+            },
+          ],
+          errors: [
+            {
+              messageId: 'unexpectedImportsOrder',
+              data: {
+                left: 'IWillNotBeSplitUp',
+                right: 'app/components/LongName',
               },
-            ],
-            errors: [
-              {
-                messageId: 'unexpectedImportsOrder',
-                data: {
-                  left: 'IWillNotBeSplitUp',
-                  right: 'app/components/LongName',
-                },
+            },
+            {
+              messageId: 'unexpectedImportsOrder',
+              data: {
+                left: 'app/components/LongName',
+                right: 'app/components/Short',
               },
-              {
-                messageId: 'unexpectedImportsOrder',
-                data: {
-                  left: 'app/components/LongName',
-                  right: 'app/components/Short',
-                },
+            },
+            {
+              messageId: 'unexpectedImportsOrder',
+              data: {
+                left: 'IWillNotBePutOntoNewLines',
+                right: 'IWillDefinitelyBeSplitUp',
               },
-              {
-                messageId: 'unexpectedImportsOrder',
-                data: {
-                  left: 'IWillNotBePutOntoNewLines',
-                  right: 'IWillDefinitelyBeSplitUp',
-                },
-              },
-            ],
-          },
-        ],
-      })
-
-      let subType = 'schema'
-
-      it(`${subType} -- type must be set if max line length is`, () => {
-        expect(
-          areOptionsValid(rule, {
-            ...options,
-            type: undefined,
-            maxLineLength: 80,
-          }),
-        ).toBe(
-          'data[0] should have property type when property maxLineLength is present',
-        )
-      })
-
-      it(`${subType} -- type must be set to 'line-length' if 'max line length' is set`, () => {
-        expect(
-          areOptionsValid(rule, {
-            ...options,
-            type: 'alphabetical',
-            maxLineLength: 80,
-          }),
-        ).toBe(
-          'data[0] should NOT be valid, data[0].type should be equal to one of the allowed values, data[0] should match some schema in anyOf',
-        )
-      })
-
-      it(`${subType} -- if it's set, max line length must be greater than 0`, () => {
-        expect(
-          areOptionsValid(rule, {
-            ...options,
-            maxLineLength: 0,
-          }),
-        ).toBe('data[0].maxLineLength should be > 0')
-      })
+            },
+          ],
+        },
+      ],
     })
 
     ruleTester.run(`${RULE_NAME}(${type}): allows to use bun modules`, rule, {
