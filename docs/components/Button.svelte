@@ -8,6 +8,7 @@
   class:button-primary={color === 'primary'}
   on:click={onClick}
   class="button"
+  type="button"
 >
   <slot />
 </button>

@@ -47,6 +47,7 @@
       }}
       class:active-tab={mounted && $codeSettings[type] === codeValue.value}
       aria-selected={$codeSettings[type] === codeValue.value}
+      type="button"
       class="tab"
       role="tab"
     >
@@ -74,6 +75,7 @@
       class:copy-button-copied={copied}
       class="copy-button"
       on:click={copyCode}
+      type="button"
     >
       {#if copied}
         <CopyCopiedIcon class="copy-icon" />
