@@ -1,5 +1,3 @@
-import type { TSESTree } from '@typescript-eslint/types'
-
 import { RuleTester } from '@typescript-eslint/rule-tester'
 import { afterAll, describe, it } from 'vitest'
 import { dedent } from 'ts-dedent'
@@ -2880,8 +2878,8 @@ describe(RULE_NAME, () => {
           `,
           options: [
             {
-              customIgnore: {
-                ignoreButtonStyles: (node: TSESTree.ObjectExpression) => {
+              customIgnore: [
+                node => {
                   if (
                     node.parent.type === 'VariableDeclarator' &&
                     node.parent.id.type === 'Identifier'
@@ -2890,7 +2888,7 @@ describe(RULE_NAME, () => {
                   }
                   return false
                 },
-              },
+              ],
             },
           ],
         },
@@ -2969,9 +2967,7 @@ describe(RULE_NAME, () => {
           `,
           options: [
             {
-              customIgnore: {
-                ignoreButtonStyles: () => false,
-              },
+              customIgnore: [() => false],
             },
           ],
           errors: [
@@ -2980,6 +2976,70 @@ describe(RULE_NAME, () => {
               data: {
                 left: 'width',
                 right: 'height',
+              },
+            },
+          ],
+        },
+      ],
+    })
+
+    ruleTester.run(`${RULE_NAME}: allow to use for destructuring only`, rule, {
+      valid: [
+        {
+          code: dedent`
+            let obj = {
+              c: 'c',
+              b: 'b',
+              a: 'a',
+            }
+
+            let { a, b, c } = obj
+          `,
+          options: [
+            {
+              customIgnore: [node => node.type !== 'ObjectPattern'],
+            },
+          ],
+        },
+      ],
+      invalid: [
+        {
+          code: dedent`
+            let obj = {
+              c: 'c',
+              b: 'b',
+              a: 'a',
+            }
+
+            let { c, b, a } = obj
+          `,
+          output: dedent`
+            let obj = {
+              c: 'c',
+              b: 'b',
+              a: 'a',
+            }
+
+            let { a, b, c } = obj
+          `,
+          options: [
+            {
+              customIgnore: [node => node.type !== 'ObjectPattern'],
+            },
+          ],
+          errors: [
+            {
+              messageId: 'unexpectedObjectsOrder',
+              data: {
+                left: 'c',
+                right: 'b',
+              },
+            },
+            {
+              messageId: 'unexpectedObjectsOrder',
+              data: {
+                left: 'b',
+                right: 'a',
               },
             },
           ],
