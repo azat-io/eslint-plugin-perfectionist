@@ -1,9 +1,7 @@
 import { minimatch } from 'minimatch'
 
-import type { PartitionComment } from '../typings'
-
 export let isPartitionComment = (
-  partitionComment: PartitionComment,
+  partitionComment: string[] | boolean | string,
   comment: string,
 ) =>
   (Array.isArray(partitionComment) &&
