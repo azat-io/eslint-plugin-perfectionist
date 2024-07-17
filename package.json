@@ -100,7 +100,6 @@
     "@typescript-eslint/types": "^6.13.0",
     "@vercel/og": "^0.6.2",
     "@vitest/coverage-v8": "^2.0.3",
-    "ajv": "^6.12.6",
     "astro": "^4.11.5",
     "astro-eslint-parser": "^1.0.2",
     "browserslist": "^4.23.2",
