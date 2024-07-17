@@ -35,6 +35,10 @@ type SortingNodeWithPosition = {
 
 type Options = [
   Partial<{
+    customIgnore: ((
+      object: TSESTree.ObjectExpression | TSESTree.ObjectPattern,
+      filename: string,
+    ) => boolean)[]
     customGroups: { [key: string]: string[] | string }
     type: 'alphabetical' | 'line-length' | 'natural'
     partitionByComment: string[] | boolean | string
@@ -99,6 +103,9 @@ export default createEslintRule<Options, MESSAGE_ID>({
           groups: {
             type: 'array',
           },
+          customIgnore: {
+            type: 'array',
+          },
         },
         additionalProperties: false,
       },
@@ -125,12 +132,21 @@ export default createEslintRule<Options, MESSAGE_ID>({
         ignorePattern: [],
         ignoreCase: true,
         customGroups: {},
+        customIgnore: [],
         order: 'asc',
         groups: [],
       } as const)
 
       let shouldIgnore = false
-      if (options.ignorePattern.length) {
+
+      if (
+        options.customIgnore.length &&
+        options.customIgnore.some(fn => fn(node, context.filename))
+      ) {
+        shouldIgnore = true
+      }
+
+      if (!shouldIgnore && options.ignorePattern.length) {
         let varParent = getNodeParent(node, ['VariableDeclarator', 'Property'])
         let parentId =
           varParent?.type === 'VariableDeclarator'
