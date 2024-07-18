@@ -4,8 +4,8 @@
   src="https://raw.githubusercontent.com/azat-io/eslint-plugin-perfectionist/main/docs/public/logo.svg"
   alt="ESLint Plugin Perfectionist logo"
   align="right"
-  height="170"
-  width="170"
+  height="160"
+  width="160"
 />
 
 [![Version](https://img.shields.io/npm/v/eslint-plugin-perfectionist.svg?color=4a32c3)](https://www.npmjs.com/package/eslint-plugin-perfectionist)
