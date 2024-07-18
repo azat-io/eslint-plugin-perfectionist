@@ -95,68 +95,94 @@ If you use the [`adjacent-overload-signatures`](https://typescript-eslint.io/rul
 
 This rule accepts an options object with the following properties:
 
-```ts
-type CustomGroup = string
-type Group = 'multiline' | CustomGroup
-
-interface Options {
-  type?: 'alphabetical' | 'natural' | 'line-length'
-  order?: 'asc' | 'desc'
-  ignoreCase?: boolean
-  groups?: (Group | Group[])[]
-  customGroups?: { [key: Group]: string[] | string }
-  partitionByNewLine?: boolean
-}
-```
-
 ### type
 
 <sub>(default: `'alphabetical'`)</sub>
 
-- `alphabetical` — sort alphabetically.
-- `natural` — sort in natural order.
-- `line-length` — sort by code line length.
+Specifies the sorting method.
+
+- `'alphabetical'` — Sort items alphabetically (e.g., “a” < “b” < “c”).
+- `'natural'` — Sort items in a natural order (e.g., “item2” < “item10”).
+- `'line-length'` — Sort items by the length of the code line (shorter lines first).
 
 ### order
 
 <sub>(default: `'asc'`)</sub>
 
-- `asc` — enforce properties to be in ascending order.
-- `desc` — enforce properties to be in descending order.
+Determines whether the sorted items should be in ascending or descending order.
+
+- `'asc'` — Sort items in ascending order (A to Z, 1 to 9).
+- `'desc'` — Sort items in descending order (Z to A, 9 to 1).
 
 ### ignoreCase
 
 <sub>(default: `true`)</sub>
 
-Only affects alphabetical and natural sorting. When `true` the rule ignores the case-sensitivity of the order.
+Controls whether sorting should be case-sensitive or not.
+
+- `true` — Ignore case when sorting alphabetically or naturally (e.g., “A” and “a” are the same).
+- `false` — Consider case when sorting (e.g., “A” comes before “a”).
 
 ### groups
 
 <sub>(default: `[]`)</sub>
 
-You can set up a list of type properties groups for sorting. Groups can be combined. There are predefined group: `'multiline'`.
+Allows you to specify a list of type properties groups for sorting. Groups help organize properties into categories, making your type definitions more readable and maintainable. Multiple groups can be combined to achieve the desired sorting order.
+
+There are predefined group: `'multiline'`.
+
+Predefined Group:
+
+- `'multiline'` — Properties with multiline definitions, such as methods or complex type declarations.
+- `'unknown'` — Properties that don’t fit into any other group.
 
 ### customGroups
 
 <sub>(default: `{}`)</sub>
 
-You can define your own groups for type properties attributes. The [minimatch](https://github.com/isaacs/minimatch) library is used for pattern matching.
+You can define your own groups for Type object values. The [minimatch](https://github.com/isaacs/minimatch) library is used for pattern matching.
 
 Example:
 
-```json
-{
-  "customGroups": {
-    "callback": "on*"
-  }
-}
+```js
+ {
+   groups: [
+     'multiline',
+     'unknown',
++    'callback',     // [!code ++]
+   ],
++  customGroups: {   // [!code ++]
++    callback: 'on*' // [!code ++]
++  }                 // [!code ++]
+ }
 ```
 
 ### partitionByNewLine
 
 <sub>(default: `false`)</sub>
 
-When `true`, does not sort the object type's members if there is an empty string between them.
+When `true`, the rule will not sort the members of an interface if there is an empty line between them. This can be useful for keeping logically separated groups of members in their defined order.
+
+```ts
+type User = {
+  // Group 1
+  firstName: string;
+  lastName: string;
+
+  // Group 2
+  age: number;
+  birthDate: Date;
+
+  // Group 3
+  address: {
+    street: string;
+    city: string;
+  };
+  phone?: string;
+};
+```
+
+In this example, the `partitionByNewLine` option will cause the rule to treat each group of members (separated by empty lines) independently, preserving their order within each group.
 
 ## Usage
 

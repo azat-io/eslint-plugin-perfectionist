@@ -203,3 +203,12 @@ kbd {
     display: flex;
   }
 }
+
+.astro-code .diff {
+  display: inline-block;
+  inline-size: 100%;
+
+  &.add {
+    background: var(--color-code-diff-add);
+  }
+}

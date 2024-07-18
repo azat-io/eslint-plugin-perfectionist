@@ -134,45 +134,47 @@ It's **safe**. The rule considers spread elements in a props list and does not b
 
 This rule accepts an options object with the following properties:
 
-```ts
-type CustomGroup = string
-type Group = 'multiline' | 'shorthand' | 'unknown' | CustomGroup
-
-interface Options {
-  type?: 'alphabetical' | 'natural' | 'line-length'
-  order?: 'asc' | 'desc'
-  ignoreCase?: boolean
-  groups?: (Group | Group[])[]
-  customGroups: { [key: CustomGroup]: string[] | string }
-}
-```
-
 ### type
 
 <sub>(default: `'alphabetical'`)</sub>
 
-- `alphabetical` — sort alphabetically.
-- `natural` — sort in natural order.
-- `line-length` — sort by code line length.
+Specifies the sorting method.
+
+- `'alphabetical'` — Sort items alphabetically (e.g., “a” < “b” < “c”).
+- `'natural'` — Sort items in a natural order (e.g., “item2” < “item10”).
+- `'line-length'` — Sort items by the length of the code line (shorter lines first).
 
 ### order
 
 <sub>(default: `'asc'`)</sub>
 
-- `asc` — enforce properties to be in ascending order.
-- `desc` — enforce properties to be in descending order.
+Determines whether the sorted items should be in ascending or descending order.
+
+- `'asc'` — Sort items in ascending order (A to Z, 1 to 9).
+- `'desc'` — Sort items in descending order (Z to A, 9 to 1).
 
 ### ignoreCase
 
 <sub>(default: `true`)</sub>
 
-Only affects alphabetical and natural sorting. When `true` the rule ignores the case-sensitivity of the order.
+Controls whether sorting should be case-sensitive or not.
+
+- `true` — Ignore case when sorting alphabetically or naturally (e.g., “A” and “a” are the same).
+- `false` — Consider case when sorting (e.g., “A” comes before “a”).
 
 ### groups
 
 <sub>(default: `[]`)</sub>
 
-You can set up a list of JSX props groups for sorting. Groups can be combined. There are predefined groups: `'multiline'`, `'shorthand'`.
+Allows you to specify a list of JSX props groups for sorting. Groups help organize props into categories, making your components more readable and maintainable. Multiple groups can be combined to achieve the desired sorting order.
+
+There are predefined groups: `'multiline'`, `'shorthand'`.
+
+Predefined Groups:
+
+- `'multiline'` — Props with multiline values.
+- `'shorthand'` — Shorthand props, which are used without a value, typically for boolean props.
+- `'unknown'` — Props that don’t fit into any other group.
 
 ### customGroups
 
@@ -182,19 +184,27 @@ You can define your own groups for JSX props. The [minimatch](https://github.com
 
 Example:
 
-```json
-{
-  "customGroups": {
-    "callback": "on*"
-  }
-}
+```js
+ {
+   groups: [
+     'multiline',
+     'unknown',
+     'shorthand',
++    'callback',     // [!code ++]
+   ],
++  customGroups: {   // [!code ++]
++    callback: 'on*' // [!code ++]
++  }                 // [!code ++]
+ }
 ```
 
 ### ignorePattern
 
 <sub>(default: `[]`)</sub>
 
-If you need to ignore a rule for some JSX elements, you can specify their names or a pattern to ignore, for example: `'Table*'` to ignore all interfaces whose names begin with the word Component.
+Allows you to specify names or patterns for JSX elements that should be ignored by this rule. This can be useful if you have specific components that you do not want to sort.
+
+For example: `'Table*'` to ignore all interfaces whose names begin with the word “Table”.
 
 The [minimatch](https://github.com/isaacs/minimatch) library is used for pattern matching.
 

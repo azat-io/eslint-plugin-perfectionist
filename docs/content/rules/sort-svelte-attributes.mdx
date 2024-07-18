@@ -103,50 +103,50 @@ If you use the [`sort-attributes`](https://sveltejs.github.io/eslint-plugin-svel
 
 This rule accepts an options object with the following properties:
 
-```ts
-type CustomGroup = string
-type Group =
-  | 'multiline'
-  | 'shorthand'
-  | 'svelte-shorthand'
-  | 'unknown'
-  | CustomGroup
-
-interface Options {
-  type?: 'alphabetical' | 'natural' | 'line-length'
-  order?: 'asc' | 'desc'
-  ignoreCase?: boolean
-  groups?: (Group | Group[])[]
-  customGroups: { [key: CustomGroup]: string[] | string }
-}
-```
-
 ### type
 
 <sub>(default: `'alphabetical'`)</sub>
 
-- `alphabetical` — sort alphabetically.
-- `natural` — sort in natural order.
-- `line-length` — sort by code line length.
+Specifies the sorting method.
+
+- `'alphabetical'` — Sort items alphabetically (e.g., “a” < “b” < “c”).
+- `'natural'` — Sort items in a natural order (e.g., “item2” < “item10”).
+- `'line-length'` — Sort items by the length of the code line (shorter lines first).
 
 ### order
 
 <sub>(default: `'asc'`)</sub>
 
-- `asc` — enforce properties to be in ascending order.
-- `desc` — enforce properties to be in descending order.
+Determines whether the sorted items should be in ascending or descending order.
+
+- `'asc'` — Sort items in ascending order (A to Z, 1 to 9).
+- `'desc'` — Sort items in descending order (Z to A, 9 to 1).
 
 ### ignoreCase
 
 <sub>(default: `true`)</sub>
 
-Only affects alphabetical and natural sorting. When `true` the rule ignores the case-sensitivity of the order.
+Controls whether sorting should be case-sensitive or not.
+
+- `true` — Ignore case when sorting alphabetically or naturally (e.g., “A” and “a” are the same).
+- `false` — Consider case when sorting (e.g., “A” comes before “a”).
 
 ### groups
 
 <sub>(default: `[]`)</sub>
 
-You can set up a list of Svelte attribute groups for sorting. Groups can be combined. There are predefined groups: `'multiline'`, `'shorthand'`, `'svelte-shorthand'`.
+Allows you to specify a list of Svelte attribute groups for sorting. Groups help organize attributes into categories, making your components more readable and maintainable. Multiple groups can be combined to achieve the desired sorting order.
+
+There are predefined groups: `'multiline'`, `'shorthand'`, `'svelte-shorthand'`.
+
+Predefined Groups:
+
+- `'multiline'` — Attributes whose length exceeds one line, such as event handlers or functions.
+- `'shorthand'` — Shorthand attributes, which are used without a value, typically for boolean props.
+- `'svelte-shorthand'` — Svelte’s shorthand for replacing `name={name}` with `{name}`.
+- `'unknown'` — Svelte attributes that don’t fit into any other group.
+
+Example:
 
 ```svelte
 <button
@@ -172,23 +172,25 @@ You can define your own groups for Svelte attributes. The [minimatch](https://gi
 
 Example:
 
-```json
-{
-  "customGroups": {
-    "this": "this",
-    "bind-this": "bind:this",
-    "style-props": "--style-props",
-    "class": "class",
-    "bind-directives": "bind:*",
-    "use-directives": "use:*"
-  },
-  "groups": [
-    ["this", "bind-this"],
-    "style-props",
-    "class",
-    ["bind-directives", "use-directives"]
-  ]
-}
+```js
+ {
+   groups: [
++    ['this', 'bind-this'],                  // [!code ++]
+     'multiline',
++    'style-props',                          // [!code ++]
++    'class',                                // [!code ++]
++    ['bind-directives', 'use-directives'],  // [!code ++]
+     ['shorthand', 'svelte-shorthand'],
+   ],
++  customGroups: {                           // [!code ++]
++    'style-props': '--style-props',         // [!code ++]
++    'bind-directives': 'bind:*',            // [!code ++]
++    'use-directives': 'use:*',              // [!code ++]
++    'bind-this': 'bind:this',               // [!code ++]
++    class: 'class',                         // [!code ++]
++    this: 'this',                           // [!code ++]
++  },                                        // [!code ++]
+ }
 ```
 
 ## Usage
