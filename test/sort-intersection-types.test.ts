@@ -261,6 +261,146 @@ describe(RULE_NAME, () => {
         ],
       },
     )
+
+    ruleTester.run(`${RULE_NAME}: sorts intersections using groups`, rule, {
+      valid: [
+        {
+          code: dedent`
+            type Type =
+              & A
+              & any
+              & bigint
+              & boolean
+              & keyof A
+              & typeof B
+              & 'aaa'
+              & 1
+              & (import('path'))
+              & (A extends B ? C : D)
+              & { name: 'a' }
+              & [A, B, C]
+              & (A & B)
+              & (A | B)
+              & null
+          `,
+          options: [
+            {
+              ...options,
+              groups: [
+                'named',
+                'keyword',
+                'operator',
+                'literal',
+                'function',
+                'import',
+                'conditional',
+                'object',
+                'tuple',
+                'intersection',
+                'union',
+                'nullish',
+              ],
+            },
+          ],
+        },
+      ],
+      invalid: [
+        {
+          code: dedent`
+            type Type =
+              & any
+              & { name: 'a' }
+              & boolean
+              & A
+              & keyof A
+              & bigint
+              & typeof B
+              & 'aaa'
+              & (import('path'))
+              & null
+              & 1
+              & (A extends B ? C : D)
+              & [A, B, C]
+              & (A | B)
+              & (A & B)
+          `,
+          output: dedent`
+            type Type =
+              & A
+              & any
+              & bigint
+              & boolean
+              & keyof A
+              & typeof B
+              & 'aaa'
+              & 1
+              & (import('path'))
+              & (A extends B ? C : D)
+              & { name: 'a' }
+              & [A, B, C]
+              & (A & B)
+              & (A | B)
+              & null
+          `,
+          options: [
+            {
+              ...options,
+              groups: [
+                'named',
+                'keyword',
+                'operator',
+                'literal',
+                'function',
+                'import',
+                'conditional',
+                'object',
+                'tuple',
+                'intersection',
+                'union',
+                'nullish',
+              ],
+            },
+          ],
+          errors: [
+            {
+              messageId: 'unexpectedIntersectionTypesOrder',
+              data: {
+                left: "{ name: 'a' }",
+                right: 'boolean',
+              },
+            },
+            {
+              messageId: 'unexpectedIntersectionTypesOrder',
+              data: {
+                left: 'boolean',
+                right: 'A',
+              },
+            },
+            {
+              messageId: 'unexpectedIntersectionTypesOrder',
+              data: {
+                left: 'keyof A',
+                right: 'bigint',
+              },
+            },
+            {
+              messageId: 'unexpectedIntersectionTypesOrder',
+              data: {
+                left: 'null',
+                right: '1',
+              },
+            },
+            {
+              messageId: 'unexpectedIntersectionTypesOrder',
+              data: {
+                left: 'A | B',
+                right: 'A & B',
+              },
+            },
+          ],
+        },
+      ],
+    })
   })
 
   describe(`${RULE_NAME}: sorting by natural order`, () => {
@@ -488,6 +628,146 @@ describe(RULE_NAME, () => {
         ],
       },
     )
+
+    ruleTester.run(`${RULE_NAME}: sorts intersections using groups`, rule, {
+      valid: [
+        {
+          code: dedent`
+            type Type =
+              & A
+              & any
+              & bigint
+              & boolean
+              & keyof A
+              & typeof B
+              & 'aaa'
+              & 1
+              & (import('path'))
+              & (A extends B ? C : D)
+              & { name: 'a' }
+              & [A, B, C]
+              & (A & B)
+              & (A | B)
+              & null
+          `,
+          options: [
+            {
+              ...options,
+              groups: [
+                'named',
+                'keyword',
+                'operator',
+                'literal',
+                'function',
+                'import',
+                'conditional',
+                'object',
+                'tuple',
+                'intersection',
+                'union',
+                'nullish',
+              ],
+            },
+          ],
+        },
+      ],
+      invalid: [
+        {
+          code: dedent`
+            type Type =
+              & any
+              & { name: 'a' }
+              & boolean
+              & A
+              & keyof A
+              & bigint
+              & typeof B
+              & 'aaa'
+              & (import('path'))
+              & null
+              & 1
+              & (A extends B ? C : D)
+              & [A, B, C]
+              & (A | B)
+              & (A & B)
+          `,
+          output: dedent`
+            type Type =
+              & A
+              & any
+              & bigint
+              & boolean
+              & keyof A
+              & typeof B
+              & 'aaa'
+              & 1
+              & (import('path'))
+              & (A extends B ? C : D)
+              & { name: 'a' }
+              & [A, B, C]
+              & (A & B)
+              & (A | B)
+              & null
+          `,
+          options: [
+            {
+              ...options,
+              groups: [
+                'named',
+                'keyword',
+                'operator',
+                'literal',
+                'function',
+                'import',
+                'conditional',
+                'object',
+                'tuple',
+                'intersection',
+                'union',
+                'nullish',
+              ],
+            },
+          ],
+          errors: [
+            {
+              messageId: 'unexpectedIntersectionTypesOrder',
+              data: {
+                left: "{ name: 'a' }",
+                right: 'boolean',
+              },
+            },
+            {
+              messageId: 'unexpectedIntersectionTypesOrder',
+              data: {
+                left: 'boolean',
+                right: 'A',
+              },
+            },
+            {
+              messageId: 'unexpectedIntersectionTypesOrder',
+              data: {
+                left: 'keyof A',
+                right: 'bigint',
+              },
+            },
+            {
+              messageId: 'unexpectedIntersectionTypesOrder',
+              data: {
+                left: 'null',
+                right: '1',
+              },
+            },
+            {
+              messageId: 'unexpectedIntersectionTypesOrder',
+              data: {
+                left: 'A | B',
+                right: 'A & B',
+              },
+            },
+          ],
+        },
+      ],
+    })
   })
 
   describe(`${RULE_NAME}: sorting by line length`, () => {
@@ -710,6 +990,146 @@ describe(RULE_NAME, () => {
         ],
       },
     )
+
+    ruleTester.run(`${RULE_NAME}: sorts intersections using groups`, rule, {
+      valid: [
+        {
+          code: dedent`
+            type Type =
+              & A
+              & boolean
+              & bigint
+              & any
+              & typeof B
+              & keyof A
+              & 'aaa'
+              & 1
+              & (import('path'))
+              & (A extends B ? C : D)
+              & { name: 'a' }
+              & [A, B, C]
+              & (A & B)
+              & (A | B)
+              & null
+          `,
+          options: [
+            {
+              ...options,
+              groups: [
+                'named',
+                'keyword',
+                'operator',
+                'literal',
+                'function',
+                'import',
+                'conditional',
+                'object',
+                'tuple',
+                'intersection',
+                'union',
+                'nullish',
+              ],
+            },
+          ],
+        },
+      ],
+      invalid: [
+        {
+          code: dedent`
+            type Type =
+              & any
+              & { name: 'a' }
+              & boolean
+              & A
+              & keyof A
+              & bigint
+              & typeof B
+              & 'aaa'
+              & (import('path'))
+              & null
+              & 1
+              & (A extends B ? C : D)
+              & [A, B, C]
+              & (A | B)
+              & (A & B)
+          `,
+          output: dedent`
+            type Type =
+              & A
+              & boolean
+              & bigint
+              & any
+              & typeof B
+              & keyof A
+              & 'aaa'
+              & 1
+              & (import('path'))
+              & (A extends B ? C : D)
+              & { name: 'a' }
+              & [A, B, C]
+              & (A & B)
+              & (A | B)
+              & null
+          `,
+          options: [
+            {
+              ...options,
+              groups: [
+                'named',
+                'keyword',
+                'operator',
+                'literal',
+                'function',
+                'import',
+                'conditional',
+                'object',
+                'tuple',
+                'intersection',
+                'union',
+                'nullish',
+              ],
+            },
+          ],
+          errors: [
+            {
+              messageId: 'unexpectedIntersectionTypesOrder',
+              data: {
+                left: "{ name: 'a' }",
+                right: 'boolean',
+              },
+            },
+            {
+              messageId: 'unexpectedIntersectionTypesOrder',
+              data: {
+                left: 'boolean',
+                right: 'A',
+              },
+            },
+            {
+              messageId: 'unexpectedIntersectionTypesOrder',
+              data: {
+                left: 'keyof A',
+                right: 'bigint',
+              },
+            },
+            {
+              messageId: 'unexpectedIntersectionTypesOrder',
+              data: {
+                left: 'null',
+                right: '1',
+              },
+            },
+            {
+              messageId: 'unexpectedIntersectionTypesOrder',
+              data: {
+                left: 'A | B',
+                right: 'A & B',
+              },
+            },
+          ],
+        },
+      ],
+    })
   })
 
   describe(`${RULE_NAME}: misc`, () => {

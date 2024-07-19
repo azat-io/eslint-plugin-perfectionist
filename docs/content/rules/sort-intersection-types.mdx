@@ -102,6 +102,62 @@ Controls whether sorting should be case-sensitive or not.
 - `true` — Ignore case when sorting alphabetically or naturally (e.g., “A” and “a” are the same).
 - `false` — Consider case when sorting (e.g., “A” comes before “a”).
 
+### groups
+
+<sub>(default: `[]`)</sub>
+
+Allows you to specify a list of intersection type groups for sorting. Groups help organize types into categories, making your type definitions more readable and maintainable. Multiple groups can be combined to achieve the desired sorting order.
+
+There are a lot of predefined groups.
+
+Predefined Groups:
+
+- `'conditional`' — Conditional types.
+- `'function`' — Function types.
+- `'import`' — Imported types.
+- `'intersection`' — Intersection types.
+- `'keyword`' — Keyword types.
+- `'literal`' — Literal types.
+- `'named`' — Named types.
+- `'object`' — Object types.
+- `'operator`' — Operator types.
+- `'tuple`' — Tuple types.
+- `'union`' — Union types.
+- `'nullish`' — Nullish types (`null` or `undefined`).
+- `'unknown`' — Types that don’t fit into any other group.
+
+Example:
+
+```ts
+type Example =
+  // 'conditional' — Conditional types.
+  (A extends B ? C : D) &
+  // 'function' — Function types.
+  ((arg: T) => U) &
+  // 'import' — Imported types.
+  import('module').Type &
+  // 'intersection' — Intersection types.
+  (A & B) &
+  // 'keyword' — Keyword types.
+  any &
+  // 'literal' — Literal types.
+  'literal' &
+  42 &
+  // 'named' — Named types.
+  SomeType &
+  AnotherType &
+  // 'object' — Object types.
+  { a: string; b: number; } &
+  // 'operator' — Operator types.
+  keyof T &
+  // 'tuple' — Tuple types.
+  [string, number] &
+  // 'union' — Union types.
+  (A | B) &
+  // 'nullish' — Nullish types.
+  null &
+  undefined;
+```
 
 ## Usage
 
