@@ -35,7 +35,14 @@ If you use the [`prettier-plugin-sort-imports`](https://github.com/trivago/prett
 
 Rule `perfectionist/sort-imports` works in a similar way to rule `import/order`, but with some differences:
 
-1. Supporting for new import types: `'side-effect'`, `'style'`, `'builtin-type'`, `'internal-type'`, `'parent-type'`, `'sibling-type'`, `'index-type'`
+1. Supporting for new import types:
+  - `'side-effect'`
+  - `'style'`
+  - `'builtin-type'`
+  - `'internal-type'`
+  - `'parent-type'`
+  - `'sibling-type'`
+  - `'index-type'`
 2. Supporting for adding custom import groups
 3. Sorting not only alphabetically, but also naturally and by line length
 
@@ -110,73 +117,63 @@ Rule `perfectionist/sort-imports` works in a similar way to rule `import/order`,
 
 This rule accepts an options object with the following properties:
 
-```ts
-type CustomGroup = string
-type Group =
-  | 'builtin'
-  | 'external'
-  | 'internal'
-  | 'parent'
-  | 'sibling'
-  | 'side-effect'
-  | 'side-effect-style'
-  | 'index'
-  | 'object'
-  | 'style'
-  | 'type'
-  | 'builtin-type'
-  | 'external-type'
-  | 'internal-type'
-  | 'parent-type'
-  | 'sibling-type'
-  | 'index-type'
-  | 'unknown'
-  | CustomGroup
-
-interface Options {
-  type?: 'alphabetical' | 'natural' | 'line-length'
-  order?: 'asc' | 'desc'
-  ignoreCase?: boolean
-  groups?: (Group | Group[])[]
-  customGroups?: {
-    value?: {
-      [key: CustomGroup]: string | string[]
-    }
-    type?: {
-      [key: CustomGroup]: string | string[]
-    }
-  }
-  internalPattern?: string[]
-  newlinesBetween?: 'always' | 'ignore' | 'never'
-  maxLineLength?: number
-```
-
 ### type
 
 <sub>(default: `'alphabetical'`)</sub>
 
-- `alphabetical` — sort alphabetically.
-- `natural` — sort in natural order.
-- `line-length` — sort by code line length.
+Specifies the sorting method.
+
+- `'alphabetical'` — Sort items alphabetically (e.g., “a” < “b” < “c”).
+- `'natural'` — Sort items in a natural order (e.g., “item2” < “item10”).
+- `'line-length'` — Sort items by the length of the code line (shorter lines first).
 
 ### order
 
 <sub>(default: `'asc'`)</sub>
 
-- `asc` — enforce properties to be in ascending order.
-- `desc` — enforce properties to be in descending order.
+Determines whether the sorted items should be in ascending or descending order.
+
+- `'asc'` — Sort items in ascending order (A to Z, 1 to 9).
+- `'desc'` — Sort items in descending order (Z to A, 9 to 1).
 
 ### ignoreCase
 
 <sub>(default: `true`)</sub>
 
-Only affects alphabetical and natural sorting. When `true` the rule ignores the case-sensitivity of the order.
+Controls whether sorting should be case-sensitive or not.
+
+- `true` — Ignore case when sorting alphabetically or naturally (e.g., “A” and “a” are the same).
+- `false` — Consider case when sorting (e.g., “A” comes before “a”).
 
 ### groups
 
 <sub>(default: `[]`)</sub>
 
-You can set up a list of import groups for sorting. Groups can be combined.
+Allows you to set up a list of import groups for sorting. Groups help organize imports into meaningful categories, making your code more readable and maintainable. Multiple groups can be combined.
+
+There are a lot of predefined groups.
+
+Predefined Groups:
+
+- `'builtin'` — Node.js Built-in Modules.
+- `'external'` — External modules installed in the project.
+- `'internal'` — Your internal modules.
+- `'parent'` — Modules from the parent directory.
+- `'sibling'` — Modules from the same directory.
+- `'side-effect'` — Side effect imports.
+- `'side-effect-style'` — Side effect style imports.
+- `'index'` — Main file from the current directory.
+- `'object'` — TypeScript object imports.
+- `'style'` — Styles.
+- `'external-type'` — TypeScript type imports from external modules.
+- `'builtin-type'` — TypeScript type imports from built-in modules.
+- `'internal-type'` — TypeScript type imports from your internal modules.
+- `'parent-type'` — TypeScript type imports from the parent directory.
+- `'sibling-type'` — TypeScript type imports from the same directory.
+- `'index-type'` — TypeScript type imports from the main directory file.
+- `'unknown'` — Imports that don’t fit into any other group.
+
+Example:
 
 ```ts
 // 'builtin' - Node.js Built-in Modules
@@ -213,23 +210,6 @@ import type { Details } from './data'
 import type { BaseOptions } from './index.d.ts'
 ```
 
-If you use [one of the configs](/configs/) exported by this plugin, you get the following import grouping settings:
-
-```js
-{
-  groups: [
-    'type',
-    ['builtin', 'external'],
-    'internal-type',
-    'internal',
-    ['parent-type', 'sibling-type', 'index-type'],
-    ['parent', 'sibling', 'index'],
-    'object',
-    'unknown',
-  ]
-}
-```
-
 ### customGroups
 
 <sub>(default: `{ value: {}, type: {} }`)</sub>
@@ -238,25 +218,36 @@ You can define your own groups for importing values or types. The [minimatch](ht
 
 Example:
 
-```
-{
-  "customGroups": {
-    "value": {
-      "react": ["react", "react-*"],
-      "lodash": "lodash"
-    },
-    "type": {
-      "react": ["react", "react-*"]
-    }
-  }
-}
+```js
+   groups: [
++    'react',                       // [!code ++]
+     'type',
+     ['builtin', 'external'],
++    'lodash',                      // [!code ++]
+     'internal-type',
+     'internal',
+     ['parent-type', 'sibling-type', 'index-type'],
+     ['parent', 'sibling', 'index'],
+     'object',
+     'unknown',
+   ],
++  customGroups: {                  // [!code ++]
++    value: {                       // [!code ++]
++     react: ['react', 'react-*'],  // [!code ++]
++     lodash: 'lodash',             // [!code ++]
++    },                             // [!code ++]
++    type: {                        // [!code ++]
++      react: ['react', 'react-*'], // [!code ++]
++    }                              // [!code ++]
++  },                               // [!code ++]
+ }
 ```
 
 ### internalPattern
 
 <sub>(default: `['~/**']`)</sub>
 
-You can specify a pattern for internal imports.
+Allows you to specify a pattern for identifying internal imports. This is useful for distinguishing your own modules from external dependencies.
 
 The [minimatch](https://github.com/isaacs/minimatch) library is used for pattern matching.
 
@@ -264,23 +255,25 @@ The [minimatch](https://github.com/isaacs/minimatch) library is used for pattern
 
 <sub>(default: `'always'`)</sub>
 
-- `ignore` - do not report errors related to new lines between import groups.
-- `always` - one new line between each group will be enforced, and new lines inside a group will be forbidden.
-- `never` - no new lines are allowed in the entire import section.
+Specifies how new lines should be handled between import groups.
 
-### maxLineLength\*
+- `ignore` — Do not report errors related to new lines between import groups.
+- `always` — Enforce one new line between each group, and forbid new lines inside a group.
+- `never` — No new lines are allowed in the entire import section.
+
+### maxLineLength
 
 <sub>(default: `undefined`)</sub>
 
-You can use this to sort by the import name only, excluding the elements, when the line length is greater than this number.
+Specifies a maximum line length for sorting imports. When the line length exceeds this number, sorting will be based only on the import name, excluding the elements.
 
-**\*Note:** Only available for `line-length` type.
+This option is only available when the type is set to `'line-length'`.
 
 ### environment
 
 <sub>(default: `'node'`)</sub>
 
-This field is responsible for which modules will be counted as builtin modules. If you are using Bun, change the value to `'bun'`.
+Specifies which environment’s built-in modules should be recognized. If you are using [Bun](https://bun.sh), change the value to `'bun'`.
 
 ## Usage
 

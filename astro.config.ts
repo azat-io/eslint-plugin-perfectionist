@@ -1,3 +1,4 @@
+import { transformerNotationDiff } from '@shikijs/transformers'
 import rehypeExternalLinks from 'rehype-external-links'
 import { browserslistToTargets } from 'lightningcss'
 import svelteSvg from '@poppanator/sveltekit-svg'
@@ -27,6 +28,7 @@ export default defineConfig({
             delete node.properties.style
           },
         },
+        transformerNotationDiff(),
       ],
       theme: colorTheme,
     },

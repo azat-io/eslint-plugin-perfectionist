@@ -153,81 +153,152 @@ By sorting class members systematically, confusion is minimized, and the code be
 
 This rule accepts an options object with the following properties:
 
-```ts
-type Group =
-  | 'private-decorated-accessor-property'
-  | 'decorated-accessor-property'
-  | 'private-decorated-property'
-  | 'static-private-method'
-  | 'decorated-set-method'
-  | 'decorated-get-method'
-  | 'decorated-property'
-  | 'decorated-method'
-  | 'private-property'
-  | 'static-property'
-  | 'index-signature'
-  | 'private-method'
-  | 'static-method'
-  | 'constructor'
-  | 'get-method'
-  | 'set-method'
-  | 'property'
-  | 'unknown'
-  | 'method'
-
-interface Options {
-  type?: 'alphabetical' | 'natural' | 'line-length'
-  order?: 'asc' | 'desc'
-  ignoreCase?: boolean
-  groups?: (Group | Group[])[]
-  customGroups?: { [key: string]: string[] | string }
-}
-```
-
 ### type
 
 <sub>(default: `'alphabetical'`)</sub>
 
-- `alphabetical` — sort alphabetically.
-- `natural` — sort in natural order.
-- `line-length` — sort by code line length.
+Specifies the sorting method.
+
+- `'alphabetical'` — Sort items alphabetically (e.g., “a” < “b” < “c”).
+- `'natural'` — Sort items in a natural order (e.g., “item2” < “item10”).
+- `'line-length'` — Sort items by the length of the code line (shorter lines first).
 
 ### order
 
 <sub>(default: `'asc'`)</sub>
 
-- `asc` — enforce properties to be in ascending order.
-- `desc` — enforce properties to be in descending order.
+Determines whether the sorted items should be in ascending or descending order.
+
+- `'asc'` — Sort items in ascending order (A to Z, 1 to 9).
+- `'desc'` — Sort items in descending order (Z to A, 9 to 1).
 
 ### ignoreCase
 
 <sub>(default: `true`)</sub>
 
-Only affects alphabetical and natural sorting. When `true` the rule ignores the case-sensitivity of the order.
+Controls whether sorting should be case-sensitive or not.
+
+- `true` — Ignore case when sorting alphabetically or naturally (e.g., “A” and “a” are the same).
+- `false` — Consider case when sorting (e.g., “A” comes before “a”).
 
 ### groups
 
 <sub>(default: `['property', 'constructor', 'method', 'unknown']`)</sub>
 
-You can set up a list of class members groups for sorting. Groups can be combined.
+Allows you to specify a list of class member groups for sorting. Groups help organize class members into categories, prioritizing them during sorting. Multiple groups can be combined to achieve the desired sorting order.
 
-If you use [one of the configs](/configs/) exported by this plugin, you get the following import grouping settings:
+There are a lot of predefined groups.
 
-```json
-{
-  "groups": [
-    "index-signature",
-    "static-property",
-    "private-property",
-    "property",
-    "constructor",
-    "static-method",
-    "private-method",
-    "static-private-method",
-    "method",
-    ["get-method", "set-method"],
-    "unknown"
-  ]
+Predefined Groups:
+
+- `'index-signature'` — Index signatures, which define the types of keys and values in an object.
+- `'private-decorated-accessor-property'` — Private accessor properties with decorators.
+- `'decorated-accessor-property'` — Accessor properties with decorators.
+- `'private-decorated-property'` — Private properties with decorators.
+- `'decorated-property'` — Properties with decorators.
+- `'private-property'` — Private properties.
+- `'static-property'` — Static properties.
+- `'property'` — Regular properties.
+- `'constructor'` — Constructor method.
+- `'private-method'` — Private methods.
+- `'static-private-method'` — Static private methods.
+- `'static-method'` — Static methods.
+- `'decorated-method'` — Methods with decorators.
+- `'decorated-get-method'` — Getter methods with decorators.
+- `'decorated-set-method'` — Setter methods with decorators.
+- `'get-method'` — Getter methods.
+- `'set-method'` — Setter methods.
+- `'method'` — Regular methods.
+- `'unknown'` — Members that don’t fit into any other group.
+
+Example:
+
+```ts
+class Example {
+  // 'index-signature'
+  [key: string]: any;
+
+  // 'private-decorated-accessor-property'
+  @SomeDecorator
+  private get accessor() {
+    return this._value;
+  }
+
+  // 'decorated-accessor-property'
+  @SomeDecorator
+  get accessor() {
+    return this._value;
+  }
+
+  // 'private-decorated-property'
+  @SomeDecorator
+  private _value: number;
+
+  // 'decorated-property'
+  @SomeDecorator
+  public value: number;
+
+  // 'private-property'
+  private name: string;
+
+  // 'static-property'
+  static instance: Example;
+
+  // 'property'
+  public description: string;
+
+  // 'constructor'
+  constructor(value: number) {
+    this._value = value;
+  }
+
+  // 'private-method'
+  private calculate() {
+    return this._value * 2;
+  }
+
+  // 'static-private-method'
+  private static initialize() {
+    this.instance = new Example(0);
+  }
+
+  // 'static-method'
+  static getInstance() {
+    return this.instance;
+  }
+
+  // 'decorated-method'
+  @SomeDecorator
+  public decoratedMethod() {
+    return this._value;
+  }
+
+  // 'decorated-get-method'
+  @SomeDecorator
+  get decoratedValue() {
+    return this._value;
+  }
+
+  // 'decorated-set-method'
+  @SomeDecorator
+  set decoratedValue(value: number) {
+    this._value = value;
+  }
+
+  // 'get-method'
+  get value() {
+    return this._value;
+  }
+
+  // 'set-method'
+  set value(value: number) {
+    this._value = value;
+  }
+
+  // 'method'
+  public display() {
+    console.log(this._value);
+  }
 }
 ```
 
@@ -235,16 +306,30 @@ If you use [one of the configs](/configs/) exported by this plugin, you get the 
 
 <sub>(default: `{}`)</sub>
 
-You can define your own groups for object keys. The [minimatch](https://github.com/isaacs/minimatch) library is used for pattern matching.
+You can define your own groups for class members. The [minimatch](https://github.com/isaacs/minimatch) library is used for pattern matching.
 
 Example:
 
-```json
-{
-  "customGroups": {
-    "top": "id"
-  }
-}
+```js
+ {
+   groups: [
+     'index-signature',
+     'static-property',
+     'private-property',
+     'property',
+     'constructor',
+     'static-method',
+     'private-method',
+     'static-private-method',
+     'method',
+     ['get-method', 'set-method'],
+     'unknown',
++    'value',         // [!code ++]
+   ],
++  customGroups: {    // [!code ++]
++    value: 'value',  // [!code ++]
++  }                  // [!code ++]
+ }
 ```
 
 ## Usage

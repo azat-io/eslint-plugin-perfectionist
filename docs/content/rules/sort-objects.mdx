@@ -153,46 +153,41 @@ If you use the [`sort-keys`](https://eslint.org/docs/latest/rules/sort-keys) rul
 
 This rule accepts an options object with the following properties:
 
-```ts
-interface Options {
-  type?: 'alphabetical' | 'natural' | 'line-length'
-  order?: 'asc' | 'desc'
-  ignoreCase?: boolean
-  groups?: (string | string[])[]
-  customGroups?: { [key: string]: string[] | string }
-  styledComponents?: boolean
-  ignorePattern?: string[]
-  partitionByComment?: string[] | string | boolean
-  partitionByNewLine?: boolean
-}
-```
-
 ### type
 
 <sub>(default: `'alphabetical'`)</sub>
 
-- `alphabetical` — sort alphabetically.
-- `natural` — sort in natural order.
-- `line-length` — sort by code line length.
+Specifies the sorting method.
+
+- `'alphabetical'` — Sort items alphabetically (e.g., “a” < “b” < “c”).
+- `'natural'` — Sort items in a natural order (e.g., “item2” < “item10”).
+- `'line-length'` — Sort items by the length of the code line (shorter lines first).
 
 ### order
 
 <sub>(default: `'asc'`)</sub>
 
-- `asc` — enforce properties to be in ascending order.
-- `desc` — enforce properties to be in descending order.
+Determines whether the sorted items should be in ascending or descending order.
+
+- `'asc'` — Sort items in ascending order (A to Z, 1 to 9).
+- `'desc'` — Sort items in descending order (Z to A, 9 to 1).
 
 ### ignoreCase
 
 <sub>(default: `true`)</sub>
 
-Only affects alphabetical and natural sorting. When `true` the rule ignores the case-sensitivity of the order.
+Controls whether sorting should be case-sensitive or not.
+
+- `true` — Ignore case when sorting alphabetically or naturally (e.g., “A” and “a” are the same).
+- `false` — Consider case when sorting (e.g., “A” comes before “a”).
 
 ### groups
 
 <sub>(default: `[]`)</sub>
 
-You can set up a list of object keys groups for sorting. Groups can be combined. There are no predefined groups.
+Allows you to specify a list of object keys groups for sorting. Groups help organize object keys into categories, making your objects more readable and maintainable. Multiple groups can be combined to achieve the desired sorting order.
+
+There are no predefined groups. You must use this with the `customGroups` option.
 
 ### customGroups
 
@@ -200,41 +195,68 @@ You can set up a list of object keys groups for sorting. Groups can be combined.
 
 You can define your own groups for object keys. The [minimatch](https://github.com/isaacs/minimatch) library is used for pattern matching.
 
-Example:
-
-```json
-{
-  "customGroups": {
-    "top": "id"
-  }
-}
+```js
+ {
+   groups: [
++    'top',              // [!code ++]
+     'unknown',
+   ],
++  customGroups: {       // [!code ++]
++    top: ['id', 'name'] // [!code ++]
++  }                     // [!code ++]
+ }
 ```
 
 ### styledComponents
 
 <sub>(default: `true`)</sub>
 
-When `false`, this rule will be disabled for the styled-components like libraries.
+Determines whether this rule should be applied to styled-components like libraries.
+
+- `true` — Apply the rule to styled-components.
+- `false` — Disable the rule for styled-components.
 
 ### partitionByComment
 
 <sub>(default: `false`)</sub>
 
-You can set comments that would separate the properties of objects into logical parts. If set to `true`, all object property comments will be treated as delimiters.
+Allows you to use comments to separate the keys of objects into logical groups. This can help in organizing and maintaining large enums by creating partitions within the enum based on comments.
 
-The [minimatch](https://github.com/isaacs/minimatch) library is used for pattern matching.
+- `true` — All comments will be treated as delimiters, creating partitions.
+-	`false` — Comments will not be used as delimiters.
+- string — A pattern using [minimatch](https://github.com/isaacs/minimatch) to specify which comments should act as delimiters.
 
 ### partitionByNewLine
 
 <sub>(default: `false`)</sub>
 
-When `true`, does not sort the object's keys if there is an empty string between them.
+When `true`, the rule will not sort the object’s keys if there is an empty line between them. This can be useful for keeping logically separated groups of keys in their defined order.
+
+```js
+const user = {
+  // Group 1
+  firstName: 'John',
+  lastName: 'Doe',
+
+  // Group 2
+  age: 30,
+  birthDate: '1990-01-01',
+
+  // Group 3
+  email: 'john.doe@example.com',
+  phone: '555-555-5555'
+};
+```
+
+In this example, the `partitionByNewLine` option will cause the rule to treat each group of keys (separated by empty lines) independently, preserving their order within each group.
 
 ### ignorePattern
 
 <sub>(default: `[]`)</sub>
 
-If you need to ignore a rule for some interfaces, you can specify their names or a pattern to ignore, for example: `'Component*'` to ignore all interfaces whose names begin with the word Component.
+Allows you to specify names or patterns for object types that should be ignored by this rule. This can be useful if you have specific objects that you do not want to sort.
+
+For example: `'User*'` to ignore all interfaces whose names begin with the word “User”.
 
 The [minimatch](https://github.com/isaacs/minimatch) library is used for pattern matching.
 
@@ -244,9 +266,9 @@ The [minimatch](https://github.com/isaacs/minimatch) library is used for pattern
 
 If you need to ignore certain objects using a more complex algorithm, you can write your own function.
 
-This function takes two parameters as input: an object in the context of an abstract syntax tree and a filename. When writing this function I recommend you use [AST Explorer](https://astexplorer.net/), use TypeScript ESLint Parser. The function should return `true` if the object should be ignored.
+This function takes two parameters as input: an object in the context of an abstract syntax tree and a filename. When writing this function, it is recommended to use [AST Explorer](https://astexplorer.net/) with the TypeScript ESLint Parser. The function should return `true` if the object should be ignored.
 
-For example, if you want to use this rule only when destructuring objects, you can use this function:
+For example, if you want to ignore objects that are not part of a destructuring pattern, you can use this function:
 
 ```js
 {

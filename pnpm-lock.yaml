@@ -60,6 +60,9 @@ importers:
       '@poppanator/sveltekit-svg':
         specifier: 5.0.0-svelte5.3
         version: 5.0.0-svelte5.3(rollup@4.18.1)(svelte@5.0.0-next.192)(svgo@3.3.2)(vite@5.3.4(@types/node@20.14.11)(lightningcss@1.25.1)(terser@5.31.3))
+      '@shikijs/transformers':
+        specifier: ^1.10.3
+        version: 1.10.3
       '@types/eslint':
         specifier: ^8.56.10
         version: 8.56.10
@@ -1833,6 +1836,9 @@ packages:
 
   '@shikijs/core@1.10.3':
     resolution: {integrity: sha512-D45PMaBaeDHxww+EkcDQtDAtzv00Gcsp72ukBtaLSmqRvh0WgGMq3Al0rl1QQBZfuneO75NXMIzEZGFitThWbg==}
+
+  '@shikijs/transformers@1.10.3':
+    resolution: {integrity: sha512-MNjsyye2WHVdxfZUSr5frS97sLGe6G1T+1P41QjyBFJehZphMcr4aBlRLmq6OSPBslYe9byQPVvt/LJCOfxw8Q==}
 
   '@shuding/opentype.js@1.4.0-beta.0':
     resolution: {integrity: sha512-3NgmNyH3l/Hv6EvsWJbsvpcpUba6R8IREQ83nH83cyakCw7uM1arZKNfHwv1Wz6jgqrF/j4x5ELvR6PnK9nTcA==}
@@ -7943,6 +7949,10 @@ snapshots:
   '@shikijs/core@1.10.3':
     dependencies:
       '@types/hast': 3.0.4
+
+  '@shikijs/transformers@1.10.3':
+    dependencies:
+      shiki: 1.10.3
 
   '@shuding/opentype.js@1.4.0-beta.0':
     dependencies:
