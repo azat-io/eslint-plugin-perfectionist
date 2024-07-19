@@ -1,6 +1,7 @@
 <script lang="ts">
   export let color: 'primary' | 'secondary' = 'primary'
-  export let onClick: () => void
+  export let onClick: () => void = () => {}
+  export let content: string = ''
 </script>
 
 <button
@@ -10,7 +11,7 @@
   class="button"
   type="button"
 >
-  <slot />
+  {content}
 </button>
 
 <style>

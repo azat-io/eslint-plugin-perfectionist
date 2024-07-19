@@ -1,12 +1,12 @@
 <script lang="ts">
   import { ShikiMagicMove } from 'shiki-magic-move/svelte'
   import { focusGroupKeyUX, startKeyUX } from 'keyux'
+  import { onMount } from 'svelte'
 
   import CopyDefaultIcon from '../icons/copy-default.svg?component'
   import CopyCopiedIcon from '../icons/copy-copied.svg?component'
   import { codeSettings } from '../stores/code-settings'
   import { shiki } from '../stores/shiki'
-  import { onMount } from 'svelte'
 
   interface Code {
     source: string

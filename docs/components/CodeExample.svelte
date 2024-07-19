@@ -30,30 +30,27 @@
 <div class="buttons-wrapper">
   <div class="buttons">
     <Button
-      color="primary"
       onClick={() => {
         selected = 'alphabetical'
       }}
-    >
-      Sort Alphabetically
-    </Button>
-    <Button
+      content="Sort Alphabetically"
       color="primary"
+    />
+    <Button
       onClick={() => {
         selected = 'lineLength'
       }}
-    >
-      Sort by Line Length
-    </Button>
+      content="Sort by Line Length"
+      color="primary"
+    />
   </div>
   <Button
-    color="secondary"
     onClick={() => {
       selected = 'initial'
     }}
-  >
-    Reset
-  </Button>
+    color="secondary"
+    content="Reset"
+  />
 </div>
 {#if mounted && $shiki.highlighter}
   <ShikiMagicMove
