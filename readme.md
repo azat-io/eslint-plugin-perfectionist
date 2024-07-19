@@ -17,7 +17,7 @@ This plugin defines rules for sorting various data, such as objects, imports, Ty
 
 All rules are automatically fixable. It's safe!
 
-## 🦄 Why
+## Why
 
 Sorting imports and properties in software development offers numerous benefits:
 
@@ -31,7 +31,7 @@ Sorting imports and properties in software development offers numerous benefits:
 
 - **Aesthetics**: This not only provides functional benefits, but also gives the code an aesthetic appeal, visually pleasing and harmonious structure. Take your code to the beauty salon!
 
-## 📖 Documentation
+## Documentation
 
 See [docs](https://perfectionist.dev).
 
@@ -41,7 +41,7 @@ See [docs](https://perfectionist.dev).
 ![ESLint Plugin Perfectionist line length usage example](https://raw.githubusercontent.com/azat-io/eslint-plugin-perfectionist/main/docs/public/examples/example-line-length-dark.webp#gh-dark-mode-only)
 ![ESLint Plugin Perfectionist line length usage example](https://raw.githubusercontent.com/azat-io/eslint-plugin-perfectionist/main/docs/public/examples/example-line-length-light.webp#gh-light-mode-only)
 
-## 💿 Installation
+## Installation
 
 You'll first need to install [ESLint](https://eslint.org):
 
@@ -55,7 +55,7 @@ Next, install `eslint-plugin-perfectionist`:
 npm install --save-dev eslint-plugin-perfectionist
 ```
 
-## 🚀️️️️ Usage
+## Usage
 
 Add `eslint-plugin-perfectionist` to the plugins section of the ESLint configuration file and define the list of rules you will use.
 
@@ -82,27 +82,27 @@ export default [
 ]
 ```
 
-### Legacy Config ([`.eslintrc`](https://eslint.org/docs/latest/use/configure/configuration-files-deprecated))
+### Legacy Config ([`.eslintrc.js`](https://eslint.org/docs/latest/use/configure/configuration-files-deprecated))
 
 <!-- prettier-ignore -->
-```json
-{
-  "plugins": [
-    "perfectionist"
+```js
+export default {
+  plugins: [
+    'perfectionist',
   ],
-  "rules": {
-    "perfectionist/sort-objects": [
-      "error",
+  rules: {
+    'perfectionist/sort-objects': [
+      'error',
       {
-        "type": "natural",
-        "order": "asc"
+        type: 'natural',
+        order: 'asc',
       }
     ]
   }
 }
 ```
 
-## ⚙️ Configs
+## Configs
 
 The easiest way to use `eslint-plugin-perfectionist` is to use ready-made configs. Config files use all the rules of the current plugin, but you can override them.
 
@@ -120,11 +120,11 @@ export default [
 ### Legacy Config ([`.eslintrc`](https://eslint.org/docs/latest/use/configure/configuration-files-deprecated))
 
 <!-- prettier-ignore -->
-```json
-{
-  "extends": [
-    "plugin:perfectionist/recommended-natural-legacy"
-  ]
+```js
+export default {
+  extends: [
+    'plugin:perfectionist/recommended-natural-legacy',
+  ],
 }
 ```
 
@@ -136,7 +136,7 @@ export default [
 | [recommended-natural](https://perfectionist.dev/configs/recommended-natural)           | all plugin rules with natural sorting in ascending order         |
 | [recommended-line-length](https://perfectionist.dev/configs/recommended-line-length)   | all plugin rules with sorting by line length in descending order |
 
-## ✅ Rules
+## Rules
 
 <!-- begin auto-generated rules list -->
 
@@ -165,7 +165,7 @@ export default [
 
 <!-- end auto-generated rules list -->
 
-## ⁉️ FAQ
+## FAQ
 
 ### Can I automatically fix problems in the editor?
 
@@ -179,7 +179,7 @@ On the whole, yes. We are very careful to make sure that the work of the plugin 
 
 I love Prettier. However, this is not his area of responsibility. Prettier is used for formatting, and ESLint is also used for styling. For example, changing the order of imports can affect how the code works (console.log calls, fetch, style loading). Prettier should not change the AST. There is a cool article about this: ["The Blurry Line Between Formatting and Style"](https://blog.joshuakgoldberg.com/the-blurry-line-between-formatting-and-style) by **@joshuakgoldberg**.
 
-## ⚠️ Troubleshooting
+## Troubleshooting
 
 There are rules of ESLint and other ESLint plugins that may conflict with the rules of ESLint Plugin Perfectionist. We strongly recommend that you [disable rules](https://eslint.org/docs/latest/use/configure/rules#using-configuration-files-1) with similar functionality.
 
@@ -261,18 +261,14 @@ I recommend that you read the [documentation](https://perfectionist.dev) before 
 
 </details>
 
-## 🚥 Versioning Policy
+## Versioning Policy
 
 This plugin is following [Semantic Versioning](https://semver.org/) and [ESLint's Semantic Versioning Policy](https://github.com/eslint/eslint#semantic-versioning-policy).
 
-## ❤️ Contributing
+## Contributing
 
 See [Contributing Guide](https://github.com/azat-io/eslint-plugin-perfectionist/blob/main/contributing.md).
 
-## 👁 See Also
-
-- [`@azat-io/eslint-config`](https://github.com/azat-io/eslint-config) - Collection of ESLint configs
-
-## 🔒 License
+## License
 
 MIT &copy; [Azat S.](https://azat.io)
