@@ -89,6 +89,7 @@
     "@nanostores/vue": "^0.10.0",
     "@playform/compress": "^0.0.13",
     "@poppanator/sveltekit-svg": "5.0.0-svelte5.3",
+    "@shikijs/transformers": "^1.10.3",
     "@types/eslint": "^8.56.10",
     "@types/mdast": "^4.0.4",
     "@types/natural-compare-lite": "^1.4.2",
