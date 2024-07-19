@@ -43,7 +43,7 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
   meta: {
     type: 'suggestion',
     docs: {
-      description: 'enforce sorted Svelte attributes',
+      description: 'Enforce sorted Svelte attributes',
     },
     fixable: 'code',
     schema: [

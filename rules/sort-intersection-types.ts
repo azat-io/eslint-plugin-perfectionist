@@ -46,7 +46,7 @@ export default createEslintRule<Options, MESSAGE_ID>({
   meta: {
     type: 'suggestion',
     docs: {
-      description: 'enforce sorted intersection types',
+      description: 'Enforce sorted intersection types',
     },
     fixable: 'code',
     schema: [

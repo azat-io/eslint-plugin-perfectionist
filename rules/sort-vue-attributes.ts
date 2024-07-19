@@ -42,7 +42,7 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
   meta: {
     type: 'suggestion',
     docs: {
-      description: 'enforce sorted Vue attributes',
+      description: 'Enforce sorted Vue attributes',
     },
     fixable: 'code',
     schema: [

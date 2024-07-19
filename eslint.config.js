@@ -9,6 +9,10 @@ module.exports = [
   },
   {
     rules: {
+      'eslint-plugin/require-meta-docs-description': [
+        'error',
+        { pattern: '^Enforce' },
+      ],
       'eslint-plugin/require-meta-docs-recommended': 'off',
       'eslint-plugin/require-meta-docs-url': 'off',
       'astro/prefer-class-list-directive': 'off',

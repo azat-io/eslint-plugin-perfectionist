@@ -132,9 +132,9 @@ export default {
 
 | Name                                                                                   | Description                                                      |
 | :------------------------------------------------------------------------------------- | :--------------------------------------------------------------- |
-| [recommended-alphabetical](https://perfectionist.dev/configs/recommended-alphabetical) | all plugin rules with alphabetical sorting in ascending order    |
-| [recommended-natural](https://perfectionist.dev/configs/recommended-natural)           | all plugin rules with natural sorting in ascending order         |
-| [recommended-line-length](https://perfectionist.dev/configs/recommended-line-length)   | all plugin rules with sorting by line length in descending order |
+| [recommended-alphabetical](https://perfectionist.dev/configs/recommended-alphabetical) | All plugin rules with alphabetical sorting in ascending order    |
+| [recommended-natural](https://perfectionist.dev/configs/recommended-natural)           | All plugin rules with natural sorting in ascending order         |
+| [recommended-line-length](https://perfectionist.dev/configs/recommended-line-length)   | All plugin rules with sorting by line length in descending order |
 
 ## Rules
 
@@ -144,24 +144,24 @@ export default {
 
 | Name                                                                               | Description                                 | 🔧  |
 | :--------------------------------------------------------------------------------- | :------------------------------------------ | :-- |
-| [sort-array-includes](https://perfectionist.dev/rules/sort-array-includes)         | enforce sorted arrays before include method | 🔧  |
-| [sort-astro-attributes](https://perfectionist.dev/rules/sort-astro-attributes)     | enforce sorted Astro attributes             | 🔧  |
-| [sort-classes](https://perfectionist.dev/rules/sort-classes)                       | enforce sorted classes                      | 🔧  |
-| [sort-enums](https://perfectionist.dev/rules/sort-enums)                           | enforce sorted TypeScript enums             | 🔧  |
-| [sort-exports](https://perfectionist.dev/rules/sort-exports)                       | enforce sorted exports                      | 🔧  |
-| [sort-imports](https://perfectionist.dev/rules/sort-imports)                       | enforce sorted imports                      | 🔧  |
-| [sort-interfaces](https://perfectionist.dev/rules/sort-interfaces)                 | enforce sorted interface properties         | 🔧  |
-| [sort-intersection-types](https://perfectionist.dev/rules/sort-intersection-types) | enforce sorted intersection types           | 🔧  |
-| [sort-jsx-props](https://perfectionist.dev/rules/sort-jsx-props)                   | enforce sorted JSX props                    | 🔧  |
-| [sort-maps](https://perfectionist.dev/rules/sort-maps)                             | enforce sorted Map elements                 | 🔧  |
-| [sort-named-exports](https://perfectionist.dev/rules/sort-named-exports)           | enforce sorted named exports                | 🔧  |
-| [sort-named-imports](https://perfectionist.dev/rules/sort-named-imports)           | enforce sorted named imports                | 🔧  |
-| [sort-object-types](https://perfectionist.dev/rules/sort-object-types)             | enforce sorted object types                 | 🔧  |
-| [sort-objects](https://perfectionist.dev/rules/sort-objects)                       | enforce sorted objects                      | 🔧  |
-| [sort-svelte-attributes](https://perfectionist.dev/rules/sort-svelte-attributes)   | enforce sorted Svelte attributes            | 🔧  |
-| [sort-switch-case](https://perfectionist.dev/rules/sort-switch-case)               | enforce sorted switch case statements       | 🔧  |
-| [sort-union-types](https://perfectionist.dev/rules/sort-union-types)               | enforce sorted union types                  | 🔧  |
-| [sort-vue-attributes](https://perfectionist.dev/rules/sort-vue-attributes)         | enforce sorted Vue attributes               | 🔧  |
+| [sort-array-includes](https://perfectionist.dev/rules/sort-array-includes)         | Enforce sorted arrays before include method | 🔧  |
+| [sort-astro-attributes](https://perfectionist.dev/rules/sort-astro-attributes)     | Enforce sorted Astro attributes             | 🔧  |
+| [sort-classes](https://perfectionist.dev/rules/sort-classes)                       | Enforce sorted classes                      | 🔧  |
+| [sort-enums](https://perfectionist.dev/rules/sort-enums)                           | Enforce sorted TypeScript enums             | 🔧  |
+| [sort-exports](https://perfectionist.dev/rules/sort-exports)                       | Enforce sorted exports                      | 🔧  |
+| [sort-imports](https://perfectionist.dev/rules/sort-imports)                       | Enforce sorted imports                      | 🔧  |
+| [sort-interfaces](https://perfectionist.dev/rules/sort-interfaces)                 | Enforce sorted interface properties         | 🔧  |
+| [sort-intersection-types](https://perfectionist.dev/rules/sort-intersection-types) | Enforce sorted intersection types           | 🔧  |
+| [sort-jsx-props](https://perfectionist.dev/rules/sort-jsx-props)                   | Enforce sorted JSX props                    | 🔧  |
+| [sort-maps](https://perfectionist.dev/rules/sort-maps)                             | Enforce sorted Map elements                 | 🔧  |
+| [sort-named-exports](https://perfectionist.dev/rules/sort-named-exports)           | Enforce sorted named exports                | 🔧  |
+| [sort-named-imports](https://perfectionist.dev/rules/sort-named-imports)           | Enforce sorted named imports                | 🔧  |
+| [sort-object-types](https://perfectionist.dev/rules/sort-object-types)             | Enforce sorted object types                 | 🔧  |
+| [sort-objects](https://perfectionist.dev/rules/sort-objects)                       | Enforce sorted objects                      | 🔧  |
+| [sort-svelte-attributes](https://perfectionist.dev/rules/sort-svelte-attributes)   | Enforce sorted Svelte attributes            | 🔧  |
+| [sort-switch-case](https://perfectionist.dev/rules/sort-switch-case)               | Enforce sorted switch case statements       | 🔧  |
+| [sort-union-types](https://perfectionist.dev/rules/sort-union-types)               | Enforce sorted union types                  | 🔧  |
+| [sort-vue-attributes](https://perfectionist.dev/rules/sort-vue-attributes)         | Enforce sorted Vue attributes               | 🔧  |
 
 <!-- end auto-generated rules list -->
 

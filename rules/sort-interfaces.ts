@@ -41,7 +41,7 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
   meta: {
     type: 'suggestion',
     docs: {
-      description: 'enforce sorted interface properties',
+      description: 'Enforce sorted interface properties',
     },
     fixable: 'code',
     schema: [

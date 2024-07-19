@@ -29,7 +29,7 @@ export default createEslintRule<Options, MESSAGE_ID>({
   meta: {
     type: 'suggestion',
     docs: {
-      description: 'enforce sorted named exports',
+      description: 'Enforce sorted named exports',
     },
     fixable: 'code',
     schema: [

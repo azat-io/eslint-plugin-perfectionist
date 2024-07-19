@@ -43,7 +43,7 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
   meta: {
     type: 'suggestion',
     docs: {
-      description: 'enforce sorted Astro attributes',
+      description: 'Enforce sorted Astro attributes',
     },
     fixable: 'code',
     schema: [

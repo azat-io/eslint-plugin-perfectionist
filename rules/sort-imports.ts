@@ -80,7 +80,7 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
   meta: {
     type: 'suggestion',
     docs: {
-      description: 'enforce sorted imports',
+      description: 'Enforce sorted imports',
     },
     fixable: 'code',
     schema: [
