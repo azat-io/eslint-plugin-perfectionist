@@ -93,21 +93,27 @@ export default createEslintRule<Options, MESSAGE_ID>({
         let sourceCode = getSourceCode(context)
 
         let nodes: SortingNode[] = specifiers.map(specifier => {
-          let group = 'unknown'
+          let group: undefined | 'value' | 'type'
           let { name } = specifier.local
 
-          if (specifier.type === 'ImportSpecifier') {
-            if (options.ignoreAlias) {
-              ;({ name } = specifier.imported)
-            }
-            group = specifier.importKind
+          if (specifier.type === 'ImportSpecifier' && options.ignoreAlias) {
+            ;({ name } = specifier.imported)
+          }
+
+          if (
+            specifier.type === 'ImportSpecifier' &&
+            specifier.importKind === 'type'
+          ) {
+            group = 'type'
+          } else {
+            group = 'value'
           }
 
           return {
             size: rangeToDiff(specifier.range),
             node: specifier,
-            name,
             group,
+            name,
           }
         })
 

@@ -82,12 +82,20 @@ export default createEslintRule<Options, MESSAGE_ID>({
 
         let sourceCode = getSourceCode(context)
 
-        let nodes: SortingNode[] = node.specifiers.map(specifier => ({
-          size: rangeToDiff(specifier.range),
-          name: specifier.local.name,
-          node: specifier,
-          group: specifier.exportKind,
-        }))
+        let nodes: SortingNode[] = node.specifiers.map(specifier => {
+          let group: undefined | 'value' | 'type'
+          if (specifier.exportKind === 'type') {
+            group = 'type'
+          } else {
+            group = 'value'
+          }
+          return {
+            size: rangeToDiff(specifier.range),
+            name: specifier.local.name,
+            node: specifier,
+            group,
+          }
+        })
 
         let shouldGroupByKind = options.groupKind !== 'mixed'
         let groupKindOrder =
