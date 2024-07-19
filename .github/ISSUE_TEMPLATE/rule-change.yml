@@ -41,7 +41,7 @@ body:
       label: Validations
       description: Before submitting the issue, please make sure you do the following
       options:
-        - label: Read the [docs](https://eslint-plugin-perfectionist.azat.io).
+        - label: Read the [docs](https://perfectionist.dev).
           required: true
         - label: Check that there isn't [already an issue](https://github.com/azat-io/eslint-plugin-perfectionist/issues) that reports the same bug to avoid creating a duplicate.
           required: true
