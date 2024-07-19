@@ -36,7 +36,7 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
   meta: {
     type: 'suggestion',
     docs: {
-      description: 'enforce sorted object types',
+      description: 'Enforce sorted object types',
     },
     fixable: 'code',
     schema: [

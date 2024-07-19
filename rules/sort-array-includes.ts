@@ -31,7 +31,7 @@ export default createEslintRule<Options, MESSAGE_ID>({
   meta: {
     type: 'suggestion',
     docs: {
-      description: 'enforce sorted arrays before include method',
+      description: 'Enforce sorted arrays before include method',
     },
     fixable: 'code',
     schema: [

@@ -30,7 +30,7 @@ export default createEslintRule<Options, MESSAGE_ID>({
   meta: {
     type: 'suggestion',
     docs: {
-      description: 'enforce sorted Map elements',
+      description: 'Enforce sorted Map elements',
     },
     fixable: 'code',
     schema: [

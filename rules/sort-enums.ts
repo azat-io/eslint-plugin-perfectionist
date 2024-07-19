@@ -31,7 +31,7 @@ export default createEslintRule<Options, MESSAGE_ID>({
   meta: {
     type: 'suggestion',
     docs: {
-      description: 'enforce sorted TypeScript enums',
+      description: 'Enforce sorted TypeScript enums',
     },
     fixable: 'code',
     schema: [

@@ -46,7 +46,7 @@ export default createEslintRule<Options, MESSAGE_ID>({
   meta: {
     type: 'suggestion',
     docs: {
-      description: 'enforce sorted union types',
+      description: 'Enforce sorted union types',
     },
     fixable: 'code',
     schema: [
