@@ -734,6 +734,118 @@ describe(RULE_NAME, () => {
         },
       ],
     })
+
+    ruleTester.run(`${RULE_NAME}(${type}): sorts decorated accessors`, rule, {
+      valid: [
+        {
+          code: dedent`
+            export class Example {
+              // Region: Table
+              protected onChangeColumns() {}
+
+              protected onPaginationChanged() {}
+
+              protected onSortChanged() {}
+
+              protected updateTable() {}
+
+              // Region: Form
+              protected clearForm() {}
+
+              protected disableForm() {}
+
+              // Regular Comment
+              protected onValueChanged() {}
+
+              protected setFormValue() {}
+            }
+          `,
+          options: [
+            {
+              ...options,
+              partitionByComment: 'Region:*',
+            },
+          ],
+        },
+      ],
+      invalid: [
+        {
+          code: dedent`
+            export class Example {
+              // Region: Table
+              protected onChangeColumns() {}
+
+              protected updateTable() {}
+
+              protected onSortChanged() {}
+
+              protected onPaginationChanged() {}
+
+              // Region: Form
+              protected clearForm() {}
+
+              protected disableForm() {}
+
+              protected setFormValue() {}
+
+              // Regular Comment
+              protected onValueChanged() {}
+            }
+          `,
+          output: dedent`
+            export class Example {
+              // Region: Table
+              protected onChangeColumns() {}
+
+              protected onPaginationChanged() {}
+
+              protected onSortChanged() {}
+
+              protected updateTable() {}
+
+              // Region: Form
+              protected clearForm() {}
+
+              protected disableForm() {}
+
+              // Regular Comment
+              protected onValueChanged() {}
+
+              protected setFormValue() {}
+            }
+          `,
+          options: [
+            {
+              ...options,
+              partitionByComment: 'Region:*',
+            },
+          ],
+          errors: [
+            {
+              messageId: 'unexpectedClassesOrder',
+              data: {
+                left: 'updateTable',
+                right: 'onSortChanged',
+              },
+            },
+            {
+              messageId: 'unexpectedClassesOrder',
+              data: {
+                left: 'onSortChanged',
+                right: 'onPaginationChanged',
+              },
+            },
+            {
+              messageId: 'unexpectedClassesOrder',
+              data: {
+                left: 'setFormValue',
+                right: 'onValueChanged',
+              },
+            },
+          ],
+        },
+      ],
+    })
   })
 
   describe(`${RULE_NAME}: sorting by natural order`, () => {
@@ -1448,6 +1560,118 @@ describe(RULE_NAME, () => {
               data: {
                 left: '#active',
                 right: 'finished',
+              },
+            },
+          ],
+        },
+      ],
+    })
+
+    ruleTester.run(`${RULE_NAME}(${type}): sorts decorated accessors`, rule, {
+      valid: [
+        {
+          code: dedent`
+            export class Example {
+              // Region: Table
+              protected onChangeColumns() {}
+
+              protected onPaginationChanged() {}
+
+              protected onSortChanged() {}
+
+              protected updateTable() {}
+
+              // Region: Form
+              protected clearForm() {}
+
+              protected disableForm() {}
+
+              // Regular Comment
+              protected onValueChanged() {}
+
+              protected setFormValue() {}
+            }
+          `,
+          options: [
+            {
+              ...options,
+              partitionByComment: 'Region:*',
+            },
+          ],
+        },
+      ],
+      invalid: [
+        {
+          code: dedent`
+            export class Example {
+              // Region: Table
+              protected onChangeColumns() {}
+
+              protected updateTable() {}
+
+              protected onSortChanged() {}
+
+              protected onPaginationChanged() {}
+
+              // Region: Form
+              protected clearForm() {}
+
+              protected disableForm() {}
+
+              protected setFormValue() {}
+
+              // Regular Comment
+              protected onValueChanged() {}
+            }
+          `,
+          output: dedent`
+            export class Example {
+              // Region: Table
+              protected onChangeColumns() {}
+
+              protected onPaginationChanged() {}
+
+              protected onSortChanged() {}
+
+              protected updateTable() {}
+
+              // Region: Form
+              protected clearForm() {}
+
+              protected disableForm() {}
+
+              // Regular Comment
+              protected onValueChanged() {}
+
+              protected setFormValue() {}
+            }
+          `,
+          options: [
+            {
+              ...options,
+              partitionByComment: 'Region:*',
+            },
+          ],
+          errors: [
+            {
+              messageId: 'unexpectedClassesOrder',
+              data: {
+                left: 'updateTable',
+                right: 'onSortChanged',
+              },
+            },
+            {
+              messageId: 'unexpectedClassesOrder',
+              data: {
+                left: 'onSortChanged',
+                right: 'onPaginationChanged',
+              },
+            },
+            {
+              messageId: 'unexpectedClassesOrder',
+              data: {
+                left: 'setFormValue',
+                right: 'onValueChanged',
               },
             },
           ],
