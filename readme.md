@@ -35,7 +35,11 @@ Sorting imports and properties in software development offers numerous benefits:
 
 See [docs](https://eslint-plugin-perfectionist.azat.io).
 
-![ESLint Plugin Perfectionist usage example](https://raw.githubusercontent.com/azat-io/eslint-plugin-perfectionist/main/docs/public/example.png)
+![ESLint Plugin Perfectionist alphabetical usage example](https://raw.githubusercontent.com/azat-io/eslint-plugin-perfectionist/main/docs/public/examples/example-alphabetical-dark.webp#gh-dark-mode-only)
+![ESLint Plugin Perfectionist alphabetical usage example](https://raw.githubusercontent.com/azat-io/eslint-plugin-perfectionist/main/docs/public/examples/example-alphabetical-light.webp#gh-light-mode-only)
+
+![ESLint Plugin Perfectionist line length usage example](https://raw.githubusercontent.com/azat-io/eslint-plugin-perfectionist/main/docs/public/examples/example-line-length-dark.webp#gh-dark-mode-only)
+![ESLint Plugin Perfectionist line length usage example](https://raw.githubusercontent.com/azat-io/eslint-plugin-perfectionist/main/docs/public/examples/example-line-length-light.webp#gh-light-mode-only)
 
 ## 💿 Installation
 
