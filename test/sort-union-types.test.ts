@@ -264,42 +264,6 @@ describe(RULE_NAME, () => {
         },
       ],
     })
-
-    ruleTester.run(`${RULE_NAME}: can put nullable types to the end`, rule, {
-      valid: [],
-      invalid: [
-        {
-          code: dedent`
-            type Type = 'null' | null | 'a' | undefined | unknown
-          `,
-          output: dedent`
-            type Type = 'a' | 'null' | unknown | null | undefined
-          `,
-          options: [
-            {
-              ...options,
-              nullableLast: true,
-            },
-          ],
-          errors: [
-            {
-              messageId: 'unexpectedUnionTypesOrder',
-              data: {
-                left: 'null',
-                right: "'a'",
-              },
-            },
-            {
-              messageId: 'unexpectedUnionTypesOrder',
-              data: {
-                left: 'undefined',
-                right: 'unknown',
-              },
-            },
-          ],
-        },
-      ],
-    })
   })
 
   describe(`${RULE_NAME}: sorting by natural order`, () => {
@@ -543,42 +507,6 @@ describe(RULE_NAME, () => {
         },
       ],
     })
-
-    ruleTester.run(`${RULE_NAME}: can put nullable types to the end`, rule, {
-      valid: [],
-      invalid: [
-        {
-          code: dedent`
-            type Type = 'null' | null | 'a' | undefined | unknown
-          `,
-          output: dedent`
-            type Type = 'a' | 'null' | unknown | null | undefined
-          `,
-          options: [
-            {
-              ...options,
-              nullableLast: true,
-            },
-          ],
-          errors: [
-            {
-              messageId: 'unexpectedUnionTypesOrder',
-              data: {
-                left: 'null',
-                right: "'a'",
-              },
-            },
-            {
-              messageId: 'unexpectedUnionTypesOrder',
-              data: {
-                left: 'undefined',
-                right: 'unknown',
-              },
-            },
-          ],
-        },
-      ],
-    })
   })
 
   describe(`${RULE_NAME}: sorting by line length`, () => {
@@ -808,42 +736,6 @@ describe(RULE_NAME, () => {
               data: {
                 left: '5',
                 right: '100',
-              },
-            },
-          ],
-        },
-      ],
-    })
-
-    ruleTester.run(`${RULE_NAME}: can put nullable types to the end`, rule, {
-      valid: [],
-      invalid: [
-        {
-          code: dedent`
-            type Type = 'null' | null | 'a' | undefined | unknown
-          `,
-          output: dedent`
-            type Type = unknown | 'null' | 'a' | undefined | null
-          `,
-          options: [
-            {
-              ...options,
-              nullableLast: true,
-            },
-          ],
-          errors: [
-            {
-              messageId: 'unexpectedUnionTypesOrder',
-              data: {
-                left: 'null',
-                right: "'a'",
-              },
-            },
-            {
-              messageId: 'unexpectedUnionTypesOrder',
-              data: {
-                left: 'undefined',
-                right: 'unknown',
               },
             },
           ],
