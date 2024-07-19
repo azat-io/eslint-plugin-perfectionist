@@ -1,11 +1,13 @@
 import type { SortingNode } from '../typings'
 
 import { createEslintRule } from '../utils/create-eslint-rule'
+import { getGroupNumber } from '../utils/get-group-number'
 import { getSourceCode } from '../utils/get-source-code'
 import { toSingleLine } from '../utils/to-single-line'
 import { rangeToDiff } from '../utils/range-to-diff'
 import { isPositive } from '../utils/is-positive'
 import { sortNodes } from '../utils/sort-nodes'
+import { useGroups } from '../utils/use-groups'
 import { makeFixes } from '../utils/make-fixes'
 import { complete } from '../utils/complete'
 import { pairwise } from '../utils/pairwise'
@@ -13,9 +15,25 @@ import { compare } from '../utils/compare'
 
 type MESSAGE_ID = 'unexpectedIntersectionTypesOrder'
 
+type Group =
+  | 'intersection'
+  | 'conditional'
+  | 'function'
+  | 'operator'
+  | 'keyword'
+  | 'literal'
+  | 'nullish'
+  | 'unknown'
+  | 'import'
+  | 'object'
+  | 'named'
+  | 'tuple'
+  | 'union'
+
 type Options = [
   Partial<{
     type: 'alphabetical' | 'line-length' | 'natural'
+    groups: (Group[] | Group)[]
     order: 'desc' | 'asc'
     ignoreCase: boolean
   }>,
@@ -49,6 +67,9 @@ export default createEslintRule<Options, MESSAGE_ID>({
             type: 'boolean',
             default: true,
           },
+          groups: {
+            type: 'array',
+          },
         },
         additionalProperties: false,
       },
@@ -70,24 +91,80 @@ export default createEslintRule<Options, MESSAGE_ID>({
         type: 'alphabetical',
         ignoreCase: true,
         order: 'asc',
+        groups: [],
       } as const)
 
       let sourceCode = getSourceCode(context)
 
-      let nodes: SortingNode[] = node.types.map(type => ({
-        group:
-          type.type === 'TSNullKeyword' || type.type === 'TSUndefinedKeyword'
-            ? 'nullable'
-            : 'unknown',
-        name: sourceCode.text.slice(...type.range),
-        size: rangeToDiff(type.range),
-        node: type,
-      }))
+      let nodes: SortingNode[] = node.types.map(type => {
+        let { getGroup, defineGroup } = useGroups(options.groups)
+
+        switch (type.type) {
+          case 'TSConditionalType':
+            defineGroup('conditional')
+            break
+          case 'TSFunctionType':
+            defineGroup('function')
+            break
+          case 'TSImportType':
+            defineGroup('import')
+            break
+          case 'TSIntersectionType':
+            defineGroup('intersection')
+            break
+          case 'TSAnyKeyword':
+          case 'TSBigIntKeyword':
+          case 'TSBooleanKeyword':
+          case 'TSNeverKeyword':
+          case 'TSNumberKeyword':
+          case 'TSObjectKeyword':
+          case 'TSStringKeyword':
+          case 'TSUnknownKeyword':
+          case 'TSVoidKeyword':
+            defineGroup('keyword')
+            break
+          case 'TSLiteralType':
+            defineGroup('literal')
+            break
+          case 'TSTypeReference':
+          case 'TSIndexedAccessType':
+            defineGroup('named')
+            break
+          case 'TSTypeLiteral':
+            defineGroup('object')
+            break
+          case 'TSTypeQuery':
+          case 'TSTypeOperator':
+            defineGroup('operator')
+            break
+          case 'TSTupleType':
+            defineGroup('tuple')
+            break
+          case 'TSUnionType':
+            defineGroup('union')
+            break
+          case 'TSNullKeyword':
+          case 'TSUndefinedKeyword':
+            defineGroup('nullish')
+            break
+        }
+
+        return {
+          name: sourceCode.text.slice(...type.range),
+          size: rangeToDiff(type.range),
+          group: getGroup(),
+          node: type,
+        }
+      })
 
       pairwise(nodes, (left, right) => {
-        let compareValue = isPositive(compare(left, right, options))
+        let leftNum = getGroupNumber(options.groups, left)
+        let rightNum = getGroupNumber(options.groups, right)
 
-        if (compareValue) {
+        if (
+          leftNum > rightNum ||
+          (leftNum === rightNum && isPositive(compare(left, right, options)))
+        ) {
           context.report({
             messageId: 'unexpectedIntersectionTypesOrder',
             data: {
@@ -96,7 +173,30 @@ export default createEslintRule<Options, MESSAGE_ID>({
             },
             node: right.node,
             fix: fixer => {
-              let sortedNodes = sortNodes(nodes, options)
+              let grouped: {
+                [key: string]: SortingNode[]
+              } = {}
+
+              for (let currentNode of nodes) {
+                let groupNum = getGroupNumber(options.groups, currentNode)
+
+                if (!(groupNum in grouped)) {
+                  grouped[groupNum] = [currentNode]
+                } else {
+                  grouped[groupNum] = sortNodes(
+                    [...grouped[groupNum], currentNode],
+                    options,
+                  )
+                }
+              }
+
+              let sortedNodes: SortingNode[] = []
+
+              for (let group of Object.keys(grouped).sort(
+                (a, b) => Number(a) - Number(b),
+              )) {
+                sortedNodes.push(...sortNodes(grouped[group], options))
+              }
 
               return makeFixes(fixer, nodes, sortedNodes, sourceCode)
             },
