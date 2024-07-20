@@ -467,6 +467,139 @@ describe(ruleName, () => {
         ],
       },
     )
+
+    ruleTester.run(
+      `${ruleName}(${type}): allows to sort required values first`,
+      rule,
+      {
+        valid: [
+          {
+            code: dedent`
+              type Type = {
+                ccc: string
+                e: string
+                aaaaa?: string
+                bbbb?: string
+                dd?: string
+              }
+            `,
+            options: [
+              {
+                ...options,
+                groupKind: 'required-first',
+              },
+            ],
+          },
+        ],
+        invalid: [
+          {
+            code: dedent`
+              type Type = {
+                aaaaa?: string
+                bbbb?: string
+                ccc: string
+                dd?: string
+                e: string
+              }
+            `,
+            output: dedent`
+              type Type = {
+                ccc: string
+                e: string
+                aaaaa?: string
+                bbbb?: string
+                dd?: string
+              }
+            `,
+            options: [
+              {
+                ...options,
+                groupKind: 'required-first',
+              },
+            ],
+            errors: [
+              {
+                messageId: 'unexpectedObjectTypesOrder',
+                data: {
+                  left: 'bbbb',
+                  right: 'ccc',
+                },
+              },
+              {
+                messageId: 'unexpectedObjectTypesOrder',
+                data: {
+                  left: 'dd',
+                  right: 'e',
+                },
+              },
+            ],
+          },
+        ],
+      },
+    )
+
+    ruleTester.run(
+      `${ruleName}(${type}): allows to sort optional values first`,
+      rule,
+      {
+        valid: [
+          {
+            code: dedent`
+              type Type = {
+                aaaaa?: string
+                bbbb?: string
+                dd?: string
+                ccc: string
+                e: string
+              }
+            `,
+            options: [
+              {
+                ...options,
+                groupKind: 'optional-first',
+              },
+            ],
+          },
+        ],
+        invalid: [
+          {
+            code: dedent`
+              type Type = {
+                aaaaa?: string
+                bbbb?: string
+                ccc: string
+                dd?: string
+                e: string
+              }
+            `,
+            output: dedent`
+              type Type = {
+                aaaaa?: string
+                bbbb?: string
+                dd?: string
+                ccc: string
+                e: string
+              }
+            `,
+            options: [
+              {
+                ...options,
+                groupKind: 'optional-first',
+              },
+            ],
+            errors: [
+              {
+                messageId: 'unexpectedObjectTypesOrder',
+                data: {
+                  left: 'ccc',
+                  right: 'dd',
+                },
+              },
+            ],
+          },
+        ],
+      },
+    )
   })
 
   describe(`${ruleName}: sorting by natural order`, () => {
@@ -871,6 +1004,139 @@ describe(ruleName, () => {
                 data: {
                   left: 'b',
                   right: 'a',
+                },
+              },
+            ],
+          },
+        ],
+      },
+    )
+
+    ruleTester.run(
+      `${ruleName}(${type}): allows to sort required values first`,
+      rule,
+      {
+        valid: [
+          {
+            code: dedent`
+              type Type = {
+                ccc: string
+                e: string
+                aaaaa?: string
+                bbbb?: string
+                dd?: string
+              }
+            `,
+            options: [
+              {
+                ...options,
+                groupKind: 'required-first',
+              },
+            ],
+          },
+        ],
+        invalid: [
+          {
+            code: dedent`
+              type Type = {
+                aaaaa?: string
+                bbbb?: string
+                ccc: string
+                dd?: string
+                e: string
+              }
+            `,
+            output: dedent`
+              type Type = {
+                ccc: string
+                e: string
+                aaaaa?: string
+                bbbb?: string
+                dd?: string
+              }
+            `,
+            options: [
+              {
+                ...options,
+                groupKind: 'required-first',
+              },
+            ],
+            errors: [
+              {
+                messageId: 'unexpectedObjectTypesOrder',
+                data: {
+                  left: 'bbbb',
+                  right: 'ccc',
+                },
+              },
+              {
+                messageId: 'unexpectedObjectTypesOrder',
+                data: {
+                  left: 'dd',
+                  right: 'e',
+                },
+              },
+            ],
+          },
+        ],
+      },
+    )
+
+    ruleTester.run(
+      `${ruleName}(${type}): allows to sort optional values first`,
+      rule,
+      {
+        valid: [
+          {
+            code: dedent`
+              type Type = {
+                aaaaa?: string
+                bbbb?: string
+                dd?: string
+                ccc: string
+                e: string
+              }
+            `,
+            options: [
+              {
+                ...options,
+                groupKind: 'optional-first',
+              },
+            ],
+          },
+        ],
+        invalid: [
+          {
+            code: dedent`
+              type Type = {
+                aaaaa?: string
+                bbbb?: string
+                ccc: string
+                dd?: string
+                e: string
+              }
+            `,
+            output: dedent`
+              type Type = {
+                aaaaa?: string
+                bbbb?: string
+                dd?: string
+                ccc: string
+                e: string
+              }
+            `,
+            options: [
+              {
+                ...options,
+                groupKind: 'optional-first',
+              },
+            ],
+            errors: [
+              {
+                messageId: 'unexpectedObjectTypesOrder',
+                data: {
+                  left: 'ccc',
+                  right: 'dd',
                 },
               },
             ],
@@ -1295,6 +1561,139 @@ describe(ruleName, () => {
                 data: {
                   left: 'b',
                   right: 'a',
+                },
+              },
+            ],
+          },
+        ],
+      },
+    )
+
+    ruleTester.run(
+      `${ruleName}(${type}): allows to sort required values first`,
+      rule,
+      {
+        valid: [
+          {
+            code: dedent`
+              type Type = {
+                ccc: string
+                e: string
+                aaaaa?: string
+                bbbb?: string
+                dd?: string
+              }
+            `,
+            options: [
+              {
+                ...options,
+                groupKind: 'required-first',
+              },
+            ],
+          },
+        ],
+        invalid: [
+          {
+            code: dedent`
+              type Type = {
+                aaaaa?: string
+                bbbb?: string
+                ccc: string
+                dd?: string
+                e: string
+              }
+            `,
+            output: dedent`
+              type Type = {
+                ccc: string
+                e: string
+                aaaaa?: string
+                bbbb?: string
+                dd?: string
+              }
+            `,
+            options: [
+              {
+                ...options,
+                groupKind: 'required-first',
+              },
+            ],
+            errors: [
+              {
+                messageId: 'unexpectedObjectTypesOrder',
+                data: {
+                  left: 'bbbb',
+                  right: 'ccc',
+                },
+              },
+              {
+                messageId: 'unexpectedObjectTypesOrder',
+                data: {
+                  left: 'dd',
+                  right: 'e',
+                },
+              },
+            ],
+          },
+        ],
+      },
+    )
+
+    ruleTester.run(
+      `${ruleName}(${type}): allows to sort optional values first`,
+      rule,
+      {
+        valid: [
+          {
+            code: dedent`
+              type Type = {
+                aaaaa?: string
+                bbbb?: string
+                dd?: string
+                ccc: string
+                e: string
+              }
+            `,
+            options: [
+              {
+                ...options,
+                groupKind: 'optional-first',
+              },
+            ],
+          },
+        ],
+        invalid: [
+          {
+            code: dedent`
+              type Type = {
+                aaaaa?: string
+                bbbb?: string
+                ccc: string
+                dd?: string
+                e: string
+              }
+            `,
+            output: dedent`
+              type Type = {
+                aaaaa?: string
+                bbbb?: string
+                dd?: string
+                ccc: string
+                e: string
+              }
+            `,
+            options: [
+              {
+                ...options,
+                groupKind: 'optional-first',
+              },
+            ],
+            errors: [
+              {
+                messageId: 'unexpectedObjectTypesOrder',
+                data: {
+                  left: 'ccc',
+                  right: 'dd',
                 },
               },
             ],
