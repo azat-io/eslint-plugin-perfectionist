@@ -119,6 +119,7 @@ export default createEslintRule<Options, MESSAGE_ID>({
           case 'TSConditionalType':
             defineGroup('conditional')
             break
+          case 'TSConstructorType':
           case 'TSFunctionType':
             defineGroup('function')
             break
@@ -135,17 +136,24 @@ export default createEslintRule<Options, MESSAGE_ID>({
           case 'TSNumberKeyword':
           case 'TSObjectKeyword':
           case 'TSStringKeyword':
+          case 'TSSymbolKeyword':
+          case 'TSThisType':
           case 'TSUnknownKeyword':
-          case 'TSVoidKeyword':
+          case 'TSIntrinsicKeyword':
             defineGroup('keyword')
             break
           case 'TSLiteralType':
+          case 'TSTemplateLiteralType':
             defineGroup('literal')
             break
-          case 'TSTypeReference':
+          case 'TSArrayType':
           case 'TSIndexedAccessType':
+          case 'TSInferType':
+          case 'TSTypeReference':
+          case 'TSQualifiedName':
             defineGroup('named')
             break
+          case 'TSMappedType':
           case 'TSTypeLiteral':
             defineGroup('object')
             break
@@ -161,6 +169,7 @@ export default createEslintRule<Options, MESSAGE_ID>({
             break
           case 'TSNullKeyword':
           case 'TSUndefinedKeyword':
+          case 'TSVoidKeyword':
             defineGroup('nullish')
             break
         }
