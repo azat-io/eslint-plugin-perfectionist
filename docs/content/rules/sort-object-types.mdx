@@ -150,6 +150,15 @@ type User = {
 
 In this example, the `partitionByNewLine` option will cause the rule to treat each group of members (separated by empty lines) independently, preserving their order within each group.
 
+### groupKind
+
+<sub>default: `'mixed'`</sub>
+
+Allows you to group type object keys by their kind, determining whether required values should come before or after optional values.
+
+- `mixed` — Do not group object keys by their kind; required values are sorted together optional values.
+- `required-first` — Group all required values before optional.
+- `optional-first` — Group all optional values before required.
 
 ### groups
 

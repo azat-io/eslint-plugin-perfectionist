@@ -1,3 +1,5 @@
+import type { TSESTree } from '@typescript-eslint/types'
+
 import type { SortingNode } from '../typings'
 
 import { createEslintRule } from '../utils/create-eslint-rule'
@@ -20,6 +22,7 @@ type Group<T extends string[]> = 'multiline' | 'unknown' | T[number]
 
 type Options<T extends string[]> = [
   Partial<{
+    groupKind: 'required-first' | 'optional-first' | 'mixed'
     type: 'alphabetical' | 'line-length' | 'natural'
     groups: (Group<T>[] | Group<T>)[]
     partitionByNewLine: boolean
@@ -61,6 +64,11 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
             description:
               'Allows to use spaces to separate the nodes into logical groups.',
             type: 'boolean',
+          },
+          groupKind: {
+            description: 'Specifies top-level groups.',
+            type: 'string',
+            enum: ['mixed', 'required-first', 'optional-first'],
           },
           groups: {
             description: 'Specifies the order of the groups.',
@@ -111,6 +119,7 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
       order: 'asc',
       ignoreCase: true,
       partitionByNewLine: false,
+      groupKind: 'mixed',
       groups: [],
       customGroups: {},
     },
@@ -121,6 +130,7 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
         let options = complete(context.options.at(0), {
           partitionByNewLine: false,
           type: 'alphabetical',
+          groupKind: 'mixed',
           ignoreCase: true,
           customGroups: {},
           order: 'asc',
@@ -129,89 +139,133 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
 
         let sourceCode = getSourceCode(context)
 
-        let formattedMembers: SortingNode[][] = node.members.reduce(
-          (accumulator: SortingNode[][], member) => {
-            let name: string
-            let raw = sourceCode.text.slice(
-              member.range.at(0),
-              member.range.at(1),
-            )
-            let lastMember = accumulator.at(-1)?.at(-1)
+        let formattedMembers: SortingNode<TSESTree.TypeElement>[][] =
+          node.members.reduce(
+            (accumulator: SortingNode<TSESTree.TypeElement>[][], member) => {
+              let name: string
+              let raw = sourceCode.text.slice(
+                member.range.at(0),
+                member.range.at(1),
+              )
+              let lastMember = accumulator.at(-1)?.at(-1)
 
-            let { getGroup, defineGroup, setCustomGroups } = useGroups(
-              options.groups,
-            )
+              let { getGroup, defineGroup, setCustomGroups } = useGroups(
+                options.groups,
+              )
 
-            let formatName = (value: string): string =>
-              value.replace(/(,|;)$/, '')
+              let formatName = (value: string): string =>
+                value.replace(/(,|;)$/, '')
 
-            if (member.type === 'TSPropertySignature') {
-              if (member.key.type === 'Identifier') {
-                ;({ name } = member.key)
-              } else if (member.key.type === 'Literal') {
-                name = `${member.key.value}`
+              if (member.type === 'TSPropertySignature') {
+                if (member.key.type === 'Identifier') {
+                  ;({ name } = member.key)
+                } else if (member.key.type === 'Literal') {
+                  name = `${member.key.value}`
+                } else {
+                  name = sourceCode.text.slice(
+                    member.range.at(0),
+                    member.typeAnnotation?.range.at(0),
+                  )
+                }
+              } else if (member.type === 'TSIndexSignature') {
+                let endIndex: number =
+                  member.typeAnnotation?.range.at(0) ?? member.range.at(1)!
+
+                name = formatName(
+                  sourceCode.text.slice(member.range.at(0), endIndex),
+                )
               } else {
-                name = sourceCode.text.slice(
-                  member.range.at(0),
-                  member.typeAnnotation?.range.at(0),
+                name = formatName(
+                  sourceCode.text.slice(member.range.at(0), member.range.at(1)),
                 )
               }
-            } else if (member.type === 'TSIndexSignature') {
-              let endIndex: number =
-                member.typeAnnotation?.range.at(0) ?? member.range.at(1)!
 
-              name = formatName(
-                sourceCode.text.slice(member.range.at(0), endIndex),
-              )
-            } else {
-              name = formatName(
-                sourceCode.text.slice(member.range.at(0), member.range.at(1)),
-              )
-            }
+              setCustomGroups(options.customGroups, name)
 
-            setCustomGroups(options.customGroups, name)
+              if (member.loc.start.line !== member.loc.end.line) {
+                defineGroup('multiline')
+              }
 
-            if (member.loc.start.line !== member.loc.end.line) {
-              defineGroup('multiline')
-            }
+              let endsWithComma = raw.endsWith(';') || raw.endsWith(',')
+              let endSize = endsWithComma ? 1 : 0
 
-            let endsWithComma = raw.endsWith(';') || raw.endsWith(',')
-            let endSize = endsWithComma ? 1 : 0
+              let memberSortingNode = {
+                size: rangeToDiff(member.range) - endSize,
+                node: member,
+                name,
+              }
 
-            let memberSortingNode = {
-              size: rangeToDiff(member.range) - endSize,
-              node: member,
-              name,
-            }
+              if (
+                options.partitionByNewLine &&
+                lastMember &&
+                getLinesBetween(sourceCode, lastMember, memberSortingNode)
+              ) {
+                accumulator.push([])
+              }
 
-            if (
-              options.partitionByNewLine &&
-              lastMember &&
-              getLinesBetween(sourceCode, lastMember, memberSortingNode)
-            ) {
-              accumulator.push([])
-            }
+              accumulator.at(-1)?.push({
+                ...memberSortingNode,
+                group: getGroup(),
+              })
 
-            accumulator.at(-1)?.push({
-              ...memberSortingNode,
-              group: getGroup(),
-            })
-
-            return accumulator
-          },
-          [[]],
-        )
+              return accumulator
+            },
+            [[]],
+          )
 
         for (let nodes of formattedMembers) {
           pairwise(nodes, (left, right) => {
             let leftNum = getGroupNumber(options.groups, left)
             let rightNum = getGroupNumber(options.groups, right)
 
+            let getIsOptionalValue = (nodeValue: TSESTree.TypeElement) => {
+              if (
+                nodeValue.type === 'TSCallSignatureDeclaration' ||
+                nodeValue.type === 'TSConstructSignatureDeclaration' ||
+                nodeValue.type === 'TSIndexSignature'
+              ) {
+                return false
+              }
+              return nodeValue.optional
+            }
+
+            let isLeftOptional = getIsOptionalValue(left.node)
+            let isRightOptional = getIsOptionalValue(right.node)
+
+            let compareValue
             if (
-              leftNum > rightNum ||
-              (leftNum === rightNum &&
-                isPositive(compare(left, right, options)))
+              options.groupKind === 'optional-first' &&
+              isLeftOptional &&
+              !isRightOptional
             ) {
+              compareValue = false
+            } else if (
+              options.groupKind === 'optional-first' &&
+              !isLeftOptional &&
+              isRightOptional
+            ) {
+              compareValue = true
+            } else if (
+              options.groupKind === 'required-first' &&
+              !isLeftOptional &&
+              isRightOptional
+            ) {
+              compareValue = false
+            } else if (
+              options.groupKind === 'required-first' &&
+              isLeftOptional &&
+              !isRightOptional
+            ) {
+              compareValue = true
+            } else if (leftNum > rightNum) {
+              compareValue = true
+            } else if (leftNum === rightNum) {
+              compareValue = isPositive(compare(left, right, options))
+            } else {
+              compareValue = false
+            }
+
+            if (compareValue) {
               context.report({
                 messageId: 'unexpectedObjectTypesOrder',
                 data: {
@@ -220,29 +274,55 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
                 },
                 node: right.node,
                 fix: fixer => {
-                  let grouped: {
-                    [key: string]: SortingNode[]
-                  } = {}
+                  let groupedByKind
+                  if (options.groupKind !== 'mixed') {
+                    groupedByKind = nodes.reduce<
+                      SortingNode<TSESTree.TypeElement>[][]
+                    >(
+                      (accumulator, currentNode) => {
+                        let requiredIndex =
+                          options.groupKind === 'required-first' ? 0 : 1
+                        let optionalIndex =
+                          options.groupKind === 'required-first' ? 1 : 0
 
-                  for (let currentNode of nodes) {
-                    let groupNum = getGroupNumber(options.groups, currentNode)
-
-                    if (!(groupNum in grouped)) {
-                      grouped[groupNum] = [currentNode]
-                    } else {
-                      grouped[groupNum] = sortNodes(
-                        [...grouped[groupNum], currentNode],
-                        options,
-                      )
-                    }
+                        if (getIsOptionalValue(currentNode.node)) {
+                          accumulator[optionalIndex].push(currentNode)
+                        } else {
+                          accumulator[requiredIndex].push(currentNode)
+                        }
+                        return accumulator
+                      },
+                      [[], []],
+                    )
+                  } else {
+                    groupedByKind = [nodes]
                   }
 
                   let sortedNodes: SortingNode[] = []
 
-                  for (let group of Object.keys(grouped).sort(
-                    (a, b) => Number(a) - Number(b),
-                  )) {
-                    sortedNodes.push(...sortNodes(grouped[group], options))
+                  for (let nodesByKind of groupedByKind) {
+                    let grouped: {
+                      [key: string]: SortingNode[]
+                    } = {}
+
+                    for (let currentNode of nodesByKind) {
+                      let groupNum = getGroupNumber(options.groups, currentNode)
+
+                      if (!(groupNum in grouped)) {
+                        grouped[groupNum] = [currentNode]
+                      } else {
+                        grouped[groupNum] = sortNodes(
+                          [...grouped[groupNum], currentNode],
+                          options,
+                        )
+                      }
+                    }
+
+                    for (let group of Object.keys(grouped).sort(
+                      (a, b) => Number(a) - Number(b),
+                    )) {
+                      sortedNodes.push(...sortNodes(grouped[group], options))
+                    }
                   }
 
                   return makeFixes(fixer, nodes, sortedNodes, sourceCode)
