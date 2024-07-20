@@ -148,14 +148,16 @@ Controls whether sorting should be case-sensitive or not.
 - `false` — Consider case when sorting (e.g., “A” comes before “a”).
 
 
-### spreadLast
+### groupKind
 
-<sub>default: `true`</sub>
+<sub>default: `'literals-first'`</sub>
 
-Determines the position of spread elements within the array.
+Allows you to group array elements by their kind, determining whether spread values should come before or after literal values.
 
-- `true` — Always place spread elements at the end of the array.
-- `false` — Do not enforce a specific position for spread elements.
+- `mixed` — Do not group array elements by their kind; spread values are sorted together with literal values.
+- `literals-first` — Group all literal values before spread values.
+- `spread-first` — Group all spread values before literal values.
+
 
 ## Usage
 
@@ -178,7 +180,7 @@ Determines the position of spread elements within the array.
                   type: 'alphabetical',
                   order: 'asc',
                   ignoreCase: true,
-                  spreadLast: true,
+                  groupKind: 'literals-first',
                 },
               ],
             },
@@ -202,7 +204,7 @@ Determines the position of spread elements within the array.
                 type: 'alphabetical',
                 order: 'asc',
                 ignoreCase: true,
-                spreadLast: true,
+                groupKind: 'literals-first',
               },
             ],
           },

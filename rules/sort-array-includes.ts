@@ -18,9 +18,9 @@ type MESSAGE_ID = 'unexpectedArrayIncludesOrder'
 
 type Options = [
   Partial<{
+    groupKind: 'literals-first' | 'spreads-first' | 'mixed'
     type: 'alphabetical' | 'line-length' | 'natural'
     order: 'desc' | 'asc'
-    spreadLast: boolean
     ignoreCase: boolean
   }>,
 ]
@@ -55,10 +55,10 @@ export default createEslintRule<Options, MESSAGE_ID>({
               'Controls whether sorting should be case-sensitive or not.',
             type: 'boolean',
           },
-          spreadLast: {
-            description:
-              'Determines the position of spread elements within the array.',
-            type: 'boolean',
+          groupKind: {
+            description: 'Specifies top-level groups.',
+            enum: ['mixed', 'literals-first', 'spreads-first'],
+            type: 'string',
           },
         },
         additionalProperties: false,
@@ -74,7 +74,7 @@ export default createEslintRule<Options, MESSAGE_ID>({
       type: 'alphabetical',
       order: 'asc',
       ignoreCase: true,
-      spreadLast: true,
+      groupKind: 'literals-first',
     },
   ],
   create: context => ({
@@ -92,8 +92,8 @@ export default createEslintRule<Options, MESSAGE_ID>({
 
         if (elements.length > 1) {
           let options = complete(context.options.at(0), {
+            groupKind: 'literals-first',
             type: 'alphabetical',
-            spreadLast: true,
             ignoreCase: true,
             order: 'asc',
           } as const)
@@ -107,7 +107,7 @@ export default createEslintRule<Options, MESSAGE_ID>({
               ) => {
                 if (element !== null) {
                   let group = 'unknown'
-                  if (options.spreadLast) {
+                  if (typeof options.groupKind === 'string') {
                     group =
                       element.type === 'SpreadElement' ? 'spread' : 'literal'
                   }
@@ -130,16 +130,21 @@ export default createEslintRule<Options, MESSAGE_ID>({
             .flat()
 
           pairwise(nodes, (left, right) => {
-            let groupKindOrder = options.spreadLast
-              ? ['literal', 'spread']
-              : ['unknown']
+            let groupKindOrder = ['unknown']
+
+            if (typeof options.groupKind === 'string') {
+              groupKindOrder =
+                options.groupKind === 'literals-first'
+                  ? ['literal', 'spread']
+                  : ['spread', 'literal']
+            }
 
             let leftNum = getGroupNumber(groupKindOrder, left)
             let rightNum = getGroupNumber(groupKindOrder, right)
 
             if (
-              (options.spreadLast && leftNum > rightNum) ||
-              ((!options.spreadLast || leftNum === rightNum) &&
+              (options.groupKind !== 'mixed' && leftNum > rightNum) ||
+              ((options.groupKind === 'mixed' || leftNum === rightNum) &&
                 isPositive(compare(left, right, options)))
             ) {
               context.report({
@@ -150,12 +155,13 @@ export default createEslintRule<Options, MESSAGE_ID>({
                 },
                 node: right.node,
                 fix: fixer => {
-                  let sortedNodes = options.spreadLast
-                    ? groupKindOrder
-                        .map(group => nodes.filter(n => n.group === group))
-                        .map(groupedNodes => sortNodes(groupedNodes, options))
-                        .flat()
-                    : sortNodes(nodes, options)
+                  let sortedNodes =
+                    options.groupKind !== 'mixed'
+                      ? groupKindOrder
+                          .map(group => nodes.filter(n => n.group === group))
+                          .map(groupedNodes => sortNodes(groupedNodes, options))
+                          .flat()
+                      : sortNodes(nodes, options)
 
                   return makeFixes(fixer, nodes, sortedNodes, sourceCode)
                 },
