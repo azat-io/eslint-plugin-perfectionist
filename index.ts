@@ -1,4 +1,7 @@
-import type { Linter, ESLint } from 'eslint'
+import type {
+  ClassicConfig,
+  FlatConfig,
+} from '@typescript-eslint/utils/ts-eslint'
 
 import sortIntersectionTypes from './rules/sort-intersection-types'
 import sortSvelteAttributes from './rules/sort-svelte-attributes'
@@ -52,24 +55,24 @@ let plugin = {
     'sort-maps': sortMaps,
   },
   name,
-} as unknown as ESLint.Plugin
+}
 
 let getRules = (options: BaseOptions): Record<string, RuleDeclaration> =>
   Object.fromEntries(
-    Object.keys(plugin.rules!).map(rule => [
+    Object.keys(plugin.rules).map(rule => [
       `${name}/${rule}`,
       ['error', options],
     ]),
   )
 
-let createConfig = (options: BaseOptions): Linter.FlatConfig => ({
+let createConfig = (options: BaseOptions): FlatConfig.Config => ({
   plugins: {
     [name]: plugin,
   },
   rules: getRules(options),
 })
 
-let createLegacyConfig = (options: BaseOptions): Linter.Config => ({
+let createLegacyConfig = (options: BaseOptions): ClassicConfig.Config => ({
   rules: getRules(options),
   plugins: [name],
 })
