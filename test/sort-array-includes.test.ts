@@ -173,7 +173,7 @@ describe(ruleName, () => {
             options: [
               {
                 ...options,
-                spreadLast: true,
+                groupKind: 'literals-first',
               },
             ],
           },
@@ -189,7 +189,7 @@ describe(ruleName, () => {
             options: [
               {
                 ...options,
-                spreadLast: true,
+                groupKind: 'literals-first',
               },
             ],
             errors: [
@@ -266,7 +266,7 @@ describe(ruleName, () => {
           options: [
             {
               ...options,
-              spreadLast: false,
+              groupKind: 'mixed',
             },
           ],
         },
@@ -292,7 +292,7 @@ describe(ruleName, () => {
           options: [
             {
               ...options,
-              spreadLast: false,
+              groupKind: 'mixed',
             },
           ],
           errors: [
@@ -464,7 +464,7 @@ describe(ruleName, () => {
             options: [
               {
                 ...options,
-                spreadLast: true,
+                groupKind: 'literals-first',
               },
             ],
           },
@@ -480,7 +480,7 @@ describe(ruleName, () => {
             options: [
               {
                 ...options,
-                spreadLast: true,
+                groupKind: 'literals-first',
               },
             ],
             errors: [
@@ -557,7 +557,7 @@ describe(ruleName, () => {
           options: [
             {
               ...options,
-              spreadLast: false,
+              groupKind: 'mixed',
             },
           ],
         },
@@ -583,7 +583,7 @@ describe(ruleName, () => {
           options: [
             {
               ...options,
-              spreadLast: false,
+              groupKind: 'mixed',
             },
           ],
           errors: [
@@ -735,7 +735,7 @@ describe(ruleName, () => {
             options: [
               {
                 ...options,
-                spreadLast: true,
+                groupKind: 'literals-first',
               },
             ],
           },
@@ -751,7 +751,7 @@ describe(ruleName, () => {
             options: [
               {
                 ...options,
-                spreadLast: true,
+                groupKind: 'literals-first',
               },
             ],
             errors: [
@@ -828,7 +828,7 @@ describe(ruleName, () => {
           options: [
             {
               ...options,
-              spreadLast: false,
+              groupKind: 'mixed',
             },
           ],
         },
@@ -854,7 +854,7 @@ describe(ruleName, () => {
           options: [
             {
               ...options,
-              spreadLast: false,
+              groupKind: 'mixed',
             },
           ],
           errors: [
