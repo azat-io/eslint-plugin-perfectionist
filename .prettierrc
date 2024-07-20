@@ -22,12 +22,6 @@
       "options": {
         "parser": "svelte"
       }
-    },
-    {
-      "files": "index.ts",
-      "options": {
-        "printWidth": 120
-      }
     }
   ]
 }

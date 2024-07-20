@@ -55,7 +55,12 @@ let plugin = {
 } as unknown as ESLint.Plugin
 
 let getRules = (options: BaseOptions): Record<string, RuleDeclaration> =>
-  Object.fromEntries(Object.keys(plugin.rules!).map(rule => [`${name}/${rule}`, ['error', options]]))
+  Object.fromEntries(
+    Object.keys(plugin.rules!).map(rule => [
+      `${name}/${rule}`,
+      ['error', options],
+    ]),
+  )
 
 let createConfig = (options: BaseOptions): Linter.FlatConfig => ({
   plugins: {
