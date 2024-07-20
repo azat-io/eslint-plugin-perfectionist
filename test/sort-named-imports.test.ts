@@ -361,6 +361,47 @@ describe(ruleName, () => {
         ],
       },
     )
+
+    ruleTester.run(`${ruleName}: allows to use original import names`, rule, {
+      valid: [
+        {
+          code: dedent`
+            import { A as B, B as A } from 'module'
+          `,
+          options: [
+            {
+              ...options,
+              ignoreAlias: true,
+            },
+          ],
+        },
+      ],
+      invalid: [
+        {
+          code: dedent`
+            import { B as A, A as B } from 'module'
+          `,
+          output: dedent`
+            import { A as B, B as A } from 'module'
+          `,
+          options: [
+            {
+              ...options,
+              ignoreAlias: true,
+            },
+          ],
+          errors: [
+            {
+              messageId: 'unexpectedNamedImportsOrder',
+              data: {
+                left: 'B',
+                right: 'A',
+              },
+            },
+          ],
+        },
+      ],
+    })
   })
 
   describe(`${ruleName}: sorting by natural order`, () => {
@@ -706,6 +747,47 @@ describe(ruleName, () => {
         ],
       },
     )
+
+    ruleTester.run(`${ruleName}: allows to use original import names`, rule, {
+      valid: [
+        {
+          code: dedent`
+            import { A as B, B as A } from 'module'
+          `,
+          options: [
+            {
+              ...options,
+              ignoreAlias: true,
+            },
+          ],
+        },
+      ],
+      invalid: [
+        {
+          code: dedent`
+            import { B as A, A as B } from 'module'
+          `,
+          output: dedent`
+            import { A as B, B as A } from 'module'
+          `,
+          options: [
+            {
+              ...options,
+              ignoreAlias: true,
+            },
+          ],
+          errors: [
+            {
+              messageId: 'unexpectedNamedImportsOrder',
+              data: {
+                left: 'B',
+                right: 'A',
+              },
+            },
+          ],
+        },
+      ],
+    })
   })
 
   describe(`${ruleName}: sorting by line length`, () => {
