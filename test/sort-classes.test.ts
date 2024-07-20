@@ -2,9 +2,11 @@ import { RuleTester } from '@typescript-eslint/rule-tester'
 import { afterAll, describe, it } from 'vitest'
 import { dedent } from 'ts-dedent'
 
-import rule, { RULE_NAME } from '../rules/sort-classes'
+import rule from '../rules/sort-classes'
 
-describe(RULE_NAME, () => {
+let ruleName = 'sort-classes'
+
+describe(ruleName, () => {
   RuleTester.describeSkip = describe.skip
   RuleTester.afterAll = afterAll
   RuleTester.describe = describe
@@ -16,7 +18,7 @@ describe(RULE_NAME, () => {
     parser: '@typescript-eslint/parser',
   })
 
-  describe(`${RULE_NAME}: sorting by alphabetical order`, () => {
+  describe(`${ruleName}: sorting by alphabetical order`, () => {
     let type = 'alphabetical-order'
 
     let options = {
@@ -25,7 +27,7 @@ describe(RULE_NAME, () => {
       order: 'asc',
     } as const
 
-    ruleTester.run(`${RULE_NAME}(${type}): sorts class members`, rule, {
+    ruleTester.run(`${ruleName}(${type}): sorts class members`, rule, {
       valid: [
         {
           code: dedent`
@@ -146,7 +148,7 @@ describe(RULE_NAME, () => {
     })
 
     ruleTester.run(
-      `${RULE_NAME}(${type}): sorts class and group members`,
+      `${ruleName}(${type}): sorts class and group members`,
       rule,
       {
         valid: [
@@ -238,7 +240,7 @@ describe(RULE_NAME, () => {
     )
 
     ruleTester.run(
-      `${RULE_NAME}(${type}): sorts class with ts index signatures`,
+      `${ruleName}(${type}): sorts class with ts index signatures`,
       rule,
       {
         valid: [
@@ -307,7 +309,7 @@ describe(RULE_NAME, () => {
     )
 
     ruleTester.run(
-      `${RULE_NAME}(${type}): sorts class with ts index signatures`,
+      `${ruleName}(${type}): sorts class with ts index signatures`,
       rule,
       {
         valid: [
@@ -338,7 +340,7 @@ describe(RULE_NAME, () => {
     )
 
     ruleTester.run(
-      `${RULE_NAME}(${type}): sorts private methods with hash`,
+      `${ruleName}(${type}): sorts private methods with hash`,
       rule,
       {
         valid: [],
@@ -445,7 +447,7 @@ describe(RULE_NAME, () => {
     )
 
     ruleTester.run(
-      `${RULE_NAME}(${type}): allows split methods with getters and setters`,
+      `${ruleName}(${type}): allows split methods with getters and setters`,
       rule,
       {
         valid: [],
@@ -507,7 +509,7 @@ describe(RULE_NAME, () => {
       },
     )
 
-    ruleTester.run(`${RULE_NAME}(${type}): sorts decorated properties`, rule, {
+    ruleTester.run(`${ruleName}(${type}): sorts decorated properties`, rule, {
       valid: [],
       invalid: [
         {
@@ -662,7 +664,7 @@ describe(RULE_NAME, () => {
       ],
     })
 
-    ruleTester.run(`${RULE_NAME}(${type}): sorts decorated accessors`, rule, {
+    ruleTester.run(`${ruleName}(${type}): sorts decorated accessors`, rule, {
       valid: [],
       invalid: [
         {
@@ -735,7 +737,7 @@ describe(RULE_NAME, () => {
       ],
     })
 
-    ruleTester.run(`${RULE_NAME}(${type}): sorts decorated accessors`, rule, {
+    ruleTester.run(`${ruleName}(${type}): sorts decorated accessors`, rule, {
       valid: [
         {
           code: dedent`
@@ -848,7 +850,7 @@ describe(RULE_NAME, () => {
     })
   })
 
-  describe(`${RULE_NAME}: sorting by natural order`, () => {
+  describe(`${ruleName}: sorting by natural order`, () => {
     let type = 'natural-order'
 
     let options = {
@@ -857,7 +859,7 @@ describe(RULE_NAME, () => {
       order: 'asc',
     } as const
 
-    ruleTester.run(`${RULE_NAME}(${type}): sorts class members`, rule, {
+    ruleTester.run(`${ruleName}(${type}): sorts class members`, rule, {
       valid: [
         {
           code: dedent`
@@ -978,7 +980,7 @@ describe(RULE_NAME, () => {
     })
 
     ruleTester.run(
-      `${RULE_NAME}(${type}): sorts class and group members`,
+      `${ruleName}(${type}): sorts class and group members`,
       rule,
       {
         valid: [
@@ -1070,7 +1072,7 @@ describe(RULE_NAME, () => {
     )
 
     ruleTester.run(
-      `${RULE_NAME}(${type}): sorts class with ts index signatures`,
+      `${ruleName}(${type}): sorts class with ts index signatures`,
       rule,
       {
         valid: [
@@ -1139,7 +1141,7 @@ describe(RULE_NAME, () => {
     )
 
     ruleTester.run(
-      `${RULE_NAME}(${type}): sorts class with ts index signatures`,
+      `${ruleName}(${type}): sorts class with ts index signatures`,
       rule,
       {
         valid: [
@@ -1170,7 +1172,7 @@ describe(RULE_NAME, () => {
     )
 
     ruleTester.run(
-      `${RULE_NAME}(${type}): sorts private methods with hash`,
+      `${ruleName}(${type}): sorts private methods with hash`,
       rule,
       {
         valid: [],
@@ -1277,7 +1279,7 @@ describe(RULE_NAME, () => {
     )
 
     ruleTester.run(
-      `${RULE_NAME}(${type}): allows split methods with getters and setters`,
+      `${ruleName}(${type}): allows split methods with getters and setters`,
       rule,
       {
         valid: [],
@@ -1339,7 +1341,7 @@ describe(RULE_NAME, () => {
       },
     )
 
-    ruleTester.run(`${RULE_NAME}(${type}): sorts decorated properties`, rule, {
+    ruleTester.run(`${ruleName}(${type}): sorts decorated properties`, rule, {
       valid: [],
       invalid: [
         {
@@ -1494,7 +1496,7 @@ describe(RULE_NAME, () => {
       ],
     })
 
-    ruleTester.run(`${RULE_NAME}(${type}): sorts decorated accessors`, rule, {
+    ruleTester.run(`${ruleName}(${type}): sorts decorated accessors`, rule, {
       valid: [],
       invalid: [
         {
@@ -1567,7 +1569,7 @@ describe(RULE_NAME, () => {
       ],
     })
 
-    ruleTester.run(`${RULE_NAME}(${type}): sorts decorated accessors`, rule, {
+    ruleTester.run(`${ruleName}(${type}): sorts decorated accessors`, rule, {
       valid: [
         {
           code: dedent`
@@ -1680,7 +1682,7 @@ describe(RULE_NAME, () => {
     })
   })
 
-  describe(`${RULE_NAME}: sorting by line length`, () => {
+  describe(`${ruleName}: sorting by line length`, () => {
     let type = 'line-length-order'
 
     let options = {
@@ -1688,7 +1690,7 @@ describe(RULE_NAME, () => {
       order: 'desc',
     } as const
 
-    ruleTester.run(`${RULE_NAME}(${type}): sorts class members`, rule, {
+    ruleTester.run(`${ruleName}(${type}): sorts class members`, rule, {
       valid: [
         {
           code: dedent`
@@ -1802,7 +1804,7 @@ describe(RULE_NAME, () => {
     })
 
     ruleTester.run(
-      `${RULE_NAME}(${type}): sorts class and group members`,
+      `${ruleName}(${type}): sorts class and group members`,
       rule,
       {
         valid: [
@@ -1887,7 +1889,7 @@ describe(RULE_NAME, () => {
     )
 
     ruleTester.run(
-      `${RULE_NAME}(${type}): sorts class with ts index signatures`,
+      `${ruleName}(${type}): sorts class with ts index signatures`,
       rule,
       {
         valid: [
@@ -1956,7 +1958,7 @@ describe(RULE_NAME, () => {
     )
 
     ruleTester.run(
-      `${RULE_NAME}(${type}): sorts class with ts index signatures`,
+      `${ruleName}(${type}): sorts class with ts index signatures`,
       rule,
       {
         valid: [
@@ -1987,7 +1989,7 @@ describe(RULE_NAME, () => {
     )
 
     ruleTester.run(
-      `${RULE_NAME}(${type}): sorts private methods with hash`,
+      `${ruleName}(${type}): sorts private methods with hash`,
       rule,
       {
         valid: [],
@@ -2093,7 +2095,7 @@ describe(RULE_NAME, () => {
       },
     )
 
-    ruleTester.run(`${RULE_NAME}(${type}): sorts decorated properties`, rule, {
+    ruleTester.run(`${ruleName}(${type}): sorts decorated properties`, rule, {
       valid: [],
       invalid: [
         {
@@ -2248,7 +2250,7 @@ describe(RULE_NAME, () => {
       ],
     })
 
-    ruleTester.run(`${RULE_NAME}(${type}): sorts decorated accessors`, rule, {
+    ruleTester.run(`${ruleName}(${type}): sorts decorated accessors`, rule, {
       valid: [],
       invalid: [
         {
@@ -2356,9 +2358,9 @@ describe(RULE_NAME, () => {
     })
   })
 
-  describe(`${RULE_NAME}: misc`, () => {
+  describe(`${ruleName}: misc`, () => {
     ruleTester.run(
-      `${RULE_NAME}: sets alphabetical asc sorting as default`,
+      `${ruleName}: sets alphabetical asc sorting as default`,
       rule,
       {
         valid: [

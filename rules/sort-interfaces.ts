@@ -34,55 +34,85 @@ type Options<T extends string[]> = [
   }>,
 ]
 
-export const RULE_NAME = 'sort-interfaces'
-
 export default createEslintRule<Options<string[]>, MESSAGE_ID>({
-  name: RULE_NAME,
+  name: 'sort-interfaces',
   meta: {
     type: 'suggestion',
     docs: {
-      description: 'Enforce sorted interface properties',
+      description: 'Enforce sorted interface properties.',
     },
     fixable: 'code',
     schema: [
       {
         type: 'object',
         properties: {
-          customGroups: {
-            type: 'object',
-          },
-          optionalityOrder: {
-            enum: ['ignore', 'optional-first', 'required-first'],
-            default: 'ignore',
-            type: 'string',
-          },
           type: {
-            enum: ['alphabetical', 'natural', 'line-length'],
-            default: 'alphabetical',
+            description: 'Specifies the sorting method.',
             type: 'string',
+            enum: ['alphabetical', 'natural', 'line-length'],
           },
           order: {
-            enum: ['asc', 'desc'],
-            default: 'asc',
+            description:
+              'Determines whether the sorted items should be in ascending or descending order.',
             type: 'string',
+            enum: ['asc', 'desc'],
           },
           ignoreCase: {
+            description:
+              'Controls whether sorting should be case-sensitive or not.',
             type: 'boolean',
-            default: true,
           },
           ignorePattern: {
+            description:
+              'Specifies names or patterns for nodes that should be ignored by rule.',
             items: {
               type: 'string',
             },
             type: 'array',
           },
-          groups: {
-            type: 'array',
-            default: [],
-          },
           partitionByNewLine: {
+            description:
+              'Allows to use spaces to separate the nodes into logical groups.',
             type: 'boolean',
-            default: false,
+          },
+          optionalityOrder: {
+            description: 'Specifies the order of optional and required nodes.',
+            enum: ['ignore', 'optional-first', 'required-first'],
+            type: 'string',
+          },
+          groups: {
+            description: 'Specifies the order of the groups.',
+            type: 'array',
+            items: {
+              oneOf: [
+                {
+                  type: 'string',
+                },
+                {
+                  type: 'array',
+                  items: {
+                    type: 'string',
+                  },
+                },
+              ],
+            },
+          },
+          customGroups: {
+            description: 'Specifies custom groups.',
+            type: 'object',
+            additionalProperties: {
+              oneOf: [
+                {
+                  type: 'string',
+                },
+                {
+                  type: 'array',
+                  items: {
+                    type: 'string',
+                  },
+                },
+              ],
+            },
           },
         },
         additionalProperties: false,
@@ -90,13 +120,19 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
     ],
     messages: {
       unexpectedInterfacePropertiesOrder:
-        'Expected "{{right}}" to come before "{{left}}"',
+        'Expected "{{right}}" to come before "{{left}}".',
     },
   },
   defaultOptions: [
     {
       type: 'alphabetical',
       order: 'asc',
+      ignoreCase: true,
+      ignorePattern: [],
+      partitionByNewLine: false,
+      optionalityOrder: 'ignore',
+      groups: [],
+      customGroups: {},
     },
   ],
   create: context => ({

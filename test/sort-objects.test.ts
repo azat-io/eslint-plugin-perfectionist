@@ -2,9 +2,11 @@ import { RuleTester } from '@typescript-eslint/rule-tester'
 import { afterAll, describe, it } from 'vitest'
 import { dedent } from 'ts-dedent'
 
-import rule, { RULE_NAME } from '../rules/sort-objects'
+import rule from '../rules/sort-objects'
 
-describe(RULE_NAME, () => {
+let ruleName = 'sort-objects'
+
+describe(ruleName, () => {
   RuleTester.describeSkip = describe.skip
   RuleTester.afterAll = afterAll
   RuleTester.describe = describe
@@ -16,7 +18,7 @@ describe(RULE_NAME, () => {
     parser: '@typescript-eslint/parser',
   })
 
-  describe(`${RULE_NAME}: sorting by alphabetical order`, () => {
+  describe(`${ruleName}: sorting by alphabetical order`, () => {
     let type = 'alphabetical-order'
 
     let options = {
@@ -26,7 +28,7 @@ describe(RULE_NAME, () => {
     } as const
 
     ruleTester.run(
-      `${RULE_NAME}(${type}): sorts object with identifier and literal keys`,
+      `${ruleName}(${type}): sorts object with identifier and literal keys`,
       rule,
       {
         valid: [
@@ -76,7 +78,7 @@ describe(RULE_NAME, () => {
     )
 
     ruleTester.run(
-      `${RULE_NAME}(${type}): sorting does not break object`,
+      `${ruleName}(${type}): sorting does not break object`,
       rule,
       {
         valid: [
@@ -125,7 +127,7 @@ describe(RULE_NAME, () => {
       },
     )
 
-    ruleTester.run(`${RULE_NAME}(${type}): sorts objects in objects`, rule, {
+    ruleTester.run(`${ruleName}(${type}): sorts objects in objects`, rule, {
       valid: [
         {
           code: dedent`
@@ -197,7 +199,7 @@ describe(RULE_NAME, () => {
       ],
     })
 
-    ruleTester.run(`${RULE_NAME}(${type}): sorts objects computed keys`, rule, {
+    ruleTester.run(`${ruleName}(${type}): sorts objects computed keys`, rule, {
       valid: [
         {
           code: dedent`
@@ -247,7 +249,7 @@ describe(RULE_NAME, () => {
       ],
     })
 
-    ruleTester.run(`${RULE_NAME}(${type}): allows to set priority keys`, rule, {
+    ruleTester.run(`${ruleName}(${type}): allows to set priority keys`, rule, {
       valid: [
         {
           code: dedent`
@@ -306,7 +308,7 @@ describe(RULE_NAME, () => {
     })
 
     ruleTester.run(
-      `${RULE_NAME}(${type}): sorts with comments on the same line`,
+      `${ruleName}(${type}): sorts with comments on the same line`,
       rule,
       {
         valid: [
@@ -353,7 +355,7 @@ describe(RULE_NAME, () => {
     )
 
     ruleTester.run(
-      `${RULE_NAME}(${type}): do not sorts objects without a comma and with a comment in the last element`,
+      `${ruleName}(${type}): do not sorts objects without a comma and with a comment in the last element`,
       rule,
       {
         valid: [],
@@ -386,7 +388,7 @@ describe(RULE_NAME, () => {
       },
     )
 
-    ruleTester.run(`${RULE_NAME}(${type}): sorts destructured object`, rule, {
+    ruleTester.run(`${ruleName}(${type}): sorts destructured object`, rule, {
       valid: [],
       invalid: [
         {
@@ -423,7 +425,7 @@ describe(RULE_NAME, () => {
     })
 
     ruleTester.run(
-      `${RULE_NAME}(${type}): does not sort keys if the right value depends on the left value`,
+      `${ruleName}(${type}): does not sort keys if the right value depends on the left value`,
       rule,
       {
         valid: [],
@@ -465,7 +467,7 @@ describe(RULE_NAME, () => {
     )
 
     ruleTester.run(
-      `${RULE_NAME}(${type}): works with complex dependencies`,
+      `${ruleName}(${type}): works with complex dependencies`,
       rule,
       {
         valid: [],
@@ -672,7 +674,7 @@ describe(RULE_NAME, () => {
     )
 
     ruleTester.run(
-      `${RULE_NAME}(${type}): allows to use partition comments`,
+      `${ruleName}(${type}): allows to use partition comments`,
       rule,
       {
         valid: [],
@@ -734,7 +736,7 @@ describe(RULE_NAME, () => {
     )
 
     ruleTester.run(
-      `${RULE_NAME}(${type}): allows to use all comments as parts`,
+      `${ruleName}(${type}): allows to use all comments as parts`,
       rule,
       {
         valid: [
@@ -760,7 +762,7 @@ describe(RULE_NAME, () => {
     )
 
     ruleTester.run(
-      `${RULE_NAME}(${type}): allows to use multiple partition comments`,
+      `${ruleName}(${type}): allows to use multiple partition comments`,
       rule,
       {
         valid: [],
@@ -813,7 +815,7 @@ describe(RULE_NAME, () => {
     )
 
     ruleTester.run(
-      `${RULE_NAME}(${type}): allows to use new line as partition`,
+      `${ruleName}(${type}): allows to use new line as partition`,
       rule,
       {
         valid: [
@@ -889,7 +891,7 @@ describe(RULE_NAME, () => {
     )
   })
 
-  describe(`${RULE_NAME}: sorting by natural order`, () => {
+  describe(`${ruleName}: sorting by natural order`, () => {
     let type = 'natural-order'
 
     let options = {
@@ -899,7 +901,7 @@ describe(RULE_NAME, () => {
     } as const
 
     ruleTester.run(
-      `${RULE_NAME}(${type}): sorts object with identifier and literal keys`,
+      `${ruleName}(${type}): sorts object with identifier and literal keys`,
       rule,
       {
         valid: [
@@ -949,7 +951,7 @@ describe(RULE_NAME, () => {
     )
 
     ruleTester.run(
-      `${RULE_NAME}(${type}): sorting does not break object`,
+      `${ruleName}(${type}): sorting does not break object`,
       rule,
       {
         valid: [
@@ -998,7 +1000,7 @@ describe(RULE_NAME, () => {
       },
     )
 
-    ruleTester.run(`${RULE_NAME}(${type}): sorts objects in objects`, rule, {
+    ruleTester.run(`${ruleName}(${type}): sorts objects in objects`, rule, {
       valid: [
         {
           code: dedent`
@@ -1070,7 +1072,7 @@ describe(RULE_NAME, () => {
       ],
     })
 
-    ruleTester.run(`${RULE_NAME}(${type}): sorts objects computed keys`, rule, {
+    ruleTester.run(`${ruleName}(${type}): sorts objects computed keys`, rule, {
       valid: [
         {
           code: dedent`
@@ -1120,7 +1122,7 @@ describe(RULE_NAME, () => {
       ],
     })
 
-    ruleTester.run(`${RULE_NAME}(${type}): allows to set priority keys`, rule, {
+    ruleTester.run(`${ruleName}(${type}): allows to set priority keys`, rule, {
       valid: [
         {
           code: dedent`
@@ -1179,7 +1181,7 @@ describe(RULE_NAME, () => {
     })
 
     ruleTester.run(
-      `${RULE_NAME}(${type}): sorts with comments on the same line`,
+      `${ruleName}(${type}): sorts with comments on the same line`,
       rule,
       {
         valid: [
@@ -1226,7 +1228,7 @@ describe(RULE_NAME, () => {
     )
 
     ruleTester.run(
-      `${RULE_NAME}(${type}): do not sorts objects without a comma and with a comment in the last element`,
+      `${ruleName}(${type}): do not sorts objects without a comma and with a comment in the last element`,
       rule,
       {
         valid: [],
@@ -1259,7 +1261,7 @@ describe(RULE_NAME, () => {
       },
     )
 
-    ruleTester.run(`${RULE_NAME}(${type}): sorts destructured object`, rule, {
+    ruleTester.run(`${ruleName}(${type}): sorts destructured object`, rule, {
       valid: [],
       invalid: [
         {
@@ -1296,7 +1298,7 @@ describe(RULE_NAME, () => {
     })
 
     ruleTester.run(
-      `${RULE_NAME}(${type}): does not sort keys if the right value depends on the left value`,
+      `${ruleName}(${type}): does not sort keys if the right value depends on the left value`,
       rule,
       {
         valid: [],
@@ -1338,7 +1340,7 @@ describe(RULE_NAME, () => {
     )
 
     ruleTester.run(
-      `${RULE_NAME}(${type}): works with complex dependencies`,
+      `${ruleName}(${type}): works with complex dependencies`,
       rule,
       {
         valid: [],
@@ -1545,7 +1547,7 @@ describe(RULE_NAME, () => {
     )
 
     ruleTester.run(
-      `${RULE_NAME}(${type}): allows to use partition comments`,
+      `${ruleName}(${type}): allows to use partition comments`,
       rule,
       {
         valid: [],
@@ -1607,7 +1609,7 @@ describe(RULE_NAME, () => {
     )
 
     ruleTester.run(
-      `${RULE_NAME}(${type}): allows to use all comments as parts`,
+      `${ruleName}(${type}): allows to use all comments as parts`,
       rule,
       {
         valid: [
@@ -1633,7 +1635,7 @@ describe(RULE_NAME, () => {
     )
 
     ruleTester.run(
-      `${RULE_NAME}(${type}): allows to use multiple partition comments`,
+      `${ruleName}(${type}): allows to use multiple partition comments`,
       rule,
       {
         valid: [],
@@ -1686,7 +1688,7 @@ describe(RULE_NAME, () => {
     )
 
     ruleTester.run(
-      `${RULE_NAME}(${type}): allows to use new line as partition`,
+      `${ruleName}(${type}): allows to use new line as partition`,
       rule,
       {
         valid: [
@@ -1762,7 +1764,7 @@ describe(RULE_NAME, () => {
     )
   })
 
-  describe(`${RULE_NAME}: sorting by line length`, () => {
+  describe(`${ruleName}: sorting by line length`, () => {
     let type = 'line-length-order'
 
     let options = {
@@ -1771,7 +1773,7 @@ describe(RULE_NAME, () => {
     } as const
 
     ruleTester.run(
-      `${RULE_NAME}(${type}): sorts object with identifier and literal keys`,
+      `${ruleName}(${type}): sorts object with identifier and literal keys`,
       rule,
       {
         valid: [
@@ -1821,7 +1823,7 @@ describe(RULE_NAME, () => {
     )
 
     ruleTester.run(
-      `${RULE_NAME}(${type}): sorting does not break object`,
+      `${ruleName}(${type}): sorting does not break object`,
       rule,
       {
         valid: [
@@ -1870,7 +1872,7 @@ describe(RULE_NAME, () => {
       },
     )
 
-    ruleTester.run(`${RULE_NAME}(${type}): sorts objects in objects`, rule, {
+    ruleTester.run(`${ruleName}(${type}): sorts objects in objects`, rule, {
       valid: [
         {
           code: dedent`
@@ -1935,7 +1937,7 @@ describe(RULE_NAME, () => {
       ],
     })
 
-    ruleTester.run(`${RULE_NAME}(${type}): sorts objects computed keys`, rule, {
+    ruleTester.run(`${ruleName}(${type}): sorts objects computed keys`, rule, {
       valid: [
         {
           code: dedent`
@@ -1978,7 +1980,7 @@ describe(RULE_NAME, () => {
       ],
     })
 
-    ruleTester.run(`${RULE_NAME}(${type}): allows to set priority keys`, rule, {
+    ruleTester.run(`${ruleName}(${type}): allows to set priority keys`, rule, {
       valid: [
         {
           code: dedent`
@@ -2044,7 +2046,7 @@ describe(RULE_NAME, () => {
     })
 
     ruleTester.run(
-      `${RULE_NAME}(${type}): sorts with comments on the same line`,
+      `${ruleName}(${type}): sorts with comments on the same line`,
       rule,
       {
         valid: [
@@ -2091,7 +2093,7 @@ describe(RULE_NAME, () => {
     )
 
     ruleTester.run(
-      `${RULE_NAME}(${type}): do not sorts objects without a comma and with a comment in the last element`,
+      `${ruleName}(${type}): do not sorts objects without a comma and with a comment in the last element`,
       rule,
       {
         valid: [],
@@ -2124,7 +2126,7 @@ describe(RULE_NAME, () => {
       },
     )
 
-    ruleTester.run(`${RULE_NAME}(${type}): sorts destructured object`, rule, {
+    ruleTester.run(`${ruleName}(${type}): sorts destructured object`, rule, {
       valid: [],
       invalid: [
         {
@@ -2161,7 +2163,7 @@ describe(RULE_NAME, () => {
     })
 
     ruleTester.run(
-      `${RULE_NAME}(${type}): does not sort keys if the right value depends on the left value`,
+      `${ruleName}(${type}): does not sort keys if the right value depends on the left value`,
       rule,
       {
         valid: [],
@@ -2203,7 +2205,7 @@ describe(RULE_NAME, () => {
     )
 
     ruleTester.run(
-      `${RULE_NAME}(${type}): works with complex dependencies`,
+      `${ruleName}(${type}): works with complex dependencies`,
       rule,
       {
         valid: [],
@@ -2378,7 +2380,7 @@ describe(RULE_NAME, () => {
     )
 
     ruleTester.run(
-      `${RULE_NAME}(${type}): allows to use partition comments`,
+      `${ruleName}(${type}): allows to use partition comments`,
       rule,
       {
         valid: [],
@@ -2440,7 +2442,7 @@ describe(RULE_NAME, () => {
     )
 
     ruleTester.run(
-      `${RULE_NAME}(${type}): allows to use all comments as parts`,
+      `${ruleName}(${type}): allows to use all comments as parts`,
       rule,
       {
         valid: [
@@ -2466,7 +2468,7 @@ describe(RULE_NAME, () => {
     )
 
     ruleTester.run(
-      `${RULE_NAME}(${type}): allows to use multiple partition comments`,
+      `${ruleName}(${type}): allows to use multiple partition comments`,
       rule,
       {
         valid: [],
@@ -2519,7 +2521,7 @@ describe(RULE_NAME, () => {
     )
 
     ruleTester.run(
-      `${RULE_NAME}(${type}): not changes order if the same length`,
+      `${ruleName}(${type}): not changes order if the same length`,
       rule,
       {
         valid: [],
@@ -2575,7 +2577,7 @@ describe(RULE_NAME, () => {
     )
 
     ruleTester.run(
-      `${RULE_NAME}(${type}): allows to use new line as partition`,
+      `${ruleName}(${type}): allows to use new line as partition`,
       rule,
       {
         valid: [
@@ -2651,9 +2653,9 @@ describe(RULE_NAME, () => {
     )
   })
 
-  describe(`${RULE_NAME}: misc`, () => {
+  describe(`${ruleName}: misc`, () => {
     ruleTester.run(
-      `${RULE_NAME}: sets alphabetical asc sorting as default`,
+      `${ruleName}: sets alphabetical asc sorting as default`,
       rule,
       {
         valid: [
@@ -2707,7 +2709,7 @@ describe(RULE_NAME, () => {
     )
 
     ruleTester.run(
-      `${RULE_NAME}: allow to disable rule for styledComponents`,
+      `${ruleName}: allow to disable rule for styledComponents`,
       rule,
       {
         valid: [
@@ -2775,7 +2777,7 @@ describe(RULE_NAME, () => {
       },
     )
 
-    ruleTester.run(`${RULE_NAME}: allow to ignore pattern`, rule, {
+    ruleTester.run(`${ruleName}: allow to ignore pattern`, rule, {
       valid: [
         {
           code: dedent`
@@ -2850,7 +2852,7 @@ describe(RULE_NAME, () => {
       ],
     })
 
-    ruleTester.run(`${RULE_NAME}: allow to ignore pattern`, rule, {
+    ruleTester.run(`${ruleName}: allow to ignore pattern`, rule, {
       valid: [
         {
           code: dedent`
@@ -2983,7 +2985,7 @@ describe(RULE_NAME, () => {
       ],
     })
 
-    ruleTester.run(`${RULE_NAME}: allow to use for destructuring only`, rule, {
+    ruleTester.run(`${ruleName}: allow to use for destructuring only`, rule, {
       valid: [
         {
           code: dedent`

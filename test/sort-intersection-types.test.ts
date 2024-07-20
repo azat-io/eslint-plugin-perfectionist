@@ -2,9 +2,11 @@ import { RuleTester } from '@typescript-eslint/rule-tester'
 import { afterAll, describe, it } from 'vitest'
 import { dedent } from 'ts-dedent'
 
-import rule, { RULE_NAME } from '../rules/sort-intersection-types'
+import rule from '../rules/sort-intersection-types'
 
-describe(RULE_NAME, () => {
+let ruleName = 'sort-intersection-types'
+
+describe(ruleName, () => {
   RuleTester.describeSkip = describe.skip
   RuleTester.afterAll = afterAll
   RuleTester.describe = describe
@@ -16,7 +18,7 @@ describe(RULE_NAME, () => {
     parser: '@typescript-eslint/parser',
   })
 
-  describe(`${RULE_NAME}: sorting by alphabetical order`, () => {
+  describe(`${ruleName}: sorting by alphabetical order`, () => {
     let type = 'alphabetical-order'
 
     let options = {
@@ -25,7 +27,7 @@ describe(RULE_NAME, () => {
       order: 'asc',
     } as const
 
-    ruleTester.run(`${RULE_NAME}(${type}: sorts intersection types`, rule, {
+    ruleTester.run(`${ruleName}(${type}: sorts intersection types`, rule, {
       valid: [
         {
           code: dedent`
@@ -56,7 +58,7 @@ describe(RULE_NAME, () => {
       ],
     })
 
-    ruleTester.run(`${RULE_NAME}: sorts keyword intersection types`, rule, {
+    ruleTester.run(`${ruleName}: sorts keyword intersection types`, rule, {
       valid: [],
       invalid: [
         {
@@ -121,7 +123,7 @@ describe(RULE_NAME, () => {
       ],
     })
 
-    ruleTester.run(`${RULE_NAME}: works with generics`, rule, {
+    ruleTester.run(`${ruleName}: works with generics`, rule, {
       valid: [],
       invalid: [
         {
@@ -141,7 +143,7 @@ describe(RULE_NAME, () => {
       ],
     })
 
-    ruleTester.run(`${RULE_NAME}: works with type references`, rule, {
+    ruleTester.run(`${ruleName}: works with type references`, rule, {
       valid: [],
       invalid: [
         {
@@ -161,7 +163,7 @@ describe(RULE_NAME, () => {
       ],
     })
 
-    ruleTester.run(`${RULE_NAME}: works with type references`, rule, {
+    ruleTester.run(`${ruleName}: works with type references`, rule, {
       valid: [],
       invalid: [
         {
@@ -189,7 +191,7 @@ describe(RULE_NAME, () => {
       ],
     })
 
-    ruleTester.run(`${RULE_NAME}: sorts intersections with parentheses`, rule, {
+    ruleTester.run(`${ruleName}: sorts intersections with parentheses`, rule, {
       valid: [],
       invalid: [
         {
@@ -228,7 +230,7 @@ describe(RULE_NAME, () => {
     })
 
     ruleTester.run(
-      `${RULE_NAME}: sorts intersections with comment at the end`,
+      `${ruleName}: sorts intersections with comment at the end`,
       rule,
       {
         valid: [],
@@ -262,7 +264,7 @@ describe(RULE_NAME, () => {
       },
     )
 
-    ruleTester.run(`${RULE_NAME}: sorts intersections using groups`, rule, {
+    ruleTester.run(`${ruleName}: sorts intersections using groups`, rule, {
       valid: [
         {
           code: dedent`
@@ -403,7 +405,7 @@ describe(RULE_NAME, () => {
     })
   })
 
-  describe(`${RULE_NAME}: sorting by natural order`, () => {
+  describe(`${ruleName}: sorting by natural order`, () => {
     let type = 'natural-order'
 
     let options = {
@@ -412,7 +414,7 @@ describe(RULE_NAME, () => {
       order: 'asc',
     } as const
 
-    ruleTester.run(`${RULE_NAME}(${type}: sorts intersection types`, rule, {
+    ruleTester.run(`${ruleName}(${type}: sorts intersection types`, rule, {
       valid: [
         {
           code: dedent`
@@ -443,7 +445,7 @@ describe(RULE_NAME, () => {
       ],
     })
 
-    ruleTester.run(`${RULE_NAME}: sorts keyword intersection types`, rule, {
+    ruleTester.run(`${ruleName}: sorts keyword intersection types`, rule, {
       valid: [],
       invalid: [
         {
@@ -508,7 +510,7 @@ describe(RULE_NAME, () => {
       ],
     })
 
-    ruleTester.run(`${RULE_NAME}: works with generics`, rule, {
+    ruleTester.run(`${ruleName}: works with generics`, rule, {
       valid: [],
       invalid: [
         {
@@ -528,7 +530,7 @@ describe(RULE_NAME, () => {
       ],
     })
 
-    ruleTester.run(`${RULE_NAME}: works with type references`, rule, {
+    ruleTester.run(`${ruleName}: works with type references`, rule, {
       valid: [],
       invalid: [
         {
@@ -556,7 +558,7 @@ describe(RULE_NAME, () => {
       ],
     })
 
-    ruleTester.run(`${RULE_NAME}: sorts intersections with parentheses`, rule, {
+    ruleTester.run(`${ruleName}: sorts intersections with parentheses`, rule, {
       valid: [],
       invalid: [
         {
@@ -595,7 +597,7 @@ describe(RULE_NAME, () => {
     })
 
     ruleTester.run(
-      `${RULE_NAME}: sorts intersections with comment at the end`,
+      `${ruleName}: sorts intersections with comment at the end`,
       rule,
       {
         valid: [],
@@ -629,7 +631,7 @@ describe(RULE_NAME, () => {
       },
     )
 
-    ruleTester.run(`${RULE_NAME}: sorts intersections using groups`, rule, {
+    ruleTester.run(`${ruleName}: sorts intersections using groups`, rule, {
       valid: [
         {
           code: dedent`
@@ -770,7 +772,7 @@ describe(RULE_NAME, () => {
     })
   })
 
-  describe(`${RULE_NAME}: sorting by line length`, () => {
+  describe(`${ruleName}: sorting by line length`, () => {
     let type = 'line-length-order'
 
     let options = {
@@ -778,7 +780,7 @@ describe(RULE_NAME, () => {
       order: 'desc',
     } as const
 
-    ruleTester.run(`${RULE_NAME}(${type}: sorts intersection types`, rule, {
+    ruleTester.run(`${ruleName}(${type}: sorts intersection types`, rule, {
       valid: [
         {
           code: dedent`
@@ -809,7 +811,7 @@ describe(RULE_NAME, () => {
       ],
     })
 
-    ruleTester.run(`${RULE_NAME}: sorts keyword intersection types`, rule, {
+    ruleTester.run(`${ruleName}: sorts keyword intersection types`, rule, {
       valid: [],
       invalid: [
         {
@@ -867,7 +869,7 @@ describe(RULE_NAME, () => {
       ],
     })
 
-    ruleTester.run(`${RULE_NAME}: works with generics`, rule, {
+    ruleTester.run(`${ruleName}: works with generics`, rule, {
       valid: [],
       invalid: [
         {
@@ -887,7 +889,7 @@ describe(RULE_NAME, () => {
       ],
     })
 
-    ruleTester.run(`${RULE_NAME}: works with type references`, rule, {
+    ruleTester.run(`${ruleName}: works with type references`, rule, {
       valid: [
         {
           code: 'type DemonSlayer = A & B & C',
@@ -897,7 +899,7 @@ describe(RULE_NAME, () => {
       invalid: [],
     })
 
-    ruleTester.run(`${RULE_NAME}: works with type references`, rule, {
+    ruleTester.run(`${ruleName}: works with type references`, rule, {
       valid: [],
       invalid: [
         {
@@ -925,7 +927,7 @@ describe(RULE_NAME, () => {
       ],
     })
 
-    ruleTester.run(`${RULE_NAME}: sorts intersections with parentheses`, rule, {
+    ruleTester.run(`${ruleName}: sorts intersections with parentheses`, rule, {
       valid: [],
       invalid: [
         {
@@ -964,7 +966,7 @@ describe(RULE_NAME, () => {
     })
 
     ruleTester.run(
-      `${RULE_NAME}: sorts intersections with comment at the end`,
+      `${ruleName}: sorts intersections with comment at the end`,
       rule,
       {
         valid: [],
@@ -991,7 +993,7 @@ describe(RULE_NAME, () => {
       },
     )
 
-    ruleTester.run(`${RULE_NAME}: sorts intersections using groups`, rule, {
+    ruleTester.run(`${ruleName}: sorts intersections using groups`, rule, {
       valid: [
         {
           code: dedent`
@@ -1132,9 +1134,9 @@ describe(RULE_NAME, () => {
     })
   })
 
-  describe(`${RULE_NAME}: misc`, () => {
+  describe(`${ruleName}: misc`, () => {
     ruleTester.run(
-      `${RULE_NAME}: sets alphabetical asc sorting as default`,
+      `${ruleName}: sets alphabetical asc sorting as default`,
       rule,
       {
         valid: [

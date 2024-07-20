@@ -36,39 +36,67 @@ type Options<T extends string[]> = [
   }>,
 ]
 
-export const RULE_NAME = 'sort-astro-attributes'
-
 export default createEslintRule<Options<string[]>, MESSAGE_ID>({
-  name: RULE_NAME,
+  name: 'sort-astro-attributes',
   meta: {
     type: 'suggestion',
     docs: {
-      description: 'Enforce sorted Astro attributes',
+      description: 'Enforce sorted Astro attributes.',
     },
     fixable: 'code',
     schema: [
       {
         type: 'object',
         properties: {
-          customGroups: {
-            type: 'object',
-          },
           type: {
-            enum: ['alphabetical', 'natural', 'line-length'],
-            default: 'alphabetical',
+            description: 'Specifies the sorting method.',
             type: 'string',
+            enum: ['alphabetical', 'natural', 'line-length'],
           },
           order: {
-            enum: ['asc', 'desc'],
-            default: 'asc',
+            description:
+              'Determines whether the sorted items should be in ascending or descending order.',
             type: 'string',
+            enum: ['asc', 'desc'],
           },
           ignoreCase: {
+            description:
+              'Controls whether sorting should be case-sensitive or not.',
             type: 'boolean',
-            default: true,
           },
           groups: {
+            description: 'Specifies the order of the groups.',
             type: 'array',
+            items: {
+              oneOf: [
+                {
+                  type: 'string',
+                },
+                {
+                  type: 'array',
+                  items: {
+                    type: 'string',
+                  },
+                },
+              ],
+            },
+          },
+          customGroups: {
+            description: 'Specifies custom groups.',
+            type: 'object',
+            additionalProperties: {
+              oneOf: [
+                {
+                  type: 'string',
+                },
+                {
+                  type: 'array',
+                  items: {
+                    type: 'string',
+                  },
+                },
+              ],
+            },
           },
         },
         additionalProperties: false,
@@ -76,13 +104,16 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
     ],
     messages: {
       unexpectedAstroAttributesOrder:
-        'Expected "{{right}}" to come before "{{left}}"',
+        'Expected "{{right}}" to come before "{{left}}".',
     },
   },
   defaultOptions: [
     {
       type: 'alphabetical',
       order: 'asc',
+      ignoreCase: true,
+      groups: [],
+      customGroups: {},
     },
   ],
   // @ts-ignore

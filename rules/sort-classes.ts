@@ -52,38 +52,37 @@ type Options = [
   }>,
 ]
 
-export const RULE_NAME = 'sort-classes'
-
 export default createEslintRule<Options, MESSAGE_ID>({
-  name: RULE_NAME,
+  name: 'sort-classes',
   meta: {
     type: 'suggestion',
     docs: {
-      description: 'Enforce sorted classes',
+      description: 'Enforce sorted classes.',
     },
     fixable: 'code',
     schema: [
       {
         type: 'object',
         properties: {
-          customGroups: {
-            type: 'object',
-          },
           type: {
-            enum: ['alphabetical', 'natural', 'line-length'],
-            default: 'alphabetical',
+            description: 'Specifies the sorting method.',
             type: 'string',
-          },
-          ignoreCase: {
-            type: 'boolean',
-            default: true,
+            enum: ['alphabetical', 'natural', 'line-length'],
           },
           order: {
-            enum: ['asc', 'desc'],
-            default: 'asc',
+            description:
+              'Determines whether the sorted items should be in ascending or descending order.',
             type: 'string',
+            enum: ['asc', 'desc'],
+          },
+          ignoreCase: {
+            description:
+              'Controls whether sorting should be case-sensitive or not.',
+            type: 'boolean',
           },
           partitionByComment: {
+            description:
+              'Allows to use comments to separate the nodes into logical groups.',
             anyOf: [
               {
                 type: 'array',
@@ -98,31 +97,86 @@ export default createEslintRule<Options, MESSAGE_ID>({
                 type: 'string',
               },
             ],
-            default: false,
           },
           groups: {
+            description: 'Specifies the order of the groups.',
             type: 'array',
-            default: [],
+            items: {
+              oneOf: [
+                {
+                  type: 'string',
+                },
+                {
+                  type: 'array',
+                  items: {
+                    type: 'string',
+                  },
+                },
+              ],
+            },
+          },
+          customGroups: {
+            description: 'Specifies custom groups.',
+            type: 'object',
+            additionalProperties: {
+              oneOf: [
+                {
+                  type: 'string',
+                },
+                {
+                  type: 'array',
+                  items: {
+                    type: 'string',
+                  },
+                },
+              ],
+            },
           },
         },
         additionalProperties: false,
       },
     ],
     messages: {
-      unexpectedClassesOrder: 'Expected "{{right}}" to come before "{{left}}"',
+      unexpectedClassesOrder: 'Expected "{{right}}" to come before "{{left}}".',
     },
   },
   defaultOptions: [
     {
       type: 'alphabetical',
       order: 'asc',
+      ignoreCase: true,
+      partitionByComment: false,
+      groups: [
+        'index-signature',
+        'static-property',
+        'private-property',
+        'property',
+        'constructor',
+        'static-method',
+        'private-method',
+        'method',
+        ['get-method', 'set-method'],
+        'unknown',
+      ],
+      customGroups: {},
     },
   ],
   create: context => ({
     ClassBody: node => {
       if (node.body.length > 1) {
         let options = complete(context.options.at(0), {
-          groups: ['property', 'constructor', 'method', 'unknown'],
+          groups: [
+            'index-signature',
+            'static-property',
+            'private-property',
+            'property',
+            'constructor',
+            'static-method',
+            'private-method',
+            'method',
+            ['get-method', 'set-method'],
+            'unknown',
+          ],
           partitionByComment: false,
           type: 'alphabetical',
           ignoreCase: true,

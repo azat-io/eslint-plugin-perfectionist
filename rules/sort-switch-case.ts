@@ -22,14 +22,12 @@ type Options = [
   }>,
 ]
 
-export const RULE_NAME = 'sort-switch-case'
-
 export default createEslintRule<Options, MESSAGE_ID>({
-  name: RULE_NAME,
+  name: 'sort-switch-case',
   meta: {
     type: 'suggestion',
     docs: {
-      description: 'Enforce sorted switch cases',
+      description: 'Enforce sorted switch cases.',
     },
     fixable: 'code',
     schema: [
@@ -37,18 +35,20 @@ export default createEslintRule<Options, MESSAGE_ID>({
         type: 'object',
         properties: {
           type: {
-            enum: ['alphabetical', 'natural', 'line-length'],
-            default: 'alphabetical',
+            description: 'Specifies the sorting method.',
             type: 'string',
+            enum: ['alphabetical', 'natural', 'line-length'],
           },
           order: {
-            enum: ['asc', 'desc'],
-            default: 'asc',
+            description:
+              'Determines whether the sorted items should be in ascending or descending order.',
             type: 'string',
+            enum: ['asc', 'desc'],
           },
           ignoreCase: {
+            description:
+              'Controls whether sorting should be case-sensitive or not.',
             type: 'boolean',
-            default: true,
           },
         },
         additionalProperties: false,
@@ -56,20 +56,21 @@ export default createEslintRule<Options, MESSAGE_ID>({
     ],
     messages: {
       unexpectedSwitchCaseOrder:
-        'Expected "{{right}}" to come before "{{left}}"',
+        'Expected "{{right}}" to come before "{{left}}".',
     },
   },
   defaultOptions: [
     {
       type: 'alphabetical',
       order: 'asc',
+      ignoreCase: true,
     },
   ],
   create: context => ({
     SwitchStatement: node => {
       let options = complete(context.options.at(0), {
         type: 'alphabetical',
-        ignoreCase: false,
+        ignoreCase: true,
         order: 'asc',
       } as const)
 

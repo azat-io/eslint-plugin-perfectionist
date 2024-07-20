@@ -51,73 +51,127 @@ type Options = [
   }>,
 ]
 
-export const RULE_NAME = 'sort-objects'
-
 export default createEslintRule<Options, MESSAGE_ID>({
-  name: RULE_NAME,
+  name: 'sort-objects',
   meta: {
     type: 'suggestion',
     docs: {
-      description: 'Enforce sorted objects',
+      description: 'Enforce sorted objects.',
     },
     fixable: 'code',
     schema: [
       {
         type: 'object',
         properties: {
-          customGroups: {
-            type: 'object',
-          },
-          partitionByComment: {
-            type: ['boolean', 'string', 'array'],
-            default: false,
-          },
-          partitionByNewLine: {
-            type: 'boolean',
-            default: false,
-          },
-          styledComponents: {
-            type: 'boolean',
-            default: true,
-          },
           type: {
-            enum: ['alphabetical', 'natural', 'line-length'],
-            default: 'alphabetical',
+            description: 'Specifies the sorting method.',
             type: 'string',
+            enum: ['alphabetical', 'natural', 'line-length'],
           },
           order: {
-            enum: ['asc', 'desc'],
-            default: 'asc',
+            description:
+              'Determines whether the sorted items should be in ascending or descending order.',
             type: 'string',
+            enum: ['asc', 'desc'],
           },
           ignoreCase: {
+            description:
+              'Controls whether sorting should be case-sensitive or not.',
             type: 'boolean',
-            default: true,
+          },
+          partitionByComment: {
+            description:
+              'Allows you to use comments to separate the class members into logical groups.',
+            anyOf: [
+              {
+                type: 'array',
+                items: {
+                  type: 'string',
+                },
+              },
+              {
+                type: 'boolean',
+              },
+              {
+                type: 'string',
+              },
+            ],
+          },
+          partitionByNewLine: {
+            description:
+              'Allows to use spaces to separate the nodes into logical groups.',
+            type: 'boolean',
+          },
+          styledComponents: {
+            description: 'Controls whether to sort styled components.',
+            type: 'boolean',
           },
           ignorePattern: {
+            description:
+              'Specifies names or patterns for nodes that should be ignored by rule.',
             items: {
               type: 'string',
             },
             type: 'array',
           },
-          groups: {
+          customIgnore: {
+            description: 'Specifies custom ignore functions.',
             type: 'array',
           },
-          customIgnore: {
+          groups: {
+            description: 'Specifies the order of the groups.',
             type: 'array',
+            items: {
+              oneOf: [
+                {
+                  type: 'string',
+                },
+                {
+                  type: 'array',
+                  items: {
+                    type: 'string',
+                  },
+                },
+              ],
+            },
+          },
+          customGroups: {
+            description: 'Specifies custom groups.',
+            type: 'object',
+            additionalProperties: {
+              oneOf: [
+                {
+                  type: 'string',
+                },
+                {
+                  type: 'array',
+                  items: {
+                    type: 'string',
+                  },
+                },
+              ],
+            },
           },
         },
         additionalProperties: false,
       },
     ],
     messages: {
-      unexpectedObjectsOrder: 'Expected "{{right}}" to come before "{{left}}"',
+      unexpectedObjectsOrder: 'Expected "{{right}}" to come before "{{left}}".',
     },
   },
   defaultOptions: [
     {
       type: 'alphabetical',
       order: 'asc',
+      ignoreCase: true,
+      partitionByComment: false,
+      partitionByNewLine: false,
+      styledComponents: true,
+      ignorePattern: [],
+      customIgnore: [],
+      groups: [],
+      customGroups: {},
     },
   ],
   create: context => {

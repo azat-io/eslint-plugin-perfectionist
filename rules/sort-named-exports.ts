@@ -22,14 +22,12 @@ type Options = [
   }>,
 ]
 
-export const RULE_NAME = 'sort-named-exports'
-
 export default createEslintRule<Options, MESSAGE_ID>({
-  name: RULE_NAME,
+  name: 'sort-named-exports',
   meta: {
     type: 'suggestion',
     docs: {
-      description: 'Enforce sorted named exports',
+      description: 'Enforce sorted named exports.',
     },
     fixable: 'code',
     schema: [
@@ -37,22 +35,24 @@ export default createEslintRule<Options, MESSAGE_ID>({
         type: 'object',
         properties: {
           type: {
-            enum: ['alphabetical', 'natural', 'line-length'],
-            default: 'alphabetical',
+            description: 'Specifies the sorting method.',
             type: 'string',
+            enum: ['alphabetical', 'natural', 'line-length'],
           },
           order: {
-            enum: ['asc', 'desc'],
-            default: 'asc',
+            description:
+              'Determines whether the sorted items should be in ascending or descending order.',
             type: 'string',
+            enum: ['asc', 'desc'],
           },
           ignoreCase: {
+            description:
+              'Controls whether sorting should be case-sensitive or not.',
             type: 'boolean',
-            default: true,
           },
           groupKind: {
+            description: 'Specifies top-level groups.',
             enum: ['mixed', 'values-first', 'types-first'],
-            default: 'mixed',
             type: 'string',
           },
         },
@@ -61,13 +61,15 @@ export default createEslintRule<Options, MESSAGE_ID>({
     ],
     messages: {
       unexpectedNamedExportsOrder:
-        'Expected "{{right}}" to come before "{{left}}"',
+        'Expected "{{right}}" to come before "{{left}}".',
     },
   },
   defaultOptions: [
     {
       type: 'alphabetical',
       order: 'asc',
+      ignoreCase: true,
+      groupKind: 'mixed',
     },
   ],
   create: context => ({

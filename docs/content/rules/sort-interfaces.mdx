@@ -135,7 +135,7 @@ This rule accepts an options object with the following properties:
 
 ### type
 
-<sub>(default: `'alphabetical'`)</sub>
+<sub>default: `'alphabetical'`</sub>
 
 Specifies the sorting method.
 
@@ -145,7 +145,7 @@ Specifies the sorting method.
 
 ### order
 
-<sub>(default: `'asc'`)</sub>
+<sub>default: `'asc'`</sub>
 
 Determines whether the sorted items should be in ascending or descending order.
 
@@ -154,61 +154,16 @@ Determines whether the sorted items should be in ascending or descending order.
 
 ### ignoreCase
 
-<sub>(default: `true`)</sub>
+<sub>default: `true`</sub>
 
 Controls whether sorting should be case-sensitive or not.
 
 - `true` — Ignore case when sorting alphabetically or naturally (e.g., “A” and “a” are the same).
 - `false` — Consider case when sorting (e.g., “A” comes before “a”).
 
-### optionalityOrder
-
-<sub>(default: `'ignore'`)</sub>
-
-Specifies how optional and required members should be ordered in TypeScript interfaces.
-
-- `'optional-first'` — Put all optional members before required members.
-- `'required-first'` — Put all required members before optional members.
-- `'ignore'` — Do not enforce any specific order based on optionality.
-
-### groups
-
-<sub>(default: `[]`)</sub>
-
-Allows you to specify a list of interface member groups for sorting. Groups help organize members into categories, making your interfaces more readable and maintainable. Multiple groups can be combined to achieve the desired sorting order.
-
-There are predefined group: `'multiline'`.
-
-Predefined Groups:
-
-- `'multiline'` — Members with multiline definitions, such as methods or properties with complex types.
-- `'unknown'` — Interface members that don’t fit into any other group.
-
-### customGroups
-
-<sub>(default: `{}`)</sub>
-
-You can define your own groups for interface members. The [minimatch](https://github.com/isaacs/minimatch) library is used for pattern matching.
-
-Example:
-
-```js
- {
-   groups: [
-+    'top',          // [!code ++]
-     'multiline',
-     'unknown',
-     ['shorthand', 'astro-shorthand'],
-   ],
-+  customGroups: {   // [!code ++]
-+    top: 'id'       // [!code ++]
-+  }                 // [!code ++]
- }
-```
-
 ### ignorePattern
 
-<sub>(default: `[]`)</sub>
+<sub>default: `[]`</sub>
 
 Allows you to specify names or patterns for interfaces that should be ignored by this rule. This can be useful if you have specific interfaces that you do not want to sort.
 
@@ -218,7 +173,7 @@ The [minimatch](https://github.com/isaacs/minimatch) library is used for pattern
 
 ### partitionByNewLine
 
-<sub>(default: `false`)</sub>
+<sub>default: `false`</sub>
 
 When `true`, the rule will not sort the members of an interface if there is an empty line between them. This can be useful for keeping logically separated groups of members in their defined order.
 
@@ -240,6 +195,51 @@ interface User {
 
 In this example, the partitionByNewLine option will cause the rule to treat each group of members (separated by empty lines) independently, preserving their order within each group.
 
+### optionalityOrder
+
+<sub>default: `'ignore'`</sub>
+
+Specifies how optional and required members should be ordered in TypeScript interfaces.
+
+- `'optional-first'` — Put all optional members before required members.
+- `'required-first'` — Put all required members before optional members.
+- `'ignore'` — Do not enforce any specific order based on optionality.
+
+### groups
+
+<sub>default: `[]`</sub>
+
+Allows you to specify a list of interface member groups for sorting. Groups help organize members into categories, making your interfaces more readable and maintainable. Multiple groups can be combined to achieve the desired sorting order.
+
+There are predefined group: `'multiline'`.
+
+Predefined Groups:
+
+- `'multiline'` — Members with multiline definitions, such as methods or properties with complex types.
+- `'unknown'` — Interface members that don’t fit into any other group.
+
+### customGroups
+
+<sub>default: `{}`</sub>
+
+You can define your own groups for interface members. The [minimatch](https://github.com/isaacs/minimatch) library is used for pattern matching.
+
+Example:
+
+```js
+ {
+   groups: [
++    'top',          // [!code ++]
+     'multiline',
+     'unknown',
+     ['shorthand', 'astro-shorthand'],
+   ],
++  customGroups: {   // [!code ++]
++    top: 'id'       // [!code ++]
++  }                 // [!code ++]
+ }
+```
+
 
 ## Usage
 
@@ -259,8 +259,14 @@ In this example, the partitionByNewLine option will cause the rule to treat each
               'perfectionist/sort-interfaces': [
                 'error',
                 {
-                  type: 'natural',
+                  type: 'alphabetical',
                   order: 'asc',
+                  ignoreCase: true,
+                  ignorePattern: [],
+                  partitionByNewLine: false,
+                  optionalityOrder: 'ignore',
+                  groups: [],
+                  customGroups: {},
                 },
               ],
             },
@@ -281,8 +287,14 @@ In this example, the partitionByNewLine option will cause the rule to treat each
             'perfectionist/sort-interfaces': [
               'error',
               {
-                type: 'natural',
+                type: 'alphabetical',
                 order: 'asc',
+                ignoreCase: true,
+                ignorePattern: [],
+                partitionByNewLine: false,
+                optionalityOrder: 'ignore',
+                groups: [],
+                customGroups: {},
               },
             ],
           },

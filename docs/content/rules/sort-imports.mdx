@@ -119,7 +119,7 @@ This rule accepts an options object with the following properties:
 
 ### type
 
-<sub>(default: `'alphabetical'`)</sub>
+<sub>default: `'alphabetical'`</sub>
 
 Specifies the sorting method.
 
@@ -129,7 +129,7 @@ Specifies the sorting method.
 
 ### order
 
-<sub>(default: `'asc'`)</sub>
+<sub>default: `'asc'`</sub>
 
 Determines whether the sorted items should be in ascending or descending order.
 
@@ -138,16 +138,56 @@ Determines whether the sorted items should be in ascending or descending order.
 
 ### ignoreCase
 
-<sub>(default: `true`)</sub>
+<sub>default: `true`</sub>
 
 Controls whether sorting should be case-sensitive or not.
 
 - `true` — Ignore case when sorting alphabetically or naturally (e.g., “A” and “a” are the same).
 - `false` — Consider case when sorting (e.g., “A” comes before “a”).
 
+### internalPattern
+
+<sub>default: `['~/**']`</sub>
+
+Allows you to specify a pattern for identifying internal imports. This is useful for distinguishing your own modules from external dependencies.
+
+The [minimatch](https://github.com/isaacs/minimatch) library is used for pattern matching.
+
+### newlinesBetween
+
+<sub>default: `'always'`</sub>
+
+Specifies how new lines should be handled between import groups.
+
+- `ignore` — Do not report errors related to new lines between import groups.
+- `always` — Enforce one new line between each group, and forbid new lines inside a group.
+- `never` — No new lines are allowed in the entire import section.
+
+### maxLineLength
+
+<sub>default: `undefined`</sub>
+
+Specifies a maximum line length for sorting imports. When the line length exceeds this number, sorting will be based only on the import name, excluding the elements.
+
+This option is only available when the type is set to `'line-length'`.
+
 ### groups
 
-<sub>(default: `[]`)</sub>
+<sub>
+  default:
+  ```
+  [
+    'type',
+    ['builtin', 'external'],
+    'internal-type',
+    'internal',
+    ['parent-type', 'sibling-type', 'index-type'],
+    ['parent', 'sibling', 'index'],
+    'object',
+    'unknown',
+  ]
+  ```
+</sub>
 
 Allows you to set up a list of import groups for sorting. Groups help organize imports into meaningful categories, making your code more readable and maintainable. Multiple groups can be combined.
 
@@ -212,7 +252,7 @@ import type { BaseOptions } from './index.d.ts'
 
 ### customGroups
 
-<sub>(default: `{ value: {}, type: {} }`)</sub>
+<sub>default: `{ value: {}, type: {} }`</sub>
 
 You can define your own groups for importing values or types. The [minimatch](https://github.com/isaacs/minimatch) library is used for pattern matching.
 
@@ -243,35 +283,9 @@ Example:
  }
 ```
 
-### internalPattern
-
-<sub>(default: `['~/**']`)</sub>
-
-Allows you to specify a pattern for identifying internal imports. This is useful for distinguishing your own modules from external dependencies.
-
-The [minimatch](https://github.com/isaacs/minimatch) library is used for pattern matching.
-
-### newlinesBetween
-
-<sub>(default: `'always'`)</sub>
-
-Specifies how new lines should be handled between import groups.
-
-- `ignore` — Do not report errors related to new lines between import groups.
-- `always` — Enforce one new line between each group, and forbid new lines inside a group.
-- `never` — No new lines are allowed in the entire import section.
-
-### maxLineLength
-
-<sub>(default: `undefined`)</sub>
-
-Specifies a maximum line length for sorting imports. When the line length exceeds this number, sorting will be based only on the import name, excluding the elements.
-
-This option is only available when the type is set to `'line-length'`.
-
 ### environment
 
-<sub>(default: `'node'`)</sub>
+<sub>default: `'node'`</sub>
 
 Specifies which environment’s built-in modules should be recognized. If you are using [Bun](https://bun.sh), change the value to `'bun'`.
 
@@ -293,38 +307,23 @@ Specifies which environment’s built-in modules should be recognized. If you ar
               'perfectionist/sort-imports': [
                 'error',
                 {
-                  type: 'natural',
+                  type: 'alphabetical',
                   order: 'asc',
+                  ignoreCase: true,
+                  internalPattern: ['~/**'],
+                  newlinesBetween: 'always',
+                  maxLineLength: undefined,
                   groups: [
                     'type',
-                    'react',
-                    'nanostores',
                     ['builtin', 'external'],
                     'internal-type',
                     'internal',
                     ['parent-type', 'sibling-type', 'index-type'],
                     ['parent', 'sibling', 'index'],
-                    'side-effect',
-                    'style',
                     'object',
                     'unknown',
                   ],
-                  customGroups: {
-                    value: {
-                      react: ['react', 'react-*'],
-                      nanostores: '@nanostores/**',
-                    },
-                    type: {
-                      react: 'react',
-                    },
-                  },
-                  newlinesBetween: 'always',
-                  internalPattern: [
-                    '@/components/**',
-                    '@/stores/**',
-                    '@/pages/**',
-                    '@/lib/**',
-                  ],
+                  customGroups: { type: {}, value: {} },
                 },
               ],
             },
@@ -345,38 +344,23 @@ Specifies which environment’s built-in modules should be recognized. If you ar
             'perfectionist/sort-imports': [
               'error',
               {
-                type: 'natural',
+                type: 'alphabetical',
                 order: 'asc',
+                ignoreCase: true,
+                internalPattern: ['~/**'],
+                newlinesBetween: 'always',
+                maxLineLength: undefined,
                 groups: [
                   'type',
-                  'react',
-                  'nanostores',
                   ['builtin', 'external'],
                   'internal-type',
                   'internal',
                   ['parent-type', 'sibling-type', 'index-type'],
                   ['parent', 'sibling', 'index'],
-                  'side-effect',
-                  'style',
                   'object',
                   'unknown',
                 ],
-                customGroups: {
-                  value: {
-                    react: ['react', 'react-*'],
-                    nanostores: '@nanostores/**',
-                  },
-                  type: {
-                    react: 'react',
-                  },
-                },
-                newlinesBetween: 'always',
-                internalPattern: [
-                  '@/components/**',
-                  '@/stores/**',
-                  '@/pages/**',
-                  '@/lib/**',
-                ],
+                customGroups: { type: {}, value: {} },
               },
             ],
           },

@@ -2,9 +2,11 @@ import { RuleTester } from '@typescript-eslint/rule-tester'
 import { afterAll, describe, it } from 'vitest'
 import { dedent } from 'ts-dedent'
 
-import rule, { RULE_NAME } from '../rules/sort-vue-attributes'
+import rule from '../rules/sort-vue-attributes'
 
-describe(RULE_NAME, () => {
+let ruleName = 'sort-vue-attributes'
+
+describe(ruleName, () => {
   RuleTester.describeSkip = describe.skip
   RuleTester.afterAll = afterAll
   RuleTester.describe = describe
@@ -21,7 +23,7 @@ describe(RULE_NAME, () => {
     },
   })
 
-  describe(`${RULE_NAME}: sorting by alphabetical order`, () => {
+  describe(`${ruleName}: sorting by alphabetical order`, () => {
     let type = 'alphabetical-order'
 
     let options = {
@@ -31,7 +33,7 @@ describe(RULE_NAME, () => {
     } as const
 
     ruleTester.run(
-      `${RULE_NAME}(${type}): sorts props in Vue components`,
+      `${ruleName}(${type}): sorts props in Vue components`,
       rule,
       {
         valid: [
@@ -107,7 +109,7 @@ describe(RULE_NAME, () => {
     )
 
     ruleTester.run(
-      `${RULE_NAME}(${type}): does not break the property list`,
+      `${ruleName}(${type}): does not break the property list`,
       rule,
       {
         valid: [
@@ -183,7 +185,7 @@ describe(RULE_NAME, () => {
     )
 
     ruleTester.run(
-      `${RULE_NAME}(${type}): allows to sort props using groups`,
+      `${ruleName}(${type}): allows to sort props using groups`,
       rule,
       {
         valid: [
@@ -297,7 +299,7 @@ describe(RULE_NAME, () => {
     )
   })
 
-  describe(`${RULE_NAME}: sorting by natural order`, () => {
+  describe(`${ruleName}: sorting by natural order`, () => {
     let type = 'natural-order'
 
     let options = {
@@ -307,7 +309,7 @@ describe(RULE_NAME, () => {
     } as const
 
     ruleTester.run(
-      `${RULE_NAME}(${type}): sorts props in Vue components`,
+      `${ruleName}(${type}): sorts props in Vue components`,
       rule,
       {
         valid: [
@@ -383,7 +385,7 @@ describe(RULE_NAME, () => {
     )
 
     ruleTester.run(
-      `${RULE_NAME}(${type}): does not break the property list`,
+      `${ruleName}(${type}): does not break the property list`,
       rule,
       {
         valid: [
@@ -459,7 +461,7 @@ describe(RULE_NAME, () => {
     )
 
     ruleTester.run(
-      `${RULE_NAME}(${type}): allows to sort props using groups`,
+      `${ruleName}(${type}): allows to sort props using groups`,
       rule,
       {
         valid: [
@@ -573,7 +575,7 @@ describe(RULE_NAME, () => {
     )
   })
 
-  describe(`${RULE_NAME}: sorting by line length`, () => {
+  describe(`${ruleName}: sorting by line length`, () => {
     let type = 'line-length-order'
 
     let options = {
@@ -582,7 +584,7 @@ describe(RULE_NAME, () => {
     } as const
 
     ruleTester.run(
-      `${RULE_NAME}(${type}): sorts props in Vue components`,
+      `${ruleName}(${type}): sorts props in Vue components`,
       rule,
       {
         valid: [
@@ -658,7 +660,7 @@ describe(RULE_NAME, () => {
     )
 
     ruleTester.run(
-      `${RULE_NAME}(${type}): does not break the property list`,
+      `${ruleName}(${type}): does not break the property list`,
       rule,
       {
         valid: [
@@ -734,7 +736,7 @@ describe(RULE_NAME, () => {
     )
 
     ruleTester.run(
-      `${RULE_NAME}(${type}): allows to sort props using groups`,
+      `${ruleName}(${type}): allows to sort props using groups`,
       rule,
       {
         valid: [
@@ -848,8 +850,8 @@ describe(RULE_NAME, () => {
     )
   })
 
-  describe(`${RULE_NAME}: misc`, () => {
-    ruleTester.run(`${RULE_NAME}: works only with .vue files`, rule, {
+  describe(`${ruleName}: misc`, () => {
+    ruleTester.run(`${ruleName}: works only with .vue files`, rule, {
       valid: [
         {
           filename: 'component.ts',
@@ -878,7 +880,7 @@ describe(RULE_NAME, () => {
         parser: '@typescript-eslint/parser',
       })
 
-      tsRuleTester.run(`${RULE_NAME}: requires vue parser`, rule, {
+      tsRuleTester.run(`${ruleName}: requires vue parser`, rule, {
         valid: [
           {
             filename: 'component.vue',

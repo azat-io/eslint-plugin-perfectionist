@@ -155,7 +155,7 @@ This rule accepts an options object with the following properties:
 
 ### type
 
-<sub>(default: `'alphabetical'`)</sub>
+<sub>default: `'alphabetical'`</sub>
 
 Specifies the sorting method.
 
@@ -165,7 +165,7 @@ Specifies the sorting method.
 
 ### order
 
-<sub>(default: `'asc'`)</sub>
+<sub>default: `'asc'`</sub>
 
 Determines whether the sorted items should be in ascending or descending order.
 
@@ -174,7 +174,7 @@ Determines whether the sorted items should be in ascending or descending order.
 
 ### ignoreCase
 
-<sub>(default: `true`)</sub>
+<sub>default: `true`</sub>
 
 Controls whether sorting should be case-sensitive or not.
 
@@ -183,7 +183,7 @@ Controls whether sorting should be case-sensitive or not.
 
 ### partitionByComment
 
-<sub>(default: `false`)</sub>
+<sub>default: `false`</sub>
 
 Allows you to use comments to separate the class members into logical groups. This can help in organizing and maintaining large enums by creating partitions within the enum based on comments.
 
@@ -193,7 +193,23 @@ Allows you to use comments to separate the class members into logical groups. Th
 
 ### groups
 
-<sub>(default: `['property', 'constructor', 'method', 'unknown']`)</sub>
+<sub>
+  default:
+  ```
+  [
+    'index-signature',
+    'static-property',
+    'private-property',
+    'property',
+    'constructor',
+    'static-method',
+    'private-method',
+    'method',
+    ['get-method', 'set-method'],
+    'unknown',
+  ]
+  ```
+</sub>
 
 Allows you to specify a list of class member groups for sorting. Groups help organize class members into categories, prioritizing them during sorting. Multiple groups can be combined to achieve the desired sorting order.
 
@@ -314,7 +330,7 @@ class Example {
 
 ### customGroups
 
-<sub>(default: `{}`)</sub>
+<sub>default: `{}`</sub>
 
 You can define your own groups for class members. The [minimatch](https://github.com/isaacs/minimatch) library is used for pattern matching.
 
@@ -360,8 +376,10 @@ Example:
               'perfectionist/sort-classes': [
                 'error',
                 {
-                  type: 'natural',
+                  type: 'alphabetical',
                   order: 'asc',
+                  ignoreCase: true,
+                  partitionByComment: false,
                   groups: [
                     'index-signature',
                     'static-property',
@@ -371,7 +389,10 @@ Example:
                     'static-method',
                     'private-method',
                     'method',
+                    ['get-method', 'set-method'],
+                    'unknown',
                   ],
+                  customGroups: {},
                 },
               ],
             },
@@ -392,8 +413,10 @@ Example:
             'perfectionist/sort-classes': [
               'error',
               {
-                type: 'natural',
+                type: 'alphabetical',
                 order: 'asc',
+                ignoreCase: true,
+                partitionByComment: false,
                 groups: [
                   'index-signature',
                   'static-property',
@@ -403,7 +426,10 @@ Example:
                   'static-method',
                   'private-method',
                   'method',
+                  ['get-method', 'set-method'],
+                  'unknown',
                 ],
+                customGroups: {},
               },
             ],
           },

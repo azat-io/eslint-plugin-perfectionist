@@ -2,9 +2,11 @@ import { RuleTester } from '@typescript-eslint/rule-tester'
 import { afterAll, describe, it } from 'vitest'
 import { dedent } from 'ts-dedent'
 
-import rule, { RULE_NAME } from '../rules/sort-maps'
+import rule from '../rules/sort-maps'
 
-describe(RULE_NAME, () => {
+let ruleName = 'sort-maps'
+
+describe(ruleName, () => {
   RuleTester.describeSkip = describe.skip
   RuleTester.afterAll = afterAll
   RuleTester.describe = describe
@@ -16,7 +18,7 @@ describe(RULE_NAME, () => {
     parser: '@typescript-eslint/parser',
   })
 
-  describe(`${RULE_NAME}: sorting by alphabetical order`, () => {
+  describe(`${ruleName}: sorting by alphabetical order`, () => {
     let type = 'alphabetical-order'
 
     let options = {
@@ -26,7 +28,7 @@ describe(RULE_NAME, () => {
     } as const
 
     ruleTester.run(
-      `${RULE_NAME}(${type}): does not break the property list`,
+      `${ruleName}(${type}): does not break the property list`,
       rule,
       {
         valid: [
@@ -78,7 +80,7 @@ describe(RULE_NAME, () => {
       },
     )
 
-    ruleTester.run(`${RULE_NAME}(${type}): not sorts spread elements`, rule, {
+    ruleTester.run(`${ruleName}(${type}): not sorts spread elements`, rule, {
       valid: [
         {
           code: dedent`
@@ -102,51 +104,47 @@ describe(RULE_NAME, () => {
       invalid: [],
     })
 
-    ruleTester.run(
-      `${RULE_NAME}(${type}): works with variables as keys`,
-      rule,
-      {
-        valid: [
-          {
-            code: dedent`
+    ruleTester.run(`${ruleName}(${type}): works with variables as keys`, rule, {
+      valid: [
+        {
+          code: dedent`
               new Map([
                 [aa, aa],
                 [b, b],
               ])
             `,
-            options: [options],
-          },
-        ],
-        invalid: [
-          {
-            code: dedent`
+          options: [options],
+        },
+      ],
+      invalid: [
+        {
+          code: dedent`
               new Map([
                 [b, b],
                 [aa, aa],
               ])
             `,
-            output: dedent`
+          output: dedent`
               new Map([
                 [aa, aa],
                 [b, b],
               ])
             `,
-            options: [options],
-            errors: [
-              {
-                messageId: 'unexpectedMapElementsOrder',
-                data: {
-                  left: 'b',
-                  right: 'aa',
-                },
+          options: [options],
+          errors: [
+            {
+              messageId: 'unexpectedMapElementsOrder',
+              data: {
+                left: 'b',
+                right: 'aa',
               },
-            ],
-          },
-        ],
-      },
-    )
+            },
+          ],
+        },
+      ],
+    })
 
-    ruleTester.run(`${RULE_NAME}(${type}): works with numbers as keys`, rule, {
+    ruleTester.run(`${ruleName}(${type}): works with numbers as keys`, rule, {
       valid: [
         {
           code: dedent`
@@ -189,7 +187,7 @@ describe(RULE_NAME, () => {
       ],
     })
 
-    ruleTester.run(`${RULE_NAME}(${type}): sorts variable identifiers`, rule, {
+    ruleTester.run(`${ruleName}(${type}): sorts variable identifiers`, rule, {
       valid: [
         {
           code: dedent`
@@ -243,7 +241,7 @@ describe(RULE_NAME, () => {
     })
   })
 
-  describe(`${RULE_NAME}: sorting by natural order`, () => {
+  describe(`${ruleName}: sorting by natural order`, () => {
     let type = 'natural-order'
 
     let options = {
@@ -253,7 +251,7 @@ describe(RULE_NAME, () => {
     } as const
 
     ruleTester.run(
-      `${RULE_NAME}(${type}): does not break the property list`,
+      `${ruleName}(${type}): does not break the property list`,
       rule,
       {
         valid: [
@@ -305,7 +303,7 @@ describe(RULE_NAME, () => {
       },
     )
 
-    ruleTester.run(`${RULE_NAME}(${type}): not sorts spread elements`, rule, {
+    ruleTester.run(`${ruleName}(${type}): not sorts spread elements`, rule, {
       valid: [
         {
           code: dedent`
@@ -329,51 +327,47 @@ describe(RULE_NAME, () => {
       invalid: [],
     })
 
-    ruleTester.run(
-      `${RULE_NAME}(${type}): works with variables as keys`,
-      rule,
-      {
-        valid: [
-          {
-            code: dedent`
+    ruleTester.run(`${ruleName}(${type}): works with variables as keys`, rule, {
+      valid: [
+        {
+          code: dedent`
               new Map([
                 [aa, aa],
                 [b, b],
               ])
             `,
-            options: [options],
-          },
-        ],
-        invalid: [
-          {
-            code: dedent`
+          options: [options],
+        },
+      ],
+      invalid: [
+        {
+          code: dedent`
               new Map([
                 [b, b],
                 [aa, aa],
               ])
             `,
-            output: dedent`
+          output: dedent`
               new Map([
                 [aa, aa],
                 [b, b],
               ])
             `,
-            options: [options],
-            errors: [
-              {
-                messageId: 'unexpectedMapElementsOrder',
-                data: {
-                  left: 'b',
-                  right: 'aa',
-                },
+          options: [options],
+          errors: [
+            {
+              messageId: 'unexpectedMapElementsOrder',
+              data: {
+                left: 'b',
+                right: 'aa',
               },
-            ],
-          },
-        ],
-      },
-    )
+            },
+          ],
+        },
+      ],
+    })
 
-    ruleTester.run(`${RULE_NAME}(${type}): works with numbers as keys`, rule, {
+    ruleTester.run(`${ruleName}(${type}): works with numbers as keys`, rule, {
       valid: [
         {
           code: dedent`
@@ -416,7 +410,7 @@ describe(RULE_NAME, () => {
       ],
     })
 
-    ruleTester.run(`${RULE_NAME}(${type}): sorts variable identifiers`, rule, {
+    ruleTester.run(`${ruleName}(${type}): sorts variable identifiers`, rule, {
       valid: [
         {
           code: dedent`
@@ -470,7 +464,7 @@ describe(RULE_NAME, () => {
     })
   })
 
-  describe(`${RULE_NAME}: sorting by line length`, () => {
+  describe(`${ruleName}: sorting by line length`, () => {
     let type = 'line-length-order'
 
     let options = {
@@ -479,7 +473,7 @@ describe(RULE_NAME, () => {
     } as const
 
     ruleTester.run(
-      `${RULE_NAME}(${type}): does not break the property list`,
+      `${ruleName}(${type}): does not break the property list`,
       rule,
       {
         valid: [
@@ -532,7 +526,7 @@ describe(RULE_NAME, () => {
     )
 
     ruleTester.run(
-      `${RULE_NAME}(${type}): both key and value affect sorting by length`,
+      `${ruleName}(${type}): both key and value affect sorting by length`,
       rule,
       {
         valid: [
@@ -602,7 +596,7 @@ describe(RULE_NAME, () => {
       },
     )
 
-    ruleTester.run(`${RULE_NAME}(${type}): not sorts spread elements`, rule, {
+    ruleTester.run(`${ruleName}(${type}): not sorts spread elements`, rule, {
       valid: [
         {
           code: dedent`
@@ -626,51 +620,47 @@ describe(RULE_NAME, () => {
       invalid: [],
     })
 
-    ruleTester.run(
-      `${RULE_NAME}(${type}): works with variables as keys`,
-      rule,
-      {
-        valid: [
-          {
-            code: dedent`
+    ruleTester.run(`${ruleName}(${type}): works with variables as keys`, rule, {
+      valid: [
+        {
+          code: dedent`
               new Map([
                 [aa, aa],
                 [b, b],
               ])
             `,
-            options: [options],
-          },
-        ],
-        invalid: [
-          {
-            code: dedent`
+          options: [options],
+        },
+      ],
+      invalid: [
+        {
+          code: dedent`
               new Map([
                 [b, b],
                 [aa, aa],
               ])
             `,
-            output: dedent`
+          output: dedent`
               new Map([
                 [aa, aa],
                 [b, b],
               ])
             `,
-            options: [options],
-            errors: [
-              {
-                messageId: 'unexpectedMapElementsOrder',
-                data: {
-                  left: 'b',
-                  right: 'aa',
-                },
+          options: [options],
+          errors: [
+            {
+              messageId: 'unexpectedMapElementsOrder',
+              data: {
+                left: 'b',
+                right: 'aa',
               },
-            ],
-          },
-        ],
-      },
-    )
+            },
+          ],
+        },
+      ],
+    })
 
-    ruleTester.run(`${RULE_NAME}(${type}): works with numbers as keys`, rule, {
+    ruleTester.run(`${ruleName}(${type}): works with numbers as keys`, rule, {
       valid: [
         {
           code: dedent`
@@ -713,7 +703,7 @@ describe(RULE_NAME, () => {
       ],
     })
 
-    ruleTester.run(`${RULE_NAME}(${type}): sorts variable identifiers`, rule, {
+    ruleTester.run(`${ruleName}(${type}): sorts variable identifiers`, rule, {
       valid: [
         {
           code: dedent`
@@ -767,9 +757,9 @@ describe(RULE_NAME, () => {
     })
   })
 
-  describe(`${RULE_NAME}: misc`, () => {
+  describe(`${ruleName}: misc`, () => {
     ruleTester.run(
-      `${RULE_NAME}: sets alphabetical asc sorting as default`,
+      `${ruleName}: sets alphabetical asc sorting as default`,
       rule,
       {
         valid: [
@@ -828,13 +818,13 @@ describe(RULE_NAME, () => {
       },
     )
 
-    ruleTester.run(`${RULE_NAME}: works with empty map`, rule, {
+    ruleTester.run(`${ruleName}: works with empty map`, rule, {
       valid: ['new Map([[], []])', 'new Map()'],
       invalid: [],
     })
 
     ruleTester.run(
-      `${RULE_NAME}: respect numeric separators with natural sorting`,
+      `${ruleName}: respect numeric separators with natural sorting`,
       rule,
       {
         valid: [

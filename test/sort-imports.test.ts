@@ -2,9 +2,11 @@ import { RuleTester } from '@typescript-eslint/rule-tester'
 import { afterAll, describe, it } from 'vitest'
 import { dedent } from 'ts-dedent'
 
-import rule, { NewlinesBetweenValue, RULE_NAME } from '../rules/sort-imports'
+import rule from '../rules/sort-imports'
 
-describe(RULE_NAME, () => {
+let ruleName = 'sort-imports'
+
+describe(ruleName, () => {
   RuleTester.describeSkip = describe.skip
   RuleTester.afterAll = afterAll
   RuleTester.describe = describe
@@ -16,7 +18,7 @@ describe(RULE_NAME, () => {
     parser: '@typescript-eslint/parser',
   })
 
-  describe(`${RULE_NAME}: sorting by alphabetical order`, () => {
+  describe(`${ruleName}: sorting by alphabetical order`, () => {
     let type = 'alphabetical-order'
 
     let options = {
@@ -25,7 +27,7 @@ describe(RULE_NAME, () => {
       order: 'asc',
     } as const
 
-    ruleTester.run(`${RULE_NAME}(${type}): sorts imports`, rule, {
+    ruleTester.run(`${ruleName}(${type}): sorts imports`, rule, {
       valid: [
         {
           code: dedent`
@@ -59,7 +61,7 @@ describe(RULE_NAME, () => {
       ],
     })
 
-    ruleTester.run(`${RULE_NAME}(${type}): sorts imports by groups`, rule, {
+    ruleTester.run(`${ruleName}(${type}): sorts imports by groups`, rule, {
       valid: [
         {
           code: dedent`
@@ -91,7 +93,7 @@ describe(RULE_NAME, () => {
           options: [
             {
               ...options,
-              newlinesBetween: NewlinesBetweenValue.always,
+              newlinesBetween: 'always',
               internalPattern: ['~/**'],
               groups: [
                 'type',
@@ -162,7 +164,7 @@ describe(RULE_NAME, () => {
           options: [
             {
               ...options,
-              newlinesBetween: NewlinesBetweenValue.always,
+              newlinesBetween: 'always',
               internalPattern: ['~/**'],
               groups: [
                 'type',
@@ -252,13 +254,10 @@ describe(RULE_NAME, () => {
       ],
     })
 
-    ruleTester.run(
-      `${RULE_NAME}(${type}): sorts imports with no spaces`,
-      rule,
-      {
-        valid: [
-          {
-            code: dedent`
+    ruleTester.run(`${ruleName}(${type}): sorts imports with no spaces`, rule, {
+      valid: [
+        {
+          code: dedent`
               import type { T } from 't'
               import { a1, a2, a3 } from 'a'
               import { b1, b2 } from '~/b'
@@ -266,28 +265,28 @@ describe(RULE_NAME, () => {
               import d from '.'
               import { e1, e2, e3 } from '../../e'
             `,
-            options: [
-              {
-                ...options,
-                newlinesBetween: NewlinesBetweenValue.never,
-                internalPattern: ['~/**'],
-                groups: [
-                  'type',
-                  ['builtin', 'external'],
-                  'internal-type',
-                  'internal',
-                  ['parent-type', 'sibling-type', 'index-type'],
-                  ['parent', 'sibling', 'index'],
-                  'object',
-                  'unknown',
-                ],
-              },
-            ],
-          },
-        ],
-        invalid: [
-          {
-            code: dedent`
+          options: [
+            {
+              ...options,
+              newlinesBetween: 'never',
+              internalPattern: ['~/**'],
+              groups: [
+                'type',
+                ['builtin', 'external'],
+                'internal-type',
+                'internal',
+                ['parent-type', 'sibling-type', 'index-type'],
+                ['parent', 'sibling', 'index'],
+                'object',
+                'unknown',
+              ],
+            },
+          ],
+        },
+      ],
+      invalid: [
+        {
+          code: dedent`
               import d from '.'
               import { a1, a2, a3 } from 'a'
               import { c1, c2, c3 } from '~/c'
@@ -297,7 +296,7 @@ describe(RULE_NAME, () => {
 
               import { b1, b2 } from '~/b'
             `,
-            output: dedent`
+          output: dedent`
               import type { T } from 't'
               import { a1, a2, a3 } from 'a'
               import { b1, b2 } from '~/b'
@@ -305,66 +304,65 @@ describe(RULE_NAME, () => {
               import d from '.'
               import { e1, e2, e3 } from '../../e'
             `,
-            options: [
-              {
-                ...options,
-                newlinesBetween: NewlinesBetweenValue.never,
-                internalPattern: ['~/**'],
-                groups: [
-                  'type',
-                  ['builtin', 'external'],
-                  'internal-type',
-                  'internal',
-                  ['parent-type', 'sibling-type', 'index-type'],
-                  ['parent', 'sibling', 'index'],
-                  'object',
-                  'unknown',
-                ],
+          options: [
+            {
+              ...options,
+              newlinesBetween: 'never',
+              internalPattern: ['~/**'],
+              groups: [
+                'type',
+                ['builtin', 'external'],
+                'internal-type',
+                'internal',
+                ['parent-type', 'sibling-type', 'index-type'],
+                ['parent', 'sibling', 'index'],
+                'object',
+                'unknown',
+              ],
+            },
+          ],
+          errors: [
+            {
+              messageId: 'unexpectedImportsOrder',
+              data: {
+                left: '.',
+                right: 'a',
               },
-            ],
-            errors: [
-              {
-                messageId: 'unexpectedImportsOrder',
-                data: {
-                  left: '.',
-                  right: 'a',
-                },
+            },
+            {
+              messageId: 'unexpectedImportsOrder',
+              data: {
+                left: '~/c',
+                right: 't',
               },
-              {
-                messageId: 'unexpectedImportsOrder',
-                data: {
-                  left: '~/c',
-                  right: 't',
-                },
+            },
+            {
+              messageId: 'extraSpacingBetweenImports',
+              data: {
+                left: '~/c',
+                right: 't',
               },
-              {
-                messageId: 'extraSpacingBetweenImports',
-                data: {
-                  left: '~/c',
-                  right: 't',
-                },
+            },
+            {
+              messageId: 'unexpectedImportsOrder',
+              data: {
+                left: '../../e',
+                right: '~/b',
               },
-              {
-                messageId: 'unexpectedImportsOrder',
-                data: {
-                  left: '../../e',
-                  right: '~/b',
-                },
+            },
+            {
+              messageId: 'extraSpacingBetweenImports',
+              data: {
+                left: '../../e',
+                right: '~/b',
               },
-              {
-                messageId: 'extraSpacingBetweenImports',
-                data: {
-                  left: '../../e',
-                  right: '~/b',
-                },
-              },
-            ],
-          },
-        ],
-      },
-    )
+            },
+          ],
+        },
+      ],
+    })
 
-    ruleTester.run(`${RULE_NAME}(${type}): disallow extra spaces`, rule, {
+    ruleTester.run(`${ruleName}(${type}): disallow extra spaces`, rule, {
       valid: [
         {
           code: dedent`
@@ -377,7 +375,7 @@ describe(RULE_NAME, () => {
           options: [
             {
               ...options,
-              newlinesBetween: NewlinesBetweenValue.always,
+              newlinesBetween: 'always',
               internalPattern: ['~/**'],
               groups: [
                 'type',
@@ -414,7 +412,7 @@ describe(RULE_NAME, () => {
           options: [
             {
               ...options,
-              newlinesBetween: NewlinesBetweenValue.always,
+              newlinesBetween: 'always',
               internalPattern: ['~/**'],
               groups: [
                 'type',
@@ -449,7 +447,7 @@ describe(RULE_NAME, () => {
     })
 
     ruleTester.run(
-      `${RULE_NAME}(${type}): supports typescript object-imports`,
+      `${ruleName}(${type}): supports typescript object-imports`,
       rule,
       {
         valid: [
@@ -467,7 +465,7 @@ describe(RULE_NAME, () => {
             options: [
               {
                 ...options,
-                newlinesBetween: NewlinesBetweenValue.always,
+                newlinesBetween: 'always',
                 internalPattern: ['~/**'],
                 groups: [
                   'type',
@@ -507,7 +505,7 @@ describe(RULE_NAME, () => {
             options: [
               {
                 ...options,
-                newlinesBetween: NewlinesBetweenValue.always,
+                newlinesBetween: 'always',
                 internalPattern: ['~/**'],
                 groups: [
                   'type',
@@ -543,7 +541,7 @@ describe(RULE_NAME, () => {
     )
 
     ruleTester.run(
-      `${RULE_NAME}(${type}): use type if type of type is not defined`,
+      `${ruleName}(${type}): use type if type of type is not defined`,
       rule,
       {
         valid: [
@@ -556,7 +554,7 @@ describe(RULE_NAME, () => {
             options: [
               {
                 ...options,
-                newlinesBetween: NewlinesBetweenValue.always,
+                newlinesBetween: 'always',
                 internalPattern: ['~/**'],
                 groups: [
                   'type',
@@ -585,7 +583,7 @@ describe(RULE_NAME, () => {
             options: [
               {
                 ...options,
-                newlinesBetween: NewlinesBetweenValue.always,
+                newlinesBetween: 'always',
                 internalPattern: ['~/**'],
                 groups: [
                   'type',
@@ -616,7 +614,7 @@ describe(RULE_NAME, () => {
       },
     )
 
-    ruleTester.run(`${RULE_NAME}(${type}): doesn't break user comments`, rule, {
+    ruleTester.run(`${ruleName}(${type}): doesn't break user comments`, rule, {
       valid: [
         {
           code: dedent`
@@ -632,7 +630,7 @@ describe(RULE_NAME, () => {
           options: [
             {
               ...options,
-              newlinesBetween: NewlinesBetweenValue.always,
+              newlinesBetween: 'always',
               internalPattern: ['~/**'],
               groups: [
                 'type',
@@ -652,7 +650,7 @@ describe(RULE_NAME, () => {
     })
 
     ruleTester.run(
-      `${RULE_NAME}(${type}): ignores comments for counting lines between imports`,
+      `${ruleName}(${type}): ignores comments for counting lines between imports`,
       rule,
       {
         valid: [
@@ -666,7 +664,7 @@ describe(RULE_NAME, () => {
             options: [
               {
                 ...options,
-                newlinesBetween: NewlinesBetweenValue.always,
+                newlinesBetween: 'always',
                 internalPattern: ['~/**'],
                 groups: [
                   'type',
@@ -687,7 +685,7 @@ describe(RULE_NAME, () => {
     )
 
     ruleTester.run(
-      `${RULE_NAME}(${type}): breaks import sorting if there is other nodes between`,
+      `${ruleName}(${type}): breaks import sorting if there is other nodes between`,
       rule,
       {
         valid: [
@@ -702,7 +700,7 @@ describe(RULE_NAME, () => {
             options: [
               {
                 ...options,
-                newlinesBetween: NewlinesBetweenValue.always,
+                newlinesBetween: 'always',
                 internalPattern: ['~/**'],
                 groups: [
                   'type',
@@ -723,7 +721,7 @@ describe(RULE_NAME, () => {
     )
 
     ruleTester.run(
-      `${RULE_NAME}(${type}): separates style imports from the rest`,
+      `${ruleName}(${type}): separates style imports from the rest`,
       rule,
       {
         valid: [
@@ -737,7 +735,7 @@ describe(RULE_NAME, () => {
             options: [
               {
                 ...options,
-                newlinesBetween: NewlinesBetweenValue.always,
+                newlinesBetween: 'always',
                 internalPattern: ['~/**'],
                 groups: [
                   'type',
@@ -759,7 +757,7 @@ describe(RULE_NAME, () => {
     )
 
     ruleTester.run(
-      `${RULE_NAME}(${type}): separates side effect imports from the rest`,
+      `${ruleName}(${type}): separates side effect imports from the rest`,
       rule,
       {
         valid: [
@@ -774,7 +772,7 @@ describe(RULE_NAME, () => {
             options: [
               {
                 ...options,
-                newlinesBetween: NewlinesBetweenValue.always,
+                newlinesBetween: 'always',
                 internalPattern: ['~/**'],
                 groups: [
                   'type',
@@ -796,7 +794,7 @@ describe(RULE_NAME, () => {
     )
 
     ruleTester.run(
-      `${RULE_NAME}(${type}): separates builtin type from the rest types`,
+      `${ruleName}(${type}): separates builtin type from the rest types`,
       rule,
       {
         valid: [
@@ -809,7 +807,7 @@ describe(RULE_NAME, () => {
             options: [
               {
                 ...options,
-                newlinesBetween: NewlinesBetweenValue.always,
+                newlinesBetween: 'always',
                 internalPattern: ['~/**'],
                 groups: ['builtin-type', 'type'],
               },
@@ -821,7 +819,7 @@ describe(RULE_NAME, () => {
     )
 
     ruleTester.run(
-      `${RULE_NAME}(${type}): works with imports ending with a semicolon`,
+      `${ruleName}(${type}): works with imports ending with a semicolon`,
       rule,
       {
         valid: [],
@@ -839,7 +837,7 @@ describe(RULE_NAME, () => {
             options: [
               {
                 ...options,
-                newlinesBetween: NewlinesBetweenValue.always,
+                newlinesBetween: 'always',
                 internalPattern: ['~/**'],
                 groups: [
                   'type',
@@ -866,7 +864,7 @@ describe(RULE_NAME, () => {
       },
     )
 
-    ruleTester.run(`${RULE_NAME}(${type}): remove unnecessary spaces`, rule, {
+    ruleTester.run(`${ruleName}(${type}): remove unnecessary spaces`, rule, {
       valid: [],
       invalid: [
         {
@@ -929,7 +927,7 @@ describe(RULE_NAME, () => {
     })
 
     ruleTester.run(
-      `${RULE_NAME}(${type}): allows to define custom groups`,
+      `${ruleName}(${type}): allows to define custom groups`,
       rule,
       {
         valid: [],
@@ -1018,7 +1016,7 @@ describe(RULE_NAME, () => {
     )
 
     ruleTester.run(
-      `${RULE_NAME}(${type}): allows to define value only custom groups`,
+      `${ruleName}(${type}): allows to define value only custom groups`,
       rule,
       {
         valid: [],
@@ -1059,7 +1057,7 @@ describe(RULE_NAME, () => {
     )
 
     ruleTester.run(
-      `${RULE_NAME}(${type}): allows hash symbol in internal pattern`,
+      `${ruleName}(${type}): allows hash symbol in internal pattern`,
       rule,
       {
         valid: [
@@ -1079,7 +1077,7 @@ describe(RULE_NAME, () => {
             options: [
               {
                 ...options,
-                newlinesBetween: NewlinesBetweenValue.always,
+                newlinesBetween: 'always',
                 internalPattern: ['#**'],
                 groups: [
                   'type',
@@ -1123,7 +1121,7 @@ describe(RULE_NAME, () => {
             options: [
               {
                 ...options,
-                newlinesBetween: NewlinesBetweenValue.always,
+                newlinesBetween: 'always',
                 internalPattern: ['#**'],
                 groups: [
                   'type',
@@ -1158,7 +1156,7 @@ describe(RULE_NAME, () => {
       },
     )
 
-    ruleTester.run(`${RULE_NAME}(${type}): allows to use bun modules`, rule, {
+    ruleTester.run(`${ruleName}(${type}): allows to use bun modules`, rule, {
       valid: [
         {
           code: dedent`
@@ -1168,7 +1166,7 @@ describe(RULE_NAME, () => {
           options: [
             {
               ...options,
-              newlinesBetween: NewlinesBetweenValue.never,
+              newlinesBetween: 'never',
               groups: ['builtin', 'external', 'unknown'],
               environment: 'bun',
             },
@@ -1188,7 +1186,7 @@ describe(RULE_NAME, () => {
           options: [
             {
               ...options,
-              newlinesBetween: NewlinesBetweenValue.never,
+              newlinesBetween: 'never',
               groups: ['builtin', 'external', 'unknown'],
               environment: 'bun',
             },
@@ -1207,7 +1205,7 @@ describe(RULE_NAME, () => {
     })
   })
 
-  describe(`${RULE_NAME}: sorting by natural order`, () => {
+  describe(`${ruleName}: sorting by natural order`, () => {
     let type = 'natural-order'
 
     let options = {
@@ -1216,7 +1214,7 @@ describe(RULE_NAME, () => {
       order: 'asc',
     } as const
 
-    ruleTester.run(`${RULE_NAME}(${type}): sorts imports`, rule, {
+    ruleTester.run(`${ruleName}(${type}): sorts imports`, rule, {
       valid: [
         {
           code: dedent`
@@ -1250,7 +1248,7 @@ describe(RULE_NAME, () => {
       ],
     })
 
-    ruleTester.run(`${RULE_NAME}(${type}): sorts imports by groups`, rule, {
+    ruleTester.run(`${ruleName}(${type}): sorts imports by groups`, rule, {
       valid: [
         {
           code: dedent`
@@ -1282,7 +1280,7 @@ describe(RULE_NAME, () => {
           options: [
             {
               ...options,
-              newlinesBetween: NewlinesBetweenValue.always,
+              newlinesBetween: 'always',
               internalPattern: ['~/**'],
               groups: [
                 'type',
@@ -1353,7 +1351,7 @@ describe(RULE_NAME, () => {
           options: [
             {
               ...options,
-              newlinesBetween: NewlinesBetweenValue.always,
+              newlinesBetween: 'always',
               internalPattern: ['~/**'],
               groups: [
                 'type',
@@ -1443,13 +1441,10 @@ describe(RULE_NAME, () => {
       ],
     })
 
-    ruleTester.run(
-      `${RULE_NAME}(${type}): sorts imports with no spaces`,
-      rule,
-      {
-        valid: [
-          {
-            code: dedent`
+    ruleTester.run(`${ruleName}(${type}): sorts imports with no spaces`, rule, {
+      valid: [
+        {
+          code: dedent`
               import type { T } from 't'
               import { a1, a2, a3 } from 'a'
               import { b1, b2 } from '~/b'
@@ -1457,28 +1452,28 @@ describe(RULE_NAME, () => {
               import d from '.'
               import { e1, e2, e3 } from '../../e'
             `,
-            options: [
-              {
-                ...options,
-                newlinesBetween: NewlinesBetweenValue.never,
-                internalPattern: ['~/**'],
-                groups: [
-                  'type',
-                  ['builtin', 'external'],
-                  'internal-type',
-                  'internal',
-                  ['parent-type', 'sibling-type', 'index-type'],
-                  ['parent', 'sibling', 'index'],
-                  'object',
-                  'unknown',
-                ],
-              },
-            ],
-          },
-        ],
-        invalid: [
-          {
-            code: dedent`
+          options: [
+            {
+              ...options,
+              newlinesBetween: 'never',
+              internalPattern: ['~/**'],
+              groups: [
+                'type',
+                ['builtin', 'external'],
+                'internal-type',
+                'internal',
+                ['parent-type', 'sibling-type', 'index-type'],
+                ['parent', 'sibling', 'index'],
+                'object',
+                'unknown',
+              ],
+            },
+          ],
+        },
+      ],
+      invalid: [
+        {
+          code: dedent`
               import d from '.'
               import { a1, a2, a3 } from 'a'
               import { c1, c2, c3 } from '~/c'
@@ -1488,7 +1483,7 @@ describe(RULE_NAME, () => {
 
               import { b1, b2 } from '~/b'
             `,
-            output: dedent`
+          output: dedent`
               import type { T } from 't'
               import { a1, a2, a3 } from 'a'
               import { b1, b2 } from '~/b'
@@ -1496,66 +1491,65 @@ describe(RULE_NAME, () => {
               import d from '.'
               import { e1, e2, e3 } from '../../e'
             `,
-            options: [
-              {
-                ...options,
-                newlinesBetween: NewlinesBetweenValue.never,
-                internalPattern: ['~/**'],
-                groups: [
-                  'type',
-                  ['builtin', 'external'],
-                  'internal-type',
-                  'internal',
-                  ['parent-type', 'sibling-type', 'index-type'],
-                  ['parent', 'sibling', 'index'],
-                  'object',
-                  'unknown',
-                ],
+          options: [
+            {
+              ...options,
+              newlinesBetween: 'never',
+              internalPattern: ['~/**'],
+              groups: [
+                'type',
+                ['builtin', 'external'],
+                'internal-type',
+                'internal',
+                ['parent-type', 'sibling-type', 'index-type'],
+                ['parent', 'sibling', 'index'],
+                'object',
+                'unknown',
+              ],
+            },
+          ],
+          errors: [
+            {
+              messageId: 'unexpectedImportsOrder',
+              data: {
+                left: '.',
+                right: 'a',
               },
-            ],
-            errors: [
-              {
-                messageId: 'unexpectedImportsOrder',
-                data: {
-                  left: '.',
-                  right: 'a',
-                },
+            },
+            {
+              messageId: 'unexpectedImportsOrder',
+              data: {
+                left: '~/c',
+                right: 't',
               },
-              {
-                messageId: 'unexpectedImportsOrder',
-                data: {
-                  left: '~/c',
-                  right: 't',
-                },
+            },
+            {
+              messageId: 'extraSpacingBetweenImports',
+              data: {
+                left: '~/c',
+                right: 't',
               },
-              {
-                messageId: 'extraSpacingBetweenImports',
-                data: {
-                  left: '~/c',
-                  right: 't',
-                },
+            },
+            {
+              messageId: 'unexpectedImportsOrder',
+              data: {
+                left: '../../e',
+                right: '~/b',
               },
-              {
-                messageId: 'unexpectedImportsOrder',
-                data: {
-                  left: '../../e',
-                  right: '~/b',
-                },
+            },
+            {
+              messageId: 'extraSpacingBetweenImports',
+              data: {
+                left: '../../e',
+                right: '~/b',
               },
-              {
-                messageId: 'extraSpacingBetweenImports',
-                data: {
-                  left: '../../e',
-                  right: '~/b',
-                },
-              },
-            ],
-          },
-        ],
-      },
-    )
+            },
+          ],
+        },
+      ],
+    })
 
-    ruleTester.run(`${RULE_NAME}(${type}): disallow extra spaces`, rule, {
+    ruleTester.run(`${ruleName}(${type}): disallow extra spaces`, rule, {
       valid: [
         {
           code: dedent`
@@ -1568,7 +1562,7 @@ describe(RULE_NAME, () => {
           options: [
             {
               ...options,
-              newlinesBetween: NewlinesBetweenValue.always,
+              newlinesBetween: 'always',
               internalPattern: ['~/**'],
               groups: [
                 'type',
@@ -1605,7 +1599,7 @@ describe(RULE_NAME, () => {
           options: [
             {
               ...options,
-              newlinesBetween: NewlinesBetweenValue.always,
+              newlinesBetween: 'always',
               internalPattern: ['~/**'],
               groups: [
                 'type',
@@ -1640,7 +1634,7 @@ describe(RULE_NAME, () => {
     })
 
     ruleTester.run(
-      `${RULE_NAME}(${type}): supports typescript object-imports`,
+      `${ruleName}(${type}): supports typescript object-imports`,
       rule,
       {
         valid: [
@@ -1658,7 +1652,7 @@ describe(RULE_NAME, () => {
             options: [
               {
                 ...options,
-                newlinesBetween: NewlinesBetweenValue.always,
+                newlinesBetween: 'always',
                 internalPattern: ['~/**'],
                 groups: [
                   'type',
@@ -1698,7 +1692,7 @@ describe(RULE_NAME, () => {
             options: [
               {
                 ...options,
-                newlinesBetween: NewlinesBetweenValue.always,
+                newlinesBetween: 'always',
                 internalPattern: ['~/**'],
                 groups: [
                   'type',
@@ -1734,7 +1728,7 @@ describe(RULE_NAME, () => {
     )
 
     ruleTester.run(
-      `${RULE_NAME}(${type}): use type if type of type is not defined`,
+      `${ruleName}(${type}): use type if type of type is not defined`,
       rule,
       {
         valid: [
@@ -1747,7 +1741,7 @@ describe(RULE_NAME, () => {
             options: [
               {
                 ...options,
-                newlinesBetween: NewlinesBetweenValue.always,
+                newlinesBetween: 'always',
                 internalPattern: ['~/**'],
                 groups: [
                   'type',
@@ -1776,7 +1770,7 @@ describe(RULE_NAME, () => {
             options: [
               {
                 ...options,
-                newlinesBetween: NewlinesBetweenValue.always,
+                newlinesBetween: 'always',
                 internalPattern: ['~/**'],
                 groups: [
                   'type',
@@ -1807,7 +1801,7 @@ describe(RULE_NAME, () => {
       },
     )
 
-    ruleTester.run(`${RULE_NAME}(${type}): doesn't break user comments`, rule, {
+    ruleTester.run(`${ruleName}(${type}): doesn't break user comments`, rule, {
       valid: [
         {
           code: dedent`
@@ -1823,7 +1817,7 @@ describe(RULE_NAME, () => {
           options: [
             {
               ...options,
-              newlinesBetween: NewlinesBetweenValue.always,
+              newlinesBetween: 'always',
               internalPattern: ['~/**'],
               groups: [
                 'type',
@@ -1843,7 +1837,7 @@ describe(RULE_NAME, () => {
     })
 
     ruleTester.run(
-      `${RULE_NAME}(${type}): ignores comments for counting lines between imports`,
+      `${ruleName}(${type}): ignores comments for counting lines between imports`,
       rule,
       {
         valid: [
@@ -1857,7 +1851,7 @@ describe(RULE_NAME, () => {
             options: [
               {
                 ...options,
-                newlinesBetween: NewlinesBetweenValue.always,
+                newlinesBetween: 'always',
                 internalPattern: ['~/**'],
                 groups: [
                   'type',
@@ -1878,7 +1872,7 @@ describe(RULE_NAME, () => {
     )
 
     ruleTester.run(
-      `${RULE_NAME}(${type}): breaks import sorting if there is other nodes between`,
+      `${ruleName}(${type}): breaks import sorting if there is other nodes between`,
       rule,
       {
         valid: [
@@ -1893,7 +1887,7 @@ describe(RULE_NAME, () => {
             options: [
               {
                 ...options,
-                newlinesBetween: NewlinesBetweenValue.always,
+                newlinesBetween: 'always',
                 internalPattern: ['~/**'],
                 groups: [
                   'type',
@@ -1914,7 +1908,7 @@ describe(RULE_NAME, () => {
     )
 
     ruleTester.run(
-      `${RULE_NAME}(${type}): separates style imports from the rest`,
+      `${ruleName}(${type}): separates style imports from the rest`,
       rule,
       {
         valid: [
@@ -1928,7 +1922,7 @@ describe(RULE_NAME, () => {
             options: [
               {
                 ...options,
-                newlinesBetween: NewlinesBetweenValue.always,
+                newlinesBetween: 'always',
                 internalPattern: ['~/**'],
                 groups: [
                   'type',
@@ -1950,7 +1944,7 @@ describe(RULE_NAME, () => {
     )
 
     ruleTester.run(
-      `${RULE_NAME}(${type}): separates side effect imports from the rest`,
+      `${ruleName}(${type}): separates side effect imports from the rest`,
       rule,
       {
         valid: [
@@ -1965,7 +1959,7 @@ describe(RULE_NAME, () => {
             options: [
               {
                 ...options,
-                newlinesBetween: NewlinesBetweenValue.always,
+                newlinesBetween: 'always',
                 internalPattern: ['~/**'],
                 groups: [
                   'type',
@@ -1987,7 +1981,7 @@ describe(RULE_NAME, () => {
     )
 
     ruleTester.run(
-      `${RULE_NAME}(${type}): separates builtin type from the rest types`,
+      `${ruleName}(${type}): separates builtin type from the rest types`,
       rule,
       {
         valid: [
@@ -2000,7 +1994,7 @@ describe(RULE_NAME, () => {
             options: [
               {
                 ...options,
-                newlinesBetween: NewlinesBetweenValue.always,
+                newlinesBetween: 'always',
                 internalPattern: ['~/**'],
                 groups: ['builtin-type', 'type'],
               },
@@ -2012,7 +2006,7 @@ describe(RULE_NAME, () => {
     )
 
     ruleTester.run(
-      `${RULE_NAME}(${type}): works with imports ending with a semicolon`,
+      `${ruleName}(${type}): works with imports ending with a semicolon`,
       rule,
       {
         valid: [],
@@ -2030,7 +2024,7 @@ describe(RULE_NAME, () => {
             options: [
               {
                 ...options,
-                newlinesBetween: NewlinesBetweenValue.always,
+                newlinesBetween: 'always',
                 internalPattern: ['~/**'],
                 groups: [
                   'type',
@@ -2057,7 +2051,7 @@ describe(RULE_NAME, () => {
       },
     )
 
-    ruleTester.run(`${RULE_NAME}(${type}): remove unnecessary spaces`, rule, {
+    ruleTester.run(`${ruleName}(${type}): remove unnecessary spaces`, rule, {
       valid: [],
       invalid: [
         {
@@ -2120,7 +2114,7 @@ describe(RULE_NAME, () => {
     })
 
     ruleTester.run(
-      `${RULE_NAME}(${type}): allows to define custom groups`,
+      `${ruleName}(${type}): allows to define custom groups`,
       rule,
       {
         valid: [],
@@ -2209,7 +2203,7 @@ describe(RULE_NAME, () => {
     )
 
     ruleTester.run(
-      `${RULE_NAME}(${type}): allows to define value only custom groups`,
+      `${ruleName}(${type}): allows to define value only custom groups`,
       rule,
       {
         valid: [],
@@ -2250,7 +2244,7 @@ describe(RULE_NAME, () => {
     )
 
     ruleTester.run(
-      `${RULE_NAME}(${type}): allows hash symbol in internal pattern`,
+      `${ruleName}(${type}): allows hash symbol in internal pattern`,
       rule,
       {
         valid: [
@@ -2270,7 +2264,7 @@ describe(RULE_NAME, () => {
             options: [
               {
                 ...options,
-                newlinesBetween: NewlinesBetweenValue.always,
+                newlinesBetween: 'always',
                 internalPattern: ['#**'],
                 groups: [
                   'type',
@@ -2314,7 +2308,7 @@ describe(RULE_NAME, () => {
             options: [
               {
                 ...options,
-                newlinesBetween: NewlinesBetweenValue.always,
+                newlinesBetween: 'always',
                 internalPattern: ['#**'],
                 groups: [
                   'type',
@@ -2349,7 +2343,7 @@ describe(RULE_NAME, () => {
       },
     )
 
-    ruleTester.run(`${RULE_NAME}(${type}): allows to use bun modules`, rule, {
+    ruleTester.run(`${ruleName}(${type}): allows to use bun modules`, rule, {
       valid: [
         {
           code: dedent`
@@ -2359,7 +2353,7 @@ describe(RULE_NAME, () => {
           options: [
             {
               ...options,
-              newlinesBetween: NewlinesBetweenValue.never,
+              newlinesBetween: 'never',
               groups: ['builtin', 'external', 'unknown'],
               environment: 'bun',
             },
@@ -2379,7 +2373,7 @@ describe(RULE_NAME, () => {
           options: [
             {
               ...options,
-              newlinesBetween: NewlinesBetweenValue.never,
+              newlinesBetween: 'never',
               groups: ['builtin', 'external', 'unknown'],
               environment: 'bun',
             },
@@ -2398,7 +2392,7 @@ describe(RULE_NAME, () => {
     })
   })
 
-  describe(`${RULE_NAME}: sorting by line length`, () => {
+  describe(`${ruleName}: sorting by line length`, () => {
     let type = 'line-length-order'
 
     let options = {
@@ -2406,7 +2400,7 @@ describe(RULE_NAME, () => {
       order: 'desc',
     } as const
 
-    ruleTester.run(`${RULE_NAME}(${type}): sorts imports`, rule, {
+    ruleTester.run(`${ruleName}(${type}): sorts imports`, rule, {
       valid: [
         {
           code: dedent`
@@ -2440,7 +2434,7 @@ describe(RULE_NAME, () => {
       ],
     })
 
-    ruleTester.run(`${RULE_NAME}(${type}): sorts imports by groups`, rule, {
+    ruleTester.run(`${ruleName}(${type}): sorts imports by groups`, rule, {
       valid: [
         {
           code: dedent`
@@ -2472,7 +2466,7 @@ describe(RULE_NAME, () => {
           options: [
             {
               ...options,
-              newlinesBetween: NewlinesBetweenValue.always,
+              newlinesBetween: 'always',
               internalPattern: ['~/**'],
               groups: [
                 'type',
@@ -2543,7 +2537,7 @@ describe(RULE_NAME, () => {
           options: [
             {
               ...options,
-              newlinesBetween: NewlinesBetweenValue.always,
+              newlinesBetween: 'always',
               internalPattern: ['~/**'],
               groups: [
                 'type',
@@ -2647,13 +2641,10 @@ describe(RULE_NAME, () => {
       ],
     })
 
-    ruleTester.run(
-      `${RULE_NAME}(${type}): sorts imports with no spaces`,
-      rule,
-      {
-        valid: [
-          {
-            code: dedent`
+    ruleTester.run(`${ruleName}(${type}): sorts imports with no spaces`, rule, {
+      valid: [
+        {
+          code: dedent`
               import type { T } from 't'
               import { a1, a2, a3 } from 'a'
               import { c1, c2, c3 } from '~/c'
@@ -2661,28 +2652,28 @@ describe(RULE_NAME, () => {
               import { e1, e2, e3 } from '../../e'
               import d from '.'
             `,
-            options: [
-              {
-                ...options,
-                newlinesBetween: NewlinesBetweenValue.never,
-                internalPattern: ['~/**'],
-                groups: [
-                  'type',
-                  ['builtin', 'external'],
-                  'internal-type',
-                  'internal',
-                  ['parent-type', 'sibling-type', 'index-type'],
-                  ['parent', 'sibling', 'index'],
-                  'object',
-                  'unknown',
-                ],
-              },
-            ],
-          },
-        ],
-        invalid: [
-          {
-            code: dedent`
+          options: [
+            {
+              ...options,
+              newlinesBetween: 'never',
+              internalPattern: ['~/**'],
+              groups: [
+                'type',
+                ['builtin', 'external'],
+                'internal-type',
+                'internal',
+                ['parent-type', 'sibling-type', 'index-type'],
+                ['parent', 'sibling', 'index'],
+                'object',
+                'unknown',
+              ],
+            },
+          ],
+        },
+      ],
+      invalid: [
+        {
+          code: dedent`
               import d from '.'
               import { a1, a2, a3 } from 'a'
               import { c1, c2, c3 } from '~/c'
@@ -2692,7 +2683,7 @@ describe(RULE_NAME, () => {
 
               import { b1, b2 } from '~/b'
             `,
-            output: dedent`
+          output: dedent`
               import type { T } from 't'
               import { a1, a2, a3 } from 'a'
               import { c1, c2, c3 } from '~/c'
@@ -2700,66 +2691,65 @@ describe(RULE_NAME, () => {
               import { e1, e2, e3 } from '../../e'
               import d from '.'
             `,
-            options: [
-              {
-                ...options,
-                newlinesBetween: NewlinesBetweenValue.never,
-                internalPattern: ['~/**'],
-                groups: [
-                  'type',
-                  ['builtin', 'external'],
-                  'internal-type',
-                  'internal',
-                  ['parent-type', 'sibling-type', 'index-type'],
-                  ['parent', 'sibling', 'index'],
-                  'object',
-                  'unknown',
-                ],
+          options: [
+            {
+              ...options,
+              newlinesBetween: 'never',
+              internalPattern: ['~/**'],
+              groups: [
+                'type',
+                ['builtin', 'external'],
+                'internal-type',
+                'internal',
+                ['parent-type', 'sibling-type', 'index-type'],
+                ['parent', 'sibling', 'index'],
+                'object',
+                'unknown',
+              ],
+            },
+          ],
+          errors: [
+            {
+              messageId: 'unexpectedImportsOrder',
+              data: {
+                left: '.',
+                right: 'a',
               },
-            ],
-            errors: [
-              {
-                messageId: 'unexpectedImportsOrder',
-                data: {
-                  left: '.',
-                  right: 'a',
-                },
+            },
+            {
+              messageId: 'unexpectedImportsOrder',
+              data: {
+                left: '~/c',
+                right: 't',
               },
-              {
-                messageId: 'unexpectedImportsOrder',
-                data: {
-                  left: '~/c',
-                  right: 't',
-                },
+            },
+            {
+              messageId: 'extraSpacingBetweenImports',
+              data: {
+                left: '~/c',
+                right: 't',
               },
-              {
-                messageId: 'extraSpacingBetweenImports',
-                data: {
-                  left: '~/c',
-                  right: 't',
-                },
+            },
+            {
+              messageId: 'unexpectedImportsOrder',
+              data: {
+                left: '../../e',
+                right: '~/b',
               },
-              {
-                messageId: 'unexpectedImportsOrder',
-                data: {
-                  left: '../../e',
-                  right: '~/b',
-                },
+            },
+            {
+              messageId: 'extraSpacingBetweenImports',
+              data: {
+                left: '../../e',
+                right: '~/b',
               },
-              {
-                messageId: 'extraSpacingBetweenImports',
-                data: {
-                  left: '../../e',
-                  right: '~/b',
-                },
-              },
-            ],
-          },
-        ],
-      },
-    )
+            },
+          ],
+        },
+      ],
+    })
 
-    ruleTester.run(`${RULE_NAME}(${type}): disallow extra spaces`, rule, {
+    ruleTester.run(`${ruleName}(${type}): disallow extra spaces`, rule, {
       valid: [
         {
           code: dedent`
@@ -2772,7 +2762,7 @@ describe(RULE_NAME, () => {
           options: [
             {
               ...options,
-              newlinesBetween: NewlinesBetweenValue.always,
+              newlinesBetween: 'always',
               internalPattern: ['~/**'],
               groups: [
                 'type',
@@ -2809,7 +2799,7 @@ describe(RULE_NAME, () => {
           options: [
             {
               ...options,
-              newlinesBetween: NewlinesBetweenValue.always,
+              newlinesBetween: 'always',
               internalPattern: ['~/**'],
               groups: [
                 'type',
@@ -2844,7 +2834,7 @@ describe(RULE_NAME, () => {
     })
 
     ruleTester.run(
-      `${RULE_NAME}(${type}): supports typescript object-imports`,
+      `${ruleName}(${type}): supports typescript object-imports`,
       rule,
       {
         valid: [
@@ -2862,7 +2852,7 @@ describe(RULE_NAME, () => {
             options: [
               {
                 ...options,
-                newlinesBetween: NewlinesBetweenValue.always,
+                newlinesBetween: 'always',
                 internalPattern: ['~/**'],
                 groups: [
                   'type',
@@ -2902,7 +2892,7 @@ describe(RULE_NAME, () => {
             options: [
               {
                 ...options,
-                newlinesBetween: NewlinesBetweenValue.always,
+                newlinesBetween: 'always',
                 internalPattern: ['~/**'],
                 groups: [
                   'type',
@@ -2938,7 +2928,7 @@ describe(RULE_NAME, () => {
     )
 
     ruleTester.run(
-      `${RULE_NAME}(${type}): use type if type of type is not defined`,
+      `${ruleName}(${type}): use type if type of type is not defined`,
       rule,
       {
         valid: [
@@ -2951,7 +2941,7 @@ describe(RULE_NAME, () => {
             options: [
               {
                 ...options,
-                newlinesBetween: NewlinesBetweenValue.always,
+                newlinesBetween: 'always',
                 internalPattern: ['~/**'],
                 groups: [
                   'type',
@@ -2980,7 +2970,7 @@ describe(RULE_NAME, () => {
             options: [
               {
                 ...options,
-                newlinesBetween: NewlinesBetweenValue.always,
+                newlinesBetween: 'always',
                 internalPattern: ['~/**'],
                 groups: [
                   'type',
@@ -3011,7 +3001,7 @@ describe(RULE_NAME, () => {
       },
     )
 
-    ruleTester.run(`${RULE_NAME}(${type}): doesn't break user comments`, rule, {
+    ruleTester.run(`${ruleName}(${type}): doesn't break user comments`, rule, {
       valid: [
         {
           code: dedent`
@@ -3027,7 +3017,7 @@ describe(RULE_NAME, () => {
           options: [
             {
               ...options,
-              newlinesBetween: NewlinesBetweenValue.always,
+              newlinesBetween: 'always',
               internalPattern: ['~/**'],
               groups: [
                 'type',
@@ -3047,7 +3037,7 @@ describe(RULE_NAME, () => {
     })
 
     ruleTester.run(
-      `${RULE_NAME}(${type}): ignores comments for counting lines between imports`,
+      `${ruleName}(${type}): ignores comments for counting lines between imports`,
       rule,
       {
         valid: [
@@ -3061,7 +3051,7 @@ describe(RULE_NAME, () => {
             options: [
               {
                 ...options,
-                newlinesBetween: NewlinesBetweenValue.always,
+                newlinesBetween: 'always',
                 internalPattern: ['~/**'],
                 groups: [
                   'type',
@@ -3082,7 +3072,7 @@ describe(RULE_NAME, () => {
     )
 
     ruleTester.run(
-      `${RULE_NAME}(${type}): breaks import sorting if there is other nodes between`,
+      `${ruleName}(${type}): breaks import sorting if there is other nodes between`,
       rule,
       {
         valid: [
@@ -3097,7 +3087,7 @@ describe(RULE_NAME, () => {
             options: [
               {
                 ...options,
-                newlinesBetween: NewlinesBetweenValue.always,
+                newlinesBetween: 'always',
                 internalPattern: ['~/**'],
                 groups: [
                   'type',
@@ -3118,7 +3108,7 @@ describe(RULE_NAME, () => {
     )
 
     ruleTester.run(
-      `${RULE_NAME}(${type}): separates style imports from the rest`,
+      `${ruleName}(${type}): separates style imports from the rest`,
       rule,
       {
         valid: [
@@ -3132,7 +3122,7 @@ describe(RULE_NAME, () => {
             options: [
               {
                 ...options,
-                newlinesBetween: NewlinesBetweenValue.always,
+                newlinesBetween: 'always',
                 internalPattern: ['~/**'],
                 groups: [
                   'type',
@@ -3154,7 +3144,7 @@ describe(RULE_NAME, () => {
     )
 
     ruleTester.run(
-      `${RULE_NAME}(${type}): separates side effect imports from the rest`,
+      `${ruleName}(${type}): separates side effect imports from the rest`,
       rule,
       {
         valid: [
@@ -3169,7 +3159,7 @@ describe(RULE_NAME, () => {
             options: [
               {
                 ...options,
-                newlinesBetween: NewlinesBetweenValue.always,
+                newlinesBetween: 'always',
                 internalPattern: ['~/**'],
                 groups: [
                   'type',
@@ -3191,7 +3181,7 @@ describe(RULE_NAME, () => {
     )
 
     ruleTester.run(
-      `${RULE_NAME}(${type}): separates builtin type from the rest types`,
+      `${ruleName}(${type}): separates builtin type from the rest types`,
       rule,
       {
         valid: [
@@ -3204,7 +3194,7 @@ describe(RULE_NAME, () => {
             options: [
               {
                 ...options,
-                newlinesBetween: NewlinesBetweenValue.always,
+                newlinesBetween: 'always',
                 internalPattern: ['~/**'],
                 groups: ['builtin-type', 'type'],
               },
@@ -3216,7 +3206,7 @@ describe(RULE_NAME, () => {
     )
 
     ruleTester.run(
-      `${RULE_NAME}(${type}): works with imports ending with a semicolon`,
+      `${ruleName}(${type}): works with imports ending with a semicolon`,
       rule,
       {
         valid: [],
@@ -3234,7 +3224,7 @@ describe(RULE_NAME, () => {
             options: [
               {
                 ...options,
-                newlinesBetween: NewlinesBetweenValue.always,
+                newlinesBetween: 'always',
                 internalPattern: ['~/**'],
                 groups: [
                   'type',
@@ -3261,7 +3251,7 @@ describe(RULE_NAME, () => {
       },
     )
 
-    ruleTester.run(`${RULE_NAME}(${type}): remove unnecessary spaces`, rule, {
+    ruleTester.run(`${ruleName}(${type}): remove unnecessary spaces`, rule, {
       valid: [],
       invalid: [
         {
@@ -3324,7 +3314,7 @@ describe(RULE_NAME, () => {
     })
 
     ruleTester.run(
-      `${RULE_NAME}(${type}): allows to define custom groups`,
+      `${ruleName}(${type}): allows to define custom groups`,
       rule,
       {
         valid: [],
@@ -3406,7 +3396,7 @@ describe(RULE_NAME, () => {
     )
 
     ruleTester.run(
-      `${RULE_NAME}(${type}): allows to define value only custom groups`,
+      `${ruleName}(${type}): allows to define value only custom groups`,
       rule,
       {
         valid: [],
@@ -3447,7 +3437,7 @@ describe(RULE_NAME, () => {
     )
 
     ruleTester.run(
-      `${RULE_NAME}(${type}): allows hash symbol in internal pattern`,
+      `${ruleName}(${type}): allows hash symbol in internal pattern`,
       rule,
       {
         valid: [
@@ -3467,7 +3457,7 @@ describe(RULE_NAME, () => {
             options: [
               {
                 ...options,
-                newlinesBetween: NewlinesBetweenValue.always,
+                newlinesBetween: 'always',
                 internalPattern: ['#**'],
                 groups: [
                   'type',
@@ -3511,7 +3501,7 @@ describe(RULE_NAME, () => {
             options: [
               {
                 ...options,
-                newlinesBetween: NewlinesBetweenValue.always,
+                newlinesBetween: 'always',
                 internalPattern: ['#**'],
                 groups: [
                   'type',
@@ -3546,7 +3536,7 @@ describe(RULE_NAME, () => {
       },
     )
 
-    ruleTester.run(`${RULE_NAME}(${type}): support`, rule, {
+    ruleTester.run(`${ruleName}(${type}): support`, rule, {
       valid: [],
       invalid: [
         {
@@ -3628,7 +3618,7 @@ describe(RULE_NAME, () => {
       ],
     })
 
-    ruleTester.run(`${RULE_NAME}(${type}): allows to use bun modules`, rule, {
+    ruleTester.run(`${ruleName}(${type}): allows to use bun modules`, rule, {
       valid: [
         {
           code: dedent`
@@ -3638,7 +3628,7 @@ describe(RULE_NAME, () => {
           options: [
             {
               ...options,
-              newlinesBetween: NewlinesBetweenValue.never,
+              newlinesBetween: 'never',
               groups: ['builtin', 'external', 'unknown'],
               environment: 'bun',
             },
@@ -3658,7 +3648,7 @@ describe(RULE_NAME, () => {
           options: [
             {
               ...options,
-              newlinesBetween: NewlinesBetweenValue.never,
+              newlinesBetween: 'never',
               groups: ['builtin', 'external', 'unknown'],
               environment: 'bun',
             },
@@ -3677,9 +3667,9 @@ describe(RULE_NAME, () => {
     })
   })
 
-  describe(`${RULE_NAME}: misc`, () => {
+  describe(`${ruleName}: misc`, () => {
     ruleTester.run(
-      `${RULE_NAME}: sets alphabetical asc sorting as default`,
+      `${ruleName}: sets alphabetical asc sorting as default`,
       rule,
       {
         valid: [
@@ -3728,7 +3718,7 @@ describe(RULE_NAME, () => {
     )
 
     ruleTester.run(
-      `${RULE_NAME}: doesn't sort imports with side effects`,
+      `${ruleName}: doesn't sort imports with side effects`,
       rule,
       {
         valid: [
@@ -3743,7 +3733,7 @@ describe(RULE_NAME, () => {
     )
 
     ruleTester.run(
-      `${RULE_NAME}: defines prefix-only builtin modules as core node modules`,
+      `${ruleName}: defines prefix-only builtin modules as core node modules`,
       rule,
       {
         valid: [
@@ -3791,7 +3781,7 @@ describe(RULE_NAME, () => {
     )
 
     ruleTester.run(
-      `${RULE_NAME}: define side-effect import with internal pattern as side-effect import`,
+      `${ruleName}: define side-effect import with internal pattern as side-effect import`,
       rule,
       {
         valid: [
@@ -3844,7 +3834,7 @@ describe(RULE_NAME, () => {
     )
 
     ruleTester.run(
-      `${RULE_NAME}: works with big amount of custom groups`,
+      `${ruleName}: works with big amount of custom groups`,
       rule,
       {
         valid: [
@@ -3909,7 +3899,7 @@ describe(RULE_NAME, () => {
                     assets: ['~/assets/**'],
                   },
                 },
-                newlinesBetween: NewlinesBetweenValue.always,
+                newlinesBetween: 'always',
                 internalPattern: ['~/**'],
               },
             ],
@@ -3996,7 +3986,7 @@ describe(RULE_NAME, () => {
                     assets: ['~/assets/**'],
                   },
                 },
-                newlinesBetween: NewlinesBetweenValue.always,
+                newlinesBetween: 'always',
                 internalPattern: ['~/**'],
               },
             ],
@@ -4050,7 +4040,7 @@ describe(RULE_NAME, () => {
     )
 
     ruleTester.run(
-      `${RULE_NAME}: does not consider empty named imports to be side-effects`,
+      `${ruleName}: does not consider empty named imports to be side-effects`,
       rule,
       {
         valid: [
@@ -4062,7 +4052,7 @@ describe(RULE_NAME, () => {
             `,
             options: [
               {
-                newlinesBetween: NewlinesBetweenValue.never,
+                newlinesBetween: 'never',
                 groups: ['builtin', 'external', 'side-effect'],
               },
             ],

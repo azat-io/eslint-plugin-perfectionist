@@ -24,50 +24,66 @@ type Options = [
   }>,
 ]
 
-export const RULE_NAME = 'sort-enums'
-
 export default createEslintRule<Options, MESSAGE_ID>({
-  name: RULE_NAME,
+  name: 'sort-enums',
   meta: {
     type: 'suggestion',
     docs: {
-      description: 'Enforce sorted TypeScript enums',
+      description: 'Enforce sorted TypeScript enums.',
     },
     fixable: 'code',
     schema: [
       {
         type: 'object',
         properties: {
-          partitionByComment: {
-            default: false,
-            type: ['boolean', 'string', 'array'],
-          },
           type: {
-            enum: ['alphabetical', 'natural', 'line-length'],
-            default: 'alphabetical',
+            description: 'Specifies the sorting method.',
             type: 'string',
-          },
-          ignoreCase: {
-            type: 'boolean',
-            default: true,
+            enum: ['alphabetical', 'natural', 'line-length'],
           },
           order: {
-            enum: ['asc', 'desc'],
-            default: 'asc',
+            description:
+              'Determines whether the sorted items should be in ascending or descending order.',
             type: 'string',
+            enum: ['asc', 'desc'],
+          },
+          ignoreCase: {
+            description:
+              'Controls whether sorting should be case-sensitive or not.',
+            type: 'boolean',
+          },
+          partitionByComment: {
+            description:
+              'Allows you to use comments to separate the class members into logical groups.',
+            anyOf: [
+              {
+                type: 'array',
+                items: {
+                  type: 'string',
+                },
+              },
+              {
+                type: 'boolean',
+              },
+              {
+                type: 'string',
+              },
+            ],
           },
         },
         additionalProperties: false,
       },
     ],
     messages: {
-      unexpectedEnumsOrder: 'Expected "{{right}}" to come before "{{left}}"',
+      unexpectedEnumsOrder: 'Expected "{{right}}" to come before "{{left}}".',
     },
   },
   defaultOptions: [
     {
       type: 'alphabetical',
       order: 'asc',
+      ignoreCase: true,
+      partitionByComment: false,
     },
   ],
   create: context => ({

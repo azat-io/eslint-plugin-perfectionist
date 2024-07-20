@@ -22,14 +22,12 @@ type Options = [
   }>,
 ]
 
-export const RULE_NAME = 'sort-exports'
-
 export default createEslintRule<Options, MESSAGE_ID>({
-  name: RULE_NAME,
+  name: 'sort-exports',
   meta: {
     type: 'suggestion',
     docs: {
-      description: 'Enforce sorted exports',
+      description: 'Enforce sorted exports.',
     },
     fixable: 'code',
     schema: [
@@ -37,31 +35,34 @@ export default createEslintRule<Options, MESSAGE_ID>({
         type: 'object',
         properties: {
           type: {
-            enum: ['alphabetical', 'natural', 'line-length'],
-            default: 'alphabetical',
+            description: 'Specifies the sorting method.',
             type: 'string',
+            enum: ['alphabetical', 'natural', 'line-length'],
           },
           order: {
-            enum: ['asc', 'desc'],
-            default: 'asc',
+            description:
+              'Determines whether the sorted items should be in ascending or descending order.',
             type: 'string',
+            enum: ['asc', 'desc'],
           },
           ignoreCase: {
+            description:
+              'Controls whether sorting should be case-sensitive or not.',
             type: 'boolean',
-            default: true,
           },
         },
         additionalProperties: false,
       },
     ],
     messages: {
-      unexpectedExportsOrder: 'Expected "{{right}}" to come before "{{left}}"',
+      unexpectedExportsOrder: 'Expected "{{right}}" to come before "{{left}}".',
     },
   },
   defaultOptions: [
     {
       type: 'alphabetical',
       order: 'asc',
+      ignoreCase: true,
     },
   ],
   create: context => {

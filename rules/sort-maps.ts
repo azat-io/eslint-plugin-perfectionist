@@ -23,14 +23,12 @@ type Options = [
   }>,
 ]
 
-export const RULE_NAME = 'sort-maps'
-
 export default createEslintRule<Options, MESSAGE_ID>({
-  name: RULE_NAME,
+  name: 'sort-maps',
   meta: {
     type: 'suggestion',
     docs: {
-      description: 'Enforce sorted Map elements',
+      description: 'Enforce sorted Map elements.',
     },
     fixable: 'code',
     schema: [
@@ -38,18 +36,20 @@ export default createEslintRule<Options, MESSAGE_ID>({
         type: 'object',
         properties: {
           type: {
-            enum: ['alphabetical', 'natural', 'line-length'],
-            default: 'alphabetical',
+            description: 'Specifies the sorting method.',
             type: 'string',
+            enum: ['alphabetical', 'natural', 'line-length'],
           },
           order: {
-            enum: ['asc', 'desc'],
-            default: 'asc',
+            description:
+              'Determines whether the sorted items should be in ascending or descending order.',
             type: 'string',
+            enum: ['asc', 'desc'],
           },
           ignoreCase: {
+            description:
+              'Controls whether sorting should be case-sensitive or not.',
             type: 'boolean',
-            default: true,
           },
         },
         additionalProperties: false,
@@ -57,13 +57,14 @@ export default createEslintRule<Options, MESSAGE_ID>({
     ],
     messages: {
       unexpectedMapElementsOrder:
-        'Expected "{{right}}" to come before "{{left}}"',
+        'Expected "{{right}}" to come before "{{left}}".',
     },
   },
   defaultOptions: [
     {
       type: 'alphabetical',
       order: 'asc',
+      ignoreCase: true,
     },
   ],
   create: context => ({

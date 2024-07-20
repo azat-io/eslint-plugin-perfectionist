@@ -97,7 +97,7 @@ This rule accepts an options object with the following properties:
 
 ### type
 
-<sub>(default: `'alphabetical'`)</sub>
+<sub>default: `'alphabetical'`</sub>
 
 Specifies the sorting method.
 
@@ -107,7 +107,7 @@ Specifies the sorting method.
 
 ### order
 
-<sub>(default: `'asc'`)</sub>
+<sub>default: `'asc'`</sub>
 
 Determines whether the sorted items should be in ascending or descending order.
 
@@ -116,50 +116,16 @@ Determines whether the sorted items should be in ascending or descending order.
 
 ### ignoreCase
 
-<sub>(default: `true`)</sub>
+<sub>default: `true`</sub>
 
 Controls whether sorting should be case-sensitive or not.
 
 - `true` — Ignore case when sorting alphabetically or naturally (e.g., “A” and “a” are the same).
 - `false` — Consider case when sorting (e.g., “A” comes before “a”).
 
-### groups
-
-<sub>(default: `[]`)</sub>
-
-Allows you to specify a list of type properties groups for sorting. Groups help organize properties into categories, making your type definitions more readable and maintainable. Multiple groups can be combined to achieve the desired sorting order.
-
-There are predefined group: `'multiline'`.
-
-Predefined Group:
-
-- `'multiline'` — Properties with multiline definitions, such as methods or complex type declarations.
-- `'unknown'` — Properties that don’t fit into any other group.
-
-### customGroups
-
-<sub>(default: `{}`)</sub>
-
-You can define your own groups for Type object values. The [minimatch](https://github.com/isaacs/minimatch) library is used for pattern matching.
-
-Example:
-
-```js
- {
-   groups: [
-     'multiline',
-     'unknown',
-+    'callback',     // [!code ++]
-   ],
-+  customGroups: {   // [!code ++]
-+    callback: 'on*' // [!code ++]
-+  }                 // [!code ++]
- }
-```
-
 ### partitionByNewLine
 
-<sub>(default: `false`)</sub>
+<sub>default: `false`</sub>
 
 When `true`, the rule will not sort the members of an interface if there is an empty line between them. This can be useful for keeping logically separated groups of members in their defined order.
 
@@ -184,6 +150,41 @@ type User = {
 
 In this example, the `partitionByNewLine` option will cause the rule to treat each group of members (separated by empty lines) independently, preserving their order within each group.
 
+
+### groups
+
+<sub>default: `[]`</sub>
+
+Allows you to specify a list of type properties groups for sorting. Groups help organize properties into categories, making your type definitions more readable and maintainable. Multiple groups can be combined to achieve the desired sorting order.
+
+There are predefined group: `'multiline'`.
+
+Predefined Group:
+
+- `'multiline'` — Properties with multiline definitions, such as methods or complex type declarations.
+- `'unknown'` — Properties that don’t fit into any other group.
+
+### customGroups
+
+<sub>default: `{}`</sub>
+
+You can define your own groups for Type object values. The [minimatch](https://github.com/isaacs/minimatch) library is used for pattern matching.
+
+Example:
+
+```js
+ {
+   groups: [
+     'multiline',
+     'unknown',
++    'callback',     // [!code ++]
+   ],
++  customGroups: {   // [!code ++]
++    callback: 'on*' // [!code ++]
++  }                 // [!code ++]
+ }
+```
+
 ## Usage
 
 <CodeTabs
@@ -202,8 +203,12 @@ In this example, the `partitionByNewLine` option will cause the rule to treat ea
               'perfectionist/sort-object-types': [
                 'error',
                 {
-                  type: 'natural',
+                  type: 'alphabetical',
                   order: 'asc',
+                  ignoreCase: true,
+                  partitionByNewLine: false,
+                  groups: [],
+                  customGroups: {},
                 },
               ],
             },
@@ -224,8 +229,12 @@ In this example, the `partitionByNewLine` option will cause the rule to treat ea
             'perfectionist/sort-object-types': [
               'error',
               {
-                type: 'natural',
+                type: 'alphabetical',
                 order: 'asc',
+                ignoreCase: true,
+                partitionByNewLine: false,
+                groups: [],
+                customGroups: {},
               },
             ],
           },

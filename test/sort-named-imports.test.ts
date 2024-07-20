@@ -2,9 +2,11 @@ import { RuleTester } from '@typescript-eslint/rule-tester'
 import { afterAll, describe, it } from 'vitest'
 import { dedent } from 'ts-dedent'
 
-import rule, { RULE_NAME } from '../rules/sort-named-imports'
+import rule from '../rules/sort-named-imports'
 
-describe(RULE_NAME, () => {
+let ruleName = 'sort-named-imports'
+
+describe(ruleName, () => {
   RuleTester.describeSkip = describe.skip
   RuleTester.afterAll = afterAll
   RuleTester.describe = describe
@@ -16,7 +18,7 @@ describe(RULE_NAME, () => {
     parser: '@typescript-eslint/parser',
   })
 
-  describe(`${RULE_NAME}: sorting by alphabetical order`, () => {
+  describe(`${ruleName}: sorting by alphabetical order`, () => {
     let type = 'alphabetical-order'
 
     let options = {
@@ -25,7 +27,7 @@ describe(RULE_NAME, () => {
       order: 'asc',
     } as const
 
-    ruleTester.run(`${RULE_NAME}(${type}): sorts named imports`, rule, {
+    ruleTester.run(`${ruleName}(${type}): sorts named imports`, rule, {
       valid: [
         {
           code: dedent`
@@ -56,7 +58,7 @@ describe(RULE_NAME, () => {
       ],
     })
 
-    ruleTester.run(`${RULE_NAME}: sorts named multiline imports`, rule, {
+    ruleTester.run(`${ruleName}: sorts named multiline imports`, rule, {
       valid: [
         {
           code: dedent`
@@ -102,7 +104,7 @@ describe(RULE_NAME, () => {
       ],
     })
 
-    ruleTester.run(`${RULE_NAME}: sorts named imports with aliases`, rule, {
+    ruleTester.run(`${ruleName}: sorts named imports with aliases`, rule, {
       valid: [
         {
           code: dedent`
@@ -152,7 +154,7 @@ describe(RULE_NAME, () => {
       ],
     })
 
-    ruleTester.run(`${RULE_NAME}: not sorts default specifiers`, rule, {
+    ruleTester.run(`${ruleName}: not sorts default specifiers`, rule, {
       valid: [
         {
           code: dedent`
@@ -164,7 +166,7 @@ describe(RULE_NAME, () => {
       invalid: [],
     })
 
-    ruleTester.run(`${RULE_NAME}: sorts with import aliases`, rule, {
+    ruleTester.run(`${ruleName}: sorts with import aliases`, rule, {
       valid: [
         {
           code: dedent`
@@ -217,7 +219,7 @@ describe(RULE_NAME, () => {
       ],
     })
 
-    ruleTester.run(`${RULE_NAME}: allows to ignore import aliases`, rule, {
+    ruleTester.run(`${ruleName}: allows to ignore import aliases`, rule, {
       valid: [
         {
           code: dedent`
@@ -271,7 +273,7 @@ describe(RULE_NAME, () => {
     })
 
     ruleTester.run(
-      `${RULE_NAME}: sorts named imports grouping by their kind`,
+      `${ruleName}: sorts named imports grouping by their kind`,
       rule,
       {
         valid: [
@@ -361,7 +363,7 @@ describe(RULE_NAME, () => {
     )
   })
 
-  describe(`${RULE_NAME}: sorting by natural order`, () => {
+  describe(`${ruleName}: sorting by natural order`, () => {
     let type = 'natural-order'
 
     let options = {
@@ -370,7 +372,7 @@ describe(RULE_NAME, () => {
       order: 'asc',
     } as const
 
-    ruleTester.run(`${RULE_NAME}(${type}): sorts named imports`, rule, {
+    ruleTester.run(`${ruleName}(${type}): sorts named imports`, rule, {
       valid: [
         {
           code: dedent`
@@ -401,7 +403,7 @@ describe(RULE_NAME, () => {
       ],
     })
 
-    ruleTester.run(`${RULE_NAME}: sorts named multiline imports`, rule, {
+    ruleTester.run(`${ruleName}: sorts named multiline imports`, rule, {
       valid: [
         {
           code: dedent`
@@ -447,7 +449,7 @@ describe(RULE_NAME, () => {
       ],
     })
 
-    ruleTester.run(`${RULE_NAME}: sorts named imports with aliases`, rule, {
+    ruleTester.run(`${ruleName}: sorts named imports with aliases`, rule, {
       valid: [
         {
           code: dedent`
@@ -497,7 +499,7 @@ describe(RULE_NAME, () => {
       ],
     })
 
-    ruleTester.run(`${RULE_NAME}: not sorts default specifiers`, rule, {
+    ruleTester.run(`${ruleName}: not sorts default specifiers`, rule, {
       valid: [
         {
           code: dedent`
@@ -509,7 +511,7 @@ describe(RULE_NAME, () => {
       invalid: [],
     })
 
-    ruleTester.run(`${RULE_NAME}: sorts with import aliases`, rule, {
+    ruleTester.run(`${ruleName}: sorts with import aliases`, rule, {
       valid: [
         {
           code: dedent`
@@ -562,7 +564,7 @@ describe(RULE_NAME, () => {
       ],
     })
 
-    ruleTester.run(`${RULE_NAME}: allows to ignore import aliases`, rule, {
+    ruleTester.run(`${ruleName}: allows to ignore import aliases`, rule, {
       valid: [
         {
           code: dedent`
@@ -616,7 +618,7 @@ describe(RULE_NAME, () => {
     })
 
     ruleTester.run(
-      `${RULE_NAME}: sorts named imports grouping by their kind`,
+      `${ruleName}: sorts named imports grouping by their kind`,
       rule,
       {
         valid: [
@@ -706,7 +708,7 @@ describe(RULE_NAME, () => {
     )
   })
 
-  describe(`${RULE_NAME}: sorting by line length`, () => {
+  describe(`${ruleName}: sorting by line length`, () => {
     let type = 'line-length-order'
 
     let options = {
@@ -714,7 +716,7 @@ describe(RULE_NAME, () => {
       order: 'desc',
     } as const
 
-    ruleTester.run(`${RULE_NAME}(${type}): sorts named imports`, rule, {
+    ruleTester.run(`${ruleName}(${type}): sorts named imports`, rule, {
       valid: [
         {
           code: dedent`
@@ -745,7 +747,7 @@ describe(RULE_NAME, () => {
       ],
     })
 
-    ruleTester.run(`${RULE_NAME}: sorts named multiline imports`, rule, {
+    ruleTester.run(`${ruleName}: sorts named multiline imports`, rule, {
       valid: [
         {
           code: dedent`
@@ -791,7 +793,7 @@ describe(RULE_NAME, () => {
       ],
     })
 
-    ruleTester.run(`${RULE_NAME}: sorts named imports with aliases`, rule, {
+    ruleTester.run(`${ruleName}: sorts named imports with aliases`, rule, {
       valid: [
         {
           code: dedent`
@@ -834,7 +836,7 @@ describe(RULE_NAME, () => {
       ],
     })
 
-    ruleTester.run(`${RULE_NAME}: not sorts default specifiers`, rule, {
+    ruleTester.run(`${ruleName}: not sorts default specifiers`, rule, {
       valid: [
         {
           code: dedent`
@@ -846,7 +848,7 @@ describe(RULE_NAME, () => {
       invalid: [],
     })
 
-    ruleTester.run(`${RULE_NAME}: sorts with import aliases`, rule, {
+    ruleTester.run(`${ruleName}: sorts with import aliases`, rule, {
       valid: [
         {
           code: dedent`
@@ -900,7 +902,7 @@ describe(RULE_NAME, () => {
     })
 
     ruleTester.run(
-      `${RULE_NAME}: sorts named imports grouping by their kind`,
+      `${ruleName}: sorts named imports grouping by their kind`,
       rule,
       {
         valid: [
@@ -990,9 +992,9 @@ describe(RULE_NAME, () => {
     )
   })
 
-  describe(`${RULE_NAME}: misc`, () => {
+  describe(`${ruleName}: misc`, () => {
     ruleTester.run(
-      `${RULE_NAME}: sets alphabetical asc sorting as default`,
+      `${ruleName}: sets alphabetical asc sorting as default`,
       rule,
       {
         valid: [

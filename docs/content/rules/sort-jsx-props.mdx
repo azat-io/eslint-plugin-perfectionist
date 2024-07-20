@@ -136,7 +136,7 @@ This rule accepts an options object with the following properties:
 
 ### type
 
-<sub>(default: `'alphabetical'`)</sub>
+<sub>default: `'alphabetical'`</sub>
 
 Specifies the sorting method.
 
@@ -146,7 +146,7 @@ Specifies the sorting method.
 
 ### order
 
-<sub>(default: `'asc'`)</sub>
+<sub>default: `'asc'`</sub>
 
 Determines whether the sorted items should be in ascending or descending order.
 
@@ -155,16 +155,26 @@ Determines whether the sorted items should be in ascending or descending order.
 
 ### ignoreCase
 
-<sub>(default: `true`)</sub>
+<sub>default: `true`</sub>
 
 Controls whether sorting should be case-sensitive or not.
 
 - `true` — Ignore case when sorting alphabetically or naturally (e.g., “A” and “a” are the same).
 - `false` — Consider case when sorting (e.g., “A” comes before “a”).
 
+### ignorePattern
+
+<sub>default: `[]`</sub>
+
+Allows you to specify names or patterns for JSX elements that should be ignored by this rule. This can be useful if you have specific components that you do not want to sort.
+
+For example: `'Table*'` to ignore all interfaces whose names begin with the word “Table”.
+
+The [minimatch](https://github.com/isaacs/minimatch) library is used for pattern matching.
+
 ### groups
 
-<sub>(default: `[]`)</sub>
+<sub>default: `[]`</sub>
 
 Allows you to specify a list of JSX props groups for sorting. Groups help organize props into categories, making your components more readable and maintainable. Multiple groups can be combined to achieve the desired sorting order.
 
@@ -178,7 +188,7 @@ Predefined Groups:
 
 ### customGroups
 
-<sub>(default: `{}`)</sub>
+<sub>default: `{}`</sub>
 
 You can define your own groups for JSX props. The [minimatch](https://github.com/isaacs/minimatch) library is used for pattern matching.
 
@@ -198,16 +208,6 @@ Example:
  }
 ```
 
-### ignorePattern
-
-<sub>(default: `[]`)</sub>
-
-Allows you to specify names or patterns for JSX elements that should be ignored by this rule. This can be useful if you have specific components that you do not want to sort.
-
-For example: `'Table*'` to ignore all interfaces whose names begin with the word “Table”.
-
-The [minimatch](https://github.com/isaacs/minimatch) library is used for pattern matching.
-
 ## Usage
 
 <CodeTabs
@@ -226,13 +226,12 @@ The [minimatch](https://github.com/isaacs/minimatch) library is used for pattern
               'perfectionist/sort-jsx-props': [
                 'error',
                 {
-                  type: 'natural',
+                  type: 'alphabetical',
                   order: 'asc',
-                  groups: [
-                    'multiline',
-                    'unknown',
-                    'shorthand',
-                  ],
+                  ignoreCase: true,
+                  ignorePattern: [],
+                  groups: [],
+                  customGroups: {},
                 },
               ],
             },
@@ -253,13 +252,12 @@ The [minimatch](https://github.com/isaacs/minimatch) library is used for pattern
             'perfectionist/sort-jsx-props': [
               'error',
               {
-                type: 'natural',
+                type: 'alphabetical',
                 order: 'asc',
-                groups: [
-                  'multiline',
-                  'unknown',
-                  'shorthand',
-                ],
+                ignoreCase: true,
+                ignorePattern: [],
+                groups: [],
+                customGroups: {},
               },
             ],
           },

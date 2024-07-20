@@ -99,7 +99,7 @@ This rule accepts an options object with the following properties:
 
 ### type
 
-<sub>(default: `'alphabetical'`)</sub>
+<sub>default: `'alphabetical'`</sub>
 
 Specifies the sorting method.
 
@@ -109,7 +109,7 @@ Specifies the sorting method.
 
 ### order
 
-<sub>(default: `'asc'`)</sub>
+<sub>default: `'asc'`</sub>
 
 Determines whether the sorted items should be in ascending or descending order.
 
@@ -118,7 +118,7 @@ Determines whether the sorted items should be in ascending or descending order.
 
 ### ignoreCase
 
-<sub>(default: `true`)</sub>
+<sub>default: `true`</sub>
 
 Controls whether sorting should be case-sensitive or not.
 
@@ -127,7 +127,7 @@ Controls whether sorting should be case-sensitive or not.
 
 ### groupKind
 
-<sub>(default: `'mixed'`)</sub>
+<sub>default: `'mixed'`</sub>
 
 Allows you to group named exports by their kind, determining whether value exports should come before or after type exports.
 
@@ -153,8 +153,10 @@ Allows you to group named exports by their kind, determining whether value expor
               'perfectionist/sort-named-exports': [
                 'error',
                 {
-                  type: 'natural',
+                  type: 'alphabetical',
                   order: 'asc',
+                  ignoreCase: true,
+                  groupKind: 'mixed',
                 },
               ],
             },
@@ -175,8 +177,10 @@ Allows you to group named exports by their kind, determining whether value expor
             'perfectionist/sort-named-exports': [
               'error',
               {
-                type: 'natural',
+                type: 'alphabetical',
                 order: 'asc',
+                ignoreCase: true,
+                groupKind: 'mixed',
               },
             ],
           },

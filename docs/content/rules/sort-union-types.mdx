@@ -96,7 +96,7 @@ This rule accepts an options object with the following properties:
 
 ### type
 
-<sub>(default: `'alphabetical'`)</sub>
+<sub>default: `'alphabetical'`</sub>
 
 Specifies the sorting method.
 
@@ -106,7 +106,7 @@ Specifies the sorting method.
 
 ### order
 
-<sub>(default: `'asc'`)</sub>
+<sub>default: `'asc'`</sub>
 
 Determines whether the sorted items should be in ascending or descending order.
 
@@ -115,7 +115,7 @@ Determines whether the sorted items should be in ascending or descending order.
 
 ### ignoreCase
 
-<sub>(default: `true`)</sub>
+<sub>default: `true`</sub>
 
 Controls whether sorting should be case-sensitive or not.
 
@@ -124,7 +124,7 @@ Controls whether sorting should be case-sensitive or not.
 
 ### groups
 
-<sub>(default: `[]`)</sub>
+<sub>default: `[]`</sub>
 
 Allows you to specify a list of union type groups for sorting. Groups help organize types into categories, making your type definitions more readable and maintainable. Multiple groups can be combined to achieve the desired sorting order.
 
@@ -151,32 +151,32 @@ Example:
 ```ts
 type Example =
   // 'conditional' — Conditional types.
-  (A extends B ? C : D) |
+  | (A extends B ? C : D)
   // 'function' — Function types.
-  ((arg: T) => U) |
+  | ((arg: T) => U)
   // 'import' — Imported types.
-  import('module').Type |
+  | import('module').Type
   // 'intersection' — Intersection types.
-  (A & B) |
+  | (A & B)
   // 'keyword' — Keyword types.
-  any |
+  | any
   // 'literal' — Literal types.
-  'literal' |
-  42 |
+  | 'literal'
+  | 42
   // 'named' — Named types.
-  SomeType |
-  AnotherType |
+  | SomeType
+  | AnotherType
   // 'object' — Object types.
-  { a: string; b: number; } |
+  | { a: string; b: number; }
   // 'operator' — Operator types.
-  keyof T |
+  | keyof T
   // 'tuple' — Tuple types.
-  [string, number] |
+  | [string, number]
   // 'union' — Union types.
-  (A | B) |
+  | (A | B)
   // 'nullish' — Nullish types.
-  null |
-  undefined;
+  | null
+  | undefined;
 ```
 
 
@@ -198,8 +198,10 @@ type Example =
               'perfectionist/sort-union-types': [
                 'error',
                 {
-                  type: 'natural',
+                  type: 'alphabetical',
                   order: 'asc',
+                  ignoreCase: true,
+                  groups: [],
                 },
               ],
             },
@@ -220,8 +222,10 @@ type Example =
             'perfectionist/sort-union-types': [
               'error',
               {
-                type: 'natural',
+                type: 'alphabetical',
                 order: 'asc',
+                ignoreCase: true,
+                groups: [],
               },
             ],
           },
