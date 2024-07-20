@@ -670,7 +670,7 @@ describe(ruleName, () => {
           options: [
             {
               ...options,
-              optionalityOrder: 'optional-first',
+              groupKind: 'optional-first',
             },
           ],
         },
@@ -698,7 +698,7 @@ describe(ruleName, () => {
           options: [
             {
               ...options,
-              optionalityOrder: 'optional-first',
+              groupKind: 'optional-first',
             },
           ],
           errors: [
@@ -746,7 +746,7 @@ describe(ruleName, () => {
                   last: 'a',
                 },
                 groups: ['unknown', 'last'],
-                optionalityOrder: 'optional-first',
+                groupKind: 'optional-first',
               },
             ],
             errors: [
@@ -1338,7 +1338,7 @@ describe(ruleName, () => {
           options: [
             {
               ...options,
-              optionalityOrder: 'optional-first',
+              groupKind: 'optional-first',
             },
           ],
         },
@@ -1366,7 +1366,7 @@ describe(ruleName, () => {
           options: [
             {
               ...options,
-              optionalityOrder: 'optional-first',
+              groupKind: 'optional-first',
             },
           ],
           errors: [
@@ -1969,7 +1969,7 @@ describe(ruleName, () => {
           options: [
             {
               ...options,
-              optionalityOrder: 'optional-first',
+              groupKind: 'optional-first',
             },
           ],
         },
@@ -1997,7 +1997,7 @@ describe(ruleName, () => {
           options: [
             {
               ...options,
-              optionalityOrder: 'optional-first',
+              groupKind: 'optional-first',
             },
           ],
           errors: [
@@ -2025,7 +2025,7 @@ describe(ruleName, () => {
           options: [
             {
               ...options,
-              optionalityOrder: 'required-first',
+              groupKind: 'required-first',
             },
           ],
         },
@@ -2053,7 +2053,7 @@ describe(ruleName, () => {
           options: [
             {
               ...options,
-              optionalityOrder: 'required-first',
+              groupKind: 'required-first',
             },
           ],
           errors: [
@@ -2108,7 +2108,7 @@ describe(ruleName, () => {
                   callback: 'on*',
                 },
                 groups: ['unknown', 'callback'],
-                optionalityOrder: 'required-first',
+                groupKind: 'required-first',
               },
             ],
             errors: [
@@ -2172,7 +2172,7 @@ describe(ruleName, () => {
             options: [
               {
                 ...options,
-                optionalityOrder: 'required-first',
+                groupKind: 'required-first',
                 partitionByNewLine: true,
               },
             ],

@@ -195,15 +195,15 @@ interface User {
 
 In this example, the partitionByNewLine option will cause the rule to treat each group of members (separated by empty lines) independently, preserving their order within each group.
 
-### optionalityOrder
+### groupKind
 
-<sub>default: `'ignore'`</sub>
+<sub>default: `'mixed'`</sub>
 
 Specifies how optional and required members should be ordered in TypeScript interfaces.
 
 - `'optional-first'` — Put all optional members before required members.
 - `'required-first'` — Put all required members before optional members.
-- `'ignore'` — Do not enforce any specific order based on optionality.
+- `'mixed'` — Do not enforce any specific order based on optionality.
 
 ### groups
 

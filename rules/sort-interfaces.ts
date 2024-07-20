@@ -23,7 +23,7 @@ type Group<T extends string[]> = 'multiline' | 'unknown' | T[number]
 
 type Options<T extends string[]> = [
   Partial<{
-    optionalityOrder: 'optional-first' | 'required-first' | 'ignore'
+    groupKind: 'optional-first' | 'required-first' | 'mixed'
     customGroups: { [key: string]: string[] | string }
     type: 'alphabetical' | 'line-length' | 'natural'
     groups: (Group<T>[] | Group<T>)[]
@@ -75,9 +75,9 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
               'Allows to use spaces to separate the nodes into logical groups.',
             type: 'boolean',
           },
-          optionalityOrder: {
+          groupKind: {
             description: 'Specifies the order of optional and required nodes.',
-            enum: ['ignore', 'optional-first', 'required-first'],
+            enum: ['mixed', 'optional-first', 'required-first'],
             type: 'string',
           },
           groups: {
@@ -130,7 +130,7 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
       ignoreCase: true,
       ignorePattern: [],
       partitionByNewLine: false,
-      optionalityOrder: 'ignore',
+      groupKind: 'mixed',
       groups: [],
       customGroups: {},
     },
@@ -139,9 +139,9 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
     TSInterfaceDeclaration: node => {
       if (node.body.body.length > 1) {
         let options = complete(context.options.at(0), {
-          optionalityOrder: 'ignore',
           partitionByNewLine: false,
           type: 'alphabetical',
+          groupKind: 'mixed',
           ignorePattern: [],
           ignoreCase: true,
           customGroups: {},
@@ -266,7 +266,7 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
             )
           }
 
-          let { optionalityOrder } = options
+          let { groupKind } = options
 
           let checkOrder = (
             members: SortingNode[],
@@ -274,7 +274,7 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
             right: SortingNode,
             iteration: number,
           ) => {
-            if (optionalityOrder === 'ignore') {
+            if (groupKind === 'mixed') {
               return checkGroupSort(left, right)
             }
 
@@ -291,8 +291,7 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
 
             if (isMemberOptional(left.node) !== isMemberOptional(right.node)) {
               return (
-                isMemberOptional(left.node) !==
-                (optionalityOrder === 'optional-first')
+                isMemberOptional(left.node) !== (groupKind === 'optional-first')
               )
             }
 
@@ -312,7 +311,7 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
                   fix: fixer => {
                     let sortedNodes
 
-                    if (optionalityOrder !== 'ignore') {
+                    if (groupKind !== 'mixed') {
                       let optionalNodes = nodes.filter(member =>
                         isMemberOptional(member.node),
                       )
@@ -321,7 +320,7 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
                       )
 
                       sortedNodes =
-                        optionalityOrder === 'optional-first'
+                        groupKind === 'optional-first'
                           ? [
                               ...toSorted(optionalNodes),
                               ...toSorted(requiredNodes),
