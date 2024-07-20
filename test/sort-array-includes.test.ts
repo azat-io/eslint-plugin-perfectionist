@@ -2,9 +2,11 @@ import { RuleTester } from '@typescript-eslint/rule-tester'
 import { afterAll, describe, it } from 'vitest'
 import { dedent } from 'ts-dedent'
 
-import rule, { RULE_NAME } from '../rules/sort-array-includes'
+import rule from '../rules/sort-array-includes'
 
-describe(RULE_NAME, () => {
+let ruleName = 'sort-array-includes'
+
+describe(ruleName, () => {
   RuleTester.describeSkip = describe.skip
   RuleTester.afterAll = afterAll
   RuleTester.describe = describe
@@ -16,7 +18,7 @@ describe(RULE_NAME, () => {
     parser: '@typescript-eslint/parser',
   })
 
-  describe(`${RULE_NAME}: sorting by alphabetical order`, () => {
+  describe(`${ruleName}: sorting by alphabetical order`, () => {
     let type = 'alphabetical-order'
 
     let options = {
@@ -26,19 +28,19 @@ describe(RULE_NAME, () => {
     } as const
 
     ruleTester.run(
-      `${RULE_NAME}(${type}): does not break the property list`,
+      `${ruleName}(${type}): does not break the property list`,
       rule,
       {
         valid: [
           {
             code: dedent`
               [
-                ...other,
                 'a',
                 'b',
                 'c',
                 'd',
                 'e',
+                ...other,
               ].includes(value)
             `,
             options: [options],
@@ -49,21 +51,21 @@ describe(RULE_NAME, () => {
             code: dedent`
               [
                 'a',
-                'b',
                 'c',
-                ...other,
+                'b',
                 'd',
                 'e',
+                ...other,
               ].includes(value)
             `,
             output: dedent`
               [
-                ...other,
                 'a',
                 'b',
                 'c',
                 'd',
                 'e',
+                ...other,
               ].includes(value)
             `,
             options: [options],
@@ -72,7 +74,7 @@ describe(RULE_NAME, () => {
                 messageId: 'unexpectedArrayIncludesOrder',
                 data: {
                   left: 'c',
-                  right: '...other',
+                  right: 'b',
                 },
               },
             ],
@@ -81,7 +83,7 @@ describe(RULE_NAME, () => {
       },
     )
 
-    ruleTester.run(`${RULE_NAME}(${type}): sorts spread elements`, rule, {
+    ruleTester.run(`${ruleName}(${type}): sorts spread elements`, rule, {
       valid: [
         {
           code: dedent`
@@ -125,7 +127,7 @@ describe(RULE_NAME, () => {
     })
 
     ruleTester.run(
-      `${RULE_NAME}(${type}): ignores nullable array elements`,
+      `${ruleName}(${type}): ignores nullable array elements`,
       rule,
       {
         valid: [
@@ -160,7 +162,7 @@ describe(RULE_NAME, () => {
     )
 
     ruleTester.run(
-      `${RULE_NAME}(${type}): allow to put spread elements to the end`,
+      `${ruleName}(${type}): allow to put spread elements to the end`,
       rule,
       {
         valid: [
@@ -204,7 +206,7 @@ describe(RULE_NAME, () => {
       },
     )
 
-    ruleTester.run(`${RULE_NAME}(${type}): sorts array constructor`, rule, {
+    ruleTester.run(`${ruleName}(${type}): sorts array constructor`, rule, {
       valid: [
         {
           code: dedent`
@@ -249,9 +251,65 @@ describe(RULE_NAME, () => {
         },
       ],
     })
+
+    ruleTester.run(`${ruleName}(${type}): allows mixed sorting`, rule, {
+      valid: [
+        {
+          code: dedent`
+            new Array(
+              ...d,
+              'aaaa',
+              'bbb',
+              'cc',
+            ).includes(value)
+          `,
+          options: [
+            {
+              ...options,
+              spreadLast: false,
+            },
+          ],
+        },
+      ],
+      invalid: [
+        {
+          code: dedent`
+            new Array(
+              'aaaa',
+              'bbb',
+              ...d,
+              'cc',
+            ).includes(value)
+          `,
+          output: dedent`
+            new Array(
+              ...d,
+              'aaaa',
+              'bbb',
+              'cc',
+            ).includes(value)
+          `,
+          options: [
+            {
+              ...options,
+              spreadLast: false,
+            },
+          ],
+          errors: [
+            {
+              messageId: 'unexpectedArrayIncludesOrder',
+              data: {
+                left: 'bbb',
+                right: '...d',
+              },
+            },
+          ],
+        },
+      ],
+    })
   })
 
-  describe(`${RULE_NAME}: sorting by natural order`, () => {
+  describe(`${ruleName}: sorting by natural order`, () => {
     let type = 'natural-order'
 
     let options = {
@@ -261,19 +319,19 @@ describe(RULE_NAME, () => {
     } as const
 
     ruleTester.run(
-      `${RULE_NAME}(${type}): does not break the property list`,
+      `${ruleName}(${type}): does not break the property list`,
       rule,
       {
         valid: [
           {
             code: dedent`
               [
-                ...other,
                 'a',
                 'b',
                 'c',
                 'd',
                 'e',
+                ...other,
               ].includes(value)
             `,
             options: [options],
@@ -284,21 +342,21 @@ describe(RULE_NAME, () => {
             code: dedent`
               [
                 'a',
-                'b',
                 'c',
-                ...other,
+                'b',
                 'd',
                 'e',
+                ...other,
               ].includes(value)
             `,
             output: dedent`
               [
-                ...other,
                 'a',
                 'b',
                 'c',
                 'd',
                 'e',
+                ...other,
               ].includes(value)
             `,
             options: [options],
@@ -307,7 +365,7 @@ describe(RULE_NAME, () => {
                 messageId: 'unexpectedArrayIncludesOrder',
                 data: {
                   left: 'c',
-                  right: '...other',
+                  right: 'b',
                 },
               },
             ],
@@ -316,7 +374,7 @@ describe(RULE_NAME, () => {
       },
     )
 
-    ruleTester.run(`${RULE_NAME}(${type}): sorts spread elements`, rule, {
+    ruleTester.run(`${ruleName}(${type}): sorts spread elements`, rule, {
       valid: [
         {
           code: dedent`
@@ -360,7 +418,7 @@ describe(RULE_NAME, () => {
     })
 
     ruleTester.run(
-      `${RULE_NAME}(${type}): ignores nullable array elements`,
+      `${ruleName}(${type}): ignores nullable array elements`,
       rule,
       {
         valid: [
@@ -395,7 +453,7 @@ describe(RULE_NAME, () => {
     )
 
     ruleTester.run(
-      `${RULE_NAME}(${type}): allow to put spread elements to the end`,
+      `${ruleName}(${type}): allow to put spread elements to the end`,
       rule,
       {
         valid: [
@@ -439,7 +497,7 @@ describe(RULE_NAME, () => {
       },
     )
 
-    ruleTester.run(`${RULE_NAME}(${type}): sorts array constructor`, rule, {
+    ruleTester.run(`${ruleName}(${type}): sorts array constructor`, rule, {
       valid: [
         {
           code: dedent`
@@ -484,9 +542,65 @@ describe(RULE_NAME, () => {
         },
       ],
     })
+
+    ruleTester.run(`${ruleName}(${type}): allows mixed sorting`, rule, {
+      valid: [
+        {
+          code: dedent`
+            new Array(
+              ...d,
+              'aaaa',
+              'bbb',
+              'cc',
+            ).includes(value)
+          `,
+          options: [
+            {
+              ...options,
+              spreadLast: false,
+            },
+          ],
+        },
+      ],
+      invalid: [
+        {
+          code: dedent`
+            new Array(
+              'aaaa',
+              'bbb',
+              ...d,
+              'cc',
+            ).includes(value)
+          `,
+          output: dedent`
+            new Array(
+              ...d,
+              'aaaa',
+              'bbb',
+              'cc',
+            ).includes(value)
+          `,
+          options: [
+            {
+              ...options,
+              spreadLast: false,
+            },
+          ],
+          errors: [
+            {
+              messageId: 'unexpectedArrayIncludesOrder',
+              data: {
+                left: 'bbb',
+                right: '...d',
+              },
+            },
+          ],
+        },
+      ],
+    })
   })
 
-  describe(`${RULE_NAME}: sorting by line length`, () => {
+  describe(`${ruleName}: sorting by line length`, () => {
     let type = 'line-length-order'
 
     let options = {
@@ -495,19 +609,19 @@ describe(RULE_NAME, () => {
     } as const
 
     ruleTester.run(
-      `${RULE_NAME}(${type}): does not break the property list`,
+      `${ruleName}(${type}): does not break the property list`,
       rule,
       {
         valid: [
           {
             code: dedent`
               [
-                ...other,
-                'a',
-                'b',
-                'c',
-                'd',
+                'aaaaa',
+                'bbbb',
+                'ccc',
+                'dd',
                 'e',
+                ...other,
               ].includes(value)
             `,
             options: [options],
@@ -517,22 +631,22 @@ describe(RULE_NAME, () => {
           {
             code: dedent`
               [
-                'a',
-                'b',
-                'c',
-                ...other,
-                'd',
+                'aaaaa',
+                'ccc',
+                'bbbb',
+                'dd',
                 'e',
+                ...other,
               ].includes(value)
             `,
             output: dedent`
               [
-                ...other,
-                'a',
-                'b',
-                'c',
-                'd',
+                'aaaaa',
+                'bbbb',
+                'ccc',
+                'dd',
                 'e',
+                ...other,
               ].includes(value)
             `,
             options: [options],
@@ -540,8 +654,8 @@ describe(RULE_NAME, () => {
               {
                 messageId: 'unexpectedArrayIncludesOrder',
                 data: {
-                  left: 'c',
-                  right: '...other',
+                  left: 'ccc',
+                  right: 'bbbb',
                 },
               },
             ],
@@ -550,7 +664,7 @@ describe(RULE_NAME, () => {
       },
     )
 
-    ruleTester.run(`${RULE_NAME}(${type}): sorts spread elements`, rule, {
+    ruleTester.run(`${ruleName}(${type}): sorts spread elements`, rule, {
       valid: [
         {
           code: dedent`
@@ -594,7 +708,7 @@ describe(RULE_NAME, () => {
     })
 
     ruleTester.run(
-      `${RULE_NAME}(${type}): ignores nullable array elements`,
+      `${ruleName}(${type}): ignores nullable array elements`,
       rule,
       {
         valid: [
@@ -610,7 +724,7 @@ describe(RULE_NAME, () => {
     )
 
     ruleTester.run(
-      `${RULE_NAME}(${type}): allow to put spread elements to the end`,
+      `${ruleName}(${type}): allow to put spread elements to the end`,
       rule,
       {
         valid: [
@@ -654,7 +768,7 @@ describe(RULE_NAME, () => {
       },
     )
 
-    ruleTester.run(`${RULE_NAME}(${type}): sorts array constructor`, rule, {
+    ruleTester.run(`${ruleName}(${type}): sorts array constructor`, rule, {
       valid: [
         {
           code: dedent`
@@ -699,11 +813,67 @@ describe(RULE_NAME, () => {
         },
       ],
     })
+
+    ruleTester.run(`${ruleName}(${type}): allows mixed sorting`, rule, {
+      valid: [
+        {
+          code: dedent`
+            new Array(
+              'aaaa',
+              'bbb',
+              ...d,
+              'cc',
+            ).includes(value)
+          `,
+          options: [
+            {
+              ...options,
+              spreadLast: false,
+            },
+          ],
+        },
+      ],
+      invalid: [
+        {
+          code: dedent`
+            new Array(
+              'aaaa',
+              ...d,
+              'bbb',
+              'cc',
+            ).includes(value)
+          `,
+          output: dedent`
+            new Array(
+              'aaaa',
+              'bbb',
+              ...d,
+              'cc',
+            ).includes(value)
+          `,
+          options: [
+            {
+              ...options,
+              spreadLast: false,
+            },
+          ],
+          errors: [
+            {
+              messageId: 'unexpectedArrayIncludesOrder',
+              data: {
+                left: '...d',
+                right: 'bbb',
+              },
+            },
+          ],
+        },
+      ],
+    })
   })
 
-  describe(`${RULE_NAME}: misc`, () => {
+  describe(`${ruleName}: misc`, () => {
     ruleTester.run(
-      `${RULE_NAME}: sets alphabetical asc sorting as default`,
+      `${ruleName}: sets alphabetical asc sorting as default`,
       rule,
       {
         valid: [
@@ -771,7 +941,7 @@ describe(RULE_NAME, () => {
     )
 
     ruleTester.run(
-      `${RULE_NAME}: works consistently with an empty array or an array with one element`,
+      `${ruleName}: works consistently with an empty array or an array with one element`,
       rule,
       {
         valid: ['[].includes(value)', "['a'].includes(value)"],
@@ -779,7 +949,7 @@ describe(RULE_NAME, () => {
       },
     )
 
-    ruleTester.run(`${RULE_NAME}: ignores quotes of strings`, rule, {
+    ruleTester.run(`${ruleName}: ignores quotes of strings`, rule, {
       valid: [
         dedent`
           ['a', "b", 'c'].includes(value)

@@ -2,9 +2,11 @@ import { RuleTester } from '@typescript-eslint/rule-tester'
 import { afterAll, describe, it } from 'vitest'
 import { dedent } from 'ts-dedent'
 
-import rule, { RULE_NAME } from '../rules/sort-svelte-attributes'
+import rule from '../rules/sort-svelte-attributes'
 
-describe(RULE_NAME, () => {
+let ruleName = 'sort-svelte-attributes'
+
+describe(ruleName, () => {
   RuleTester.describeSkip = describe.skip
   RuleTester.afterAll = afterAll
   RuleTester.describe = describe
@@ -21,7 +23,7 @@ describe(RULE_NAME, () => {
     },
   })
 
-  describe(`${RULE_NAME}: sorting by alphabetical order`, () => {
+  describe(`${ruleName}: sorting by alphabetical order`, () => {
     let type = 'alphabetical-order'
 
     let options = {
@@ -31,7 +33,7 @@ describe(RULE_NAME, () => {
     } as const
 
     ruleTester.run(
-      `${RULE_NAME}(${type}): sorts props in svelte components`,
+      `${ruleName}(${type}): sorts props in svelte components`,
       rule,
       {
         valid: [
@@ -86,14 +88,11 @@ describe(RULE_NAME, () => {
       },
     )
 
-    ruleTester.run(
-      `${RULE_NAME}(${type}): works with spread attributes`,
-      rule,
-      {
-        valid: [
-          {
-            filename: 'component.svelte',
-            code: dedent`
+    ruleTester.run(`${ruleName}(${type}): works with spread attributes`, rule, {
+      valid: [
+        {
+          filename: 'component.svelte',
+          code: dedent`
               <script>
                 import Component from '../Component.svelte'
 
@@ -102,13 +101,13 @@ describe(RULE_NAME, () => {
 
               <Component c {...data} a="aa" b="b" />
             `,
-            options: [options],
-          },
-        ],
-        invalid: [
-          {
-            filename: 'component.svelte',
-            code: dedent`
+          options: [options],
+        },
+      ],
+      invalid: [
+        {
+          filename: 'component.svelte',
+          code: dedent`
               <script>
                 import Component from '../Component.svelte'
 
@@ -117,7 +116,7 @@ describe(RULE_NAME, () => {
 
               <Component c {...data} b="b" a="aa" />
             `,
-            output: dedent`
+          output: dedent`
               <script>
                 import Component from '../Component.svelte'
 
@@ -126,22 +125,21 @@ describe(RULE_NAME, () => {
 
               <Component c {...data} a="aa" b="b" />
             `,
-            options: [options],
-            errors: [
-              {
-                messageId: 'unexpectedSvelteAttributesOrder',
-                data: {
-                  left: 'b',
-                  right: 'a',
-                },
+          options: [options],
+          errors: [
+            {
+              messageId: 'unexpectedSvelteAttributesOrder',
+              data: {
+                left: 'b',
+                right: 'a',
               },
-            ],
-          },
-        ],
-      },
-    )
+            },
+          ],
+        },
+      ],
+    })
 
-    ruleTester.run(`${RULE_NAME}(${type}): works with directives`, rule, {
+    ruleTester.run(`${ruleName}(${type}): works with directives`, rule, {
       valid: [
         {
           filename: 'component.svelte',
@@ -205,7 +203,7 @@ describe(RULE_NAME, () => {
     })
 
     ruleTester.run(
-      `${RULE_NAME}(${type}): allows to set shorthand attributes position`,
+      `${ruleName}(${type}): allows to set shorthand attributes position`,
       rule,
       {
         valid: [
@@ -292,7 +290,7 @@ describe(RULE_NAME, () => {
     )
 
     ruleTester.run(
-      `${RULE_NAME}(${type}): allows to set multiline attributes position`,
+      `${ruleName}(${type}): allows to set multiline attributes position`,
       rule,
       {
         valid: [
@@ -377,7 +375,7 @@ describe(RULE_NAME, () => {
       },
     )
 
-    ruleTester.run(`${RULE_NAME}(${type}): allows to set custom groups`, rule, {
+    ruleTester.run(`${ruleName}(${type}): allows to set custom groups`, rule, {
       valid: [
         {
           filename: 'component.svelte',
@@ -462,7 +460,7 @@ describe(RULE_NAME, () => {
     })
   })
 
-  describe(`${RULE_NAME}: sorting by natural order`, () => {
+  describe(`${ruleName}: sorting by natural order`, () => {
     let type = 'natural-order'
 
     let options = {
@@ -472,7 +470,7 @@ describe(RULE_NAME, () => {
     } as const
 
     ruleTester.run(
-      `${RULE_NAME}(${type}): sorts props in svelte components`,
+      `${ruleName}(${type}): sorts props in svelte components`,
       rule,
       {
         valid: [
@@ -527,14 +525,11 @@ describe(RULE_NAME, () => {
       },
     )
 
-    ruleTester.run(
-      `${RULE_NAME}(${type}): works with spread attributes`,
-      rule,
-      {
-        valid: [
-          {
-            filename: 'component.svelte',
-            code: dedent`
+    ruleTester.run(`${ruleName}(${type}): works with spread attributes`, rule, {
+      valid: [
+        {
+          filename: 'component.svelte',
+          code: dedent`
               <script>
                 import Component from '../Component.svelte'
 
@@ -543,13 +538,13 @@ describe(RULE_NAME, () => {
 
               <Component c {...data} a="aa" b="b" />
             `,
-            options: [options],
-          },
-        ],
-        invalid: [
-          {
-            filename: 'component.svelte',
-            code: dedent`
+          options: [options],
+        },
+      ],
+      invalid: [
+        {
+          filename: 'component.svelte',
+          code: dedent`
               <script>
                 import Component from '../Component.svelte'
 
@@ -558,7 +553,7 @@ describe(RULE_NAME, () => {
 
               <Component c {...data} b="b" a="aa" />
             `,
-            output: dedent`
+          output: dedent`
               <script>
                 import Component from '../Component.svelte'
 
@@ -567,22 +562,21 @@ describe(RULE_NAME, () => {
 
               <Component c {...data} a="aa" b="b" />
             `,
-            options: [options],
-            errors: [
-              {
-                messageId: 'unexpectedSvelteAttributesOrder',
-                data: {
-                  left: 'b',
-                  right: 'a',
-                },
+          options: [options],
+          errors: [
+            {
+              messageId: 'unexpectedSvelteAttributesOrder',
+              data: {
+                left: 'b',
+                right: 'a',
               },
-            ],
-          },
-        ],
-      },
-    )
+            },
+          ],
+        },
+      ],
+    })
 
-    ruleTester.run(`${RULE_NAME}(${type}): works with directives`, rule, {
+    ruleTester.run(`${ruleName}(${type}): works with directives`, rule, {
       valid: [
         {
           filename: 'component.svelte',
@@ -646,7 +640,7 @@ describe(RULE_NAME, () => {
     })
 
     ruleTester.run(
-      `${RULE_NAME}(${type}): allows to set shorthand attributes position`,
+      `${ruleName}(${type}): allows to set shorthand attributes position`,
       rule,
       {
         valid: [
@@ -733,7 +727,7 @@ describe(RULE_NAME, () => {
     )
 
     ruleTester.run(
-      `${RULE_NAME}(${type}): allows to set multiline attributes position`,
+      `${ruleName}(${type}): allows to set multiline attributes position`,
       rule,
       {
         valid: [
@@ -818,7 +812,7 @@ describe(RULE_NAME, () => {
       },
     )
 
-    ruleTester.run(`${RULE_NAME}(${type}): allows to set custom groups`, rule, {
+    ruleTester.run(`${ruleName}(${type}): allows to set custom groups`, rule, {
       valid: [
         {
           filename: 'component.svelte',
@@ -903,7 +897,7 @@ describe(RULE_NAME, () => {
     })
   })
 
-  describe(`${RULE_NAME}: sorting by line length`, () => {
+  describe(`${ruleName}: sorting by line length`, () => {
     let type = 'line-length-order'
 
     let options = {
@@ -912,7 +906,7 @@ describe(RULE_NAME, () => {
     } as const
 
     ruleTester.run(
-      `${RULE_NAME}(${type}): sorts props in svelte components`,
+      `${ruleName}(${type}): sorts props in svelte components`,
       rule,
       {
         valid: [
@@ -967,14 +961,11 @@ describe(RULE_NAME, () => {
       },
     )
 
-    ruleTester.run(
-      `${RULE_NAME}(${type}): works with spread attributes`,
-      rule,
-      {
-        valid: [
-          {
-            filename: 'component.svelte',
-            code: dedent`
+    ruleTester.run(`${ruleName}(${type}): works with spread attributes`, rule, {
+      valid: [
+        {
+          filename: 'component.svelte',
+          code: dedent`
               <script>
                 import Component from '../Component.svelte'
 
@@ -983,13 +974,13 @@ describe(RULE_NAME, () => {
 
               <Component c {...data} a="aa" b="b" />
             `,
-            options: [options],
-          },
-        ],
-        invalid: [
-          {
-            filename: 'component.svelte',
-            code: dedent`
+          options: [options],
+        },
+      ],
+      invalid: [
+        {
+          filename: 'component.svelte',
+          code: dedent`
               <script>
                 import Component from '../Component.svelte'
 
@@ -998,7 +989,7 @@ describe(RULE_NAME, () => {
 
               <Component c {...data} b="b" a="aa" />
             `,
-            output: dedent`
+          output: dedent`
               <script>
                 import Component from '../Component.svelte'
 
@@ -1007,22 +998,21 @@ describe(RULE_NAME, () => {
 
               <Component c {...data} a="aa" b="b" />
             `,
-            options: [options],
-            errors: [
-              {
-                messageId: 'unexpectedSvelteAttributesOrder',
-                data: {
-                  left: 'b',
-                  right: 'a',
-                },
+          options: [options],
+          errors: [
+            {
+              messageId: 'unexpectedSvelteAttributesOrder',
+              data: {
+                left: 'b',
+                right: 'a',
               },
-            ],
-          },
-        ],
-      },
-    )
+            },
+          ],
+        },
+      ],
+    })
 
-    ruleTester.run(`${RULE_NAME}(${type}): works with directives`, rule, {
+    ruleTester.run(`${ruleName}(${type}): works with directives`, rule, {
       valid: [
         {
           filename: 'component.svelte',
@@ -1086,7 +1076,7 @@ describe(RULE_NAME, () => {
     })
 
     ruleTester.run(
-      `${RULE_NAME}(${type}): allows to set shorthand attributes position`,
+      `${ruleName}(${type}): allows to set shorthand attributes position`,
       rule,
       {
         valid: [
@@ -1173,7 +1163,7 @@ describe(RULE_NAME, () => {
     )
 
     ruleTester.run(
-      `${RULE_NAME}(${type}): allows to set multiline attributes position`,
+      `${ruleName}(${type}): allows to set multiline attributes position`,
       rule,
       {
         valid: [
@@ -1258,7 +1248,7 @@ describe(RULE_NAME, () => {
       },
     )
 
-    ruleTester.run(`${RULE_NAME}(${type}): allows to set custom groups`, rule, {
+    ruleTester.run(`${ruleName}(${type}): allows to set custom groups`, rule, {
       valid: [
         {
           filename: 'component.svelte',
@@ -1343,8 +1333,8 @@ describe(RULE_NAME, () => {
     })
   })
 
-  describe(`${RULE_NAME}: misc`, () => {
-    ruleTester.run(`${RULE_NAME}: works only with .svelte files`, rule, {
+  describe(`${ruleName}: misc`, () => {
+    ruleTester.run(`${ruleName}: works only with .svelte files`, rule, {
       valid: [
         {
           filename: 'component.ts',
@@ -1362,7 +1352,7 @@ describe(RULE_NAME, () => {
       invalid: [],
     })
 
-    ruleTester.run(`${RULE_NAME}: works with special directive keys`, rule, {
+    ruleTester.run(`${ruleName}: works with special directive keys`, rule, {
       valid: [
         {
           filename: 'component.svelte',

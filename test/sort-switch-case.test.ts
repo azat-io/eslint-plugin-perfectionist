@@ -2,9 +2,11 @@ import { RuleTester } from '@typescript-eslint/rule-tester'
 import { afterAll, describe, it } from 'vitest'
 import { dedent } from 'ts-dedent'
 
-import rule, { RULE_NAME } from '../rules/sort-switch-case'
+import rule from '../rules/sort-switch-case'
 
-describe(RULE_NAME, () => {
+let ruleName = 'sort-switch-case'
+
+describe(ruleName, () => {
   RuleTester.describeSkip = describe.skip
   RuleTester.afterAll = afterAll
   RuleTester.describe = describe
@@ -16,7 +18,7 @@ describe(RULE_NAME, () => {
     parser: '@typescript-eslint/parser',
   })
 
-  describe(`${RULE_NAME}: sorting by alphabetical order`, () => {
+  describe(`${ruleName}: sorting by alphabetical order`, () => {
     let type = 'alphabetical-order'
 
     let options = {
@@ -26,7 +28,7 @@ describe(RULE_NAME, () => {
     } as const
 
     ruleTester.run(
-      `${RULE_NAME}(${type}): sorts switch cases with return statements`,
+      `${ruleName}(${type}): sorts switch cases with return statements`,
       rule,
       {
         valid: [
@@ -94,7 +96,7 @@ describe(RULE_NAME, () => {
     )
 
     ruleTester.run(
-      `${RULE_NAME}(${type}): sorts switch cases with break statements`,
+      `${ruleName}(${type}): sorts switch cases with break statements`,
       rule,
       {
         valid: [
@@ -176,7 +178,7 @@ describe(RULE_NAME, () => {
       },
     )
 
-    ruleTester.run(`${RULE_NAME}(${type}): works with grouped cases`, rule, {
+    ruleTester.run(`${ruleName}(${type}): works with grouped cases`, rule, {
       valid: [
         {
           code: dedent`
@@ -254,7 +256,7 @@ describe(RULE_NAME, () => {
     })
   })
 
-  describe(`${RULE_NAME}: sorts switch cases with return statements`, () => {
+  describe(`${ruleName}: sorts switch cases with return statements`, () => {
     let type = 'natural-order'
 
     let options = {
@@ -264,7 +266,7 @@ describe(RULE_NAME, () => {
     } as const
 
     ruleTester.run(
-      `${RULE_NAME}(${type}): sorts switch cases with return statements`,
+      `${ruleName}(${type}): sorts switch cases with return statements`,
       rule,
       {
         valid: [
@@ -332,7 +334,7 @@ describe(RULE_NAME, () => {
     )
 
     ruleTester.run(
-      `${RULE_NAME}(${type}): sorts switch cases with break statements`,
+      `${ruleName}(${type}): sorts switch cases with break statements`,
       rule,
       {
         valid: [
@@ -414,7 +416,7 @@ describe(RULE_NAME, () => {
       },
     )
 
-    ruleTester.run(`${RULE_NAME}(${type}): works with grouped cases`, rule, {
+    ruleTester.run(`${ruleName}(${type}): works with grouped cases`, rule, {
       valid: [
         {
           code: dedent`
@@ -492,7 +494,7 @@ describe(RULE_NAME, () => {
     })
   })
 
-  describe(`${RULE_NAME}: sorts switch cases with return statements`, () => {
+  describe(`${ruleName}: sorts switch cases with return statements`, () => {
     let type = 'line-length-order'
 
     let options = {
@@ -501,7 +503,7 @@ describe(RULE_NAME, () => {
     } as const
 
     ruleTester.run(
-      `${RULE_NAME}(${type}): sorts switch cases with return statements`,
+      `${ruleName}(${type}): sorts switch cases with return statements`,
       rule,
       {
         valid: [
@@ -569,7 +571,7 @@ describe(RULE_NAME, () => {
     )
 
     ruleTester.run(
-      `${RULE_NAME}(${type}): sorts switch cases with break statements`,
+      `${ruleName}(${type}): sorts switch cases with break statements`,
       rule,
       {
         valid: [
@@ -651,7 +653,7 @@ describe(RULE_NAME, () => {
       },
     )
 
-    ruleTester.run(`${RULE_NAME}(${type}): works with grouped cases`, rule, {
+    ruleTester.run(`${ruleName}(${type}): works with grouped cases`, rule, {
       valid: [
         {
           code: dedent`
@@ -729,9 +731,9 @@ describe(RULE_NAME, () => {
     })
   })
 
-  describe(`${RULE_NAME}: misc`, () => {
+  describe(`${ruleName}: misc`, () => {
     ruleTester.run(
-      `${RULE_NAME}: not works if discriminant is not literal`,
+      `${ruleName}: not works if discriminant is not literal`,
       rule,
       {
         valid: [
@@ -753,7 +755,7 @@ describe(RULE_NAME, () => {
     )
   })
 
-  ruleTester.run(`${RULE_NAME}: default should be last`, rule, {
+  ruleTester.run(`${ruleName}: default should be last`, rule, {
     valid: [],
     invalid: [
       {

@@ -110,7 +110,7 @@ This rule accepts an options object with the following properties:
 
 ### type
 
-<sub>(default: `'alphabetical'`)</sub>
+<sub>default: `'alphabetical'`</sub>
 
 Specifies the sorting method.
 
@@ -120,7 +120,7 @@ Specifies the sorting method.
 
 ### order
 
-<sub>(default: `'asc'`)</sub>
+<sub>default: `'asc'`</sub>
 
 Determines whether the sorted items should be in ascending or descending order.
 
@@ -129,7 +129,7 @@ Determines whether the sorted items should be in ascending or descending order.
 
 ### ignoreCase
 
-<sub>(default: `true`)</sub>
+<sub>default: `true`</sub>
 
 Controls whether sorting should be case-sensitive or not.
 
@@ -138,7 +138,7 @@ Controls whether sorting should be case-sensitive or not.
 
 ### groups
 
-<sub>(default: `[]`)</sub>
+<sub>default: `[]`</sub>
 
 Allows you to specify a list of Astro attribute groups for sorting. Groups help organize attributes into categories, prioritizing them during sorting. Multiple groups can be combined to achieve the desired sorting order.
 
@@ -169,7 +169,7 @@ Example:
 
 ### customGroups
 
-<sub>(default: `{}`)</sub>
+<sub>default: `{}`</sub>
 
 You can define your own groups for Astro attributes. The [minimatch](https://github.com/isaacs/minimatch) library is used for pattern matching.
 
@@ -243,13 +243,11 @@ In order to start using this rule, you need to install additional dependency:
               'perfectionist/sort-astro-attributes': [
                 'error',
                 {
-                  type: 'natural',
+                  type: 'alphabetical',
                   order: 'asc',
-                  groups: [
-                    'multiline',
-                    'unknown',
-                    ['shorthand', 'astro-shorthand'],
-                  ],
+                  ignoreCase: true,
+                  groups: [],
+                  customGroups: {},
                 },
               ],
             },
@@ -276,13 +274,11 @@ In order to start using this rule, you need to install additional dependency:
             'perfectionist/sort-astro-attributes': [
               'error',
               {
-                type: 'natural',
+                type: 'alphabetical',
                 order: 'asc',
-                groups: [
-                  'multiline',
-                  'unknown',
-                  ['shorthand', 'astro-shorthand'],
-                ],
+                ignoreCase: true,
+                groups: [],
+                customGroups: {},
               },
             ],
           },

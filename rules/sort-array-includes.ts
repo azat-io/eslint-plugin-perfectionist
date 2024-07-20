@@ -3,6 +3,7 @@ import type { TSESTree } from '@typescript-eslint/types'
 import type { SortingNode } from '../typings'
 
 import { createEslintRule } from '../utils/create-eslint-rule'
+import { getGroupNumber } from '../utils/get-group-number'
 import { getSourceCode } from '../utils/get-source-code'
 import { toSingleLine } from '../utils/to-single-line'
 import { rangeToDiff } from '../utils/range-to-diff'
@@ -27,11 +28,11 @@ type Options = [
 export const RULE_NAME = 'sort-array-includes'
 
 export default createEslintRule<Options, MESSAGE_ID>({
-  name: RULE_NAME,
+  name: 'sort-array-includes',
   meta: {
     type: 'suggestion',
     docs: {
-      description: 'Enforce sorted arrays before include method',
+      description: 'Enforce sorted arrays before include method.',
     },
     fixable: 'code',
     schema: [
@@ -39,22 +40,25 @@ export default createEslintRule<Options, MESSAGE_ID>({
         type: 'object',
         properties: {
           type: {
-            enum: ['alphabetical', 'natural', 'line-length'],
-            default: 'alphabetical',
+            description: 'Specifies the sorting method.',
             type: 'string',
+            enum: ['alphabetical', 'natural', 'line-length'],
           },
           order: {
-            enum: ['asc', 'desc'],
-            default: 'asc',
+            description:
+              'Determines whether the sorted items should be in ascending or descending order.',
             type: 'string',
+            enum: ['asc', 'desc'],
           },
           ignoreCase: {
+            description:
+              'Controls whether sorting should be case-sensitive or not.',
             type: 'boolean',
-            default: true,
           },
           spreadLast: {
+            description:
+              'Determines the position of spread elements within the array.',
             type: 'boolean',
-            default: false,
           },
         },
         additionalProperties: false,
@@ -62,13 +66,15 @@ export default createEslintRule<Options, MESSAGE_ID>({
     ],
     messages: {
       unexpectedArrayIncludesOrder:
-        'Expected "{{right}}" to come before "{{left}}"',
+        'Expected "{{right}}" to come before "{{left}}".',
     },
   },
   defaultOptions: [
     {
       type: 'alphabetical',
       order: 'asc',
+      ignoreCase: true,
+      spreadLast: true,
     },
   ],
   create: context => ({
@@ -87,9 +93,9 @@ export default createEslintRule<Options, MESSAGE_ID>({
         if (elements.length > 1) {
           let options = complete(context.options.at(0), {
             type: 'alphabetical',
-            order: 'asc',
-            spreadLast: false,
+            spreadLast: true,
             ignoreCase: true,
+            order: 'asc',
           } as const)
 
           let sourceCode = getSourceCode(context)
@@ -100,6 +106,11 @@ export default createEslintRule<Options, MESSAGE_ID>({
                 element: TSESTree.SpreadElement | TSESTree.Expression | null,
               ) => {
                 if (element !== null) {
+                  let group = 'unknown'
+                  if (options.spreadLast) {
+                    group =
+                      element.type === 'SpreadElement' ? 'spread' : 'literal'
+                  }
                   accumulator.at(0)!.push({
                     name:
                       element.type === 'Literal'
@@ -108,6 +119,7 @@ export default createEslintRule<Options, MESSAGE_ID>({
                     size: rangeToDiff(element.range),
                     type: element.type,
                     node: element,
+                    group,
                   })
                 }
 
@@ -118,25 +130,18 @@ export default createEslintRule<Options, MESSAGE_ID>({
             .flat()
 
           pairwise(nodes, (left, right) => {
-            let compareValue: boolean
+            let groupKindOrder = options.spreadLast
+              ? ['literal', 'spread']
+              : ['unknown']
+
+            let leftNum = getGroupNumber(groupKindOrder, left)
+            let rightNum = getGroupNumber(groupKindOrder, right)
 
             if (
-              options.spreadLast &&
-              left.node.type === 'Literal' &&
-              right.node.type === 'SpreadElement'
+              (options.spreadLast && leftNum > rightNum) ||
+              ((!options.spreadLast || leftNum === rightNum) &&
+                isPositive(compare(left, right, options)))
             ) {
-              compareValue = false
-            } else if (
-              options.spreadLast &&
-              left.node.type === 'SpreadElement' &&
-              right.node.type === 'Literal'
-            ) {
-              compareValue = true
-            } else {
-              compareValue = isPositive(compare(left, right, options))
-            }
-
-            if (compareValue) {
               context.report({
                 messageId: 'unexpectedArrayIncludesOrder',
                 data: {
@@ -145,15 +150,12 @@ export default createEslintRule<Options, MESSAGE_ID>({
                 },
                 node: right.node,
                 fix: fixer => {
-                  let sortedNodes = sortNodes(nodes, options)
-
-                  if (options.spreadLast) {
-                    for (let i = 0, max = sortedNodes.length; i < max; i++) {
-                      if (sortedNodes.at(i)!.node.type === 'SpreadElement') {
-                        sortedNodes.push(sortedNodes.splice(i, 1).at(0)!)
-                      }
-                    }
-                  }
+                  let sortedNodes = options.spreadLast
+                    ? groupKindOrder
+                        .map(group => nodes.filter(n => n.group === group))
+                        .map(groupedNodes => sortNodes(groupedNodes, options))
+                        .flat()
+                    : sortNodes(nodes, options)
 
                   return makeFixes(fixer, nodes, sortedNodes, sourceCode)
                 },

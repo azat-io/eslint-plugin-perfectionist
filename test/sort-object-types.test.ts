@@ -2,9 +2,11 @@ import { RuleTester } from '@typescript-eslint/rule-tester'
 import { afterAll, describe, it } from 'vitest'
 import { dedent } from 'ts-dedent'
 
-import rule, { RULE_NAME } from '../rules/sort-object-types'
+import rule from '../rules/sort-object-types'
 
-describe(RULE_NAME, () => {
+let ruleName = 'sort-object-types'
+
+describe(ruleName, () => {
   RuleTester.describeSkip = describe.skip
   RuleTester.afterAll = afterAll
   RuleTester.describe = describe
@@ -16,7 +18,7 @@ describe(RULE_NAME, () => {
     parser: '@typescript-eslint/parser',
   })
 
-  describe(`${RULE_NAME}: sorting by alphabetical order`, () => {
+  describe(`${ruleName}: sorting by alphabetical order`, () => {
     let type = 'alphabetical-order'
 
     let options = {
@@ -25,7 +27,7 @@ describe(RULE_NAME, () => {
       order: 'asc',
     } as const
 
-    ruleTester.run(`${RULE_NAME}(${type}): sorts type members`, rule, {
+    ruleTester.run(`${ruleName}(${type}): sorts type members`, rule, {
       valid: [
         {
           code: dedent`
@@ -69,7 +71,7 @@ describe(RULE_NAME, () => {
     })
 
     ruleTester.run(
-      `${RULE_NAME}(${type}): sorts type members in function args`,
+      `${ruleName}(${type}): sorts type members in function args`,
       rule,
       {
         valid: [
@@ -122,7 +124,7 @@ describe(RULE_NAME, () => {
     )
 
     ruleTester.run(
-      `${RULE_NAME}(${type}): sorts type members with computed keys`,
+      `${ruleName}(${type}): sorts type members with computed keys`,
       rule,
       {
         valid: [
@@ -182,7 +184,7 @@ describe(RULE_NAME, () => {
     )
 
     ruleTester.run(
-      `${RULE_NAME}(${type}): sorts type members with any key types`,
+      `${ruleName}(${type}): sorts type members with any key types`,
       rule,
       {
         valid: [
@@ -237,7 +239,7 @@ describe(RULE_NAME, () => {
       },
     )
 
-    ruleTester.run(`${RULE_NAME}(${type}): sorts inline type members`, rule, {
+    ruleTester.run(`${ruleName}(${type}): sorts inline type members`, rule, {
       valid: [
         {
           code: dedent`
@@ -269,7 +271,7 @@ describe(RULE_NAME, () => {
     })
 
     ruleTester.run(
-      `${RULE_NAME}(${type}): allows to set groups for sorting`,
+      `${ruleName}(${type}): allows to set groups for sorting`,
       rule,
       {
         valid: [
@@ -351,7 +353,7 @@ describe(RULE_NAME, () => {
     )
 
     ruleTester.run(
-      `${RULE_NAME}(${type}): allows to use in class methods`,
+      `${ruleName}(${type}): allows to use in class methods`,
       rule,
       {
         valid: [],
@@ -391,7 +393,7 @@ describe(RULE_NAME, () => {
     )
 
     ruleTester.run(
-      `${RULE_NAME}(${type}): allows to use new line as partition`,
+      `${ruleName}(${type}): allows to use new line as partition`,
       rule,
       {
         valid: [
@@ -467,7 +469,7 @@ describe(RULE_NAME, () => {
     )
   })
 
-  describe(`${RULE_NAME}: sorting by natural order`, () => {
+  describe(`${ruleName}: sorting by natural order`, () => {
     let type = 'natural-order'
 
     let options = {
@@ -476,7 +478,7 @@ describe(RULE_NAME, () => {
       order: 'asc',
     } as const
 
-    ruleTester.run(`${RULE_NAME}(${type}): sorts type members`, rule, {
+    ruleTester.run(`${ruleName}(${type}): sorts type members`, rule, {
       valid: [
         {
           code: dedent`
@@ -520,7 +522,7 @@ describe(RULE_NAME, () => {
     })
 
     ruleTester.run(
-      `${RULE_NAME}(${type}): sorts type members in function args`,
+      `${ruleName}(${type}): sorts type members in function args`,
       rule,
       {
         valid: [
@@ -573,7 +575,7 @@ describe(RULE_NAME, () => {
     )
 
     ruleTester.run(
-      `${RULE_NAME}(${type}): sorts type members with computed keys`,
+      `${ruleName}(${type}): sorts type members with computed keys`,
       rule,
       {
         valid: [
@@ -633,7 +635,7 @@ describe(RULE_NAME, () => {
     )
 
     ruleTester.run(
-      `${RULE_NAME}(${type}): sorts type members with any key types`,
+      `${ruleName}(${type}): sorts type members with any key types`,
       rule,
       {
         valid: [
@@ -688,7 +690,7 @@ describe(RULE_NAME, () => {
       },
     )
 
-    ruleTester.run(`${RULE_NAME}(${type}): sorts inline type members`, rule, {
+    ruleTester.run(`${ruleName}(${type}): sorts inline type members`, rule, {
       valid: [
         {
           code: dedent`
@@ -720,7 +722,7 @@ describe(RULE_NAME, () => {
     })
 
     ruleTester.run(
-      `${RULE_NAME}(${type}): allows to set groups for sorting`,
+      `${ruleName}(${type}): allows to set groups for sorting`,
       rule,
       {
         valid: [
@@ -802,7 +804,7 @@ describe(RULE_NAME, () => {
     )
 
     ruleTester.run(
-      `${RULE_NAME}(${type}): allows to use new line as partition`,
+      `${ruleName}(${type}): allows to use new line as partition`,
       rule,
       {
         valid: [
@@ -878,7 +880,7 @@ describe(RULE_NAME, () => {
     )
   })
 
-  describe(`${RULE_NAME}: sorting by line length`, () => {
+  describe(`${ruleName}: sorting by line length`, () => {
     let type = 'line-length-order'
 
     let options = {
@@ -886,7 +888,7 @@ describe(RULE_NAME, () => {
       order: 'desc',
     } as const
 
-    ruleTester.run(`${RULE_NAME}(${type}): sorts type members`, rule, {
+    ruleTester.run(`${ruleName}(${type}): sorts type members`, rule, {
       valid: [
         {
           code: dedent`
@@ -930,7 +932,7 @@ describe(RULE_NAME, () => {
     })
 
     ruleTester.run(
-      `${RULE_NAME}(${type}): sorts type members in function args`,
+      `${ruleName}(${type}): sorts type members in function args`,
       rule,
       {
         valid: [
@@ -983,7 +985,7 @@ describe(RULE_NAME, () => {
     )
 
     ruleTester.run(
-      `${RULE_NAME}(${type}): sorts type members with computed keys`,
+      `${ruleName}(${type}): sorts type members with computed keys`,
       rule,
       {
         valid: [
@@ -1043,7 +1045,7 @@ describe(RULE_NAME, () => {
     )
 
     ruleTester.run(
-      `${RULE_NAME}(${type}): sorts type members with any key types`,
+      `${ruleName}(${type}): sorts type members with any key types`,
       rule,
       {
         valid: [
@@ -1112,7 +1114,7 @@ describe(RULE_NAME, () => {
       },
     )
 
-    ruleTester.run(`${RULE_NAME}(${type}): sorts inline type members`, rule, {
+    ruleTester.run(`${ruleName}(${type}): sorts inline type members`, rule, {
       valid: [
         {
           code: dedent`
@@ -1144,7 +1146,7 @@ describe(RULE_NAME, () => {
     })
 
     ruleTester.run(
-      `${RULE_NAME}(${type}): allows to set groups for sorting`,
+      `${ruleName}(${type}): allows to set groups for sorting`,
       rule,
       {
         valid: [
@@ -1226,7 +1228,7 @@ describe(RULE_NAME, () => {
     )
 
     ruleTester.run(
-      `${RULE_NAME}(${type}): allows to use new line as partition`,
+      `${ruleName}(${type}): allows to use new line as partition`,
       rule,
       {
         valid: [
@@ -1303,7 +1305,7 @@ describe(RULE_NAME, () => {
   })
 
   describe('misc', () => {
-    ruleTester.run(`${RULE_NAME}: ignores semi at the end of value`, rule, {
+    ruleTester.run(`${ruleName}: ignores semi at the end of value`, rule, {
       valid: [
         dedent`
           type Type<T> = T extends {
@@ -1326,7 +1328,7 @@ describe(RULE_NAME, () => {
     })
 
     ruleTester.run(
-      `${RULE_NAME}: sets alphabetical asc sorting as default`,
+      `${ruleName}: sets alphabetical asc sorting as default`,
       rule,
       {
         valid: [

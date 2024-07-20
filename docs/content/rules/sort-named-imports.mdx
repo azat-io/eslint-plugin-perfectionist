@@ -100,7 +100,7 @@ This rule accepts an options object with the following properties:
 
 ### type
 
-<sub>(default: `'alphabetical'`)</sub>
+<sub>default: `'alphabetical'`</sub>
 
 Specifies the sorting method.
 
@@ -110,7 +110,7 @@ Specifies the sorting method.
 
 ### order
 
-<sub>(default: `'asc'`)</sub>
+<sub>default: `'asc'`</sub>
 
 Determines whether the sorted items should be in ascending or descending order.
 
@@ -119,32 +119,31 @@ Determines whether the sorted items should be in ascending or descending order.
 
 ### ignoreCase
 
-<sub>(default: `true`)</sub>
+<sub>default: `true`</sub>
 
 Controls whether sorting should be case-sensitive or not.
 
 - `true` — Ignore case when sorting alphabetically or naturally (e.g., “A” and “a” are the same).
 - `false` — Consider case when sorting (e.g., “A” comes before “a”).
 
-### groupKind
-
-<sub>(default: `'mixed'`)</sub>
-
-Allows you to group named imports by their kind, determining whether value imports should come before or after type imports.
-
-- `mixed` — Do not group named imports by their kind; export statements are sorted together regardless of their type.
-- `values-first` — Group all value imports before type imports.
-- `types-first` — Group all type imports before value imports.
-
 ### ignoreAlias
 
-<sub>(default: `true`)</sub>
+<sub>default: `false`</sub>
 
 Determines whether to use the import alias as the name for sorting instead of the exported name.
 
 - `true` — Use the import alias for sorting.
 - `false` — Use the exported name for sorting.
 
+### groupKind
+
+<sub>default: `'mixed'`</sub>
+
+Allows you to group named imports by their kind, determining whether value imports should come before or after type imports.
+
+- `mixed` — Do not group named imports by their kind; export statements are sorted together regardless of their type.
+- `values-first` — Group all value imports before type imports.
+- `types-first` — Group all type imports before value imports.
 
 ## Usage
 
@@ -164,8 +163,11 @@ Determines whether to use the import alias as the name for sorting instead of th
               'perfectionist/sort-named-imports': [
                 'error',
                 {
-                  type: 'natural',
+                  type: 'alphabetical',
                   order: 'asc',
+                  ignoreAlias: false,
+                  ignoreCase: true,
+                  groupKind: 'mixed',
                 },
               ],
             },
@@ -186,8 +188,11 @@ Determines whether to use the import alias as the name for sorting instead of th
             'perfectionist/sort-named-imports': [
               'error',
               {
-                type: 'natural',
+                type: 'alphabetical',
                 order: 'asc',
+                ignoreAlias: false,
+                ignoreCase: true,
+                groupKind: 'mixed',
               },
             ],
           },

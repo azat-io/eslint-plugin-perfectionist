@@ -39,14 +39,12 @@ type Options = [
   }>,
 ]
 
-export const RULE_NAME = 'sort-intersection-types'
-
 export default createEslintRule<Options, MESSAGE_ID>({
-  name: RULE_NAME,
+  name: 'sort-intersection-types',
   meta: {
     type: 'suggestion',
     docs: {
-      description: 'Enforce sorted intersection types',
+      description: 'Enforce sorted intersection types.',
     },
     fixable: 'code',
     schema: [
@@ -54,21 +52,37 @@ export default createEslintRule<Options, MESSAGE_ID>({
         type: 'object',
         properties: {
           type: {
-            enum: ['alphabetical', 'natural', 'line-length'],
-            default: 'alphabetical',
+            description: 'Specifies the sorting method.',
             type: 'string',
+            enum: ['alphabetical', 'natural', 'line-length'],
           },
           order: {
-            enum: ['asc', 'desc'],
-            default: 'asc',
+            description:
+              'Determines whether the sorted items should be in ascending or descending order.',
             type: 'string',
+            enum: ['asc', 'desc'],
           },
           ignoreCase: {
+            description:
+              'Controls whether sorting should be case-sensitive or not.',
             type: 'boolean',
-            default: true,
           },
           groups: {
+            description: 'Specifies the order of the groups.',
             type: 'array',
+            items: {
+              oneOf: [
+                {
+                  type: 'string',
+                },
+                {
+                  type: 'array',
+                  items: {
+                    type: 'string',
+                  },
+                },
+              ],
+            },
           },
         },
         additionalProperties: false,
@@ -76,13 +90,15 @@ export default createEslintRule<Options, MESSAGE_ID>({
     ],
     messages: {
       unexpectedIntersectionTypesOrder:
-        'Expected "{{right}}" to come before "{{left}}"',
+        'Expected "{{right}}" to come before "{{left}}".',
     },
   },
   defaultOptions: [
     {
       type: 'alphabetical',
       order: 'asc',
+      ignoreCase: true,
+      groups: [],
     },
   ],
   create: context => ({

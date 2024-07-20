@@ -2,9 +2,11 @@ import { RuleTester } from '@typescript-eslint/rule-tester'
 import { afterAll, describe, it } from 'vitest'
 import { dedent } from 'ts-dedent'
 
-import rule, { RULE_NAME } from '../rules/sort-jsx-props'
+import rule from '../rules/sort-jsx-props'
 
-describe(RULE_NAME, () => {
+let ruleName = 'sort-jsx-props'
+
+describe(ruleName, () => {
   RuleTester.describeSkip = describe.skip
   RuleTester.afterAll = afterAll
   RuleTester.describe = describe
@@ -21,7 +23,7 @@ describe(RULE_NAME, () => {
     },
   })
 
-  describe(`${RULE_NAME}: sorting by alphabetical order`, () => {
+  describe(`${ruleName}: sorting by alphabetical order`, () => {
     let type = 'alphabetical-order'
 
     let options = {
@@ -30,7 +32,7 @@ describe(RULE_NAME, () => {
       order: 'asc',
     } as const
 
-    ruleTester.run(`${RULE_NAME}(${type}): sorts jsx props`, rule, {
+    ruleTester.run(`${ruleName}(${type}): sorts jsx props`, rule, {
       valid: [
         {
           code: dedent`
@@ -86,7 +88,7 @@ describe(RULE_NAME, () => {
     })
 
     ruleTester.run(
-      `${RULE_NAME}(${type}): sorts jsx props with namespaced names`,
+      `${ruleName}(${type}): sorts jsx props with namespaced names`,
       rule,
       {
         valid: [
@@ -142,7 +144,7 @@ describe(RULE_NAME, () => {
     )
 
     ruleTester.run(
-      `${RULE_NAME}(${type}): does not break the property list`,
+      `${ruleName}(${type}): does not break the property list`,
       rule,
       {
         valid: [
@@ -214,7 +216,7 @@ describe(RULE_NAME, () => {
     )
 
     ruleTester.run(
-      `${RULE_NAME}(${type}): allows to set shorthand props position`,
+      `${ruleName}(${type}): allows to set shorthand props position`,
       rule,
       {
         valid: [
@@ -280,7 +282,7 @@ describe(RULE_NAME, () => {
     )
 
     ruleTester.run(
-      `${RULE_NAME}(${type}): allows to set callback props position`,
+      `${ruleName}(${type}): allows to set callback props position`,
       rule,
       {
         valid: [
@@ -339,7 +341,7 @@ describe(RULE_NAME, () => {
     )
 
     ruleTester.run(
-      `${RULE_NAME}(${type}): allows to set multiline props position`,
+      `${ruleName}(${type}): allows to set multiline props position`,
       rule,
       {
         valid: [
@@ -416,13 +418,10 @@ describe(RULE_NAME, () => {
       },
     )
 
-    ruleTester.run(
-      `${RULE_NAME}(${type}): allows to set priority props`,
-      rule,
-      {
-        valid: [
-          {
-            code: dedent`
+    ruleTester.run(`${ruleName}(${type}): allows to set priority props`, rule, {
+      valid: [
+        {
+          code: dedent`
               <Element
                 d="ddd"
                 e="ee"
@@ -431,18 +430,18 @@ describe(RULE_NAME, () => {
                 c="cc"
               />
             `,
-            options: [
-              {
-                ...options,
-                customGroups: { top: ['d', 'e'] },
-                groups: ['top', 'unknown'],
-              },
-            ],
-          },
-        ],
-        invalid: [
-          {
-            code: dedent`
+          options: [
+            {
+              ...options,
+              customGroups: { top: ['d', 'e'] },
+              groups: ['top', 'unknown'],
+            },
+          ],
+        },
+      ],
+      invalid: [
+        {
+          code: dedent`
               <Element
                 a="aaaa"
                 b="bbb"
@@ -451,7 +450,7 @@ describe(RULE_NAME, () => {
                 e="ee"
               />
             `,
-            output: dedent`
+          output: dedent`
               <Element
                 d="ddd"
                 e="ee"
@@ -460,29 +459,28 @@ describe(RULE_NAME, () => {
                 c="cc"
               />
             `,
-            options: [
-              {
-                ...options,
-                customGroups: { top: ['d', 'e'] },
-                groups: ['top', 'unknown'],
+          options: [
+            {
+              ...options,
+              customGroups: { top: ['d', 'e'] },
+              groups: ['top', 'unknown'],
+            },
+          ],
+          errors: [
+            {
+              messageId: 'unexpectedJSXPropsOrder',
+              data: {
+                left: 'c',
+                right: 'd',
               },
-            ],
-            errors: [
-              {
-                messageId: 'unexpectedJSXPropsOrder',
-                data: {
-                  left: 'c',
-                  right: 'd',
-                },
-              },
-            ],
-          },
-        ],
-      },
-    )
+            },
+          ],
+        },
+      ],
+    })
   })
 
-  describe(`${RULE_NAME}: sorting by natural order`, () => {
+  describe(`${ruleName}: sorting by natural order`, () => {
     let type = 'natural-order'
 
     let options = {
@@ -491,7 +489,7 @@ describe(RULE_NAME, () => {
       order: 'asc',
     } as const
 
-    ruleTester.run(`${RULE_NAME}(${type}): sorts jsx props`, rule, {
+    ruleTester.run(`${ruleName}(${type}): sorts jsx props`, rule, {
       valid: [
         {
           code: dedent`
@@ -547,7 +545,7 @@ describe(RULE_NAME, () => {
     })
 
     ruleTester.run(
-      `${RULE_NAME}(${type}): sorts jsx props with namespaced names`,
+      `${ruleName}(${type}): sorts jsx props with namespaced names`,
       rule,
       {
         valid: [
@@ -603,7 +601,7 @@ describe(RULE_NAME, () => {
     )
 
     ruleTester.run(
-      `${RULE_NAME}(${type}): does not break the property list`,
+      `${ruleName}(${type}): does not break the property list`,
       rule,
       {
         valid: [
@@ -675,7 +673,7 @@ describe(RULE_NAME, () => {
     )
 
     ruleTester.run(
-      `${RULE_NAME}(${type}): allows to set shorthand props position`,
+      `${ruleName}(${type}): allows to set shorthand props position`,
       rule,
       {
         valid: [
@@ -741,7 +739,7 @@ describe(RULE_NAME, () => {
     )
 
     ruleTester.run(
-      `${RULE_NAME}(${type}): allows to set callback props position`,
+      `${ruleName}(${type}): allows to set callback props position`,
       rule,
       {
         valid: [
@@ -800,7 +798,7 @@ describe(RULE_NAME, () => {
     )
 
     ruleTester.run(
-      `${RULE_NAME}(${type}): allows to set multiline props position`,
+      `${ruleName}(${type}): allows to set multiline props position`,
       rule,
       {
         valid: [
@@ -877,13 +875,10 @@ describe(RULE_NAME, () => {
       },
     )
 
-    ruleTester.run(
-      `${RULE_NAME}(${type}): allows to set priority props`,
-      rule,
-      {
-        valid: [
-          {
-            code: dedent`
+    ruleTester.run(`${ruleName}(${type}): allows to set priority props`, rule, {
+      valid: [
+        {
+          code: dedent`
               <Element
                 d="ddd"
                 e="ee"
@@ -892,18 +887,18 @@ describe(RULE_NAME, () => {
                 c="cc"
               />
             `,
-            options: [
-              {
-                ...options,
-                customGroups: { top: ['d', 'e'] },
-                groups: ['top', 'unknown'],
-              },
-            ],
-          },
-        ],
-        invalid: [
-          {
-            code: dedent`
+          options: [
+            {
+              ...options,
+              customGroups: { top: ['d', 'e'] },
+              groups: ['top', 'unknown'],
+            },
+          ],
+        },
+      ],
+      invalid: [
+        {
+          code: dedent`
               <Element
                 a="aaaa"
                 b="bbb"
@@ -912,7 +907,7 @@ describe(RULE_NAME, () => {
                 e="ee"
               />
             `,
-            output: dedent`
+          output: dedent`
               <Element
                 d="ddd"
                 e="ee"
@@ -921,29 +916,28 @@ describe(RULE_NAME, () => {
                 c="cc"
               />
             `,
-            options: [
-              {
-                ...options,
-                customGroups: { top: ['d', 'e'] },
-                groups: ['top', 'unknown'],
+          options: [
+            {
+              ...options,
+              customGroups: { top: ['d', 'e'] },
+              groups: ['top', 'unknown'],
+            },
+          ],
+          errors: [
+            {
+              messageId: 'unexpectedJSXPropsOrder',
+              data: {
+                left: 'c',
+                right: 'd',
               },
-            ],
-            errors: [
-              {
-                messageId: 'unexpectedJSXPropsOrder',
-                data: {
-                  left: 'c',
-                  right: 'd',
-                },
-              },
-            ],
-          },
-        ],
-      },
-    )
+            },
+          ],
+        },
+      ],
+    })
   })
 
-  describe(`${RULE_NAME}: sorting by line length`, () => {
+  describe(`${ruleName}: sorting by line length`, () => {
     let type = 'line-length-order'
 
     let options = {
@@ -951,7 +945,7 @@ describe(RULE_NAME, () => {
       order: 'desc',
     } as const
 
-    ruleTester.run(`${RULE_NAME}(${type}): sorts jsx props`, rule, {
+    ruleTester.run(`${ruleName}(${type}): sorts jsx props`, rule, {
       valid: [
         {
           code: dedent`
@@ -1007,7 +1001,7 @@ describe(RULE_NAME, () => {
     })
 
     ruleTester.run(
-      `${RULE_NAME}(${type}): sorts jsx props with namespaced names`,
+      `${ruleName}(${type}): sorts jsx props with namespaced names`,
       rule,
       {
         valid: [
@@ -1063,7 +1057,7 @@ describe(RULE_NAME, () => {
     )
 
     ruleTester.run(
-      `${RULE_NAME}(${type}): does not break the property list`,
+      `${ruleName}(${type}): does not break the property list`,
       rule,
       {
         valid: [
@@ -1135,7 +1129,7 @@ describe(RULE_NAME, () => {
     )
 
     ruleTester.run(
-      `${RULE_NAME}(${type}): allows to set shorthand props position`,
+      `${ruleName}(${type}): allows to set shorthand props position`,
       rule,
       {
         valid: [
@@ -1201,7 +1195,7 @@ describe(RULE_NAME, () => {
     )
 
     ruleTester.run(
-      `${RULE_NAME}(${type}): allows to set callback props position`,
+      `${ruleName}(${type}): allows to set callback props position`,
       rule,
       {
         valid: [
@@ -1260,7 +1254,7 @@ describe(RULE_NAME, () => {
     )
 
     ruleTester.run(
-      `${RULE_NAME}(${type}): allows to set multiline props position`,
+      `${ruleName}(${type}): allows to set multiline props position`,
       rule,
       {
         valid: [
@@ -1344,13 +1338,10 @@ describe(RULE_NAME, () => {
       },
     )
 
-    ruleTester.run(
-      `${RULE_NAME}(${type}): allows to set priority props`,
-      rule,
-      {
-        valid: [
-          {
-            code: dedent`
+    ruleTester.run(`${ruleName}(${type}): allows to set priority props`, rule, {
+      valid: [
+        {
+          code: dedent`
               <Element
                 d="ddd"
                 e="ee"
@@ -1359,19 +1350,19 @@ describe(RULE_NAME, () => {
                 c="cc"
               />
             `,
-            options: [
-              {
-                ...options,
-                customGroups: { top: ['d', 'e'] },
-                groups: ['top', 'unknown'],
-                ignoreCase: true,
-              },
-            ],
-          },
-        ],
-        invalid: [
-          {
-            code: dedent`
+          options: [
+            {
+              ...options,
+              customGroups: { top: ['d', 'e'] },
+              groups: ['top', 'unknown'],
+              ignoreCase: true,
+            },
+          ],
+        },
+      ],
+      invalid: [
+        {
+          code: dedent`
               <Element
                 a="aaaa"
                 b="bbb"
@@ -1380,7 +1371,7 @@ describe(RULE_NAME, () => {
                 e="ee"
               />
             `,
-            output: dedent`
+          output: dedent`
               <Element
                 d="ddd"
                 e="ee"
@@ -1389,31 +1380,30 @@ describe(RULE_NAME, () => {
                 c="cc"
               />
             `,
-            options: [
-              {
-                ...options,
-                customGroups: { top: ['d', 'e'] },
-                groups: ['top', 'unknown'],
+          options: [
+            {
+              ...options,
+              customGroups: { top: ['d', 'e'] },
+              groups: ['top', 'unknown'],
+            },
+          ],
+          errors: [
+            {
+              messageId: 'unexpectedJSXPropsOrder',
+              data: {
+                left: 'c',
+                right: 'd',
               },
-            ],
-            errors: [
-              {
-                messageId: 'unexpectedJSXPropsOrder',
-                data: {
-                  left: 'c',
-                  right: 'd',
-                },
-              },
-            ],
-          },
-        ],
-      },
-    )
+            },
+          ],
+        },
+      ],
+    })
   })
 
-  describe(`${RULE_NAME}: misc`, () => {
+  describe(`${ruleName}: misc`, () => {
     ruleTester.run(
-      `${RULE_NAME}: sets alphabetical asc sorting as default`,
+      `${ruleName}: sets alphabetical asc sorting as default`,
       rule,
       {
         valid: [
@@ -1443,7 +1433,7 @@ describe(RULE_NAME, () => {
       },
     )
     ;['.svelte', '.astro', '.vue'].forEach(extension => {
-      ruleTester.run(`${RULE_NAME}: not works with ${extension} files`, rule, {
+      ruleTester.run(`${ruleName}: not works with ${extension} files`, rule, {
         valid: [
           {
             filename: `component${extension}`,
@@ -1460,7 +1450,7 @@ describe(RULE_NAME, () => {
       })
     })
 
-    ruleTester.run(`${RULE_NAME}: does not work with empty props`, rule, {
+    ruleTester.run(`${ruleName}: does not work with empty props`, rule, {
       valid: [
         dedent`
           let Component = () => (
@@ -1471,7 +1461,7 @@ describe(RULE_NAME, () => {
       invalid: [],
     })
 
-    ruleTester.run(`${RULE_NAME}: does not work with single prop`, rule, {
+    ruleTester.run(`${ruleName}: does not work with single prop`, rule, {
       valid: [
         dedent`
           let Component = () => (
@@ -1483,7 +1473,7 @@ describe(RULE_NAME, () => {
     })
 
     ruleTester.run(
-      `${RULE_NAME}: allow to disable rule for some JSX elements`,
+      `${ruleName}: allow to disable rule for some JSX elements`,
       rule,
       {
         valid: [

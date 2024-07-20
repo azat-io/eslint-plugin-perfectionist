@@ -155,7 +155,7 @@ This rule accepts an options object with the following properties:
 
 ### type
 
-<sub>(default: `'alphabetical'`)</sub>
+<sub>default: `'alphabetical'`</sub>
 
 Specifies the sorting method.
 
@@ -165,7 +165,7 @@ Specifies the sorting method.
 
 ### order
 
-<sub>(default: `'asc'`)</sub>
+<sub>default: `'asc'`</sub>
 
 Determines whether the sorted items should be in ascending or descending order.
 
@@ -174,51 +174,16 @@ Determines whether the sorted items should be in ascending or descending order.
 
 ### ignoreCase
 
-<sub>(default: `true`)</sub>
+<sub>default: `true`</sub>
 
 Controls whether sorting should be case-sensitive or not.
 
 - `true` — Ignore case when sorting alphabetically or naturally (e.g., “A” and “a” are the same).
 - `false` — Consider case when sorting (e.g., “A” comes before “a”).
 
-### groups
-
-<sub>(default: `[]`)</sub>
-
-Allows you to specify a list of object keys groups for sorting. Groups help organize object keys into categories, making your objects more readable and maintainable. Multiple groups can be combined to achieve the desired sorting order.
-
-There are no predefined groups. You must use this with the `customGroups` option.
-
-### customGroups
-
-<sub>(default: `{}`)</sub>
-
-You can define your own groups for object keys. The [minimatch](https://github.com/isaacs/minimatch) library is used for pattern matching.
-
-```js
- {
-   groups: [
-+    'top',              // [!code ++]
-     'unknown',
-   ],
-+  customGroups: {       // [!code ++]
-+    top: ['id', 'name'] // [!code ++]
-+  }                     // [!code ++]
- }
-```
-
-### styledComponents
-
-<sub>(default: `true`)</sub>
-
-Determines whether this rule should be applied to styled-components like libraries.
-
-- `true` — Apply the rule to styled-components.
-- `false` — Disable the rule for styled-components.
-
 ### partitionByComment
 
-<sub>(default: `false`)</sub>
+<sub>default: `false`</sub>
 
 Allows you to use comments to separate the keys of objects into logical groups. This can help in organizing and maintaining large enums by creating partitions within the enum based on comments.
 
@@ -228,7 +193,7 @@ Allows you to use comments to separate the keys of objects into logical groups. 
 
 ### partitionByNewLine
 
-<sub>(default: `false`)</sub>
+<sub>default: `false`</sub>
 
 When `true`, the rule will not sort the object’s keys if there is an empty line between them. This can be useful for keeping logically separated groups of keys in their defined order.
 
@@ -250,9 +215,18 @@ const user = {
 
 In this example, the `partitionByNewLine` option will cause the rule to treat each group of keys (separated by empty lines) independently, preserving their order within each group.
 
+### styledComponents
+
+<sub>default: `true`</sub>
+
+Determines whether this rule should be applied to styled-components like libraries.
+
+- `true` — Apply the rule to styled-components.
+- `false` — Disable the rule for styled-components.
+
 ### ignorePattern
 
-<sub>(default: `[]`)</sub>
+<sub>default: `[]`</sub>
 
 Allows you to specify names or patterns for object types that should be ignored by this rule. This can be useful if you have specific objects that you do not want to sort.
 
@@ -262,7 +236,7 @@ The [minimatch](https://github.com/isaacs/minimatch) library is used for pattern
 
 ### customIgnore
 
-<sub>(default: `[]`)</sub>
+<sub>default: `[]`</sub>
 
 If you need to ignore certain objects using a more complex algorithm, you can write your own function.
 
@@ -278,6 +252,32 @@ For example, if you want to ignore objects that are not part of a destructuring 
     },
   ]
 }
+```
+
+### groups
+
+<sub>default: `[]`</sub>
+
+Allows you to specify a list of object keys groups for sorting. Groups help organize object keys into categories, making your objects more readable and maintainable. Multiple groups can be combined to achieve the desired sorting order.
+
+There are no predefined groups. You must use this with the `customGroups` option.
+
+### customGroups
+
+<sub>default: `{}`</sub>
+
+You can define your own groups for object keys. The [minimatch](https://github.com/isaacs/minimatch) library is used for pattern matching.
+
+```js
+ {
+   groups: [
++    'top',              // [!code ++]
+     'unknown',
+   ],
++  customGroups: {       // [!code ++]
++    top: ['id', 'name'] // [!code ++]
++  }                     // [!code ++]
+ }
 ```
 
 ## Usage
@@ -298,13 +298,16 @@ For example, if you want to ignore objects that are not part of a destructuring 
               'perfectionist/sort-objects': [
                 'error',
                 {
-                  type: 'natural',
+                  type: 'alphabetical',
                   order: 'asc',
-                  partitionByComment': 'Part:**',
-                  groups: ['id', 'unknown'],
-                  customGroups: {
-                    id: 'id',
-                  },
+                  ignoreCase: true,
+                  partitionByComment: false,
+                  partitionByNewLine: false,
+                  styledComponents: true,
+                  ignorePattern: [],
+                  customIgnore: [],
+                  groups: [],
+                  customGroups: {},
                 },
               ],
             },
@@ -325,13 +328,16 @@ For example, if you want to ignore objects that are not part of a destructuring 
             'perfectionist/sort-objects': [
               'error',
               {
-                type: 'natural',
+                type: 'alphabetical',
                 order: 'asc',
-                partitionByComment: 'Part:**',
-                groups: ['id', 'unknown'],
-                customGroups: {
-                  id: 'id',
-                },
+                ignoreCase: true,
+                partitionByComment: false,
+                partitionByNewLine: false,
+                styledComponents: true,
+                ignorePattern: [],
+                customIgnore: [],
+                groups: [],
+                customGroups: {},
               },
             ],
           },

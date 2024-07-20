@@ -25,12 +25,6 @@ type MESSAGE_ID =
   | 'extraSpacingBetweenImports'
   | 'unexpectedImportsOrder'
 
-export enum NewlinesBetweenValue {
-  'ignore' = 'ignore',
-  'always' = 'always',
-  'never' = 'never',
-}
-
 type Group<T extends string[]> =
   | 'side-effect-style'
   | 'external-type'
@@ -59,7 +53,7 @@ type Options<T extends string[]> = [
       type?: { [key in T[number]]: string[] | string }
     }
     type: 'alphabetical' | 'line-length' | 'natural'
-    newlinesBetween: NewlinesBetweenValue
+    newlinesBetween: 'ignore' | 'always' | 'never'
     groups: (Group<T>[] | Group<T>)[]
     environment: 'node' | 'bun'
     internalPattern: string[]
@@ -69,18 +63,16 @@ type Options<T extends string[]> = [
   }>,
 ]
 
-export const RULE_NAME = 'sort-imports'
-
 type ModuleDeclaration =
   | TSESTree.TSImportEqualsDeclaration
   | TSESTree.ImportDeclaration
 
 export default createEslintRule<Options<string[]>, MESSAGE_ID>({
-  name: RULE_NAME,
+  name: 'sort-imports',
   meta: {
     type: 'suggestion',
     docs: {
-      description: 'Enforce sorted imports',
+      description: 'Enforce sorted imports.',
     },
     fixable: 'code',
     schema: [
@@ -88,7 +80,60 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
         id: 'sort-imports',
         type: 'object',
         properties: {
+          type: {
+            description: 'Specifies the sorting method.',
+            type: 'string',
+            enum: ['alphabetical', 'natural', 'line-length'],
+          },
+          order: {
+            description:
+              'Determines whether the sorted items should be in ascending or descending order.',
+            type: 'string',
+            enum: ['asc', 'desc'],
+          },
+          ignoreCase: {
+            description:
+              'Controls whether sorting should be case-sensitive or not.',
+            type: 'boolean',
+          },
+          internalPattern: {
+            description: 'Specifies the pattern for internal modules.',
+            items: {
+              type: 'string',
+            },
+            type: 'array',
+          },
+          newlinesBetween: {
+            description:
+              'Specifies how new lines should be handled between import groups.',
+            enum: ['ignore', 'always', 'never'],
+            type: 'string',
+          },
+          maxLineLength: {
+            description: 'Specifies the maximum line length.',
+            type: 'integer',
+            minimum: 0,
+            exclusiveMinimum: true,
+          },
+          groups: {
+            description: 'Specifies the order of the groups.',
+            type: 'array',
+            items: {
+              oneOf: [
+                {
+                  type: 'string',
+                },
+                {
+                  type: 'array',
+                  items: {
+                    type: 'string',
+                  },
+                },
+              ],
+            },
+          },
           customGroups: {
+            description: 'Specifies custom groups.',
             type: 'object',
             properties: {
               type: {
@@ -100,45 +145,8 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
             },
             additionalProperties: false,
           },
-          type: {
-            enum: ['alphabetical', 'natural', 'line-length'],
-            default: 'alphabetical',
-            type: 'string',
-          },
-          order: {
-            enum: ['asc', 'desc'],
-            default: 'asc',
-            type: 'string',
-          },
-          ignoreCase: {
-            type: 'boolean',
-            default: true,
-          },
-          groups: {
-            type: 'array',
-            default: [],
-          },
-          internalPattern: {
-            items: {
-              type: 'string',
-            },
-            type: 'array',
-          },
-          newlinesBetween: {
-            enum: [
-              NewlinesBetweenValue.ignore,
-              NewlinesBetweenValue.always,
-              NewlinesBetweenValue.never,
-            ],
-            default: NewlinesBetweenValue.always,
-            type: 'string',
-          },
-          maxLineLength: {
-            type: 'integer',
-            minimum: 0,
-            exclusiveMinimum: true,
-          },
           environment: {
+            description: 'Specifies the environment.',
             enum: ['node', 'bun'],
             default: 'node',
             type: 'string',
@@ -179,29 +187,53 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
       },
     ],
     messages: {
-      unexpectedImportsOrder: 'Expected "{{right}}" to come before "{{left}}"',
+      unexpectedImportsOrder: 'Expected "{{right}}" to come before "{{left}}".',
       missedSpacingBetweenImports:
-        'Missed spacing between "{{left}}" and "{{right}}" imports',
+        'Missed spacing between "{{left}}" and "{{right}}" imports.',
       extraSpacingBetweenImports:
-        'Extra spacing between "{{left}}" and "{{right}}" imports',
+        'Extra spacing between "{{left}}" and "{{right}}" imports.',
     },
   },
   defaultOptions: [
     {
       type: 'alphabetical',
       order: 'asc',
+      ignoreCase: true,
+      internalPattern: ['~/**'],
+      newlinesBetween: 'always',
+      maxLineLength: undefined,
+      groups: [
+        'type',
+        ['builtin', 'external'],
+        'internal-type',
+        'internal',
+        ['parent-type', 'sibling-type', 'index-type'],
+        ['parent', 'sibling', 'index'],
+        'object',
+        'unknown',
+      ],
+      customGroups: { type: {}, value: {} },
     },
   ],
   create: context => {
     let options = complete(context.options.at(0), {
-      newlinesBetween: NewlinesBetweenValue.always,
+      groups: [
+        'type',
+        ['builtin', 'external'],
+        'internal-type',
+        'internal',
+        ['parent-type', 'sibling-type', 'index-type'],
+        ['parent', 'sibling', 'index'],
+        'object',
+        'unknown',
+      ],
       customGroups: { type: {}, value: {} },
       internalPattern: ['~/**'],
+      newlinesBetween: 'always',
       type: 'alphabetical',
       environment: 'node',
       ignoreCase: true,
       order: 'asc',
-      groups: [],
     } as const)
 
     let sourceCode = getSourceCode(context)

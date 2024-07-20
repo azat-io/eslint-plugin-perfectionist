@@ -23,14 +23,12 @@ type Options = [
   }>,
 ]
 
-export const RULE_NAME = 'sort-named-imports'
-
 export default createEslintRule<Options, MESSAGE_ID>({
-  name: RULE_NAME,
+  name: 'sort-named-imports',
   meta: {
     type: 'suggestion',
     docs: {
-      description: 'Enforce sorted named imports',
+      description: 'Enforce sorted named imports.',
     },
     fixable: 'code',
     schema: [
@@ -38,26 +36,28 @@ export default createEslintRule<Options, MESSAGE_ID>({
         type: 'object',
         properties: {
           type: {
-            enum: ['alphabetical', 'natural', 'line-length'],
-            default: 'alphabetical',
+            description: 'Specifies the sorting method.',
             type: 'string',
+            enum: ['alphabetical', 'natural', 'line-length'],
           },
           order: {
-            enum: ['asc', 'desc'],
-            default: 'asc',
+            description:
+              'Determines whether the sorted items should be in ascending or descending order.',
             type: 'string',
+            enum: ['asc', 'desc'],
           },
           ignoreCase: {
+            description:
+              'Controls whether sorting should be case-sensitive or not.',
             type: 'boolean',
-            default: true,
           },
           ignoreAlias: {
+            description: 'Controls whether to ignore alias names.',
             type: 'boolean',
-            default: false,
           },
           groupKind: {
+            description: 'Specifies top-level groups.',
             enum: ['mixed', 'values-first', 'types-first'],
-            default: 'mixed',
             type: 'string',
           },
         },
@@ -66,13 +66,16 @@ export default createEslintRule<Options, MESSAGE_ID>({
     ],
     messages: {
       unexpectedNamedImportsOrder:
-        'Expected "{{right}}" to come before "{{left}}"',
+        'Expected "{{right}}" to come before "{{left}}".',
     },
   },
   defaultOptions: [
     {
       type: 'alphabetical',
       order: 'asc',
+      ignoreAlias: false,
+      ignoreCase: true,
+      groupKind: 'mixed',
     },
   ],
   create: context => ({
@@ -84,9 +87,9 @@ export default createEslintRule<Options, MESSAGE_ID>({
       if (specifiers.length > 1) {
         let options = complete(context.options.at(0), {
           type: 'alphabetical',
-          ignoreAlias: true,
-          ignoreCase: true,
+          ignoreAlias: false,
           groupKind: 'mixed',
+          ignoreCase: true,
           order: 'asc',
         } as const)
 

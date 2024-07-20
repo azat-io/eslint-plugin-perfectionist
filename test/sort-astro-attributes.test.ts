@@ -2,9 +2,11 @@ import { RuleTester } from '@typescript-eslint/rule-tester'
 import { afterAll, describe, it } from 'vitest'
 import { dedent } from 'ts-dedent'
 
-import rule, { RULE_NAME } from '../rules/sort-astro-attributes'
+import rule from '../rules/sort-astro-attributes'
 
-describe(RULE_NAME, () => {
+let ruleName = 'sort-astro-attributes'
+
+describe(ruleName, () => {
   RuleTester.describeSkip = describe.skip
   RuleTester.afterAll = afterAll
   RuleTester.describe = describe
@@ -21,7 +23,7 @@ describe(RULE_NAME, () => {
     },
   })
 
-  describe(`${RULE_NAME}: sorting by alphabetical order`, () => {
+  describe(`${ruleName}: sorting by alphabetical order`, () => {
     let type = 'alphabetical-order'
 
     let options = {
@@ -31,7 +33,7 @@ describe(RULE_NAME, () => {
     } as const
 
     ruleTester.run(
-      `${RULE_NAME}(${type}): sorts props in astro components`,
+      `${ruleName}(${type}): sorts props in astro components`,
       rule,
       {
         valid: [
@@ -77,7 +79,7 @@ describe(RULE_NAME, () => {
     )
 
     ruleTester.run(
-      `${RULE_NAME}(${type}): split props intro groups if there is spread props`,
+      `${ruleName}(${type}): split props intro groups if there is spread props`,
       rule,
       {
         valid: [
@@ -129,7 +131,7 @@ describe(RULE_NAME, () => {
     )
 
     ruleTester.run(
-      `${RULE_NAME}(${type}): works with literal attributes`,
+      `${ruleName}(${type}): works with literal attributes`,
       rule,
       {
         valid: [
@@ -199,7 +201,7 @@ describe(RULE_NAME, () => {
     )
 
     ruleTester.run(
-      `${RULE_NAME}(${type}): allows to set shorthand attributes position`,
+      `${ruleName}(${type}): allows to set shorthand attributes position`,
       rule,
       {
         valid: [
@@ -279,7 +281,7 @@ describe(RULE_NAME, () => {
     )
 
     ruleTester.run(
-      `${RULE_NAME}(${type}): allows to set multiline attributes position`,
+      `${ruleName}(${type}): allows to set multiline attributes position`,
       rule,
       {
         valid: [
@@ -361,7 +363,7 @@ describe(RULE_NAME, () => {
       },
     )
 
-    ruleTester.run(`${RULE_NAME}(${type}): allows to set custom groups`, rule, {
+    ruleTester.run(`${ruleName}(${type}): allows to set custom groups`, rule, {
       valid: [
         {
           filename: 'component.astro',
@@ -450,7 +452,7 @@ describe(RULE_NAME, () => {
     })
   })
 
-  describe(`${RULE_NAME}: sorting by natural order`, () => {
+  describe(`${ruleName}: sorting by natural order`, () => {
     let type = 'natural-order'
 
     let options = {
@@ -460,7 +462,7 @@ describe(RULE_NAME, () => {
     } as const
 
     ruleTester.run(
-      `${RULE_NAME}(${type}): sorts props in astro components`,
+      `${ruleName}(${type}): sorts props in astro components`,
       rule,
       {
         valid: [
@@ -506,7 +508,7 @@ describe(RULE_NAME, () => {
     )
 
     ruleTester.run(
-      `${RULE_NAME}(${type}): split props intro groups if there is spread props`,
+      `${ruleName}(${type}): split props intro groups if there is spread props`,
       rule,
       {
         valid: [
@@ -558,7 +560,7 @@ describe(RULE_NAME, () => {
     )
 
     ruleTester.run(
-      `${RULE_NAME}(${type}): works with literal attributes`,
+      `${ruleName}(${type}): works with literal attributes`,
       rule,
       {
         valid: [
@@ -628,7 +630,7 @@ describe(RULE_NAME, () => {
     )
 
     ruleTester.run(
-      `${RULE_NAME}(${type}): allows to set shorthand attributes position`,
+      `${ruleName}(${type}): allows to set shorthand attributes position`,
       rule,
       {
         valid: [
@@ -708,7 +710,7 @@ describe(RULE_NAME, () => {
     )
 
     ruleTester.run(
-      `${RULE_NAME}(${type}): allows to set multiline attributes position`,
+      `${ruleName}(${type}): allows to set multiline attributes position`,
       rule,
       {
         valid: [
@@ -793,7 +795,7 @@ describe(RULE_NAME, () => {
       },
     )
 
-    ruleTester.run(`${RULE_NAME}(${type}): allows to set custom groups`, rule, {
+    ruleTester.run(`${ruleName}(${type}): allows to set custom groups`, rule, {
       valid: [
         {
           filename: 'component.astro',
@@ -882,7 +884,7 @@ describe(RULE_NAME, () => {
     })
   })
 
-  describe(`${RULE_NAME}: sorting by line length`, () => {
+  describe(`${ruleName}: sorting by line length`, () => {
     let type = 'line-length-order'
 
     let options = {
@@ -891,7 +893,7 @@ describe(RULE_NAME, () => {
     } as const
 
     ruleTester.run(
-      `${RULE_NAME}(${type}): sorts props in astro components`,
+      `${ruleName}(${type}): sorts props in astro components`,
       rule,
       {
         valid: [
@@ -937,7 +939,7 @@ describe(RULE_NAME, () => {
     )
 
     ruleTester.run(
-      `${RULE_NAME}(${type}): split props intro groups if there is spread props`,
+      `${ruleName}(${type}): split props intro groups if there is spread props`,
       rule,
       {
         valid: [
@@ -989,7 +991,7 @@ describe(RULE_NAME, () => {
     )
 
     ruleTester.run(
-      `${RULE_NAME}(${type}): works with literal attributes`,
+      `${ruleName}(${type}): works with literal attributes`,
       rule,
       {
         valid: [
@@ -1059,7 +1061,7 @@ describe(RULE_NAME, () => {
     )
 
     ruleTester.run(
-      `${RULE_NAME}(${type}): allows to set shorthand attributes position`,
+      `${ruleName}(${type}): allows to set shorthand attributes position`,
       rule,
       {
         valid: [
@@ -1146,7 +1148,7 @@ describe(RULE_NAME, () => {
     )
 
     ruleTester.run(
-      `${RULE_NAME}(${type}): allows to set multiline attributes position`,
+      `${ruleName}(${type}): allows to set multiline attributes position`,
       rule,
       {
         valid: [
@@ -1235,7 +1237,7 @@ describe(RULE_NAME, () => {
       },
     )
 
-    ruleTester.run(`${RULE_NAME}(${type}): allows to set custom groups`, rule, {
+    ruleTester.run(`${ruleName}(${type}): allows to set custom groups`, rule, {
       valid: [
         {
           filename: 'component.astro',
@@ -1324,8 +1326,8 @@ describe(RULE_NAME, () => {
     })
   })
 
-  describe(`${RULE_NAME}: misc`, () => {
-    ruleTester.run(`${RULE_NAME}: works only for .astro files`, rule, {
+  describe(`${ruleName}: misc`, () => {
+    ruleTester.run(`${ruleName}: works only for .astro files`, rule, {
       valid: [
         dedent`
           <Component

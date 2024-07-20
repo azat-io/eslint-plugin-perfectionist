@@ -2,9 +2,11 @@ import { RuleTester } from '@typescript-eslint/rule-tester'
 import { afterAll, describe, it } from 'vitest'
 import { dedent } from 'ts-dedent'
 
-import rule, { RULE_NAME } from '../rules/sort-enums'
+import rule from '../rules/sort-enums'
 
-describe(RULE_NAME, () => {
+let ruleName = 'sort-enums'
+
+describe(ruleName, () => {
   RuleTester.describeSkip = describe.skip
   RuleTester.afterAll = afterAll
   RuleTester.describe = describe
@@ -16,7 +18,7 @@ describe(RULE_NAME, () => {
     parser: '@typescript-eslint/parser',
   })
 
-  describe(`${RULE_NAME}: sorting by alphabetical order`, () => {
+  describe(`${ruleName}: sorting by alphabetical order`, () => {
     let type = 'alphabetical-order'
 
     let options = {
@@ -25,7 +27,7 @@ describe(RULE_NAME, () => {
       order: 'asc',
     } as const
 
-    ruleTester.run(`${RULE_NAME}(${type}): sorts enum members`, rule, {
+    ruleTester.run(`${ruleName}(${type}): sorts enum members`, rule, {
       valid: [
         {
           code: dedent`
@@ -72,7 +74,7 @@ describe(RULE_NAME, () => {
     })
 
     ruleTester.run(
-      `${RULE_NAME}(${type}): sorts enum members with number keys`,
+      `${ruleName}(${type}): sorts enum members with number keys`,
       rule,
       {
         valid: [
@@ -122,7 +124,7 @@ describe(RULE_NAME, () => {
     )
 
     ruleTester.run(
-      `${RULE_NAME}(${type}): doesn't sorts enum members without initializer`,
+      `${ruleName}(${type}): doesn't sorts enum members without initializer`,
       rule,
       {
         valid: [
@@ -142,7 +144,7 @@ describe(RULE_NAME, () => {
     )
 
     ruleTester.run(
-      `${RULE_NAME}(${type}): sorts enum members with boolean ids`,
+      `${ruleName}(${type}): sorts enum members with boolean ids`,
       rule,
       {
         valid: [
@@ -186,7 +188,7 @@ describe(RULE_NAME, () => {
     )
 
     ruleTester.run(
-      `${RULE_NAME}(${type}): does not break interface docs`,
+      `${ruleName}(${type}): does not break interface docs`,
       rule,
       {
         valid: [],
@@ -232,7 +234,7 @@ describe(RULE_NAME, () => {
     )
 
     ruleTester.run(
-      `${RULE_NAME}(${type}): does not sort enums with implicit values`,
+      `${ruleName}(${type}): does not sort enums with implicit values`,
       rule,
       {
         valid: [
@@ -253,7 +255,7 @@ describe(RULE_NAME, () => {
     )
 
     ruleTester.run(
-      `${RULE_NAME}(${type}): allows to use partition comments`,
+      `${ruleName}(${type}): allows to use partition comments`,
       rule,
       {
         valid: [],
@@ -319,7 +321,7 @@ describe(RULE_NAME, () => {
     )
 
     ruleTester.run(
-      `${RULE_NAME}(${type}): allows to use all comments as parts`,
+      `${ruleName}(${type}): allows to use all comments as parts`,
       rule,
       {
         valid: [
@@ -345,7 +347,7 @@ describe(RULE_NAME, () => {
     )
 
     ruleTester.run(
-      `${RULE_NAME}(${type}): allows to use multiple partition comments`,
+      `${ruleName}(${type}): allows to use multiple partition comments`,
       rule,
       {
         valid: [],
@@ -398,7 +400,7 @@ describe(RULE_NAME, () => {
     )
   })
 
-  describe(`${RULE_NAME}: sorting by natural order`, () => {
+  describe(`${ruleName}: sorting by natural order`, () => {
     let type = 'natural-order'
 
     let options = {
@@ -407,7 +409,7 @@ describe(RULE_NAME, () => {
       order: 'asc',
     } as const
 
-    ruleTester.run(`${RULE_NAME}(${type}): sorts enum members`, rule, {
+    ruleTester.run(`${ruleName}(${type}): sorts enum members`, rule, {
       valid: [
         {
           code: dedent`
@@ -454,7 +456,7 @@ describe(RULE_NAME, () => {
     })
 
     ruleTester.run(
-      `${RULE_NAME}(${type}): sorts enum members with number keys`,
+      `${ruleName}(${type}): sorts enum members with number keys`,
       rule,
       {
         valid: [
@@ -504,7 +506,7 @@ describe(RULE_NAME, () => {
     )
 
     ruleTester.run(
-      `${RULE_NAME}(${type}): doesn't sorts enum members without initializer`,
+      `${ruleName}(${type}): doesn't sorts enum members without initializer`,
       rule,
       {
         valid: [
@@ -524,7 +526,7 @@ describe(RULE_NAME, () => {
     )
 
     ruleTester.run(
-      `${RULE_NAME}(${type}): sorts enum members with boolean ids`,
+      `${ruleName}(${type}): sorts enum members with boolean ids`,
       rule,
       {
         valid: [
@@ -568,7 +570,7 @@ describe(RULE_NAME, () => {
     )
 
     ruleTester.run(
-      `${RULE_NAME}(${type}): does not break interface docs`,
+      `${ruleName}(${type}): does not break interface docs`,
       rule,
       {
         valid: [],
@@ -614,7 +616,7 @@ describe(RULE_NAME, () => {
     )
 
     ruleTester.run(
-      `${RULE_NAME}(${type}): does not sort enums with implicit values`,
+      `${ruleName}(${type}): does not sort enums with implicit values`,
       rule,
       {
         valid: [
@@ -635,7 +637,7 @@ describe(RULE_NAME, () => {
     )
 
     ruleTester.run(
-      `${RULE_NAME}(${type}): allows to use partition comments`,
+      `${ruleName}(${type}): allows to use partition comments`,
       rule,
       {
         valid: [],
@@ -701,7 +703,7 @@ describe(RULE_NAME, () => {
     )
 
     ruleTester.run(
-      `${RULE_NAME}(${type}): allows to use all comments as parts`,
+      `${ruleName}(${type}): allows to use all comments as parts`,
       rule,
       {
         valid: [
@@ -727,7 +729,7 @@ describe(RULE_NAME, () => {
     )
 
     ruleTester.run(
-      `${RULE_NAME}(${type}): allows to use multiple partition comments`,
+      `${ruleName}(${type}): allows to use multiple partition comments`,
       rule,
       {
         valid: [],
@@ -780,7 +782,7 @@ describe(RULE_NAME, () => {
     )
   })
 
-  describe(`${RULE_NAME}: sorting by line length`, () => {
+  describe(`${ruleName}: sorting by line length`, () => {
     let type = 'line-length-order'
 
     let options = {
@@ -788,7 +790,7 @@ describe(RULE_NAME, () => {
       order: 'desc',
     } as const
 
-    ruleTester.run(`${RULE_NAME}(${type}): sorts enum members`, rule, {
+    ruleTester.run(`${ruleName}(${type}): sorts enum members`, rule, {
       valid: [
         {
           code: dedent`
@@ -835,7 +837,7 @@ describe(RULE_NAME, () => {
     })
 
     ruleTester.run(
-      `${RULE_NAME}(${type}): sorts enum members with number keys`,
+      `${ruleName}(${type}): sorts enum members with number keys`,
       rule,
       {
         valid: [
@@ -885,7 +887,7 @@ describe(RULE_NAME, () => {
     )
 
     ruleTester.run(
-      `${RULE_NAME}(${type}): doesn't sorts enum members without initializer`,
+      `${ruleName}(${type}): doesn't sorts enum members without initializer`,
       rule,
       {
         valid: [
@@ -905,7 +907,7 @@ describe(RULE_NAME, () => {
     )
 
     ruleTester.run(
-      `${RULE_NAME}(${type}): sorts enum members with boolean ids`,
+      `${ruleName}(${type}): sorts enum members with boolean ids`,
       rule,
       {
         valid: [
@@ -949,7 +951,7 @@ describe(RULE_NAME, () => {
     )
 
     ruleTester.run(
-      `${RULE_NAME}(${type}): does not break interface docs`,
+      `${ruleName}(${type}): does not break interface docs`,
       rule,
       {
         valid: [],
@@ -995,7 +997,7 @@ describe(RULE_NAME, () => {
     )
 
     ruleTester.run(
-      `${RULE_NAME}(${type}): does not sort enums with implicit values`,
+      `${ruleName}(${type}): does not sort enums with implicit values`,
       rule,
       {
         valid: [
@@ -1016,7 +1018,7 @@ describe(RULE_NAME, () => {
     )
 
     ruleTester.run(
-      `${RULE_NAME}(${type}): allows to use partition comments`,
+      `${ruleName}(${type}): allows to use partition comments`,
       rule,
       {
         valid: [],
@@ -1075,7 +1077,7 @@ describe(RULE_NAME, () => {
     )
 
     ruleTester.run(
-      `${RULE_NAME}(${type}): allows to use all comments as parts`,
+      `${ruleName}(${type}): allows to use all comments as parts`,
       rule,
       {
         valid: [
@@ -1101,7 +1103,7 @@ describe(RULE_NAME, () => {
     )
 
     ruleTester.run(
-      `${RULE_NAME}(${type}): allows to use multiple partition comments`,
+      `${ruleName}(${type}): allows to use multiple partition comments`,
       rule,
       {
         valid: [],
@@ -1154,9 +1156,9 @@ describe(RULE_NAME, () => {
     )
   })
 
-  describe(`${RULE_NAME}: misc`, () => {
+  describe(`${ruleName}: misc`, () => {
     ruleTester.run(
-      `${RULE_NAME}: sets alphabetical asc sorting as default`,
+      `${ruleName}: sets alphabetical asc sorting as default`,
       rule,
       {
         valid: [

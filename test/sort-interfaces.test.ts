@@ -2,9 +2,11 @@ import { RuleTester } from '@typescript-eslint/rule-tester'
 import { afterAll, describe, it } from 'vitest'
 import { dedent } from 'ts-dedent'
 
-import rule, { RULE_NAME } from '../rules/sort-interfaces'
+import rule from '../rules/sort-interfaces'
 
-describe(RULE_NAME, () => {
+let ruleName = 'sort-interfaces'
+
+describe(ruleName, () => {
   RuleTester.describeSkip = describe.skip
   RuleTester.afterAll = afterAll
   RuleTester.describe = describe
@@ -16,7 +18,7 @@ describe(RULE_NAME, () => {
     parser: '@typescript-eslint/parser',
   })
 
-  describe(`${RULE_NAME}: sorting by alphabetical order`, () => {
+  describe(`${ruleName}: sorting by alphabetical order`, () => {
     let type = 'alphabetical-order'
 
     let options = {
@@ -25,7 +27,7 @@ describe(RULE_NAME, () => {
       order: 'asc',
     } as const
 
-    ruleTester.run(`${RULE_NAME}(${type}): sorts interface properties`, rule, {
+    ruleTester.run(`${ruleName}(${type}): sorts interface properties`, rule, {
       valid: [
         {
           code: dedent`
@@ -69,7 +71,7 @@ describe(RULE_NAME, () => {
     })
 
     ruleTester.run(
-      `${RULE_NAME}(${type}): works with ts index signature`,
+      `${ruleName}(${type}): works with ts index signature`,
       rule,
       {
         valid: [
@@ -113,7 +115,7 @@ describe(RULE_NAME, () => {
     )
 
     ruleTester.run(
-      `${RULE_NAME}(${type}): sorts multi-word keys by value`,
+      `${ruleName}(${type}): sorts multi-word keys by value`,
       rule,
       {
         valid: [
@@ -170,7 +172,7 @@ describe(RULE_NAME, () => {
     )
 
     ruleTester.run(
-      `${RULE_NAME}(${type}): works with typescript index signature`,
+      `${ruleName}(${type}): works with typescript index signature`,
       rule,
       {
         valid: [
@@ -217,7 +219,7 @@ describe(RULE_NAME, () => {
     )
 
     ruleTester.run(
-      `${RULE_NAME}(${type}): works with method and construct signatures`,
+      `${ruleName}(${type}): works with method and construct signatures`,
       rule,
       {
         valid: [
@@ -277,7 +279,7 @@ describe(RULE_NAME, () => {
     )
 
     ruleTester.run(
-      `${RULE_NAME}(${type}): works with empty properties with empty values`,
+      `${ruleName}(${type}): works with empty properties with empty values`,
       rule,
       {
         valid: [
@@ -337,7 +339,7 @@ describe(RULE_NAME, () => {
     )
 
     ruleTester.run(
-      `${RULE_NAME}(${type}): does not break interface docs`,
+      `${ruleName}(${type}): does not break interface docs`,
       rule,
       {
         valid: [],
@@ -398,7 +400,7 @@ describe(RULE_NAME, () => {
     )
 
     ruleTester.run(
-      `${RULE_NAME}(${type}): sorts interfaces with comments on the same line`,
+      `${ruleName}(${type}): sorts interfaces with comments on the same line`,
       rule,
       {
         valid: [],
@@ -432,7 +434,7 @@ describe(RULE_NAME, () => {
     )
 
     ruleTester.run(
-      `${RULE_NAME}(${type}): sorts interfaces with semi and comments on the same line`,
+      `${ruleName}(${type}): sorts interfaces with semi and comments on the same line`,
       rule,
       {
         valid: [],
@@ -466,7 +468,7 @@ describe(RULE_NAME, () => {
     )
 
     ruleTester.run(
-      `${RULE_NAME}(${type}): not sorts call signature declarations`,
+      `${ruleName}(${type}): not sorts call signature declarations`,
       rule,
       {
         valid: [
@@ -490,7 +492,7 @@ describe(RULE_NAME, () => {
     )
 
     ruleTester.run(
-      `${RULE_NAME}(${type}): allows to set groups for sorting`,
+      `${ruleName}(${type}): allows to set groups for sorting`,
       rule,
       {
         valid: [
@@ -575,7 +577,7 @@ describe(RULE_NAME, () => {
     )
 
     ruleTester.run(
-      `${RULE_NAME}(${type}): allows to use new line as partition`,
+      `${ruleName}(${type}): allows to use new line as partition`,
       rule,
       {
         valid: [
@@ -656,7 +658,7 @@ describe(RULE_NAME, () => {
       },
     )
 
-    ruleTester.run(`${RULE_NAME}(${type}): sorts interface properties`, rule, {
+    ruleTester.run(`${ruleName}(${type}): sorts interface properties`, rule, {
       valid: [
         {
           code: dedent`
@@ -713,7 +715,7 @@ describe(RULE_NAME, () => {
     })
 
     ruleTester.run(
-      `${RULE_NAME}(${type}): allows to set groups for sorting`,
+      `${ruleName}(${type}): allows to set groups for sorting`,
       rule,
       {
         valid: [],
@@ -769,7 +771,7 @@ describe(RULE_NAME, () => {
     )
   })
 
-  describe(`${RULE_NAME}: sorting by natural order`, () => {
+  describe(`${ruleName}: sorting by natural order`, () => {
     let type = 'natural-order'
 
     let options = {
@@ -778,7 +780,7 @@ describe(RULE_NAME, () => {
       order: 'asc',
     } as const
 
-    ruleTester.run(`${RULE_NAME}(${type}): sorts interface properties`, rule, {
+    ruleTester.run(`${ruleName}(${type}): sorts interface properties`, rule, {
       valid: [
         {
           code: dedent`
@@ -822,7 +824,7 @@ describe(RULE_NAME, () => {
     })
 
     ruleTester.run(
-      `${RULE_NAME}(${type}): works with ts index signature`,
+      `${ruleName}(${type}): works with ts index signature`,
       rule,
       {
         valid: [
@@ -866,7 +868,7 @@ describe(RULE_NAME, () => {
     )
 
     ruleTester.run(
-      `${RULE_NAME}(${type}): sorts multi-word keys by value`,
+      `${ruleName}(${type}): sorts multi-word keys by value`,
       rule,
       {
         valid: [
@@ -923,7 +925,7 @@ describe(RULE_NAME, () => {
     )
 
     ruleTester.run(
-      `${RULE_NAME}(${type}): works with typescript index signature`,
+      `${ruleName}(${type}): works with typescript index signature`,
       rule,
       {
         valid: [
@@ -970,7 +972,7 @@ describe(RULE_NAME, () => {
     )
 
     ruleTester.run(
-      `${RULE_NAME}(${type}): works with method and construct signatures`,
+      `${ruleName}(${type}): works with method and construct signatures`,
       rule,
       {
         valid: [
@@ -1030,7 +1032,7 @@ describe(RULE_NAME, () => {
     )
 
     ruleTester.run(
-      `${RULE_NAME}(${type}): works with empty properties with empty values`,
+      `${ruleName}(${type}): works with empty properties with empty values`,
       rule,
       {
         valid: [
@@ -1090,7 +1092,7 @@ describe(RULE_NAME, () => {
     )
 
     ruleTester.run(
-      `${RULE_NAME}(${type}): does not break interface docs`,
+      `${ruleName}(${type}): does not break interface docs`,
       rule,
       {
         valid: [],
@@ -1151,7 +1153,7 @@ describe(RULE_NAME, () => {
     )
 
     ruleTester.run(
-      `${RULE_NAME}(${type}): sorts interfaces with comments on the same line`,
+      `${ruleName}(${type}): sorts interfaces with comments on the same line`,
       rule,
       {
         valid: [],
@@ -1185,7 +1187,7 @@ describe(RULE_NAME, () => {
     )
 
     ruleTester.run(
-      `${RULE_NAME}(${type}): sorts interfaces with semi and comments on the same line`,
+      `${ruleName}(${type}): sorts interfaces with semi and comments on the same line`,
       rule,
       {
         valid: [],
@@ -1219,7 +1221,7 @@ describe(RULE_NAME, () => {
     )
 
     ruleTester.run(
-      `${RULE_NAME}(${type}): not sorts call signature declarations`,
+      `${ruleName}(${type}): not sorts call signature declarations`,
       rule,
       {
         valid: [
@@ -1243,7 +1245,7 @@ describe(RULE_NAME, () => {
     )
 
     ruleTester.run(
-      `${RULE_NAME}(${type}): allows to use new line as partition`,
+      `${ruleName}(${type}): allows to use new line as partition`,
       rule,
       {
         valid: [
@@ -1324,7 +1326,7 @@ describe(RULE_NAME, () => {
       },
     )
 
-    ruleTester.run(`${RULE_NAME}(${type}): sorts interface properties`, rule, {
+    ruleTester.run(`${ruleName}(${type}): sorts interface properties`, rule, {
       valid: [
         {
           code: dedent`
@@ -1381,7 +1383,7 @@ describe(RULE_NAME, () => {
     })
   })
 
-  describe(`${RULE_NAME}: sorting by line length`, () => {
+  describe(`${ruleName}: sorting by line length`, () => {
     let type = 'line-length-order'
 
     let options = {
@@ -1389,7 +1391,7 @@ describe(RULE_NAME, () => {
       order: 'desc',
     } as const
 
-    ruleTester.run(`${RULE_NAME}(${type}): sorts interface properties`, rule, {
+    ruleTester.run(`${ruleName}(${type}): sorts interface properties`, rule, {
       valid: [
         {
           code: dedent`
@@ -1433,7 +1435,7 @@ describe(RULE_NAME, () => {
     })
 
     ruleTester.run(
-      `${RULE_NAME}(${type}): takes into account the presence of an optional operator`,
+      `${ruleName}(${type}): takes into account the presence of an optional operator`,
       rule,
       {
         valid: [
@@ -1486,7 +1488,7 @@ describe(RULE_NAME, () => {
     )
 
     ruleTester.run(
-      `${RULE_NAME}(${type}): works with ts index signature`,
+      `${ruleName}(${type}): works with ts index signature`,
       rule,
       {
         valid: [
@@ -1530,7 +1532,7 @@ describe(RULE_NAME, () => {
     )
 
     ruleTester.run(
-      `${RULE_NAME}(${type}): works with method and construct signatures`,
+      `${ruleName}(${type}): works with method and construct signatures`,
       rule,
       {
         valid: [
@@ -1583,7 +1585,7 @@ describe(RULE_NAME, () => {
     )
 
     ruleTester.run(
-      `${RULE_NAME}(${type}): works with empty properties with empty values`,
+      `${ruleName}(${type}): works with empty properties with empty values`,
       rule,
       {
         valid: [
@@ -1636,7 +1638,7 @@ describe(RULE_NAME, () => {
     )
 
     ruleTester.run(
-      `${RULE_NAME}(${type}): does not break interface docs`,
+      `${ruleName}(${type}): does not break interface docs`,
       rule,
       {
         valid: [],
@@ -1697,7 +1699,7 @@ describe(RULE_NAME, () => {
     )
 
     ruleTester.run(
-      `${RULE_NAME}(${type}): sorts interfaces with comments on the same line`,
+      `${ruleName}(${type}): sorts interfaces with comments on the same line`,
       rule,
       {
         valid: [],
@@ -1731,7 +1733,7 @@ describe(RULE_NAME, () => {
     )
 
     ruleTester.run(
-      `${RULE_NAME}(${type}): sorts interfaces with semi and comments on the same line`,
+      `${ruleName}(${type}): sorts interfaces with semi and comments on the same line`,
       rule,
       {
         valid: [],
@@ -1765,7 +1767,7 @@ describe(RULE_NAME, () => {
     )
 
     ruleTester.run(
-      `${RULE_NAME}(${type}): not sorts call signature declarations`,
+      `${ruleName}(${type}): not sorts call signature declarations`,
       rule,
       {
         valid: [
@@ -1789,7 +1791,7 @@ describe(RULE_NAME, () => {
     )
 
     ruleTester.run(
-      `${RULE_NAME}(${type}): allows to set groups for sorting`,
+      `${ruleName}(${type}): allows to set groups for sorting`,
       rule,
       {
         valid: [
@@ -1874,7 +1876,7 @@ describe(RULE_NAME, () => {
     )
 
     ruleTester.run(
-      `${RULE_NAME}(${type}): allows to use new line as partition`,
+      `${ruleName}(${type}): allows to use new line as partition`,
       rule,
       {
         valid: [
@@ -1955,7 +1957,7 @@ describe(RULE_NAME, () => {
       },
     )
 
-    ruleTester.run(`${RULE_NAME}(${type}): sorts interface properties`, rule, {
+    ruleTester.run(`${ruleName}(${type}): sorts interface properties`, rule, {
       valid: [
         {
           code: dedent`
@@ -2011,7 +2013,7 @@ describe(RULE_NAME, () => {
       ],
     })
 
-    ruleTester.run(`${RULE_NAME}(${type}): sorts interface properties`, rule, {
+    ruleTester.run(`${ruleName}(${type}): sorts interface properties`, rule, {
       valid: [
         {
           code: dedent`
@@ -2075,7 +2077,7 @@ describe(RULE_NAME, () => {
     })
 
     ruleTester.run(
-      `${RULE_NAME}(${type}): allows to set groups for sorting`,
+      `${ruleName}(${type}): allows to set groups for sorting`,
       rule,
       {
         valid: [],
@@ -2131,7 +2133,7 @@ describe(RULE_NAME, () => {
     )
 
     ruleTester.run(
-      `${RULE_NAME}(${type}): allows to use new line as partition`,
+      `${ruleName}(${type}): allows to use new line as partition`,
       rule,
       {
         valid: [],
@@ -2203,9 +2205,9 @@ describe(RULE_NAME, () => {
     )
   })
 
-  describe(`${RULE_NAME}: misc`, () => {
+  describe(`${ruleName}: misc`, () => {
     ruleTester.run(
-      `${RULE_NAME}: sets alphabetical asc sorting as default`,
+      `${ruleName}: sets alphabetical asc sorting as default`,
       rule,
       {
         valid: [
@@ -2255,7 +2257,7 @@ describe(RULE_NAME, () => {
       },
     )
 
-    ruleTester.run(`${RULE_NAME}: allows to ignore interfaces`, rule, {
+    ruleTester.run(`${ruleName}: allows to ignore interfaces`, rule, {
       valid: [
         {
           code: dedent`

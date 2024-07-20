@@ -2,9 +2,11 @@ import { RuleTester } from '@typescript-eslint/rule-tester'
 import { afterAll, describe, it } from 'vitest'
 import { dedent } from 'ts-dedent'
 
-import rule, { RULE_NAME } from '../rules/sort-exports'
+import rule from '../rules/sort-exports'
 
-describe(RULE_NAME, () => {
+let ruleName = 'sort-exports'
+
+describe(ruleName, () => {
   RuleTester.describeSkip = describe.skip
   RuleTester.afterAll = afterAll
   RuleTester.describe = describe
@@ -16,7 +18,7 @@ describe(RULE_NAME, () => {
     parser: '@typescript-eslint/parser',
   })
 
-  describe(`${RULE_NAME}: sorting by alphabetical order`, () => {
+  describe(`${ruleName}: sorting by alphabetical order`, () => {
     let type = 'alphabetical-order'
 
     let options = {
@@ -25,7 +27,7 @@ describe(RULE_NAME, () => {
       order: 'asc',
     } as const
 
-    ruleTester.run(`${RULE_NAME}(${type}): sorts exports`, rule, {
+    ruleTester.run(`${ruleName}(${type}): sorts exports`, rule, {
       valid: [
         {
           code: dedent`
@@ -72,7 +74,7 @@ describe(RULE_NAME, () => {
       ],
     })
 
-    ruleTester.run(`${RULE_NAME}(${type}): sorts all-exports`, rule, {
+    ruleTester.run(`${ruleName}(${type}): sorts all-exports`, rule, {
       valid: [
         {
           code: dedent`
@@ -122,7 +124,7 @@ describe(RULE_NAME, () => {
       ],
     })
 
-    ruleTester.run(`${RULE_NAME}(${type}): works with export aliases`, rule, {
+    ruleTester.run(`${ruleName}(${type}): works with export aliases`, rule, {
       valid: [
         {
           code: dedent`
@@ -160,7 +162,7 @@ describe(RULE_NAME, () => {
     })
   })
 
-  describe(`${RULE_NAME}: sorting by natural order`, () => {
+  describe(`${ruleName}: sorting by natural order`, () => {
     let type = 'natural-order'
 
     let options = {
@@ -169,7 +171,7 @@ describe(RULE_NAME, () => {
       order: 'asc',
     } as const
 
-    ruleTester.run(`${RULE_NAME}(${type}): sorts exports`, rule, {
+    ruleTester.run(`${ruleName}(${type}): sorts exports`, rule, {
       valid: [
         {
           code: dedent`
@@ -216,7 +218,7 @@ describe(RULE_NAME, () => {
       ],
     })
 
-    ruleTester.run(`${RULE_NAME}(${type}): sorts all-exports`, rule, {
+    ruleTester.run(`${ruleName}(${type}): sorts all-exports`, rule, {
       valid: [
         {
           code: dedent`
@@ -266,7 +268,7 @@ describe(RULE_NAME, () => {
       ],
     })
 
-    ruleTester.run(`${RULE_NAME}(${type}): works with export aliases`, rule, {
+    ruleTester.run(`${ruleName}(${type}): works with export aliases`, rule, {
       valid: [
         {
           code: dedent`
@@ -304,7 +306,7 @@ describe(RULE_NAME, () => {
     })
   })
 
-  describe(`${RULE_NAME}: sorting by line length`, () => {
+  describe(`${ruleName}: sorting by line length`, () => {
     let type = 'line-length-order'
 
     let options = {
@@ -312,7 +314,7 @@ describe(RULE_NAME, () => {
       order: 'desc',
     } as const
 
-    ruleTester.run(`${RULE_NAME}(${type}): sorts exports`, rule, {
+    ruleTester.run(`${ruleName}(${type}): sorts exports`, rule, {
       valid: [
         {
           code: dedent`
@@ -359,7 +361,7 @@ describe(RULE_NAME, () => {
       ],
     })
 
-    ruleTester.run(`${RULE_NAME}(${type}): sorts all-exports`, rule, {
+    ruleTester.run(`${ruleName}(${type}): sorts all-exports`, rule, {
       valid: [
         {
           code: dedent`
@@ -409,7 +411,7 @@ describe(RULE_NAME, () => {
       ],
     })
 
-    ruleTester.run(`${RULE_NAME}(${type}): works with export aliases`, rule, {
+    ruleTester.run(`${ruleName}(${type}): works with export aliases`, rule, {
       valid: [
         {
           code: dedent`
@@ -449,7 +451,7 @@ describe(RULE_NAME, () => {
 
   describe('misc', () => {
     ruleTester.run(
-      `${RULE_NAME}: sets alphabetical asc sorting as default`,
+      `${ruleName}: sets alphabetical asc sorting as default`,
       rule,
       {
         valid: [
@@ -498,7 +500,7 @@ describe(RULE_NAME, () => {
     )
 
     ruleTester.run(
-      `${RULE_NAME}: ignores exported variables or functions`,
+      `${ruleName}: ignores exported variables or functions`,
       rule,
       {
         valid: [
