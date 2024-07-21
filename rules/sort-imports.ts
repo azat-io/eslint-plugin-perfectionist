@@ -144,7 +144,6 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
           environment: {
             description: 'Specifies the environment.',
             enum: ['node', 'bun'],
-            default: 'node',
             type: 'string',
           },
         },
@@ -209,6 +208,7 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
         'unknown',
       ],
       customGroups: { type: {}, value: {} },
+      environment: 'node',
     },
   ],
   create: context => {

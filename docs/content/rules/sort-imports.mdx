@@ -324,6 +324,7 @@ Specifies which environment’s built-in modules should be recognized. If you ar
                     'unknown',
                   ],
                   customGroups: { type: {}, value: {} },
+                  environment: 'node',
                 },
               ],
             },
@@ -336,7 +337,7 @@ Specifies which environment’s built-in modules should be recognized. If you ar
     {
       source: dedent`
         // .eslintrc.js
-        export default {
+        module.exports = {
           plugins: [
             'perfectionist',
           ],
@@ -361,6 +362,7 @@ Specifies which environment’s built-in modules should be recognized. If you ar
                   'unknown',
                 ],
                 customGroups: { type: {}, value: {} },
+                environment: 'node',
               },
             ],
           },

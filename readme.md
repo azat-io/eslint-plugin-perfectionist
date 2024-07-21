@@ -88,7 +88,7 @@ export default [
 
 <!-- prettier-ignore -->
 ```js
-export default {
+module.exports = {
   plugins: [
     'perfectionist',
   ],
@@ -123,7 +123,7 @@ export default [
 
 <!-- prettier-ignore -->
 ```js
-export default {
+module.exports = {
   extends: [
     'plugin:perfectionist/recommended-natural-legacy',
   ],
