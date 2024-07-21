@@ -273,6 +273,8 @@ describe(ruleName, () => {
           code: dedent`
             type Type =
               | A
+              | SomeClass['name']
+              | string[]
               | any
               | bigint
               | boolean
@@ -280,8 +282,10 @@ describe(ruleName, () => {
               | typeof B
               | 'aaa'
               | 1
+              | (new () => SomeClass)
               | (import('path'))
               | (A extends B ? C : D)
+              | { [P in keyof T]: T[P] }
               | { name: 'a' }
               | [A, B, C]
               | (A & B)
@@ -656,6 +660,8 @@ describe(ruleName, () => {
           code: dedent`
             type Type =
               | A
+              | SomeClass['name']
+              | string[]
               | any
               | bigint
               | boolean
@@ -663,8 +669,10 @@ describe(ruleName, () => {
               | typeof B
               | 'aaa'
               | 1
+              | (new () => SomeClass)
               | (import('path'))
               | (A extends B ? C : D)
+              | { [P in keyof T]: T[P] }
               | { name: 'a' }
               | [A, B, C]
               | (A & B)
@@ -1030,6 +1038,8 @@ describe(ruleName, () => {
         {
           code: dedent`
             type Type =
+              | SomeClass['name']
+              | string[]
               | A
               | boolean
               | bigint
@@ -1038,8 +1048,10 @@ describe(ruleName, () => {
               | keyof A
               | 'aaa'
               | 1
+              | (new () => SomeClass)
               | (import('path'))
               | (A extends B ? C : D)
+              | { [P in keyof T]: T[P] }
               | { name: 'a' }
               | [A, B, C]
               | (A & B)
