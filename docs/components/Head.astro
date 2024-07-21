@@ -1,6 +1,7 @@
 ---
 import { ViewTransitions } from 'astro:transitions'
 
+import Analytics from './Analytics.astro'
 import '../styles/base.css'
 import '../styles/fonts.css'
 import '../styles/sizes.css'
@@ -24,6 +25,8 @@ let pageTitle = title ? `${title} | ${websiteName}` : websiteName
 
 let image = `${Astro.url.pathname === '/' ? '' : Astro.url.pathname.replace(/\.html$/, '')}/open-graph.png`
 let author = 'Azat S.'
+
+let isProd = import.meta.env.PROD
 ---
 
 <head>
@@ -141,4 +144,6 @@ let author = 'Azat S.'
   </script>
 
   <ViewTransitions />
+
+  {isProd && <Analytics />}
 </head>
