@@ -1,3 +1,4 @@
+import type { TSESTree } from '@typescript-eslint/types'
 import type { TSESLint } from '@typescript-eslint/utils'
 
 import type { SortingNode } from '../typings'
@@ -186,6 +187,55 @@ export default createEslintRule<Options, MESSAGE_ID>({
 
         let sourceCode = getSourceCode(context)
 
+        let extractDependencies = (
+          expression: TSESTree.Expression,
+        ): string[] => {
+          let dependencies: string[] = []
+
+          let checkNode = (nodeValue: TSESTree.Node) => {
+            if (
+              nodeValue.type === 'MemberExpression' &&
+              nodeValue.object.type === 'ThisExpression' &&
+              nodeValue.property.type === 'Identifier'
+            ) {
+              dependencies.push(nodeValue.property.name)
+            }
+
+            if ('body' in nodeValue && nodeValue.body) {
+              traverseNode(nodeValue.body)
+            }
+
+            if ('left' in nodeValue) {
+              traverseNode(nodeValue.left)
+            }
+
+            if ('right' in nodeValue) {
+              traverseNode(nodeValue.right)
+            }
+
+            if ('elements' in nodeValue) {
+              nodeValue.elements
+                .filter(currentNode => currentNode !== null)
+                .forEach(traverseNode)
+            }
+
+            if ('arguments' in nodeValue) {
+              nodeValue.arguments.forEach(traverseNode)
+            }
+          }
+
+          let traverseNode = (nodeValue: TSESTree.Node[] | TSESTree.Node) => {
+            if (Array.isArray(nodeValue)) {
+              nodeValue.forEach(traverseNode)
+            } else {
+              checkNode(nodeValue)
+            }
+          }
+
+          traverseNode(expression)
+          return dependencies
+        }
+
         let formattedNodes: SortingNode[][] = node.body.reduce(
           (accumulator: SortingNode[][], member) => {
             let comment = getCommentBefore(member, sourceCode)
@@ -199,6 +249,7 @@ export default createEslintRule<Options, MESSAGE_ID>({
             }
 
             let name: string
+            let dependencies: string[] = []
             let { getGroup, defineGroup, setCustomGroups } = useGroups(
               options.groups,
             )
@@ -299,9 +350,14 @@ export default createEslintRule<Options, MESSAGE_ID>({
               override: true,
             })
 
+            if (member.type === 'PropertyDefinition' && member.value) {
+              dependencies = extractDependencies(member.value)
+            }
+
             let value = {
               size: rangeToDiff(member.range),
               group: getGroup(),
+              dependencies,
               node: member,
               name,
             }

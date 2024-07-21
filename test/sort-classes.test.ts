@@ -741,7 +741,7 @@ describe(ruleName, () => {
       valid: [
         {
           code: dedent`
-            export class Example {
+            class Class {
               // Region: Table
               protected onChangeColumns() {}
 
@@ -773,7 +773,7 @@ describe(ruleName, () => {
       invalid: [
         {
           code: dedent`
-            export class Example {
+            class Class {
               // Region: Table
               protected onChangeColumns() {}
 
@@ -795,7 +795,7 @@ describe(ruleName, () => {
             }
           `,
           output: dedent`
-            export class Example {
+            class Class {
               // Region: Table
               protected onChangeColumns() {}
 
@@ -842,6 +842,485 @@ describe(ruleName, () => {
               data: {
                 left: 'setFormValue',
                 right: 'onValueChanged',
+              },
+            },
+          ],
+        },
+      ],
+    })
+
+    ruleTester.run(
+      `${ruleName}(${type}): does not sort properties if the right value depends on the left value`,
+      rule,
+      {
+        valid: [
+          {
+            code: dedent`
+              class Class {
+                b = 'b'
+
+                aaa = [this.b]
+              }
+            `,
+            options: [options],
+          },
+          {
+            code: dedent`
+              class Class {
+                b = 'b'
+
+                getAaa() {
+                  return this.b;
+                }
+              }
+            `,
+            options: [options],
+          },
+          {
+            code: dedent`
+              class Class {
+                static c = 'c'
+
+                b = Example.c
+              }
+            `,
+            options: [options],
+          },
+          {
+            code: dedent`
+              class Class {
+                #b = 'b'
+
+                getAaa() {
+                  return this.#b;
+                }
+              }
+            `,
+            options: [options],
+          },
+          {
+            code: dedent`
+              class Class {
+                static b = 'b'
+
+                static getAaa() {
+                  return this.b;
+                }
+              }
+            `,
+            options: [options],
+          },
+        ],
+        invalid: [
+          {
+            code: dedent`
+              class Class {
+                aaa = [this.b]
+
+                b = 'b'
+              }
+            `,
+            output: dedent`
+              class Class {
+                b = 'b'
+
+                aaa = [this.b]
+              }
+            `,
+            options: [options],
+            errors: [
+              {
+                messageId: 'unexpectedClassesOrder',
+                data: {
+                  left: 'aaa',
+                  right: 'b',
+                },
+              },
+            ],
+          },
+          {
+            code: dedent`
+              class Class {
+                getAaa() {
+                  return this.b;
+                }
+
+                b = 'b'
+              }
+            `,
+            output: dedent`
+              class Class {
+                b = 'b'
+
+                getAaa() {
+                  return this.b;
+                }
+              }
+            `,
+            options: [options],
+            errors: [
+              {
+                messageId: 'unexpectedClassesOrder',
+                data: {
+                  left: 'getAaa',
+                  right: 'b',
+                },
+              },
+            ],
+          },
+          {
+            code: dedent`
+              class Class {
+                b = Example.c
+
+                static c = 'c'
+              }
+            `,
+            output: dedent`
+              class Class {
+                static c = 'c'
+
+                b = Example.c
+              }
+            `,
+            options: [options],
+            errors: [
+              {
+                messageId: 'unexpectedClassesOrder',
+                data: {
+                  left: 'b',
+                  right: 'c',
+                },
+              },
+            ],
+          },
+          {
+            code: dedent`
+              class Class {
+                getAaa() {
+                  return this.#b;
+                }
+
+                #b = 'b'
+              }
+            `,
+            output: dedent`
+              class Class {
+                #b = 'b'
+
+                getAaa() {
+                  return this.#b;
+                }
+              }
+            `,
+            options: [options],
+            errors: [
+              {
+                messageId: 'unexpectedClassesOrder',
+                data: {
+                  left: 'getAaa',
+                  right: '#b',
+                },
+              },
+            ],
+          },
+          {
+            code: dedent`
+              class Class {
+                static getAaa() {
+                  return this.b;
+                }
+
+                static b = 'b'
+              }
+            `,
+            output: dedent`
+              class Class {
+                static b = 'b'
+
+                static getAaa() {
+                  return this.b;
+                }
+              }
+            `,
+            options: [options],
+            errors: [
+              {
+                messageId: 'unexpectedClassesOrder',
+                data: {
+                  left: 'getAaa',
+                  right: 'b',
+                },
+              },
+            ],
+          },
+        ],
+      },
+    )
+
+    ruleTester.run(
+      `${ruleName}(${type}): works with left and right dependencies`,
+      rule,
+      {
+        valid: [
+          {
+            code: dedent`
+              class Class {
+                left = 'left'
+                right = 'right'
+
+                aaa = this.left + this.right
+              }
+            `,
+            options: [options],
+          },
+          {
+            code: dedent`
+              class Class {
+                condition1 = true
+                condition2 = false
+
+                result = this.condition1 && this.condition2
+              }
+            `,
+            options: [options],
+          },
+        ],
+        invalid: [
+          {
+            code: dedent`
+              class Class {
+                aaa = this.left + this.right
+
+                left = 'left'
+
+                right = 'right'
+              }
+            `,
+            output: dedent`
+              class Class {
+                left = 'left'
+
+                right = 'right'
+
+                aaa = this.left + this.right
+              }
+            `,
+            options: [options],
+            errors: [
+              {
+                messageId: 'unexpectedClassesOrder',
+                data: {
+                  left: 'aaa',
+                  right: 'left',
+                },
+              },
+            ],
+          },
+        ],
+      },
+    )
+
+    ruleTester.run(`${ruleName}(${type}): works with body dependencies`, rule, {
+      valid: [
+        {
+          code: dedent`
+              class Class {
+                a = 10
+
+                method = function() {
+                  const b = this.a + 20;
+                  return b;
+                }
+              }
+            `,
+          options: [options],
+        },
+        {
+          code: dedent`
+              class Class {
+                a = 10
+
+                method = () => {
+                  const b = this.a + 20;
+                  return b;
+                }
+              }
+            `,
+          options: [options],
+        },
+        {
+          code: dedent`
+              class Class {
+                a = 10
+                b = 20
+
+                method() {
+                  {
+                    const c = this.a + this.b;
+                    console.log(c);
+                  }
+                }
+              }
+            `,
+          options: [options],
+        },
+        {
+          code: dedent`
+              class Class {
+                a = 10
+                b = this.a + 20
+
+                method() {
+                  return this.b;
+                }
+              }
+            `,
+          options: [options],
+        },
+      ],
+      invalid: [
+        {
+          code: dedent`
+            class Class {
+              method = function() {
+                const b = this.a + 20;
+                return b;
+              }
+
+              a = 10
+            }
+          `,
+          output: dedent`
+            class Class {
+              a = 10
+
+              method = function() {
+                const b = this.a + 20;
+                return b;
+              }
+            }
+          `,
+          options: [options],
+          errors: [
+            {
+              messageId: 'unexpectedClassesOrder',
+              data: {
+                left: 'method',
+                right: 'a',
+              },
+            },
+          ],
+        },
+        {
+          code: dedent`
+              class Class {
+                method = () => {
+                  const b = this.a + 20;
+                  return b;
+                }
+
+                a = 10
+              }
+            `,
+          output: dedent`
+              class Class {
+                a = 10
+
+                method = () => {
+                  const b = this.a + 20;
+                  return b;
+                }
+              }
+            `,
+          options: [options],
+          errors: [
+            {
+              messageId: 'unexpectedClassesOrder',
+              data: {
+                left: 'method',
+                right: 'a',
+              },
+            },
+          ],
+        },
+        {
+          code: dedent`
+              class Class {
+                method() {
+                  {
+                    const c = this.a + this.b;
+                    console.log(c);
+                  }
+                }
+
+                a = 10
+
+                b = 20
+              }
+            `,
+          output: dedent`
+              class Class {
+                a = 10
+
+                b = 20
+
+                method() {
+                  {
+                    const c = this.a + this.b;
+                    console.log(c);
+                  }
+                }
+              }
+            `,
+          options: [options],
+          errors: [
+            {
+              messageId: 'unexpectedClassesOrder',
+              data: {
+                left: 'method',
+                right: 'a',
+              },
+            },
+          ],
+        },
+        {
+          code: dedent`
+              class Class {
+                method() {
+                  return this.b;
+                }
+
+                b = this.a + 20
+
+                a = 10
+              }
+            `,
+          output: dedent`
+              class Class {
+                a = 10
+
+                b = this.a + 20
+
+                method() {
+                  return this.b;
+                }
+              }
+            `,
+          options: [options],
+          errors: [
+            {
+              messageId: 'unexpectedClassesOrder',
+              data: {
+                left: 'method',
+                right: 'b',
+              },
+            },
+            {
+              messageId: 'unexpectedClassesOrder',
+              data: {
+                left: 'b',
+                right: 'a',
               },
             },
           ],
@@ -1573,7 +2052,7 @@ describe(ruleName, () => {
       valid: [
         {
           code: dedent`
-            export class Example {
+            class Class {
               // Region: Table
               protected onChangeColumns() {}
 
@@ -1605,7 +2084,7 @@ describe(ruleName, () => {
       invalid: [
         {
           code: dedent`
-            export class Example {
+            class Class {
               // Region: Table
               protected onChangeColumns() {}
 
@@ -1627,7 +2106,7 @@ describe(ruleName, () => {
             }
           `,
           output: dedent`
-            export class Example {
+            class Class {
               // Region: Table
               protected onChangeColumns() {}
 
@@ -1674,6 +2153,485 @@ describe(ruleName, () => {
               data: {
                 left: 'setFormValue',
                 right: 'onValueChanged',
+              },
+            },
+          ],
+        },
+      ],
+    })
+
+    ruleTester.run(
+      `${ruleName}(${type}): does not sort properties if the right value depends on the left value`,
+      rule,
+      {
+        valid: [
+          {
+            code: dedent`
+              class Class {
+                b = 'b'
+
+                aaa = [this.b]
+              }
+            `,
+            options: [options],
+          },
+          {
+            code: dedent`
+              class Class {
+                b = 'b'
+
+                getAaa() {
+                  return this.b;
+                }
+              }
+            `,
+            options: [options],
+          },
+          {
+            code: dedent`
+              class Class {
+                static c = 'c'
+
+                b = Example.c
+              }
+            `,
+            options: [options],
+          },
+          {
+            code: dedent`
+              class Class {
+                #b = 'b'
+
+                getAaa() {
+                  return this.#b;
+                }
+              }
+            `,
+            options: [options],
+          },
+          {
+            code: dedent`
+              class Class {
+                static b = 'b'
+
+                static getAaa() {
+                  return this.b;
+                }
+              }
+            `,
+            options: [options],
+          },
+        ],
+        invalid: [
+          {
+            code: dedent`
+              class Class {
+                aaa = [this.b]
+
+                b = 'b'
+              }
+            `,
+            output: dedent`
+              class Class {
+                b = 'b'
+
+                aaa = [this.b]
+              }
+            `,
+            options: [options],
+            errors: [
+              {
+                messageId: 'unexpectedClassesOrder',
+                data: {
+                  left: 'aaa',
+                  right: 'b',
+                },
+              },
+            ],
+          },
+          {
+            code: dedent`
+              class Class {
+                getAaa() {
+                  return this.b;
+                }
+
+                b = 'b'
+              }
+            `,
+            output: dedent`
+              class Class {
+                b = 'b'
+
+                getAaa() {
+                  return this.b;
+                }
+              }
+            `,
+            options: [options],
+            errors: [
+              {
+                messageId: 'unexpectedClassesOrder',
+                data: {
+                  left: 'getAaa',
+                  right: 'b',
+                },
+              },
+            ],
+          },
+          {
+            code: dedent`
+              class Class {
+                b = Example.c
+
+                static c = 'c'
+              }
+            `,
+            output: dedent`
+              class Class {
+                static c = 'c'
+
+                b = Example.c
+              }
+            `,
+            options: [options],
+            errors: [
+              {
+                messageId: 'unexpectedClassesOrder',
+                data: {
+                  left: 'b',
+                  right: 'c',
+                },
+              },
+            ],
+          },
+          {
+            code: dedent`
+              class Class {
+                getAaa() {
+                  return this.#b;
+                }
+
+                #b = 'b'
+              }
+            `,
+            output: dedent`
+              class Class {
+                #b = 'b'
+
+                getAaa() {
+                  return this.#b;
+                }
+              }
+            `,
+            options: [options],
+            errors: [
+              {
+                messageId: 'unexpectedClassesOrder',
+                data: {
+                  left: 'getAaa',
+                  right: '#b',
+                },
+              },
+            ],
+          },
+          {
+            code: dedent`
+              class Class {
+                static getAaa() {
+                  return this.b;
+                }
+
+                static b = 'b'
+              }
+            `,
+            output: dedent`
+              class Class {
+                static b = 'b'
+
+                static getAaa() {
+                  return this.b;
+                }
+              }
+            `,
+            options: [options],
+            errors: [
+              {
+                messageId: 'unexpectedClassesOrder',
+                data: {
+                  left: 'getAaa',
+                  right: 'b',
+                },
+              },
+            ],
+          },
+        ],
+      },
+    )
+
+    ruleTester.run(
+      `${ruleName}(${type}): works with left and right dependencies`,
+      rule,
+      {
+        valid: [
+          {
+            code: dedent`
+              class Class {
+                left = 'left'
+                right = 'right'
+
+                aaa = this.left + this.right
+              }
+            `,
+            options: [options],
+          },
+          {
+            code: dedent`
+              class Class {
+                condition1 = true
+                condition2 = false
+
+                result = this.condition1 && this.condition2
+              }
+            `,
+            options: [options],
+          },
+        ],
+        invalid: [
+          {
+            code: dedent`
+              class Class {
+                aaa = this.left + this.right
+
+                left = 'left'
+
+                right = 'right'
+              }
+            `,
+            output: dedent`
+              class Class {
+                left = 'left'
+
+                right = 'right'
+
+                aaa = this.left + this.right
+              }
+            `,
+            options: [options],
+            errors: [
+              {
+                messageId: 'unexpectedClassesOrder',
+                data: {
+                  left: 'aaa',
+                  right: 'left',
+                },
+              },
+            ],
+          },
+        ],
+      },
+    )
+
+    ruleTester.run(`${ruleName}(${type}): works with body dependencies`, rule, {
+      valid: [
+        {
+          code: dedent`
+              class Class {
+                a = 10
+
+                method = function() {
+                  const b = this.a + 20;
+                  return b;
+                }
+              }
+            `,
+          options: [options],
+        },
+        {
+          code: dedent`
+              class Class {
+                a = 10
+
+                method = () => {
+                  const b = this.a + 20;
+                  return b;
+                }
+              }
+            `,
+          options: [options],
+        },
+        {
+          code: dedent`
+              class Class {
+                a = 10
+                b = 20
+
+                method() {
+                  {
+                    const c = this.a + this.b;
+                    console.log(c);
+                  }
+                }
+              }
+            `,
+          options: [options],
+        },
+        {
+          code: dedent`
+              class Class {
+                a = 10
+                b = this.a + 20
+
+                method() {
+                  return this.b;
+                }
+              }
+            `,
+          options: [options],
+        },
+      ],
+      invalid: [
+        {
+          code: dedent`
+            class Class {
+              method = function() {
+                const b = this.a + 20;
+                return b;
+              }
+
+              a = 10
+            }
+          `,
+          output: dedent`
+            class Class {
+              a = 10
+
+              method = function() {
+                const b = this.a + 20;
+                return b;
+              }
+            }
+          `,
+          options: [options],
+          errors: [
+            {
+              messageId: 'unexpectedClassesOrder',
+              data: {
+                left: 'method',
+                right: 'a',
+              },
+            },
+          ],
+        },
+        {
+          code: dedent`
+              class Class {
+                method = () => {
+                  const b = this.a + 20;
+                  return b;
+                }
+
+                a = 10
+              }
+            `,
+          output: dedent`
+              class Class {
+                a = 10
+
+                method = () => {
+                  const b = this.a + 20;
+                  return b;
+                }
+              }
+            `,
+          options: [options],
+          errors: [
+            {
+              messageId: 'unexpectedClassesOrder',
+              data: {
+                left: 'method',
+                right: 'a',
+              },
+            },
+          ],
+        },
+        {
+          code: dedent`
+              class Class {
+                method() {
+                  {
+                    const c = this.a + this.b;
+                    console.log(c);
+                  }
+                }
+
+                a = 10
+
+                b = 20
+              }
+            `,
+          output: dedent`
+              class Class {
+                a = 10
+
+                b = 20
+
+                method() {
+                  {
+                    const c = this.a + this.b;
+                    console.log(c);
+                  }
+                }
+              }
+            `,
+          options: [options],
+          errors: [
+            {
+              messageId: 'unexpectedClassesOrder',
+              data: {
+                left: 'method',
+                right: 'a',
+              },
+            },
+          ],
+        },
+        {
+          code: dedent`
+              class Class {
+                method() {
+                  return this.b;
+                }
+
+                b = this.a + 20
+
+                a = 10
+              }
+            `,
+          output: dedent`
+              class Class {
+                a = 10
+
+                b = this.a + 20
+
+                method() {
+                  return this.b;
+                }
+              }
+            `,
+          options: [options],
+          errors: [
+            {
+              messageId: 'unexpectedClassesOrder',
+              data: {
+                left: 'method',
+                right: 'b',
+              },
+            },
+            {
+              messageId: 'unexpectedClassesOrder',
+              data: {
+                left: 'b',
+                right: 'a',
               },
             },
           ],
