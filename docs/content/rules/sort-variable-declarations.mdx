@@ -1,0 +1,175 @@
+---
+title: sort-variable-declarations
+description: The sort-variable-declarations rule in ESLint enforces a consistent order of variable declarations within a scope, improving code readability and maintainability
+shortDescription: Enforce sorted variable declarations
+keywords:
+  - eslint
+  - eslint rule
+  - coding standards
+  - code quality
+  - javascript linting
+  - variable declarations
+  - variable order
+  - variable sorting
+  - variable declaration order
+  - sort vars
+  - sort variables
+  - sort constants
+---
+
+import CodeExample from '../../components/CodeExample.svelte'
+import Important from '../../components/Important.astro'
+import CodeTabs from '../../components/CodeTabs.svelte'
+import { dedent } from 'ts-dedent'
+
+Enforce sorted variable declarations within a scope.
+
+Variable declarations within a block of code can quickly become disorganized and difficult to navigate, especially in larger functions or modules. With this rule, you can ensure that all variable declarations are consistently sorted, making it easier to locate specific variables and maintain a clean and structured codebase.
+
+This practice improves readability and maintainability by providing a predictable order for variable declarations. It helps developers quickly understand the scope and usage of variables without having to search through an unsorted list.
+
+## Try it out
+
+<CodeExample
+  alphabetical={dedent`
+    const API_KEY = 'e7c3b6d4-7b7d-4b3b-8b3b-7b3b7b3b7b3b',
+          apiUrl = 'https://api.perfectionist.dev',
+          data = fetchData(),
+          isAuthenticated = checkAuth(),
+          user = getCurrentUser()
+
+    const config = loadConfig(),
+          database = connectToDatabase(),
+          environment = process.env.NODE_ENV,
+          logger = createLogger(),
+          server = createServer()
+  `}
+  lineLength={dedent`
+    const API_KEY = 'e7c3b6d4-7b7d-4b3b-8b3b-7b3b7b3b7b3b',
+          apiUrl = 'https://api.perfectionist.dev',
+          isAuthenticated = checkAuth(),
+          user = getCurrentUser(),
+          data = fetchData()
+
+    const environment = process.env.NODE_ENV,
+          database = connectToDatabase(),
+          logger = createLogger(),
+          server = createServer(),
+          config = loadConfig()
+  `}
+  initial={dedent`
+    const data = fetchData(),
+          isAuthenticated = checkAuth(),
+          API_KEY = 'e7c3b6d4-7b7d-4b3b-8b3b-7b3b7b3b7b3b',
+          user = getCurrentUser(),
+          apiUrl = 'https://api.perfectionist.dev'
+
+    const logger = createLogger(),
+          database = connectToDatabase(),
+          config = loadConfig(),
+          environment = process.env.NODE_ENV,
+          server = createServer()
+  `}
+  client:load
+  lang="js"
+/>
+
+## Options
+
+This rule accepts an options object with the following properties:
+
+### type
+
+<sub>default: `'alphabetical'`</sub>
+
+Specifies the sorting method.
+
+- `'alphabetical'` — Sort items alphabetically (e.g., “a” < “b” < “c”).
+- `'natural'` — Sort items in a natural order (e.g., “item2” < “item10”).
+- `'line-length'` — Sort items by the length of the code line (shorter lines first).
+
+### order
+
+<sub>default: `'asc'`</sub>
+
+Determines whether the sorted items should be in ascending or descending order.
+
+- `'asc'` — Sort items in ascending order (A to Z, 1 to 9).
+- `'desc'` — Sort items in descending order (Z to A, 9 to 1).
+
+### ignoreCase
+
+<sub>default: `true`</sub>
+
+Controls whether sorting should be case-sensitive or not.
+
+- `true` — Ignore case when sorting alphabetically or naturally (e.g., “A” and “a” are the same).
+- `false` — Consider case when sorting (e.g., “A” comes before “a”).
+
+## Usage
+
+<CodeTabs
+  code={[
+    {
+      source: dedent`
+        // eslint.config.js
+        import perfectionist from 'eslint-plugin-perfectionist'
+
+        export default [
+          {
+            plugins: {
+              perfectionist,
+            },
+            rules: {
+              'perfectionist/sort-variable-declarations': [
+                'error',
+                {
+                  type: 'alphabetical',
+                  order: 'asc',
+                  ignoreCase: true,
+                },
+              ],
+            },
+          },
+        ]
+      `,
+      name: 'Flat Config',
+      value: 'flat',
+    },
+    {
+      source: dedent`
+        // .eslintrc.js
+        export default {
+          plugins: [
+            'perfectionist',
+          ],
+          rules: {
+            'perfectionist/sort-variable-declarations': [
+              'error',
+              {
+                type: 'alphabetical',
+                order: 'asc',
+                ignoreCase: true,
+              },
+            ],
+          },
+        }
+      `,
+      name: 'Legacy Config',
+      value: 'legacy',
+    },
+  ]}
+  type="config-type"
+  client:load
+  lang="ts"
+/>
+
+## Version
+
+This rule was introduced in [v3.0.0](https://github.com/azat-io/eslint-plugin-perfectionist/releases/tag/v3.0.0).
+
+## Resources
+
+- [Rule source](https://github.com/azat-io/eslint-plugin-perfectionist/blob/main/rules/sort-variable-declarations.ts)
+- [Test source](https://github.com/azat-io/eslint-plugin-perfectionist/blob/main/test/sort-variable-declarations.test.ts)
+
