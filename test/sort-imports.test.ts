@@ -1203,6 +1203,175 @@ describe(ruleName, () => {
         },
       ],
     })
+
+    ruleTester.run(`${ruleName}(${type}): sorts require imports`, rule, {
+      valid: [
+        {
+          code: dedent`
+            const { a1, a2 } = require('a')
+            const { b1 } = require('b')
+          `,
+          options: [options],
+        },
+      ],
+      invalid: [
+        {
+          code: dedent`
+            const { b1 } = require('b')
+            const { a1, a2 } = require('a')
+          `,
+          output: dedent`
+            const { a1, a2 } = require('a')
+            const { b1 } = require('b')
+          `,
+          options: [options],
+          errors: [
+            {
+              messageId: 'unexpectedImportsOrder',
+              data: {
+                left: 'b',
+                right: 'a',
+              },
+            },
+          ],
+        },
+      ],
+    })
+
+    ruleTester.run(
+      `${ruleName}(${type}): sorts require imports by groups`,
+      rule,
+      {
+        valid: [
+          {
+            code: dedent`
+            const { c1, c2, c3, c4 } = require('c')
+            const { e1 } = require('e/a')
+            const { e2 } = require('e/b')
+            const fs = require('fs')
+            const path = require('path')
+
+            const { b1, b2 } = require('~/b')
+            const { c1 } = require('~/c')
+            const { i1, i2, i3 } = require('~/i')
+
+            const a = require('.')
+            const h = require('../../h')
+            const { j } = require('../j')
+            const { K, L, M } = require('../k')
+          `,
+            options: [
+              {
+                ...options,
+                newlinesBetween: 'always',
+                internalPattern: ['~/**'],
+                groups: [
+                  'type',
+                  ['builtin', 'external'],
+                  'internal-type',
+                  'internal',
+                  ['parent-type', 'sibling-type', 'index-type'],
+                  ['parent', 'sibling', 'index'],
+                  'object',
+                  'unknown',
+                ],
+              },
+            ],
+          },
+        ],
+        invalid: [
+          {
+            code: dedent`
+              const { c1, c2, c3, c4 } = require('c')
+              const { e2 } = require('e/b')
+              const { e1 } = require('e/a')
+              const path = require('path')
+
+              const { b1, b2 } = require('~/b')
+              const fs = require('fs')
+              const { c1 } = require('~/c')
+              const { i1, i2, i3 } = require('~/i')
+
+              const h = require('../../h')
+
+              const a = require('.')
+              const { j } = require('../j')
+              const { K, L, M } = require('../k')
+            `,
+            output: dedent`
+              const { c1, c2, c3, c4 } = require('c')
+              const { e1 } = require('e/a')
+              const { e2 } = require('e/b')
+              const fs = require('fs')
+              const path = require('path')
+
+              const { b1, b2 } = require('~/b')
+              const { c1 } = require('~/c')
+              const { i1, i2, i3 } = require('~/i')
+
+              const a = require('.')
+              const h = require('../../h')
+              const { j } = require('../j')
+              const { K, L, M } = require('../k')
+            `,
+            options: [
+              {
+                ...options,
+                newlinesBetween: 'always',
+                internalPattern: ['~/**'],
+                groups: [
+                  'type',
+                  ['builtin', 'external'],
+                  'internal-type',
+                  'internal',
+                  ['parent-type', 'sibling-type', 'index-type'],
+                  ['parent', 'sibling', 'index'],
+                  'object',
+                  'unknown',
+                ],
+              },
+            ],
+            errors: [
+              {
+                messageId: 'unexpectedImportsOrder',
+                data: {
+                  left: 'e/b',
+                  right: 'e/a',
+                },
+              },
+              {
+                messageId: 'unexpectedImportsOrder',
+                data: {
+                  left: '~/b',
+                  right: 'fs',
+                },
+              },
+              {
+                messageId: 'missedSpacingBetweenImports',
+                data: {
+                  left: 'fs',
+                  right: '~/c',
+                },
+              },
+              {
+                messageId: 'unexpectedImportsOrder',
+                data: {
+                  left: '../../h',
+                  right: '.',
+                },
+              },
+              {
+                messageId: 'extraSpacingBetweenImports',
+                data: {
+                  left: '../../h',
+                  right: '.',
+                },
+              },
+            ],
+          },
+        ],
+      },
+    )
   })
 
   describe(`${ruleName}: sorting by natural order`, () => {
@@ -2390,6 +2559,175 @@ describe(ruleName, () => {
         },
       ],
     })
+
+    ruleTester.run(`${ruleName}(${type}): sorts require imports`, rule, {
+      valid: [
+        {
+          code: dedent`
+            const { a1, a2 } = require('a')
+            const { b1 } = require('b')
+          `,
+          options: [options],
+        },
+      ],
+      invalid: [
+        {
+          code: dedent`
+            const { b1 } = require('b')
+            const { a1, a2 } = require('a')
+          `,
+          output: dedent`
+            const { a1, a2 } = require('a')
+            const { b1 } = require('b')
+          `,
+          options: [options],
+          errors: [
+            {
+              messageId: 'unexpectedImportsOrder',
+              data: {
+                left: 'b',
+                right: 'a',
+              },
+            },
+          ],
+        },
+      ],
+    })
+
+    ruleTester.run(
+      `${ruleName}(${type}): sorts require imports by groups`,
+      rule,
+      {
+        valid: [
+          {
+            code: dedent`
+            const { c1, c2, c3, c4 } = require('c')
+            const { e1 } = require('e/a')
+            const { e2 } = require('e/b')
+            const fs = require('fs')
+            const path = require('path')
+
+            const { b1, b2 } = require('~/b')
+            const { c1 } = require('~/c')
+            const { i1, i2, i3 } = require('~/i')
+
+            const a = require('.')
+            const h = require('../../h')
+            const { j } = require('../j')
+            const { K, L, M } = require('../k')
+          `,
+            options: [
+              {
+                ...options,
+                newlinesBetween: 'always',
+                internalPattern: ['~/**'],
+                groups: [
+                  'type',
+                  ['builtin', 'external'],
+                  'internal-type',
+                  'internal',
+                  ['parent-type', 'sibling-type', 'index-type'],
+                  ['parent', 'sibling', 'index'],
+                  'object',
+                  'unknown',
+                ],
+              },
+            ],
+          },
+        ],
+        invalid: [
+          {
+            code: dedent`
+              const { c1, c2, c3, c4 } = require('c')
+              const { e2 } = require('e/b')
+              const { e1 } = require('e/a')
+              const path = require('path')
+
+              const { b1, b2 } = require('~/b')
+              const fs = require('fs')
+              const { c1 } = require('~/c')
+              const { i1, i2, i3 } = require('~/i')
+
+              const h = require('../../h')
+
+              const a = require('.')
+              const { j } = require('../j')
+              const { K, L, M } = require('../k')
+            `,
+            output: dedent`
+              const { c1, c2, c3, c4 } = require('c')
+              const { e1 } = require('e/a')
+              const { e2 } = require('e/b')
+              const fs = require('fs')
+              const path = require('path')
+
+              const { b1, b2 } = require('~/b')
+              const { c1 } = require('~/c')
+              const { i1, i2, i3 } = require('~/i')
+
+              const a = require('.')
+              const h = require('../../h')
+              const { j } = require('../j')
+              const { K, L, M } = require('../k')
+            `,
+            options: [
+              {
+                ...options,
+                newlinesBetween: 'always',
+                internalPattern: ['~/**'],
+                groups: [
+                  'type',
+                  ['builtin', 'external'],
+                  'internal-type',
+                  'internal',
+                  ['parent-type', 'sibling-type', 'index-type'],
+                  ['parent', 'sibling', 'index'],
+                  'object',
+                  'unknown',
+                ],
+              },
+            ],
+            errors: [
+              {
+                messageId: 'unexpectedImportsOrder',
+                data: {
+                  left: 'e/b',
+                  right: 'e/a',
+                },
+              },
+              {
+                messageId: 'unexpectedImportsOrder',
+                data: {
+                  left: '~/b',
+                  right: 'fs',
+                },
+              },
+              {
+                messageId: 'missedSpacingBetweenImports',
+                data: {
+                  left: 'fs',
+                  right: '~/c',
+                },
+              },
+              {
+                messageId: 'unexpectedImportsOrder',
+                data: {
+                  left: '../../h',
+                  right: '.',
+                },
+              },
+              {
+                messageId: 'extraSpacingBetweenImports',
+                data: {
+                  left: '../../h',
+                  right: '.',
+                },
+              },
+            ],
+          },
+        ],
+      },
+    )
   })
 
   describe(`${ruleName}: sorting by line length`, () => {
@@ -3665,6 +4003,182 @@ describe(ruleName, () => {
         },
       ],
     })
+
+    ruleTester.run(`${ruleName}(${type}): sorts require imports`, rule, {
+      valid: [
+        {
+          code: dedent`
+            const { a1, a2 } = require('a')
+            const { b1 } = require('b')
+          `,
+          options: [options],
+        },
+      ],
+      invalid: [
+        {
+          code: dedent`
+            const { b1 } = require('b')
+            const { a1, a2 } = require('a')
+          `,
+          output: dedent`
+            const { a1, a2 } = require('a')
+            const { b1 } = require('b')
+          `,
+          options: [options],
+          errors: [
+            {
+              messageId: 'unexpectedImportsOrder',
+              data: {
+                left: 'b',
+                right: 'a',
+              },
+            },
+          ],
+        },
+      ],
+    })
+
+    ruleTester.run(
+      `${ruleName}(${type}): sorts require imports by groups`,
+      rule,
+      {
+        valid: [
+          {
+            code: dedent`
+            const { c1, c2, c3, c4 } = require('c')
+            const { e1 } = require('e/a')
+            const { e2 } = require('e/b')
+            const path = require('path')
+            const fs = require('fs')
+
+            const { i1, i2, i3 } = require('~/i')
+            const { b1, b2 } = require('~/b')
+            const { c1 } = require('~/c')
+
+            const { K, L, M } = require('../k')
+            const { j } = require('../j')
+            const h = require('../../h')
+            const a = require('.')
+          `,
+            options: [
+              {
+                ...options,
+                newlinesBetween: 'always',
+                internalPattern: ['~/**'],
+                groups: [
+                  'type',
+                  ['builtin', 'external'],
+                  'internal-type',
+                  'internal',
+                  ['parent-type', 'sibling-type', 'index-type'],
+                  ['parent', 'sibling', 'index'],
+                  'object',
+                  'unknown',
+                ],
+              },
+            ],
+          },
+        ],
+        invalid: [
+          {
+            code: dedent`
+              const { c1, c2, c3, c4 } = require('c')
+              const { e2 } = require('e/b')
+              const { e1 } = require('e/a')
+              const path = require('path')
+
+              const { b1, b2 } = require('~/b')
+              const fs = require('fs')
+              const { c1 } = require('~/c')
+              const { i1, i2, i3 } = require('~/i')
+
+              const h = require('../../h')
+
+              const a = require('.')
+              const { j } = require('../j')
+              const { K, L, M } = require('../k')
+            `,
+            output: dedent`
+              const { c1, c2, c3, c4 } = require('c')
+              const { e2 } = require('e/b')
+              const { e1 } = require('e/a')
+              const path = require('path')
+              const fs = require('fs')
+
+              const { i1, i2, i3 } = require('~/i')
+              const { b1, b2 } = require('~/b')
+              const { c1 } = require('~/c')
+
+              const { K, L, M } = require('../k')
+              const { j } = require('../j')
+              const h = require('../../h')
+              const a = require('.')
+            `,
+            options: [
+              {
+                ...options,
+                newlinesBetween: 'always',
+                internalPattern: ['~/**'],
+                groups: [
+                  'type',
+                  ['builtin', 'external'],
+                  'internal-type',
+                  'internal',
+                  ['parent-type', 'sibling-type', 'index-type'],
+                  ['parent', 'sibling', 'index'],
+                  'object',
+                  'unknown',
+                ],
+              },
+            ],
+            errors: [
+              {
+                messageId: 'unexpectedImportsOrder',
+                data: {
+                  left: '~/b',
+                  right: 'fs',
+                },
+              },
+              {
+                messageId: 'missedSpacingBetweenImports',
+                data: {
+                  left: 'fs',
+                  right: '~/c',
+                },
+              },
+              {
+                messageId: 'unexpectedImportsOrder',
+                data: {
+                  left: '~/c',
+                  right: '~/i',
+                },
+              },
+              {
+                messageId: 'extraSpacingBetweenImports',
+                data: {
+                  left: '../../h',
+                  right: '.',
+                },
+              },
+              {
+                messageId: 'unexpectedImportsOrder',
+                data: {
+                  left: '.',
+                  right: '../j',
+                },
+              },
+              {
+                messageId: 'unexpectedImportsOrder',
+                data: {
+                  left: '../j',
+                  right: '../k',
+                },
+              },
+            ],
+          },
+        ],
+      },
+    )
   })
 
   describe(`${ruleName}: misc`, () => {

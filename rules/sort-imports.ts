@@ -63,10 +63,6 @@ type Options<T extends string[]> = [
   }>,
 ]
 
-type ModuleDeclaration =
-  | TSESTree.TSImportEqualsDeclaration
-  | TSESTree.ImportDeclaration
-
 export default createEslintRule<Options<string[]>, MESSAGE_ID>({
   name: 'sort-imports',
   meta: {
@@ -265,7 +261,12 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
       /* Avoid matching on named imports without specifiers */
       !/}\s*from\s+/.test(sourceCode.getText(node))
 
-    let computeGroup = (node: ModuleDeclaration): Group<string[]> => {
+    let computeGroup = (
+      node:
+        | TSESTree.TSImportEqualsDeclaration
+        | TSESTree.VariableDeclaration
+        | TSESTree.ImportDeclaration,
+    ): Group<string[]> => {
       let isStyle = (value: string) =>
         ['.less', '.scss', '.sass', '.styl', '.pcss', '.css', '.sss'].some(
           extension => value.endsWith(extension),
@@ -288,10 +289,10 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
 
       let { getGroup, defineGroup, setCustomGroups } = useGroups(options.groups)
 
-      let isInternal = (nodeElement: TSESTree.ImportDeclaration) =>
+      let isInternal = (value: string) =>
         options.internalPattern.length &&
         options.internalPattern.some(pattern =>
-          minimatch(nodeElement.source.value, pattern, {
+          minimatch(value, pattern, {
             nocomment: true,
           }),
         )
@@ -319,7 +320,7 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
       let isExternal = (value: string) =>
         !(value.startsWith('.') || value.startsWith('/'))
 
-      if (node.importKind === 'type') {
+      if (node.type !== 'VariableDeclaration' && node.importKind === 'type') {
         if (node.type === 'ImportDeclaration') {
           setCustomGroups(options.customGroups.type, node.source.value)
 
@@ -335,7 +336,7 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
             defineGroup('parent-type')
           }
 
-          if (isInternal(node)) {
+          if (isInternal(node.source.value)) {
             defineGroup('internal-type')
           }
 
@@ -351,10 +352,23 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
         defineGroup('type')
       }
 
-      if (node.type === 'ImportDeclaration') {
-        setCustomGroups(options.customGroups.value, node.source.value)
+      if (
+        node.type === 'ImportDeclaration' ||
+        node.type === 'VariableDeclaration'
+      ) {
+        let value =
+          node.type === 'ImportDeclaration'
+            ? node.source.value
+            : (
+                (node.declarations[0].init as TSESTree.CallExpression)
+                  .arguments[0] as TSESTree.Literal
+              )
+                .value!.toString()
+                .toString()
 
-        if (isSideEffectImport(node) && isStyle(node.source.value)) {
+        setCustomGroups(options.customGroups.value, value)
+
+        if (isSideEffectImport(node) && isStyle(value)) {
           defineGroup('side-effect-style')
         }
 
@@ -362,31 +376,31 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
           defineGroup('side-effect')
         }
 
-        if (isStyle(node.source.value)) {
+        if (isStyle(value)) {
           defineGroup('style')
         }
 
-        if (isIndex(node.source.value)) {
+        if (isIndex(value)) {
           defineGroup('index')
         }
 
-        if (isSibling(node.source.value)) {
+        if (isSibling(value)) {
           defineGroup('sibling')
         }
 
-        if (isParent(node.source.value)) {
+        if (isParent(value)) {
           defineGroup('parent')
         }
 
-        if (isInternal(node)) {
+        if (isInternal(value)) {
           defineGroup('internal')
         }
 
-        if (isCoreModule(node.source.value)) {
+        if (isCoreModule(value)) {
           defineGroup('builtin')
         }
 
-        if (isExternal(node.source.value)) {
+        if (isExternal(value)) {
           defineGroup('external')
         }
       }
@@ -398,17 +412,25 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
       node: TSESTree.ImportDeclaration,
     ): boolean => node.specifiers.length > 1
 
-    let registerNode = (node: ModuleDeclaration) => {
+    let registerNode = (
+      node:
+        | TSESTree.TSImportEqualsDeclaration
+        | TSESTree.VariableDeclaration
+        | TSESTree.ImportDeclaration,
+    ) => {
       let name: string
 
       if (node.type === 'ImportDeclaration') {
         name = node.source.value
-      } else {
+      } else if (node.type === 'TSImportEqualsDeclaration') {
         if (node.moduleReference.type === 'TSExternalModuleReference') {
           name = `${node.moduleReference.expression.value}`
         } else {
           name = sourceCode.text.slice(...node.moduleReference.range)
         }
+      } else {
+        let decl = node.declarations[0].init as TSESTree.CallExpression
+        name = (decl.arguments[0] as TSESTree.Literal).value!.toString()
       }
 
       nodes.push({
@@ -428,6 +450,16 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
     return {
       TSImportEqualsDeclaration: registerNode,
       ImportDeclaration: registerNode,
+      VariableDeclaration: node => {
+        if (
+          node.declarations[0].init &&
+          node.declarations[0].init.type === 'CallExpression' &&
+          node.declarations[0].init.callee.type === 'Identifier' &&
+          node.declarations[0].init.callee.name === 'require'
+        ) {
+          registerNode(node)
+        }
+      },
       'Program:exit': () => {
         let hasContentBetweenNodes = (
           left: SortingNode,
