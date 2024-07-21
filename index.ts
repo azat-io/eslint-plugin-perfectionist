@@ -3,6 +3,7 @@ import type {
   FlatConfig,
 } from '@typescript-eslint/utils/ts-eslint'
 
+import sortVariableDeclarations from './rules/sort-variable-declarations'
 import sortIntersectionTypes from './rules/sort-intersection-types'
 import sortSvelteAttributes from './rules/sort-svelte-attributes'
 import sortAstroAttributes from './rules/sort-astro-attributes'
@@ -35,6 +36,7 @@ let name = 'perfectionist'
 
 let plugin = {
   rules: {
+    'sort-variable-declarations': sortVariableDeclarations,
     'sort-intersection-types': sortIntersectionTypes,
     'sort-svelte-attributes': sortSvelteAttributes,
     'sort-astro-attributes': sortAstroAttributes,

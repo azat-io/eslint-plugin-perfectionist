@@ -25,8 +25,6 @@ type Options = [
   }>,
 ]
 
-export const RULE_NAME = 'sort-array-includes'
-
 export default createEslintRule<Options, MESSAGE_ID>({
   name: 'sort-array-includes',
   meta: {
