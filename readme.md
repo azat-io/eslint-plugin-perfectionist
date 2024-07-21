@@ -37,8 +37,12 @@ Sorting imports and properties in software development offers numerous benefits:
 
 See [docs](https://perfectionist.dev).
 
+### Alphabetical Sorting
+
 ![ESLint Plugin Perfectionist alphabetical usage example](https://raw.githubusercontent.com/azat-io/eslint-plugin-perfectionist/main/docs/public/examples/example-alphabetical-dark.webp#gh-dark-mode-only)
 ![ESLint Plugin Perfectionist alphabetical usage example](https://raw.githubusercontent.com/azat-io/eslint-plugin-perfectionist/main/docs/public/examples/example-alphabetical-light.webp#gh-light-mode-only)
+
+### Sorting by Line Length
 
 ![ESLint Plugin Perfectionist line length usage example](https://raw.githubusercontent.com/azat-io/eslint-plugin-perfectionist/main/docs/public/examples/example-line-length-dark.webp#gh-dark-mode-only)
 ![ESLint Plugin Perfectionist line length usage example](https://raw.githubusercontent.com/azat-io/eslint-plugin-perfectionist/main/docs/public/examples/example-line-length-light.webp#gh-light-mode-only)
@@ -72,7 +76,7 @@ export default [
       perfectionist,
     },
     rules: {
-      'perfectionist/sort-objects': [
+      'perfectionist/sort-imports': [
         'error',
         {
           type: 'natural',
@@ -93,7 +97,7 @@ module.exports = {
     'perfectionist',
   ],
   rules: {
-    'perfectionist/sort-objects': [
+    'perfectionist/sort-imports': [
       'error',
       {
         type: 'natural',
