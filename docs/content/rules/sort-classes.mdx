@@ -189,7 +189,7 @@ Allows you to use comments to separate the class members into logical groups. Th
 
 - `true` — All comments will be treated as delimiters, creating partitions.
 -	`false` — Comments will not be used as delimiters.
-- string — A pattern using [minimatch](https://github.com/isaacs/minimatch) to specify which comments should act as delimiters.
+- string — A glob pattern to specify which comments should act as delimiters.
 
 ### groups
 
@@ -332,7 +332,7 @@ class Example {
 
 <sub>default: `{}`</sub>
 
-You can define your own groups for class members. The [minimatch](https://github.com/isaacs/minimatch) library is used for pattern matching.
+You can define your own groups for class members using custom glob patterns for matching.
 
 Example:
 

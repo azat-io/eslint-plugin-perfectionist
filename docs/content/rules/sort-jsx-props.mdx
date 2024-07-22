@@ -168,9 +168,7 @@ Controls whether sorting should be case-sensitive or not.
 
 Allows you to specify names or patterns for JSX elements that should be ignored by this rule. This can be useful if you have specific components that you do not want to sort.
 
-For example: `'Table*'` to ignore all interfaces whose names begin with the word “Table”.
-
-The [minimatch](https://github.com/isaacs/minimatch) library is used for pattern matching.
+You can specify their names or a glob pattern to ignore, for example: `'Table*'` to ignore all object types whose names begin with the word Table.
 
 ### groups
 
@@ -190,7 +188,7 @@ Predefined Groups:
 
 <sub>default: `{}`</sub>
 
-You can define your own groups for JSX props. The [minimatch](https://github.com/isaacs/minimatch) library is used for pattern matching.
+You can define your own groups for JSX props using custom glob patterns for matching.
 
 Example:
 

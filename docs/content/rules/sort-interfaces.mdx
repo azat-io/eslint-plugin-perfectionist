@@ -167,9 +167,7 @@ Controls whether sorting should be case-sensitive or not.
 
 Allows you to specify names or patterns for interfaces that should be ignored by this rule. This can be useful if you have specific interfaces that you do not want to sort.
 
-You can specify their names or a pattern to ignore, for example: `'Component*'` to ignore all interfaces whose names begin with the word “Component”.
-
-The [minimatch](https://github.com/isaacs/minimatch) library is used for pattern matching.
+You can specify their names or a glob pattern to ignore, for example: `'Component*'` to ignore all interfaces whose names begin with the word “Component”.
 
 ### partitionByNewLine
 
@@ -222,7 +220,7 @@ Predefined Groups:
 
 <sub>default: `{}`</sub>
 
-You can define your own groups for interface members. The [minimatch](https://github.com/isaacs/minimatch) library is used for pattern matching.
+You can define your own groups for interface members using custom glob patterns for matching.
 
 Example:
 

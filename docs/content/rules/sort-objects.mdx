@@ -189,7 +189,7 @@ Allows you to use comments to separate the keys of objects into logical groups. 
 
 - `true` — All comments will be treated as delimiters, creating partitions.
 -	`false` — Comments will not be used as delimiters.
-- string — A pattern using [minimatch](https://github.com/isaacs/minimatch) to specify which comments should act as delimiters.
+- string — A glob pattern to specify which comments should act as delimiters.
 
 ### partitionByNewLine
 
@@ -230,9 +230,7 @@ Determines whether this rule should be applied to styled-components like librari
 
 Allows you to specify names or patterns for object types that should be ignored by this rule. This can be useful if you have specific objects that you do not want to sort.
 
-For example: `'User*'` to ignore all interfaces whose names begin with the word “User”.
-
-The [minimatch](https://github.com/isaacs/minimatch) library is used for pattern matching.
+You can specify their names or a glob pattern to ignore, for example: `'User*'` to ignore all object types whose names begin with the word “User”.
 
 ### customIgnore
 
@@ -266,7 +264,7 @@ There are no predefined groups. You must use this with the `customGroups` option
 
 <sub>default: `{}`</sub>
 
-You can define your own groups for object keys. The [minimatch](https://github.com/isaacs/minimatch) library is used for pattern matching.
+You can define your own groups for object keys using custom glob patterns for matching.
 
 ```js
  {
