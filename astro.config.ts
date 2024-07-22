@@ -19,30 +19,6 @@ let dirname = fileURLToPath(path.dirname(import.meta.url))
 let site = 'https://perfectionist.dev'
 
 export default defineConfig({
-  markdown: {
-    shikiConfig: {
-      transformers: [
-        {
-          pre: node => {
-            delete node.properties.tabindex
-            delete node.properties.style
-          },
-        },
-        transformerNotationDiff(),
-      ],
-      theme: colorTheme,
-    },
-    rehypePlugins: [
-      [
-        rehypeExternalLinks,
-        {
-          rel: ['noopener', 'noreferrer'],
-          target: '_blank',
-        },
-      ],
-    ],
-    remarkPlugins: [remarkSectionize, remarkHeadings],
-  },
   integrations: [
     compress({
       JavaScript: true,
@@ -62,6 +38,22 @@ export default defineConfig({
     }),
     mdx(),
   ],
+  markdown: {
+    rehypePlugins: [
+      [
+        rehypeExternalLinks,
+        {
+          rel: ['noopener', 'noreferrer'],
+          target: '_blank',
+        },
+      ],
+    ],
+    shikiConfig: {
+      transformers: [transformerNotationDiff()],
+      theme: colorTheme,
+    },
+    remarkPlugins: [remarkSectionize, remarkHeadings],
+  },
   vite: {
     css: {
       lightningcss: {
