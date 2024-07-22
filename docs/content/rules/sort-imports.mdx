@@ -151,7 +151,7 @@ Controls whether sorting should be case-sensitive or not.
 
 Allows you to specify a pattern for identifying internal imports. This is useful for distinguishing your own modules from external dependencies.
 
-The [minimatch](https://github.com/isaacs/minimatch) library is used for pattern matching.
+You can use glob patterns to define these internal imports.
 
 ### newlinesBetween
 
@@ -254,7 +254,7 @@ import type { BaseOptions } from './index.d.ts'
 
 <sub>default: `{ value: {}, type: {} }`</sub>
 
-You can define your own groups for importing values or types. The [minimatch](https://github.com/isaacs/minimatch) library is used for pattern matching.
+You can define your own groups for importing values of types using custom glob patterns for matching.
 
 Example:
 
