@@ -14,6 +14,7 @@
 html {
   background: var(--color-background-primary);
   scroll-behavior: smooth;
+  scroll-padding-block-start: var(--header-block-size);
 }
 
 body {
