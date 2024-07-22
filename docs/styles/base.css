@@ -124,6 +124,12 @@ pre {
   overflow-y: scroll;
   scrollbar-width: thin;
   border-radius: var(--border-radius);
+  outline: none;
+
+  &:focus-visible {
+    box-shadow: 0 0 0 3px var(--color-border-brand);
+    transition: box-shadow 200ms;
+  }
 }
 
 h2,
