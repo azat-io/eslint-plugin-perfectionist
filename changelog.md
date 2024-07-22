@@ -1,6 +1,63 @@
 # Changelog
 
 
+## v3.0.0
+
+[compare changes](https://github.com/azat-io/eslint-plugin-perfectionist/compare/v2.11.0...v3.0.0)
+
+### 🚀 Features
+
+- ⚠️  Drop nodejs v16 support ([79f74f5](https://github.com/azat-io/eslint-plugin-perfectionist/commit/79f74f5))
+- Move to typescript-eslint v7 ([933cebd](https://github.com/azat-io/eslint-plugin-perfectionist/commit/933cebd))
+- Add new docs website ([76b29e8](https://github.com/azat-io/eslint-plugin-perfectionist/commit/76b29e8))
+- ⚠️  Rename options from kebab case to camel case ([6592f6f](https://github.com/azat-io/eslint-plugin-perfectionist/commit/6592f6f))
+- ⚠️  Make case ignoring enabled by default ([63efbf7](https://github.com/azat-io/eslint-plugin-perfectionist/commit/63efbf7))
+- Update svelte eslint parser ([611f088](https://github.com/azat-io/eslint-plugin-perfectionist/commit/611f088))
+- Add ability to ignore jsx elements ([da515ce](https://github.com/azat-io/eslint-plugin-perfectionist/commit/da515ce))
+- Use ignore pattern when sorting object for call expressions ([471de40](https://github.com/azat-io/eslint-plugin-perfectionist/commit/471de40))
+- ⚠️  Make new config export ([2a7eec2](https://github.com/azat-io/eslint-plugin-perfectionist/commit/2a7eec2))
+- Add sort-switch-case rule ([5311118](https://github.com/azat-io/eslint-plugin-perfectionist/commit/5311118))
+- Add typescript types ([2b63ab5](https://github.com/azat-io/eslint-plugin-perfectionist/commit/2b63ab5))
+- Add custom ignore to enable customisable ignore sort-objects rule ([4fa2b3e](https://github.com/azat-io/eslint-plugin-perfectionist/commit/4fa2b3e))
+- Respect numeric separators in natural sorting ([7b57ba2](https://github.com/azat-io/eslint-plugin-perfectionist/commit/7b57ba2))
+- Add groups option in sort-intersection-types rule ([208a9db](https://github.com/azat-io/eslint-plugin-perfectionist/commit/208a9db))
+- ⚠️  Remove nullable last option in sort-union-types ([c4977df](https://github.com/azat-io/eslint-plugin-perfectionist/commit/c4977df))
+- Add groups option in sort-union-types rule ([c69f277](https://github.com/azat-io/eslint-plugin-perfectionist/commit/c69f277))
+- Add partition by comment option in sort-classes ([da01c85](https://github.com/azat-io/eslint-plugin-perfectionist/commit/da01c85))
+- ⚠️  Make recommended options default ([d0d9115](https://github.com/azat-io/eslint-plugin-perfectionist/commit/d0d9115))
+- ⚠️  Replace spread last sort-array-includes option with group kind ([721e1ee](https://github.com/azat-io/eslint-plugin-perfectionist/commit/721e1ee))
+- Add group kind option in sort-object-types ([96cfcd8](https://github.com/azat-io/eslint-plugin-perfectionist/commit/96cfcd8))
+- ⚠️  Rename optionality order option to group kind in sort-interfaces rule ([79a4823](https://github.com/azat-io/eslint-plugin-perfectionist/commit/79a4823))
+- Add sort-variable-declarations rule ([12bd265](https://github.com/azat-io/eslint-plugin-perfectionist/commit/12bd265))
+- Support require in sort-imports ([bc16243](https://github.com/azat-io/eslint-plugin-perfectionist/commit/bc16243))
+
+### 🐞 Bug Fixes
+
+- Move typescript-eslint types to dependencies ([44edb63](https://github.com/azat-io/eslint-plugin-perfectionist/commit/44edb63))
+- Add ability to select enviorenment and separate bun modules ([c8b2fa4](https://github.com/azat-io/eslint-plugin-perfectionist/commit/c8b2fa4))
+- Fix disabling styled components when using css func ([d4e8011](https://github.com/azat-io/eslint-plugin-perfectionist/commit/d4e8011))
+- Support old getting context eslint api ([09900aa](https://github.com/azat-io/eslint-plugin-perfectionist/commit/09900aa))
+- Fix export and import kind default value ([a0208ac](https://github.com/azat-io/eslint-plugin-perfectionist/commit/a0208ac))
+- Don't sort class members if right value depends on left ([8c35a7d](https://github.com/azat-io/eslint-plugin-perfectionist/commit/8c35a7d))
+
+#### ⚠️ Breaking Changes
+
+- ⚠️  Drop nodejs v16 support ([79f74f5](https://github.com/azat-io/eslint-plugin-perfectionist/commit/79f74f5))
+- ⚠️  Rename options from kebab case to camel case ([6592f6f](https://github.com/azat-io/eslint-plugin-perfectionist/commit/6592f6f))
+- ⚠️  Make case ignoring enabled by default ([63efbf7](https://github.com/azat-io/eslint-plugin-perfectionist/commit/63efbf7))
+- ⚠️  Make new config export ([2a7eec2](https://github.com/azat-io/eslint-plugin-perfectionist/commit/2a7eec2))
+- ⚠️  Remove nullable last option in sort-union-types ([c4977df](https://github.com/azat-io/eslint-plugin-perfectionist/commit/c4977df))
+- ⚠️  Make recommended options default ([d0d9115](https://github.com/azat-io/eslint-plugin-perfectionist/commit/d0d9115))
+- ⚠️  Replace spread last sort-array-includes option with group kind ([721e1ee](https://github.com/azat-io/eslint-plugin-perfectionist/commit/721e1ee))
+- ⚠️  Rename optionality order option to group kind in sort-interfaces rule ([79a4823](https://github.com/azat-io/eslint-plugin-perfectionist/commit/79a4823))
+
+### ❤️ Contributors
+
+- Azat S. ([@azat-io](http://github.com/azat-io))
+- Sergio ([@KID-joker](http://github.com/KID-joker))
+- Azat S ([@azat-io](http://github.com/azat-io))
+- Luca Cavallaro <luca.cavallaro@posteo.net>
+
 ## v2.11.0
 
 [compare changes](https://github.com/azat-io/eslint-plugin-perfectionist/compare/v2.10.0...v2.11.0)
