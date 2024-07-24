@@ -39,13 +39,37 @@ See [docs](https://perfectionist.dev).
 
 ### Alphabetical Sorting
 
-![ESLint Plugin Perfectionist alphabetical usage example](https://raw.githubusercontent.com/azat-io/eslint-plugin-perfectionist/main/docs/public/examples/example-alphabetical-dark.webp#gh-dark-mode-only)
-![ESLint Plugin Perfectionist alphabetical usage example](https://raw.githubusercontent.com/azat-io/eslint-plugin-perfectionist/main/docs/public/examples/example-alphabetical-light.webp#gh-light-mode-only)
+<picture>
+  <source
+    srcset="https://raw.githubusercontent.com/azat-io/eslint-plugin-perfectionist/main/docs/public/examples/example-alphabetical-light.webp"
+    media="(prefers-color-scheme: light)"
+  />
+  <source
+    srcset="https://raw.githubusercontent.com/azat-io/eslint-plugin-perfectionist/main/docs/public/examples/example-alphabetical-dark.webp"
+    media="(prefers-color-scheme: dark)"
+  />
+  <img
+    src="https://raw.githubusercontent.com/azat-io/eslint-plugin-perfectionist/main/docs/public/examples/example-alphabetical-light.webp"
+    alt="ESLint Plugin Perfectionist alphabetical usage example"
+  />
+</picture>
 
 ### Sorting by Line Length
 
-![ESLint Plugin Perfectionist line length usage example](https://raw.githubusercontent.com/azat-io/eslint-plugin-perfectionist/main/docs/public/examples/example-line-length-dark.webp#gh-dark-mode-only)
-![ESLint Plugin Perfectionist line length usage example](https://raw.githubusercontent.com/azat-io/eslint-plugin-perfectionist/main/docs/public/examples/example-line-length-light.webp#gh-light-mode-only)
+<picture>
+  <source
+    srcset="https://raw.githubusercontent.com/azat-io/eslint-plugin-perfectionist/main/docs/public/examples/example-line-length-light.webp"
+    media="(prefers-color-scheme: light)"
+  />
+  <source
+    srcset="https://raw.githubusercontent.com/azat-io/eslint-plugin-perfectionist/main/docs/public/examples/example-line-length-dark.webp"
+    media="(prefers-color-scheme: dark)"
+  />
+  <img
+    src="https://raw.githubusercontent.com/azat-io/eslint-plugin-perfectionist/main/docs/public/examples/example-line-length-light.webp"
+    alt="ESLint Plugin Perfectionist line length usage example"
+  />
+</picture>
 
 ## Installation
 
