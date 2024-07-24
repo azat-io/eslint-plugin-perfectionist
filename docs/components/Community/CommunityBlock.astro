@@ -9,6 +9,14 @@ let { stdout: releases } = await execa('git tag | wc -l', {
   shell: true,
 })
 
+if (!releases) {
+  let data = await fetch(
+    'https://api.github.com/repos/azat-io/eslint-plugin-perfectionist/releases?per_page=1000',
+  )
+  let json = await data.json()
+  releases = json.length
+}
+
 let stars = '1.7k'
 let downloads = '1M'
 ---
