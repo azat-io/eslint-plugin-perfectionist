@@ -21,15 +21,20 @@ import { compare } from '../utils/compare'
 type MESSAGE_ID = 'unexpectedClassesOrder'
 
 type Group =
+  | 'protected-decorated-accessor-property'
   | 'private-decorated-accessor-property'
+  | 'protected-decorated-property'
   | 'decorated-accessor-property'
   | 'private-decorated-property'
+  | 'static-protected-method'
   | 'static-private-method'
   | 'decorated-set-method'
   | 'decorated-get-method'
   | 'decorated-property'
+  | 'protected-property'
   | 'decorated-method'
   | 'private-property'
+  | 'protected-method'
   | 'static-property'
   | 'index-signature'
   | 'private-method'
@@ -150,10 +155,12 @@ export default createEslintRule<Options, MESSAGE_ID>({
       groups: [
         'index-signature',
         'static-property',
+        'protected-property',
         'private-property',
         'property',
         'constructor',
         'static-method',
+        'protected-method',
         'private-method',
         'method',
         ['get-method', 'set-method'],
@@ -169,10 +176,12 @@ export default createEslintRule<Options, MESSAGE_ID>({
           groups: [
             'index-signature',
             'static-property',
+            'protected-property',
             'private-property',
             'property',
             'constructor',
             'static-method',
+            'protected-method',
             'private-method',
             'method',
             ['get-method', 'set-method'],
@@ -278,6 +287,8 @@ export default createEslintRule<Options, MESSAGE_ID>({
                 defineGroup('constructor')
               }
 
+              let isProtectedMethod = member.accessibility === 'protected'
+
               let isPrivateMethod =
                 member.accessibility === 'private' || isPrivate
 
@@ -307,6 +318,14 @@ export default createEslintRule<Options, MESSAGE_ID>({
                 defineGroup('static-method')
               }
 
+              if (isProtectedMethod && isStaticMethod) {
+                defineGroup('static-protected-method')
+              }
+
+              if (isProtectedMethod) {
+                defineGroup('protected-method')
+              }
+
               if (member.kind === 'get') {
                 defineGroup('get-method')
               }
@@ -320,6 +339,10 @@ export default createEslintRule<Options, MESSAGE_ID>({
               defineGroup('index-signature')
             } else if (member.type === 'AccessorProperty') {
               if (decorated) {
+                if (member.accessibility === 'protected') {
+                  defineGroup('protected-decorated-accessor-property')
+                }
+
                 if (member.accessibility === 'private' || isPrivate) {
                   defineGroup('private-decorated-accessor-property')
                 }
@@ -328,11 +351,19 @@ export default createEslintRule<Options, MESSAGE_ID>({
               }
             } else if (member.type === 'PropertyDefinition') {
               if (decorated) {
+                if (member.accessibility === 'protected') {
+                  defineGroup('protected-decorated-property')
+                }
+
                 if (member.accessibility === 'private' || isPrivate) {
                   defineGroup('private-decorated-property')
                 }
 
                 defineGroup('decorated-property')
+              }
+
+              if (member.accessibility === 'protected') {
+                defineGroup('protected-property')
               }
 
               if (member.accessibility === 'private' || isPrivate) {

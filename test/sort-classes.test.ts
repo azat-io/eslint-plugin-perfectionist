@@ -34,21 +34,25 @@ describe(ruleName, () => {
             class Class {
               static a = 'a'
 
-              private b = 'b'
+              protected b = 'b'
 
-              c = 'c'
+              private c = 'c'
 
               d = 'd'
 
+              e = 'e'
+
               constructor() {}
 
-              static e() {}
+              static f() {}
 
-              private f() {}
+              protected g() {}
 
-              g() {}
+              private h() {}
 
-              h() {}
+              i() {}
+
+              j() {}
             }
           `,
           options: [
@@ -56,10 +60,12 @@ describe(ruleName, () => {
               ...options,
               groups: [
                 'static-property',
+                'protected-property',
                 'private-property',
                 'property',
                 'constructor',
                 'static-method',
+                'protected-method',
                 'private-method',
                 'method',
                 'unknown',
@@ -74,42 +80,50 @@ describe(ruleName, () => {
             class Class {
               static a = 'a'
 
-              private b = 'b'
+              protected b = 'b'
+
+              private c = 'c'
+
+              e = 'e'
 
               d = 'd'
 
-              c = 'c'
-
-              static e() {}
+              static f() {}
 
               constructor() {}
 
-              private f() {}
+              protected g() {}
 
-              g() {}
+              private h() {}
 
-              h() {}
+              i() {}
+
+              j() {}
             }
           `,
           output: dedent`
             class Class {
               static a = 'a'
 
-              private b = 'b'
+              protected b = 'b'
 
-              c = 'c'
+              private c = 'c'
 
               d = 'd'
 
+              e = 'e'
+
               constructor() {}
 
-              static e() {}
+              static f() {}
 
-              private f() {}
+              protected g() {}
 
-              g() {}
+              private h() {}
 
-              h() {}
+              i() {}
+
+              j() {}
             }
           `,
           options: [
@@ -117,10 +131,12 @@ describe(ruleName, () => {
               ...options,
               groups: [
                 'static-property',
+                'protected-property',
                 'private-property',
                 'property',
                 'constructor',
                 'static-method',
+                'protected-method',
                 'private-method',
                 'method',
                 'unknown',
@@ -131,14 +147,14 @@ describe(ruleName, () => {
             {
               messageId: 'unexpectedClassesOrder',
               data: {
-                left: 'd',
-                right: 'c',
+                left: 'e',
+                right: 'd',
               },
             },
             {
               messageId: 'unexpectedClassesOrder',
               data: {
-                left: 'e',
+                left: 'f',
                 right: 'constructor',
               },
             },
