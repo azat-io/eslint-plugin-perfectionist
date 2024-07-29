@@ -586,6 +586,9 @@ describe(ruleName, () => {
               @property()
               greeting: string = 'Hello'
 
+              @property()
+              protected type = ''
+
               @state()
               private _counter = 0
 
@@ -623,6 +626,9 @@ describe(ruleName, () => {
               @property()
               greeting: string = 'Hello'
 
+              @property()
+              protected type = ''
+
               @state()
               private _counter = 0
 
@@ -658,6 +664,7 @@ describe(ruleName, () => {
               groups: [
                 'decorated-property',
                 'property',
+                'protected-decorated-property',
                 'private-decorated-property',
                 'private-property',
                 'constructor',
@@ -1904,6 +1911,9 @@ describe(ruleName, () => {
               @property()
               greeting: string = 'Hello'
 
+              @property()
+              protected type = ''
+
               @state()
               private _counter = 0
 
@@ -1940,6 +1950,9 @@ describe(ruleName, () => {
 
               @property()
               greeting: string = 'Hello'
+
+              @property()
+              protected type = ''
 
               @state()
               private _counter = 0
@@ -3137,6 +3150,9 @@ describe(ruleName, () => {
               @property()
               greeting: string = 'Hello'
 
+              @property()
+              protected type = ''
+
               @state()
               private _counter = 0
 
@@ -3173,6 +3189,9 @@ describe(ruleName, () => {
 
               @property()
               greeting: string = 'Hello'
+
+              @property()
+              protected type = ''
 
               @state()
               private _counter = 0
