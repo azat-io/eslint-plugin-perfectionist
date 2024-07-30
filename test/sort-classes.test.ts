@@ -1989,6 +1989,7 @@ describe(ruleName, () => {
               groups: [
                 'decorated-property',
                 'property',
+                'protected-decorated-property',
                 'private-decorated-property',
                 'private-property',
                 'constructor',
@@ -2032,6 +2033,9 @@ describe(ruleName, () => {
 
               @observable
               accessor title = ''
+
+              @observable
+              protected accessor type = ''
             }`,
           output: dedent`
             class Todo {
@@ -2040,6 +2044,9 @@ describe(ruleName, () => {
 
               @observable
               accessor title = ''
+
+              @observable
+              protected accessor type = ''
 
               @observable
               accessor #active = false
@@ -2056,6 +2063,7 @@ describe(ruleName, () => {
               ...options,
               groups: [
                 'decorated-accessor-property',
+                'protected-decorated-accessor-property',
                 'private-decorated-accessor-property',
                 'property',
                 'constructor',
@@ -3278,6 +3286,9 @@ describe(ruleName, () => {
               @observable
               accessor title = ''
 
+              @observable
+              protected accessor type = ''
+
             }`,
           output: dedent`
             class Todo {
@@ -3289,6 +3300,9 @@ describe(ruleName, () => {
 
               @observable
               accessor title = ''
+
+              @observable
+              protected accessor type = ''
 
               @observable
               accessor #active = false
@@ -3314,6 +3328,7 @@ describe(ruleName, () => {
               groups: [
                 'my-first-group',
                 'decorated-accessor-property',
+                'protected-decorated-accessor-property',
                 'private-decorated-accessor-property',
                 'property',
                 'constructor',
