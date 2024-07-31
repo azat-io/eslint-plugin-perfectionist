@@ -356,15 +356,14 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
         node.type === 'ImportDeclaration' ||
         node.type === 'VariableDeclaration'
       ) {
-        let value =
-          node.type === 'ImportDeclaration'
-            ? node.source.value
-            : (
-                (node.declarations[0].init as TSESTree.CallExpression)
-                  .arguments[0] as TSESTree.Literal
-              )
-                .value!.toString()
-                .toString()
+        let value: string
+        if (node.type === 'ImportDeclaration') {
+          ;({ value } = node.source)
+        } else {
+          let decl = node.declarations[0].init as TSESTree.CallExpression
+          let declValue = (decl.arguments[0] as TSESTree.Literal).value
+          value = declValue!.toString()
+        }
 
         setCustomGroups(options.customGroups.value, value)
 
@@ -430,7 +429,8 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
         }
       } else {
         let decl = node.declarations[0].init as TSESTree.CallExpression
-        name = (decl.arguments[0] as TSESTree.Literal).value!.toString()
+        let { value } = decl.arguments[0] as TSESTree.Literal
+        name = value!.toString()
       }
 
       nodes.push({
@@ -455,7 +455,8 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
           node.declarations[0].init &&
           node.declarations[0].init.type === 'CallExpression' &&
           node.declarations[0].init.callee.type === 'Identifier' &&
-          node.declarations[0].init.callee.name === 'require'
+          node.declarations[0].init.callee.name === 'require' &&
+          node.declarations[0].init.arguments[0]?.type === 'Literal'
         ) {
           registerNode(node)
         }

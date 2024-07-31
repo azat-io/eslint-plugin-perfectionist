@@ -4575,5 +4575,25 @@ describe(ruleName, () => {
         invalid: [],
       },
     )
+
+    ruleTester.run(`${ruleName}: ignores dynamic requires`, rule, {
+      valid: [
+        {
+          code: dedent`
+            const path = require(path);
+            const myFileName = require('the-filename');
+            const file = require(path.join(myDir, myFileName));
+            const other = require('./other.js');
+          `,
+          options: [
+            {
+              newlinesBetween: 'never',
+              groups: ['builtin', 'external', 'side-effect'],
+            },
+          ],
+        },
+      ],
+      invalid: [],
+    })
   })
 })
