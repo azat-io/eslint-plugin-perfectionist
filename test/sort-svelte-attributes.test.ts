@@ -1,6 +1,9 @@
 import { RuleTester } from '@typescript-eslint/rule-tester'
+import typescriptParser from '@typescript-eslint/parser'
 import { afterAll, describe, it } from 'vitest'
+import svelteParser from 'svelte-eslint-parser'
 import { dedent } from 'ts-dedent'
+import path from 'node:path'
 
 import rule from '../rules/sort-svelte-attributes'
 
@@ -15,10 +18,14 @@ describe(ruleName, () => {
   RuleTester.it = it
 
   let ruleTester = new RuleTester({
-    parser: require.resolve('svelte-eslint-parser'),
-    parserOptions: {
-      parser: {
-        ts: '@typescript-eslint/parser',
+    languageOptions: {
+      parser: svelteParser,
+      parserOptions: {
+        parser: {
+          tsconfigRootDir: path.join(__dirname, './fixtures'),
+          project: './tsconfig.json',
+          ts: typescriptParser,
+        },
       },
     },
   })
@@ -38,10 +45,10 @@ describe(ruleName, () => {
       {
         valid: [
           {
-            filename: 'component.svelte',
+            filename: 'file.svelte',
             code: dedent`
               <script>
-                import Component from '../Component.svelte'
+                import Component from '../file.svelte'
               </script>
 
               <Component a="aaa" b="bb" c="c" d />
@@ -51,17 +58,17 @@ describe(ruleName, () => {
         ],
         invalid: [
           {
-            filename: 'component.svelte',
+            filename: 'file.svelte',
             code: dedent`
               <script>
-                import Component from '../Component.svelte'
+                import Component from '../file.svelte'
               </script>
 
               <Component b="bb" a="aaa" d c="c" />
             `,
             output: dedent`
               <script>
-                import Component from '../Component.svelte'
+                import Component from '../file.svelte'
               </script>
 
               <Component a="aaa" b="bb" c="c" d />
@@ -91,10 +98,10 @@ describe(ruleName, () => {
     ruleTester.run(`${ruleName}(${type}): works with spread attributes`, rule, {
       valid: [
         {
-          filename: 'component.svelte',
+          filename: 'file.svelte',
           code: dedent`
               <script>
-                import Component from '../Component.svelte'
+                import Component from '../file.svelte'
 
                 let data = {}
               </script>
@@ -106,10 +113,10 @@ describe(ruleName, () => {
       ],
       invalid: [
         {
-          filename: 'component.svelte',
+          filename: 'file.svelte',
           code: dedent`
               <script>
-                import Component from '../Component.svelte'
+                import Component from '../file.svelte'
 
                 let data = {}
               </script>
@@ -118,7 +125,7 @@ describe(ruleName, () => {
             `,
           output: dedent`
               <script>
-                import Component from '../Component.svelte'
+                import Component from '../file.svelte'
 
                 let data = {}
               </script>
@@ -142,11 +149,11 @@ describe(ruleName, () => {
     ruleTester.run(`${ruleName}(${type}): works with directives`, rule, {
       valid: [
         {
-          filename: 'component.svelte',
+          filename: 'file.svelte',
           code: dedent`
             <script>
               import { clickOutside } from './click-outside.js'
-              import Component from './Component.svelte'
+              import Component from './file.svelte'
 
               let s = true
             </script>
@@ -161,11 +168,11 @@ describe(ruleName, () => {
       ],
       invalid: [
         {
-          filename: 'component.svelte',
+          filename: 'file.svelte',
           code: dedent`
             <script>
               import { clickOutside } from './click-outside.js'
-              import Component from './Component.svelte'
+              import Component from './file.svelte'
 
               let s = true
             </script>
@@ -178,7 +185,7 @@ describe(ruleName, () => {
           output: dedent`
             <script>
               import { clickOutside } from './click-outside.js'
-              import Component from './Component.svelte'
+              import Component from './file.svelte'
 
               let s = true
             </script>
@@ -208,10 +215,10 @@ describe(ruleName, () => {
       {
         valid: [
           {
-            filename: 'component.svelte',
+            filename: 'file.svelte',
             code: dedent`
               <script>
-                import Component from '../components/Component.svelte'
+                import Component from '../components/file.svelte'
 
                 let c = true
               </script>
@@ -233,10 +240,10 @@ describe(ruleName, () => {
         ],
         invalid: [
           {
-            filename: 'component.svelte',
+            filename: 'file.svelte',
             code: dedent`
               <script>
-                import Component from '../components/Component.svelte'
+                import Component from '../components/file.svelte'
 
                 let c = true
               </script>
@@ -250,7 +257,7 @@ describe(ruleName, () => {
             `,
             output: dedent`
               <script>
-                import Component from '../components/Component.svelte'
+                import Component from '../components/file.svelte'
 
                 let c = true
               </script>
@@ -295,10 +302,10 @@ describe(ruleName, () => {
       {
         valid: [
           {
-            filename: 'component.svelte',
+            filename: 'file.svelte',
             code: dedent`
               <script>
-                import Component from '../components/Component.svelte'
+                import Component from '../components/file.svelte'
 
                 let c = 0
               </script>
@@ -322,10 +329,10 @@ describe(ruleName, () => {
         ],
         invalid: [
           {
-            filename: 'component.svelte',
+            filename: 'file.svelte',
             code: dedent`
               <script>
-                import Component from '../components/Component.svelte'
+                import Component from '../components/file.svelte'
 
                 let c = 0
               </script>
@@ -341,7 +348,7 @@ describe(ruleName, () => {
             `,
             output: dedent`
               <script>
-                import Component from '../components/Component.svelte'
+                import Component from '../components/file.svelte'
 
                 let c = 0
               </script>
@@ -378,10 +385,10 @@ describe(ruleName, () => {
     ruleTester.run(`${ruleName}(${type}): allows to set custom groups`, rule, {
       valid: [
         {
-          filename: 'component.svelte',
+          filename: 'file.svelte',
           code: dedent`
             <script>
-              import Component from '~/Component.svelte'
+              import Component from '~/file.svelte'
             </script>
 
             <Component
@@ -407,10 +414,10 @@ describe(ruleName, () => {
       ],
       invalid: [
         {
-          filename: 'component.svelte',
+          filename: 'file.svelte',
           code: dedent`
             <script>
-              import Component from '~/Component.svelte'
+              import Component from '~/file.svelte'
             </script>
 
             <Component
@@ -424,7 +431,7 @@ describe(ruleName, () => {
           `,
           output: dedent`
             <script>
-              import Component from '~/Component.svelte'
+              import Component from '~/file.svelte'
             </script>
 
             <Component
@@ -475,10 +482,10 @@ describe(ruleName, () => {
       {
         valid: [
           {
-            filename: 'component.svelte',
+            filename: 'file.svelte',
             code: dedent`
               <script>
-                import Component from '../Component.svelte'
+                import Component from '../file.svelte'
               </script>
 
               <Component a="aaa" b="bb" c="c" d />
@@ -488,17 +495,17 @@ describe(ruleName, () => {
         ],
         invalid: [
           {
-            filename: 'component.svelte',
+            filename: 'file.svelte',
             code: dedent`
               <script>
-                import Component from '../Component.svelte'
+                import Component from '../file.svelte'
               </script>
 
               <Component b="bb" a="aaa" d c="c" />
             `,
             output: dedent`
               <script>
-                import Component from '../Component.svelte'
+                import Component from '../file.svelte'
               </script>
 
               <Component a="aaa" b="bb" c="c" d />
@@ -528,10 +535,10 @@ describe(ruleName, () => {
     ruleTester.run(`${ruleName}(${type}): works with spread attributes`, rule, {
       valid: [
         {
-          filename: 'component.svelte',
+          filename: 'file.svelte',
           code: dedent`
               <script>
-                import Component from '../Component.svelte'
+                import Component from '../file.svelte'
 
                 let data = {}
               </script>
@@ -543,10 +550,10 @@ describe(ruleName, () => {
       ],
       invalid: [
         {
-          filename: 'component.svelte',
+          filename: 'file.svelte',
           code: dedent`
               <script>
-                import Component from '../Component.svelte'
+                import Component from '../file.svelte'
 
                 let data = {}
               </script>
@@ -555,7 +562,7 @@ describe(ruleName, () => {
             `,
           output: dedent`
               <script>
-                import Component from '../Component.svelte'
+                import Component from '../file.svelte'
 
                 let data = {}
               </script>
@@ -579,11 +586,11 @@ describe(ruleName, () => {
     ruleTester.run(`${ruleName}(${type}): works with directives`, rule, {
       valid: [
         {
-          filename: 'component.svelte',
+          filename: 'file.svelte',
           code: dedent`
             <script>
               import { clickOutside } from './click-outside.js'
-              import Component from './Component.svelte'
+              import Component from './file.svelte'
 
               let s = true
             </script>
@@ -598,11 +605,11 @@ describe(ruleName, () => {
       ],
       invalid: [
         {
-          filename: 'component.svelte',
+          filename: 'file.svelte',
           code: dedent`
             <script>
               import { clickOutside } from './click-outside.js'
-              import Component from './Component.svelte'
+              import Component from './file.svelte'
 
               let s = true
             </script>
@@ -615,7 +622,7 @@ describe(ruleName, () => {
           output: dedent`
             <script>
               import { clickOutside } from './click-outside.js'
-              import Component from './Component.svelte'
+              import Component from './file.svelte'
 
               let s = true
             </script>
@@ -645,10 +652,10 @@ describe(ruleName, () => {
       {
         valid: [
           {
-            filename: 'component.svelte',
+            filename: 'file.svelte',
             code: dedent`
               <script>
-                import Component from '../components/Component.svelte'
+                import Component from '../components/file.svelte'
 
                 let c = true
               </script>
@@ -670,10 +677,10 @@ describe(ruleName, () => {
         ],
         invalid: [
           {
-            filename: 'component.svelte',
+            filename: 'file.svelte',
             code: dedent`
               <script>
-                import Component from '../components/Component.svelte'
+                import Component from '../components/file.svelte'
 
                 let c = true
               </script>
@@ -687,7 +694,7 @@ describe(ruleName, () => {
             `,
             output: dedent`
               <script>
-                import Component from '../components/Component.svelte'
+                import Component from '../components/file.svelte'
 
                 let c = true
               </script>
@@ -732,10 +739,10 @@ describe(ruleName, () => {
       {
         valid: [
           {
-            filename: 'component.svelte',
+            filename: 'file.svelte',
             code: dedent`
               <script>
-                import Component from '../components/Component.svelte'
+                import Component from '../components/file.svelte'
 
                 let c = 0
               </script>
@@ -759,10 +766,10 @@ describe(ruleName, () => {
         ],
         invalid: [
           {
-            filename: 'component.svelte',
+            filename: 'file.svelte',
             code: dedent`
               <script>
-                import Component from '../components/Component.svelte'
+                import Component from '../components/file.svelte'
 
                 let c = 0
               </script>
@@ -778,7 +785,7 @@ describe(ruleName, () => {
             `,
             output: dedent`
               <script>
-                import Component from '../components/Component.svelte'
+                import Component from '../components/file.svelte'
 
                 let c = 0
               </script>
@@ -815,10 +822,10 @@ describe(ruleName, () => {
     ruleTester.run(`${ruleName}(${type}): allows to set custom groups`, rule, {
       valid: [
         {
-          filename: 'component.svelte',
+          filename: 'file.svelte',
           code: dedent`
             <script>
-              import Component from '~/Component.svelte'
+              import Component from '~/file.svelte'
             </script>
 
             <Component
@@ -844,10 +851,10 @@ describe(ruleName, () => {
       ],
       invalid: [
         {
-          filename: 'component.svelte',
+          filename: 'file.svelte',
           code: dedent`
             <script>
-              import Component from '~/Component.svelte'
+              import Component from '~/file.svelte'
             </script>
 
             <Component
@@ -861,7 +868,7 @@ describe(ruleName, () => {
           `,
           output: dedent`
             <script>
-              import Component from '~/Component.svelte'
+              import Component from '~/file.svelte'
             </script>
 
             <Component
@@ -911,10 +918,10 @@ describe(ruleName, () => {
       {
         valid: [
           {
-            filename: 'component.svelte',
+            filename: 'file.svelte',
             code: dedent`
               <script>
-                import Component from '../Component.svelte'
+                import Component from '../file.svelte'
               </script>
 
               <Component a="aaa" b="bb" c="c" d />
@@ -924,17 +931,17 @@ describe(ruleName, () => {
         ],
         invalid: [
           {
-            filename: 'component.svelte',
+            filename: 'file.svelte',
             code: dedent`
               <script>
-                import Component from '../Component.svelte'
+                import Component from '../file.svelte'
               </script>
 
               <Component b="bb" a="aaa" d c="c" />
             `,
             output: dedent`
               <script>
-                import Component from '../Component.svelte'
+                import Component from '../file.svelte'
               </script>
 
               <Component a="aaa" b="bb" c="c" d />
@@ -964,10 +971,10 @@ describe(ruleName, () => {
     ruleTester.run(`${ruleName}(${type}): works with spread attributes`, rule, {
       valid: [
         {
-          filename: 'component.svelte',
+          filename: 'file.svelte',
           code: dedent`
               <script>
-                import Component from '../Component.svelte'
+                import Component from '../file.svelte'
 
                 let data = {}
               </script>
@@ -979,10 +986,10 @@ describe(ruleName, () => {
       ],
       invalid: [
         {
-          filename: 'component.svelte',
+          filename: 'file.svelte',
           code: dedent`
               <script>
-                import Component from '../Component.svelte'
+                import Component from '../file.svelte'
 
                 let data = {}
               </script>
@@ -991,7 +998,7 @@ describe(ruleName, () => {
             `,
           output: dedent`
               <script>
-                import Component from '../Component.svelte'
+                import Component from '../file.svelte'
 
                 let data = {}
               </script>
@@ -1015,11 +1022,11 @@ describe(ruleName, () => {
     ruleTester.run(`${ruleName}(${type}): works with directives`, rule, {
       valid: [
         {
-          filename: 'component.svelte',
+          filename: 'file.svelte',
           code: dedent`
             <script>
               import { clickOutside } from './click-outside.js'
-              import Component from './Component.svelte'
+              import Component from './file.svelte'
 
               let s = true
             </script>
@@ -1034,11 +1041,11 @@ describe(ruleName, () => {
       ],
       invalid: [
         {
-          filename: 'component.svelte',
+          filename: 'file.svelte',
           code: dedent`
             <script>
               import { clickOutside } from './click-outside.js'
-              import Component from './Component.svelte'
+              import Component from './file.svelte'
 
               let s = true
             </script>
@@ -1051,7 +1058,7 @@ describe(ruleName, () => {
           output: dedent`
             <script>
               import { clickOutside } from './click-outside.js'
-              import Component from './Component.svelte'
+              import Component from './file.svelte'
 
               let s = true
             </script>
@@ -1081,10 +1088,10 @@ describe(ruleName, () => {
       {
         valid: [
           {
-            filename: 'component.svelte',
+            filename: 'file.svelte',
             code: dedent`
               <script>
-                import Component from '../components/Component.svelte'
+                import Component from '../components/file.svelte'
 
                 let c = true
               </script>
@@ -1106,10 +1113,10 @@ describe(ruleName, () => {
         ],
         invalid: [
           {
-            filename: 'component.svelte',
+            filename: 'file.svelte',
             code: dedent`
               <script>
-                import Component from '../components/Component.svelte'
+                import Component from '../components/file.svelte'
 
                 let c = true
               </script>
@@ -1123,7 +1130,7 @@ describe(ruleName, () => {
             `,
             output: dedent`
               <script>
-                import Component from '../components/Component.svelte'
+                import Component from '../components/file.svelte'
 
                 let c = true
               </script>
@@ -1168,10 +1175,10 @@ describe(ruleName, () => {
       {
         valid: [
           {
-            filename: 'component.svelte',
+            filename: 'file.svelte',
             code: dedent`
               <script>
-                import Component from '../components/Component.svelte'
+                import Component from '../components/file.svelte'
 
                 let c = 0
               </script>
@@ -1195,10 +1202,10 @@ describe(ruleName, () => {
         ],
         invalid: [
           {
-            filename: 'component.svelte',
+            filename: 'file.svelte',
             code: dedent`
               <script>
-                import Component from '../components/Component.svelte'
+                import Component from '../components/file.svelte'
 
                 let c = 0
               </script>
@@ -1214,7 +1221,7 @@ describe(ruleName, () => {
             `,
             output: dedent`
               <script>
-                import Component from '../components/Component.svelte'
+                import Component from '../components/file.svelte'
 
                 let c = 0
               </script>
@@ -1251,10 +1258,10 @@ describe(ruleName, () => {
     ruleTester.run(`${ruleName}(${type}): allows to set custom groups`, rule, {
       valid: [
         {
-          filename: 'component.svelte',
+          filename: 'file.svelte',
           code: dedent`
             <script>
-              import Component from '~/Component.svelte'
+              import Component from '~/file.svelte'
             </script>
 
             <Component
@@ -1280,10 +1287,10 @@ describe(ruleName, () => {
       ],
       invalid: [
         {
-          filename: 'component.svelte',
+          filename: 'file.svelte',
           code: dedent`
             <script>
-              import Component from '~/Component.svelte'
+              import Component from '~/file.svelte'
             </script>
 
             <Component
@@ -1297,7 +1304,7 @@ describe(ruleName, () => {
           `,
           output: dedent`
             <script>
-              import Component from '~/Component.svelte'
+              import Component from '~/file.svelte'
             </script>
 
             <Component
@@ -1355,7 +1362,7 @@ describe(ruleName, () => {
     ruleTester.run(`${ruleName}: works with special directive keys`, rule, {
       valid: [
         {
-          filename: 'component.svelte',
+          filename: 'file.svelte',
           code: dedent`
             <svelte:element key={1} this={expression} />
           `,

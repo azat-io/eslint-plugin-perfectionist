@@ -1,6 +1,8 @@
 import { RuleTester } from '@typescript-eslint/rule-tester'
+import typescriptParser from '@typescript-eslint/parser'
 import { afterAll, describe, it } from 'vitest'
 import { dedent } from 'ts-dedent'
+import path from 'node:path'
 
 import rule from '../rules/sort-jsx-props'
 
@@ -15,10 +17,15 @@ describe(ruleName, () => {
   RuleTester.it = it
 
   let ruleTester = new RuleTester({
-    parser: '@typescript-eslint/parser',
-    parserOptions: {
-      ecmaFeatures: {
-        jsx: true,
+    languageOptions: {
+      parserOptions: {
+        tsconfigRootDir: path.join(__dirname, './fixtures'),
+        project: './tsconfig.json',
+        parser: typescriptParser,
+        extraFileExtensions: ['.svelte', '.astro', '.vue'],
+        ecmaFeatures: {
+          jsx: true,
+        },
       },
     },
   })
@@ -1432,23 +1439,6 @@ describe(ruleName, () => {
         invalid: [],
       },
     )
-    ;['.svelte', '.astro', '.vue'].forEach(extension => {
-      ruleTester.run(`${ruleName}: not works with ${extension} files`, rule, {
-        valid: [
-          {
-            filename: `component${extension}`,
-            code: dedent`
-                <Element
-                  c="c"
-                  b="bb"
-                  a="aaa"
-                />
-              `,
-          },
-        ],
-        invalid: [],
-      })
-    })
 
     ruleTester.run(`${ruleName}: does not work with empty props`, rule, {
       valid: [

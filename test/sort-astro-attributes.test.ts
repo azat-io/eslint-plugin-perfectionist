@@ -1,6 +1,9 @@
 import { RuleTester } from '@typescript-eslint/rule-tester'
+import typescriptParser from '@typescript-eslint/parser'
 import { afterAll, describe, it } from 'vitest'
+import astroParser from 'astro-eslint-parser'
 import { dedent } from 'ts-dedent'
+import path from 'node:path'
 
 import rule from '../rules/sort-astro-attributes'
 
@@ -15,10 +18,14 @@ describe(ruleName, () => {
   RuleTester.it = it
 
   let ruleTester = new RuleTester({
-    parser: require.resolve('astro-eslint-parser'),
-    parserOptions: {
-      parser: {
-        ts: '@typescript-eslint/parser',
+    languageOptions: {
+      parser: astroParser,
+      parserOptions: {
+        parser: {
+          tsconfigRootDir: path.join(__dirname, './fixtures'),
+          project: './tsconfig.json',
+          ts: typescriptParser,
+        },
       },
     },
   })
@@ -38,10 +45,10 @@ describe(ruleName, () => {
       {
         valid: [
           {
-            filename: 'component.astro',
+            filename: 'file.astro',
             code: dedent`
               ---
-                import Component from '../Component.astro'
+                import Component from '../file.astro'
               ---
               <Component a="a" bb="b" ccc="c" d />
             `,
@@ -50,16 +57,16 @@ describe(ruleName, () => {
         ],
         invalid: [
           {
-            filename: 'component.astro',
+            filename: 'file.astro',
             code: dedent`
               ---
-                import Component from '../Component.astro'
+                import Component from '../file.astro'
               ---
               <Component a="a" ccc="c" bb="b" d />
             `,
             output: dedent`
               ---
-                import Component from '../Component.astro'
+                import Component from '../file.astro'
               ---
               <Component a="a" bb="b" ccc="c" d />
             `,
@@ -84,10 +91,10 @@ describe(ruleName, () => {
       {
         valid: [
           {
-            filename: 'component.astro',
+            filename: 'file.astro',
             code: dedent`
               ---
-                import Component from '../Component.astro'
+                import Component from '../file.astro'
 
                 import data from './data.json'
               ---
@@ -98,10 +105,10 @@ describe(ruleName, () => {
         ],
         invalid: [
           {
-            filename: 'component.astro',
+            filename: 'file.astro',
             code: dedent`
               ---
-                import Component from '../Component.astro'
+                import Component from '../file.astro'
 
                 import data from './data.json'
               ---
@@ -109,7 +116,7 @@ describe(ruleName, () => {
             `,
             output: dedent`
               ---
-                import Component from '../Component.astro'
+                import Component from '../file.astro'
 
                 import data from './data.json'
               ---
@@ -136,10 +143,10 @@ describe(ruleName, () => {
       {
         valid: [
           {
-            filename: 'component.astro',
+            filename: 'file.astro',
             code: dedent`
               ---
-                import Component from './Component.astro'
+                import Component from './file.astro'
 
                 let ccc = 'c'
                 let dddd = 'd'
@@ -156,10 +163,10 @@ describe(ruleName, () => {
         ],
         invalid: [
           {
-            filename: 'component.astro',
+            filename: 'file.astro',
             code: dedent`
               ---
-                import Component from './Component.astro'
+                import Component from './file.astro'
 
                 let ccc = 'c'
                 let dddd = 'd'
@@ -173,7 +180,7 @@ describe(ruleName, () => {
             `,
             output: dedent`
               ---
-                import Component from './Component.astro'
+                import Component from './file.astro'
 
                 let ccc = 'c'
                 let dddd = 'd'
@@ -206,10 +213,10 @@ describe(ruleName, () => {
       {
         valid: [
           {
-            filename: 'component.astro',
+            filename: 'file.astro',
             code: dedent`
               ---
-                import Component from '../Component.astro'
+                import Component from '../file.astro'
 
                 let d = 'd'
               ---
@@ -231,10 +238,10 @@ describe(ruleName, () => {
         ],
         invalid: [
           {
-            filename: 'component.astro',
+            filename: 'file.astro',
             code: dedent`
               ---
-                import Component from '../Component.astro'
+                import Component from '../file.astro'
 
                 let d = 'd'
               ---
@@ -248,7 +255,7 @@ describe(ruleName, () => {
             `,
             output: dedent`
               ---
-                import Component from '../Component.astro'
+                import Component from '../file.astro'
 
                 let d = 'd'
               ---
@@ -286,10 +293,10 @@ describe(ruleName, () => {
       {
         valid: [
           {
-            filename: 'component.astro',
+            filename: 'file.astro',
             code: dedent`
               ---
-                import Component from '../Component.astro'
+                import Component from '../file.astro'
 
                 let c = false
               ---
@@ -312,10 +319,10 @@ describe(ruleName, () => {
         ],
         invalid: [
           {
-            filename: 'component.astro',
+            filename: 'file.astro',
             code: dedent`
               ---
-                import Component from '../Component.astro'
+                import Component from '../file.astro'
 
                 let c = false
               ---
@@ -330,7 +337,7 @@ describe(ruleName, () => {
             `,
             output: dedent`
               ---
-                import Component from '../Component.astro'
+                import Component from '../file.astro'
 
                 let c = false
               ---
@@ -366,10 +373,10 @@ describe(ruleName, () => {
     ruleTester.run(`${ruleName}(${type}): allows to set custom groups`, rule, {
       valid: [
         {
-          filename: 'component.astro',
+          filename: 'file.astro',
           code: dedent`
             ---
-              import Component from '~/Component.astro'
+              import Component from '~/file.astro'
             ---
             <Component
               b="b"
@@ -394,10 +401,10 @@ describe(ruleName, () => {
       ],
       invalid: [
         {
-          filename: 'component.astro',
+          filename: 'file.astro',
           code: dedent`
             ---
-              import Component from '~/Component.astro'
+              import Component from '~/file.astro'
             ---
             <Component
               a="a"
@@ -410,7 +417,7 @@ describe(ruleName, () => {
           `,
           output: dedent`
             ---
-              import Component from '~/Component.astro'
+              import Component from '~/file.astro'
             ---
             <Component
               b="b"
@@ -467,10 +474,10 @@ describe(ruleName, () => {
       {
         valid: [
           {
-            filename: 'component.astro',
+            filename: 'file.astro',
             code: dedent`
               ---
-                import Component from '../Component.astro'
+                import Component from '../file.astro'
               ---
               <Component a="a" bb="b" ccc="c" d />
             `,
@@ -479,16 +486,16 @@ describe(ruleName, () => {
         ],
         invalid: [
           {
-            filename: 'component.astro',
+            filename: 'file.astro',
             code: dedent`
               ---
-                import Component from '../Component.astro'
+                import Component from '../file.astro'
               ---
               <Component a="a" ccc="c" bb="b" d />
             `,
             output: dedent`
               ---
-                import Component from '../Component.astro'
+                import Component from '../file.astro'
               ---
               <Component a="a" bb="b" ccc="c" d />
             `,
@@ -513,10 +520,10 @@ describe(ruleName, () => {
       {
         valid: [
           {
-            filename: 'component.astro',
+            filename: 'file.astro',
             code: dedent`
               ---
-                import Component from '../Component.astro'
+                import Component from '../file.astro'
 
                 import data from './data.json'
               ---
@@ -527,10 +534,10 @@ describe(ruleName, () => {
         ],
         invalid: [
           {
-            filename: 'component.astro',
+            filename: 'file.astro',
             code: dedent`
               ---
-                import Component from '../Component.astro'
+                import Component from '../file.astro'
 
                 import data from './data.json'
               ---
@@ -538,7 +545,7 @@ describe(ruleName, () => {
             `,
             output: dedent`
               ---
-                import Component from '../Component.astro'
+                import Component from '../file.astro'
 
                 import data from './data.json'
               ---
@@ -565,10 +572,10 @@ describe(ruleName, () => {
       {
         valid: [
           {
-            filename: 'component.astro',
+            filename: 'file.astro',
             code: dedent`
               ---
-                import Component from './Component.astro'
+                import Component from './file.astro'
 
                 let ccc = 'c'
                 let dddd = 'd'
@@ -585,10 +592,10 @@ describe(ruleName, () => {
         ],
         invalid: [
           {
-            filename: 'component.astro',
+            filename: 'file.astro',
             code: dedent`
               ---
-                import Component from './Component.astro'
+                import Component from './file.astro'
 
                 let ccc = 'c'
                 let dddd = 'd'
@@ -602,7 +609,7 @@ describe(ruleName, () => {
             `,
             output: dedent`
               ---
-                import Component from './Component.astro'
+                import Component from './file.astro'
 
                 let ccc = 'c'
                 let dddd = 'd'
@@ -635,10 +642,10 @@ describe(ruleName, () => {
       {
         valid: [
           {
-            filename: 'component.astro',
+            filename: 'file.astro',
             code: dedent`
               ---
-                import Component from '../Component.astro'
+                import Component from '../file.astro'
 
                 let d = 'd'
               ---
@@ -660,10 +667,10 @@ describe(ruleName, () => {
         ],
         invalid: [
           {
-            filename: 'component.astro',
+            filename: 'file.astro',
             code: dedent`
               ---
-                import Component from '../Component.astro'
+                import Component from '../file.astro'
 
                 let d = 'd'
               ---
@@ -677,7 +684,7 @@ describe(ruleName, () => {
             `,
             output: dedent`
               ---
-                import Component from '../Component.astro'
+                import Component from '../file.astro'
 
                 let d = 'd'
               ---
@@ -715,10 +722,10 @@ describe(ruleName, () => {
       {
         valid: [
           {
-            filename: 'component.astro',
+            filename: 'file.astro',
             code: dedent`
               ---
-                import Component from '../Component.astro'
+                import Component from '../file.astro'
 
                 let c = false
               ---
@@ -742,10 +749,10 @@ describe(ruleName, () => {
         ],
         invalid: [
           {
-            filename: 'component.astro',
+            filename: 'file.astro',
             code: dedent`
               ---
-                import Component from '../Component.astro'
+                import Component from '../file.astro'
 
                 let c = false
               ---
@@ -761,7 +768,7 @@ describe(ruleName, () => {
             `,
             output: dedent`
               ---
-                import Component from '../Component.astro'
+                import Component from '../file.astro'
 
                 let c = false
               ---
@@ -798,10 +805,10 @@ describe(ruleName, () => {
     ruleTester.run(`${ruleName}(${type}): allows to set custom groups`, rule, {
       valid: [
         {
-          filename: 'component.astro',
+          filename: 'file.astro',
           code: dedent`
             ---
-              import Component from '~/Component.astro'
+              import Component from '~/file.astro'
             ---
             <Component
               b="b"
@@ -826,10 +833,10 @@ describe(ruleName, () => {
       ],
       invalid: [
         {
-          filename: 'component.astro',
+          filename: 'file.astro',
           code: dedent`
             ---
-              import Component from '~/Component.astro'
+              import Component from '~/file.astro'
             ---
             <Component
               a="a"
@@ -842,7 +849,7 @@ describe(ruleName, () => {
           `,
           output: dedent`
             ---
-              import Component from '~/Component.astro'
+              import Component from '~/file.astro'
             ---
             <Component
               b="b"
@@ -898,10 +905,10 @@ describe(ruleName, () => {
       {
         valid: [
           {
-            filename: 'component.astro',
+            filename: 'file.astro',
             code: dedent`
               ---
-                import Component from '../Component.astro'
+                import Component from '../file.astro'
               ---
               <Component ccc="c" bb="b" a="a" d />
             `,
@@ -910,16 +917,16 @@ describe(ruleName, () => {
         ],
         invalid: [
           {
-            filename: 'component.astro',
+            filename: 'file.astro',
             code: dedent`
               ---
-                import Component from '../Component.astro'
+                import Component from '../file.astro'
               ---
               <Component a="a" ccc="c" bb="b" d />
             `,
             output: dedent`
               ---
-                import Component from '../Component.astro'
+                import Component from '../file.astro'
               ---
               <Component ccc="c" bb="b" a="a" d />
             `,
@@ -944,10 +951,10 @@ describe(ruleName, () => {
       {
         valid: [
           {
-            filename: 'component.astro',
+            filename: 'file.astro',
             code: dedent`
               ---
-                import Component from '../Component.astro'
+                import Component from '../file.astro'
 
                 import data from './data.json'
               ---
@@ -958,10 +965,10 @@ describe(ruleName, () => {
         ],
         invalid: [
           {
-            filename: 'component.astro',
+            filename: 'file.astro',
             code: dedent`
               ---
-                import Component from '../Component.astro'
+                import Component from '../file.astro'
 
                 import data from './data.json'
               ---
@@ -969,7 +976,7 @@ describe(ruleName, () => {
             `,
             output: dedent`
               ---
-                import Component from '../Component.astro'
+                import Component from '../file.astro'
 
                 import data from './data.json'
               ---
@@ -996,10 +1003,10 @@ describe(ruleName, () => {
       {
         valid: [
           {
-            filename: 'component.astro',
+            filename: 'file.astro',
             code: dedent`
               ---
-                import Component from './Component.astro'
+                import Component from './file.astro'
 
                 let ccc = 'c'
                 let dddd = 'd'
@@ -1016,10 +1023,10 @@ describe(ruleName, () => {
         ],
         invalid: [
           {
-            filename: 'component.astro',
+            filename: 'file.astro',
             code: dedent`
               ---
-                import Component from './Component.astro'
+                import Component from './file.astro'
 
                 let ccc = 'c'
                 let dddd = 'd'
@@ -1033,7 +1040,7 @@ describe(ruleName, () => {
             `,
             output: dedent`
               ---
-                import Component from './Component.astro'
+                import Component from './file.astro'
 
                 let ccc = 'c'
                 let dddd = 'd'
@@ -1066,10 +1073,10 @@ describe(ruleName, () => {
       {
         valid: [
           {
-            filename: 'component.astro',
+            filename: 'file.astro',
             code: dedent`
               ---
-                import Component from '../Component.astro'
+                import Component from '../file.astro'
 
                 let d = 'd'
               ---
@@ -1091,10 +1098,10 @@ describe(ruleName, () => {
         ],
         invalid: [
           {
-            filename: 'component.astro',
+            filename: 'file.astro',
             code: dedent`
               ---
-                import Component from '../Component.astro'
+                import Component from '../file.astro'
 
                 let d = 'd'
               ---
@@ -1108,7 +1115,7 @@ describe(ruleName, () => {
             `,
             output: dedent`
               ---
-                import Component from '../Component.astro'
+                import Component from '../file.astro'
 
                 let d = 'd'
               ---
@@ -1153,10 +1160,10 @@ describe(ruleName, () => {
       {
         valid: [
           {
-            filename: 'component.astro',
+            filename: 'file.astro',
             code: dedent`
               ---
-                import Component from '../Component.astro'
+                import Component from '../file.astro'
 
                 let c = false
               ---
@@ -1179,10 +1186,10 @@ describe(ruleName, () => {
         ],
         invalid: [
           {
-            filename: 'component.astro',
+            filename: 'file.astro',
             code: dedent`
               ---
-                import Component from '../Component.astro'
+                import Component from '../file.astro'
 
                 let c = false
               ---
@@ -1197,7 +1204,7 @@ describe(ruleName, () => {
             `,
             output: dedent`
               ---
-                import Component from '../Component.astro'
+                import Component from '../file.astro'
 
                 let c = false
               ---
@@ -1240,10 +1247,10 @@ describe(ruleName, () => {
     ruleTester.run(`${ruleName}(${type}): allows to set custom groups`, rule, {
       valid: [
         {
-          filename: 'component.astro',
+          filename: 'file.astro',
           code: dedent`
             ---
-              import Component from '~/Component.astro'
+              import Component from '~/file.astro'
             ---
             <Component
               b="b"
@@ -1268,10 +1275,10 @@ describe(ruleName, () => {
       ],
       invalid: [
         {
-          filename: 'component.astro',
+          filename: 'file.astro',
           code: dedent`
             ---
-              import Component from '~/Component.astro'
+              import Component from '~/file.astro'
             ---
             <Component
               a="a"
@@ -1284,7 +1291,7 @@ describe(ruleName, () => {
           `,
           output: dedent`
             ---
-              import Component from '~/Component.astro'
+              import Component from '~/file.astro'
             ---
             <Component
               b="b"

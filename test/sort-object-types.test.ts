@@ -14,9 +14,7 @@ describe(ruleName, () => {
   RuleTester.itSkip = it.skip
   RuleTester.it = it
 
-  let ruleTester = new RuleTester({
-    parser: '@typescript-eslint/parser',
-  })
+  let ruleTester = new RuleTester()
 
   describe(`${ruleName}: sorting by alphabetical order`, () => {
     let type = 'alphabetical-order'
@@ -311,17 +309,30 @@ describe(ruleName, () => {
                 }
               }
             `,
-            output: dedent`
-              type Type = {
-                b: 'bb'
-                a: 'aaa'
-                c: 'c'
-                d: {
-                  f: 'f'
-                  e: 'ee'
+            output: [
+              dedent`
+                type Type = {
+                  b: 'bb'
+                  a: 'aaa'
+                  c: 'c'
+                  d: {
+                    f: 'f'
+                    e: 'ee'
+                  }
                 }
-              }
-            `,
+              `,
+              dedent`
+                type Type = {
+                  b: 'bb'
+                  a: 'aaa'
+                  c: 'c'
+                  d: {
+                    e: 'ee'
+                    f: 'f'
+                  }
+                }
+              `,
+            ],
             options: [
               {
                 ...options,
@@ -895,17 +906,30 @@ describe(ruleName, () => {
                 }
               }
             `,
-            output: dedent`
-              type Type = {
-                b: 'bb'
-                a: 'aaa'
-                c: 'c'
-                d: {
-                  f: 'f'
-                  e: 'ee'
+            output: [
+              dedent`
+                type Type = {
+                  b: 'bb'
+                  a: 'aaa'
+                  c: 'c'
+                  d: {
+                    f: 'f'
+                    e: 'ee'
+                  }
                 }
-              }
-            `,
+              `,
+              dedent`
+                type Type = {
+                  b: 'bb'
+                  a: 'aaa'
+                  c: 'c'
+                  d: {
+                    e: 'ee'
+                    f: 'f'
+                  }
+                }
+              `,
+            ],
             options: [
               {
                 ...options,
@@ -1452,17 +1476,30 @@ describe(ruleName, () => {
                 }
               }
             `,
-            output: dedent`
-              type Type = {
-                b: 'bb'
-                a: 'aaa'
-                c: 'c'
-                d: {
-                  f: 'f'
-                  e: 'ee'
+            output: [
+              dedent`
+                type Type = {
+                  b: 'bb'
+                  a: 'aaa'
+                  c: 'c'
+                  d: {
+                    f: 'f'
+                    e: 'ee'
+                  }
                 }
-              }
-            `,
+              `,
+              dedent`
+                type Type = {
+                  b: 'bb'
+                  a: 'aaa'
+                  c: 'c'
+                  d: {
+                    e: 'ee'
+                    f: 'f'
+                  }
+                }
+              `,
+            ],
             options: [
               {
                 ...options,

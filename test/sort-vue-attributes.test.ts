@@ -1,6 +1,9 @@
 import { RuleTester } from '@typescript-eslint/rule-tester'
+import typescriptParser from '@typescript-eslint/parser'
 import { afterAll, describe, it } from 'vitest'
+import vueParser from 'vue-eslint-parser'
 import { dedent } from 'ts-dedent'
+import path from 'node:path'
 
 import rule from '../rules/sort-vue-attributes'
 
@@ -15,10 +18,14 @@ describe(ruleName, () => {
   RuleTester.it = it
 
   let ruleTester = new RuleTester({
-    parser: require.resolve('vue-eslint-parser'),
-    parserOptions: {
-      parser: {
-        ts: '@typescript-eslint/parser',
+    languageOptions: {
+      parser: vueParser,
+      parserOptions: {
+        parser: {
+          tsconfigRootDir: path.join(__dirname, './fixtures'),
+          project: './tsconfig.json',
+          ts: typescriptParser,
+        },
       },
     },
   })
@@ -38,10 +45,10 @@ describe(ruleName, () => {
       {
         valid: [
           {
-            filename: 'component.vue',
+            filename: 'file.vue',
             code: dedent`
               <script lang="ts" setup>
-                import Component from '../Component.vue'
+                import Component from '../file.vue'
 
                 let b = 'b'
               </script>
@@ -60,10 +67,10 @@ describe(ruleName, () => {
         ],
         invalid: [
           {
-            filename: 'component.vue',
+            filename: 'file.vue',
             code: dedent`
               <script lang="ts" setup>
-                import Component from '../Component.vue'
+                import Component from '../file.vue'
 
                 let b = 'b'
               </script>
@@ -79,7 +86,7 @@ describe(ruleName, () => {
             `,
             output: dedent`
               <script lang="ts" setup>
-                import Component from '../Component.vue'
+                import Component from '../file.vue'
 
                 let b = 'b'
               </script>
@@ -114,10 +121,10 @@ describe(ruleName, () => {
       {
         valid: [
           {
-            filename: 'component.vue',
+            filename: 'file.vue',
             code: dedent`
               <script lang="ts" setup>
-                import Component from '@/Component.vue'
+                import Component from '@/file.vue'
               </script>
 
               <template>
@@ -136,10 +143,10 @@ describe(ruleName, () => {
         ],
         invalid: [
           {
-            filename: 'component.vue',
+            filename: 'file.vue',
             code: dedent`
               <script lang="ts" setup>
-                import Component from '@/Component.vue'
+                import Component from '@/file.vue'
               </script>
 
               <template>
@@ -155,7 +162,7 @@ describe(ruleName, () => {
             `,
             output: dedent`
               <script lang="ts" setup>
-                import Component from '@/Component.vue'
+                import Component from '@/file.vue'
               </script>
 
               <template>
@@ -190,12 +197,12 @@ describe(ruleName, () => {
       {
         valid: [
           {
-            filename: 'component.vue',
+            filename: 'file.vue',
             code: dedent`
               <script lang="ts" setup>
                 import { useRef } from 'vue'
 
-                import Component from '../Component.vue'
+                import Component from '../file.vue'
 
                 let eF = useRef(false)
                 let g = true
@@ -225,12 +232,12 @@ describe(ruleName, () => {
         ],
         invalid: [
           {
-            filename: 'component.vue',
+            filename: 'file.vue',
             code: dedent`
               <script lang="ts" setup>
                 import { useRef } from 'vue'
 
-                import Component from '../Component.vue'
+                import Component from '../file.vue'
 
                 let eF = useRef(false)
                 let g = true
@@ -251,7 +258,7 @@ describe(ruleName, () => {
               <script lang="ts" setup>
                 import { useRef } from 'vue'
 
-                import Component from '../Component.vue'
+                import Component from '../file.vue'
 
                 let eF = useRef(false)
                 let g = true
@@ -314,10 +321,10 @@ describe(ruleName, () => {
       {
         valid: [
           {
-            filename: 'component.vue',
+            filename: 'file.vue',
             code: dedent`
               <script lang="ts" setup>
-                import Component from '../Component.vue'
+                import Component from '../file.vue'
 
                 let b = 'b'
               </script>
@@ -336,10 +343,10 @@ describe(ruleName, () => {
         ],
         invalid: [
           {
-            filename: 'component.vue',
+            filename: 'file.vue',
             code: dedent`
               <script lang="ts" setup>
-                import Component from '../Component.vue'
+                import Component from '../file.vue'
 
                 let b = 'b'
               </script>
@@ -355,7 +362,7 @@ describe(ruleName, () => {
             `,
             output: dedent`
               <script lang="ts" setup>
-                import Component from '../Component.vue'
+                import Component from '../file.vue'
 
                 let b = 'b'
               </script>
@@ -390,10 +397,10 @@ describe(ruleName, () => {
       {
         valid: [
           {
-            filename: 'component.vue',
+            filename: 'file.vue',
             code: dedent`
               <script lang="ts" setup>
-                import Component from '@/Component.vue'
+                import Component from '@/file.vue'
               </script>
 
               <template>
@@ -412,10 +419,10 @@ describe(ruleName, () => {
         ],
         invalid: [
           {
-            filename: 'component.vue',
+            filename: 'file.vue',
             code: dedent`
               <script lang="ts" setup>
-                import Component from '@/Component.vue'
+                import Component from '@/file.vue'
               </script>
 
               <template>
@@ -431,7 +438,7 @@ describe(ruleName, () => {
             `,
             output: dedent`
               <script lang="ts" setup>
-                import Component from '@/Component.vue'
+                import Component from '@/file.vue'
               </script>
 
               <template>
@@ -466,12 +473,12 @@ describe(ruleName, () => {
       {
         valid: [
           {
-            filename: 'component.vue',
+            filename: 'file.vue',
             code: dedent`
               <script lang="ts" setup>
                 import { useRef } from 'vue'
 
-                import Component from '../Component.vue'
+                import Component from '../file.vue'
 
                 let eF = useRef(false)
                 let g = true
@@ -501,12 +508,12 @@ describe(ruleName, () => {
         ],
         invalid: [
           {
-            filename: 'component.vue',
+            filename: 'file.vue',
             code: dedent`
               <script lang="ts" setup>
                 import { useRef } from 'vue'
 
-                import Component from '../Component.vue'
+                import Component from '../file.vue'
 
                 let eF = useRef(false)
                 let g = true
@@ -527,7 +534,7 @@ describe(ruleName, () => {
               <script lang="ts" setup>
                 import { useRef } from 'vue'
 
-                import Component from '../Component.vue'
+                import Component from '../file.vue'
 
                 let eF = useRef(false)
                 let g = true
@@ -589,10 +596,10 @@ describe(ruleName, () => {
       {
         valid: [
           {
-            filename: 'component.vue',
+            filename: 'file.vue',
             code: dedent`
               <script lang="ts" setup>
-                import Component from '../Component.vue'
+                import Component from '../file.vue'
 
                 let b = 'b'
               </script>
@@ -611,10 +618,10 @@ describe(ruleName, () => {
         ],
         invalid: [
           {
-            filename: 'component.vue',
+            filename: 'file.vue',
             code: dedent`
               <script lang="ts" setup>
-                import Component from '../Component.vue'
+                import Component from '../file.vue'
 
                 let b = 'b'
               </script>
@@ -630,7 +637,7 @@ describe(ruleName, () => {
             `,
             output: dedent`
               <script lang="ts" setup>
-                import Component from '../Component.vue'
+                import Component from '../file.vue'
 
                 let b = 'b'
               </script>
@@ -665,10 +672,10 @@ describe(ruleName, () => {
       {
         valid: [
           {
-            filename: 'component.vue',
+            filename: 'file.vue',
             code: dedent`
               <script lang="ts" setup>
-                import Component from '@/Component.vue'
+                import Component from '@/file.vue'
               </script>
 
               <template>
@@ -687,10 +694,10 @@ describe(ruleName, () => {
         ],
         invalid: [
           {
-            filename: 'component.vue',
+            filename: 'file.vue',
             code: dedent`
               <script lang="ts" setup>
-                import Component from '@/Component.vue'
+                import Component from '@/file.vue'
               </script>
 
               <template>
@@ -706,7 +713,7 @@ describe(ruleName, () => {
             `,
             output: dedent`
               <script lang="ts" setup>
-                import Component from '@/Component.vue'
+                import Component from '@/file.vue'
               </script>
 
               <template>
@@ -741,12 +748,12 @@ describe(ruleName, () => {
       {
         valid: [
           {
-            filename: 'component.vue',
+            filename: 'file.vue',
             code: dedent`
               <script lang="ts" setup>
                 import { useRef } from 'vue'
 
-                import Component from '../Component.vue'
+                import Component from '../file.vue'
 
                 let eF = useRef(false)
                 let g = true
@@ -776,12 +783,12 @@ describe(ruleName, () => {
         ],
         invalid: [
           {
-            filename: 'component.vue',
+            filename: 'file.vue',
             code: dedent`
               <script lang="ts" setup>
                 import { useRef } from 'vue'
 
-                import Component from '../Component.vue'
+                import Component from '../file.vue'
 
                 let eF = useRef(false)
                 let g = true
@@ -802,7 +809,7 @@ describe(ruleName, () => {
               <script lang="ts" setup>
                 import { useRef } from 'vue'
 
-                import Component from '../Component.vue'
+                import Component from '../file.vue'
 
                 let eF = useRef(false)
                 let g = true
@@ -857,7 +864,7 @@ describe(ruleName, () => {
           filename: 'component.ts',
           code: dedent`
             <script lang="ts" setup>
-              import Component from '../Component.vue'
+              import Component from '../file.vue'
             </script>
 
             <template>
@@ -877,13 +884,15 @@ describe(ruleName, () => {
 
     describe('without vue parser', () => {
       let tsRuleTester = new RuleTester({
-        parser: '@typescript-eslint/parser',
+        settings: {
+          parser: typescriptParser,
+        },
       })
 
       tsRuleTester.run(`${ruleName}: requires vue parser`, rule, {
         valid: [
           {
-            filename: 'component.vue',
+            filename: 'file.vue',
             code: '',
             options: [{}],
           },

@@ -14,9 +14,7 @@ describe(ruleName, () => {
   RuleTester.itSkip = it.skip
   RuleTester.it = it
 
-  let ruleTester = new RuleTester({
-    parser: '@typescript-eslint/parser',
-  })
+  let ruleTester = new RuleTester()
 
   describe(`${ruleName}: sorting by alphabetical order`, () => {
     let type = 'alphabetical-order'

@@ -14,9 +14,7 @@ describe(ruleName, () => {
   RuleTester.itSkip = it.skip
   RuleTester.it = it
 
-  let ruleTester = new RuleTester({
-    parser: '@typescript-eslint/parser',
-  })
+  let ruleTester = new RuleTester()
 
   describe(`${ruleName}: sorting by alphabetical order`, () => {
     let type = 'alphabetical-order'
@@ -159,18 +157,32 @@ describe(ruleName, () => {
               },
             }
           `,
-          output: dedent`
-            let Obj = {
-              x: {
-                b: 'b',
-                a: 'aa',
-              },
-              y: {
-                b: 'b',
-                a: 'aa',
-              },
-            }
-          `,
+          output: [
+            dedent`
+              let Obj = {
+                x: {
+                  b: 'b',
+                  a: 'aa',
+                },
+                y: {
+                  b: 'b',
+                  a: 'aa',
+                },
+              }
+            `,
+            dedent`
+              let Obj = {
+                x: {
+                  a: 'aa',
+                  b: 'b',
+                },
+                y: {
+                  a: 'aa',
+                  b: 'b',
+                },
+              }
+            `,
+          ],
           options: [options],
           errors: [
             {
@@ -1032,18 +1044,32 @@ describe(ruleName, () => {
               },
             }
           `,
-          output: dedent`
-            let Obj = {
-              x: {
-                b: 'b',
-                a: 'aa',
-              },
-              y: {
-                b: 'b',
-                a: 'aa',
-              },
-            }
-          `,
+          output: [
+            dedent`
+              let Obj = {
+                x: {
+                  b: 'b',
+                  a: 'aa',
+                },
+                y: {
+                  b: 'b',
+                  a: 'aa',
+                },
+              }
+            `,
+            dedent`
+              let Obj = {
+                x: {
+                  a: 'aa',
+                  b: 'b',
+                },
+                y: {
+                  a: 'aa',
+                  b: 'b',
+                },
+              }
+            `,
+          ],
           options: [options],
           errors: [
             {
