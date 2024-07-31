@@ -4561,6 +4561,8 @@ describe(ruleName, () => {
           {
             code: dedent`
               import {} from 'node:os'
+              import sqlite from 'node:sqlite'
+              import { describe, test } from 'node:test'
               import { c } from 'c'
               import 'node:os'
             `,

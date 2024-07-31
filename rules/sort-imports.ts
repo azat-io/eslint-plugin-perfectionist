@@ -309,10 +309,12 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
           'undici',
           'ws',
         ]
+        let builtinPrefixOnlyModules = ['sea', 'sqlite', 'test']
         return (
           builtinModules.includes(
             value.startsWith('node:') ? value.split('node:')[1] : value,
           ) ||
+          builtinPrefixOnlyModules.some(module => `node:${module}` === value) ||
           (options.environment === 'bun' ? bunModules.includes(value) : false)
         )
       }
