@@ -120,9 +120,9 @@ export default createEslintRule<Options, MESSAGE_ID>({
                 : `${sourceCode.text.slice(...member.id.range)}`
 
             let sortingNode = {
-              name,
-              node: member,
               size: rangeToDiff(member.range),
+              node: structuredClone(member),
+              name,
             }
             accumulator.at(-1)!.push(sortingNode)
             return accumulator

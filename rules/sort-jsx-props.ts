@@ -187,8 +187,8 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
 
                 let jsxNode = {
                   size: rangeToDiff(attribute.range),
+                  node: structuredClone(attribute),
                   group: getGroup(),
-                  node: attribute,
                   name,
                 }
 

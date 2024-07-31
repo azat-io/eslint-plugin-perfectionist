@@ -177,8 +177,8 @@ export default createEslintRule<Options, MESSAGE_ID>({
         return {
           name: sourceCode.text.slice(...type.range),
           size: rangeToDiff(type.range),
+          node: structuredClone(type),
           group: getGroup(),
-          node: type,
         }
       })
 
