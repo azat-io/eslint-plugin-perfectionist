@@ -188,7 +188,7 @@ export default createEslintRule<Options, MESSAGE_ID>({
                     sortedGroup.at(-1)!.node.consequent = consequent
                     return sortedGroup
                   })
-                  .toSorted((a, b) => {
+                  .sort((a, b) => {
                     if (isGroupContainsDefault(a)) {
                       return 1
                     } else if (isGroupContainsDefault(b)) {
