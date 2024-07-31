@@ -4,7 +4,7 @@ export let getGroupNumber = (
   groups: (string[] | string)[],
   node: SortingNode,
 ): number => {
-  for (let i = 0, max = groups.length; i < max; i++) {
+  for (let max = groups.length, i = 0; i < max; i++) {
     let currentGroup = groups[i]
 
     if (

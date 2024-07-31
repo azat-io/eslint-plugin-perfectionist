@@ -199,7 +199,7 @@ export default createEslintRule<Options, MESSAGE_ID>({
 
                 let sortedNodes = sortedNodeGroups.flat()
 
-                for (let i = 0, max = sortedNodes.length; i < max; i++) {
+                for (let max = sortedNodes.length, i = 0; i < max; i++) {
                   if (sortedNodes.at(i)!.name === 'default') {
                     sortedNodes.push(sortedNodes.splice(i, 1).at(0)!)
                   }

@@ -509,7 +509,7 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
               [],
             )
 
-          for (let i = 0, max = formatted.length; i < max; i++) {
+          for (let max = formatted.length, i = 0; i < max; i++) {
             let node = formatted.at(i)!
 
             fixes.push(

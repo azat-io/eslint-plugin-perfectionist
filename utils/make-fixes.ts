@@ -20,7 +20,7 @@ export let makeFixes = (
   let isSingleline =
     nodes.at(0)?.node.loc.start.line === nodes.at(-1)?.node.loc.end.line
 
-  for (let i = 0, max = nodes.length; i < max; i++) {
+  for (let max = nodes.length, i = 0; i < max; i++) {
     let { node } = nodes.at(i)!
 
     fixes.push(
