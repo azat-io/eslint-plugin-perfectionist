@@ -34,21 +34,27 @@ describe(ruleName, () => {
             class Class {
               static a = 'a'
 
-              private b = 'b'
+              protected b = 'b'
 
-              c = 'c'
+              private c = 'c'
 
               d = 'd'
 
+              e = 'e'
+
               constructor() {}
 
-              static e() {}
+              static f() {}
 
-              private f() {}
+              protected static g() {}
 
-              g() {}
+              protected h() {}
 
-              h() {}
+              private i() {}
+
+              j() {}
+
+              k() {}
             }
           `,
           options: [
@@ -56,10 +62,13 @@ describe(ruleName, () => {
               ...options,
               groups: [
                 'static-property',
+                'protected-property',
                 'private-property',
                 'property',
                 'constructor',
                 'static-method',
+                'static-protected-method',
+                'protected-method',
                 'private-method',
                 'method',
                 'unknown',
@@ -74,42 +83,54 @@ describe(ruleName, () => {
             class Class {
               static a = 'a'
 
-              private b = 'b'
+              protected b = 'b'
+
+              private c = 'c'
+
+              e = 'e'
 
               d = 'd'
 
-              c = 'c'
-
-              static e() {}
+              static f() {}
 
               constructor() {}
 
-              private f() {}
+              protected static g() {}
 
-              g() {}
+              protected h() {}
 
-              h() {}
+              private i() {}
+
+              j() {}
+
+              k() {}
             }
           `,
           output: dedent`
             class Class {
               static a = 'a'
 
-              private b = 'b'
+              protected b = 'b'
 
-              c = 'c'
+              private c = 'c'
 
               d = 'd'
 
+              e = 'e'
+
               constructor() {}
 
-              static e() {}
+              static f() {}
 
-              private f() {}
+              protected static g() {}
 
-              g() {}
+              protected h() {}
 
-              h() {}
+              private i() {}
+
+              j() {}
+
+              k() {}
             }
           `,
           options: [
@@ -117,10 +138,13 @@ describe(ruleName, () => {
               ...options,
               groups: [
                 'static-property',
+                'protected-property',
                 'private-property',
                 'property',
                 'constructor',
                 'static-method',
+                'static-protected-method',
+                'protected-method',
                 'private-method',
                 'method',
                 'unknown',
@@ -131,14 +155,14 @@ describe(ruleName, () => {
             {
               messageId: 'unexpectedClassesOrder',
               data: {
-                left: 'd',
-                right: 'c',
+                left: 'e',
+                right: 'd',
               },
             },
             {
               messageId: 'unexpectedClassesOrder',
               data: {
-                left: 'e',
+                left: 'f',
                 right: 'constructor',
               },
             },
@@ -570,6 +594,9 @@ describe(ruleName, () => {
               @property()
               greeting: string = 'Hello'
 
+              @property()
+              protected type = ''
+
               @state()
               private _counter = 0
 
@@ -607,6 +634,9 @@ describe(ruleName, () => {
               @property()
               greeting: string = 'Hello'
 
+              @property()
+              protected type = ''
+
               @state()
               private _counter = 0
 
@@ -642,6 +672,7 @@ describe(ruleName, () => {
               groups: [
                 'decorated-property',
                 'property',
+                'protected-decorated-property',
                 'private-decorated-property',
                 'private-property',
                 'constructor',
@@ -685,6 +716,9 @@ describe(ruleName, () => {
 
               @observable
               accessor title = ''
+
+              @observable
+              protected accessor type = ''
             }`,
           output: dedent`
             class Todo {
@@ -693,6 +727,9 @@ describe(ruleName, () => {
 
               @observable
               accessor title = ''
+
+              @observable
+              protected accessor type = ''
 
               @observable
               accessor #active = false
@@ -709,6 +746,7 @@ describe(ruleName, () => {
               ...options,
               groups: [
                 'decorated-accessor-property',
+                'protected-decorated-accessor-property',
                 'private-decorated-accessor-property',
                 'property',
                 'constructor',
@@ -1345,21 +1383,25 @@ describe(ruleName, () => {
             class Class {
               static a = 'a'
 
-              private b = 'b'
+              protected b = 'b'
 
-              c = 'c'
+              private c = 'c'
 
               d = 'd'
 
+              e = 'e'
+
               constructor() {}
 
-              static e() {}
+              static f() {}
 
-              private f() {}
+              protected g() {}
 
-              g() {}
+              private h() {}
 
-              h() {}
+              i() {}
+
+              j() {}
             }
           `,
           options: [
@@ -1367,10 +1409,12 @@ describe(ruleName, () => {
               ...options,
               groups: [
                 'static-property',
+                'protected-property',
                 'private-property',
                 'property',
                 'constructor',
                 'static-method',
+                'protected-method',
                 'private-method',
                 'method',
                 'unknown',
@@ -1385,42 +1429,50 @@ describe(ruleName, () => {
             class Class {
               static a = 'a'
 
-              private b = 'b'
+              protected b = 'b'
+
+              private c = 'c'
+
+              e = 'e'
 
               d = 'd'
 
-              c = 'c'
-
-              static e() {}
+              static f() {}
 
               constructor() {}
 
-              private f() {}
+              protected g() {}
 
-              g() {}
+              private h() {}
 
-              h() {}
+              i() {}
+
+              j() {}
             }
           `,
           output: dedent`
             class Class {
               static a = 'a'
 
-              private b = 'b'
+              protected b = 'b'
 
-              c = 'c'
+              private c = 'c'
 
               d = 'd'
 
+              e = 'e'
+
               constructor() {}
 
-              static e() {}
+              static f() {}
 
-              private f() {}
+              protected g() {}
 
-              g() {}
+              private h() {}
 
-              h() {}
+              i() {}
+
+              j() {}
             }
           `,
           options: [
@@ -1428,10 +1480,12 @@ describe(ruleName, () => {
               ...options,
               groups: [
                 'static-property',
+                'protected-property',
                 'private-property',
                 'property',
                 'constructor',
                 'static-method',
+                'protected-method',
                 'private-method',
                 'method',
                 'unknown',
@@ -1442,14 +1496,14 @@ describe(ruleName, () => {
             {
               messageId: 'unexpectedClassesOrder',
               data: {
-                left: 'd',
-                right: 'c',
+                left: 'e',
+                right: 'd',
               },
             },
             {
               messageId: 'unexpectedClassesOrder',
               data: {
-                left: 'e',
+                left: 'f',
                 right: 'constructor',
               },
             },
@@ -1881,6 +1935,9 @@ describe(ruleName, () => {
               @property()
               greeting: string = 'Hello'
 
+              @property()
+              protected type = ''
+
               @state()
               private _counter = 0
 
@@ -1918,6 +1975,9 @@ describe(ruleName, () => {
               @property()
               greeting: string = 'Hello'
 
+              @property()
+              protected type = ''
+
               @state()
               private _counter = 0
 
@@ -1953,6 +2013,7 @@ describe(ruleName, () => {
               groups: [
                 'decorated-property',
                 'property',
+                'protected-decorated-property',
                 'private-decorated-property',
                 'private-property',
                 'constructor',
@@ -1996,6 +2057,9 @@ describe(ruleName, () => {
 
               @observable
               accessor title = ''
+
+              @observable
+              protected accessor type = ''
             }`,
           output: dedent`
             class Todo {
@@ -2004,6 +2068,9 @@ describe(ruleName, () => {
 
               @observable
               accessor title = ''
+
+              @observable
+              protected accessor type = ''
 
               @observable
               accessor #active = false
@@ -2020,6 +2087,7 @@ describe(ruleName, () => {
               ...options,
               groups: [
                 'decorated-accessor-property',
+                'protected-decorated-accessor-property',
                 'private-decorated-accessor-property',
                 'property',
                 'constructor',
@@ -3114,6 +3182,9 @@ describe(ruleName, () => {
               @property()
               greeting: string = 'Hello'
 
+              @property()
+              protected type = ''
+
               @state()
               private _counter = 0
 
@@ -3150,6 +3221,9 @@ describe(ruleName, () => {
 
               @property()
               greeting: string = 'Hello'
+
+              @property()
+              protected type = ''
 
               @state()
               private _counter = 0
@@ -3236,6 +3310,9 @@ describe(ruleName, () => {
               @observable
               accessor title = ''
 
+              @observable
+              protected accessor type = ''
+
             }`,
           output: dedent`
             class Todo {
@@ -3247,6 +3324,9 @@ describe(ruleName, () => {
 
               @observable
               accessor title = ''
+
+              @observable
+              protected accessor type = ''
 
               @observable
               accessor #active = false
@@ -3272,6 +3352,7 @@ describe(ruleName, () => {
               groups: [
                 'my-first-group',
                 'decorated-accessor-property',
+                'protected-decorated-accessor-property',
                 'private-decorated-accessor-property',
                 'property',
                 'constructor',

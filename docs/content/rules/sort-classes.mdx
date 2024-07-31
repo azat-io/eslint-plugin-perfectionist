@@ -199,10 +199,12 @@ Allows you to use comments to separate the class members into logical groups. Th
   [
     'index-signature',
     'static-property',
+    'protected-property',
     'private-property',
     'property',
     'constructor',
     'static-method',
+    'protected-method',
     'private-method',
     'method',
     ['get-method', 'set-method'],
@@ -218,15 +220,20 @@ There are a lot of predefined groups.
 Predefined Groups:
 
 - `'index-signature'` — Index signatures, which define the types of keys and values in an object.
+- `'protected-decorated-accessor-property'` — Protected accessor properties with decorators.
 - `'private-decorated-accessor-property'` — Private accessor properties with decorators.
 - `'decorated-accessor-property'` — Accessor properties with decorators.
+- `'protected-decorated-property'` — Protected properties with decorators.
 - `'private-decorated-property'` — Private properties with decorators.
 - `'decorated-property'` — Properties with decorators.
+- `'protected-property'` — Protected properties.
 - `'private-property'` — Private properties.
 - `'static-property'` — Static properties.
 - `'property'` — Regular properties.
 - `'constructor'` — Constructor method.
+- `'protected-method'` — Protected methods.
 - `'private-method'` — Private methods.
+- `'static-protected-method'` — Static protected methods.
 - `'static-private-method'` — Static private methods.
 - `'static-method'` — Static methods.
 - `'decorated-method'` — Methods with decorators.
@@ -244,6 +251,12 @@ class Example {
   // 'index-signature'
   [key: string]: any;
 
+  // 'protected-decorated-accessor-property'
+  @SomeDecorator
+  protected get accessor() {
+    return this._value;
+  }
+
   // 'private-decorated-accessor-property'
   @SomeDecorator
   private get accessor() {
@@ -256,6 +269,10 @@ class Example {
     return this._value;
   }
 
+  // 'protected-decorated-property'
+  @SomeDecorator
+  protected _value: number;
+
   // 'private-decorated-property'
   @SomeDecorator
   private _value: number;
@@ -263,6 +280,9 @@ class Example {
   // 'decorated-property'
   @SomeDecorator
   public value: number;
+
+  // 'protected-property'
+  protected name: string;
 
   // 'private-property'
   private name: string;
@@ -278,9 +298,19 @@ class Example {
     this._value = value;
   }
 
+  // 'protected-method'
+  protected calculate() {
+    return this._value * 2;
+  }
+
   // 'private-method'
   private calculate() {
     return this._value * 2;
+  }
+
+  // 'static-protected-method'
+  protected static initialize() {
+    this.instance = new Example(0);
   }
 
   // 'static-private-method'
@@ -341,10 +371,12 @@ Example:
    groups: [
      'index-signature',
      'static-property',
+     'protected-property',
      'private-property',
      'property',
      'constructor',
      'static-method',
+     'protected-method',
      'private-method',
      'static-private-method',
      'method',
@@ -383,10 +415,12 @@ Example:
                   groups: [
                     'index-signature',
                     'static-property',
+                    'protected-property',
                     'private-property',
                     'property',
                     'constructor',
                     'static-method',
+                    'protected-method',
                     'private-method',
                     'method',
                     ['get-method', 'set-method'],
@@ -420,10 +454,12 @@ Example:
                 groups: [
                   'index-signature',
                   'static-property',
+                  'protected-property',
                   'private-property',
                   'property',
                   'constructor',
                   'static-method',
+                  'protected-method',
                   'private-method',
                   'method',
                   ['get-method', 'set-method'],
