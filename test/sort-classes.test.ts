@@ -46,13 +46,15 @@ describe(ruleName, () => {
 
               static f() {}
 
-              protected g() {}
+              protected static g() {}
 
-              private h() {}
+              protected h() {}
 
-              i() {}
+              private i() {}
 
               j() {}
+
+              k() {}
             }
           `,
           options: [
@@ -65,6 +67,7 @@ describe(ruleName, () => {
                 'property',
                 'constructor',
                 'static-method',
+                'static-protected-method',
                 'protected-method',
                 'private-method',
                 'method',
@@ -92,13 +95,15 @@ describe(ruleName, () => {
 
               constructor() {}
 
-              protected g() {}
+              protected static g() {}
 
-              private h() {}
+              protected h() {}
 
-              i() {}
+              private i() {}
 
               j() {}
+
+              k() {}
             }
           `,
           output: dedent`
@@ -117,13 +122,15 @@ describe(ruleName, () => {
 
               static f() {}
 
-              protected g() {}
+              protected static g() {}
 
-              private h() {}
+              protected h() {}
 
-              i() {}
+              private i() {}
 
               j() {}
+
+              k() {}
             }
           `,
           options: [
@@ -136,6 +143,7 @@ describe(ruleName, () => {
                 'property',
                 'constructor',
                 'static-method',
+                'static-protected-method',
                 'protected-method',
                 'private-method',
                 'method',
