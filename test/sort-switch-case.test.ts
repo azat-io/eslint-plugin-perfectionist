@@ -254,9 +254,71 @@ describe(ruleName, () => {
         },
       ],
     })
+
+    ruleTester.run(
+      `${ruleName}(${type}): works with grouped cases with default`,
+      rule,
+      {
+        valid: [
+          {
+            code: dedent`
+            switch (operationMode) {
+              case wwww:
+                return null
+              case yy:
+              case z:
+                return null
+              case xxx:
+              default:
+                return null
+            }
+          `,
+            options: [options],
+          },
+        ],
+        invalid: [
+          {
+            code: dedent`
+            switch (operationMode) {
+              case yy:
+              case z:
+                return null
+              case wwww:
+                return null
+              case xxx:
+              default:
+                return null
+            }
+          `,
+            output: dedent`
+            switch (operationMode) {
+              case wwww:
+                return null
+              case yy:
+              case z:
+                return null
+              case xxx:
+              default:
+                return null
+            }
+          `,
+            options: [options],
+            errors: [
+              {
+                messageId: 'unexpectedSwitchCaseOrder',
+                data: {
+                  left: 'z',
+                  right: 'wwww',
+                },
+              },
+            ],
+          },
+        ],
+      },
+    )
   })
 
-  describe(`${ruleName}: sorts switch cases with return statements`, () => {
+  describe(`${ruleName}: sorting by natural order`, () => {
     let type = 'natural-order'
 
     let options = {
@@ -492,9 +554,71 @@ describe(ruleName, () => {
         },
       ],
     })
+
+    ruleTester.run(
+      `${ruleName}(${type}): works with grouped cases with default`,
+      rule,
+      {
+        valid: [
+          {
+            code: dedent`
+            switch (operationMode) {
+              case wwww:
+                return null
+              case yy:
+              case z:
+                return null
+              case xxx:
+              default:
+                return null
+            }
+          `,
+            options: [options],
+          },
+        ],
+        invalid: [
+          {
+            code: dedent`
+            switch (operationMode) {
+              case yy:
+              case z:
+                return null
+              case wwww:
+                return null
+              case xxx:
+              default:
+                return null
+            }
+          `,
+            output: dedent`
+            switch (operationMode) {
+              case wwww:
+                return null
+              case yy:
+              case z:
+                return null
+              case xxx:
+              default:
+                return null
+            }
+          `,
+            options: [options],
+            errors: [
+              {
+                messageId: 'unexpectedSwitchCaseOrder',
+                data: {
+                  left: 'z',
+                  right: 'wwww',
+                },
+              },
+            ],
+          },
+        ],
+      },
+    )
   })
 
-  describe(`${ruleName}: sorts switch cases with return statements`, () => {
+  describe(`${ruleName}: sorting by line length`, () => {
     let type = 'line-length-order'
 
     let options = {
@@ -729,6 +853,68 @@ describe(ruleName, () => {
         },
       ],
     })
+
+    ruleTester.run(
+      `${ruleName}(${type}): works with grouped cases with default`,
+      rule,
+      {
+        valid: [
+          {
+            code: dedent`
+            switch (operationMode) {
+              case wwww:
+                return null
+              case yy:
+              case z:
+                return null
+              case xxx:
+              default:
+                return null
+            }
+          `,
+            options: [options],
+          },
+        ],
+        invalid: [
+          {
+            code: dedent`
+            switch (operationMode) {
+              case yy:
+              case z:
+                return null
+              case wwww:
+                return null
+              case xxx:
+              default:
+                return null
+            }
+          `,
+            output: dedent`
+            switch (operationMode) {
+              case wwww:
+                return null
+              case yy:
+              case z:
+                return null
+              case xxx:
+              default:
+                return null
+            }
+          `,
+            options: [options],
+            errors: [
+              {
+                messageId: 'unexpectedSwitchCaseOrder',
+                data: {
+                  left: 'z',
+                  right: 'wwww',
+                },
+              },
+            ],
+          },
+        ],
+      },
+    )
   })
 
   describe(`${ruleName}: misc`, () => {

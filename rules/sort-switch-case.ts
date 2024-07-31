@@ -92,16 +92,18 @@ export default createEslintRule<Options, MESSAGE_ID>({
       if (isDiscriminantIdentifier && isCasesHasBreak) {
         let nodes = node.cases.map<SortingNode<TSESTree.SwitchCase>>(
           (caseNode: TSESTree.SwitchCase) => {
-            let name
+            let name: string
             if (caseNode.test?.type === 'Literal') {
               name = `${caseNode.test.value}`
-            } else {
+            } else if (caseNode.test === null) {
               name = 'default'
+            } else {
+              name = sourceCode.text.slice(...caseNode.test.range)
             }
 
             return {
               size: rangeToDiff(caseNode.test?.range ?? caseNode.range),
-              node: caseNode,
+              node: structuredClone(caseNode),
               name,
             }
           },
@@ -114,21 +116,35 @@ export default createEslintRule<Options, MESSAGE_ID>({
             lefter?.node.consequent.length === 0 &&
             left.node.consequent.length !== 0
 
-          let caseGroup = [left]
+          let isGroupContainsDefault = (group: SortingNode[]) =>
+            group.some(currentNode => currentNode.name === 'default')
+
+          let leftCaseGroup = [left]
+          let rightCaseGroup = [right]
           for (let i = iteration - 1; i >= 0; i--) {
             if (nodes.at(i)!.node.consequent.length === 0) {
-              caseGroup.unshift(nodes.at(i)!)
+              leftCaseGroup.unshift(nodes.at(i)!)
             } else {
               break
             }
           }
+          if (right.node.consequent.length === 0) {
+            for (let i = iteration + 1; i < nodes.length; i++) {
+              if (nodes.at(i)!.node.consequent.length === 0) {
+                rightCaseGroup.push(nodes.at(i)!)
+              } else {
+                rightCaseGroup.push(nodes.at(i)!)
+                break
+              }
+            }
+          }
 
-          if (left.name === 'default') {
+          if (isGroupContainsDefault(leftCaseGroup)) {
             compareValue = true
-          } else if (right.name === 'default') {
+          } else if (isGroupContainsDefault(rightCaseGroup)) {
             compareValue = false
           } else if (isCaseGrouped) {
-            compareValue = isPositive(compare(caseGroup[0], right, options))
+            compareValue = isPositive(compare(leftCaseGroup[0], right, options))
           } else {
             compareValue = isPositive(compare(left, right, options))
           }
@@ -173,8 +189,6 @@ export default createEslintRule<Options, MESSAGE_ID>({
                     return sortedGroup
                   })
                   .toSorted((a, b) => {
-                    let isGroupContainsDefault = (group: SortingNode[]) =>
-                      group.some(currentNode => currentNode.name === 'default')
                     if (isGroupContainsDefault(a)) {
                       return 1
                     } else if (isGroupContainsDefault(b)) {
