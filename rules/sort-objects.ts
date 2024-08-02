@@ -35,16 +35,13 @@ type SortingNodeWithPosition = {
 
 type Options = [
   Partial<{
-    customIgnore: ((
-      object: TSESTree.ObjectExpression | TSESTree.ObjectPattern,
-      filename: string,
-    ) => boolean)[]
     customGroups: { [key: string]: string[] | string }
     type: 'alphabetical' | 'line-length' | 'natural'
     partitionByComment: string[] | boolean | string
     groups: (string[] | string)[]
     partitionByNewLine: boolean
     styledComponents: boolean
+    destructureOnly: boolean
     ignorePattern: string[]
     order: 'desc' | 'asc'
     ignoreCase: boolean
@@ -106,16 +103,16 @@ export default createEslintRule<Options, MESSAGE_ID>({
             description: 'Controls whether to sort styled components.',
             type: 'boolean',
           },
+          destructureOnly: {
+            description: 'Controls whether to sort only destructured objects.',
+            type: 'boolean',
+          },
           ignorePattern: {
             description:
               'Specifies names or patterns for nodes that should be ignored by rule.',
             items: {
               type: 'string',
             },
-            type: 'array',
-          },
-          customIgnore: {
-            description: 'Specifies custom ignore functions.',
             type: 'array',
           },
           groups: {
@@ -168,8 +165,8 @@ export default createEslintRule<Options, MESSAGE_ID>({
       partitionByComment: false,
       partitionByNewLine: false,
       styledComponents: true,
+      destructureOnly: false,
       ignorePattern: [],
-      customIgnore: [],
       groups: [],
       customGroups: {},
     },
@@ -182,22 +179,19 @@ export default createEslintRule<Options, MESSAGE_ID>({
         partitionByNewLine: false,
         partitionByComment: false,
         styledComponents: true,
+        destructureOnly: false,
         type: 'alphabetical',
         ignorePattern: [],
         ignoreCase: true,
         customGroups: {},
-        customIgnore: [],
         order: 'asc',
         groups: [],
       } as const)
 
       let shouldIgnore = false
 
-      if (
-        options.customIgnore.length &&
-        options.customIgnore.some(fn => fn(node, context.filename))
-      ) {
-        shouldIgnore = true
+      if (options.destructureOnly) {
+        shouldIgnore = node.type !== 'ObjectPattern'
       }
 
       if (!shouldIgnore && options.ignorePattern.length) {

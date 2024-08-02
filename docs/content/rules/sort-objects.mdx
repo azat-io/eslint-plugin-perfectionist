@@ -232,25 +232,11 @@ Allows you to specify names or patterns for object types that should be ignored 
 
 You can specify their names or a glob pattern to ignore, for example: `'User*'` to ignore all object types whose names begin with the word “User”.
 
-### customIgnore
+### destructureOnly
 
-<sub>default: `[]`</sub>
+<sub>default: `false`</sub>
 
-If you need to ignore certain objects using a more complex algorithm, you can write your own function.
-
-This function takes two parameters as input: an object in the context of an abstract syntax tree and a filename. When writing this function, it is recommended to use [AST Explorer](https://astexplorer.net/) with the TypeScript ESLint Parser. The function should return `true` if the object should be ignored.
-
-For example, if you want to ignore objects that are not part of a destructuring pattern, you can use this function:
-
-```js
-{
-  customIgnore: [
-    (object, fileName) => {
-      return node.type !== 'ObjectPattern'
-    },
-  ]
-}
-```
+Allows you to sort only objects that are part of a destructuring pattern. When set to `true`, the rule will apply sorting exclusively to destructured objects, leaving other object declarations unchanged.
 
 ### groups
 

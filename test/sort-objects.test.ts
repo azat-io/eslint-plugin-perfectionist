@@ -2868,32 +2868,6 @@ describe(ruleName, () => {
             },
           ],
         },
-        {
-          code: dedent`
-            const buttonStyles = {
-              background: "palevioletred",
-              display: 'flex',
-              flexDirection: 'column',
-              width: "50px",
-              height: "50px",
-            }
-          `,
-          options: [
-            {
-              customIgnore: [
-                node => {
-                  if (
-                    node.parent.type === 'VariableDeclarator' &&
-                    node.parent.id.type === 'Identifier'
-                  ) {
-                    return node.parent.id.name === 'buttonStyles'
-                  }
-                  return false
-                },
-              ],
-            },
-          ],
-        },
       ],
       invalid: [
         {
@@ -2948,40 +2922,6 @@ describe(ruleName, () => {
             },
           ],
         },
-        {
-          code: dedent`
-            const buttonStyles = {
-              background: "palevioletred",
-              display: 'flex',
-              flexDirection: 'column',
-              width: "50px",
-              height: "50px",
-            }
-          `,
-          output: dedent`
-            const buttonStyles = {
-              background: "palevioletred",
-              display: 'flex',
-              flexDirection: 'column',
-              height: "50px",
-              width: "50px",
-            }
-          `,
-          options: [
-            {
-              customIgnore: [() => false],
-            },
-          ],
-          errors: [
-            {
-              messageId: 'unexpectedObjectsOrder',
-              data: {
-                left: 'width',
-                right: 'height',
-              },
-            },
-          ],
-        },
       ],
     })
 
@@ -2999,7 +2939,7 @@ describe(ruleName, () => {
           `,
           options: [
             {
-              customIgnore: [node => node.type !== 'ObjectPattern'],
+              destructureOnly: true,
             },
           ],
         },
@@ -3026,7 +2966,7 @@ describe(ruleName, () => {
           `,
           options: [
             {
-              customIgnore: [node => node.type !== 'ObjectPattern'],
+              destructureOnly: true,
             },
           ],
           errors: [
