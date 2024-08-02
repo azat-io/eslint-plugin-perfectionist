@@ -89,8 +89,8 @@ export default createEslintRule<Options, MESSAGE_ID>({
   create: context => ({
     TSEnumDeclaration: node => {
       if (
-        node.members.length > 1 &&
-        node.members.every(({ initializer }) => initializer)
+        node.body.members.length > 1 &&
+        node.body.members.every(({ initializer }) => initializer)
       ) {
         let options = complete(context.options.at(0), {
           partitionByComment: false,
@@ -102,7 +102,7 @@ export default createEslintRule<Options, MESSAGE_ID>({
         let sourceCode = getSourceCode(context)
         let partitionComment = options.partitionByComment
 
-        let formattedMembers: SortingNode[][] = node.members.reduce(
+        let formattedMembers: SortingNode[][] = node.body.members.reduce(
           (accumulator: SortingNode[][], member) => {
             let comment = getCommentBefore(member, sourceCode)
 
