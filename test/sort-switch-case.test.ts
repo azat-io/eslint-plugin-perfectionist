@@ -316,6 +316,153 @@ describe(ruleName, () => {
         ],
       },
     )
+
+    ruleTester.run(
+      `${ruleName}(${type}): works with single grouped case`,
+      rule,
+      {
+        valid: [
+          {
+            code: dedent`
+              switch (x) {
+                case AA:
+                case B:
+                  const a = 1;
+                  break;
+              }
+            `,
+            options: [options],
+          },
+        ],
+        invalid: [
+          {
+            code: dedent`
+              switch (x) {
+                case B:
+                case AA:
+                  const a = 1;
+                  break;
+              }
+            `,
+            output: dedent`
+              switch (x) {
+                case AA:
+                case B:
+                  const a = 1;
+                  break;
+              }
+            `,
+            options: [options],
+            errors: [
+              {
+                messageId: 'unexpectedSwitchCaseOrder',
+                data: {
+                  left: 'B',
+                  right: 'AA',
+                },
+              },
+            ],
+          },
+        ],
+      },
+    )
+
+    ruleTester.run(`${ruleName}(${type}): works with complex cases`, rule, {
+      valid: [
+        {
+          code: dedent`
+            switch (x) {
+              case AAAAA:
+              case BBBB:
+                const a = 1
+                break
+              case CCC:
+                break
+              case DD:
+              case E:
+                const b = () => {
+                  return 2
+                }
+                break
+              default:
+                const c = 3
+            }
+          `,
+          options: [options],
+        },
+      ],
+      invalid: [
+        {
+          code: dedent`
+            switch (x) {
+              case E:
+              case DD:
+                const b = () => {
+                  return 2
+                }
+                break
+              case CCC:
+                break
+              case BBBB:
+              case AAAAA:
+                const a = 1
+                break
+              default:
+                const c = 3
+            }
+          `,
+          output: dedent`
+            switch (x) {
+              case DD:
+              case E:
+                const b = () => {
+                  return 2
+                }
+                break
+              case CCC:
+                break
+              case AAAAA:
+              case BBBB:
+                const a = 1
+                break
+              default:
+                const c = 3
+            }
+          `,
+          options: [options],
+          errors: [
+            {
+              messageId: 'unexpectedSwitchCaseOrder',
+              data: {
+                left: 'E',
+                right: 'DD',
+              },
+            },
+            {
+              messageId: 'unexpectedSwitchCaseOrder',
+              data: {
+                left: 'DD',
+                right: 'CCC',
+              },
+            },
+            {
+              messageId: 'unexpectedSwitchCaseOrder',
+              data: {
+                left: 'CCC',
+                right: 'BBBB',
+              },
+            },
+            {
+              messageId: 'unexpectedSwitchCaseOrder',
+              data: {
+                left: 'BBBB',
+                right: 'AAAAA',
+              },
+            },
+          ],
+        },
+      ],
+    })
   })
 
   describe(`${ruleName}: sorting by natural order`, () => {

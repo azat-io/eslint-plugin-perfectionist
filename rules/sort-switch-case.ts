@@ -1,4 +1,5 @@
 import type { TSESTree } from '@typescript-eslint/types'
+import type { TSESLint } from '@typescript-eslint/utils'
 
 import type { SortingNode } from '../typings'
 
@@ -158,7 +159,8 @@ export default createEslintRule<Options, MESSAGE_ID>({
               },
               node: right.node,
               fix: fixer => {
-                let nodeGroups = nodes.reduce<
+                let additionalFixes: TSESLint.RuleFix[] = []
+                let nodeGroups = structuredClone(nodes).reduce<
                   SortingNode<TSESTree.SwitchCase>[][]
                 >(
                   (
@@ -182,10 +184,40 @@ export default createEslintRule<Options, MESSAGE_ID>({
 
                 let sortedNodeGroups = nodeGroups
                   .map(group => {
-                    let { consequent } = group.at(-1)!.node
-                    group.at(-1)!.node.consequent = []
                     let sortedGroup = sortNodes(group, options)
-                    sortedGroup.at(-1)!.node.consequent = consequent
+
+                    if (group.at(-1)!.name !== sortedGroup.at(-1)!.name) {
+                      let firstSortedNodeConsequent =
+                        sortedGroup.at(0)!.node.consequent
+                      let consequentStart = firstSortedNodeConsequent
+                        .at(0)
+                        ?.range.at(0)
+                      let consequentEnd = firstSortedNodeConsequent
+                        .at(-1)
+                        ?.range.at(1)
+                      let lastNode = group.at(-1)!.node
+                      if (consequentStart && consequentEnd && lastNode.test) {
+                        lastNode.range = [
+                          lastNode.range.at(0)!,
+                          lastNode.test.range.at(1)! + 1,
+                        ]
+                        additionalFixes.push(
+                          ...makeFixes(fixer, group, sortedGroup, sourceCode),
+                          fixer.removeRange([
+                            lastNode.range.at(1)!,
+                            consequentEnd,
+                          ]),
+                          fixer.insertTextAfter(
+                            lastNode,
+                            sourceCode.text.slice(
+                              lastNode.range.at(1),
+                              consequentEnd,
+                            ),
+                          ),
+                        )
+                      }
+                    }
+
                     return sortedGroup
                   })
                   .sort((a, b) => {
@@ -203,6 +235,10 @@ export default createEslintRule<Options, MESSAGE_ID>({
                   if (sortedNodes.at(i)!.name === 'default') {
                     sortedNodes.push(sortedNodes.splice(i, 1).at(0)!)
                   }
+                }
+
+                if (additionalFixes.length) {
+                  return additionalFixes
                 }
 
                 return makeFixes(fixer, nodes, sortedNodes, sourceCode)
