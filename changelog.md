@@ -1,6 +1,29 @@
 # Changelog
 
 
+## v3.1.0
+
+[compare changes](https://github.com/azat-io/eslint-plugin-perfectionist/compare/v3.0.0...v3.1.0)
+
+### 🚀 Features
+
+- Support for ordering protected properties and methods in classes ([7efadfa](https://github.com/azat-io/eslint-plugin-perfectionist/commit/7efadfa))
+- Replace sort-objects custom ignore option with destructure only ([f3906f9](https://github.com/azat-io/eslint-plugin-perfectionist/commit/f3906f9))
+- Move to typescript-eslint v8 ([05b6502](https://github.com/azat-io/eslint-plugin-perfectionist/commit/05b6502))
+
+### 🐞 Bug Fixes
+
+- Fix switch case sorting with grouped default case ([7428523](https://github.com/azat-io/eslint-plugin-perfectionist/commit/7428523))
+- Switch from to-sorted to sort method ([bff6575](https://github.com/azat-io/eslint-plugin-perfectionist/commit/bff6575))
+- Disable sorting dynamic require imports ([68632df](https://github.com/azat-io/eslint-plugin-perfectionist/commit/68632df))
+- Define as builtin modules that require a node prefix ([aac4725](https://github.com/azat-io/eslint-plugin-perfectionist/commit/aac4725))
+- Fix sorting of complex switch case expressions ([d07f5f7](https://github.com/azat-io/eslint-plugin-perfectionist/commit/d07f5f7))
+
+### ❤️ Contributors
+
+- Azat S. ([@azat-io](http://github.com/azat-io))
+- Williamkolean ([@williamkolean](http://github.com/williamkolean))
+
 ## v3.0.0
 
 [compare changes](https://github.com/azat-io/eslint-plugin-perfectionist/compare/v2.11.0...v3.0.0)
