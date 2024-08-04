@@ -1,6 +1,18 @@
 # Changelog
 
 
+## v3.1.1
+
+[compare changes](https://github.com/azat-io/eslint-plugin-perfectionist/compare/v3.1.0...v3.1.1)
+
+### 🐞 Bug Fixes
+
+- Fix getting enum members in eslint v8 ([4789764](https://github.com/azat-io/eslint-plugin-perfectionist/commit/4789764))
+
+### ❤️ Contributors
+
+- Azat S. ([@azat-io](http://github.com/azat-io))
+
 ## v3.1.0
 
 [compare changes](https://github.com/azat-io/eslint-plugin-perfectionist/compare/v3.0.0...v3.1.0)
