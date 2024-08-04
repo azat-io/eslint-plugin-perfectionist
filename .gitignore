@@ -1,7 +1,6 @@
 # Node.js
 node_modules/
 .nvmrc
-package-lock.json
 
 # Build
 dist/
@@ -9,6 +8,7 @@ dist/
 # Editor
 .vscode/
 .vim/
+.idea
 
 # Astro
 .astro/
@@ -18,6 +18,3 @@ coverage/
 
 # Misc
 .DS_Store
-
-# Jetbrains IDE
-.idea

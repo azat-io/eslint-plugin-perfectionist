@@ -1,4 +1,3 @@
-import type { ClassElement } from 'node_modules/@typescript-eslint/types/dist/generated/ast-spec'
 import type { TSESTree } from '@typescript-eslint/types'
 import type { TSESLint } from '@typescript-eslint/utils'
 
@@ -21,53 +20,127 @@ import { compare } from '../utils/compare'
 
 type MESSAGE_ID = 'unexpectedClassesOrder'
 
-type Group =
-  TypedGroup
-  | 'unknown'
-  | string
+type Group = OfficialGroup | 'unknown' | string
 
-type TypedGroup =
-  'protected-decorated-accessor-property' |
-  'private-decorated-accessor-property' |
-  'protected-decorated-property' |
-  'decorated-accessor-property' |
-  'protected-abstract-property' |
-  'private-decorated-property' |
-  'static-protected-property' |
-  'protected-abstract-method' |
-  'private-abstract-property' |
-  'public-abstract-property' |
-  'static-private-property' |
-  'private-abstract-method' |
-  'static-protected-method' |
-  'static-public-property' |
-  'public-abstract-method' |
-  'protected-constructor' |
-  'static-private-method' |
-  'decorated-get-method' |
-  'decorated-set-method' |
-  'static-public-method' |
-  'private-constructor' |
-  'public-constructor' |
-  'protected-property' |
-  'decorated-property' |
-  'abstract-property' |
-  'decorated-method' |
-  'private-property' |
-  'protected-method' |
-  'static-property' |
-  'public-property' |
-  'abstract-method' |
-  'index-signature' |
-  'private-method' |
-  'static-method' |
-  'public-method' |
-  'constructor' |
-  'get-method' |
-  'set-method' |
-  'property' |
-  'method'
-
+type OfficialGroup =
+  | 'protected-abstract-readonly-decorated-property'
+  | 'static-protected-readonly-decorated-property'
+  | 'public-abstract-readonly-decorated-property'
+  | 'static-private-readonly-decorated-property'
+  | 'static-public-readonly-decorated-property'
+  | 'protected-abstract-decorated-set-method'
+  | 'protected-abstract-decorated-get-method'
+  | 'static-protected-decorated-get-method'
+  | 'static-protected-decorated-set-method'
+  | 'protected-decorated-accessor-property'
+  | 'protected-abstract-decorated-property'
+  | 'protected-readonly-decorated-property'
+  | 'protected-abstract-readonly-property'
+  | 'public-abstract-decorated-set-method'
+  | 'public-abstract-decorated-get-method'
+  | 'abstract-readonly-decorated-property'
+  | 'static-private-decorated-get-method'
+  | 'static-private-decorated-set-method'
+  | 'private-decorated-accessor-property'
+  | 'static-protected-decorated-property'
+  | 'protected-abstract-decorated-method'
+  | 'private-readonly-decorated-property'
+  | 'static-protected-readonly-property'
+  | 'static-readonly-decorated-property'
+  | 'static-public-decorated-get-method'
+  | 'static-public-decorated-set-method'
+  | 'public-abstract-decorated-property'
+  | 'public-readonly-decorated-property'
+  | 'static-protected-decorated-method'
+  | 'public-abstract-readonly-property'
+  | 'static-private-decorated-property'
+  | 'static-public-decorated-property'
+  | 'static-private-readonly-property'
+  | 'public-abstract-decorated-method'
+  | 'static-private-decorated-method'
+  | 'static-public-readonly-property'
+  | 'static-public-decorated-method'
+  | 'protected-decorated-get-method'
+  | 'protected-decorated-set-method'
+  | 'protected-abstract-get-method'
+  | 'protected-abstract-set-method'
+  | 'abstract-decorated-get-method'
+  | 'abstract-decorated-set-method'
+  | 'protected-decorated-property'
+  | 'private-decorated-get-method'
+  | 'private-decorated-set-method'
+  | 'static-decorated-get-method'
+  | 'static-decorated-set-method'
+  | 'readonly-decorated-property'
+  | 'decorated-accessor-property'
+  | 'protected-abstract-property'
+  | 'static-protected-get-method'
+  | 'static-protected-set-method'
+  | 'protected-readonly-property'
+  | 'public-decorated-get-method'
+  | 'public-decorated-set-method'
+  | 'abstract-decorated-property'
+  | 'private-decorated-property'
+  | 'public-abstract-get-method'
+  | 'public-abstract-set-method'
+  | 'abstract-readonly-property'
+  | 'protected-decorated-method'
+  | 'abstract-decorated-method'
+  | 'static-protected-property'
+  | 'protected-abstract-method'
+  | 'static-private-get-method'
+  | 'static-private-set-method'
+  | 'private-readonly-property'
+  | 'public-decorated-property'
+  | 'static-decorated-property'
+  | 'public-abstract-property'
+  | 'static-public-get-method'
+  | 'static-public-set-method'
+  | 'static-readonly-property'
+  | 'public-readonly-property'
+  | 'private-decorated-method'
+  | 'static-decorated-method'
+  | 'static-private-property'
+  | 'static-protected-method'
+  | 'public-decorated-method'
+  | 'static-public-property'
+  | 'public-abstract-method'
+  | 'protected-constructor'
+  | 'static-private-method'
+  | 'decorated-get-method'
+  | 'decorated-set-method'
+  | 'static-public-method'
+  | 'protected-get-method'
+  | 'protected-set-method'
+  | 'private-constructor'
+  | 'abstract-get-method'
+  | 'abstract-set-method'
+  | 'public-constructor'
+  | 'protected-property'
+  | 'decorated-property'
+  | 'private-get-method'
+  | 'private-set-method'
+  | 'abstract-property'
+  | 'public-get-method'
+  | 'public-set-method'
+  | 'static-get-method'
+  | 'static-set-method'
+  | 'readonly-property'
+  | 'decorated-method'
+  | 'private-property'
+  | 'protected-method'
+  | 'static-property'
+  | 'public-property'
+  | 'abstract-method'
+  | 'index-signature'
+  | 'private-method'
+  | 'static-method'
+  | 'public-method'
+  | 'constructor'
+  | 'get-method'
+  | 'set-method'
+  | 'property'
+  | 'method'
 
 type Options = [
   Partial<{
@@ -300,83 +373,234 @@ export default createEslintRule<Options, MESSAGE_ID>({
               }
             }
 
-            let isPrivateName =  name.startsWith('_') || name.startsWith('#');
+            let isPrivateName = name.startsWith('_') || name.startsWith('#')
             let decorated =
               'decorators' in member && member.decorators.length > 0
-            let memberGroups: TypedGroup[] = []
+            let memberGroups: OfficialGroup[] = []
 
             // Methods
-            if (member.type === 'MethodDefinition' || member.type === "TSAbstractMethodDefinition") {
-
+            if (
+              member.type === 'MethodDefinition' ||
+              member.type === 'TSAbstractMethodDefinition'
+            ) {
               let isProtectedMethod = member.accessibility === 'protected'
               let isPrivateMethod =
                 member.accessibility === 'private' || isPrivateName
               let isStaticMethod = member.static
-              let isAbstractMethod = member.type === "TSAbstractMethodDefinition";
+              let isAbstractMethod =
+                member.type === 'TSAbstractMethodDefinition'
+              let isGetMethod = member.kind === 'get'
+              let isSetMethod = member.kind === 'set'
 
               if (member.kind === 'constructor') {
                 if (isProtectedMethod) {
-                  memberGroups.push('protected-constructor');
+                  memberGroups.push('protected-constructor')
                 } else if (isPrivateMethod) {
-                  memberGroups.push('private-constructor');
+                  memberGroups.push('private-constructor')
                 } else {
-                  memberGroups.push('public-constructor');
+                  memberGroups.push('public-constructor')
                 }
-                memberGroups.push('constructor');
-              }
-
-              if (decorated) {
-                if (member.kind === 'get') {
-                  memberGroups.push('decorated-get-method')
-                }
-
-                if (member.kind === 'set') {
-                  memberGroups.push('decorated-set-method')
-                }
-
-                memberGroups.push('decorated-method')
+                memberGroups.push('constructor')
               }
 
               if (isStaticMethod) {
                 if (isPrivateMethod) {
+                  if (isGetMethod) {
+                    if (decorated) {
+                      memberGroups.push('static-private-decorated-get-method')
+                    }
+                    memberGroups.push('static-private-get-method')
+                  } else if (isSetMethod) {
+                    if (decorated) {
+                      memberGroups.push('static-private-decorated-set-method')
+                    }
+                    memberGroups.push('static-private-set-method')
+                  }
+                  if (decorated) {
+                    memberGroups.push('static-private-decorated-method')
+                  }
                   memberGroups.push('static-private-method')
                 } else if (isProtectedMethod) {
+                  if (isGetMethod) {
+                    if (decorated) {
+                      memberGroups.push('static-protected-decorated-get-method')
+                    }
+                    memberGroups.push('static-protected-get-method')
+                  } else if (isSetMethod) {
+                    if (decorated) {
+                      memberGroups.push('static-protected-decorated-set-method')
+                    }
+                    memberGroups.push('static-protected-set-method')
+                  }
+                  if (decorated) {
+                    memberGroups.push('static-protected-decorated-method')
+                  }
                   memberGroups.push('static-protected-method')
                 } else {
+                  // Public static methods
+                  if (isGetMethod) {
+                    if (decorated) {
+                      memberGroups.push('static-public-decorated-get-method')
+                    }
+                    memberGroups.push('static-public-get-method')
+                  } else if (isSetMethod) {
+                    if (decorated) {
+                      memberGroups.push('static-public-decorated-set-method')
+                    }
+                    memberGroups.push('static-public-set-method')
+                  }
+                  if (decorated) {
+                    memberGroups.push('static-public-decorated-method')
+                  }
                   memberGroups.push('static-public-method')
+                }
+                if (isGetMethod) {
+                  if (decorated) {
+                    memberGroups.push('static-decorated-get-method')
+                  }
+                  memberGroups.push('static-get-method')
+                }
+                if (isSetMethod) {
+                  if (decorated) {
+                    memberGroups.push('static-decorated-set-method')
+                  }
+                  memberGroups.push('static-set-method')
+                }
+                if (decorated) {
+                  memberGroups.push('static-decorated-method')
                 }
                 memberGroups.push('static-method')
               } else {
+                // Non-static methods
                 if (isAbstractMethod) {
-                  if (isPrivateMethod) {
-                    memberGroups.push('private-abstract-method');
-                  } else if (isProtectedMethod) {
-                    memberGroups.push('protected-abstract-method');
+                  // Abstract methods can not be private
+                  if (isProtectedMethod) {
+                    if (isGetMethod) {
+                      if (decorated) {
+                        memberGroups.push(
+                          'protected-abstract-decorated-get-method',
+                        )
+                      }
+                      memberGroups.push('protected-abstract-get-method')
+                    } else if (isSetMethod) {
+                      if (decorated) {
+                        memberGroups.push(
+                          'protected-abstract-decorated-set-method',
+                        )
+                      }
+                      memberGroups.push('protected-abstract-set-method')
+                    }
+                    if (decorated) {
+                      memberGroups.push('protected-abstract-decorated-method')
+                    }
+                    memberGroups.push('protected-abstract-method')
                   } else {
-                    memberGroups.push('public-abstract-method');
+                    // Public abstract methods
+                    if (isGetMethod) {
+                      if (decorated) {
+                        memberGroups.push(
+                          'public-abstract-decorated-get-method',
+                        )
+                      }
+                      memberGroups.push('public-abstract-get-method')
+                    } else if (isSetMethod) {
+                      if (decorated) {
+                        memberGroups.push(
+                          'public-abstract-decorated-set-method',
+                        )
+                      }
+                      memberGroups.push('public-abstract-set-method')
+                    }
+                    if (decorated) {
+                      memberGroups.push('public-abstract-decorated-method')
+                    }
+                    memberGroups.push('public-abstract-method')
                   }
-                  memberGroups.push('abstract-method');
+                  if (isGetMethod) {
+                    if (decorated) {
+                      memberGroups.push('abstract-decorated-get-method')
+                    }
+                    memberGroups.push('abstract-get-method')
+                  } else if (isSetMethod) {
+                    if (decorated) {
+                      memberGroups.push('abstract-decorated-set-method')
+                    }
+                    memberGroups.push('abstract-set-method')
+                  }
+                  if (decorated) {
+                    memberGroups.push('abstract-decorated-method')
+                  }
+                  memberGroups.push('abstract-method')
                 } else {
-                  // Non-abstract
-                  if (member.kind === 'get') {
-                    memberGroups.push('get-method')
+                  // Non-abstract methods
+                  if (isPrivateMethod) {
+                    if (isGetMethod) {
+                      if (decorated) {
+                        memberGroups.push('private-decorated-get-method')
+                      }
+                      memberGroups.push('private-get-method')
+                    } else if (isSetMethod) {
+                      if (decorated) {
+                        memberGroups.push('private-decorated-set-method')
+                      }
+                      memberGroups.push('private-set-method')
+                    }
+                    if (decorated) {
+                      memberGroups.push('private-decorated-method')
+                    }
+                    memberGroups.push('private-method')
+                  } else if (isProtectedMethod) {
+                    if (isGetMethod) {
+                      if (decorated) {
+                        memberGroups.push('protected-decorated-get-method')
+                      }
+                      memberGroups.push('protected-get-method')
+                    } else if (isSetMethod) {
+                      if (decorated) {
+                        memberGroups.push('protected-decorated-set-method')
+                      }
+                      memberGroups.push('protected-set-method')
+                    }
+                    if (decorated) {
+                      memberGroups.push('protected-decorated-method')
+                    }
+                    memberGroups.push('protected-method')
+                  } else {
+                    if (isGetMethod) {
+                      if (decorated) {
+                        memberGroups.push('public-decorated-get-method')
+                      }
+                      memberGroups.push('public-get-method')
+                    } else if (isSetMethod) {
+                      if (decorated) {
+                        memberGroups.push('public-decorated-set-method')
+                      }
+                      memberGroups.push('public-set-method')
+                    }
+                    if (decorated) {
+                      memberGroups.push('public-decorated-method')
+                    }
+                    memberGroups.push('public-method')
                   }
-                  if (member.kind === 'set') {
+                  if (isGetMethod) {
+                    if (decorated) {
+                      memberGroups.push('decorated-get-method')
+                    }
+                    memberGroups.push('get-method')
+                  } else if (isSetMethod) {
+                    if (decorated) {
+                      memberGroups.push('decorated-set-method')
+                    }
                     memberGroups.push('set-method')
                   }
-                  if (isPrivateMethod) {
-                    memberGroups.push('private-method');
-                  } else if (isProtectedMethod) {
-                    memberGroups.push('protected-method');
-                  } else {
-                    memberGroups.push('public-method');
+                  if (decorated) {
+                    memberGroups.push('decorated-method')
                   }
-                  memberGroups.push('method');
+                  memberGroups.push('method')
                 }
               }
-
             } else if (member.type === 'TSIndexSignature') {
-              memberGroups.push('index-signature');
+              memberGroups.push('index-signature')
             } else if (member.type === 'AccessorProperty') {
               if (decorated) {
                 if (member.accessibility === 'protected') {
@@ -389,60 +613,164 @@ export default createEslintRule<Options, MESSAGE_ID>({
 
                 memberGroups.push('decorated-accessor-property')
               }
-            } else if (member.type === 'PropertyDefinition' || member.type === 'TSAbstractPropertyDefinition') {
+            } else if (
+              member.type === 'PropertyDefinition' ||
+              member.type === 'TSAbstractPropertyDefinition'
+            ) {
+              // Properties
               let isProtectedProperty = member.accessibility === 'protected'
               let isPrivateProperty =
                 member.accessibility === 'private' || isPrivateName
               let isStaticProperty = member.static
-              let isAbstractProperty = member.type === "TSAbstractPropertyDefinition";
-
-              if (decorated) {
-                if (isProtectedProperty) {
-                  memberGroups.push('protected-decorated-property');
-                }
-
-                if (isPrivateProperty) {
-                  memberGroups.push('private-decorated-property');
-                }
-
-                memberGroups.push('decorated-property');
-              }
+              let isAbstractProperty =
+                member.type === 'TSAbstractPropertyDefinition'
+              let isReadonly = member.readonly
 
               if (isStaticProperty) {
                 if (isPrivateProperty) {
+                  if (isReadonly) {
+                    if (decorated) {
+                      memberGroups.push(
+                        'static-private-readonly-decorated-property',
+                      )
+                    }
+                    memberGroups.push('static-private-readonly-property')
+                  }
+                  if (decorated) {
+                    memberGroups.push('static-private-decorated-property')
+                  }
                   memberGroups.push('static-private-property')
                 } else if (isProtectedProperty) {
+                  if (isReadonly) {
+                    if (decorated) {
+                      memberGroups.push(
+                        'static-protected-readonly-decorated-property',
+                      )
+                    }
+                    memberGroups.push('static-protected-readonly-property')
+                  }
+                  if (decorated) {
+                    memberGroups.push('static-protected-decorated-property')
+                  }
                   memberGroups.push('static-protected-property')
                 } else {
+                  if (isReadonly) {
+                    if (decorated) {
+                      memberGroups.push(
+                        'static-public-readonly-decorated-property',
+                      )
+                    }
+                    memberGroups.push('static-public-readonly-property')
+                  }
+                  if (decorated) {
+                    memberGroups.push('static-public-decorated-property')
+                  }
                   memberGroups.push('static-public-property')
+                }
+                if (isReadonly) {
+                  if (decorated) {
+                    memberGroups.push('static-readonly-decorated-property')
+                  }
+                  memberGroups.push('static-readonly-property')
+                }
+                if (decorated) {
+                  memberGroups.push('static-decorated-property')
                 }
                 memberGroups.push('static-property')
               } else {
-                // Non-static
+                // Non-static properties
                 if (isAbstractProperty) {
-                  if (isPrivateProperty) {
-                    memberGroups.push('private-abstract-property');
-                  } else if (isProtectedProperty) {
-                    memberGroups.push('protected-abstract-property');
+                  // Private properties can not be abstract
+                  if (isProtectedProperty) {
+                    if (isReadonly) {
+                      if (decorated) {
+                        memberGroups.push(
+                          'protected-abstract-readonly-decorated-property',
+                        )
+                      }
+                      memberGroups.push('protected-abstract-readonly-property')
+                    }
+                    if (decorated) {
+                      memberGroups.push('protected-abstract-decorated-property')
+                    }
+                    memberGroups.push('protected-abstract-property')
                   } else {
-                    memberGroups.push('public-abstract-property');
+                    if (isReadonly) {
+                      if (decorated) {
+                        memberGroups.push(
+                          'public-abstract-readonly-decorated-property',
+                        )
+                      }
+                      memberGroups.push('public-abstract-readonly-property')
+                    }
+                    if (decorated) {
+                      memberGroups.push('public-abstract-decorated-property')
+                    }
+                    memberGroups.push('public-abstract-property')
                   }
-                  memberGroups.push('abstract-property');
+                  if (isReadonly) {
+                    if (decorated) {
+                      memberGroups.push('abstract-readonly-decorated-property')
+                    }
+                    memberGroups.push('abstract-readonly-property')
+                  }
+                  if (decorated) {
+                    memberGroups.push('abstract-decorated-property')
+                  }
+                  memberGroups.push('abstract-property')
                 } else {
                   // Non-abstract
                   if (isPrivateProperty) {
-                    memberGroups.push('private-property');
+                    if (isReadonly) {
+                      if (decorated) {
+                        memberGroups.push('private-readonly-decorated-property')
+                      }
+                      memberGroups.push('private-readonly-property')
+                    }
+                    if (decorated) {
+                      memberGroups.push('private-decorated-property')
+                    }
+                    memberGroups.push('private-property')
                   } else if (isProtectedProperty) {
-                    memberGroups.push('protected-property');
+                    if (isReadonly) {
+                      if (decorated) {
+                        memberGroups.push(
+                          'protected-readonly-decorated-property',
+                        )
+                      }
+                      memberGroups.push('protected-readonly-property')
+                    }
+                    if (decorated) {
+                      memberGroups.push('protected-decorated-property')
+                    }
+                    memberGroups.push('protected-property')
                   } else {
-                    memberGroups.push('public-property');
+                    if (isReadonly) {
+                      if (decorated) {
+                        memberGroups.push('public-readonly-decorated-property')
+                      }
+                      memberGroups.push('public-readonly-property')
+                    }
+                    if (decorated) {
+                      memberGroups.push('public-decorated-property')
+                    }
+                    memberGroups.push('public-property')
                   }
-                  memberGroups.push('property');
+                  if (isReadonly) {
+                    if (decorated) {
+                      memberGroups.push('readonly-decorated-property')
+                    }
+                    memberGroups.push('readonly-property')
+                  }
+                  if (decorated) {
+                    memberGroups.push('decorated-property')
+                  }
+                  memberGroups.push('property')
                 }
               }
             }
             for (let memberGroup of memberGroups) {
-              defineGroup(memberGroup);
+              defineGroup(memberGroup)
             }
 
             setCustomGroups(options.customGroups, name, {
