@@ -1,3 +1,5 @@
+import type { TSESTree } from '@typescript-eslint/types'
+
 import type { SortingNode } from '../typings'
 
 import { isPartitionComment } from '../utils/is-partition-comment'
@@ -88,9 +90,13 @@ export default createEslintRule<Options, MESSAGE_ID>({
   ],
   create: context => ({
     TSEnumDeclaration: node => {
+      let getMembers = (nodeValue: TSESTree.TSEnumDeclaration) =>
+        /* v8 ignore next 2 */
+        // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
+        node.body.members || nodeValue.members
       if (
-        node.body.members.length > 1 &&
-        node.body.members.every(({ initializer }) => initializer)
+        getMembers(node).length > 1 &&
+        getMembers(node).every(({ initializer }) => initializer)
       ) {
         let options = complete(context.options.at(0), {
           partitionByComment: false,
@@ -102,7 +108,7 @@ export default createEslintRule<Options, MESSAGE_ID>({
         let sourceCode = getSourceCode(context)
         let partitionComment = options.partitionByComment
 
-        let formattedMembers: SortingNode[][] = node.body.members.reduce(
+        let formattedMembers: SortingNode[][] = getMembers(node).reduce(
           (accumulator: SortingNode[][], member) => {
             let comment = getCommentBefore(member, sourceCode)
 
