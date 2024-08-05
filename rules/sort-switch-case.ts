@@ -184,11 +184,19 @@ export default createEslintRule<Options, MESSAGE_ID>({
 
                 let sortedNodeGroups = nodeGroups
                   .map(group => {
-                    let sortedGroup = sortNodes(group, options)
+                    let sortedGroup = sortNodes(group, options).sort((a, b) => {
+                      if (b.name === 'default') {
+                        return -1
+                      }
+                      return 1
+                    })
 
                     if (group.at(-1)!.name !== sortedGroup.at(-1)!.name) {
+                      let consequentNodeIndex = sortedGroup.findIndex(
+                        currentNode => currentNode.node.consequent.length !== 0,
+                      )
                       let firstSortedNodeConsequent =
-                        sortedGroup.at(0)!.node.consequent
+                        sortedGroup.at(consequentNodeIndex)!.node.consequent
                       let consequentStart = firstSortedNodeConsequent
                         .at(0)
                         ?.range.at(0)
@@ -196,6 +204,7 @@ export default createEslintRule<Options, MESSAGE_ID>({
                         .at(-1)
                         ?.range.at(1)
                       let lastNode = group.at(-1)!.node
+
                       if (consequentStart && consequentEnd && lastNode.test) {
                         lastNode.range = [
                           lastNode.range.at(0)!,

@@ -481,6 +481,56 @@ describe(ruleName, () => {
         },
       ],
     })
+
+    ruleTester.run(
+      `${ruleName}(${type}): works with groups with default`,
+      rule,
+      {
+        valid: [
+          {
+            code: dedent`
+            switch (x) {
+              case 'AA':
+              case 'B':
+              default:
+                const c = 3
+            }
+          `,
+            options: [options],
+          },
+        ],
+        invalid: [
+          {
+            code: dedent`
+            switch (x) {
+              case 'AA':
+              default:
+              case 'B':
+                break;
+            }
+          `,
+            output: dedent`
+            switch (x) {
+              case 'AA':
+              case 'B':
+              default:
+                break;
+            }
+          `,
+            options: [options],
+            errors: [
+              {
+                messageId: 'unexpectedSwitchCaseOrder',
+                data: {
+                  left: 'default',
+                  right: 'B',
+                },
+              },
+            ],
+          },
+        ],
+      },
+    )
   })
 
   describe(`${ruleName}: sorting by natural order`, () => {
@@ -948,6 +998,56 @@ describe(ruleName, () => {
         },
       ],
     })
+
+    ruleTester.run(
+      `${ruleName}(${type}): works with groups with default`,
+      rule,
+      {
+        valid: [
+          {
+            code: dedent`
+            switch (x) {
+              case 'AA':
+              case 'B':
+              default:
+                const c = 3
+            }
+          `,
+            options: [options],
+          },
+        ],
+        invalid: [
+          {
+            code: dedent`
+            switch (x) {
+              case 'AA':
+              default:
+              case 'B':
+                break;
+            }
+          `,
+            output: dedent`
+            switch (x) {
+              case 'AA':
+              case 'B':
+              default:
+                break;
+            }
+          `,
+            options: [options],
+            errors: [
+              {
+                messageId: 'unexpectedSwitchCaseOrder',
+                data: {
+                  left: 'default',
+                  right: 'B',
+                },
+              },
+            ],
+          },
+        ],
+      },
+    )
   })
 
   describe(`${ruleName}: sorting by line length`, () => {
@@ -1414,6 +1514,56 @@ describe(ruleName, () => {
         },
       ],
     })
+
+    ruleTester.run(
+      `${ruleName}(${type}): works with groups with default`,
+      rule,
+      {
+        valid: [
+          {
+            code: dedent`
+            switch (x) {
+              case 'AA':
+              case 'B':
+              default:
+                const c = 3
+            }
+          `,
+            options: [options],
+          },
+        ],
+        invalid: [
+          {
+            code: dedent`
+            switch (x) {
+              case 'AA':
+              default:
+              case 'B':
+                break;
+            }
+          `,
+            output: dedent`
+            switch (x) {
+              case 'AA':
+              case 'B':
+              default:
+                break;
+            }
+          `,
+            options: [options],
+            errors: [
+              {
+                messageId: 'unexpectedSwitchCaseOrder',
+                data: {
+                  left: 'default',
+                  right: 'B',
+                },
+              },
+            ],
+          },
+        ],
+      },
+    )
   })
 
   describe(`${ruleName}: misc`, () => {
