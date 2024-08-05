@@ -291,9 +291,24 @@ export default createEslintRule<Options, MESSAGE_ID>({
             ) {
               let modifiers: string[] = []
               let selectors: string[] = []
-              if (member.kind === 'constructor') {
-                selectors.push('constructor')
+
+              // By putting the abstract modifier before accessibility modifiers,
+              // we prioritize 'abstract' over those in cases like:
+              // Config: ['abstract-method', 'public-method']
+              // Element: public abstract method();
+              // Element will be classified as 'abstract-method' before 'public-method'
+              if (member.type === 'TSAbstractMethodDefinition') {
+                modifiers.push('abstract')
               }
+
+              if (decorated) {
+                modifiers.push('decorated')
+              }
+
+              if (member.override) {
+                modifiers.push('override')
+              }
+
               if (member.accessibility === 'protected') {
                 modifiers.push('protected')
               } else if (member.accessibility === 'private' || isPrivateName) {
@@ -305,16 +320,8 @@ export default createEslintRule<Options, MESSAGE_ID>({
                 modifiers.push('static')
               }
 
-              if (decorated) {
-                modifiers.push('decorated')
-              }
-
-              if (member.override) {
-                modifiers.push('override')
-              }
-
-              if (member.type === 'TSAbstractMethodDefinition') {
-                modifiers.push('abstract')
+              if (member.kind === 'constructor') {
+                selectors.push('constructor')
               }
 
               if (member.kind === 'get') {
@@ -347,6 +354,24 @@ export default createEslintRule<Options, MESSAGE_ID>({
               let modifiers: string[] = []
               let selectors: string[] = []
 
+              // Similarly to above for methods, prioritize 'abstract', 'override' and 'readonly'
+              // over accessibility modifiers
+              if (member.type === 'TSAbstractPropertyDefinition') {
+                modifiers.push('abstract')
+              }
+
+              if (decorated) {
+                modifiers.push('decorated')
+              }
+
+              if (member.override) {
+                modifiers.push('override')
+              }
+
+              if (member.readonly) {
+                modifiers.push('readonly')
+              }
+
               if (member.accessibility === 'protected') {
                 modifiers.push('protected')
               } else if (member.accessibility === 'private' || isPrivateName) {
@@ -357,22 +382,6 @@ export default createEslintRule<Options, MESSAGE_ID>({
 
               if (member.static) {
                 modifiers.push('static')
-              }
-
-              if (decorated) {
-                modifiers.push('decorated')
-              }
-
-              if (member.readonly) {
-                modifiers.push('readonly')
-              }
-
-              if (member.override) {
-                modifiers.push('override')
-              }
-
-              if (member.type === 'TSAbstractPropertyDefinition') {
-                modifiers.push('abstract')
               }
 
               selectors.push('property')
