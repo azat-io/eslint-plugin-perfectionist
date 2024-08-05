@@ -1,6 +1,23 @@
 # Changelog
 
 
+## v3.1.2
+
+[compare changes](https://github.com/azat-io/eslint-plugin-perfectionist/compare/v3.1.1...v3.1.2)
+
+### 🏎 Performance Improvements
+
+- Remove node cloning to improve performance ([00b2cc3](https://github.com/azat-io/eslint-plugin-perfectionist/commit/00b2cc3))
+
+### 🐞 Bug Fixes
+
+- Fix sorting switch cases with default in middle of group ([4ee655e](https://github.com/azat-io/eslint-plugin-perfectionist/commit/4ee655e))
+- Fix getting enum members in eslint v8 ([3f3d77c](https://github.com/azat-io/eslint-plugin-perfectionist/commit/3f3d77c))
+
+### ❤️ Contributors
+
+- Azat S. ([@azat-io](http://github.com/azat-io))
+
 ## v3.1.1
 
 [compare changes](https://github.com/azat-io/eslint-plugin-perfectionist/compare/v3.1.0...v3.1.1)
