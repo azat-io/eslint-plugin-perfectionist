@@ -169,11 +169,14 @@ describe(ruleName, () => {
       ],
     })
 
-    ruleTester.run(`${ruleName}(${type}): sorts complex official groups`, rule, {
-      valid: [],
-      invalid: [
-        {
-          code: dedent`
+    ruleTester.run(
+      `${ruleName}(${type}): sorts complex official groups`,
+      rule,
+      {
+        valid: [],
+        invalid: [
+          {
+            code: dedent`
             abstract class Class {
 
               private k = 'k';
@@ -201,7 +204,7 @@ describe(ruleName, () => {
               abstract override readonly a;
             }
           `,
-          output: dedent`
+            output: dedent`
             abstract class Class {
 
               @Decorator
@@ -229,99 +232,100 @@ describe(ruleName, () => {
               private k = 'k';
             }
           `,
-          options: [
-            {
-              ...options,
-              groups: [
-                'public-abstract-override-readonly-decorated-property',
-                'protected-abstract-override-readonly-decorated-property',
-                'static-public-override-readonly-property',
-                'static-protected-override-readonly-property',
-                'static-private-override-readonly-property',
-                'public-readonly-property',
-                'protected-readonly-property',
-                'private-readonly-property',
-                'public-property',
-                'protected-property',
-                'private-property',
-              ],
-            },
-          ],
-          errors: [
-            {
-              messageId: 'unexpectedClassesOrder',
-              data: {
-                left: 'k',
-                right: 'j',
+            options: [
+              {
+                ...options,
+                groups: [
+                  'public-abstract-override-readonly-decorated-property',
+                  'protected-abstract-override-readonly-decorated-property',
+                  'static-public-override-readonly-property',
+                  'static-protected-override-readonly-property',
+                  'static-private-override-readonly-property',
+                  'public-readonly-property',
+                  'protected-readonly-property',
+                  'private-readonly-property',
+                  'public-property',
+                  'protected-property',
+                  'private-property',
+                ],
               },
-            },
-            {
-              messageId: 'unexpectedClassesOrder',
-              data: {
-                left: 'j',
-                right: 'i',
+            ],
+            errors: [
+              {
+                messageId: 'unexpectedClassesOrder',
+                data: {
+                  left: 'k',
+                  right: 'j',
+                },
               },
-            },
-            {
-              messageId: 'unexpectedClassesOrder',
-              data: {
-                left: 'i',
-                right: 'h',
+              {
+                messageId: 'unexpectedClassesOrder',
+                data: {
+                  left: 'j',
+                  right: 'i',
+                },
               },
-            },
-            {
-              messageId: 'unexpectedClassesOrder',
-              data: {
-                left: 'h',
-                right: 'g',
+              {
+                messageId: 'unexpectedClassesOrder',
+                data: {
+                  left: 'i',
+                  right: 'h',
+                },
               },
-            },
-            {
-              messageId: 'unexpectedClassesOrder',
-              data: {
-                left: 'g',
-                right: 'f',
+              {
+                messageId: 'unexpectedClassesOrder',
+                data: {
+                  left: 'h',
+                  right: 'g',
+                },
               },
-            },
-            {
-              messageId: 'unexpectedClassesOrder',
-              data: {
-                left: 'f',
-                right: 'e',
+              {
+                messageId: 'unexpectedClassesOrder',
+                data: {
+                  left: 'g',
+                  right: 'f',
+                },
               },
-            },
-            {
-              messageId: 'unexpectedClassesOrder',
-              data: {
-                left: 'e',
-                right: 'd',
+              {
+                messageId: 'unexpectedClassesOrder',
+                data: {
+                  left: 'f',
+                  right: 'e',
+                },
               },
-            },
-            {
-              messageId: 'unexpectedClassesOrder',
-              data: {
-                left: 'd',
-                right: 'c',
+              {
+                messageId: 'unexpectedClassesOrder',
+                data: {
+                  left: 'e',
+                  right: 'd',
+                },
               },
-            },
-            {
-              messageId: 'unexpectedClassesOrder',
-              data: {
-                left: 'c',
-                right: 'b',
+              {
+                messageId: 'unexpectedClassesOrder',
+                data: {
+                  left: 'd',
+                  right: 'c',
+                },
               },
-            },
-            {
-              messageId: 'unexpectedClassesOrder',
-              data: {
-                left: 'b',
-                right: 'a',
+              {
+                messageId: 'unexpectedClassesOrder',
+                data: {
+                  left: 'c',
+                  right: 'b',
+                },
               },
-            },
-          ],
-        },
-      ],
-    })
+              {
+                messageId: 'unexpectedClassesOrder',
+                data: {
+                  left: 'b',
+                  right: 'a',
+                },
+              },
+            ],
+          },
+        ],
+      },
+    )
 
     ruleTester.run(
       `${ruleName}(${type}): sorts class and group members`,

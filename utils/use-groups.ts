@@ -3,7 +3,7 @@ import { minimatch } from 'minimatch'
 export let useGroups = (groups: (string[] | string)[]) => {
   let group: undefined | string
   // For lookup performance
-  let groupsSet = new Set(groups.flat());
+  let groupsSet = new Set(groups.flat())
 
   let defineGroup = (value: string, override = false) => {
     if ((!group || override) && groupsSet.has(value)) {

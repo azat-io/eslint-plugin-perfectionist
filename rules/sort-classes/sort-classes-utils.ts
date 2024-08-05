@@ -1,7 +1,7 @@
 /**
  * Cache computed groups by modifiers and selectors for performance
  */
-const cachedGroupsByModifiersAndSelectors = new Map<string, string[]>();
+const cachedGroupsByModifiersAndSelectors = new Map<string, string[]>()
 
 /**
  * Generates an ordered list of groups associated to modifiers and selectors entered
@@ -9,43 +9,59 @@ const cachedGroupsByModifiersAndSelectors = new Map<string, string[]>();
  * @param modifiers List of modifiers associated to the selector, i.e ['abstract', 'protected']
  * @param selectors List of selectors, i.e ['get-method', 'method', 'property']
  */
-export const generateGroups = (modifiers: string[], selectors: string[]): string[] => {
-  let modifiersAndSelectorsKey = modifiers.join('&') + '/' + selectors.join('&');
-  let cachedValue = cachedGroupsByModifiersAndSelectors.get(modifiersAndSelectorsKey);
+export const generateGroups = (
+  modifiers: string[],
+  selectors: string[],
+): string[] => {
+  let modifiersAndSelectorsKey = modifiers.join('&') + '/' + selectors.join('&')
+  let cachedValue = cachedGroupsByModifiersAndSelectors.get(
+    modifiersAndSelectorsKey,
+  )
   if (cachedValue) {
-    return cachedValue;
+    return cachedValue
   }
   let allModifiersCombinations: string[][] = []
-  for (let i=modifiers.length; i>0; i--) {
-    allModifiersCombinations = [...allModifiersCombinations, ...getCombinations(modifiers, i)]
+  for (let i = modifiers.length; i > 0; i--) {
+    allModifiersCombinations = [
+      ...allModifiersCombinations,
+      ...getCombinations(modifiers, i),
+    ]
   }
-  let allPossibleModifiersCombinationPermutations = (allModifiersCombinations.map(result => getPermutations(result)).flat())
-  let returnValue = selectors.map(selector => allPossibleModifiersCombinationPermutations.map(modifiersCombination => [...modifiersCombination, selector].join('-'))).flat()
-    .concat(selectors);
-  cachedGroupsByModifiersAndSelectors.set(modifiersAndSelectorsKey, returnValue);
-  return returnValue;
+  let allPossibleModifiersCombinationPermutations = allModifiersCombinations
+    .map(result => getPermutations(result))
+    .flat()
+  let returnValue = selectors
+    .map(selector =>
+      allPossibleModifiersCombinationPermutations.map(modifiersCombination =>
+        [...modifiersCombination, selector].join('-'),
+      ),
+    )
+    .flat()
+    .concat(selectors)
+  cachedGroupsByModifiersAndSelectors.set(modifiersAndSelectorsKey, returnValue)
+  return returnValue
 }
 
 /**
  * Get possible combinations of n elements from an array
  */
 const getCombinations = (array: string[], n: number): string[][] => {
-  let result: string[][] = [];
+  let result: string[][] = []
 
   let backtrack = (start: number, comb: string[]) => {
     if (comb.length === n) {
-      result.push([...comb]);
-      return;
+      result.push([...comb])
+      return
     }
     for (let i = start; i < array.length; i++) {
-      comb.push(array[i]);
-      backtrack(i + 1, comb);
-      comb.pop();
+      comb.push(array[i])
+      backtrack(i + 1, comb)
+      comb.pop()
     }
-  };
+  }
 
-  backtrack(0, []);
-  return result;
+  backtrack(0, [])
+  return result
 }
 
 /**
@@ -55,20 +71,19 @@ const getCombinations = (array: string[], n: number): string[][] => {
  *
  */
 const getPermutations = (elements: string[]): string[][] => {
-  let result: string[][] = [];
+  let result: string[][] = []
   let backtrack = (first: number) => {
     if (first === elements.length) {
-      result.push([...elements]);
-      return;
+      result.push([...elements])
+      return
     }
     for (let i = first; i < elements.length; i++) {
-      [elements[first], elements[i]] = [elements[i], elements[first]];
-      backtrack(first
-        + 1);
-      [elements[first], elements[i]] = [elements[i], elements[first]];
+      ;[elements[first], elements[i]] = [elements[i], elements[first]]
+      backtrack(first + 1)
+      ;[elements[first], elements[i]] = [elements[i], elements[first]]
     }
-  };
-  backtrack(0);
+  }
+  backtrack(0)
 
-  return result;
-};
+  return result
+}
