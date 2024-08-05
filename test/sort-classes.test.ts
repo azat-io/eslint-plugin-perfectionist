@@ -169,6 +169,160 @@ describe(ruleName, () => {
       ],
     })
 
+    ruleTester.run(`${ruleName}(${type}): sorts complex official groups`, rule, {
+      valid: [],
+      invalid: [
+        {
+          code: dedent`
+            abstract class Class {
+
+              private k = 'k';
+
+              protected j = 'j';
+
+              public i = 'i';
+
+              private readonly h = 'h';
+
+              protected readonly g = 'g';
+
+              public readonly f = 'f';
+
+              private static override readonly e = 'e';
+
+              protected static override readonly d = 'd';
+
+              static override readonly c = 'c';
+
+              @Decorator
+              protected abstract override readonly b;
+
+              @Decorator
+              abstract override readonly a;
+            }
+          `,
+          output: dedent`
+            abstract class Class {
+
+              @Decorator
+              abstract override readonly a;
+
+              @Decorator
+              protected abstract override readonly b;
+
+              static override readonly c = 'c';
+
+              protected static override readonly d = 'd';
+
+              private static override readonly e = 'e';
+
+              public readonly f = 'f';
+
+              protected readonly g = 'g';
+
+              private readonly h = 'h';
+
+              public i = 'i';
+
+              protected j = 'j';
+
+              private k = 'k';
+            }
+          `,
+          options: [
+            {
+              ...options,
+              groups: [
+                'public-abstract-override-readonly-decorated-property',
+                'protected-abstract-override-readonly-decorated-property',
+                'static-public-override-readonly-property',
+                'static-protected-override-readonly-property',
+                'static-private-override-readonly-property',
+                'public-readonly-property',
+                'protected-readonly-property',
+                'private-readonly-property',
+                'public-property',
+                'protected-property',
+                'private-property',
+              ],
+            },
+          ],
+          errors: [
+            {
+              messageId: 'unexpectedClassesOrder',
+              data: {
+                left: 'k',
+                right: 'j',
+              },
+            },
+            {
+              messageId: 'unexpectedClassesOrder',
+              data: {
+                left: 'j',
+                right: 'i',
+              },
+            },
+            {
+              messageId: 'unexpectedClassesOrder',
+              data: {
+                left: 'i',
+                right: 'h',
+              },
+            },
+            {
+              messageId: 'unexpectedClassesOrder',
+              data: {
+                left: 'h',
+                right: 'g',
+              },
+            },
+            {
+              messageId: 'unexpectedClassesOrder',
+              data: {
+                left: 'g',
+                right: 'f',
+              },
+            },
+            {
+              messageId: 'unexpectedClassesOrder',
+              data: {
+                left: 'f',
+                right: 'e',
+              },
+            },
+            {
+              messageId: 'unexpectedClassesOrder',
+              data: {
+                left: 'e',
+                right: 'd',
+              },
+            },
+            {
+              messageId: 'unexpectedClassesOrder',
+              data: {
+                left: 'd',
+                right: 'c',
+              },
+            },
+            {
+              messageId: 'unexpectedClassesOrder',
+              data: {
+                left: 'c',
+                right: 'b',
+              },
+            },
+            {
+              messageId: 'unexpectedClassesOrder',
+              data: {
+                left: 'b',
+                right: 'a',
+              },
+            },
+          ],
+        },
+      ],
+    })
+
     ruleTester.run(
       `${ruleName}(${type}): sorts class and group members`,
       rule,

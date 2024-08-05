@@ -293,10 +293,10 @@ export default createEslintRule<Options, MESSAGE_ID>({
               }
               if (member.accessibility === 'protected') {
                 modifiers.push('protected');
-              }
-
-              if (member.accessibility === 'private' || isPrivateName) {
+              } else if (member.accessibility === 'private' || isPrivateName) {
                 modifiers.push('private');
+              } else {
+                modifiers.push('public')
               }
               if (member.static) {
                 modifiers.push('static');
@@ -306,10 +306,11 @@ export default createEslintRule<Options, MESSAGE_ID>({
                 modifiers.push('decorated')
               }
 
+              if (member.override) {
+                modifiers.push('override')
+              }
+
               if (member.type === 'TSAbstractMethodDefinition') {
-                if (member.override) {
-                  modifiers.push('override')
-                }
                 modifiers.push('abstract')
               }
 
@@ -345,11 +346,12 @@ export default createEslintRule<Options, MESSAGE_ID>({
 
               if (member.accessibility === 'protected') {
                 modifiers.push('protected');
+              } else if (member.accessibility === 'private' || isPrivateName) {
+                modifiers.push('private');
+              } else {
+                modifiers.push('public')
               }
 
-              if (member.accessibility === 'private' || isPrivateName) {
-                modifiers.push('private');
-              }
               if (member.static) {
                 modifiers.push('static');
               }
@@ -362,10 +364,11 @@ export default createEslintRule<Options, MESSAGE_ID>({
                 modifiers.push('readonly')
               }
 
+              if (member.override) {
+                modifiers.push('override')
+              }
+
               if (member.type === 'TSAbstractPropertyDefinition') {
-                if (member.override) {
-                  modifiers.push('override')
-                }
                 modifiers.push('abstract');
               }
 
