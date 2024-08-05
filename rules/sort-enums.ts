@@ -93,7 +93,7 @@ export default createEslintRule<Options, MESSAGE_ID>({
       let getMembers = (nodeValue: TSESTree.TSEnumDeclaration) =>
         /* v8 ignore next 2 */
         // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
-        node.body.members || nodeValue.members
+        node.body?.members ?? nodeValue.members ?? []
       if (
         getMembers(node).length > 1 &&
         getMembers(node).every(({ initializer }) => initializer)
