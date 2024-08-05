@@ -345,8 +345,6 @@ export default createEslintRule<Options, MESSAGE_ID>({
                 data: {
                   right: toSingleLine(right.name),
                   left: toSingleLine(left.name),
-                  rightGroup: right.group,
-                  leftGroup: left.group,
                 },
                 messageId: 'unexpectedClassesOrder',
                 node: right.node,
@@ -435,8 +433,7 @@ export default createEslintRule<Options, MESSAGE_ID>({
       },
     ],
     messages: {
-      unexpectedClassesOrder:
-        'Expected "{{right}} ({{rightGroup}})" to come before "{{left}} ({{leftGroup}})".',
+      unexpectedClassesOrder: 'Expected "{{right}}" to come before "{{left}}".',
     },
     docs: {
       description: 'Enforce sorted classes.',
