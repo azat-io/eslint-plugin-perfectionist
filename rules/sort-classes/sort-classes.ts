@@ -7,10 +7,10 @@ import { isPartitionComment } from '../../utils/is-partition-comment'
 import { getCommentBefore } from '../../utils/get-comment-before'
 import { createEslintRule } from '../../utils/create-eslint-rule'
 import { getGroupNumber } from '../../utils/get-group-number'
+import { generateOfficialGroups } from './sort-classes-utils'
 import { getSourceCode } from '../../utils/get-source-code'
 import { toSingleLine } from '../../utils/to-single-line'
 import { rangeToDiff } from '../../utils/range-to-diff'
-import { generateGroups } from './sort-classes-utils'
 import { isPositive } from '../../utils/is-positive'
 import { useGroups } from '../../utils/use-groups'
 import { sortNodes } from '../../utils/sort-nodes'
@@ -325,7 +325,7 @@ export default createEslintRule<Options, MESSAGE_ID>({
                 selectors.push('set-method')
               }
               selectors.push('method')
-              officialGroups = generateGroups(modifiers, selectors)
+              officialGroups = generateOfficialGroups(modifiers, selectors)
             } else if (member.type === 'TSIndexSignature') {
               officialGroups.push('index-signature')
             } else if (member.type === 'AccessorProperty') {
@@ -376,7 +376,7 @@ export default createEslintRule<Options, MESSAGE_ID>({
               }
 
               selectors.push('property')
-              officialGroups = generateGroups(modifiers, selectors)
+              officialGroups = generateOfficialGroups(modifiers, selectors)
             }
             for (let officialGroup of officialGroups) {
               defineGroup(officialGroup)

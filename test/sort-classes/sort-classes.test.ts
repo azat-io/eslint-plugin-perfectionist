@@ -2,7 +2,7 @@ import { RuleTester } from '@typescript-eslint/rule-tester'
 import { afterAll, describe, it } from 'vitest'
 import { dedent } from 'ts-dedent'
 
-import rule from '../rules/sort-classes/sort-classes'
+import rule from '../../rules/sort-classes/sort-classes'
 
 let ruleName = 'sort-classes'
 
@@ -319,6 +319,49 @@ describe(ruleName, () => {
                 data: {
                   left: 'b',
                   right: 'a',
+                },
+              },
+            ],
+          },
+        ],
+      },
+    )
+
+    ruleTester.run(
+      `${ruleName}(${type}): prioritize selectors over modifiers quantity`,
+      rule,
+      {
+        valid: [],
+        invalid: [
+          {
+            code: dedent`
+            export abstract class Class extends Class2 {
+
+              public abstract override method(): string;
+
+              public abstract override get fields(): string;
+            }
+          `,
+            output: dedent`
+            export abstract class Class extends Class2 {
+
+              public abstract override get fields(): string;
+
+              public abstract override method(): string;
+            }
+          `,
+            options: [
+              {
+                ...options,
+                groups: ['get-method', 'public-abstract-override-method'],
+              },
+            ],
+            errors: [
+              {
+                messageId: 'unexpectedClassesOrder',
+                data: {
+                  left: 'method',
+                  right: 'fields',
                 },
               },
             ],

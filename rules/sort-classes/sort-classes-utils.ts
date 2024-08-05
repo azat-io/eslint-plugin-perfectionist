@@ -9,7 +9,7 @@ const cachedGroupsByModifiersAndSelectors = new Map<string, string[]>()
  * @param modifiers List of modifiers associated to the selector, i.e ['abstract', 'protected']
  * @param selectors List of selectors, i.e ['get-method', 'method', 'property']
  */
-export const generateGroups = (
+export const generateOfficialGroups = (
   modifiers: string[],
   selectors: string[],
 ): string[] => {
@@ -30,14 +30,16 @@ export const generateGroups = (
   let allPossibleModifiersCombinationPermutations = allModifiersCombinations
     .map(result => getPermutations(result))
     .flat()
-  let returnValue = selectors
-    .map(selector =>
-      allPossibleModifiersCombinationPermutations.map(modifiersCombination =>
+  let returnValue: string[] = []
+  for (let selector of selectors) {
+    returnValue = [
+      ...returnValue,
+      ...allPossibleModifiersCombinationPermutations.map(modifiersCombination =>
         [...modifiersCombination, selector].join('-'),
       ),
-    )
-    .flat()
-    .concat(selectors)
+      selector,
+    ]
+  }
   cachedGroupsByModifiersAndSelectors.set(modifiersAndSelectorsKey, returnValue)
   return returnValue
 }
