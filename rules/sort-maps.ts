@@ -121,7 +121,7 @@ export default createEslintRule<Options, MESSAGE_ID>({
 
               return {
                 size: rangeToDiff(element.range),
-                node: structuredClone(element),
+                node: element,
                 name,
               }
             })

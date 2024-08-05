@@ -387,8 +387,8 @@ export default createEslintRule<Options, MESSAGE_ID>({
 
             let value = {
               size: rangeToDiff(member.range),
-              node: structuredClone(member),
               group: getGroup(),
+              node: member,
               dependencies,
               name,
             }

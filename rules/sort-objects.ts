@@ -298,7 +298,7 @@ export default createEslintRule<Options, MESSAGE_ID>({
 
               let propSortingNode = {
                 size: rangeToDiff(prop.range),
-                node: structuredClone(prop),
+                node: prop,
                 name,
               }
 

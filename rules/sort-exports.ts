@@ -81,8 +81,8 @@ export default createEslintRule<Options, MESSAGE_ID>({
     ) => {
       parts.at(-1)!.push({
         size: rangeToDiff(node.range),
-        node: structuredClone(node),
         name: node.source.value,
+        node,
       })
     }
 

@@ -437,8 +437,8 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
 
       nodes.push({
         size: rangeToDiff(node.range),
-        node: structuredClone(node),
         group: computeGroup(node),
+        node,
         name,
         ...(options.type === 'line-length' &&
           options.maxLineLength && {

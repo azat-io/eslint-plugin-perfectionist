@@ -104,7 +104,7 @@ export default createEslintRule<Options, MESSAGE_ID>({
 
             return {
               size: rangeToDiff(caseNode.test?.range ?? caseNode.range),
-              node: structuredClone(caseNode),
+              node: caseNode,
               name,
             }
           },
@@ -160,7 +160,7 @@ export default createEslintRule<Options, MESSAGE_ID>({
               node: right.node,
               fix: fixer => {
                 let additionalFixes: TSESLint.RuleFix[] = []
-                let nodeGroups = structuredClone(nodes).reduce<
+                let nodeGroups = nodes.reduce<
                   SortingNode<TSESTree.SwitchCase>[][]
                 >(
                   (

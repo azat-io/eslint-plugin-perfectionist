@@ -179,7 +179,7 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
               }
 
               accumulator.at(-1)!.push({
-                node: structuredClone(attribute) as unknown as TSESTree.Node,
+                node: attribute as unknown as TSESTree.Node,
                 size: rangeToDiff(attribute.range),
                 group: getGroup(),
                 name,

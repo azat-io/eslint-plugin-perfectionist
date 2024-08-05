@@ -127,7 +127,7 @@ export default createEslintRule<Options, MESSAGE_ID>({
 
             let sortingNode = {
               size: rangeToDiff(member.range),
-              node: structuredClone(member),
+              node: member,
               name,
             }
             accumulator.at(-1)!.push(sortingNode)
