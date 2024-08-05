@@ -60,6 +60,116 @@ type Options = [
 ]
 
 export default createEslintRule<Options, MESSAGE_ID>({
+  name: 'sort-classes',
+  meta: {
+    type: 'suggestion',
+    docs: {
+      description: 'Enforce sorted classes.',
+    },
+    fixable: 'code',
+    schema: [
+      {
+        type: 'object',
+        properties: {
+          type: {
+            description: 'Specifies the sorting method.',
+            type: 'string',
+            enum: ['alphabetical', 'natural', 'line-length'],
+          },
+          order: {
+            description:
+              'Determines whether the sorted items should be in ascending or descending order.',
+            type: 'string',
+            enum: ['asc', 'desc'],
+          },
+          ignoreCase: {
+            description:
+              'Controls whether sorting should be case-sensitive or not.',
+            type: 'boolean',
+          },
+          partitionByComment: {
+            description:
+              'Allows to use comments to separate the nodes into logical groups.',
+            anyOf: [
+              {
+                type: 'array',
+                items: {
+                  type: 'string',
+                },
+              },
+              {
+                type: 'boolean',
+              },
+              {
+                type: 'string',
+              },
+            ],
+          },
+          groups: {
+            description: 'Specifies the order of the groups.',
+            type: 'array',
+            items: {
+              oneOf: [
+                {
+                  type: 'string',
+                },
+                {
+                  type: 'array',
+                  items: {
+                    type: 'string',
+                  },
+                },
+              ],
+            },
+          },
+          customGroups: {
+            description: 'Specifies custom groups.',
+            type: 'object',
+            additionalProperties: {
+              oneOf: [
+                {
+                  type: 'string',
+                },
+                {
+                  type: 'array',
+                  items: {
+                    type: 'string',
+                  },
+                },
+              ],
+            },
+          },
+        },
+        additionalProperties: false,
+      },
+    ],
+    messages: {
+      unexpectedClassesOrder: 'Expected "{{right}}" to come before "{{left}}".',
+    },
+  },
+  defaultOptions: [
+    {
+      type: 'alphabetical',
+      order: 'asc',
+      ignoreCase: true,
+      partitionByComment: false,
+      groups: [
+        'index-signature',
+        'static-property',
+        'protected-property',
+        'private-property',
+        'property',
+        'constructor',
+        'static-method',
+        'protected-method',
+        'private-method',
+        'method',
+        ['get-method', 'set-method'],
+        'unknown',
+      ],
+      customGroups: {},
+    },
+  ],
   create: context => ({
     ClassBody: node => {
       if (node.body.length > 1) {
@@ -150,7 +260,7 @@ export default createEslintRule<Options, MESSAGE_ID>({
 
             let name: string
             let dependencies: string[] = []
-            let { setCustomGroups, defineGroup, getGroup } = useGroups(
+            let { getGroup, defineGroup, setCustomGroups } = useGroups(
               options.groups,
             )
 
@@ -306,6 +416,12 @@ export default createEslintRule<Options, MESSAGE_ID>({
                   isPositive(compare(left, right, options))))
             ) {
               context.report({
+                messageId: 'unexpectedClassesOrder',
+                data: {
+                  left: toSingleLine(left.name),
+                  right: toSingleLine(right.name),
+                },
+                node: right.node,
                 fix: (fixer: TSESLint.RuleFixer) => {
                   let grouped = nodes.reduce(
                     (
@@ -342,12 +458,6 @@ export default createEslintRule<Options, MESSAGE_ID>({
                     partitionComment: options.partitionByComment,
                   })
                 },
-                data: {
-                  right: toSingleLine(right.name),
-                  left: toSingleLine(left.name),
-                },
-                messageId: 'unexpectedClassesOrder',
-                node: right.node,
               })
             }
           })
@@ -355,114 +465,4 @@ export default createEslintRule<Options, MESSAGE_ID>({
       }
     },
   }),
-  meta: {
-    schema: [
-      {
-        type: 'object',
-        properties: {
-          type: {
-            description: 'Specifies the sorting method.',
-            type: 'string',
-            enum: ['alphabetical', 'natural', 'line-length'],
-          },
-          order: {
-            description:
-              'Determines whether the sorted items should be in ascending or descending order.',
-            type: 'string',
-            enum: ['asc', 'desc'],
-          },
-          ignoreCase: {
-            description:
-              'Controls whether sorting should be case-sensitive or not.',
-            type: 'boolean',
-          },
-          partitionByComment: {
-            description:
-              'Allows to use comments to separate the nodes into logical groups.',
-            anyOf: [
-              {
-                type: 'array',
-                items: {
-                  type: 'string',
-                },
-              },
-              {
-                type: 'boolean',
-              },
-              {
-                type: 'string',
-              },
-            ],
-          },
-          groups: {
-            description: 'Specifies the order of the groups.',
-            type: 'array',
-            items: {
-              oneOf: [
-                {
-                  type: 'string',
-                },
-                {
-                  type: 'array',
-                  items: {
-                    type: 'string',
-                  },
-                },
-              ],
-            },
-          },
-          customGroups: {
-            description: 'Specifies custom groups.',
-            type: 'object',
-            additionalProperties: {
-              oneOf: [
-                {
-                  type: 'string',
-                },
-                {
-                  type: 'array',
-                  items: {
-                    type: 'string',
-                  },
-                },
-              ],
-            },
-          },
-        },
-        additionalProperties: false,
-      },
-    ],
-    messages: {
-      unexpectedClassesOrder: 'Expected "{{right}}" to come before "{{left}}".',
-    },
-    docs: {
-      description: 'Enforce sorted classes.',
-    },
-    type: 'suggestion',
-    fixable: 'code',
-  },
-  defaultOptions: [
-    {
-      groups: [
-        'index-signature',
-        'static-property',
-        'protected-property',
-        'private-property',
-        'property',
-        'constructor',
-        'static-method',
-        'protected-method',
-        'private-method',
-        'method',
-        ['get-method', 'set-method'],
-        'unknown',
-      ],
-      partitionByComment: false,
-      type: 'alphabetical',
-      ignoreCase: true,
-      customGroups: {},
-      order: 'asc',
-    },
-  ],
-  name: 'sort-classes',
 })
