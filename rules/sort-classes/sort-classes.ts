@@ -285,7 +285,7 @@ export default createEslintRule<Options, MESSAGE_ID>({
 
             let officialGroups: string[] = [];
 
-            if (member.type === 'MethodDefinition') {
+            if (member.type === 'MethodDefinition' || member.type === 'TSAbstractMethodDefinition') {
               let modifiers: string[] = [];
               let selectors: string[] = []
               if (member.kind === 'constructor') {
@@ -305,6 +305,15 @@ export default createEslintRule<Options, MESSAGE_ID>({
               if (decorated) {
                 modifiers.push('decorated')
               }
+
+              if (member.type === 'TSAbstractMethodDefinition') {
+                if (member.override) {
+                  modifiers.push('override')
+                }
+                modifiers.push('abstract')
+              }
+
+
               if (member.kind === 'get') {
                 selectors.push('get-method');
               }
@@ -329,7 +338,8 @@ export default createEslintRule<Options, MESSAGE_ID>({
 
                 officialGroups.push('decorated-accessor-property')
               }
-            } else if (member.type === 'PropertyDefinition') {
+            } else if (member.type === 'PropertyDefinition' ||
+            member.type === 'TSAbstractPropertyDefinition') {
               let modifiers: string[] = [];
               let selectors: string[] = []
 
@@ -343,9 +353,22 @@ export default createEslintRule<Options, MESSAGE_ID>({
               if (member.static) {
                 modifiers.push('static');
               }
+
               if (decorated) {
                 modifiers.push('decorated')
               }
+
+              if (member.readonly) {
+                modifiers.push('readonly')
+              }
+
+              if (member.type === 'TSAbstractPropertyDefinition') {
+                if (member.override) {
+                  modifiers.push('override')
+                }
+                modifiers.push('abstract');
+              }
+
               selectors.push('property');
               officialGroups = generateGroups(modifiers, selectors)
             }
