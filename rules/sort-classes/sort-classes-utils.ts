@@ -50,9 +50,12 @@ const getCombinations = (array: string[], n: number): string[][] => {
 
 /**
  * Get all permutations of an array
+ * This allows 'abstract-override-protected-get-method', 'override-protected-abstract-get-method',
+ * 'protected-abstract-override-get-method'... to be entered by the user and always match the same group
+ *
  */
-export const  getPermutations = <T>(elements: T[]): T[][] => {
-  let result: T[][] = [];
+const getPermutations = (elements: string[]): string[][] => {
+  let result: string[][] = [];
   let backtrack = (first: number) => {
     if (first === elements.length) {
       result.push([...elements]);
