@@ -2,7 +2,7 @@ import { RuleTester } from '@typescript-eslint/rule-tester'
 import { afterAll, describe, it } from 'vitest'
 import { dedent } from 'ts-dedent'
 
-import rule from '../rules/sort-classes'
+import rule from '../rules/sort-classes/sort-classes'
 
 let ruleName = 'sort-classes'
 

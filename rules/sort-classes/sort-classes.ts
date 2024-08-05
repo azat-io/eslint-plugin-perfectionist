@@ -1,22 +1,23 @@
 import type { TSESTree } from '@typescript-eslint/types'
 import type { TSESLint } from '@typescript-eslint/utils'
 
-import type { SortingNode } from '../typings'
+import type { SortingNode } from '../../typings'
 
-import { isPartitionComment } from '../utils/is-partition-comment'
-import { getCommentBefore } from '../utils/get-comment-before'
-import { createEslintRule } from '../utils/create-eslint-rule'
-import { getGroupNumber } from '../utils/get-group-number'
-import { getSourceCode } from '../utils/get-source-code'
-import { toSingleLine } from '../utils/to-single-line'
-import { rangeToDiff } from '../utils/range-to-diff'
-import { isPositive } from '../utils/is-positive'
-import { useGroups } from '../utils/use-groups'
-import { sortNodes } from '../utils/sort-nodes'
-import { makeFixes } from '../utils/make-fixes'
-import { complete } from '../utils/complete'
-import { pairwise } from '../utils/pairwise'
-import { compare } from '../utils/compare'
+import { isPartitionComment } from '../../utils/is-partition-comment'
+import { getCommentBefore } from '../../utils/get-comment-before'
+import { createEslintRule } from '../../utils/create-eslint-rule'
+import { getGroupNumber } from '../../utils/get-group-number'
+import { getSourceCode } from '../../utils/get-source-code'
+import { toSingleLine } from '../../utils/to-single-line'
+import { rangeToDiff } from '../../utils/range-to-diff'
+import { generateGroups } from './sort-classes-utils'
+import { isPositive } from '../../utils/is-positive'
+import { useGroups } from '../../utils/use-groups'
+import { sortNodes } from '../../utils/sort-nodes'
+import { makeFixes } from '../../utils/make-fixes'
+import { complete } from '../../utils/complete'
+import { pairwise } from '../../utils/pairwise'
+import { compare } from '../../utils/compare'
 
 type MESSAGE_ID = 'unexpectedClassesOrder'
 
@@ -278,105 +279,79 @@ export default createEslintRule<Options, MESSAGE_ID>({
               }
             }
 
-            let isPrivate = name.startsWith('_') || name.startsWith('#')
+            let isPrivateName = name.startsWith('_') || name.startsWith('#')
             let decorated =
               'decorators' in member && member.decorators.length > 0
 
+            let officialGroups: string[] = [];
+
             if (member.type === 'MethodDefinition') {
+              let modifiers: string[] = [];
+              let selectors: string[] = []
               if (member.kind === 'constructor') {
-                defineGroup('constructor')
+                selectors.push('constructor');
+              }
+              if (member.accessibility === 'protected') {
+                modifiers.push('protected');
               }
 
-              let isProtectedMethod = member.accessibility === 'protected'
-
-              let isPrivateMethod =
-                member.accessibility === 'private' || isPrivate
-
-              let isStaticMethod = member.static
+              if (member.accessibility === 'private' || isPrivateName) {
+                modifiers.push('private');
+              }
+              if (member.static) {
+                modifiers.push('static');
+              }
 
               if (decorated) {
-                if (member.kind === 'get') {
-                  defineGroup('decorated-get-method')
-                }
-
-                if (member.kind === 'set') {
-                  defineGroup('decorated-set-method')
-                }
-
-                defineGroup('decorated-method')
+                modifiers.push('decorated')
               }
-
-              if (isPrivateMethod && isStaticMethod) {
-                defineGroup('static-private-method')
-              }
-
-              if (isPrivateMethod) {
-                defineGroup('private-method')
-              }
-
-              if (isStaticMethod) {
-                defineGroup('static-method')
-              }
-
-              if (isProtectedMethod && isStaticMethod) {
-                defineGroup('static-protected-method')
-              }
-
-              if (isProtectedMethod) {
-                defineGroup('protected-method')
-              }
-
               if (member.kind === 'get') {
-                defineGroup('get-method')
+                selectors.push('get-method');
               }
 
               if (member.kind === 'set') {
-                defineGroup('set-method')
+                selectors.push('set-method');
               }
+              selectors.push('method');
+              officialGroups = generateGroups(modifiers, selectors)
 
-              defineGroup('method')
             } else if (member.type === 'TSIndexSignature') {
-              defineGroup('index-signature')
+              officialGroups.push('index-signature')
             } else if (member.type === 'AccessorProperty') {
               if (decorated) {
                 if (member.accessibility === 'protected') {
-                  defineGroup('protected-decorated-accessor-property')
+                  officialGroups.push('protected-decorated-accessor-property')
                 }
 
-                if (member.accessibility === 'private' || isPrivate) {
-                  defineGroup('private-decorated-accessor-property')
+                if (member.accessibility === 'private' || isPrivateName) {
+                  officialGroups.push('private-decorated-accessor-property')
                 }
 
-                defineGroup('decorated-accessor-property')
+                officialGroups.push('decorated-accessor-property')
               }
             } else if (member.type === 'PropertyDefinition') {
-              if (decorated) {
-                if (member.accessibility === 'protected') {
-                  defineGroup('protected-decorated-property')
-                }
-
-                if (member.accessibility === 'private' || isPrivate) {
-                  defineGroup('private-decorated-property')
-                }
-
-                defineGroup('decorated-property')
-              }
+              let modifiers: string[] = [];
+              let selectors: string[] = []
 
               if (member.accessibility === 'protected') {
-                defineGroup('protected-property')
+                modifiers.push('protected');
               }
 
-              if (member.accessibility === 'private' || isPrivate) {
-                defineGroup('private-property')
+              if (member.accessibility === 'private' || isPrivateName) {
+                modifiers.push('private');
               }
-
               if (member.static) {
-                defineGroup('static-property')
+                modifiers.push('static');
               }
-
-              defineGroup('property')
+              if (decorated) {
+                modifiers.push('decorated')
+              }
+              selectors.push('property');
+              officialGroups = generateGroups(modifiers, selectors)
             }
-
+            for (let officialGroup of officialGroups) {
+              defineGroup(officialGroup);
+            }
             setCustomGroups(options.customGroups, name, {
               override: true,
             })
