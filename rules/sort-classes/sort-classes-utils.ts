@@ -29,15 +29,16 @@ export const generateOfficialGroups = (
       ...getCombinations(modifiers, i),
     ]
   }
-  let allPossibleModifiersCombinationPermutations = allModifiersCombinations
+  let allModifiersCombinationPermutations = allModifiersCombinations
     .map(result => getPermutations(result))
     .flat()
   let returnValue: string[] = []
   for (let selector of selectors) {
     returnValue = [
       ...returnValue,
-      ...allPossibleModifiersCombinationPermutations.map(modifiersCombination =>
-        [...modifiersCombination, selector].join('-'),
+      ...allModifiersCombinationPermutations.map(
+        modifiersCombinationPermutation =>
+          [...modifiersCombinationPermutation, selector].join('-'),
       ),
       selector,
     ]

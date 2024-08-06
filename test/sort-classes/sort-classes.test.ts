@@ -370,9 +370,140 @@ describe(ruleName, () => {
       },
     )
 
+    describe('method selectors priority', () => {
+      ruleTester.run(
+        `${ruleName}(${type}): prioritize constructor over method`,
+        rule,
+        {
+          valid: [],
+          invalid: [
+            {
+              code: dedent`
+            export class Class {
+
+              method(): void;
+
+              constructor() {}
+            }
+          `,
+              output: dedent`
+            export class Class {
+
+              constructor() {}
+
+              method(): void;
+            }
+          `,
+              options: [
+                {
+                  ...options,
+                  groups: ['constructor', 'method'],
+                },
+              ],
+              errors: [
+                {
+                  messageId: 'unexpectedClassesOrder',
+                  data: {
+                    left: 'method',
+                    right: 'constructor',
+                  },
+                },
+              ],
+            },
+          ],
+        },
+      )
+
+      ruleTester.run(
+        `${ruleName}(${type}): prioritize get-method over method`,
+        rule,
+        {
+          valid: [],
+          invalid: [
+            {
+              code: dedent`
+            export class Class {
+
+              method(): void;
+
+              get a() {}
+            }
+          `,
+              output: dedent`
+            export class Class {
+
+              get a() {}
+
+              method(): void;
+            }
+          `,
+              options: [
+                {
+                  ...options,
+                  groups: ['get-method', 'method'],
+                },
+              ],
+              errors: [
+                {
+                  messageId: 'unexpectedClassesOrder',
+                  data: {
+                    left: 'method',
+                    right: 'a',
+                  },
+                },
+              ],
+            },
+          ],
+        },
+      )
+
+      ruleTester.run(
+        `${ruleName}(${type}): prioritize set-method over method`,
+        rule,
+        {
+          valid: [],
+          invalid: [
+            {
+              code: dedent`
+            export class Class {
+
+              method(): void;
+
+              set a() {}
+            }
+          `,
+              output: dedent`
+            export class Class {
+
+              set a() {}
+
+              method(): void;
+            }
+          `,
+              options: [
+                {
+                  ...options,
+                  groups: ['set-method', 'method'],
+                },
+              ],
+              errors: [
+                {
+                  messageId: 'unexpectedClassesOrder',
+                  data: {
+                    left: 'method',
+                    right: 'a',
+                  },
+                },
+              ],
+            },
+          ],
+        },
+      )
+    })
+
     describe('method modifiers priority', () => {
       ruleTester.run(
-        `${ruleName}(${type}): prioritize abstract over override for methods`,
+        `${ruleName}(${type}): prioritize abstract over override`,
         rule,
         {
           valid: [],
@@ -415,7 +546,7 @@ describe(ruleName, () => {
       )
 
       ruleTester.run(
-        `${ruleName}(${type}): prioritize decorated over override for methods`,
+        `${ruleName}(${type}): prioritize decorated over override`,
         rule,
         {
           valid: [],
@@ -461,7 +592,7 @@ describe(ruleName, () => {
 
       for (let accessibilityModifier of ['public', 'protected', 'private']) {
         ruleTester.run(
-          `${ruleName}(${type}): prioritize override over ${accessibilityModifier} accessibility for methods`,
+          `${ruleName}(${type}): prioritize override over ${accessibilityModifier} accessibility`,
           rule,
           {
             valid: [],
@@ -508,7 +639,7 @@ describe(ruleName, () => {
         )
 
         ruleTester.run(
-          `${ruleName}(${type}): prioritize ${accessibilityModifier} accessibility over static for methods`,
+          `${ruleName}(${type}): prioritize ${accessibilityModifier} accessibility over static`,
           rule,
           {
             valid: [],
@@ -558,7 +689,7 @@ describe(ruleName, () => {
 
     describe('accessor modifiers priority', () => {
       ruleTester.run(
-        `${ruleName}(${type}): prioritize abstract over override for accessors`,
+        `${ruleName}(${type}): prioritize abstract over override`,
         rule,
         {
           valid: [],
@@ -605,7 +736,7 @@ describe(ruleName, () => {
       )
 
       ruleTester.run(
-        `${ruleName}(${type}): prioritize decorated over override for accessors`,
+        `${ruleName}(${type}): prioritize decorated over override`,
         rule,
         {
           valid: [],
@@ -655,7 +786,7 @@ describe(ruleName, () => {
 
       for (let accessibilityModifier of ['public', 'protected', 'private']) {
         ruleTester.run(
-          `${ruleName}(${type}): prioritize override over ${accessibilityModifier} accessibility for accessors`,
+          `${ruleName}(${type}): prioritize override over ${accessibilityModifier} accessibility`,
           rule,
           {
             valid: [],
@@ -702,7 +833,7 @@ describe(ruleName, () => {
         )
 
         ruleTester.run(
-          `${ruleName}(${type}): prioritize ${accessibilityModifier} accessibility over static for accessors`,
+          `${ruleName}(${type}): prioritize ${accessibilityModifier} accessibility over static`,
           rule,
           {
             valid: [],
@@ -752,7 +883,7 @@ describe(ruleName, () => {
 
     describe('property modifiers priority', () => {
       ruleTester.run(
-        `${ruleName}(${type}): prioritize abstract over override for properties`,
+        `${ruleName}(${type}): prioritize abstract over override`,
         rule,
         {
           valid: [],
@@ -795,7 +926,7 @@ describe(ruleName, () => {
       )
 
       ruleTester.run(
-        `${ruleName}(${type}): prioritize decorated over override for properties`,
+        `${ruleName}(${type}): prioritize decorated over override`,
         rule,
         {
           valid: [],
@@ -840,7 +971,7 @@ describe(ruleName, () => {
       )
 
       ruleTester.run(
-        `${ruleName}(${type}): prioritize decorated over override for properties`,
+        `${ruleName}(${type}): prioritize decorated over override`,
         rule,
         {
           valid: [],
@@ -885,7 +1016,7 @@ describe(ruleName, () => {
       )
 
       ruleTester.run(
-        `${ruleName}(${type}): prioritize override over readonly for properties`,
+        `${ruleName}(${type}): prioritize override over readonly`,
         rule,
         {
           valid: [],
@@ -929,7 +1060,7 @@ describe(ruleName, () => {
 
       for (let accessibilityModifier of ['public', 'protected', 'private']) {
         ruleTester.run(
-          `${ruleName}(${type}): prioritize readonly over ${accessibilityModifier} accessibility for properties`,
+          `${ruleName}(${type}): prioritize readonly over ${accessibilityModifier} accessibility`,
           rule,
           {
             valid: [],
@@ -976,7 +1107,7 @@ describe(ruleName, () => {
         )
 
         ruleTester.run(
-          `${ruleName}(${type}): prioritize ${accessibilityModifier} accessibility over static for properties`,
+          `${ruleName}(${type}): prioritize ${accessibilityModifier} accessibility over static`,
           rule,
           {
             valid: [],
