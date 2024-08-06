@@ -283,15 +283,12 @@ export default createEslintRule<Options, MESSAGE_ID>({
             let decorated =
               'decorators' in member && member.decorators.length > 0
 
-            let officialGroups: string[] = []
-
+            let modifiers: string[] = []
+            let selectors: string[] = []
             if (
               member.type === 'MethodDefinition' ||
               member.type === 'TSAbstractMethodDefinition'
             ) {
-              let modifiers: string[] = []
-              let selectors: string[] = []
-
               // By putting the abstract modifier before accessibility modifiers,
               // we prioritize 'abstract' over those in cases like:
               // Config: ['abstract-method', 'public-method']
@@ -332,28 +329,39 @@ export default createEslintRule<Options, MESSAGE_ID>({
                 selectors.push('set-method')
               }
               selectors.push('method')
-              officialGroups = generateOfficialGroups(modifiers, selectors)
             } else if (member.type === 'TSIndexSignature') {
-              officialGroups.push('index-signature')
-            } else if (member.type === 'AccessorProperty') {
-              if (decorated) {
-                if (member.accessibility === 'protected') {
-                  officialGroups.push('protected-decorated-accessor-property')
-                }
-
-                if (member.accessibility === 'private' || isPrivateName) {
-                  officialGroups.push('private-decorated-accessor-property')
-                }
-
-                officialGroups.push('decorated-accessor-property')
+              selectors.push('index-signature')
+            } else if (
+              member.type === 'AccessorProperty' ||
+              member.type === 'TSAbstractAccessorProperty'
+            ) {
+              if (member.type === 'TSAbstractAccessorProperty') {
+                modifiers.push('abstract')
               }
+
+              if (decorated) {
+                modifiers.push('decorated')
+              }
+
+              if (member.override) {
+                modifiers.push('override')
+              }
+
+              if (member.accessibility === 'protected') {
+                modifiers.push('protected')
+              } else if (member.accessibility === 'private' || isPrivateName) {
+                modifiers.push('private')
+              } else {
+                modifiers.push('public')
+              }
+              if (member.static) {
+                modifiers.push('static')
+              }
+              selectors.push('accessor-property')
             } else if (
               member.type === 'PropertyDefinition' ||
               member.type === 'TSAbstractPropertyDefinition'
             ) {
-              let modifiers: string[] = []
-              let selectors: string[] = []
-
               // Similarly to above for methods, prioritize 'abstract', 'override' and 'readonly'
               // over accessibility modifiers
               if (member.type === 'TSAbstractPropertyDefinition') {
@@ -385,9 +393,11 @@ export default createEslintRule<Options, MESSAGE_ID>({
               }
 
               selectors.push('property')
-              officialGroups = generateOfficialGroups(modifiers, selectors)
             }
-            for (let officialGroup of officialGroups) {
+            for (let officialGroup of generateOfficialGroups(
+              modifiers,
+              selectors,
+            )) {
               defineGroup(officialGroup)
             }
             setCustomGroups(options.customGroups, name, {
