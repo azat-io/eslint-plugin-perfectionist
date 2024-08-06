@@ -381,7 +381,7 @@ describe(ruleName, () => {
               code: dedent`
             export class Class {
 
-              method(): void;
+              a(): void;
 
               constructor() {}
             }
@@ -391,7 +391,7 @@ describe(ruleName, () => {
 
               constructor() {}
 
-              method(): void;
+              a(): void;
             }
           `,
               options: [
@@ -404,7 +404,7 @@ describe(ruleName, () => {
                 {
                   messageId: 'unexpectedClassesOrder',
                   data: {
-                    left: 'method',
+                    left: 'a',
                     right: 'constructor',
                   },
                 },
@@ -424,17 +424,17 @@ describe(ruleName, () => {
               code: dedent`
             export class Class {
 
-              method(): void;
+              a(): void;
 
-              get a() {}
+              get z() {}
             }
           `,
               output: dedent`
             export class Class {
 
-              get a() {}
+              get z() {}
 
-              method(): void;
+              a(): void;
             }
           `,
               options: [
@@ -447,8 +447,8 @@ describe(ruleName, () => {
                 {
                   messageId: 'unexpectedClassesOrder',
                   data: {
-                    left: 'method',
-                    right: 'a',
+                    left: 'a',
+                    right: 'z',
                   },
                 },
               ],
@@ -467,17 +467,17 @@ describe(ruleName, () => {
               code: dedent`
             export class Class {
 
-              method(): void;
+              a(): void;
 
-              set a() {}
+              set z() {}
             }
           `,
               output: dedent`
             export class Class {
 
-              set a() {}
+              set z() {}
 
-              method(): void;
+              a(): void;
             }
           `,
               options: [
@@ -490,8 +490,8 @@ describe(ruleName, () => {
                 {
                   messageId: 'unexpectedClassesOrder',
                   data: {
-                    left: 'method',
-                    right: 'a',
+                    left: 'a',
+                    right: 'z',
                   },
                 },
               ],
@@ -512,17 +512,17 @@ describe(ruleName, () => {
               code: dedent`
             export abstract class Class extends Class2 {
 
-              property: string;
+              a: string;
 
-              abstract override method(): string;
+              abstract override z(): string;
             }
           `,
               output: dedent`
             export abstract class Class extends Class2 {
 
-              abstract override method(): string;
+              abstract override z(): string;
 
-              property: string;
+              a: string;
             }
           `,
               options: [
@@ -535,8 +535,8 @@ describe(ruleName, () => {
                 {
                   messageId: 'unexpectedClassesOrder',
                   data: {
-                    left: 'property',
-                    right: 'method',
+                    left: 'a',
+                    right: 'z',
                   },
                 },
               ],
@@ -555,19 +555,19 @@ describe(ruleName, () => {
               code: dedent`
             export abstract class Class extends Class2 {
 
-              property: string;
+              a: string;
 
               @Decorator
-              override method(): void {}
+              override z(): void {}
             }
           `,
               output: dedent`
             export abstract class Class extends Class2 {
 
               @Decorator
-              override method(): void {}
+              override z(): void {}
 
-              property: string;
+              a: string;
             }
           `,
               options: [
@@ -580,8 +580,8 @@ describe(ruleName, () => {
                 {
                   messageId: 'unexpectedClassesOrder',
                   data: {
-                    left: 'property',
-                    right: 'method',
+                    left: 'a',
+                    right: 'z',
                   },
                 },
               ],
@@ -601,17 +601,17 @@ describe(ruleName, () => {
                 code: dedent`
               export class Class {
 
-                property: string;
+                a: string;
 
-                ${accessibilityModifier} override method(): string;
+                ${accessibilityModifier} override z(): string;
               }
             `,
                 output: dedent`
               export class Class {
 
-                ${accessibilityModifier} override method(): string;
+                ${accessibilityModifier} override z(): string;
 
-                property: string;
+                a: string;
               }
             `,
                 options: [
@@ -628,8 +628,8 @@ describe(ruleName, () => {
                   {
                     messageId: 'unexpectedClassesOrder',
                     data: {
-                      left: 'property',
-                      right: 'method',
+                      left: 'a',
+                      right: 'z',
                     },
                   },
                 ],
@@ -648,17 +648,17 @@ describe(ruleName, () => {
                 code: dedent`
               export class Class {
 
-                property: string;
+                a: string;
 
-                ${accessibilityModifier} static method(): string;
+                ${accessibilityModifier} static z(): string;
               }
             `,
                 output: dedent`
               export class Class {
 
-                ${accessibilityModifier} static method(): string;
+                ${accessibilityModifier} static z(): string;
 
-                property: string;
+                a: string;
               }
             `,
                 options: [
@@ -675,8 +675,8 @@ describe(ruleName, () => {
                   {
                     messageId: 'unexpectedClassesOrder',
                     data: {
-                      left: 'property',
-                      right: 'method',
+                      left: 'a',
+                      right: 'z',
                     },
                   },
                 ],
@@ -698,17 +698,17 @@ describe(ruleName, () => {
               code: dedent`
             export abstract class Class extends Class2 {
 
-              property: string;
+              a: string;
 
-              abstract override accessor a: string;
+              abstract override accessor z: string;
             }
           `,
               output: dedent`
             export abstract class Class extends Class2 {
 
-              abstract override accessor a: string;
+              abstract override accessor z: string;
 
-              property: string;
+              a: string;
             }
           `,
               options: [
@@ -725,8 +725,8 @@ describe(ruleName, () => {
                 {
                   messageId: 'unexpectedClassesOrder',
                   data: {
-                    left: 'property',
-                    right: 'a',
+                    left: 'a',
+                    right: 'z',
                   },
                 },
               ],
@@ -745,19 +745,19 @@ describe(ruleName, () => {
               code: dedent`
             export abstract class Class extends Class2 {
 
-              property: string;
+              a: string;
 
               @Decorator
-              override accessor a: string;
+              override accessor z: string;
             }
           `,
               output: dedent`
             export abstract class Class extends Class2 {
 
               @Decorator
-              override accessor a: string;
+              override accessor z: string;
 
-              property: string;
+              a: string;
             }
           `,
               options: [
@@ -774,8 +774,8 @@ describe(ruleName, () => {
                 {
                   messageId: 'unexpectedClassesOrder',
                   data: {
-                    left: 'property',
-                    right: 'a',
+                    left: 'a',
+                    right: 'z',
                   },
                 },
               ],
@@ -795,17 +795,17 @@ describe(ruleName, () => {
                 code: dedent`
               export class Class {
 
-                property: string;
+                a: string;
 
-                ${accessibilityModifier} override accessor a: string;
+                ${accessibilityModifier} override accessor z: string;
               }
             `,
                 output: dedent`
               export class Class {
 
-                ${accessibilityModifier} override accessor a: string;
+                ${accessibilityModifier} override accessor z: string;
 
-                property: string;
+                a: string;
               }
             `,
                 options: [
@@ -822,8 +822,8 @@ describe(ruleName, () => {
                   {
                     messageId: 'unexpectedClassesOrder',
                     data: {
-                      left: 'property',
-                      right: 'a',
+                      left: 'a',
+                      right: 'z',
                     },
                   },
                 ],
@@ -842,17 +842,17 @@ describe(ruleName, () => {
                 code: dedent`
               export class Class {
 
-                property: string;
+                a: string;
 
-                ${accessibilityModifier} static accessor a: string;
+                ${accessibilityModifier} static accessor z: string;
               }
             `,
                 output: dedent`
               export class Class {
 
-                ${accessibilityModifier} static accessor a: string;
+                ${accessibilityModifier} static accessor z: string;
 
-                property: string;
+                a: string;
               }
             `,
                 options: [
@@ -869,8 +869,8 @@ describe(ruleName, () => {
                   {
                     messageId: 'unexpectedClassesOrder',
                     data: {
-                      left: 'property',
-                      right: 'a',
+                      left: 'a',
+                      right: 'z',
                     },
                   },
                 ],
@@ -892,17 +892,17 @@ describe(ruleName, () => {
               code: dedent`
             export abstract class Class extends Class2 {
 
-              method(): void {}
+              a(): void {}
 
-              abstract override property: string;
+              abstract override z: string;
             }
           `,
               output: dedent`
             export abstract class Class extends Class2 {
 
-              abstract override property: string;
+              abstract override z: string;
 
-              method(): void {}
+              a(): void {}
             }
           `,
               options: [
@@ -915,8 +915,8 @@ describe(ruleName, () => {
                 {
                   messageId: 'unexpectedClassesOrder',
                   data: {
-                    left: 'method',
-                    right: 'property',
+                    left: 'a',
+                    right: 'z',
                   },
                 },
               ],
@@ -935,19 +935,19 @@ describe(ruleName, () => {
               code: dedent`
             export abstract class Class extends Class2 {
 
-              method(): void {}
+              a(): void {}
 
               @Decorator
-              override property: string;
+              override z: string;
             }
           `,
               output: dedent`
             export abstract class Class extends Class2 {
 
               @Decorator
-              override property: string;
+              override z: string;
 
-              method(): void {}
+              a(): void {}
             }
           `,
               options: [
@@ -960,8 +960,8 @@ describe(ruleName, () => {
                 {
                   messageId: 'unexpectedClassesOrder',
                   data: {
-                    left: 'method',
-                    right: 'property',
+                    left: 'a',
+                    right: 'z',
                   },
                 },
               ],
@@ -980,19 +980,19 @@ describe(ruleName, () => {
               code: dedent`
             export abstract class Class extends Class2 {
 
-              method(): void {}
+              a(): void {}
 
               @Decorator
-              override property: string;
+              override z: string;
             }
           `,
               output: dedent`
             export abstract class Class extends Class2 {
 
               @Decorator
-              override property: string;
+              override z: string;
 
-              method(): void {}
+              a(): void {}
             }
           `,
               options: [
@@ -1005,8 +1005,8 @@ describe(ruleName, () => {
                 {
                   messageId: 'unexpectedClassesOrder',
                   data: {
-                    left: 'method',
-                    right: 'property',
+                    left: 'a',
+                    right: 'z',
                   },
                 },
               ],
@@ -1025,17 +1025,17 @@ describe(ruleName, () => {
               code: dedent`
             export abstract class Class extends Class2 {
 
-              method(): void {}
+              a(): void {}
 
-              override readonly property: string;
+              override readonly z: string;
             }
           `,
               output: dedent`
             export abstract class Class extends Class2 {
 
-              override readonly property: string;
+              override readonly z: string;
 
-              method(): void {}
+              a(): void {}
             }
           `,
               options: [
@@ -1048,8 +1048,8 @@ describe(ruleName, () => {
                 {
                   messageId: 'unexpectedClassesOrder',
                   data: {
-                    left: 'method',
-                    right: 'property',
+                    left: 'a',
+                    right: 'z',
                   },
                 },
               ],
@@ -1069,17 +1069,17 @@ describe(ruleName, () => {
                 code: dedent`
               export class Class {
 
-                method(): void {}
+                a(): void {}
 
-                ${accessibilityModifier} readonly property: string;
+                ${accessibilityModifier} readonly z: string;
               }
             `,
                 output: dedent`
               export class Class {
 
-                ${accessibilityModifier} readonly property: string;
+                ${accessibilityModifier} readonly z: string;
 
-                method(): void {}
+                a(): void {}
               }
             `,
                 options: [
@@ -1096,8 +1096,8 @@ describe(ruleName, () => {
                   {
                     messageId: 'unexpectedClassesOrder',
                     data: {
-                      left: 'method',
-                      right: 'property',
+                      left: 'a',
+                      right: 'z',
                     },
                   },
                 ],
@@ -1116,17 +1116,17 @@ describe(ruleName, () => {
                 code: dedent`
               export class Class {
 
-                method(): void {}
+                a(): void {}
 
-                ${accessibilityModifier} static property: string;
+                ${accessibilityModifier} static z: string;
               }
             `,
                 output: dedent`
               export class Class {
 
-                ${accessibilityModifier} static property: string;
+                ${accessibilityModifier} static z: string;
 
-                method(): void {}
+                a(): void {}
               }
             `,
                 options: [
@@ -1143,8 +1143,8 @@ describe(ruleName, () => {
                   {
                     messageId: 'unexpectedClassesOrder',
                     data: {
-                      left: 'method',
-                      right: 'property',
+                      left: 'a',
+                      right: 'z',
                     },
                   },
                 ],
