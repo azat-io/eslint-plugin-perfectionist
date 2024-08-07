@@ -29,9 +29,9 @@ export const generateOfficialGroups = (
       ...getCombinations(modifiers, i),
     ]
   }
-  let allModifiersCombinationPermutations = allModifiersCombinations
-    .map(result => getPermutations(result))
-    .flat()
+  let allModifiersCombinationPermutations = allModifiersCombinations.flatMap(
+    result => getPermutations(result),
+  )
   let returnValue: string[] = []
   for (let selector of selectors) {
     returnValue = [

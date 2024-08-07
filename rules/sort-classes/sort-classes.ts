@@ -21,32 +21,7 @@ import { compare } from '../../utils/compare'
 
 type MESSAGE_ID = 'unexpectedClassesOrder'
 
-type Group =
-  | 'protected-decorated-accessor-property'
-  | 'private-decorated-accessor-property'
-  | 'protected-decorated-property'
-  | 'decorated-accessor-property'
-  | 'private-decorated-property'
-  | 'static-protected-method'
-  | 'static-private-method'
-  | 'decorated-set-method'
-  | 'decorated-get-method'
-  | 'decorated-property'
-  | 'protected-property'
-  | 'decorated-method'
-  | 'private-property'
-  | 'protected-method'
-  | 'static-property'
-  | 'index-signature'
-  | 'private-method'
-  | 'static-method'
-  | 'constructor'
-  | 'get-method'
-  | 'set-method'
-  | 'property'
-  | 'unknown'
-  | 'method'
-  | string
+type Group = 'unknown' | string
 
 type Options = [
   Partial<{

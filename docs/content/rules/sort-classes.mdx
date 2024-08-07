@@ -215,87 +215,110 @@ Allows you to use comments to separate the class members into logical groups. Th
 
 Allows you to specify a list of class member groups for sorting. Groups help organize class members into categories, prioritizing them during sorting. Multiple groups can be combined to achieve the desired sorting order.
 
-There are a lot of predefined groups.
+Predefined groups are characterized by a single selector and potentially multiple modifiers. You may enter modifiers in any order, but the selector must always come at the end.
 
-Predefined Groups:
+#### Methods
+- Selectors: `constructor`, `get-method`, `set-method`, `method`.
+- Modifiers: `abstract`, `decorated`, `override`, `protected`, `private`, `public`, `static`.
+- Example: `protected-abstract-override-method` or `static-get-method`.
 
-- `'index-signature'` — Index signatures, which define the types of keys and values in an object.
-- `'protected-decorated-accessor-property'` — Protected accessor properties with decorators.
-- `'private-decorated-accessor-property'` — Private accessor properties with decorators.
-- `'decorated-accessor-property'` — Accessor properties with decorators.
-- `'protected-decorated-property'` — Protected properties with decorators.
-- `'private-decorated-property'` — Private properties with decorators.
-- `'decorated-property'` — Properties with decorators.
-- `'protected-property'` — Protected properties.
-- `'private-property'` — Private properties.
-- `'static-property'` — Static properties.
-- `'property'` — Regular properties.
-- `'constructor'` — Constructor method.
-- `'protected-method'` — Protected methods.
-- `'private-method'` — Private methods.
-- `'static-protected-method'` — Static protected methods.
-- `'static-private-method'` — Static private methods.
-- `'static-method'` — Static methods.
-- `'decorated-method'` — Methods with decorators.
-- `'decorated-get-method'` — Getter methods with decorators.
-- `'decorated-set-method'` — Setter methods with decorators.
-- `'get-method'` — Getter methods.
-- `'set-method'` — Setter methods.
-- `'method'` — Regular methods.
-- `'unknown'` — Members that don’t fit into any other group.
+#### Accessors
+- Selectors: `accessor-property`.
+- Modifiers: `abstract`, `decorated`, `override`, `protected`, `private`, `public`, `static`.
+- Example: `private-static-accessor-property`.
 
-Example:
+#### Index-signature
+- Selectors: `index-signature`.
+- Modifiers: No modifier available.
+- Example: `index-signature`.
+
+#### Properties
+- Selectors: `property`.
+- Modifiers: `abstract`, `decorated`, `override`, `readonly`, `protected`, `private`, `public`, `static`.
+- Example: `readonly-decorated-property`.
+
+#### Important notes
+
+##### Scope of the `private` modifier
+The `private` modifier will currently match any of the following:
+- Elements with the `private` keyword.
+- Elements with their name starting with `#`.
+- Elements with their name starting with `_`.
+
+##### Scope of the `public` modifier
+Elements that are not `protected` nor `private` will be matched with the `public` modifier, even if the keyword is not present.
+
+
+##### The `unknown` group
+Members that don’t fit into any other group can be matched with the `unknown` group.
+
+##### Behavior when multiple groups match an element
+
+The lists of selectors and modifiers above are both sorted by importance, from most to least important.
+In case of multiple groups matching an element, the following rules will be applied:
+
+1. Selector priority: `constructor`, `get-method` and `set-method` groups will always take precedence over `method` groups.
+2. If the selector is the same, the group with the most modifiers matching will be selected.
+3. If modifiers quantity is the same, order will be chosen based on modifier importance as listed above.
+
+Example 1:
+```ts
+abstract class Class {
+
+    protected abstract get field();
+
+}
+```
+
+`field` can be matched by the following groups, from most to least important:
+- `abstract-protected-get-method` or `protected-abstract-get-method`.
+- `abstract-get-method`.
+- `protected-get-method`.
+- `get-method`.
+- `abstract-protected-method` or `protected-abstract-method`.
+- `abstract-method`.
+- `protected-method`.
+- `method`.
+
+Example 2: (The most important group is written in the comments)
 
 ```ts
-class Example {
+abstract class Example extends BaseExample {
   // 'index-signature'
   [key: string]: any;
 
-  // 'protected-decorated-accessor-property'
-  @SomeDecorator
-  protected get accessor() {
-    return this._value;
-  }
+  // 'public-static-property'
+  static instance: Example;
 
-  // 'private-decorated-accessor-property'
+  // 'protected-abstract-override-readonly-decorated-property'
   @SomeDecorator
-  private get accessor() {
-    return this._value;
-  }
+  protected abstract override readonly _value: number;
 
-  // 'decorated-accessor-property'
-  @SomeDecorator
-  get accessor() {
-    return this._value;
-  }
-
-  // 'protected-decorated-property'
-  @SomeDecorator
-  protected _value: number;
+  // 'protected-property'
+  protected name: string;
 
   // 'private-decorated-property'
   @SomeDecorator
   private _value: number;
 
-  // 'decorated-property'
-  @SomeDecorator
-  public value: number;
-
-  // 'protected-property'
-  protected name: string;
-
   // 'private-property'
   private name: string;
 
-  // 'static-property'
-  static instance: Example;
-
-  // 'property'
+  // 'public-property'
   public description: string;
 
-  // 'constructor'
+  // 'public-decorated-property'
+  @SomeDecorator
+  public value: number;
+
+  // 'public-constructor'
   constructor(value: number) {
     this._value = value;
+  }
+
+  // 'public-static-method'
+  static getInstance() {
+    return this.instance;
   }
 
   // 'protected-method'
@@ -303,58 +326,83 @@ class Example {
     return this._value * 2;
   }
 
+  // 'protected-static-method'
+  protected static initialize() {
+    this.instance = new Example(0);
+  }
+
   // 'private-method'
   private calculate() {
     return this._value * 2;
   }
 
-  // 'static-protected-method'
-  protected static initialize() {
-    this.instance = new Example(0);
-  }
-
-  // 'static-private-method'
+  // 'private-static-method'
   private static initialize() {
     this.instance = new Example(0);
   }
 
-  // 'static-method'
-  static getInstance() {
-    return this.instance;
-  }
-
-  // 'decorated-method'
+  // 'public-decorated-method'
   @SomeDecorator
   public decoratedMethod() {
     return this._value;
   }
 
-  // 'decorated-get-method'
+  // 'public-method'
+  public display() {
+    console.log(this._value);
+  }
+
+  // 'public-decorated-get-method'
   @SomeDecorator
   get decoratedValue() {
     return this._value;
   }
 
-  // 'decorated-set-method'
+  // 'public-decorated-set-method'
   @SomeDecorator
   set decoratedValue(value: number) {
     this._value = value;
   }
 
-  // 'get-method'
+  // 'protected-decorated-get-method'
+  @SomeDecorator
+  protected get value() {
+    return this._value;
+  }
+
+  // 'private-decorated-get-method'
+  @SomeDecorator
+  private get value() {
+    return this._value;
+  }
+
+  // 'public-decorated-get-method'
+  @SomeDecorator
   get value() {
     return this._value;
   }
 
-  // 'set-method'
+  // 'public-get-method'
+  get value() {
+    return this._value;
+  }
+
+  // 'public-set-method'
   set value(value: number) {
     this._value = value;
   }
 
-  // 'method'
-  public display() {
-    console.log(this._value);
-  }
+  // 'protected-decorated-accessor-property'
+  @SomeDecorator
+  protected accessor _value: number;
+
+  // 'private-decorated-accessor-property'
+  @SomeDecorator
+  private accessor _value: number;
+
+  // 'public-decorated-accessor-property'
+  @SomeDecorator
+  public accessor value: number;
 }
 ```
 
