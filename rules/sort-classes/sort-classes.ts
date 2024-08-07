@@ -21,7 +21,41 @@ import { compare } from '../../utils/compare'
 
 type MESSAGE_ID = 'unexpectedClassesOrder'
 
-type Group = 'unknown' | string
+type PublicOrProtectedOrPrivateModifier =
+  | 'protected-'
+  | 'private-'
+  | 'public-'
+  | ''
+type StaticModifier = 'static-' | ''
+type AbstractModifier = 'abstract-' | ''
+type OverrideModifier = 'override-' | ''
+type ReadonlyModifier = 'readonly-' | ''
+type DecoratedModifier = 'decorated-' | ''
+
+type StaticOrAbstractModifier = AbstractModifier | StaticModifier
+
+type MethodOrGetMethodOrSetMethodSelector =
+  | 'get-method'
+  | 'set-method'
+  | 'method'
+
+type ConstructorGroup = `${PublicOrProtectedOrPrivateModifier}constructor`
+type PropertyGroup =
+  `${PublicOrProtectedOrPrivateModifier}${StaticOrAbstractModifier}${OverrideModifier}${ReadonlyModifier}${DecoratedModifier}property`
+type MethodOrGetMethodOrSetMethodGroup =
+  `${PublicOrProtectedOrPrivateModifier}${StaticOrAbstractModifier}${OverrideModifier}${DecoratedModifier}${MethodOrGetMethodOrSetMethodSelector}`
+type AccessorPropertyGroup =
+  `${PublicOrProtectedOrPrivateModifier}${StaticOrAbstractModifier}${OverrideModifier}${DecoratedModifier}accessor-property`
+
+type Group =
+  | MethodOrGetMethodOrSetMethodGroup
+  | AccessorPropertyGroup
+  | 'index-signature'
+  | ConstructorGroup
+  | PropertyGroup
+  | 'unknown'
+  | string
+
 
 type Options = [
   Partial<{
