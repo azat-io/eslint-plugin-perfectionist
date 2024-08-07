@@ -91,6 +91,15 @@ export default defineConfig({
   },
   plugins: [
     dts({
+      afterBuild: async () => {
+        await fs.writeFile(
+          'dist/index.d.ts',
+          (await fs.readFile('dist/index.d.ts'))
+            .toString()
+            .replace(/\nexport .+/, '')
+             + "export = _default"
+        )
+      },
       include: [
         path.join(__dirname, 'index.ts'),
         path.join(__dirname, 'typings'),
