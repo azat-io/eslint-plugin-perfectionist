@@ -96,8 +96,7 @@ export default defineConfig({
           'dist/index.d.ts',
           (await fs.readFile('dist/index.d.ts'))
             .toString()
-            .replace(/\nexport .+/, '')
-             + "export = _default"
+            .replace(/\nexport .+/, '') + 'export = _default',
         )
       },
       include: [
