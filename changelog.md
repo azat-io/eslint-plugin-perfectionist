@@ -1,6 +1,18 @@
 # Changelog
 
 
+## v3.1.3
+
+[compare changes](https://github.com/azat-io/eslint-plugin-perfectionist/compare/v3.1.2...v3.1.3)
+
+### 🐞 Bug Fixes
+
+- Fix export of typescript types ([1c4e960](https://github.com/azat-io/eslint-plugin-perfectionist/commit/1c4e960))
+
+### ❤️ Contributors
+
+- Josh Goldberg ✨ <git@joshuakgoldberg.com>
+
 ## v3.1.2
 
 [compare changes](https://github.com/azat-io/eslint-plugin-perfectionist/compare/v3.1.1...v3.1.2)
