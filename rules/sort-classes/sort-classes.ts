@@ -47,6 +47,11 @@ type MethodOrGetMethodOrSetMethodGroup =
 type AccessorPropertyGroup =
   `${PublicOrProtectedOrPrivateModifier}${StaticOrAbstractModifier}${OverrideModifier}${DecoratedModifier}accessor-property`
 
+/**
+ * Some invalid combinations are still handled by this type, such as
+ * - private abstract X
+ * - abstract decorated X
+ */
 type Group =
   | MethodOrGetMethodOrSetMethodGroup
   | AccessorPropertyGroup
@@ -55,7 +60,6 @@ type Group =
   | PropertyGroup
   | 'unknown'
   | string
-
 
 type Options = [
   Partial<{
@@ -288,7 +292,7 @@ export default createEslintRule<Options, MESSAGE_ID>({
               }
             }
 
-            let isPrivateName = name.startsWith('_') || name.startsWith('#')
+            let isPrivateName = name.startsWith('#')
             let decorated =
               'decorators' in member && member.decorators.length > 0
 

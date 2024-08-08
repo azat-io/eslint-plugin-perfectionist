@@ -217,25 +217,31 @@ Allows you to specify a list of class member groups for sorting. Groups help org
 
 Predefined groups are characterized by a single selector and potentially multiple modifiers. You may enter modifiers in any order, but the selector must always come at the end.
 
-#### Methods
-- Selectors: `constructor`, `get-method`, `set-method`, `method`.
-- Modifiers: `abstract`, `decorated`, `override`, `protected`, `private`, `public`, `static`.
-- Example: `protected-abstract-override-method` or `static-get-method`.
+#### Constructors
+- Selector: `constructor`.
+- Modifiers: `protected`, `private`, `public`.
+- Example: `protected-constructor`, `private-constructor`, `public-constructor` or `constructor`.
 
-#### Accessors
-- Selectors: `accessor-property`.
+#### Methods and accessors
+- Method selectors: `get-method`, `set-method`, `method`.
+- Accessors selector: `accessor-property`.
 - Modifiers: `abstract`, `decorated`, `override`, `protected`, `private`, `public`, `static`.
-- Example: `private-static-accessor-property`.
+- Example: `private-static-accessor-property`, `protected-abstract-override-method` or `static-get-method`.
 
-#### Index-signature
-- Selectors: `index-signature`.
-- Modifiers: No modifier available.
-- Example: `index-signature`.
+The `abstract` modifier is incompatible with the `static`, `private` and `decorated` modifiers.
+`constructor`, `get-method` and `set-method` elements will also be matched as `method`.
 
 #### Properties
-- Selectors: `property`.
+- Selector: `property`.
 - Modifiers: `abstract`, `decorated`, `override`, `readonly`, `protected`, `private`, `public`, `static`.
 - Example: `readonly-decorated-property`.
+
+The `abstract` modifier is incompatible with the `static`, `private` and `decorated` modifiers.
+
+#### Index-signature
+- Selector: `index-signature`.
+- Modifiers: No modifier available.
+- Example: `index-signature`.
 
 #### Important notes
 
@@ -243,7 +249,6 @@ Predefined groups are characterized by a single selector and potentially multipl
 The `private` modifier will currently match any of the following:
 - Elements with the `private` keyword.
 - Elements with their name starting with `#`.
-- Elements with their name starting with `_`.
 
 ##### Scope of the `public` modifier
 Elements that are not `protected` nor `private` will be matched with the `public` modifier, even if the keyword is not present.
