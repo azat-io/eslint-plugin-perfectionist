@@ -179,6 +179,8 @@ describe(ruleName, () => {
             code: dedent`
             abstract class Class {
 
+              static readonly [key: string]: string;
+
               declare private static readonly l;
 
               private k = 'k';
@@ -234,6 +236,8 @@ describe(ruleName, () => {
               private k = 'k';
 
               declare private static readonly l;
+
+              static readonly [key: string]: string;
             }
           `,
             options: [
@@ -252,10 +256,18 @@ describe(ruleName, () => {
                   'protected-property',
                   'private-property',
                   'declare-private-static-readonly-property',
+                  'static-readonly-index-signature',
                 ],
               },
             ],
             errors: [
+              {
+                messageId: 'unexpectedClassesOrder',
+                data: {
+                  left: 'static readonly [key: string]',
+                  right: 'l',
+                },
+              },
               {
                 messageId: 'unexpectedClassesOrder',
                 data: {
@@ -381,6 +393,55 @@ describe(ruleName, () => {
         ],
       },
     )
+
+    describe('index-signature modifiers priority', () => {
+      ruleTester.run(
+        `${ruleName}(${type}): prioritize readonly over static`,
+        rule,
+        {
+          valid: [],
+          invalid: [
+            {
+              code: dedent`
+            export class Class {
+
+              a: string;
+
+              static readonly [key: string]: string;
+            }
+          `,
+              output: dedent`
+            export class Class {
+
+              static readonly [key: string]: string;
+
+              a: string;
+            }
+          `,
+              options: [
+                {
+                  ...options,
+                  groups: [
+                    'readonly-index-signature',
+                    'property',
+                    'static-index-signature',
+                  ],
+                },
+              ],
+              errors: [
+                {
+                  messageId: 'unexpectedClassesOrder',
+                  data: {
+                    left: 'a',
+                    right: 'static readonly [key: string]',
+                  },
+                },
+              ],
+            },
+          ],
+        },
+      )
+    })
 
     describe('method selectors priority', () => {
       ruleTester.run(

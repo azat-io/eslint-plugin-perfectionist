@@ -72,6 +72,8 @@ type StaticOrAbstractModifierPrefix = WithDashSuffixOrEmpty<
   AbstractModifier | StaticModifier
 >
 
+type StaticModifierPrefix = WithDashSuffixOrEmpty<StaticModifier>
+
 type MethodOrGetMethodOrSetMethodSelector =
   | GetMethodSelector
   | SetMethodSelector
@@ -87,6 +89,8 @@ type MethodOrGetMethodOrSetMethodGroup =
   `${PublicOrProtectedOrPrivateModifierPrefix}${StaticOrAbstractModifierPrefix}${OverrideModifierPrefix}${DecoratedModifierPrefix}${MethodOrGetMethodOrSetMethodSelector}`
 type AccessorPropertyGroup =
   `${PublicOrProtectedOrPrivateModifierPrefix}${StaticOrAbstractModifierPrefix}${OverrideModifierPrefix}${DecoratedModifierPrefix}${AccessorPropertySelector}`
+type IndexSignatureGroup =
+  `${StaticModifierPrefix}${ReadonlyModifierPrefix}${IndexSignatureSelector}`
 
 /**
  * Some invalid combinations are still handled by this type, such as
@@ -96,9 +100,9 @@ type AccessorPropertyGroup =
 type Group =
   | MethodOrGetMethodOrSetMethodGroup
   | NonDeclarePropertyGroup
-  | IndexSignatureSelector
   | AccessorPropertyGroup
   | DeclarePropertyGroup
+  | IndexSignatureGroup
   | ConstructorGroup
   | 'unknown'
   | string
@@ -385,6 +389,14 @@ export default createEslintRule<Options, MESSAGE_ID>({
               }
               selectors.push('method')
             } else if (member.type === 'TSIndexSignature') {
+              if (member.readonly) {
+                modifiers.push('readonly')
+              }
+
+              if (member.static) {
+                modifiers.push('static')
+              }
+
               selectors.push('index-signature')
             } else if (
               member.type === 'AccessorProperty' ||
