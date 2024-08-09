@@ -21,31 +21,72 @@ import { compare } from '../../utils/compare'
 
 type MESSAGE_ID = 'unexpectedClassesOrder'
 
-type PublicOrProtectedOrPrivateModifier =
-  | 'protected-'
-  | 'private-'
-  | 'public-'
-  | ''
-type StaticModifier = 'static-' | ''
-type AbstractModifier = 'abstract-' | ''
-type OverrideModifier = 'override-' | ''
-type ReadonlyModifier = 'readonly-' | ''
-type DecoratedModifier = 'decorated-' | ''
+type ProtectedModifier = 'protected'
+type PrivateModifier = 'private'
+type PublicModifier = 'public'
+type StaticModifier = 'static'
+type AbstractModifier = 'abstract'
+type OverrideModifier = 'override'
+type ReadonlyModifier = 'readonly'
+type DecoratedModifier = 'decorated'
+type DeclareModifier = 'declare'
+export type Modifier =
+  | ProtectedModifier
+  | DecoratedModifier
+  | AbstractModifier
+  | OverrideModifier
+  | ReadonlyModifier
+  | PrivateModifier
+  | DeclareModifier
+  | PublicModifier
+  | StaticModifier
 
-type StaticOrAbstractModifier = AbstractModifier | StaticModifier
+type ConstructorSelector = 'constructor'
+type PropertySelector = 'property'
+type MethodSelector = 'method'
+type GetMethodSelector = 'get-method'
+type SetMethodSelector = 'set-method'
+type IndexSignatureSelector = 'index-signature'
+type AccessorPropertySelector = 'accessor-property'
+export type Selector =
+  | AccessorPropertySelector
+  | IndexSignatureSelector
+  | ConstructorSelector
+  | GetMethodSelector
+  | SetMethodSelector
+  | PropertySelector
+  | MethodSelector
+
+type WithDashSuffixOrEmpty<T extends string> = `${T}-` | ''
+
+type PublicOrProtectedOrPrivateModifierPrefix = WithDashSuffixOrEmpty<
+  ProtectedModifier | PrivateModifier | PublicModifier
+>
+
+type OverrideModifierPrefix = WithDashSuffixOrEmpty<OverrideModifier>
+type ReadonlyModifierPrefix = WithDashSuffixOrEmpty<ReadonlyModifier>
+type DecoratedModifierPrefix = WithDashSuffixOrEmpty<DecoratedModifier>
+type DeclareModifierPrefix = WithDashSuffixOrEmpty<DeclareModifier>
+
+type StaticOrAbstractModifierPrefix = WithDashSuffixOrEmpty<
+  AbstractModifier | StaticModifier
+>
 
 type MethodOrGetMethodOrSetMethodSelector =
-  | 'get-method'
-  | 'set-method'
-  | 'method'
+  | GetMethodSelector
+  | SetMethodSelector
+  | MethodSelector
 
-type ConstructorGroup = `${PublicOrProtectedOrPrivateModifier}constructor`
-type PropertyGroup =
-  `${PublicOrProtectedOrPrivateModifier}${StaticOrAbstractModifier}${OverrideModifier}${ReadonlyModifier}${DecoratedModifier}property`
+type ConstructorGroup =
+  `${PublicOrProtectedOrPrivateModifierPrefix}${ConstructorSelector}`
+type DeclarePropertyGroup =
+  `${DeclareModifierPrefix}${PublicOrProtectedOrPrivateModifierPrefix}${StaticOrAbstractModifierPrefix}${ReadonlyModifierPrefix}${PropertySelector}`
+type NonDeclarePropertyGroup =
+  `${PublicOrProtectedOrPrivateModifierPrefix}${StaticOrAbstractModifierPrefix}${OverrideModifierPrefix}${ReadonlyModifierPrefix}${DecoratedModifierPrefix}${PropertySelector}`
 type MethodOrGetMethodOrSetMethodGroup =
-  `${PublicOrProtectedOrPrivateModifier}${StaticOrAbstractModifier}${OverrideModifier}${DecoratedModifier}${MethodOrGetMethodOrSetMethodSelector}`
+  `${PublicOrProtectedOrPrivateModifierPrefix}${StaticOrAbstractModifierPrefix}${OverrideModifierPrefix}${DecoratedModifierPrefix}${MethodOrGetMethodOrSetMethodSelector}`
 type AccessorPropertyGroup =
-  `${PublicOrProtectedOrPrivateModifier}${StaticOrAbstractModifier}${OverrideModifier}${DecoratedModifier}accessor-property`
+  `${PublicOrProtectedOrPrivateModifierPrefix}${StaticOrAbstractModifierPrefix}${OverrideModifierPrefix}${DecoratedModifierPrefix}${AccessorPropertySelector}`
 
 /**
  * Some invalid combinations are still handled by this type, such as
@@ -54,10 +95,11 @@ type AccessorPropertyGroup =
  */
 type Group =
   | MethodOrGetMethodOrSetMethodGroup
+  | NonDeclarePropertyGroup
+  | IndexSignatureSelector
   | AccessorPropertyGroup
-  | 'index-signature'
+  | DeclarePropertyGroup
   | ConstructorGroup
-  | PropertyGroup
   | 'unknown'
   | string
 
@@ -296,8 +338,8 @@ export default createEslintRule<Options, MESSAGE_ID>({
             let decorated =
               'decorators' in member && member.decorators.length > 0
 
-            let modifiers: string[] = []
-            let selectors: string[] = []
+            let modifiers: Modifier[] = []
+            let selectors: Selector[] = []
             if (
               member.type === 'MethodDefinition' ||
               member.type === 'TSAbstractMethodDefinition'
@@ -375,8 +417,12 @@ export default createEslintRule<Options, MESSAGE_ID>({
               member.type === 'PropertyDefinition' ||
               member.type === 'TSAbstractPropertyDefinition'
             ) {
-              // Similarly to above for methods, prioritize 'abstract', 'override' and 'readonly'
+              // Similarly to above for methods, prioritize 'declare', 'decorated', 'abstract', 'override' and 'readonly'
               // over accessibility modifiers
+              if (member.declare) {
+                modifiers.push('declare')
+              }
+
               if (member.type === 'TSAbstractPropertyDefinition') {
                 modifiers.push('abstract')
               }

@@ -1,3 +1,5 @@
+import type { Modifier, Selector } from './sort-classes'
+
 /**
  * Cache computed groups by modifiers and selectors for performance
  */
@@ -12,8 +14,8 @@ const cachedGroupsByModifiersAndSelectors = new Map<string, string[]>()
  * @param selectors List of selectors, i.e ['get-method', 'method', 'property']
  */
 export const generateOfficialGroups = (
-  modifiers: string[],
-  selectors: string[],
+  modifiers: Modifier[],
+  selectors: Selector[],
 ): string[] => {
   let modifiersAndSelectorsKey = modifiers.join('&') + '/' + selectors.join('&')
   let cachedValue = cachedGroupsByModifiersAndSelectors.get(

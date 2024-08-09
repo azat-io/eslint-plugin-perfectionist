@@ -233,10 +233,11 @@ The `abstract` modifier is incompatible with the `static`, `private` and `decora
 
 #### Properties
 - Selector: `property`.
-- Modifiers: `abstract`, `decorated`, `override`, `readonly`, `protected`, `private`, `public`, `static`.
+- Modifiers: `declare`, `abstract`, `decorated`, `override`, `readonly`, `protected`, `private`, `public`, `static`.
 - Example: `readonly-decorated-property`.
 
 The `abstract` modifier is incompatible with the `static`, `private` and `decorated` modifiers.
+The `declare` modifier is incompatible with the `override` and `decorated` modifiers.
 
 #### Index-signature
 - Selector: `index-signature`.
@@ -255,7 +256,7 @@ Elements that are not `protected` nor `private` will be matched with the `public
 
 
 ##### The `unknown` group
-Members that don’t fit into any other group can be matched with the `unknown` group.
+Members that don’t fit into any group entered by the user will be placed in the `unknown` group.
 
 ##### Behavior when multiple groups match an element
 
@@ -284,12 +285,14 @@ abstract class Class {
 - `abstract-method`.
 - `protected-method`.
 - `method`.
+- `unknown`.
 
 Example 2: (The most important group is written in the comments)
 
 ```ts
 abstract class Example extends BaseExample {
-  // 'index-signature'
+
+   // 'index-signature'
   [key: string]: any;
 
   // 'public-static-property'
@@ -301,6 +304,9 @@ abstract class Example extends BaseExample {
 
   // 'protected-property'
   protected name: string;
+
+  // 'declare-protected-static-readonly-property'
+  declare protected static readonly value: string;
 
   // 'private-decorated-property'
   @SomeDecorator

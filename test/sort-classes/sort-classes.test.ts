@@ -179,6 +179,8 @@ describe(ruleName, () => {
             code: dedent`
             abstract class Class {
 
+              declare private static readonly l;
+
               private k = 'k';
 
               protected j = 'j';
@@ -230,6 +232,8 @@ describe(ruleName, () => {
               protected j = 'j';
 
               private k = 'k';
+
+              declare private static readonly l;
             }
           `,
             options: [
@@ -247,10 +251,18 @@ describe(ruleName, () => {
                   'public-property',
                   'protected-property',
                   'private-property',
+                  'declare-private-static-readonly-property',
                 ],
               },
             ],
             errors: [
+              {
+                messageId: 'unexpectedClassesOrder',
+                data: {
+                  left: 'l',
+                  right: 'k',
+                },
+              },
               {
                 messageId: 'unexpectedClassesOrder',
                 data: {
@@ -882,6 +894,49 @@ describe(ruleName, () => {
     })
 
     describe('property modifiers priority', () => {
+      ruleTester.run(
+        `${ruleName}(${type}): prioritize declare over abstract`,
+        rule,
+        {
+          valid: [],
+          invalid: [
+            {
+              code: dedent`
+            export abstract class Class extends Class2 {
+
+              a(): void {}
+
+              declare abstract z: string;
+            }
+          `,
+              output: dedent`
+            export abstract class Class extends Class2 {
+
+              declare abstract z: string;
+
+              a(): void {}
+            }
+          `,
+              options: [
+                {
+                  ...options,
+                  groups: ['declare-property', 'method', 'abstract-property'],
+                },
+              ],
+              errors: [
+                {
+                  messageId: 'unexpectedClassesOrder',
+                  data: {
+                    left: 'a',
+                    right: 'z',
+                  },
+                },
+              ],
+            },
+          ],
+        },
+      )
+
       ruleTester.run(
         `${ruleName}(${type}): prioritize abstract over override`,
         rule,
