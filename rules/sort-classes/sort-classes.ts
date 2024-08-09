@@ -1,50 +1,110 @@
 import type { TSESTree } from '@typescript-eslint/types'
 import type { TSESLint } from '@typescript-eslint/utils'
 
-import type { SortingNode } from '../typings'
+import type { SortingNode } from '../../typings'
 
-import { isPartitionComment } from '../utils/is-partition-comment'
-import { getCommentBefore } from '../utils/get-comment-before'
-import { createEslintRule } from '../utils/create-eslint-rule'
-import { getGroupNumber } from '../utils/get-group-number'
-import { getSourceCode } from '../utils/get-source-code'
-import { toSingleLine } from '../utils/to-single-line'
-import { rangeToDiff } from '../utils/range-to-diff'
-import { isPositive } from '../utils/is-positive'
-import { useGroups } from '../utils/use-groups'
-import { sortNodes } from '../utils/sort-nodes'
-import { makeFixes } from '../utils/make-fixes'
-import { complete } from '../utils/complete'
-import { pairwise } from '../utils/pairwise'
-import { compare } from '../utils/compare'
+import { isPartitionComment } from '../../utils/is-partition-comment'
+import { getCommentBefore } from '../../utils/get-comment-before'
+import { createEslintRule } from '../../utils/create-eslint-rule'
+import { getGroupNumber } from '../../utils/get-group-number'
+import { generateOfficialGroups } from './sort-classes-utils'
+import { getSourceCode } from '../../utils/get-source-code'
+import { toSingleLine } from '../../utils/to-single-line'
+import { rangeToDiff } from '../../utils/range-to-diff'
+import { isPositive } from '../../utils/is-positive'
+import { useGroups } from '../../utils/use-groups'
+import { sortNodes } from '../../utils/sort-nodes'
+import { makeFixes } from '../../utils/make-fixes'
+import { complete } from '../../utils/complete'
+import { pairwise } from '../../utils/pairwise'
+import { compare } from '../../utils/compare'
 
 type MESSAGE_ID = 'unexpectedClassesOrder'
 
+type ProtectedModifier = 'protected'
+type PrivateModifier = 'private'
+type PublicModifier = 'public'
+type StaticModifier = 'static'
+type AbstractModifier = 'abstract'
+type OverrideModifier = 'override'
+type ReadonlyModifier = 'readonly'
+type DecoratedModifier = 'decorated'
+type DeclareModifier = 'declare'
+export type Modifier =
+  | ProtectedModifier
+  | DecoratedModifier
+  | AbstractModifier
+  | OverrideModifier
+  | ReadonlyModifier
+  | PrivateModifier
+  | DeclareModifier
+  | PublicModifier
+  | StaticModifier
+
+type ConstructorSelector = 'constructor'
+type PropertySelector = 'property'
+type MethodSelector = 'method'
+type GetMethodSelector = 'get-method'
+type SetMethodSelector = 'set-method'
+type IndexSignatureSelector = 'index-signature'
+type AccessorPropertySelector = 'accessor-property'
+export type Selector =
+  | AccessorPropertySelector
+  | IndexSignatureSelector
+  | ConstructorSelector
+  | GetMethodSelector
+  | SetMethodSelector
+  | PropertySelector
+  | MethodSelector
+
+type WithDashSuffixOrEmpty<T extends string> = `${T}-` | ''
+
+type PublicOrProtectedOrPrivateModifierPrefix = WithDashSuffixOrEmpty<
+  ProtectedModifier | PrivateModifier | PublicModifier
+>
+
+type OverrideModifierPrefix = WithDashSuffixOrEmpty<OverrideModifier>
+type ReadonlyModifierPrefix = WithDashSuffixOrEmpty<ReadonlyModifier>
+type DecoratedModifierPrefix = WithDashSuffixOrEmpty<DecoratedModifier>
+type DeclareModifierPrefix = WithDashSuffixOrEmpty<DeclareModifier>
+
+type StaticOrAbstractModifierPrefix = WithDashSuffixOrEmpty<
+  AbstractModifier | StaticModifier
+>
+
+type StaticModifierPrefix = WithDashSuffixOrEmpty<StaticModifier>
+
+type MethodOrGetMethodOrSetMethodSelector =
+  | GetMethodSelector
+  | SetMethodSelector
+  | MethodSelector
+
+type ConstructorGroup =
+  `${PublicOrProtectedOrPrivateModifierPrefix}${ConstructorSelector}`
+type DeclarePropertyGroup =
+  `${DeclareModifierPrefix}${PublicOrProtectedOrPrivateModifierPrefix}${StaticOrAbstractModifierPrefix}${ReadonlyModifierPrefix}${PropertySelector}`
+type NonDeclarePropertyGroup =
+  `${PublicOrProtectedOrPrivateModifierPrefix}${StaticOrAbstractModifierPrefix}${OverrideModifierPrefix}${ReadonlyModifierPrefix}${DecoratedModifierPrefix}${PropertySelector}`
+type MethodOrGetMethodOrSetMethodGroup =
+  `${PublicOrProtectedOrPrivateModifierPrefix}${StaticOrAbstractModifierPrefix}${OverrideModifierPrefix}${DecoratedModifierPrefix}${MethodOrGetMethodOrSetMethodSelector}`
+type AccessorPropertyGroup =
+  `${PublicOrProtectedOrPrivateModifierPrefix}${StaticOrAbstractModifierPrefix}${OverrideModifierPrefix}${DecoratedModifierPrefix}${AccessorPropertySelector}`
+type IndexSignatureGroup =
+  `${StaticModifierPrefix}${ReadonlyModifierPrefix}${IndexSignatureSelector}`
+
+/**
+ * Some invalid combinations are still handled by this type, such as
+ * - private abstract X
+ * - abstract decorated X
+ */
 type Group =
-  | 'protected-decorated-accessor-property'
-  | 'private-decorated-accessor-property'
-  | 'protected-decorated-property'
-  | 'decorated-accessor-property'
-  | 'private-decorated-property'
-  | 'static-protected-method'
-  | 'static-private-method'
-  | 'decorated-set-method'
-  | 'decorated-get-method'
-  | 'decorated-property'
-  | 'protected-property'
-  | 'decorated-method'
-  | 'private-property'
-  | 'protected-method'
-  | 'static-property'
-  | 'index-signature'
-  | 'private-method'
-  | 'static-method'
-  | 'constructor'
-  | 'get-method'
-  | 'set-method'
-  | 'property'
+  | MethodOrGetMethodOrSetMethodGroup
+  | NonDeclarePropertyGroup
+  | AccessorPropertyGroup
+  | DeclarePropertyGroup
+  | IndexSignatureGroup
+  | ConstructorGroup
   | 'unknown'
-  | 'method'
   | string
 
 type Options = [
@@ -278,105 +338,139 @@ export default createEslintRule<Options, MESSAGE_ID>({
               }
             }
 
-            let isPrivate = name.startsWith('_') || name.startsWith('#')
+            let isPrivateName = name.startsWith('#')
             let decorated =
               'decorators' in member && member.decorators.length > 0
 
-            if (member.type === 'MethodDefinition') {
-              if (member.kind === 'constructor') {
-                defineGroup('constructor')
+            let modifiers: Modifier[] = []
+            let selectors: Selector[] = []
+            if (
+              member.type === 'MethodDefinition' ||
+              member.type === 'TSAbstractMethodDefinition'
+            ) {
+              // By putting the abstract modifier before accessibility modifiers,
+              // we prioritize 'abstract' over those in cases like:
+              // Config: ['abstract-method', 'public-method']
+              // Element: public abstract method();
+              // Element will be classified as 'abstract-method' before 'public-method'
+              if (member.type === 'TSAbstractMethodDefinition') {
+                modifiers.push('abstract')
               }
-
-              let isProtectedMethod = member.accessibility === 'protected'
-
-              let isPrivateMethod =
-                member.accessibility === 'private' || isPrivate
-
-              let isStaticMethod = member.static
 
               if (decorated) {
-                if (member.kind === 'get') {
-                  defineGroup('decorated-get-method')
-                }
-
-                if (member.kind === 'set') {
-                  defineGroup('decorated-set-method')
-                }
-
-                defineGroup('decorated-method')
+                modifiers.push('decorated')
               }
 
-              if (isPrivateMethod && isStaticMethod) {
-                defineGroup('static-private-method')
-              }
-
-              if (isPrivateMethod) {
-                defineGroup('private-method')
-              }
-
-              if (isStaticMethod) {
-                defineGroup('static-method')
-              }
-
-              if (isProtectedMethod && isStaticMethod) {
-                defineGroup('static-protected-method')
-              }
-
-              if (isProtectedMethod) {
-                defineGroup('protected-method')
-              }
-
-              if (member.kind === 'get') {
-                defineGroup('get-method')
-              }
-
-              if (member.kind === 'set') {
-                defineGroup('set-method')
-              }
-
-              defineGroup('method')
-            } else if (member.type === 'TSIndexSignature') {
-              defineGroup('index-signature')
-            } else if (member.type === 'AccessorProperty') {
-              if (decorated) {
-                if (member.accessibility === 'protected') {
-                  defineGroup('protected-decorated-accessor-property')
-                }
-
-                if (member.accessibility === 'private' || isPrivate) {
-                  defineGroup('private-decorated-accessor-property')
-                }
-
-                defineGroup('decorated-accessor-property')
-              }
-            } else if (member.type === 'PropertyDefinition') {
-              if (decorated) {
-                if (member.accessibility === 'protected') {
-                  defineGroup('protected-decorated-property')
-                }
-
-                if (member.accessibility === 'private' || isPrivate) {
-                  defineGroup('private-decorated-property')
-                }
-
-                defineGroup('decorated-property')
+              if (member.override) {
+                modifiers.push('override')
               }
 
               if (member.accessibility === 'protected') {
-                defineGroup('protected-property')
+                modifiers.push('protected')
+              } else if (member.accessibility === 'private' || isPrivateName) {
+                modifiers.push('private')
+              } else {
+                modifiers.push('public')
+              }
+              if (member.static) {
+                modifiers.push('static')
               }
 
-              if (member.accessibility === 'private' || isPrivate) {
-                defineGroup('private-property')
+              if (member.kind === 'constructor') {
+                selectors.push('constructor')
+              }
+
+              if (member.kind === 'get') {
+                selectors.push('get-method')
+              }
+
+              if (member.kind === 'set') {
+                selectors.push('set-method')
+              }
+              selectors.push('method')
+            } else if (member.type === 'TSIndexSignature') {
+              if (member.readonly) {
+                modifiers.push('readonly')
               }
 
               if (member.static) {
-                defineGroup('static-property')
+                modifiers.push('static')
               }
 
-              defineGroup('property')
-            }
+              selectors.push('index-signature')
+            } else if (
+              member.type === 'AccessorProperty' ||
+              member.type === 'TSAbstractAccessorProperty'
+            ) {
+              if (member.type === 'TSAbstractAccessorProperty') {
+                modifiers.push('abstract')
+              }
 
+              if (decorated) {
+                modifiers.push('decorated')
+              }
+
+              if (member.override) {
+                modifiers.push('override')
+              }
+
+              if (member.accessibility === 'protected') {
+                modifiers.push('protected')
+              } else if (member.accessibility === 'private' || isPrivateName) {
+                modifiers.push('private')
+              } else {
+                modifiers.push('public')
+              }
+              if (member.static) {
+                modifiers.push('static')
+              }
+              selectors.push('accessor-property')
+            } else if (
+              member.type === 'PropertyDefinition' ||
+              member.type === 'TSAbstractPropertyDefinition'
+            ) {
+              // Similarly to above for methods, prioritize 'declare', 'decorated', 'abstract', 'override' and 'readonly'
+              // over accessibility modifiers
+              if (member.declare) {
+                modifiers.push('declare')
+              }
+
+              if (member.type === 'TSAbstractPropertyDefinition') {
+                modifiers.push('abstract')
+              }
+
+              if (decorated) {
+                modifiers.push('decorated')
+              }
+
+              if (member.override) {
+                modifiers.push('override')
+              }
+
+              if (member.readonly) {
+                modifiers.push('readonly')
+              }
+
+              if (member.accessibility === 'protected') {
+                modifiers.push('protected')
+              } else if (member.accessibility === 'private' || isPrivateName) {
+                modifiers.push('private')
+              } else {
+                modifiers.push('public')
+              }
+
+              if (member.static) {
+                modifiers.push('static')
+              }
+
+              selectors.push('property')
+            }
+            for (let officialGroup of generateOfficialGroups(
+              modifiers,
+              selectors,
+            )) {
+              defineGroup(officialGroup)
+            }
             setCustomGroups(options.customGroups, name, {
               override: true,
             })

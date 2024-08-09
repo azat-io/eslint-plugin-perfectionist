@@ -22,6 +22,6 @@ module.exports = [
     rules: {
       'perfectionist/sort-objects': 'off',
     },
-    files: ['**/test/*', '**/rules/*'],
+    files: ['**/test/**', '**/rules/**'],
   },
 ]

@@ -2,7 +2,7 @@ import { RuleTester } from '@typescript-eslint/rule-tester'
 import { afterAll, describe, it } from 'vitest'
 import { dedent } from 'ts-dedent'
 
-import rule from '../rules/sort-classes'
+import rule from '../../rules/sort-classes/sort-classes'
 
 let ruleName = 'sort-classes'
 
@@ -167,6 +167,1108 @@ describe(ruleName, () => {
           ],
         },
       ],
+    })
+
+    ruleTester.run(
+      `${ruleName}(${type}): sorts complex official groups`,
+      rule,
+      {
+        valid: [],
+        invalid: [
+          {
+            code: dedent`
+            abstract class Class {
+
+              static readonly [key: string]: string;
+
+              declare private static readonly l;
+
+              private k = 'k';
+
+              protected j = 'j';
+
+              public i = 'i';
+
+              private readonly h = 'h';
+
+              protected readonly g = 'g';
+
+              public readonly f = 'f';
+
+              private static override readonly e = 'e';
+
+              protected static override readonly d = 'd';
+
+              static override readonly c = 'c';
+
+              @Decorator
+              protected abstract override readonly b;
+
+              @Decorator
+              abstract override readonly a;
+            }
+          `,
+            output: dedent`
+            abstract class Class {
+
+              @Decorator
+              abstract override readonly a;
+
+              @Decorator
+              protected abstract override readonly b;
+
+              static override readonly c = 'c';
+
+              protected static override readonly d = 'd';
+
+              private static override readonly e = 'e';
+
+              public readonly f = 'f';
+
+              protected readonly g = 'g';
+
+              private readonly h = 'h';
+
+              public i = 'i';
+
+              protected j = 'j';
+
+              private k = 'k';
+
+              declare private static readonly l;
+
+              static readonly [key: string]: string;
+            }
+          `,
+            options: [
+              {
+                ...options,
+                groups: [
+                  'public-abstract-override-readonly-decorated-property',
+                  'protected-abstract-override-readonly-decorated-property',
+                  'static-public-override-readonly-property',
+                  'static-protected-override-readonly-property',
+                  'static-private-override-readonly-property',
+                  'public-readonly-property',
+                  'protected-readonly-property',
+                  'private-readonly-property',
+                  'public-property',
+                  'protected-property',
+                  'private-property',
+                  'declare-private-static-readonly-property',
+                  'static-readonly-index-signature',
+                ],
+              },
+            ],
+            errors: [
+              {
+                messageId: 'unexpectedClassesOrder',
+                data: {
+                  left: 'static readonly [key: string]',
+                  right: 'l',
+                },
+              },
+              {
+                messageId: 'unexpectedClassesOrder',
+                data: {
+                  left: 'l',
+                  right: 'k',
+                },
+              },
+              {
+                messageId: 'unexpectedClassesOrder',
+                data: {
+                  left: 'k',
+                  right: 'j',
+                },
+              },
+              {
+                messageId: 'unexpectedClassesOrder',
+                data: {
+                  left: 'j',
+                  right: 'i',
+                },
+              },
+              {
+                messageId: 'unexpectedClassesOrder',
+                data: {
+                  left: 'i',
+                  right: 'h',
+                },
+              },
+              {
+                messageId: 'unexpectedClassesOrder',
+                data: {
+                  left: 'h',
+                  right: 'g',
+                },
+              },
+              {
+                messageId: 'unexpectedClassesOrder',
+                data: {
+                  left: 'g',
+                  right: 'f',
+                },
+              },
+              {
+                messageId: 'unexpectedClassesOrder',
+                data: {
+                  left: 'f',
+                  right: 'e',
+                },
+              },
+              {
+                messageId: 'unexpectedClassesOrder',
+                data: {
+                  left: 'e',
+                  right: 'd',
+                },
+              },
+              {
+                messageId: 'unexpectedClassesOrder',
+                data: {
+                  left: 'd',
+                  right: 'c',
+                },
+              },
+              {
+                messageId: 'unexpectedClassesOrder',
+                data: {
+                  left: 'c',
+                  right: 'b',
+                },
+              },
+              {
+                messageId: 'unexpectedClassesOrder',
+                data: {
+                  left: 'b',
+                  right: 'a',
+                },
+              },
+            ],
+          },
+        ],
+      },
+    )
+
+    ruleTester.run(
+      `${ruleName}(${type}): prioritize selectors over modifiers quantity`,
+      rule,
+      {
+        valid: [],
+        invalid: [
+          {
+            code: dedent`
+            export abstract class Class extends Class2 {
+
+              public abstract override method(): string;
+
+              public abstract override get fields(): string;
+            }
+          `,
+            output: dedent`
+            export abstract class Class extends Class2 {
+
+              public abstract override get fields(): string;
+
+              public abstract override method(): string;
+            }
+          `,
+            options: [
+              {
+                ...options,
+                groups: ['get-method', 'public-abstract-override-method'],
+              },
+            ],
+            errors: [
+              {
+                messageId: 'unexpectedClassesOrder',
+                data: {
+                  left: 'method',
+                  right: 'fields',
+                },
+              },
+            ],
+          },
+        ],
+      },
+    )
+
+    describe('index-signature modifiers priority', () => {
+      ruleTester.run(
+        `${ruleName}(${type}): prioritize readonly over static`,
+        rule,
+        {
+          valid: [],
+          invalid: [
+            {
+              code: dedent`
+            export class Class {
+
+              a: string;
+
+              static readonly [key: string]: string;
+            }
+          `,
+              output: dedent`
+            export class Class {
+
+              static readonly [key: string]: string;
+
+              a: string;
+            }
+          `,
+              options: [
+                {
+                  ...options,
+                  groups: [
+                    'readonly-index-signature',
+                    'property',
+                    'static-index-signature',
+                  ],
+                },
+              ],
+              errors: [
+                {
+                  messageId: 'unexpectedClassesOrder',
+                  data: {
+                    left: 'a',
+                    right: 'static readonly [key: string]',
+                  },
+                },
+              ],
+            },
+          ],
+        },
+      )
+    })
+
+    describe('method selectors priority', () => {
+      ruleTester.run(
+        `${ruleName}(${type}): prioritize constructor over method`,
+        rule,
+        {
+          valid: [],
+          invalid: [
+            {
+              code: dedent`
+            export class Class {
+
+              a(): void;
+
+              constructor() {}
+            }
+          `,
+              output: dedent`
+            export class Class {
+
+              constructor() {}
+
+              a(): void;
+            }
+          `,
+              options: [
+                {
+                  ...options,
+                  groups: ['constructor', 'method'],
+                },
+              ],
+              errors: [
+                {
+                  messageId: 'unexpectedClassesOrder',
+                  data: {
+                    left: 'a',
+                    right: 'constructor',
+                  },
+                },
+              ],
+            },
+          ],
+        },
+      )
+
+      ruleTester.run(
+        `${ruleName}(${type}): prioritize get-method over method`,
+        rule,
+        {
+          valid: [],
+          invalid: [
+            {
+              code: dedent`
+            export class Class {
+
+              a(): void;
+
+              get z() {}
+            }
+          `,
+              output: dedent`
+            export class Class {
+
+              get z() {}
+
+              a(): void;
+            }
+          `,
+              options: [
+                {
+                  ...options,
+                  groups: ['get-method', 'method'],
+                },
+              ],
+              errors: [
+                {
+                  messageId: 'unexpectedClassesOrder',
+                  data: {
+                    left: 'a',
+                    right: 'z',
+                  },
+                },
+              ],
+            },
+          ],
+        },
+      )
+
+      ruleTester.run(
+        `${ruleName}(${type}): prioritize set-method over method`,
+        rule,
+        {
+          valid: [],
+          invalid: [
+            {
+              code: dedent`
+            export class Class {
+
+              a(): void;
+
+              set z() {}
+            }
+          `,
+              output: dedent`
+            export class Class {
+
+              set z() {}
+
+              a(): void;
+            }
+          `,
+              options: [
+                {
+                  ...options,
+                  groups: ['set-method', 'method'],
+                },
+              ],
+              errors: [
+                {
+                  messageId: 'unexpectedClassesOrder',
+                  data: {
+                    left: 'a',
+                    right: 'z',
+                  },
+                },
+              ],
+            },
+          ],
+        },
+      )
+    })
+
+    describe('method modifiers priority', () => {
+      ruleTester.run(
+        `${ruleName}(${type}): prioritize abstract over override`,
+        rule,
+        {
+          valid: [],
+          invalid: [
+            {
+              code: dedent`
+            export abstract class Class extends Class2 {
+
+              a: string;
+
+              abstract override z(): string;
+            }
+          `,
+              output: dedent`
+            export abstract class Class extends Class2 {
+
+              abstract override z(): string;
+
+              a: string;
+            }
+          `,
+              options: [
+                {
+                  ...options,
+                  groups: ['abstract-method', 'property', 'override-method'],
+                },
+              ],
+              errors: [
+                {
+                  messageId: 'unexpectedClassesOrder',
+                  data: {
+                    left: 'a',
+                    right: 'z',
+                  },
+                },
+              ],
+            },
+          ],
+        },
+      )
+
+      ruleTester.run(
+        `${ruleName}(${type}): prioritize decorated over override`,
+        rule,
+        {
+          valid: [],
+          invalid: [
+            {
+              code: dedent`
+            export abstract class Class extends Class2 {
+
+              a: string;
+
+              @Decorator
+              override z(): void {}
+            }
+          `,
+              output: dedent`
+            export abstract class Class extends Class2 {
+
+              @Decorator
+              override z(): void {}
+
+              a: string;
+            }
+          `,
+              options: [
+                {
+                  ...options,
+                  groups: ['decorated-method', 'property', 'override-method'],
+                },
+              ],
+              errors: [
+                {
+                  messageId: 'unexpectedClassesOrder',
+                  data: {
+                    left: 'a',
+                    right: 'z',
+                  },
+                },
+              ],
+            },
+          ],
+        },
+      )
+
+      for (let accessibilityModifier of ['public', 'protected', 'private']) {
+        ruleTester.run(
+          `${ruleName}(${type}): prioritize override over ${accessibilityModifier} accessibility`,
+          rule,
+          {
+            valid: [],
+            invalid: [
+              {
+                code: dedent`
+              export class Class {
+
+                a: string;
+
+                ${accessibilityModifier} override z(): string;
+              }
+            `,
+                output: dedent`
+              export class Class {
+
+                ${accessibilityModifier} override z(): string;
+
+                a: string;
+              }
+            `,
+                options: [
+                  {
+                    ...options,
+                    groups: [
+                      'override-method',
+                      'property',
+                      `${accessibilityModifier}-method`,
+                    ],
+                  },
+                ],
+                errors: [
+                  {
+                    messageId: 'unexpectedClassesOrder',
+                    data: {
+                      left: 'a',
+                      right: 'z',
+                    },
+                  },
+                ],
+              },
+            ],
+          },
+        )
+
+        ruleTester.run(
+          `${ruleName}(${type}): prioritize ${accessibilityModifier} accessibility over static`,
+          rule,
+          {
+            valid: [],
+            invalid: [
+              {
+                code: dedent`
+              export class Class {
+
+                a: string;
+
+                ${accessibilityModifier} static z(): string;
+              }
+            `,
+                output: dedent`
+              export class Class {
+
+                ${accessibilityModifier} static z(): string;
+
+                a: string;
+              }
+            `,
+                options: [
+                  {
+                    ...options,
+                    groups: [
+                      `${accessibilityModifier}-method`,
+                      'property',
+                      'static-method',
+                    ],
+                  },
+                ],
+                errors: [
+                  {
+                    messageId: 'unexpectedClassesOrder',
+                    data: {
+                      left: 'a',
+                      right: 'z',
+                    },
+                  },
+                ],
+              },
+            ],
+          },
+        )
+      }
+    })
+
+    describe('accessor modifiers priority', () => {
+      ruleTester.run(
+        `${ruleName}(${type}): prioritize abstract over override`,
+        rule,
+        {
+          valid: [],
+          invalid: [
+            {
+              code: dedent`
+            export abstract class Class extends Class2 {
+
+              a: string;
+
+              abstract override accessor z: string;
+            }
+          `,
+              output: dedent`
+            export abstract class Class extends Class2 {
+
+              abstract override accessor z: string;
+
+              a: string;
+            }
+          `,
+              options: [
+                {
+                  ...options,
+                  groups: [
+                    'abstract-accessor-property',
+                    'property',
+                    'override-accessor-property',
+                  ],
+                },
+              ],
+              errors: [
+                {
+                  messageId: 'unexpectedClassesOrder',
+                  data: {
+                    left: 'a',
+                    right: 'z',
+                  },
+                },
+              ],
+            },
+          ],
+        },
+      )
+
+      ruleTester.run(
+        `${ruleName}(${type}): prioritize decorated over override`,
+        rule,
+        {
+          valid: [],
+          invalid: [
+            {
+              code: dedent`
+            export abstract class Class extends Class2 {
+
+              a: string;
+
+              @Decorator
+              override accessor z: string;
+            }
+          `,
+              output: dedent`
+            export abstract class Class extends Class2 {
+
+              @Decorator
+              override accessor z: string;
+
+              a: string;
+            }
+          `,
+              options: [
+                {
+                  ...options,
+                  groups: [
+                    'decorated-accessor-property',
+                    'property',
+                    'override-accessor-property',
+                  ],
+                },
+              ],
+              errors: [
+                {
+                  messageId: 'unexpectedClassesOrder',
+                  data: {
+                    left: 'a',
+                    right: 'z',
+                  },
+                },
+              ],
+            },
+          ],
+        },
+      )
+
+      for (let accessibilityModifier of ['public', 'protected', 'private']) {
+        ruleTester.run(
+          `${ruleName}(${type}): prioritize override over ${accessibilityModifier} accessibility`,
+          rule,
+          {
+            valid: [],
+            invalid: [
+              {
+                code: dedent`
+              export class Class {
+
+                a: string;
+
+                ${accessibilityModifier} override accessor z: string;
+              }
+            `,
+                output: dedent`
+              export class Class {
+
+                ${accessibilityModifier} override accessor z: string;
+
+                a: string;
+              }
+            `,
+                options: [
+                  {
+                    ...options,
+                    groups: [
+                      'override-accessor-property',
+                      'property',
+                      `${accessibilityModifier}-accessor-property`,
+                    ],
+                  },
+                ],
+                errors: [
+                  {
+                    messageId: 'unexpectedClassesOrder',
+                    data: {
+                      left: 'a',
+                      right: 'z',
+                    },
+                  },
+                ],
+              },
+            ],
+          },
+        )
+
+        ruleTester.run(
+          `${ruleName}(${type}): prioritize ${accessibilityModifier} accessibility over static`,
+          rule,
+          {
+            valid: [],
+            invalid: [
+              {
+                code: dedent`
+              export class Class {
+
+                a: string;
+
+                ${accessibilityModifier} static accessor z: string;
+              }
+            `,
+                output: dedent`
+              export class Class {
+
+                ${accessibilityModifier} static accessor z: string;
+
+                a: string;
+              }
+            `,
+                options: [
+                  {
+                    ...options,
+                    groups: [
+                      `${accessibilityModifier}-accessor-property`,
+                      'property',
+                      'static-accessor-property',
+                    ],
+                  },
+                ],
+                errors: [
+                  {
+                    messageId: 'unexpectedClassesOrder',
+                    data: {
+                      left: 'a',
+                      right: 'z',
+                    },
+                  },
+                ],
+              },
+            ],
+          },
+        )
+      }
+    })
+
+    describe('property modifiers priority', () => {
+      ruleTester.run(
+        `${ruleName}(${type}): prioritize declare over abstract`,
+        rule,
+        {
+          valid: [],
+          invalid: [
+            {
+              code: dedent`
+            export abstract class Class extends Class2 {
+
+              a(): void {}
+
+              declare abstract z: string;
+            }
+          `,
+              output: dedent`
+            export abstract class Class extends Class2 {
+
+              declare abstract z: string;
+
+              a(): void {}
+            }
+          `,
+              options: [
+                {
+                  ...options,
+                  groups: ['declare-property', 'method', 'abstract-property'],
+                },
+              ],
+              errors: [
+                {
+                  messageId: 'unexpectedClassesOrder',
+                  data: {
+                    left: 'a',
+                    right: 'z',
+                  },
+                },
+              ],
+            },
+          ],
+        },
+      )
+
+      ruleTester.run(
+        `${ruleName}(${type}): prioritize abstract over override`,
+        rule,
+        {
+          valid: [],
+          invalid: [
+            {
+              code: dedent`
+            export abstract class Class extends Class2 {
+
+              a(): void {}
+
+              abstract override z: string;
+            }
+          `,
+              output: dedent`
+            export abstract class Class extends Class2 {
+
+              abstract override z: string;
+
+              a(): void {}
+            }
+          `,
+              options: [
+                {
+                  ...options,
+                  groups: ['abstract-property', 'method', 'override-property'],
+                },
+              ],
+              errors: [
+                {
+                  messageId: 'unexpectedClassesOrder',
+                  data: {
+                    left: 'a',
+                    right: 'z',
+                  },
+                },
+              ],
+            },
+          ],
+        },
+      )
+
+      ruleTester.run(
+        `${ruleName}(${type}): prioritize decorated over override`,
+        rule,
+        {
+          valid: [],
+          invalid: [
+            {
+              code: dedent`
+            export abstract class Class extends Class2 {
+
+              a(): void {}
+
+              @Decorator
+              override z: string;
+            }
+          `,
+              output: dedent`
+            export abstract class Class extends Class2 {
+
+              @Decorator
+              override z: string;
+
+              a(): void {}
+            }
+          `,
+              options: [
+                {
+                  ...options,
+                  groups: ['decorated-property', 'method', 'override-property'],
+                },
+              ],
+              errors: [
+                {
+                  messageId: 'unexpectedClassesOrder',
+                  data: {
+                    left: 'a',
+                    right: 'z',
+                  },
+                },
+              ],
+            },
+          ],
+        },
+      )
+
+      ruleTester.run(
+        `${ruleName}(${type}): prioritize decorated over override`,
+        rule,
+        {
+          valid: [],
+          invalid: [
+            {
+              code: dedent`
+            export abstract class Class extends Class2 {
+
+              a(): void {}
+
+              @Decorator
+              override z: string;
+            }
+          `,
+              output: dedent`
+            export abstract class Class extends Class2 {
+
+              @Decorator
+              override z: string;
+
+              a(): void {}
+            }
+          `,
+              options: [
+                {
+                  ...options,
+                  groups: ['decorated-property', 'method', 'override-property'],
+                },
+              ],
+              errors: [
+                {
+                  messageId: 'unexpectedClassesOrder',
+                  data: {
+                    left: 'a',
+                    right: 'z',
+                  },
+                },
+              ],
+            },
+          ],
+        },
+      )
+
+      ruleTester.run(
+        `${ruleName}(${type}): prioritize override over readonly`,
+        rule,
+        {
+          valid: [],
+          invalid: [
+            {
+              code: dedent`
+            export abstract class Class extends Class2 {
+
+              a(): void {}
+
+              override readonly z: string;
+            }
+          `,
+              output: dedent`
+            export abstract class Class extends Class2 {
+
+              override readonly z: string;
+
+              a(): void {}
+            }
+          `,
+              options: [
+                {
+                  ...options,
+                  groups: ['override-property', 'method', 'readonly-property'],
+                },
+              ],
+              errors: [
+                {
+                  messageId: 'unexpectedClassesOrder',
+                  data: {
+                    left: 'a',
+                    right: 'z',
+                  },
+                },
+              ],
+            },
+          ],
+        },
+      )
+
+      for (let accessibilityModifier of ['public', 'protected', 'private']) {
+        ruleTester.run(
+          `${ruleName}(${type}): prioritize readonly over ${accessibilityModifier} accessibility`,
+          rule,
+          {
+            valid: [],
+            invalid: [
+              {
+                code: dedent`
+              export class Class {
+
+                a(): void {}
+
+                ${accessibilityModifier} readonly z: string;
+              }
+            `,
+                output: dedent`
+              export class Class {
+
+                ${accessibilityModifier} readonly z: string;
+
+                a(): void {}
+              }
+            `,
+                options: [
+                  {
+                    ...options,
+                    groups: [
+                      'readonly-property',
+                      'method',
+                      `${accessibilityModifier}-property`,
+                    ],
+                  },
+                ],
+                errors: [
+                  {
+                    messageId: 'unexpectedClassesOrder',
+                    data: {
+                      left: 'a',
+                      right: 'z',
+                    },
+                  },
+                ],
+              },
+            ],
+          },
+        )
+
+        ruleTester.run(
+          `${ruleName}(${type}): prioritize ${accessibilityModifier} accessibility over static`,
+          rule,
+          {
+            valid: [],
+            invalid: [
+              {
+                code: dedent`
+              export class Class {
+
+                a(): void {}
+
+                ${accessibilityModifier} static z: string;
+              }
+            `,
+                output: dedent`
+              export class Class {
+
+                ${accessibilityModifier} static z: string;
+
+                a(): void {}
+              }
+            `,
+                options: [
+                  {
+                    ...options,
+                    groups: [
+                      `${accessibilityModifier}-property`,
+                      'method',
+                      'static-property',
+                    ],
+                  },
+                ],
+                errors: [
+                  {
+                    messageId: 'unexpectedClassesOrder',
+                    data: {
+                      left: 'a',
+                      right: 'z',
+                    },
+                  },
+                ],
+              },
+            ],
+          },
+        )
+      }
     })
 
     ruleTester.run(
