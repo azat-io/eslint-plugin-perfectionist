@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 
-import { generateOfficialGroups } from '../../rules/sort-classes/sort-classes-utils'
+import { generateOfficialGroups } from '../rules/sort-classes-utils'
 
 describe('sort-classes-utils', () => {
   it('sort-classes-utils: should generate official groups', () => {
