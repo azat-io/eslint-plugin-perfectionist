@@ -47,11 +47,13 @@ type MethodSelector = 'method'
 type GetMethodSelector = 'get-method'
 type SetMethodSelector = 'set-method'
 type IndexSignatureSelector = 'index-signature'
+type StaticBlockSelector = 'static-block'
 type AccessorPropertySelector = 'accessor-property'
 export type Selector =
   | AccessorPropertySelector
   | IndexSignatureSelector
   | ConstructorSelector
+  | StaticBlockSelector
   | GetMethodSelector
   | SetMethodSelector
   | PropertySelector
@@ -91,6 +93,7 @@ type AccessorPropertyGroup =
   `${PublicOrProtectedOrPrivateModifierPrefix}${StaticOrAbstractModifierPrefix}${OverrideModifierPrefix}${DecoratedModifierPrefix}${AccessorPropertySelector}`
 type IndexSignatureGroup =
   `${StaticModifierPrefix}${ReadonlyModifierPrefix}${IndexSignatureSelector}`
+type StaticBlockGroup = `${StaticBlockSelector}`
 
 /**
  * Some invalid combinations are still handled by this type, such as
@@ -104,6 +107,7 @@ type Group =
   | DeclarePropertyGroup
   | IndexSignatureGroup
   | ConstructorGroup
+  | StaticBlockGroup
   | 'unknown'
   | string
 
@@ -348,11 +352,14 @@ export default createEslintRule<Options, MESSAGE_ID>({
               member.type === 'MethodDefinition' ||
               member.type === 'TSAbstractMethodDefinition'
             ) {
-              // By putting the abstract modifier before accessibility modifiers,
-              // we prioritize 'abstract' over those in cases like:
-              // Config: ['abstract-method', 'public-method']
-              // Element: public abstract method();
-              // Element will be classified as 'abstract-method' before 'public-method'
+              // By putting the static modifier before accessibility modifiers,
+              // we prioritize 'static' over those in cases like:
+              // Config: ['static-method', 'public-method']
+              // Element: public static method();
+              // Element will be classified as 'static-method' before 'public-method'
+              if (member.static) {
+                modifiers.push('static')
+              }
               if (member.type === 'TSAbstractMethodDefinition') {
                 modifiers.push('abstract')
               }
@@ -372,9 +379,6 @@ export default createEslintRule<Options, MESSAGE_ID>({
               } else {
                 modifiers.push('public')
               }
-              if (member.static) {
-                modifiers.push('static')
-              }
 
               if (member.kind === 'constructor') {
                 selectors.push('constructor')
@@ -389,19 +393,25 @@ export default createEslintRule<Options, MESSAGE_ID>({
               }
               selectors.push('method')
             } else if (member.type === 'TSIndexSignature') {
-              if (member.readonly) {
-                modifiers.push('readonly')
-              }
-
               if (member.static) {
                 modifiers.push('static')
               }
 
+              if (member.readonly) {
+                modifiers.push('readonly')
+              }
+
               selectors.push('index-signature')
+            } else if (member.type === 'StaticBlock') {
+              selectors.push('static-block')
             } else if (
               member.type === 'AccessorProperty' ||
               member.type === 'TSAbstractAccessorProperty'
             ) {
+              if (member.static) {
+                modifiers.push('static')
+              }
+
               if (member.type === 'TSAbstractAccessorProperty') {
                 modifiers.push('abstract')
               }
@@ -421,16 +431,18 @@ export default createEslintRule<Options, MESSAGE_ID>({
               } else {
                 modifiers.push('public')
               }
-              if (member.static) {
-                modifiers.push('static')
-              }
               selectors.push('accessor-property')
             } else if (
               member.type === 'PropertyDefinition' ||
               member.type === 'TSAbstractPropertyDefinition'
             ) {
-              // Similarly to above for methods, prioritize 'declare', 'decorated', 'abstract', 'override' and 'readonly'
+              // Similarly to above for methods, prioritize 'static', 'declare', 'decorated', 'abstract', 'override' and 'readonly'
               // over accessibility modifiers
+
+              if (member.static) {
+                modifiers.push('static')
+              }
+
               if (member.declare) {
                 modifiers.push('declare')
               }
@@ -457,10 +469,6 @@ export default createEslintRule<Options, MESSAGE_ID>({
                 modifiers.push('private')
               } else {
                 modifiers.push('public')
-              }
-
-              if (member.static) {
-                modifiers.push('static')
               }
 
               selectors.push('property')

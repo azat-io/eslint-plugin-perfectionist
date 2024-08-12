@@ -179,6 +179,8 @@ describe(ruleName, () => {
             code: dedent`
             abstract class Class {
 
+              static {}
+
               static readonly [key: string]: string;
 
               declare private static readonly l;
@@ -238,12 +240,15 @@ describe(ruleName, () => {
               declare private static readonly l;
 
               static readonly [key: string]: string;
+
+              static {}
             }
           `,
             options: [
               {
                 ...options,
                 groups: [
+                  'unknown',
                   'public-abstract-override-readonly-decorated-property',
                   'protected-abstract-override-readonly-decorated-property',
                   'static-public-override-readonly-property',
@@ -257,10 +262,18 @@ describe(ruleName, () => {
                   'private-property',
                   'declare-private-static-readonly-property',
                   'static-readonly-index-signature',
+                  'static-block',
                 ],
               },
             ],
             errors: [
+              {
+                messageId: 'unexpectedClassesOrder',
+                data: {
+                  left: 'static',
+                  right: 'static readonly [key: string]',
+                },
+              },
               {
                 messageId: 'unexpectedClassesOrder',
                 data: {
@@ -396,7 +409,7 @@ describe(ruleName, () => {
 
     describe('index-signature modifiers priority', () => {
       ruleTester.run(
-        `${ruleName}(${type}): prioritize readonly over static`,
+        `${ruleName}(${type}): prioritize static over readonly`,
         rule,
         {
           valid: [],
@@ -422,9 +435,9 @@ describe(ruleName, () => {
                 {
                   ...options,
                   groups: [
-                    'readonly-index-signature',
-                    'property',
                     'static-index-signature',
+                    'property',
+                    'readonly-index-signature',
                   ],
                 },
               ],
@@ -576,6 +589,49 @@ describe(ruleName, () => {
 
     describe('method modifiers priority', () => {
       ruleTester.run(
+        `${ruleName}(${type}): prioritize static over override`,
+        rule,
+        {
+          valid: [],
+          invalid: [
+            {
+              code: dedent`
+            export class Class extends Class2 {
+
+              a: string;
+
+              static override z(): string;
+            }
+          `,
+              output: dedent`
+            export class Class extends Class2 {
+
+              static override z(): string;
+
+              a: string;
+            }
+          `,
+              options: [
+                {
+                  ...options,
+                  groups: ['static-method', 'property', 'override-method'],
+                },
+              ],
+              errors: [
+                {
+                  messageId: 'unexpectedClassesOrder',
+                  data: {
+                    left: 'a',
+                    right: 'z',
+                  },
+                },
+              ],
+            },
+          ],
+        },
+      )
+
+      ruleTester.run(
         `${ruleName}(${type}): prioritize abstract over override`,
         rule,
         {
@@ -710,57 +766,57 @@ describe(ruleName, () => {
             ],
           },
         )
-
-        ruleTester.run(
-          `${ruleName}(${type}): prioritize ${accessibilityModifier} accessibility over static`,
-          rule,
-          {
-            valid: [],
-            invalid: [
-              {
-                code: dedent`
-              export class Class {
-
-                a: string;
-
-                ${accessibilityModifier} static z(): string;
-              }
-            `,
-                output: dedent`
-              export class Class {
-
-                ${accessibilityModifier} static z(): string;
-
-                a: string;
-              }
-            `,
-                options: [
-                  {
-                    ...options,
-                    groups: [
-                      `${accessibilityModifier}-method`,
-                      'property',
-                      'static-method',
-                    ],
-                  },
-                ],
-                errors: [
-                  {
-                    messageId: 'unexpectedClassesOrder',
-                    data: {
-                      left: 'a',
-                      right: 'z',
-                    },
-                  },
-                ],
-              },
-            ],
-          },
-        )
       }
     })
 
     describe('accessor modifiers priority', () => {
+      ruleTester.run(
+        `${ruleName}(${type}): prioritize static over override`,
+        rule,
+        {
+          valid: [],
+          invalid: [
+            {
+              code: dedent`
+            export class Class extends Class2 {
+
+              a: string;
+
+              static override accessor z: string;
+            }
+          `,
+              output: dedent`
+            export class Class extends Class2 {
+
+              static override accessor z: string;
+
+              a: string;
+            }
+          `,
+              options: [
+                {
+                  ...options,
+                  groups: [
+                    'static-accessor-property',
+                    'property',
+                    'override-accessor-property',
+                  ],
+                },
+              ],
+              errors: [
+                {
+                  messageId: 'unexpectedClassesOrder',
+                  data: {
+                    left: 'a',
+                    right: 'z',
+                  },
+                },
+              ],
+            },
+          ],
+        },
+      )
+
       ruleTester.run(
         `${ruleName}(${type}): prioritize abstract over override`,
         rule,
@@ -904,57 +960,53 @@ describe(ruleName, () => {
             ],
           },
         )
-
-        ruleTester.run(
-          `${ruleName}(${type}): prioritize ${accessibilityModifier} accessibility over static`,
-          rule,
-          {
-            valid: [],
-            invalid: [
-              {
-                code: dedent`
-              export class Class {
-
-                a: string;
-
-                ${accessibilityModifier} static accessor z: string;
-              }
-            `,
-                output: dedent`
-              export class Class {
-
-                ${accessibilityModifier} static accessor z: string;
-
-                a: string;
-              }
-            `,
-                options: [
-                  {
-                    ...options,
-                    groups: [
-                      `${accessibilityModifier}-accessor-property`,
-                      'property',
-                      'static-accessor-property',
-                    ],
-                  },
-                ],
-                errors: [
-                  {
-                    messageId: 'unexpectedClassesOrder',
-                    data: {
-                      left: 'a',
-                      right: 'z',
-                    },
-                  },
-                ],
-              },
-            ],
-          },
-        )
       }
     })
 
     describe('property modifiers priority', () => {
+      ruleTester.run(
+        `${ruleName}(${type}): prioritize static over declare`,
+        rule,
+        {
+          valid: [],
+          invalid: [
+            {
+              code: dedent`
+            export class Class extends Class2 {
+
+              a(): void {}
+
+              declare static z: string;
+            }
+          `,
+              output: dedent`
+            export class Class extends Class2 {
+
+              declare static z: string;
+
+              a(): void {}
+            }
+          `,
+              options: [
+                {
+                  ...options,
+                  groups: ['static-property', 'method', 'declare-property'],
+                },
+              ],
+              errors: [
+                {
+                  messageId: 'unexpectedClassesOrder',
+                  data: {
+                    left: 'a',
+                    right: 'z',
+                  },
+                },
+              ],
+            },
+          ],
+        },
+      )
+
       ruleTester.run(
         `${ruleName}(${type}): prioritize declare over abstract`,
         rule,
@@ -963,7 +1015,7 @@ describe(ruleName, () => {
           invalid: [
             {
               code: dedent`
-            export abstract class Class extends Class2 {
+            export class Class extends Class2 {
 
               a(): void {}
 
@@ -971,7 +1023,7 @@ describe(ruleName, () => {
             }
           `,
               output: dedent`
-            export abstract class Class extends Class2 {
+            export class Class extends Class2 {
 
               declare abstract z: string;
 
@@ -1221,53 +1273,6 @@ describe(ruleName, () => {
             ],
           },
         )
-
-        ruleTester.run(
-          `${ruleName}(${type}): prioritize ${accessibilityModifier} accessibility over static`,
-          rule,
-          {
-            valid: [],
-            invalid: [
-              {
-                code: dedent`
-              export class Class {
-
-                a(): void {}
-
-                ${accessibilityModifier} static z: string;
-              }
-            `,
-                output: dedent`
-              export class Class {
-
-                ${accessibilityModifier} static z: string;
-
-                a(): void {}
-              }
-            `,
-                options: [
-                  {
-                    ...options,
-                    groups: [
-                      `${accessibilityModifier}-property`,
-                      'method',
-                      'static-property',
-                    ],
-                  },
-                ],
-                errors: [
-                  {
-                    messageId: 'unexpectedClassesOrder',
-                    data: {
-                      left: 'a',
-                      right: 'z',
-                    },
-                  },
-                ],
-              },
-            ],
-          },
-        )
       }
     })
 
@@ -1497,13 +1502,13 @@ describe(ruleName, () => {
             `,
             output: dedent`
               class MyUnsortedClass {
+                static #someStaticPrivateProperty = 4
+
                 static someStaticProperty = 3
 
                 #someOtherPrivateProperty = 2
 
                 #somePrivateProperty
-
-                static #someStaticPrivateProperty = 4
 
                 someOtherProperty
 
@@ -1555,6 +1560,13 @@ describe(ruleName, () => {
                 data: {
                   left: '#someOtherPrivateProperty',
                   right: 'someStaticProperty',
+                },
+              },
+              {
+                messageId: 'unexpectedClassesOrder',
+                data: {
+                  left: 'someStaticProperty',
+                  right: '#someStaticPrivateProperty',
                 },
               },
               {
@@ -2838,13 +2850,13 @@ describe(ruleName, () => {
             `,
             output: dedent`
               class MyUnsortedClass {
+                static #someStaticPrivateProperty = 4
+
                 static someStaticProperty = 3
 
                 #someOtherPrivateProperty = 2
 
                 #somePrivateProperty
-
-                static #someStaticPrivateProperty = 4
 
                 someOtherProperty
 
@@ -2896,6 +2908,13 @@ describe(ruleName, () => {
                 data: {
                   left: '#someOtherPrivateProperty',
                   right: 'someStaticProperty',
+                },
+              },
+              {
+                messageId: 'unexpectedClassesOrder',
+                data: {
+                  left: 'someStaticProperty',
+                  right: '#someStaticPrivateProperty',
                 },
               },
               {
@@ -4148,9 +4167,9 @@ describe(ruleName, () => {
             `,
             output: dedent`
               class MyUnsortedClass {
-                static someStaticProperty = 3
-
                 static #someStaticPrivateProperty = 4
+
+                static someStaticProperty = 3
 
                 #someOtherPrivateProperty = 2
 
@@ -4164,9 +4183,9 @@ describe(ruleName, () => {
 
                 aInstanceMethod () {}
 
-                static #aPrivateStaticMethod () {}
-
                 #aPrivateInstanceMethod () {}
+
+                static #aPrivateStaticMethod () {}
 
                 static aStaticMethod () {}
               }
@@ -4206,6 +4225,13 @@ describe(ruleName, () => {
                 data: {
                   left: '#someOtherPrivateProperty',
                   right: 'someStaticProperty',
+                },
+              },
+              {
+                messageId: 'unexpectedClassesOrder',
+                data: {
+                  left: 'someStaticProperty',
+                  right: '#someStaticPrivateProperty',
                 },
               },
               {

@@ -225,7 +225,7 @@ Predefined groups are characterized by a single selector and potentially multipl
 #### Methods and accessors
 - Method selectors: `get-method`, `set-method`, `method`.
 - Accessors selector: `accessor-property`.
-- Modifiers: `abstract`, `decorated`, `override`, `protected`, `private`, `public`, `static`.
+- Modifiers: `static`, `abstract`, `decorated`, `override`, `protected`, `private`, `public`.
 - Example: `private-static-accessor-property`, `protected-abstract-override-method` or `static-get-method`.
 
 The `abstract` modifier is incompatible with the `static`, `private` and `decorated` modifiers.
@@ -233,7 +233,7 @@ The `abstract` modifier is incompatible with the `static`, `private` and `decora
 
 #### Properties
 - Selector: `property`.
-- Modifiers: `declare`, `abstract`, `decorated`, `override`, `readonly`, `protected`, `private`, `public`, `static`.
+- Modifiers: `static`, `declare`, `abstract`, `decorated`, `override`, `readonly`, `protected`, `private`, `public`.
 - Example: `readonly-decorated-property`.
 
 The `abstract` modifier is incompatible with the `static`, `private` and `decorated` modifiers.
@@ -241,8 +241,13 @@ The `declare` modifier is incompatible with the `override` and `decorated` modif
 
 #### Index-signatures
 - Selector: `index-signature`.
-- Modifiers: `readonly`, `static`.
+- Modifiers: `static`, `readonly`.
 - Example: `static-readonly-index-signature`.
+
+#### Static-blocks
+- Selector: `static-block`.
+- Modifiers: No modifier available.
+- Example: `static-block`.
 
 #### Important notes
 
@@ -292,11 +297,14 @@ Example 2: (The most important group is written in the comments)
 ```ts
 abstract class Example extends BaseExample {
 
-   // 'index-signature'
+  // 'index-signature'
   [key: string]: any;
 
   // 'public-static-property'
   static instance: Example;
+
+  // 'declare-protected-static-readonly-property'
+  declare protected static readonly value: string;
 
   // 'protected-abstract-override-readonly-decorated-property'
   @SomeDecorator
@@ -304,9 +312,6 @@ abstract class Example extends BaseExample {
 
   // 'protected-property'
   protected name: string;
-
-  // 'declare-protected-static-readonly-property'
-  declare protected static readonly value: string;
 
   // 'private-decorated-property'
   @SomeDecorator
@@ -332,24 +337,24 @@ abstract class Example extends BaseExample {
     return this.instance;
   }
 
-  // 'protected-method'
-  protected calculate() {
-    return this._value * 2;
-  }
-
   // 'protected-static-method'
   protected static initialize() {
     this.instance = new Example(0);
   }
 
-  // 'private-method'
-  private calculate() {
-    return this._value * 2;
-  }
-
   // 'private-static-method'
   private static initialize() {
     this.instance = new Example(0);
+  }
+
+  // 'protected-method'
+  protected calculate() {
+    return this._value * 2;
+  }
+
+  // 'private-method'
+  private calculate() {
+    return this._value * 2;
   }
 
   // 'public-decorated-method'
@@ -410,6 +415,11 @@ abstract class Example extends BaseExample {
   // 'private-decorated-accessor-property'
   @SomeDecorator
   private accessor _value: number;
+
+  // 'static-block'
+  static {
+    console.log("I am a static block");
+  }
 
   // 'public-decorated-accessor-property'
   @SomeDecorator
