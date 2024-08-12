@@ -432,13 +432,11 @@ export default createEslintRule<Options, MESSAGE_ID>({
                 modifiers.push('public')
               }
               selectors.push('accessor-property')
-            } else if (
-              member.type === 'PropertyDefinition' ||
-              member.type === 'TSAbstractPropertyDefinition'
-            ) {
+            } else {
+              // Member is necessarily a Property
+
               // Similarly to above for methods, prioritize 'static', 'declare', 'decorated', 'abstract', 'override' and 'readonly'
               // over accessibility modifiers
-
               if (member.static) {
                 modifiers.push('static')
               }
