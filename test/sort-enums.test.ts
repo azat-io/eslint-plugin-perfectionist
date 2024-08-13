@@ -1156,7 +1156,7 @@ describe(ruleName, () => {
 
   describe(`${ruleName}: misc`, () => {
     ruleTester.run(
-      `${ruleName}: sets alphabetical asc sorting as default`,
+      `${ruleName}: compare enum values correctly`,
       rule,
       {
         valid: [],
