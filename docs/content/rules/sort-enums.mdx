@@ -112,6 +112,15 @@ Controls whether sorting should be case-sensitive or not.
 - `true` — Ignore case when sorting alphabetically or naturally (e.g., “A” and “a” are the same).
 - `false` — Consider case when sorting (e.g., “A” comes before “a”).
 
+### compareValues
+
+<sub>default: `false`</sub>
+
+Controls whether sorting should be done using the enum's values or names.
+
+- `true` — Use enum values.
+- `false` — Use enum names.
+
 ### partitionByComment
 
 <sub>default: `false`</sub>
@@ -144,6 +153,7 @@ Allows you to use comments to separate the members of enums into logical groups.
                   order: 'asc',
                   ignoreCase: true,
                   partitionByComment: false,
+                  compareValues: false
                 },
               ],
             },
@@ -168,6 +178,7 @@ Allows you to use comments to separate the members of enums into logical groups.
                 order: 'asc',
                 ignoreCase: true,
                 partitionByComment: false,
+                compareValues: false,
               },
             ],
           },

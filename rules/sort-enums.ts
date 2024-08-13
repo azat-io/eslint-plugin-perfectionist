@@ -1,5 +1,6 @@
 import type { TSESTree } from '@typescript-eslint/types'
 
+import type { CompareOptions } from '../utils/compare'
 import type { SortingNode } from '../typings'
 
 import { isPartitionComment } from '../utils/is-partition-comment'
@@ -21,6 +22,7 @@ type Options = [
   Partial<{
     type: 'alphabetical' | 'line-length' | 'natural'
     partitionByComment: string[] | boolean | string
+    compareValues: boolean
     order: 'desc' | 'asc'
     ignoreCase: boolean
   }>,
@@ -54,6 +56,10 @@ export default createEslintRule<Options, MESSAGE_ID>({
               'Controls whether sorting should be case-sensitive or not.',
             type: 'boolean',
           },
+          compareValues: {
+            description: 'Compare enum values instead of names.',
+            type: 'boolean',
+          },
           partitionByComment: {
             description:
               'Allows you to use comments to separate the class members into logical groups.',
@@ -85,6 +91,7 @@ export default createEslintRule<Options, MESSAGE_ID>({
       type: 'alphabetical',
       order: 'asc',
       ignoreCase: true,
+      compareValues: false,
       partitionByComment: false,
     },
   ],
@@ -103,6 +110,7 @@ export default createEslintRule<Options, MESSAGE_ID>({
           type: 'alphabetical',
           ignoreCase: true,
           order: 'asc',
+          compareValues: false,
         } as const)
 
         let sourceCode = getSourceCode(context)
@@ -136,9 +144,25 @@ export default createEslintRule<Options, MESSAGE_ID>({
           [[]],
         )
 
+        let compareOptions: CompareOptions = {
+          type: options.type,
+          order: options.order,
+          ignoreCase: options.ignoreCase,
+          nodeValueGetter: options.compareValues
+            ? sortingNode => {
+                if (
+                  sortingNode.node.type === 'TSEnumMember' &&
+                  sortingNode.node.initializer?.type === 'Literal'
+                ) {
+                  return sortingNode.node.initializer.value?.toString() ?? ''
+                }
+                return ''
+              }
+            : undefined,
+        }
         for (let nodes of formattedMembers) {
           pairwise(nodes, (left, right) => {
-            if (isPositive(compare(left, right, options))) {
+            if (isPositive(compare(left, right, compareOptions))) {
               context.report({
                 messageId: 'unexpectedEnumsOrder',
                 data: {
@@ -150,7 +174,7 @@ export default createEslintRule<Options, MESSAGE_ID>({
                   makeFixes(
                     fixer,
                     nodes,
-                    sortNodes(nodes, options),
+                    sortNodes(nodes, compareOptions),
                     sourceCode,
                     { partitionComment },
                   ),

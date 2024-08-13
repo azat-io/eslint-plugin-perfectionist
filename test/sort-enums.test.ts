@@ -1159,6 +1159,112 @@ describe(ruleName, () => {
       `${ruleName}: sets alphabetical asc sorting as default`,
       rule,
       {
+        valid: [],
+        invalid: [
+          {
+            code: dedent`
+            enum Enum {
+              'k' = 'ffffff',
+              'j' = 4444,
+              'i' = 6,
+              'h' = 5,
+              'g' = 4,
+              'f' = '3',
+              'e' = 2,
+              'd' = 1,
+              'c' = '',
+              'b' = null,
+              'a' = undefined,
+            }
+          `,
+            output: dedent`
+            enum Enum {
+              'c' = '',
+              'b' = null,
+              'a' = undefined,
+              'd' = 1,
+              'e' = 2,
+              'f' = '3',
+              'g' = 4,
+              'h' = 5,
+              'i' = 6,
+              'j' = 4444,
+              'k' = 'ffffff',
+            }
+          `,
+            options: [
+              {
+                type: 'natural',
+                compareValues: true,
+              },
+            ],
+            errors: [
+              {
+                messageId: 'unexpectedEnumsOrder',
+                data: {
+                  left: 'k',
+                  right: 'j',
+                },
+              },
+              {
+                messageId: 'unexpectedEnumsOrder',
+                data: {
+                  left: 'j',
+                  right: 'i',
+                },
+              },
+              {
+                messageId: 'unexpectedEnumsOrder',
+                data: {
+                  left: 'i',
+                  right: 'h',
+                },
+              },
+              {
+                messageId: 'unexpectedEnumsOrder',
+                data: {
+                  left: 'h',
+                  right: 'g',
+                },
+              },
+              {
+                messageId: 'unexpectedEnumsOrder',
+                data: {
+                  left: 'g',
+                  right: 'f',
+                },
+              },
+              {
+                messageId: 'unexpectedEnumsOrder',
+                data: {
+                  left: 'f',
+                  right: 'e',
+                },
+              },
+              {
+                messageId: 'unexpectedEnumsOrder',
+                data: {
+                  left: 'e',
+                  right: 'd',
+                },
+              },
+              {
+                messageId: 'unexpectedEnumsOrder',
+                data: {
+                  left: 'd',
+                  right: 'c',
+                },
+              },
+            ],
+          },
+        ],
+      },
+    )
+
+    ruleTester.run(
+      `${ruleName}: sets alphabetical asc sorting as default`,
+      rule,
+      {
         valid: [
           dedent`
             enum Enum {
