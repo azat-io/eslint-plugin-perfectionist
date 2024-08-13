@@ -35,11 +35,9 @@ export let compare = (
   b: SortingNode,
   options: CompareOptions,
 ): number => {
-  let nodeValueGetter =
-    options.nodeValueGetter ?? ((node: SortingNode) => node.name)
-  if (b.dependencies?.includes(nodeValueGetter(a))) {
+  if (b.dependencies?.includes(a.name)) {
     return -1
-  } else if (a.dependencies?.includes(nodeValueGetter(b))) {
+  } else if (a.dependencies?.includes(b.name)) {
     return 1
   }
 
@@ -50,6 +48,9 @@ export let compare = (
     options.type === 'natural' || !options.ignoreCase
       ? (string: string) => string
       : (string: string) => string.toLowerCase()
+
+  let nodeValueGetter =
+    options.nodeValueGetter ?? ((node: SortingNode) => node.name)
 
   if (options.type === 'alphabetical') {
     sortingFunction = (aNode, bNode) =>
