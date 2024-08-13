@@ -22,8 +22,9 @@ type Options = [
   Partial<{
     type: 'alphabetical' | 'line-length' | 'natural'
     partitionByComment: string[] | boolean | string
-    compareValues: boolean
+    forceNumericSort: boolean
     order: 'desc' | 'asc'
+    sortByValue: boolean
     ignoreCase: boolean
   }>,
 ]
@@ -56,8 +57,13 @@ export default createEslintRule<Options, MESSAGE_ID>({
               'Controls whether sorting should be case-sensitive or not.',
             type: 'boolean',
           },
-          compareValues: {
+          sortByValue: {
             description: 'Compare enum values instead of names.',
+            type: 'boolean',
+          },
+          forceNumericSort: {
+            description:
+              'Will always sort numeric enums by their value regardless of the sort type specified.',
             type: 'boolean',
           },
           partitionByComment: {
@@ -91,8 +97,9 @@ export default createEslintRule<Options, MESSAGE_ID>({
       type: 'alphabetical',
       order: 'asc',
       ignoreCase: true,
-      compareValues: false,
+      sortByValue: false,
       partitionByComment: false,
+      forceNumericSort: false,
     },
   ],
   create: context => ({
@@ -101,16 +108,18 @@ export default createEslintRule<Options, MESSAGE_ID>({
         /* v8 ignore next 2 */
         // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
         node.body?.members ?? nodeValue.members ?? []
+      let members = getMembers(node)
       if (
-        getMembers(node).length > 1 &&
-        getMembers(node).every(({ initializer }) => initializer)
+        members.length > 1 &&
+        members.every(({ initializer }) => initializer)
       ) {
         let options = complete(context.options.at(0), {
           partitionByComment: false,
           type: 'alphabetical',
           ignoreCase: true,
           order: 'asc',
-          compareValues: false,
+          sortByValue: false,
+          forceNumericSort: false,
         } as const)
 
         let sourceCode = getSourceCode(context)
@@ -143,22 +152,34 @@ export default createEslintRule<Options, MESSAGE_ID>({
           },
           [[]],
         )
+        let isNumericalEnum = members.every(
+          member =>
+            member.initializer?.type === 'Literal' &&
+            typeof member.initializer.value === 'number',
+        )
 
         let compareOptions: CompareOptions = {
-          type: options.type,
+          // `natural` sort type will sort numeric enums by their number value
+          // If the enum is numerical, and we sort by value, always use the `natural` sort type
+          type:
+            isNumericalEnum && (options.forceNumericSort || options.sortByValue)
+              ? 'natural'
+              : options.type,
           order: options.order,
           ignoreCase: options.ignoreCase,
-          nodeValueGetter: options.compareValues
-            ? sortingNode => {
-                if (
-                  sortingNode.node.type === 'TSEnumMember' &&
-                  sortingNode.node.initializer?.type === 'Literal'
-                ) {
-                  return sortingNode.node.initializer.value?.toString() ?? ''
+          // Get the enum value rather than the name if needed
+          nodeValueGetter:
+            options.sortByValue || (isNumericalEnum && options.forceNumericSort)
+              ? sortingNode => {
+                  if (
+                    sortingNode.node.type === 'TSEnumMember' &&
+                    sortingNode.node.initializer?.type === 'Literal'
+                  ) {
+                    return sortingNode.node.initializer.value?.toString() ?? ''
+                  }
+                  return ''
                 }
-                return ''
-              }
-            : undefined,
+              : undefined,
         }
         for (let nodes of formattedMembers) {
           pairwise(nodes, (left, right) => {

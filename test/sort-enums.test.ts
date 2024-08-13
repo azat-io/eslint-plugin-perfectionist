@@ -397,7 +397,7 @@ describe(ruleName, () => {
       },
     )
 
-    ruleTester.run(`${ruleName}: compare enum values correctly`, rule, {
+    ruleTester.run(`${ruleName}: sort enum values correctly`, rule, {
       valid: [],
       invalid: [
         {
@@ -434,7 +434,7 @@ describe(ruleName, () => {
           options: [
             {
               ...options,
-              compareValues: true,
+              sortByValue: true,
             },
           ],
           errors: [
@@ -888,7 +888,7 @@ describe(ruleName, () => {
       },
     )
 
-    ruleTester.run(`${ruleName}: compare enum values correctly`, rule, {
+    ruleTester.run(`${ruleName}: sort enum values correctly`, rule, {
       valid: [],
       invalid: [
         {
@@ -925,7 +925,7 @@ describe(ruleName, () => {
           options: [
             {
               ...options,
-              compareValues: true,
+              sortByValue: true,
             },
           ],
           errors: [
@@ -1364,7 +1364,7 @@ describe(ruleName, () => {
       },
     )
 
-    ruleTester.run(`${ruleName}: compare enum values correctly`, rule, {
+    ruleTester.run(`${ruleName}: sort enum values correctly`, rule, {
       valid: [],
       invalid: [
         {
@@ -1399,7 +1399,7 @@ describe(ruleName, () => {
           options: [
             {
               ...options,
-              compareValues: true,
+              sortByValue: true,
             },
           ],
           errors: [
