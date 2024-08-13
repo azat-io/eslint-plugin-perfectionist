@@ -17,11 +17,11 @@ interface AlphabeticalCompareOptions extends BaseCompareOptions {
 
 interface LineLengthCompareOptions extends BaseCompareOptions {
   maxLineLength?: number
-  ignoreCase?: boolean
   type: 'line-length'
 }
 
 interface NaturalCompareOptions extends BaseCompareOptions {
+  ignoreCase?: boolean
   type: 'natural'
 }
 
@@ -45,7 +45,7 @@ export let compare = (
   let sortingFunction: (a: SortingNode, b: SortingNode) => number
 
   let formatString =
-    options.type === 'natural' || !options.ignoreCase
+    options.type === 'line-length' || !options.ignoreCase
       ? (string: string) => string
       : (string: string) => string.toLowerCase()
 
