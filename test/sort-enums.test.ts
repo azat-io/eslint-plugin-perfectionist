@@ -396,6 +396,115 @@ describe(ruleName, () => {
         ],
       },
     )
+
+    ruleTester.run(`${ruleName}: compare enum values correctly`, rule, {
+      valid: [],
+      invalid: [
+        {
+          code: dedent`
+            enum Enum {
+              'a' = 'i',
+              'b' = 'h',
+              'c' = 'g',
+              'd' = 'f',
+              'e' = 'e',
+              'f' = 'd',
+              'g' = 'c',
+              'h' = 'b',
+              'i' = 'a',
+              'j' = null,
+              'k' = undefined,
+            }
+          `,
+          output: dedent`
+            enum Enum {
+              'j' = null,
+              'k' = undefined,
+              'i' = 'a',
+              'h' = 'b',
+              'g' = 'c',
+              'f' = 'd',
+              'e' = 'e',
+              'd' = 'f',
+              'c' = 'g',
+              'b' = 'h',
+              'a' = 'i',
+            }
+          `,
+          options: [
+            {
+              ...options,
+              compareValues: true,
+            },
+          ],
+          errors: [
+            {
+              messageId: 'unexpectedEnumsOrder',
+              data: {
+                left: 'a',
+                right: 'b',
+              },
+            },
+            {
+              messageId: 'unexpectedEnumsOrder',
+              data: {
+                left: 'b',
+                right: 'c',
+              },
+            },
+            {
+              messageId: 'unexpectedEnumsOrder',
+              data: {
+                left: 'c',
+                right: 'd',
+              },
+            },
+            {
+              messageId: 'unexpectedEnumsOrder',
+              data: {
+                left: 'd',
+                right: 'e',
+              },
+            },
+            {
+              messageId: 'unexpectedEnumsOrder',
+              data: {
+                left: 'e',
+                right: 'f',
+              },
+            },
+            {
+              messageId: 'unexpectedEnumsOrder',
+              data: {
+                left: 'f',
+                right: 'g',
+              },
+            },
+            {
+              messageId: 'unexpectedEnumsOrder',
+              data: {
+                left: 'g',
+                right: 'h',
+              },
+            },
+            {
+              messageId: 'unexpectedEnumsOrder',
+              data: {
+                left: 'h',
+                right: 'i',
+              },
+            },
+            {
+              messageId: 'unexpectedEnumsOrder',
+              data: {
+                left: 'i',
+                right: 'j',
+              },
+            },
+          ],
+        },
+      ],
+    })
   })
 
   describe(`${ruleName}: sorting by natural order`, () => {
@@ -778,6 +887,108 @@ describe(ruleName, () => {
         ],
       },
     )
+
+    ruleTester.run(`${ruleName}: compare enum values correctly`, rule, {
+      valid: [],
+      invalid: [
+        {
+          code: dedent`
+            enum Enum {
+              'a' = 'ffffff',
+              'b' = 4444,
+              'c' = 6,
+              'd' = 5,
+              'e' = 4,
+              'f' = '3',
+              'g' = 2,
+              'h' = 1,
+              'i' = '',
+              'j' = null,
+              'k' = undefined,
+            }
+          `,
+          output: dedent`
+            enum Enum {
+              'i' = '',
+              'j' = null,
+              'k' = undefined,
+              'h' = 1,
+              'g' = 2,
+              'f' = '3',
+              'e' = 4,
+              'd' = 5,
+              'c' = 6,
+              'b' = 4444,
+              'a' = 'ffffff',
+            }
+          `,
+          options: [
+            {
+              ...options,
+              compareValues: true,
+            },
+          ],
+          errors: [
+            {
+              messageId: 'unexpectedEnumsOrder',
+              data: {
+                left: 'a',
+                right: 'b',
+              },
+            },
+            {
+              messageId: 'unexpectedEnumsOrder',
+              data: {
+                left: 'b',
+                right: 'c',
+              },
+            },
+            {
+              messageId: 'unexpectedEnumsOrder',
+              data: {
+                left: 'c',
+                right: 'd',
+              },
+            },
+            {
+              messageId: 'unexpectedEnumsOrder',
+              data: {
+                left: 'd',
+                right: 'e',
+              },
+            },
+            {
+              messageId: 'unexpectedEnumsOrder',
+              data: {
+                left: 'e',
+                right: 'f',
+              },
+            },
+            {
+              messageId: 'unexpectedEnumsOrder',
+              data: {
+                left: 'f',
+                right: 'g',
+              },
+            },
+            {
+              messageId: 'unexpectedEnumsOrder',
+              data: {
+                left: 'g',
+                right: 'h',
+              },
+            },
+            {
+              messageId: 'unexpectedEnumsOrder',
+              data: {
+                left: 'h',
+                right: 'i',
+              },
+            },
+          ],
+        },
+      ],
+    })
   })
 
   describe(`${ruleName}: sorting by line length`, () => {
@@ -1152,46 +1363,42 @@ describe(ruleName, () => {
         ],
       },
     )
-  })
 
-  describe(`${ruleName}: misc`, () => {
     ruleTester.run(`${ruleName}: compare enum values correctly`, rule, {
       valid: [],
       invalid: [
         {
           code: dedent`
             enum Enum {
-              'a' = 'ffffff',
-              'b' = 4444,
-              'c' = 6,
-              'd' = 5,
-              'e' = 4,
-              'f' = '3',
-              'g' = 2,
-              'h' = 1,
-              'i' = '',
-              'j' = null,
-              'k' = undefined,
+              'a' = '',
+              'b' = 'b',
+              'c' = 'cc',
+              'd' = 'ddd',
+              'e' = 'eeee',
+              'f' = 'fffff',
+              'g' = 'gggggg',
+              'h' = 'hhhhhhh',
+              'i' = 'iiiiiiii',
+              'j' = 'jj',
             }
           `,
           output: dedent`
             enum Enum {
-              'i' = '',
-              'j' = null,
-              'k' = undefined,
-              'h' = 1,
-              'g' = 2,
-              'f' = '3',
-              'e' = 4,
-              'd' = 5,
-              'c' = 6,
-              'b' = 4444,
-              'a' = 'ffffff',
+              'i' = 'iiiiiiii',
+              'h' = 'hhhhhhh',
+              'g' = 'gggggg',
+              'f' = 'fffff',
+              'e' = 'eeee',
+              'd' = 'ddd',
+              'c' = 'cc',
+              'j' = 'jj',
+              'b' = 'b',
+              'a' = '',
             }
           `,
           options: [
             {
-              type: 'natural',
+              ...options,
               compareValues: true,
             },
           ],
@@ -1256,7 +1463,9 @@ describe(ruleName, () => {
         },
       ],
     })
+  })
 
+  describe(`${ruleName}: misc`, () => {
     ruleTester.run(
       `${ruleName}: sets alphabetical asc sorting as default`,
       rule,
