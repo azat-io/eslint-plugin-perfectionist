@@ -1155,111 +1155,107 @@ describe(ruleName, () => {
   })
 
   describe(`${ruleName}: misc`, () => {
-    ruleTester.run(
-      `${ruleName}: compare enum values correctly`,
-      rule,
-      {
-        valid: [],
-        invalid: [
-          {
-            code: dedent`
+    ruleTester.run(`${ruleName}: compare enum values correctly`, rule, {
+      valid: [],
+      invalid: [
+        {
+          code: dedent`
             enum Enum {
-              'k' = 'ffffff',
-              'j' = 4444,
-              'i' = 6,
-              'h' = 5,
-              'g' = 4,
+              'a' = 'ffffff',
+              'b' = 4444,
+              'c' = 6,
+              'd' = 5,
+              'e' = 4,
               'f' = '3',
-              'e' = 2,
-              'd' = 1,
-              'c' = '',
-              'b' = null,
-              'a' = undefined,
+              'g' = 2,
+              'h' = 1,
+              'i' = '',
+              'j' = null,
+              'k' = undefined,
             }
           `,
-            output: dedent`
+          output: dedent`
             enum Enum {
-              'c' = '',
-              'b' = null,
-              'a' = undefined,
-              'd' = 1,
-              'e' = 2,
+              'i' = '',
+              'j' = null,
+              'k' = undefined,
+              'h' = 1,
+              'g' = 2,
               'f' = '3',
-              'g' = 4,
-              'h' = 5,
-              'i' = 6,
-              'j' = 4444,
-              'k' = 'ffffff',
+              'e' = 4,
+              'd' = 5,
+              'c' = 6,
+              'b' = 4444,
+              'a' = 'ffffff',
             }
           `,
-            options: [
-              {
-                type: 'natural',
-                compareValues: true,
+          options: [
+            {
+              type: 'natural',
+              compareValues: true,
+            },
+          ],
+          errors: [
+            {
+              messageId: 'unexpectedEnumsOrder',
+              data: {
+                left: 'a',
+                right: 'b',
               },
-            ],
-            errors: [
-              {
-                messageId: 'unexpectedEnumsOrder',
-                data: {
-                  left: 'k',
-                  right: 'j',
-                },
+            },
+            {
+              messageId: 'unexpectedEnumsOrder',
+              data: {
+                left: 'b',
+                right: 'c',
               },
-              {
-                messageId: 'unexpectedEnumsOrder',
-                data: {
-                  left: 'j',
-                  right: 'i',
-                },
+            },
+            {
+              messageId: 'unexpectedEnumsOrder',
+              data: {
+                left: 'c',
+                right: 'd',
               },
-              {
-                messageId: 'unexpectedEnumsOrder',
-                data: {
-                  left: 'i',
-                  right: 'h',
-                },
+            },
+            {
+              messageId: 'unexpectedEnumsOrder',
+              data: {
+                left: 'd',
+                right: 'e',
               },
-              {
-                messageId: 'unexpectedEnumsOrder',
-                data: {
-                  left: 'h',
-                  right: 'g',
-                },
+            },
+            {
+              messageId: 'unexpectedEnumsOrder',
+              data: {
+                left: 'e',
+                right: 'f',
               },
-              {
-                messageId: 'unexpectedEnumsOrder',
-                data: {
-                  left: 'g',
-                  right: 'f',
-                },
+            },
+            {
+              messageId: 'unexpectedEnumsOrder',
+              data: {
+                left: 'f',
+                right: 'g',
               },
-              {
-                messageId: 'unexpectedEnumsOrder',
-                data: {
-                  left: 'f',
-                  right: 'e',
-                },
+            },
+            {
+              messageId: 'unexpectedEnumsOrder',
+              data: {
+                left: 'g',
+                right: 'h',
               },
-              {
-                messageId: 'unexpectedEnumsOrder',
-                data: {
-                  left: 'e',
-                  right: 'd',
-                },
+            },
+            {
+              messageId: 'unexpectedEnumsOrder',
+              data: {
+                left: 'h',
+                right: 'i',
               },
-              {
-                messageId: 'unexpectedEnumsOrder',
-                data: {
-                  left: 'd',
-                  right: 'c',
-                },
-              },
-            ],
-          },
-        ],
-      },
-    )
+            },
+          ],
+        },
+      ],
+    })
 
     ruleTester.run(
       `${ruleName}: sets alphabetical asc sorting as default`,
