@@ -125,7 +125,7 @@ export default createEslintRule<Options, MESSAGE_ID>({
         let sourceCode = getSourceCode(context)
         let partitionComment = options.partitionByComment
 
-        let formattedMembers: SortingNode[][] = getMembers(node).reduce(
+        let formattedMembers: SortingNode[][] = members.reduce(
           (accumulator: SortingNode[][], member) => {
             let comment = getCommentBefore(member, sourceCode)
 
@@ -152,24 +152,23 @@ export default createEslintRule<Options, MESSAGE_ID>({
           },
           [[]],
         )
-        let isNumericalEnum = members.every(
+        let isNumericEnum = members.every(
           member =>
             member.initializer?.type === 'Literal' &&
             typeof member.initializer.value === 'number',
         )
 
         let compareOptions: CompareOptions = {
-          // `natural` sort type will sort numeric enums by their number value
-          // If the enum is numerical, and we sort by value, always use the `natural` sort type
+          // If the enum is numeric, and we sort by value, always use the `natural` sort type, which will correctly sort them.
           type:
-            isNumericalEnum && (options.forceNumericSort || options.sortByValue)
+            isNumericEnum && (options.forceNumericSort || options.sortByValue)
               ? 'natural'
               : options.type,
           order: options.order,
           ignoreCase: options.ignoreCase,
           // Get the enum value rather than the name if needed
           nodeValueGetter:
-            options.sortByValue || (isNumericalEnum && options.forceNumericSort)
+            options.sortByValue || (isNumericEnum && options.forceNumericSort)
               ? sortingNode => {
                   if (
                     sortingNode.node.type === 'TSEnumMember' &&
