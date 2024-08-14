@@ -131,3 +131,81 @@ type="config-type"
 client:load
 lang="js"
 />
+
+## Settings
+
+Many rules have common settings. You can set them in the `settings` field.
+
+The highest priority is given to the settings of a particular rule. Next comes the settings field and the lowest priority has default values.
+
+In settings you can set the following options:
+
+- `type` — The type of sorting. Possible values are `'alphabetical'`, `'natural'` and `'line-length'`.
+- `order` — The order of sorting. Possible values are `'asc'` and `'desc'`.
+- `ignoreCase` — Ignore case when sorting.
+- `ignorePattern` — Ignore sorting for elements that match the pattern.
+- `partitionByComment` — Partition the sorted elements by comments. Values can be `true`, `false` or glob pattern string.
+- `partitionByNewLine` — Partition the sorted elements by new lines. Values can be `true` or `false`.
+
+Example:
+
+<CodeTabs
+  code={[
+    {
+      source: dedent`
+        // eslint.config.js
+        import perfectionist from 'eslint-plugin-perfectionist'
+
+        export default [
+          {
+            plugins: {
+              perfectionist,
+            },
+            rules: {
+              'perfectionist/sort-objects': ['error', {
+                type: 'alphabetical',
+              }],
+              'perfectionist/sort-interfaces': ['error'],
+            },
+            settings: {
+              perfectionist: {
+                type: 'line-length',
+                partitionByComment: true,
+              },
+            },
+          },
+        ]
+      `,
+      name: 'Flat Config',
+      value: 'flat',
+    },
+    {
+      source: dedent`
+        // .eslintrc.js
+        module.exports = {
+          plugins: [
+            'perfectionist',
+          ],
+          rules: {
+            'perfectionist/sort-objects': ['error', {
+              type: 'alphabetical',
+            }],
+            'perfectionist/sort-interfaces': ['error'],
+          },
+          settings: {
+            perfectionist: {
+              type: 'line-length',
+              partitionByComment: true,
+            },
+          },
+        }
+      `,
+      name: 'Legacy Config',
+      value: 'legacy',
+    },
+
+]}
+type="config-type"
+client:load
+lang="js"
+/>
