@@ -1,7 +1,22 @@
+import { minimatch } from 'minimatch'
 import type { TSESTree } from '@typescript-eslint/utils'
 
 import type { Modifier, Selector } from './sort-classes'
 
+import type { CustomGroup, Modifier, Selector } from './sort-classes.types'
+
+interface CustomGroupMatchesProps {
+  memberValueType:
+    | 'ArrowFunctionExpression'
+    | 'FunctionExpression'
+    | undefined
+    | string
+  customGroup: CustomGroup
+  selectors: Selector[]
+  modifiers: Modifier[]
+  decorators: string[]
+  elementName: string
+}
 /**
  * Cache computed groups by modifiers and selectors for performance
  */
@@ -137,4 +152,82 @@ export const getOverloadSignatureGroups = (
     ...overloadSignaturesByName.values(),
     ...staticOverloadSignaturesByName.values(),
   ].filter(group => group.length > 1)
+}
+
+
+export const customGroupMatches = (props: CustomGroupMatchesProps): boolean => {
+  if (!props.selectors.includes(props.customGroup.selector)) {
+    return false
+  }
+
+  if (props.customGroup.selector === 'static-block') {
+    return true
+  }
+
+  if (props.customGroup.modifiers) {
+    for (let modifier of props.customGroup.modifiers) {
+      if (!props.modifiers.includes(modifier)) {
+        return false
+      }
+    }
+  }
+
+  if (
+    props.customGroup.selector === 'constructor' ||
+    props.customGroup.selector === 'index-signature'
+  ) {
+    return true
+  }
+
+  if (props.customGroup.elementNamePattern) {
+    let matchesElementNamePattern: boolean = minimatch(
+      props.elementName,
+      props.customGroup.elementNamePattern,
+      {
+        nocomment: true,
+      },
+    )
+    if (!matchesElementNamePattern) {
+      return false
+    }
+  }
+
+  if (props.customGroup.decoratorNamePattern) {
+    let decoratorPattern = props.customGroup.decoratorNamePattern
+    let matchesDecoratorNamePattern: boolean = props.decorators.some(
+      decorator =>
+        minimatch(decorator, decoratorPattern, {
+          nocomment: true,
+        }),
+    )
+    if (!matchesDecoratorNamePattern) {
+      return false
+    }
+  }
+
+  if (
+    props.customGroup.selector === 'method' ||
+    props.customGroup.selector === 'get-method' ||
+    props.customGroup.selector === 'set-method'
+  ) {
+    return true
+  }
+
+  if (props.customGroup.valueTypePattern) {
+    if (!props.memberValueType) {
+      return false
+    }
+    let matchesValueTypePattern: boolean = minimatch(
+      props.memberValueType,
+      props.customGroup.valueTypePattern,
+      {
+        nocomment: true,
+      },
+    )
+    if (!matchesValueTypePattern) {
+      return false
+    }
+  }
+
+  return true
 }

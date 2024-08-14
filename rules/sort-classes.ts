@@ -1,13 +1,20 @@
 import type { TSESTree } from '@typescript-eslint/types'
 import type { TSESLint } from '@typescript-eslint/utils'
 
+import type {
+  SortClassesOptions,
+  Modifier,
+  Selector,
+} from './sort-classes.types'
 import type { SortingNode } from '../typings'
 
 import {
-  getOverloadSignatureGroups,
   generateOfficialGroups,
+  customGroupMatches,
+  getOverloadSignatureGroups,
 } from './sort-classes-utils'
 import { isPartitionComment } from '../utils/is-partition-comment'
+import { allModifiers, allSelectors } from './sort-classes.types'
 import { getCommentBefore } from '../utils/get-comment-before'
 import { createEslintRule } from '../utils/create-eslint-rule'
 import { getGroupNumber } from '../utils/get-group-number'
@@ -25,119 +32,7 @@ import { compare } from '../utils/compare'
 
 type MESSAGE_ID = 'unexpectedClassesGroupOrder' | 'unexpectedClassesOrder'
 
-type ProtectedModifier = 'protected'
-type PrivateModifier = 'private'
-type PublicModifier = 'public'
-type StaticModifier = 'static'
-type AbstractModifier = 'abstract'
-type OverrideModifier = 'override'
-type ReadonlyModifier = 'readonly'
-type DecoratedModifier = 'decorated'
-type DeclareModifier = 'declare'
-type OptionalModifier = 'optional'
-export type Modifier =
-  | ProtectedModifier
-  | DecoratedModifier
-  | AbstractModifier
-  | OptionalModifier
-  | OverrideModifier
-  | ReadonlyModifier
-  | PrivateModifier
-  | DeclareModifier
-  | PublicModifier
-  | StaticModifier
-
-type ConstructorSelector = 'constructor'
-type FunctionPropertySelector = 'function-property'
-type PropertySelector = 'property'
-type MethodSelector = 'method'
-type GetMethodSelector = 'get-method'
-type SetMethodSelector = 'set-method'
-type IndexSignatureSelector = 'index-signature'
-type StaticBlockSelector = 'static-block'
-type AccessorPropertySelector = 'accessor-property'
-export type Selector =
-  | AccessorPropertySelector
-  | FunctionPropertySelector
-  | IndexSignatureSelector
-  | ConstructorSelector
-  | StaticBlockSelector
-  | GetMethodSelector
-  | SetMethodSelector
-  | PropertySelector
-  | MethodSelector
-
-type WithDashSuffixOrEmpty<T extends string> = `${T}-` | ''
-
-type PublicOrProtectedOrPrivateModifierPrefix = WithDashSuffixOrEmpty<
-  ProtectedModifier | PrivateModifier | PublicModifier
->
-
-type OverrideModifierPrefix = WithDashSuffixOrEmpty<OverrideModifier>
-type OptionalModifierPrefix = WithDashSuffixOrEmpty<OptionalModifier>
-type ReadonlyModifierPrefix = WithDashSuffixOrEmpty<ReadonlyModifier>
-type DecoratedModifierPrefix = WithDashSuffixOrEmpty<DecoratedModifier>
-type DeclareModifierPrefix = WithDashSuffixOrEmpty<DeclareModifier>
-
-type StaticOrAbstractModifierPrefix = WithDashSuffixOrEmpty<
-  AbstractModifier | StaticModifier
->
-
-type StaticModifierPrefix = WithDashSuffixOrEmpty<StaticModifier>
-
-type MethodOrGetMethodOrSetMethodSelector =
-  | GetMethodSelector
-  | SetMethodSelector
-  | MethodSelector
-
-type ConstructorGroup =
-  `${PublicOrProtectedOrPrivateModifierPrefix}${ConstructorSelector}`
-type FunctionPropertyGroup =
-  `${PublicOrProtectedOrPrivateModifierPrefix}${StaticModifierPrefix}${OverrideModifierPrefix}${ReadonlyModifierPrefix}${DecoratedModifierPrefix}${FunctionPropertySelector}`
-type DeclarePropertyGroup =
-  `${DeclareModifierPrefix}${PublicOrProtectedOrPrivateModifierPrefix}${StaticOrAbstractModifierPrefix}${ReadonlyModifierPrefix}${OptionalModifierPrefix}${PropertySelector}`
-type NonDeclarePropertyGroup =
-  `${PublicOrProtectedOrPrivateModifierPrefix}${StaticOrAbstractModifierPrefix}${OverrideModifierPrefix}${ReadonlyModifierPrefix}${DecoratedModifierPrefix}${OptionalModifierPrefix}${PropertySelector}`
-type MethodGroup =
-  `${PublicOrProtectedOrPrivateModifierPrefix}${StaticOrAbstractModifierPrefix}${OverrideModifierPrefix}${DecoratedModifierPrefix}${OptionalModifierPrefix}${MethodSelector}`
-type GetMethodOrSetMethodGroup =
-  `${PublicOrProtectedOrPrivateModifierPrefix}${StaticOrAbstractModifierPrefix}${OverrideModifierPrefix}${DecoratedModifierPrefix}${MethodOrGetMethodOrSetMethodSelector}`
-type AccessorPropertyGroup =
-  `${PublicOrProtectedOrPrivateModifierPrefix}${StaticOrAbstractModifierPrefix}${OverrideModifierPrefix}${DecoratedModifierPrefix}${AccessorPropertySelector}`
-type IndexSignatureGroup =
-  `${StaticModifierPrefix}${ReadonlyModifierPrefix}${IndexSignatureSelector}`
-type StaticBlockGroup = `${StaticBlockSelector}`
-
-/**
- * Some invalid combinations are still handled by this type, such as
- * - private abstract X
- * - abstract decorated X
- */
-type Group =
-  | GetMethodOrSetMethodGroup
-  | NonDeclarePropertyGroup
-  | AccessorPropertyGroup
-  | FunctionPropertyGroup
-  | DeclarePropertyGroup
-  | IndexSignatureGroup
-  | ConstructorGroup
-  | StaticBlockGroup
-  | MethodGroup
-  | 'unknown'
-  | string
-
-type Options = [
-  Partial<{
-    customGroups: { [key: string]: string[] | string }
-    type: 'alphabetical' | 'line-length' | 'natural'
-    partitionByComment: string[] | boolean | string
-    groups: (Group[] | Group)[]
-    order: 'desc' | 'asc'
-    ignoreCase: boolean
-  }>,
-]
-
-export default createEslintRule<Options, MESSAGE_ID>({
+export default createEslintRule<SortClassesOptions, MESSAGE_ID>({
   name: 'sort-classes',
   meta: {
     type: 'suggestion',
@@ -202,20 +97,64 @@ export default createEslintRule<Options, MESSAGE_ID>({
           },
           customGroups: {
             description: 'Specifies custom groups.',
-            type: 'object',
-            additionalProperties: {
-              oneOf: [
-                {
-                  type: 'string',
+            anyOf: [
+              {
+                type: 'object',
+                additionalProperties: {
+                  oneOf: [
+                    {
+                      type: 'string',
+                    },
+                    {
+                      type: 'array',
+                      items: {
+                        type: 'string',
+                      },
+                    },
+                  ],
                 },
-                {
-                  type: 'array',
-                  items: {
-                    type: 'string',
+              },
+              {
+                type: 'array',
+                items: {
+                  additionalProperties: false,
+                  description: 'Advanced group.',
+                  type: 'object',
+                  required: ['groupName', 'selector'],
+                  properties: {
+                    groupName: {
+                      description: 'Group name',
+                      type: 'string',
+                    },
+                    selector: {
+                      description: 'Selector',
+                      type: 'string',
+                      enum: allSelectors,
+                    },
+                    modifiers: {
+                      description: 'Modifiers',
+                      type: 'array',
+                      items: {
+                        type: 'string',
+                        enum: allModifiers,
+                      },
+                    },
+                    elementNameRegex: {
+                      description: 'Element name regex',
+                      type: 'string',
+                    },
+                    decoratorNamePattern: {
+                      description: 'Decorator name pattern',
+                      type: 'string',
+                    },
+                    valueTypePattern: {
+                      description: 'Value type pattern',
+                      type: 'string',
+                    },
                   },
                 },
-              ],
-            },
+              },
+            ],
           },
         },
         additionalProperties: false,
@@ -369,9 +308,12 @@ export default createEslintRule<Options, MESSAGE_ID>({
               'key' in member && member.key.type === 'PrivateIdentifier'
             let decorated =
               'decorators' in member && member.decorators.length > 0
+            let decorators: string[] = []
 
             let modifiers: Modifier[] = []
             let selectors: Selector[] = []
+            let memberValueType: undefined | string
+
             if (
               member.type === 'MethodDefinition' ||
               member.type === 'TSAbstractMethodDefinition'
@@ -390,6 +332,16 @@ export default createEslintRule<Options, MESSAGE_ID>({
 
               if (decorated) {
                 modifiers.push('decorated')
+                for (let decorator of member.decorators) {
+                  if (decorator.expression.type === 'Identifier') {
+                    decorators.push(decorator.expression.name)
+                  } else if (
+                    decorator.expression.type === 'CallExpression' &&
+                    decorator.expression.callee.type === 'Identifier'
+                  ) {
+                    decorators.push(decorator.expression.callee.name)
+                  }
+                }
               }
 
               if (member.override) {
@@ -436,6 +388,8 @@ export default createEslintRule<Options, MESSAGE_ID>({
               member.type === 'AccessorProperty' ||
               member.type === 'TSAbstractAccessorProperty'
             ) {
+              memberValueType = member.value?.type
+
               if (member.static) {
                 modifiers.push('static')
               }
@@ -446,6 +400,16 @@ export default createEslintRule<Options, MESSAGE_ID>({
 
               if (decorated) {
                 modifiers.push('decorated')
+                for (let decorator of member.decorators) {
+                  if (decorator.expression.type === 'Identifier') {
+                    decorators.push(decorator.expression.name)
+                  } else if (
+                    decorator.expression.type === 'CallExpression' &&
+                    decorator.expression.callee.type === 'Identifier'
+                  ) {
+                    decorators.push(decorator.expression.callee.name)
+                  }
+                }
               }
 
               if (member.override) {
@@ -465,6 +429,9 @@ export default createEslintRule<Options, MESSAGE_ID>({
 
               // Similarly to above for methods, prioritize 'static', 'declare', 'decorated', 'abstract', 'override' and 'readonly'
               // over accessibility modifiers
+
+              memberValueType = member.value?.type
+
               if (member.static) {
                 modifiers.push('static')
               }
@@ -479,6 +446,16 @@ export default createEslintRule<Options, MESSAGE_ID>({
 
               if (decorated) {
                 modifiers.push('decorated')
+                for (let decorator of member.decorators) {
+                  if (decorator.expression.type === 'Identifier') {
+                    decorators.push(decorator.expression.name)
+                  } else if (
+                    decorator.expression.type === 'CallExpression' &&
+                    decorator.expression.callee.type === 'Identifier'
+                  ) {
+                    decorators.push(decorator.expression.callee.name)
+                  }
+                }
               }
 
               if (member.override) {
@@ -516,9 +493,27 @@ export default createEslintRule<Options, MESSAGE_ID>({
             )) {
               defineGroup(officialGroup)
             }
-            setCustomGroups(options.customGroups, name, {
-              override: true,
-            })
+
+            if (Array.isArray(options.customGroups)) {
+              for (let customGroup of options.customGroups) {
+                if (
+                  customGroupMatches({
+                    customGroup,
+                    elementName: name,
+                    modifiers,
+                    selectors,
+                    decorators,
+                    memberValueType,
+                  })
+                ) {
+                  defineGroup(customGroup.groupName, true)
+                }
+              }
+            } else {
+              setCustomGroups(options.customGroups, name, {
+                override: true,
+              })
+            }
 
             if (member.type === 'PropertyDefinition' && member.value) {
               dependencies = extractDependencies(member.value)
