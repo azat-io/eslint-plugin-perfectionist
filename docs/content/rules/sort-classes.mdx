@@ -232,12 +232,16 @@ The `abstract` modifier is incompatible with the `static`, `private` and `decora
 `constructor`, `get-method` and `set-method` elements will also be matched as `method`.
 
 #### Properties
-- Selector: `property`.
+- Selectors: `function-property`, `property`.
 - Modifiers: `static`, `declare`, `abstract`, `decorated`, `override`, `readonly`, `protected`, `private`, `public`.
 - Example: `readonly-decorated-property`.
 
 The `abstract` modifier is incompatible with the `static`, `private` and `decorated` modifiers.
+
 The `declare` modifier is incompatible with the `override` and `decorated` modifiers.
+
+The `function-property` selector will match properties whose values are defined functions or arrow-functions.
+As such, the `declare` and `abstract` modifiers are incompatible with this selector.
 
 #### Index-signatures
 - Selector: `index-signature`.
@@ -316,6 +320,12 @@ abstract class Example extends BaseExample {
   // 'private-decorated-property'
   @SomeDecorator
   private _value: number;
+
+  // private-function-property
+  private arrowProperty = () => {};
+
+  // private-function-property
+  private functionProperty = function() {};
 
   // 'private-property'
   private name: string;

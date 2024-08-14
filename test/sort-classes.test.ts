@@ -185,6 +185,10 @@ describe(ruleName, () => {
 
               static readonly [key: string]: string;
 
+              private n = function() {};
+
+              private m = () => {};
+
               declare private static readonly l;
 
               private k = 'k';
@@ -241,6 +245,10 @@ describe(ruleName, () => {
 
               declare private static readonly l;
 
+              private m = () => {};
+
+              private n = function() {};
+
               static readonly [key: string]: string;
 
               static {}
@@ -263,6 +271,7 @@ describe(ruleName, () => {
                   'protected-property',
                   'private-property',
                   'declare-private-static-readonly-property',
+                  'function-property',
                   'static-readonly-index-signature',
                   'static-block',
                 ],
@@ -283,8 +292,22 @@ describe(ruleName, () => {
                 data: {
                   left: 'static readonly [key: string]',
                   leftGroup: 'static-readonly-index-signature',
-                  right: 'l',
+                  right: 'n',
                   rightGroup: 'declare-private-static-readonly-property',
+                },
+              },
+              {
+                messageId: 'unexpectedClassesOrder',
+                data: {
+                  left: 'n',
+                  right: 'm',
+                },
+              },
+              {
+                messageId: 'unexpectedClassesOrder',
+                data: {
+                  left: 'm',
+                  right: 'l',
                 },
               },
               {
@@ -1018,6 +1041,94 @@ describe(ruleName, () => {
           },
         )
       }
+    })
+
+    describe('property selectors priority', () => {
+      ruleTester.run(
+        `${ruleName}(${type}): prioritize function property over property`,
+        rule,
+        {
+          valid: [],
+          invalid: [
+            {
+              code: dedent`
+            export class Class {
+
+              a = function() {}
+
+              z: string;
+            }
+          `,
+              output: dedent`
+            export class Class {
+
+              z: string;
+
+              a = function() {}
+            }
+          `,
+              options: [
+                {
+                  ...options,
+                  groups: ['property', 'function-property'],
+                },
+              ],
+              errors: [
+                {
+                  messageId: 'unexpectedClassesOrder',
+                  data: {
+                    left: 'a',
+                    right: 'z',
+                  },
+                },
+              ],
+            },
+          ],
+        },
+      )
+
+      ruleTester.run(
+        `${ruleName}(${type}): prioritize function property over property for arrow functions`,
+        rule,
+        {
+          valid: [],
+          invalid: [
+            {
+              code: dedent`
+            export class Class {
+
+              a = () => {}
+
+              z: string;
+            }
+          `,
+              output: dedent`
+            export class Class {
+
+              z: string;
+
+              a = () => {}
+            }
+          `,
+              options: [
+                {
+                  ...options,
+                  groups: ['property', 'function-property'],
+                },
+              ],
+              errors: [
+                {
+                  messageId: 'unexpectedClassesOrder',
+                  data: {
+                    left: 'a',
+                    right: 'z',
+                  },
+                },
+              ],
+            },
+          ],
+        },
+      )
     })
 
     describe('property modifiers priority', () => {

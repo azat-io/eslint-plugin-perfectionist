@@ -43,6 +43,7 @@ export type Modifier =
   | StaticModifier
 
 type ConstructorSelector = 'constructor'
+type FunctionPropertySelector = 'function-property'
 type PropertySelector = 'property'
 type MethodSelector = 'method'
 type GetMethodSelector = 'get-method'
@@ -52,6 +53,7 @@ type StaticBlockSelector = 'static-block'
 type AccessorPropertySelector = 'accessor-property'
 export type Selector =
   | AccessorPropertySelector
+  | FunctionPropertySelector
   | IndexSignatureSelector
   | ConstructorSelector
   | StaticBlockSelector
@@ -84,6 +86,8 @@ type MethodOrGetMethodOrSetMethodSelector =
 
 type ConstructorGroup =
   `${PublicOrProtectedOrPrivateModifierPrefix}${ConstructorSelector}`
+type FunctionPropertyGroup =
+  `${PublicOrProtectedOrPrivateModifierPrefix}${StaticModifierPrefix}${OverrideModifierPrefix}${ReadonlyModifierPrefix}${DecoratedModifierPrefix}${FunctionPropertySelector}`
 type DeclarePropertyGroup =
   `${DeclareModifierPrefix}${PublicOrProtectedOrPrivateModifierPrefix}${StaticOrAbstractModifierPrefix}${ReadonlyModifierPrefix}${PropertySelector}`
 type NonDeclarePropertyGroup =
@@ -105,6 +109,7 @@ type Group =
   | MethodOrGetMethodOrSetMethodGroup
   | NonDeclarePropertyGroup
   | AccessorPropertyGroup
+  | FunctionPropertyGroup
   | DeclarePropertyGroup
   | IndexSignatureGroup
   | ConstructorGroup
@@ -472,6 +477,13 @@ export default createEslintRule<Options, MESSAGE_ID>({
                 modifiers.push('private')
               } else {
                 modifiers.push('public')
+              }
+
+              if (
+                member.value?.type === 'ArrowFunctionExpression' ||
+                member.value?.type === 'FunctionExpression'
+              ) {
+                selectors.push('function-property')
               }
 
               selectors.push('property')
