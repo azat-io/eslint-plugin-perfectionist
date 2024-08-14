@@ -208,7 +208,8 @@ export const customGroupMatches = (props: CustomGroupMatchesProps): boolean => {
   if (
     props.customGroup.selector === 'method' ||
     props.customGroup.selector === 'get-method' ||
-    props.customGroup.selector === 'set-method'
+    props.customGroup.selector === 'set-method' ||
+    props.customGroup.selector === 'function-property'
   ) {
     return true
   }
