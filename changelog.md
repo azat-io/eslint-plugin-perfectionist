@@ -1,6 +1,23 @@
 # Changelog
 
 
+## v3.2.0
+
+[compare changes](https://github.com/azat-io/eslint-plugin-perfectionist/compare/v3.1.3...v3.2.0)
+
+### 🚀 Features
+
+- Use dynamic group generation in sort-classes ([baa701d](https://github.com/azat-io/eslint-plugin-perfectionist/commit/baa701d))
+- Support for sorting by enum value ([285a451](https://github.com/azat-io/eslint-plugin-perfectionist/commit/285a451))
+- Improve group order error messages in sort-classes ([b02d626](https://github.com/azat-io/eslint-plugin-perfectionist/commit/b02d626))
+- Allow specifying cross-rule settings ([8e15730](https://github.com/azat-io/eslint-plugin-perfectionist/commit/8e15730))
+- Add property-function groups in sort-class rule ([41b92d3](https://github.com/azat-io/eslint-plugin-perfectionist/commit/41b92d3))
+
+### ❤️ Contributors
+
+- Hugo ([@hugop95](http://github.com/hugop95))
+- Azat S. ([@azat-io](http://github.com/azat-io))
+
 ## v3.1.3
 
 [compare changes](https://github.com/azat-io/eslint-plugin-perfectionist/compare/v3.1.2...v3.1.3)
