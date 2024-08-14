@@ -18,7 +18,7 @@ import { compare } from '../utils/compare'
 
 type MESSAGE_ID = 'unexpectedEnumsOrder'
 
-type Options = [
+export type Options = [
   Partial<{
     type: 'alphabetical' | 'line-length' | 'natural'
     partitionByComment: string[] | boolean | string

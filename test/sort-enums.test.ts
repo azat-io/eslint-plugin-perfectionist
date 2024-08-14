@@ -2,6 +2,8 @@ import { RuleTester } from '@typescript-eslint/rule-tester'
 import { afterAll, describe, it } from 'vitest'
 import { dedent } from 'ts-dedent'
 
+import type { Options } from '../rules/sort-enums'
+
 import rule from '../rules/sort-enums'
 
 let ruleName = 'sort-enums'
@@ -1466,6 +1468,188 @@ describe(ruleName, () => {
   })
 
   describe(`${ruleName}: misc`, () => {
+    ruleTester.run(`${ruleName}: detects numeric enums`, rule, {
+      valid: [
+        {
+          code: dedent`
+              enum Enum {
+                'a' = '1',
+                'b' = 2,
+                'c' = 0,
+              }
+            `,
+          options: [
+            {
+              forceNumericSort: true,
+            },
+          ],
+        },
+        {
+          code: dedent`
+            enum Enum {
+                'a' = 1,
+                'b' = 2,
+                'c' = 0,
+                d,
+              }
+            `,
+          options: [
+            {
+              forceNumericSort: true,
+            },
+          ],
+        },
+        {
+          code: dedent`
+            enum Enum {
+                'a' = 1,
+                'b' = 2,
+                'c' = 0,
+                d = undefined,
+              }
+            `,
+          options: [
+            {
+              forceNumericSort: true,
+            },
+          ],
+        },
+        {
+          code: dedent`
+            enum Enum {
+                'a' = 1,
+                'b' = 2,
+                'c' = 0,
+                d = null,
+              }
+            `,
+          options: [
+            {
+              forceNumericSort: true,
+            },
+          ],
+        },
+        {
+          code: dedent`
+            enum Enum {
+                'c' = 0,
+                'a' = 1,
+                'b' = 2,
+              }
+            `,
+          options: [
+            {
+              forceNumericSort: true,
+            },
+          ],
+        },
+      ],
+      invalid: [],
+    })
+
+    let sortTypes: Options[0]['type'][] = [
+      'alphabetical',
+      'line-length',
+      'natural',
+    ]
+    for (let type of sortTypes) {
+      ruleTester.run(
+        `${ruleName}: sortByValue = true => sorts numerical enums numerically for type ${type}`,
+        rule,
+        {
+          valid: [],
+          invalid: [
+            {
+              code: dedent`
+              enum Enum {
+                'b' = 2,
+                'a' = 1,
+                'c' = 0,
+              }
+            `,
+              output: dedent`
+              enum Enum {
+                'c' = 0,
+                'a' = 1,
+                'b' = 2,
+              }
+              `,
+              options: [
+                {
+                  type,
+                  sortByValue: true,
+                },
+              ],
+              errors: [
+                {
+                  messageId: 'unexpectedEnumsOrder',
+                  data: {
+                    left: 'b',
+                    right: 'a',
+                  },
+                },
+                {
+                  messageId: 'unexpectedEnumsOrder',
+                  data: {
+                    left: 'a',
+                    right: 'c',
+                  },
+                },
+              ],
+            },
+          ],
+        },
+      )
+
+      ruleTester.run(
+        `${ruleName}: forceNumericSort = true => sorts numerical enums numerically regardless for type ${type}`,
+        rule,
+        {
+          valid: [],
+          invalid: [
+            {
+              code: dedent`
+              enum Enum {
+                'b' = 2,
+                'a' = 1,
+                'c' = 0,
+              }
+            `,
+              output: dedent`
+              enum Enum {
+                'c' = 0,
+                'a' = 1,
+                'b' = 2,
+              }
+              `,
+              options: [
+                {
+                  type,
+                  forceNumericSort: true,
+                },
+              ],
+              errors: [
+                {
+                  messageId: 'unexpectedEnumsOrder',
+                  data: {
+                    left: 'b',
+                    right: 'a',
+                  },
+                },
+                {
+                  messageId: 'unexpectedEnumsOrder',
+                  data: {
+                    left: 'a',
+                    right: 'c',
+                  },
+                },
+              ],
+            },
+          ],
+        },
+      )
+    }
+
     ruleTester.run(
       `${ruleName}: sets alphabetical asc sorting as default`,
       rule,
