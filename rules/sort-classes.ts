@@ -514,9 +514,10 @@ export default createEslintRule<Options, MESSAGE_ID>({
                   isPositive(compare(left, right, options))))
             ) {
               context.report({
-                messageId: leftNum !== rightNum
-                  ? 'unexpectedClassesGroupOrder'
-                  : 'unexpectedClassesOrder',
+                messageId:
+                  leftNum !== rightNum
+                    ? 'unexpectedClassesGroupOrder'
+                    : 'unexpectedClassesOrder',
                 data: {
                   left: toSingleLine(left.name),
                   leftGroup: left.group,
