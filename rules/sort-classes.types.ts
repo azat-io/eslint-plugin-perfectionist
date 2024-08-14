@@ -170,6 +170,7 @@ interface CustomGroupWithValueTypePattern<T extends Selector>
 }
 
 export type CustomGroup =
+  | CustomGroupWithNameAndDecoratorPatternFilter<FunctionPropertySelector>
   | CustomGroupWithNameAndDecoratorPatternFilter<GetMethodSelector>
   | CustomGroupWithNameAndDecoratorPatternFilter<SetMethodSelector>
   | CustomGroupWithNameAndDecoratorPatternFilter<MethodSelector>
