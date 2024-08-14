@@ -523,7 +523,7 @@ export default createEslintRule<Options, MESSAGE_ID>({
             let rightNum = getGroupNumber(options.groups, right)
 
             if (
-              left.name !== right.name &&
+              (left.name !== right.name || leftNum !== rightNum) &&
               (leftNum > rightNum ||
                 (leftNum === rightNum &&
                   isPositive(compare(left, right, options))))
