@@ -19,7 +19,7 @@ import { complete } from '../utils/complete'
 import { pairwise } from '../utils/pairwise'
 import { compare } from '../utils/compare'
 
-type MESSAGE_ID = 'unexpectedClassesOrder'
+type MESSAGE_ID = 'unexpectedClassesGroupOrder' | 'unexpectedClassesOrder'
 
 type ProtectedModifier = 'protected'
 type PrivateModifier = 'private'
@@ -207,8 +207,9 @@ export default createEslintRule<Options, MESSAGE_ID>({
       },
     ],
     messages: {
-      unexpectedClassesOrder:
+      unexpectedClassesGroupOrder:
         'Expected "{{right}}" ({{rightGroup}}) to come before "{{left}}" ({{leftGroup}}).',
+      unexpectedClassesOrder: 'Expected "{{right}}" to come before "{{left}}".',
     },
   },
   defaultOptions: [
@@ -513,7 +514,9 @@ export default createEslintRule<Options, MESSAGE_ID>({
                   isPositive(compare(left, right, options))))
             ) {
               context.report({
-                messageId: 'unexpectedClassesOrder',
+                messageId: leftNum !== rightNum
+                  ? 'unexpectedClassesGroupOrder'
+                  : 'unexpectedClassesOrder',
                 data: {
                   left: toSingleLine(left.name),
                   leftGroup: left.group,
