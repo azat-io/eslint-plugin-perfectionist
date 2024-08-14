@@ -158,10 +158,12 @@ describe(ruleName, () => {
               },
             },
             {
-              messageId: 'unexpectedClassesOrder',
+              messageId: 'unexpectedClassesGroupOrder',
               data: {
                 left: 'f',
+                leftGroup: 'static-method',
                 right: 'constructor',
+                rightGroup: 'constructor',
               },
             },
           ],
@@ -268,94 +270,123 @@ describe(ruleName, () => {
             ],
             errors: [
               {
-                messageId: 'unexpectedClassesOrder',
+                messageId: 'unexpectedClassesGroupOrder',
                 data: {
                   left: 'static',
+                  leftGroup: 'static-block',
                   right: 'static readonly [key: string]',
+                  rightGroup: 'static-readonly-index-signature',
                 },
               },
               {
-                messageId: 'unexpectedClassesOrder',
+                messageId: 'unexpectedClassesGroupOrder',
                 data: {
                   left: 'static readonly [key: string]',
+                  leftGroup: 'static-readonly-index-signature',
                   right: 'l',
+                  rightGroup: 'declare-private-static-readonly-property',
                 },
               },
               {
-                messageId: 'unexpectedClassesOrder',
+                messageId: 'unexpectedClassesGroupOrder',
                 data: {
                   left: 'l',
+                  leftGroup: 'declare-private-static-readonly-property',
                   right: 'k',
+                  rightGroup: 'private-property',
                 },
               },
               {
-                messageId: 'unexpectedClassesOrder',
+                messageId: 'unexpectedClassesGroupOrder',
                 data: {
                   left: 'k',
+                  leftGroup: 'private-property',
                   right: 'j',
+                  rightGroup: 'protected-property',
                 },
               },
               {
-                messageId: 'unexpectedClassesOrder',
+                messageId: 'unexpectedClassesGroupOrder',
                 data: {
                   left: 'j',
+                  leftGroup: 'protected-property',
                   right: 'i',
+                  rightGroup: 'public-property',
                 },
               },
               {
-                messageId: 'unexpectedClassesOrder',
+                messageId: 'unexpectedClassesGroupOrder',
                 data: {
                   left: 'i',
+                  leftGroup: 'public-property',
                   right: 'h',
+                  rightGroup: 'private-readonly-property',
                 },
               },
               {
-                messageId: 'unexpectedClassesOrder',
+                messageId: 'unexpectedClassesGroupOrder',
                 data: {
                   left: 'h',
+                  leftGroup: 'private-readonly-property',
                   right: 'g',
+                  rightGroup: 'protected-readonly-property',
                 },
               },
               {
-                messageId: 'unexpectedClassesOrder',
+                messageId: 'unexpectedClassesGroupOrder',
                 data: {
                   left: 'g',
+                  leftGroup: 'protected-readonly-property',
                   right: 'f',
+                  rightGroup: 'public-readonly-property',
                 },
               },
               {
-                messageId: 'unexpectedClassesOrder',
+                messageId: 'unexpectedClassesGroupOrder',
                 data: {
                   left: 'f',
+                  leftGroup: 'public-readonly-property',
                   right: 'e',
+                  rightGroup: 'static-private-override-readonly-property',
                 },
               },
               {
-                messageId: 'unexpectedClassesOrder',
+                messageId: 'unexpectedClassesGroupOrder',
                 data: {
                   left: 'e',
+                  leftGroup: 'static-private-override-readonly-property',
                   right: 'd',
+                  rightGroup: 'static-protected-override-readonly-property',
                 },
               },
               {
-                messageId: 'unexpectedClassesOrder',
+                messageId: 'unexpectedClassesGroupOrder',
                 data: {
                   left: 'd',
+                  leftGroup: 'static-protected-override-readonly-property',
                   right: 'c',
+                  rightGroup: 'static-public-override-readonly-property',
                 },
               },
               {
-                messageId: 'unexpectedClassesOrder',
+                messageId: 'unexpectedClassesGroupOrder',
                 data: {
                   left: 'c',
+                  leftGroup: 'static-public-override-readonly-property',
                   right: 'b',
+                  rightGroup:
+                    'protected-abstract-override-readonly-decorated-property',
                 },
               },
               {
-                messageId: 'unexpectedClassesOrder',
+                messageId: 'unexpectedClassesGroupOrder',
                 data: {
                   left: 'b',
+                  leftGroup:
+                    'protected-abstract-override-readonly-decorated-property',
                   right: 'a',
+                  rightGroup:
+                    'public-abstract-override-readonly-decorated-property',
                 },
               },
             ],
@@ -395,10 +426,12 @@ describe(ruleName, () => {
             ],
             errors: [
               {
-                messageId: 'unexpectedClassesOrder',
+                messageId: 'unexpectedClassesGroupOrder',
                 data: {
                   left: 'method',
+                  leftGroup: 'public-abstract-override-method',
                   right: 'fields',
+                  rightGroup: 'get-method',
                 },
               },
             ],
@@ -443,10 +476,12 @@ describe(ruleName, () => {
               ],
               errors: [
                 {
-                  messageId: 'unexpectedClassesOrder',
+                  messageId: 'unexpectedClassesGroupOrder',
                   data: {
                     left: 'a',
+                    leftGroup: 'property',
                     right: 'static readonly [key: string]',
+                    rightGroup: 'static-index-signature',
                   },
                 },
               ],
@@ -488,10 +523,12 @@ describe(ruleName, () => {
               ],
               errors: [
                 {
-                  messageId: 'unexpectedClassesOrder',
+                  messageId: 'unexpectedClassesGroupOrder',
                   data: {
                     left: 'a',
+                    leftGroup: 'method',
                     right: 'constructor',
+                    rightGroup: 'constructor',
                   },
                 },
               ],
@@ -531,10 +568,12 @@ describe(ruleName, () => {
               ],
               errors: [
                 {
-                  messageId: 'unexpectedClassesOrder',
+                  messageId: 'unexpectedClassesGroupOrder',
                   data: {
                     left: 'a',
+                    leftGroup: 'method',
                     right: 'z',
+                    rightGroup: 'get-method',
                   },
                 },
               ],
@@ -574,10 +613,12 @@ describe(ruleName, () => {
               ],
               errors: [
                 {
-                  messageId: 'unexpectedClassesOrder',
+                  messageId: 'unexpectedClassesGroupOrder',
                   data: {
                     left: 'a',
+                    leftGroup: 'method',
                     right: 'z',
+                    rightGroup: 'set-method',
                   },
                 },
               ],
@@ -619,10 +660,12 @@ describe(ruleName, () => {
               ],
               errors: [
                 {
-                  messageId: 'unexpectedClassesOrder',
+                  messageId: 'unexpectedClassesGroupOrder',
                   data: {
                     left: 'a',
+                    leftGroup: 'property',
                     right: 'z',
+                    rightGroup: 'static-method',
                   },
                 },
               ],
@@ -662,10 +705,12 @@ describe(ruleName, () => {
               ],
               errors: [
                 {
-                  messageId: 'unexpectedClassesOrder',
+                  messageId: 'unexpectedClassesGroupOrder',
                   data: {
                     left: 'a',
+                    leftGroup: 'property',
                     right: 'z',
+                    rightGroup: 'abstract-method',
                   },
                 },
               ],
@@ -707,10 +752,12 @@ describe(ruleName, () => {
               ],
               errors: [
                 {
-                  messageId: 'unexpectedClassesOrder',
+                  messageId: 'unexpectedClassesGroupOrder',
                   data: {
                     left: 'a',
+                    leftGroup: 'property',
                     right: 'z',
+                    rightGroup: 'decorated-method',
                   },
                 },
               ],
@@ -755,10 +802,12 @@ describe(ruleName, () => {
                 ],
                 errors: [
                   {
-                    messageId: 'unexpectedClassesOrder',
+                    messageId: 'unexpectedClassesGroupOrder',
                     data: {
                       left: 'a',
+                      leftGroup: 'property',
                       right: 'z',
+                      rightGroup: 'override-method',
                     },
                   },
                 ],
@@ -805,10 +854,12 @@ describe(ruleName, () => {
               ],
               errors: [
                 {
-                  messageId: 'unexpectedClassesOrder',
+                  messageId: 'unexpectedClassesGroupOrder',
                   data: {
                     left: 'a',
+                    leftGroup: 'property',
                     right: 'z',
+                    rightGroup: 'static-accessor-property',
                   },
                 },
               ],
@@ -852,10 +903,12 @@ describe(ruleName, () => {
               ],
               errors: [
                 {
-                  messageId: 'unexpectedClassesOrder',
+                  messageId: 'unexpectedClassesGroupOrder',
                   data: {
                     left: 'a',
+                    leftGroup: 'property',
                     right: 'z',
+                    rightGroup: 'abstract-accessor-property',
                   },
                 },
               ],
@@ -901,10 +954,12 @@ describe(ruleName, () => {
               ],
               errors: [
                 {
-                  messageId: 'unexpectedClassesOrder',
+                  messageId: 'unexpectedClassesGroupOrder',
                   data: {
                     left: 'a',
+                    leftGroup: 'property',
                     right: 'z',
+                    rightGroup: 'decorated-accessor-property',
                   },
                 },
               ],
@@ -949,10 +1004,12 @@ describe(ruleName, () => {
                 ],
                 errors: [
                   {
-                    messageId: 'unexpectedClassesOrder',
+                    messageId: 'unexpectedClassesGroupOrder',
                     data: {
                       left: 'a',
+                      leftGroup: 'property',
                       right: 'z',
+                      rightGroup: 'override-accessor-property',
                     },
                   },
                 ],
@@ -995,10 +1052,12 @@ describe(ruleName, () => {
               ],
               errors: [
                 {
-                  messageId: 'unexpectedClassesOrder',
+                  messageId: 'unexpectedClassesGroupOrder',
                   data: {
                     left: 'a',
+                    leftGroup: 'method',
                     right: 'z',
+                    rightGroup: 'static-property',
                   },
                 },
               ],
@@ -1038,10 +1097,12 @@ describe(ruleName, () => {
               ],
               errors: [
                 {
-                  messageId: 'unexpectedClassesOrder',
+                  messageId: 'unexpectedClassesGroupOrder',
                   data: {
                     left: 'a',
+                    leftGroup: 'method',
                     right: 'z',
+                    rightGroup: 'declare-property',
                   },
                 },
               ],
@@ -1081,10 +1142,12 @@ describe(ruleName, () => {
               ],
               errors: [
                 {
-                  messageId: 'unexpectedClassesOrder',
+                  messageId: 'unexpectedClassesGroupOrder',
                   data: {
                     left: 'a',
+                    leftGroup: 'method',
                     right: 'z',
+                    rightGroup: 'abstract-property',
                   },
                 },
               ],
@@ -1126,10 +1189,12 @@ describe(ruleName, () => {
               ],
               errors: [
                 {
-                  messageId: 'unexpectedClassesOrder',
+                  messageId: 'unexpectedClassesGroupOrder',
                   data: {
                     left: 'a',
+                    leftGroup: 'method',
                     right: 'z',
+                    rightGroup: 'decorated-property',
                   },
                 },
               ],
@@ -1171,10 +1236,12 @@ describe(ruleName, () => {
               ],
               errors: [
                 {
-                  messageId: 'unexpectedClassesOrder',
+                  messageId: 'unexpectedClassesGroupOrder',
                   data: {
                     left: 'a',
+                    leftGroup: 'method',
                     right: 'z',
+                    rightGroup: 'decorated-property',
                   },
                 },
               ],
@@ -1214,10 +1281,12 @@ describe(ruleName, () => {
               ],
               errors: [
                 {
-                  messageId: 'unexpectedClassesOrder',
+                  messageId: 'unexpectedClassesGroupOrder',
                   data: {
                     left: 'a',
+                    leftGroup: 'method',
                     right: 'z',
+                    rightGroup: 'override-property',
                   },
                 },
               ],
@@ -1262,10 +1331,12 @@ describe(ruleName, () => {
                 ],
                 errors: [
                   {
-                    messageId: 'unexpectedClassesOrder',
+                    messageId: 'unexpectedClassesGroupOrder',
                     data: {
                       left: 'a',
+                      leftGroup: 'method',
                       right: 'z',
+                      rightGroup: 'readonly-property',
                     },
                   },
                 ],
@@ -1425,10 +1496,12 @@ describe(ruleName, () => {
             ],
             errors: [
               {
-                messageId: 'unexpectedClassesOrder',
+                messageId: 'unexpectedClassesGroupOrder',
                 data: {
                   left: '[k: string];',
+                  leftGroup: 'unknown',
                   right: 'a',
+                  rightGroup: 'static-property',
                 },
               },
             ],
@@ -1542,10 +1615,12 @@ describe(ruleName, () => {
             ],
             errors: [
               {
-                messageId: 'unexpectedClassesOrder',
+                messageId: 'unexpectedClassesGroupOrder',
                 data: {
                   left: '#aPrivateStaticMethod',
+                  leftGroup: 'static-method',
                   right: '#somePrivateProperty',
+                  rightGroup: 'private-property',
                 },
               },
               {
@@ -1556,10 +1631,12 @@ describe(ruleName, () => {
                 },
               },
               {
-                messageId: 'unexpectedClassesOrder',
+                messageId: 'unexpectedClassesGroupOrder',
                 data: {
                   left: '#someOtherPrivateProperty',
+                  leftGroup: 'private-property',
                   right: 'someStaticProperty',
+                  rightGroup: 'static-property',
                 },
               },
               {
@@ -1570,10 +1647,12 @@ describe(ruleName, () => {
                 },
               },
               {
-                messageId: 'unexpectedClassesOrder',
+                messageId: 'unexpectedClassesGroupOrder',
                 data: {
                   left: 'aStaticMethod',
+                  leftGroup: 'static-method',
                   right: '#aPrivateInstanceMethod',
+                  rightGroup: 'private-method',
                 },
               },
             ],
@@ -1689,10 +1768,12 @@ describe(ruleName, () => {
           ],
           errors: [
             {
-              messageId: 'unexpectedClassesOrder',
+              messageId: 'unexpectedClassesGroupOrder',
               data: {
                 left: 'email',
+                leftGroup: 'decorated-property',
                 right: 'lastName',
+                rightGroup: 'property',
               },
             },
           ],
@@ -1796,10 +1877,12 @@ describe(ruleName, () => {
           ],
           errors: [
             {
-              messageId: 'unexpectedClassesOrder',
+              messageId: 'unexpectedClassesGroupOrder',
               data: {
                 left: 'message',
+                leftGroup: 'set-method',
                 right: 'prop',
+                rightGroup: 'decorated-set-method',
               },
             },
           ],
@@ -1869,17 +1952,21 @@ describe(ruleName, () => {
           ],
           errors: [
             {
-              messageId: 'unexpectedClassesOrder',
+              messageId: 'unexpectedClassesGroupOrder',
               data: {
                 left: 'toggle',
+                leftGroup: 'decorated-method',
                 right: '#active',
+                rightGroup: 'private-decorated-accessor-property',
               },
             },
             {
-              messageId: 'unexpectedClassesOrder',
+              messageId: 'unexpectedClassesGroupOrder',
               data: {
                 left: '#active',
+                leftGroup: 'private-decorated-accessor-property',
                 right: 'finished',
+                rightGroup: 'decorated-accessor-property',
               },
             },
           ],
@@ -2110,10 +2197,12 @@ describe(ruleName, () => {
             options: [options],
             errors: [
               {
-                messageId: 'unexpectedClassesOrder',
+                messageId: 'unexpectedClassesGroupOrder',
                 data: {
                   left: 'getAaa',
+                  leftGroup: 'method',
                   right: 'b',
+                  rightGroup: 'property',
                 },
               },
             ],
@@ -2136,10 +2225,12 @@ describe(ruleName, () => {
             options: [options],
             errors: [
               {
-                messageId: 'unexpectedClassesOrder',
+                messageId: 'unexpectedClassesGroupOrder',
                 data: {
                   left: 'b',
+                  leftGroup: 'property',
                   right: 'c',
+                  rightGroup: 'static-property',
                 },
               },
             ],
@@ -2166,10 +2257,12 @@ describe(ruleName, () => {
             options: [options],
             errors: [
               {
-                messageId: 'unexpectedClassesOrder',
+                messageId: 'unexpectedClassesGroupOrder',
                 data: {
                   left: 'getAaa',
+                  leftGroup: 'method',
                   right: '#b',
+                  rightGroup: 'private-property',
                 },
               },
             ],
@@ -2196,10 +2289,12 @@ describe(ruleName, () => {
             options: [options],
             errors: [
               {
-                messageId: 'unexpectedClassesOrder',
+                messageId: 'unexpectedClassesGroupOrder',
                 data: {
                   left: 'getAaa',
+                  leftGroup: 'static-method',
                   right: 'b',
+                  rightGroup: 'static-property',
                 },
               },
             ],
@@ -2426,10 +2521,12 @@ describe(ruleName, () => {
           options: [options],
           errors: [
             {
-              messageId: 'unexpectedClassesOrder',
+              messageId: 'unexpectedClassesGroupOrder',
               data: {
                 left: 'method',
+                leftGroup: 'method',
                 right: 'a',
+                rightGroup: 'property',
               },
             },
           ],
@@ -2460,10 +2557,12 @@ describe(ruleName, () => {
           options: [options],
           errors: [
             {
-              messageId: 'unexpectedClassesOrder',
+              messageId: 'unexpectedClassesGroupOrder',
               data: {
                 left: 'method',
+                leftGroup: 'method',
                 right: 'b',
+                rightGroup: 'property',
               },
             },
             {
@@ -2613,10 +2712,12 @@ describe(ruleName, () => {
               },
             },
             {
-              messageId: 'unexpectedClassesOrder',
+              messageId: 'unexpectedClassesGroupOrder',
               data: {
                 left: 'f',
+                leftGroup: 'static-method',
                 right: 'constructor',
+                rightGroup: 'constructor',
               },
             },
           ],
@@ -2773,10 +2874,12 @@ describe(ruleName, () => {
             ],
             errors: [
               {
-                messageId: 'unexpectedClassesOrder',
+                messageId: 'unexpectedClassesGroupOrder',
                 data: {
                   left: '[k: string];',
+                  leftGroup: 'unknown',
                   right: 'a',
+                  rightGroup: 'static-property',
                 },
               },
             ],
@@ -2890,10 +2993,12 @@ describe(ruleName, () => {
             ],
             errors: [
               {
-                messageId: 'unexpectedClassesOrder',
+                messageId: 'unexpectedClassesGroupOrder',
                 data: {
                   left: '#aPrivateStaticMethod',
+                  leftGroup: 'static-method',
                   right: '#somePrivateProperty',
+                  rightGroup: 'private-property',
                 },
               },
               {
@@ -2904,10 +3009,12 @@ describe(ruleName, () => {
                 },
               },
               {
-                messageId: 'unexpectedClassesOrder',
+                messageId: 'unexpectedClassesGroupOrder',
                 data: {
                   left: '#someOtherPrivateProperty',
+                  leftGroup: 'private-property',
                   right: 'someStaticProperty',
+                  rightGroup: 'static-property',
                 },
               },
               {
@@ -2918,10 +3025,12 @@ describe(ruleName, () => {
                 },
               },
               {
-                messageId: 'unexpectedClassesOrder',
+                messageId: 'unexpectedClassesGroupOrder',
                 data: {
                   left: 'aStaticMethod',
+                  leftGroup: 'static-method',
                   right: '#aPrivateInstanceMethod',
+                  rightGroup: 'private-method',
                 },
               },
             ],
@@ -3037,10 +3146,12 @@ describe(ruleName, () => {
           ],
           errors: [
             {
-              messageId: 'unexpectedClassesOrder',
+              messageId: 'unexpectedClassesGroupOrder',
               data: {
                 left: 'email',
+                leftGroup: 'decorated-property',
                 right: 'lastName',
+                rightGroup: 'property',
               },
             },
           ],
@@ -3144,10 +3255,12 @@ describe(ruleName, () => {
           ],
           errors: [
             {
-              messageId: 'unexpectedClassesOrder',
+              messageId: 'unexpectedClassesGroupOrder',
               data: {
                 left: 'message',
+                leftGroup: 'set-method',
                 right: 'prop',
+                rightGroup: 'decorated-set-method',
               },
             },
           ],
@@ -3217,17 +3330,21 @@ describe(ruleName, () => {
           ],
           errors: [
             {
-              messageId: 'unexpectedClassesOrder',
+              messageId: 'unexpectedClassesGroupOrder',
               data: {
                 left: 'toggle',
+                leftGroup: 'decorated-method',
                 right: '#active',
+                rightGroup: 'private-decorated-accessor-property',
               },
             },
             {
-              messageId: 'unexpectedClassesOrder',
+              messageId: 'unexpectedClassesGroupOrder',
               data: {
                 left: '#active',
+                leftGroup: 'private-decorated-accessor-property',
                 right: 'finished',
+                rightGroup: 'decorated-accessor-property',
               },
             },
           ],
@@ -3458,10 +3575,12 @@ describe(ruleName, () => {
             options: [options],
             errors: [
               {
-                messageId: 'unexpectedClassesOrder',
+                messageId: 'unexpectedClassesGroupOrder',
                 data: {
                   left: 'getAaa',
+                  leftGroup: 'method',
                   right: 'b',
+                  rightGroup: 'property',
                 },
               },
             ],
@@ -3484,10 +3603,12 @@ describe(ruleName, () => {
             options: [options],
             errors: [
               {
-                messageId: 'unexpectedClassesOrder',
+                messageId: 'unexpectedClassesGroupOrder',
                 data: {
                   left: 'b',
+                  leftGroup: 'property',
                   right: 'c',
+                  rightGroup: 'static-property',
                 },
               },
             ],
@@ -3514,10 +3635,12 @@ describe(ruleName, () => {
             options: [options],
             errors: [
               {
-                messageId: 'unexpectedClassesOrder',
+                messageId: 'unexpectedClassesGroupOrder',
                 data: {
                   left: 'getAaa',
+                  leftGroup: 'method',
                   right: '#b',
+                  rightGroup: 'private-property',
                 },
               },
             ],
@@ -3544,10 +3667,12 @@ describe(ruleName, () => {
             options: [options],
             errors: [
               {
-                messageId: 'unexpectedClassesOrder',
+                messageId: 'unexpectedClassesGroupOrder',
                 data: {
                   left: 'getAaa',
+                  leftGroup: 'static-method',
                   right: 'b',
+                  rightGroup: 'static-property',
                 },
               },
             ],
@@ -3774,10 +3899,12 @@ describe(ruleName, () => {
           options: [options],
           errors: [
             {
-              messageId: 'unexpectedClassesOrder',
+              messageId: 'unexpectedClassesGroupOrder',
               data: {
                 left: 'method',
+                leftGroup: 'method',
                 right: 'a',
+                rightGroup: 'property',
               },
             },
           ],
@@ -3808,10 +3935,12 @@ describe(ruleName, () => {
           options: [options],
           errors: [
             {
-              messageId: 'unexpectedClassesOrder',
+              messageId: 'unexpectedClassesGroupOrder',
               data: {
                 left: 'method',
+                leftGroup: 'method',
                 right: 'b',
+                rightGroup: 'property',
               },
             },
             {
@@ -3937,10 +4066,12 @@ describe(ruleName, () => {
           ],
           errors: [
             {
-              messageId: 'unexpectedClassesOrder',
+              messageId: 'unexpectedClassesGroupOrder',
               data: {
                 left: 'e',
+                leftGroup: 'static-method',
                 right: 'constructor',
+                rightGroup: 'constructor',
               },
             },
           ],
@@ -4090,10 +4221,12 @@ describe(ruleName, () => {
             ],
             errors: [
               {
-                messageId: 'unexpectedClassesOrder',
+                messageId: 'unexpectedClassesGroupOrder',
                 data: {
                   left: '[k: string];',
+                  leftGroup: 'unknown',
                   right: 'a',
+                  rightGroup: 'static-property',
                 },
               },
             ],
@@ -4207,10 +4340,12 @@ describe(ruleName, () => {
             ],
             errors: [
               {
-                messageId: 'unexpectedClassesOrder',
+                messageId: 'unexpectedClassesGroupOrder',
                 data: {
                   left: '#aPrivateStaticMethod',
+                  leftGroup: 'static-method',
                   right: '#somePrivateProperty',
+                  rightGroup: 'private-property',
                 },
               },
               {
@@ -4221,10 +4356,12 @@ describe(ruleName, () => {
                 },
               },
               {
-                messageId: 'unexpectedClassesOrder',
+                messageId: 'unexpectedClassesGroupOrder',
                 data: {
                   left: '#someOtherPrivateProperty',
+                  leftGroup: 'private-property',
                   right: 'someStaticProperty',
+                  rightGroup: 'static-property',
                 },
               },
               {
@@ -4235,10 +4372,12 @@ describe(ruleName, () => {
                 },
               },
               {
-                messageId: 'unexpectedClassesOrder',
+                messageId: 'unexpectedClassesGroupOrder',
                 data: {
                   left: 'aStaticMethod',
+                  leftGroup: 'static-method',
                   right: '#aPrivateInstanceMethod',
+                  rightGroup: 'private-method',
                 },
               },
             ],
@@ -4291,10 +4430,12 @@ describe(ruleName, () => {
           ],
           errors: [
             {
-              messageId: 'unexpectedClassesOrder',
+              messageId: 'unexpectedClassesGroupOrder',
               data: {
                 left: 'email',
+                leftGroup: 'decorated-property',
                 right: 'lastName',
+                rightGroup: 'property',
               },
             },
           ],
@@ -4397,10 +4538,12 @@ describe(ruleName, () => {
           ],
           errors: [
             {
-              messageId: 'unexpectedClassesOrder',
+              messageId: 'unexpectedClassesGroupOrder',
               data: {
                 left: 'message',
+                leftGroup: 'set-method',
                 right: 'prop',
+                rightGroup: 'decorated-set-method',
               },
             },
           ],
@@ -4490,31 +4633,39 @@ describe(ruleName, () => {
           ],
           errors: [
             {
-              messageId: 'unexpectedClassesOrder',
+              messageId: 'unexpectedClassesGroupOrder',
               data: {
                 left: 'customLastGroupProperty',
+                leftGroup: 'my-last-group',
                 right: 'id',
+                rightGroup: 'property',
               },
             },
             {
-              messageId: 'unexpectedClassesOrder',
+              messageId: 'unexpectedClassesGroupOrder',
               data: {
                 left: 'constructor',
+                leftGroup: 'constructor',
                 right: 'customFirstGroupProperty',
+                rightGroup: 'my-first-group',
               },
             },
             {
-              messageId: 'unexpectedClassesOrder',
+              messageId: 'unexpectedClassesGroupOrder',
               data: {
                 left: 'toggle',
+                leftGroup: 'decorated-method',
                 right: '#active',
+                rightGroup: 'private-decorated-accessor-property',
               },
             },
             {
-              messageId: 'unexpectedClassesOrder',
+              messageId: 'unexpectedClassesGroupOrder',
               data: {
                 left: '#active',
+                leftGroup: 'private-decorated-accessor-property',
                 right: 'finished',
+                rightGroup: 'decorated-accessor-property',
               },
             },
           ],
