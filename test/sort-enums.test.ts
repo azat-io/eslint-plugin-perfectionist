@@ -2,6 +2,8 @@ import { RuleTester } from '@typescript-eslint/rule-tester'
 import { afterAll, describe, it } from 'vitest'
 import { dedent } from 'ts-dedent'
 
+import type { Options } from '../rules/sort-enums'
+
 import rule from '../rules/sort-enums'
 
 let ruleName = 'sort-enums'
@@ -396,6 +398,115 @@ describe(ruleName, () => {
         ],
       },
     )
+
+    ruleTester.run(`${ruleName}: sort enum values correctly`, rule, {
+      valid: [],
+      invalid: [
+        {
+          code: dedent`
+            enum Enum {
+              'a' = 'i',
+              'b' = 'h',
+              'c' = 'g',
+              'd' = 'f',
+              'e' = 'e',
+              'f' = 'd',
+              'g' = 'c',
+              'h' = 'b',
+              'i' = 'a',
+              'j' = null,
+              'k' = undefined,
+            }
+          `,
+          output: dedent`
+            enum Enum {
+              'j' = null,
+              'k' = undefined,
+              'i' = 'a',
+              'h' = 'b',
+              'g' = 'c',
+              'f' = 'd',
+              'e' = 'e',
+              'd' = 'f',
+              'c' = 'g',
+              'b' = 'h',
+              'a' = 'i',
+            }
+          `,
+          options: [
+            {
+              ...options,
+              sortByValue: true,
+            },
+          ],
+          errors: [
+            {
+              messageId: 'unexpectedEnumsOrder',
+              data: {
+                left: 'a',
+                right: 'b',
+              },
+            },
+            {
+              messageId: 'unexpectedEnumsOrder',
+              data: {
+                left: 'b',
+                right: 'c',
+              },
+            },
+            {
+              messageId: 'unexpectedEnumsOrder',
+              data: {
+                left: 'c',
+                right: 'd',
+              },
+            },
+            {
+              messageId: 'unexpectedEnumsOrder',
+              data: {
+                left: 'd',
+                right: 'e',
+              },
+            },
+            {
+              messageId: 'unexpectedEnumsOrder',
+              data: {
+                left: 'e',
+                right: 'f',
+              },
+            },
+            {
+              messageId: 'unexpectedEnumsOrder',
+              data: {
+                left: 'f',
+                right: 'g',
+              },
+            },
+            {
+              messageId: 'unexpectedEnumsOrder',
+              data: {
+                left: 'g',
+                right: 'h',
+              },
+            },
+            {
+              messageId: 'unexpectedEnumsOrder',
+              data: {
+                left: 'h',
+                right: 'i',
+              },
+            },
+            {
+              messageId: 'unexpectedEnumsOrder',
+              data: {
+                left: 'i',
+                right: 'j',
+              },
+            },
+          ],
+        },
+      ],
+    })
   })
 
   describe(`${ruleName}: sorting by natural order`, () => {
@@ -778,6 +889,108 @@ describe(ruleName, () => {
         ],
       },
     )
+
+    ruleTester.run(`${ruleName}: sort enum values correctly`, rule, {
+      valid: [],
+      invalid: [
+        {
+          code: dedent`
+            enum Enum {
+              'a' = 'ffffff',
+              'b' = 4444,
+              'c' = 6,
+              'd' = 5,
+              'e' = 4,
+              'f' = '3',
+              'g' = 2,
+              'h' = 1,
+              'i' = '',
+              'j' = null,
+              'k' = undefined,
+            }
+          `,
+          output: dedent`
+            enum Enum {
+              'i' = '',
+              'j' = null,
+              'k' = undefined,
+              'h' = 1,
+              'g' = 2,
+              'f' = '3',
+              'e' = 4,
+              'd' = 5,
+              'c' = 6,
+              'b' = 4444,
+              'a' = 'ffffff',
+            }
+          `,
+          options: [
+            {
+              ...options,
+              sortByValue: true,
+            },
+          ],
+          errors: [
+            {
+              messageId: 'unexpectedEnumsOrder',
+              data: {
+                left: 'a',
+                right: 'b',
+              },
+            },
+            {
+              messageId: 'unexpectedEnumsOrder',
+              data: {
+                left: 'b',
+                right: 'c',
+              },
+            },
+            {
+              messageId: 'unexpectedEnumsOrder',
+              data: {
+                left: 'c',
+                right: 'd',
+              },
+            },
+            {
+              messageId: 'unexpectedEnumsOrder',
+              data: {
+                left: 'd',
+                right: 'e',
+              },
+            },
+            {
+              messageId: 'unexpectedEnumsOrder',
+              data: {
+                left: 'e',
+                right: 'f',
+              },
+            },
+            {
+              messageId: 'unexpectedEnumsOrder',
+              data: {
+                left: 'f',
+                right: 'g',
+              },
+            },
+            {
+              messageId: 'unexpectedEnumsOrder',
+              data: {
+                left: 'g',
+                right: 'h',
+              },
+            },
+            {
+              messageId: 'unexpectedEnumsOrder',
+              data: {
+                left: 'h',
+                right: 'i',
+              },
+            },
+          ],
+        },
+      ],
+    })
   })
 
   describe(`${ruleName}: sorting by line length`, () => {
@@ -1152,9 +1365,291 @@ describe(ruleName, () => {
         ],
       },
     )
+
+    ruleTester.run(`${ruleName}: sort enum values correctly`, rule, {
+      valid: [],
+      invalid: [
+        {
+          code: dedent`
+            enum Enum {
+              'a' = '',
+              'b' = 'b',
+              'c' = 'cc',
+              'd' = 'ddd',
+              'e' = 'eeee',
+              'f' = 'fffff',
+              'g' = 'gggggg',
+              'h' = 'hhhhhhh',
+              'i' = 'iiiiiiii',
+              'j' = 'jj',
+            }
+          `,
+          output: dedent`
+            enum Enum {
+              'i' = 'iiiiiiii',
+              'h' = 'hhhhhhh',
+              'g' = 'gggggg',
+              'f' = 'fffff',
+              'e' = 'eeee',
+              'd' = 'ddd',
+              'c' = 'cc',
+              'j' = 'jj',
+              'b' = 'b',
+              'a' = '',
+            }
+          `,
+          options: [
+            {
+              ...options,
+              sortByValue: true,
+            },
+          ],
+          errors: [
+            {
+              messageId: 'unexpectedEnumsOrder',
+              data: {
+                left: 'a',
+                right: 'b',
+              },
+            },
+            {
+              messageId: 'unexpectedEnumsOrder',
+              data: {
+                left: 'b',
+                right: 'c',
+              },
+            },
+            {
+              messageId: 'unexpectedEnumsOrder',
+              data: {
+                left: 'c',
+                right: 'd',
+              },
+            },
+            {
+              messageId: 'unexpectedEnumsOrder',
+              data: {
+                left: 'd',
+                right: 'e',
+              },
+            },
+            {
+              messageId: 'unexpectedEnumsOrder',
+              data: {
+                left: 'e',
+                right: 'f',
+              },
+            },
+            {
+              messageId: 'unexpectedEnumsOrder',
+              data: {
+                left: 'f',
+                right: 'g',
+              },
+            },
+            {
+              messageId: 'unexpectedEnumsOrder',
+              data: {
+                left: 'g',
+                right: 'h',
+              },
+            },
+            {
+              messageId: 'unexpectedEnumsOrder',
+              data: {
+                left: 'h',
+                right: 'i',
+              },
+            },
+          ],
+        },
+      ],
+    })
   })
 
   describe(`${ruleName}: misc`, () => {
+    ruleTester.run(`${ruleName}: detects numeric enums`, rule, {
+      valid: [
+        {
+          code: dedent`
+              enum Enum {
+                'a' = '1',
+                'b' = 2,
+                'c' = 0,
+              }
+            `,
+          options: [
+            {
+              forceNumericSort: true,
+            },
+          ],
+        },
+        {
+          code: dedent`
+            enum Enum {
+                'a' = 1,
+                'b' = 2,
+                'c' = 0,
+                d,
+              }
+            `,
+          options: [
+            {
+              forceNumericSort: true,
+            },
+          ],
+        },
+        {
+          code: dedent`
+            enum Enum {
+                'a' = 1,
+                'b' = 2,
+                'c' = 0,
+                d = undefined,
+              }
+            `,
+          options: [
+            {
+              forceNumericSort: true,
+            },
+          ],
+        },
+        {
+          code: dedent`
+            enum Enum {
+                'a' = 1,
+                'b' = 2,
+                'c' = 0,
+                d = null,
+              }
+            `,
+          options: [
+            {
+              forceNumericSort: true,
+            },
+          ],
+        },
+        {
+          code: dedent`
+            enum Enum {
+                'c' = 0,
+                'a' = 1,
+                'b' = 2,
+              }
+            `,
+          options: [
+            {
+              forceNumericSort: true,
+            },
+          ],
+        },
+      ],
+      invalid: [],
+    })
+
+    let sortTypes: Options[0]['type'][] = [
+      'alphabetical',
+      'line-length',
+      'natural',
+    ]
+    for (let type of sortTypes) {
+      ruleTester.run(
+        `${ruleName}: sortByValue = true => sorts numerical enums numerically for type ${type}`,
+        rule,
+        {
+          valid: [],
+          invalid: [
+            {
+              code: dedent`
+              enum Enum {
+                'b' = 2,
+                'a' = 1,
+                'c' = 0,
+              }
+            `,
+              output: dedent`
+              enum Enum {
+                'c' = 0,
+                'a' = 1,
+                'b' = 2,
+              }
+              `,
+              options: [
+                {
+                  type,
+                  sortByValue: true,
+                },
+              ],
+              errors: [
+                {
+                  messageId: 'unexpectedEnumsOrder',
+                  data: {
+                    left: 'b',
+                    right: 'a',
+                  },
+                },
+                {
+                  messageId: 'unexpectedEnumsOrder',
+                  data: {
+                    left: 'a',
+                    right: 'c',
+                  },
+                },
+              ],
+            },
+          ],
+        },
+      )
+
+      ruleTester.run(
+        `${ruleName}: forceNumericSort = true => sorts numerical enums numerically regardless for type ${type}`,
+        rule,
+        {
+          valid: [],
+          invalid: [
+            {
+              code: dedent`
+              enum Enum {
+                'b' = 2,
+                'a' = 1,
+                'c' = 0,
+              }
+            `,
+              output: dedent`
+              enum Enum {
+                'c' = 0,
+                'a' = 1,
+                'b' = 2,
+              }
+              `,
+              options: [
+                {
+                  type,
+                  forceNumericSort: true,
+                },
+              ],
+              errors: [
+                {
+                  messageId: 'unexpectedEnumsOrder',
+                  data: {
+                    left: 'b',
+                    right: 'a',
+                  },
+                },
+                {
+                  messageId: 'unexpectedEnumsOrder',
+                  data: {
+                    left: 'a',
+                    right: 'c',
+                  },
+                },
+              ],
+            },
+          ],
+        },
+      )
+    }
+
     ruleTester.run(
       `${ruleName}: sets alphabetical asc sorting as default`,
       rule,

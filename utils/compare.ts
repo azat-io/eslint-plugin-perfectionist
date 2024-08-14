@@ -2,15 +2,38 @@ import naturalCompare from 'natural-compare-lite'
 
 import type { SortingNode } from '../typings'
 
+interface BaseCompareOptions {
+  /**
+   * Custom function to get the value of the node. By default, returns the node's name.
+   */
+  nodeValueGetter?: (node: SortingNode) => string
+  order: 'desc' | 'asc'
+}
+
+interface AlphabeticalCompareOptions extends BaseCompareOptions {
+  type: 'alphabetical'
+  ignoreCase?: boolean
+}
+
+interface LineLengthCompareOptions extends BaseCompareOptions {
+  maxLineLength?: number
+  type: 'line-length'
+}
+
+interface NaturalCompareOptions extends BaseCompareOptions {
+  ignoreCase?: boolean
+  type: 'natural'
+}
+
+export type CompareOptions =
+  | AlphabeticalCompareOptions
+  | LineLengthCompareOptions
+  | NaturalCompareOptions
+
 export let compare = (
   a: SortingNode,
   b: SortingNode,
-  options: {
-    type: 'alphabetical' | 'line-length' | 'natural'
-    maxLineLength?: number
-    order: 'desc' | 'asc'
-    ignoreCase?: boolean
-  },
+  options: CompareOptions,
 ): number => {
   if (b.dependencies?.includes(a.name)) {
     return -1
@@ -21,12 +44,19 @@ export let compare = (
   let orderCoefficient = options.order === 'asc' ? 1 : -1
   let sortingFunction: (a: SortingNode, b: SortingNode) => number
 
-  let formatString = (string: string) =>
-    options.ignoreCase ? string.toLowerCase() : string
+  let formatString =
+    options.type === 'line-length' || !options.ignoreCase
+      ? (string: string) => string
+      : (string: string) => string.toLowerCase()
+
+  let nodeValueGetter =
+    options.nodeValueGetter ?? ((node: SortingNode) => node.name)
 
   if (options.type === 'alphabetical') {
     sortingFunction = (aNode, bNode) =>
-      formatString(aNode.name).localeCompare(formatString(bNode.name))
+      formatString(nodeValueGetter(aNode)).localeCompare(
+        formatString(nodeValueGetter(bNode)),
+      )
   } else if (options.type === 'natural') {
     let prepareNumeric = (string: string) => {
       let formattedNumberPattern = /^[+-]?[\d ,_]+(\.[\d ,_]+)?$/
@@ -37,8 +67,8 @@ export let compare = (
     }
     sortingFunction = (aNode, bNode) =>
       naturalCompare(
-        prepareNumeric(formatString(aNode.name)),
-        prepareNumeric(formatString(bNode.name)),
+        prepareNumeric(formatString(nodeValueGetter(aNode))),
+        prepareNumeric(formatString(nodeValueGetter(bNode))),
       )
   } else {
     sortingFunction = (aNode, bNode) => {
@@ -52,11 +82,11 @@ export let compare = (
           size > maxLineLength && node.hasMultipleImportDeclarations
 
         if (isTooLong(aSize, aNode)) {
-          aSize = aNode.name.length + 10
+          aSize = nodeValueGetter(aNode).length + 10
         }
 
         if (isTooLong(bSize, bNode)) {
-          bSize = bNode.name.length + 10
+          bSize = nodeValueGetter(bNode).length + 10
         }
       }
 
