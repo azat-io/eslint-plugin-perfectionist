@@ -5,6 +5,7 @@ import { getGroupNumber } from '../utils/get-group-number'
 import { getSourceCode } from '../utils/get-source-code'
 import { toSingleLine } from '../utils/to-single-line'
 import { rangeToDiff } from '../utils/range-to-diff'
+import { getSettings } from '../utils/get-settings'
 import { isPositive } from '../utils/is-positive'
 import { useGroups } from '../utils/use-groups'
 import { sortNodes } from '../utils/sort-nodes'
@@ -103,7 +104,9 @@ export default createEslintRule<Options, MESSAGE_ID>({
   ],
   create: context => ({
     TSUnionType: node => {
-      let options = complete(context.options.at(0), {
+      let settings = getSettings(context.settings)
+
+      let options = complete(context.options.at(0), settings, {
         type: 'alphabetical',
         ignoreCase: true,
         order: 'asc',

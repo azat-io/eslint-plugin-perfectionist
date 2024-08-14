@@ -8,6 +8,7 @@ import { getGroupNumber } from '../utils/get-group-number'
 import { getSourceCode } from '../utils/get-source-code'
 import { toSingleLine } from '../utils/to-single-line'
 import { rangeToDiff } from '../utils/range-to-diff'
+import { getSettings } from '../utils/get-settings'
 import { isPositive } from '../utils/is-positive'
 import { sortNodes } from '../utils/sort-nodes'
 import { makeFixes } from '../utils/make-fixes'
@@ -127,7 +128,9 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
   create: context => ({
     TSTypeLiteral: node => {
       if (node.members.length > 1) {
-        let options = complete(context.options.at(0), {
+        let settings = getSettings(context.settings)
+
+        let options = complete(context.options.at(0), settings, {
           partitionByNewLine: false,
           type: 'alphabetical',
           groupKind: 'mixed',

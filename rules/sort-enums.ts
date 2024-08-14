@@ -9,6 +9,7 @@ import { getCommentBefore } from '../utils/get-comment-before'
 import { getSourceCode } from '../utils/get-source-code'
 import { toSingleLine } from '../utils/to-single-line'
 import { rangeToDiff } from '../utils/range-to-diff'
+import { getSettings } from '../utils/get-settings'
 import { isPositive } from '../utils/is-positive'
 import { sortNodes } from '../utils/sort-nodes'
 import { makeFixes } from '../utils/make-fixes'
@@ -113,7 +114,9 @@ export default createEslintRule<Options, MESSAGE_ID>({
         members.length > 1 &&
         members.every(({ initializer }) => initializer)
       ) {
-        let options = complete(context.options.at(0), {
+        let settings = getSettings(context.settings)
+
+        let options = complete(context.options.at(0), settings, {
           partitionByComment: false,
           type: 'alphabetical',
           ignoreCase: true,

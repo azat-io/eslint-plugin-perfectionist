@@ -5,6 +5,7 @@ import type { SortingNode } from '../typings'
 import { createEslintRule } from '../utils/create-eslint-rule'
 import { getSourceCode } from '../utils/get-source-code'
 import { rangeToDiff } from '../utils/range-to-diff'
+import { getSettings } from '../utils/get-settings'
 import { isPositive } from '../utils/is-positive'
 import { sortNodes } from '../utils/sort-nodes'
 import { makeFixes } from '../utils/make-fixes'
@@ -66,7 +67,9 @@ export default createEslintRule<Options, MESSAGE_ID>({
     },
   ],
   create: context => {
-    let options = complete(context.options.at(0), {
+    let settings = getSettings(context.settings)
+
+    let options = complete(context.options.at(0), settings, {
       type: 'alphabetical',
       ignoreCase: true,
       order: 'asc',

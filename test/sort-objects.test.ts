@@ -3014,5 +3014,27 @@ describe(ruleName, () => {
         },
       ],
     })
+
+    ruleTester.run(`${ruleName}: works with settings`, rule, {
+      valid: [
+        {
+          code: dedent`
+            let obj = {
+              ccc: 'ccc',
+              bb: 'bb',
+              a: 'a',
+            }
+          `,
+          options: [{}],
+          settings: {
+            perfectionist: {
+              type: 'line-length',
+              order: 'desc',
+            },
+          },
+        },
+      ],
+      invalid: [],
+    })
   })
 })

@@ -14,6 +14,7 @@ import { getSourceCode } from '../utils/get-source-code'
 import { getNodeParent } from '../utils/get-node-parent'
 import { toSingleLine } from '../utils/to-single-line'
 import { rangeToDiff } from '../utils/range-to-diff'
+import { getSettings } from '../utils/get-settings'
 import { isPositive } from '../utils/is-positive'
 import { useGroups } from '../utils/use-groups'
 import { makeFixes } from '../utils/make-fixes'
@@ -175,7 +176,9 @@ export default createEslintRule<Options, MESSAGE_ID>({
     let sortObject = (
       node: TSESTree.ObjectExpression | TSESTree.ObjectPattern,
     ) => {
-      let options = complete(context.options.at(0), {
+      let settings = getSettings(context.settings)
+
+      let options = complete(context.options.at(0), settings, {
         partitionByNewLine: false,
         partitionByComment: false,
         styledComponents: true,

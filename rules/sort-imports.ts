@@ -13,6 +13,7 @@ import { getGroupNumber } from '../utils/get-group-number'
 import { getSourceCode } from '../utils/get-source-code'
 import { getNodeRange } from '../utils/get-node-range'
 import { rangeToDiff } from '../utils/range-to-diff'
+import { getSettings } from '../utils/get-settings'
 import { isPositive } from '../utils/is-positive'
 import { useGroups } from '../utils/use-groups'
 import { sortNodes } from '../utils/sort-nodes'
@@ -212,7 +213,9 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
     },
   ],
   create: context => {
-    let options = complete(context.options.at(0), {
+    let settings = getSettings(context.settings)
+
+    let options = complete(context.options.at(0), settings, {
       groups: [
         'type',
         ['builtin', 'external'],

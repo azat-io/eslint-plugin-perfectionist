@@ -135,7 +135,11 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
     return defineTemplateBodyVisitor({
       VStartTag: (node: AST.VStartTag) => {
         if (node.attributes.length > 1) {
-          let options = complete(context.options.at(0), {
+          let settings = context.settings.perfectionist as
+            | Options<string[]>[0]
+            | undefined
+
+          let options = complete(context.options.at(0), settings, {
             type: 'alphabetical',
             ignoreCase: true,
             customGroups: {},
