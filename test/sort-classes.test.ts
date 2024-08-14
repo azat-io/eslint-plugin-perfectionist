@@ -293,7 +293,7 @@ describe(ruleName, () => {
                   left: 'static readonly [key: string]',
                   leftGroup: 'static-readonly-index-signature',
                   right: 'n',
-                  rightGroup: 'declare-private-static-readonly-property',
+                  rightGroup: 'function-property',
                 },
               },
               {
@@ -304,10 +304,12 @@ describe(ruleName, () => {
                 },
               },
               {
-                messageId: 'unexpectedClassesOrder',
+                messageId: 'unexpectedClassesGroupOrder',
                 data: {
                   left: 'm',
+                  leftGroup: 'function-property',
                   right: 'l',
+                  rightGroup: 'declare-private-static-readonly-property',
                 },
               },
               {
@@ -1075,10 +1077,12 @@ describe(ruleName, () => {
               ],
               errors: [
                 {
-                  messageId: 'unexpectedClassesOrder',
+                  messageId: 'unexpectedClassesGroupOrder',
                   data: {
                     left: 'a',
+                    leftGroup: 'function-property',
                     right: 'z',
+                    rightGroup: 'property',
                   },
                 },
               ],
@@ -1118,10 +1122,12 @@ describe(ruleName, () => {
               ],
               errors: [
                 {
-                  messageId: 'unexpectedClassesOrder',
+                  messageId: 'unexpectedClassesGroupOrder',
                   data: {
                     left: 'a',
+                    leftGroup: 'function-property',
                     right: 'z',
+                    rightGroup: 'property',
                   },
                 },
               ],
