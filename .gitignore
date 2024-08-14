@@ -8,6 +8,7 @@ dist/
 # Editor
 .vscode/
 .vim/
+.idea/
 
 # Astro
 .astro/

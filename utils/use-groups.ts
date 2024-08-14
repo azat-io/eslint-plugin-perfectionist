@@ -2,9 +2,11 @@ import { minimatch } from 'minimatch'
 
 export let useGroups = (groups: (string[] | string)[]) => {
   let group: undefined | string
+  // For lookup performance
+  let groupsSet = new Set(groups.flat())
 
   let defineGroup = (value: string, override = false) => {
-    if ((!group || override) && groups.flat().includes(value)) {
+    if ((!group || override) && groupsSet.has(value)) {
       group = value
     }
   }
