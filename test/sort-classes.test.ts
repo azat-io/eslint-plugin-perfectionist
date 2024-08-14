@@ -1557,6 +1557,49 @@ describe(ruleName, () => {
     )
 
     ruleTester.run(
+      `${ruleName}(${type}): sorts class with attributes having the same name`,
+      rule,
+      {
+        valid: [],
+        invalid: [
+          {
+            code: dedent`
+              class Class {
+                static a;
+
+                a;
+              }
+            `,
+            output: dedent`
+              class Class {
+                a;
+
+                static a;
+              }
+            `,
+            options: [
+              {
+                ...options,
+                groups: ['property', 'static-property'],
+              },
+            ],
+            errors: [
+              {
+                messageId: 'unexpectedClassesGroupOrder',
+                data: {
+                  left: 'a',
+                  leftGroup: 'static-property',
+                  right: 'a',
+                  rightGroup: 'property',
+                },
+              },
+            ],
+          },
+        ],
+      },
+    )
+
+    ruleTester.run(
       `${ruleName}(${type}): sorts class with ts index signatures`,
       rule,
       {
@@ -4873,5 +4916,30 @@ describe(ruleName, () => {
         ],
       },
     )
+
+    ruleTester.run(`${ruleName}: does not sort method overloads`, rule, {
+      valid: [
+        {
+          code: dedent`
+            abstract class Class extends BaseClass {
+
+              a;
+
+              setBackground(color: number, hexFlag: boolean): this
+              override setBackground(r: number, g: number, b: number, a?: number): this
+              setBackground(): this {
+                /* ... */
+              }
+            }
+            `,
+          options: [
+            {
+              groups: ['override-method', 'property', 'method'],
+            },
+          ],
+        },
+      ],
+      invalid: [],
+    })
   })
 })

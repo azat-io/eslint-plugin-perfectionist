@@ -128,6 +128,10 @@ type Options = [
   }>,
 ]
 
+interface SortClassesSortingNode extends SortingNode<TSESTree.ClassElement> {
+  selectors: Selector[]
+}
+
 export default createEslintRule<Options, MESSAGE_ID>({
   name: 'sort-classes',
   meta: {
@@ -319,8 +323,8 @@ export default createEslintRule<Options, MESSAGE_ID>({
           return dependencies
         }
 
-        let formattedNodes: SortingNode[][] = node.body.reduce(
-          (accumulator: SortingNode[][], member) => {
+        let formattedNodes: SortClassesSortingNode[][] = node.body.reduce(
+          (accumulator: SortClassesSortingNode[][], member) => {
             let comment = getCommentBefore(member, sourceCode)
 
             if (
@@ -502,10 +506,11 @@ export default createEslintRule<Options, MESSAGE_ID>({
               dependencies = extractDependencies(member.value)
             }
 
-            let value = {
+            let value: SortClassesSortingNode = {
               size: rangeToDiff(member.range),
               group: getGroup(),
-              node: member,
+              node: member as TSESTree.ClassElement,
+              selectors,
               dependencies,
               name,
             }
@@ -522,8 +527,14 @@ export default createEslintRule<Options, MESSAGE_ID>({
             let leftNum = getGroupNumber(options.groups, left)
             let rightNum = getGroupNumber(options.groups, right)
 
+            // Overload signatures must not be sorted
+            let areLeftAndRightOverloadSignatures =
+              left.selectors.includes('method') &&
+              right.selectors.includes('method') &&
+              left.name === right.name
+
             if (
-              (left.name !== right.name || leftNum !== rightNum) &&
+              !areLeftAndRightOverloadSignatures &&
               (leftNum > rightNum ||
                 (leftNum === rightNum &&
                   isPositive(compare(left, right, options))))
@@ -544,7 +555,7 @@ export default createEslintRule<Options, MESSAGE_ID>({
                   let grouped = nodes.reduce(
                     (
                       accumulator: {
-                        [key: string]: SortingNode[]
+                        [key: string]: SortClassesSortingNode[]
                       },
                       sortingNode,
                     ) => {
@@ -564,7 +575,7 @@ export default createEslintRule<Options, MESSAGE_ID>({
                     {},
                   )
 
-                  let sortedNodes: SortingNode[] = []
+                  let sortedNodes: SortClassesSortingNode[] = []
 
                   for (let group of Object.keys(grouped).sort(
                     (a, b) => Number(a) - Number(b),
