@@ -4,8 +4,8 @@ import type { TSESLint } from '@typescript-eslint/utils'
 import type { SortingNode } from '../typings'
 
 import {
+  getOverloadSignatureGroups,
   generateOfficialGroups,
-  getOverloadSignatures,
 } from './sort-classes-utils'
 import { isPartitionComment } from '../utils/is-partition-comment'
 import { getCommentBefore } from '../utils/get-comment-before'
@@ -130,10 +130,6 @@ type Options = [
     ignoreCase: boolean
   }>,
 ]
-
-interface SortClassesSortingNode extends SortingNode<TSESTree.ClassElement> {
-  selectors: Selector[]
-}
 
 export default createEslintRule<Options, MESSAGE_ID>({
   name: 'sort-classes',
@@ -326,10 +322,10 @@ export default createEslintRule<Options, MESSAGE_ID>({
           return dependencies
         }
 
-        let overloadSignatureGroups = getOverloadSignatures(node.body)
+        let overloadSignatureGroups = getOverloadSignatureGroups(node.body)
 
-        let formattedNodes: SortClassesSortingNode[][] = node.body.reduce(
-          (accumulator: SortClassesSortingNode[][], member) => {
+        let formattedNodes: SortingNode[][] = node.body.reduce(
+          (accumulator: SortingNode[][], member) => {
             let comment = getCommentBefore(member, sourceCode)
 
             if (
@@ -511,19 +507,18 @@ export default createEslintRule<Options, MESSAGE_ID>({
               dependencies = extractDependencies(member.value)
             }
 
-            // Members belonging to the same overload signature group should have the same size in order to keep sorting between them consistent.
+            // Members belonging to the same overload signature group should have the same size in order to keep line-length sorting between them consistent.
             // It is unclear what should be considered the size of an overload signature group. Take the size of the implementation by default.
             let overloadSignatureGroupMember = overloadSignatureGroups
               .find(overloadSignatures => overloadSignatures.includes(member))
               ?.at(-1)
 
-            let value: SortClassesSortingNode = {
+            let value: SortingNode = {
               size: overloadSignatureGroupMember
                 ? rangeToDiff(overloadSignatureGroupMember.range)
                 : rangeToDiff(member.range),
               group: getGroup(),
               node: member,
-              selectors,
               dependencies,
               name,
             }
@@ -561,7 +556,7 @@ export default createEslintRule<Options, MESSAGE_ID>({
                   let grouped = nodes.reduce(
                     (
                       accumulator: {
-                        [key: string]: SortClassesSortingNode[]
+                        [key: string]: SortingNode[]
                       },
                       sortingNode,
                     ) => {
@@ -581,7 +576,7 @@ export default createEslintRule<Options, MESSAGE_ID>({
                     {},
                   )
 
-                  let sortedNodes: SortClassesSortingNode[] = []
+                  let sortedNodes: SortingNode[] = []
 
                   for (let group of Object.keys(grouped).sort(
                     (a, b) => Number(a) - Number(b),

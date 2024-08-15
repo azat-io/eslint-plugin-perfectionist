@@ -101,7 +101,7 @@ const getPermutations = (elements: string[]): string[][] => {
 /**
  * Returns a list of groups of overload signatures.
  */
-export const getOverloadSignatures = (
+export const getOverloadSignatureGroups = (
   members: TSESTree.ClassElement[],
 ): TSESTree.ClassElement[][] => {
   let methods = members
