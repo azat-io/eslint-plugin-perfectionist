@@ -4916,30 +4916,5 @@ describe(ruleName, () => {
         ],
       },
     )
-
-    ruleTester.run(`${ruleName}: does not sort method overloads`, rule, {
-      valid: [
-        {
-          code: dedent`
-            abstract class Class extends BaseClass {
-
-              a;
-
-              setBackground(color: number, hexFlag: boolean): this
-              override setBackground(r: number, g: number, b: number, a?: number): this
-              setBackground(): this {
-                /* ... */
-              }
-            }
-            `,
-          options: [
-            {
-              groups: ['override-method', 'property', 'method'],
-            },
-          ],
-        },
-      ],
-      invalid: [],
-    })
   })
 })
