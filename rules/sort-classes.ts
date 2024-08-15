@@ -509,7 +509,7 @@ export default createEslintRule<Options, MESSAGE_ID>({
             let value: SortClassesSortingNode = {
               size: rangeToDiff(member.range),
               group: getGroup(),
-              node: member as TSESTree.ClassElement,
+              node: member,
               selectors,
               dependencies,
               name,
