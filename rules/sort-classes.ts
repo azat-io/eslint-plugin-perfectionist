@@ -559,21 +559,21 @@ export default createEslintRule<Options, MESSAGE_ID>({
             let leftNum = getGroupNumber(options.groups, left)
             let rightNum = getGroupNumber(options.groups, right)
 
-            let compareValue
-            if (
-              options.groupKind !== 'mixed' &&
-              left.isOptional !== right.isOptional
-            ) {
-              compareValue =
-                options.groupKind === 'optional-first'
-                  ? !left.isOptional
-                  : left.isOptional
-            } else if (leftNum > rightNum) {
+            let compareValue = false
+            if (leftNum > rightNum) {
               compareValue = true
             } else if (leftNum === rightNum) {
-              compareValue = isPositive(compare(left, right, options))
-            } else {
-              compareValue = false
+              if (
+                options.groupKind !== 'mixed' &&
+                left.isOptional !== right.isOptional
+              ) {
+                compareValue =
+                  options.groupKind === 'optional-first'
+                    ? !left.isOptional
+                    : left.isOptional
+              } else {
+                compareValue = isPositive(compare(left, right, options))
+              }
             }
 
             if (compareValue) {
