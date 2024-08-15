@@ -511,15 +511,15 @@ export default createEslintRule<Options, MESSAGE_ID>({
               dependencies = extractDependencies(member.value)
             }
 
-            let overloadSignatureGroup = overloadSignatureGroups.find(
-              overloadSignatures => overloadSignatures.includes(member),
-            )
+            // Members belonging to the same overload signature group should have the same size in order to keep sorting between them consistent.
+            // It is unclear what should be considered the size of an overload signature group. Take the size of the implementation by default.
+            let overloadSignatureGroupMember = overloadSignatureGroups
+              .find(overloadSignatures => overloadSignatures.includes(member))
+              ?.at(-1)
 
             let value: SortClassesSortingNode = {
-              // Members belonging to the same overload signature group should have the same size in order to keep sorting between them consistent.
-              // It is unclear what should be considered the size of an overload signature group. Take the size of the implementation by default.
-              size: overloadSignatureGroup
-                ? rangeToDiff(overloadSignatureGroup.at(-1).range)
+              size: overloadSignatureGroupMember
+                ? rangeToDiff(overloadSignatureGroupMember.range)
                 : rangeToDiff(member.range),
               group: getGroup(),
               node: member,
