@@ -122,6 +122,7 @@ type Group =
 
 type Options = [
   Partial<{
+    groupKind: 'required-first' | 'optional-first' | 'mixed'
     customGroups: { [key: string]: string[] | string }
     type: 'alphabetical' | 'line-length' | 'natural'
     partitionByComment: string[] | boolean | string
@@ -130,6 +131,10 @@ type Options = [
     ignoreCase: boolean
   }>,
 ]
+
+interface SortClassesSortingNode extends SortingNode<TSESTree.ClassElement> {
+  isOptional: boolean
+}
 
 export default createEslintRule<Options, MESSAGE_ID>({
   name: 'sort-classes',
@@ -158,6 +163,11 @@ export default createEslintRule<Options, MESSAGE_ID>({
             description:
               'Controls whether sorting should be case-sensitive or not.',
             type: 'boolean',
+          },
+          groupKind: {
+            description: 'Specifies the order of optional and required nodes.',
+            type: 'string',
+            enum: ['mixed', 'required-first', 'optional-first'],
           },
           partitionByComment: {
             description:
@@ -226,6 +236,7 @@ export default createEslintRule<Options, MESSAGE_ID>({
       type: 'alphabetical',
       order: 'asc',
       ignoreCase: true,
+      groupKind: 'mixed',
       partitionByComment: false,
       groups: [
         'static-block',
@@ -266,6 +277,7 @@ export default createEslintRule<Options, MESSAGE_ID>({
             ['get-method', 'set-method'],
             'unknown',
           ],
+          groupKind: 'mixed',
           partitionByComment: false,
           type: 'alphabetical',
           ignoreCase: true,
@@ -326,8 +338,8 @@ export default createEslintRule<Options, MESSAGE_ID>({
 
         let overloadSignatureGroups = getOverloadSignatureGroups(node.body)
 
-        let formattedNodes: SortingNode[][] = node.body.reduce(
-          (accumulator: SortingNode[][], member) => {
+        let formattedNodes: SortClassesSortingNode[][] = node.body.reduce(
+          (accumulator: SortClassesSortingNode[][], member) => {
             let comment = getCommentBefore(member, sourceCode)
 
             if (
@@ -364,12 +376,16 @@ export default createEslintRule<Options, MESSAGE_ID>({
             let decorated =
               'decorators' in member && member.decorators.length > 0
 
+            let isOptional = false
             let modifiers: Modifier[] = []
             let selectors: Selector[] = []
             if (
               member.type === 'MethodDefinition' ||
               member.type === 'TSAbstractMethodDefinition'
             ) {
+              // Not sure how a class method can be optional, but it's here because typescript allows it
+              isOptional = member.optional
+
               // By putting the static modifier before accessibility modifiers,
               // we prioritize 'static' over those in cases like:
               // Config: ['static-method', 'public-method']
@@ -426,6 +442,8 @@ export default createEslintRule<Options, MESSAGE_ID>({
               member.type === 'AccessorProperty' ||
               member.type === 'TSAbstractAccessorProperty'
             ) {
+              isOptional = member.optional
+
               if (member.static) {
                 modifiers.push('static')
               }
@@ -452,6 +470,8 @@ export default createEslintRule<Options, MESSAGE_ID>({
               selectors.push('accessor-property')
             } else {
               // Member is necessarily a Property
+
+              isOptional = member.optional
 
               // Similarly to above for methods, prioritize 'static', 'declare', 'decorated', 'abstract', 'override' and 'readonly'
               // over accessibility modifiers
@@ -516,11 +536,12 @@ export default createEslintRule<Options, MESSAGE_ID>({
               .find(overloadSignatures => overloadSignatures.includes(member))
               ?.at(-1)
 
-            let value: SortingNode = {
+            let value: SortClassesSortingNode = {
               size: overloadSignatureGroupMember
                 ? rangeToDiff(overloadSignatureGroupMember.range)
                 : rangeToDiff(member.range),
               group: getGroup(),
+              isOptional,
               node: member,
               dependencies,
               name,
@@ -538,11 +559,24 @@ export default createEslintRule<Options, MESSAGE_ID>({
             let leftNum = getGroupNumber(options.groups, left)
             let rightNum = getGroupNumber(options.groups, right)
 
+            let compareValue
             if (
-              leftNum > rightNum ||
-              (leftNum === rightNum &&
-                isPositive(compare(left, right, options)))
+              options.groupKind !== 'mixed' &&
+              left.isOptional !== right.isOptional
             ) {
+              compareValue =
+                options.groupKind === 'optional-first'
+                  ? !left.isOptional
+                  : left.isOptional
+            } else if (leftNum > rightNum) {
+              compareValue = true
+            } else if (leftNum === rightNum) {
+              compareValue = isPositive(compare(left, right, options))
+            } else {
+              compareValue = false
+            }
+
+            if (compareValue) {
               context.report({
                 messageId:
                   leftNum !== rightNum
@@ -559,7 +593,7 @@ export default createEslintRule<Options, MESSAGE_ID>({
                   let grouped = nodes.reduce(
                     (
                       accumulator: {
-                        [key: string]: SortingNode[]
+                        [key: string]: SortClassesSortingNode[]
                       },
                       sortingNode,
                     ) => {
@@ -579,12 +613,33 @@ export default createEslintRule<Options, MESSAGE_ID>({
                     {},
                   )
 
-                  let sortedNodes: SortingNode[] = []
+                  let sortedNodes: SortClassesSortingNode[] = []
 
                   for (let group of Object.keys(grouped).sort(
                     (a, b) => Number(a) - Number(b),
                   )) {
-                    sortedNodes.push(...sortNodes(grouped[group], options))
+                    if (options.groupKind === 'mixed') {
+                      sortedNodes.push(...sortNodes(grouped[group], options))
+                    } else {
+                      // Group by optionality
+                      let optionalNodes = grouped[group].filter(
+                        sortingNode => sortingNode.isOptional,
+                      )
+                      let requiredNodes = grouped[group].filter(
+                        sortingNode => !sortingNode.isOptional,
+                      )
+                      let optionalFirst = options.groupKind === 'optional-first'
+                      sortedNodes.push(
+                        ...sortNodes(
+                          optionalFirst ? optionalNodes : requiredNodes,
+                          options,
+                        ),
+                        ...sortNodes(
+                          optionalFirst ? requiredNodes : optionalNodes,
+                          options,
+                        ),
+                      )
+                    }
                   }
 
                   return makeFixes(fixer, nodes, sortedNodes, sourceCode, {

@@ -2736,6 +2736,218 @@ describe(ruleName, () => {
         },
       ],
     })
+
+    ruleTester.run(
+      `${ruleName}(${type}): allows to sort optional values first`,
+      rule,
+      {
+        valid: [],
+        invalid: [
+          {
+            code: dedent`
+              class Class {
+
+                private g
+                accessor l?
+                d
+                accessor j?
+                c?
+                private h?
+                b
+                private f?
+                a
+                accessor m
+                private e
+                i?
+                accessor k
+              }
+            `,
+            output: dedent`
+              class Class {
+
+                c?
+                i?
+                a
+                b
+                d
+                accessor j?
+                accessor l?
+                accessor k
+                accessor m
+                private f?
+                private h?
+                private e
+                private g
+              }
+            `,
+            options: [
+              {
+                ...options,
+                groups: [
+                  'public-property',
+                  'accessor-property',
+                  'private-property',
+                ],
+                groupKind: 'optional-first',
+              },
+            ],
+            errors: [
+              {
+                messageId: 'unexpectedClassesGroupOrder',
+                data: {
+                  left: 'g',
+                  leftGroup: 'private-property',
+                  right: 'l',
+                  rightGroup: 'accessor-property',
+                },
+              },
+              {
+                messageId: 'unexpectedClassesGroupOrder',
+                data: {
+                  left: 'd',
+                  leftGroup: 'public-property',
+                  right: 'j',
+                  rightGroup: 'accessor-property',
+                },
+              },
+              {
+                messageId: 'unexpectedClassesGroupOrder',
+                data: {
+                  left: 'j',
+                  leftGroup: 'accessor-property',
+                  right: 'c',
+                  rightGroup: 'public-property',
+                },
+              },
+              {
+                messageId: 'unexpectedClassesGroupOrder',
+                data: {
+                  left: 'b',
+                  leftGroup: 'public-property',
+                  right: 'f',
+                  rightGroup: 'private-property',
+                },
+              },
+              {
+                messageId: 'unexpectedClassesGroupOrder',
+                data: {
+                  left: 'e',
+                  leftGroup: 'private-property',
+                  right: 'i',
+                  rightGroup: 'public-property',
+                },
+              },
+            ],
+          },
+        ],
+      },
+    )
+
+    ruleTester.run(
+      `${ruleName}(${type}): allows to sort required values first`,
+      rule,
+      {
+        valid: [],
+        invalid: [
+          {
+            code: dedent`
+              class Class {
+
+                private g
+                accessor l?
+                d
+                accessor j?
+                c?
+                private h?
+                b
+                private f?
+                a
+                accessor m
+                private e
+                i?
+                accessor k
+              }
+            `,
+            output: dedent`
+              class Class {
+
+                a
+                b
+                d
+                c?
+                i?
+                accessor k
+                accessor m
+                accessor j?
+                accessor l?
+                private e
+                private g
+                private f?
+                private h?
+              }
+            `,
+            options: [
+              {
+                ...options,
+                groups: [
+                  'public-property',
+                  'accessor-property',
+                  'private-property',
+                ],
+                groupKind: 'required-first',
+              },
+            ],
+            errors: [
+              {
+                messageId: 'unexpectedClassesGroupOrder',
+                data: {
+                  left: 'l',
+                  leftGroup: 'accessor-property',
+                  right: 'd',
+                  rightGroup: 'public-property',
+                },
+              },
+              {
+                messageId: 'unexpectedClassesGroupOrder',
+                data: {
+                  left: 'j',
+                  leftGroup: 'accessor-property',
+                  right: 'c',
+                  rightGroup: 'public-property',
+                },
+              },
+              {
+                messageId: 'unexpectedClassesGroupOrder',
+                data: {
+                  left: 'h',
+                  leftGroup: 'private-property',
+                  right: 'b',
+                  rightGroup: 'public-property',
+                },
+              },
+              {
+                messageId: 'unexpectedClassesGroupOrder',
+                data: {
+                  left: 'f',
+                  leftGroup: 'private-property',
+                  right: 'a',
+                  rightGroup: 'public-property',
+                },
+              },
+              {
+                messageId: 'unexpectedClassesGroupOrder',
+                data: {
+                  left: 'i',
+                  leftGroup: 'public-property',
+                  right: 'k',
+                  rightGroup: 'accessor-property',
+                },
+              },
+            ],
+          },
+        ],
+      },
+    )
   })
 
   describe(`${ruleName}: sorting by natural order`, () => {
@@ -4114,6 +4326,218 @@ describe(ruleName, () => {
         },
       ],
     })
+
+    ruleTester.run(
+      `${ruleName}(${type}): allows to sort optional values first`,
+      rule,
+      {
+        valid: [],
+        invalid: [
+          {
+            code: dedent`
+              class Class {
+
+                private g
+                accessor l?
+                d
+                accessor j?
+                c?
+                private h?
+                b
+                private f?
+                a
+                accessor m
+                private e
+                i?
+                accessor k
+              }
+            `,
+            output: dedent`
+              class Class {
+
+                c?
+                i?
+                a
+                b
+                d
+                accessor j?
+                accessor l?
+                accessor k
+                accessor m
+                private f?
+                private h?
+                private e
+                private g
+              }
+            `,
+            options: [
+              {
+                ...options,
+                groups: [
+                  'public-property',
+                  'accessor-property',
+                  'private-property',
+                ],
+                groupKind: 'optional-first',
+              },
+            ],
+            errors: [
+              {
+                messageId: 'unexpectedClassesGroupOrder',
+                data: {
+                  left: 'g',
+                  leftGroup: 'private-property',
+                  right: 'l',
+                  rightGroup: 'accessor-property',
+                },
+              },
+              {
+                messageId: 'unexpectedClassesGroupOrder',
+                data: {
+                  left: 'd',
+                  leftGroup: 'public-property',
+                  right: 'j',
+                  rightGroup: 'accessor-property',
+                },
+              },
+              {
+                messageId: 'unexpectedClassesGroupOrder',
+                data: {
+                  left: 'j',
+                  leftGroup: 'accessor-property',
+                  right: 'c',
+                  rightGroup: 'public-property',
+                },
+              },
+              {
+                messageId: 'unexpectedClassesGroupOrder',
+                data: {
+                  left: 'b',
+                  leftGroup: 'public-property',
+                  right: 'f',
+                  rightGroup: 'private-property',
+                },
+              },
+              {
+                messageId: 'unexpectedClassesGroupOrder',
+                data: {
+                  left: 'e',
+                  leftGroup: 'private-property',
+                  right: 'i',
+                  rightGroup: 'public-property',
+                },
+              },
+            ],
+          },
+        ],
+      },
+    )
+
+    ruleTester.run(
+      `${ruleName}(${type}): allows to sort required values first`,
+      rule,
+      {
+        valid: [],
+        invalid: [
+          {
+            code: dedent`
+              class Class {
+
+                private g
+                accessor l?
+                d
+                accessor j?
+                c?
+                private h?
+                b
+                private f?
+                a
+                accessor m
+                private e
+                i?
+                accessor k
+              }
+            `,
+            output: dedent`
+              class Class {
+
+                a
+                b
+                d
+                c?
+                i?
+                accessor k
+                accessor m
+                accessor j?
+                accessor l?
+                private e
+                private g
+                private f?
+                private h?
+              }
+            `,
+            options: [
+              {
+                ...options,
+                groups: [
+                  'public-property',
+                  'accessor-property',
+                  'private-property',
+                ],
+                groupKind: 'required-first',
+              },
+            ],
+            errors: [
+              {
+                messageId: 'unexpectedClassesGroupOrder',
+                data: {
+                  left: 'l',
+                  leftGroup: 'accessor-property',
+                  right: 'd',
+                  rightGroup: 'public-property',
+                },
+              },
+              {
+                messageId: 'unexpectedClassesGroupOrder',
+                data: {
+                  left: 'j',
+                  leftGroup: 'accessor-property',
+                  right: 'c',
+                  rightGroup: 'public-property',
+                },
+              },
+              {
+                messageId: 'unexpectedClassesGroupOrder',
+                data: {
+                  left: 'h',
+                  leftGroup: 'private-property',
+                  right: 'b',
+                  rightGroup: 'public-property',
+                },
+              },
+              {
+                messageId: 'unexpectedClassesGroupOrder',
+                data: {
+                  left: 'f',
+                  leftGroup: 'private-property',
+                  right: 'a',
+                  rightGroup: 'public-property',
+                },
+              },
+              {
+                messageId: 'unexpectedClassesGroupOrder',
+                data: {
+                  left: 'i',
+                  leftGroup: 'public-property',
+                  right: 'k',
+                  rightGroup: 'accessor-property',
+                },
+              },
+            ],
+          },
+        ],
+      },
+    )
   })
 
   describe(`${ruleName}: sorting by line length`, () => {

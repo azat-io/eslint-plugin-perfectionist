@@ -237,29 +237,13 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
 
             let compareValue
             if (
-              options.groupKind === 'optional-first' &&
-              isLeftOptional &&
-              !isRightOptional
+              options.groupKind !== 'mixed' &&
+              isLeftOptional !== isRightOptional
             ) {
-              compareValue = false
-            } else if (
-              options.groupKind === 'optional-first' &&
-              !isLeftOptional &&
-              isRightOptional
-            ) {
-              compareValue = true
-            } else if (
-              options.groupKind === 'required-first' &&
-              !isLeftOptional &&
-              isRightOptional
-            ) {
-              compareValue = false
-            } else if (
-              options.groupKind === 'required-first' &&
-              isLeftOptional &&
-              !isRightOptional
-            ) {
-              compareValue = true
+              compareValue =
+                options.groupKind === 'optional-first'
+                  ? !isLeftOptional
+                  : isLeftOptional
             } else if (leftNum > rightNum) {
               compareValue = true
             } else if (leftNum === rightNum) {

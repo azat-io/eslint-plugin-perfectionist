@@ -191,6 +191,16 @@ Allows you to use comments to separate the class members into logical groups. Th
 -	`false` — Comments will not be used as delimiters.
 - string — A glob pattern to specify which comments should act as delimiters.
 
+### groupKind
+
+<sub>default: `'mixed'`</sub>
+
+Allows you to group properties by their kind, determining whether required properties should come before or after optional properties.
+
+- `mixed` — Do not group properties by their kind; required properties are sorted together with optional properties.
+- `required-first` — Group all required properties before optional properties.
+- `optional-first` — Group all optional properties before required properties.
+
 ### groups
 
 <sub>
@@ -493,6 +503,7 @@ Example:
                   order: 'asc',
                   ignoreCase: true,
                   partitionByComment: false,
+                  groupKind: 'mixed',
                   groups: [
                     'static-block',
                     'index-signature',
@@ -533,6 +544,7 @@ Example:
                 order: 'asc',
                 ignoreCase: true,
                 partitionByComment: false,
+                groupKind: 'mixed',
                 groups: [
                   'static-block',
                   'index-signature',
