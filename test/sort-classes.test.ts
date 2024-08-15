@@ -1557,6 +1557,49 @@ describe(ruleName, () => {
     )
 
     ruleTester.run(
+      `${ruleName}(${type}): sorts class with attributes having the same name`,
+      rule,
+      {
+        valid: [],
+        invalid: [
+          {
+            code: dedent`
+              class Class {
+                static a;
+
+                a;
+              }
+            `,
+            output: dedent`
+              class Class {
+                a;
+
+                static a;
+              }
+            `,
+            options: [
+              {
+                ...options,
+                groups: ['property', 'static-property'],
+              },
+            ],
+            errors: [
+              {
+                messageId: 'unexpectedClassesGroupOrder',
+                data: {
+                  left: 'a',
+                  leftGroup: 'static-property',
+                  right: 'a',
+                  rightGroup: 'property',
+                },
+              },
+            ],
+          },
+        ],
+      },
+    )
+
+    ruleTester.run(
       `${ruleName}(${type}): sorts class with ts index signatures`,
       rule,
       {
@@ -4379,7 +4422,75 @@ describe(ruleName, () => {
             ],
           },
         ],
-        invalid: [],
+        invalid: [
+          {
+            code: dedent`
+              class Decorations {
+
+                setBackground(r: number, g: number, b: number, a?: number): this
+                setBackground(color: number, hexFlag: boolean): this
+                setBackground(color: Color | string | CSSColor): this
+                setBackground(color: ColorArgument, arg1?: boolean | number, arg2?: number, arg3?: number): this {
+                  /* ... */
+                }
+
+                static setBackground(r: number, g: number, b: number, a?: number): this
+                static setBackground(color: number, hexFlag: boolean): this
+                static setBackground(color: Color | string | CSSColor): this
+                static setBackground(color: ColorArgument, arg1?: boolean | number, arg2?: number, arg3?: number): this {
+                  /* ... */
+                }
+
+                a
+              }
+            `,
+            output: dedent`
+              class Decorations {
+
+                a
+                static setBackground(r: number, g: number, b: number, a?: number): this
+                static setBackground(color: number, hexFlag: boolean): this
+                static setBackground(color: Color | string | CSSColor): this
+
+                static setBackground(color: ColorArgument, arg1?: boolean | number, arg2?: number, arg3?: number): this {
+                  /* ... */
+                }
+                setBackground(r: number, g: number, b: number, a?: number): this
+                setBackground(color: number, hexFlag: boolean): this
+                setBackground(color: Color | string | CSSColor): this
+
+                setBackground(color: ColorArgument, arg1?: boolean | number, arg2?: number, arg3?: number): this {
+                  /* ... */
+                }
+              }
+            `,
+            options: [
+              {
+                ...options,
+              },
+            ],
+            errors: [
+              {
+                messageId: 'unexpectedClassesGroupOrder',
+                data: {
+                  left: 'setBackground',
+                  leftGroup: 'method',
+                  right: 'setBackground',
+                  rightGroup: 'static-method',
+                },
+              },
+              {
+                messageId: 'unexpectedClassesGroupOrder',
+                data: {
+                  left: 'setBackground',
+                  leftGroup: 'static-method',
+                  right: 'a',
+                  rightGroup: 'property',
+                },
+              },
+            ],
+          },
+        ],
       },
     )
 

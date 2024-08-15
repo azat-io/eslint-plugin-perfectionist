@@ -3,10 +3,13 @@ import type { TSESLint } from '@typescript-eslint/utils'
 
 import type { SortingNode } from '../typings'
 
+import {
+  getOverloadSignatureGroups,
+  generateOfficialGroups,
+} from './sort-classes-utils'
 import { isPartitionComment } from '../utils/is-partition-comment'
 import { getCommentBefore } from '../utils/get-comment-before'
 import { createEslintRule } from '../utils/create-eslint-rule'
-import { generateOfficialGroups } from './sort-classes-utils'
 import { getGroupNumber } from '../utils/get-group-number'
 import { getSourceCode } from '../utils/get-source-code'
 import { toSingleLine } from '../utils/to-single-line'
@@ -319,6 +322,8 @@ export default createEslintRule<Options, MESSAGE_ID>({
           return dependencies
         }
 
+        let overloadSignatureGroups = getOverloadSignatureGroups(node.body)
+
         let formattedNodes: SortingNode[][] = node.body.reduce(
           (accumulator: SortingNode[][], member) => {
             let comment = getCommentBefore(member, sourceCode)
@@ -503,8 +508,16 @@ export default createEslintRule<Options, MESSAGE_ID>({
               dependencies = extractDependencies(member.value)
             }
 
-            let value = {
-              size: rangeToDiff(member.range),
+            // Members belonging to the same overload signature group should have the same size in order to keep line-length sorting between them consistent.
+            // It is unclear what should be considered the size of an overload signature group. Take the size of the implementation by default.
+            let overloadSignatureGroupMember = overloadSignatureGroups
+              .find(overloadSignatures => overloadSignatures.includes(member))
+              ?.at(-1)
+
+            let value: SortingNode = {
+              size: overloadSignatureGroupMember
+                ? rangeToDiff(overloadSignatureGroupMember.range)
+                : rangeToDiff(member.range),
               group: getGroup(),
               node: member,
               dependencies,
@@ -524,10 +537,9 @@ export default createEslintRule<Options, MESSAGE_ID>({
             let rightNum = getGroupNumber(options.groups, right)
 
             if (
-              left.name !== right.name &&
-              (leftNum > rightNum ||
-                (leftNum === rightNum &&
-                  isPositive(compare(left, right, options))))
+              leftNum > rightNum ||
+              (leftNum === rightNum &&
+                isPositive(compare(left, right, options)))
             ) {
               context.report({
                 messageId:
