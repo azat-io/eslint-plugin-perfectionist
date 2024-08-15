@@ -352,7 +352,8 @@ export default createEslintRule<Options, MESSAGE_ID>({
               }
             }
 
-            let isPrivateName = name.startsWith('#')
+            let isPrivateHash =
+              'key' in member && member.key.type === 'PrivateIdentifier'
             let decorated =
               'decorators' in member && member.decorators.length > 0
 
@@ -384,7 +385,7 @@ export default createEslintRule<Options, MESSAGE_ID>({
 
               if (member.accessibility === 'protected') {
                 modifiers.push('protected')
-              } else if (member.accessibility === 'private' || isPrivateName) {
+              } else if (member.accessibility === 'private' || isPrivateHash) {
                 modifiers.push('private')
               } else {
                 modifiers.push('public')
@@ -436,7 +437,7 @@ export default createEslintRule<Options, MESSAGE_ID>({
 
               if (member.accessibility === 'protected') {
                 modifiers.push('protected')
-              } else if (member.accessibility === 'private' || isPrivateName) {
+              } else if (member.accessibility === 'private' || isPrivateHash) {
                 modifiers.push('private')
               } else {
                 modifiers.push('public')
@@ -473,7 +474,7 @@ export default createEslintRule<Options, MESSAGE_ID>({
 
               if (member.accessibility === 'protected') {
                 modifiers.push('protected')
-              } else if (member.accessibility === 'private' || isPrivateName) {
+              } else if (member.accessibility === 'private' || isPrivateHash) {
                 modifiers.push('private')
               } else {
                 modifiers.push('public')
