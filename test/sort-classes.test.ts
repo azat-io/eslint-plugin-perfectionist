@@ -5005,6 +5005,10 @@ describe(ruleName, () => {
 
                 constructor() {}
 
+                public accessor publicAccessorProperty
+
+                public publicProperty
+
                 private accessor privateAccessorProperty
 
                 private privateProperty
@@ -5035,6 +5039,10 @@ describe(ruleName, () => {
                 private accessor privateAccessorProperty
 
                 private privateProperty
+
+                public accessor publicAccessorProperty
+
+                public publicProperty
 
                 constructor() {}
 
@@ -5109,6 +5117,15 @@ describe(ruleName, () => {
               data: {
                 left: 'constructor',
                 leftGroup: 'constructor',
+                right: 'publicAccessorProperty',
+                rightGroup: 'accessor-property',
+              },
+            },
+            {
+              messageId: 'unexpectedClassesGroupOrder',
+              data: {
+                left: 'publicProperty',
+                leftGroup: 'property',
                 right: 'privateAccessorProperty',
                 rightGroup: 'private-accessor-property',
               },
