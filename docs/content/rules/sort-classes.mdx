@@ -223,15 +223,23 @@ Predefined groups are characterized by a single selector and potentially multipl
 - Modifiers: `protected`, `private`, `public`.
 - Example: `protected-constructor`, `private-constructor`, `public-constructor` or `constructor`.
 
-#### Methods and accessors
-- Methods selectors: `get-method`, `set-method`, `method`.
-- Accessors selector: `accessor-property`.
-- Modifiers: `static`, `abstract`, `decorated`, `override`, `protected`, `private`, `public`.
+#### Methods
+- Selectors: `get-method`, `set-method`, `method`.
+- Modifiers: `static`, `abstract`, `decorated`, `override`, `protected`, `private`, `public`, `optional`.
 - Example: `private-static-accessor-property`, `protected-abstract-override-method` or `static-get-method`.
+
+The `optional` modifier is incompatible with the `get-method` and `set-method` selectors.
 
 The `abstract` modifier is incompatible with the `static`, `private` and `decorated` modifiers.
 
 `constructor`, `get-method` and `set-method` elements will also be matched as `method`.
+
+#### Accessors
+- Selector: `accessor-property`.
+- Modifiers: `static`, `abstract`, `decorated`, `override`, `protected`, `private`, `public`.
+- Example: `private-static-accessor-property`, `protected-abstract-override-method` or `static-get-method`.
+
+The `abstract` modifier is incompatible with the `static`, `private` and `decorated` modifiers.
 
 #### Properties
 - Selectors: `function-property`, `property`.

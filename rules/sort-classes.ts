@@ -98,7 +98,9 @@ type DeclarePropertyGroup =
   `${DeclareModifierPrefix}${PublicOrProtectedOrPrivateModifierPrefix}${StaticOrAbstractModifierPrefix}${ReadonlyModifierPrefix}${OptionalModifierPrefix}${PropertySelector}`
 type NonDeclarePropertyGroup =
   `${PublicOrProtectedOrPrivateModifierPrefix}${StaticOrAbstractModifierPrefix}${OverrideModifierPrefix}${ReadonlyModifierPrefix}${DecoratedModifierPrefix}${OptionalModifierPrefix}${PropertySelector}`
-type MethodOrGetMethodOrSetMethodGroup =
+type MethodGroup =
+  `${PublicOrProtectedOrPrivateModifierPrefix}${StaticOrAbstractModifierPrefix}${OverrideModifierPrefix}${DecoratedModifierPrefix}${OptionalModifierPrefix}${MethodSelector}`
+type GetMethodOrSetMethodGroup =
   `${PublicOrProtectedOrPrivateModifierPrefix}${StaticOrAbstractModifierPrefix}${OverrideModifierPrefix}${DecoratedModifierPrefix}${MethodOrGetMethodOrSetMethodSelector}`
 type AccessorPropertyGroup =
   `${PublicOrProtectedOrPrivateModifierPrefix}${StaticOrAbstractModifierPrefix}${OverrideModifierPrefix}${DecoratedModifierPrefix}${AccessorPropertySelector}`
@@ -112,7 +114,7 @@ type StaticBlockGroup = `${StaticBlockSelector}`
  * - abstract decorated X
  */
 type Group =
-  | MethodOrGetMethodOrSetMethodGroup
+  | GetMethodOrSetMethodGroup
   | NonDeclarePropertyGroup
   | AccessorPropertyGroup
   | FunctionPropertyGroup
@@ -120,6 +122,7 @@ type Group =
   | IndexSignatureGroup
   | ConstructorGroup
   | StaticBlockGroup
+  | MethodGroup
   | 'unknown'
   | string
 
@@ -399,6 +402,10 @@ export default createEslintRule<Options, MESSAGE_ID>({
                 modifiers.push('private')
               } else {
                 modifiers.push('public')
+              }
+
+              if (member.optional) {
+                modifiers.push('optional')
               }
 
               if (member.kind === 'constructor') {
