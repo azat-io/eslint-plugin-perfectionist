@@ -101,7 +101,7 @@ type NonDeclarePropertyGroup =
 type MethodOrGetMethodOrSetMethodGroup =
   `${PublicOrProtectedOrPrivateModifierPrefix}${StaticOrAbstractModifierPrefix}${OverrideModifierPrefix}${DecoratedModifierPrefix}${MethodOrGetMethodOrSetMethodSelector}`
 type AccessorPropertyGroup =
-  `${PublicOrProtectedOrPrivateModifierPrefix}${StaticOrAbstractModifierPrefix}${OverrideModifierPrefix}${DecoratedModifierPrefix}${OptionalModifierPrefix}${AccessorPropertySelector}`
+  `${PublicOrProtectedOrPrivateModifierPrefix}${StaticOrAbstractModifierPrefix}${OverrideModifierPrefix}${DecoratedModifierPrefix}${AccessorPropertySelector}`
 type IndexSignatureGroup =
   `${StaticModifierPrefix}${ReadonlyModifierPrefix}${IndexSignatureSelector}`
 type StaticBlockGroup = `${StaticBlockSelector}`
@@ -452,11 +452,6 @@ export default createEslintRule<Options, MESSAGE_ID>({
               } else {
                 modifiers.push('public')
               }
-
-              if (member.optional) {
-                modifiers.push('optional')
-              }
-
               selectors.push('accessor-property')
             } else {
               // Member is necessarily a Property

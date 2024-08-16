@@ -181,8 +181,6 @@ describe(ruleName, () => {
             code: dedent`
             abstract class Class {
 
-              accessor p?;
-
               o?;
 
               static {}
@@ -258,8 +256,6 @@ describe(ruleName, () => {
               static {}
 
               o?;
-
-              accessor p?;
             }
           `,
             options: [
@@ -283,20 +279,10 @@ describe(ruleName, () => {
                   'static-readonly-index-signature',
                   'static-block',
                   'public-optional-property',
-                  'public-optional-accessor-property',
                 ],
               },
             ],
             errors: [
-              {
-                messageId: 'unexpectedClassesGroupOrder',
-                data: {
-                  left: 'p',
-                  leftGroup: 'public-optional-accessor-property',
-                  right: 'o',
-                  rightGroup: 'public-optional-property',
-                },
-              },
               {
                 messageId: 'unexpectedClassesGroupOrder',
                 data: {
@@ -1063,55 +1049,6 @@ describe(ruleName, () => {
                       leftGroup: 'property',
                       right: 'z',
                       rightGroup: 'override-accessor-property',
-                    },
-                  },
-                ],
-              },
-            ],
-          },
-        )
-
-        ruleTester.run(
-          `${ruleName}(${type}): prioritize ${accessibilityModifier} accessibility over optional`,
-          rule,
-          {
-            valid: [],
-            invalid: [
-              {
-                code: dedent`
-              export class Class {
-
-                a(): void {}
-
-                ${accessibilityModifier} accessor z?: string;
-              }
-            `,
-                output: dedent`
-              export class Class {
-
-                ${accessibilityModifier} accessor z?: string;
-
-                a(): void {}
-              }
-            `,
-                options: [
-                  {
-                    ...options,
-                    groups: [
-                      `${accessibilityModifier}-accessor-property`,
-                      'method',
-                      'optional-property',
-                    ],
-                  },
-                ],
-                errors: [
-                  {
-                    messageId: 'unexpectedClassesGroupOrder',
-                    data: {
-                      left: 'a',
-                      leftGroup: 'method',
-                      right: 'z',
-                      rightGroup: `${accessibilityModifier}-accessor-property`,
                     },
                   },
                 ],
