@@ -126,6 +126,7 @@ type Options = [
     type: 'alphabetical' | 'line-length' | 'natural'
     partitionByComment: string[] | boolean | string
     groups: (Group[] | Group)[]
+    ignoredGroups: string[]
     order: 'desc' | 'asc'
     ignoreCase: boolean
   }>,
@@ -177,6 +178,14 @@ export default createEslintRule<Options, MESSAGE_ID>({
               },
             ],
           },
+          ignoredGroups: {
+            description:
+              'Specifies groups whose elements should not be sorted.',
+            type: 'array',
+            items: {
+              type: 'string',
+            },
+          },
           groups: {
             description: 'Specifies the order of the groups.',
             type: 'array',
@@ -227,6 +236,7 @@ export default createEslintRule<Options, MESSAGE_ID>({
       order: 'asc',
       ignoreCase: true,
       partitionByComment: false,
+      ignoredGroups: [],
       groups: [
         'static-block',
         'index-signature',
@@ -266,6 +276,7 @@ export default createEslintRule<Options, MESSAGE_ID>({
             ['get-method', 'set-method'],
             'unknown',
           ],
+          ignoredGroups: [],
           partitionByComment: false,
           type: 'alphabetical',
           ignoreCase: true,
@@ -340,9 +351,10 @@ export default createEslintRule<Options, MESSAGE_ID>({
 
             let name: string
             let dependencies: string[] = []
-            let { getGroup, defineGroup, setCustomGroups } = useGroups(
-              options.groups,
-            )
+            let { getGroup, defineGroup, setCustomGroups } = useGroups([
+              ...options.ignoredGroups,
+              ...options.groups,
+            ])
 
             if (member.type === 'StaticBlock') {
               name = 'static'
@@ -537,11 +549,15 @@ export default createEslintRule<Options, MESSAGE_ID>({
           pairwise(nodes, (left, right) => {
             let leftNum = getGroupNumber(options.groups, left)
             let rightNum = getGroupNumber(options.groups, right)
+            let isLeftOrRightIgnored =
+              (left.group && options.ignoredGroups.includes(left.group)) ||
+              (right.group && options.ignoredGroups.includes(right.group))
 
             if (
-              leftNum > rightNum ||
-              (leftNum === rightNum &&
-                isPositive(compare(left, right, options)))
+              !isLeftOrRightIgnored &&
+              (leftNum > rightNum ||
+                (leftNum === rightNum &&
+                  isPositive(compare(left, right, options))))
             ) {
               context.report({
                 messageId:
@@ -563,6 +579,12 @@ export default createEslintRule<Options, MESSAGE_ID>({
                       },
                       sortingNode,
                     ) => {
+                      if (
+                        sortingNode.group &&
+                        options.ignoredGroups.includes(sortingNode.group)
+                      ) {
+                        return accumulator
+                      }
                       let groupNum = getGroupNumber(options.groups, sortingNode)
 
                       if (!(groupNum in accumulator)) {
@@ -585,6 +607,17 @@ export default createEslintRule<Options, MESSAGE_ID>({
                     (a, b) => Number(a) - Number(b),
                   )) {
                     sortedNodes.push(...sortNodes(grouped[group], options))
+                  }
+
+                  let ignoredNodeIndices = nodes
+                    .map((n, index) =>
+                      n.group && options.ignoredGroups.includes(n.group)
+                        ? index
+                        : null,
+                    )
+                    .filter(index => index !== null)
+                  for (let ignoredIndex of ignoredNodeIndices.reverse()) {
+                    sortedNodes.splice(ignoredIndex, 0, nodes[ignoredIndex])
                   }
 
                   return makeFixes(fixer, nodes, sortedNodes, sourceCode, {
