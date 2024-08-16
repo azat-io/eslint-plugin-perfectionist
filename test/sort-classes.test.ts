@@ -4984,5 +4984,191 @@ describe(ruleName, () => {
         ],
       },
     )
+
+    ruleTester.run(`${ruleName}: sorts using default groups`, rule, {
+      valid: [],
+      invalid: [
+        {
+          code: dedent`
+              class Class {
+                set setMethod() {}
+
+                get getMethod() {}
+
+                public publicMethod() {}
+
+                private privateMethod() {}
+
+                protected protectedMethod() {}
+
+                static staticMethod() {}
+
+                constructor() {}
+
+                public accessor publicAccessorProperty
+
+                public publicProperty
+
+                private accessor privateAccessorProperty
+
+                private privateProperty
+
+                protected accessor protectedAccessorProperty
+
+                protected protectedProperty
+
+                static staticProperty
+
+                [key: string]: string
+
+                static {}
+              }
+            `,
+          output: dedent`
+              class Class {
+                static {}
+
+                [key: string]: string
+
+                static staticProperty
+
+                protected accessor protectedAccessorProperty
+
+                protected protectedProperty
+
+                private accessor privateAccessorProperty
+
+                private privateProperty
+
+                public accessor publicAccessorProperty
+
+                public publicProperty
+
+                constructor() {}
+
+                static staticMethod() {}
+
+                protected protectedMethod() {}
+
+                private privateMethod() {}
+
+                public publicMethod() {}
+
+                get getMethod() {}
+
+                set setMethod() {}
+              }
+            `,
+          errors: [
+            {
+              messageId: 'unexpectedClassesOrder',
+              data: {
+                left: 'setMethod',
+                right: 'getMethod',
+              },
+            },
+            {
+              messageId: 'unexpectedClassesGroupOrder',
+              data: {
+                left: 'getMethod',
+                leftGroup: 'get-method',
+                right: 'publicMethod',
+                rightGroup: 'method',
+              },
+            },
+            {
+              messageId: 'unexpectedClassesGroupOrder',
+              data: {
+                left: 'publicMethod',
+                leftGroup: 'method',
+                right: 'privateMethod',
+                rightGroup: 'private-method',
+              },
+            },
+            {
+              messageId: 'unexpectedClassesGroupOrder',
+              data: {
+                left: 'privateMethod',
+                leftGroup: 'private-method',
+                right: 'protectedMethod',
+                rightGroup: 'protected-method',
+              },
+            },
+            {
+              messageId: 'unexpectedClassesGroupOrder',
+              data: {
+                left: 'protectedMethod',
+                leftGroup: 'protected-method',
+                right: 'staticMethod',
+                rightGroup: 'static-method',
+              },
+            },
+            {
+              messageId: 'unexpectedClassesGroupOrder',
+              data: {
+                left: 'staticMethod',
+                leftGroup: 'static-method',
+                right: 'constructor',
+                rightGroup: 'constructor',
+              },
+            },
+            {
+              messageId: 'unexpectedClassesGroupOrder',
+              data: {
+                left: 'constructor',
+                leftGroup: 'constructor',
+                right: 'publicAccessorProperty',
+                rightGroup: 'accessor-property',
+              },
+            },
+            {
+              messageId: 'unexpectedClassesGroupOrder',
+              data: {
+                left: 'publicProperty',
+                leftGroup: 'property',
+                right: 'privateAccessorProperty',
+                rightGroup: 'private-accessor-property',
+              },
+            },
+            {
+              messageId: 'unexpectedClassesGroupOrder',
+              data: {
+                left: 'privateProperty',
+                leftGroup: 'private-property',
+                right: 'protectedAccessorProperty',
+                rightGroup: 'protected-accessor-property',
+              },
+            },
+            {
+              messageId: 'unexpectedClassesGroupOrder',
+              data: {
+                left: 'protectedProperty',
+                leftGroup: 'protected-property',
+                right: 'staticProperty',
+                rightGroup: 'static-property',
+              },
+            },
+            {
+              messageId: 'unexpectedClassesGroupOrder',
+              data: {
+                left: 'staticProperty',
+                leftGroup: 'static-property',
+                right: '[key: string]',
+                rightGroup: 'index-signature',
+              },
+            },
+            {
+              messageId: 'unexpectedClassesGroupOrder',
+              data: {
+                left: '[key: string]',
+                leftGroup: 'index-signature',
+                right: 'static',
+                rightGroup: 'static-block',
+              },
+            },
+          ],
+        },
+      ],
+    })
   })
 })

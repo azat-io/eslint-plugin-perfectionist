@@ -197,11 +197,12 @@ Allows you to use comments to separate the class members into logical groups. Th
   default:
   ```
   [
+    'static-block',
     'index-signature',
     'static-property',
-    'protected-property',
-    'private-property',
-    'property',
+    ['protected-property', 'protected-accessor-property'],
+    ['private-property', 'private-accessor-property'],
+    ['property', 'accessor-property'],
     'constructor',
     'static-method',
     'protected-method',
@@ -301,6 +302,11 @@ Example 2: (The most important group is written in the comments)
 ```ts
 abstract class Example extends BaseExample {
 
+  // 'static-block'
+  static {
+    console.log("I am a static block");
+  }
+
   // 'index-signature'
   [key: string]: any;
 
@@ -314,12 +320,20 @@ abstract class Example extends BaseExample {
   @SomeDecorator
   protected abstract override readonly _value: number;
 
+  // 'protected-decorated-accessor-property'
+  @SomeDecorator
+  protected accessor _value: number;
+
   // 'protected-property'
   protected name: string;
 
   // 'private-decorated-property'
   @SomeDecorator
   private _value: number;
+
+  // 'private-decorated-accessor-property'
+  @SomeDecorator
+  private accessor _value: number;
 
   // private-function-property
   private arrowProperty = () => {};
@@ -336,6 +350,10 @@ abstract class Example extends BaseExample {
   // 'public-decorated-property'
   @SomeDecorator
   public value: number;
+
+  // 'public-decorated-accessor-property'
+  @SomeDecorator
+  public accessor value: number;
 
   // 'public-constructor'
   constructor(value: number) {
@@ -417,23 +435,6 @@ abstract class Example extends BaseExample {
   set value(value: number) {
     this._value = value;
   }
-
-  // 'protected-decorated-accessor-property'
-  @SomeDecorator
-  protected accessor _value: number;
-
-  // 'private-decorated-accessor-property'
-  @SomeDecorator
-  private accessor _value: number;
-
-  // 'static-block'
-  static {
-    console.log("I am a static block");
-  }
-
-  // 'public-decorated-accessor-property'
-  @SomeDecorator
-  public accessor value: number;
 }
 ```
 
@@ -448,19 +449,20 @@ Example:
 ```js
  {
    groups: [
-     'index-signature',
-     'static-property',
-     'protected-property',
-     'private-property',
-     'property',
-     'constructor',
-     'static-method',
-     'protected-method',
-     'private-method',
+    'static-block',
+    'index-signature',
+    'static-property',
+    ['protected-property', 'protected-accessor-property'],
+    ['private-property', 'private-accessor-property'],
+    ['property', 'accessor-property'],
+    'constructor',
+    'static-method',
+    'protected-method',
+    'private-method',
      'static-private-method',
-     'method',
-     ['get-method', 'set-method'],
-     'unknown',
+    'method',
+    ['get-method', 'set-method'],
+    'unknown',
 +    'value',         // [!code ++]
    ],
 +  customGroups: {    // [!code ++]
@@ -492,11 +494,12 @@ Example:
                   ignoreCase: true,
                   partitionByComment: false,
                   groups: [
+                    'static-block',
                     'index-signature',
                     'static-property',
-                    'protected-property',
-                    'private-property',
-                    'property',
+                    ['protected-property', 'protected-accessor-property'],
+                    ['private-property', 'private-accessor-property'],
+                    ['property', 'accessor-property'],
                     'constructor',
                     'static-method',
                     'protected-method',
@@ -531,11 +534,12 @@ Example:
                 ignoreCase: true,
                 partitionByComment: false,
                 groups: [
+                  'static-block',
                   'index-signature',
                   'static-property',
-                  'protected-property',
-                  'private-property',
-                  'property',
+                  ['protected-property', 'protected-accessor-property'],
+                  ['private-property', 'private-accessor-property'],
+                  ['property', 'accessor-property'],
                   'constructor',
                   'static-method',
                   'protected-method',
