@@ -132,6 +132,11 @@ type Options = [
   }>,
 ]
 
+interface SortClassesSortingNode extends SortingNode<TSESTree.ClassElement> {
+  // Every node must be assigned to a group
+  group: Group
+}
+
 export default createEslintRule<Options, MESSAGE_ID>({
   name: 'sort-classes',
   meta: {
@@ -337,8 +342,8 @@ export default createEslintRule<Options, MESSAGE_ID>({
 
         let overloadSignatureGroups = getOverloadSignatureGroups(node.body)
 
-        let formattedNodes: SortingNode[][] = node.body.reduce(
-          (accumulator: SortingNode[][], member) => {
+        let formattedNodes: SortClassesSortingNode[][] = node.body.reduce(
+          (accumulator: SortClassesSortingNode[][], member) => {
             let comment = getCommentBefore(member, sourceCode)
 
             if (
@@ -528,7 +533,7 @@ export default createEslintRule<Options, MESSAGE_ID>({
               .find(overloadSignatures => overloadSignatures.includes(member))
               ?.at(-1)
 
-            let value: SortingNode = {
+            let value: SortClassesSortingNode = {
               size: overloadSignatureGroupMember
                 ? rangeToDiff(overloadSignatureGroupMember.range)
                 : rangeToDiff(member.range),
@@ -550,8 +555,8 @@ export default createEslintRule<Options, MESSAGE_ID>({
             let leftNum = getGroupNumber(options.groups, left)
             let rightNum = getGroupNumber(options.groups, right)
             let isLeftOrRightIgnored =
-              (left.group && options.ignoredGroups.includes(left.group)) ||
-              (right.group && options.ignoredGroups.includes(right.group))
+              options.ignoredGroups.includes(left.group) ||
+              options.ignoredGroups.includes(right.group)
 
             if (
               !isLeftOrRightIgnored &&
@@ -572,17 +577,15 @@ export default createEslintRule<Options, MESSAGE_ID>({
                 },
                 node: right.node,
                 fix: (fixer: TSESLint.RuleFixer) => {
-                  let grouped = nodes.reduce(
+                  let nodesByNonIgnoredGroup = nodes.reduce(
                     (
                       accumulator: {
                         [key: string]: SortingNode[]
                       },
                       sortingNode,
                     ) => {
-                      if (
-                        sortingNode.group &&
-                        options.ignoredGroups.includes(sortingNode.group)
-                      ) {
+                      // Nodes from ignored groups will be added in the end
+                      if (options.ignoredGroups.includes(sortingNode.group)) {
                         return accumulator
                       }
                       let groupNum = getGroupNumber(options.groups, sortingNode)
@@ -603,20 +606,21 @@ export default createEslintRule<Options, MESSAGE_ID>({
 
                   let sortedNodes: SortingNode[] = []
 
-                  for (let group of Object.keys(grouped).sort(
+                  for (let group of Object.keys(nodesByNonIgnoredGroup).sort(
                     (a, b) => Number(a) - Number(b),
                   )) {
-                    sortedNodes.push(...sortNodes(grouped[group], options))
+                    sortedNodes.push(
+                      ...sortNodes(nodesByNonIgnoredGroup[group], options),
+                    )
                   }
 
+                  // Add ignored nodes at the same position as they were before linting
                   let ignoredNodeIndices = nodes
                     .map((n, index) =>
-                      n.group && options.ignoredGroups.includes(n.group)
-                        ? index
-                        : null,
+                      options.ignoredGroups.includes(n.group) ? index : null,
                     )
                     .filter(index => index !== null)
-                  for (let ignoredIndex of ignoredNodeIndices.reverse()) {
+                  for (let ignoredIndex of ignoredNodeIndices) {
                     sortedNodes.splice(ignoredIndex, 0, nodes[ignoredIndex])
                   }
 
