@@ -1650,7 +1650,7 @@ describe(ruleName, () => {
                 ...options,
                 groups: [
                   ['static-property', 'private-property', 'property'],
-                  'constructor',
+                  'index-signature',
                 ],
               },
             ],
@@ -1659,7 +1659,7 @@ describe(ruleName, () => {
                 messageId: 'unexpectedClassesGroupOrder',
                 data: {
                   left: '[k: string];',
-                  leftGroup: 'unknown',
+                  leftGroup: 'index-signature',
                   right: 'a',
                   rightGroup: 'static-property',
                 },
@@ -2730,6 +2730,55 @@ describe(ruleName, () => {
               data: {
                 left: 'b',
                 right: 'a',
+              },
+            },
+          ],
+        },
+      ],
+    })
+
+    ruleTester.run(`${ruleName}(${type}): should ignore unknown group`, rule, {
+      valid: [],
+      invalid: [
+        {
+          code: dedent`
+              class Class {
+
+                public i = 'i';
+                private z() {}
+                public method3() {}
+                private y() {}
+                public method4() {}
+                public method1() {}
+                private x() {}
+              }
+            `,
+          output: dedent`
+              class Class {
+
+                private x() {}
+                private y() {}
+                public method3() {}
+                private z() {}
+                public method4() {}
+                public method1() {}
+                public i = 'i';
+              }
+            `,
+          options: [
+            {
+              ...options,
+              groups: ['private-method', 'property'],
+            },
+          ],
+          errors: [
+            {
+              messageId: 'unexpectedClassesGroupOrder',
+              data: {
+                left: 'i',
+                leftGroup: 'property',
+                right: 'z',
+                rightGroup: 'private-method',
               },
             },
           ],
@@ -3028,7 +3077,7 @@ describe(ruleName, () => {
                 ...options,
                 groups: [
                   ['static-property', 'private-property', 'property'],
-                  'constructor',
+                  'index-signature',
                 ],
               },
             ],
@@ -3037,7 +3086,7 @@ describe(ruleName, () => {
                 messageId: 'unexpectedClassesGroupOrder',
                 data: {
                   left: '[k: string];',
-                  leftGroup: 'unknown',
+                  leftGroup: 'index-signature',
                   right: 'a',
                   rightGroup: 'static-property',
                 },
@@ -4114,6 +4163,55 @@ describe(ruleName, () => {
         },
       ],
     })
+
+    ruleTester.run(`${ruleName}(${type}): should ignore unknown group`, rule, {
+      valid: [],
+      invalid: [
+        {
+          code: dedent`
+              class Class {
+
+                public i = 'i';
+                private z() {}
+                public method3() {}
+                private y() {}
+                public method4() {}
+                public method1() {}
+                private x() {}
+              }
+            `,
+          output: dedent`
+              class Class {
+
+                private x() {}
+                private y() {}
+                public method3() {}
+                private z() {}
+                public method4() {}
+                public method1() {}
+                public i = 'i';
+              }
+            `,
+          options: [
+            {
+              ...options,
+              groups: ['private-method', 'property'],
+            },
+          ],
+          errors: [
+            {
+              messageId: 'unexpectedClassesGroupOrder',
+              data: {
+                left: 'i',
+                leftGroup: 'property',
+                right: 'z',
+                rightGroup: 'private-method',
+              },
+            },
+          ],
+        },
+      ],
+    })
   })
 
   describe(`${ruleName}: sorting by line length`, () => {
@@ -4375,7 +4473,7 @@ describe(ruleName, () => {
                 ...options,
                 groups: [
                   ['static-property', 'private-property', 'property'],
-                  'constructor',
+                  'index-signature',
                 ],
               },
             ],
@@ -4384,7 +4482,7 @@ describe(ruleName, () => {
                 messageId: 'unexpectedClassesGroupOrder',
                 data: {
                   left: '[k: string];',
-                  leftGroup: 'unknown',
+                  leftGroup: 'index-signature',
                   right: 'a',
                   rightGroup: 'static-property',
                 },
@@ -4894,6 +4992,55 @@ describe(ruleName, () => {
                 leftGroup: 'private-decorated-accessor-property',
                 right: 'finished',
                 rightGroup: 'decorated-accessor-property',
+              },
+            },
+          ],
+        },
+      ],
+    })
+
+    ruleTester.run(`${ruleName}(${type}): should ignore unknown group`, rule, {
+      valid: [],
+      invalid: [
+        {
+          code: dedent`
+              class Class {
+
+                public i = 'i';
+                private z() {}
+                public method3() {}
+                private y() {}
+                public method4() {}
+                public method1() {}
+                private x() {}
+              }
+            `,
+          output: dedent`
+              class Class {
+
+                private z() {}
+                private y() {}
+                public method3() {}
+                private x() {}
+                public method4() {}
+                public method1() {}
+                public i = 'i';
+              }
+            `,
+          options: [
+            {
+              ...options,
+              groups: ['private-method', 'property'],
+            },
+          ],
+          errors: [
+            {
+              messageId: 'unexpectedClassesGroupOrder',
+              data: {
+                left: 'i',
+                leftGroup: 'property',
+                right: 'z',
+                rightGroup: 'private-method',
               },
             },
           ],

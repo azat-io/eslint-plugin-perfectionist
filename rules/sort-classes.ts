@@ -126,16 +126,10 @@ type Options = [
     type: 'alphabetical' | 'line-length' | 'natural'
     partitionByComment: string[] | boolean | string
     groups: (Group[] | Group)[]
-    ignoredGroups: string[]
     order: 'desc' | 'asc'
     ignoreCase: boolean
   }>,
 ]
-
-interface SortClassesSortingNode extends SortingNode<TSESTree.ClassElement> {
-  // Every node must be assigned to a group
-  group: Group
-}
 
 export default createEslintRule<Options, MESSAGE_ID>({
   name: 'sort-classes',
@@ -182,14 +176,6 @@ export default createEslintRule<Options, MESSAGE_ID>({
                 type: 'string',
               },
             ],
-          },
-          ignoredGroups: {
-            description:
-              'Specifies groups whose elements should not be sorted.',
-            type: 'array',
-            items: {
-              type: 'string',
-            },
           },
           groups: {
             description: 'Specifies the order of the groups.',
@@ -241,7 +227,6 @@ export default createEslintRule<Options, MESSAGE_ID>({
       order: 'asc',
       ignoreCase: true,
       partitionByComment: false,
-      ignoredGroups: [],
       groups: [
         'static-block',
         'index-signature',
@@ -281,7 +266,6 @@ export default createEslintRule<Options, MESSAGE_ID>({
             ['get-method', 'set-method'],
             'unknown',
           ],
-          ignoredGroups: [],
           partitionByComment: false,
           type: 'alphabetical',
           ignoreCase: true,
@@ -342,8 +326,8 @@ export default createEslintRule<Options, MESSAGE_ID>({
 
         let overloadSignatureGroups = getOverloadSignatureGroups(node.body)
 
-        let formattedNodes: SortClassesSortingNode[][] = node.body.reduce(
-          (accumulator: SortClassesSortingNode[][], member) => {
+        let formattedNodes: SortingNode[][] = node.body.reduce(
+          (accumulator: SortingNode[][], member) => {
             let comment = getCommentBefore(member, sourceCode)
 
             if (
@@ -356,10 +340,9 @@ export default createEslintRule<Options, MESSAGE_ID>({
 
             let name: string
             let dependencies: string[] = []
-            let { getGroup, defineGroup, setCustomGroups } = useGroups([
-              ...options.ignoredGroups,
-              ...options.groups,
-            ])
+            let { getGroup, defineGroup, setCustomGroups } = useGroups(
+              options.groups,
+            )
 
             if (member.type === 'StaticBlock') {
               name = 'static'
@@ -533,7 +516,7 @@ export default createEslintRule<Options, MESSAGE_ID>({
               .find(overloadSignatures => overloadSignatures.includes(member))
               ?.at(-1)
 
-            let value: SortClassesSortingNode = {
+            let value: SortingNode = {
               size: overloadSignatureGroupMember
                 ? rangeToDiff(overloadSignatureGroupMember.range)
                 : rangeToDiff(member.range),
@@ -554,9 +537,11 @@ export default createEslintRule<Options, MESSAGE_ID>({
           pairwise(nodes, (left, right) => {
             let leftNum = getGroupNumber(options.groups, left)
             let rightNum = getGroupNumber(options.groups, right)
+            // Ignore nodes belonging to `unknown` group when that group is not referenced in the
+            // `groups` option.
             let isLeftOrRightIgnored =
-              options.ignoredGroups.includes(left.group) ||
-              options.ignoredGroups.includes(right.group)
+              leftNum === options.groups.length ||
+              rightNum === options.groups.length
 
             if (
               !isLeftOrRightIgnored &&
@@ -577,49 +562,34 @@ export default createEslintRule<Options, MESSAGE_ID>({
                 },
                 node: right.node,
                 fix: (fixer: TSESLint.RuleFixer) => {
-                  let nodesByNonIgnoredGroup = nodes.reduce(
-                    (
-                      accumulator: {
-                        [key: string]: SortingNode[]
-                      },
-                      sortingNode,
-                    ) => {
-                      // Nodes from ignored groups will be added in the end
-                      if (options.ignoredGroups.includes(sortingNode.group)) {
-                        return accumulator
-                      }
-                      let groupNum = getGroupNumber(options.groups, sortingNode)
-
-                      if (!(groupNum in accumulator)) {
-                        accumulator[groupNum] = [sortingNode]
-                      } else {
-                        accumulator[groupNum] = sortNodes(
-                          [...accumulator[groupNum], sortingNode],
-                          options,
-                        )
-                      }
-
-                      return accumulator
-                    },
-                    {},
-                  )
+                  let nodesByNonIgnoredGroupNumber: {
+                    [key: number]: SortingNode[]
+                  } = {}
+                  let ignoredNodeIndices: number[] = []
+                  for (let [index, sortingNode] of nodes.entries()) {
+                    let groupNum = getGroupNumber(options.groups, sortingNode)
+                    if (groupNum === options.groups.length) {
+                      ignoredNodeIndices.push(index)
+                      continue
+                    }
+                    nodesByNonIgnoredGroupNumber[groupNum] =
+                      nodesByNonIgnoredGroupNumber[groupNum] ?? []
+                    nodesByNonIgnoredGroupNumber[groupNum].push(sortingNode)
+                  }
 
                   let sortedNodes: SortingNode[] = []
-
-                  for (let group of Object.keys(nodesByNonIgnoredGroup).sort(
-                    (a, b) => Number(a) - Number(b),
-                  )) {
+                  for (let groupNumber of Object.keys(
+                    nodesByNonIgnoredGroupNumber,
+                  ).sort((a, b) => Number(a) - Number(b))) {
                     sortedNodes.push(
-                      ...sortNodes(nodesByNonIgnoredGroup[group], options),
+                      ...sortNodes(
+                        nodesByNonIgnoredGroupNumber[Number(groupNumber)],
+                        options,
+                      ),
                     )
                   }
 
                   // Add ignored nodes at the same position as they were before linting
-                  let ignoredNodeIndices = nodes
-                    .map((n, index) =>
-                      options.ignoredGroups.includes(n.group) ? index : null,
-                    )
-                    .filter(index => index !== null)
                   for (let ignoredIndex of ignoredNodeIndices) {
                     sortedNodes.splice(ignoredIndex, 0, nodes[ignoredIndex])
                   }
