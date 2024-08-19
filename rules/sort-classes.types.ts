@@ -1,3 +1,5 @@
+import type { JSONSchema4 } from '@typescript-eslint/utils/json-schema'
+
 type ProtectedModifier = 'protected'
 type PrivateModifier = 'private'
 type PublicModifier = 'public'
@@ -152,28 +154,43 @@ interface AllowedModifiersPerSelector {
   'static-block': never
 }
 
-interface BaseCustomGroup<T extends Selector> {
-  modifiers?: AllowedModifiersPerSelector[T][]
-  groupName: string
-  selector?: T
-}
+type SortableCustomGroup =
+  | {
+      type?: 'alphabetical' | 'line-length' | 'natural'
+      order?: 'desc' | 'asc'
+    }
+  | {
+      type?: 'unsorted'
+    }
 
-interface CustomGroupWithNameAndDecoratorPatternFilter<T extends Selector>
-  extends BaseCustomGroup<T> {
+type CustomGroupBlock = {
+  subgroups: CustomGroup[]
+} & SortableCustomGroup
+
+type BaseCustomGroup<T extends Selector> = {
+  modifiers?: AllowedModifiersPerSelector[T][]
+  selector?: T
+} & SortableCustomGroup
+
+type AdvancedCustomGroup<T extends Selector> = {
   decoratorNamePattern?: string
   elementNamePattern?: string
-}
+} & BaseCustomGroup<T>
 
-export type CustomGroup =
-  | CustomGroupWithNameAndDecoratorPatternFilter<FunctionPropertySelector>
-  | CustomGroupWithNameAndDecoratorPatternFilter<AccessorPropertySelector>
-  | CustomGroupWithNameAndDecoratorPatternFilter<GetMethodSelector>
-  | CustomGroupWithNameAndDecoratorPatternFilter<SetMethodSelector>
-  | CustomGroupWithNameAndDecoratorPatternFilter<PropertySelector>
-  | CustomGroupWithNameAndDecoratorPatternFilter<MethodSelector>
+export type SingleCustomGroup =
+  | AdvancedCustomGroup<FunctionPropertySelector>
+  | AdvancedCustomGroup<AccessorPropertySelector>
   | BaseCustomGroup<IndexSignatureSelector>
+  | AdvancedCustomGroup<GetMethodSelector>
+  | AdvancedCustomGroup<SetMethodSelector>
+  | AdvancedCustomGroup<PropertySelector>
   | BaseCustomGroup<StaticBlockSelector>
   | BaseCustomGroup<ConstructorSelector>
+  | AdvancedCustomGroup<MethodSelector>
+
+export type CustomGroup = (SingleCustomGroup | CustomGroupBlock) & {
+  groupName: string
+}
 
 export type SortClassesOptions = [
   Partial<{
@@ -185,3 +202,48 @@ export type SortClassesOptions = [
     ignoreCase: boolean
   }>,
 ]
+
+export const singleCustomGroupGroupJsonSchema: Record<string, JSONSchema4> = {
+  selector: {
+    description: 'Selector filter.',
+    type: 'string',
+    enum: allSelectors,
+  },
+  modifiers: {
+    description: 'Modifier filters.',
+    type: 'array',
+    items: {
+      type: 'string',
+      enum: allModifiers,
+    },
+  },
+  elementNamePattern: {
+    description: 'Element name pattern.',
+    type: 'string',
+  },
+  decoratorNamePattern: {
+    description: 'Decorator name pattern.',
+    type: 'string',
+  },
+  type: {
+    description: 'Custom group sort type.',
+    type: 'string',
+    enum: ['alphabetical', 'line-length', 'natural', 'unsorted'],
+  },
+  order: {
+    description: 'Custom group sort order.',
+    type: 'string',
+    enum: ['desc', 'asc'],
+  },
+}
+
+export const singleCustomGroupWithNameGroupJsonSchema: Record<
+  string,
+  JSONSchema4
+> = {
+  ...singleCustomGroupGroupJsonSchema,
+  groupName: {
+    description: 'Custom group name.',
+    type: 'string',
+  },
+}

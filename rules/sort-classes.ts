@@ -12,9 +12,10 @@ import {
   getOverloadSignatureGroups,
   generateOfficialGroups,
   customGroupMatches,
+  getCompareOptions,
 } from './sort-classes-utils'
+import { singleCustomGroupWithNameGroupJsonSchema } from './sort-classes.types'
 import { isPartitionComment } from '../utils/is-partition-comment'
-import { allModifiers, allSelectors } from './sort-classes.types'
 import { getCommentBefore } from '../utils/get-comment-before'
 import { createEslintRule } from '../utils/create-eslint-rule'
 import { getGroupNumber } from '../utils/get-group-number'
@@ -117,37 +118,36 @@ export default createEslintRule<SortClassesOptions, MESSAGE_ID>({
               {
                 type: 'array',
                 items: {
-                  additionalProperties: false,
-                  description: 'Advanced group.',
-                  type: 'object',
-                  required: ['groupName'],
-                  properties: {
-                    groupName: {
-                      description: 'Group name',
-                      type: 'string',
-                    },
-                    selector: {
-                      description: 'Selector',
-                      type: 'string',
-                      enum: allSelectors,
-                    },
-                    modifiers: {
-                      description: 'Modifiers',
-                      type: 'array',
-                      items: {
-                        type: 'string',
-                        enum: allModifiers,
+                  description: 'Advanced custom groups.',
+                  oneOf: [
+                    {
+                      description: 'Custom group block.',
+                      type: 'object',
+                      additionalProperties: false,
+                      properties: {
+                        groupName: {
+                          description: 'Custom group name.',
+                          type: 'string',
+                        },
+                        subgroups: {
+                          type: 'array',
+                          items: {
+                            description: 'Custom group.',
+                            type: 'object',
+                            additionalProperties: false,
+                            properties:
+                              singleCustomGroupWithNameGroupJsonSchema,
+                          },
+                        },
                       },
                     },
-                    elementNameRegex: {
-                      description: 'Element name regex',
-                      type: 'string',
+                    {
+                      description: 'Custom group.',
+                      type: 'object',
+                      additionalProperties: false,
+                      properties: singleCustomGroupWithNameGroupJsonSchema,
                     },
-                    decoratorNamePattern: {
-                      description: 'Decorator name pattern',
-                      type: 'string',
-                    },
-                  },
+                  ],
                 },
               },
             ],
@@ -497,6 +497,7 @@ export default createEslintRule<SortClassesOptions, MESSAGE_ID>({
                   })
                 ) {
                   defineGroup(customGroup.groupName, true)
+                  break
                 }
               }
             } else {
@@ -541,13 +542,21 @@ export default createEslintRule<SortClassesOptions, MESSAGE_ID>({
             let isLeftOrRightIgnored =
               leftNum === options.groups.length ||
               rightNum === options.groups.length
+            if (isLeftOrRightIgnored) {
+              continue;
+            }
 
-            if (
-              !isLeftOrRightIgnored &&
-              (leftNum > rightNum ||
-                (leftNum === rightNum &&
-                  isPositive(compare(left, right, options))))
-            ) {
+            let compareValue = false
+            if (leftNum > rightNum) {
+              compareValue = true
+            } else if (leftNum === rightNum) {
+              let compareOptions = getCompareOptions(options, leftNum)
+              compareValue = compareOptions
+                ? isPositive(compare(left, right, compareOptions))
+                : false
+            }
+
+            if (compareValue) {
               context.report({
                 messageId:
                   leftNum !== rightNum
@@ -561,36 +570,35 @@ export default createEslintRule<SortClassesOptions, MESSAGE_ID>({
                 },
                 node: right.node,
                 fix: (fixer: TSESLint.RuleFixer) => {
-                  let nodesByNonIgnoredGroupNumber: {
+                  let nodesByGroupNumber: {
                     [key: number]: SortingNode[]
                   } = {}
-                  let ignoredNodeIndices: number[] = []
-                  for (let [index, sortingNode] of nodes.entries()) {
+                  for (let sortingNode of nodes) {
                     let groupNum = getGroupNumber(options.groups, sortingNode)
-                    if (groupNum === options.groups.length) {
-                      ignoredNodeIndices.push(index)
+                    nodesByGroupNumber[groupNum] =
+                      nodesByGroupNumber[groupNum] ?? []
+                    nodesByGroupNumber[groupNum].push(sortingNode)
+                  }
+                  let sortedNodes: SortingNode[] = []
+                  for (let groupNumber of Object.keys(nodesByGroupNumber).sort(
+                    (a, b) => Number(a) - Number(b),
+                  )) {
+                    let compareOptions = getCompareOptions(
+                      options,
+                      Number(groupNumber),
+                    )
+                    if (!compareOptions) {
+                      sortedNodes.push(
+                        ...nodesByGroupNumber[Number(groupNumber)],
+                      )
                       continue
                     }
-                    nodesByNonIgnoredGroupNumber[groupNum] =
-                      nodesByNonIgnoredGroupNumber[groupNum] ?? []
-                    nodesByNonIgnoredGroupNumber[groupNum].push(sortingNode)
-                  }
-
-                  let sortedNodes: SortingNode[] = []
-                  for (let groupNumber of Object.keys(
-                    nodesByNonIgnoredGroupNumber,
-                  ).sort((a, b) => Number(a) - Number(b))) {
                     sortedNodes.push(
                       ...sortNodes(
-                        nodesByNonIgnoredGroupNumber[Number(groupNumber)],
-                        options,
+                        nodesByGroupNumber[Number(groupNumber)],
+                        compareOptions,
                       ),
                     )
-                  }
-
-                  // Add ignored nodes at the same position as they were before linting
-                  for (let ignoredIndex of ignoredNodeIndices) {
-                    sortedNodes.splice(ignoredIndex, 0, nodes[ignoredIndex])
                   }
 
                   return makeFixes(fixer, nodes, sortedNodes, sourceCode, {

@@ -2,10 +2,17 @@ import type { TSESTree } from '@typescript-eslint/utils'
 
 import { minimatch } from 'minimatch'
 
-import type { CustomGroup, Modifier, Selector } from './sort-classes.types'
+import type {
+  SortClassesOptions,
+  SingleCustomGroup,
+  CustomGroup,
+  Modifier,
+  Selector,
+} from './sort-classes.types'
+import type { CompareOptions } from '../utils/compare'
 
 interface CustomGroupMatchesProps {
-  customGroup: CustomGroup
+  customGroup: SingleCustomGroup
   selectors: Selector[]
   modifiers: Modifier[]
   decorators: string[]
@@ -198,3 +205,42 @@ export const customGroupMatches = (props: CustomGroupMatchesProps): boolean => {
 
   return true
 }
+
+/**
+ * Returns the compare options used to sort a given group
+ */
+export const getCompareOptions = (
+  options: Required<SortClassesOptions[0]>,
+  groupNumber: number,
+): CompareOptions | null => {
+  let group = options.groups[groupNumber]
+  let customGroup =
+    typeof group === 'string' && Array.isArray(options.customGroups)
+      ? getCustomGroup(group, options.customGroups)
+      : null
+  if (customGroup?.type === 'unsorted') {
+    return null
+  }
+  return {
+    type: customGroup?.type ?? options.type,
+    order:
+      customGroup && 'order' in customGroup && customGroup.order
+        ? customGroup.order
+        : options.order,
+    ignoreCase: options.ignoreCase,
+  }
+}
+
+const getCustomGroup = (
+  groupName: string,
+  customGroups: CustomGroup[],
+): CustomGroup | undefined =>
+  customGroups.find(group => {
+    if ('subgroups' in group) {
+      let foundSubgroup = getCustomGroup(groupName, group.subgroups)
+      if (foundSubgroup) {
+        return true
+      }
+    }
+    return group.groupName === groupName
+  })
