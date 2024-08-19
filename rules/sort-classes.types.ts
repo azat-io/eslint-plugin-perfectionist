@@ -154,17 +154,8 @@ interface AllowedModifiersPerSelector {
   'static-block': never
 }
 
-type SortableCustomGroup =
-  | {
-      type?: 'alphabetical' | 'line-length' | 'natural'
-      order?: 'desc' | 'asc'
-    }
-  | {
-      type?: 'unsorted'
-    }
-
 export interface CustomGroupBlock {
-  subgroups: SingleCustomGroup[]
+  anyOf: SingleCustomGroup[]
 }
 
 interface BaseCustomGroup<T extends Selector> {
@@ -188,9 +179,18 @@ export type SingleCustomGroup =
   | BaseCustomGroup<ConstructorSelector>
   | AdvancedCustomGroup<MethodSelector>
 
-export type CustomGroup = (SingleCustomGroup | CustomGroupBlock) & {
-  groupName: string
-} & SortableCustomGroup
+export type CustomGroup = (
+  | {
+      type?: 'alphabetical' | 'line-length' | 'natural'
+      order?: 'desc' | 'asc'
+    }
+  | {
+      type?: 'unsorted'
+    }
+) &
+  (SingleCustomGroup | CustomGroupBlock) & {
+    groupName: string
+  }
 
 export type SortClassesOptions = [
   Partial<{

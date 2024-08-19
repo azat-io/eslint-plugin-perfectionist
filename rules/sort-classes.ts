@@ -131,7 +131,7 @@ export default createEslintRule<SortClassesOptions, MESSAGE_ID>({
                       properties: {
                         ...singleCustomGroupNameGroupSchema,
                         ...singleCustomGroupSortGroupSchema,
-                        subgroups: {
+                        anyOf: {
                           type: 'array',
                           items: {
                             description: 'Custom group.',

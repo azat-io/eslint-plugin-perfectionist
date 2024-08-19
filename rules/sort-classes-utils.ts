@@ -156,9 +156,9 @@ export const getOverloadSignatureGroups = (
 }
 
 export const customGroupMatches = (props: CustomGroupMatchesProps): boolean => {
-  if ('subgroups' in props.customGroup) {
+  if ('anyOf' in props.customGroup) {
     // At least one subgroup must match
-    return props.customGroup.subgroups.some(subgroup =>
+    return props.customGroup.anyOf.some(subgroup =>
       customGroupMatches({ ...props, customGroup: subgroup }),
     )
   }
