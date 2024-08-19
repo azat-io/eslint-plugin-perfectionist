@@ -164,18 +164,13 @@ interface CustomGroupWithNameAndDecoratorPatternFilter<T extends Selector>
   elementNamePattern?: string
 }
 
-interface CustomGroupWithValueTypePattern<T extends Selector>
-  extends CustomGroupWithNameAndDecoratorPatternFilter<T> {
-  valueTypePattern?: string
-}
-
 export type CustomGroup =
   | CustomGroupWithNameAndDecoratorPatternFilter<FunctionPropertySelector>
+  | CustomGroupWithNameAndDecoratorPatternFilter<AccessorPropertySelector>
   | CustomGroupWithNameAndDecoratorPatternFilter<GetMethodSelector>
   | CustomGroupWithNameAndDecoratorPatternFilter<SetMethodSelector>
+  | CustomGroupWithNameAndDecoratorPatternFilter<PropertySelector>
   | CustomGroupWithNameAndDecoratorPatternFilter<MethodSelector>
-  | CustomGroupWithValueTypePattern<AccessorPropertySelector>
-  | CustomGroupWithValueTypePattern<PropertySelector>
   | BaseCustomGroup<IndexSignatureSelector>
   | BaseCustomGroup<StaticBlockSelector>
   | BaseCustomGroup<ConstructorSelector>

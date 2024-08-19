@@ -147,10 +147,6 @@ export default createEslintRule<SortClassesOptions, MESSAGE_ID>({
                       description: 'Decorator name pattern',
                       type: 'string',
                     },
-                    valueTypePattern: {
-                      description: 'Value type pattern',
-                      type: 'string',
-                    },
                   },
                 },
               },
@@ -187,7 +183,7 @@ export default createEslintRule<SortClassesOptions, MESSAGE_ID>({
         ['get-method', 'set-method'],
         'unknown',
       ],
-      customGroups: {},
+      customGroups: [],
     },
   ],
   create: context => ({
@@ -214,7 +210,7 @@ export default createEslintRule<SortClassesOptions, MESSAGE_ID>({
           partitionByComment: false,
           type: 'alphabetical',
           ignoreCase: true,
-          customGroups: {},
+          customGroups: [],
           order: 'asc',
         } as const)
 
@@ -312,7 +308,6 @@ export default createEslintRule<SortClassesOptions, MESSAGE_ID>({
 
             let modifiers: Modifier[] = []
             let selectors: Selector[] = []
-            let memberValueType: undefined | string
 
             if (
               member.type === 'MethodDefinition' ||
@@ -388,8 +383,6 @@ export default createEslintRule<SortClassesOptions, MESSAGE_ID>({
               member.type === 'AccessorProperty' ||
               member.type === 'TSAbstractAccessorProperty'
             ) {
-              memberValueType = member.value?.type
-
               if (member.static) {
                 modifiers.push('static')
               }
@@ -429,8 +422,6 @@ export default createEslintRule<SortClassesOptions, MESSAGE_ID>({
 
               // Similarly to above for methods, prioritize 'static', 'declare', 'decorated', 'abstract', 'override' and 'readonly'
               // over accessibility modifiers
-
-              memberValueType = member.value?.type
 
               if (member.static) {
                 modifiers.push('static')
@@ -503,7 +494,6 @@ export default createEslintRule<SortClassesOptions, MESSAGE_ID>({
                     modifiers,
                     selectors,
                     decorators,
-                    memberValueType,
                   })
                 ) {
                   defineGroup(customGroup.groupName, true)

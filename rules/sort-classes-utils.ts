@@ -5,11 +5,6 @@ import { minimatch } from 'minimatch'
 import type { CustomGroup, Modifier, Selector } from './sort-classes.types'
 
 interface CustomGroupMatchesProps {
-  memberValueType:
-    | 'ArrowFunctionExpression'
-    | 'FunctionExpression'
-    | undefined
-    | string
   customGroup: CustomGroup
   selectors: Selector[]
   modifiers: Modifier[]
@@ -199,31 +194,6 @@ export const customGroupMatches = (props: CustomGroupMatchesProps): boolean => {
         }),
     )
     if (!matchesDecoratorNamePattern) {
-      return false
-    }
-  }
-
-  if (
-    props.customGroup.selector === 'method' ||
-    props.customGroup.selector === 'get-method' ||
-    props.customGroup.selector === 'set-method' ||
-    props.customGroup.selector === 'function-property'
-  ) {
-    return true
-  }
-
-  if (props.customGroup.valueTypePattern) {
-    if (!props.memberValueType) {
-      return false
-    }
-    let matchesValueTypePattern: boolean = minimatch(
-      props.memberValueType,
-      props.customGroup.valueTypePattern,
-      {
-        nocomment: true,
-      },
-    )
-    if (!matchesValueTypePattern) {
       return false
     }
   }
