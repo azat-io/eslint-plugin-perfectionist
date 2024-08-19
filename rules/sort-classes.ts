@@ -9,9 +9,9 @@ import type {
 import type { SortingNode } from '../typings'
 
 import {
+  getOverloadSignatureGroups,
   generateOfficialGroups,
   customGroupMatches,
-  getOverloadSignatureGroups,
 } from './sort-classes-utils'
 import { isPartitionComment } from '../utils/is-partition-comment'
 import { allModifiers, allSelectors } from './sort-classes.types'

@@ -1,7 +1,6 @@
-import { minimatch } from 'minimatch'
 import type { TSESTree } from '@typescript-eslint/utils'
 
-import type { Modifier, Selector } from './sort-classes'
+import { minimatch } from 'minimatch'
 
 import type { CustomGroup, Modifier, Selector } from './sort-classes.types'
 
