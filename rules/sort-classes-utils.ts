@@ -153,7 +153,6 @@ export const getOverloadSignatureGroups = (
   ].filter(group => group.length > 1)
 }
 
-
 export const customGroupMatches = (props: CustomGroupMatchesProps): boolean => {
   if (!props.selectors.includes(props.customGroup.selector)) {
     return false
