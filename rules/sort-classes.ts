@@ -9,12 +9,16 @@ import type {
 import type { SortingNode } from '../typings'
 
 import {
+  singleCustomGroupNameGroupSchema,
+  singleCustomGroupSortGroupSchema,
+  singleCustomGroupJsonSchema,
+} from './sort-classes.types'
+import {
   getOverloadSignatureGroups,
   generateOfficialGroups,
   customGroupMatches,
   getCompareOptions,
 } from './sort-classes-utils'
-import { singleCustomGroupWithNameGroupJsonSchema } from './sort-classes.types'
 import { isPartitionComment } from '../utils/is-partition-comment'
 import { getCommentBefore } from '../utils/get-comment-before'
 import { createEslintRule } from '../utils/create-eslint-rule'
@@ -125,18 +129,17 @@ export default createEslintRule<SortClassesOptions, MESSAGE_ID>({
                       type: 'object',
                       additionalProperties: false,
                       properties: {
-                        groupName: {
-                          description: 'Custom group name.',
-                          type: 'string',
-                        },
+                        ...singleCustomGroupNameGroupSchema,
+                        ...singleCustomGroupSortGroupSchema,
                         subgroups: {
                           type: 'array',
                           items: {
                             description: 'Custom group.',
                             type: 'object',
                             additionalProperties: false,
-                            properties:
-                              singleCustomGroupWithNameGroupJsonSchema,
+                            properties: {
+                              ...singleCustomGroupJsonSchema,
+                            },
                           },
                         },
                       },
@@ -145,7 +148,11 @@ export default createEslintRule<SortClassesOptions, MESSAGE_ID>({
                       description: 'Custom group.',
                       type: 'object',
                       additionalProperties: false,
-                      properties: singleCustomGroupWithNameGroupJsonSchema,
+                      properties: {
+                        ...singleCustomGroupNameGroupSchema,
+                        ...singleCustomGroupSortGroupSchema,
+                        ...singleCustomGroupJsonSchema,
+                      },
                     },
                   ],
                 },

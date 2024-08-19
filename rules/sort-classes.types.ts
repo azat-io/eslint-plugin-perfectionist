@@ -163,14 +163,14 @@ type SortableCustomGroup =
       type?: 'unsorted'
     }
 
-type CustomGroupBlock = {
-  subgroups: CustomGroup[]
-} & SortableCustomGroup
+interface CustomGroupBlock {
+  subgroups: SingleCustomGroup[]
+}
 
-type BaseCustomGroup<T extends Selector> = {
+interface BaseCustomGroup<T extends Selector> {
   modifiers?: AllowedModifiersPerSelector[T][]
   selector?: T
-} & SortableCustomGroup
+}
 
 type AdvancedCustomGroup<T extends Selector> = {
   decoratorNamePattern?: string
@@ -190,7 +190,7 @@ export type SingleCustomGroup =
 
 export type CustomGroup = (SingleCustomGroup | CustomGroupBlock) & {
   groupName: string
-}
+} & SortableCustomGroup
 
 export type SortClassesOptions = [
   Partial<{
@@ -203,7 +203,7 @@ export type SortClassesOptions = [
   }>,
 ]
 
-export const singleCustomGroupGroupJsonSchema: Record<string, JSONSchema4> = {
+export const singleCustomGroupJsonSchema: Record<string, JSONSchema4> = {
   selector: {
     description: 'Selector filter.',
     type: 'string',
@@ -225,6 +225,9 @@ export const singleCustomGroupGroupJsonSchema: Record<string, JSONSchema4> = {
     description: 'Decorator name pattern.',
     type: 'string',
   },
+}
+
+export const singleCustomGroupSortGroupSchema: Record<string, JSONSchema4> = {
   type: {
     description: 'Custom group sort type.',
     type: 'string',
@@ -237,11 +240,7 @@ export const singleCustomGroupGroupJsonSchema: Record<string, JSONSchema4> = {
   },
 }
 
-export const singleCustomGroupWithNameGroupJsonSchema: Record<
-  string,
-  JSONSchema4
-> = {
-  ...singleCustomGroupGroupJsonSchema,
+export const singleCustomGroupNameGroupSchema: Record<string, JSONSchema4> = {
   groupName: {
     description: 'Custom group name.',
     type: 'string',
