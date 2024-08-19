@@ -149,12 +149,11 @@ export const getOverloadSignatureGroups = (
 }
 
 export const customGroupMatches = (props: CustomGroupMatchesProps): boolean => {
-  if (!props.selectors.includes(props.customGroup.selector)) {
+  if (
+    props.customGroup.selector &&
+    !props.selectors.includes(props.customGroup.selector)
+  ) {
     return false
-  }
-
-  if (props.customGroup.selector === 'static-block') {
-    return true
   }
 
   if (props.customGroup.modifiers) {
@@ -166,13 +165,9 @@ export const customGroupMatches = (props: CustomGroupMatchesProps): boolean => {
   }
 
   if (
-    props.customGroup.selector === 'constructor' ||
-    props.customGroup.selector === 'index-signature'
+    'elementNamePattern' in props.customGroup &&
+    props.customGroup.elementNamePattern
   ) {
-    return true
-  }
-
-  if (props.customGroup.elementNamePattern) {
     let matchesElementNamePattern: boolean = minimatch(
       props.elementName,
       props.customGroup.elementNamePattern,
@@ -185,7 +180,10 @@ export const customGroupMatches = (props: CustomGroupMatchesProps): boolean => {
     }
   }
 
-  if (props.customGroup.decoratorNamePattern) {
+  if (
+    'decoratorNamePattern' in props.customGroup &&
+    props.customGroup.decoratorNamePattern
+  ) {
     let decoratorPattern = props.customGroup.decoratorNamePattern
     let matchesDecoratorNamePattern: boolean = props.decorators.some(
       decorator =>

@@ -149,13 +149,13 @@ interface AllowedModifiersPerSelector {
   'set-method': AllowedModifiersPerSelector['method']
   'get-method': AllowedModifiersPerSelector['method']
   constructor: PublicOrProtectedOrPrivateModifier
-  'static-block': void
+  'static-block': never
 }
 
 interface BaseCustomGroup<T extends Selector> {
   modifiers?: AllowedModifiersPerSelector[T][]
   groupName: string
-  selector: T
+  selector?: T
 }
 
 interface CustomGroupWithNameAndDecoratorPatternFilter<T extends Selector>

@@ -120,7 +120,7 @@ export default createEslintRule<SortClassesOptions, MESSAGE_ID>({
                   additionalProperties: false,
                   description: 'Advanced group.',
                   type: 'object',
-                  required: ['groupName', 'selector'],
+                  required: ['groupName'],
                   properties: {
                     groupName: {
                       description: 'Group name',
