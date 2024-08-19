@@ -5,14 +5,14 @@ import { minimatch } from 'minimatch'
 import type {
   SortClassesOptions,
   SingleCustomGroup,
-  CustomGroup,
+  CustomGroupBlock,
   Modifier,
   Selector,
 } from './sort-classes.types'
 import type { CompareOptions } from '../utils/compare'
 
 interface CustomGroupMatchesProps {
-  customGroup: SingleCustomGroup
+  customGroup: SingleCustomGroup | CustomGroupBlock
   selectors: Selector[]
   modifiers: Modifier[]
   decorators: string[]
@@ -156,6 +156,12 @@ export const getOverloadSignatureGroups = (
 }
 
 export const customGroupMatches = (props: CustomGroupMatchesProps): boolean => {
+  if ('subgroups' in props.customGroup) {
+    // At least one subgroup must match
+    return props.customGroup.subgroups.some(subgroup =>
+      customGroupMatches({ ...props, customGroup: subgroup }),
+    )
+  }
   if (
     props.customGroup.selector &&
     !props.selectors.includes(props.customGroup.selector)
@@ -216,7 +222,7 @@ export const getCompareOptions = (
   let group = options.groups[groupNumber]
   let customGroup =
     typeof group === 'string' && Array.isArray(options.customGroups)
-      ? getCustomGroup(group, options.customGroups)
+      ? options.customGroups.find(g => group === g.groupName)
       : null
   if (customGroup?.type === 'unsorted') {
     return null
@@ -230,17 +236,3 @@ export const getCompareOptions = (
     ignoreCase: options.ignoreCase,
   }
 }
-
-const getCustomGroup = (
-  groupName: string,
-  customGroups: CustomGroup[],
-): CustomGroup | undefined =>
-  customGroups.find(group => {
-    if ('subgroups' in group) {
-      let foundSubgroup = getCustomGroup(groupName, group.subgroups)
-      if (foundSubgroup) {
-        return true
-      }
-    }
-    return group.groupName === groupName
-  })

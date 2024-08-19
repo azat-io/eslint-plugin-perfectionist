@@ -163,7 +163,7 @@ type SortableCustomGroup =
       type?: 'unsorted'
     }
 
-interface CustomGroupBlock {
+export interface CustomGroupBlock {
   subgroups: SingleCustomGroup[]
 }
 
