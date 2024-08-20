@@ -1703,5 +1703,79 @@ describe(ruleName, () => {
         ],
       },
     )
+
+    ruleTester.run(`${ruleName}: works with dependencies`, rule, {
+      valid: [
+        {
+          code: dedent`
+              enum Enum {
+                B = 'B',
+                A = B,
+              }
+            `,
+          options: [
+            {
+              type: 'alphabetical',
+            },
+          ],
+        },
+        {
+          code: dedent`
+              enum Enum {
+                B = 'B',
+                A = Enum.B,
+              }
+            `,
+          options: [
+            {
+              type: 'alphabetical',
+            },
+          ],
+        },
+        {
+          code: dedent`
+              enum Enum {
+                B = 0,
+                A = 1 | 2 | B | Enum.B,
+              }
+            `,
+          options: [
+            {
+              type: 'alphabetical',
+            },
+          ],
+        },
+      ],
+      invalid: [
+        {
+          code: dedent`
+              enum Enum {
+                B = 'B',
+                A = AnotherEnum.B,
+              }
+            `,
+          output: dedent`
+            enum Enum {
+              A = AnotherEnum.B,
+              B = 'B',
+            }
+          `,
+          options: [
+            {
+              type: 'alphabetical',
+            },
+          ],
+          errors: [
+            {
+              messageId: 'unexpectedEnumsOrder',
+              data: {
+                left: 'B',
+                right: 'A',
+              },
+            },
+          ],
+        },
+      ],
+    })
   })
 })

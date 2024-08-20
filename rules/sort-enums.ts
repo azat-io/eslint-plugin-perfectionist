@@ -128,6 +128,57 @@ export default createEslintRule<Options, MESSAGE_ID>({
         let sourceCode = getSourceCode(context)
         let partitionComment = options.partitionByComment
 
+        let extractDependencies = (
+          expression: TSESTree.Expression,
+          enumName: string,
+        ): string[] => {
+          let dependencies: string[] = []
+
+          let checkNode = (nodeValue: TSESTree.Node) => {
+            if (
+              nodeValue.type === 'MemberExpression' &&
+              nodeValue.object.type === 'Identifier' &&
+              nodeValue.object.name === enumName &&
+              nodeValue.property.type === 'Identifier'
+            ) {
+              /**
+               * enum Enum {
+               *   A = 1,
+               *   B = Enum.A
+               * }
+               */
+              dependencies.push(nodeValue.property.name)
+            } else if (nodeValue.type === 'Identifier') {
+              /**
+               * enum Enum {
+               *   A = 1,
+               *   B = A
+               * }
+               */
+              dependencies.push(nodeValue.name)
+            }
+
+            if ('left' in nodeValue) {
+              traverseNode(nodeValue.left)
+            }
+
+            if ('right' in nodeValue) {
+              traverseNode(nodeValue.right)
+            }
+          }
+
+          let traverseNode = (nodeValue: TSESTree.Node[] | TSESTree.Node) => {
+            if (Array.isArray(nodeValue)) {
+              nodeValue.forEach(traverseNode)
+            } else {
+              checkNode(nodeValue)
+            }
+          }
+
+          traverseNode(expression)
+          return dependencies
+        }
+
         let formattedMembers: SortingNode[][] = members.reduce(
           (accumulator: SortingNode[][], member) => {
             let comment = getCommentBefore(member, sourceCode)
@@ -145,9 +196,18 @@ export default createEslintRule<Options, MESSAGE_ID>({
                 ? `${member.id.value}`
                 : `${sourceCode.text.slice(...member.id.range)}`
 
-            let sortingNode = {
+            let dependencies
+            if (member.initializer) {
+              dependencies = extractDependencies(
+                member.initializer,
+                node.id.name,
+              )
+            }
+
+            let sortingNode: SortingNode = {
               size: rangeToDiff(member.range),
               node: member,
+              dependencies,
               name,
             }
             accumulator.at(-1)!.push(sortingNode)
