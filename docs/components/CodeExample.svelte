@@ -60,8 +60,9 @@
       stagger: 3,
     }}
     highlighter={$shiki.highlighter}
-    theme={$shiki.theme}
     code={code[selected]}
+    theme={$shiki.theme}
+    tabindex={0}
     class="code"
     {lang}
   />

@@ -67,6 +67,7 @@
         ''}
       highlighter={$shiki.highlighter}
       theme={$shiki.theme}
+      tabindex={0}
       class="code"
       {lang}
     />
@@ -141,7 +142,6 @@
   .code-wrapper {
     position: relative;
     margin-block-end: var(--space-m);
-    overflow: hidden;
   }
 
   .code-wrapper :global(.code) {
