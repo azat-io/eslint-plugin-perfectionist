@@ -102,7 +102,7 @@ export default createEslintRule<SortClassesOptions, MESSAGE_ID>({
           },
           customGroups: {
             description: 'Specifies custom groups.',
-            anyOf: [
+            oneOf: [
               {
                 type: 'object',
                 additionalProperties: {
@@ -309,13 +309,26 @@ export default createEslintRule<SortClassesOptions, MESSAGE_ID>({
 
             let isPrivateHash =
               'key' in member && member.key.type === 'PrivateIdentifier'
-            let decorated =
-              'decorators' in member && member.decorators.length > 0
+
+            let decorated = false
             let decorators: string[] = []
+
+            if ('decorators' in member) {
+              decorated = member.decorators.length > 0
+              for (let decorator of member.decorators) {
+                if (decorator.expression.type === 'Identifier') {
+                  decorators.push(decorator.expression.name)
+                } else if (
+                  decorator.expression.type === 'CallExpression' &&
+                  decorator.expression.callee.type === 'Identifier'
+                ) {
+                  decorators.push(decorator.expression.callee.name)
+                }
+              }
+            }
 
             let modifiers: Modifier[] = []
             let selectors: Selector[] = []
-
             if (
               member.type === 'MethodDefinition' ||
               member.type === 'TSAbstractMethodDefinition'
@@ -334,16 +347,6 @@ export default createEslintRule<SortClassesOptions, MESSAGE_ID>({
 
               if (decorated) {
                 modifiers.push('decorated')
-                for (let decorator of member.decorators) {
-                  if (decorator.expression.type === 'Identifier') {
-                    decorators.push(decorator.expression.name)
-                  } else if (
-                    decorator.expression.type === 'CallExpression' &&
-                    decorator.expression.callee.type === 'Identifier'
-                  ) {
-                    decorators.push(decorator.expression.callee.name)
-                  }
-                }
               }
 
               if (member.override) {
@@ -400,16 +403,6 @@ export default createEslintRule<SortClassesOptions, MESSAGE_ID>({
 
               if (decorated) {
                 modifiers.push('decorated')
-                for (let decorator of member.decorators) {
-                  if (decorator.expression.type === 'Identifier') {
-                    decorators.push(decorator.expression.name)
-                  } else if (
-                    decorator.expression.type === 'CallExpression' &&
-                    decorator.expression.callee.type === 'Identifier'
-                  ) {
-                    decorators.push(decorator.expression.callee.name)
-                  }
-                }
               }
 
               if (member.override) {
@@ -429,7 +422,6 @@ export default createEslintRule<SortClassesOptions, MESSAGE_ID>({
 
               // Similarly to above for methods, prioritize 'static', 'declare', 'decorated', 'abstract', 'override' and 'readonly'
               // over accessibility modifiers
-
               if (member.static) {
                 modifiers.push('static')
               }
@@ -444,16 +436,6 @@ export default createEslintRule<SortClassesOptions, MESSAGE_ID>({
 
               if (decorated) {
                 modifiers.push('decorated')
-                for (let decorator of member.decorators) {
-                  if (decorator.expression.type === 'Identifier') {
-                    decorators.push(decorator.expression.name)
-                  } else if (
-                    decorator.expression.type === 'CallExpression' &&
-                    decorator.expression.callee.type === 'Identifier'
-                  ) {
-                    decorators.push(decorator.expression.callee.name)
-                  }
-                }
               }
 
               if (member.override) {
@@ -493,6 +475,7 @@ export default createEslintRule<SortClassesOptions, MESSAGE_ID>({
             }
 
             if (Array.isArray(options.customGroups)) {
+              // New API
               for (let customGroup of options.customGroups) {
                 if (
                   customGroupMatches({
@@ -508,6 +491,7 @@ export default createEslintRule<SortClassesOptions, MESSAGE_ID>({
                 }
               }
             } else {
+              // Old API
               setCustomGroups(options.customGroups, name, {
                 override: true,
               })
@@ -591,6 +575,7 @@ export default createEslintRule<SortClassesOptions, MESSAGE_ID>({
                       nodesByNonIgnoredGroupNumber[groupNum] ?? []
                     nodesByNonIgnoredGroupNumber[groupNum].push(sortingNode)
                   }
+
                   let sortedNodes: SortingNode[] = []
                   for (let groupNumber of Object.keys(
                     nodesByNonIgnoredGroupNumber,
@@ -600,17 +585,18 @@ export default createEslintRule<SortClassesOptions, MESSAGE_ID>({
                       Number(groupNumber),
                     )
                     if (!compareOptions) {
+                      // Do not sort this group
                       sortedNodes.push(
                         ...nodesByNonIgnoredGroupNumber[Number(groupNumber)],
                       )
-                      continue
+                    } else {
+                      sortedNodes.push(
+                        ...sortNodes(
+                          nodesByNonIgnoredGroupNumber[Number(groupNumber)],
+                          compareOptions,
+                        ),
+                      )
                     }
-                    sortedNodes.push(
-                      ...sortNodes(
-                        nodesByNonIgnoredGroupNumber[Number(groupNumber)],
-                        compareOptions,
-                      ),
-                    )
                   }
 
                   // Add ignored nodes at the same position as they were before linting

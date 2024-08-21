@@ -155,6 +155,9 @@ export const getOverloadSignatureGroups = (
   ].filter(group => group.length > 1)
 }
 
+/**
+ * Returns whether a custom group matches the given properties
+ */
 export const customGroupMatches = (props: CustomGroupMatchesProps): boolean => {
   if ('anyOf' in props.customGroup) {
     // At least one subgroup must match
@@ -213,7 +216,8 @@ export const customGroupMatches = (props: CustomGroupMatchesProps): boolean => {
 }
 
 /**
- * Returns the compare options used to sort a given group
+ * Returns the compare options used to sort a given group.
+ * Returns null if the group should not be sorted
  */
 export const getCompareOptions = (
   options: Required<SortClassesOptions[0]>,
