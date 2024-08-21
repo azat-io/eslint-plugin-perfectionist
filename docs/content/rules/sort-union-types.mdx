@@ -144,7 +144,7 @@ Predefined Groups:
 - `'tuple`' — Tuple types.
 - `'union`' — Union types.
 - `'nullish`' — Nullish types (`null` or `undefined`).
-- `'unknown`' — Types that don’t fit into any other group.
+- `'unknown`' — Types that don’t fit into any group entered by the user.
 
 Example:
 
@@ -201,7 +201,20 @@ type Example =
                   type: 'alphabetical',
                   order: 'asc',
                   ignoreCase: true,
-                  groups: [],
+                  groups: [
+                    'conditional',
+                    'function',
+                    'import',
+                    'intersection',
+                    'keyword',
+                    ['literal', 'named'],
+                    'object',
+                    'operator',
+                    'tuple',
+                    'union',
+                    'nullish',
+                    'unknown',
+                  ],
                 },
               ],
             },
@@ -225,7 +238,20 @@ type Example =
                 type: 'alphabetical',
                 order: 'asc',
                 ignoreCase: true,
-                groups: [],
+                groups: [
+                  'conditional',
+                  'function',
+                  'import',
+                  'intersection',
+                  'keyword',
+                  ['literal', 'named'],
+                  'object',
+                  'operator',
+                  'tuple',
+                  'union',
+                  'nullish',
+                  'unknown',
+                ],
               },
             ],
           },
