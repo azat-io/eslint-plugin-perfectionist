@@ -234,7 +234,7 @@ export const singleCustomGroupJsonSchema: Record<string, JSONSchema4> = {
   },
 }
 
-export const singleCustomGroupSortSchema: Record<string, JSONSchema4> = {
+export const singleCustomGroupSortJsonSchema: Record<string, JSONSchema4> = {
   type: {
     description: 'Custom group sort type.',
     type: 'string',
@@ -247,7 +247,7 @@ export const singleCustomGroupSortSchema: Record<string, JSONSchema4> = {
   },
 }
 
-export const singleCustomGroupNameSchema: Record<string, JSONSchema4> = {
+export const singleCustomGroupNameJsonSchema: Record<string, JSONSchema4> = {
   groupName: {
     description: 'Custom group name.',
     type: 'string',
