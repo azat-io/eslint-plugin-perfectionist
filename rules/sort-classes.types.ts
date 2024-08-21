@@ -225,11 +225,11 @@ export const singleCustomGroupJsonSchema: Record<string, JSONSchema4> = {
     },
   },
   elementNamePattern: {
-    description: 'Element name pattern.',
+    description: 'Element name pattern filter.',
     type: 'string',
   },
   decoratorNamePattern: {
-    description: 'Decorator name pattern.',
+    description: 'Decorator name pattern filter.',
     type: 'string',
   },
 }
