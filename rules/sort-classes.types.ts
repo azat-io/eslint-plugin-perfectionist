@@ -13,11 +13,13 @@ type OverrideModifier = 'override'
 type ReadonlyModifier = 'readonly'
 type DecoratedModifier = 'decorated'
 type DeclareModifier = 'declare'
+type OptionalModifier = 'optional'
 export type Modifier =
   | PublicOrProtectedOrPrivateModifier
   | DecoratedModifier
   | AbstractModifier
   | OverrideModifier
+  | OptionalModifier
   | ReadonlyModifier
   | DeclareModifier
   | StaticModifier
@@ -73,6 +75,7 @@ type PublicOrProtectedOrPrivateModifierPrefix = WithDashSuffixOrEmpty<
 >
 
 type OverrideModifierPrefix = WithDashSuffixOrEmpty<OverrideModifier>
+type OptionalModifierPrefix = WithDashSuffixOrEmpty<OptionalModifier>
 type ReadonlyModifierPrefix = WithDashSuffixOrEmpty<ReadonlyModifier>
 type DecoratedModifierPrefix = WithDashSuffixOrEmpty<DecoratedModifier>
 type DeclareModifierPrefix = WithDashSuffixOrEmpty<DeclareModifier>
@@ -93,11 +96,11 @@ type ConstructorGroup =
 type FunctionPropertyGroup =
   `${PublicOrProtectedOrPrivateModifierPrefix}${StaticModifierPrefix}${OverrideModifierPrefix}${ReadonlyModifierPrefix}${DecoratedModifierPrefix}${FunctionPropertySelector}`
 type DeclarePropertyGroup =
-  `${DeclareModifierPrefix}${PublicOrProtectedOrPrivateModifierPrefix}${StaticOrAbstractModifierPrefix}${ReadonlyModifierPrefix}${PropertySelector}`
+  `${DeclareModifierPrefix}${PublicOrProtectedOrPrivateModifierPrefix}${StaticOrAbstractModifierPrefix}${ReadonlyModifierPrefix}${OptionalModifierPrefix}${PropertySelector}`
 type NonDeclarePropertyGroup =
-  `${PublicOrProtectedOrPrivateModifierPrefix}${StaticOrAbstractModifierPrefix}${OverrideModifierPrefix}${ReadonlyModifierPrefix}${DecoratedModifierPrefix}${PropertySelector}`
+  `${PublicOrProtectedOrPrivateModifierPrefix}${StaticOrAbstractModifierPrefix}${OverrideModifierPrefix}${ReadonlyModifierPrefix}${DecoratedModifierPrefix}${OptionalModifierPrefix}${PropertySelector}`
 type MethodOrGetMethodOrSetMethodGroup =
-  `${PublicOrProtectedOrPrivateModifierPrefix}${StaticOrAbstractModifierPrefix}${OverrideModifierPrefix}${DecoratedModifierPrefix}${MethodOrGetMethodOrSetMethodSelector}`
+  `${PublicOrProtectedOrPrivateModifierPrefix}${StaticOrAbstractModifierPrefix}${OverrideModifierPrefix}${DecoratedModifierPrefix}${OptionalModifierPrefix}${MethodOrGetMethodOrSetMethodSelector}`
 type AccessorPropertyGroup =
   `${PublicOrProtectedOrPrivateModifierPrefix}${StaticOrAbstractModifierPrefix}${OverrideModifierPrefix}${DecoratedModifierPrefix}${AccessorPropertySelector}`
 type IndexSignatureGroup =

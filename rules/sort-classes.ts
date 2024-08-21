@@ -550,7 +550,7 @@ export default createEslintRule<SortClassesOptions, MESSAGE_ID>({
               leftNum === options.groups.length ||
               rightNum === options.groups.length
             if (isLeftOrRightIgnored) {
-              continue;
+              return
             }
 
             let compareValue = false
@@ -577,35 +577,45 @@ export default createEslintRule<SortClassesOptions, MESSAGE_ID>({
                 },
                 node: right.node,
                 fix: (fixer: TSESLint.RuleFixer) => {
-                  let nodesByGroupNumber: {
+                  let nodesByNonIgnoredGroupNumber: {
                     [key: number]: SortingNode[]
                   } = {}
-                  for (let sortingNode of nodes) {
+                  let ignoredNodeIndices: number[] = []
+                  for (let [index, sortingNode] of nodes.entries()) {
                     let groupNum = getGroupNumber(options.groups, sortingNode)
-                    nodesByGroupNumber[groupNum] =
-                      nodesByGroupNumber[groupNum] ?? []
-                    nodesByGroupNumber[groupNum].push(sortingNode)
+                    if (groupNum === options.groups.length) {
+                      ignoredNodeIndices.push(index)
+                      continue
+                    }
+                    nodesByNonIgnoredGroupNumber[groupNum] =
+                      nodesByNonIgnoredGroupNumber[groupNum] ?? []
+                    nodesByNonIgnoredGroupNumber[groupNum].push(sortingNode)
                   }
                   let sortedNodes: SortingNode[] = []
-                  for (let groupNumber of Object.keys(nodesByGroupNumber).sort(
-                    (a, b) => Number(a) - Number(b),
-                  )) {
+                  for (let groupNumber of Object.keys(
+                    nodesByNonIgnoredGroupNumber,
+                  ).sort((a, b) => Number(a) - Number(b))) {
                     let compareOptions = getCompareOptions(
                       options,
                       Number(groupNumber),
                     )
                     if (!compareOptions) {
                       sortedNodes.push(
-                        ...nodesByGroupNumber[Number(groupNumber)],
+                        ...nodesByNonIgnoredGroupNumber[Number(groupNumber)],
                       )
                       continue
                     }
                     sortedNodes.push(
                       ...sortNodes(
-                        nodesByGroupNumber[Number(groupNumber)],
+                        nodesByNonIgnoredGroupNumber[Number(groupNumber)],
                         compareOptions,
                       ),
                     )
+                  }
+
+                  // Add ignored nodes at the same position as they were before linting
+                  for (let ignoredIndex of ignoredNodeIndices) {
+                    sortedNodes.splice(ignoredIndex, 0, nodes[ignoredIndex])
                   }
 
                   return makeFixes(fixer, nodes, sortedNodes, sourceCode, {
