@@ -34,6 +34,7 @@ export const allModifiers: Modifier[] = [
   'readonly',
   'decorated',
   'declare',
+  'optional',
 ]
 
 type ConstructorSelector = 'constructor'
@@ -86,10 +87,7 @@ type StaticOrAbstractModifierPrefix = WithDashSuffixOrEmpty<
 
 type StaticModifierPrefix = WithDashSuffixOrEmpty<StaticModifier>
 
-type MethodOrGetMethodOrSetMethodSelector =
-  | GetMethodSelector
-  | SetMethodSelector
-  | MethodSelector
+type GetMethodOrSetMethodSelector = GetMethodSelector | SetMethodSelector
 
 type ConstructorGroup =
   `${PublicOrProtectedOrPrivateModifierPrefix}${ConstructorSelector}`
@@ -99,8 +97,10 @@ type DeclarePropertyGroup =
   `${DeclareModifierPrefix}${PublicOrProtectedOrPrivateModifierPrefix}${StaticOrAbstractModifierPrefix}${ReadonlyModifierPrefix}${OptionalModifierPrefix}${PropertySelector}`
 type NonDeclarePropertyGroup =
   `${PublicOrProtectedOrPrivateModifierPrefix}${StaticOrAbstractModifierPrefix}${OverrideModifierPrefix}${ReadonlyModifierPrefix}${DecoratedModifierPrefix}${OptionalModifierPrefix}${PropertySelector}`
-type MethodOrGetMethodOrSetMethodGroup =
-  `${PublicOrProtectedOrPrivateModifierPrefix}${StaticOrAbstractModifierPrefix}${OverrideModifierPrefix}${DecoratedModifierPrefix}${OptionalModifierPrefix}${MethodOrGetMethodOrSetMethodSelector}`
+type MethodGroup =
+  `${PublicOrProtectedOrPrivateModifierPrefix}${StaticOrAbstractModifierPrefix}${OverrideModifierPrefix}${DecoratedModifierPrefix}${OptionalModifierPrefix}${MethodSelector}`
+type GetMethodOrSetMethodGroup =
+  `${PublicOrProtectedOrPrivateModifierPrefix}${StaticOrAbstractModifierPrefix}${OverrideModifierPrefix}${DecoratedModifierPrefix}${GetMethodOrSetMethodSelector}`
 type AccessorPropertyGroup =
   `${PublicOrProtectedOrPrivateModifierPrefix}${StaticOrAbstractModifierPrefix}${OverrideModifierPrefix}${DecoratedModifierPrefix}${AccessorPropertySelector}`
 type IndexSignatureGroup =
@@ -113,7 +113,7 @@ type StaticBlockGroup = `${StaticBlockSelector}`
  * - abstract decorated X
  */
 type Group =
-  | MethodOrGetMethodOrSetMethodGroup
+  | GetMethodOrSetMethodGroup
   | NonDeclarePropertyGroup
   | AccessorPropertyGroup
   | FunctionPropertyGroup
@@ -121,6 +121,7 @@ type Group =
   | IndexSignatureGroup
   | ConstructorGroup
   | StaticBlockGroup
+  | MethodGroup
   | 'unknown'
   | string
 

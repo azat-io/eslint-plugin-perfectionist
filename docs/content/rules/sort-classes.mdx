@@ -450,9 +450,60 @@ abstract class Example extends BaseExample {
 
 ### customGroups
 
-<sub>default: `{}`</sub>
+<sub>default: `[]`</sub>
 
-You can define your own groups for class members using custom glob patterns for matching.
+You can define your own groups to match very specific members.
+
+A custom group definition may follow one of the two following interfaces:
+
+```ts
+interface CustomGroupDefinition {
+  groupName: string
+  type?: 'alphabetical' | 'natural' | 'line-length' | 'unsorted'
+  order?: 'asc' | 'desc'
+  selector?: string
+  modifiers?: string[]
+  elementNamePattern?: string
+  decoratorNamePattern?: string
+}
+```
+A class member will match a `CustomGroupDefinition` group if it matches all the filters of the custom group's definition.
+
+or:
+
+```ts
+interface CustomGroupBlockDefinition {
+  groupName: string
+  type?: 'alphabetical' | 'natural' | 'line-length' | 'unsorted'
+  order?: 'asc' | 'desc'
+  anyOf: Array<{
+      selector?: string
+      modifiers?: string[]
+      elementNamePattern?: string
+      decoratorNamePattern?: string
+  }>
+}
+```
+
+A class member will match a `CustomGroupBlockDefinition` group if it matches all the filters of at least one of the `anyOf` items.
+
+#### Attributes
+
+- `groupName`: The group's name, which needs to be put in the `groups` option.
+- `selector`: Filter on the `selector` of the element.
+- `modifiers`: Filter on the `modifiers` of the element. (All the modifiers of the element must be present in that list)
+- `elementNamePattern`: If entered, will check that the name of the element matches the pattern entered.
+- `decoratorNamePattern`: If entered, will check that at least one `decorator` matches the pattern entered.
+- `type`: Overrides the sort type for that custom group. `unsorted` will not sort the group.
+- `order`: Overrides the sort order for that custom group
+
+#### Match importance
+
+The `customGroups` list is ordered:
+The first custom group definition that matches an element will be used.
+
+Custom groups have a higher priority than any predefined group. If you want a predefined group to take precedence over a custom group,
+you must write a custom group definition that does the same as what the predefined group does (using `selector` and `modifiers` filters), and put it first in the list.
 
 Example:
 
@@ -461,23 +512,48 @@ Example:
    groups: [
     'static-block',
     'index-signature',
-    'static-property',
-    ['protected-property', 'protected-accessor-property'],
-    ['private-property', 'private-accessor-property'],
-    ['property', 'accessor-property'],
++   'input-properties',                         // [!code ++]
++   'output-properties',                        // [!code ++]
     'constructor',
-    'static-method',
-    'protected-method',
-    'private-method',
-     'static-private-method',
-    'method',
++   'unsorted-methods-and-other-properties',    // [!code ++]
     ['get-method', 'set-method'],
     'unknown',
-+    'value',         // [!code ++]
    ],
-+  customGroups: {    // [!code ++]
-+    value: 'value',  // [!code ++]
-+  }                  // [!code ++]
++  customGroups: [                               // [!code ++]
++    [                                           // [!code ++]
++      {                                         // [!code ++]
++        // `constructor()` members must not match  // [!code ++]
++        // `unsorted-methods-and-other-properties` // [!code ++]
++        // so make them match this first           // [!code ++]
++         groupName: 'constructor',              // [!code ++]
++         selector: 'constructor',               // [!code ++]
++      },                                        // [!code ++]
++      {                                         // [!code ++]
++         groupName: 'input-properties',         // [!code ++]
++         selector: 'property',                  // [!code ++]
++         modifiers: ['decorated'],              // [!code ++]
++         decoratorNamePattern: 'Input',         // [!code ++]
++      },                                        // [!code ++]
++      {                                         // [!code ++]
++         groupName: 'output-properties',        // [!code ++]
++         selector: 'property',                  // [!code ++]
++         modifiers: ['decorated'],              // [!code ++]
++         decoratorNamePattern: 'Output',        // [!code ++]
++      },                                        // [!code ++]
++      {                                         // [!code ++]
++         groupName: 'unsorted-methods-and-other-properties', // [!code ++]
++         type: 'unsorted',                      // [!code ++]
++         anyOf: [                               // [!code ++]
++           {                                    // [!code ++]
++              selector: 'method',               // [!code ++]
++           },                                   // [!code ++]
++           {                                    // [!code ++]
++              selector: 'property',             // [!code ++]
++           },                                   // [!code ++]
++         ]                                      // [!code ++]
++      },                                        // [!code ++]
++    ]                                           // [!code ++]
++  ]                                             // [!code ++]
  }
 ```
 
@@ -518,7 +594,7 @@ Example:
                     ['get-method', 'set-method'],
                     'unknown',
                   ],
-                  customGroups: {},
+                  customGroups: [],
                 },
               ],
             },
@@ -558,7 +634,7 @@ Example:
                   ['get-method', 'set-method'],
                   'unknown',
                 ],
-                customGroups: {},
+                customGroups: [],
               },
             ],
           },

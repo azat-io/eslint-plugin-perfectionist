@@ -5381,7 +5381,7 @@ describe(ruleName, () => {
     })
 
     ruleTester.run(
-      `${ruleName}: sort custom groups with overriden 'type' and 'order'`,
+      `${ruleName}: sort custom groups by overriding 'type' and 'order'`,
       rule,
       {
         valid: [],

@@ -217,6 +217,7 @@ export const customGroupMatches = (props: CustomGroupMatchesProps): boolean => {
 
 /**
  * Returns the compare options used to sort a given group.
+ * If the group is a custom group, its options will be favored over the default options.
  * Returns null if the group should not be sorted
  */
 export const getCompareOptions = (
