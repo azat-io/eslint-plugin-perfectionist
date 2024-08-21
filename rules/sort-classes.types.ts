@@ -165,26 +165,26 @@ export interface CustomGroupBlock {
   anyOf: SingleCustomGroup[]
 }
 
-interface BaseCustomGroup<T extends Selector> {
+interface BaseSingleCustomGroup<T extends Selector> {
   modifiers?: AllowedModifiersPerSelector[T][]
   selector?: T
 }
 
-type AdvancedCustomGroup<T extends Selector> = {
+type AdvancedSingleCustomGroup<T extends Selector> = {
   decoratorNamePattern?: string
   elementNamePattern?: string
-} & BaseCustomGroup<T>
+} & BaseSingleCustomGroup<T>
 
 export type SingleCustomGroup =
-  | AdvancedCustomGroup<FunctionPropertySelector>
-  | AdvancedCustomGroup<AccessorPropertySelector>
-  | BaseCustomGroup<IndexSignatureSelector>
-  | AdvancedCustomGroup<GetMethodSelector>
-  | AdvancedCustomGroup<SetMethodSelector>
-  | AdvancedCustomGroup<PropertySelector>
-  | BaseCustomGroup<StaticBlockSelector>
-  | BaseCustomGroup<ConstructorSelector>
-  | AdvancedCustomGroup<MethodSelector>
+  | AdvancedSingleCustomGroup<FunctionPropertySelector>
+  | AdvancedSingleCustomGroup<AccessorPropertySelector>
+  | BaseSingleCustomGroup<IndexSignatureSelector>
+  | AdvancedSingleCustomGroup<GetMethodSelector>
+  | AdvancedSingleCustomGroup<SetMethodSelector>
+  | AdvancedSingleCustomGroup<PropertySelector>
+  | BaseSingleCustomGroup<StaticBlockSelector>
+  | BaseSingleCustomGroup<ConstructorSelector>
+  | AdvancedSingleCustomGroup<MethodSelector>
 
 export type CustomGroup = (
   | {
