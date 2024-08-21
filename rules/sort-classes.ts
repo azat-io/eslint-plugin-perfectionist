@@ -34,10 +34,12 @@ type OverrideModifier = 'override'
 type ReadonlyModifier = 'readonly'
 type DecoratedModifier = 'decorated'
 type DeclareModifier = 'declare'
+type OptionalModifier = 'optional'
 export type Modifier =
   | ProtectedModifier
   | DecoratedModifier
   | AbstractModifier
+  | OptionalModifier
   | OverrideModifier
   | ReadonlyModifier
   | PrivateModifier
@@ -72,6 +74,7 @@ type PublicOrProtectedOrPrivateModifierPrefix = WithDashSuffixOrEmpty<
 >
 
 type OverrideModifierPrefix = WithDashSuffixOrEmpty<OverrideModifier>
+type OptionalModifierPrefix = WithDashSuffixOrEmpty<OptionalModifier>
 type ReadonlyModifierPrefix = WithDashSuffixOrEmpty<ReadonlyModifier>
 type DecoratedModifierPrefix = WithDashSuffixOrEmpty<DecoratedModifier>
 type DeclareModifierPrefix = WithDashSuffixOrEmpty<DeclareModifier>
@@ -92,10 +95,12 @@ type ConstructorGroup =
 type FunctionPropertyGroup =
   `${PublicOrProtectedOrPrivateModifierPrefix}${StaticModifierPrefix}${OverrideModifierPrefix}${ReadonlyModifierPrefix}${DecoratedModifierPrefix}${FunctionPropertySelector}`
 type DeclarePropertyGroup =
-  `${DeclareModifierPrefix}${PublicOrProtectedOrPrivateModifierPrefix}${StaticOrAbstractModifierPrefix}${ReadonlyModifierPrefix}${PropertySelector}`
+  `${DeclareModifierPrefix}${PublicOrProtectedOrPrivateModifierPrefix}${StaticOrAbstractModifierPrefix}${ReadonlyModifierPrefix}${OptionalModifierPrefix}${PropertySelector}`
 type NonDeclarePropertyGroup =
-  `${PublicOrProtectedOrPrivateModifierPrefix}${StaticOrAbstractModifierPrefix}${OverrideModifierPrefix}${ReadonlyModifierPrefix}${DecoratedModifierPrefix}${PropertySelector}`
-type MethodOrGetMethodOrSetMethodGroup =
+  `${PublicOrProtectedOrPrivateModifierPrefix}${StaticOrAbstractModifierPrefix}${OverrideModifierPrefix}${ReadonlyModifierPrefix}${DecoratedModifierPrefix}${OptionalModifierPrefix}${PropertySelector}`
+type MethodGroup =
+  `${PublicOrProtectedOrPrivateModifierPrefix}${StaticOrAbstractModifierPrefix}${OverrideModifierPrefix}${DecoratedModifierPrefix}${OptionalModifierPrefix}${MethodSelector}`
+type GetMethodOrSetMethodGroup =
   `${PublicOrProtectedOrPrivateModifierPrefix}${StaticOrAbstractModifierPrefix}${OverrideModifierPrefix}${DecoratedModifierPrefix}${MethodOrGetMethodOrSetMethodSelector}`
 type AccessorPropertyGroup =
   `${PublicOrProtectedOrPrivateModifierPrefix}${StaticOrAbstractModifierPrefix}${OverrideModifierPrefix}${DecoratedModifierPrefix}${AccessorPropertySelector}`
@@ -109,7 +114,7 @@ type StaticBlockGroup = `${StaticBlockSelector}`
  * - abstract decorated X
  */
 type Group =
-  | MethodOrGetMethodOrSetMethodGroup
+  | GetMethodOrSetMethodGroup
   | NonDeclarePropertyGroup
   | AccessorPropertyGroup
   | FunctionPropertyGroup
@@ -117,6 +122,7 @@ type Group =
   | IndexSignatureGroup
   | ConstructorGroup
   | StaticBlockGroup
+  | MethodGroup
   | 'unknown'
   | string
 
@@ -398,6 +404,10 @@ export default createEslintRule<Options, MESSAGE_ID>({
                 modifiers.push('public')
               }
 
+              if (member.optional) {
+                modifiers.push('optional')
+              }
+
               if (member.kind === 'constructor') {
                 selectors.push('constructor')
               }
@@ -485,6 +495,10 @@ export default createEslintRule<Options, MESSAGE_ID>({
                 modifiers.push('private')
               } else {
                 modifiers.push('public')
+              }
+
+              if (member.optional) {
+                modifiers.push('optional')
               }
 
               if (
