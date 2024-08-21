@@ -154,9 +154,14 @@ interface AllowedModifiersPerSelector {
     | OverrideModifier
     | ReadonlyModifier
     | StaticModifier
+  'set-method':
+    | PublicOrProtectedOrPrivateModifier
+    | DecoratedModifier
+    | AbstractModifier
+    | OverrideModifier
+    | StaticModifier
+  'get-method': AllowedModifiersPerSelector['set-method']
   'index-signature': ReadonlyModifier | StaticModifier
-  'set-method': AllowedModifiersPerSelector['method']
-  'get-method': AllowedModifiersPerSelector['method']
   constructor: PublicOrProtectedOrPrivateModifier
   'static-block': never
 }
