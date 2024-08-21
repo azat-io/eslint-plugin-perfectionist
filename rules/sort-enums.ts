@@ -159,23 +159,15 @@ export default createEslintRule<Options, MESSAGE_ID>({
             }
 
             if ('left' in nodeValue) {
-              traverseNode(nodeValue.left)
+              checkNode(nodeValue.left)
             }
 
             if ('right' in nodeValue) {
-              traverseNode(nodeValue.right)
+              checkNode(nodeValue.right)
             }
           }
 
-          let traverseNode = (nodeValue: TSESTree.Node[] | TSESTree.Node) => {
-            if (Array.isArray(nodeValue)) {
-              nodeValue.forEach(traverseNode)
-            } else {
-              checkNode(nodeValue)
-            }
-          }
-
-          traverseNode(expression)
+          checkNode(expression)
           return dependencies
         }
 
