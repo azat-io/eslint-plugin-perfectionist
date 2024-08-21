@@ -130,7 +130,15 @@ interface AllowedModifiersPerSelector {
     | AbstractModifier
     | OverrideModifier
     | ReadonlyModifier
+    | OptionalModifier
     | DeclareModifier
+    | StaticModifier
+  method:
+    | PublicOrProtectedOrPrivateModifier
+    | DecoratedModifier
+    | AbstractModifier
+    | OverrideModifier
+    | OptionalModifier
     | StaticModifier
   'accessor-property':
     | PublicOrProtectedOrPrivateModifier
@@ -143,12 +151,6 @@ interface AllowedModifiersPerSelector {
     | DecoratedModifier
     | OverrideModifier
     | ReadonlyModifier
-    | StaticModifier
-  method:
-    | PublicOrProtectedOrPrivateModifier
-    | DecoratedModifier
-    | AbstractModifier
-    | OverrideModifier
     | StaticModifier
   'index-signature': ReadonlyModifier | StaticModifier
   'set-method': AllowedModifiersPerSelector['method']
