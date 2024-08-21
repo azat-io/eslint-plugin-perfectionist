@@ -1635,6 +1635,8 @@ describe(ruleName, () => {
             break
           case 'default':
             break
+          case 'remove':
+            break
           default:
             break
           }
@@ -1648,6 +1650,8 @@ describe(ruleName, () => {
             break
           case 'add':
             break
+          case 'remove':
+            break
           default:
             break
           }
@@ -1657,6 +1661,8 @@ describe(ruleName, () => {
           case 'add':
             break
           case 'default':
+            break
+          case 'remove':
             break
           default:
             break
