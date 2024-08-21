@@ -123,6 +123,7 @@ type Group =
   | StaticBlockGroup
   | 'unknown'
   | string
+
 interface AllowedModifiersPerSelector {
   property:
     | PublicOrProtectedOrPrivateModifier
@@ -186,8 +187,8 @@ export type SingleCustomGroup =
 
 export type CustomGroup = (
   | {
-      type?: 'alphabetical' | 'line-length' | 'natural'
-      order?: 'desc' | 'asc'
+      order?: SortClassesOptions[0]['order']
+      type?: SortClassesOptions[0]['type']
     }
   | {
       type?: 'unsorted'
@@ -232,7 +233,7 @@ export const singleCustomGroupJsonSchema: Record<string, JSONSchema4> = {
   },
 }
 
-export const singleCustomGroupSortGroupSchema: Record<string, JSONSchema4> = {
+export const singleCustomGroupSortSchema: Record<string, JSONSchema4> = {
   type: {
     description: 'Custom group sort type.',
     type: 'string',
@@ -245,7 +246,7 @@ export const singleCustomGroupSortGroupSchema: Record<string, JSONSchema4> = {
   },
 }
 
-export const singleCustomGroupNameGroupSchema: Record<string, JSONSchema4> = {
+export const singleCustomGroupNameSchema: Record<string, JSONSchema4> = {
   groupName: {
     description: 'Custom group name.',
     type: 'string',

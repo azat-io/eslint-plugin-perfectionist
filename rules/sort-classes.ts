@@ -9,16 +9,16 @@ import type {
 import type { SortingNode } from '../typings'
 
 import {
-  singleCustomGroupNameGroupSchema,
-  singleCustomGroupSortGroupSchema,
-  singleCustomGroupJsonSchema,
-} from './sort-classes.types'
-import {
   getOverloadSignatureGroups,
   generateOfficialGroups,
   customGroupMatches,
   getCompareOptions,
 } from './sort-classes-utils'
+import {
+  singleCustomGroupNameSchema,
+  singleCustomGroupSortSchema,
+  singleCustomGroupJsonSchema,
+} from './sort-classes.types'
 import { isPartitionComment } from '../utils/is-partition-comment'
 import { getCommentBefore } from '../utils/get-comment-before'
 import { createEslintRule } from '../utils/create-eslint-rule'
@@ -129,8 +129,8 @@ export default createEslintRule<SortClassesOptions, MESSAGE_ID>({
                       type: 'object',
                       additionalProperties: false,
                       properties: {
-                        ...singleCustomGroupNameGroupSchema,
-                        ...singleCustomGroupSortGroupSchema,
+                        ...singleCustomGroupNameSchema,
+                        ...singleCustomGroupSortSchema,
                         anyOf: {
                           type: 'array',
                           items: {
@@ -149,8 +149,8 @@ export default createEslintRule<SortClassesOptions, MESSAGE_ID>({
                       type: 'object',
                       additionalProperties: false,
                       properties: {
-                        ...singleCustomGroupNameGroupSchema,
-                        ...singleCustomGroupSortGroupSchema,
+                        ...singleCustomGroupNameSchema,
+                        ...singleCustomGroupSortSchema,
                         ...singleCustomGroupJsonSchema,
                       },
                     },
