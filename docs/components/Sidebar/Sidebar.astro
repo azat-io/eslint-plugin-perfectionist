@@ -66,9 +66,9 @@ let { isMobileOnly = false } = Astro.props
     padding: var(--space-s);
     padding-block-end: calc(var(--space-xl) + var(--space-m));
     overflow: scroll;
+    scrollbar-width: thin;
     background: var(--color-background-secondary);
     border-inline-end: 1px solid var(--color-border-primary);
-    scrollbar-width: thin;
 
     @media (width >= 800px) {
       position: sticky;

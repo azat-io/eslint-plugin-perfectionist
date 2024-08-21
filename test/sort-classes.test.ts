@@ -181,6 +181,10 @@ describe(ruleName, () => {
             code: dedent`
             abstract class Class {
 
+              p?(): void;
+
+              o?;
+
               static {}
 
               static readonly [key: string]: string;
@@ -252,6 +256,10 @@ describe(ruleName, () => {
               static readonly [key: string]: string;
 
               static {}
+
+              o?;
+
+              p?(): void;
             }
           `,
             options: [
@@ -274,10 +282,30 @@ describe(ruleName, () => {
                   'function-property',
                   'static-readonly-index-signature',
                   'static-block',
+                  'public-optional-property',
+                  'public-optional-method',
                 ],
               },
             ],
             errors: [
+              {
+                messageId: 'unexpectedClassesGroupOrder',
+                data: {
+                  left: 'p',
+                  leftGroup: 'public-optional-method',
+                  right: 'o',
+                  rightGroup: 'public-optional-property',
+                },
+              },
+              {
+                messageId: 'unexpectedClassesGroupOrder',
+                data: {
+                  left: 'o',
+                  leftGroup: 'public-optional-property',
+                  right: 'static',
+                  rightGroup: 'static-block',
+                },
+              },
               {
                 messageId: 'unexpectedClassesGroupOrder',
                 data: {
@@ -833,6 +861,55 @@ describe(ruleName, () => {
                       leftGroup: 'property',
                       right: 'z',
                       rightGroup: 'override-method',
+                    },
+                  },
+                ],
+              },
+            ],
+          },
+        )
+
+        ruleTester.run(
+          `${ruleName}(${type}): prioritize ${accessibilityModifier} accessibility over optional`,
+          rule,
+          {
+            valid: [],
+            invalid: [
+              {
+                code: dedent`
+              export class Class {
+
+                a: string;
+
+                ${accessibilityModifier} z?(): string;
+              }
+            `,
+                output: dedent`
+              export class Class {
+
+                ${accessibilityModifier} z?(): string;
+
+                a: string;
+              }
+            `,
+                options: [
+                  {
+                    ...options,
+                    groups: [
+                      `${accessibilityModifier}-method`,
+                      'property',
+                      'optional-method',
+                    ],
+                  },
+                ],
+                errors: [
+                  {
+                    messageId: 'unexpectedClassesGroupOrder',
+                    data: {
+                      left: 'a',
+                      leftGroup: 'property',
+                      right: 'z',
+                      rightGroup: `${accessibilityModifier}-method`,
                     },
                   },
                 ],
@@ -1461,6 +1538,55 @@ describe(ruleName, () => {
             ],
           },
         )
+
+        ruleTester.run(
+          `${ruleName}(${type}): prioritize ${accessibilityModifier} accessibility over optional`,
+          rule,
+          {
+            valid: [],
+            invalid: [
+              {
+                code: dedent`
+              export class Class {
+
+                a(): void {}
+
+                ${accessibilityModifier} z?: string;
+              }
+            `,
+                output: dedent`
+              export class Class {
+
+                ${accessibilityModifier} z?: string;
+
+                a(): void {}
+              }
+            `,
+                options: [
+                  {
+                    ...options,
+                    groups: [
+                      `${accessibilityModifier}-property`,
+                      'method',
+                      'optional-property',
+                    ],
+                  },
+                ],
+                errors: [
+                  {
+                    messageId: 'unexpectedClassesGroupOrder',
+                    data: {
+                      left: 'a',
+                      leftGroup: 'method',
+                      right: 'z',
+                      rightGroup: `${accessibilityModifier}-property`,
+                    },
+                  },
+                ],
+              },
+            ],
+          },
+        )
       }
     })
 
@@ -1650,7 +1776,7 @@ describe(ruleName, () => {
                 ...options,
                 groups: [
                   ['static-property', 'private-property', 'property'],
-                  'constructor',
+                  'index-signature',
                 ],
               },
             ],
@@ -1659,7 +1785,7 @@ describe(ruleName, () => {
                 messageId: 'unexpectedClassesGroupOrder',
                 data: {
                   left: '[k: string];',
-                  leftGroup: 'unknown',
+                  leftGroup: 'index-signature',
                   right: 'a',
                   rightGroup: 'static-property',
                 },
@@ -2730,6 +2856,55 @@ describe(ruleName, () => {
               data: {
                 left: 'b',
                 right: 'a',
+              },
+            },
+          ],
+        },
+      ],
+    })
+
+    ruleTester.run(`${ruleName}(${type}): should ignore unknown group`, rule, {
+      valid: [],
+      invalid: [
+        {
+          code: dedent`
+              class Class {
+
+                public i = 'i';
+                private z() {}
+                public method3() {}
+                private y() {}
+                public method4() {}
+                public method1() {}
+                private x() {}
+              }
+            `,
+          output: dedent`
+              class Class {
+
+                private x() {}
+                private y() {}
+                public method3() {}
+                private z() {}
+                public method4() {}
+                public method1() {}
+                public i = 'i';
+              }
+            `,
+          options: [
+            {
+              ...options,
+              groups: ['private-method', 'property'],
+            },
+          ],
+          errors: [
+            {
+              messageId: 'unexpectedClassesGroupOrder',
+              data: {
+                left: 'i',
+                leftGroup: 'property',
+                right: 'z',
+                rightGroup: 'private-method',
               },
             },
           ],
@@ -3028,7 +3203,7 @@ describe(ruleName, () => {
                 ...options,
                 groups: [
                   ['static-property', 'private-property', 'property'],
-                  'constructor',
+                  'index-signature',
                 ],
               },
             ],
@@ -3037,7 +3212,7 @@ describe(ruleName, () => {
                 messageId: 'unexpectedClassesGroupOrder',
                 data: {
                   left: '[k: string];',
-                  leftGroup: 'unknown',
+                  leftGroup: 'index-signature',
                   right: 'a',
                   rightGroup: 'static-property',
                 },
@@ -4114,6 +4289,55 @@ describe(ruleName, () => {
         },
       ],
     })
+
+    ruleTester.run(`${ruleName}(${type}): should ignore unknown group`, rule, {
+      valid: [],
+      invalid: [
+        {
+          code: dedent`
+              class Class {
+
+                public i = 'i';
+                private z() {}
+                public method3() {}
+                private y() {}
+                public method4() {}
+                public method1() {}
+                private x() {}
+              }
+            `,
+          output: dedent`
+              class Class {
+
+                private x() {}
+                private y() {}
+                public method3() {}
+                private z() {}
+                public method4() {}
+                public method1() {}
+                public i = 'i';
+              }
+            `,
+          options: [
+            {
+              ...options,
+              groups: ['private-method', 'property'],
+            },
+          ],
+          errors: [
+            {
+              messageId: 'unexpectedClassesGroupOrder',
+              data: {
+                left: 'i',
+                leftGroup: 'property',
+                right: 'z',
+                rightGroup: 'private-method',
+              },
+            },
+          ],
+        },
+      ],
+    })
   })
 
   describe(`${ruleName}: sorting by line length`, () => {
@@ -4375,7 +4599,7 @@ describe(ruleName, () => {
                 ...options,
                 groups: [
                   ['static-property', 'private-property', 'property'],
-                  'constructor',
+                  'index-signature',
                 ],
               },
             ],
@@ -4384,7 +4608,7 @@ describe(ruleName, () => {
                 messageId: 'unexpectedClassesGroupOrder',
                 data: {
                   left: '[k: string];',
-                  leftGroup: 'unknown',
+                  leftGroup: 'index-signature',
                   right: 'a',
                   rightGroup: 'static-property',
                 },
@@ -4894,6 +5118,55 @@ describe(ruleName, () => {
                 leftGroup: 'private-decorated-accessor-property',
                 right: 'finished',
                 rightGroup: 'decorated-accessor-property',
+              },
+            },
+          ],
+        },
+      ],
+    })
+
+    ruleTester.run(`${ruleName}(${type}): should ignore unknown group`, rule, {
+      valid: [],
+      invalid: [
+        {
+          code: dedent`
+              class Class {
+
+                public i = 'i';
+                private z() {}
+                public method3() {}
+                private y() {}
+                public method4() {}
+                public method1() {}
+                private x() {}
+              }
+            `,
+          output: dedent`
+              class Class {
+
+                private z() {}
+                private y() {}
+                public method3() {}
+                private x() {}
+                public method4() {}
+                public method1() {}
+                public i = 'i';
+              }
+            `,
+          options: [
+            {
+              ...options,
+              groups: ['private-method', 'property'],
+            },
+          ],
+          errors: [
+            {
+              messageId: 'unexpectedClassesGroupOrder',
+              data: {
+                left: 'i',
+                leftGroup: 'property',
+                right: 'z',
+                rightGroup: 'private-method',
               },
             },
           ],

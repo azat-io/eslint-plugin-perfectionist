@@ -12,9 +12,9 @@
 }
 
 html {
+  scroll-padding-block-start: var(--header-block-size);
   background: var(--color-background-primary);
   scroll-behavior: smooth;
-  scroll-padding-block-start: var(--header-block-size);
 }
 
 body {
@@ -119,6 +119,7 @@ code {
 }
 
 pre {
+  position: relative;
   padding: var(--space-m);
   margin-block: 0;
   /* stylelint-disable-next-line plugin/use-logical-properties-and-values */
@@ -128,6 +129,7 @@ pre {
   outline: none;
 
   &:focus-visible {
+    z-index: 1;
     box-shadow: 0 0 0 3px var(--color-border-brand);
     transition: box-shadow 200ms;
   }

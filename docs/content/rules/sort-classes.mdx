@@ -223,18 +223,27 @@ Predefined groups are characterized by a single selector and potentially multipl
 - Modifiers: `protected`, `private`, `public`.
 - Example: `protected-constructor`, `private-constructor`, `public-constructor` or `constructor`.
 
-#### Methods and accessors
-- Method selectors: `get-method`, `set-method`, `method`.
-- Accessors selector: `accessor-property`.
+#### Methods
+- Selectors: `get-method`, `set-method`, `method`.
+- Modifiers: `static`, `abstract`, `decorated`, `override`, `protected`, `private`, `public`, `optional`.
+- Example: `private-static-accessor-property`, `protected-abstract-override-method` or `static-get-method`.
+
+The `optional` modifier is incompatible with the `get-method` and `set-method` selectors.
+
+The `abstract` modifier is incompatible with the `static`, `private` and `decorated` modifiers.
+
+`constructor`, `get-method` and `set-method` elements will also be matched as `method`.
+
+#### Accessors
+- Selector: `accessor-property`.
 - Modifiers: `static`, `abstract`, `decorated`, `override`, `protected`, `private`, `public`.
 - Example: `private-static-accessor-property`, `protected-abstract-override-method` or `static-get-method`.
 
 The `abstract` modifier is incompatible with the `static`, `private` and `decorated` modifiers.
-`constructor`, `get-method` and `set-method` elements will also be matched as `method`.
 
 #### Properties
 - Selectors: `function-property`, `property`.
-- Modifiers: `static`, `declare`, `abstract`, `decorated`, `override`, `readonly`, `protected`, `private`, `public`.
+- Modifiers: `static`, `declare`, `abstract`, `decorated`, `override`, `readonly`, `protected`, `private`, `public`, `optional`.
 - Example: `readonly-decorated-property`.
 
 The `abstract` modifier is incompatible with the `static`, `private` and `decorated` modifiers.
@@ -266,7 +275,8 @@ Elements that are not `protected` nor `private` will be matched with the `public
 
 
 ##### The `unknown` group
-Members that don’t fit into any group entered by the user will be placed in the `unknown` group.
+Members that don’t fit into any group entered by the user will be placed in the `unknown` group. If the `unknown` group is not specified in `groups`,
+the members will remain in their original order.
 
 ##### Behavior when multiple groups match an element
 
