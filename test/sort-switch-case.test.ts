@@ -1626,4 +1626,52 @@ describe(ruleName, () => {
       },
     ],
   })
+
+  ruleTester.run(`${ruleName}: handles default case and default clause`, rule, {
+    valid: [
+      dedent`
+        switch (variable) {
+          case 'add':
+            break
+          case 'default':
+            break
+          default:
+            break
+          }
+        `,
+    ],
+    invalid: [
+      {
+        code: dedent`
+        switch (variable) {
+          case 'default':
+            break
+          case 'add':
+            break
+          default:
+            break
+          }
+        `,
+        output: dedent`
+        switch (variable) {
+          case 'add':
+            break
+          case 'default':
+            break
+          default:
+            break
+          }
+        `,
+        errors: [
+          {
+            messageId: 'unexpectedSwitchCaseOrder',
+            data: {
+              left: 'default',
+              right: 'add',
+            },
+          },
+        ],
+      },
+    ],
+  })
 })

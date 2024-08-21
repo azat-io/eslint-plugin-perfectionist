@@ -24,6 +24,10 @@ type Options = [
   }>,
 ]
 
+interface SortSwitchCaseSortingNode extends SortingNode<TSESTree.SwitchCase> {
+  isDefaultClause: boolean
+}
+
 export default createEslintRule<Options, MESSAGE_ID>({
   name: 'sort-switch-case',
   meta: {
@@ -94,13 +98,15 @@ export default createEslintRule<Options, MESSAGE_ID>({
         )
 
       if (isDiscriminantIdentifier && isCasesHasBreak) {
-        let nodes = node.cases.map<SortingNode<TSESTree.SwitchCase>>(
+        let nodes = node.cases.map<SortSwitchCaseSortingNode>(
           (caseNode: TSESTree.SwitchCase) => {
             let name: string
+            let isDefaultClause = false
             if (caseNode.test?.type === 'Literal') {
               name = `${caseNode.test.value}`
             } else if (caseNode.test === null) {
               name = 'default'
+              isDefaultClause = true
             } else {
               name = sourceCode.text.slice(...caseNode.test.range)
             }
@@ -108,6 +114,7 @@ export default createEslintRule<Options, MESSAGE_ID>({
             return {
               size: rangeToDiff(caseNode.test?.range ?? caseNode.range),
               node: caseNode,
+              isDefaultClause,
               name,
             }
           },
@@ -120,8 +127,8 @@ export default createEslintRule<Options, MESSAGE_ID>({
             lefter?.node.consequent.length === 0 &&
             left.node.consequent.length !== 0
 
-          let isGroupContainsDefault = (group: SortingNode[]) =>
-            group.some(currentNode => currentNode.name === 'default')
+          let isGroupContainsDefault = (group: SortSwitchCaseSortingNode[]) =>
+            group.some(currentNode => currentNode.isDefaultClause)
 
           let leftCaseGroup = [left]
           let rightCaseGroup = [right]
@@ -163,12 +170,10 @@ export default createEslintRule<Options, MESSAGE_ID>({
               node: right.node,
               fix: fixer => {
                 let additionalFixes: TSESLint.RuleFix[] = []
-                let nodeGroups = nodes.reduce<
-                  SortingNode<TSESTree.SwitchCase>[][]
-                >(
+                let nodeGroups = nodes.reduce<SortSwitchCaseSortingNode[][]>(
                   (
-                    accumulator: SortingNode<TSESTree.SwitchCase>[][],
-                    currentNode: SortingNode<TSESTree.SwitchCase>,
+                    accumulator: SortSwitchCaseSortingNode[][],
+                    currentNode: SortSwitchCaseSortingNode,
                     index,
                   ) => {
                     if (index === 0) {
@@ -188,7 +193,7 @@ export default createEslintRule<Options, MESSAGE_ID>({
                 let sortedNodeGroups = nodeGroups
                   .map(group => {
                     let sortedGroup = sortNodes(group, options).sort((a, b) => {
-                      if (b.name === 'default') {
+                      if (b.isDefaultClause) {
                         return -1
                       }
                       return 1
@@ -244,7 +249,7 @@ export default createEslintRule<Options, MESSAGE_ID>({
                 let sortedNodes = sortedNodeGroups.flat()
 
                 for (let max = sortedNodes.length, i = 0; i < max; i++) {
-                  if (sortedNodes.at(i)!.name === 'default') {
+                  if (sortedNodes.at(i)!.isDefaultClause) {
                     sortedNodes.push(sortedNodes.splice(i, 1).at(0)!)
                   }
                 }
