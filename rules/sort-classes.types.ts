@@ -24,19 +24,6 @@ export type Modifier =
   | DeclareModifier
   | StaticModifier
 
-export const allModifiers: Modifier[] = [
-  'protected',
-  'private',
-  'public',
-  'static',
-  'abstract',
-  'override',
-  'readonly',
-  'decorated',
-  'declare',
-  'optional',
-]
-
 type ConstructorSelector = 'constructor'
 type FunctionPropertySelector = 'function-property'
 type PropertySelector = 'property'
@@ -56,18 +43,6 @@ export type Selector =
   | SetMethodSelector
   | PropertySelector
   | MethodSelector
-
-export const allSelectors: Selector[] = [
-  'accessor-property',
-  'index-signature',
-  'constructor',
-  'static-block',
-  'get-method',
-  'set-method',
-  'function-property',
-  'property',
-  'method',
-]
 
 type WithDashSuffixOrEmpty<T extends string> = `${T}-` | ''
 
@@ -111,6 +86,7 @@ type StaticBlockGroup = `${StaticBlockSelector}`
  * Some invalid combinations are still handled by this type, such as
  * - private abstract X
  * - abstract decorated X
+ * Only used in code, so I don't know if it's worth maintaining this.
  */
 type Group =
   | GetMethodOrSetMethodGroup
@@ -125,6 +101,9 @@ type Group =
   | 'unknown'
   | string
 
+/**
+ * Only used in code as well
+ */
 interface AllowedModifiersPerSelector {
   property:
     | PublicOrProtectedOrPrivateModifier
@@ -215,6 +194,55 @@ export type SortClassesOptions = [
   }>,
 ]
 
+export const allSelectors: Selector[] = [
+  'accessor-property',
+  'index-signature',
+  'constructor',
+  'static-block',
+  'get-method',
+  'set-method',
+  'function-property',
+  'property',
+  'method',
+]
+
+export const allModifiers: Modifier[] = [
+  'protected',
+  'private',
+  'public',
+  'static',
+  'abstract',
+  'override',
+  'readonly',
+  'decorated',
+  'declare',
+  'optional',
+]
+
+export const customGroupSortJsonSchema: Record<string, JSONSchema4> = {
+  type: {
+    description: 'Custom group sort type.',
+    type: 'string',
+    enum: ['alphabetical', 'line-length', 'natural', 'unsorted'],
+  },
+  order: {
+    description: 'Custom group sort order.',
+    type: 'string',
+    enum: ['desc', 'asc'],
+  },
+}
+
+export const customGroupNameJsonSchema: Record<string, JSONSchema4> = {
+  groupName: {
+    description: 'Custom group name.',
+    type: 'string',
+  },
+}
+
+/**
+ * Ideally, we should generate as many schemas as there are selectors, and ensure
+ * that users do not enter invalid modifiers for a given selector
+ */
 export const singleCustomGroupJsonSchema: Record<string, JSONSchema4> = {
   selector: {
     description: 'Selector filter.',
@@ -235,26 +263,6 @@ export const singleCustomGroupJsonSchema: Record<string, JSONSchema4> = {
   },
   decoratorNamePattern: {
     description: 'Decorator name pattern filter.',
-    type: 'string',
-  },
-}
-
-export const singleCustomGroupSortJsonSchema: Record<string, JSONSchema4> = {
-  type: {
-    description: 'Custom group sort type.',
-    type: 'string',
-    enum: ['alphabetical', 'line-length', 'natural', 'unsorted'],
-  },
-  order: {
-    description: 'Custom group sort order.',
-    type: 'string',
-    enum: ['desc', 'asc'],
-  },
-}
-
-export const singleCustomGroupNameJsonSchema: Record<string, JSONSchema4> = {
-  groupName: {
-    description: 'Custom group name.',
     type: 'string',
   },
 }
