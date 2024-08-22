@@ -5201,6 +5201,11 @@ describe(ruleName, () => {
               groups: ['propertyGroup', 'constructor', 'privatePropertyGroup'],
               customGroups: [
                 {
+                  groupName: 'unusedCustomGroup',
+                  selector: 'property',
+                  modifiers: ['private'],
+                },
+                {
                   groupName: 'privatePropertyGroup',
                   selector: 'property',
                   modifiers: ['private'],

@@ -487,7 +487,10 @@ export default createEslintRule<SortClassesOptions, MESSAGE_ID>({
                   })
                 ) {
                   defineGroup(customGroup.groupName, true)
-                  break
+                  // If the custom group is not referenced in the `groups` option, it will be ignored
+                  if (getGroup() === customGroup.groupName) {
+                    break
+                  }
                 }
               }
             } else {
