@@ -11,6 +11,7 @@ import sitemap from '@astrojs/sitemap'
 import svelte from '@astrojs/svelte'
 import mdx from '@astrojs/mdx'
 import path from 'node:path'
+import pagefind from 'astro-pagefind'
 
 import { remarkHeadings } from './docs/plugins/remark-headings'
 import { colorTheme } from './docs/utils/shiki-theme'
@@ -37,6 +38,7 @@ export default defineConfig({
       filter: page => !new RegExp(`^${site}/guide$`).test(page),
     }),
     mdx(),
+    pagefind(),
   ],
   markdown: {
     rehypePlugins: [

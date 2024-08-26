@@ -26,9 +26,42 @@ let { border = false } = Astro.props
       <Logo class="logo" />
       <span class="title">Perfectionist</span>
     </a>
+
+    <span class="seperator"></span>
+    <canary-root framework="astro">
+      <canary-provider-pagefind>
+        <canary-modal>
+          <canary-trigger-searchbar slot="trigger"></canary-trigger-searchbar>
+          <canary-content slot="content">
+            <canary-search slot="mode">
+              <canary-search-input slot="input"></canary-search-input>
+              <canary-search-results-tabs
+                slot="body"
+                tabs={JSON.stringify([
+                  { name: 'All', pattern: '**/*' },
+                  { name: 'Guide', pattern: '/guide/**' },
+                  { name: 'Configs', pattern: '/configs/**' },
+                  { name: 'Rules', pattern: '/rules/**' },
+                ])}></canary-search-results-tabs>
+            </canary-search>
+          </canary-content>
+        </canary-modal>
+      </canary-provider-pagefind>
+    </canary-root>
   </div>
   <Navigation />
 </header>
+
+<script>
+  import '@getcanary/web/components/canary-root.js'
+  import '@getcanary/web/components/canary-provider-pagefind.js'
+  import '@getcanary/web/components/canary-modal.js'
+  import '@getcanary/web/components/canary-trigger-searchbar.js'
+  import '@getcanary/web/components/canary-content.js'
+  import '@getcanary/web/components/canary-search.js'
+  import '@getcanary/web/components/canary-search-input.js'
+  import '@getcanary/web/components/canary-search-results-tabs.js'
+</script>
 
 <script>
   import { toggleMenu } from '../stores/menu-open'
@@ -148,5 +181,22 @@ let { border = false } = Astro.props
       font-weight: 500;
       line-height: 1;
     }
+  }
+
+  .seperator {
+    margin: 0 var(--space-2xs);
+  }
+
+  canary-root {
+    /* http://getcanary.dev/docs/common/customization/styling.html#css-variables */
+    --canary-color-primary-c: 0.1;
+    --canary-color-primary-h: 280;
+  }
+
+  canary-trigger-searchbar::part(button) {
+    background-color: var(--color-background-primary);
+  }
+  canary-trigger-searchbar::part(kbd) {
+    background-color: var(--color-background-primary-hover);
   }
 </style>
