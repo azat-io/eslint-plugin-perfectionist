@@ -1,6 +1,27 @@
 # Changelog
 
 
+## v3.3.0
+
+[compare changes](https://github.com/azat-io/eslint-plugin-perfectionist/compare/v3.2.0...v3.3.0)
+
+### 🚀 Features
+
+- Improve checking if a member is private in sort-classes rule ([4e19b94](https://github.com/azat-io/eslint-plugin-perfectionist/commit/4e19b94))
+- Add static-block and accessor-property to default groups in sort-classes ([0c724e0](https://github.com/azat-io/eslint-plugin-perfectionist/commit/0c724e0))
+- Don't sort unknown elements if unknown is not referenced in groups ([0086427](https://github.com/azat-io/eslint-plugin-perfectionist/commit/0086427))
+- Add optional modifier in sort-classes rule ([27fa7e8](https://github.com/azat-io/eslint-plugin-perfectionist/commit/27fa7e8))
+
+### 🐞 Bug Fixes
+
+- Fix sorting class members with same names ([f1f875e](https://github.com/azat-io/eslint-plugin-perfectionist/commit/f1f875e))
+- Fix use of case named default in sort-switch-case rule ([5583eb0](https://github.com/azat-io/eslint-plugin-perfectionist/commit/5583eb0))
+- Take into account dependencies in sort-enums ([eeb0534](https://github.com/azat-io/eslint-plugin-perfectionist/commit/eeb0534))
+
+### ❤️ Contributors
+
+- Hugo ([@hugop95](http://github.com/hugop95))
+
 ## v3.2.0
 
 [compare changes](https://github.com/azat-io/eslint-plugin-perfectionist/compare/v3.1.3...v3.2.0)
