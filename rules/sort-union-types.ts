@@ -1,5 +1,6 @@
 import type { SortingNode } from '../typings'
 
+import { validateGroupsConfiguration } from '../utils/validate-groups-configuration'
 import { createEslintRule } from '../utils/create-eslint-rule'
 import { getGroupNumber } from '../utils/get-group-number'
 import { getSourceCode } from '../utils/get-source-code'
@@ -112,6 +113,27 @@ export default createEslintRule<Options, MESSAGE_ID>({
         order: 'asc',
         groups: [],
       } as const)
+
+      // Validate groups config
+      validateGroupsConfiguration(
+        options.groups,
+        [
+          'intersection',
+          'conditional',
+          'function',
+          'operator',
+          'keyword',
+          'literal',
+          'nullish',
+          'unknown',
+          'import',
+          'object',
+          'named',
+          'tuple',
+          'union',
+        ],
+        [],
+      )
 
       let sourceCode = getSourceCode(context)
 

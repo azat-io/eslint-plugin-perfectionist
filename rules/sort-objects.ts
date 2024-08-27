@@ -5,6 +5,7 @@ import { minimatch } from 'minimatch'
 
 import type { SortingNode } from '../typings'
 
+import { validateGroupsConfiguration } from '../utils/validate-groups-configuration'
 import { isPartitionComment } from '../utils/is-partition-comment'
 import { getCommentBefore } from '../utils/get-comment-before'
 import { createEslintRule } from '../utils/create-eslint-rule'
@@ -190,6 +191,13 @@ export default createEslintRule<Options, MESSAGE_ID>({
         order: 'asc',
         groups: [],
       } as const)
+
+      // Validate groups config
+      validateGroupsConfiguration(
+        options.groups,
+        [],
+        Object.keys(options.customGroups),
+      )
 
       let shouldIgnore = false
 

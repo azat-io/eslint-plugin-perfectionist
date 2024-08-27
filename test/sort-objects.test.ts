@@ -276,7 +276,7 @@ describe(ruleName, () => {
             {
               ...options,
               customGroups: { top: ['c', 'b'] },
-              groups: ['top', 'unknown'],
+              groups: ['top'],
             },
           ],
         },
@@ -303,7 +303,7 @@ describe(ruleName, () => {
             {
               ...options,
               customGroups: { top: ['c', 'b'] },
-              groups: ['top', 'unknown'],
+              groups: ['top'],
             },
           ],
           errors: [
@@ -1163,7 +1163,7 @@ describe(ruleName, () => {
             {
               ...options,
               customGroups: { top: ['c', 'b'] },
-              groups: ['top', 'unknown'],
+              groups: ['top'],
             },
           ],
         },
@@ -1190,7 +1190,7 @@ describe(ruleName, () => {
             {
               ...options,
               customGroups: { top: ['c', 'b'] },
-              groups: ['top', 'unknown'],
+              groups: ['top'],
             },
           ],
           errors: [
@@ -2021,7 +2021,7 @@ describe(ruleName, () => {
             {
               ...options,
               customGroups: { top: ['c', 'b'] },
-              groups: ['top', 'unknown'],
+              groups: ['top'],
             },
           ],
         },
@@ -2048,7 +2048,7 @@ describe(ruleName, () => {
             {
               ...options,
               customGroups: { top: ['c', 'b'] },
-              groups: ['top', 'unknown'],
+              groups: ['top'],
             },
           ],
           errors: [

@@ -270,7 +270,7 @@ describe(ruleName, () => {
             options: [
               {
                 ...options,
-                groups: ['unknown', ['svelte-shorthand', 'shorthand']],
+                groups: ['unknown', ['shorthand']],
               },
             ],
             errors: [
@@ -699,7 +699,7 @@ describe(ruleName, () => {
             options: [
               {
                 ...options,
-                groups: ['unknown', ['svelte-shorthand', 'shorthand']],
+                groups: ['unknown', ['shorthand']],
               },
             ],
             errors: [
@@ -1130,7 +1130,7 @@ describe(ruleName, () => {
             options: [
               {
                 ...options,
-                groups: ['unknown', ['svelte-shorthand', 'shorthand']],
+                groups: ['unknown', ['shorthand']],
               },
             ],
             errors: [

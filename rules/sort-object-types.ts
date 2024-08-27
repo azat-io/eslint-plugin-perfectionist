@@ -2,6 +2,7 @@ import type { TSESTree } from '@typescript-eslint/types'
 
 import type { SortingNode } from '../typings'
 
+import { validateGroupsConfiguration } from '../utils/validate-groups-configuration'
 import { createEslintRule } from '../utils/create-eslint-rule'
 import { getLinesBetween } from '../utils/get-lines-between'
 import { getGroupNumber } from '../utils/get-group-number'
@@ -24,12 +25,12 @@ type Group<T extends string[]> = 'multiline' | 'unknown' | T[number]
 type Options<T extends string[]> = [
   Partial<{
     groupKind: 'required-first' | 'optional-first' | 'mixed'
+    customGroups: { [key in T[number]]: string[] | string }
     type: 'alphabetical' | 'line-length' | 'natural'
     groups: (Group<T>[] | Group<T>)[]
     partitionByNewLine: boolean
     order: 'desc' | 'asc'
     ignoreCase: boolean
-    customGroups: {}
   }>,
 ]
 
@@ -139,6 +140,13 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
           order: 'asc',
           groups: [],
         } as const)
+
+        // Validate groups config
+        validateGroupsConfiguration(
+          options.groups,
+          ['multiline', 'unknown'],
+          Object.keys(options.customGroups),
+        )
 
         let sourceCode = getSourceCode(context)
 
