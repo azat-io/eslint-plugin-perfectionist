@@ -1703,5 +1703,131 @@ describe(ruleName, () => {
         ],
       },
     )
+
+    ruleTester.run(`${ruleName}: works with dependencies`, rule, {
+      valid: [],
+      invalid: [
+        {
+          code: dedent`
+            enum Enum {
+              C = 'C',
+              B = 0,
+              A = B,
+            }
+          `,
+          output: dedent`
+            enum Enum {
+              B = 0,
+              A = B,
+              C = 'C',
+            }
+          `,
+          options: [
+            {
+              type: 'alphabetical',
+            },
+          ],
+          errors: [
+            {
+              messageId: 'unexpectedEnumsOrder',
+              data: {
+                left: 'C',
+                right: 'B',
+              },
+            },
+          ],
+        },
+        {
+          code: dedent`
+            enum Enum {
+              C = 'C',
+              B = 0,
+              A = Enum.B,
+            }
+          `,
+          output: dedent`
+            enum Enum {
+              B = 0,
+              A = Enum.B,
+              C = 'C',
+            }
+          `,
+          options: [
+            {
+              type: 'alphabetical',
+            },
+          ],
+          errors: [
+            {
+              messageId: 'unexpectedEnumsOrder',
+              data: {
+                left: 'C',
+                right: 'B',
+              },
+            },
+          ],
+        },
+        {
+          code: dedent`
+            enum Enum {
+              C = 3,
+              B = 0,
+              A = 1 | 2 | B | Enum.B,
+            }
+          `,
+          output: dedent`
+            enum Enum {
+              B = 0,
+              A = 1 | 2 | B | Enum.B,
+              C = 3,
+            }
+          `,
+          options: [
+            {
+              type: 'alphabetical',
+            },
+          ],
+          errors: [
+            {
+              messageId: 'unexpectedEnumsOrder',
+              data: {
+                left: 'C',
+                right: 'B',
+              },
+            },
+          ],
+        },
+        {
+          code: dedent`
+            enum Enum {
+              B = 'B',
+              A = AnotherEnum.B,
+              C = 'C',
+            }
+          `,
+          output: dedent`
+            enum Enum {
+              A = AnotherEnum.B,
+              B = 'B',
+              C = 'C',
+            }
+          `,
+          options: [
+            {
+              type: 'alphabetical',
+            },
+          ],
+          errors: [
+            {
+              messageId: 'unexpectedEnumsOrder',
+              data: {
+                left: 'B',
+                right: 'A',
+              },
+            },
+          ],
+        },
+      ],
+    })
   })
 })
