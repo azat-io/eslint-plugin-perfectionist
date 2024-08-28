@@ -5290,20 +5290,20 @@ describe(ruleName, () => {
 
                 protected protectedProperty
 
+                static {}
+
                 static staticProperty
 
                 [key: string]: string
-
-                static {}
               }
             `,
           output: dedent`
               class Class {
-                static {}
-
                 [key: string]: string
 
                 static staticProperty
+
+                static {}
 
                 protected accessor protectedAccessorProperty
 
@@ -5417,6 +5417,15 @@ describe(ruleName, () => {
               data: {
                 left: 'protectedProperty',
                 leftGroup: 'protected-property',
+                right: 'static',
+                rightGroup: 'static-block',
+              },
+            },
+            {
+              messageId: 'unexpectedClassesGroupOrder',
+              data: {
+                left: 'static',
+                leftGroup: 'static-block',
                 right: 'staticProperty',
                 rightGroup: 'static-property',
               },
@@ -5428,15 +5437,6 @@ describe(ruleName, () => {
                 leftGroup: 'static-property',
                 right: '[key: string]',
                 rightGroup: 'index-signature',
-              },
-            },
-            {
-              messageId: 'unexpectedClassesGroupOrder',
-              data: {
-                left: '[key: string]',
-                leftGroup: 'index-signature',
-                right: 'static',
-                rightGroup: 'static-block',
               },
             },
           ],
