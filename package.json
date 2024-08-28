@@ -85,7 +85,7 @@
     "@azat-io/stylelint-config": "^0.1.1",
     "@commitlint/cli": "^19.4.1",
     "@commitlint/config-conventional": "^19.4.1",
-    "@getcanary/web": "^0.0.101",
+    "@getcanary/web": "^0.0.102",
     "@nanostores/persistent": "^0.10.2",
     "@nanostores/vue": "^0.10.0",
     "@playform/compress": "^0.1.1",

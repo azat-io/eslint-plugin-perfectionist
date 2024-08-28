@@ -46,8 +46,8 @@ importers:
         specifier: ^19.4.1
         version: 19.4.1
       '@getcanary/web':
-        specifier: ^0.0.101
-        version: 0.0.101
+        specifier: ^0.0.102
+        version: 0.0.102
       '@nanostores/persistent':
         specifier: ^0.10.2
         version: 0.10.2(nanostores@0.11.3)
@@ -1500,8 +1500,8 @@ packages:
   '@floating-ui/utils@0.2.7':
     resolution: {integrity: sha512-X8R8Oj771YRl/w+c1HqAC1szL8zWQRwFvgDwT129k9ACdBoud/+/rX9V0qiMl6LWUdP9voC2nDVZYPMQQsb6eA==}
 
-  '@getcanary/web@0.0.101':
-    resolution: {integrity: sha512-/GeoSpVKq0w2HmjeF855zOeKE8a6cFcdtAsLHC0/ATJTkrAjAuAaTn5We0WX2w0UGBdzHuc94bYXJCklbTEoCg==}
+  '@getcanary/web@0.0.102':
+    resolution: {integrity: sha512-o21n9KYHwHk/M16WSghXTkKT3kkGTXu0dusTT3Jdir0Kh5ohgZxKxClOcjP45CCuIV/s+qRUtlKoAb7U1swzdw==}
 
   '@humanwhocodes/module-importer@1.0.1':
     resolution: {integrity: sha512-bxveV4V8v5Yb4ncFTT3rPSgZBOpCkjfK0y4oVVVJwIuDVBRMDXrPyXRL988i5ap9m9bnyEEjWfm5WkBmtffLfA==}
@@ -7859,7 +7859,7 @@ snapshots:
 
   '@floating-ui/utils@0.2.7': {}
 
-  '@getcanary/web@0.0.101':
+  '@getcanary/web@0.0.102':
     dependencies:
       '@floating-ui/dom': 1.6.10
       '@lit-labs/observers': 2.0.3

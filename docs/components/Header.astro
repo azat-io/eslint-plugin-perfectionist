@@ -36,13 +36,13 @@ let { border = false } = Astro.props
             <canary-search slot="mode">
               <canary-search-input slot="input"></canary-search-input>
               <canary-search-results-tabs
-                slot="body"
                 tabs={JSON.stringify([
-                  { name: 'All', pattern: '**/*' },
-                  { name: 'Guide', pattern: '/guide/**' },
-                  { name: 'Configs', pattern: '/configs/**' },
-                  { name: 'Rules', pattern: '/rules/**' },
-                ])}></canary-search-results-tabs>
+                  { pattern: '**/*', name: 'All' },
+                  { pattern: '/guide/**', name: 'Guide' },
+                  { pattern: '/configs/**', name: 'Configs' },
+                  { pattern: '/rules/**', name: 'Rules' },
+                ])}
+                slot="body"></canary-search-results-tabs>
             </canary-search>
           </canary-content>
         </canary-modal>
@@ -196,6 +196,7 @@ let { border = false } = Astro.props
   canary-trigger-searchbar::part(button) {
     background-color: var(--color-background-primary);
   }
+
   canary-trigger-searchbar::part(kbd) {
     background-color: var(--color-background-primary-hover);
   }
