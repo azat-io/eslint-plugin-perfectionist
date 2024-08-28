@@ -283,7 +283,7 @@ export default createEslintRule<Options, MESSAGE_ID>({
         let className = node.parent.id?.name
 
         let extractDependencies = (
-          expression: TSESTree.Expression,
+          expression: TSESTree.StaticBlock | TSESTree.Expression,
         ): string[] => {
           let dependencies: string[] = []
 
