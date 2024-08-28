@@ -12,10 +12,10 @@ describe('validate-groups-configuration', () => {
   it('throws an error when an invalid group is provided', () => {
     expect(() => {
       validateGroupsConfiguration(
-        ['predefinedGroup', ['customGroup', 'invalidGroup']],
+        ['predefinedGroup', ['customGroup', 'invalidGroup1'], 'invalidGroup2'],
         ['predefinedGroup'],
         ['customGroup'],
       )
-    }).toThrow('Invalid group(s): invalidGroup')
+    }).toThrow('Invalid group(s): invalidGroup1, invalidGroup2')
   })
 })
