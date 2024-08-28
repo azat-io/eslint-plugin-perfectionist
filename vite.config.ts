@@ -113,6 +113,9 @@ export default defineConfig({
   ],
   test: {
     coverage: {
+      thresholds: {
+        100: true,
+      },
       all: false,
     },
   },
