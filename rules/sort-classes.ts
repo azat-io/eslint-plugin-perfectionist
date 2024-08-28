@@ -280,6 +280,7 @@ export default createEslintRule<Options, MESSAGE_ID>({
         } as const)
 
         let sourceCode = getSourceCode(context)
+        let className = node.parent.id?.name
 
         let extractDependencies = (
           expression: TSESTree.Expression,
@@ -289,10 +290,20 @@ export default createEslintRule<Options, MESSAGE_ID>({
           let checkNode = (nodeValue: TSESTree.Node) => {
             if (
               nodeValue.type === 'MemberExpression' &&
-              nodeValue.object.type === 'ThisExpression' &&
+              (nodeValue.object.type === 'ThisExpression' ||
+                (nodeValue.object.type === 'Identifier' &&
+                  nodeValue.object.name === className)) &&
               nodeValue.property.type === 'Identifier'
             ) {
               dependencies.push(nodeValue.property.name)
+            }
+
+            if (nodeValue.type === 'ExpressionStatement') {
+              traverseNode(nodeValue.expression)
+            }
+
+            if ('init' in nodeValue && nodeValue.init) {
+              traverseNode(nodeValue.init)
             }
 
             if ('body' in nodeValue && nodeValue.body) {
@@ -315,6 +326,10 @@ export default createEslintRule<Options, MESSAGE_ID>({
 
             if ('arguments' in nodeValue) {
               nodeValue.arguments.forEach(traverseNode)
+            }
+
+            if ('declarations' in nodeValue) {
+              nodeValue.declarations.forEach(traverseNode)
             }
           }
 
@@ -432,6 +447,8 @@ export default createEslintRule<Options, MESSAGE_ID>({
               selectors.push('index-signature')
             } else if (member.type === 'StaticBlock') {
               selectors.push('static-block')
+
+              dependencies = extractDependencies(member)
             } else if (
               member.type === 'AccessorProperty' ||
               member.type === 'TSAbstractAccessorProperty'
@@ -501,15 +518,24 @@ export default createEslintRule<Options, MESSAGE_ID>({
                 modifiers.push('optional')
               }
 
-              if (
+              let isFunctionProperty =
                 member.value?.type === 'ArrowFunctionExpression' ||
                 member.value?.type === 'FunctionExpression'
-              ) {
+              if (isFunctionProperty) {
                 selectors.push('function-property')
               }
 
               selectors.push('property')
+
+              if (
+                member.type === 'PropertyDefinition' &&
+                member.value &&
+                !isFunctionProperty
+              ) {
+                dependencies = extractDependencies(member.value)
+              }
             }
+
             for (let officialGroup of generateOfficialGroups(
               modifiers,
               selectors,
@@ -519,10 +545,6 @@ export default createEslintRule<Options, MESSAGE_ID>({
             setCustomGroups(options.customGroups, name, {
               override: true,
             })
-
-            if (member.type === 'PropertyDefinition' && member.value) {
-              dependencies = extractDependencies(member.value)
-            }
 
             // Members belonging to the same overload signature group should have the same size in order to keep line-length sorting between them consistent.
             // It is unclear what should be considered the size of an overload signature group. Take the size of the implementation by default.
