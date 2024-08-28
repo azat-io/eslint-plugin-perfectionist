@@ -1144,6 +1144,38 @@ describe(ruleName, () => {
     })
   })
 
+  describe(`${ruleName}: validating group configuration`, () => {
+    ruleTester.run(`${ruleName}: allows predefined groups`, rule, {
+      valid: [
+        {
+          code: dedent`
+            type Type = { label: 'aaa' } & { label: 'bb' } & { label: 'c' }
+          `,
+          options: [
+            {
+              groups: [
+                'intersection',
+                'conditional',
+                'function',
+                'operator',
+                'keyword',
+                'literal',
+                'nullish',
+                'unknown',
+                'import',
+                'object',
+                'named',
+                'tuple',
+                'union',
+              ],
+            },
+          ],
+        },
+      ],
+      invalid: [],
+    })
+  })
+
   describe(`${ruleName}: misc`, () => {
     ruleTester.run(
       `${ruleName}: sets alphabetical asc sorting as default`,

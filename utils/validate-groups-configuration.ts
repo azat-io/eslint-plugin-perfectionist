@@ -11,6 +11,6 @@ export let validateGroupsConfiguration = (
     .flat()
     .filter(group => !allowedGroupsSet.has(group))
   if (invalidGroups.length) {
-    throw new Error('Invalid groups: ' + invalidGroups.join(', '))
+    throw new Error('Invalid group(s): ' + invalidGroups.join(', '))
   }
 }

@@ -1408,6 +1408,39 @@ describe(ruleName, () => {
     })
   })
 
+  describe(`${ruleName}: validating group configuration`, () => {
+    ruleTester.run(
+      `${ruleName}: allows predefined groups and defined custom groups`,
+      rule,
+      {
+        valid: [
+          {
+            code: dedent`
+            let Component = () => (
+              <Element
+                a="aaa"
+                b="bb"
+                c="c"
+              >
+                Value
+              </Element>
+            )
+          `,
+            options: [
+              {
+                groups: ['multiline', 'shorthand', 'unknown', 'myCustomGroup'],
+                customGroups: {
+                  myCustomGroup: 'x',
+                },
+              },
+            ],
+          },
+        ],
+        invalid: [],
+      },
+    )
+  })
+
   describe(`${ruleName}: misc`, () => {
     ruleTester.run(
       `${ruleName}: sets alphabetical asc sorting as default`,

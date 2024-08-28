@@ -1740,6 +1740,35 @@ describe(ruleName, () => {
     )
   })
 
+  describe(`${ruleName}: validating group configuration`, () => {
+    ruleTester.run(
+      `${ruleName}: allows predefined groups and defined custom groups`,
+      rule,
+      {
+        valid: [
+          {
+            code: dedent`
+            type Type = {
+              a: 'aaa'
+              b: 'bb'
+              c: 'c'
+            }
+          `,
+            options: [
+              {
+                groups: ['multiline', 'unknown', 'myCustomGroup'],
+                customGroups: {
+                  myCustomGroup: 'x',
+                },
+              },
+            ],
+          },
+        ],
+        invalid: [],
+      },
+    )
+  })
+
   describe('misc', () => {
     ruleTester.run(`${ruleName}: ignores semi at the end of value`, rule, {
       valid: [

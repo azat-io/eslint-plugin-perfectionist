@@ -257,7 +257,6 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
       options.groups = [...options.groups, 'unknown']
     }
 
-    // Validate groups config
     validateGroupsConfiguration(
       options.groups,
       [
