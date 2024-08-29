@@ -1712,6 +1712,36 @@ describe(ruleName, () => {
             enum Enum {
               C = 'C',
               B = 0,
+              A = B,
+            }
+          `,
+          output: dedent`
+            enum Enum {
+              B = 0,
+              A = B,
+              C = 'C',
+            }
+          `,
+          options: [
+            {
+              type: 'alphabetical',
+            },
+          ],
+          errors: [
+            {
+              messageId: 'unexpectedEnumsOrder',
+              data: {
+                left: 'C',
+                right: 'B',
+              },
+            },
+          ],
+        },
+        {
+          code: dedent`
+            enum Enum {
+              C = 'C',
+              B = 0,
               A = Enum.B,
             }
           `,
