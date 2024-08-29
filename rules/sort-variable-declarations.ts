@@ -1,7 +1,6 @@
 import type { TSESTree } from '@typescript-eslint/types'
 
 import type { SortingNodeWithDependencies } from '../utils/sort-nodes-by-dependencies'
-import type { SortingNode } from '../typings'
 
 import { sortNodesByDependencies } from '../utils/sort-nodes-by-dependencies'
 import { createEslintRule } from '../utils/create-eslint-rule'

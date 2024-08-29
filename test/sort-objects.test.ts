@@ -769,6 +769,36 @@ describe(ruleName, () => {
     )
 
     ruleTester.run(
+      `${ruleName}(${type}): prioritizes dependencies over group configuration`,
+      rule,
+      {
+        valid: [
+          {
+            code: dedent`
+              let Func = ({
+                b,
+                a = b,
+              }) => {
+                // ...
+              }
+            `,
+            options: [
+              {
+                ...options,
+                groups: ['attributesStartingWithA', 'attributesStartingWithB'],
+                customGroups: {
+                  attributesStartingWithA: 'a',
+                  attributesStartingWithB: 'b',
+                },
+              },
+            ],
+          },
+        ],
+        invalid: [],
+      },
+    )
+
+    ruleTester.run(
       `${ruleName}(${type}): allows to use partition comments`,
       rule,
       {

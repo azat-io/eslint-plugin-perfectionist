@@ -2,7 +2,6 @@ import type { TSESTree } from '@typescript-eslint/types'
 
 import type { SortingNodeWithDependencies } from '../utils/sort-nodes-by-dependencies'
 import type { CompareOptions } from '../utils/compare'
-import type { SortingNode } from '../typings'
 
 import { sortNodesByDependencies } from '../utils/sort-nodes-by-dependencies'
 import { isPartitionComment } from '../utils/is-partition-comment'

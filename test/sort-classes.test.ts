@@ -2896,6 +2896,30 @@ describe(ruleName, () => {
       )
 
       ruleTester.run(
+        `${ruleName}(${type}): prioritizes dependencies over group configuration`,
+        rule,
+        {
+          valid: [
+            {
+              code: dedent`
+                class Class {
+                  public b = 1;
+                  private a = this.b;
+                }
+              `,
+              options: [
+                {
+                  ...options,
+                  groups: ['private-property', 'public-property'],
+                },
+              ],
+            },
+          ],
+          invalid: [],
+        },
+      )
+
+      ruleTester.run(
         `${ruleName}(${type}): works with left and right dependencies`,
         rule,
         {
