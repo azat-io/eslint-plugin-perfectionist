@@ -264,7 +264,7 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
             return (
               leftNum > rightNum ||
               (leftNum === rightNum &&
-                isPositive(compare(left, right, options, true)))
+                isPositive(compare(left, right, options)))
             )
           }
 

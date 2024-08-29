@@ -8,4 +8,4 @@ export let sortNodes = <T extends SortingNode>(
   nodes: T[],
   options: CompareOptions,
 ): T[] =>
-  compareDependencies([...nodes].sort((a, b) => compare(a, b, options, false)))
+  compareDependencies([...nodes].sort((a, b) => compare(a, b, options, true)))

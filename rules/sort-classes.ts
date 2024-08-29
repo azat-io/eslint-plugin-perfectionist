@@ -15,13 +15,11 @@ import { getSourceCode } from '../utils/get-source-code'
 import { toSingleLine } from '../utils/to-single-line'
 import { rangeToDiff } from '../utils/range-to-diff'
 import { getSettings } from '../utils/get-settings'
-import { isPositive } from '../utils/is-positive'
 import { useGroups } from '../utils/use-groups'
 import { sortNodes } from '../utils/sort-nodes'
 import { makeFixes } from '../utils/make-fixes'
 import { complete } from '../utils/complete'
 import { pairwise } from '../utils/pairwise'
-import { compare } from '../utils/compare'
 
 type MESSAGE_ID = 'unexpectedClassesGroupOrder' | 'unexpectedClassesOrder'
 
@@ -126,7 +124,7 @@ type Group =
   | 'unknown'
   | string
 
-type Options = [
+export type Options = [
   Partial<{
     customGroups: { [key: string]: string[] | string }
     type: 'alphabetical' | 'line-length' | 'natural'
@@ -592,21 +590,48 @@ export default createEslintRule<Options, MESSAGE_ID>({
         )
 
         for (let nodes of formattedNodes) {
-          pairwise(nodes, (left, right) => {
-            let leftNum = getGroupNumber(options.groups, left)
-            let rightNum = getGroupNumber(options.groups, right)
-            // Ignore nodes belonging to `unknown` group when that group is not referenced in the
-            // `groups` option.
-            let isLeftOrRightIgnored =
-              leftNum === options.groups.length ||
-              rightNum === options.groups.length
+          let getSortedNodes = () => {
+            let nodesByNonIgnoredGroupNumber: {
+              [key: number]: SortingNode[]
+            } = {}
+            let ignoredNodeIndices: number[] = []
+            for (let [index, sortingNode] of nodes.entries()) {
+              let groupNum = getGroupNumber(options.groups, sortingNode)
+              if (groupNum === options.groups.length) {
+                ignoredNodeIndices.push(index)
+                continue
+              }
+              nodesByNonIgnoredGroupNumber[groupNum] =
+                nodesByNonIgnoredGroupNumber[groupNum] ?? []
+              nodesByNonIgnoredGroupNumber[groupNum].push(sortingNode)
+            }
 
-            if (
-              !isLeftOrRightIgnored &&
-              (leftNum > rightNum ||
-                (leftNum === rightNum &&
-                  isPositive(compare(left, right, options, true))))
-            ) {
+            let sortedNodes: SortingNode[] = []
+            for (let groupNumber of Object.keys(
+              nodesByNonIgnoredGroupNumber,
+            ).sort((a, b) => Number(a) - Number(b))) {
+              sortedNodes.push(
+                ...sortNodes(
+                  nodesByNonIgnoredGroupNumber[Number(groupNumber)],
+                  options,
+                ),
+              )
+            }
+
+            // Add ignored nodes at the same position as they were before linting
+            for (let ignoredIndex of ignoredNodeIndices) {
+              sortedNodes.splice(ignoredIndex, 0, nodes[ignoredIndex])
+            }
+            return sortedNodes
+          }
+          let sortedNodes = getSortedNodes()
+
+          pairwise(nodes, (left, right) => {
+            let indexOfLeft = sortedNodes.indexOf(left)
+            let indexOfRight = sortedNodes.indexOf(right)
+            if (indexOfLeft > indexOfRight) {
+              let leftNum = getGroupNumber(options.groups, left)
+              let rightNum = getGroupNumber(options.groups, right)
               context.report({
                 messageId:
                   leftNum !== rightNum
@@ -619,43 +644,10 @@ export default createEslintRule<Options, MESSAGE_ID>({
                   rightGroup: right.group,
                 },
                 node: right.node,
-                fix: (fixer: TSESLint.RuleFixer) => {
-                  let nodesByNonIgnoredGroupNumber: {
-                    [key: number]: SortingNode[]
-                  } = {}
-                  let ignoredNodeIndices: number[] = []
-                  for (let [index, sortingNode] of nodes.entries()) {
-                    let groupNum = getGroupNumber(options.groups, sortingNode)
-                    if (groupNum === options.groups.length) {
-                      ignoredNodeIndices.push(index)
-                      continue
-                    }
-                    nodesByNonIgnoredGroupNumber[groupNum] =
-                      nodesByNonIgnoredGroupNumber[groupNum] ?? []
-                    nodesByNonIgnoredGroupNumber[groupNum].push(sortingNode)
-                  }
-
-                  let sortedNodes: SortingNode[] = []
-                  for (let groupNumber of Object.keys(
-                    nodesByNonIgnoredGroupNumber,
-                  ).sort((a, b) => Number(a) - Number(b))) {
-                    sortedNodes.push(
-                      ...sortNodes(
-                        nodesByNonIgnoredGroupNumber[Number(groupNumber)],
-                        options,
-                      ),
-                    )
-                  }
-
-                  // Add ignored nodes at the same position as they were before linting
-                  for (let ignoredIndex of ignoredNodeIndices) {
-                    sortedNodes.splice(ignoredIndex, 0, nodes[ignoredIndex])
-                  }
-
-                  return makeFixes(fixer, nodes, sortedNodes, sourceCode, {
+                fix: (fixer: TSESLint.RuleFixer) =>
+                  makeFixes(fixer, nodes, sortedNodes, sourceCode, {
                     partitionComment: options.partitionByComment,
-                  })
-                },
+                  }),
               })
             }
           })

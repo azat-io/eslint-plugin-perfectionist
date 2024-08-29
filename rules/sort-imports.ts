@@ -619,7 +619,7 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
               !hasContentBetweenNodes(left, right) &&
               (leftNum > rightNum ||
                 (leftNum === rightNum &&
-                  isPositive(compare(left, right, options, true))))
+                  isPositive(compare(left, right, options))))
             ) {
               context.report({
                 messageId: 'unexpectedImportsOrder',

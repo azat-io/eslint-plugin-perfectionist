@@ -101,7 +101,7 @@ export default createEslintRule<Options, MESSAGE_ID>({
 
         for (let nodes of parts) {
           pairwise(nodes, (left, right) => {
-            if (isPositive(compare(left, right, options, true))) {
+            if (isPositive(compare(left, right, options))) {
               context.report({
                 messageId: 'unexpectedExportsOrder',
                 data: {

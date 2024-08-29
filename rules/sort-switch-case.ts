@@ -155,9 +155,9 @@ export default createEslintRule<Options, MESSAGE_ID>({
           } else if (isGroupContainsDefault(rightCaseGroup)) {
             compareValue = false
           } else if (isCaseGrouped) {
-            compareValue = isPositive(compare(leftCaseGroup[0], right, options, true))
+            compareValue = isPositive(compare(leftCaseGroup[0], right, options))
           } else {
-            compareValue = isPositive(compare(left, right, options, true))
+            compareValue = isPositive(compare(left, right, options))
           }
 
           if (compareValue) {
@@ -243,7 +243,7 @@ export default createEslintRule<Options, MESSAGE_ID>({
                     } else if (isGroupContainsDefault(b)) {
                       return -1
                     }
-                    return compare(a.at(0)!, b.at(0)!, options, true)
+                    return compare(a.at(0)!, b.at(0)!, options)
                   })
 
                 let sortedNodes = sortedNodeGroups.flat()
