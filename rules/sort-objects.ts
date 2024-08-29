@@ -416,7 +416,6 @@ export default createEslintRule<Options, MESSAGE_ID>({
             sortedNodes.push(...sortNodes(grouped[group], options))
           }
 
-          // Sort nodes by dependencies
           sortedNodes = sortNodesByDependencies(sortedNodes)
 
           pairwise(nodes, (left, right) => {

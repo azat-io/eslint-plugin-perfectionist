@@ -6,7 +6,7 @@ export interface SortingNodeWithDependencies<
   Node extends TSESTree.Node = TSESTree.Node,
 > extends SortingNode<Node> {
   /**
-   * Custom name used to check if a node is a dependency of another node. If unspecified, defaults to the node's name.
+   * Custom name used to check if a node is a dependency of another node. If unspecified, defaults to the SortingNode's name.
    */
   dependencyName?: string
   dependencies: string[]

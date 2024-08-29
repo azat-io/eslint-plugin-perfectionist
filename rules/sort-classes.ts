@@ -623,7 +623,6 @@ export default createEslintRule<Options, MESSAGE_ID>({
             sortedNodes.splice(ignoredIndex, 0, nodes[ignoredIndex])
           }
 
-          // Sort nodes by dependencies
           sortedNodes = sortNodesByDependencies(sortedNodes)
 
           pairwise(nodes, (left, right) => {

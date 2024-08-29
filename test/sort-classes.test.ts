@@ -2764,7 +2764,23 @@ describe(ruleName, () => {
         `${ruleName}(${type}) separates static from non-static dependencies`,
         rule,
         {
-          valid: [],
+          valid: [
+            {
+              code: dedent`
+              export class Class{
+                b = 1;
+                a = this.b;
+                static b = 1;
+              }
+            `,
+              options: [
+                {
+                  ...options,
+                  groups: ['property'],
+                },
+              ],
+            },
+          ],
           invalid: [
             {
               code: dedent`
