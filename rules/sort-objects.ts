@@ -3,7 +3,7 @@ import type { TSESLint } from '@typescript-eslint/utils'
 
 import { minimatch } from 'minimatch'
 
-import type { SortingNode } from '../typings'
+import type { SortingNodeWithDependencies } from '../utils/sort-nodes-by-dependencies'
 
 import { sortNodesByDependencies } from '../utils/sort-nodes-by-dependencies'
 import { isPartitionComment } from '../utils/is-partition-comment'
@@ -29,9 +29,9 @@ export enum Position {
   'ignore' = 'ignore',
 }
 
-type SortingNodeWithPosition = {
+type SortingNodeWithPosition = SortingNodeWithDependencies & {
   position: Position
-} & SortingNode
+}
 
 type Options = [
   Partial<{
@@ -395,7 +395,7 @@ export default createEslintRule<Options, MESSAGE_ID>({
 
         for (let nodes of formatProperties(node.properties)) {
           let grouped: {
-            [key: string]: SortingNode[]
+            [key: string]: SortingNodeWithDependencies[]
           } = {}
 
           for (let currentNode of nodes) {
@@ -408,7 +408,7 @@ export default createEslintRule<Options, MESSAGE_ID>({
             }
           }
 
-          let sortedNodes: SortingNode[] = []
+          let sortedNodes: SortingNodeWithDependencies[] = []
 
           for (let group of Object.keys(grouped).sort(
             (a, b) => Number(a) - Number(b),

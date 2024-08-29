@@ -1,7 +1,7 @@
 import type { TSESTree } from '@typescript-eslint/types'
 import type { TSESLint } from '@typescript-eslint/utils'
 
-import type { SortingNode } from '../typings'
+import type { SortingNodeWithDependencies } from '../utils/sort-nodes-by-dependencies'
 
 import {
   getOverloadSignatureGroups,
@@ -365,8 +365,8 @@ export default createEslintRule<Options, MESSAGE_ID>({
 
         let overloadSignatureGroups = getOverloadSignatureGroups(node.body)
 
-        let formattedNodes: SortingNode[][] = node.body.reduce(
-          (accumulator: SortingNode[][], member) => {
+        let formattedNodes: SortingNodeWithDependencies[][] = node.body.reduce(
+          (accumulator: SortingNodeWithDependencies[][], member) => {
             let comment = getCommentBefore(member, sourceCode)
 
             if (
@@ -570,7 +570,7 @@ export default createEslintRule<Options, MESSAGE_ID>({
               .find(overloadSignatures => overloadSignatures.includes(member))
               ?.at(-1)
 
-            let value: SortingNode = {
+            let value: SortingNodeWithDependencies = {
               size: overloadSignatureGroupMember
                 ? rangeToDiff(overloadSignatureGroupMember.range)
                 : rangeToDiff(member.range),
@@ -592,7 +592,7 @@ export default createEslintRule<Options, MESSAGE_ID>({
 
         for (let nodes of formattedNodes) {
           let nodesByNonIgnoredGroupNumber: {
-            [key: number]: SortingNode[]
+            [key: number]: SortingNodeWithDependencies[]
           } = {}
           let ignoredNodeIndices: number[] = []
           for (let [index, sortingNode] of nodes.entries()) {
@@ -606,7 +606,7 @@ export default createEslintRule<Options, MESSAGE_ID>({
             nodesByNonIgnoredGroupNumber[groupNum].push(sortingNode)
           }
 
-          let sortedNodes: SortingNode[] = []
+          let sortedNodes: SortingNodeWithDependencies[] = []
           for (let groupNumber of Object.keys(
             nodesByNonIgnoredGroupNumber,
           ).sort((a, b) => Number(a) - Number(b))) {

@@ -1,5 +1,6 @@
 import type { TSESTree } from '@typescript-eslint/types'
 
+import type { SortingNodeWithDependencies } from '../utils/sort-nodes-by-dependencies'
 import type { CompareOptions } from '../utils/compare'
 import type { SortingNode } from '../typings'
 
@@ -170,8 +171,8 @@ export default createEslintRule<Options, MESSAGE_ID>({
           return dependencies
         }
 
-        let formattedMembers: SortingNode[][] = members.reduce(
-          (accumulator: SortingNode[][], member) => {
+        let formattedMembers: SortingNodeWithDependencies[][] = members.reduce(
+          (accumulator: SortingNodeWithDependencies[][], member) => {
             let comment = getCommentBefore(member, sourceCode)
 
             if (
@@ -187,7 +188,7 @@ export default createEslintRule<Options, MESSAGE_ID>({
                 ? `${member.id.value}`
                 : `${sourceCode.text.slice(...member.id.range)}`
 
-            let dependencies
+            let dependencies: string[] = []
             if (member.initializer) {
               dependencies = extractDependencies(
                 member.initializer,
@@ -195,7 +196,7 @@ export default createEslintRule<Options, MESSAGE_ID>({
               )
             }
 
-            let sortingNode: SortingNode = {
+            let sortingNode: SortingNodeWithDependencies = {
               size: rangeToDiff(member.range),
               node: member,
               dependencies,

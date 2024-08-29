@@ -1,5 +1,6 @@
 import type { TSESTree } from '@typescript-eslint/types'
 
+import type { SortingNodeWithDependencies } from '../utils/sort-nodes-by-dependencies'
 import type { SortingNode } from '../typings'
 
 import { sortNodesByDependencies } from '../utils/sort-nodes-by-dependencies'
@@ -126,27 +127,29 @@ export default createEslintRule<Options, MESSAGE_ID>({
           return dependencies
         }
 
-        let nodes = node.declarations.map((declaration): SortingNode => {
-          let name
+        let nodes = node.declarations.map(
+          (declaration): SortingNodeWithDependencies => {
+            let name
 
-          if (
-            declaration.id.type === 'ArrayPattern' ||
-            declaration.id.type === 'ObjectPattern'
-          ) {
-            name = sourceCode.text.slice(...declaration.id.range)
-          } else {
-            ;({ name } = declaration.id)
-          }
+            if (
+              declaration.id.type === 'ArrayPattern' ||
+              declaration.id.type === 'ObjectPattern'
+            ) {
+              name = sourceCode.text.slice(...declaration.id.range)
+            } else {
+              ;({ name } = declaration.id)
+            }
 
-          let dependencies = extractDependencies(declaration.init)
+            let dependencies = extractDependencies(declaration.init)
 
-          return {
-            size: rangeToDiff(declaration.range),
-            node: declaration,
-            dependencies,
-            name,
-          }
-        })
+            return {
+              size: rangeToDiff(declaration.range),
+              node: declaration,
+              dependencies,
+              name,
+            }
+          },
+        )
         let sortedNodes = sortNodesByDependencies(sortNodes(nodes, options))
 
         pairwise(nodes, (left, right) => {

@@ -1,6 +1,14 @@
 import type { SortingNode } from '../typings'
 
-export let sortNodesByDependencies = <T extends SortingNode>(
+export interface SortingNodeWithDependencies extends SortingNode {
+  /**
+   * Custom name used to check if a node is a dependency of another node. If unspecified, defaults to the node's name.
+   */
+  dependencyName?: string
+  dependencies: string[]
+}
+
+export let sortNodesByDependencies = <T extends SortingNodeWithDependencies>(
   nodes: T[],
 ): T[] => {
   let result: T[] = []
@@ -17,7 +25,7 @@ export let sortNodesByDependencies = <T extends SortingNode>(
     }
     inProcessNodes.add(node)
     let dependentNodes = nodes.filter(n =>
-      (node.dependencies ?? []).includes(n.dependencyName ?? n.name),
+      node.dependencies.includes(n.dependencyName ?? n.name),
     )
     for (let dependentNode of dependentNodes) {
       visitNode(dependentNode)
