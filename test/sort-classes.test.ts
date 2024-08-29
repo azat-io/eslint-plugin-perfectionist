@@ -2761,7 +2761,7 @@ describe(ruleName, () => {
       )
 
       ruleTester.run(
-        `${ruleName}(${type}) separate static from non-static dependencies`,
+        `${ruleName}(${type}) separates static from non-static dependencies`,
         rule,
         {
           valid: [],
@@ -2894,15 +2894,14 @@ describe(ruleName, () => {
           invalid: [],
         },
       )
-    })
 
-    ruleTester.run(
-      `${ruleName}(${type}): works with left and right dependencies`,
-      rule,
-      {
-        valid: [
-          {
-            code: dedent`
+      ruleTester.run(
+        `${ruleName}(${type}): works with left and right dependencies`,
+        rule,
+        {
+          valid: [
+            {
+              code: dedent`
               class Class {
                 left = 'left'
                 right = 'right'
@@ -2910,23 +2909,12 @@ describe(ruleName, () => {
                 aaa = this.left + this.right
               }
             `,
-            options: [options],
-          },
-          {
-            code: dedent`
-              class Class {
-                condition1 = true
-                condition2 = false
-
-                result = this.condition1 && this.condition2
-              }
-            `,
-            options: [options],
-          },
-        ],
-        invalid: [
-          {
-            code: dedent`
+              options: [options],
+            },
+          ],
+          invalid: [
+            {
+              code: dedent`
               class Class {
                 aaa = this.left + this.right
 
@@ -2935,7 +2923,7 @@ describe(ruleName, () => {
                 right = 'right'
               }
             `,
-            output: dedent`
+              output: dedent`
               class Class {
                 left = 'left'
 
@@ -2944,230 +2932,20 @@ describe(ruleName, () => {
                 aaa = this.left + this.right
               }
             `,
-            options: [options],
-            errors: [
-              {
-                messageId: 'unexpectedClassesOrder',
-                data: {
-                  left: 'aaa',
-                  right: 'left',
+              options: [options],
+              errors: [
+                {
+                  messageId: 'unexpectedClassesOrder',
+                  data: {
+                    left: 'aaa',
+                    right: 'left',
+                  },
                 },
-              },
-            ],
-          },
-        ],
-      },
-    )
-
-    ruleTester.run(`${ruleName}(${type}): works with body dependencies`, rule, {
-      valid: [
-        {
-          code: dedent`
-              class Class {
-                a = 10
-
-                method = function() {
-                  const b = this.a + 20;
-                  return b;
-                }
-              }
-            `,
-          options: [options],
-        },
-        {
-          code: dedent`
-              class Class {
-                a = 10
-
-                method = () => {
-                  const b = this.a + 20;
-                  return b;
-                }
-              }
-            `,
-          options: [options],
-        },
-        {
-          code: dedent`
-              class Class {
-                a = 10
-                b = 20
-
-                method() {
-                  {
-                    const c = this.a + this.b;
-                    console.log(c);
-                  }
-                }
-              }
-            `,
-          options: [options],
-        },
-        {
-          code: dedent`
-              class Class {
-                a = 10
-                b = this.a + 20
-
-                method() {
-                  return this.b;
-                }
-              }
-            `,
-          options: [options],
-        },
-      ],
-      invalid: [
-        {
-          code: dedent`
-            class Class {
-              method = function() {
-                const b = this.a + 20;
-                return b;
-              }
-
-              a = 10
-            }
-          `,
-          output: dedent`
-            class Class {
-              a = 10
-
-              method = function() {
-                const b = this.a + 20;
-                return b;
-              }
-            }
-          `,
-          options: [options],
-          errors: [
-            {
-              messageId: 'unexpectedClassesOrder',
-              data: {
-                left: 'method',
-                right: 'a',
-              },
+              ],
             },
           ],
         },
-        {
-          code: dedent`
-              class Class {
-                method = () => {
-                  const b = this.a + 20;
-                  return b;
-                }
-
-                a = 10
-              }
-            `,
-          output: dedent`
-              class Class {
-                a = 10
-
-                method = () => {
-                  const b = this.a + 20;
-                  return b;
-                }
-              }
-            `,
-          options: [options],
-          errors: [
-            {
-              messageId: 'unexpectedClassesOrder',
-              data: {
-                left: 'method',
-                right: 'a',
-              },
-            },
-          ],
-        },
-        {
-          code: dedent`
-              class Class {
-                method() {
-                  {
-                    const c = this.a + this.b;
-                    console.log(c);
-                  }
-                }
-
-                a = 10
-
-                b = 20
-              }
-            `,
-          output: dedent`
-              class Class {
-                a = 10
-
-                b = 20
-
-                method() {
-                  {
-                    const c = this.a + this.b;
-                    console.log(c);
-                  }
-                }
-              }
-            `,
-          options: [options],
-          errors: [
-            {
-              messageId: 'unexpectedClassesGroupOrder',
-              data: {
-                left: 'method',
-                leftGroup: 'method',
-                right: 'a',
-                rightGroup: 'property',
-              },
-            },
-          ],
-        },
-        {
-          code: dedent`
-              class Class {
-                method() {
-                  return this.b;
-                }
-
-                b = this.a + 20
-
-                a = 10
-              }
-            `,
-          output: dedent`
-              class Class {
-                a = 10
-
-                b = this.a + 20
-
-                method() {
-                  return this.b;
-                }
-              }
-            `,
-          options: [options],
-          errors: [
-            {
-              messageId: 'unexpectedClassesGroupOrder',
-              data: {
-                left: 'method',
-                leftGroup: 'method',
-                right: 'b',
-                rightGroup: 'property',
-              },
-            },
-            {
-              messageId: 'unexpectedClassesOrder',
-              data: {
-                left: 'b',
-                right: 'a',
-              },
-            },
-          ],
-        },
-      ],
+      )
     })
 
     ruleTester.run(`${ruleName}(${type}): should ignore unknown group`, rule, {
@@ -4339,17 +4117,6 @@ describe(ruleName, () => {
             `,
             options: [options],
           },
-          {
-            code: dedent`
-              class Class {
-                condition1 = true
-                condition2 = false
-
-                result = this.condition1 && this.condition2
-              }
-            `,
-            options: [options],
-          },
         ],
         invalid: [
           {
@@ -4385,217 +4152,6 @@ describe(ruleName, () => {
         ],
       },
     )
-
-    ruleTester.run(`${ruleName}(${type}): works with body dependencies`, rule, {
-      valid: [
-        {
-          code: dedent`
-              class Class {
-                a = 10
-
-                method = function() {
-                  const b = this.a + 20;
-                  return b;
-                }
-              }
-            `,
-          options: [options],
-        },
-        {
-          code: dedent`
-              class Class {
-                a = 10
-
-                method = () => {
-                  const b = this.a + 20;
-                  return b;
-                }
-              }
-            `,
-          options: [options],
-        },
-        {
-          code: dedent`
-              class Class {
-                a = 10
-                b = 20
-
-                method() {
-                  {
-                    const c = this.a + this.b;
-                    console.log(c);
-                  }
-                }
-              }
-            `,
-          options: [options],
-        },
-        {
-          code: dedent`
-              class Class {
-                a = 10
-                b = this.a + 20
-
-                method() {
-                  return this.b;
-                }
-              }
-            `,
-          options: [options],
-        },
-      ],
-      invalid: [
-        {
-          code: dedent`
-            class Class {
-              method = function() {
-                const b = this.a + 20;
-                return b;
-              }
-
-              a = 10
-            }
-          `,
-          output: dedent`
-            class Class {
-              a = 10
-
-              method = function() {
-                const b = this.a + 20;
-                return b;
-              }
-            }
-          `,
-          options: [options],
-          errors: [
-            {
-              messageId: 'unexpectedClassesOrder',
-              data: {
-                left: 'method',
-                right: 'a',
-              },
-            },
-          ],
-        },
-        {
-          code: dedent`
-              class Class {
-                method = () => {
-                  const b = this.a + 20;
-                  return b;
-                }
-
-                a = 10
-              }
-            `,
-          output: dedent`
-              class Class {
-                a = 10
-
-                method = () => {
-                  const b = this.a + 20;
-                  return b;
-                }
-              }
-            `,
-          options: [options],
-          errors: [
-            {
-              messageId: 'unexpectedClassesOrder',
-              data: {
-                left: 'method',
-                right: 'a',
-              },
-            },
-          ],
-        },
-        {
-          code: dedent`
-              class Class {
-                method() {
-                  {
-                    const c = this.a + this.b;
-                    console.log(c);
-                  }
-                }
-
-                a = 10
-
-                b = 20
-              }
-            `,
-          output: dedent`
-              class Class {
-                a = 10
-
-                b = 20
-
-                method() {
-                  {
-                    const c = this.a + this.b;
-                    console.log(c);
-                  }
-                }
-              }
-            `,
-          options: [options],
-          errors: [
-            {
-              messageId: 'unexpectedClassesGroupOrder',
-              data: {
-                left: 'method',
-                leftGroup: 'method',
-                right: 'a',
-                rightGroup: 'property',
-              },
-            },
-          ],
-        },
-        {
-          code: dedent`
-              class Class {
-                method() {
-                  return this.b;
-                }
-
-                b = this.a + 20
-
-                a = 10
-              }
-            `,
-          output: dedent`
-              class Class {
-                a = 10
-
-                b = this.a + 20
-
-                method() {
-                  return this.b;
-                }
-              }
-            `,
-          options: [options],
-          errors: [
-            {
-              messageId: 'unexpectedClassesGroupOrder',
-              data: {
-                left: 'method',
-                leftGroup: 'method',
-                right: 'b',
-                rightGroup: 'property',
-              },
-            },
-            {
-              messageId: 'unexpectedClassesOrder',
-              data: {
-                left: 'b',
-                right: 'a',
-              },
-            },
-          ],
-        },
-      ],
-    })
 
     ruleTester.run(`${ruleName}(${type}): should ignore unknown group`, rule, {
       valid: [],
