@@ -5,6 +5,7 @@ import { minimatch } from 'minimatch'
 
 import type { SortingNode } from '../typings'
 
+import { sortNodesByDependencies } from '../utils/sort-nodes-by-dependencies'
 import { isPartitionComment } from '../utils/is-partition-comment'
 import { getCommentBefore } from '../utils/get-comment-before'
 import { createEslintRule } from '../utils/create-eslint-rule'
@@ -414,6 +415,9 @@ export default createEslintRule<Options, MESSAGE_ID>({
           )) {
             sortedNodes.push(...sortNodes(grouped[group], options))
           }
+
+          // Sort nodes by dependencies
+          sortedNodes = sortNodesByDependencies(sortedNodes)
 
           pairwise(nodes, (left, right) => {
             let indexOfLeft = sortedNodes.indexOf(left)

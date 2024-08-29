@@ -1,6 +1,8 @@
 import type { SortingNode } from '../typings'
 
-export let compareDependencies = <T extends SortingNode>(nodes: T[]): T[] => {
+export let sortNodesByDependencies = <T extends SortingNode>(
+  nodes: T[],
+): T[] => {
   let result: T[] = []
   let visitedNodes = new Set<SortingNode>()
   let inProcessNodes = new Set<SortingNode>()

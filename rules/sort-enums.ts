@@ -3,6 +3,7 @@ import type { TSESTree } from '@typescript-eslint/types'
 import type { CompareOptions } from '../utils/compare'
 import type { SortingNode } from '../typings'
 
+import { sortNodesByDependencies } from '../utils/sort-nodes-by-dependencies'
 import { isPartitionComment } from '../utils/is-partition-comment'
 import { createEslintRule } from '../utils/create-eslint-rule'
 import { getCommentBefore } from '../utils/get-comment-before'
@@ -234,7 +235,9 @@ export default createEslintRule<Options, MESSAGE_ID>({
               : undefined,
         }
         for (let nodes of formattedMembers) {
-          let sortedNodes = sortNodes(nodes, compareOptions)
+          let sortedNodes = sortNodesByDependencies(
+            sortNodes(nodes, compareOptions),
+          )
           pairwise(nodes, (left, right) => {
             let indexOfLeft = sortedNodes.indexOf(left)
             let indexOfRight = sortedNodes.indexOf(right)

@@ -7,6 +7,7 @@ import {
   getOverloadSignatureGroups,
   generateOfficialGroups,
 } from './sort-classes-utils'
+import { sortNodesByDependencies } from '../utils/sort-nodes-by-dependencies'
 import { isPartitionComment } from '../utils/is-partition-comment'
 import { getCommentBefore } from '../utils/get-comment-before'
 import { createEslintRule } from '../utils/create-eslint-rule'
@@ -621,6 +622,9 @@ export default createEslintRule<Options, MESSAGE_ID>({
           for (let ignoredIndex of ignoredNodeIndices) {
             sortedNodes.splice(ignoredIndex, 0, nodes[ignoredIndex])
           }
+
+          // Sort nodes by dependencies
+          sortedNodes = sortNodesByDependencies(sortedNodes)
 
           pairwise(nodes, (left, right) => {
             let leftNum = getGroupNumber(options.groups, left)

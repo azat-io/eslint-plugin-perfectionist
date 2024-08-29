@@ -2,6 +2,7 @@ import type { TSESTree } from '@typescript-eslint/types'
 
 import type { SortingNode } from '../typings'
 
+import { sortNodesByDependencies } from '../utils/sort-nodes-by-dependencies'
 import { createEslintRule } from '../utils/create-eslint-rule'
 import { getSourceCode } from '../utils/get-source-code'
 import { toSingleLine } from '../utils/to-single-line'
@@ -146,9 +147,9 @@ export default createEslintRule<Options, MESSAGE_ID>({
             name,
           }
         })
+        let sortedNodes = sortNodesByDependencies(sortNodes(nodes, options))
 
         pairwise(nodes, (left, right) => {
-          let sortedNodes = sortNodes(nodes, options)
           let indexOfLeft = sortedNodes.indexOf(left)
           let indexOfRight = sortedNodes.indexOf(right)
           if (indexOfLeft > indexOfRight) {
