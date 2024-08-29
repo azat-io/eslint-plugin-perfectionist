@@ -1,6 +1,10 @@
+import type { TSESTree } from '@typescript-eslint/types'
+
 import type { SortingNode } from '../typings'
 
-export interface SortingNodeWithDependencies extends SortingNode {
+export interface SortingNodeWithDependencies<
+  Node extends TSESTree.Node = TSESTree.Node,
+> extends SortingNode<Node> {
   /**
    * Custom name used to check if a node is a dependency of another node. If unspecified, defaults to the node's name.
    */
@@ -8,6 +12,9 @@ export interface SortingNodeWithDependencies extends SortingNode {
   dependencies: string[]
 }
 
+/**
+ * Returns nodes topologically sorted by their dependencies
+ */
 export let sortNodesByDependencies = <T extends SortingNodeWithDependencies>(
   nodes: T[],
 ): T[] => {
