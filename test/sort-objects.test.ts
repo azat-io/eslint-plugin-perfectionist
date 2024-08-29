@@ -681,6 +681,89 @@ describe(ruleName, () => {
               },
             ],
           },
+          {
+            code: dedent`
+              let Func = ({
+                  a = c,
+                  b = 10,
+                  c = 10,
+                  }) => {
+                // ...
+              }
+            `,
+            output: dedent`
+              let Func = ({
+                  c = 10,
+                  a = c,
+                  b = 10,
+                  }) => {
+                // ...
+              }
+            `,
+            options: [options],
+            errors: [
+              {
+                messageId: 'unexpectedObjectsOrder',
+                data: {
+                  left: 'b',
+                  right: 'c',
+                },
+              },
+            ],
+          },
+        ],
+      },
+    )
+
+    ruleTester.run(
+      `${ruleName}(${type}): detects circular dependencies`,
+      rule,
+      {
+        valid: [],
+        invalid: [
+          {
+            code: dedent`
+              let Func = ({
+                a,
+                b = f + 1,
+                c,
+                d = b + 1,
+                e,
+                f = d + 1
+              }) => {
+                // ...
+              }
+            `,
+            output: dedent`
+              let Func = ({
+                a,
+                d = b + 1,
+                f = d + 1,
+                b = f + 1,
+                c,
+                e
+              }) => {
+                // ...
+              }
+            `,
+            options: [options],
+            errors: [
+              {
+                messageId: 'unexpectedObjectsOrder',
+                data: {
+                  left: 'c',
+                  right: 'd',
+                },
+              },
+              {
+                messageId: 'unexpectedObjectsOrder',
+                data: {
+                  left: 'e',
+                  right: 'f',
+                },
+              },
+            ],
+          },
         ],
       },
     )

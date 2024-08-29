@@ -257,6 +257,25 @@ describe(ruleName, () => {
               },
             ],
           },
+          {
+            code: dedent`
+              const a = c,
+                    b = 10,
+                    c = 10;
+            `,
+            output: dedent`
+              const c = 10,
+                    a = c,
+                    b = 10;
+            `,
+            options: [options],
+            errors: [
+              {
+                messageId: 'unexpectedVariableDeclarationsOrder',
+                data: { left: 'b', right: 'c' },
+              },
+            ],
+          },
         ],
       },
     )

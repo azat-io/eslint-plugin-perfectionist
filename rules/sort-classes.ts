@@ -124,7 +124,7 @@ type Group =
   | 'unknown'
   | string
 
-export type Options = [
+type Options = [
   Partial<{
     customGroups: { [key: string]: string[] | string }
     type: 'alphabetical' | 'line-length' | 'natural'
@@ -590,41 +590,37 @@ export default createEslintRule<Options, MESSAGE_ID>({
         )
 
         for (let nodes of formattedNodes) {
-          let getSortedNodes = () => {
-            let nodesByNonIgnoredGroupNumber: {
-              [key: number]: SortingNode[]
-            } = {}
-            let ignoredNodeIndices: number[] = []
-            for (let [index, sortingNode] of nodes.entries()) {
-              let groupNum = getGroupNumber(options.groups, sortingNode)
-              if (groupNum === options.groups.length) {
-                ignoredNodeIndices.push(index)
-                continue
-              }
-              nodesByNonIgnoredGroupNumber[groupNum] =
-                nodesByNonIgnoredGroupNumber[groupNum] ?? []
-              nodesByNonIgnoredGroupNumber[groupNum].push(sortingNode)
+          let nodesByNonIgnoredGroupNumber: {
+            [key: number]: SortingNode[]
+          } = {}
+          let ignoredNodeIndices: number[] = []
+          for (let [index, sortingNode] of nodes.entries()) {
+            let groupNum = getGroupNumber(options.groups, sortingNode)
+            if (groupNum === options.groups.length) {
+              ignoredNodeIndices.push(index)
+              continue
             }
-
-            let sortedNodes: SortingNode[] = []
-            for (let groupNumber of Object.keys(
-              nodesByNonIgnoredGroupNumber,
-            ).sort((a, b) => Number(a) - Number(b))) {
-              sortedNodes.push(
-                ...sortNodes(
-                  nodesByNonIgnoredGroupNumber[Number(groupNumber)],
-                  options,
-                ),
-              )
-            }
-
-            // Add ignored nodes at the same position as they were before linting
-            for (let ignoredIndex of ignoredNodeIndices) {
-              sortedNodes.splice(ignoredIndex, 0, nodes[ignoredIndex])
-            }
-            return sortedNodes
+            nodesByNonIgnoredGroupNumber[groupNum] =
+              nodesByNonIgnoredGroupNumber[groupNum] ?? []
+            nodesByNonIgnoredGroupNumber[groupNum].push(sortingNode)
           }
-          let sortedNodes = getSortedNodes()
+
+          let sortedNodes: SortingNode[] = []
+          for (let groupNumber of Object.keys(
+            nodesByNonIgnoredGroupNumber,
+          ).sort((a, b) => Number(a) - Number(b))) {
+            sortedNodes.push(
+              ...sortNodes(
+                nodesByNonIgnoredGroupNumber[Number(groupNumber)],
+                options,
+              ),
+            )
+          }
+
+          // Add ignored nodes at the same position as they were before linting
+          for (let ignoredIndex of ignoredNodeIndices) {
+            sortedNodes.splice(ignoredIndex, 0, nodes[ignoredIndex])
+          }
 
           pairwise(nodes, (left, right) => {
             let leftNum = getGroupNumber(options.groups, left)
