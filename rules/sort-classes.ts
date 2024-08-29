@@ -284,7 +284,7 @@ export default createEslintRule<Options, MESSAGE_ID>({
 
         let extractDependencies = (
           expression: TSESTree.StaticBlock | TSESTree.Expression,
-          isThisExpressionStatic: boolean,
+          isMemberStatic: boolean,
         ): string[] => {
           let dependencies: string[] = []
 
@@ -297,7 +297,7 @@ export default createEslintRule<Options, MESSAGE_ID>({
               nodeValue.property.type === 'Identifier'
             ) {
               let isStaticDependency =
-                isThisExpressionStatic || nodeValue.object.type === 'Identifier'
+                isMemberStatic || nodeValue.object.type === 'Identifier'
               dependencies.push(
                 `${isStaticDependency ? 'static ' : ''}${nodeValue.property.name}`,
               )
