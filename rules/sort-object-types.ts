@@ -263,7 +263,7 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
             } else if (leftNum > rightNum) {
               compareValue = true
             } else if (leftNum === rightNum) {
-              compareValue = isPositive(compare(left, right, options))
+              compareValue = isPositive(compare(left, right, options, true))
             } else {
               compareValue = false
             }

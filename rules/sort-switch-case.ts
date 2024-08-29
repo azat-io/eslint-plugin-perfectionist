@@ -157,7 +157,7 @@ export default createEslintRule<Options, MESSAGE_ID>({
           } else if (isCaseGrouped) {
             compareValue = isPositive(compare(leftCaseGroup[0], right, options))
           } else {
-            compareValue = isPositive(compare(left, right, options))
+            compareValue = isPositive(compare(left, right, options, true))
           }
 
           if (compareValue) {

@@ -191,7 +191,8 @@ export default createEslintRule<Options, MESSAGE_ID>({
 
         if (
           leftNum > rightNum ||
-          (leftNum === rightNum && isPositive(compare(left, right, options)))
+          (leftNum === rightNum &&
+            isPositive(compare(left, right, options, true)))
         ) {
           context.report({
             messageId: 'unexpectedIntersectionTypesOrder',

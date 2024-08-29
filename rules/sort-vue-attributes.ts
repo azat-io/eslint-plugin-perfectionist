@@ -202,7 +202,7 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
               if (
                 leftNum > rightNum ||
                 (leftNum === rightNum &&
-                  isPositive(compare(left, right, options)))
+                  isPositive(compare(left, right, options, true)))
               ) {
                 context.report({
                   messageId: 'unexpectedVueAttributesOrder',

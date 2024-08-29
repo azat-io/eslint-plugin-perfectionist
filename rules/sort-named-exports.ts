@@ -115,7 +115,7 @@ export default createEslintRule<Options, MESSAGE_ID>({
           if (
             (shouldGroupByKind && leftNum > rightNum) ||
             ((!shouldGroupByKind || leftNum === rightNum) &&
-              isPositive(compare(left, right, options)))
+              isPositive(compare(left, right, options, true)))
           ) {
             let sortedNodes = shouldGroupByKind
               ? groupKindOrder

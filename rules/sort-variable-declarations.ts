@@ -150,7 +150,7 @@ export default createEslintRule<Options, MESSAGE_ID>({
         })
 
         pairwise(nodes, (left, right) => {
-          if (isPositive(compare(left, right, options))) {
+          if (isPositive(compare(left, right, options, true))) {
             context.report({
               messageId: 'unexpectedVariableDeclarationsOrder',
               data: {

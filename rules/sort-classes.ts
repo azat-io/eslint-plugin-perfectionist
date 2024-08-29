@@ -605,7 +605,7 @@ export default createEslintRule<Options, MESSAGE_ID>({
               !isLeftOrRightIgnored &&
               (leftNum > rightNum ||
                 (leftNum === rightNum &&
-                  isPositive(compare(left, right, options))))
+                  isPositive(compare(left, right, options, true))))
             ) {
               context.report({
                 messageId:

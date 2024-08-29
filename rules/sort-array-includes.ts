@@ -146,7 +146,7 @@ export default createEslintRule<Options, MESSAGE_ID>({
             if (
               (options.groupKind !== 'mixed' && leftNum > rightNum) ||
               ((options.groupKind === 'mixed' || leftNum === rightNum) &&
-                isPositive(compare(left, right, options)))
+                isPositive(compare(left, right, options, true)))
             ) {
               context.report({
                 messageId: 'unexpectedArrayIncludesOrder',
