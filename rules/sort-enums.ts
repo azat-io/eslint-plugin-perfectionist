@@ -237,7 +237,7 @@ export default createEslintRule<Options, MESSAGE_ID>({
         }
         for (let nodes of formattedMembers) {
           pairwise(nodes, (left, right) => {
-            if (isPositive(compare(left, right, compareOptions))) {
+            if (isPositive(compare(left, right, compareOptions, true))) {
               context.report({
                 messageId: 'unexpectedEnumsOrder',
                 data: {
