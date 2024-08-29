@@ -601,9 +601,6 @@ export default createEslintRule<Options, MESSAGE_ID>({
               leftNum === options.groups.length ||
               rightNum === options.groups.length
 
-            // todo remove
-            let aaa = isPositive(compare(left, right, options))
-
             if (
               !isLeftOrRightIgnored &&
               (leftNum > rightNum ||
