@@ -35,9 +35,9 @@ export let compare = (
   b: SortingNode,
   options: CompareOptions,
 ): number => {
-  if (b.dependencies?.includes(a.name)) {
+  if (b.dependencies?.includes(a.dependencyName ?? a.name)) {
     return -1
-  } else if (a.dependencies?.includes(b.name)) {
+  } else if (a.dependencies?.includes(b.dependencyName ?? b.name)) {
     return 1
   }
 

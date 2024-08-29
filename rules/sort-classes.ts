@@ -284,6 +284,7 @@ export default createEslintRule<Options, MESSAGE_ID>({
 
         let extractDependencies = (
           expression: TSESTree.StaticBlock | TSESTree.Expression,
+          isThisExpressionStatic: boolean,
         ): string[] => {
           let dependencies: string[] = []
 
@@ -295,7 +296,11 @@ export default createEslintRule<Options, MESSAGE_ID>({
                   nodeValue.object.name === className)) &&
               nodeValue.property.type === 'Identifier'
             ) {
-              dependencies.push(nodeValue.property.name)
+              let isStaticDependency =
+                isThisExpressionStatic || nodeValue.object.type === 'Identifier'
+              dependencies.push(
+                `${isStaticDependency ? 'static ' : ''}${nodeValue.property.name}`,
+              )
             }
 
             if (nodeValue.type === 'ExpressionStatement') {
@@ -448,7 +453,7 @@ export default createEslintRule<Options, MESSAGE_ID>({
             } else if (member.type === 'StaticBlock') {
               selectors.push('static-block')
 
-              dependencies = extractDependencies(member)
+              dependencies = extractDependencies(member, true)
             } else if (
               member.type === 'AccessorProperty' ||
               member.type === 'TSAbstractAccessorProperty'
@@ -532,7 +537,7 @@ export default createEslintRule<Options, MESSAGE_ID>({
                 member.value &&
                 !isFunctionProperty
               ) {
-                dependencies = extractDependencies(member.value)
+                dependencies = extractDependencies(member.value, member.static)
               }
             }
 
@@ -560,6 +565,9 @@ export default createEslintRule<Options, MESSAGE_ID>({
               node: member,
               dependencies,
               name,
+              dependencyName: modifiers.includes('static')
+                ? `static ${name}`
+                : name,
             }
 
             accumulator.at(-1)!.push(value)
