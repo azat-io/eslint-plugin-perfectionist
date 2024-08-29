@@ -403,10 +403,7 @@ export default createEslintRule<Options, MESSAGE_ID>({
             if (!(groupNum in grouped)) {
               grouped[groupNum] = [currentNode]
             } else {
-              grouped[groupNum] = sortNodes(
-                [...grouped[groupNum], currentNode],
-                options,
-              )
+              grouped[groupNum].push(currentNode)
             }
           }
 

@@ -627,11 +627,17 @@ export default createEslintRule<Options, MESSAGE_ID>({
           let sortedNodes = getSortedNodes()
 
           pairwise(nodes, (left, right) => {
+            let leftNum = getGroupNumber(options.groups, left)
+            let rightNum = getGroupNumber(options.groups, right)
+            // Ignore nodes belonging to `unknown` group when that group is not referenced in the
+            // `groups` option.
+            let isLeftOrRightIgnored =
+              leftNum === options.groups.length ||
+              rightNum === options.groups.length
+
             let indexOfLeft = sortedNodes.indexOf(left)
             let indexOfRight = sortedNodes.indexOf(right)
-            if (indexOfLeft > indexOfRight) {
-              let leftNum = getGroupNumber(options.groups, left)
-              let rightNum = getGroupNumber(options.groups, right)
+            if (!isLeftOrRightIgnored && indexOfLeft > indexOfRight) {
               context.report({
                 messageId:
                   leftNum !== rightNum

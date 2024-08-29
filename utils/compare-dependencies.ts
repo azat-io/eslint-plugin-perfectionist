@@ -14,13 +14,11 @@ export let compareDependencies = <T extends SortingNode>(nodes: T[]): T[] => {
       return
     }
     inProcessNodes.add(node)
-    for (let dependency of node.dependencies ?? []) {
-      let dependentNode = nodes.find(
-        n => (n.dependencyName ?? n.name) === dependency,
-      )
-      if (dependentNode) {
-        visitNode(dependentNode)
-      }
+    let dependentNodes = nodes.filter(n =>
+      (node.dependencies ?? []).includes(n.dependencyName ?? n.name),
+    )
+    for (let dependentNode of dependentNodes) {
+      visitNode(dependentNode)
     }
     visitedNodes.add(node)
     inProcessNodes.delete(node)
