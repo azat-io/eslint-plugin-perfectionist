@@ -2667,35 +2667,35 @@ describe(ruleName, () => {
           invalid: [
             {
               code: dedent`
-            class Class {
-              static e = 10 + this.c
+                class Class {
+                  static e = 10 + this.c
 
-              d = this.b
+                  d = this.b
 
-              static a = 10 + OtherClass.z
+                  static a = 10 + OtherClass.z
 
-              b = 10 + Class.z
+                  b = 10 + Class.z
 
-              static c = 10 + this.z
+                  static c = 10 + this.z
 
-              static z = 1
-            }
-          `,
+                  static z = 1
+                }
+              `,
               output: dedent`
-            class Class {
-              static a = 10 + OtherClass.z
+                class Class {
+                  static a = 10 + OtherClass.z
 
-              static z = 1
+                  static z = 1
 
-              b = 10 + Class.z
+                  b = 10 + Class.z
 
-              static c = 10 + this.z
+                  static c = 10 + this.z
 
-              d = this.b
+                  d = this.b
 
-              static e = 10 + this.c
-            }
-          `,
+                  static e = 10 + this.c
+                }
+              `,
               options: [
                 {
                   ...options,
@@ -2722,6 +2722,78 @@ describe(ruleName, () => {
                   data: {
                     left: 'c',
                     right: 'z',
+                  },
+                },
+              ],
+            },
+            {
+              code: dedent`
+                class Class {
+                  a = this.c
+                  b = 10
+                  c = 10
+                }
+              `,
+              output: dedent`
+                class Class {
+                  c = 10
+                  a = this.c
+                  b = 10
+                }
+              `,
+              options: [
+                {
+                  ...options,
+                },
+              ],
+              errors: [
+                {
+                  messageId: 'unexpectedClassesOrder',
+                  data: {
+                    left: 'b',
+                    right: 'c',
+                  },
+                },
+              ],
+            },
+            {
+              code: dedent`
+                class Class {
+                  static a = Class.c
+                  b = this.c
+                  static b = this.c
+                  c = 10
+                  static c = 10
+                }
+              `,
+              output: dedent`
+                class Class {
+                  static c = 10
+                  static a = Class.c
+                  c = 10
+                  b = this.c
+                  static b = this.c
+                }
+              `,
+              options: [
+                {
+                  ...options,
+                  groups: ['property'],
+                },
+              ],
+              errors: [
+                {
+                  messageId: 'unexpectedClassesOrder',
+                  data: {
+                    left: 'b',
+                    right: 'c',
+                  },
+                },
+                {
+                  messageId: 'unexpectedClassesOrder',
+                  data: {
+                    left: 'c',
+                    right: 'c',
                   },
                 },
               ],
