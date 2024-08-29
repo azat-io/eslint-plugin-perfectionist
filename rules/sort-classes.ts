@@ -289,6 +289,16 @@ export default createEslintRule<Options, MESSAGE_ID>({
           let dependencies: string[] = []
 
           let checkNode = (nodeValue: TSESTree.Node) => {
+            /**
+             * Function expressions do not require their dependencies to be before them
+             */
+            if (
+              nodeValue.type === 'ArrowFunctionExpression' ||
+              nodeValue.type === 'FunctionExpression'
+            ) {
+              return
+            }
+
             if (
               nodeValue.type === 'MemberExpression' &&
               (nodeValue.object.type === 'ThisExpression' ||
@@ -327,6 +337,10 @@ export default createEslintRule<Options, MESSAGE_ID>({
               nodeValue.elements
                 .filter(currentNode => currentNode !== null)
                 .forEach(traverseNode)
+            }
+
+            if ('argument' in nodeValue && nodeValue.argument) {
+              traverseNode(nodeValue.argument)
             }
 
             if ('arguments' in nodeValue) {
@@ -586,6 +600,9 @@ export default createEslintRule<Options, MESSAGE_ID>({
             let isLeftOrRightIgnored =
               leftNum === options.groups.length ||
               rightNum === options.groups.length
+
+            // todo remove
+            let aaa = isPositive(compare(left, right, options))
 
             if (
               !isLeftOrRightIgnored &&

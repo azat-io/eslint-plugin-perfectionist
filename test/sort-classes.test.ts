@@ -493,7 +493,7 @@ describe(ruleName, () => {
       },
     )
 
-    describe('index-signature modifiers priority', () => {
+    describe(`${ruleName}(${type}): index-signature modifiers priority`, () => {
       ruleTester.run(
         `${ruleName}(${type}): prioritize static over readonly`,
         rule,
@@ -544,7 +544,7 @@ describe(ruleName, () => {
       )
     })
 
-    describe('method selectors priority', () => {
+    describe(`${ruleName}(${type}): method selectors priority`, () => {
       ruleTester.run(
         `${ruleName}(${type}): prioritize constructor over method`,
         rule,
@@ -681,7 +681,7 @@ describe(ruleName, () => {
       )
     })
 
-    describe('method modifiers priority', () => {
+    describe(`${ruleName}(${type}): method modifiers priority`, () => {
       ruleTester.run(
         `${ruleName}(${type}): prioritize static over override`,
         rule,
@@ -920,7 +920,7 @@ describe(ruleName, () => {
       }
     })
 
-    describe('accessor modifiers priority', () => {
+    describe(`${ruleName}(${type}): accessor modifiers priority`, () => {
       ruleTester.run(
         `${ruleName}(${type}): prioritize static over override`,
         rule,
@@ -1122,7 +1122,7 @@ describe(ruleName, () => {
       }
     })
 
-    describe('property selectors priority', () => {
+    describe(`${ruleName}(${type}): property selectors priority`, () => {
       ruleTester.run(
         `${ruleName}(${type}): prioritize function property over property`,
         rule,
@@ -1214,7 +1214,7 @@ describe(ruleName, () => {
       )
     })
 
-    describe('property modifiers priority', () => {
+    describe(`${ruleName}(${type}): property modifiers priority`, () => {
       ruleTester.run(
         `${ruleName}(${type}): prioritize static over declare`,
         rule,
@@ -2588,6 +2588,179 @@ describe(ruleName, () => {
         ],
       },
     )
+
+    describe(`${ruleName}(${type}): detects dependencies`, () => {
+      ruleTester.run(
+        `${ruleName}(${type}) detects static block dependencies`,
+        rule,
+        {
+          valid: [
+            {
+              /**
+               * It should not detect that the static block depends on `z` because `z` is used in a function body, so it is not required
+               * at initialization time.
+               */
+              code: dedent`
+                class Class {
+                  static {
+                    const method = () => {
+                      return (Class.z || true) && (false || this.z);
+                    };
+                    method();
+                  }
+                  static z = true;
+                }
+              `,
+              options: [
+                {
+                  ...options,
+                  groups: [['static-block', 'static-property']],
+                },
+              ],
+            },
+            {
+              code: dedent`
+                class Class {
+                  static z = true;
+                  static {
+                    const method = () => {
+                      return (Class.z || true) && (false || this.z);
+                    };
+                    method();
+                    return (Class.z || true) && (false || this.z);
+                  }
+                }
+              `,
+              options: [
+                {
+                  ...options,
+                  groups: [['static-block', 'static-property']],
+                },
+              ],
+            },
+            {
+              code: dedent`
+                class Class {
+                  static {
+                    return true || OtherClass.z;
+                  }
+                  static z = true;
+                }
+              `,
+              options: [
+                {
+                  ...options,
+                  groups: [['static-block', 'static-property']],
+                },
+              ],
+            },
+          ],
+          invalid: [],
+        },
+      )
+
+      ruleTester.run(
+        `${ruleName}(${type}) detects property expression dependencies`,
+        rule,
+        {
+          valid: [],
+          invalid: [
+            {
+              code: dedent`
+            class Class {
+              static e = 10 + this.c
+
+              d = this.b
+
+              static a = 10 + OtherClass.z
+
+              b = 10 + Class.z
+
+              static c = 10 + this.z
+
+              static z = 1
+            }
+          `,
+              output: dedent`
+            class Class {
+              static a = 10 + OtherClass.z
+
+              static z = 1
+
+              b = 10 + Class.z
+
+              static c = 10 + this.z
+
+              d = this.b
+
+              static e = 10 + this.c
+            }
+          `,
+              options: [
+                {
+                  ...options,
+                  groups: ['property'],
+                },
+              ],
+              errors: [
+                {
+                  messageId: 'unexpectedClassesOrder',
+                  data: {
+                    left: 'e',
+                    right: 'd',
+                  },
+                },
+                {
+                  messageId: 'unexpectedClassesOrder',
+                  data: {
+                    left: 'd',
+                    right: 'a',
+                  },
+                },
+                {
+                  messageId: 'unexpectedClassesOrder',
+                  data: {
+                    left: 'c',
+                    right: 'z',
+                  },
+                },
+              ],
+            },
+          ],
+        },
+      )
+
+      ruleTester.run(
+        `${ruleName}(${type}) ignores function body dependencies`,
+        rule,
+        {
+          valid: [
+            {
+              code: dedent`
+                class Class {
+                  static a = true;
+
+                  static b() {
+                     return this.a || Class.a
+                  }
+
+                  static c = () => {
+                     return this.a || Class.a
+                  }
+                }
+              `,
+              options: [
+                {
+                  ...options,
+                  groups: [['method', 'property']],
+                },
+              ],
+            },
+          ],
+          invalid: [],
+        },
+      )
+    })
 
     ruleTester.run(
       `${ruleName}(${type}): works with left and right dependencies`,
