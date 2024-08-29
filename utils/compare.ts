@@ -34,16 +34,7 @@ export let compare = (
   a: SortingNode,
   b: SortingNode,
   options: CompareOptions,
-  compareDependencies: boolean = true,
 ): number => {
-  if (compareDependencies) {
-    if (b.dependencies?.includes(a.dependencyName ?? a.name)) {
-      return -1
-    } else if (a.dependencies?.includes(b.dependencyName ?? b.name)) {
-      return 1
-    }
-  }
-
   let orderCoefficient = options.order === 'asc' ? 1 : -1
   let sortingFunction: (a: SortingNode, b: SortingNode) => number
 

@@ -2756,6 +2756,16 @@ describe(ruleName, () => {
                 },
               ],
             },
+          ],
+        },
+      )
+
+      ruleTester.run(
+        `${ruleName}(${type}) separate static from non-static dependencies`,
+        rule,
+        {
+          valid: [],
+          invalid: [
             {
               code: dedent`
                 class Class {
@@ -2794,6 +2804,58 @@ describe(ruleName, () => {
                   data: {
                     left: 'c',
                     right: 'c',
+                  },
+                },
+              ],
+            },
+          ],
+        },
+      )
+
+      ruleTester.run(
+        `${ruleName}(${type}) detects circular dependencies`,
+        rule,
+        {
+          valid: [],
+          invalid: [
+            {
+              code: dedent`
+                class Class {
+                  b = this.e
+                  a
+                  e = this.g
+                  f
+                  g = this.b
+                }
+              `,
+              output: dedent`
+                class Class {
+                  a
+                  g = this.b
+                  e = this.g
+                  b = this.e
+                  f
+                }
+              `,
+              options: [
+                {
+                  ...options,
+                  groups: ['property'],
+                },
+              ],
+              errors: [
+                {
+                  messageId: 'unexpectedClassesOrder',
+                  data: {
+                    left: 'b',
+                    right: 'a',
+                  },
+                },
+                {
+                  messageId: 'unexpectedClassesOrder',
+                  data: {
+                    left: 'f',
+                    right: 'g',
                   },
                 },
               ],
