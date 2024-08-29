@@ -236,8 +236,11 @@ export default createEslintRule<Options, MESSAGE_ID>({
               : undefined,
         }
         for (let nodes of formattedMembers) {
+          let sortedNodes = sortNodes(nodes, compareOptions)
           pairwise(nodes, (left, right) => {
-            if (isPositive(compare(left, right, compareOptions))) {
+            let indexOfLeft = sortedNodes.indexOf(left)
+            let indexOfRight = sortedNodes.indexOf(right)
+            if (indexOfLeft > indexOfRight) {
               context.report({
                 messageId: 'unexpectedEnumsOrder',
                 data: {
@@ -246,13 +249,9 @@ export default createEslintRule<Options, MESSAGE_ID>({
                 },
                 node: right.node,
                 fix: fixer =>
-                  makeFixes(
-                    fixer,
-                    nodes,
-                    sortNodes(nodes, compareOptions),
-                    sourceCode,
-                    { partitionComment },
-                  ),
+                  makeFixes(fixer, nodes, sortedNodes, sourceCode, {
+                    partitionComment,
+                  }),
               })
             }
           })

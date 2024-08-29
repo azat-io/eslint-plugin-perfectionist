@@ -150,7 +150,10 @@ export default createEslintRule<Options, MESSAGE_ID>({
         })
 
         pairwise(nodes, (left, right) => {
-          if (isPositive(compare(left, right, options))) {
+          let sortedNodes = sortNodes(nodes, options)
+          let indexOfLeft = sortedNodes.indexOf(left)
+          let indexOfRight = sortedNodes.indexOf(right)
+          if (indexOfLeft > indexOfRight) {
             context.report({
               messageId: 'unexpectedVariableDeclarationsOrder',
               data: {
@@ -158,8 +161,7 @@ export default createEslintRule<Options, MESSAGE_ID>({
                 right: toSingleLine(right.name),
               },
               node: right.node,
-              fix: fixer =>
-                makeFixes(fixer, nodes, sortNodes(nodes, options), sourceCode),
+              fix: fixer => makeFixes(fixer, nodes, sortedNodes, sourceCode),
             })
           }
         })

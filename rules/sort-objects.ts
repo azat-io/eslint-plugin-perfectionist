@@ -15,13 +15,11 @@ import { getNodeParent } from '../utils/get-node-parent'
 import { toSingleLine } from '../utils/to-single-line'
 import { rangeToDiff } from '../utils/range-to-diff'
 import { getSettings } from '../utils/get-settings'
-import { isPositive } from '../utils/is-positive'
 import { useGroups } from '../utils/use-groups'
 import { makeFixes } from '../utils/make-fixes'
 import { sortNodes } from '../utils/sort-nodes'
 import { complete } from '../utils/complete'
 import { pairwise } from '../utils/pairwise'
-import { compare } from '../utils/compare'
 
 type MESSAGE_ID = 'unexpectedObjectsOrder'
 
@@ -395,47 +393,41 @@ export default createEslintRule<Options, MESSAGE_ID>({
           )
 
         for (let nodes of formatProperties(node.properties)) {
-          pairwise(nodes, (left, right) => {
-            let leftNum = getGroupNumber(options.groups, left)
-            let rightNum = getGroupNumber(options.groups, right)
+          let grouped: {
+            [key: string]: SortingNode[]
+          } = {}
 
-            if (
-              leftNum > rightNum ||
-              (leftNum === rightNum &&
-                isPositive(compare(left, right, options)))
-            ) {
+          for (let currentNode of nodes) {
+            let groupNum = getGroupNumber(options.groups, currentNode)
+
+            if (!(groupNum in grouped)) {
+              grouped[groupNum] = [currentNode]
+            } else {
+              grouped[groupNum] = sortNodes(
+                [...grouped[groupNum], currentNode],
+                options,
+              )
+            }
+          }
+
+          let sortedNodes: SortingNode[] = []
+
+          for (let group of Object.keys(grouped).sort(
+            (a, b) => Number(a) - Number(b),
+          )) {
+            sortedNodes.push(...sortNodes(grouped[group], options))
+          }
+
+          pairwise(nodes, (left, right) => {
+            let indexOfLeft = sortedNodes.indexOf(left)
+            let indexOfRight = sortedNodes.indexOf(right)
+            if (indexOfLeft > indexOfRight) {
               let fix:
                 | ((fixer: TSESLint.RuleFixer) => TSESLint.RuleFix[])
-                | undefined = fixer => {
-                let grouped: {
-                  [key: string]: SortingNode[]
-                } = {}
-
-                for (let currentNode of nodes) {
-                  let groupNum = getGroupNumber(options.groups, currentNode)
-
-                  if (!(groupNum in grouped)) {
-                    grouped[groupNum] = [currentNode]
-                  } else {
-                    grouped[groupNum] = sortNodes(
-                      [...grouped[groupNum], currentNode],
-                      options,
-                    )
-                  }
-                }
-
-                let sortedNodes: SortingNode[] = []
-
-                for (let group of Object.keys(grouped).sort(
-                  (a, b) => Number(a) - Number(b),
-                )) {
-                  sortedNodes.push(...sortNodes(grouped[group], options))
-                }
-
-                return makeFixes(fixer, nodes, sortedNodes, sourceCode, {
+                | undefined = fixer =>
+                makeFixes(fixer, nodes, sortedNodes, sourceCode, {
                   partitionComment: options.partitionByComment,
                 })
-              }
 
               context.report({
                 messageId: 'unexpectedObjectsOrder',
