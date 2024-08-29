@@ -1859,5 +1859,54 @@ describe(ruleName, () => {
         },
       ],
     })
+
+    ruleTester.run(`${ruleName}: detects circular dependencies`, rule, {
+      valid: [],
+      invalid: [
+        {
+          code: dedent`
+            enum Enum {
+              A = 'A',
+              B = F,
+              C = 'C',
+              D = B,
+              E = 'E',
+              F = D
+            }
+          `,
+          output: dedent`
+            enum Enum {
+              A = 'A',
+              D = B,
+              F = D,
+              B = F,
+              C = 'C',
+              E = 'E'
+            }
+          `,
+          options: [
+            {
+              type: 'alphabetical',
+            },
+          ],
+          errors: [
+            {
+              messageId: 'unexpectedEnumsOrder',
+              data: {
+                left: 'C',
+                right: 'D',
+              },
+            },
+            {
+              messageId: 'unexpectedEnumsOrder',
+              data: {
+                left: 'E',
+                right: 'F',
+              },
+            },
+          ],
+        },
+      ],
+    })
   })
 })

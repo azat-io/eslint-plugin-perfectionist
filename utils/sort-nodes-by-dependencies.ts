@@ -12,8 +12,8 @@ export let sortNodesByDependencies = <T extends SortingNodeWithDependencies>(
   nodes: T[],
 ): T[] => {
   let result: T[] = []
-  let visitedNodes = new Set<SortingNode>()
-  let inProcessNodes = new Set<SortingNode>()
+  let visitedNodes = new Set<T>()
+  let inProcessNodes = new Set<T>()
 
   let visitNode = (node: T) => {
     if (visitedNodes.has(node)) {

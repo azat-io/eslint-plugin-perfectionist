@@ -525,6 +525,45 @@ describe(ruleName, () => {
         ],
       },
     )
+
+    ruleTester.run(
+      `${ruleName}(${type}): detects circular dependencies`,
+      rule,
+      {
+        valid: [],
+        invalid: [
+          {
+            code: dedent`
+              const a,
+                    b = f + 1,
+                    c,
+                    d = b + 1,
+                    e,
+                    f = d + 1
+            `,
+            output: dedent`
+              const a,
+                    d = b + 1,
+                    f = d + 1,
+                    b = f + 1,
+                    c,
+                    e
+            `,
+            options: [options],
+            errors: [
+              {
+                messageId: 'unexpectedVariableDeclarationsOrder',
+                data: { left: 'c', right: 'd' },
+              },
+              {
+                messageId: 'unexpectedVariableDeclarationsOrder',
+                data: { left: 'e', right: 'f' },
+              },
+            ],
+          },
+        ],
+      },
+    )
   })
 
   describe(`${ruleName}: sorting by line length`, () => {
