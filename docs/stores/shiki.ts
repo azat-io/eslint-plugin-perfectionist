@@ -1,11 +1,13 @@
 import type { HighlighterCore } from 'shiki'
 
+import { createJavaScriptRegexEngine, getSingletonHighlighter } from 'shiki'
 import { computed, onMount, atom, task } from 'nanostores'
-import { getSingletonHighlighter } from 'shiki'
 
 import { colorTheme } from '../utils/shiki-theme'
 
 let shikiHighlighter = atom<HighlighterCore | null>(null)
+
+let jsEngine = createJavaScriptRegexEngine()
 
 export let shiki = computed([shikiHighlighter], highlighter => ({
   theme: 'css-variables',
@@ -24,6 +26,7 @@ onMount(shikiHighlighter, () => {
         import('shiki/langs/js.mjs'),
       ],
       themes: [colorTheme],
+      engine: jsEngine,
     })
 
     shikiHighlighter.set(highlighter)
