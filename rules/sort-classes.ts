@@ -281,6 +281,9 @@ export default createEslintRule<Options, MESSAGE_ID>({
         let sourceCode = getSourceCode(context)
         let className = node.parent.id?.name
 
+        let getDependencyName = (nodeName: string, isStatic: boolean) =>
+          `${isStatic ? 'static ' : ''}${nodeName}`
+
         let extractDependencies = (
           expression: TSESTree.StaticBlock | TSESTree.Expression,
           isMemberStatic: boolean,
@@ -308,7 +311,7 @@ export default createEslintRule<Options, MESSAGE_ID>({
               let isStaticDependency =
                 isMemberStatic || nodeValue.object.type === 'Identifier'
               dependencies.push(
-                `${isStaticDependency ? 'static ' : ''}${nodeValue.property.name}`,
+                getDependencyName(nodeValue.property.name, isStaticDependency),
               )
             }
 
@@ -578,9 +581,10 @@ export default createEslintRule<Options, MESSAGE_ID>({
               node: member,
               dependencies,
               name,
-              dependencyName: modifiers.includes('static')
-                ? `static ${name}`
-                : name,
+              dependencyName: getDependencyName(
+                name,
+                modifiers.includes('static'),
+              ),
             }
 
             accumulator.at(-1)!.push(value)
