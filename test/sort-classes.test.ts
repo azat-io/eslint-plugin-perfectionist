@@ -5175,6 +5175,518 @@ describe(ruleName, () => {
     })
   })
 
+  describe(`${ruleName}: custom groups`, () => {
+    ruleTester.run(`${ruleName}: filters on selector and modifiers`, rule, {
+      valid: [],
+      invalid: [
+        {
+          code: dedent`
+              class Class {
+                private a;
+                private b;
+                c;
+                constructor() {}
+              }
+            `,
+          output: dedent`
+            class Class {
+              c;
+              constructor() {}
+              private a;
+              private b;
+            }
+            `,
+          options: [
+            {
+              groups: ['propertyGroup', 'constructor', 'privatePropertyGroup'],
+              customGroups: [
+                {
+                  groupName: 'unusedCustomGroup',
+                  selector: 'property',
+                  modifiers: ['private'],
+                },
+                {
+                  groupName: 'privatePropertyGroup',
+                  selector: 'property',
+                  modifiers: ['private'],
+                },
+                {
+                  groupName: 'propertyGroup',
+                  selector: 'property',
+                },
+              ],
+            },
+          ],
+          errors: [
+            {
+              messageId: 'unexpectedClassesGroupOrder',
+              data: {
+                left: 'b',
+                leftGroup: 'privatePropertyGroup',
+                right: 'c',
+                rightGroup: 'propertyGroup',
+              },
+            },
+          ],
+        },
+      ],
+    })
+
+    ruleTester.run(`${ruleName}: filters on elementNamePattern`, rule, {
+      valid: [],
+      invalid: [
+        {
+          code: dedent`
+              class Class {
+                a;
+
+                b;
+
+                constructor() {}
+
+                method() {}
+
+                helloProperty;
+              }
+            `,
+          output: dedent`
+              class Class {
+                helloProperty;
+
+                constructor() {}
+
+                a;
+
+                b;
+
+                method() {}
+              }
+            `,
+          options: [
+            {
+              groups: ['propertiesStartingWithHello', 'constructor', 'unknown'],
+              customGroups: [
+                {
+                  groupName: 'propertiesStartingWithHello',
+                  selector: 'property',
+                  elementNamePattern: 'hello*',
+                },
+              ],
+            },
+          ],
+          errors: [
+            {
+              messageId: 'unexpectedClassesGroupOrder',
+              data: {
+                left: 'b',
+                leftGroup: 'unknown',
+                right: 'constructor',
+                rightGroup: 'constructor',
+              },
+            },
+            {
+              messageId: 'unexpectedClassesGroupOrder',
+              data: {
+                left: 'method',
+                leftGroup: 'unknown',
+                right: 'helloProperty',
+                rightGroup: 'propertiesStartingWithHello',
+              },
+            },
+          ],
+        },
+      ],
+    })
+
+    ruleTester.run(`${ruleName}: filters on decoratorNamePattern`, rule, {
+      valid: [],
+      invalid: [
+        {
+          code: dedent`
+              class Class {
+                @Decorator
+                a;
+
+                b;
+
+                constructor() {}
+
+                method() {}
+
+                @HelloDecorator
+                property;
+
+                @HelloDecorator()
+                anotherProperty;
+              }
+            `,
+          output: dedent`
+            class Class {
+              @HelloDecorator()
+              anotherProperty;
+
+              @HelloDecorator
+              property;
+
+              constructor() {}
+
+              @Decorator
+              a;
+
+              b;
+
+              method() {}
+            }
+            `,
+          options: [
+            {
+              groups: [
+                'propertiesWithDecoratorStartingWithHello',
+                'constructor',
+                'unknown',
+              ],
+              customGroups: [
+                {
+                  groupName: 'propertiesWithDecoratorStartingWithHello',
+                  selector: 'property',
+                  decoratorNamePattern: 'Hello*',
+                },
+              ],
+            },
+          ],
+          errors: [
+            {
+              messageId: 'unexpectedClassesGroupOrder',
+              data: {
+                left: 'b',
+                leftGroup: 'unknown',
+                right: 'constructor',
+                rightGroup: 'constructor',
+              },
+            },
+            {
+              messageId: 'unexpectedClassesGroupOrder',
+              data: {
+                left: 'method',
+                leftGroup: 'unknown',
+                right: 'property',
+                rightGroup: 'propertiesWithDecoratorStartingWithHello',
+              },
+            },
+            {
+              messageId: 'unexpectedClassesOrder',
+              data: {
+                left: 'property',
+                right: 'anotherProperty',
+              },
+            },
+          ],
+        },
+      ],
+    })
+
+    ruleTester.run(
+      `${ruleName}: sort custom groups by overriding 'type' and 'order'`,
+      rule,
+      {
+        valid: [],
+        invalid: [
+          {
+            code: dedent`
+            class Class {
+
+              a;
+
+              bb;
+
+              ccc;
+
+              dddd;
+
+              method() {}
+
+              eee;
+
+              ff;
+
+              g;
+
+              constructor() {}
+
+              anotherMethod() {}
+
+              yetAnotherMethod() {}
+            }
+            `,
+            output: dedent`
+            class Class {
+
+              dddd;
+
+              ccc;
+
+              eee;
+
+              bb;
+
+              ff;
+
+              a;
+
+              g;
+
+              constructor() {}
+
+              anotherMethod() {}
+
+              method() {}
+
+              yetAnotherMethod() {}
+            }
+            `,
+            options: [
+              {
+                type: 'alphabetical',
+                order: 'asc',
+                groups: [
+                  'reversedPropertiesByLineLength',
+                  'constructor',
+                  'unknown',
+                ],
+                customGroups: [
+                  {
+                    groupName: 'reversedPropertiesByLineLength',
+                    selector: 'property',
+                    type: 'line-length',
+                    order: 'desc',
+                  },
+                ],
+              },
+            ],
+            errors: [
+              {
+                messageId: 'unexpectedClassesOrder',
+                data: {
+                  left: 'a',
+                  right: 'bb',
+                },
+              },
+              {
+                messageId: 'unexpectedClassesOrder',
+                data: {
+                  left: 'bb',
+                  right: 'ccc',
+                },
+              },
+              {
+                messageId: 'unexpectedClassesOrder',
+                data: {
+                  left: 'ccc',
+                  right: 'dddd',
+                },
+              },
+              {
+                messageId: 'unexpectedClassesGroupOrder',
+                data: {
+                  left: 'method',
+                  leftGroup: 'unknown',
+                  right: 'eee',
+                  rightGroup: 'reversedPropertiesByLineLength',
+                },
+              },
+            ],
+          },
+        ],
+      },
+    )
+
+    ruleTester.run(
+      `${ruleName}: does not sort custom groups with 'unsorted' type`,
+      rule,
+      {
+        valid: [],
+        invalid: [
+          {
+            code: dedent`
+            class Class {
+              b;
+
+              a;
+
+              constructor() {}
+
+              d
+
+              e
+
+              method() {}
+
+              c
+            }
+            `,
+            output: dedent`
+            class Class {
+              b;
+
+              a;
+
+              d
+
+              e
+
+              c
+
+              constructor() {}
+
+              method() {}
+            }
+            `,
+            options: [
+              {
+                groups: ['unsortedProperties', 'constructor', 'unknown'],
+                customGroups: [
+                  {
+                    groupName: 'unsortedProperties',
+                    selector: 'property',
+                    type: 'unsorted',
+                  },
+                ],
+              },
+            ],
+            errors: [
+              {
+                messageId: 'unexpectedClassesGroupOrder',
+                data: {
+                  left: 'constructor',
+                  leftGroup: 'constructor',
+                  right: 'd',
+                  rightGroup: 'unsortedProperties',
+                },
+              },
+              {
+                messageId: 'unexpectedClassesGroupOrder',
+                data: {
+                  left: 'method',
+                  leftGroup: 'unknown',
+                  right: 'c',
+                  rightGroup: 'unsortedProperties',
+                },
+              },
+            ],
+          },
+        ],
+      },
+    )
+
+    ruleTester.run(`${ruleName}: sort custom group blocks`, rule, {
+      valid: [],
+      invalid: [
+        {
+          code: dedent`
+            class Class {
+              constructor() {}
+
+              protected a;
+
+              private b;
+
+              @Decorator
+              protected e;
+
+              method() {}
+
+              private c;
+
+              protected protectedMethod() {}
+
+              protected d;
+
+              protected anotherProtectedMethod() {}
+            }
+            `,
+          output: dedent`
+            class Class {
+              protected anotherProtectedMethod() {}
+
+              private b;
+
+              private c;
+
+              @Decorator
+              protected e;
+
+              protected protectedMethod() {}
+
+              constructor() {}
+
+              protected a;
+
+              protected d;
+
+              method() {}
+            }
+            `,
+          options: [
+            {
+              groups: [
+                [
+                  'privatePropertiesAndProtectedMethods',
+                  'decorated-protected-property',
+                ],
+                'constructor',
+                'unknown',
+              ],
+              customGroups: [
+                {
+                  groupName: 'privatePropertiesAndProtectedMethods',
+                  anyOf: [
+                    {
+                      selector: 'property',
+                      modifiers: ['private'],
+                    },
+                    {
+                      selector: 'method',
+                      modifiers: ['protected'],
+                    },
+                  ],
+                },
+              ],
+            },
+          ],
+          errors: [
+            {
+              messageId: 'unexpectedClassesGroupOrder',
+              data: {
+                left: 'a',
+                leftGroup: 'unknown',
+                right: 'b',
+                rightGroup: 'privatePropertiesAndProtectedMethods',
+              },
+            },
+            {
+              messageId: 'unexpectedClassesGroupOrder',
+              data: {
+                left: 'method',
+                leftGroup: 'unknown',
+                right: 'c',
+                rightGroup: 'privatePropertiesAndProtectedMethods',
+              },
+            },
+            {
+              messageId: 'unexpectedClassesGroupOrder',
+              data: {
+                left: 'd',
+                leftGroup: 'unknown',
+                right: 'anotherProtectedMethod',
+                rightGroup: 'privatePropertiesAndProtectedMethods',
+              },
+            },
+          ],
+        },
+      ],
+    })
+  })
+
   describe(`${ruleName}: misc`, () => {
     ruleTester.run(
       `${ruleName}: sets alphabetical asc sorting as default`,

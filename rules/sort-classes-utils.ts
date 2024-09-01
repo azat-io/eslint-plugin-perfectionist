@@ -1,7 +1,23 @@
 import type { TSESTree } from '@typescript-eslint/utils'
 
-import type { Modifier, Selector } from './sort-classes'
+import { minimatch } from 'minimatch'
 
+import type {
+  SortClassesOptions,
+  SingleCustomGroup,
+  CustomGroupBlock,
+  Modifier,
+  Selector,
+} from './sort-classes.types'
+import type { CompareOptions } from '../utils/compare'
+
+interface CustomGroupMatchesProps {
+  customGroup: SingleCustomGroup | CustomGroupBlock
+  selectors: Selector[]
+  modifiers: Modifier[]
+  decorators: string[]
+  elementName: string
+}
 /**
  * Cache computed groups by modifiers and selectors for performance
  */
@@ -137,4 +153,91 @@ export const getOverloadSignatureGroups = (
     ...overloadSignaturesByName.values(),
     ...staticOverloadSignaturesByName.values(),
   ].filter(group => group.length > 1)
+}
+
+/**
+ * Returns whether a custom group matches the given properties
+ */
+export const customGroupMatches = (props: CustomGroupMatchesProps): boolean => {
+  if ('anyOf' in props.customGroup) {
+    // At least one subgroup must match
+    return props.customGroup.anyOf.some(subgroup =>
+      customGroupMatches({ ...props, customGroup: subgroup }),
+    )
+  }
+  if (
+    props.customGroup.selector &&
+    !props.selectors.includes(props.customGroup.selector)
+  ) {
+    return false
+  }
+
+  if (props.customGroup.modifiers) {
+    for (let modifier of props.customGroup.modifiers) {
+      if (!props.modifiers.includes(modifier)) {
+        return false
+      }
+    }
+  }
+
+  if (
+    'elementNamePattern' in props.customGroup &&
+    props.customGroup.elementNamePattern
+  ) {
+    let matchesElementNamePattern: boolean = minimatch(
+      props.elementName,
+      props.customGroup.elementNamePattern,
+      {
+        nocomment: true,
+      },
+    )
+    if (!matchesElementNamePattern) {
+      return false
+    }
+  }
+
+  if (
+    'decoratorNamePattern' in props.customGroup &&
+    props.customGroup.decoratorNamePattern
+  ) {
+    let decoratorPattern = props.customGroup.decoratorNamePattern
+    let matchesDecoratorNamePattern: boolean = props.decorators.some(
+      decorator =>
+        minimatch(decorator, decoratorPattern, {
+          nocomment: true,
+        }),
+    )
+    if (!matchesDecoratorNamePattern) {
+      return false
+    }
+  }
+
+  return true
+}
+
+/**
+ * Returns the compare options used to sort a given group.
+ * If the group is a custom group, its options will be favored over the default options.
+ * Returns null if the group should not be sorted
+ */
+export const getCompareOptions = (
+  options: Required<SortClassesOptions[0]>,
+  groupNumber: number,
+): CompareOptions | null => {
+  let group = options.groups[groupNumber]
+  let customGroup =
+    typeof group === 'string' && Array.isArray(options.customGroups)
+      ? options.customGroups.find(g => group === g.groupName)
+      : null
+  if (customGroup?.type === 'unsorted') {
+    return null
+  }
+  return {
+    type: customGroup?.type ?? options.type,
+    order:
+      customGroup && 'order' in customGroup && customGroup.order
+        ? customGroup.order
+        : options.order,
+    ignoreCase: options.ignoreCase,
+  }
 }
