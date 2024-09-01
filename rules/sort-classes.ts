@@ -319,6 +319,14 @@ export default createEslintRule<Options, MESSAGE_ID>({
               traverseNode(nodeValue.expression)
             }
 
+            if ('object' in nodeValue) {
+              traverseNode(nodeValue.object)
+            }
+
+            if ('callee' in nodeValue) {
+              traverseNode(nodeValue.callee)
+            }
+
             if ('init' in nodeValue && nodeValue.init) {
               traverseNode(nodeValue.init)
             }

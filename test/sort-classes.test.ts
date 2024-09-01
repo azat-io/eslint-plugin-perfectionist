@@ -2761,6 +2761,43 @@ describe(ruleName, () => {
       )
 
       ruleTester.run(
+        `${ruleName}(${type}) detects nested property references`,
+        rule,
+        {
+          valid: [
+            {
+              code: dedent`
+               class Class {
+                  b = new Subject()
+                  a = this.b.asObservable()
+               }
+              `,
+              options: [
+                {
+                  ...options,
+                },
+              ],
+            },
+            {
+              code: dedent`
+               class Class {
+                  static c = 1
+                  static b = new WhateverObject(this.c)
+                  static a = Class.b.bMethod().anotherNestedMethod(this.c).finalMethod()
+               }
+              `,
+              options: [
+                {
+                  ...options,
+                },
+              ],
+            },
+          ],
+          invalid: [],
+        },
+      )
+
+      ruleTester.run(
         `${ruleName}(${type}) separates static from non-static dependencies`,
         rule,
         {
