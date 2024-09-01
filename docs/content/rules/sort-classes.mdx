@@ -197,9 +197,9 @@ Allows you to use comments to separate the class members into logical groups. Th
   default:
   ```
   [
-    'static-block',
     'index-signature',
     'static-property',
+    'static-block',
     ['protected-property', 'protected-accessor-property'],
     ['private-property', 'private-accessor-property'],
     ['property', 'accessor-property'],
@@ -312,11 +312,6 @@ Example 2: (The most important group is written in the comments)
 ```ts
 abstract class Example extends BaseExample {
 
-  // 'static-block'
-  static {
-    console.log("I am a static block");
-  }
-
   // 'index-signature'
   [key: string]: any;
 
@@ -325,6 +320,11 @@ abstract class Example extends BaseExample {
 
   // 'declare-protected-static-readonly-property'
   declare protected static readonly value: string;
+
+  // 'static-block'
+  static {
+    console.log("I am a static block");
+  }
 
   // 'protected-abstract-override-readonly-decorated-property'
   @SomeDecorator

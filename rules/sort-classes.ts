@@ -234,9 +234,9 @@ export default createEslintRule<Options, MESSAGE_ID>({
       ignoreCase: true,
       partitionByComment: false,
       groups: [
-        'static-block',
         'index-signature',
         'static-property',
+        'static-block',
         ['protected-property', 'protected-accessor-property'],
         ['private-property', 'private-accessor-property'],
         ['property', 'accessor-property'],
@@ -258,9 +258,9 @@ export default createEslintRule<Options, MESSAGE_ID>({
 
         let options = complete(context.options.at(0), settings, {
           groups: [
-            'static-block',
             'index-signature',
             'static-property',
+            'static-block',
             ['protected-property', 'protected-accessor-property'],
             ['private-property', 'private-accessor-property'],
             ['property', 'accessor-property'],
