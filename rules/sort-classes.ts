@@ -347,6 +347,11 @@ export default createEslintRule<Options, MESSAGE_ID>({
               traverseNode(nodeValue.expression)
             }
 
+            if (nodeValue.type === 'Property') {
+              traverseNode(nodeValue.key)
+              traverseNode(nodeValue.value)
+            }
+
             if ('object' in nodeValue) {
               traverseNode(nodeValue.object)
             }
@@ -387,6 +392,10 @@ export default createEslintRule<Options, MESSAGE_ID>({
 
             if ('declarations' in nodeValue) {
               nodeValue.declarations.forEach(traverseNode)
+            }
+
+            if ('properties' in nodeValue) {
+              nodeValue.properties.forEach(traverseNode)
             }
           }
 

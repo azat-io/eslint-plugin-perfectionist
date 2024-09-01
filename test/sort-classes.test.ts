@@ -2591,89 +2591,10 @@ describe(ruleName, () => {
 
     describe(`${ruleName}(${type}): detects dependencies`, () => {
       ruleTester.run(
-        `${ruleName}(${type}) detects static block dependencies`,
+        `${ruleName}(${type}) ignores function expression dependencies`,
         rule,
         {
           valid: [
-            {
-              /**
-               * It should not detect that the static block depends on `z` because `z` is used in a function body, so it is not required
-               * at initialization time.
-               */
-              code: dedent`
-                class Class {
-                  static {
-                    const method = () => {
-                      return (Class.z || true) && (false || this.z);
-                    };
-                    method();
-                  }
-                  static z = true;
-                }
-              `,
-              options: [
-                {
-                  ...options,
-                  groups: [['static-block', 'static-property']],
-                },
-              ],
-            },
-            {
-              code: dedent`
-                class Class {
-                  static z = true;
-                  static {
-                    const method = () => {
-                      return (Class.z || true) && (false || this.z);
-                    };
-                    method();
-                    return (Class.z || true) && (false || this.z);
-                  }
-                }
-              `,
-              options: [
-                {
-                  ...options,
-                  groups: [['static-block', 'static-property']],
-                },
-              ],
-            },
-            {
-              code: dedent`
-                class Class {
-                  static {
-                    return true || OtherClass.z;
-                  }
-                  static z = true;
-                }
-              `,
-              options: [
-                {
-                  ...options,
-                  groups: [['static-block', 'static-property']],
-                },
-              ],
-            },
-            {
-              code: dedent`
-                class Class {
-                  b = () => {
-                    return 1
-                  }
-                  a = this.b()
-                  static b = () => {
-                    return 1
-                  }
-                  static a = this.b()
-                }
-              `,
-              options: [
-                {
-                  ...options,
-                  groups: [['property', 'method']],
-                },
-              ],
-            },
             {
               code: dedent`
                 class Class {
@@ -2717,14 +2638,14 @@ describe(ruleName, () => {
             {
               code: dedent`
                 class Class {
-                  b = () => {
-                    return 1
-                  }
                   a = [1].map(this.b)
-                  static b = () => {
+                  static a = [1].map(this.b)
+                  b() {
                     return 1
                   }
-                  static a = [1].map(this.b)
+                  static b() {
+                    return 1
+                  }
                 }
               `,
               options: [
@@ -2737,14 +2658,14 @@ describe(ruleName, () => {
             {
               code: dedent`
                 class Class {
-                  b = () => {
-                    return 1
-                  }
                   a = [1].map(this.b)
-                  static b = () => {
+                  static a = [1].map(Class.b)
+                  b() {
                     return 1
                   }
-                  static a = [1].map(Class.b)
+                  static b() {
+                    return 1
+                  }
                 }
               `,
               options: [
@@ -2754,18 +2675,27 @@ describe(ruleName, () => {
                 },
               ],
             },
+          ],
+          invalid: [],
+        },
+      )
 
+      ruleTester.run(
+        `${ruleName}(${type}) detects arrow function expression dependencies`,
+        rule,
+        {
+          valid: [
             {
               code: dedent`
                 class Class {
-                  a = [1].map(this.b)
-                  static a = [1].map(this.b)
-                  b() {
+                  b = () => {
                     return 1
                   }
-                  static b() {
+                  a = this.b()
+                  static b = () => {
                     return 1
                   }
+                  static a = this.b()
                 }
               `,
               options: [
@@ -2778,20 +2708,105 @@ describe(ruleName, () => {
             {
               code: dedent`
                 class Class {
+                  b = () => {
+                    return 1
+                  }
                   a = [1].map(this.b)
-                  static a = [1].map(Class.b)
-                  b() {
+                  static b = () => {
                     return 1
                   }
-                  static b() {
-                    return 1
-                  }
+                  static a = [1].map(this.b)
                 }
               `,
               options: [
                 {
                   ...options,
                   groups: [['property', 'method']],
+                },
+              ],
+            },
+            {
+              code: dedent`
+                class Class {
+                  b = () => {
+                    return 1
+                  }
+                  a = [1].map(this.b)
+                  static b = () => {
+                    return 1
+                  }
+                  static a = [1].map(Class.b)
+                }
+              `,
+              options: [
+                {
+                  ...options,
+                  groups: [['property', 'method']],
+                },
+              ],
+            },
+          ],
+          invalid: [],
+        },
+      )
+
+      ruleTester.run(
+        `${ruleName}(${type}) detects static block dependencies`,
+        rule,
+        {
+          valid: [
+            {
+              code: dedent`
+                class Class {
+                  static {
+                    return true || OtherClass.z;
+                  }
+                  static z = true;
+                }
+              `,
+              options: [
+                {
+                  ...options,
+                  groups: [['static-block', 'static-property']],
+                },
+              ],
+            },
+            {
+              code: dedent`
+                class Class {
+                  static {
+                    const method = () => {
+                      return (Class.z || true) && (false || this.z);
+                    };
+                    method();
+                  }
+                  static z = true;
+                }
+              `,
+              options: [
+                {
+                  ...options,
+                  groups: [['static-block', 'static-property']],
+                },
+              ],
+            },
+            {
+              code: dedent`
+                class Class {
+                  static z = true;
+                  static {
+                    const method = () => {
+                      return (Class.z || true) && (false || this.z);
+                    };
+                    method();
+                    return (Class.z || true) && (false || this.z);
+                  }
+                }
+              `,
+              options: [
+                {
+                  ...options,
+                  groups: [['static-block', 'static-property']],
                 },
               ],
             },
@@ -2898,6 +2913,96 @@ describe(ruleName, () => {
               ],
             },
           ],
+        },
+      )
+
+      ruleTester.run(
+        `${ruleName}(${type}) detects dependencies in objects`,
+        rule,
+        {
+          valid: [
+            {
+              code: dedent`
+               class Class {
+                 b = 1
+                 a = {
+                   b: this.b
+                 }
+                 static b = 1
+                 static a = {
+                   b: this.b
+                 }
+               }
+              `,
+              options: [
+                {
+                  ...options,
+                  groups: ['property'],
+                },
+              ],
+            },
+            {
+              code: dedent`
+               class Class {
+                 b = 1
+                 a = {
+                   b: this.b
+                 }
+                 static b = 1
+                 static a = {
+                   b: Class.b
+                 }
+               }
+              `,
+              options: [
+                {
+                  ...options,
+                  groups: ['property'],
+                },
+              ],
+            },
+            {
+              code: dedent`
+               class Class {
+                 b = 1
+                 a = {
+                   [this.b]: 1
+                 }
+                 static b = 1
+                 static a = {
+                   [this.b]: A
+                 }
+               }
+              `,
+              options: [
+                {
+                  ...options,
+                  groups: ['property'],
+                },
+              ],
+            },
+            {
+              code: dedent`
+               class Class {
+                 b = 1
+                 a = {
+                   [this.b]: 1
+                 }
+                 static b = 1
+                 static a = {
+                   [Class.b]: 1
+                 }
+               }
+              `,
+              options: [
+                {
+                  ...options,
+                  groups: ['property'],
+                },
+              ],
+            },
+          ],
+          invalid: [],
         },
       )
 
