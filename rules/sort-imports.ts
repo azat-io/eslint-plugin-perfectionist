@@ -6,6 +6,7 @@ import { minimatch } from 'minimatch'
 
 import type { SortingNode } from '../typings'
 
+import { validateGroupsConfiguration } from '../utils/validate-groups-configuration'
 import { getCommentBefore } from '../utils/get-comment-before'
 import { createEslintRule } from '../utils/create-eslint-rule'
 import { getLinesBetween } from '../utils/get-lines-between'
@@ -255,6 +256,34 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
     if (!hasUnknownGroup) {
       options.groups = [...options.groups, 'unknown']
     }
+
+    validateGroupsConfiguration(
+      options.groups,
+      [
+        'side-effect-style',
+        'external-type',
+        'internal-type',
+        'builtin-type',
+        'sibling-type',
+        'parent-type',
+        'side-effect',
+        'index-type',
+        'internal',
+        'external',
+        'sibling',
+        'unknown',
+        'builtin',
+        'parent',
+        'object',
+        'index',
+        'style',
+        'type',
+      ],
+      [
+        ...Object.keys(options.customGroups.type ?? {}),
+        ...Object.keys(options.customGroups.value ?? {}),
+      ],
+    )
 
     let nodes: SortingNode[] = []
 

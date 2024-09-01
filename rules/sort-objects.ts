@@ -5,6 +5,7 @@ import { minimatch } from 'minimatch'
 
 import type { SortingNode } from '../typings'
 
+import { validateGroupsConfiguration } from '../utils/validate-groups-configuration'
 import { isPartitionComment } from '../utils/is-partition-comment'
 import { getCommentBefore } from '../utils/get-comment-before'
 import { createEslintRule } from '../utils/create-eslint-rule'
@@ -30,6 +31,8 @@ export enum Position {
   'ignore' = 'ignore',
 }
 
+type Group = 'unknown' | string
+
 type SortingNodeWithPosition = {
   position: Position
 } & SortingNode
@@ -39,7 +42,7 @@ type Options = [
     customGroups: { [key: string]: string[] | string }
     type: 'alphabetical' | 'line-length' | 'natural'
     partitionByComment: string[] | boolean | string
-    groups: (string[] | string)[]
+    groups: (Group[] | Group)[]
     partitionByNewLine: boolean
     styledComponents: boolean
     destructureOnly: boolean
@@ -190,6 +193,12 @@ export default createEslintRule<Options, MESSAGE_ID>({
         order: 'asc',
         groups: [],
       } as const)
+
+      validateGroupsConfiguration(
+        options.groups,
+        ['unknown'],
+        Object.keys(options.customGroups),
+      )
 
       let shouldIgnore = false
 

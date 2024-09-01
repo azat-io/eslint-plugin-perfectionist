@@ -5,6 +5,7 @@ import path from 'node:path'
 
 import type { SortingNode } from '../typings'
 
+import { validateGroupsConfiguration } from '../utils/validate-groups-configuration'
 import { createEslintRule } from '../utils/create-eslint-rule'
 import { getGroupNumber } from '../utils/get-group-number'
 import { getSourceCode } from '../utils/get-source-code'
@@ -146,6 +147,12 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
             order: 'asc',
             groups: [],
           } as const)
+
+          validateGroupsConfiguration(
+            options.groups,
+            ['multiline', 'shorthand', 'unknown'],
+            Object.keys(options.customGroups),
+          )
 
           let parts: SortingNode[][] = node.attributes.reduce(
             (accumulator: SortingNode[][], attribute) => {

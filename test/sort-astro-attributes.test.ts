@@ -270,7 +270,7 @@ describe(ruleName, () => {
             options: [
               {
                 ...options,
-                groups: ['unknown', ['svelte-shorthand', 'shorthand']],
+                groups: ['unknown', ['shorthand']],
               },
             ],
             errors: [
@@ -699,7 +699,7 @@ describe(ruleName, () => {
             options: [
               {
                 ...options,
-                groups: ['unknown', ['svelte-shorthand', 'shorthand']],
+                groups: ['unknown', ['shorthand']],
               },
             ],
             errors: [
@@ -1130,7 +1130,7 @@ describe(ruleName, () => {
             options: [
               {
                 ...options,
-                groups: ['unknown', ['svelte-shorthand', 'shorthand']],
+                groups: ['unknown', ['shorthand']],
               },
             ],
             errors: [
@@ -1331,6 +1331,41 @@ describe(ruleName, () => {
         },
       ],
     })
+  })
+
+  describe(`${ruleName}: validating group configuration`, () => {
+    ruleTester.run(
+      `${ruleName}: allows predefined groups and defined custom groups`,
+      rule,
+      {
+        valid: [
+          {
+            filename: 'file.astro',
+            code: dedent`
+          ---
+            import Component from '../file2.astro'
+          ---
+          <Component a="a" bb="b" />
+        `,
+            options: [
+              {
+                groups: [
+                  'astro-shorthand',
+                  'multiline',
+                  'shorthand',
+                  'unknown',
+                  'myCustomGroup',
+                ],
+                customGroups: {
+                  myCustomGroup: 'x',
+                },
+              },
+            ],
+          },
+        ],
+        invalid: [],
+      },
+    )
   })
 
   describe(`${ruleName}: misc`, () => {

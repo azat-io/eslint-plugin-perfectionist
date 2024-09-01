@@ -2,6 +2,7 @@ import { minimatch } from 'minimatch'
 
 import type { SortingNode } from '../typings'
 
+import { validateGroupsConfiguration } from '../utils/validate-groups-configuration'
 import { createEslintRule } from '../utils/create-eslint-rule'
 import { isMemberOptional } from '../utils/is-member-optional'
 import { getLinesBetween } from '../utils/get-lines-between'
@@ -150,6 +151,12 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
           order: 'asc',
           groups: [],
         } as const)
+
+        validateGroupsConfiguration(
+          options.groups,
+          ['multiline', 'unknown'],
+          Object.keys(options.customGroups),
+        )
 
         let sourceCode = getSourceCode(context)
 

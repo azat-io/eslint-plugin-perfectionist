@@ -1340,6 +1340,42 @@ describe(ruleName, () => {
     })
   })
 
+  describe(`${ruleName}: validating group configuration`, () => {
+    ruleTester.run(
+      `${ruleName}: allows predefined groups and defined custom groups`,
+      rule,
+      {
+        valid: [
+          {
+            filename: 'file.svelte',
+            code: dedent`
+              <script>
+                import Component from '../file2.svelte'
+              </script>
+
+              <Component a="aaa" b="bb" />
+            `,
+            options: [
+              {
+                groups: [
+                  'svelte-shorthand',
+                  'multiline',
+                  'shorthand',
+                  'unknown',
+                  'myCustomGroup',
+                ],
+                customGroups: {
+                  myCustomGroup: 'x',
+                },
+              },
+            ],
+          },
+        ],
+        invalid: [],
+      },
+    )
+  })
+
   describe(`${ruleName}: misc`, () => {
     ruleTester.run(`${ruleName}: works only with .svelte files`, rule, {
       valid: [

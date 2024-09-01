@@ -4179,6 +4179,56 @@ describe(ruleName, () => {
     )
   })
 
+  describe(`${ruleName}: validating group configuration`, () => {
+    ruleTester.run(
+      `${ruleName}: allows predefined groups and defined custom groups`,
+      rule,
+      {
+        valid: [
+          {
+            code: dedent`
+            import type { T } from 't'
+
+            // @ts-expect-error missing types
+            import { t } from 't'
+          `,
+            options: [
+              {
+                groups: [
+                  'side-effect-style',
+                  'external-type',
+                  'internal-type',
+                  'builtin-type',
+                  'sibling-type',
+                  'parent-type',
+                  'side-effect',
+                  'index-type',
+                  'internal',
+                  'external',
+                  'sibling',
+                  'unknown',
+                  'builtin',
+                  'parent',
+                  'object',
+                  'index',
+                  'style',
+                  'type',
+                  'myCustomGroup1',
+                ],
+                customGroups: {
+                  type: {
+                    myCustomGroup1: 'x',
+                  },
+                },
+              },
+            ],
+          },
+        ],
+        invalid: [],
+      },
+    )
+  })
+
   describe(`${ruleName}: misc`, () => {
     ruleTester.run(
       `${ruleName}: sets alphabetical asc sorting as default`,
