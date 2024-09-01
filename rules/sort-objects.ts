@@ -3,8 +3,9 @@ import type { TSESLint } from '@typescript-eslint/utils'
 
 import { minimatch } from 'minimatch'
 
-import type { SortingNode } from '../typings'
+import type { SortingNodeWithDependencies } from '../utils/sort-nodes-by-dependencies'
 
+import { sortNodesByDependencies } from '../utils/sort-nodes-by-dependencies'
 import { validateGroupsConfiguration } from '../utils/validate-groups-configuration'
 import { isPartitionComment } from '../utils/is-partition-comment'
 import { getCommentBefore } from '../utils/get-comment-before'
@@ -16,13 +17,11 @@ import { getNodeParent } from '../utils/get-node-parent'
 import { toSingleLine } from '../utils/to-single-line'
 import { rangeToDiff } from '../utils/range-to-diff'
 import { getSettings } from '../utils/get-settings'
-import { isPositive } from '../utils/is-positive'
 import { useGroups } from '../utils/use-groups'
 import { makeFixes } from '../utils/make-fixes'
 import { sortNodes } from '../utils/sort-nodes'
 import { complete } from '../utils/complete'
 import { pairwise } from '../utils/pairwise'
-import { compare } from '../utils/compare'
 
 type MESSAGE_ID = 'unexpectedObjectsOrder'
 
@@ -30,12 +29,10 @@ export enum Position {
   'exception' = 'exception',
   'ignore' = 'ignore',
 }
-
 type Group = 'unknown' | string
-
-type SortingNodeWithPosition = {
+type SortingNodeWithPosition = SortingNodeWithDependencies & {
   position: Position
-} & SortingNode
+}
 
 type Options = [
   Partial<{
@@ -404,47 +401,40 @@ export default createEslintRule<Options, MESSAGE_ID>({
           )
 
         for (let nodes of formatProperties(node.properties)) {
-          pairwise(nodes, (left, right) => {
-            let leftNum = getGroupNumber(options.groups, left)
-            let rightNum = getGroupNumber(options.groups, right)
+          let grouped: {
+            [key: string]: SortingNodeWithDependencies[]
+          } = {}
 
-            if (
-              leftNum > rightNum ||
-              (leftNum === rightNum &&
-                isPositive(compare(left, right, options)))
-            ) {
+          for (let currentNode of nodes) {
+            let groupNum = getGroupNumber(options.groups, currentNode)
+
+            if (!(groupNum in grouped)) {
+              grouped[groupNum] = [currentNode]
+            } else {
+              grouped[groupNum].push(currentNode)
+            }
+          }
+
+          let sortedNodes: SortingNodeWithDependencies[] = []
+
+          for (let group of Object.keys(grouped).sort(
+            (a, b) => Number(a) - Number(b),
+          )) {
+            sortedNodes.push(...sortNodes(grouped[group], options))
+          }
+
+          sortedNodes = sortNodesByDependencies(sortedNodes)
+
+          pairwise(nodes, (left, right) => {
+            let indexOfLeft = sortedNodes.indexOf(left)
+            let indexOfRight = sortedNodes.indexOf(right)
+            if (indexOfLeft > indexOfRight) {
               let fix:
                 | ((fixer: TSESLint.RuleFixer) => TSESLint.RuleFix[])
-                | undefined = fixer => {
-                let grouped: {
-                  [key: string]: SortingNode[]
-                } = {}
-
-                for (let currentNode of nodes) {
-                  let groupNum = getGroupNumber(options.groups, currentNode)
-
-                  if (!(groupNum in grouped)) {
-                    grouped[groupNum] = [currentNode]
-                  } else {
-                    grouped[groupNum] = sortNodes(
-                      [...grouped[groupNum], currentNode],
-                      options,
-                    )
-                  }
-                }
-
-                let sortedNodes: SortingNode[] = []
-
-                for (let group of Object.keys(grouped).sort(
-                  (a, b) => Number(a) - Number(b),
-                )) {
-                  sortedNodes.push(...sortNodes(grouped[group], options))
-                }
-
-                return makeFixes(fixer, nodes, sortedNodes, sourceCode, {
+                | undefined = fixer =>
+                makeFixes(fixer, nodes, sortedNodes, sourceCode, {
                   partitionComment: options.partitionByComment,
                 })
-              }
 
               context.report({
                 messageId: 'unexpectedObjectsOrder',

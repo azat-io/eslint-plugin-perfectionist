@@ -1,8 +1,9 @@
 import type { TSESTree } from '@typescript-eslint/types'
 
+import type { SortingNodeWithDependencies } from '../utils/sort-nodes-by-dependencies'
 import type { CompareOptions } from '../utils/compare'
-import type { SortingNode } from '../typings'
 
+import { sortNodesByDependencies } from '../utils/sort-nodes-by-dependencies'
 import { isPartitionComment } from '../utils/is-partition-comment'
 import { createEslintRule } from '../utils/create-eslint-rule'
 import { getCommentBefore } from '../utils/get-comment-before'
@@ -10,12 +11,10 @@ import { getSourceCode } from '../utils/get-source-code'
 import { toSingleLine } from '../utils/to-single-line'
 import { rangeToDiff } from '../utils/range-to-diff'
 import { getSettings } from '../utils/get-settings'
-import { isPositive } from '../utils/is-positive'
 import { sortNodes } from '../utils/sort-nodes'
 import { makeFixes } from '../utils/make-fixes'
 import { complete } from '../utils/complete'
 import { pairwise } from '../utils/pairwise'
-import { compare } from '../utils/compare'
 
 type MESSAGE_ID = 'unexpectedEnumsOrder'
 
@@ -171,8 +170,8 @@ export default createEslintRule<Options, MESSAGE_ID>({
           return dependencies
         }
 
-        let formattedMembers: SortingNode[][] = members.reduce(
-          (accumulator: SortingNode[][], member) => {
+        let formattedMembers: SortingNodeWithDependencies[][] = members.reduce(
+          (accumulator: SortingNodeWithDependencies[][], member) => {
             let comment = getCommentBefore(member, sourceCode)
 
             if (
@@ -188,7 +187,7 @@ export default createEslintRule<Options, MESSAGE_ID>({
                 ? `${member.id.value}`
                 : `${sourceCode.text.slice(...member.id.range)}`
 
-            let dependencies
+            let dependencies: string[] = []
             if (member.initializer) {
               dependencies = extractDependencies(
                 member.initializer,
@@ -196,7 +195,7 @@ export default createEslintRule<Options, MESSAGE_ID>({
               )
             }
 
-            let sortingNode: SortingNode = {
+            let sortingNode: SortingNodeWithDependencies = {
               size: rangeToDiff(member.range),
               node: member,
               dependencies,
@@ -236,8 +235,13 @@ export default createEslintRule<Options, MESSAGE_ID>({
               : undefined,
         }
         for (let nodes of formattedMembers) {
+          let sortedNodes = sortNodesByDependencies(
+            sortNodes(nodes, compareOptions),
+          )
           pairwise(nodes, (left, right) => {
-            if (isPositive(compare(left, right, compareOptions))) {
+            let indexOfLeft = sortedNodes.indexOf(left)
+            let indexOfRight = sortedNodes.indexOf(right)
+            if (indexOfLeft > indexOfRight) {
               context.report({
                 messageId: 'unexpectedEnumsOrder',
                 data: {
@@ -246,13 +250,9 @@ export default createEslintRule<Options, MESSAGE_ID>({
                 },
                 node: right.node,
                 fix: fixer =>
-                  makeFixes(
-                    fixer,
-                    nodes,
-                    sortNodes(nodes, compareOptions),
-                    sourceCode,
-                    { partitionComment },
-                  ),
+                  makeFixes(fixer, nodes, sortedNodes, sourceCode, {
+                    partitionComment,
+                  }),
               })
             }
           })
