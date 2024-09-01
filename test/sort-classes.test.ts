@@ -2781,6 +2781,19 @@ describe(ruleName, () => {
             {
               code: dedent`
                class Class {
+                  b = new WhateverObject()
+                  a = this.b.bProperty
+               }
+              `,
+              options: [
+                {
+                  ...options,
+                },
+              ],
+            },
+            {
+              code: dedent`
+               class Class {
                   static c = 1
                   static b = new WhateverObject(this.c)
                   static a = Class.b.bMethod().anotherNestedMethod(this.c).finalMethod()
