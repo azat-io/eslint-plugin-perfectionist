@@ -311,7 +311,7 @@ export default createEslintRule<Options, MESSAGE_ID>({
 
           let checkNode = (nodeValue: TSESTree.Node) => {
             /**
-             * Function expressions do not require their dependencies to be before them
+             * No need to check the body of functions and arrow functions
              */
             if (
               nodeValue.type === 'ArrowFunctionExpression' ||
