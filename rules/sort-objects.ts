@@ -5,8 +5,8 @@ import { minimatch } from 'minimatch'
 
 import type { SortingNodeWithDependencies } from '../utils/sort-nodes-by-dependencies'
 
-import { sortNodesByDependencies } from '../utils/sort-nodes-by-dependencies'
 import { validateGroupsConfiguration } from '../utils/validate-groups-configuration'
+import { sortNodesByDependencies } from '../utils/sort-nodes-by-dependencies'
 import { isPartitionComment } from '../utils/is-partition-comment'
 import { getCommentBefore } from '../utils/get-comment-before'
 import { createEslintRule } from '../utils/create-eslint-rule'
