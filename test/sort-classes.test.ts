@@ -2654,6 +2654,147 @@ describe(ruleName, () => {
                 },
               ],
             },
+            {
+              code: dedent`
+                class Class {
+                  b = () => {
+                    return 1
+                  }
+                  a = this.b()
+                  static b = () => {
+                    return 1
+                  }
+                  static a = this.b()
+                }
+              `,
+              options: [
+                {
+                  ...options,
+                  groups: [['property', 'method']],
+                },
+              ],
+            },
+            {
+              code: dedent`
+                class Class {
+                  a = this.b()
+                  static a = this.b()
+                  b() {
+                    return 1
+                  }
+                  static b() {
+                    return 1
+                  }
+                }
+              `,
+              options: [
+                {
+                  ...options,
+                  groups: [['property', 'method']],
+                },
+              ],
+            },
+            {
+              code: dedent`
+                class Class {
+                  a = this.b()
+                  static a = Class.b()
+                  b() {
+                    return 1
+                  }
+                  static b() {
+                    return 1
+                  }
+                }
+              `,
+              options: [
+                {
+                  ...options,
+                  groups: [['property', 'method']],
+                },
+              ],
+            },
+            {
+              code: dedent`
+                class Class {
+                  b = () => {
+                    return 1
+                  }
+                  a = [1].map(this.b)
+                  static b = () => {
+                    return 1
+                  }
+                  static a = [1].map(this.b)
+                }
+              `,
+              options: [
+                {
+                  ...options,
+                  groups: [['property', 'method']],
+                },
+              ],
+            },
+            {
+              code: dedent`
+                class Class {
+                  b = () => {
+                    return 1
+                  }
+                  a = [1].map(this.b)
+                  static b = () => {
+                    return 1
+                  }
+                  static a = [1].map(Class.b)
+                }
+              `,
+              options: [
+                {
+                  ...options,
+                  groups: [['property', 'method']],
+                },
+              ],
+            },
+
+            {
+              code: dedent`
+                class Class {
+                  a = [1].map(this.b)
+                  static a = [1].map(this.b)
+                  b() {
+                    return 1
+                  }
+                  static b() {
+                    return 1
+                  }
+                }
+              `,
+              options: [
+                {
+                  ...options,
+                  groups: [['property', 'method']],
+                },
+              ],
+            },
+            {
+              code: dedent`
+                class Class {
+                  a = [1].map(this.b)
+                  static a = [1].map(Class.b)
+                  b() {
+                    return 1
+                  }
+                  static b() {
+                    return 1
+                  }
+                }
+              `,
+              options: [
+                {
+                  ...options,
+                  groups: [['property', 'method']],
+                },
+              ],
+            },
           ],
           invalid: [],
         },

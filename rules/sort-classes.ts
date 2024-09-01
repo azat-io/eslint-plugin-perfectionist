@@ -284,6 +284,25 @@ export default createEslintRule<Options, MESSAGE_ID>({
         let getDependencyName = (nodeName: string, isStatic: boolean) =>
           `${isStatic ? 'static ' : ''}${nodeName}`
 
+        /**
+         * Function expressions (methods) should not be considered as dependencies
+         * because they can be put in any order without causing a reference error.
+         */
+        let functionExpressionDependencyNames = new Set(
+          node.body
+            .map(member => {
+              if (
+                (member.type === 'MethodDefinition' ||
+                  member.type === 'TSAbstractMethodDefinition') &&
+                'name' in member.key
+              ) {
+                return getDependencyName(member.key.name, member.static)
+              }
+              return null
+            })
+            .filter(m => m !== null),
+        )
+
         let extractDependencies = (
           expression: TSESTree.StaticBlock | TSESTree.Expression,
           isMemberStatic: boolean,
@@ -310,9 +329,18 @@ export default createEslintRule<Options, MESSAGE_ID>({
             ) {
               let isStaticDependency =
                 isMemberStatic || nodeValue.object.type === 'Identifier'
-              dependencies.push(
-                getDependencyName(nodeValue.property.name, isStaticDependency),
+              let dependencyName = getDependencyName(
+                nodeValue.property.name,
+                isStaticDependency,
               )
+              if (!functionExpressionDependencyNames.has(dependencyName)) {
+                dependencies.push(
+                  getDependencyName(
+                    nodeValue.property.name,
+                    isStaticDependency,
+                  ),
+                )
+              }
             }
 
             if (nodeValue.type === 'ExpressionStatement') {
