@@ -31,6 +31,8 @@ export enum Position {
   'ignore' = 'ignore',
 }
 
+type Group = 'unknown' | string
+
 type SortingNodeWithPosition = {
   position: Position
 } & SortingNode
@@ -40,7 +42,7 @@ type Options = [
     customGroups: { [key: string]: string[] | string }
     type: 'alphabetical' | 'line-length' | 'natural'
     partitionByComment: string[] | boolean | string
-    groups: (string[] | string)[]
+    groups: (Group[] | Group)[]
     partitionByNewLine: boolean
     styledComponents: boolean
     destructureOnly: boolean
@@ -194,7 +196,7 @@ export default createEslintRule<Options, MESSAGE_ID>({
 
       validateGroupsConfiguration(
         options.groups,
-        [],
+        ['unknown'],
         Object.keys(options.customGroups),
       )
 
