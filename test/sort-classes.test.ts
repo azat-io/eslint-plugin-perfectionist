@@ -3016,11 +3016,30 @@ describe(ruleName, () => {
                class Class {
                   b = new Subject()
                   a = this.b.asObservable()
+                  static b = new Subject()
+                  static a = this.b.asObservable()
                }
               `,
               options: [
                 {
                   ...options,
+                  groups: ['property'],
+                },
+              ],
+            },
+            {
+              code: dedent`
+               class Class {
+                  b = new Subject()
+                  a = this.b.asObservable()
+                  static b = new Subject()
+                  static a = Class.b.asObservable()
+               }
+              `,
+              options: [
+                {
+                  ...options,
+                  groups: ['property'],
                 },
               ],
             },
@@ -3029,11 +3048,30 @@ describe(ruleName, () => {
                class Class {
                   b = new WhateverObject()
                   a = this.b.bProperty
+                  static b = new WhateverObject()
+                  static a = this.b.bProperty
                }
               `,
               options: [
                 {
                   ...options,
+                  groups: ['property'],
+                },
+              ],
+            },
+            {
+              code: dedent`
+               class Class {
+                  b = new WhateverObject()
+                  a = this.b.bProperty
+                  static b = new WhateverObject()
+                  static a = Class.b.bProperty
+               }
+              `,
+              options: [
+                {
+                  ...options,
+                  groups: ['property'],
                 },
               ],
             },
@@ -3066,24 +3104,30 @@ describe(ruleName, () => {
                class Class {
                   b = new Subject()
                   a = this.b?.asObservable()
+                  static b = new Subject()
+                  static a = this.b?.asObservable()
                }
               `,
               options: [
                 {
                   ...options,
+                  groups: ['property'],
                 },
               ],
             },
             {
               code: dedent`
                class Class {
-                  b = new WhateverObject()
-                  a = this.b?.bProperty
+                  b = new Subject()
+                  a = this.b?.asObservable()
+                  static b = new Subject()
+                  static a = Class.b?.asObservable()
                }
               `,
               options: [
                 {
                   ...options,
+                  groups: ['property'],
                 },
               ],
             },
@@ -3102,24 +3146,30 @@ describe(ruleName, () => {
                class Class {
                   b = new Subject()
                   a = this.b!.asObservable()
+                  static b = new Subject()
+                  static a = this.b!.asObservable()
                }
               `,
               options: [
                 {
                   ...options,
+                  groups: ['property'],
                 },
               ],
             },
             {
               code: dedent`
                class Class {
-                  b = new WhateverObject()
-                  a = this.b!.bProperty
+                  b = new Subject()
+                  a = this.b!.asObservable()
+                  static b = new Subject()
+                  static a = Class.b!.asObservable()
                }
               `,
               options: [
                 {
                   ...options,
+                  groups: ['property'],
                 },
               ],
             },
@@ -3127,6 +3177,44 @@ describe(ruleName, () => {
           invalid: [],
         },
       )
+
+      ruleTester.run(`${ruleName}(${type}) detects unary dependencies`, rule, {
+        valid: [
+          {
+            code: dedent`
+               class Class {
+                  b = true
+                  a = !this.b
+                  static b = true
+                  static a = !this.b
+               }
+              `,
+            options: [
+              {
+                ...options,
+                groups: ['property'],
+              },
+            ],
+          },
+          {
+            code: dedent`
+               class Class {
+                  b = true
+                  a = !this.b
+                  static b = true
+                  static a = !Class.b
+               }
+              `,
+            options: [
+              {
+                ...options,
+                groups: ['property'],
+              },
+            ],
+          },
+        ],
+        invalid: [],
+      })
 
       ruleTester.run(
         `${ruleName}(${type}) detects dependencies in conditional expressions`,
