@@ -227,10 +227,10 @@ export default createEslintRule<SortClassesOptions, MESSAGE_ID>({
           `${isStatic ? 'static ' : ''}${nodeName}`
 
         /**
-         * Function expressions (methods) should not be considered as dependencies
+         * Class methods should not be considered as dependencies
          * because they can be put in any order without causing a reference error.
          */
-        let functionExpressionDependencyNames = new Set(
+        let classMethodsDependencyNames = new Set(
           node.body
             .map(member => {
               if (
@@ -275,7 +275,7 @@ export default createEslintRule<SortClassesOptions, MESSAGE_ID>({
                 nodeValue.property.name,
                 isStaticDependency,
               )
-              if (!functionExpressionDependencyNames.has(dependencyName)) {
+              if (!classMethodsDependencyNames.has(dependencyName)) {
                 dependencies.push(
                   getDependencyName(
                     nodeValue.property.name,
