@@ -4,7 +4,7 @@ import type { TSESLint } from '@typescript-eslint/utils'
 import { ASTUtils } from '@typescript-eslint/utils'
 
 import { isPartitionComment } from './is-partition-comment'
-import { getCommentBefore } from './get-comment-before'
+import { getCommentsBefore } from './get-comments-before'
 
 export let getNodeRange = (
   node: TSESTree.Node,
@@ -33,8 +33,6 @@ export let getNodeRange = (
     end = bodyClosingParen.range.at(1)!
   }
 
-  let comment = getCommentBefore(node, sourceCode)
-
   if (raw.endsWith(';') || raw.endsWith(',')) {
     let tokensAfter = sourceCode.getTokensAfter(node, {
       includeComments: true,
@@ -45,15 +43,24 @@ export let getNodeRange = (
       end -= 1
     }
   }
+  let comments = getCommentsBefore(node, sourceCode)
+  let commentAtTheTop = comments.at(0)
 
-  if (
-    comment &&
-    !isPartitionComment(
+  // Ignore comment at the top if it's a partition comment
+  let isCommentAtTheTopPartitionComment =
+    commentAtTheTop &&
+    isPartitionComment(
       additionalOptions?.partitionComment ?? false,
-      comment.value,
+      commentAtTheTop.value,
     )
-  ) {
-    start = comment.range.at(0)!
+
+  if (isCommentAtTheTopPartitionComment) {
+    let commentBelowTop = comments.at(-2)
+    if (commentBelowTop) {
+      start = commentBelowTop.range.at(0)!
+    }
+  } else if (commentAtTheTop) {
+    start = commentAtTheTop.range.at(0)!
   }
 
   return [start, end]

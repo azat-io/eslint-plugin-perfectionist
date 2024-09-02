@@ -7,7 +7,7 @@ import { minimatch } from 'minimatch'
 import type { SortingNode } from '../typings'
 
 import { validateGroupsConfiguration } from '../utils/validate-groups-configuration'
-import { getCommentBefore } from '../utils/get-comment-before'
+import { getCommentsBefore } from '../utils/get-comments-before'
 import { createEslintRule } from '../utils/create-eslint-rule'
 import { getLinesBetween } from '../utils/get-lines-between'
 import { getGroupNumber } from '../utils/get-group-number'
@@ -510,14 +510,15 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
         let hasContentBetweenNodes = (
           left: SortingNode,
           right: SortingNode,
-        ): boolean =>
-          !!sourceCode.getTokensBetween(
-            left.node,
-            getCommentBefore(right.node, sourceCode) || right.node,
-            {
-              includeComments: true,
-            },
-          ).length
+        ): boolean => {
+          let commentsBefore = getCommentsBefore(right.node, sourceCode)
+          return (
+            commentsBefore.length ||
+            !!sourceCode.getTokensBetween(left.node, right.node, {
+              includeComments: false,
+            }).length
+          )
+        }
 
         let fix = (
           fixer: TSESLint.RuleFixer,

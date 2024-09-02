@@ -21,7 +21,7 @@ import {
 } from './sort-classes.types'
 import { sortNodesByDependencies } from '../utils/sort-nodes-by-dependencies'
 import { isPartitionComment } from '../utils/is-partition-comment'
-import { getCommentBefore } from '../utils/get-comment-before'
+import { getCommentsBefore } from '../utils/get-comments-before'
 import { createEslintRule } from '../utils/create-eslint-rule'
 import { getGroupNumber } from '../utils/get-group-number'
 import { getSourceCode } from '../utils/get-source-code'
