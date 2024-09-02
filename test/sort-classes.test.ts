@@ -3163,6 +3163,48 @@ describe(ruleName, () => {
       )
 
       ruleTester.run(
+        `${ruleName}(${type}) detects dependencies in 'as' expressions`,
+        rule,
+        {
+          valid: [
+            {
+              code: dedent`
+            class Class {
+              b = 1
+              a = this.b as any
+              static b = 1
+              static a = this.b as any
+            }
+          `,
+              options: [
+                {
+                  ...options,
+                  groups: ['property'],
+                },
+              ],
+            },
+            {
+              code: dedent`
+            class Class {
+              b = 1
+              a = this.b as any
+              static b = 1
+              static a = Class.b as any
+            }
+          `,
+              options: [
+                {
+                  ...options,
+                  groups: ['property'],
+                },
+              ],
+            },
+          ],
+          invalid: [],
+        },
+      )
+
+      ruleTester.run(
         `${ruleName}(${type}) separates static from non-static dependencies`,
         rule,
         {

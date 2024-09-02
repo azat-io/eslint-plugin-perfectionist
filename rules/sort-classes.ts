@@ -300,6 +300,10 @@ export default createEslintRule<SortClassesOptions, MESSAGE_ID>({
               traverseNode(nodeValue.alternate)
             }
 
+            if (nodeValue.type === 'TSAsExpression') {
+              traverseNode(nodeValue.expression)
+            }
+
             if ('object' in nodeValue) {
               traverseNode(nodeValue.object)
             }
