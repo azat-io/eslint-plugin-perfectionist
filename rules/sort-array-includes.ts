@@ -1,7 +1,6 @@
 import type { JSONSchema4 } from '@typescript-eslint/utils/json-schema'
 import type { RuleContext } from '@typescript-eslint/utils/ts-eslint'
 import type { TSESTree } from '@typescript-eslint/types'
-import type { SpreadElement, Expression } from 'estree'
 
 import type { SortingNode } from '../typings'
 
@@ -99,7 +98,7 @@ export default createEslintRule<Options, MESSAGE_ID>({
 export let sortArray = <MessageIds extends string>(
   context: Readonly<RuleContext<MessageIds, Options>>,
   messageId: MessageIds,
-  elements: (SpreadElement | Expression | null)[],
+  elements: (TSESTree.SpreadElement | TSESTree.Expression | null)[],
 ) => {
   let settings = getSettings(context.settings)
 
