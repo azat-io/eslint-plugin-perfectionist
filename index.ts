@@ -22,6 +22,7 @@ import sortExports from './rules/sort-exports'
 import sortObjects from './rules/sort-objects'
 import sortEnums from './rules/sort-enums'
 import sortMaps from './rules/sort-maps'
+import sortSets from './rules/sort-sets'
 
 interface BaseOptions {
   type: 'alphabetical' | 'line-length' | 'natural'
@@ -54,6 +55,7 @@ let plugin = {
     'sort-exports': sortExports,
     'sort-objects': sortObjects,
     'sort-enums': sortEnums,
+    'sort-sets': sortSets,
     'sort-maps': sortMaps,
   },
   name,
