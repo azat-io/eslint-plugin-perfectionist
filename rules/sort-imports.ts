@@ -510,15 +510,11 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
         let hasContentBetweenNodes = (
           left: SortingNode,
           right: SortingNode,
-        ): boolean => {
-          let commentsBefore = getCommentsBefore(right.node, sourceCode)
-          return (
-            commentsBefore.length > 0 ||
-            !!sourceCode.getTokensBetween(left.node, right.node, {
-              includeComments: false,
-            }).length
-          )
-        }
+        ): boolean =>
+          getCommentsBefore(right.node, sourceCode).length > 0 ||
+          !!sourceCode.getTokensBetween(left.node, right.node, {
+            includeComments: false,
+          }).length
 
         let fix = (
           fixer: TSESLint.RuleFixer,

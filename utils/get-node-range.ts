@@ -54,13 +54,11 @@ export let getNodeRange = (
       commentAtTheTop.value,
     )
 
-  if (isCommentAtTheTopPartitionComment) {
-    let commentBelowTop = comments.at(-2)
-    if (commentBelowTop) {
-      start = commentBelowTop.range.at(0)!
-    }
-  } else if (commentAtTheTop) {
-    start = commentAtTheTop.range.at(0)!
+  let startComment = isCommentAtTheTopPartitionComment
+    ? comments.at(-2)
+    : commentAtTheTop
+  if (startComment) {
+    start = startComment.range.at(0)!
   }
 
   return [start, end]

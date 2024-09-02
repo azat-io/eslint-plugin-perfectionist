@@ -1,6 +1,10 @@
 import type { TSESLint } from '@typescript-eslint/utils'
 import type { TSESTree } from '@typescript-eslint/types'
 
+/**
+ * Returns a list of comments before a given node, excluding ones that are
+ * right after code. Includes comment blocks.
+ */
 export let getCommentsBefore = (
   node: TSESTree.Node,
   source: TSESLint.SourceCode,
