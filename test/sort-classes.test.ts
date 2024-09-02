@@ -3057,6 +3057,78 @@ describe(ruleName, () => {
       )
 
       ruleTester.run(
+        `${ruleName}(${type}) detects optional chained dependencies`,
+        rule,
+        {
+          valid: [
+            {
+              code: dedent`
+               class Class {
+                  b = new Subject()
+                  a = this.b?.asObservable()
+               }
+              `,
+              options: [
+                {
+                  ...options,
+                },
+              ],
+            },
+            {
+              code: dedent`
+               class Class {
+                  b = new WhateverObject()
+                  a = this.b?.bProperty
+               }
+              `,
+              options: [
+                {
+                  ...options,
+                },
+              ],
+            },
+          ],
+          invalid: [],
+        },
+      )
+
+      ruleTester.run(
+        `${ruleName}(${type}) detects non-null asserted dependencies`,
+        rule,
+        {
+          valid: [
+            {
+              code: dedent`
+               class Class {
+                  b = new Subject()
+                  a = this.b!.asObservable()
+               }
+              `,
+              options: [
+                {
+                  ...options,
+                },
+              ],
+            },
+            {
+              code: dedent`
+               class Class {
+                  b = new WhateverObject()
+                  a = this.b!.bProperty
+               }
+              `,
+              options: [
+                {
+                  ...options,
+                },
+              ],
+            },
+          ],
+          invalid: [],
+        },
+      )
+
+      ruleTester.run(
         `${ruleName}(${type}) detects dependencies in conditional expressions`,
         rule,
         {

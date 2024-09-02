@@ -276,21 +276,8 @@ export default createEslintRule<SortClassesOptions, MESSAGE_ID>({
                 isStaticDependency,
               )
               if (!classMethodsDependencyNames.has(dependencyName)) {
-                dependencies.push(
-                  getDependencyName(
-                    nodeValue.property.name,
-                    isStaticDependency,
-                  ),
-                )
+                dependencies.push(dependencyName)
               }
-            }
-
-            if (
-              nodeValue.type === 'ExpressionStatement' ||
-              nodeValue.type === 'TSAsExpression' ||
-              nodeValue.type === 'TSTypeAssertion'
-            ) {
-              traverseNode(nodeValue.expression)
             }
 
             if (nodeValue.type === 'Property') {
@@ -302,6 +289,13 @@ export default createEslintRule<SortClassesOptions, MESSAGE_ID>({
               traverseNode(nodeValue.test)
               traverseNode(nodeValue.consequent)
               traverseNode(nodeValue.alternate)
+            }
+
+            if (
+              'expression' in nodeValue &&
+              typeof nodeValue.expression !== 'boolean'
+            ) {
+              traverseNode(nodeValue.expression)
             }
 
             if ('object' in nodeValue) {
