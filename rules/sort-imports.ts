@@ -513,7 +513,7 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
         ): boolean => {
           let commentsBefore = getCommentsBefore(right.node, sourceCode)
           return (
-            commentsBefore.length ||
+            commentsBefore.length > 0 ||
             !!sourceCode.getTokensBetween(left.node, right.node, {
               includeComments: false,
             }).length
