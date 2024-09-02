@@ -3169,13 +3169,13 @@ describe(ruleName, () => {
           valid: [
             {
               code: dedent`
-            class Class {
-              b = 1
-              a = this.b as any
-              static b = 1
-              static a = this.b as any
-            }
-          `,
+                class Class {
+                  b = 1
+                  a = this.b as any
+                  static b = 1
+                  static a = this.b as any
+                }
+              `,
               options: [
                 {
                   ...options,
@@ -3185,13 +3185,55 @@ describe(ruleName, () => {
             },
             {
               code: dedent`
-            class Class {
-              b = 1
-              a = this.b as any
-              static b = 1
-              static a = Class.b as any
-            }
-          `,
+                class Class {
+                  b = 1
+                  a = this.b as any
+                  static b = 1
+                  static a = Class.b as any
+                }
+              `,
+              options: [
+                {
+                  ...options,
+                  groups: ['property'],
+                },
+              ],
+            },
+          ],
+          invalid: [],
+        },
+      )
+
+      ruleTester.run(
+        `${ruleName}(${type}) detects dependencies in type assertion expressions`,
+        rule,
+        {
+          valid: [
+            {
+              code: dedent`
+                class Class {
+                  b = 1
+                  a = <any>this.b
+                  static b = 1
+                  static a = <any>this.b
+                }
+              `,
+              options: [
+                {
+                  ...options,
+                  groups: ['property'],
+                },
+              ],
+            },
+            {
+              code: dedent`
+                class Class {
+                  b = 1
+                  a = <any>this.b
+                  static b = 1
+                  static a = <any>Class.b
+                }
+              `,
               options: [
                 {
                   ...options,

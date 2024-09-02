@@ -285,7 +285,11 @@ export default createEslintRule<SortClassesOptions, MESSAGE_ID>({
               }
             }
 
-            if (nodeValue.type === 'ExpressionStatement') {
+            if (
+              nodeValue.type === 'ExpressionStatement' ||
+              nodeValue.type === 'TSAsExpression' ||
+              nodeValue.type === 'TSTypeAssertion'
+            ) {
               traverseNode(nodeValue.expression)
             }
 
@@ -298,10 +302,6 @@ export default createEslintRule<SortClassesOptions, MESSAGE_ID>({
               traverseNode(nodeValue.test)
               traverseNode(nodeValue.consequent)
               traverseNode(nodeValue.alternate)
-            }
-
-            if (nodeValue.type === 'TSAsExpression') {
-              traverseNode(nodeValue.expression)
             }
 
             if ('object' in nodeValue) {
