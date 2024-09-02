@@ -3057,6 +3057,112 @@ describe(ruleName, () => {
       )
 
       ruleTester.run(
+        `${ruleName}(${type}) detects dependencies in conditional expressions`,
+        rule,
+        {
+          valid: [
+            {
+              code: dedent`
+            class Class {
+              b = 1;
+              a = this.b ? 1 : 0;
+              static b = 1;
+              static a = this.b ? 1 : 0;
+            }
+          `,
+              options: [
+                {
+                  ...options,
+                  groups: ['property'],
+                },
+              ],
+            },
+            {
+              code: dedent`
+            class Class {
+              b = 1;
+              a = this.b ? 1 : 0;
+              static b = 1;
+              static a = Class.b ? 1 : 0;
+            }
+          `,
+              options: [
+                {
+                  ...options,
+                  groups: ['property'],
+                },
+              ],
+            },
+            {
+              code: dedent`
+            class Class {
+              b = 1;
+              a = someCondition ? this.b : 0;
+              static b = 1;
+              static a = someCondition ? this.b : 0;
+            }
+          `,
+              options: [
+                {
+                  ...options,
+                  groups: ['property'],
+                },
+              ],
+            },
+            {
+              code: dedent`
+            class Class {
+              b = 1;
+              a = someCondition ? this.b : 0;
+              static b = 1;
+              static a = someCondition ? Class.b : 0;
+            }
+          `,
+              options: [
+                {
+                  ...options,
+                  groups: ['property'],
+                },
+              ],
+            },
+            {
+              code: dedent`
+            class Class {
+              b = 1;
+              a = someCondition ? 0 : this.b;
+              static b = 1;
+              static a = someCondition ? 0 : this.b;
+            }
+          `,
+              options: [
+                {
+                  ...options,
+                  groups: ['property'],
+                },
+              ],
+            },
+            {
+              code: dedent`
+            class Class {
+              b = 1;
+              a = someCondition ? 0 : this.b;
+              static b = 1;
+              static a = someCondition ? 0 : Class.b;
+            }
+          `,
+              options: [
+                {
+                  ...options,
+                  groups: ['property'],
+                },
+              ],
+            },
+          ],
+          invalid: [],
+        },
+      )
+
+      ruleTester.run(
         `${ruleName}(${type}) separates static from non-static dependencies`,
         rule,
         {

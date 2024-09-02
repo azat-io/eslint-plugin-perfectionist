@@ -294,6 +294,12 @@ export default createEslintRule<SortClassesOptions, MESSAGE_ID>({
               traverseNode(nodeValue.value)
             }
 
+            if (nodeValue.type === 'ConditionalExpression') {
+              traverseNode(nodeValue.test)
+              traverseNode(nodeValue.consequent)
+              traverseNode(nodeValue.alternate)
+            }
+
             if ('object' in nodeValue) {
               traverseNode(nodeValue.object)
             }
