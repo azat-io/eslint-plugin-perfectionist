@@ -2,7 +2,6 @@ import type { TSESTree } from '@typescript-eslint/types'
 
 export interface SortingNode<Node extends TSESTree.Node = TSESTree.Node> {
   hasMultipleImportDeclarations?: boolean
-  dependencies?: string[]
   group?: string
   name: string
   size: number

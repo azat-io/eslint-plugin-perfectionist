@@ -6,7 +6,7 @@ import type {
   Modifier,
   Selector,
 } from './sort-classes.types'
-import type { SortingNode } from '../typings'
+import type { SortingNodeWithDependencies } from '../utils/sort-nodes-by-dependencies'
 
 import {
   getOverloadSignatureGroups,
@@ -19,6 +19,7 @@ import {
   customGroupNameJsonSchema,
   customGroupSortJsonSchema,
 } from './sort-classes.types'
+import { sortNodesByDependencies } from '../utils/sort-nodes-by-dependencies'
 import { isPartitionComment } from '../utils/is-partition-comment'
 import { getCommentBefore } from '../utils/get-comment-before'
 import { createEslintRule } from '../utils/create-eslint-rule'
@@ -27,13 +28,11 @@ import { getSourceCode } from '../utils/get-source-code'
 import { toSingleLine } from '../utils/to-single-line'
 import { rangeToDiff } from '../utils/range-to-diff'
 import { getSettings } from '../utils/get-settings'
-import { isPositive } from '../utils/is-positive'
 import { useGroups } from '../utils/use-groups'
 import { sortNodes } from '../utils/sort-nodes'
 import { makeFixes } from '../utils/make-fixes'
 import { complete } from '../utils/complete'
 import { pairwise } from '../utils/pairwise'
-import { compare } from '../utils/compare'
 
 type MESSAGE_ID = 'unexpectedClassesGroupOrder' | 'unexpectedClassesOrder'
 
@@ -222,19 +221,93 @@ export default createEslintRule<SortClassesOptions, MESSAGE_ID>({
         } as const)
 
         let sourceCode = getSourceCode(context)
+        let className = node.parent.id?.name
+
+        let getDependencyName = (nodeName: string, isStatic: boolean) =>
+          `${isStatic ? 'static ' : ''}${nodeName}`
+
+        /**
+         * Class methods should not be considered as dependencies
+         * because they can be put in any order without causing a reference error.
+         */
+        let classMethodsDependencyNames = new Set(
+          node.body
+            .map(member => {
+              if (
+                (member.type === 'MethodDefinition' ||
+                  member.type === 'TSAbstractMethodDefinition') &&
+                'name' in member.key
+              ) {
+                return getDependencyName(member.key.name, member.static)
+              }
+              return null
+            })
+            .filter(m => m !== null),
+        )
 
         let extractDependencies = (
-          expression: TSESTree.Expression,
+          expression: TSESTree.StaticBlock | TSESTree.Expression,
+          isMemberStatic: boolean,
         ): string[] => {
           let dependencies: string[] = []
 
           let checkNode = (nodeValue: TSESTree.Node) => {
+            /**
+             * No need to check the body of functions and arrow functions
+             */
+            if (
+              nodeValue.type === 'ArrowFunctionExpression' ||
+              nodeValue.type === 'FunctionExpression'
+            ) {
+              return
+            }
+
             if (
               nodeValue.type === 'MemberExpression' &&
-              nodeValue.object.type === 'ThisExpression' &&
+              (nodeValue.object.type === 'ThisExpression' ||
+                (nodeValue.object.type === 'Identifier' &&
+                  nodeValue.object.name === className)) &&
               nodeValue.property.type === 'Identifier'
             ) {
-              dependencies.push(nodeValue.property.name)
+              let isStaticDependency =
+                isMemberStatic || nodeValue.object.type === 'Identifier'
+              let dependencyName = getDependencyName(
+                nodeValue.property.name,
+                isStaticDependency,
+              )
+              if (!classMethodsDependencyNames.has(dependencyName)) {
+                dependencies.push(dependencyName)
+              }
+            }
+
+            if (nodeValue.type === 'Property') {
+              traverseNode(nodeValue.key)
+              traverseNode(nodeValue.value)
+            }
+
+            if (nodeValue.type === 'ConditionalExpression') {
+              traverseNode(nodeValue.test)
+              traverseNode(nodeValue.consequent)
+              traverseNode(nodeValue.alternate)
+            }
+
+            if (
+              'expression' in nodeValue &&
+              typeof nodeValue.expression !== 'boolean'
+            ) {
+              traverseNode(nodeValue.expression)
+            }
+
+            if ('object' in nodeValue) {
+              traverseNode(nodeValue.object)
+            }
+
+            if ('callee' in nodeValue) {
+              traverseNode(nodeValue.callee)
+            }
+
+            if ('init' in nodeValue && nodeValue.init) {
+              traverseNode(nodeValue.init)
             }
 
             if ('body' in nodeValue && nodeValue.body) {
@@ -255,8 +328,20 @@ export default createEslintRule<SortClassesOptions, MESSAGE_ID>({
                 .forEach(traverseNode)
             }
 
+            if ('argument' in nodeValue && nodeValue.argument) {
+              traverseNode(nodeValue.argument)
+            }
+
             if ('arguments' in nodeValue) {
               nodeValue.arguments.forEach(traverseNode)
+            }
+
+            if ('declarations' in nodeValue) {
+              nodeValue.declarations.forEach(traverseNode)
+            }
+
+            if ('properties' in nodeValue) {
+              nodeValue.properties.forEach(traverseNode)
             }
           }
 
@@ -274,8 +359,8 @@ export default createEslintRule<SortClassesOptions, MESSAGE_ID>({
 
         let overloadSignatureGroups = getOverloadSignatureGroups(node.body)
 
-        let formattedNodes: SortingNode[][] = node.body.reduce(
-          (accumulator: SortingNode[][], member) => {
+        let formattedNodes: SortingNodeWithDependencies[][] = node.body.reduce(
+          (accumulator: SortingNodeWithDependencies[][], member) => {
             let comment = getCommentBefore(member, sourceCode)
 
             if (
@@ -389,6 +474,8 @@ export default createEslintRule<SortClassesOptions, MESSAGE_ID>({
               selectors.push('index-signature')
             } else if (member.type === 'StaticBlock') {
               selectors.push('static-block')
+
+              dependencies = extractDependencies(member, true)
             } else if (
               member.type === 'AccessorProperty' ||
               member.type === 'TSAbstractAccessorProperty'
@@ -458,15 +545,24 @@ export default createEslintRule<SortClassesOptions, MESSAGE_ID>({
                 modifiers.push('optional')
               }
 
-              if (
+              let isFunctionProperty =
                 member.value?.type === 'ArrowFunctionExpression' ||
                 member.value?.type === 'FunctionExpression'
-              ) {
+              if (isFunctionProperty) {
                 selectors.push('function-property')
               }
 
               selectors.push('property')
+
+              if (
+                member.type === 'PropertyDefinition' &&
+                member.value &&
+                !isFunctionProperty
+              ) {
+                dependencies = extractDependencies(member.value, member.static)
+              }
             }
+
             for (let officialGroup of generateOfficialGroups(
               modifiers,
               selectors,
@@ -500,17 +596,13 @@ export default createEslintRule<SortClassesOptions, MESSAGE_ID>({
               })
             }
 
-            if (member.type === 'PropertyDefinition' && member.value) {
-              dependencies = extractDependencies(member.value)
-            }
-
             // Members belonging to the same overload signature group should have the same size in order to keep line-length sorting between them consistent.
             // It is unclear what should be considered the size of an overload signature group. Take the size of the implementation by default.
             let overloadSignatureGroupMember = overloadSignatureGroups
               .find(overloadSignatures => overloadSignatures.includes(member))
               ?.at(-1)
 
-            let value: SortingNode = {
+            let value: SortingNodeWithDependencies = {
               size: overloadSignatureGroupMember
                 ? rangeToDiff(overloadSignatureGroupMember.range)
                 : rangeToDiff(member.range),
@@ -518,6 +610,10 @@ export default createEslintRule<SortClassesOptions, MESSAGE_ID>({
               node: member,
               dependencies,
               name,
+              dependencyName: getDependencyName(
+                name,
+                modifiers.includes('static'),
+              ),
             }
 
             accumulator.at(-1)!.push(value)
@@ -528,6 +624,48 @@ export default createEslintRule<SortClassesOptions, MESSAGE_ID>({
         )
 
         for (let nodes of formattedNodes) {
+          let nodesByNonIgnoredGroupNumber: {
+            [key: number]: SortingNodeWithDependencies[]
+          } = {}
+          let ignoredNodeIndices: number[] = []
+          for (let [index, sortingNode] of nodes.entries()) {
+            let groupNum = getGroupNumber(options.groups, sortingNode)
+            if (groupNum === options.groups.length) {
+              ignoredNodeIndices.push(index)
+              continue
+            }
+            nodesByNonIgnoredGroupNumber[groupNum] =
+              nodesByNonIgnoredGroupNumber[groupNum] ?? []
+            nodesByNonIgnoredGroupNumber[groupNum].push(sortingNode)
+          }
+
+          let sortedNodes: SortingNodeWithDependencies[] = []
+          for (let groupNumber of Object.keys(
+            nodesByNonIgnoredGroupNumber,
+          ).sort((a, b) => Number(a) - Number(b))) {
+            let compareOptions = getCompareOptions(options, Number(groupNumber))
+            if (!compareOptions) {
+              // Do not sort this group
+              sortedNodes.push(
+                ...nodesByNonIgnoredGroupNumber[Number(groupNumber)],
+              )
+            } else {
+              sortedNodes.push(
+                ...sortNodes(
+                  nodesByNonIgnoredGroupNumber[Number(groupNumber)],
+                  compareOptions,
+                ),
+              )
+            }
+          }
+
+          // Add ignored nodes at the same position as they were before linting
+          for (let ignoredIndex of ignoredNodeIndices) {
+            sortedNodes.splice(ignoredIndex, 0, nodes[ignoredIndex])
+          }
+
+          sortedNodes = sortNodesByDependencies(sortedNodes)
+
           pairwise(nodes, (left, right) => {
             let leftNum = getGroupNumber(options.groups, left)
             let rightNum = getGroupNumber(options.groups, right)
@@ -536,21 +674,10 @@ export default createEslintRule<SortClassesOptions, MESSAGE_ID>({
             let isLeftOrRightIgnored =
               leftNum === options.groups.length ||
               rightNum === options.groups.length
-            if (isLeftOrRightIgnored) {
-              return
-            }
 
-            let compareValue = false
-            if (leftNum > rightNum) {
-              compareValue = true
-            } else if (leftNum === rightNum) {
-              let compareOptions = getCompareOptions(options, leftNum)
-              compareValue = compareOptions
-                ? isPositive(compare(left, right, compareOptions))
-                : false
-            }
-
-            if (compareValue) {
+            let indexOfLeft = sortedNodes.indexOf(left)
+            let indexOfRight = sortedNodes.indexOf(right)
+            if (!isLeftOrRightIgnored && indexOfLeft > indexOfRight) {
               context.report({
                 messageId:
                   leftNum !== rightNum
@@ -563,54 +690,10 @@ export default createEslintRule<SortClassesOptions, MESSAGE_ID>({
                   rightGroup: right.group,
                 },
                 node: right.node,
-                fix: (fixer: TSESLint.RuleFixer) => {
-                  let nodesByNonIgnoredGroupNumber: {
-                    [key: number]: SortingNode[]
-                  } = {}
-                  let ignoredNodeIndices: number[] = []
-                  for (let [index, sortingNode] of nodes.entries()) {
-                    let groupNum = getGroupNumber(options.groups, sortingNode)
-                    if (groupNum === options.groups.length) {
-                      ignoredNodeIndices.push(index)
-                      continue
-                    }
-                    nodesByNonIgnoredGroupNumber[groupNum] =
-                      nodesByNonIgnoredGroupNumber[groupNum] ?? []
-                    nodesByNonIgnoredGroupNumber[groupNum].push(sortingNode)
-                  }
-
-                  let sortedNodes: SortingNode[] = []
-                  for (let groupNumber of Object.keys(
-                    nodesByNonIgnoredGroupNumber,
-                  ).sort((a, b) => Number(a) - Number(b))) {
-                    let compareOptions = getCompareOptions(
-                      options,
-                      Number(groupNumber),
-                    )
-                    if (!compareOptions) {
-                      // Do not sort this group
-                      sortedNodes.push(
-                        ...nodesByNonIgnoredGroupNumber[Number(groupNumber)],
-                      )
-                    } else {
-                      sortedNodes.push(
-                        ...sortNodes(
-                          nodesByNonIgnoredGroupNumber[Number(groupNumber)],
-                          compareOptions,
-                        ),
-                      )
-                    }
-                  }
-
-                  // Add ignored nodes at the same position as they were before linting
-                  for (let ignoredIndex of ignoredNodeIndices) {
-                    sortedNodes.splice(ignoredIndex, 0, nodes[ignoredIndex])
-                  }
-
-                  return makeFixes(fixer, nodes, sortedNodes, sourceCode, {
+                fix: (fixer: TSESLint.RuleFixer) =>
+                  makeFixes(fixer, nodes, sortedNodes, sourceCode, {
                     partitionComment: options.partitionByComment,
-                  })
-                },
+                  }),
               })
             }
           })

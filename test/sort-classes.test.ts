@@ -493,7 +493,7 @@ describe(ruleName, () => {
       },
     )
 
-    describe('index-signature modifiers priority', () => {
+    describe(`${ruleName}(${type}): index-signature modifiers priority`, () => {
       ruleTester.run(
         `${ruleName}(${type}): prioritize static over readonly`,
         rule,
@@ -544,7 +544,7 @@ describe(ruleName, () => {
       )
     })
 
-    describe('method selectors priority', () => {
+    describe(`${ruleName}(${type}): method selectors priority`, () => {
       ruleTester.run(
         `${ruleName}(${type}): prioritize constructor over method`,
         rule,
@@ -681,7 +681,7 @@ describe(ruleName, () => {
       )
     })
 
-    describe('method modifiers priority', () => {
+    describe(`${ruleName}(${type}): method modifiers priority`, () => {
       ruleTester.run(
         `${ruleName}(${type}): prioritize static over override`,
         rule,
@@ -920,7 +920,7 @@ describe(ruleName, () => {
       }
     })
 
-    describe('accessor modifiers priority', () => {
+    describe(`${ruleName}(${type}): accessor modifiers priority`, () => {
       ruleTester.run(
         `${ruleName}(${type}): prioritize static over override`,
         rule,
@@ -1122,7 +1122,7 @@ describe(ruleName, () => {
       }
     })
 
-    describe('property selectors priority', () => {
+    describe(`${ruleName}(${type}): property selectors priority`, () => {
       ruleTester.run(
         `${ruleName}(${type}): prioritize function property over property`,
         rule,
@@ -1214,7 +1214,7 @@ describe(ruleName, () => {
       )
     })
 
-    describe('property modifiers priority', () => {
+    describe(`${ruleName}(${type}): property modifiers priority`, () => {
       ruleTester.run(
         `${ruleName}(${type}): prioritize static over declare`,
         rule,
@@ -2589,278 +2589,1091 @@ describe(ruleName, () => {
       },
     )
 
-    ruleTester.run(
-      `${ruleName}(${type}): works with left and right dependencies`,
-      rule,
-      {
+    describe(`${ruleName}(${type}): detects dependencies`, () => {
+      ruleTester.run(
+        `${ruleName}(${type}) ignores function expression dependencies`,
+        rule,
+        {
+          valid: [
+            {
+              code: dedent`
+                class Class {
+                  a = this.b()
+                  static a = this.b()
+                  b() {
+                    return 1
+                  }
+                  static b() {
+                    return 1
+                  }
+                }
+              `,
+              options: [
+                {
+                  ...options,
+                  groups: [['property', 'method']],
+                },
+              ],
+            },
+            {
+              code: dedent`
+                class Class {
+                  a = this.b()
+                  static a = Class.b()
+                  b() {
+                    return 1
+                  }
+                  static b() {
+                    return 1
+                  }
+                }
+              `,
+              options: [
+                {
+                  ...options,
+                  groups: [['property', 'method']],
+                },
+              ],
+            },
+            {
+              code: dedent`
+                class Class {
+                  a = [1].map(this.b)
+                  static a = [1].map(this.b)
+                  b() {
+                    return 1
+                  }
+                  static b() {
+                    return 1
+                  }
+                }
+              `,
+              options: [
+                {
+                  ...options,
+                  groups: [['property', 'method']],
+                },
+              ],
+            },
+            {
+              code: dedent`
+                class Class {
+                  a = [1].map(this.b)
+                  static a = [1].map(Class.b)
+                  b() {
+                    return 1
+                  }
+                  static b() {
+                    return 1
+                  }
+                }
+              `,
+              options: [
+                {
+                  ...options,
+                  groups: [['property', 'method']],
+                },
+              ],
+            },
+          ],
+          invalid: [],
+        },
+      )
+
+      ruleTester.run(
+        `${ruleName}(${type}) detects arrow function expression dependencies`,
+        rule,
+        {
+          valid: [
+            {
+              code: dedent`
+                class Class {
+                  b = () => {
+                    return 1
+                  }
+                  a = this.b()
+                  static b = () => {
+                    return 1
+                  }
+                  static a = this.b()
+                }
+              `,
+              options: [
+                {
+                  ...options,
+                  groups: [['property', 'method']],
+                },
+              ],
+            },
+            {
+              code: dedent`
+                class Class {
+                  b = () => {
+                    return 1
+                  }
+                  a = [1].map(this.b)
+                  static b = () => {
+                    return 1
+                  }
+                  static a = [1].map(this.b)
+                }
+              `,
+              options: [
+                {
+                  ...options,
+                  groups: [['property', 'method']],
+                },
+              ],
+            },
+            {
+              code: dedent`
+                class Class {
+                  b = () => {
+                    return 1
+                  }
+                  a = [1].map(this.b)
+                  static b = () => {
+                    return 1
+                  }
+                  static a = [1].map(Class.b)
+                }
+              `,
+              options: [
+                {
+                  ...options,
+                  groups: [['property', 'method']],
+                },
+              ],
+            },
+          ],
+          invalid: [],
+        },
+      )
+
+      ruleTester.run(
+        `${ruleName}(${type}) detects static block dependencies`,
+        rule,
+        {
+          valid: [
+            {
+              code: dedent`
+                class Class {
+                  static {
+                    return true || OtherClass.z;
+                  }
+                  static z = true;
+                }
+              `,
+              options: [
+                {
+                  ...options,
+                  groups: [['static-block', 'static-property']],
+                },
+              ],
+            },
+            {
+              code: dedent`
+                class Class {
+                  static {
+                    const method = () => {
+                      return (Class.z || true) && (false || this.z);
+                    };
+                    method();
+                  }
+                  static z = true;
+                }
+              `,
+              options: [
+                {
+                  ...options,
+                  groups: [['static-block', 'static-property']],
+                },
+              ],
+            },
+            {
+              code: dedent`
+                class Class {
+                  static z = true;
+                  static {
+                    const method = () => {
+                      return (Class.z || true) && (false || this.z);
+                    };
+                    method();
+                    return (Class.z || true) && (false || this.z);
+                  }
+                }
+              `,
+              options: [
+                {
+                  ...options,
+                  groups: [['static-block', 'static-property']],
+                },
+              ],
+            },
+          ],
+          invalid: [],
+        },
+      )
+
+      ruleTester.run(
+        `${ruleName}(${type}) detects property expression dependencies`,
+        rule,
+        {
+          valid: [],
+          invalid: [
+            {
+              code: dedent`
+                class Class {
+                  static e = 10 + this.c
+
+                  d = this.b
+
+                  static a = 10 + OtherClass.z
+
+                  b = 10 + Class.z
+
+                  static c = 10 + this.z
+
+                  static z = 1
+                }
+              `,
+              output: dedent`
+                class Class {
+                  static a = 10 + OtherClass.z
+
+                  static z = 1
+
+                  b = 10 + Class.z
+
+                  static c = 10 + this.z
+
+                  d = this.b
+
+                  static e = 10 + this.c
+                }
+              `,
+              options: [
+                {
+                  ...options,
+                  groups: ['property'],
+                },
+              ],
+              errors: [
+                {
+                  messageId: 'unexpectedClassesOrder',
+                  data: {
+                    left: 'e',
+                    right: 'd',
+                  },
+                },
+                {
+                  messageId: 'unexpectedClassesOrder',
+                  data: {
+                    left: 'd',
+                    right: 'a',
+                  },
+                },
+                {
+                  messageId: 'unexpectedClassesOrder',
+                  data: {
+                    left: 'c',
+                    right: 'z',
+                  },
+                },
+              ],
+            },
+            {
+              code: dedent`
+                class Class {
+                  a = this.c
+                  b = 10
+                  c = 10
+                }
+              `,
+              output: dedent`
+                class Class {
+                  c = 10
+                  a = this.c
+                  b = 10
+                }
+              `,
+              options: [
+                {
+                  ...options,
+                },
+              ],
+              errors: [
+                {
+                  messageId: 'unexpectedClassesOrder',
+                  data: {
+                    left: 'b',
+                    right: 'c',
+                  },
+                },
+              ],
+            },
+          ],
+        },
+      )
+
+      ruleTester.run(
+        `${ruleName}(${type}) detects dependencies in objects`,
+        rule,
+        {
+          valid: [
+            {
+              code: dedent`
+               class Class {
+                 b = 1
+                 a = {
+                   b: this.b
+                 }
+                 static b = 1
+                 static a = {
+                   b: this.b
+                 }
+               }
+              `,
+              options: [
+                {
+                  ...options,
+                  groups: ['property'],
+                },
+              ],
+            },
+            {
+              code: dedent`
+               class Class {
+                 b = 1
+                 a = {
+                   b: this.b
+                 }
+                 static b = 1
+                 static a = {
+                   b: Class.b
+                 }
+               }
+              `,
+              options: [
+                {
+                  ...options,
+                  groups: ['property'],
+                },
+              ],
+            },
+            {
+              code: dedent`
+               class Class {
+                 b = 1
+                 a = {
+                   [this.b]: 1
+                 }
+                 static b = 1
+                 static a = {
+                   [this.b]: A
+                 }
+               }
+              `,
+              options: [
+                {
+                  ...options,
+                  groups: ['property'],
+                },
+              ],
+            },
+            {
+              code: dedent`
+               class Class {
+                 b = 1
+                 a = {
+                   [this.b]: 1
+                 }
+                 static b = 1
+                 static a = {
+                   [Class.b]: 1
+                 }
+               }
+              `,
+              options: [
+                {
+                  ...options,
+                  groups: ['property'],
+                },
+              ],
+            },
+          ],
+          invalid: [],
+        },
+      )
+
+      ruleTester.run(
+        `${ruleName}(${type}) detects nested property references`,
+        rule,
+        {
+          valid: [
+            {
+              code: dedent`
+               class Class {
+                  b = new Subject()
+                  a = this.b.asObservable()
+                  static b = new Subject()
+                  static a = this.b.asObservable()
+               }
+              `,
+              options: [
+                {
+                  ...options,
+                  groups: ['property'],
+                },
+              ],
+            },
+            {
+              code: dedent`
+               class Class {
+                  b = new Subject()
+                  a = this.b.asObservable()
+                  static b = new Subject()
+                  static a = Class.b.asObservable()
+               }
+              `,
+              options: [
+                {
+                  ...options,
+                  groups: ['property'],
+                },
+              ],
+            },
+            {
+              code: dedent`
+               class Class {
+                  b = new WhateverObject()
+                  a = this.b.bProperty
+                  static b = new WhateverObject()
+                  static a = this.b.bProperty
+               }
+              `,
+              options: [
+                {
+                  ...options,
+                  groups: ['property'],
+                },
+              ],
+            },
+            {
+              code: dedent`
+               class Class {
+                  b = new WhateverObject()
+                  a = this.b.bProperty
+                  static b = new WhateverObject()
+                  static a = Class.b.bProperty
+               }
+              `,
+              options: [
+                {
+                  ...options,
+                  groups: ['property'],
+                },
+              ],
+            },
+            {
+              code: dedent`
+               class Class {
+                  static c = 1
+                  static b = new WhateverObject(this.c)
+                  static a = Class.b.bMethod().anotherNestedMethod(this.c).finalMethod()
+               }
+              `,
+              options: [
+                {
+                  ...options,
+                },
+              ],
+            },
+          ],
+          invalid: [],
+        },
+      )
+
+      ruleTester.run(
+        `${ruleName}(${type}) detects optional chained dependencies`,
+        rule,
+        {
+          valid: [
+            {
+              code: dedent`
+               class Class {
+                  b = new Subject()
+                  a = this.b?.asObservable()
+                  static b = new Subject()
+                  static a = this.b?.asObservable()
+               }
+              `,
+              options: [
+                {
+                  ...options,
+                  groups: ['property'],
+                },
+              ],
+            },
+            {
+              code: dedent`
+               class Class {
+                  b = new Subject()
+                  a = this.b?.asObservable()
+                  static b = new Subject()
+                  static a = Class.b?.asObservable()
+               }
+              `,
+              options: [
+                {
+                  ...options,
+                  groups: ['property'],
+                },
+              ],
+            },
+          ],
+          invalid: [],
+        },
+      )
+
+      ruleTester.run(
+        `${ruleName}(${type}) detects non-null asserted dependencies`,
+        rule,
+        {
+          valid: [
+            {
+              code: dedent`
+               class Class {
+                  b = new Subject()
+                  a = this.b!.asObservable()
+                  static b = new Subject()
+                  static a = this.b!.asObservable()
+               }
+              `,
+              options: [
+                {
+                  ...options,
+                  groups: ['property'],
+                },
+              ],
+            },
+            {
+              code: dedent`
+               class Class {
+                  b = new Subject()
+                  a = this.b!.asObservable()
+                  static b = new Subject()
+                  static a = Class.b!.asObservable()
+               }
+              `,
+              options: [
+                {
+                  ...options,
+                  groups: ['property'],
+                },
+              ],
+            },
+          ],
+          invalid: [],
+        },
+      )
+
+      ruleTester.run(`${ruleName}(${type}) detects unary dependencies`, rule, {
         valid: [
           {
             code: dedent`
-              class Class {
-                left = 'left'
-                right = 'right'
-
-                aaa = this.left + this.right
-              }
-            `,
-            options: [options],
-          },
-          {
-            code: dedent`
-              class Class {
-                condition1 = true
-                condition2 = false
-
-                result = this.condition1 && this.condition2
-              }
-            `,
-            options: [options],
-          },
-        ],
-        invalid: [
-          {
-            code: dedent`
-              class Class {
-                aaa = this.left + this.right
-
-                left = 'left'
-
-                right = 'right'
-              }
-            `,
-            output: dedent`
-              class Class {
-                left = 'left'
-
-                right = 'right'
-
-                aaa = this.left + this.right
-              }
-            `,
-            options: [options],
-            errors: [
+               class Class {
+                  b = true
+                  a = !this.b
+                  static b = true
+                  static a = !this.b
+               }
+              `,
+            options: [
               {
-                messageId: 'unexpectedClassesOrder',
-                data: {
-                  left: 'aaa',
-                  right: 'left',
-                },
+                ...options,
+                groups: ['property'],
+              },
+            ],
+          },
+          {
+            code: dedent`
+               class Class {
+                  b = true
+                  a = !this.b
+                  static b = true
+                  static a = !Class.b
+               }
+              `,
+            options: [
+              {
+                ...options,
+                groups: ['property'],
               },
             ],
           },
         ],
-      },
-    )
+        invalid: [],
+      })
 
-    ruleTester.run(`${ruleName}(${type}): works with body dependencies`, rule, {
-      valid: [
+      ruleTester.run(
+        `${ruleName}(${type}) detects spread elements dependencies`,
+        rule,
         {
-          code: dedent`
-              class Class {
-                a = 10
-
-                method = function() {
-                  const b = this.a + 20;
-                  return b;
-                }
-              }
-            `,
-          options: [options],
+          valid: [
+            {
+              code: dedent`
+               class Class {
+                  b = {}
+                  a = {...this.b}
+                  static b = {}
+                  static a = {...this.b}
+               }
+              `,
+              options: [
+                {
+                  ...options,
+                  groups: ['property'],
+                },
+              ],
+            },
+            {
+              code: dedent`
+               class Class {
+                  b = {}
+                  a = {...this.b}
+                  static b = {}
+                  static a = {...Class.b}
+               }
+              `,
+              options: [
+                {
+                  ...options,
+                  groups: ['property'],
+                },
+              ],
+            },
+          ],
+          invalid: [],
         },
-        {
-          code: dedent`
-              class Class {
-                a = 10
+      )
 
-                method = () => {
-                  const b = this.a + 20;
-                  return b;
-                }
-              }
-            `,
-          options: [options],
-        },
+      ruleTester.run(
+        `${ruleName}(${type}) detects dependencies in conditional expressions`,
+        rule,
         {
-          code: dedent`
-              class Class {
-                a = 10
-                b = 20
-
-                method() {
-                  {
-                    const c = this.a + this.b;
-                    console.log(c);
-                  }
-                }
-              }
-            `,
-          options: [options],
-        },
-        {
-          code: dedent`
-              class Class {
-                a = 10
-                b = this.a + 20
-
-                method() {
-                  return this.b;
-                }
-              }
-            `,
-          options: [options],
-        },
-      ],
-      invalid: [
-        {
-          code: dedent`
+          valid: [
+            {
+              code: dedent`
             class Class {
-              method = function() {
-                const b = this.a + 20;
-                return b;
-              }
-
-              a = 10
+              b = 1;
+              a = this.b ? 1 : 0;
+              static b = 1;
+              static a = this.b ? 1 : 0;
             }
           `,
-          output: dedent`
+              options: [
+                {
+                  ...options,
+                  groups: ['property'],
+                },
+              ],
+            },
+            {
+              code: dedent`
             class Class {
-              a = 10
-
-              method = function() {
-                const b = this.a + 20;
-                return b;
-              }
+              b = 1;
+              a = this.b ? 1 : 0;
+              static b = 1;
+              static a = Class.b ? 1 : 0;
             }
           `,
-          options: [options],
-          errors: [
+              options: [
+                {
+                  ...options,
+                  groups: ['property'],
+                },
+              ],
+            },
             {
-              messageId: 'unexpectedClassesOrder',
-              data: {
-                left: 'method',
-                right: 'a',
-              },
+              code: dedent`
+            class Class {
+              b = 1;
+              a = someCondition ? this.b : 0;
+              static b = 1;
+              static a = someCondition ? this.b : 0;
+            }
+          `,
+              options: [
+                {
+                  ...options,
+                  groups: ['property'],
+                },
+              ],
+            },
+            {
+              code: dedent`
+            class Class {
+              b = 1;
+              a = someCondition ? this.b : 0;
+              static b = 1;
+              static a = someCondition ? Class.b : 0;
+            }
+          `,
+              options: [
+                {
+                  ...options,
+                  groups: ['property'],
+                },
+              ],
+            },
+            {
+              code: dedent`
+            class Class {
+              b = 1;
+              a = someCondition ? 0 : this.b;
+              static b = 1;
+              static a = someCondition ? 0 : this.b;
+            }
+          `,
+              options: [
+                {
+                  ...options,
+                  groups: ['property'],
+                },
+              ],
+            },
+            {
+              code: dedent`
+            class Class {
+              b = 1;
+              a = someCondition ? 0 : this.b;
+              static b = 1;
+              static a = someCondition ? 0 : Class.b;
+            }
+          `,
+              options: [
+                {
+                  ...options,
+                  groups: ['property'],
+                },
+              ],
+            },
+          ],
+          invalid: [],
+        },
+      )
+
+      ruleTester.run(
+        `${ruleName}(${type}) detects dependencies in 'as' expressions`,
+        rule,
+        {
+          valid: [
+            {
+              code: dedent`
+                class Class {
+                  b = 1
+                  a = this.b as any
+                  static b = 1
+                  static a = this.b as any
+                }
+              `,
+              options: [
+                {
+                  ...options,
+                  groups: ['property'],
+                },
+              ],
+            },
+            {
+              code: dedent`
+                class Class {
+                  b = 1
+                  a = this.b as any
+                  static b = 1
+                  static a = Class.b as any
+                }
+              `,
+              options: [
+                {
+                  ...options,
+                  groups: ['property'],
+                },
+              ],
+            },
+          ],
+          invalid: [],
+        },
+      )
+
+      ruleTester.run(
+        `${ruleName}(${type}) detects dependencies in type assertion expressions`,
+        rule,
+        {
+          valid: [
+            {
+              code: dedent`
+                class Class {
+                  b = 1
+                  a = <any>this.b
+                  static b = 1
+                  static a = <any>this.b
+                }
+              `,
+              options: [
+                {
+                  ...options,
+                  groups: ['property'],
+                },
+              ],
+            },
+            {
+              code: dedent`
+                class Class {
+                  b = 1
+                  a = <any>this.b
+                  static b = 1
+                  static a = <any>Class.b
+                }
+              `,
+              options: [
+                {
+                  ...options,
+                  groups: ['property'],
+                },
+              ],
+            },
+          ],
+          invalid: [],
+        },
+      )
+
+      ruleTester.run(
+        `${ruleName}(${type}) separates static from non-static dependencies`,
+        rule,
+        {
+          valid: [
+            {
+              code: dedent`
+              export class Class{
+                b = 1;
+                a = this.b;
+                static b = 1;
+              }
+            `,
+              options: [
+                {
+                  ...options,
+                  groups: ['property'],
+                },
+              ],
+            },
+          ],
+          invalid: [
+            {
+              code: dedent`
+                class Class {
+                  static a = Class.c
+                  b = this.c
+                  static b = this.c
+                  c = 10
+                  static c = 10
+                }
+              `,
+              output: dedent`
+                class Class {
+                  static c = 10
+                  static a = Class.c
+                  c = 10
+                  b = this.c
+                  static b = this.c
+                }
+              `,
+              options: [
+                {
+                  ...options,
+                  groups: ['property'],
+                },
+              ],
+              errors: [
+                {
+                  messageId: 'unexpectedClassesOrder',
+                  data: {
+                    left: 'b',
+                    right: 'c',
+                  },
+                },
+                {
+                  messageId: 'unexpectedClassesOrder',
+                  data: {
+                    left: 'c',
+                    right: 'c',
+                  },
+                },
+              ],
             },
           ],
         },
+      )
+
+      ruleTester.run(
+        `${ruleName}(${type}) detects circular dependencies`,
+        rule,
         {
-          code: dedent`
-              class Class {
-                method = () => {
-                  const b = this.a + 20;
-                  return b;
-                }
-
-                a = 10
-              }
-            `,
-          output: dedent`
-              class Class {
-                a = 10
-
-                method = () => {
-                  const b = this.a + 20;
-                  return b;
-                }
-              }
-            `,
-          options: [options],
-          errors: [
+          valid: [],
+          invalid: [
             {
-              messageId: 'unexpectedClassesOrder',
-              data: {
-                left: 'method',
-                right: 'a',
-              },
+              code: dedent`
+                class Class {
+                  b = this.e
+                  a
+                  e = this.g
+                  f
+                  g = this.b
+                }
+              `,
+              output: dedent`
+                class Class {
+                  a
+                  g = this.b
+                  e = this.g
+                  b = this.e
+                  f
+                }
+              `,
+              options: [
+                {
+                  ...options,
+                  groups: ['property'],
+                },
+              ],
+              errors: [
+                {
+                  messageId: 'unexpectedClassesOrder',
+                  data: {
+                    left: 'b',
+                    right: 'a',
+                  },
+                },
+                {
+                  messageId: 'unexpectedClassesOrder',
+                  data: {
+                    left: 'f',
+                    right: 'g',
+                  },
+                },
+              ],
             },
           ],
         },
+      )
+
+      ruleTester.run(
+        `${ruleName}(${type}) ignores function body dependencies`,
+        rule,
         {
-          code: dedent`
-              class Class {
-                method() {
-                  {
-                    const c = this.a + this.b;
-                    console.log(c);
+          valid: [
+            {
+              code: dedent`
+                class Class {
+                  static a = true;
+
+                  static b() {
+                     return this.a || Class.a
+                  }
+
+                  static c = () => {
+                     return this.a || Class.a
                   }
                 }
-
-                a = 10
-
-                b = 20
-              }
-            `,
-          output: dedent`
-              class Class {
-                a = 10
-
-                b = 20
-
-                method() {
-                  {
-                    const c = this.a + this.b;
-                    console.log(c);
-                  }
-                }
-              }
-            `,
-          options: [options],
-          errors: [
-            {
-              messageId: 'unexpectedClassesGroupOrder',
-              data: {
-                left: 'method',
-                leftGroup: 'method',
-                right: 'a',
-                rightGroup: 'property',
-              },
+              `,
+              options: [
+                {
+                  ...options,
+                  groups: [['method', 'property']],
+                },
+              ],
             },
           ],
+          invalid: [],
         },
+      )
+
+      ruleTester.run(
+        `${ruleName}(${type}): prioritizes dependencies over group configuration`,
+        rule,
         {
-          code: dedent`
-              class Class {
-                method() {
-                  return this.b;
-                }
-
-                b = this.a + 20
-
-                a = 10
-              }
-            `,
-          output: dedent`
-              class Class {
-                a = 10
-
-                b = this.a + 20
-
-                method() {
-                  return this.b;
-                }
-              }
-            `,
-          options: [options],
-          errors: [
+          valid: [
             {
-              messageId: 'unexpectedClassesGroupOrder',
-              data: {
-                left: 'method',
-                leftGroup: 'method',
-                right: 'b',
-                rightGroup: 'property',
-              },
+              code: dedent`
+                class Class {
+                  public b = 1;
+                  private a = this.b;
+                }
+              `,
+              options: [
+                {
+                  ...options,
+                  groups: ['private-property', 'public-property'],
+                },
+              ],
             },
+          ],
+          invalid: [],
+        },
+      )
+
+      ruleTester.run(
+        `${ruleName}(${type}): works with left and right dependencies`,
+        rule,
+        {
+          valid: [
             {
-              messageId: 'unexpectedClassesOrder',
-              data: {
-                left: 'b',
-                right: 'a',
-              },
+              code: dedent`
+              class Class {
+                left = 'left'
+                right = 'right'
+
+                aaa = this.left + this.right
+              }
+            `,
+              options: [options],
+            },
+          ],
+          invalid: [
+            {
+              code: dedent`
+              class Class {
+                aaa = this.left + this.right
+
+                left = 'left'
+
+                right = 'right'
+              }
+            `,
+              output: dedent`
+              class Class {
+                left = 'left'
+
+                right = 'right'
+
+                aaa = this.left + this.right
+              }
+            `,
+              options: [options],
+              errors: [
+                {
+                  messageId: 'unexpectedClassesOrder',
+                  data: {
+                    left: 'aaa',
+                    right: 'left',
+                  },
+                },
+              ],
             },
           ],
         },
-      ],
+      )
     })
 
     ruleTester.run(`${ruleName}(${type}): should ignore unknown group`, rule, {
@@ -4032,17 +4845,6 @@ describe(ruleName, () => {
             `,
             options: [options],
           },
-          {
-            code: dedent`
-              class Class {
-                condition1 = true
-                condition2 = false
-
-                result = this.condition1 && this.condition2
-              }
-            `,
-            options: [options],
-          },
         ],
         invalid: [
           {
@@ -4078,217 +4880,6 @@ describe(ruleName, () => {
         ],
       },
     )
-
-    ruleTester.run(`${ruleName}(${type}): works with body dependencies`, rule, {
-      valid: [
-        {
-          code: dedent`
-              class Class {
-                a = 10
-
-                method = function() {
-                  const b = this.a + 20;
-                  return b;
-                }
-              }
-            `,
-          options: [options],
-        },
-        {
-          code: dedent`
-              class Class {
-                a = 10
-
-                method = () => {
-                  const b = this.a + 20;
-                  return b;
-                }
-              }
-            `,
-          options: [options],
-        },
-        {
-          code: dedent`
-              class Class {
-                a = 10
-                b = 20
-
-                method() {
-                  {
-                    const c = this.a + this.b;
-                    console.log(c);
-                  }
-                }
-              }
-            `,
-          options: [options],
-        },
-        {
-          code: dedent`
-              class Class {
-                a = 10
-                b = this.a + 20
-
-                method() {
-                  return this.b;
-                }
-              }
-            `,
-          options: [options],
-        },
-      ],
-      invalid: [
-        {
-          code: dedent`
-            class Class {
-              method = function() {
-                const b = this.a + 20;
-                return b;
-              }
-
-              a = 10
-            }
-          `,
-          output: dedent`
-            class Class {
-              a = 10
-
-              method = function() {
-                const b = this.a + 20;
-                return b;
-              }
-            }
-          `,
-          options: [options],
-          errors: [
-            {
-              messageId: 'unexpectedClassesOrder',
-              data: {
-                left: 'method',
-                right: 'a',
-              },
-            },
-          ],
-        },
-        {
-          code: dedent`
-              class Class {
-                method = () => {
-                  const b = this.a + 20;
-                  return b;
-                }
-
-                a = 10
-              }
-            `,
-          output: dedent`
-              class Class {
-                a = 10
-
-                method = () => {
-                  const b = this.a + 20;
-                  return b;
-                }
-              }
-            `,
-          options: [options],
-          errors: [
-            {
-              messageId: 'unexpectedClassesOrder',
-              data: {
-                left: 'method',
-                right: 'a',
-              },
-            },
-          ],
-        },
-        {
-          code: dedent`
-              class Class {
-                method() {
-                  {
-                    const c = this.a + this.b;
-                    console.log(c);
-                  }
-                }
-
-                a = 10
-
-                b = 20
-              }
-            `,
-          output: dedent`
-              class Class {
-                a = 10
-
-                b = 20
-
-                method() {
-                  {
-                    const c = this.a + this.b;
-                    console.log(c);
-                  }
-                }
-              }
-            `,
-          options: [options],
-          errors: [
-            {
-              messageId: 'unexpectedClassesGroupOrder',
-              data: {
-                left: 'method',
-                leftGroup: 'method',
-                right: 'a',
-                rightGroup: 'property',
-              },
-            },
-          ],
-        },
-        {
-          code: dedent`
-              class Class {
-                method() {
-                  return this.b;
-                }
-
-                b = this.a + 20
-
-                a = 10
-              }
-            `,
-          output: dedent`
-              class Class {
-                a = 10
-
-                b = this.a + 20
-
-                method() {
-                  return this.b;
-                }
-              }
-            `,
-          options: [options],
-          errors: [
-            {
-              messageId: 'unexpectedClassesGroupOrder',
-              data: {
-                left: 'method',
-                leftGroup: 'method',
-                right: 'b',
-                rightGroup: 'property',
-              },
-            },
-            {
-              messageId: 'unexpectedClassesOrder',
-              data: {
-                left: 'b',
-                right: 'a',
-              },
-            },
-          ],
-        },
-      ],
-    })
 
     ruleTester.run(`${ruleName}(${type}): should ignore unknown group`, rule, {
       valid: [],
