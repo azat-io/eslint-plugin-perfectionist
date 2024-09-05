@@ -93,6 +93,10 @@ export default createEslintRule<Options, MESSAGE_ID>({
               dependencies.push(nodeValue.name)
             }
 
+            if ('object' in nodeValue) {
+              traverseNode(nodeValue.object)
+            }
+
             if (
               'body' in nodeValue &&
               nodeValue.body &&
