@@ -1,6 +1,6 @@
 import type { HighlighterCore } from 'shiki'
 
-import { createJavaScriptRegexEngine, getSingletonHighlighter } from 'shiki'
+import { createJavaScriptRegexEngine, createHighlighter } from 'shiki'
 import { computed, onMount, atom, task } from 'nanostores'
 
 import { colorTheme } from '../utils/shiki-theme'
@@ -16,7 +16,7 @@ export let shiki = computed([shikiHighlighter], highlighter => ({
 
 onMount(shikiHighlighter, () => {
   task(async () => {
-    let highlighter = await getSingletonHighlighter({
+    let highlighter = await createHighlighter({
       langs: [
         import('shiki/langs/svelte.mjs'),
         import('shiki/langs/astro.mjs'),
