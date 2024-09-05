@@ -3449,6 +3449,48 @@ describe(ruleName, () => {
       )
 
       ruleTester.run(
+        `${ruleName}(${type}) detects dependencies in template literal expressions`,
+        rule,
+        {
+          valid: [
+            {
+              code: dedent`
+               class Class {
+                b = 1
+                a = \`\${this.b}\`
+                static b = 1
+                static a = \`\${this.b}\`
+               }
+              `,
+              options: [
+                {
+                  ...options,
+                  groups: ['property'],
+                },
+              ],
+            },
+            {
+              code: dedent`
+               class Class {
+                b = 1
+                a = \`\${this.b}\`
+                static b = 1
+                static a = \`\${Class.b}\`
+               }
+              `,
+              options: [
+                {
+                  ...options,
+                  groups: ['property'],
+                },
+              ],
+            },
+          ],
+          invalid: [],
+        },
+      )
+
+      ruleTester.run(
         `${ruleName}(${type}) separates static from non-static dependencies`,
         rule,
         {

@@ -343,6 +343,10 @@ export default createEslintRule<SortClassesOptions, MESSAGE_ID>({
             if ('properties' in nodeValue) {
               nodeValue.properties.forEach(traverseNode)
             }
+
+            if ('expressions' in nodeValue) {
+              nodeValue.expressions.forEach(traverseNode)
+            }
           }
 
           let traverseNode = (nodeValue: TSESTree.Node[] | TSESTree.Node) => {
