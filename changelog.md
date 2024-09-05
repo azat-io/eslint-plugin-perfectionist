@@ -1,6 +1,27 @@
 # Changelog
 
 
+## v3.4.0
+
+[compare changes](https://github.com/azat-io/eslint-plugin-perfectionist/compare/v3.3.0...v3.4.0)
+
+### 🚀 Features
+
+- Improve ability to expand custom groups ([5088619](https://github.com/azat-io/eslint-plugin-perfectionist/commit/5088619))
+- Downgrade minimatch dependency ([4803030](https://github.com/azat-io/eslint-plugin-perfectionist/commit/4803030))
+- Generate exception if group does not exist ([0872bdd](https://github.com/azat-io/eslint-plugin-perfectionist/commit/0872bdd))
+- Add sort-sets rule ([7d4cf14](https://github.com/azat-io/eslint-plugin-perfectionist/commit/7d4cf14))
+
+### 🐞 Bug Fixes
+
+- Place static-block after static-property in default-options in sort-classes ([73b1b54](https://github.com/azat-io/eslint-plugin-perfectionist/commit/73b1b54))
+- Fix sorting of members with dependencies ([e7c113d](https://github.com/azat-io/eslint-plugin-perfectionist/commit/e7c113d))
+
+### ❤️ Contributors
+
+- Hugo ([@hugop95](http://github.com/hugop95))
+- Denis Sokolov ([@denis-sokolov](http://github.com/denis-sokolov))
+
 ## v3.3.0
 
 [compare changes](https://github.com/azat-io/eslint-plugin-perfectionist/compare/v3.2.0...v3.3.0)
