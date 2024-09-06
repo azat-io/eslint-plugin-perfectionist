@@ -757,7 +757,7 @@ describe(ruleName, () => {
                     result = value + 2;
             `,
             options: [options],
-          }
+          },
         ],
         invalid: [
           {
