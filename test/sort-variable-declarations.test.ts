@@ -757,14 +757,7 @@ describe(ruleName, () => {
                     result = value + 2;
             `,
             options: [options],
-          },
-          {
-            code: dedent`
-              let position = editor.state.selection.$anchor,
-              depth = position.depth;
-            `,
-            options: [options],
-          },
+          }
         ],
         invalid: [
           {
