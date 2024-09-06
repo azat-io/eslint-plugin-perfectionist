@@ -137,8 +137,18 @@ export default createEslintRule<Options, MESSAGE_ID>({
               traverseNode(nodeValue.right as TSESTree.Node)
             }
 
+            if ('elements' in nodeValue) {
+              nodeValue.elements
+                .filter(currentNode => currentNode !== null)
+                .forEach(traverseNode)
+            }
+
             if ('argument' in nodeValue && nodeValue.argument) {
               traverseNode(nodeValue.argument)
+            }
+
+            if ('arguments' in nodeValue) {
+              nodeValue.arguments.forEach(traverseNode)
             }
 
             if ('properties' in nodeValue) {
@@ -147,16 +157,6 @@ export default createEslintRule<Options, MESSAGE_ID>({
 
             if ('expressions' in nodeValue) {
               nodeValue.expressions.forEach(traverseNode)
-            }
-
-            if ('elements' in nodeValue) {
-              nodeValue.elements
-                .filter(currentNode => currentNode !== null)
-                .forEach(traverseNode)
-            }
-
-            if ('arguments' in nodeValue) {
-              nodeValue.arguments.forEach(traverseNode)
             }
           }
 
