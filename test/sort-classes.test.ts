@@ -3313,6 +3313,38 @@ describe(ruleName, () => {
                 },
               ],
             },
+            {
+              code: dedent`
+               class Class {
+                  b = []
+                  a = [...this.b]
+                  static b = []
+                  static a = [...this.b]
+               }
+              `,
+              options: [
+                {
+                  ...options,
+                  groups: ['property'],
+                },
+              ],
+            },
+            {
+              code: dedent`
+               class Class {
+                  b = []
+                  a = [...this.b]
+                  static b = []
+                  static a = [...Class.b]
+               }
+              `,
+              options: [
+                {
+                  ...options,
+                  groups: ['property'],
+                },
+              ],
+            },
           ],
           invalid: [],
         },
