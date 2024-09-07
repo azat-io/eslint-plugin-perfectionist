@@ -176,12 +176,12 @@ export default createEslintRule<Options, MESSAGE_ID>({
 
         let formattedMembers: SortingNodeWithDependencies[][] = members.reduce(
           (accumulator: SortingNodeWithDependencies[][], member) => {
-            let comment = getCommentBefore(member, sourceCode)
+            let comments = getCommentsBefore(member, sourceCode)
 
             if (
               partitionComment &&
-              comment &&
-              isPartitionComment(partitionComment, comment.value)
+              comments[0] &&
+              isPartitionComment(partitionComment, comments[0].value)
             ) {
               accumulator.push([])
             }

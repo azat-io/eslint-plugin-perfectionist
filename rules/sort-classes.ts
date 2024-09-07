@@ -365,12 +365,12 @@ export default createEslintRule<SortClassesOptions, MESSAGE_ID>({
 
         let formattedNodes: SortingNodeWithDependencies[][] = node.body.reduce(
           (accumulator: SortingNodeWithDependencies[][], member) => {
-            let comment = getCommentBefore(member, sourceCode)
+            let comments = getCommentsBefore(member, sourceCode)
 
             if (
               options.partitionByComment &&
-              comment &&
-              isPartitionComment(options.partitionByComment, comment.value)
+              comments[0] &&
+              isPartitionComment(options.partitionByComment, comments[0].value)
             ) {
               accumulator.push([])
             }
