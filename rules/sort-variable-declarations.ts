@@ -89,16 +89,44 @@ export default createEslintRule<Options, MESSAGE_ID>({
           let dependencies: string[] = []
 
           let checkNode = (nodeValue: TSESTree.Node) => {
+            /**
+             * No need to check the body of functions and arrow functions
+             */
+            if (
+              nodeValue.type === 'ArrowFunctionExpression' ||
+              nodeValue.type === 'FunctionExpression'
+            ) {
+              return
+            }
+
             if (nodeValue.type === 'Identifier') {
               dependencies.push(nodeValue.name)
             }
 
+            if (nodeValue.type === 'Property') {
+              traverseNode(nodeValue.key)
+              traverseNode(nodeValue.value)
+            }
+
+            if (nodeValue.type === 'ConditionalExpression') {
+              traverseNode(nodeValue.test)
+              traverseNode(nodeValue.consequent)
+              traverseNode(nodeValue.alternate)
+            }
+
             if (
-              'body' in nodeValue &&
-              nodeValue.body &&
-              !Array.isArray(nodeValue.body)
+              'expression' in nodeValue &&
+              typeof nodeValue.expression !== 'boolean'
             ) {
-              traverseNode(nodeValue.body)
+              traverseNode(nodeValue.expression)
+            }
+
+            if ('object' in nodeValue) {
+              traverseNode(nodeValue.object)
+            }
+
+            if ('callee' in nodeValue) {
+              traverseNode(nodeValue.callee)
             }
 
             if ('left' in nodeValue) {
@@ -113,8 +141,22 @@ export default createEslintRule<Options, MESSAGE_ID>({
               nodeValue.elements
                 .filter(currentNode => currentNode !== null)
                 .forEach(traverseNode)
-            } else if ('arguments' in nodeValue) {
+            }
+
+            if ('argument' in nodeValue && nodeValue.argument) {
+              traverseNode(nodeValue.argument)
+            }
+
+            if ('arguments' in nodeValue) {
               nodeValue.arguments.forEach(traverseNode)
+            }
+
+            if ('properties' in nodeValue) {
+              nodeValue.properties.forEach(traverseNode)
+            }
+
+            if ('expressions' in nodeValue) {
+              nodeValue.expressions.forEach(traverseNode)
             }
           }
 

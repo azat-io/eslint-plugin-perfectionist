@@ -2681,7 +2681,7 @@ describe(ruleName, () => {
       )
 
       ruleTester.run(
-        `${ruleName}(${type}) detects arrow function expression dependencies`,
+        `${ruleName}(${type}) detects function expression dependencies`,
         rule,
         {
           valid: [
@@ -2693,6 +2693,26 @@ describe(ruleName, () => {
                   }
                   a = this.b()
                   static b = () => {
+                    return 1
+                  }
+                  static a = this.b()
+                }
+              `,
+              options: [
+                {
+                  ...options,
+                  groups: [['property', 'method']],
+                },
+              ],
+            },
+            {
+              code: dedent`
+                class Class {
+                  b = function() {
+                    return 1
+                  }
+                  a = this.b()
+                  static b = function() {
                     return 1
                   }
                   static a = this.b()
@@ -2728,11 +2748,51 @@ describe(ruleName, () => {
             {
               code: dedent`
                 class Class {
+                  b = function() {
+                    return 1
+                  }
+                  a = [1].map(this.b)
+                  static b = function() {
+                    return 1
+                  }
+                  static a = [1].map(this.b)
+                }
+              `,
+              options: [
+                {
+                  ...options,
+                  groups: [['property', 'method']],
+                },
+              ],
+            },
+            {
+              code: dedent`
+                class Class {
                   b = () => {
                     return 1
                   }
                   a = [1].map(this.b)
                   static b = () => {
+                    return 1
+                  }
+                  static a = [1].map(Class.b)
+                }
+              `,
+              options: [
+                {
+                  ...options,
+                  groups: [['property', 'method']],
+                },
+              ],
+            },
+            {
+              code: dedent`
+                class Class {
+                  b = function() {
+                    return 1
+                  }
+                  a = [1].map(this.b)
+                  static b = function() {
                     return 1
                   }
                   static a = [1].map(Class.b)
@@ -3244,6 +3304,38 @@ describe(ruleName, () => {
                   a = {...this.b}
                   static b = {}
                   static a = {...Class.b}
+               }
+              `,
+              options: [
+                {
+                  ...options,
+                  groups: ['property'],
+                },
+              ],
+            },
+            {
+              code: dedent`
+               class Class {
+                  b = []
+                  a = [...this.b]
+                  static b = []
+                  static a = [...this.b]
+               }
+              `,
+              options: [
+                {
+                  ...options,
+                  groups: ['property'],
+                },
+              ],
+            },
+            {
+              code: dedent`
+               class Class {
+                  b = []
+                  a = [...this.b]
+                  static b = []
+                  static a = [...Class.b]
                }
               `,
               options: [
