@@ -13,8 +13,8 @@ let Tag = tag
 <Tag
   class:list={Array.from(
     new Set([
-      'container',
       `size-${size}`,
+      'container',
       ...(className?.split(' ').flat() ?? []),
     ]),
   )}
