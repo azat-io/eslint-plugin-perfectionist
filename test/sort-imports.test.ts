@@ -1370,6 +1370,137 @@ describe(ruleName, () => {
         ],
       },
     )
+
+    ruleTester.run(
+      `${ruleName}(${type}): can enable or disable sorting side effect imports`,
+      rule,
+      {
+        valid: [
+          {
+            code: dedent`
+              import a from 'aaaa'
+
+              import 'bbb'
+              import './cc'
+              import '../d'
+            `,
+            options: [
+              {
+                ...options,
+                newlinesBetween: 'always',
+                internalPattern: ['~/**'],
+                groups: ['external', 'side-effect', 'unknown'],
+                sortSideEffects: false,
+              },
+            ],
+          },
+          {
+            code: dedent`
+              import 'c'
+              import 'bb'
+              import 'aaa'
+            `,
+            options: [
+              {
+                ...options,
+                newlinesBetween: 'always',
+                internalPattern: ['~/**'],
+                groups: ['external', 'side-effect', 'unknown'],
+                sortSideEffects: false,
+              },
+            ],
+          },
+        ],
+        invalid: [
+          {
+            code: dedent`
+              import './cc'
+              import 'bbb'
+              import e from 'e'
+              import a from 'aaaa'
+              import '../d'
+            `,
+            output: dedent`
+              import a from 'aaaa'
+              import e from 'e'
+
+              import './cc'
+              import 'bbb'
+              import '../d'
+            `,
+            options: [
+              {
+                ...options,
+                newlinesBetween: 'always',
+                internalPattern: ['~/**'],
+                groups: ['external', 'side-effect', 'unknown'],
+                sortSideEffects: false,
+              },
+            ],
+            errors: [
+              {
+                messageId: 'unexpectedImportsOrder',
+                data: {
+                  left: 'bbb',
+                  right: 'e',
+                },
+              },
+              {
+                messageId: 'unexpectedImportsOrder',
+                data: {
+                  left: 'e',
+                  right: 'aaaa',
+                },
+              },
+              {
+                messageId: 'missedSpacingBetweenImports',
+                data: {
+                  left: 'aaaa',
+                  right: '../d',
+                },
+              },
+            ],
+          },
+          {
+            code: dedent`
+              import 'c'
+              import 'bb'
+              import 'aaa'
+            `,
+            output: dedent`
+              import 'aaa'
+              import 'bb'
+              import 'c'
+            `,
+            options: [
+              {
+                ...options,
+                newlinesBetween: 'always',
+                internalPattern: ['~/**'],
+                groups: ['external', 'side-effect', 'unknown'],
+                sortSideEffects: true,
+              },
+            ],
+            errors: [
+              {
+                messageId: 'unexpectedImportsOrder',
+                data: {
+                  left: 'c',
+                  right: 'bb',
+                },
+              },
+              {
+                messageId: 'unexpectedImportsOrder',
+                data: {
+                  left: 'bb',
+                  right: 'aaa',
+                },
+              },
+            ],
+          },
+        ],
+      },
+    )
   })
 
   describe(`${ruleName}: sorting by natural order`, () => {
@@ -2719,6 +2850,137 @@ describe(ruleName, () => {
                 data: {
                   left: '../../h',
                   right: '.',
+                },
+              },
+            ],
+          },
+        ],
+      },
+    )
+
+    ruleTester.run(
+      `${ruleName}(${type}): can enable or disable sorting side effect imports`,
+      rule,
+      {
+        valid: [
+          {
+            code: dedent`
+              import a from 'aaaa'
+
+              import 'bbb'
+              import './cc'
+              import '../d'
+            `,
+            options: [
+              {
+                ...options,
+                newlinesBetween: 'always',
+                internalPattern: ['~/**'],
+                groups: ['external', 'side-effect', 'unknown'],
+                sortSideEffects: false,
+              },
+            ],
+          },
+          {
+            code: dedent`
+              import 'c'
+              import 'bb'
+              import 'aaa'
+            `,
+            options: [
+              {
+                ...options,
+                newlinesBetween: 'always',
+                internalPattern: ['~/**'],
+                groups: ['external', 'side-effect', 'unknown'],
+                sortSideEffects: false,
+              },
+            ],
+          },
+        ],
+        invalid: [
+          {
+            code: dedent`
+              import './cc'
+              import 'bbb'
+              import e from 'e'
+              import a from 'aaaa'
+              import '../d'
+            `,
+            output: dedent`
+              import a from 'aaaa'
+              import e from 'e'
+
+              import './cc'
+              import 'bbb'
+              import '../d'
+            `,
+            options: [
+              {
+                ...options,
+                newlinesBetween: 'always',
+                internalPattern: ['~/**'],
+                groups: ['external', 'side-effect', 'unknown'],
+                sortSideEffects: false,
+              },
+            ],
+            errors: [
+              {
+                messageId: 'unexpectedImportsOrder',
+                data: {
+                  left: 'bbb',
+                  right: 'e',
+                },
+              },
+              {
+                messageId: 'unexpectedImportsOrder',
+                data: {
+                  left: 'e',
+                  right: 'aaaa',
+                },
+              },
+              {
+                messageId: 'missedSpacingBetweenImports',
+                data: {
+                  left: 'aaaa',
+                  right: '../d',
+                },
+              },
+            ],
+          },
+          {
+            code: dedent`
+              import 'c'
+              import 'bb'
+              import 'aaa'
+            `,
+            output: dedent`
+              import 'aaa'
+              import 'bb'
+              import 'c'
+            `,
+            options: [
+              {
+                ...options,
+                newlinesBetween: 'always',
+                internalPattern: ['~/**'],
+                groups: ['external', 'side-effect', 'unknown'],
+                sortSideEffects: true,
+              },
+            ],
+            errors: [
+              {
+                messageId: 'unexpectedImportsOrder',
+                data: {
+                  left: 'c',
+                  right: 'bb',
+                },
+              },
+              {
+                messageId: 'unexpectedImportsOrder',
+                data: {
+                  left: 'bb',
+                  right: 'aaa',
                 },
               },
             ],
@@ -4170,6 +4432,137 @@ describe(ruleName, () => {
                 data: {
                   left: '../j',
                   right: '../k',
+                },
+              },
+            ],
+          },
+        ],
+      },
+    )
+
+    ruleTester.run(
+      `${ruleName}(${type}): can enable or disable sorting side effect imports`,
+      rule,
+      {
+        valid: [
+          {
+            code: dedent`
+              import a from 'aaaa'
+
+              import 'bbb'
+              import './cc'
+              import '../d'
+            `,
+            options: [
+              {
+                ...options,
+                newlinesBetween: 'always',
+                internalPattern: ['~/**'],
+                groups: ['external', 'side-effect', 'unknown'],
+                sortSideEffects: false,
+              },
+            ],
+          },
+          {
+            code: dedent`
+              import 'c'
+              import 'bb'
+              import 'aaa'
+            `,
+            options: [
+              {
+                ...options,
+                newlinesBetween: 'always',
+                internalPattern: ['~/**'],
+                groups: ['external', 'side-effect', 'unknown'],
+                sortSideEffects: false,
+              },
+            ],
+          },
+        ],
+        invalid: [
+          {
+            code: dedent`
+              import './cc'
+              import 'bbb'
+              import e from 'e'
+              import a from 'aaaa'
+              import '../d'
+            `,
+            output: dedent`
+              import a from 'aaaa'
+              import e from 'e'
+
+              import './cc'
+              import 'bbb'
+              import '../d'
+            `,
+            options: [
+              {
+                ...options,
+                newlinesBetween: 'always',
+                internalPattern: ['~/**'],
+                groups: ['external', 'side-effect', 'unknown'],
+                sortSideEffects: false,
+              },
+            ],
+            errors: [
+              {
+                messageId: 'unexpectedImportsOrder',
+                data: {
+                  left: 'bbb',
+                  right: 'e',
+                },
+              },
+              {
+                messageId: 'unexpectedImportsOrder',
+                data: {
+                  left: 'e',
+                  right: 'aaaa',
+                },
+              },
+              {
+                messageId: 'missedSpacingBetweenImports',
+                data: {
+                  left: 'aaaa',
+                  right: '../d',
+                },
+              },
+            ],
+          },
+          {
+            code: dedent`
+              import 'c'
+              import 'bb'
+              import 'aaa'
+            `,
+            output: dedent`
+              import 'aaa'
+              import 'bb'
+              import 'c'
+            `,
+            options: [
+              {
+                ...options,
+                newlinesBetween: 'always',
+                internalPattern: ['~/**'],
+                groups: ['external', 'side-effect', 'unknown'],
+                sortSideEffects: true,
+              },
+            ],
+            errors: [
+              {
+                messageId: 'unexpectedImportsOrder',
+                data: {
+                  left: 'c',
+                  right: 'bb',
+                },
+              },
+              {
+                messageId: 'unexpectedImportsOrder',
+                data: {
+                  left: 'bb',
+                  right: 'aaa',
                 },
               },
             ],

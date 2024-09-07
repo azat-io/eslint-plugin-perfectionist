@@ -59,6 +59,7 @@ type Options<T extends string[]> = [
     groups: (Group<T>[] | Group<T>)[]
     environment: 'node' | 'bun'
     internalPattern: string[]
+    sortSideEffects: boolean
     maxLineLength?: number
     order: 'desc' | 'asc'
     ignoreCase: boolean
@@ -100,6 +101,11 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
               type: 'string',
             },
             type: 'array',
+          },
+          sortSideEffects: {
+            description:
+              'Controls whether side-effect imports should be sorted.',
+            type: 'boolean',
           },
           newlinesBetween: {
             description:
@@ -197,6 +203,7 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
       order: 'asc',
       ignoreCase: true,
       internalPattern: ['~/**'],
+      sortSideEffects: false,
       newlinesBetween: 'always',
       maxLineLength: undefined,
       groups: [
@@ -230,6 +237,7 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
       customGroups: { type: {}, value: {} },
       internalPattern: ['~/**'],
       newlinesBetween: 'always',
+      sortSideEffects: false,
       type: 'alphabetical',
       environment: 'node',
       ignoreCase: true,
@@ -524,10 +532,14 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
             if (!(groupNum in grouped)) {
               grouped[groupNum] = [node]
             } else {
-              grouped[groupNum] = sortNodes(
-                [...grouped[groupNum], node],
-                options,
-              )
+              if (!options.sortSideEffects && isSideEffectImport(node.node)) {
+                grouped[groupNum] = [...grouped[groupNum], node]
+              } else {
+                grouped[groupNum] = sortNodes(
+                  [...grouped[groupNum], node],
+                  options,
+                )
+              }
             }
           }
 
@@ -643,7 +655,9 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
 
             if (
               !(
-                isSideEffectImport(left.node) && isSideEffectImport(right.node)
+                !options.sortSideEffects &&
+                isSideEffectImport(left.node) &&
+                isSideEffectImport(right.node)
               ) &&
               !hasContentBetweenNodes(left, right) &&
               (leftNum > rightNum ||
