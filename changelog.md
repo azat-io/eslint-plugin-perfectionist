@@ -1,6 +1,24 @@
 # Changelog
 
 
+## v3.5.0
+
+[compare changes](https://github.com/azat-io/eslint-plugin-perfectionist/compare/v3.4.0...v3.5.0)
+
+### 🚀 Features
+
+- Add ability to disable or enable side effect imports sorting ([ae02009](https://github.com/azat-io/eslint-plugin-perfectionist/commit/ae02009))
+
+### 🐞 Bug Fixes
+
+- Detect dependencies in template literals ([4e0e6d8](https://github.com/azat-io/eslint-plugin-perfectionist/commit/4e0e6d8))
+- Improve dependency detection in sort-variable-declarations rule ([6beb536](https://github.com/azat-io/eslint-plugin-perfectionist/commit/6beb536))
+
+### ❤️ Contributors
+
+- Hugo ([@hugop95](http://github.com/hugop95))
+- Azat S. ([@azat-io](http://github.com/azat-io))
+
 ## v3.4.0
 
 [compare changes](https://github.com/azat-io/eslint-plugin-perfectionist/compare/v3.3.0...v3.4.0)
