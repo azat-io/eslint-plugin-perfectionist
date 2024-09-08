@@ -90,7 +90,6 @@
     "@playform/compress": "^0.1.1",
     "@poppanator/sveltekit-svg": "5.0.0-svelte5.3",
     "@shikijs/transformers": "^1.16.2",
-    "@types/eslint": "^9.6.1",
     "@types/mdast": "^4.0.4",
     "@types/natural-compare-lite": "^1.4.2",
     "@types/node": "^22.5.4",
