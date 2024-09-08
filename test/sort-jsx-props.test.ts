@@ -276,10 +276,12 @@ describe(ruleName, () => {
             ],
             errors: [
               {
-                messageId: 'unexpectedJSXPropsOrder',
+                messageId: 'unexpectedJSXPropsGroupOrder',
                 data: {
                   left: 'aaaaaa',
+                  leftGroup: 'shorthand',
                   right: 'b',
+                  rightGroup: 'unknown',
                 },
               },
             ],
@@ -335,10 +337,12 @@ describe(ruleName, () => {
             ],
             errors: [
               {
-                messageId: 'unexpectedJSXPropsOrder',
+                messageId: 'unexpectedJSXPropsGroupOrder',
                 data: {
                   left: 'onChange',
+                  leftGroup: 'callback',
                   right: 'a',
+                  rightGroup: 'unknown',
                 },
               },
             ],
@@ -413,10 +417,12 @@ describe(ruleName, () => {
             ],
             errors: [
               {
-                messageId: 'unexpectedJSXPropsOrder',
+                messageId: 'unexpectedJSXPropsGroupOrder',
                 data: {
                   left: 'c',
+                  leftGroup: 'unknown',
                   right: 'd',
+                  rightGroup: 'multiline',
                 },
               },
             ],
@@ -475,10 +481,12 @@ describe(ruleName, () => {
           ],
           errors: [
             {
-              messageId: 'unexpectedJSXPropsOrder',
+              messageId: 'unexpectedJSXPropsGroupOrder',
               data: {
                 left: 'c',
+                leftGroup: 'unknown',
                 right: 'd',
+                rightGroup: 'top',
               },
             },
           ],
@@ -733,10 +741,12 @@ describe(ruleName, () => {
             ],
             errors: [
               {
-                messageId: 'unexpectedJSXPropsOrder',
+                messageId: 'unexpectedJSXPropsGroupOrder',
                 data: {
                   left: 'aaaaaa',
+                  leftGroup: 'shorthand',
                   right: 'b',
+                  rightGroup: 'unknown',
                 },
               },
             ],
@@ -792,10 +802,12 @@ describe(ruleName, () => {
             ],
             errors: [
               {
-                messageId: 'unexpectedJSXPropsOrder',
+                messageId: 'unexpectedJSXPropsGroupOrder',
                 data: {
                   left: 'onChange',
+                  leftGroup: 'callback',
                   right: 'a',
+                  rightGroup: 'unknown',
                 },
               },
             ],
@@ -870,10 +882,12 @@ describe(ruleName, () => {
             ],
             errors: [
               {
-                messageId: 'unexpectedJSXPropsOrder',
+                messageId: 'unexpectedJSXPropsGroupOrder',
                 data: {
                   left: 'c',
+                  leftGroup: 'unknown',
                   right: 'd',
+                  rightGroup: 'multiline',
                 },
               },
             ],
@@ -932,10 +946,12 @@ describe(ruleName, () => {
           ],
           errors: [
             {
-              messageId: 'unexpectedJSXPropsOrder',
+              messageId: 'unexpectedJSXPropsGroupOrder',
               data: {
                 left: 'c',
+                leftGroup: 'unknown',
                 right: 'd',
+                rightGroup: 'top',
               },
             },
           ],
@@ -1189,10 +1205,12 @@ describe(ruleName, () => {
             ],
             errors: [
               {
-                messageId: 'unexpectedJSXPropsOrder',
+                messageId: 'unexpectedJSXPropsGroupOrder',
                 data: {
                   left: 'aaaaaa',
+                  leftGroup: 'shorthand',
                   right: 'b',
+                  rightGroup: 'unknown',
                 },
               },
             ],
@@ -1248,10 +1266,12 @@ describe(ruleName, () => {
             ],
             errors: [
               {
-                messageId: 'unexpectedJSXPropsOrder',
+                messageId: 'unexpectedJSXPropsGroupOrder',
                 data: {
                   left: 'onChange',
+                  leftGroup: 'callback',
                   right: 'a',
+                  rightGroup: 'unknown',
                 },
               },
             ],
@@ -1326,10 +1346,12 @@ describe(ruleName, () => {
             ],
             errors: [
               {
-                messageId: 'unexpectedJSXPropsOrder',
+                messageId: 'unexpectedJSXPropsGroupOrder',
                 data: {
                   left: 'c',
+                  leftGroup: 'unknown',
                   right: 'd',
+                  rightGroup: 'multiline',
                 },
               },
               {
@@ -1396,10 +1418,12 @@ describe(ruleName, () => {
           ],
           errors: [
             {
-              messageId: 'unexpectedJSXPropsOrder',
+              messageId: 'unexpectedJSXPropsGroupOrder',
               data: {
                 left: 'c',
+                leftGroup: 'unknown',
                 right: 'd',
+                rightGroup: 'top',
               },
             },
           ],
