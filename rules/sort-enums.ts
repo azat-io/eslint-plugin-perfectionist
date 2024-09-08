@@ -164,6 +164,10 @@ export default createEslintRule<Options, MESSAGE_ID>({
             if ('right' in nodeValue) {
               checkNode(nodeValue.right)
             }
+
+            if ('expressions' in nodeValue) {
+              nodeValue.expressions.forEach(checkNode)
+            }
           }
 
           checkNode(expression)
