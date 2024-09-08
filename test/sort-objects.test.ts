@@ -478,251 +478,651 @@ describe(ruleName, () => {
       },
     )
 
-    ruleTester.run(
-      `${ruleName}(${type}): works with complex dependencies`,
-      rule,
-      {
-        valid: [],
-        invalid: [
-          {
-            code: dedent`
-              let Func = ({
-                a,
-                b = a + c + d,
-                c,
-                d,
-              }) => {
-                // ...
-              }
-            `,
-            output: dedent`
-              let Func = ({
-                a,
-                c,
-                d,
-                b = a + c + d,
-              }) => {
-                // ...
-              }
-            `,
-            options: [options],
-            errors: [
-              {
-                messageId: 'unexpectedObjectsOrder',
-                data: {
-                  left: 'b',
-                  right: 'c',
+    describe('detects dependencies', () => {
+      ruleTester.run(
+        `${ruleName}(${type}): works with complex dependencies`,
+        rule,
+        {
+          valid: [],
+          invalid: [
+            {
+              code: dedent`
+                let Func = ({
+                  a,
+                  b = a + c + d,
+                  c,
+                  d,
+                }) => {
+                  // ...
+                }
+              `,
+              output: dedent`
+                let Func = ({
+                  a,
+                  c,
+                  d,
+                  b = a + c + d,
+                }) => {
+                  // ...
+                }
+              `,
+              options: [options],
+              errors: [
+                {
+                  messageId: 'unexpectedObjectsOrder',
+                  data: {
+                    left: 'b',
+                    right: 'c',
+                  },
                 },
-              },
-            ],
-          },
-          {
-            code: dedent`
-              let Func = ({
-                a,
-                b = () => a + c,
-                c,
-                d,
-              }) => {
-                // ...
-              }
-            `,
-            output: dedent`
-              let Func = ({
-                a,
-                c,
-                b = () => a + c,
-                d,
-              }) => {
-                // ...
-              }
-            `,
-            options: [options],
-            errors: [
-              {
-                messageId: 'unexpectedObjectsOrder',
-                data: {
-                  left: 'b',
-                  right: 'c',
+              ],
+            },
+            {
+              code: dedent`
+                let Func = ({
+                  a,
+                  c = 1 === 1 ? 1 === 1 ? a : b : b,
+                  b,
+                  d,
+                }) => {
+                  // ...
+                }
+              `,
+              output: dedent`
+                let Func = ({
+                  a,
+                  b,
+                  c = 1 === 1 ? 1 === 1 ? a : b : b,
+                  d,
+                }) => {
+                  // ...
+                }
+              `,
+              options: [options],
+              errors: [
+                {
+                  messageId: 'unexpectedObjectsOrder',
+                  data: {
+                    left: 'c',
+                    right: 'b',
+                  },
                 },
-              },
-            ],
-          },
-          {
-            code: dedent`
-              let Func = ({
-                a,
-                c = 1 === 1 ? 1 === 1 ? a : b : b,
-                b,
-                d,
-              }) => {
-                // ...
-              }
-            `,
-            output: dedent`
-              let Func = ({
-                a,
-                b,
-                c = 1 === 1 ? 1 === 1 ? a : b : b,
-                d,
-              }) => {
-                // ...
-              }
-            `,
-            options: [options],
-            errors: [
-              {
-                messageId: 'unexpectedObjectsOrder',
-                data: {
-                  left: 'c',
-                  right: 'b',
+              ],
+            },
+            {
+              code: dedent`
+                let Func = ({
+                  a,
+                  b = ['a', 'b', 'c'].includes(d, c, a),
+                  c,
+                  d,
+                }) => {
+                  // ...
+                }
+              `,
+              output: dedent`
+                let Func = ({
+                  a,
+                  c,
+                  d,
+                  b = ['a', 'b', 'c'].includes(d, c, a),
+                }) => {
+                  // ...
+                }
+              `,
+              options: [
+                {
+                  type: 'alphabetical',
+                  order: 'asc',
                 },
-              },
-            ],
-          },
+              ],
+              errors: [
+                {
+                  messageId: 'unexpectedObjectsOrder',
+                  data: {
+                    left: 'b',
+                    right: 'c',
+                  },
+                },
+              ],
+            },
+            {
+              code: dedent`
+                let Func = ({
+                  a,
+                  b = c || c,
+                  c,
+                  d,
+                }) => {
+                  // ...
+                }
+              `,
+              output: dedent`
+                let Func = ({
+                  a,
+                  c,
+                  b = c || c,
+                  d,
+                }) => {
+                  // ...
+                }
+              `,
+              options: [options],
+              errors: [
+                {
+                  messageId: 'unexpectedObjectsOrder',
+                  data: {
+                    left: 'b',
+                    right: 'c',
+                  },
+                },
+              ],
+            },
+            {
+              code: dedent`
+                let Func = ({
+                  a,
+                  b = 1 === 1 ? a : c,
+                  c,
+                  d,
+                }) => {
+                  // ...
+                }
+              `,
+              output: dedent`
+                let Func = ({
+                  a,
+                  c,
+                  b = 1 === 1 ? a : c,
+                  d,
+                }) => {
+                  // ...
+                }
+              `,
+              options: [options],
+              errors: [
+                {
+                  messageId: 'unexpectedObjectsOrder',
+                  data: {
+                    left: 'b',
+                    right: 'c',
+                  },
+                },
+              ],
+            },
+            {
+              code: dedent`
+                let Func = ({
+                    a = c,
+                    b = 10,
+                    c = 10,
+                    }) => {
+                  // ...
+                }
+              `,
+              output: dedent`
+                let Func = ({
+                    c = 10,
+                    a = c,
+                    b = 10,
+                    }) => {
+                  // ...
+                }
+              `,
+              options: [options],
+              errors: [
+                {
+                  messageId: 'unexpectedObjectsOrder',
+                  data: {
+                    left: 'b',
+                    right: 'c',
+                  },
+                },
+              ],
+            },
+          ],
+        },
+      )
+
+      ruleTester.run(
+        `${ruleName}(${type}): detects function expression dependencies`,
+        rule,
+        {
+          valid: [
+            {
+              code: dedent`
+                let Func = ({
+                  b = () => 1,
+                  a = b(),
+                }) => {
+                  // ...
+                }
+              `,
+              options: [
+                {
+                  ...options,
+                },
+              ],
+            },
+            {
+              code: dedent`
+                let Func = ({
+                  b = function() { return 1 },
+                  a = b(),
+                }) => {
+                  // ...
+                }
+              `,
+              options: [
+                {
+                  ...options,
+                },
+              ],
+            },
+            {
+              code: dedent`
+                let Func = ({
+                  b = () => 1,
+                  a = a.map(b),
+                }) => {
+                  // ...
+                }
+              `,
+              options: [
+                {
+                  ...options,
+                },
+              ],
+            },
+          ],
+          invalid: [],
+        },
+      )
+
+      ruleTester.run(
+        `${ruleName}(${type}) detects dependencies in objects`,
+        rule,
+        {
+          valid: [
+            {
+              code: dedent`
+                let Func = ({
+                  b = 1,
+                  a = {x: b},
+                }) => {
+                  // ...
+                }
+              `,
+              options: [
+                {
+                  ...options,
+                },
+              ],
+            },
+            {
+              code: dedent`
+                let Func = ({
+                  b = 1,
+                  a = {[b]: 0},
+                }) => {
+                  // ...
+                }
+              `,
+              options: [
+                {
+                  ...options,
+                },
+              ],
+            },
+          ],
+          invalid: [],
+        },
+      )
+
+      ruleTester.run(
+        `${ruleName}(${type}) detects chained dependencies`,
+        rule,
+        {
+          valid: [
+            {
+              code: dedent`
+                let Func = ({
+                  b = {x: 1},
+                  a = b.x,
+                }) => {
+                  // ...
+                }
+              `,
+              options: [
+                {
+                  ...options,
+                },
+              ],
+            },
+            {
+              code: dedent`
+                let Func = ({
+                  b = new Subject(),
+                  a = b.asObservable(),
+                }) => {
+                  // ...
+                }
+              `,
+              options: [
+                {
+                  ...options,
+                },
+              ],
+            },
+          ],
+          invalid: [],
+        },
+      )
+
+      ruleTester.run(
+        `${ruleName}(${type}) detects optional chained dependencies`,
+        rule,
+        {
+          valid: [
+            {
+              code: dedent`
+                let Func = ({
+                  b = {x: 1},
+                  a = b?.x,
+                }) => {
+                  // ...
+                }
+              `,
+              options: [
+                {
+                  ...options,
+                },
+              ],
+            },
+          ],
+          invalid: [],
+        },
+      )
+
+      ruleTester.run(
+        `${ruleName}(${type}) detects non-null asserted dependencies`,
+        rule,
+        {
+          valid: [
+            {
+              code: dedent`
+                let Func = ({
+                  b = 1,
+                  a = b!,
+                }) => {
+                  // ...
+                }
+              `,
+              options: [
+                {
+                  ...options,
+                },
+              ],
+            },
+          ],
+          invalid: [],
+        },
+      )
+
+      ruleTester.run(`${ruleName}(${type}) detects unary dependencies`, rule, {
+        valid: [
           {
             code: dedent`
               let Func = ({
-                a,
-                b = ['a', 'b', 'c'].includes(d, c, a),
-                c,
-                d,
-              }) => {
-                // ...
-              }
-            `,
-            output: dedent`
-              let Func = ({
-                a,
-                c,
-                d,
-                b = ['a', 'b', 'c'].includes(d, c, a),
+                b = true,
+                a = !b,
               }) => {
                 // ...
               }
             `,
             options: [
               {
-                type: 'alphabetical',
-                order: 'asc',
-              },
-            ],
-            errors: [
-              {
-                messageId: 'unexpectedObjectsOrder',
-                data: {
-                  left: 'b',
-                  right: 'c',
-                },
-              },
-            ],
-          },
-          {
-            code: dedent`
-              let Func = ({
-                a,
-                b = c || c,
-                c,
-                d,
-              }) => {
-                // ...
-              }
-            `,
-            output: dedent`
-              let Func = ({
-                a,
-                c,
-                b = c || c,
-                d,
-              }) => {
-                // ...
-              }
-            `,
-            options: [options],
-            errors: [
-              {
-                messageId: 'unexpectedObjectsOrder',
-                data: {
-                  left: 'b',
-                  right: 'c',
-                },
-              },
-            ],
-          },
-          {
-            code: dedent`
-              let Func = ({
-                a,
-                b = 1 === 1 ? a : c,
-                c,
-                d,
-              }) => {
-                // ...
-              }
-            `,
-            output: dedent`
-              let Func = ({
-                a,
-                c,
-                b = 1 === 1 ? a : c,
-                d,
-              }) => {
-                // ...
-              }
-            `,
-            options: [options],
-            errors: [
-              {
-                messageId: 'unexpectedObjectsOrder',
-                data: {
-                  left: 'b',
-                  right: 'c',
-                },
-              },
-            ],
-          },
-          {
-            code: dedent`
-              let Func = ({
-                  a = c,
-                  b = 10,
-                  c = 10,
-                  }) => {
-                // ...
-              }
-            `,
-            output: dedent`
-              let Func = ({
-                  c = 10,
-                  a = c,
-                  b = 10,
-                  }) => {
-                // ...
-              }
-            `,
-            options: [options],
-            errors: [
-              {
-                messageId: 'unexpectedObjectsOrder',
-                data: {
-                  left: 'b',
-                  right: 'c',
-                },
+                ...options,
               },
             ],
           },
         ],
-      },
-    )
+        invalid: [],
+      })
 
-    ruleTester.run(
-      `${ruleName}(${type}): detects circular dependencies`,
-      rule,
-      {
-        valid: [],
-        invalid: [
-          {
-            code: dedent`
+      ruleTester.run(
+        `${ruleName}(${type}) detects spread elements dependencies`,
+        rule,
+        {
+          valid: [
+            {
+              code: dedent`
+                let Func = ({
+                  b = {x: 1},
+                  a = {...b},
+                }) => {
+                  // ...
+                }
+              `,
+              options: [
+                {
+                  ...options,
+                },
+              ],
+            },
+            {
+              code: dedent`
+                let Func = ({
+                  b = [1],
+                  a = [...b],
+                }) => {
+                  // ...
+                }
+              `,
+              options: [
+                {
+                  ...options,
+                },
+              ],
+            },
+          ],
+          invalid: [],
+        },
+      )
+
+      ruleTester.run(
+        `${ruleName}(${type}) detects dependencies in conditional expressions`,
+        rule,
+        {
+          valid: [
+            {
+              code: dedent`
+                let Func = ({
+                  b = 0,
+                  a = b ? 1 : 0,
+                }) => {
+                  // ...
+                }
+              `,
+              options: [
+                {
+                  ...options,
+                },
+              ],
+            },
+            {
+              code: dedent`
+                let Func = ({
+                  b = 0,
+                  a = x ? b : 0,
+                }) => {
+                  // ...
+                }
+              `,
+              options: [
+                {
+                  ...options,
+                },
+              ],
+            },
+            {
+              code: dedent`
+                let Func = ({
+                  b = 0,
+                  a = x ? 0 : b,
+                }) => {
+                  // ...
+                }
+              `,
+              options: [
+                {
+                  ...options,
+                },
+              ],
+            },
+          ],
+          invalid: [],
+        },
+      )
+
+      ruleTester.run(
+        `${ruleName}(${type}) detects dependencies in 'as' expressions`,
+        rule,
+        {
+          valid: [
+            {
+              code: dedent`
+                let Func = ({
+                  b = a,
+                  a = b as any,
+                }) => {
+                  // ...
+                }
+              `,
+              options: [
+                {
+                  ...options,
+                },
+              ],
+            },
+          ],
+          invalid: [],
+        },
+      )
+
+      ruleTester.run(
+        `${ruleName}(${type}) detects dependencies in type assertion expressions`,
+        rule,
+        {
+          valid: [
+            {
+              code: dedent`
+                let Func = ({
+                  b = a,
+                  a = <any>b,
+                }) => {
+                  // ...
+                }
+              `,
+              options: [
+                {
+                  ...options,
+                },
+              ],
+            },
+          ],
+          invalid: [],
+        },
+      )
+
+      ruleTester.run(
+        `${ruleName}(${type}) detects dependencies in template literal expressions`,
+        rule,
+        {
+          valid: [
+            {
+              code: dedent`
+                let Func = ({
+                  b = a,
+                  a = \`\${b}\`,
+                }) => {
+                  // ...
+                }
+              `,
+              options: [
+                {
+                  ...options,
+                },
+              ],
+            },
+          ],
+          invalid: [],
+        },
+      )
+
+      ruleTester.run(
+        `${ruleName}(${type}) ignores function body dependencies`,
+        rule,
+        {
+          valid: [
+            {
+              code: dedent`
+                let Func = ({
+                  a = () => b,
+                  b = 1,
+                }) => {
+                  // ...
+                }
+                `,
+              options: [
+                {
+                  ...options,
+                },
+              ],
+            },
+            {
+              code: dedent`
+                let Func = ({
+                  a = function() { return b },
+                  b = 1,
+                }) => {
+                  // ...
+                }
+                `,
+              options: [
+                {
+                  ...options,
+                },
+              ],
+            },
+            {
+              code: dedent`
+                let Func = ({
+                  a = () => {return b},
+                  b = 1,
+                }) => {
+                  // ...
+                }
+                `,
+              options: [
+                {
+                  ...options,
+                },
+              ],
+            },
+          ],
+          invalid: [],
+        },
+      )
+
+      ruleTester.run(
+        `${ruleName}(${type}): detects circular dependencies`,
+        rule,
+        {
+          valid: [],
+          invalid: [
+            {
+              code: dedent`
               let Func = ({
                 a,
                 b = f + 1,
@@ -734,7 +1134,7 @@ describe(ruleName, () => {
                 // ...
               }
             `,
-            output: dedent`
+              output: dedent`
               let Func = ({
                 a,
                 d = b + 1,
@@ -746,57 +1146,61 @@ describe(ruleName, () => {
                 // ...
               }
             `,
-            options: [options],
-            errors: [
-              {
-                messageId: 'unexpectedObjectsOrder',
-                data: {
-                  left: 'c',
-                  right: 'd',
+              options: [options],
+              errors: [
+                {
+                  messageId: 'unexpectedObjectsOrder',
+                  data: {
+                    left: 'c',
+                    right: 'd',
+                  },
                 },
-              },
-              {
-                messageId: 'unexpectedObjectsOrder',
-                data: {
-                  left: 'e',
-                  right: 'f',
+                {
+                  messageId: 'unexpectedObjectsOrder',
+                  data: {
+                    left: 'e',
+                    right: 'f',
+                  },
                 },
-              },
-            ],
-          },
-        ],
-      },
-    )
+              ],
+            },
+          ],
+        },
+      )
 
-    ruleTester.run(
-      `${ruleName}(${type}): prioritizes dependencies over group configuration`,
-      rule,
-      {
-        valid: [
-          {
-            code: dedent`
-              let Func = ({
-                b,
-                a = b,
-              }) => {
-                // ...
-              }
-            `,
-            options: [
-              {
-                ...options,
-                groups: ['attributesStartingWithA', 'attributesStartingWithB'],
-                customGroups: {
-                  attributesStartingWithA: 'a',
-                  attributesStartingWithB: 'b',
+      ruleTester.run(
+        `${ruleName}(${type}): prioritizes dependencies over group configuration`,
+        rule,
+        {
+          valid: [
+            {
+              code: dedent`
+                let Func = ({
+                  b,
+                  a = b,
+                }) => {
+                  // ...
+                }
+              `,
+              options: [
+                {
+                  ...options,
+                  groups: [
+                    'attributesStartingWithA',
+                    'attributesStartingWithB',
+                  ],
+                  customGroups: {
+                    attributesStartingWithA: 'a',
+                    attributesStartingWithB: 'b',
+                  },
                 },
-              },
-            ],
-          },
-        ],
-        invalid: [],
-      },
-    )
+              ],
+            },
+          ],
+          invalid: [],
+        },
+      )
+    })
 
     ruleTester.run(
       `${ruleName}(${type}): allows to use partition comments`,
@@ -1501,38 +1905,6 @@ describe(ruleName, () => {
                 c,
                 d,
                 b = a + c + d,
-              }) => {
-                // ...
-              }
-            `,
-            options: [options],
-            errors: [
-              {
-                messageId: 'unexpectedObjectsOrder',
-                data: {
-                  left: 'b',
-                  right: 'c',
-                },
-              },
-            ],
-          },
-          {
-            code: dedent`
-              let Func = ({
-                a,
-                b = () => a + c,
-                c,
-                d,
-              }) => {
-                // ...
-              }
-            `,
-            output: dedent`
-              let Func = ({
-                a,
-                c,
-                b = () => a + c,
-                d,
               }) => {
                 // ...
               }
@@ -2366,38 +2738,6 @@ describe(ruleName, () => {
                 c,
                 d,
                 b = a + c + d,
-              }) => {
-                // ...
-              }
-            `,
-            options: [options],
-            errors: [
-              {
-                messageId: 'unexpectedObjectsOrder',
-                data: {
-                  left: 'b',
-                  right: 'c',
-                },
-              },
-            ],
-          },
-          {
-            code: dedent`
-              let Func = ({
-                a,
-                b = () => a + c,
-                c,
-                d,
-              }) => {
-                // ...
-              }
-            `,
-            output: dedent`
-              let Func = ({
-                a,
-                c,
-                b = () => a + c,
-                d,
               }) => {
                 // ...
               }
