@@ -555,17 +555,21 @@ describe(ruleName, () => {
             ],
             errors: [
               {
-                messageId: 'unexpectedInterfacePropertiesOrder',
+                messageId: 'unexpectedInterfacePropertiesGroupOrder',
                 data: {
                   left: 'c',
+                  leftGroup: 'unknown',
                   right: 'd',
+                  rightGroup: 'multiline',
                 },
               },
               {
-                messageId: 'unexpectedInterfacePropertiesOrder',
+                messageId: 'unexpectedInterfacePropertiesGroupOrder',
                 data: {
                   left: 'd',
+                  leftGroup: 'multiline',
                   right: 'g',
+                  rightGroup: 'g',
                 },
               },
             ],
@@ -749,10 +753,12 @@ describe(ruleName, () => {
             ],
             errors: [
               {
-                messageId: 'unexpectedInterfacePropertiesOrder',
+                messageId: 'unexpectedInterfacePropertiesGroupOrder',
                 data: {
                   left: 'a',
+                  leftGroup: 'last',
                   right: 'b',
+                  rightGroup: 'unknown',
                 },
               },
               {
@@ -1854,17 +1860,21 @@ describe(ruleName, () => {
             ],
             errors: [
               {
-                messageId: 'unexpectedInterfacePropertiesOrder',
+                messageId: 'unexpectedInterfacePropertiesGroupOrder',
                 data: {
                   left: 'c',
+                  leftGroup: 'unknown',
                   right: 'd',
+                  rightGroup: 'multiline',
                 },
               },
               {
-                messageId: 'unexpectedInterfacePropertiesOrder',
+                messageId: 'unexpectedInterfacePropertiesGroupOrder',
                 data: {
                   left: 'd',
+                  leftGroup: 'multiline',
                   right: 'g',
+                  rightGroup: 'g',
                 },
               },
             ],

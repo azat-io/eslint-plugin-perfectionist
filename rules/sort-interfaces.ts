@@ -19,7 +19,9 @@ import { complete } from '../utils/complete'
 import { pairwise } from '../utils/pairwise'
 import { compare } from '../utils/compare'
 
-type MESSAGE_ID = 'unexpectedInterfacePropertiesOrder'
+type MESSAGE_ID =
+  | 'unexpectedInterfacePropertiesGroupOrder'
+  | 'unexpectedInterfacePropertiesOrder'
 
 type Group<T extends string[]> = 'multiline' | 'unknown' | T[number]
 
@@ -121,6 +123,8 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
       },
     ],
     messages: {
+      unexpectedInterfacePropertiesGroupOrder:
+        'Expected "{{right}}" ({{rightGroup}}) to come before "{{left}}" ({{leftGroup}}).',
       unexpectedInterfacePropertiesOrder:
         'Expected "{{right}}" to come before "{{left}}".',
     },
@@ -310,11 +314,18 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
           for (let nodes of formattedMembers) {
             pairwise(nodes, (left, right, iteration) => {
               if (checkOrder(nodes, left, right, iteration)) {
+                let leftNum = getGroupNumber(options.groups, left)
+                let rightNum = getGroupNumber(options.groups, right)
                 context.report({
-                  messageId: 'unexpectedInterfacePropertiesOrder',
+                  messageId:
+                    leftNum !== rightNum
+                      ? 'unexpectedInterfacePropertiesGroupOrder'
+                      : 'unexpectedInterfacePropertiesOrder',
                   data: {
                     left: toSingleLine(left.name),
+                    leftGroup: left.group,
                     right: toSingleLine(right.name),
+                    rightGroup: right.group,
                   },
                   node: right.node,
                   fix: fixer => {
