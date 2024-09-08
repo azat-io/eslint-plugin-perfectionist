@@ -1710,19 +1710,19 @@ describe(ruleName, () => {
         invalid: [
           {
             code: dedent`
-            enum Enum {
-              C = 'C',
-              B = 0,
-              A = B,
-            }
-          `,
+              enum Enum {
+                C = 'C',
+                B = 0,
+                A = B,
+              }
+            `,
             output: dedent`
-            enum Enum {
-              B = 0,
-              A = B,
-              C = 'C',
-            }
-          `,
+              enum Enum {
+                B = 0,
+                A = B,
+                C = 'C',
+              }
+            `,
             options: [
               {
                 type: 'alphabetical',
@@ -1740,19 +1740,19 @@ describe(ruleName, () => {
           },
           {
             code: dedent`
-            enum Enum {
-              C = 'C',
-              B = 0,
-              A = Enum.B,
-            }
-          `,
+              enum Enum {
+                C = 'C',
+                B = 0,
+                A = Enum.B,
+              }
+            `,
             output: dedent`
-            enum Enum {
-              B = 0,
-              A = Enum.B,
-              C = 'C',
-            }
-          `,
+              enum Enum {
+                B = 0,
+                A = Enum.B,
+                C = 'C',
+              }
+            `,
             options: [
               {
                 type: 'alphabetical',
@@ -1770,19 +1770,19 @@ describe(ruleName, () => {
           },
           {
             code: dedent`
-            enum Enum {
-              C = 3,
-              B = 0,
-              A = 1 | 2 | B | Enum.B,
-            }
-          `,
+              enum Enum {
+                C = 3,
+                B = 0,
+                A = 1 | 2 | B | Enum.B,
+              }
+            `,
             output: dedent`
-            enum Enum {
-              B = 0,
-              A = 1 | 2 | B | Enum.B,
-              C = 3,
-            }
-          `,
+              enum Enum {
+                B = 0,
+                A = 1 | 2 | B | Enum.B,
+                C = 3,
+              }
+            `,
             options: [
               {
                 type: 'alphabetical',
@@ -1800,19 +1800,19 @@ describe(ruleName, () => {
           },
           {
             code: dedent`
-            enum Enum {
-              B = 'B',
-              A = AnotherEnum.B,
-              C = 'C',
-            }
-          `,
+              enum Enum {
+                B = 'B',
+                A = AnotherEnum.B,
+                C = 'C',
+              }
+            `,
             output: dedent`
-            enum Enum {
-              A = AnotherEnum.B,
-              B = 'B',
-              C = 'C',
-            }
-          `,
+              enum Enum {
+                A = AnotherEnum.B,
+                B = 'B',
+                C = 'C',
+              }
+            `,
             options: [
               {
                 type: 'alphabetical',
@@ -1830,19 +1830,19 @@ describe(ruleName, () => {
           },
           {
             code: dedent`
-            enum Enum {
-              A = Enum.C,
-              B = 10,
-              C = 10,
-            }
-          `,
+              enum Enum {
+                A = Enum.C,
+                B = 10,
+                C = 10,
+              }
+            `,
             output: dedent`
-            enum Enum {
-              C = 10,
-              A = Enum.C,
-              B = 10,
-            }
-          `,
+              enum Enum {
+                C = 10,
+                A = Enum.C,
+                B = 10,
+              }
+            `,
             options: [
               {
                 type: 'alphabetical',
@@ -1891,25 +1891,25 @@ describe(ruleName, () => {
         invalid: [
           {
             code: dedent`
-            enum Enum {
-              A = 'A',
-              B = F,
-              C = 'C',
-              D = B,
-              E = 'E',
-              F = D
-            }
-          `,
+              enum Enum {
+                A = 'A',
+                B = F,
+                C = 'C',
+                D = B,
+                E = 'E',
+                F = D
+              }
+            `,
             output: dedent`
-            enum Enum {
-              A = 'A',
-              D = B,
-              F = D,
-              B = F,
-              C = 'C',
-              E = 'E'
-            }
-          `,
+              enum Enum {
+                A = 'A',
+                D = B,
+                F = D,
+                B = F,
+                C = 'C',
+                E = 'E'
+              }
+            `,
             options: [
               {
                 type: 'alphabetical',
