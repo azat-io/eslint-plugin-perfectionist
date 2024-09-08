@@ -1704,167 +1704,193 @@ describe(ruleName, () => {
       },
     )
 
-    ruleTester.run(`${ruleName}: works with dependencies`, rule, {
-      valid: [],
-      invalid: [
-        {
-          code: dedent`
+    describe('detects dependencies', () => {
+      ruleTester.run(`${ruleName}: works with dependencies`, rule, {
+        valid: [],
+        invalid: [
+          {
+            code: dedent`
             enum Enum {
               C = 'C',
               B = 0,
               A = B,
             }
           `,
-          output: dedent`
+            output: dedent`
             enum Enum {
               B = 0,
               A = B,
               C = 'C',
             }
           `,
-          options: [
-            {
-              type: 'alphabetical',
-            },
-          ],
-          errors: [
-            {
-              messageId: 'unexpectedEnumsOrder',
-              data: {
-                left: 'C',
-                right: 'B',
+            options: [
+              {
+                type: 'alphabetical',
               },
-            },
-          ],
-        },
-        {
-          code: dedent`
+            ],
+            errors: [
+              {
+                messageId: 'unexpectedEnumsOrder',
+                data: {
+                  left: 'C',
+                  right: 'B',
+                },
+              },
+            ],
+          },
+          {
+            code: dedent`
             enum Enum {
               C = 'C',
               B = 0,
               A = Enum.B,
             }
           `,
-          output: dedent`
+            output: dedent`
             enum Enum {
               B = 0,
               A = Enum.B,
               C = 'C',
             }
           `,
-          options: [
-            {
-              type: 'alphabetical',
-            },
-          ],
-          errors: [
-            {
-              messageId: 'unexpectedEnumsOrder',
-              data: {
-                left: 'C',
-                right: 'B',
+            options: [
+              {
+                type: 'alphabetical',
               },
-            },
-          ],
-        },
-        {
-          code: dedent`
+            ],
+            errors: [
+              {
+                messageId: 'unexpectedEnumsOrder',
+                data: {
+                  left: 'C',
+                  right: 'B',
+                },
+              },
+            ],
+          },
+          {
+            code: dedent`
             enum Enum {
               C = 3,
               B = 0,
               A = 1 | 2 | B | Enum.B,
             }
           `,
-          output: dedent`
+            output: dedent`
             enum Enum {
               B = 0,
               A = 1 | 2 | B | Enum.B,
               C = 3,
             }
           `,
-          options: [
-            {
-              type: 'alphabetical',
-            },
-          ],
-          errors: [
-            {
-              messageId: 'unexpectedEnumsOrder',
-              data: {
-                left: 'C',
-                right: 'B',
+            options: [
+              {
+                type: 'alphabetical',
               },
-            },
-          ],
-        },
-        {
-          code: dedent`
+            ],
+            errors: [
+              {
+                messageId: 'unexpectedEnumsOrder',
+                data: {
+                  left: 'C',
+                  right: 'B',
+                },
+              },
+            ],
+          },
+          {
+            code: dedent`
             enum Enum {
               B = 'B',
               A = AnotherEnum.B,
               C = 'C',
             }
           `,
-          output: dedent`
+            output: dedent`
             enum Enum {
               A = AnotherEnum.B,
               B = 'B',
               C = 'C',
             }
           `,
-          options: [
-            {
-              type: 'alphabetical',
-            },
-          ],
-          errors: [
-            {
-              messageId: 'unexpectedEnumsOrder',
-              data: {
-                left: 'B',
-                right: 'A',
+            options: [
+              {
+                type: 'alphabetical',
               },
-            },
-          ],
-        },
-        {
-          code: dedent`
+            ],
+            errors: [
+              {
+                messageId: 'unexpectedEnumsOrder',
+                data: {
+                  left: 'B',
+                  right: 'A',
+                },
+              },
+            ],
+          },
+          {
+            code: dedent`
             enum Enum {
               A = Enum.C,
               B = 10,
               C = 10,
             }
           `,
-          output: dedent`
+            output: dedent`
             enum Enum {
               C = 10,
               A = Enum.C,
               B = 10,
             }
           `,
-          options: [
-            {
-              type: 'alphabetical',
-            },
-          ],
-          errors: [
-            {
-              messageId: 'unexpectedEnumsOrder',
-              data: {
-                left: 'B',
-                right: 'C',
+            options: [
+              {
+                type: 'alphabetical',
               },
-            },
-          ],
-        },
-      ],
-    })
+            ],
+            errors: [
+              {
+                messageId: 'unexpectedEnumsOrder',
+                data: {
+                  left: 'B',
+                  right: 'C',
+                },
+              },
+            ],
+          },
+        ],
+      })
 
-    ruleTester.run(`${ruleName}: detects circular dependencies`, rule, {
-      valid: [],
-      invalid: [
+      ruleTester.run(
+        `${ruleName} detects dependencies in template literal expressions`,
+        rule,
         {
-          code: dedent`
+          valid: [
+            {
+              code: dedent`
+                enum Enum {
+                  A = \`\${AnotherEnum.D}\`,
+                  D = 'D',
+                  B = \`\${Enum.D}\`,
+                  C = \`\${D}\`,
+                }
+            `,
+              options: [
+                {
+                  type: 'alphabetical',
+                },
+              ],
+            },
+          ],
+          invalid: [],
+        },
+      )
+
+      ruleTester.run(`${ruleName}: detects circular dependencies`, rule, {
+        valid: [],
+        invalid: [
+          {
+            code: dedent`
             enum Enum {
               A = 'A',
               B = F,
@@ -1874,7 +1900,7 @@ describe(ruleName, () => {
               F = D
             }
           `,
-          output: dedent`
+            output: dedent`
             enum Enum {
               A = 'A',
               D = B,
@@ -1884,29 +1910,30 @@ describe(ruleName, () => {
               E = 'E'
             }
           `,
-          options: [
-            {
-              type: 'alphabetical',
-            },
-          ],
-          errors: [
-            {
-              messageId: 'unexpectedEnumsOrder',
-              data: {
-                left: 'C',
-                right: 'D',
+            options: [
+              {
+                type: 'alphabetical',
               },
-            },
-            {
-              messageId: 'unexpectedEnumsOrder',
-              data: {
-                left: 'E',
-                right: 'F',
+            ],
+            errors: [
+              {
+                messageId: 'unexpectedEnumsOrder',
+                data: {
+                  left: 'C',
+                  right: 'D',
+                },
               },
-            },
-          ],
-        },
-      ],
+              {
+                messageId: 'unexpectedEnumsOrder',
+                data: {
+                  left: 'E',
+                  right: 'F',
+                },
+              },
+            ],
+          },
+        ],
+      })
     })
   })
 })
