@@ -9,6 +9,7 @@ import { validateGroupsConfiguration } from '../utils/validate-groups-configurat
 import { createEslintRule } from '../utils/create-eslint-rule'
 import { getGroupNumber } from '../utils/get-group-number'
 import { getSourceCode } from '../utils/get-source-code'
+import { toSingleLine } from '../utils/to-single-line'
 import { rangeToDiff } from '../utils/range-to-diff'
 import { getSettings } from '../utils/get-settings'
 import { isPositive } from '../utils/is-positive'
@@ -26,7 +27,9 @@ type Group<T extends string[]> =
   | 'unknown'
   | T[number]
 
-type MESSAGE_ID = 'unexpectedAstroAttributesOrder'
+type MESSAGE_ID =
+  | 'unexpectedAstroAttributesGroupOrder'
+  | 'unexpectedAstroAttributesOrder'
 
 type Options<T extends string[]> = [
   Partial<{
@@ -105,6 +108,8 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
       },
     ],
     messages: {
+      unexpectedAstroAttributesGroupOrder:
+        'Expected "{{right}}" ({{rightGroup}}) to come before "{{left}}" ({{leftGroup}}).',
       unexpectedAstroAttributesOrder:
         'Expected "{{right}}" to come before "{{left}}".',
     },
@@ -201,10 +206,15 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
                   isPositive(compare(left, right, options)))
               ) {
                 context.report({
-                  messageId: 'unexpectedAstroAttributesOrder',
+                  messageId:
+                    leftNum !== rightNum
+                      ? 'unexpectedAstroAttributesGroupOrder'
+                      : 'unexpectedAstroAttributesOrder',
                   data: {
                     left: left.name,
                     right: right.name,
+                    leftGroup: left.group,
+                    rightGroup: right.group,
                   },
                   node: right.node,
                   fix: fixer => {

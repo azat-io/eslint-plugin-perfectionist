@@ -275,10 +275,12 @@ describe(ruleName, () => {
             ],
             errors: [
               {
-                messageId: 'unexpectedAstroAttributesOrder',
+                messageId: 'unexpectedAstroAttributesGroupOrder',
                 data: {
                   left: 'c',
+                  leftGroup: 'shorthand',
                   right: 'dd',
+                  rightGroup: 'unknown',
                 },
               },
             ],
@@ -358,10 +360,12 @@ describe(ruleName, () => {
             ],
             errors: [
               {
-                messageId: 'unexpectedAstroAttributesOrder',
+                messageId: 'unexpectedAstroAttributesGroupOrder',
                 data: {
                   left: 'a',
+                  leftGroup: 'unknown',
                   right: 'b',
+                  rightGroup: 'multiline',
                 },
               },
             ],
@@ -440,17 +444,21 @@ describe(ruleName, () => {
           ],
           errors: [
             {
-              messageId: 'unexpectedAstroAttributesOrder',
+              messageId: 'unexpectedAstroAttributesGroupOrder',
               data: {
                 left: 'a',
+                leftGroup: 'unknown',
                 right: 'b',
+                rightGroup: 'primary',
               },
             },
             {
-              messageId: 'unexpectedAstroAttributesOrder',
+              messageId: 'unexpectedAstroAttributesGroupOrder',
               data: {
                 left: 'c',
+                leftGroup: 'unknown',
                 right: 'd',
+                rightGroup: 'secondary',
               },
             },
           ],
@@ -704,10 +712,12 @@ describe(ruleName, () => {
             ],
             errors: [
               {
-                messageId: 'unexpectedAstroAttributesOrder',
+                messageId: 'unexpectedAstroAttributesGroupOrder',
                 data: {
                   left: 'c',
+                  leftGroup: 'shorthand',
                   right: 'dd',
+                  rightGroup: 'unknown',
                 },
               },
             ],
@@ -790,10 +800,12 @@ describe(ruleName, () => {
             ],
             errors: [
               {
-                messageId: 'unexpectedAstroAttributesOrder',
+                messageId: 'unexpectedAstroAttributesGroupOrder',
                 data: {
                   left: 'a',
+                  leftGroup: 'unknown',
                   right: 'b',
+                  rightGroup: 'multiline',
                 },
               },
             ],
@@ -872,17 +884,21 @@ describe(ruleName, () => {
           ],
           errors: [
             {
-              messageId: 'unexpectedAstroAttributesOrder',
+              messageId: 'unexpectedAstroAttributesGroupOrder',
               data: {
                 left: 'a',
+                leftGroup: 'unknown',
                 right: 'b',
+                rightGroup: 'primary',
               },
             },
             {
-              messageId: 'unexpectedAstroAttributesOrder',
+              messageId: 'unexpectedAstroAttributesGroupOrder',
               data: {
                 left: 'c',
+                leftGroup: 'unknown',
                 right: 'd',
+                rightGroup: 'secondary',
               },
             },
           ],
@@ -1135,10 +1151,12 @@ describe(ruleName, () => {
             ],
             errors: [
               {
-                messageId: 'unexpectedAstroAttributesOrder',
+                messageId: 'unexpectedAstroAttributesGroupOrder',
                 data: {
                   left: 'c',
+                  leftGroup: 'shorthand',
                   right: 'dd',
+                  rightGroup: 'unknown',
                 },
               },
               {
@@ -1225,10 +1243,12 @@ describe(ruleName, () => {
             ],
             errors: [
               {
-                messageId: 'unexpectedAstroAttributesOrder',
+                messageId: 'unexpectedAstroAttributesGroupOrder',
                 data: {
                   left: 'a',
+                  leftGroup: 'unknown',
                   right: 'b',
+                  rightGroup: 'multiline',
                 },
               },
               {
@@ -1314,17 +1334,21 @@ describe(ruleName, () => {
           ],
           errors: [
             {
-              messageId: 'unexpectedAstroAttributesOrder',
+              messageId: 'unexpectedAstroAttributesGroupOrder',
               data: {
                 left: 'a',
+                leftGroup: 'unknown',
                 right: 'b',
+                rightGroup: 'primary',
               },
             },
             {
-              messageId: 'unexpectedAstroAttributesOrder',
+              messageId: 'unexpectedAstroAttributesGroupOrder',
               data: {
                 left: 'c',
+                leftGroup: 'unknown',
                 right: 'd',
+                rightGroup: 'secondary',
               },
             },
           ],
