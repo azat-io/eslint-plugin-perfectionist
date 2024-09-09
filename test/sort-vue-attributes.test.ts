@@ -286,17 +286,21 @@ describe(ruleName, () => {
             ],
             errors: [
               {
-                messageId: 'unexpectedVueAttributesOrder',
+                messageId: 'unexpectedVueAttributesGroupOrder',
                 data: {
                   left: 'b',
+                  leftGroup: 'unknown',
                   right: '@a',
+                  rightGroup: 'multiline',
                 },
               },
               {
-                messageId: 'unexpectedVueAttributesOrder',
+                messageId: 'unexpectedVueAttributesGroupOrder',
                 data: {
                   left: 'e-f',
+                  leftGroup: 'shorthand',
                   right: 'c',
+                  rightGroup: 'unknown',
                 },
               },
             ],
@@ -562,17 +566,21 @@ describe(ruleName, () => {
             ],
             errors: [
               {
-                messageId: 'unexpectedVueAttributesOrder',
+                messageId: 'unexpectedVueAttributesGroupOrder',
                 data: {
                   left: 'b',
+                  leftGroup: 'unknown',
                   right: '@a',
+                  rightGroup: 'multiline',
                 },
               },
               {
-                messageId: 'unexpectedVueAttributesOrder',
+                messageId: 'unexpectedVueAttributesGroupOrder',
                 data: {
                   left: 'e-f',
+                  leftGroup: 'shorthand',
                   right: 'c',
+                  rightGroup: 'unknown',
                 },
               },
             ],
@@ -837,17 +845,21 @@ describe(ruleName, () => {
             ],
             errors: [
               {
-                messageId: 'unexpectedVueAttributesOrder',
+                messageId: 'unexpectedVueAttributesGroupOrder',
                 data: {
                   left: 'b',
+                  leftGroup: 'unknown',
                   right: '@a',
+                  rightGroup: 'multiline',
                 },
               },
               {
-                messageId: 'unexpectedVueAttributesOrder',
+                messageId: 'unexpectedVueAttributesGroupOrder',
                 data: {
                   left: 'e-f',
+                  leftGroup: 'shorthand',
                   right: 'c',
+                  rightGroup: 'unknown',
                 },
               },
             ],

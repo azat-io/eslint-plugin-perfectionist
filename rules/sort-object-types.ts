@@ -18,7 +18,9 @@ import { complete } from '../utils/complete'
 import { pairwise } from '../utils/pairwise'
 import { compare } from '../utils/compare'
 
-type MESSAGE_ID = 'unexpectedObjectTypesOrder'
+type MESSAGE_ID =
+  | 'unexpectedObjectTypesGroupOrder'
+  | 'unexpectedObjectTypesOrder'
 
 type Group<T extends string[]> = 'multiline' | 'unknown' | T[number]
 
@@ -111,6 +113,8 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
       },
     ],
     messages: {
+      unexpectedObjectTypesGroupOrder:
+        'Expected "{{right}}" ({{rightGroup}}) to come before "{{left}}" ({{leftGroup}}).',
       unexpectedObjectTypesOrder:
         'Expected "{{right}}" to come before "{{left}}".',
     },
@@ -277,10 +281,15 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
 
             if (compareValue) {
               context.report({
-                messageId: 'unexpectedObjectTypesOrder',
+                messageId:
+                  leftNum !== rightNum
+                    ? 'unexpectedObjectTypesGroupOrder'
+                    : 'unexpectedObjectTypesOrder',
                 data: {
                   left: toSingleLine(left.name),
+                  leftGroup: left.group,
                   right: toSingleLine(right.name),
+                  rightGroup: right.group,
                 },
                 node: right.node,
                 fix: fixer => {

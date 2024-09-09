@@ -23,12 +23,13 @@ import { sortNodes } from '../utils/sort-nodes'
 import { complete } from '../utils/complete'
 import { pairwise } from '../utils/pairwise'
 
-type MESSAGE_ID = 'unexpectedObjectsOrder'
+type MESSAGE_ID = 'unexpectedObjectsGroupOrder' | 'unexpectedObjectsOrder'
 
 export enum Position {
   'exception' = 'exception',
   'ignore' = 'ignore',
 }
+
 type Group = 'unknown' | string
 type SortingNodeWithPosition = SortingNodeWithDependencies & {
   position: Position
@@ -155,6 +156,8 @@ export default createEslintRule<Options, MESSAGE_ID>({
       },
     ],
     messages: {
+      unexpectedObjectsGroupOrder:
+        'Expected "{{right}}" ({{rightGroup}}) to come before "{{left}}" ({{leftGroup}}).',
       unexpectedObjectsOrder: 'Expected "{{right}}" to come before "{{left}}".',
     },
   },
@@ -435,12 +438,18 @@ export default createEslintRule<Options, MESSAGE_ID>({
                 makeFixes(fixer, nodes, sortedNodes, sourceCode, {
                   partitionComment: options.partitionByComment,
                 })
-
+              let leftNum = getGroupNumber(options.groups, left)
+              let rightNum = getGroupNumber(options.groups, right)
               context.report({
-                messageId: 'unexpectedObjectsOrder',
+                messageId:
+                  leftNum !== rightNum
+                    ? 'unexpectedObjectsGroupOrder'
+                    : 'unexpectedObjectsOrder',
                 data: {
                   left: toSingleLine(left.name),
+                  leftGroup: left.group,
                   right: toSingleLine(right.name),
+                  rightGroup: right.group,
                 },
                 node: right.node,
                 fix,

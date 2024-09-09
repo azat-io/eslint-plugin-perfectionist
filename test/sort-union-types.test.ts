@@ -370,38 +370,48 @@ describe(ruleName, () => {
           ],
           errors: [
             {
-              messageId: 'unexpectedUnionTypesOrder',
+              messageId: 'unexpectedUnionTypesGroupOrder',
               data: {
                 left: "{ name: 'a' }",
+                leftGroup: 'object',
                 right: 'boolean',
+                rightGroup: 'keyword',
               },
             },
             {
-              messageId: 'unexpectedUnionTypesOrder',
+              messageId: 'unexpectedUnionTypesGroupOrder',
               data: {
                 left: 'boolean',
+                leftGroup: 'keyword',
                 right: 'A',
+                rightGroup: 'named',
               },
             },
             {
-              messageId: 'unexpectedUnionTypesOrder',
+              messageId: 'unexpectedUnionTypesGroupOrder',
               data: {
                 left: 'keyof A',
+                leftGroup: 'operator',
                 right: 'bigint',
+                rightGroup: 'keyword',
               },
             },
             {
-              messageId: 'unexpectedUnionTypesOrder',
+              messageId: 'unexpectedUnionTypesGroupOrder',
               data: {
                 left: 'null',
+                leftGroup: 'nullish',
                 right: '1',
+                rightGroup: 'literal',
               },
             },
             {
-              messageId: 'unexpectedUnionTypesOrder',
+              messageId: 'unexpectedUnionTypesGroupOrder',
               data: {
                 left: 'A | B',
+                leftGroup: 'union',
                 right: 'A & B',
+                rightGroup: 'intersection',
               },
             },
           ],
@@ -757,38 +767,48 @@ describe(ruleName, () => {
           ],
           errors: [
             {
-              messageId: 'unexpectedUnionTypesOrder',
+              messageId: 'unexpectedUnionTypesGroupOrder',
               data: {
                 left: "{ name: 'a' }",
+                leftGroup: 'object',
                 right: 'boolean',
+                rightGroup: 'keyword',
               },
             },
             {
-              messageId: 'unexpectedUnionTypesOrder',
+              messageId: 'unexpectedUnionTypesGroupOrder',
               data: {
                 left: 'boolean',
+                leftGroup: 'keyword',
                 right: 'A',
+                rightGroup: 'named',
               },
             },
             {
-              messageId: 'unexpectedUnionTypesOrder',
+              messageId: 'unexpectedUnionTypesGroupOrder',
               data: {
                 left: 'keyof A',
+                leftGroup: 'operator',
                 right: 'bigint',
+                rightGroup: 'keyword',
               },
             },
             {
-              messageId: 'unexpectedUnionTypesOrder',
+              messageId: 'unexpectedUnionTypesGroupOrder',
               data: {
                 left: 'null',
+                leftGroup: 'nullish',
                 right: '1',
+                rightGroup: 'literal',
               },
             },
             {
-              messageId: 'unexpectedUnionTypesOrder',
+              messageId: 'unexpectedUnionTypesGroupOrder',
               data: {
                 left: 'A | B',
+                leftGroup: 'union',
                 right: 'A & B',
+                rightGroup: 'intersection',
               },
             },
           ],
@@ -1136,38 +1156,48 @@ describe(ruleName, () => {
           ],
           errors: [
             {
-              messageId: 'unexpectedUnionTypesOrder',
+              messageId: 'unexpectedUnionTypesGroupOrder',
               data: {
                 left: "{ name: 'a' }",
+                leftGroup: 'object',
                 right: 'boolean',
+                rightGroup: 'keyword',
               },
             },
             {
-              messageId: 'unexpectedUnionTypesOrder',
+              messageId: 'unexpectedUnionTypesGroupOrder',
               data: {
                 left: 'boolean',
+                leftGroup: 'keyword',
                 right: 'A',
+                rightGroup: 'named',
               },
             },
             {
-              messageId: 'unexpectedUnionTypesOrder',
+              messageId: 'unexpectedUnionTypesGroupOrder',
               data: {
                 left: 'keyof A',
+                leftGroup: 'operator',
                 right: 'bigint',
+                rightGroup: 'keyword',
               },
             },
             {
-              messageId: 'unexpectedUnionTypesOrder',
+              messageId: 'unexpectedUnionTypesGroupOrder',
               data: {
                 left: 'null',
+                leftGroup: 'nullish',
                 right: '1',
+                rightGroup: 'literal',
               },
             },
             {
-              messageId: 'unexpectedUnionTypesOrder',
+              messageId: 'unexpectedUnionTypesGroupOrder',
               data: {
                 left: 'A | B',
+                leftGroup: 'union',
                 right: 'A & B',
+                rightGroup: 'intersection',
               },
             },
           ],

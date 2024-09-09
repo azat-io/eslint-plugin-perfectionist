@@ -185,10 +185,12 @@ describe(ruleName, () => {
               },
             },
             {
-              messageId: 'unexpectedImportsOrder',
+              messageId: 'unexpectedImportsGroupOrder',
               data: {
                 left: '~/b',
+                leftGroup: 'internal',
                 right: '~/i',
+                rightGroup: 'internal-type',
               },
             },
             {
@@ -199,10 +201,12 @@ describe(ruleName, () => {
               },
             },
             {
-              messageId: 'unexpectedImportsOrder',
+              messageId: 'unexpectedImportsGroupOrder',
               data: {
                 left: './d',
+                leftGroup: 'sibling-type',
                 right: 'fs',
+                rightGroup: 'builtin',
               },
             },
             {
@@ -220,17 +224,21 @@ describe(ruleName, () => {
               },
             },
             {
-              messageId: 'unexpectedImportsOrder',
+              messageId: 'unexpectedImportsGroupOrder',
               data: {
                 left: '../../h',
+                leftGroup: 'parent',
                 right: './index.d.ts',
+                rightGroup: 'index-type',
               },
             },
             {
-              messageId: 'unexpectedImportsOrder',
+              messageId: 'unexpectedImportsGroupOrder',
               data: {
                 left: '.',
+                leftGroup: 'index',
                 right: 't',
+                rightGroup: 'type',
               },
             },
             {
@@ -321,17 +329,21 @@ describe(ruleName, () => {
           ],
           errors: [
             {
-              messageId: 'unexpectedImportsOrder',
+              messageId: 'unexpectedImportsGroupOrder',
               data: {
                 left: '.',
+                leftGroup: 'index',
                 right: 'a',
+                rightGroup: 'external',
               },
             },
             {
-              messageId: 'unexpectedImportsOrder',
+              messageId: 'unexpectedImportsGroupOrder',
               data: {
                 left: '~/c',
+                leftGroup: 'internal',
                 right: 't',
+                rightGroup: 'type',
               },
             },
             {
@@ -342,10 +354,12 @@ describe(ruleName, () => {
               },
             },
             {
-              messageId: 'unexpectedImportsOrder',
+              messageId: 'unexpectedImportsGroupOrder',
               data: {
                 left: '../../e',
+                leftGroup: 'parent',
                 right: '~/b',
+                rightGroup: 'internal',
               },
             },
             {
@@ -906,10 +920,12 @@ describe(ruleName, () => {
               },
             },
             {
-              messageId: 'unexpectedImportsOrder',
+              messageId: 'unexpectedImportsGroupOrder',
               data: {
                 left: './b',
+                leftGroup: 'sibling',
                 right: 'c',
+                rightGroup: 'external',
               },
             },
             {
@@ -1191,10 +1207,12 @@ describe(ruleName, () => {
           ],
           errors: [
             {
-              messageId: 'unexpectedImportsOrder',
+              messageId: 'unexpectedImportsGroupOrder',
               data: {
                 left: 'a',
+                leftGroup: 'external',
                 right: 'bun:test',
+                rightGroup: 'builtin',
               },
             },
           ],
@@ -1338,10 +1356,12 @@ describe(ruleName, () => {
                 },
               },
               {
-                messageId: 'unexpectedImportsOrder',
+                messageId: 'unexpectedImportsGroupOrder',
                 data: {
                   left: '~/b',
+                  leftGroup: 'internal',
                   right: 'fs',
+                  rightGroup: 'builtin',
                 },
               },
               {
@@ -1439,10 +1459,12 @@ describe(ruleName, () => {
             ],
             errors: [
               {
-                messageId: 'unexpectedImportsOrder',
+                messageId: 'unexpectedImportsGroupOrder',
                 data: {
                   left: 'bbb',
+                  leftGroup: 'side-effect',
                   right: 'e',
+                  rightGroup: 'external',
                 },
               },
               {
@@ -1672,10 +1694,12 @@ describe(ruleName, () => {
               },
             },
             {
-              messageId: 'unexpectedImportsOrder',
+              messageId: 'unexpectedImportsGroupOrder',
               data: {
                 left: '~/b',
+                leftGroup: 'internal',
                 right: '~/i',
+                rightGroup: 'internal-type',
               },
             },
             {
@@ -1686,10 +1710,12 @@ describe(ruleName, () => {
               },
             },
             {
-              messageId: 'unexpectedImportsOrder',
+              messageId: 'unexpectedImportsGroupOrder',
               data: {
                 left: './d',
+                leftGroup: 'sibling-type',
                 right: 'fs',
+                rightGroup: 'builtin',
               },
             },
             {
@@ -1707,17 +1733,21 @@ describe(ruleName, () => {
               },
             },
             {
-              messageId: 'unexpectedImportsOrder',
+              messageId: 'unexpectedImportsGroupOrder',
               data: {
                 left: '../../h',
+                leftGroup: 'parent',
                 right: './index.d.ts',
+                rightGroup: 'index-type',
               },
             },
             {
-              messageId: 'unexpectedImportsOrder',
+              messageId: 'unexpectedImportsGroupOrder',
               data: {
                 left: '.',
+                leftGroup: 'index',
                 right: 't',
+                rightGroup: 'type',
               },
             },
             {
@@ -1808,17 +1838,21 @@ describe(ruleName, () => {
           ],
           errors: [
             {
-              messageId: 'unexpectedImportsOrder',
+              messageId: 'unexpectedImportsGroupOrder',
               data: {
                 left: '.',
+                leftGroup: 'index',
                 right: 'a',
+                rightGroup: 'external',
               },
             },
             {
-              messageId: 'unexpectedImportsOrder',
+              messageId: 'unexpectedImportsGroupOrder',
               data: {
                 left: '~/c',
+                leftGroup: 'internal',
                 right: 't',
+                rightGroup: 'type',
               },
             },
             {
@@ -1829,10 +1863,12 @@ describe(ruleName, () => {
               },
             },
             {
-              messageId: 'unexpectedImportsOrder',
+              messageId: 'unexpectedImportsGroupOrder',
               data: {
                 left: '../../e',
+                leftGroup: 'parent',
                 right: '~/b',
+                rightGroup: 'internal',
               },
             },
             {
@@ -2393,10 +2429,12 @@ describe(ruleName, () => {
               },
             },
             {
-              messageId: 'unexpectedImportsOrder',
+              messageId: 'unexpectedImportsGroupOrder',
               data: {
                 left: './b',
+                leftGroup: 'sibling',
                 right: 'c',
+                rightGroup: 'external',
               },
             },
             {
@@ -2678,10 +2716,12 @@ describe(ruleName, () => {
           ],
           errors: [
             {
-              messageId: 'unexpectedImportsOrder',
+              messageId: 'unexpectedImportsGroupOrder',
               data: {
                 left: 'a',
+                leftGroup: 'external',
                 right: 'bun:test',
+                rightGroup: 'builtin',
               },
             },
           ],
@@ -2825,10 +2865,12 @@ describe(ruleName, () => {
                 },
               },
               {
-                messageId: 'unexpectedImportsOrder',
+                messageId: 'unexpectedImportsGroupOrder',
                 data: {
                   left: '~/b',
+                  leftGroup: 'internal',
                   right: 'fs',
+                  rightGroup: 'builtin',
                 },
               },
               {
@@ -2926,10 +2968,12 @@ describe(ruleName, () => {
             ],
             errors: [
               {
-                messageId: 'unexpectedImportsOrder',
+                messageId: 'unexpectedImportsGroupOrder',
                 data: {
                   left: 'bbb',
+                  leftGroup: 'side-effect',
                   right: 'e',
+                  rightGroup: 'external',
                 },
               },
               {
@@ -3151,10 +3195,12 @@ describe(ruleName, () => {
           ],
           errors: [
             {
-              messageId: 'unexpectedImportsOrder',
+              messageId: 'unexpectedImportsGroupOrder',
               data: {
                 left: '~/b',
+                leftGroup: 'internal',
                 right: '~/i',
+                rightGroup: 'internal-type',
               },
             },
             {
@@ -3165,10 +3211,12 @@ describe(ruleName, () => {
               },
             },
             {
-              messageId: 'unexpectedImportsOrder',
+              messageId: 'unexpectedImportsGroupOrder',
               data: {
                 left: './d',
+                leftGroup: 'sibling-type',
                 right: 'fs',
+                rightGroup: 'builtin',
               },
             },
             {
@@ -3200,17 +3248,21 @@ describe(ruleName, () => {
               },
             },
             {
-              messageId: 'unexpectedImportsOrder',
+              messageId: 'unexpectedImportsGroupOrder',
               data: {
                 left: '../../h',
+                leftGroup: 'parent',
                 right: './index.d.ts',
+                rightGroup: 'index-type',
               },
             },
             {
-              messageId: 'unexpectedImportsOrder',
+              messageId: 'unexpectedImportsGroupOrder',
               data: {
                 left: '.',
+                leftGroup: 'index',
                 right: 't',
+                rightGroup: 'type',
               },
             },
             {
@@ -3308,17 +3360,21 @@ describe(ruleName, () => {
           ],
           errors: [
             {
-              messageId: 'unexpectedImportsOrder',
+              messageId: 'unexpectedImportsGroupOrder',
               data: {
                 left: '.',
+                leftGroup: 'index',
                 right: 'a',
+                rightGroup: 'external',
               },
             },
             {
-              messageId: 'unexpectedImportsOrder',
+              messageId: 'unexpectedImportsGroupOrder',
               data: {
                 left: '~/c',
+                leftGroup: 'internal',
                 right: 't',
+                rightGroup: 'type',
               },
             },
             {
@@ -3329,10 +3385,12 @@ describe(ruleName, () => {
               },
             },
             {
-              messageId: 'unexpectedImportsOrder',
+              messageId: 'unexpectedImportsGroupOrder',
               data: {
                 left: '../../e',
+                leftGroup: 'parent',
                 right: '~/b',
+                rightGroup: 'internal',
               },
             },
             {
@@ -3893,10 +3951,12 @@ describe(ruleName, () => {
               },
             },
             {
-              messageId: 'unexpectedImportsOrder',
+              messageId: 'unexpectedImportsGroupOrder',
               data: {
                 left: './b',
+                leftGroup: 'sibling',
                 right: 'c',
+                rightGroup: 'external',
               },
             },
             {
@@ -4253,10 +4313,12 @@ describe(ruleName, () => {
           ],
           errors: [
             {
-              messageId: 'unexpectedImportsOrder',
+              messageId: 'unexpectedImportsGroupOrder',
               data: {
                 left: 'a',
+                leftGroup: 'external',
                 right: 'bun:test',
+                rightGroup: 'builtin',
               },
             },
           ],
@@ -4393,10 +4455,12 @@ describe(ruleName, () => {
             ],
             errors: [
               {
-                messageId: 'unexpectedImportsOrder',
+                messageId: 'unexpectedImportsGroupOrder',
                 data: {
                   left: '~/b',
+                  leftGroup: 'internal',
                   right: 'fs',
+                  rightGroup: 'builtin',
                 },
               },
               {
@@ -4508,10 +4572,12 @@ describe(ruleName, () => {
             ],
             errors: [
               {
-                messageId: 'unexpectedImportsOrder',
+                messageId: 'unexpectedImportsGroupOrder',
                 data: {
                   left: 'bbb',
+                  leftGroup: 'side-effect',
                   right: 'e',
+                  rightGroup: 'external',
                 },
               },
               {
@@ -4947,24 +5013,30 @@ describe(ruleName, () => {
             ],
             errors: [
               {
-                messageId: 'unexpectedImportsOrder',
+                messageId: 'unexpectedImportsGroupOrder',
                 data: {
                   left: './cart/CartComponentB.vue',
+                  leftGroup: 'sibling',
                   right: '~/utils/ws.ts',
+                  rightGroup: 'utils',
                 },
               },
               {
-                messageId: 'unexpectedImportsOrder',
+                messageId: 'unexpectedImportsGroupOrder',
                 data: {
                   left: '~/utils/ws.ts',
+                  leftGroup: 'utils',
                   right: '~/services/cartService.ts',
+                  rightGroup: 'services',
                 },
               },
               {
-                messageId: 'unexpectedImportsOrder',
+                messageId: 'unexpectedImportsGroupOrder',
                 data: {
                   left: '~/services/cartService.ts',
+                  leftGroup: 'services',
                   right: '~/stores/userStore.ts',
+                  rightGroup: 'stores',
                 },
               },
               {
@@ -4975,10 +5047,12 @@ describe(ruleName, () => {
                 },
               },
               {
-                messageId: 'unexpectedImportsOrder',
+                messageId: 'unexpectedImportsGroupOrder',
                 data: {
                   left: '~/composable/useFetch.ts',
+                  leftGroup: 'composable',
                   right: '~/stores/cartStore.ts',
+                  rightGroup: 'stores',
                 },
               },
               {

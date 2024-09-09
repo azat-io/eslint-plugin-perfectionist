@@ -344,10 +344,12 @@ describe(ruleName, () => {
             ],
             errors: [
               {
-                messageId: 'unexpectedObjectTypesOrder',
+                messageId: 'unexpectedObjectTypesGroupOrder',
                 data: {
                   left: 'a',
+                  leftGroup: 'unknown',
                   right: 'b',
+                  rightGroup: 'b',
                 },
               },
               {
@@ -941,10 +943,12 @@ describe(ruleName, () => {
             ],
             errors: [
               {
-                messageId: 'unexpectedObjectTypesOrder',
+                messageId: 'unexpectedObjectTypesGroupOrder',
                 data: {
                   left: 'a',
+                  leftGroup: 'unknown',
                   right: 'b',
+                  rightGroup: 'b',
                 },
               },
               {
@@ -1511,10 +1515,12 @@ describe(ruleName, () => {
             ],
             errors: [
               {
-                messageId: 'unexpectedObjectTypesOrder',
+                messageId: 'unexpectedObjectTypesGroupOrder',
                 data: {
                   left: 'a',
+                  leftGroup: 'unknown',
                   right: 'b',
+                  rightGroup: 'b',
                 },
               },
               {

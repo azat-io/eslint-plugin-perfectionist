@@ -18,7 +18,9 @@ import { complete } from '../utils/complete'
 import { pairwise } from '../utils/pairwise'
 import { compare } from '../utils/compare'
 
-type MESSAGE_ID = 'unexpectedVueAttributesOrder'
+type MESSAGE_ID =
+  | 'unexpectedVueAttributesGroupOrder'
+  | 'unexpectedVueAttributesOrder'
 
 type Group<T extends string[]> =
   | 'multiline'
@@ -103,6 +105,8 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
       },
     ],
     messages: {
+      unexpectedVueAttributesGroupOrder:
+        'Expected "{{right}}" ({{rightGroup}}) to come before "{{left}}" ({{leftGroup}}).',
       unexpectedVueAttributesOrder:
         'Expected "{{right}}" to come before "{{left}}".',
     },
@@ -212,10 +216,15 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
                   isPositive(compare(left, right, options)))
               ) {
                 context.report({
-                  messageId: 'unexpectedVueAttributesOrder',
+                  messageId:
+                    leftNum !== rightNum
+                      ? 'unexpectedVueAttributesGroupOrder'
+                      : 'unexpectedVueAttributesOrder',
                   data: {
                     left: left.name,
+                    leftGroup: left.group,
                     right: right.name,
+                    rightGroup: right.group,
                   },
                   // @ts-ignore
                   node: right.node,

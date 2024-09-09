@@ -24,6 +24,7 @@ import { compare } from '../utils/compare'
 
 type MESSAGE_ID =
   | 'missedSpacingBetweenImports'
+  | 'unexpectedImportsGroupOrder'
   | 'extraSpacingBetweenImports'
   | 'unexpectedImportsOrder'
 
@@ -190,6 +191,8 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
       },
     ],
     messages: {
+      unexpectedImportsGroupOrder:
+        'Expected "{{right}}" ({{rightGroup}}) to come before "{{left}}" ({{leftGroup}}).',
       unexpectedImportsOrder: 'Expected "{{right}}" to come before "{{left}}".',
       missedSpacingBetweenImports:
         'Missed spacing between "{{left}}" and "{{right}}" imports.',
@@ -665,10 +668,15 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
                   isPositive(compare(left, right, options))))
             ) {
               context.report({
-                messageId: 'unexpectedImportsOrder',
+                messageId:
+                  leftNum !== rightNum
+                    ? 'unexpectedImportsGroupOrder'
+                    : 'unexpectedImportsOrder',
                 data: {
                   left: left.name,
+                  leftGroup: left.group,
                   right: right.name,
+                  rightGroup: right.group,
                 },
                 node: right.node,
                 fix: fixer => fix(fixer, nodeList),
