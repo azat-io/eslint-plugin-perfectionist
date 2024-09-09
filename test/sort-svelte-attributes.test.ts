@@ -284,10 +284,12 @@ describe(ruleName, () => {
                 },
               },
               {
-                messageId: 'unexpectedSvelteAttributesOrder',
+                messageId: 'unexpectedSvelteAttributesGroupOrder',
                 data: {
                   left: 'c',
+                  leftGroup: 'svelte-shorthand',
                   right: 'b',
+                  rightGroup: 'unknown',
                 },
               },
             ],
@@ -370,10 +372,12 @@ describe(ruleName, () => {
             ],
             errors: [
               {
-                messageId: 'unexpectedSvelteAttributesOrder',
+                messageId: 'unexpectedSvelteAttributesGroupOrder',
                 data: {
                   left: 'c',
+                  leftGroup: 'unknown',
                   right: 'onClick',
+                  rightGroup: 'multiline',
                 },
               },
             ],
@@ -721,10 +725,12 @@ describe(ruleName, () => {
                 },
               },
               {
-                messageId: 'unexpectedSvelteAttributesOrder',
+                messageId: 'unexpectedSvelteAttributesGroupOrder',
                 data: {
                   left: 'c',
+                  leftGroup: 'svelte-shorthand',
                   right: 'b',
+                  rightGroup: 'unknown',
                 },
               },
             ],
@@ -807,10 +813,12 @@ describe(ruleName, () => {
             ],
             errors: [
               {
-                messageId: 'unexpectedSvelteAttributesOrder',
+                messageId: 'unexpectedSvelteAttributesGroupOrder',
                 data: {
                   left: 'c',
+                  leftGroup: 'unknown',
                   right: 'onClick',
+                  rightGroup: 'multiline',
                 },
               },
             ],
@@ -1157,10 +1165,12 @@ describe(ruleName, () => {
                 },
               },
               {
-                messageId: 'unexpectedSvelteAttributesOrder',
+                messageId: 'unexpectedSvelteAttributesGroupOrder',
                 data: {
                   left: 'c',
+                  leftGroup: 'svelte-shorthand',
                   right: 'b',
+                  rightGroup: 'unknown',
                 },
               },
             ],
@@ -1243,10 +1253,12 @@ describe(ruleName, () => {
             ],
             errors: [
               {
-                messageId: 'unexpectedSvelteAttributesOrder',
+                messageId: 'unexpectedSvelteAttributesGroupOrder',
                 data: {
                   left: 'c',
+                  leftGroup: 'unknown',
                   right: 'onClick',
+                  rightGroup: 'multiline',
                 },
               },
             ],
@@ -1328,10 +1340,12 @@ describe(ruleName, () => {
           ],
           errors: [
             {
-              messageId: 'unexpectedSvelteAttributesOrder',
+              messageId: 'unexpectedSvelteAttributesGroupOrder',
               data: {
                 left: 'b',
+                leftGroup: 'unknown',
                 right: 'c',
+                rightGroup: 'ce',
               },
             },
           ],
