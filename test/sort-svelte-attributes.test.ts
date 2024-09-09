@@ -459,10 +459,12 @@ describe(ruleName, () => {
           ],
           errors: [
             {
-              messageId: 'unexpectedSvelteAttributesOrder',
+              messageId: 'unexpectedSvelteAttributesGroupOrder',
               data: {
                 left: 'b',
+                leftGroup: 'unknown',
                 right: 'c',
+                rightGroup: 'ce',
               },
             },
           ],
@@ -900,10 +902,12 @@ describe(ruleName, () => {
           ],
           errors: [
             {
-              messageId: 'unexpectedSvelteAttributesOrder',
+              messageId: 'unexpectedSvelteAttributesGroupOrder',
               data: {
                 left: 'b',
+                leftGroup: 'unknown',
                 right: 'c',
+                rightGroup: 'ce',
               },
             },
           ],
