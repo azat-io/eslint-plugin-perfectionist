@@ -15,7 +15,7 @@ import { complete } from '../utils/complete'
 import { pairwise } from '../utils/pairwise'
 import { compare } from '../utils/compare'
 
-type MESSAGE_ID = 'unexpectedUnionTypesOrder'
+type MESSAGE_ID = 'unexpectedUnionTypesGroupOrder' | 'unexpectedUnionTypesOrder'
 
 type Group =
   | 'intersection'
@@ -91,6 +91,8 @@ export default createEslintRule<Options, MESSAGE_ID>({
       },
     ],
     messages: {
+      unexpectedUnionTypesGroupOrder:
+        'Expected "{{right}}" ({{rightGroup}}) to come before "{{left}}" ({{leftGroup}}).',
       unexpectedUnionTypesOrder:
         'Expected "{{right}}" to come before "{{left}}".',
     },
@@ -215,10 +217,15 @@ export default createEslintRule<Options, MESSAGE_ID>({
           (leftNum === rightNum && isPositive(compare(left, right, options)))
         ) {
           context.report({
-            messageId: 'unexpectedUnionTypesOrder',
+            messageId:
+              leftNum !== rightNum
+                ? 'unexpectedUnionTypesGroupOrder'
+                : 'unexpectedUnionTypesOrder',
             data: {
               left: toSingleLine(left.name),
+              leftGroup: left.group,
               right: toSingleLine(right.name),
+              rightGroup: right.group,
             },
             node: right.node,
             fix: fixer => {
