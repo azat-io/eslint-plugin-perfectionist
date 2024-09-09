@@ -19,7 +19,9 @@ import { complete } from '../utils/complete'
 import { pairwise } from '../utils/pairwise'
 import { compare } from '../utils/compare'
 
-type MESSAGE_ID = 'unexpectedSvelteAttributesOrder'
+type MESSAGE_ID =
+  | 'unexpectedSvelteAttributesGroupOrder'
+  | 'unexpectedSvelteAttributesOrder'
 
 type Group<T extends string[]> =
   | 'svelte-shorthand'
@@ -105,6 +107,8 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
       },
     ],
     messages: {
+      unexpectedSvelteAttributesGroupOrder:
+        'Expected "{{right}}" ({{rightGroup}}) to come before "{{left}}" ({{leftGroup}}).',
       unexpectedSvelteAttributesOrder:
         'Expected "{{right}}" to come before "{{left}}".',
     },
@@ -208,10 +212,15 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
                   isPositive(compare(left, right, options)))
               ) {
                 context.report({
-                  messageId: 'unexpectedSvelteAttributesOrder',
+                  messageId:
+                    leftNum !== rightNum
+                      ? 'unexpectedSvelteAttributesGroupOrder'
+                      : 'unexpectedSvelteAttributesOrder',
                   data: {
                     left: left.name,
+                    leftGroup: left.group,
                     right: right.name,
+                    rightGroup: right.group,
                   },
                   node: right.node,
                   fix: fixer => {
