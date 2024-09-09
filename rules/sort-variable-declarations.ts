@@ -80,12 +80,7 @@ export default createEslintRule<Options, MESSAGE_ID>({
 
         let sourceCode = getSourceCode(context)
 
-        let extractDependencies = (
-          init: TSESTree.Expression | null,
-        ): string[] => {
-          if (!init) {
-            return []
-          }
+        let extractDependencies = (init: TSESTree.Expression): string[] => {
           let dependencies: string[] = []
 
           let checkNode = (nodeValue: TSESTree.Node) => {
@@ -181,7 +176,10 @@ export default createEslintRule<Options, MESSAGE_ID>({
               ;({ name } = declaration.id)
             }
 
-            let dependencies = extractDependencies(declaration.init)
+            let dependencies: string[] = []
+            if (declaration.init) {
+              dependencies = extractDependencies(declaration.init)
+            }
 
             return {
               size: rangeToDiff(declaration.range),

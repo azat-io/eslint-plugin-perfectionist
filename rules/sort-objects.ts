@@ -266,6 +266,92 @@ export default createEslintRule<Options, MESSAGE_ID>({
         }
 
         let sourceCode = getSourceCode(context)
+
+        let extractDependencies = (
+          init: TSESTree.AssignmentPattern,
+        ): string[] => {
+          let dependencies: string[] = []
+
+          let checkNode = (nodeValue: TSESTree.Node) => {
+            /**
+             * No need to check the body of functions and arrow functions
+             */
+            if (
+              nodeValue.type === 'ArrowFunctionExpression' ||
+              nodeValue.type === 'FunctionExpression'
+            ) {
+              return
+            }
+
+            if (nodeValue.type === 'Identifier') {
+              dependencies.push(nodeValue.name)
+            }
+
+            if (nodeValue.type === 'Property') {
+              traverseNode(nodeValue.key)
+              traverseNode(nodeValue.value)
+            }
+
+            if (nodeValue.type === 'ConditionalExpression') {
+              traverseNode(nodeValue.test)
+              traverseNode(nodeValue.consequent)
+              traverseNode(nodeValue.alternate)
+            }
+
+            if (
+              'expression' in nodeValue &&
+              typeof nodeValue.expression !== 'boolean'
+            ) {
+              traverseNode(nodeValue.expression)
+            }
+
+            if ('object' in nodeValue) {
+              traverseNode(nodeValue.object)
+            }
+
+            if ('callee' in nodeValue) {
+              traverseNode(nodeValue.callee)
+            }
+
+            if ('left' in nodeValue) {
+              traverseNode(nodeValue.left)
+            }
+
+            if ('right' in nodeValue) {
+              traverseNode(nodeValue.right as TSESTree.Node)
+            }
+
+            if ('elements' in nodeValue) {
+              nodeValue.elements
+                .filter(currentNode => currentNode !== null)
+                .forEach(traverseNode)
+            }
+
+            if ('argument' in nodeValue && nodeValue.argument) {
+              traverseNode(nodeValue.argument)
+            }
+
+            if ('arguments' in nodeValue) {
+              nodeValue.arguments.forEach(traverseNode)
+            }
+
+            if ('properties' in nodeValue) {
+              nodeValue.properties.forEach(traverseNode)
+            }
+
+            if ('expressions' in nodeValue) {
+              nodeValue.expressions.forEach(traverseNode)
+            }
+          }
+
+          let traverseNode = (nodeValue: TSESTree.Node) => {
+            checkNode(nodeValue)
+          }
+
+          traverseNode(init)
+          return dependencies
+        }
+
         let formatProperties = (
           props: (
             | TSESTree.ObjectLiteralElement
@@ -323,68 +409,7 @@ export default createEslintRule<Options, MESSAGE_ID>({
               }
 
               if (prop.value.type === 'AssignmentPattern') {
-                let addDependencies = (value: TSESTree.AssignmentPattern) => {
-                  if (value.right.type === 'Identifier') {
-                    dependencies.push(value.right.name)
-                  }
-
-                  let handleComplexExpression = (
-                    expression:
-                      | TSESTree.ArrowFunctionExpression
-                      | TSESTree.ConditionalExpression
-                      | TSESTree.LogicalExpression
-                      | TSESTree.BinaryExpression
-                      | TSESTree.CallExpression,
-                  ) => {
-                    let nodes = []
-
-                    switch (expression.type) {
-                      case 'ArrowFunctionExpression':
-                        nodes.push(expression.body)
-                        break
-
-                      case 'ConditionalExpression':
-                        nodes.push(expression.consequent, expression.alternate)
-                        break
-
-                      case 'LogicalExpression':
-                      case 'BinaryExpression':
-                        nodes.push(expression.left, expression.right)
-                        break
-
-                      case 'CallExpression':
-                        nodes.push(...expression.arguments)
-                        break
-                    }
-
-                    nodes.forEach(nestedNode => {
-                      if (nestedNode.type === 'Identifier') {
-                        dependencies.push(nestedNode.name)
-                      }
-
-                      if (
-                        nestedNode.type === 'BinaryExpression' ||
-                        nestedNode.type === 'ConditionalExpression'
-                      ) {
-                        handleComplexExpression(nestedNode)
-                      }
-                    })
-                  }
-
-                  switch (value.right.type) {
-                    case 'ArrowFunctionExpression':
-                    case 'ConditionalExpression':
-                    case 'LogicalExpression':
-                    case 'BinaryExpression':
-                    case 'CallExpression':
-                      handleComplexExpression(value.right)
-                      break
-
-                    default:
-                  }
-                }
-
-                addDependencies(prop.value)
+                dependencies = extractDependencies(prop.value)
               }
 
               setCustomGroups(options.customGroups, name)
