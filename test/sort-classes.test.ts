@@ -6681,7 +6681,7 @@ describe(ruleName, () => {
       ],
     })
 
-    describe('handles comments', () => {
+    describe('handles complex comment cases', () => {
       ruleTester.run(`keeps comments associated to their node`, rule, {
         valid: [],
         invalid: [

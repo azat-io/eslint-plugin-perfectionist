@@ -1935,5 +1935,149 @@ describe(ruleName, () => {
         ],
       })
     })
+
+    describe('handles complex comment cases', () => {
+      ruleTester.run(`keeps comments associated to their node`, rule, {
+        valid: [],
+        invalid: [
+          {
+            code: dedent`
+              enum Enum {
+                // Ignore this comment
+
+                // B2
+                /**
+                  * B1
+                  */
+                B = 'B',
+
+                // Ignore this comment
+
+                // A3
+                /**
+                  * A2
+                  */
+                // A1
+                A = 'A',
+              }
+            `,
+            output: dedent`
+              enum Enum {
+                // Ignore this comment
+
+                // A3
+                /**
+                  * A2
+                  */
+                // A1
+                A = 'A',
+
+                // Ignore this comment
+
+                // B2
+                /**
+                  * B1
+                  */
+                B = 'B',
+              }
+            `,
+            options: [
+              {
+                type: 'alphabetical',
+              },
+            ],
+            errors: [
+              {
+                messageId: 'unexpectedEnumsOrder',
+                data: {
+                  left: 'B',
+                  right: 'A',
+                },
+              },
+            ],
+          },
+        ],
+      })
+
+      ruleTester.run(`handles partition comments`, rule, {
+        valid: [],
+        invalid: [
+          {
+            code: dedent`
+              enum Enum {
+                // Ignore this comment
+
+                // C2
+                // C1
+                C = 'C',
+
+                // B2
+                /**
+                  * B1
+                  */
+                B = 'B',
+
+                // Above a partition comment ignore me
+                // PartitionComment: 1
+                /**
+                  * D2
+                  */
+                // D1
+                D = 'D',
+
+                A = 'A',
+              }
+            `,
+            output: dedent`
+              enum Enum {
+                // Ignore this comment
+
+                // B2
+                /**
+                  * B1
+                  */
+                B = 'B',
+
+                // C2
+                // C1
+                C = 'C',
+
+                // Above a partition comment ignore me
+                // PartitionComment: 1
+                A = 'A',
+
+                /**
+                  * D2
+                  */
+                // D1
+                D = 'D',
+              }
+            `,
+            options: [
+              {
+                type: 'alphabetical',
+                partitionByComment: 'PartitionComment:*',
+              },
+            ],
+            errors: [
+              {
+                messageId: 'unexpectedEnumsOrder',
+                data: {
+                  left: 'C',
+                  right: 'B',
+                },
+              },
+              {
+                messageId: 'unexpectedEnumsOrder',
+                data: {
+                  left: 'D',
+                  right: 'A',
+                },
+              },
+            ],
+          },
+        ],
+      })
+    })
   })
 })
