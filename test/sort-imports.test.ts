@@ -661,6 +661,36 @@ describe(ruleName, () => {
       invalid: [],
     })
 
+    ruleTester.run(`${ruleName}(${type}): ignores inline comments`, rule, {
+      valid: [
+        {
+          code: dedent`
+            import { a } from 'a'
+            import { b1, b2 } from 'b' // Comment
+            import { c } from 'c'
+          `,
+          options: [
+            {
+              ...options,
+              newlinesBetween: 'always',
+              internalPattern: ['~/**'],
+              groups: [
+                'type',
+                ['builtin', 'external'],
+                'internal-type',
+                'internal',
+                ['parent-type', 'sibling-type', 'index-type'],
+                ['parent', 'sibling', 'index'],
+                'object',
+                'unknown',
+              ],
+            },
+          ],
+        },
+      ],
+      invalid: [],
+    })
+
     ruleTester.run(
       `${ruleName}(${type}): ignores comments for counting lines between imports`,
       rule,
@@ -2146,6 +2176,36 @@ describe(ruleName, () => {
              */
 
             import { a } from 'a'
+            import { c } from 'c'
+          `,
+          options: [
+            {
+              ...options,
+              newlinesBetween: 'always',
+              internalPattern: ['~/**'],
+              groups: [
+                'type',
+                ['builtin', 'external'],
+                'internal-type',
+                'internal',
+                ['parent-type', 'sibling-type', 'index-type'],
+                ['parent', 'sibling', 'index'],
+                'object',
+                'unknown',
+              ],
+            },
+          ],
+        },
+      ],
+      invalid: [],
+    })
+
+    ruleTester.run(`${ruleName}(${type}): ignores inline comments`, rule, {
+      valid: [
+        {
+          code: dedent`
+            import { a } from 'a'
+            import { b1, b2 } from 'b' // Comment
             import { c } from 'c'
           `,
           options: [
