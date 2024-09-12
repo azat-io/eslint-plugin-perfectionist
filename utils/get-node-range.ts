@@ -50,11 +50,12 @@ export let getNodeRange = (
   let relevantTopComment: TSESTree.Comment | undefined
   for (let i = comments.length - 1; i >= 0; i--) {
     let comment = comments[i]
-    let isCommentPartition = isPartitionComment(
-      additionalOptions?.partitionComment ?? false,
-      comment.value,
-    )
-    if (isCommentPartition) {
+    if (
+      isPartitionComment(
+        additionalOptions?.partitionComment ?? false,
+        comment.value,
+      )
+    ) {
       break
     }
     // Check for newlines between comments or between the first comment and
