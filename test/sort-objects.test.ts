@@ -3495,5 +3495,149 @@ describe(ruleName, () => {
       ],
       invalid: [],
     })
+
+    describe('handles complex comment cases', () => {
+      ruleTester.run(`keeps comments associated to their node`, rule, {
+        valid: [],
+        invalid: [
+          {
+            code: dedent`
+              let obj = {
+                // Ignore this comment
+
+                // B2
+                /**
+                  * B1
+                  */
+                b,
+
+                // Ignore this comment
+
+                // A3
+                /**
+                  * A2
+                  */
+                // A1
+                a,
+              }
+            `,
+            output: dedent`
+              let obj = {
+                // Ignore this comment
+
+                // A3
+                /**
+                  * A2
+                  */
+                // A1
+                a,
+
+                // Ignore this comment
+
+                // B2
+                /**
+                  * B1
+                  */
+                b,
+              }
+            `,
+            options: [
+              {
+                type: 'alphabetical',
+              },
+            ],
+            errors: [
+              {
+                messageId: 'unexpectedObjectsOrder',
+                data: {
+                  left: 'b',
+                  right: 'a',
+                },
+              },
+            ],
+          },
+        ],
+      })
+
+      ruleTester.run(`handles partition comments`, rule, {
+        valid: [],
+        invalid: [
+          {
+            code: dedent`
+              let obj = {
+                // Ignore this comment
+
+                // C2
+                // C1
+                c,
+
+                // B2
+                /**
+                  * B1
+                  */
+                b,
+
+                // Above a partition comment ignore me
+                // PartitionComment: 1
+                /**
+                  * D2
+                  */
+                // D1
+                d,
+
+                a,
+              }
+            `,
+            output: dedent`
+              let obj = {
+                // Ignore this comment
+
+                // B2
+                /**
+                  * B1
+                  */
+                b,
+
+                // C2
+                // C1
+                c,
+
+                // Above a partition comment ignore me
+                // PartitionComment: 1
+                a,
+
+                /**
+                  * D2
+                  */
+                // D1
+                d,
+              }
+            `,
+            options: [
+              {
+                type: 'alphabetical',
+                partitionByComment: 'PartitionComment:*',
+              },
+            ],
+            errors: [
+              {
+                messageId: 'unexpectedObjectsOrder',
+                data: {
+                  left: 'c',
+                  right: 'b',
+                },
+              },
+              {
+                messageId: 'unexpectedObjectsOrder',
+                data: {
+                  left: 'd',
+                  right: 'a',
+                },
+              },
+            ],
+          },
+        ],
+      })
+    })
   })
 })
