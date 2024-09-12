@@ -44,21 +44,33 @@ export let getNodeRange = (
     }
   }
   let comments = getCommentsBefore(node, sourceCode)
-  let commentAtTheTop = comments.at(0)
 
-  // Ignore comment at the top if it's a partition comment
-  let isCommentAtTheTopPartitionComment =
-    commentAtTheTop &&
-    isPartitionComment(
+  // Iterate on all comments starting from the bottom, until we reach the last
+  // of the comments, a newline between comments, or a partition comment
+  let relevantTopComment: TSESTree.Comment | undefined
+  for (let i = comments.length - 1; i >= 0; i--) {
+    let comment = comments[i]
+    let isCommentPartition = isPartitionComment(
       additionalOptions?.partitionComment ?? false,
-      commentAtTheTop.value,
+      comment.value,
     )
+    if (isCommentPartition) {
+      break
+    }
+    // Check for newlines between comments or between the first comment and
+    // the node.
+    let previousCommentOrNodeStartLine =
+      i === comments.length - 1
+        ? node.loc.start.line
+        : comments[i + 1].loc.start.line
+    if (comment.loc.end.line !== previousCommentOrNodeStartLine - 1) {
+      break
+    }
+    relevantTopComment = comment
+  }
 
-  let startComment = isCommentAtTheTopPartitionComment
-    ? comments.at(-2)
-    : commentAtTheTop
-  if (startComment) {
-    start = startComment.range.at(0)!
+  if (relevantTopComment) {
+    start = relevantTopComment.range.at(0)!
   }
 
   return [start, end]
