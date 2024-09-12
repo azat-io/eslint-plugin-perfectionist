@@ -20,7 +20,7 @@ import {
   customGroupSortJsonSchema,
 } from './sort-classes.types'
 import { sortNodesByDependencies } from '../utils/sort-nodes-by-dependencies'
-import { isPartitionComment } from '../utils/is-partition-comment'
+import { hasPartitionComment } from '../utils/is-partition-comment'
 import { getCommentsBefore } from '../utils/get-comments-before'
 import { createEslintRule } from '../utils/create-eslint-rule'
 import { getGroupNumber } from '../utils/get-group-number'
@@ -369,8 +369,7 @@ export default createEslintRule<SortClassesOptions, MESSAGE_ID>({
 
             if (
               options.partitionByComment &&
-              comments[0] &&
-              isPartitionComment(options.partitionByComment, comments[0].value)
+              hasPartitionComment(options.partitionByComment, comments)
             ) {
               accumulator.push([])
             }

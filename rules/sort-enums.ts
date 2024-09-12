@@ -4,7 +4,7 @@ import type { SortingNodeWithDependencies } from '../utils/sort-nodes-by-depende
 import type { CompareOptions } from '../utils/compare'
 
 import { sortNodesByDependencies } from '../utils/sort-nodes-by-dependencies'
-import { isPartitionComment } from '../utils/is-partition-comment'
+import { hasPartitionComment } from '../utils/is-partition-comment'
 import { getCommentsBefore } from '../utils/get-comments-before'
 import { createEslintRule } from '../utils/create-eslint-rule'
 import { getSourceCode } from '../utils/get-source-code'
@@ -180,8 +180,7 @@ export default createEslintRule<Options, MESSAGE_ID>({
 
             if (
               partitionComment &&
-              comments[0] &&
-              isPartitionComment(partitionComment, comments[0].value)
+              hasPartitionComment(partitionComment, comments)
             ) {
               accumulator.push([])
             }

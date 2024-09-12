@@ -7,7 +7,7 @@ import type { SortingNodeWithDependencies } from '../utils/sort-nodes-by-depende
 
 import { validateGroupsConfiguration } from '../utils/validate-groups-configuration'
 import { sortNodesByDependencies } from '../utils/sort-nodes-by-dependencies'
-import { isPartitionComment } from '../utils/is-partition-comment'
+import { hasPartitionComment } from '../utils/is-partition-comment'
 import { getCommentsBefore } from '../utils/get-comments-before'
 import { createEslintRule } from '../utils/create-eslint-rule'
 import { getLinesBetween } from '../utils/get-lines-between'
@@ -369,13 +369,12 @@ export default createEslintRule<Options, MESSAGE_ID>({
                 return accumulator
               }
 
-              let comment = getCommentsBefore(prop, sourceCode).at(0)
+              let comments = getCommentsBefore(prop, sourceCode)
               let lastProp = accumulator.at(-1)?.at(-1)
 
               if (
                 options.partitionByComment &&
-                comment &&
-                isPartitionComment(options.partitionByComment, comment.value)
+                hasPartitionComment(options.partitionByComment, comments)
               ) {
                 accumulator.push([])
               }

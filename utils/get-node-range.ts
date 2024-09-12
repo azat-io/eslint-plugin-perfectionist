@@ -3,7 +3,7 @@ import type { TSESLint } from '@typescript-eslint/utils'
 
 import { ASTUtils } from '@typescript-eslint/utils'
 
-import { isPartitionComment } from './is-partition-comment'
+import { hasPartitionComment, isPartitionComment } from './is-partition-comment'
 import { getCommentsBefore } from './get-comments-before'
 
 export let getNodeRange = (
