@@ -5,9 +5,11 @@ import { minimatch } from 'minimatch'
 
 import type { SortingNodeWithDependencies } from '../utils/sort-nodes-by-dependencies'
 
-import { nodeDependsOn } from '../utils/sort-nodes-by-dependencies'
+import {
+  sortNodesByDependencies,
+  nodeDependsOn,
+} from '../utils/sort-nodes-by-dependencies'
 import { validateGroupsConfiguration } from '../utils/validate-groups-configuration'
-import { sortNodesByDependencies } from '../utils/sort-nodes-by-dependencies'
 import { hasPartitionComment } from '../utils/is-partition-comment'
 import { getCommentsBefore } from '../utils/get-comments-before'
 import { createEslintRule } from '../utils/create-eslint-rule'
@@ -472,12 +474,17 @@ export default createEslintRule<Options, MESSAGE_ID>({
                 })
               let leftNum = getGroupNumber(options.groups, left)
               let rightNum = getGroupNumber(options.groups, right)
-              context.report({
-                messageId: leftDependsOnRight
-                  ? 'unexpectedObjectsDependencyOrder'
-                  : leftNum !== rightNum
+              let messageId: MESSAGE_ID
+              if (leftDependsOnRight) {
+                messageId = 'unexpectedObjectsDependencyOrder'
+              } else {
+                messageId =
+                  leftNum !== rightNum
                     ? 'unexpectedObjectsGroupOrder'
-                    : 'unexpectedObjectsOrder',
+                    : 'unexpectedObjectsOrder'
+              }
+              context.report({
+                messageId,
                 data: {
                   left: toSingleLine(left.name),
                   leftGroup: left.group,

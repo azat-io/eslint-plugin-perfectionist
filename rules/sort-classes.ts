@@ -6,10 +6,7 @@ import type {
   Modifier,
   Selector,
 } from './sort-classes.types'
-import {
-  getFirstUnorderedDependency,
-  type SortingNodeWithDependencies,
-} from '../utils/sort-nodes-by-dependencies'
+import type { SortingNodeWithDependencies } from '../utils/sort-nodes-by-dependencies'
 
 import {
   getOverloadSignatureGroups,
@@ -22,7 +19,10 @@ import {
   customGroupNameJsonSchema,
   customGroupSortJsonSchema,
 } from './sort-classes.types'
-import { sortNodesByDependencies } from '../utils/sort-nodes-by-dependencies'
+import {
+  getFirstUnorderedDependency,
+  sortNodesByDependencies,
+} from '../utils/sort-nodes-by-dependencies'
 import { hasPartitionComment } from '../utils/is-partition-comment'
 import { getCommentsBefore } from '../utils/get-comments-before'
 import { createEslintRule } from '../utils/create-eslint-rule'

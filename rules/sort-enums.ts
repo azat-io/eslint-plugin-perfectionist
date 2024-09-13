@@ -7,6 +7,8 @@ import {
   sortNodesByDependencies,
   nodeDependsOn,
 } from '../utils/sort-nodes-by-dependencies'
+import { hasPartitionComment } from '../utils/is-partition-comment'
+import { getCommentsBefore } from '../utils/get-comments-before'
 import { createEslintRule } from '../utils/create-eslint-rule'
 import { getSourceCode } from '../utils/get-source-code'
 import { toSingleLine } from '../utils/to-single-line'
@@ -16,8 +18,6 @@ import { sortNodes } from '../utils/sort-nodes'
 import { makeFixes } from '../utils/make-fixes'
 import { complete } from '../utils/complete'
 import { pairwise } from '../utils/pairwise'
-import { getCommentsBefore } from '../utils/get-comments-before'
-import { hasPartitionComment } from '../utils/is-partition-comment'
 
 type MESSAGE_ID = 'unexpectedEnumsDependencyOrder' | 'unexpectedEnumsOrder'
 
