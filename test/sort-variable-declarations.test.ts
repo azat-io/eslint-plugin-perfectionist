@@ -184,7 +184,7 @@ describe(ruleName, () => {
               options: [options],
               errors: [
                 {
-                  messageId: 'unexpectedVariableDeclarationsOrder',
+                  messageId: 'unexpectedVariableDeclarationsDependencyOrder',
                   data: { left: 'aaa', right: 'bb' },
                 },
               ],
@@ -203,7 +203,7 @@ describe(ruleName, () => {
               options: [options],
               errors: [
                 {
-                  messageId: 'unexpectedVariableDeclarationsOrder',
+                  messageId: 'unexpectedVariableDeclarationsDependencyOrder',
                   data: { left: 'b', right: 'a' },
                 },
               ],
@@ -222,7 +222,7 @@ describe(ruleName, () => {
               options: [options],
               errors: [
                 {
-                  messageId: 'unexpectedVariableDeclarationsOrder',
+                  messageId: 'unexpectedVariableDeclarationsDependencyOrder',
                   data: { left: 'y', right: 'x' },
                 },
               ],
@@ -241,7 +241,7 @@ describe(ruleName, () => {
               options: [options],
               errors: [
                 {
-                  messageId: 'unexpectedVariableDeclarationsOrder',
+                  messageId: 'unexpectedVariableDeclarationsDependencyOrder',
                   data: { left: 'sum', right: 'arr' },
                 },
               ],
@@ -260,7 +260,7 @@ describe(ruleName, () => {
               options: [options],
               errors: [
                 {
-                  messageId: 'unexpectedVariableDeclarationsOrder',
+                  messageId: 'unexpectedVariableDeclarationsDependencyOrder',
                   data: { left: 'value', right: 'getValue' },
                 },
               ],
@@ -793,7 +793,7 @@ describe(ruleName, () => {
             options: [options],
             errors: [
               {
-                messageId: 'unexpectedVariableDeclarationsOrder',
+                messageId: 'unexpectedVariableDeclarationsDependencyOrder',
                 data: { left: 'aaa', right: 'bb' },
               },
             ],
@@ -812,7 +812,7 @@ describe(ruleName, () => {
             options: [options],
             errors: [
               {
-                messageId: 'unexpectedVariableDeclarationsOrder',
+                messageId: 'unexpectedVariableDeclarationsDependencyOrder',
                 data: { left: 'b', right: 'a' },
               },
             ],
@@ -831,7 +831,7 @@ describe(ruleName, () => {
             options: [options],
             errors: [
               {
-                messageId: 'unexpectedVariableDeclarationsOrder',
+                messageId: 'unexpectedVariableDeclarationsDependencyOrder',
                 data: { left: 'y', right: 'x' },
               },
             ],
@@ -850,7 +850,7 @@ describe(ruleName, () => {
             options: [options],
             errors: [
               {
-                messageId: 'unexpectedVariableDeclarationsOrder',
+                messageId: 'unexpectedVariableDeclarationsDependencyOrder',
                 data: { left: 'sum', right: 'arr' },
               },
             ],
@@ -869,7 +869,7 @@ describe(ruleName, () => {
             options: [options],
             errors: [
               {
-                messageId: 'unexpectedVariableDeclarationsOrder',
+                messageId: 'unexpectedVariableDeclarationsDependencyOrder',
                 data: { left: 'value', right: 'getValue' },
               },
             ],

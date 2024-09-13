@@ -6,7 +6,10 @@ import type {
   Modifier,
   Selector,
 } from './sort-classes.types'
-import type { SortingNodeWithDependencies } from '../utils/sort-nodes-by-dependencies'
+import {
+  getFirstUnorderedDependency,
+  type SortingNodeWithDependencies,
+} from '../utils/sort-nodes-by-dependencies'
 
 import {
   getOverloadSignatureGroups,
@@ -34,7 +37,10 @@ import { makeFixes } from '../utils/make-fixes'
 import { complete } from '../utils/complete'
 import { pairwise } from '../utils/pairwise'
 
-type MESSAGE_ID = 'unexpectedClassesGroupOrder' | 'unexpectedClassesOrder'
+type MESSAGE_ID =
+  | 'unexpectedClassesDependencyOrder'
+  | 'unexpectedClassesGroupOrder'
+  | 'unexpectedClassesOrder'
 
 export default createEslintRule<SortClassesOptions, MESSAGE_ID>({
   name: 'sort-classes',
@@ -166,6 +172,8 @@ export default createEslintRule<SortClassesOptions, MESSAGE_ID>({
       unexpectedClassesGroupOrder:
         'Expected "{{right}}" ({{rightGroup}}) to come before "{{left}}" ({{leftGroup}}).',
       unexpectedClassesOrder: 'Expected "{{right}}" to come before "{{left}}".',
+      unexpectedClassesDependencyOrder:
+        'Expected dependency "{{dependency}}" to come before "{{left}}".',
     },
   },
   defaultOptions: [
@@ -680,14 +688,26 @@ export default createEslintRule<SortClassesOptions, MESSAGE_ID>({
 
             let indexOfLeft = sortedNodes.indexOf(left)
             let indexOfRight = sortedNodes.indexOf(right)
-            if (!isLeftOrRightIgnored && indexOfLeft > indexOfRight) {
-              context.report({
-                messageId:
+            let firstLeftUnorderedDependency: SortingNodeWithDependencies | null =
+              getFirstUnorderedDependency(left, nodes, sortedNodes)
+            if (
+              firstLeftUnorderedDependency ||
+              (!isLeftOrRightIgnored && indexOfLeft > indexOfRight)
+            ) {
+              let messageId: MESSAGE_ID
+              if (firstLeftUnorderedDependency) {
+                messageId = 'unexpectedClassesDependencyOrder'
+              } else {
+                messageId =
                   leftNum !== rightNum
                     ? 'unexpectedClassesGroupOrder'
-                    : 'unexpectedClassesOrder',
+                    : 'unexpectedClassesOrder'
+              }
+              context.report({
+                messageId,
                 data: {
                   left: toSingleLine(left.name),
+                  dependency: firstLeftUnorderedDependency?.name,
                   leftGroup: left.group,
                   right: toSingleLine(right.name),
                   rightGroup: right.group,

@@ -2453,10 +2453,10 @@ describe(ruleName, () => {
             options: [options],
             errors: [
               {
-                messageId: 'unexpectedClassesOrder',
+                messageId: 'unexpectedClassesDependencyOrder',
                 data: {
                   left: 'aaa',
-                  right: 'b',
+                  dependency: 'b',
                 },
               },
             ],
@@ -2920,24 +2920,31 @@ describe(ruleName, () => {
               ],
               errors: [
                 {
-                  messageId: 'unexpectedClassesOrder',
+                  messageId: 'unexpectedClassesDependencyOrder',
                   data: {
                     left: 'e',
-                    right: 'd',
+                    dependency: 'c',
                   },
                 },
                 {
-                  messageId: 'unexpectedClassesOrder',
+                  messageId: 'unexpectedClassesDependencyOrder',
                   data: {
                     left: 'd',
-                    right: 'a',
+                    dependency: 'b',
                   },
                 },
                 {
-                  messageId: 'unexpectedClassesOrder',
+                  messageId: 'unexpectedClassesDependencyOrder',
+                  data: {
+                    left: 'b',
+                    dependency: 'z',
+                  },
+                },
+                {
+                  messageId: 'unexpectedClassesDependencyOrder',
                   data: {
                     left: 'c',
-                    right: 'z',
+                    dependency: 'z',
                   },
                 },
               ],
@@ -2963,6 +2970,13 @@ describe(ruleName, () => {
                 },
               ],
               errors: [
+                {
+                  messageId: 'unexpectedClassesDependencyOrder',
+                  data: {
+                    left: 'a',
+                    dependency: 'c',
+                  },
+                },
                 {
                   messageId: 'unexpectedClassesOrder',
                   data: {
@@ -3631,10 +3645,24 @@ describe(ruleName, () => {
               ],
               errors: [
                 {
-                  messageId: 'unexpectedClassesOrder',
+                  messageId: 'unexpectedClassesDependencyOrder',
+                  data: {
+                    left: 'a',
+                    dependency: 'c',
+                  },
+                },
+                {
+                  messageId: 'unexpectedClassesDependencyOrder',
                   data: {
                     left: 'b',
-                    right: 'c',
+                    dependency: 'c',
+                  },
+                },
+                {
+                  messageId: 'unexpectedClassesDependencyOrder',
+                  data: {
+                    dependency: 'c',
+                    left: 'b',
                   },
                 },
                 {
@@ -3683,10 +3711,17 @@ describe(ruleName, () => {
               ],
               errors: [
                 {
-                  messageId: 'unexpectedClassesOrder',
+                  messageId: 'unexpectedClassesDependencyOrder',
                   data: {
+                    dependency: 'e',
                     left: 'b',
-                    right: 'a',
+                  },
+                },
+                {
+                  messageId: 'unexpectedClassesDependencyOrder',
+                  data: {
+                    left: 'e',
+                    dependency: 'g',
                   },
                 },
                 {
@@ -3797,10 +3832,10 @@ describe(ruleName, () => {
               options: [options],
               errors: [
                 {
-                  messageId: 'unexpectedClassesOrder',
+                  messageId: 'unexpectedClassesDependencyOrder',
                   data: {
+                    dependency: 'left',
                     left: 'aaa',
-                    right: 'left',
                   },
                 },
               ],
@@ -4827,10 +4862,10 @@ describe(ruleName, () => {
             options: [options],
             errors: [
               {
-                messageId: 'unexpectedClassesOrder',
+                messageId: 'unexpectedClassesDependencyOrder',
                 data: {
                   left: 'aaa',
-                  right: 'b',
+                  dependency: 'b',
                 },
               },
             ],
@@ -5003,10 +5038,10 @@ describe(ruleName, () => {
             options: [options],
             errors: [
               {
-                messageId: 'unexpectedClassesOrder',
+                messageId: 'unexpectedClassesDependencyOrder',
                 data: {
+                  dependency: 'left',
                   left: 'aaa',
-                  right: 'left',
                 },
               },
             ],

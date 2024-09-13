@@ -2,7 +2,10 @@ import type { TSESTree } from '@typescript-eslint/types'
 
 import type { SortingNodeWithDependencies } from '../utils/sort-nodes-by-dependencies'
 
-import { sortNodesByDependencies } from '../utils/sort-nodes-by-dependencies'
+import {
+  sortNodesByDependencies,
+  nodeDependsOn,
+} from '../utils/sort-nodes-by-dependencies'
 import { createEslintRule } from '../utils/create-eslint-rule'
 import { getSourceCode } from '../utils/get-source-code'
 import { toSingleLine } from '../utils/to-single-line'
@@ -13,7 +16,9 @@ import { makeFixes } from '../utils/make-fixes'
 import { complete } from '../utils/complete'
 import { pairwise } from '../utils/pairwise'
 
-type MESSAGE_ID = 'unexpectedVariableDeclarationsOrder'
+type MESSAGE_ID =
+  | 'unexpectedVariableDeclarationsDependencyOrder'
+  | 'unexpectedVariableDeclarationsOrder'
 
 type Options = [
   Partial<{
@@ -58,6 +63,8 @@ export default createEslintRule<Options, MESSAGE_ID>({
     messages: {
       unexpectedVariableDeclarationsOrder:
         'Expected "{{right}}" to come before "{{left}}".',
+      unexpectedVariableDeclarationsDependencyOrder:
+        'Expected dependency "{{right}}" to come before "{{left}}".',
     },
   },
   defaultOptions: [
@@ -195,8 +202,11 @@ export default createEslintRule<Options, MESSAGE_ID>({
           let indexOfLeft = sortedNodes.indexOf(left)
           let indexOfRight = sortedNodes.indexOf(right)
           if (indexOfLeft > indexOfRight) {
+            let leftDependsOnRight = nodeDependsOn(left, right)
             context.report({
-              messageId: 'unexpectedVariableDeclarationsOrder',
+              messageId: leftDependsOnRight
+                ? 'unexpectedVariableDeclarationsDependencyOrder'
+                : 'unexpectedVariableDeclarationsOrder',
               data: {
                 left: toSingleLine(left.name),
                 right: toSingleLine(right.name),

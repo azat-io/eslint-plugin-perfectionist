@@ -511,7 +511,7 @@ describe(ruleName, () => {
               options: [options],
               errors: [
                 {
-                  messageId: 'unexpectedObjectsOrder',
+                  messageId: 'unexpectedObjectsDependencyOrder',
                   data: {
                     left: 'b',
                     right: 'c',
@@ -543,7 +543,7 @@ describe(ruleName, () => {
               options: [options],
               errors: [
                 {
-                  messageId: 'unexpectedObjectsOrder',
+                  messageId: 'unexpectedObjectsDependencyOrder',
                   data: {
                     left: 'c',
                     right: 'b',
@@ -580,7 +580,7 @@ describe(ruleName, () => {
               ],
               errors: [
                 {
-                  messageId: 'unexpectedObjectsOrder',
+                  messageId: 'unexpectedObjectsDependencyOrder',
                   data: {
                     left: 'b',
                     right: 'c',
@@ -612,7 +612,7 @@ describe(ruleName, () => {
               options: [options],
               errors: [
                 {
-                  messageId: 'unexpectedObjectsOrder',
+                  messageId: 'unexpectedObjectsDependencyOrder',
                   data: {
                     left: 'b',
                     right: 'c',
@@ -644,7 +644,7 @@ describe(ruleName, () => {
               options: [options],
               errors: [
                 {
-                  messageId: 'unexpectedObjectsOrder',
+                  messageId: 'unexpectedObjectsDependencyOrder',
                   data: {
                     left: 'b',
                     right: 'c',
@@ -1916,7 +1916,7 @@ describe(ruleName, () => {
             options: [options],
             errors: [
               {
-                messageId: 'unexpectedObjectsOrder',
+                messageId: 'unexpectedObjectsDependencyOrder',
                 data: {
                   left: 'b',
                   right: 'c',
@@ -1948,7 +1948,7 @@ describe(ruleName, () => {
             options: [options],
             errors: [
               {
-                messageId: 'unexpectedObjectsOrder',
+                messageId: 'unexpectedObjectsDependencyOrder',
                 data: {
                   left: 'c',
                   right: 'b',
@@ -1985,7 +1985,7 @@ describe(ruleName, () => {
             ],
             errors: [
               {
-                messageId: 'unexpectedObjectsOrder',
+                messageId: 'unexpectedObjectsDependencyOrder',
                 data: {
                   left: 'b',
                   right: 'c',
@@ -2017,7 +2017,7 @@ describe(ruleName, () => {
             options: [options],
             errors: [
               {
-                messageId: 'unexpectedObjectsOrder',
+                messageId: 'unexpectedObjectsDependencyOrder',
                 data: {
                   left: 'b',
                   right: 'c',
@@ -2049,7 +2049,7 @@ describe(ruleName, () => {
             options: [options],
             errors: [
               {
-                messageId: 'unexpectedObjectsOrder',
+                messageId: 'unexpectedObjectsDependencyOrder',
                 data: {
                   left: 'b',
                   right: 'c',
@@ -2751,7 +2751,7 @@ describe(ruleName, () => {
             options: [options],
             errors: [
               {
-                messageId: 'unexpectedObjectsOrder',
+                messageId: 'unexpectedObjectsDependencyOrder',
                 data: {
                   left: 'b',
                   right: 'c',
@@ -2783,7 +2783,7 @@ describe(ruleName, () => {
             options: [options],
             errors: [
               {
-                messageId: 'unexpectedObjectsOrder',
+                messageId: 'unexpectedObjectsDependencyOrder',
                 data: {
                   left: 'c',
                   right: 'b',
@@ -2820,7 +2820,7 @@ describe(ruleName, () => {
             ],
             errors: [
               {
-                messageId: 'unexpectedObjectsOrder',
+                messageId: 'unexpectedObjectsDependencyOrder',
                 data: {
                   left: 'b',
                   right: 'c',
@@ -2852,7 +2852,7 @@ describe(ruleName, () => {
             options: [options],
             errors: [
               {
-                messageId: 'unexpectedObjectsOrder',
+                messageId: 'unexpectedObjectsDependencyOrder',
                 data: {
                   left: 'b',
                   right: 'c',

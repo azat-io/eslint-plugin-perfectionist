@@ -3,9 +3,10 @@ import type { TSESTree } from '@typescript-eslint/types'
 import type { SortingNodeWithDependencies } from '../utils/sort-nodes-by-dependencies'
 import type { CompareOptions } from '../utils/compare'
 
-import { sortNodesByDependencies } from '../utils/sort-nodes-by-dependencies'
-import { hasPartitionComment } from '../utils/is-partition-comment'
-import { getCommentsBefore } from '../utils/get-comments-before'
+import {
+  sortNodesByDependencies,
+  nodeDependsOn,
+} from '../utils/sort-nodes-by-dependencies'
 import { createEslintRule } from '../utils/create-eslint-rule'
 import { getSourceCode } from '../utils/get-source-code'
 import { toSingleLine } from '../utils/to-single-line'
@@ -15,8 +16,10 @@ import { sortNodes } from '../utils/sort-nodes'
 import { makeFixes } from '../utils/make-fixes'
 import { complete } from '../utils/complete'
 import { pairwise } from '../utils/pairwise'
+import { getCommentsBefore } from '../utils/get-comments-before'
+import { hasPartitionComment } from '../utils/is-partition-comment'
 
-type MESSAGE_ID = 'unexpectedEnumsOrder'
+type MESSAGE_ID = 'unexpectedEnumsDependencyOrder' | 'unexpectedEnumsOrder'
 
 export type Options = [
   Partial<{
@@ -90,6 +93,8 @@ export default createEslintRule<Options, MESSAGE_ID>({
     ],
     messages: {
       unexpectedEnumsOrder: 'Expected "{{right}}" to come before "{{left}}".',
+      unexpectedEnumsDependencyOrder:
+        'Expected dependency "{{right}}" to come before "{{left}}".',
     },
   },
   defaultOptions: [
@@ -245,8 +250,11 @@ export default createEslintRule<Options, MESSAGE_ID>({
             let indexOfLeft = sortedNodes.indexOf(left)
             let indexOfRight = sortedNodes.indexOf(right)
             if (indexOfLeft > indexOfRight) {
+              let leftDependsOnRight = nodeDependsOn(left, right)
               context.report({
-                messageId: 'unexpectedEnumsOrder',
+                messageId: leftDependsOnRight
+                  ? 'unexpectedEnumsDependencyOrder'
+                  : 'unexpectedEnumsOrder',
                 data: {
                   left: toSingleLine(left.name),
                   right: toSingleLine(right.name),
