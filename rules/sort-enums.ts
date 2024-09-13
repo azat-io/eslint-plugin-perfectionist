@@ -4,9 +4,9 @@ import type { SortingNodeWithDependencies } from '../utils/sort-nodes-by-depende
 import type { CompareOptions } from '../utils/compare'
 
 import { sortNodesByDependencies } from '../utils/sort-nodes-by-dependencies'
-import { isPartitionComment } from '../utils/is-partition-comment'
+import { hasPartitionComment } from '../utils/is-partition-comment'
+import { getCommentsBefore } from '../utils/get-comments-before'
 import { createEslintRule } from '../utils/create-eslint-rule'
-import { getCommentBefore } from '../utils/get-comment-before'
 import { getSourceCode } from '../utils/get-source-code'
 import { toSingleLine } from '../utils/to-single-line'
 import { rangeToDiff } from '../utils/range-to-diff'
@@ -176,12 +176,11 @@ export default createEslintRule<Options, MESSAGE_ID>({
 
         let formattedMembers: SortingNodeWithDependencies[][] = members.reduce(
           (accumulator: SortingNodeWithDependencies[][], member) => {
-            let comment = getCommentBefore(member, sourceCode)
+            let comments = getCommentsBefore(member, sourceCode)
 
             if (
               partitionComment &&
-              comment &&
-              isPartitionComment(partitionComment, comment.value)
+              hasPartitionComment(partitionComment, comments)
             ) {
               accumulator.push([])
             }

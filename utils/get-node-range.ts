@@ -4,7 +4,7 @@ import type { TSESLint } from '@typescript-eslint/utils'
 import { ASTUtils } from '@typescript-eslint/utils'
 
 import { isPartitionComment } from './is-partition-comment'
-import { getCommentBefore } from './get-comment-before'
+import { getCommentsBefore } from './get-comments-before'
 
 export let getNodeRange = (
   node: TSESTree.Node,
@@ -33,8 +33,6 @@ export let getNodeRange = (
     end = bodyClosingParen.range.at(1)!
   }
 
-  let comment = getCommentBefore(node, sourceCode)
-
   if (raw.endsWith(';') || raw.endsWith(',')) {
     let tokensAfter = sourceCode.getTokensAfter(node, {
       includeComments: true,
@@ -45,15 +43,35 @@ export let getNodeRange = (
       end -= 1
     }
   }
+  let comments = getCommentsBefore(node, sourceCode)
 
-  if (
-    comment &&
-    !isPartitionComment(
-      additionalOptions?.partitionComment ?? false,
-      comment.value,
-    )
-  ) {
-    start = comment.range.at(0)!
+  // Iterate on all comments starting from the bottom until we reach the last
+  // of the comments, a newline between comments, or a partition comment
+  let relevantTopComment: TSESTree.Comment | undefined
+  for (let i = comments.length - 1; i >= 0; i--) {
+    let comment = comments[i]
+    if (
+      isPartitionComment(
+        additionalOptions?.partitionComment ?? false,
+        comment.value,
+      )
+    ) {
+      break
+    }
+    // Check for newlines between comments or between the first comment and
+    // the node.
+    let previousCommentOrNodeStartLine =
+      i === comments.length - 1
+        ? node.loc.start.line
+        : comments[i + 1].loc.start.line
+    if (comment.loc.end.line !== previousCommentOrNodeStartLine - 1) {
+      break
+    }
+    relevantTopComment = comment
+  }
+
+  if (relevantTopComment) {
+    start = relevantTopComment.range.at(0)!
   }
 
   return [start, end]

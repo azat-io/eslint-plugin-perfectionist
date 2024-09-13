@@ -6680,5 +6680,149 @@ describe(ruleName, () => {
         },
       ],
     })
+
+    describe('handles complex comment cases', () => {
+      ruleTester.run(`keeps comments associated to their node`, rule, {
+        valid: [],
+        invalid: [
+          {
+            code: dedent`
+              class Class {
+                // Ignore this comment
+
+                // B1
+                b
+
+                /**
+                 * Ignore this comment as well
+                 */
+
+                // A4
+                // A3
+                /*
+                 * A2
+                 */
+                // A1
+                a
+              }
+            `,
+            output: dedent`
+              class Class {
+                // Ignore this comment
+
+                // A4
+                // A3
+                /*
+                 * A2
+                 */
+                // A1
+                a
+
+                /**
+                 * Ignore this comment as well
+                 */
+
+                // B1
+                b
+              }
+            `,
+            options: [
+              {
+                type: 'alphabetical',
+              },
+            ],
+            errors: [
+              {
+                messageId: 'unexpectedClassesOrder',
+                data: {
+                  left: 'b',
+                  right: 'a',
+                },
+              },
+            ],
+          },
+        ],
+      })
+
+      ruleTester.run(`handles partition comments`, rule, {
+        valid: [],
+        invalid: [
+          {
+            code: dedent`
+              class Class {
+                // Ignore this comment
+
+                // C2
+                // C1
+                c
+
+                // B2
+                /**
+                  * B1
+                  */
+                b
+
+                // Above a partition comment ignore me
+                // PartitionComment: 1
+                /**
+                  * D2
+                  */
+                // D1
+                d
+
+                a
+              }
+            `,
+            output: dedent`
+              class Class {
+                // Ignore this comment
+
+                // B2
+                /**
+                  * B1
+                  */
+                b
+
+                // C2
+                // C1
+                c
+
+                // Above a partition comment ignore me
+                // PartitionComment: 1
+                a
+
+                /**
+                  * D2
+                  */
+                // D1
+                d
+              }
+            `,
+            options: [
+              {
+                type: 'alphabetical',
+                partitionByComment: 'PartitionComment:*',
+              },
+            ],
+            errors: [
+              {
+                messageId: 'unexpectedClassesOrder',
+                data: {
+                  left: 'c',
+                  right: 'b',
+                },
+              },
+              {
+                messageId: 'unexpectedClassesOrder',
+                data: {
+                  left: 'd',
+                  right: 'a',
+                },
+              },
+            ],
+          },
+        ],
+      })
+    })
   })
 })
