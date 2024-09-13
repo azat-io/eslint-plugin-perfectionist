@@ -1,6 +1,24 @@
 # Changelog
 
 
+## v3.6.0
+
+[compare changes](https://github.com/azat-io/eslint-plugin-perfectionist/compare/v3.5.0...v3.6.0)
+
+### 🚀 Features
+
+- Improve error messages when sorting different groups ([e0f375a](https://github.com/azat-io/eslint-plugin-perfectionist/commit/e0f375a))
+- Improve dependency detection in sort-objects rule ([412d5da](https://github.com/azat-io/eslint-plugin-perfectionist/commit/412d5da))
+- Keep comments above elements being sorted ([bd8ba3f](https://github.com/azat-io/eslint-plugin-perfectionist/commit/bd8ba3f))
+
+### 🐞 Bug Fixes
+
+- Detect dependencies in template literals in sort-enums ([c9367eb](https://github.com/azat-io/eslint-plugin-perfectionist/commit/c9367eb))
+
+### ❤️ Contributors
+
+- Hugo ([@hugop95](http://github.com/hugop95))
+
 ## v3.5.0
 
 [compare changes](https://github.com/azat-io/eslint-plugin-perfectionist/compare/v3.4.0...v3.5.0)
