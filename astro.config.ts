@@ -8,6 +8,7 @@ import compress from '@playform/compress'
 import { fileURLToPath } from 'node:url'
 import browserslist from 'browserslist'
 import sitemap from '@astrojs/sitemap'
+import pagefind from 'astro-pagefind'
 import svelte from '@astrojs/svelte'
 import mdx from '@astrojs/mdx'
 import path from 'node:path'
@@ -37,6 +38,7 @@ export default defineConfig({
       filter: page => !new RegExp(`^${site}/guide$`).test(page),
     }),
     mdx(),
+    pagefind(),
   ],
   markdown: {
     rehypePlugins: [
