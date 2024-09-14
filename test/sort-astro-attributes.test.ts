@@ -1405,5 +1405,38 @@ describe(ruleName, () => {
       ],
       invalid: [],
     })
+
+    ruleTester.run(
+      `${ruleName}: should ignore unknown group if not referenced in groups`,
+      rule,
+      {
+        valid: [
+          {
+            filename: 'file.astro',
+            code: dedent`
+              ---
+                import Component from '../file.astro'
+
+                let d = 'd'
+              ---
+              <Component
+                eee="e"
+                {b}
+                a="a"
+                c
+                dd="d"
+              />
+            `,
+            options: [
+              {
+                type: 'alphabetical',
+                groups: ['astro-shorthand', 'shorthand'],
+              },
+            ],
+          },
+        ],
+        invalid: [],
+      },
+    )
   })
 })

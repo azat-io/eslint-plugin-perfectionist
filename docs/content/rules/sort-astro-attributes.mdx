@@ -138,7 +138,14 @@ Controls whether sorting should be case-sensitive or not.
 
 ### groups
 
-<sub>default: `[]`</sub>
+<sub>
+  default:
+  ```
+  [
+    'unknown',
+  ]
+  ```
+</sub>
 
 Allows you to specify a list of Astro attribute groups for sorting. Groups help organize attributes into categories, prioritizing them during sorting. Multiple groups can be combined to achieve the desired sorting order.
 
@@ -149,7 +156,7 @@ Predefined Groups:
 - `'multiline'` — Attributes with multiline values.
 -	`'shorthand'` — Shorthand attributes, which are used without a value, typically for boolean props.
 -	`'astro-shorthand'` — Astro shorthand attributes, where the attribute name and value are the same.
-- `'unknown'` — Attributes that don’t fit into any other group.
+- `'unknown'` — Attributes that don’t fit into any other group. If the `unknown` group is not specified in `groups`, the attributes will remain in their original order.
 
 Example:
 
@@ -246,7 +253,7 @@ In order to start using this rule, you need to install additional dependency:
                   type: 'alphabetical',
                   order: 'asc',
                   ignoreCase: true,
-                  groups: [],
+                  groups: ['unknown'],
                   customGroups: {},
                 },
               ],
@@ -277,7 +284,7 @@ In order to start using this rule, you need to install additional dependency:
                 type: 'alphabetical',
                 order: 'asc',
                 ignoreCase: true,
-                groups: [],
+                groups: ['unknown'],
                 customGroups: {},
               },
             ],
