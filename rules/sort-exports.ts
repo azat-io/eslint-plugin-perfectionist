@@ -7,23 +7,26 @@ import { getLinesBetween } from '../utils/get-lines-between'
 import { getSourceCode } from '../utils/get-source-code'
 import { rangeToDiff } from '../utils/range-to-diff'
 import { getSettings } from '../utils/get-settings'
-import { isPositive } from '../utils/is-positive'
 import { sortNodes } from '../utils/sort-nodes'
 import { makeFixes } from '../utils/make-fixes'
 import { complete } from '../utils/complete'
 import { pairwise } from '../utils/pairwise'
-import { compare } from '../utils/compare'
 
 type MESSAGE_ID = 'unexpectedExportsOrder'
 
 type Options = [
   Partial<{
+    groupKind: 'values-first' | 'types-first' | 'mixed'
     type: 'alphabetical' | 'line-length' | 'natural'
     partitionByNewLine: boolean
     order: 'desc' | 'asc'
     ignoreCase: boolean
   }>,
 ]
+
+type SortExportsSortingNode = SortingNode<
+  TSESTree.ExportNamedDeclarationWithSource | TSESTree.ExportAllDeclaration
+>
 
 export default createEslintRule<Options, MESSAGE_ID>({
   name: 'sort-exports',
@@ -58,6 +61,11 @@ export default createEslintRule<Options, MESSAGE_ID>({
               'Allows to use spaces to separate the nodes into logical groups.',
             type: 'boolean',
           },
+          groupKind: {
+            description: 'Specifies top-level groups.',
+            type: 'string',
+            enum: ['mixed', 'values-first', 'types-first'],
+          },
         },
         additionalProperties: false,
       },
@@ -72,6 +80,7 @@ export default createEslintRule<Options, MESSAGE_ID>({
       order: 'asc',
       ignoreCase: true,
       partitionByNewLine: false,
+      groupKind: 'mixed',
     },
   ],
   create: context => {
@@ -82,18 +91,19 @@ export default createEslintRule<Options, MESSAGE_ID>({
       ignoreCase: true,
       order: 'asc',
       partitionByNewLine: false,
+      groupKind: 'mixed',
     } as const)
 
     let sourceCode = getSourceCode(context)
 
-    let parts: SortingNode[][] = [[]]
+    let parts: SortExportsSortingNode[][] = [[]]
 
     let registerNode = (
       node:
         | TSESTree.ExportNamedDeclarationWithSource
         | TSESTree.ExportAllDeclaration,
     ) => {
-      let sortingNode: SortingNode = {
+      let sortingNode: SortExportsSortingNode = {
         size: rangeToDiff(node.range),
         name: node.source.value,
         node,
@@ -118,8 +128,35 @@ export default createEslintRule<Options, MESSAGE_ID>({
       },
       'Program:exit': () => {
         for (let nodes of parts) {
+          let groupedByKind
+          if (options.groupKind !== 'mixed') {
+            groupedByKind = nodes.reduce<SortExportsSortingNode[][]>(
+              (accumulator, currentNode) => {
+                let exportTypeIndex =
+                  options.groupKind === 'types-first' ? 0 : 1
+                let exportIndex = options.groupKind === 'types-first' ? 1 : 0
+                if (currentNode.node.exportKind === 'value') {
+                  accumulator[exportIndex].push(currentNode)
+                } else {
+                  accumulator[exportTypeIndex].push(currentNode)
+                }
+                return accumulator
+              },
+              [[], []],
+            )
+          } else {
+            groupedByKind = [nodes]
+          }
+
+          let sortedNodes: SortingNode[] = []
+          for (let nodesByKind of groupedByKind) {
+            sortedNodes = [...sortedNodes, ...sortNodes(nodesByKind, options)]
+          }
+
           pairwise(nodes, (left, right) => {
-            if (isPositive(compare(left, right, options))) {
+            let indexOfLeft = sortedNodes.indexOf(left)
+            let indexOfRight = sortedNodes.indexOf(right)
+            if (indexOfLeft > indexOfRight) {
               context.report({
                 messageId: 'unexpectedExportsOrder',
                 data: {
@@ -127,13 +164,7 @@ export default createEslintRule<Options, MESSAGE_ID>({
                   right: right.name,
                 },
                 node: right.node,
-                fix: fixer =>
-                  makeFixes(
-                    fixer,
-                    nodes,
-                    sortNodes(nodes, options),
-                    sourceCode,
-                  ),
+                fix: fixer => makeFixes(fixer, nodes, sortedNodes, sourceCode),
               })
             }
           })

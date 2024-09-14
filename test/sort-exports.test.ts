@@ -208,6 +208,106 @@ describe(ruleName, () => {
         ],
       },
     )
+
+    ruleTester.run(`${ruleName}(${type}): sorts by group kind`, rule, {
+      valid: [],
+      invalid: [
+        {
+          code: dedent`
+            export type { F } from "./f";
+            export type { D } from "./d";
+            export type { E } from "./e";
+            export { C } from "./c";
+            export { A } from "./a";
+            export { B } from "./b";
+          `,
+          output: dedent`
+            export { A } from "./a";
+            export { B } from "./b";
+            export { C } from "./c";
+            export type { D } from "./d";
+            export type { E } from "./e";
+            export type { F } from "./f";
+          `,
+          options: [
+            {
+              ...options,
+              groupKind: 'values-first',
+            },
+          ],
+          errors: [
+            {
+              messageId: 'unexpectedExportsOrder',
+              data: {
+                left: './f',
+                right: './d',
+              },
+            },
+            {
+              messageId: 'unexpectedExportsOrder',
+              data: {
+                left: './e',
+                right: './c',
+              },
+            },
+            {
+              messageId: 'unexpectedExportsOrder',
+              data: {
+                left: './c',
+                right: './a',
+              },
+            },
+          ],
+        },
+        {
+          code: dedent`
+            export { C } from "./c";
+            export { A } from "./a";
+            export { B } from "./b";
+            export type { F } from "./f";
+            export type { D } from "./d";
+            export type { E } from "./e";
+          `,
+          output: dedent`
+            export type { D } from "./d";
+            export type { E } from "./e";
+            export type { F } from "./f";
+            export { A } from "./a";
+            export { B } from "./b";
+            export { C } from "./c";
+          `,
+          options: [
+            {
+              ...options,
+              groupKind: 'types-first',
+            },
+          ],
+          errors: [
+            {
+              messageId: 'unexpectedExportsOrder',
+              data: {
+                left: './c',
+                right: './a',
+              },
+            },
+            {
+              messageId: 'unexpectedExportsOrder',
+              data: {
+                left: './b',
+                right: './f',
+              },
+            },
+            {
+              messageId: 'unexpectedExportsOrder',
+              data: {
+                left: './f',
+                right: './d',
+              },
+            },
+          ],
+        },
+      ],
+    })
   })
 
   describe(`${ruleName}: sorting by natural order`, () => {
@@ -402,6 +502,106 @@ describe(ruleName, () => {
         ],
       },
     )
+
+    ruleTester.run(`${ruleName}(${type}): sorts by group kind`, rule, {
+      valid: [],
+      invalid: [
+        {
+          code: dedent`
+            export type { F } from "./f";
+            export type { D } from "./d";
+            export type { E } from "./e";
+            export { C } from "./c";
+            export { A } from "./a";
+            export { B } from "./b";
+          `,
+          output: dedent`
+            export { A } from "./a";
+            export { B } from "./b";
+            export { C } from "./c";
+            export type { D } from "./d";
+            export type { E } from "./e";
+            export type { F } from "./f";
+          `,
+          options: [
+            {
+              ...options,
+              groupKind: 'values-first',
+            },
+          ],
+          errors: [
+            {
+              messageId: 'unexpectedExportsOrder',
+              data: {
+                left: './f',
+                right: './d',
+              },
+            },
+            {
+              messageId: 'unexpectedExportsOrder',
+              data: {
+                left: './e',
+                right: './c',
+              },
+            },
+            {
+              messageId: 'unexpectedExportsOrder',
+              data: {
+                left: './c',
+                right: './a',
+              },
+            },
+          ],
+        },
+        {
+          code: dedent`
+            export { C } from "./c";
+            export { A } from "./a";
+            export { B } from "./b";
+            export type { F } from "./f";
+            export type { D } from "./d";
+            export type { E } from "./e";
+          `,
+          output: dedent`
+            export type { D } from "./d";
+            export type { E } from "./e";
+            export type { F } from "./f";
+            export { A } from "./a";
+            export { B } from "./b";
+            export { C } from "./c";
+          `,
+          options: [
+            {
+              ...options,
+              groupKind: 'types-first',
+            },
+          ],
+          errors: [
+            {
+              messageId: 'unexpectedExportsOrder',
+              data: {
+                left: './c',
+                right: './a',
+              },
+            },
+            {
+              messageId: 'unexpectedExportsOrder',
+              data: {
+                left: './b',
+                right: './f',
+              },
+            },
+            {
+              messageId: 'unexpectedExportsOrder',
+              data: {
+                left: './f',
+                right: './d',
+              },
+            },
+          ],
+        },
+      ],
+    })
   })
 
   describe(`${ruleName}: sorting by line length`, () => {
