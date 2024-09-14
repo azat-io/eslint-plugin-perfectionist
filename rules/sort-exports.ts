@@ -3,6 +3,7 @@ import type { TSESTree } from '@typescript-eslint/types'
 import type { SortingNode } from '../typings'
 
 import { createEslintRule } from '../utils/create-eslint-rule'
+import { getLinesBetween } from '../utils/get-lines-between'
 import { getSourceCode } from '../utils/get-source-code'
 import { rangeToDiff } from '../utils/range-to-diff'
 import { getSettings } from '../utils/get-settings'
@@ -18,6 +19,7 @@ type MESSAGE_ID = 'unexpectedExportsOrder'
 type Options = [
   Partial<{
     type: 'alphabetical' | 'line-length' | 'natural'
+    partitionByNewLine: boolean
     order: 'desc' | 'asc'
     ignoreCase: boolean
   }>,
@@ -51,6 +53,11 @@ export default createEslintRule<Options, MESSAGE_ID>({
               'Controls whether sorting should be case-sensitive or not.',
             type: 'boolean',
           },
+          partitionByNewLine: {
+            description:
+              'Allows to use spaces to separate the nodes into logical groups.',
+            type: 'boolean',
+          },
         },
         additionalProperties: false,
       },
@@ -64,6 +71,7 @@ export default createEslintRule<Options, MESSAGE_ID>({
       type: 'alphabetical',
       order: 'asc',
       ignoreCase: true,
+      partitionByNewLine: false,
     },
   ],
   create: context => {
@@ -73,7 +81,10 @@ export default createEslintRule<Options, MESSAGE_ID>({
       type: 'alphabetical',
       ignoreCase: true,
       order: 'asc',
+      partitionByNewLine: false,
     } as const)
+
+    let sourceCode = getSourceCode(context)
 
     let parts: SortingNode[][] = [[]]
 
@@ -82,11 +93,20 @@ export default createEslintRule<Options, MESSAGE_ID>({
         | TSESTree.ExportNamedDeclarationWithSource
         | TSESTree.ExportAllDeclaration,
     ) => {
-      parts.at(-1)!.push({
+      let sortingNode: SortingNode = {
         size: rangeToDiff(node.range),
         name: node.source.value,
         node,
-      })
+      }
+      let lastNode = parts.at(-1)?.at(-1)
+      if (
+        options.partitionByNewLine &&
+        lastNode &&
+        getLinesBetween(sourceCode, lastNode, sortingNode)
+      ) {
+        parts.push([])
+      }
+      parts.at(-1)!.push(sortingNode)
     }
 
     return {
@@ -97,8 +117,6 @@ export default createEslintRule<Options, MESSAGE_ID>({
         }
       },
       'Program:exit': () => {
-        let sourceCode = getSourceCode(context)
-
         for (let nodes of parts) {
           pairwise(nodes, (left, right) => {
             if (isPositive(compare(left, right, options))) {

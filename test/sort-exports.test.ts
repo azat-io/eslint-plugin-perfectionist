@@ -158,6 +158,56 @@ describe(ruleName, () => {
         },
       ],
     })
+
+    ruleTester.run(
+      `${ruleName}(${type}): allows to use new line as partition`,
+      rule,
+      {
+        valid: [],
+        invalid: [
+          {
+            code: dedent`
+              export * from "./organisms";
+              export * from "./atoms";
+              export * from "./shared";
+
+              export { AnotherNamed } from './second-folder';
+              export { Named } from './folder';
+            `,
+            output: dedent`
+              export * from "./atoms";
+              export * from "./organisms";
+              export * from "./shared";
+
+              export { Named } from './folder';
+              export { AnotherNamed } from './second-folder';
+            `,
+            options: [
+              {
+                ...options,
+                partitionByNewLine: true,
+              },
+            ],
+            errors: [
+              {
+                messageId: 'unexpectedExportsOrder',
+                data: {
+                  left: './organisms',
+                  right: './atoms',
+                },
+              },
+              {
+                messageId: 'unexpectedExportsOrder',
+                data: {
+                  left: './second-folder',
+                  right: './folder',
+                },
+              },
+            ],
+          },
+        ],
+      },
+    )
   })
 
   describe(`${ruleName}: sorting by natural order`, () => {
@@ -302,6 +352,56 @@ describe(ruleName, () => {
         },
       ],
     })
+
+    ruleTester.run(
+      `${ruleName}(${type}): allows to use new line as partition`,
+      rule,
+      {
+        valid: [],
+        invalid: [
+          {
+            code: dedent`
+              export * from "./organisms";
+              export * from "./atoms";
+              export * from "./shared";
+
+              export { AnotherNamed } from './second-folder';
+              export { Named } from './folder';
+            `,
+            output: dedent`
+              export * from "./atoms";
+              export * from "./organisms";
+              export * from "./shared";
+
+              export { Named } from './folder';
+              export { AnotherNamed } from './second-folder';
+            `,
+            options: [
+              {
+                ...options,
+                partitionByNewLine: true,
+              },
+            ],
+            errors: [
+              {
+                messageId: 'unexpectedExportsOrder',
+                data: {
+                  left: './organisms',
+                  right: './atoms',
+                },
+              },
+              {
+                messageId: 'unexpectedExportsOrder',
+                data: {
+                  left: './second-folder',
+                  right: './folder',
+                },
+              },
+            ],
+          },
+        ],
+      },
+    )
   })
 
   describe(`${ruleName}: sorting by line length`, () => {
