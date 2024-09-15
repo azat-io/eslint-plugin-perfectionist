@@ -794,8 +794,8 @@ describe(ruleName, () => {
               {
                 messageId: 'unexpectedVariableDeclarationsOrder',
                 data: {
-                  right: 'bb',
-                  nodeDependentOnRight: 'aaa',
+                  left: 'b',
+                  right: 'a',
                 },
               },
             ],
