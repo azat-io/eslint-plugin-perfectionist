@@ -1850,10 +1850,10 @@ describe(ruleName, () => {
             ],
             errors: [
               {
-                messageId: 'unexpectedEnumsOrder',
+                messageId: 'unexpectedEnumsDependencyOrder',
                 data: {
-                  left: 'B',
                   right: 'C',
+                  nodeDependentOnRight: 'A',
                 },
               },
             ],
@@ -1924,10 +1924,10 @@ describe(ruleName, () => {
                 },
               },
               {
-                messageId: 'unexpectedEnumsOrder',
+                messageId: 'unexpectedEnumsDependencyOrder',
                 data: {
-                  left: 'E',
                   right: 'F',
+                  nodeDependentOnRight: 'B',
                 },
               },
             ],

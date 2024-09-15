@@ -4,8 +4,8 @@ import type { SortingNodeWithDependencies } from '../utils/sort-nodes-by-depende
 import type { CompareOptions } from '../utils/compare'
 
 import {
+  getFirstUnorderedDependency,
   sortNodesByDependencies,
-  nodeDependsOn,
 } from '../utils/sort-nodes-by-dependencies'
 import { hasPartitionComment } from '../utils/is-partition-comment'
 import { getCommentsBefore } from '../utils/get-comments-before'
@@ -94,7 +94,7 @@ export default createEslintRule<Options, MESSAGE_ID>({
     messages: {
       unexpectedEnumsOrder: 'Expected "{{right}}" to come before "{{left}}".',
       unexpectedEnumsDependencyOrder:
-        'Expected dependency "{{right}}" to come before "{{left}}".',
+        'Expected dependency "{{right}}" to come before "{{nodeDependentOnRight}}".',
     },
   },
   defaultOptions: [
@@ -250,14 +250,18 @@ export default createEslintRule<Options, MESSAGE_ID>({
             let indexOfLeft = sortedNodes.indexOf(left)
             let indexOfRight = sortedNodes.indexOf(right)
             if (indexOfLeft > indexOfRight) {
-              let leftDependsOnRight = nodeDependsOn(left, right)
+              let firstNodeDependentOnRight = getFirstUnorderedDependency(
+                right,
+                nodes,
+              )
               context.report({
-                messageId: leftDependsOnRight
+                messageId: firstNodeDependentOnRight
                   ? 'unexpectedEnumsDependencyOrder'
                   : 'unexpectedEnumsOrder',
                 data: {
                   left: toSingleLine(left.name),
                   right: toSingleLine(right.name),
+                  nodeDependentOnRight: firstNodeDependentOnRight?.name,
                 },
                 node: right.node,
                 fix: fixer =>

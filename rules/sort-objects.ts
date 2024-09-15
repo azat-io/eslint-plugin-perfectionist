@@ -6,8 +6,8 @@ import { minimatch } from 'minimatch'
 import type { SortingNodeWithDependencies } from '../utils/sort-nodes-by-dependencies'
 
 import {
+  getFirstUnorderedDependency,
   sortNodesByDependencies,
-  nodeDependsOn,
 } from '../utils/sort-nodes-by-dependencies'
 import { validateGroupsConfiguration } from '../utils/validate-groups-configuration'
 import { hasPartitionComment } from '../utils/is-partition-comment'
@@ -166,7 +166,7 @@ export default createEslintRule<Options, MESSAGE_ID>({
         'Expected "{{right}}" ({{rightGroup}}) to come before "{{left}}" ({{leftGroup}}).',
       unexpectedObjectsOrder: 'Expected "{{right}}" to come before "{{left}}".',
       unexpectedObjectsDependencyOrder:
-        'Expected dependency "{{right}}" to come before "{{left}}".',
+        'Expected dependency "{{right}}" to come before "{{nodeDependentOnRight}}".',
     },
   },
   defaultOptions: [
@@ -465,7 +465,10 @@ export default createEslintRule<Options, MESSAGE_ID>({
             let indexOfRight = sortedNodes.indexOf(right)
 
             if (indexOfLeft > indexOfRight) {
-              let leftDependsOnRight = nodeDependsOn(left, right)
+              let firstNodeDependentOnRight = getFirstUnorderedDependency(
+                right,
+                nodes,
+              )
               let fix:
                 | ((fixer: TSESLint.RuleFixer) => TSESLint.RuleFix[])
                 | undefined = fixer =>
@@ -475,7 +478,7 @@ export default createEslintRule<Options, MESSAGE_ID>({
               let leftNum = getGroupNumber(options.groups, left)
               let rightNum = getGroupNumber(options.groups, right)
               let messageId: MESSAGE_ID
-              if (leftDependsOnRight) {
+              if (firstNodeDependentOnRight) {
                 messageId = 'unexpectedObjectsDependencyOrder'
               } else {
                 messageId =
@@ -490,6 +493,7 @@ export default createEslintRule<Options, MESSAGE_ID>({
                   leftGroup: left.group,
                   right: toSingleLine(right.name),
                   rightGroup: right.group,
+                  nodeDependentOnRight: firstNodeDependentOnRight?.name,
                 },
                 node: right.node,
                 fix,

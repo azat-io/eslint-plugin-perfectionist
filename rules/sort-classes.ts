@@ -173,7 +173,7 @@ export default createEslintRule<SortClassesOptions, MESSAGE_ID>({
         'Expected "{{right}}" ({{rightGroup}}) to come before "{{left}}" ({{leftGroup}}).',
       unexpectedClassesOrder: 'Expected "{{right}}" to come before "{{left}}".',
       unexpectedClassesDependencyOrder:
-        'Expected dependency "{{dependency}}" to come before "{{left}}".',
+        'Expected dependency "{{right}}" to come before "{{nodeDependentOnRight}}".',
     },
   },
   defaultOptions: [
@@ -688,14 +688,14 @@ export default createEslintRule<SortClassesOptions, MESSAGE_ID>({
 
             let indexOfLeft = sortedNodes.indexOf(left)
             let indexOfRight = sortedNodes.indexOf(right)
-            let firstLeftUnorderedDependency: SortingNodeWithDependencies | null =
-              getFirstUnorderedDependency(left, nodes, sortedNodes)
+            let firstRightUnorderedDependency: SortingNodeWithDependencies | null =
+              getFirstUnorderedDependency(right, nodes)
             if (
-              firstLeftUnorderedDependency ||
+              firstRightUnorderedDependency ||
               (!isLeftOrRightIgnored && indexOfLeft > indexOfRight)
             ) {
               let messageId: MESSAGE_ID
-              if (firstLeftUnorderedDependency) {
+              if (firstRightUnorderedDependency) {
                 messageId = 'unexpectedClassesDependencyOrder'
               } else {
                 messageId =
@@ -707,10 +707,10 @@ export default createEslintRule<SortClassesOptions, MESSAGE_ID>({
                 messageId,
                 data: {
                   left: toSingleLine(left.name),
-                  dependency: firstLeftUnorderedDependency?.name,
                   leftGroup: left.group,
                   right: toSingleLine(right.name),
                   rightGroup: right.group,
+                  nodeDependentOnRight: firstRightUnorderedDependency?.name,
                 },
                 node: right.node,
                 fix: (fixer: TSESLint.RuleFixer) =>

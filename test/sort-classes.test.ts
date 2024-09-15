@@ -2455,8 +2455,8 @@ describe(ruleName, () => {
               {
                 messageId: 'unexpectedClassesDependencyOrder',
                 data: {
-                  left: 'aaa',
-                  dependency: 'b',
+                  right: 'b',
+                  nodeDependentOnRight: 'aaa',
                 },
               },
             ],
@@ -2920,31 +2920,38 @@ describe(ruleName, () => {
               ],
               errors: [
                 {
-                  messageId: 'unexpectedClassesDependencyOrder',
+                  messageId: 'unexpectedClassesOrder',
                   data: {
                     left: 'e',
-                    dependency: 'c',
+                    right: 'd',
                   },
                 },
                 {
-                  messageId: 'unexpectedClassesDependencyOrder',
+                  messageId: 'unexpectedClassesOrder',
                   data: {
                     left: 'd',
-                    dependency: 'b',
+                    right: 'a',
                   },
                 },
                 {
                   messageId: 'unexpectedClassesDependencyOrder',
                   data: {
-                    left: 'b',
-                    dependency: 'z',
+                    right: 'b',
+                    nodeDependentOnRight: 'd',
                   },
                 },
                 {
                   messageId: 'unexpectedClassesDependencyOrder',
                   data: {
-                    left: 'c',
-                    dependency: 'z',
+                    right: 'c',
+                    nodeDependentOnRight: 'e',
+                  },
+                },
+                {
+                  messageId: 'unexpectedClassesDependencyOrder',
+                  data: {
+                    right: 'z',
+                    nodeDependentOnRight: 'b',
                   },
                 },
               ],
@@ -2973,15 +2980,8 @@ describe(ruleName, () => {
                 {
                   messageId: 'unexpectedClassesDependencyOrder',
                   data: {
-                    left: 'a',
-                    dependency: 'c',
-                  },
-                },
-                {
-                  messageId: 'unexpectedClassesOrder',
-                  data: {
-                    left: 'b',
                     right: 'c',
+                    nodeDependentOnRight: 'a',
                   },
                 },
               ],
@@ -3647,29 +3647,15 @@ describe(ruleName, () => {
                 {
                   messageId: 'unexpectedClassesDependencyOrder',
                   data: {
-                    left: 'a',
-                    dependency: 'c',
-                  },
-                },
-                {
-                  messageId: 'unexpectedClassesDependencyOrder',
-                  data: {
-                    left: 'b',
-                    dependency: 'c',
-                  },
-                },
-                {
-                  messageId: 'unexpectedClassesDependencyOrder',
-                  data: {
-                    dependency: 'c',
-                    left: 'b',
-                  },
-                },
-                {
-                  messageId: 'unexpectedClassesOrder',
-                  data: {
-                    left: 'c',
                     right: 'c',
+                    nodeDependentOnRight: 'b',
+                  },
+                },
+                {
+                  messageId: 'unexpectedClassesDependencyOrder',
+                  data: {
+                    right: 'c',
+                    nodeDependentOnRight: 'a',
                   },
                 },
               ],
@@ -3711,24 +3697,24 @@ describe(ruleName, () => {
               ],
               errors: [
                 {
-                  messageId: 'unexpectedClassesDependencyOrder',
-                  data: {
-                    dependency: 'e',
-                    left: 'b',
-                  },
-                },
-                {
-                  messageId: 'unexpectedClassesDependencyOrder',
-                  data: {
-                    left: 'e',
-                    dependency: 'g',
-                  },
-                },
-                {
                   messageId: 'unexpectedClassesOrder',
                   data: {
-                    left: 'f',
+                    left: 'b',
+                    right: 'a',
+                  },
+                },
+                {
+                  messageId: 'unexpectedClassesDependencyOrder',
+                  data: {
+                    right: 'e',
+                    nodeDependentOnRight: 'b',
+                  },
+                },
+                {
+                  messageId: 'unexpectedClassesDependencyOrder',
+                  data: {
                     right: 'g',
+                    nodeDependentOnRight: 'e',
                   },
                 },
               ],
@@ -3834,8 +3820,15 @@ describe(ruleName, () => {
                 {
                   messageId: 'unexpectedClassesDependencyOrder',
                   data: {
-                    dependency: 'left',
-                    left: 'aaa',
+                    right: 'left',
+                    nodeDependentOnRight: 'aaa',
+                  },
+                },
+                {
+                  messageId: 'unexpectedClassesDependencyOrder',
+                  data: {
+                    right: 'right',
+                    nodeDependentOnRight: 'aaa',
                   },
                 },
               ],
@@ -4864,8 +4857,8 @@ describe(ruleName, () => {
               {
                 messageId: 'unexpectedClassesDependencyOrder',
                 data: {
-                  left: 'aaa',
-                  dependency: 'b',
+                  right: 'b',
+                  nodeDependentOnRight: 'aaa',
                 },
               },
             ],
@@ -5040,8 +5033,15 @@ describe(ruleName, () => {
               {
                 messageId: 'unexpectedClassesDependencyOrder',
                 data: {
-                  dependency: 'left',
-                  left: 'aaa',
+                  right: 'left',
+                  nodeDependentOnRight: 'aaa',
+                },
+              },
+              {
+                messageId: 'unexpectedClassesDependencyOrder',
+                data: {
+                  right: 'right',
+                  nodeDependentOnRight: 'aaa',
                 },
               },
             ],

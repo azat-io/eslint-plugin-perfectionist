@@ -12,11 +12,6 @@ export interface SortingNodeWithDependencies<
   dependencies: string[]
 }
 
-export let nodeDependsOn = (
-  left: SortingNodeWithDependencies,
-  right: SortingNodeWithDependencies,
-): boolean => left.dependencies.includes(right.dependencyName ?? right.name)
-
 /**
  * Returns nodes topologically sorted by their dependencies
  */
@@ -36,7 +31,9 @@ export let sortNodesByDependencies = <T extends SortingNodeWithDependencies>(
       return
     }
     inProcessNodes.add(node)
-    let dependentNodes = nodes.filter(n => nodeDependsOn(node, n))
+    let dependentNodes = nodes.filter(n =>
+      node.dependencies.includes(n.dependencyName ?? n.name),
+    )
     for (let dependentNode of dependentNodes) {
       visitNode(dependentNode)
     }
@@ -55,26 +52,20 @@ export let sortNodesByDependencies = <T extends SortingNodeWithDependencies>(
 export let getFirstUnorderedDependency = (
   node: SortingNodeWithDependencies,
   currentlyOrderedNodes: SortingNodeWithDependencies[],
-  expectedOrderedNodes: SortingNodeWithDependencies[],
 ): SortingNodeWithDependencies | null => {
-  let currentIndexOfNode = currentlyOrderedNodes.indexOf(node)
-  let expectedIndexOfNode = expectedOrderedNodes.indexOf(node)
-  for (let dependency of node.dependencies) {
-    let dependencyNode = currentlyOrderedNodes.find(
-      currentNode =>
-        (currentNode.dependencyName ?? currentNode.name) === dependency,
+  let firstNodeDependentOnNode = currentlyOrderedNodes.find(
+    currentlyOrderedNode =>
+      currentlyOrderedNode.dependencies.includes(
+        node.dependencyName ?? node.name,
+      ),
+  )
+  if (firstNodeDependentOnNode) {
+    let currentIndexOfNode = currentlyOrderedNodes.indexOf(node)
+    let currentIndexOfFirstNodeDependentOnNode = currentlyOrderedNodes.indexOf(
+      firstNodeDependentOnNode,
     )
-    if (dependencyNode) {
-      let currentIndexOfDependency =
-        currentlyOrderedNodes.indexOf(dependencyNode)
-      let expectedIndexOfDependency =
-        expectedOrderedNodes.indexOf(dependencyNode)
-      if (
-        currentIndexOfDependency > currentIndexOfNode &&
-        expectedIndexOfDependency < expectedIndexOfNode
-      ) {
-        return dependencyNode
-      }
+    if (currentIndexOfFirstNodeDependentOnNode < currentIndexOfNode) {
+      return firstNodeDependentOnNode
     }
   }
   return null

@@ -3,8 +3,8 @@ import type { TSESTree } from '@typescript-eslint/types'
 import type { SortingNodeWithDependencies } from '../utils/sort-nodes-by-dependencies'
 
 import {
+  getFirstUnorderedDependency,
   sortNodesByDependencies,
-  nodeDependsOn,
 } from '../utils/sort-nodes-by-dependencies'
 import { createEslintRule } from '../utils/create-eslint-rule'
 import { getSourceCode } from '../utils/get-source-code'
@@ -64,7 +64,7 @@ export default createEslintRule<Options, MESSAGE_ID>({
       unexpectedVariableDeclarationsOrder:
         'Expected "{{right}}" to come before "{{left}}".',
       unexpectedVariableDeclarationsDependencyOrder:
-        'Expected dependency "{{right}}" to come before "{{left}}".',
+        'Expected dependency "{{right}}" to come before "{{nodeDependentOnRight}}".',
     },
   },
   defaultOptions: [
@@ -202,14 +202,18 @@ export default createEslintRule<Options, MESSAGE_ID>({
           let indexOfLeft = sortedNodes.indexOf(left)
           let indexOfRight = sortedNodes.indexOf(right)
           if (indexOfLeft > indexOfRight) {
-            let leftDependsOnRight = nodeDependsOn(left, right)
+            let firstNodeDependentOnRight = getFirstUnorderedDependency(
+              right,
+              nodes,
+            )
             context.report({
-              messageId: leftDependsOnRight
+              messageId: firstNodeDependentOnRight
                 ? 'unexpectedVariableDeclarationsDependencyOrder'
                 : 'unexpectedVariableDeclarationsOrder',
               data: {
                 left: toSingleLine(left.name),
                 right: toSingleLine(right.name),
+                nodeDependentOnRight: firstNodeDependentOnRight?.name,
               },
               node: right.node,
               fix: fixer => makeFixes(fixer, nodes, sortedNodes, sourceCode),
