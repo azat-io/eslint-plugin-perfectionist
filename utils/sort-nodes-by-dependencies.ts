@@ -49,24 +49,25 @@ export let sortNodesByDependencies = <T extends SortingNodeWithDependencies>(
   return result
 }
 
+/**
+ * Returns the first node that is dependent on the given node, but is not
+ * ordered before it
+ */
 export let getFirstUnorderedDependency = (
   node: SortingNodeWithDependencies,
   currentlyOrderedNodes: SortingNodeWithDependencies[],
-): SortingNodeWithDependencies | null => {
-  let firstNodeDependentOnNode = currentlyOrderedNodes.find(
+): SortingNodeWithDependencies | undefined => {
+  let nodesDependentOnNode = currentlyOrderedNodes.filter(
     currentlyOrderedNode =>
       currentlyOrderedNode.dependencies.includes(
         node.dependencyName ?? node.name,
       ),
   )
-  if (firstNodeDependentOnNode) {
+  return nodesDependentOnNode.find(firstNodeDependentOnNode => {
     let currentIndexOfNode = currentlyOrderedNodes.indexOf(node)
     let currentIndexOfFirstNodeDependentOnNode = currentlyOrderedNodes.indexOf(
       firstNodeDependentOnNode,
     )
-    if (currentIndexOfFirstNodeDependentOnNode < currentIndexOfNode) {
-      return firstNodeDependentOnNode
-    }
-  }
-  return null
+    return currentIndexOfFirstNodeDependentOnNode < currentIndexOfNode
+  })
 }
