@@ -435,7 +435,10 @@ export default createEslintRule<Options, MESSAGE_ID>({
             [[]],
           )
 
-        for (let nodes of formatProperties(node.properties)) {
+        let sortedNodes: SortingNodeWithDependencies[] = []
+
+        let formattedNodes = formatProperties(node.properties)
+        for (let nodes of formattedNodes) {
           let grouped: {
             [key: string]: SortingNodeWithDependencies[]
           } = {}
@@ -450,15 +453,15 @@ export default createEslintRule<Options, MESSAGE_ID>({
             }
           }
 
-          let sortedNodes: SortingNodeWithDependencies[] = []
-
           for (let group of Object.keys(grouped).sort(
             (a, b) => Number(a) - Number(b),
           )) {
             sortedNodes.push(...sortNodes(grouped[group], options))
           }
+        }
 
-          sortedNodes = sortNodesByDependencies(sortedNodes)
+        sortedNodes = sortNodesByDependencies(sortedNodes)
+        let nodes = formattedNodes.flat()
 
           pairwise(nodes, (left, right) => {
             let indexOfLeft = sortedNodes.indexOf(left)

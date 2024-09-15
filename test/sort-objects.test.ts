@@ -1202,6 +1202,51 @@ describe(ruleName, () => {
           invalid: [],
         },
       )
+
+      ruleTester.run(
+        `${ruleName}(${type}): prioritizes dependencies over partitionByComment`,
+        rule,
+        {
+          valid: [],
+          invalid: [
+            {
+              code: dedent`
+              let Func = ({
+                b = a,
+                // Part: 1
+                a = 0,
+              }) => {
+                // ...
+              }
+            `,
+              output: dedent`
+                let Func = ({
+                  a = 0,
+                  // Part: 1
+                  b = a,
+                }) => {
+                  // ...
+                }
+            `,
+              options: [
+                {
+                  ...options,
+                  partitionByComment: 'Part**',
+                },
+              ],
+              errors: [
+                {
+                  messageId: 'unexpectedObjectsOrder',
+                  data: {
+                    left: 'b',
+                    right: 'a',
+                  },
+                },
+              ],
+            },
+          ],
+        },
+      )
     })
 
     ruleTester.run(
