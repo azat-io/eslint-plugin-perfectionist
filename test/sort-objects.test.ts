@@ -1247,6 +1247,51 @@ describe(ruleName, () => {
           ],
         },
       )
+
+      ruleTester.run(
+        `${ruleName}(${type}): prioritizes dependencies over partitionByNewLine`,
+        rule,
+        {
+          valid: [],
+          invalid: [
+            {
+              code: dedent`
+              let Func = ({
+                b = a,
+
+                a = 0,
+              }) => {
+                // ...
+              }
+            `,
+              output: dedent`
+                let Func = ({
+                  a = 0,
+
+                  b = a,
+                }) => {
+                  // ...
+                }
+            `,
+              options: [
+                {
+                  ...options,
+                  partitionByNewLine: true,
+                },
+              ],
+              errors: [
+                {
+                  messageId: 'unexpectedObjectsOrder',
+                  data: {
+                    left: 'b',
+                    right: 'a',
+                  },
+                },
+              ],
+            },
+          ],
+        },
+      )
     })
 
     ruleTester.run(
