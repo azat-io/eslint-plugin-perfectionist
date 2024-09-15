@@ -3779,6 +3779,47 @@ describe(ruleName, () => {
       )
 
       ruleTester.run(
+        `${ruleName}(${type}): prioritizes dependencies over partitionByComment`,
+        rule,
+        {
+          valid: [],
+          invalid: [
+            {
+              code: dedent`
+                class Class {
+                  b = this.a
+                  // Part1
+                  a
+                }
+              `,
+              output: dedent`
+                class Class {
+                  a
+                  // Part1
+                  b = this.a
+                }
+              `,
+              options: [
+                {
+                  ...options,
+                  partitionByComment: 'Part*',
+                },
+              ],
+              errors: [
+                {
+                  messageId: 'unexpectedClassesOrder',
+                  data: {
+                    left: 'b',
+                    right: 'a',
+                  },
+                },
+              ],
+            },
+          ],
+        },
+      )
+
+      ruleTester.run(
         `${ruleName}(${type}): works with left and right dependencies`,
         rule,
         {
