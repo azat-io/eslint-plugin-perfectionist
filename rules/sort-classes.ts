@@ -20,7 +20,7 @@ import {
   customGroupSortJsonSchema,
 } from './sort-classes.types'
 import {
-  getFirstUnorderedDependency,
+  getFirstUnorderedNodeDependentOn,
   sortNodesByDependencies,
 } from '../utils/sort-nodes-by-dependencies'
 import { hasPartitionComment } from '../utils/is-partition-comment'
@@ -688,16 +688,14 @@ export default createEslintRule<SortClassesOptions, MESSAGE_ID>({
 
             let indexOfLeft = sortedNodes.indexOf(left)
             let indexOfRight = sortedNodes.indexOf(right)
-            let firstRightUnorderedDependency = getFirstUnorderedDependency(
-              right,
-              nodes,
-            )
+            let firstUnorderedNodeDependentOnRight =
+              getFirstUnorderedNodeDependentOn(right, nodes)
             if (
-              firstRightUnorderedDependency ||
+              firstUnorderedNodeDependentOnRight ||
               (!isLeftOrRightIgnored && indexOfLeft > indexOfRight)
             ) {
               let messageId: MESSAGE_ID
-              if (firstRightUnorderedDependency) {
+              if (firstUnorderedNodeDependentOnRight) {
                 messageId = 'unexpectedClassesDependencyOrder'
               } else {
                 messageId =
@@ -712,7 +710,8 @@ export default createEslintRule<SortClassesOptions, MESSAGE_ID>({
                   leftGroup: left.group,
                   right: toSingleLine(right.name),
                   rightGroup: right.group,
-                  nodeDependentOnRight: firstRightUnorderedDependency?.name,
+                  nodeDependentOnRight:
+                    firstUnorderedNodeDependentOnRight?.name,
                 },
                 node: right.node,
                 fix: (fixer: TSESLint.RuleFixer) =>

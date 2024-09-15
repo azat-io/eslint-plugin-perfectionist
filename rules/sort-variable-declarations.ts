@@ -3,7 +3,7 @@ import type { TSESTree } from '@typescript-eslint/types'
 import type { SortingNodeWithDependencies } from '../utils/sort-nodes-by-dependencies'
 
 import {
-  getFirstUnorderedDependency,
+  getFirstUnorderedNodeDependentOn,
   sortNodesByDependencies,
 } from '../utils/sort-nodes-by-dependencies'
 import { createEslintRule } from '../utils/create-eslint-rule'
@@ -202,18 +202,16 @@ export default createEslintRule<Options, MESSAGE_ID>({
           let indexOfLeft = sortedNodes.indexOf(left)
           let indexOfRight = sortedNodes.indexOf(right)
           if (indexOfLeft > indexOfRight) {
-            let firstNodeDependentOnRight = getFirstUnorderedDependency(
-              right,
-              nodes,
-            )
+            let firstUnorderedNodeDependentOnRight =
+              getFirstUnorderedNodeDependentOn(right, nodes)
             context.report({
-              messageId: firstNodeDependentOnRight
+              messageId: firstUnorderedNodeDependentOnRight
                 ? 'unexpectedVariableDeclarationsDependencyOrder'
                 : 'unexpectedVariableDeclarationsOrder',
               data: {
                 left: toSingleLine(left.name),
                 right: toSingleLine(right.name),
-                nodeDependentOnRight: firstNodeDependentOnRight?.name,
+                nodeDependentOnRight: firstUnorderedNodeDependentOnRight?.name,
               },
               node: right.node,
               fix: fixer => makeFixes(fixer, nodes, sortedNodes, sourceCode),

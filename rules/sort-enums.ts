@@ -4,7 +4,7 @@ import type { SortingNodeWithDependencies } from '../utils/sort-nodes-by-depende
 import type { CompareOptions } from '../utils/compare'
 
 import {
-  getFirstUnorderedDependency,
+  getFirstUnorderedNodeDependentOn,
   sortNodesByDependencies,
 } from '../utils/sort-nodes-by-dependencies'
 import { hasPartitionComment } from '../utils/is-partition-comment'
@@ -250,18 +250,17 @@ export default createEslintRule<Options, MESSAGE_ID>({
             let indexOfLeft = sortedNodes.indexOf(left)
             let indexOfRight = sortedNodes.indexOf(right)
             if (indexOfLeft > indexOfRight) {
-              let firstNodeDependentOnRight = getFirstUnorderedDependency(
-                right,
-                nodes,
-              )
+              let firstUnorderedNodeDependentOnRight =
+                getFirstUnorderedNodeDependentOn(right, nodes)
               context.report({
-                messageId: firstNodeDependentOnRight
+                messageId: firstUnorderedNodeDependentOnRight
                   ? 'unexpectedEnumsDependencyOrder'
                   : 'unexpectedEnumsOrder',
                 data: {
                   left: toSingleLine(left.name),
                   right: toSingleLine(right.name),
-                  nodeDependentOnRight: firstNodeDependentOnRight?.name,
+                  nodeDependentOnRight:
+                    firstUnorderedNodeDependentOnRight?.name,
                 },
                 node: right.node,
                 fix: fixer =>

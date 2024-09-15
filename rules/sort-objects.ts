@@ -6,7 +6,7 @@ import { minimatch } from 'minimatch'
 import type { SortingNodeWithDependencies } from '../utils/sort-nodes-by-dependencies'
 
 import {
-  getFirstUnorderedDependency,
+  getFirstUnorderedNodeDependentOn,
   sortNodesByDependencies,
 } from '../utils/sort-nodes-by-dependencies'
 import { validateGroupsConfiguration } from '../utils/validate-groups-configuration'
@@ -465,10 +465,8 @@ export default createEslintRule<Options, MESSAGE_ID>({
             let indexOfRight = sortedNodes.indexOf(right)
 
             if (indexOfLeft > indexOfRight) {
-              let firstNodeDependentOnRight = getFirstUnorderedDependency(
-                right,
-                nodes,
-              )
+              let firstUnorderedNodeDependentOnRight =
+                getFirstUnorderedNodeDependentOn(right, nodes)
               let fix:
                 | ((fixer: TSESLint.RuleFixer) => TSESLint.RuleFix[])
                 | undefined = fixer =>
@@ -478,7 +476,7 @@ export default createEslintRule<Options, MESSAGE_ID>({
               let leftNum = getGroupNumber(options.groups, left)
               let rightNum = getGroupNumber(options.groups, right)
               let messageId: MESSAGE_ID
-              if (firstNodeDependentOnRight) {
+              if (firstUnorderedNodeDependentOnRight) {
                 messageId = 'unexpectedObjectsDependencyOrder'
               } else {
                 messageId =
@@ -493,7 +491,8 @@ export default createEslintRule<Options, MESSAGE_ID>({
                   leftGroup: left.group,
                   right: toSingleLine(right.name),
                   rightGroup: right.group,
-                  nodeDependentOnRight: firstNodeDependentOnRight?.name,
+                  nodeDependentOnRight:
+                    firstUnorderedNodeDependentOnRight?.name,
                 },
                 node: right.node,
                 fix,
