@@ -242,6 +242,12 @@ export default createEslintRule<Options, MESSAGE_ID>({
                 }
               : undefined,
         }
+        let sortedNodes = sortNodesByDependencies(
+          formattedMembers
+            .map(nodes => sortNodes(nodes, compareOptions))
+            .flat(),
+        )
+        let nodes = formattedMembers.flat()
         for (let nodes of formattedMembers) {
           let sortedNodes = sortNodesByDependencies(
             sortNodes(nodes, compareOptions),
