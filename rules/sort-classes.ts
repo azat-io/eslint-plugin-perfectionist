@@ -688,8 +688,10 @@ export default createEslintRule<SortClassesOptions, MESSAGE_ID>({
 
             let indexOfLeft = sortedNodes.indexOf(left)
             let indexOfRight = sortedNodes.indexOf(right)
-            let firstRightUnorderedDependency: SortingNodeWithDependencies | null =
-              getFirstUnorderedDependency(right, nodes)
+            let firstRightUnorderedDependency = getFirstUnorderedDependency(
+              right,
+              nodes,
+            )
             if (
               firstRightUnorderedDependency ||
               (!isLeftOrRightIgnored && indexOfLeft > indexOfRight)
