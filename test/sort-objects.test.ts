@@ -1236,10 +1236,10 @@ describe(ruleName, () => {
               ],
               errors: [
                 {
-                  messageId: 'unexpectedObjectsOrder',
+                  messageId: 'unexpectedObjectsDependencyOrder',
                   data: {
-                    left: 'b',
                     right: 'a',
+                    nodeDependentOnRight: 'b',
                   },
                 },
               ],
@@ -1281,10 +1281,10 @@ describe(ruleName, () => {
               ],
               errors: [
                 {
-                  messageId: 'unexpectedObjectsOrder',
+                  messageId: 'unexpectedObjectsDependencyOrder',
                   data: {
-                    left: 'b',
                     right: 'a',
+                    nodeDependentOnRight: 'b',
                   },
                 },
               ],

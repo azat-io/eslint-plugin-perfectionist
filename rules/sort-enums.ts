@@ -248,35 +248,29 @@ export default createEslintRule<Options, MESSAGE_ID>({
             .flat(),
         )
         let nodes = formattedMembers.flat()
-        for (let nodes of formattedMembers) {
-          let sortedNodes = sortNodesByDependencies(
-            sortNodes(nodes, compareOptions),
-          )
-          pairwise(nodes, (left, right) => {
-            let indexOfLeft = sortedNodes.indexOf(left)
-            let indexOfRight = sortedNodes.indexOf(right)
-            if (indexOfLeft > indexOfRight) {
-              let firstUnorderedNodeDependentOnRight =
-                getFirstUnorderedNodeDependentOn(right, nodes)
-              context.report({
-                messageId: firstUnorderedNodeDependentOnRight
-                  ? 'unexpectedEnumsDependencyOrder'
-                  : 'unexpectedEnumsOrder',
-                data: {
-                  left: toSingleLine(left.name),
-                  right: toSingleLine(right.name),
-                  nodeDependentOnRight:
-                    firstUnorderedNodeDependentOnRight?.name,
-                },
-                node: right.node,
-                fix: fixer =>
-                  makeFixes(fixer, nodes, sortedNodes, sourceCode, {
-                    partitionComment,
-                  }),
-              })
-            }
-          })
-        }
+        pairwise(nodes, (left, right) => {
+          let indexOfLeft = sortedNodes.indexOf(left)
+          let indexOfRight = sortedNodes.indexOf(right)
+          if (indexOfLeft > indexOfRight) {
+            let firstUnorderedNodeDependentOnRight =
+              getFirstUnorderedNodeDependentOn(right, nodes)
+            context.report({
+              messageId: firstUnorderedNodeDependentOnRight
+                ? 'unexpectedEnumsDependencyOrder'
+                : 'unexpectedEnumsOrder',
+              data: {
+                left: toSingleLine(left.name),
+                right: toSingleLine(right.name),
+                nodeDependentOnRight: firstUnorderedNodeDependentOnRight?.name,
+              },
+              node: right.node,
+              fix: fixer =>
+                makeFixes(fixer, nodes, sortedNodes, sourceCode, {
+                  partitionComment,
+                }),
+            })
+          }
+        })
       }
     },
   }),

@@ -688,42 +688,40 @@ export default createEslintRule<SortClassesOptions, MESSAGE_ID>({
             leftNum === options.groups.length ||
             rightNum === options.groups.length
 
-            let indexOfLeft = sortedNodes.indexOf(left)
-            let indexOfRight = sortedNodes.indexOf(right)
-            let firstUnorderedNodeDependentOnRight =
-              getFirstUnorderedNodeDependentOn(right, nodes)
-            if (
-              firstUnorderedNodeDependentOnRight ||
-              (!isLeftOrRightIgnored && indexOfLeft > indexOfRight)
-            ) {
-              let messageId: MESSAGE_ID
-              if (firstUnorderedNodeDependentOnRight) {
-                messageId = 'unexpectedClassesDependencyOrder'
-              } else {
-                messageId =
-                  leftNum !== rightNum
-                    ? 'unexpectedClassesGroupOrder'
-                    : 'unexpectedClassesOrder'
-              }
-              context.report({
-                messageId,
-                data: {
-                  left: toSingleLine(left.name),
-                  leftGroup: left.group,
-                  right: toSingleLine(right.name),
-                  rightGroup: right.group,
-                  nodeDependentOnRight:
-                    firstUnorderedNodeDependentOnRight?.name,
-                },
-                node: right.node,
-                fix: (fixer: TSESLint.RuleFixer) =>
-                  makeFixes(fixer, nodes, sortedNodes, sourceCode, {
-                    partitionComment: options.partitionByComment,
-                  }),
-              })
+          let indexOfLeft = sortedNodes.indexOf(left)
+          let indexOfRight = sortedNodes.indexOf(right)
+          let firstUnorderedNodeDependentOnRight =
+            getFirstUnorderedNodeDependentOn(right, nodes)
+          if (
+            firstUnorderedNodeDependentOnRight ||
+            (!isLeftOrRightIgnored && indexOfLeft > indexOfRight)
+          ) {
+            let messageId: MESSAGE_ID
+            if (firstUnorderedNodeDependentOnRight) {
+              messageId = 'unexpectedClassesDependencyOrder'
+            } else {
+              messageId =
+                leftNum !== rightNum
+                  ? 'unexpectedClassesGroupOrder'
+                  : 'unexpectedClassesOrder'
             }
-          })
-        }
+            context.report({
+              messageId,
+              data: {
+                left: toSingleLine(left.name),
+                leftGroup: left.group,
+                right: toSingleLine(right.name),
+                rightGroup: right.group,
+                nodeDependentOnRight: firstUnorderedNodeDependentOnRight?.name,
+              },
+              node: right.node,
+              fix: (fixer: TSESLint.RuleFixer) =>
+                makeFixes(fixer, nodes, sortedNodes, sourceCode, {
+                  partitionComment: options.partitionByComment,
+                }),
+            })
+          }
+        })
       }
     },
   }),

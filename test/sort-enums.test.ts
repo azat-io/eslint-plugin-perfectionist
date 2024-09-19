@@ -1964,10 +1964,10 @@ describe(ruleName, () => {
               ],
               errors: [
                 {
-                  messageId: 'unexpectedEnumsOrder',
+                  messageId: 'unexpectedEnumsDependencyOrder',
                   data: {
-                    left: 'B',
                     right: 'A',
+                    nodeDependentOnRight: 'B',
                   },
                 },
               ],

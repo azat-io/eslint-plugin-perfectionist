@@ -463,46 +463,44 @@ export default createEslintRule<Options, MESSAGE_ID>({
         sortedNodes = sortNodesByDependencies(sortedNodes)
         let nodes = formattedNodes.flat()
 
-          pairwise(nodes, (left, right) => {
-            let indexOfLeft = sortedNodes.indexOf(left)
-            let indexOfRight = sortedNodes.indexOf(right)
+        pairwise(nodes, (left, right) => {
+          let indexOfLeft = sortedNodes.indexOf(left)
+          let indexOfRight = sortedNodes.indexOf(right)
 
-            if (indexOfLeft > indexOfRight) {
-              let firstUnorderedNodeDependentOnRight =
-                getFirstUnorderedNodeDependentOn(right, nodes)
-              let fix:
-                | ((fixer: TSESLint.RuleFixer) => TSESLint.RuleFix[])
-                | undefined = fixer =>
-                makeFixes(fixer, nodes, sortedNodes, sourceCode, {
-                  partitionComment: options.partitionByComment,
-                })
-              let leftNum = getGroupNumber(options.groups, left)
-              let rightNum = getGroupNumber(options.groups, right)
-              let messageId: MESSAGE_ID
-              if (firstUnorderedNodeDependentOnRight) {
-                messageId = 'unexpectedObjectsDependencyOrder'
-              } else {
-                messageId =
-                  leftNum !== rightNum
-                    ? 'unexpectedObjectsGroupOrder'
-                    : 'unexpectedObjectsOrder'
-              }
-              context.report({
-                messageId,
-                data: {
-                  left: toSingleLine(left.name),
-                  leftGroup: left.group,
-                  right: toSingleLine(right.name),
-                  rightGroup: right.group,
-                  nodeDependentOnRight:
-                    firstUnorderedNodeDependentOnRight?.name,
-                },
-                node: right.node,
-                fix,
+          if (indexOfLeft > indexOfRight) {
+            let firstUnorderedNodeDependentOnRight =
+              getFirstUnorderedNodeDependentOn(right, nodes)
+            let fix:
+              | ((fixer: TSESLint.RuleFixer) => TSESLint.RuleFix[])
+              | undefined = fixer =>
+              makeFixes(fixer, nodes, sortedNodes, sourceCode, {
+                partitionComment: options.partitionByComment,
               })
+            let leftNum = getGroupNumber(options.groups, left)
+            let rightNum = getGroupNumber(options.groups, right)
+            let messageId: MESSAGE_ID
+            if (firstUnorderedNodeDependentOnRight) {
+              messageId = 'unexpectedObjectsDependencyOrder'
+            } else {
+              messageId =
+                leftNum !== rightNum
+                  ? 'unexpectedObjectsGroupOrder'
+                  : 'unexpectedObjectsOrder'
             }
-          })
-        }
+            context.report({
+              messageId,
+              data: {
+                left: toSingleLine(left.name),
+                leftGroup: left.group,
+                right: toSingleLine(right.name),
+                rightGroup: right.group,
+                nodeDependentOnRight: firstUnorderedNodeDependentOnRight?.name,
+              },
+              node: right.node,
+              fix,
+            })
+          }
+        })
       }
     }
 

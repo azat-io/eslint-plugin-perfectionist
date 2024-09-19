@@ -3807,10 +3807,10 @@ describe(ruleName, () => {
               ],
               errors: [
                 {
-                  messageId: 'unexpectedClassesOrder',
+                  messageId: 'unexpectedClassesDependencyOrder',
                   data: {
-                    left: 'b',
                     right: 'a',
+                    nodeDependentOnRight: 'b',
                   },
                 },
               ],
