@@ -3,25 +3,30 @@ import type { TSESTree } from '@typescript-eslint/types'
 import type { SortingNode } from '../typings'
 
 import { createEslintRule } from '../utils/create-eslint-rule'
+import { getLinesBetween } from '../utils/get-lines-between'
 import { getSourceCode } from '../utils/get-source-code'
 import { rangeToDiff } from '../utils/range-to-diff'
 import { getSettings } from '../utils/get-settings'
-import { isPositive } from '../utils/is-positive'
 import { sortNodes } from '../utils/sort-nodes'
 import { makeFixes } from '../utils/make-fixes'
 import { complete } from '../utils/complete'
 import { pairwise } from '../utils/pairwise'
-import { compare } from '../utils/compare'
 
 type MESSAGE_ID = 'unexpectedExportsOrder'
 
 type Options = [
   Partial<{
+    groupKind: 'values-first' | 'types-first' | 'mixed'
     type: 'alphabetical' | 'line-length' | 'natural'
+    partitionByNewLine: boolean
     order: 'desc' | 'asc'
     ignoreCase: boolean
   }>,
 ]
+
+type SortExportsSortingNode = SortingNode<
+  TSESTree.ExportNamedDeclarationWithSource | TSESTree.ExportAllDeclaration
+>
 
 export default createEslintRule<Options, MESSAGE_ID>({
   name: 'sort-exports',
@@ -51,6 +56,16 @@ export default createEslintRule<Options, MESSAGE_ID>({
               'Controls whether sorting should be case-sensitive or not.',
             type: 'boolean',
           },
+          partitionByNewLine: {
+            description:
+              'Allows to use spaces to separate the nodes into logical groups.',
+            type: 'boolean',
+          },
+          groupKind: {
+            description: 'Specifies top-level groups.',
+            type: 'string',
+            enum: ['mixed', 'values-first', 'types-first'],
+          },
         },
         additionalProperties: false,
       },
@@ -64,6 +79,8 @@ export default createEslintRule<Options, MESSAGE_ID>({
       type: 'alphabetical',
       order: 'asc',
       ignoreCase: true,
+      partitionByNewLine: false,
+      groupKind: 'mixed',
     },
   ],
   create: context => {
@@ -73,20 +90,33 @@ export default createEslintRule<Options, MESSAGE_ID>({
       type: 'alphabetical',
       ignoreCase: true,
       order: 'asc',
+      partitionByNewLine: false,
+      groupKind: 'mixed',
     } as const)
 
-    let parts: SortingNode[][] = [[]]
+    let sourceCode = getSourceCode(context)
+
+    let parts: SortExportsSortingNode[][] = [[]]
 
     let registerNode = (
       node:
         | TSESTree.ExportNamedDeclarationWithSource
         | TSESTree.ExportAllDeclaration,
     ) => {
-      parts.at(-1)!.push({
+      let sortingNode: SortExportsSortingNode = {
         size: rangeToDiff(node.range),
         name: node.source.value,
         node,
-      })
+      }
+      let lastNode = parts.at(-1)?.at(-1)
+      if (
+        options.partitionByNewLine &&
+        lastNode &&
+        getLinesBetween(sourceCode, lastNode, sortingNode)
+      ) {
+        parts.push([])
+      }
+      parts.at(-1)!.push(sortingNode)
     }
 
     return {
@@ -97,11 +127,36 @@ export default createEslintRule<Options, MESSAGE_ID>({
         }
       },
       'Program:exit': () => {
-        let sourceCode = getSourceCode(context)
-
         for (let nodes of parts) {
+          let groupedByKind
+          if (options.groupKind !== 'mixed') {
+            groupedByKind = nodes.reduce<SortExportsSortingNode[][]>(
+              (accumulator, currentNode) => {
+                let exportTypeIndex =
+                  options.groupKind === 'types-first' ? 0 : 1
+                let exportIndex = options.groupKind === 'types-first' ? 1 : 0
+                if (currentNode.node.exportKind === 'value') {
+                  accumulator[exportIndex].push(currentNode)
+                } else {
+                  accumulator[exportTypeIndex].push(currentNode)
+                }
+                return accumulator
+              },
+              [[], []],
+            )
+          } else {
+            groupedByKind = [nodes]
+          }
+
+          let sortedNodes: SortingNode[] = []
+          for (let nodesByKind of groupedByKind) {
+            sortedNodes = [...sortedNodes, ...sortNodes(nodesByKind, options)]
+          }
+
           pairwise(nodes, (left, right) => {
-            if (isPositive(compare(left, right, options))) {
+            let indexOfLeft = sortedNodes.indexOf(left)
+            let indexOfRight = sortedNodes.indexOf(right)
+            if (indexOfLeft > indexOfRight) {
               context.report({
                 messageId: 'unexpectedExportsOrder',
                 data: {
@@ -109,13 +164,7 @@ export default createEslintRule<Options, MESSAGE_ID>({
                   right: right.name,
                 },
                 node: right.node,
-                fix: fixer =>
-                  makeFixes(
-                    fixer,
-                    nodes,
-                    sortNodes(nodes, options),
-                    sourceCode,
-                  ),
+                fix: fixer => makeFixes(fixer, nodes, sortedNodes, sourceCode),
               })
             }
           })

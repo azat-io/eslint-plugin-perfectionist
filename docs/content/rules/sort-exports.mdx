@@ -106,6 +106,34 @@ Controls whether sorting should be case-sensitive or not.
 - `true` — Ignore case when sorting alphabetically or naturally (e.g., “A” and “a” are the same).
 - `false` — Consider case when sorting (e.g., “A” comes before “a”).
 
+### partitionByNewLine
+
+<sub>default: `false`</sub>
+
+When `true`, the rule will not sort the exports if there is an empty line between them. This can be useful for keeping logically separated groups of exports in their defined order.
+
+```js
+// Group 1
+export * from "./atoms";
+export * from "./organisms";
+export * from "./shared";
+
+// Group 2
+export { Named } from './folder';
+export { AnotherNamed } from './second-folder';
+```
+
+### groupKind
+
+<sub>default: `'mixed'`</sub>
+
+Allows you to group exports by their kind, determining whether value exports should come before or after type exports.
+
+- `mixed` — Do not group named exports by their kind; export statements are sorted together regardless of their type.
+- `values-first` — Group all value exports before type exports.
+- `types-first` — Group all type exports before value exports.
+
+
 ## Usage
 
 <CodeTabs
@@ -127,6 +155,8 @@ Controls whether sorting should be case-sensitive or not.
                   type: 'alphabetical',
                   order: 'asc',
                   ignoreCase: true,
+                  partitionByNewLine: false,
+                  groupKind: 'mixed',
                 },
               ],
             },
@@ -150,6 +180,8 @@ Controls whether sorting should be case-sensitive or not.
                 type: 'alphabetical',
                 order: 'asc',
                 ignoreCase: true,
+                partitionByNewLine: false,
+                groupKind: 'mixed',
               },
             ],
           },

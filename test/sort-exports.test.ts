@@ -158,6 +158,156 @@ describe(ruleName, () => {
         },
       ],
     })
+
+    ruleTester.run(
+      `${ruleName}(${type}): allows to use new line as partition`,
+      rule,
+      {
+        valid: [],
+        invalid: [
+          {
+            code: dedent`
+              export * from "./organisms";
+              export * from "./atoms";
+              export * from "./shared";
+
+              export { AnotherNamed } from './second-folder';
+              export { Named } from './folder';
+            `,
+            output: dedent`
+              export * from "./atoms";
+              export * from "./organisms";
+              export * from "./shared";
+
+              export { Named } from './folder';
+              export { AnotherNamed } from './second-folder';
+            `,
+            options: [
+              {
+                ...options,
+                partitionByNewLine: true,
+              },
+            ],
+            errors: [
+              {
+                messageId: 'unexpectedExportsOrder',
+                data: {
+                  left: './organisms',
+                  right: './atoms',
+                },
+              },
+              {
+                messageId: 'unexpectedExportsOrder',
+                data: {
+                  left: './second-folder',
+                  right: './folder',
+                },
+              },
+            ],
+          },
+        ],
+      },
+    )
+
+    ruleTester.run(`${ruleName}(${type}): sorts by group kind`, rule, {
+      valid: [],
+      invalid: [
+        {
+          code: dedent`
+            export type { F } from "./f";
+            export type { D } from "./d";
+            export type { E } from "./e";
+            export { C } from "./c";
+            export { A } from "./a";
+            export { B } from "./b";
+          `,
+          output: dedent`
+            export { A } from "./a";
+            export { B } from "./b";
+            export { C } from "./c";
+            export type { D } from "./d";
+            export type { E } from "./e";
+            export type { F } from "./f";
+          `,
+          options: [
+            {
+              ...options,
+              groupKind: 'values-first',
+            },
+          ],
+          errors: [
+            {
+              messageId: 'unexpectedExportsOrder',
+              data: {
+                left: './f',
+                right: './d',
+              },
+            },
+            {
+              messageId: 'unexpectedExportsOrder',
+              data: {
+                left: './e',
+                right: './c',
+              },
+            },
+            {
+              messageId: 'unexpectedExportsOrder',
+              data: {
+                left: './c',
+                right: './a',
+              },
+            },
+          ],
+        },
+        {
+          code: dedent`
+            export { C } from "./c";
+            export { A } from "./a";
+            export { B } from "./b";
+            export type { F } from "./f";
+            export type { D } from "./d";
+            export type { E } from "./e";
+          `,
+          output: dedent`
+            export type { D } from "./d";
+            export type { E } from "./e";
+            export type { F } from "./f";
+            export { A } from "./a";
+            export { B } from "./b";
+            export { C } from "./c";
+          `,
+          options: [
+            {
+              ...options,
+              groupKind: 'types-first',
+            },
+          ],
+          errors: [
+            {
+              messageId: 'unexpectedExportsOrder',
+              data: {
+                left: './c',
+                right: './a',
+              },
+            },
+            {
+              messageId: 'unexpectedExportsOrder',
+              data: {
+                left: './b',
+                right: './f',
+              },
+            },
+            {
+              messageId: 'unexpectedExportsOrder',
+              data: {
+                left: './f',
+                right: './d',
+              },
+            },
+          ],
+        },
+      ],
+    })
   })
 
   describe(`${ruleName}: sorting by natural order`, () => {
@@ -296,6 +446,156 @@ describe(ruleName, () => {
               data: {
                 left: './c',
                 right: './b',
+              },
+            },
+          ],
+        },
+      ],
+    })
+
+    ruleTester.run(
+      `${ruleName}(${type}): allows to use new line as partition`,
+      rule,
+      {
+        valid: [],
+        invalid: [
+          {
+            code: dedent`
+              export * from "./organisms";
+              export * from "./atoms";
+              export * from "./shared";
+
+              export { AnotherNamed } from './second-folder';
+              export { Named } from './folder';
+            `,
+            output: dedent`
+              export * from "./atoms";
+              export * from "./organisms";
+              export * from "./shared";
+
+              export { Named } from './folder';
+              export { AnotherNamed } from './second-folder';
+            `,
+            options: [
+              {
+                ...options,
+                partitionByNewLine: true,
+              },
+            ],
+            errors: [
+              {
+                messageId: 'unexpectedExportsOrder',
+                data: {
+                  left: './organisms',
+                  right: './atoms',
+                },
+              },
+              {
+                messageId: 'unexpectedExportsOrder',
+                data: {
+                  left: './second-folder',
+                  right: './folder',
+                },
+              },
+            ],
+          },
+        ],
+      },
+    )
+
+    ruleTester.run(`${ruleName}(${type}): sorts by group kind`, rule, {
+      valid: [],
+      invalid: [
+        {
+          code: dedent`
+            export type { F } from "./f";
+            export type { D } from "./d";
+            export type { E } from "./e";
+            export { C } from "./c";
+            export { A } from "./a";
+            export { B } from "./b";
+          `,
+          output: dedent`
+            export { A } from "./a";
+            export { B } from "./b";
+            export { C } from "./c";
+            export type { D } from "./d";
+            export type { E } from "./e";
+            export type { F } from "./f";
+          `,
+          options: [
+            {
+              ...options,
+              groupKind: 'values-first',
+            },
+          ],
+          errors: [
+            {
+              messageId: 'unexpectedExportsOrder',
+              data: {
+                left: './f',
+                right: './d',
+              },
+            },
+            {
+              messageId: 'unexpectedExportsOrder',
+              data: {
+                left: './e',
+                right: './c',
+              },
+            },
+            {
+              messageId: 'unexpectedExportsOrder',
+              data: {
+                left: './c',
+                right: './a',
+              },
+            },
+          ],
+        },
+        {
+          code: dedent`
+            export { C } from "./c";
+            export { A } from "./a";
+            export { B } from "./b";
+            export type { F } from "./f";
+            export type { D } from "./d";
+            export type { E } from "./e";
+          `,
+          output: dedent`
+            export type { D } from "./d";
+            export type { E } from "./e";
+            export type { F } from "./f";
+            export { A } from "./a";
+            export { B } from "./b";
+            export { C } from "./c";
+          `,
+          options: [
+            {
+              ...options,
+              groupKind: 'types-first',
+            },
+          ],
+          errors: [
+            {
+              messageId: 'unexpectedExportsOrder',
+              data: {
+                left: './c',
+                right: './a',
+              },
+            },
+            {
+              messageId: 'unexpectedExportsOrder',
+              data: {
+                left: './b',
+                right: './f',
+              },
+            },
+            {
+              messageId: 'unexpectedExportsOrder',
+              data: {
+                left: './f',
+                right: './d',
               },
             },
           ],
