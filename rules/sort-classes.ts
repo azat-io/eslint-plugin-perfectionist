@@ -19,7 +19,10 @@ import {
   customGroupNameJsonSchema,
   customGroupSortJsonSchema,
 } from './sort-classes.types'
-import { sortNodesByDependencies } from '../utils/sort-nodes-by-dependencies'
+import {
+  getFirstUnorderedNodeDependentOn,
+  sortNodesByDependencies,
+} from '../utils/sort-nodes-by-dependencies'
 import { hasPartitionComment } from '../utils/is-partition-comment'
 import { getCommentsBefore } from '../utils/get-comments-before'
 import { createEslintRule } from '../utils/create-eslint-rule'
@@ -34,7 +37,10 @@ import { makeFixes } from '../utils/make-fixes'
 import { complete } from '../utils/complete'
 import { pairwise } from '../utils/pairwise'
 
-type MESSAGE_ID = 'unexpectedClassesGroupOrder' | 'unexpectedClassesOrder'
+type MESSAGE_ID =
+  | 'unexpectedClassesDependencyOrder'
+  | 'unexpectedClassesGroupOrder'
+  | 'unexpectedClassesOrder'
 
 export default createEslintRule<SortClassesOptions, MESSAGE_ID>({
   name: 'sort-classes',
@@ -166,6 +172,8 @@ export default createEslintRule<SortClassesOptions, MESSAGE_ID>({
       unexpectedClassesGroupOrder:
         'Expected "{{right}}" ({{rightGroup}}) to come before "{{left}}" ({{leftGroup}}).',
       unexpectedClassesOrder: 'Expected "{{right}}" to come before "{{left}}".',
+      unexpectedClassesDependencyOrder:
+        'Expected dependency "{{right}}" to come before "{{nodeDependentOnRight}}".',
     },
   },
   defaultOptions: [
@@ -680,17 +688,30 @@ export default createEslintRule<SortClassesOptions, MESSAGE_ID>({
 
             let indexOfLeft = sortedNodes.indexOf(left)
             let indexOfRight = sortedNodes.indexOf(right)
-            if (!isLeftOrRightIgnored && indexOfLeft > indexOfRight) {
-              context.report({
-                messageId:
+            let firstUnorderedNodeDependentOnRight =
+              getFirstUnorderedNodeDependentOn(right, nodes)
+            if (
+              firstUnorderedNodeDependentOnRight ||
+              (!isLeftOrRightIgnored && indexOfLeft > indexOfRight)
+            ) {
+              let messageId: MESSAGE_ID
+              if (firstUnorderedNodeDependentOnRight) {
+                messageId = 'unexpectedClassesDependencyOrder'
+              } else {
+                messageId =
                   leftNum !== rightNum
                     ? 'unexpectedClassesGroupOrder'
-                    : 'unexpectedClassesOrder',
+                    : 'unexpectedClassesOrder'
+              }
+              context.report({
+                messageId,
                 data: {
                   left: toSingleLine(left.name),
                   leftGroup: left.group,
                   right: toSingleLine(right.name),
                   rightGroup: right.group,
+                  nodeDependentOnRight:
+                    firstUnorderedNodeDependentOnRight?.name,
                 },
                 node: right.node,
                 fix: (fixer: TSESLint.RuleFixer) =>

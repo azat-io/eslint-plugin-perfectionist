@@ -5,8 +5,11 @@ import { minimatch } from 'minimatch'
 
 import type { SortingNodeWithDependencies } from '../utils/sort-nodes-by-dependencies'
 
+import {
+  getFirstUnorderedNodeDependentOn,
+  sortNodesByDependencies,
+} from '../utils/sort-nodes-by-dependencies'
 import { validateGroupsConfiguration } from '../utils/validate-groups-configuration'
-import { sortNodesByDependencies } from '../utils/sort-nodes-by-dependencies'
 import { hasPartitionComment } from '../utils/is-partition-comment'
 import { getCommentsBefore } from '../utils/get-comments-before'
 import { createEslintRule } from '../utils/create-eslint-rule'
@@ -23,7 +26,10 @@ import { sortNodes } from '../utils/sort-nodes'
 import { complete } from '../utils/complete'
 import { pairwise } from '../utils/pairwise'
 
-type MESSAGE_ID = 'unexpectedObjectsGroupOrder' | 'unexpectedObjectsOrder'
+type MESSAGE_ID =
+  | 'unexpectedObjectsDependencyOrder'
+  | 'unexpectedObjectsGroupOrder'
+  | 'unexpectedObjectsOrder'
 
 export enum Position {
   'exception' = 'exception',
@@ -159,6 +165,8 @@ export default createEslintRule<Options, MESSAGE_ID>({
       unexpectedObjectsGroupOrder:
         'Expected "{{right}}" ({{rightGroup}}) to come before "{{left}}" ({{leftGroup}}).',
       unexpectedObjectsOrder: 'Expected "{{right}}" to come before "{{left}}".',
+      unexpectedObjectsDependencyOrder:
+        'Expected dependency "{{right}}" to come before "{{nodeDependentOnRight}}".',
     },
   },
   defaultOptions: [
@@ -455,7 +463,10 @@ export default createEslintRule<Options, MESSAGE_ID>({
           pairwise(nodes, (left, right) => {
             let indexOfLeft = sortedNodes.indexOf(left)
             let indexOfRight = sortedNodes.indexOf(right)
+
             if (indexOfLeft > indexOfRight) {
+              let firstUnorderedNodeDependentOnRight =
+                getFirstUnorderedNodeDependentOn(right, nodes)
               let fix:
                 | ((fixer: TSESLint.RuleFixer) => TSESLint.RuleFix[])
                 | undefined = fixer =>
@@ -464,16 +475,24 @@ export default createEslintRule<Options, MESSAGE_ID>({
                 })
               let leftNum = getGroupNumber(options.groups, left)
               let rightNum = getGroupNumber(options.groups, right)
-              context.report({
-                messageId:
+              let messageId: MESSAGE_ID
+              if (firstUnorderedNodeDependentOnRight) {
+                messageId = 'unexpectedObjectsDependencyOrder'
+              } else {
+                messageId =
                   leftNum !== rightNum
                     ? 'unexpectedObjectsGroupOrder'
-                    : 'unexpectedObjectsOrder',
+                    : 'unexpectedObjectsOrder'
+              }
+              context.report({
+                messageId,
                 data: {
                   left: toSingleLine(left.name),
                   leftGroup: left.group,
                   right: toSingleLine(right.name),
                   rightGroup: right.group,
+                  nodeDependentOnRight:
+                    firstUnorderedNodeDependentOnRight?.name,
                 },
                 node: right.node,
                 fix,

@@ -3,7 +3,10 @@ import type { TSESTree } from '@typescript-eslint/types'
 import type { SortingNodeWithDependencies } from '../utils/sort-nodes-by-dependencies'
 import type { CompareOptions } from '../utils/compare'
 
-import { sortNodesByDependencies } from '../utils/sort-nodes-by-dependencies'
+import {
+  getFirstUnorderedNodeDependentOn,
+  sortNodesByDependencies,
+} from '../utils/sort-nodes-by-dependencies'
 import { hasPartitionComment } from '../utils/is-partition-comment'
 import { getCommentsBefore } from '../utils/get-comments-before'
 import { createEslintRule } from '../utils/create-eslint-rule'
@@ -16,7 +19,7 @@ import { makeFixes } from '../utils/make-fixes'
 import { complete } from '../utils/complete'
 import { pairwise } from '../utils/pairwise'
 
-type MESSAGE_ID = 'unexpectedEnumsOrder'
+type MESSAGE_ID = 'unexpectedEnumsDependencyOrder' | 'unexpectedEnumsOrder'
 
 export type Options = [
   Partial<{
@@ -90,6 +93,8 @@ export default createEslintRule<Options, MESSAGE_ID>({
     ],
     messages: {
       unexpectedEnumsOrder: 'Expected "{{right}}" to come before "{{left}}".',
+      unexpectedEnumsDependencyOrder:
+        'Expected dependency "{{right}}" to come before "{{nodeDependentOnRight}}".',
     },
   },
   defaultOptions: [
@@ -245,11 +250,17 @@ export default createEslintRule<Options, MESSAGE_ID>({
             let indexOfLeft = sortedNodes.indexOf(left)
             let indexOfRight = sortedNodes.indexOf(right)
             if (indexOfLeft > indexOfRight) {
+              let firstUnorderedNodeDependentOnRight =
+                getFirstUnorderedNodeDependentOn(right, nodes)
               context.report({
-                messageId: 'unexpectedEnumsOrder',
+                messageId: firstUnorderedNodeDependentOnRight
+                  ? 'unexpectedEnumsDependencyOrder'
+                  : 'unexpectedEnumsOrder',
                 data: {
                   left: toSingleLine(left.name),
                   right: toSingleLine(right.name),
+                  nodeDependentOnRight:
+                    firstUnorderedNodeDependentOnRight?.name,
                 },
                 node: right.node,
                 fix: fixer =>
