@@ -1544,5 +1544,61 @@ describe(ruleName, () => {
         invalid: [],
       },
     )
+
+    ruleTester.run(
+      `${ruleName}: should ignore unknown group if not referenced in groups`,
+      rule,
+      {
+        valid: [],
+        invalid: [
+          {
+            code: dedent`
+              <Element
+                eee="e"
+                c
+                a="a"
+                b
+                dd="d"
+              />
+            `,
+            output: dedent`
+              <Element
+                eee="e"
+                b
+                a="a"
+                c
+                dd="d"
+              />
+            `,
+            options: [
+              {
+                type: 'alphabetical',
+                groups: ['shorthand'],
+              },
+            ],
+            errors: [
+              {
+                messageId: 'unexpectedJSXPropsGroupOrder',
+                data: {
+                  left: 'c',
+                  leftGroup: 'shorthand',
+                  right: 'a',
+                  rightGroup: 'unknown',
+                },
+              },
+              {
+                messageId: 'unexpectedJSXPropsGroupOrder',
+                data: {
+                  left: 'a',
+                  leftGroup: 'unknown',
+                  right: 'b',
+                  rightGroup: 'shorthand',
+                },
+              },
+            ],
+          },
+        ],
+      },
+    )
   })
 })
