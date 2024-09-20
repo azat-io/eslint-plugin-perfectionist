@@ -949,5 +949,33 @@ describe(ruleName, () => {
         invalid: [],
       })
     })
+
+    ruleTester.run(
+      `${ruleName}: should ignore unknown group if not referenced in groups`,
+      rule,
+      {
+        valid: [
+          {
+            filename: 'file.vue',
+            code: dedent`
+              <component
+                eee="e"
+                {b}
+                a="a"
+                c
+                dd="d"
+              />
+            `,
+            options: [
+              {
+                type: 'alphabetical',
+                groups: ['shorthand'],
+              },
+            ],
+          },
+        ],
+        invalid: [],
+      },
+    )
   })
 })
