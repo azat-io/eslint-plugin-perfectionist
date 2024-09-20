@@ -2314,5 +2314,64 @@ describe(ruleName, () => {
       ],
       invalid: [],
     })
+
+    ruleTester.run(
+      `${ruleName}: should ignore unknown group if not referenced in groups`,
+      rule,
+      {
+        valid: [],
+        invalid: [
+          {
+            code: dedent`
+              interface Interface {
+                a: string
+                dX: string
+                b: string
+                cX: string
+                e: string
+              }
+            `,
+            output: dedent`
+              interface Interface {
+                a: string
+                cX: string
+                b: string
+                dX: string
+                e: string
+              }
+            `,
+            options: [
+              {
+                type: 'alphabetical',
+                groups: ['attributesEndingWithX'],
+                customGroups: {
+                  attributesEndingWithX: '*X',
+                },
+              },
+            ],
+            errors: [
+              {
+                messageId: 'unexpectedInterfacePropertiesGroupOrder',
+                data: {
+                  left: 'dX',
+                  leftGroup: 'attributesEndingWithX',
+                  right: 'b',
+                  rightGroup: 'unknown',
+                },
+              },
+              {
+                messageId: 'unexpectedInterfacePropertiesGroupOrder',
+                data: {
+                  left: 'b',
+                  leftGroup: 'unknown',
+                  right: 'cX',
+                  rightGroup: 'attributesEndingWithX',
+                },
+              },
+            ],
+          },
+        ],
+      },
+    )
   })
 })

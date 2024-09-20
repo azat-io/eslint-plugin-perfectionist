@@ -3,6 +3,7 @@ import { minimatch } from 'minimatch'
 import type { SortingNode } from '../typings'
 
 import { validateGroupsConfiguration } from '../utils/validate-groups-configuration'
+import { sortNodesByGroups } from '../utils/sort-nodes-by-groups'
 import { createEslintRule } from '../utils/create-eslint-rule'
 import { isMemberOptional } from '../utils/is-member-optional'
 import { getLinesBetween } from '../utils/get-lines-between'
@@ -11,13 +12,10 @@ import { getSourceCode } from '../utils/get-source-code'
 import { toSingleLine } from '../utils/to-single-line'
 import { rangeToDiff } from '../utils/range-to-diff'
 import { getSettings } from '../utils/get-settings'
-import { isPositive } from '../utils/is-positive'
 import { useGroups } from '../utils/use-groups'
-import { sortNodes } from '../utils/sort-nodes'
 import { makeFixes } from '../utils/make-fixes'
 import { complete } from '../utils/complete'
 import { pairwise } from '../utils/pairwise'
-import { compare } from '../utils/compare'
 
 type MESSAGE_ID =
   | 'unexpectedInterfacePropertiesGroupOrder'
@@ -137,7 +135,7 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
       ignorePattern: [],
       partitionByNewLine: false,
       groupKind: 'mixed',
-      groups: [],
+      groups: ['unknown'],
       customGroups: {},
     },
   ],
@@ -153,7 +151,7 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
           ignoreCase: true,
           customGroups: {},
           order: 'asc',
-          groups: [],
+          groups: ['unknown'],
         } as const)
 
         validateGroupsConfiguration(
@@ -239,81 +237,37 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
             [[]],
           )
 
-          let toSorted = (nodes: SortingNode[]) => {
-            let grouped: {
-              [key: string]: SortingNode[]
-            } = {}
-
-            for (let currentNode of nodes) {
-              let groupNum = getGroupNumber(options.groups, currentNode)
-
-              if (!(groupNum in grouped)) {
-                grouped[groupNum] = [currentNode]
-              } else {
-                grouped[groupNum] = sortNodes(
-                  [...grouped[groupNum], currentNode],
-                  options,
-                )
-              }
-            }
-
-            let sortedNodes: SortingNode[] = []
-
-            for (let group of Object.keys(grouped).sort(
-              (a, b) => Number(a) - Number(b),
-            )) {
-              sortedNodes.push(...sortNodes(grouped[group], options))
-            }
-
-            return sortedNodes
-          }
-
-          let checkGroupSort = (left: SortingNode, right: SortingNode) => {
-            let leftNum = getGroupNumber(options.groups, left)
-            let rightNum = getGroupNumber(options.groups, right)
-
-            return (
-              leftNum > rightNum ||
-              (leftNum === rightNum &&
-                isPositive(compare(left, right, options)))
-            )
-          }
-
           let { groupKind } = options
 
-          let checkOrder = (
-            members: SortingNode[],
-            left: SortingNode,
-            right: SortingNode,
-            iteration: number,
-          ) => {
-            if (groupKind === 'mixed') {
-              return checkGroupSort(left, right)
-            }
-
-            let switchIndex = members.findIndex(
-              (_, i) =>
-                i &&
-                isMemberOptional(members[i - 1].node) !==
-                  isMemberOptional(members[i].node),
-            )
-
-            if (iteration < switchIndex && iteration + 1 !== switchIndex) {
-              return checkGroupSort(left, right)
-            }
-
-            if (isMemberOptional(left.node) !== isMemberOptional(right.node)) {
-              return (
-                isMemberOptional(left.node) !== (groupKind === 'optional-first')
-              )
-            }
-
-            return checkGroupSort(left, right)
-          }
-
           for (let nodes of formattedMembers) {
-            pairwise(nodes, (left, right, iteration) => {
-              if (checkOrder(nodes, left, right, iteration)) {
+            let sortedNodes: SortingNode[]
+
+            if (groupKind !== 'mixed') {
+              let optionalNodes = nodes.filter(member =>
+                isMemberOptional(member.node),
+              )
+              let requiredNodes = nodes.filter(
+                member => !isMemberOptional(member.node),
+              )
+
+              sortedNodes =
+                groupKind === 'optional-first'
+                  ? [
+                      ...sortNodesByGroups(optionalNodes, options),
+                      ...sortNodesByGroups(requiredNodes, options),
+                    ]
+                  : [
+                      ...sortNodesByGroups(requiredNodes, options),
+                      ...sortNodesByGroups(optionalNodes, options),
+                    ]
+            } else {
+              sortedNodes = sortNodesByGroups(nodes, options)
+            }
+
+            pairwise(nodes, (left, right) => {
+              let indexOfLeft = sortedNodes.indexOf(left)
+              let indexOfRight = sortedNodes.indexOf(right)
+              if (indexOfLeft > indexOfRight) {
                 let leftNum = getGroupNumber(options.groups, left)
                 let rightNum = getGroupNumber(options.groups, right)
                 context.report({
@@ -328,33 +282,8 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
                     rightGroup: right.group,
                   },
                   node: right.node,
-                  fix: fixer => {
-                    let sortedNodes
-
-                    if (groupKind !== 'mixed') {
-                      let optionalNodes = nodes.filter(member =>
-                        isMemberOptional(member.node),
-                      )
-                      let requiredNodes = nodes.filter(
-                        member => !isMemberOptional(member.node),
-                      )
-
-                      sortedNodes =
-                        groupKind === 'optional-first'
-                          ? [
-                              ...toSorted(optionalNodes),
-                              ...toSorted(requiredNodes),
-                            ]
-                          : [
-                              ...toSorted(requiredNodes),
-                              ...toSorted(optionalNodes),
-                            ]
-                    } else {
-                      sortedNodes = toSorted(nodes)
-                    }
-
-                    return makeFixes(fixer, nodes, sortedNodes, sourceCode)
-                  },
+                  fix: fixer =>
+                    makeFixes(fixer, nodes, sortedNodes, sourceCode),
                 })
               }
             })

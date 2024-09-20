@@ -205,7 +205,14 @@ Specifies how optional and required members should be ordered in TypeScript inte
 
 ### groups
 
-<sub>default: `[]`</sub>
+<sub>
+  default:
+  ```
+  [
+    'unknown',
+  ]
+  ```
+</sub>
 
 Allows you to specify a list of interface member groups for sorting. Groups help organize members into categories, making your interfaces more readable and maintainable. Multiple groups can be combined to achieve the desired sorting order.
 
@@ -214,7 +221,7 @@ There are predefined group: `'multiline'`.
 Predefined Groups:
 
 - `'multiline'` — Members with multiline definitions, such as methods or properties with complex types.
-- `'unknown'` — Interface members that don’t fit into any other group.
+- `'unknown'` — Interface members that don’t fit into any other group. If the `unknown` group is not specified in `groups`, the members will remain in their original order.
 
 ### customGroups
 
@@ -263,7 +270,7 @@ Example:
                   ignorePattern: [],
                   partitionByNewLine: false,
                   optionalityOrder: 'ignore',
-                  groups: [],
+                  groups: ['unknown'],
                   customGroups: {},
                 },
               ],
@@ -291,7 +298,7 @@ Example:
                 ignorePattern: [],
                 partitionByNewLine: false,
                 optionalityOrder: 'ignore',
-                groups: [],
+                groups: ['unknown'],
                 customGroups: {},
               },
             ],
