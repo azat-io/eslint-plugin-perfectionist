@@ -305,6 +305,264 @@ describe(ruleName, () => {
         },
       ],
     })
+
+    describe(`${ruleName}(${type}): partition by new line`, () => {
+      ruleTester.run(
+        `${ruleName}(${type}): allows to use new line as partition`,
+        rule,
+        {
+          valid: [],
+          invalid: [
+            {
+              code: dedent`
+              new Set([
+                'd',
+                'a',
+
+                'c',
+
+                'e',
+                'b',
+              ])
+            `,
+              output: dedent`
+              new Set([
+                'a',
+                'd',
+
+                'c',
+
+                'b',
+                'e',
+              ])
+            `,
+              options: [
+                {
+                  ...options,
+                  partitionByNewLine: true,
+                },
+              ],
+              errors: [
+                {
+                  messageId: 'unexpectedSetsOrder',
+                  data: {
+                    left: 'd',
+                    right: 'a',
+                  },
+                },
+                {
+                  messageId: 'unexpectedSetsOrder',
+                  data: {
+                    left: 'e',
+                    right: 'b',
+                  },
+                },
+              ],
+            },
+          ],
+        },
+      )
+
+      ruleTester.run(
+        `${ruleName}(${type}): prioritize partitions over group kind`,
+        rule,
+        {
+          valid: [],
+          invalid: [
+            {
+              code: dedent`
+                new Set([
+                  'c',
+                  ...d,
+
+                  'a',
+                  ...b,
+                ])
+              `,
+              output: dedent`
+                new Set([
+                  ...d,
+                  'c',
+
+                  ...b,
+                  'a',
+                ])
+              `,
+              options: [
+                {
+                  ...options,
+                  partitionByNewLine: true,
+                  groupKind: 'spreads-first',
+                },
+              ],
+              errors: [
+                {
+                  messageId: 'unexpectedSetsOrder',
+                  data: {
+                    left: 'c',
+                    right: '...d',
+                  },
+                },
+                {
+                  messageId: 'unexpectedSetsOrder',
+                  data: {
+                    left: 'a',
+                    right: '...b',
+                  },
+                },
+              ],
+            },
+          ],
+        },
+      )
+    })
+
+    describe(`${ruleName}(${type}): partition comments`, () => {
+      ruleTester.run(
+        `${ruleName}(${type}): allows to use partition comments`,
+        rule,
+        {
+          valid: [],
+          invalid: [
+            {
+              code: dedent`
+              new Set([
+                // Part: A
+                'cc',
+                'd',
+                // Not partition comment
+                'bbb',
+                // Part: B
+                'aaaa',
+                'e',
+                // Part: C
+                'gg',
+                // Not partition comment
+                'fff',
+              ])
+            `,
+              output: dedent`
+              new Set([
+                // Part: A
+                // Not partition comment
+                'bbb',
+                'cc',
+                'd',
+                // Part: B
+                'aaaa',
+                'e',
+                // Part: C
+                // Not partition comment
+                'fff',
+                'gg',
+              ])
+            `,
+              options: [
+                {
+                  ...options,
+                  partitionByComment: 'Part**',
+                },
+              ],
+              errors: [
+                {
+                  messageId: 'unexpectedSetsOrder',
+                  data: {
+                    left: 'd',
+                    right: 'bbb',
+                  },
+                },
+                {
+                  messageId: 'unexpectedSetsOrder',
+                  data: {
+                    left: 'gg',
+                    right: 'fff',
+                  },
+                },
+              ],
+            },
+          ],
+        },
+      )
+
+      ruleTester.run(
+        `${ruleName}(${type}): allows to use all comments as parts`,
+        rule,
+        {
+          valid: [
+            {
+              code: dedent`
+              new Set([
+                // Comment
+                'bb',
+                // Other comment
+                'a',
+              ])
+            `,
+              options: [
+                {
+                  ...options,
+                  partitionByComment: true,
+                },
+              ],
+            },
+          ],
+          invalid: [],
+        },
+      )
+
+      ruleTester.run(
+        `${ruleName}(${type}): allows to use multiple partition comments`,
+        rule,
+        {
+          valid: [],
+          invalid: [
+            {
+              code: dedent`
+              new Set([
+                /* Partition Comment */
+                // Part: A
+                'd',
+                // Part: B
+                'aaa',
+                'c',
+                'bb',
+                /* Other */
+                'e',
+              ])
+            `,
+              output: dedent`
+              new Set([
+                /* Partition Comment */
+                // Part: A
+                'd',
+                // Part: B
+                'aaa',
+                'bb',
+                'c',
+                /* Other */
+                'e',
+              ])
+            `,
+              options: [
+                {
+                  ...options,
+                  partitionByComment: ['Partition Comment', 'Part: *', 'Other'],
+                },
+              ],
+              errors: [
+                {
+                  messageId: 'unexpectedSetsOrder',
+                  data: {
+                    left: 'c',
+                    right: 'bb',
+                  },
+                },
+              ],
+            },
+          ],
+        },
+      )
+    })
   })
 
   describe(`${ruleName}: sorting by natural order`, () => {

@@ -305,6 +305,317 @@ describe(ruleName, () => {
         },
       ],
     })
+
+    describe(`${ruleName}(${type}): partition by new line`, () => {
+      ruleTester.run(
+        `${ruleName}(${type}): allows to use new line as partition`,
+        rule,
+        {
+          valid: [],
+          invalid: [
+            {
+              code: dedent`
+              [
+                'd',
+                'a',
+
+                'c',
+
+                'e',
+                'b',
+              ].includes(value)
+            `,
+              output: dedent`
+              [
+                'a',
+                'd',
+
+                'c',
+
+                'b',
+                'e',
+              ].includes(value)
+            `,
+              options: [
+                {
+                  ...options,
+                  partitionByNewLine: true,
+                },
+              ],
+              errors: [
+                {
+                  messageId: 'unexpectedArrayIncludesOrder',
+                  data: {
+                    left: 'd',
+                    right: 'a',
+                  },
+                },
+                {
+                  messageId: 'unexpectedArrayIncludesOrder',
+                  data: {
+                    left: 'e',
+                    right: 'b',
+                  },
+                },
+              ],
+            },
+          ],
+        },
+      )
+
+      ruleTester.run(
+        `${ruleName}(${type}): prioritize partitions over group kind`,
+        rule,
+        {
+          valid: [],
+          invalid: [
+            {
+              code: dedent`
+                [
+                  'c',
+                  ...d,
+
+                  'a',
+                  ...b,
+                ].includes(value)
+              `,
+              output: dedent`
+                [
+                  ...d,
+                  'c',
+
+                  ...b,
+                  'a',
+                ].includes(value)
+              `,
+              options: [
+                {
+                  ...options,
+                  partitionByNewLine: true,
+                  groupKind: 'spreads-first',
+                },
+              ],
+              errors: [
+                {
+                  messageId: 'unexpectedArrayIncludesOrder',
+                  data: {
+                    left: 'c',
+                    right: '...d',
+                  },
+                },
+                {
+                  messageId: 'unexpectedArrayIncludesOrder',
+                  data: {
+                    left: 'a',
+                    right: '...b',
+                  },
+                },
+              ],
+            },
+          ],
+        },
+      )
+    })
+
+    describe(`${ruleName}(${type}): partition comments`, () => {
+      ruleTester.run(
+        `${ruleName}(${type}): allows to use partition comments`,
+        rule,
+        {
+          valid: [],
+          invalid: [
+            {
+              code: dedent`
+              [
+                // Part: A
+                'cc',
+                'd',
+                // Not partition comment
+                'bbb',
+                // Part: B
+                'aaaa',
+                'e',
+                // Part: C
+                'gg',
+                // Not partition comment
+                'fff',
+              ].includes(value)
+            `,
+              output: dedent`
+              [
+                // Part: A
+                // Not partition comment
+                'bbb',
+                'cc',
+                'd',
+                // Part: B
+                'aaaa',
+                'e',
+                // Part: C
+                // Not partition comment
+                'fff',
+                'gg',
+              ].includes(value)
+            `,
+              options: [
+                {
+                  ...options,
+                  partitionByComment: 'Part**',
+                },
+              ],
+              errors: [
+                {
+                  messageId: 'unexpectedArrayIncludesOrder',
+                  data: {
+                    left: 'd',
+                    right: 'bbb',
+                  },
+                },
+                {
+                  messageId: 'unexpectedArrayIncludesOrder',
+                  data: {
+                    left: 'gg',
+                    right: 'fff',
+                  },
+                },
+              ],
+            },
+          ],
+        },
+      )
+
+      ruleTester.run(
+        `${ruleName}(${type}): allows to use all comments as parts`,
+        rule,
+        {
+          valid: [
+            {
+              code: dedent`
+              [
+                // Comment
+                'bb',
+                // Other comment
+                'a',
+              ].includes(value)
+            `,
+              options: [
+                {
+                  ...options,
+                  partitionByComment: true,
+                },
+              ],
+            },
+          ],
+          invalid: [],
+        },
+      )
+
+      ruleTester.run(
+        `${ruleName}(${type}): allows to use multiple partition comments`,
+        rule,
+        {
+          valid: [],
+          invalid: [
+            {
+              code: dedent`
+              [
+                /* Partition Comment */
+                // Part: A
+                'd',
+                // Part: B
+                'aaa',
+                'c',
+                'bb',
+                /* Other */
+                'e',
+              ].includes(value)
+            `,
+              output: dedent`
+              [
+                /* Partition Comment */
+                // Part: A
+                'd',
+                // Part: B
+                'aaa',
+                'bb',
+                'c',
+                /* Other */
+                'e',
+              ].includes(value)
+            `,
+              options: [
+                {
+                  ...options,
+                  partitionByComment: ['Partition Comment', 'Part: *', 'Other'],
+                },
+              ],
+              errors: [
+                {
+                  messageId: 'unexpectedArrayIncludesOrder',
+                  data: {
+                    left: 'c',
+                    right: 'bb',
+                  },
+                },
+              ],
+            },
+          ],
+        },
+      )
+
+      ruleTester.run(
+        `${ruleName}(${type}): prioritize partitions over group kind`,
+        rule,
+        {
+          valid: [],
+          invalid: [
+            {
+              code: dedent`
+                [
+                  'c',
+                  ...d,
+                  // Part: 1
+                  'a',
+                  ...b,
+                ].includes(value)
+              `,
+              output: dedent`
+                [
+                  ...d,
+                  'c',
+                  // Part: 1
+                  ...b,
+                  'a',
+                ].includes(value)
+              `,
+              options: [
+                {
+                  ...options,
+                  partitionByComment: 'Part: *',
+                  groupKind: 'spreads-first',
+                },
+              ],
+              errors: [
+                {
+                  messageId: 'unexpectedArrayIncludesOrder',
+                  data: {
+                    left: 'c',
+                    right: '...d',
+                  },
+                },
+                {
+                  messageId: 'unexpectedArrayIncludesOrder',
+                  data: {
+                    left: 'a',
+                    right: '...b',
+                  },
+                },
+              ],
+            },
+          ],
+        },
+      )
+    })
   })
 
   describe(`${ruleName}: sorting by natural order`, () => {
