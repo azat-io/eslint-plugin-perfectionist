@@ -3728,6 +3728,65 @@ describe(ruleName, () => {
           },
         ],
       })
+
+      ruleTester.run(
+        `${ruleName}: should ignore unknown group if not referenced in groups`,
+        rule,
+        {
+          valid: [],
+          invalid: [
+            {
+              code: dedent`
+              let obj = {
+                a: 0,
+                dX: 0,
+                b: 0,
+                cX: 0,
+                e: 0,
+              }
+            `,
+              output: dedent`
+              let obj = {
+                a: 0,
+                cX: 0,
+                b: 0,
+                dX: 0,
+                e: 0,
+              }
+            `,
+              options: [
+                {
+                  type: 'alphabetical',
+                  groups: ['attributesEndingWithX'],
+                  customGroups: {
+                    attributesEndingWithX: '*X',
+                  },
+                },
+              ],
+              errors: [
+                {
+                  messageId: 'unexpectedObjectsGroupOrder',
+                  data: {
+                    left: 'dX',
+                    leftGroup: 'attributesEndingWithX',
+                    right: 'b',
+                    rightGroup: 'unknown',
+                  },
+                },
+                {
+                  messageId: 'unexpectedObjectsGroupOrder',
+                  data: {
+                    left: 'b',
+                    leftGroup: 'unknown',
+                    right: 'cX',
+                    rightGroup: 'attributesEndingWithX',
+                  },
+                },
+              ],
+            },
+          ],
+        },
+      )
     })
   })
 })

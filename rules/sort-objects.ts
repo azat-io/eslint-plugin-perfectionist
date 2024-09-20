@@ -11,6 +11,7 @@ import {
 } from '../utils/sort-nodes-by-dependencies'
 import { validateGroupsConfiguration } from '../utils/validate-groups-configuration'
 import { hasPartitionComment } from '../utils/is-partition-comment'
+import { sortNodesByGroups } from '../utils/sort-nodes-by-groups'
 import { getCommentsBefore } from '../utils/get-comments-before'
 import { createEslintRule } from '../utils/create-eslint-rule'
 import { getLinesBetween } from '../utils/get-lines-between'
@@ -22,7 +23,6 @@ import { rangeToDiff } from '../utils/range-to-diff'
 import { getSettings } from '../utils/get-settings'
 import { useGroups } from '../utils/use-groups'
 import { makeFixes } from '../utils/make-fixes'
-import { sortNodes } from '../utils/sort-nodes'
 import { complete } from '../utils/complete'
 import { pairwise } from '../utils/pairwise'
 
@@ -179,7 +179,7 @@ export default createEslintRule<Options, MESSAGE_ID>({
       styledComponents: true,
       destructureOnly: false,
       ignorePattern: [],
-      groups: [],
+      groups: ['unknown'],
       customGroups: {},
     },
   ],
@@ -199,7 +199,7 @@ export default createEslintRule<Options, MESSAGE_ID>({
         ignoreCase: true,
         customGroups: {},
         order: 'asc',
-        groups: [],
+        groups: ['unknown'],
       } as const)
 
       validateGroupsConfiguration(
@@ -435,34 +435,13 @@ export default createEslintRule<Options, MESSAGE_ID>({
             [[]],
           )
 
-        let sortedNodes: SortingNodeWithDependencies[] = []
-
-        let formattedNodes = formatProperties(node.properties)
-        for (let nodes of formattedNodes) {
-          let grouped: {
-            [key: string]: SortingNodeWithDependencies[]
-          } = {}
-
-          for (let currentNode of nodes) {
-            let groupNum = getGroupNumber(options.groups, currentNode)
-
-            if (!(groupNum in grouped)) {
-              grouped[groupNum] = [currentNode]
-            } else {
-              grouped[groupNum].push(currentNode)
-            }
-          }
-
-          for (let group of Object.keys(grouped).sort(
-            (a, b) => Number(a) - Number(b),
-          )) {
-            sortedNodes.push(...sortNodes(grouped[group], options))
-          }
-        }
-
-        sortedNodes = sortNodesByDependencies(sortedNodes)
-        let nodes = formattedNodes.flat()
-
+        let formattedMembers = formatProperties(node.properties)
+        let sortedNodes = sortNodesByDependencies(
+          formattedMembers
+            .map(nodes => sortNodesByGroups(nodes, options))
+            .flat(),
+        )
+        let nodes = formattedMembers.flat()
         pairwise(nodes, (left, right) => {
           let indexOfLeft = sortedNodes.indexOf(left)
           let indexOfRight = sortedNodes.indexOf(right)
@@ -470,12 +449,6 @@ export default createEslintRule<Options, MESSAGE_ID>({
           if (indexOfLeft > indexOfRight) {
             let firstUnorderedNodeDependentOnRight =
               getFirstUnorderedNodeDependentOn(right, nodes)
-            let fix:
-              | ((fixer: TSESLint.RuleFixer) => TSESLint.RuleFix[])
-              | undefined = fixer =>
-              makeFixes(fixer, nodes, sortedNodes, sourceCode, {
-                partitionComment: options.partitionByComment,
-              })
             let leftNum = getGroupNumber(options.groups, left)
             let rightNum = getGroupNumber(options.groups, right)
             let messageId: MESSAGE_ID
@@ -497,7 +470,10 @@ export default createEslintRule<Options, MESSAGE_ID>({
                 nodeDependentOnRight: firstUnorderedNodeDependentOnRight?.name,
               },
               node: right.node,
-              fix,
+              fix: (fixer: TSESLint.RuleFixer) =>
+                makeFixes(fixer, nodes, sortedNodes, sourceCode, {
+                  partitionComment: options.partitionByComment,
+                }),
             })
           }
         })
