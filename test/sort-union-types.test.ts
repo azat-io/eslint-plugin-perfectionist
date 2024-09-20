@@ -1275,5 +1275,49 @@ describe(ruleName, () => {
         ],
       },
     )
+
+    ruleTester.run(
+      `${ruleName}: should ignore unknown group if not referenced in groups`,
+      rule,
+      {
+        valid: [],
+        invalid: [
+          {
+            code: dedent`
+              type Type = 0 | D | 1 | C | 2
+            `,
+            output: dedent`
+              type Type = 0 | C | 1 | D | 2
+            `,
+            options: [
+              {
+                type: 'alphabetical',
+                groups: ['named'],
+              },
+            ],
+            errors: [
+              {
+                messageId: 'unexpectedUnionTypesGroupOrder',
+                data: {
+                  left: 'D',
+                  leftGroup: 'named',
+                  right: '1',
+                  rightGroup: 'unknown',
+                },
+              },
+              {
+                messageId: 'unexpectedUnionTypesGroupOrder',
+                data: {
+                  left: '1',
+                  leftGroup: 'unknown',
+                  right: 'C',
+                  rightGroup: 'named',
+                },
+              },
+            ],
+          },
+        ],
+      },
+    )
   })
 })
