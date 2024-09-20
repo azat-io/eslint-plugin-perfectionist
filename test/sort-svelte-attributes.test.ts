@@ -1430,5 +1430,33 @@ describe(ruleName, () => {
       ],
       invalid: [],
     })
+
+    ruleTester.run(
+      `${ruleName}: should ignore unknown group if not referenced in groups`,
+      rule,
+      {
+        valid: [
+          {
+            filename: 'filename.svelte',
+            code: dedent`
+              <Component
+                eee="e"
+                {b}
+                a="a"
+                c
+                dd="d"
+              />
+            `,
+            options: [
+              {
+                type: 'alphabetical',
+                groups: ['svelte-shorthand', 'shorthand'],
+              },
+            ],
+          },
+        ],
+        invalid: [],
+      },
+    )
   })
 })

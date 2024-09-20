@@ -133,7 +133,14 @@ Controls whether sorting should be case-sensitive or not.
 
 ### groups
 
-<sub>default: `[]`</sub>
+<sub>
+  default:
+  ```
+  [
+    'unknown',
+  ]
+  ```
+</sub>
 
 Allows you to specify a list of Svelte attribute groups for sorting. Groups help organize attributes into categories, making your components more readable and maintainable. Multiple groups can be combined to achieve the desired sorting order.
 
@@ -144,7 +151,7 @@ Predefined Groups:
 - `'multiline'` — Attributes whose length exceeds one line, such as event handlers or functions.
 - `'shorthand'` — Shorthand attributes, which are used without a value, typically for boolean props.
 - `'svelte-shorthand'` — Svelte’s shorthand for replacing `name={name}` with `{name}`.
-- `'unknown'` — Svelte attributes that don’t fit into any other group.
+- `'unknown'` — Svelte attributes that don’t fit into any other group. If the `unknown` group is not specified in `groups`, the attributes will remain in their original order.
 
 Example:
 
@@ -250,7 +257,7 @@ In order to start using this rule, you need to install additional dependency:
                   type: 'alphabetical',
                   order: 'asc',
                   ignoreCase: true,
-                  groups: [],
+                  groups: ['unknown'],
                   customGroups: {},
                 },
               ],
@@ -281,7 +288,7 @@ In order to start using this rule, you need to install additional dependency:
                 type: 'alphabetical',
                 order: 'asc',
                 ignoreCase: true,
-                groups: [],
+                groups: ['unknown'],
                 customGroups: {},
               },
             ],
