@@ -162,7 +162,14 @@ Allows you to group type object keys by their kind, determining whether required
 
 ### groups
 
-<sub>default: `[]`</sub>
+<sub>
+  default:
+  ```
+  [
+    'unknown',
+  ]
+  ```
+</sub>
 
 Allows you to specify a list of type properties groups for sorting. Groups help organize properties into categories, making your type definitions more readable and maintainable. Multiple groups can be combined to achieve the desired sorting order.
 
@@ -171,7 +178,7 @@ There are predefined group: `'multiline'`.
 Predefined Group:
 
 - `'multiline'` — Properties with multiline definitions, such as methods or complex type declarations.
-- `'unknown'` — Properties that don’t fit into any other group.
+- `'unknown'` — Properties that don’t fit into any other group. If the `unknown` group is not specified in `groups`, the properties will remain in their original order.
 
 ### customGroups
 
@@ -216,7 +223,7 @@ Example:
                   order: 'asc',
                   ignoreCase: true,
                   partitionByNewLine: false,
-                  groups: [],
+                  groups: ['unknown'],
                   customGroups: {},
                 },
               ],
@@ -242,7 +249,7 @@ Example:
                 order: 'asc',
                 ignoreCase: true,
                 partitionByNewLine: false,
-                groups: [],
+                groups: ['unknown'],
                 customGroups: {},
               },
             ],
