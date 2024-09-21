@@ -3923,6 +3923,77 @@ describe(ruleName, () => {
                 rightGroup: 'private-method',
               },
             },
+            {
+              messageId: 'unexpectedClassesGroupOrder',
+              data: {
+                left: 'z',
+                leftGroup: 'private-method',
+                right: 'method3',
+                rightGroup: 'unknown',
+              },
+            },
+            {
+              messageId: 'unexpectedClassesGroupOrder',
+              data: {
+                left: 'method3',
+                leftGroup: 'unknown',
+                right: 'y',
+                rightGroup: 'private-method',
+              },
+            },
+            {
+              messageId: 'unexpectedClassesGroupOrder',
+              data: {
+                left: 'method1',
+                leftGroup: 'unknown',
+                right: 'x',
+                rightGroup: 'private-method',
+              },
+            },
+          ],
+        },
+        {
+          code: dedent`
+              class Class {
+                b
+                someMethod() {
+                }
+                a
+              }
+            `,
+          output: dedent`
+              class Class {
+                a
+                someMethod() {
+                }
+                b
+              }
+            `,
+          options: [
+            {
+              ...options,
+              groups: ['property'],
+            },
+          ],
+          errors: [
+            {
+              messageId: 'unexpectedClassesGroupOrder',
+              data: {
+                left: 'b',
+                leftGroup: 'property',
+                right: 'someMethod',
+                rightGroup: 'unknown',
+              },
+            },
+            {
+              messageId: 'unexpectedClassesGroupOrder',
+              data: {
+                left: 'someMethod',
+                leftGroup: 'unknown',
+                right: 'a',
+                rightGroup: 'property',
+              },
+            },
           ],
         },
       ],
@@ -5135,6 +5206,77 @@ describe(ruleName, () => {
                 rightGroup: 'private-method',
               },
             },
+            {
+              messageId: 'unexpectedClassesGroupOrder',
+              data: {
+                left: 'z',
+                leftGroup: 'private-method',
+                right: 'method3',
+                rightGroup: 'unknown',
+              },
+            },
+            {
+              messageId: 'unexpectedClassesGroupOrder',
+              data: {
+                left: 'method3',
+                leftGroup: 'unknown',
+                right: 'y',
+                rightGroup: 'private-method',
+              },
+            },
+            {
+              messageId: 'unexpectedClassesGroupOrder',
+              data: {
+                left: 'method1',
+                leftGroup: 'unknown',
+                right: 'x',
+                rightGroup: 'private-method',
+              },
+            },
+          ],
+        },
+        {
+          code: dedent`
+              class Class {
+                b
+                someMethod() {
+                }
+                a
+              }
+            `,
+          output: dedent`
+              class Class {
+                a
+                someMethod() {
+                }
+                b
+              }
+            `,
+          options: [
+            {
+              ...options,
+              groups: ['property'],
+            },
+          ],
+          errors: [
+            {
+              messageId: 'unexpectedClassesGroupOrder',
+              data: {
+                left: 'b',
+                leftGroup: 'property',
+                right: 'someMethod',
+                rightGroup: 'unknown',
+              },
+            },
+            {
+              messageId: 'unexpectedClassesGroupOrder',
+              data: {
+                left: 'someMethod',
+                leftGroup: 'unknown',
+                right: 'a',
+                rightGroup: 'property',
+              },
+            },
           ],
         },
       ],
@@ -5967,6 +6109,24 @@ describe(ruleName, () => {
                 left: 'i',
                 leftGroup: 'property',
                 right: 'z',
+                rightGroup: 'private-method',
+              },
+            },
+            {
+              messageId: 'unexpectedClassesGroupOrder',
+              data: {
+                left: 'method3',
+                leftGroup: 'unknown',
+                right: 'y',
+                rightGroup: 'private-method',
+              },
+            },
+            {
+              messageId: 'unexpectedClassesGroupOrder',
+              data: {
+                left: 'method1',
+                leftGroup: 'unknown',
+                right: 'x',
                 rightGroup: 'private-method',
               },
             },
