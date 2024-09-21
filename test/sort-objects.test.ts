@@ -1202,6 +1202,96 @@ describe(ruleName, () => {
           invalid: [],
         },
       )
+
+      ruleTester.run(
+        `${ruleName}(${type}): prioritizes dependencies over partitionByComment`,
+        rule,
+        {
+          valid: [],
+          invalid: [
+            {
+              code: dedent`
+              let Func = ({
+                b = a,
+                // Part: 1
+                a = 0,
+              }) => {
+                // ...
+              }
+            `,
+              output: dedent`
+                let Func = ({
+                  a = 0,
+                  // Part: 1
+                  b = a,
+                }) => {
+                  // ...
+                }
+            `,
+              options: [
+                {
+                  ...options,
+                  partitionByComment: 'Part**',
+                },
+              ],
+              errors: [
+                {
+                  messageId: 'unexpectedObjectsDependencyOrder',
+                  data: {
+                    right: 'a',
+                    nodeDependentOnRight: 'b',
+                  },
+                },
+              ],
+            },
+          ],
+        },
+      )
+
+      ruleTester.run(
+        `${ruleName}(${type}): prioritizes dependencies over partitionByNewLine`,
+        rule,
+        {
+          valid: [],
+          invalid: [
+            {
+              code: dedent`
+              let Func = ({
+                b = a,
+
+                a = 0,
+              }) => {
+                // ...
+              }
+            `,
+              output: dedent`
+                let Func = ({
+                  a = 0,
+
+                  b = a,
+                }) => {
+                  // ...
+                }
+            `,
+              options: [
+                {
+                  ...options,
+                  partitionByNewLine: true,
+                },
+              ],
+              errors: [
+                {
+                  messageId: 'unexpectedObjectsDependencyOrder',
+                  data: {
+                    right: 'a',
+                    nodeDependentOnRight: 'b',
+                  },
+                },
+              ],
+            },
+          ],
+        },
+      )
     })
 
     ruleTester.run(

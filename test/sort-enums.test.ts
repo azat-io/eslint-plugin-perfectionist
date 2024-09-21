@@ -1934,6 +1934,47 @@ describe(ruleName, () => {
           },
         ],
       })
+
+      ruleTester.run(
+        `${ruleName}: prioritizes dependencies over partitionByComment`,
+        rule,
+        {
+          valid: [],
+          invalid: [
+            {
+              code: dedent`
+              enum Enum {
+                B = A,
+                // Part: 1
+                A = 'A',
+              }
+            `,
+              output: dedent`
+              enum Enum {
+                A = 'A',
+                // Part: 1
+                B = A,
+              }
+            `,
+              options: [
+                {
+                  type: 'alphabetical',
+                  partitionByComment: 'Part**',
+                },
+              ],
+              errors: [
+                {
+                  messageId: 'unexpectedEnumsDependencyOrder',
+                  data: {
+                    right: 'A',
+                    nodeDependentOnRight: 'B',
+                  },
+                },
+              ],
+            },
+          ],
+        },
+      )
     })
 
     describe('handles complex comment cases', () => {
