@@ -209,6 +209,143 @@ describe(ruleName, () => {
       },
     )
 
+    describe(`${ruleName}(${type}): partition comments`, () => {
+      ruleTester.run(
+        `${ruleName}(${type}): allows to use partition comments`,
+        rule,
+        {
+          valid: [],
+          invalid: [
+            {
+              code: dedent`
+                // Part: A
+                export * from './cc';
+                export * from './d';
+                // Not partition comment
+                export * from './bbb';
+                // Part: B
+                export * from './aaaa';
+                export * from './e';
+                // Part: C
+                export * from './gg';
+                // Not partition comment
+                export * from './fff';
+              `,
+              output: dedent`
+                // Part: A
+                // Not partition comment
+                export * from './bbb';
+                export * from './cc';
+                export * from './d';
+                // Part: B
+                export * from './aaaa';
+                export * from './e';
+                // Part: C
+                // Not partition comment
+                export * from './fff';
+                export * from './gg';
+              `,
+              options: [
+                {
+                  ...options,
+                  partitionByComment: 'Part**',
+                },
+              ],
+              errors: [
+                {
+                  messageId: 'unexpectedExportsOrder',
+                  data: {
+                    left: './d',
+                    right: './bbb',
+                  },
+                },
+                {
+                  messageId: 'unexpectedExportsOrder',
+                  data: {
+                    left: './gg',
+                    right: './fff',
+                  },
+                },
+              ],
+            },
+          ],
+        },
+      )
+
+      ruleTester.run(
+        `${ruleName}(${type}): allows to use all comments as parts`,
+        rule,
+        {
+          valid: [
+            {
+              code: dedent`
+                // Comment
+                export * from './bb';
+                // Other comment
+                export * from './a';
+              `,
+              options: [
+                {
+                  ...options,
+                  partitionByComment: true,
+                },
+              ],
+            },
+          ],
+          invalid: [],
+        },
+      )
+
+      ruleTester.run(
+        `${ruleName}(${type}): allows to use multiple partition comments`,
+        rule,
+        {
+          valid: [],
+          invalid: [
+            {
+              code: dedent`
+                /* Partition Comment */
+                // Part: A
+                export * from './d'
+                // Part: B
+                export * from './aaa'
+                export * from './c'
+                export * from './bb'
+                /* Other */
+                export * from './e'
+              `,
+              output: dedent`
+                /* Partition Comment */
+                // Part: A
+                export * from './d'
+                // Part: B
+                export * from './aaa'
+                export * from './bb'
+                export * from './c'
+                /* Other */
+                export * from './e'
+              `,
+              options: [
+                {
+                  ...options,
+                  partitionByComment: ['Partition Comment', 'Part: *', 'Other'],
+                },
+              ],
+              errors: [
+                {
+                  messageId: 'unexpectedExportsOrder',
+                  data: {
+                    left: './c',
+                    right: './bb',
+                  },
+                },
+              ],
+            },
+          ],
+        },
+      )
+    })
+
     ruleTester.run(`${ruleName}(${type}): sorts by group kind`, rule, {
       valid: [],
       invalid: [
