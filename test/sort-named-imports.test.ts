@@ -400,6 +400,210 @@ describe(ruleName, () => {
         },
       ],
     })
+
+    ruleTester.run(
+      `${ruleName}(${type}): allows to use new line as partition`,
+      rule,
+      {
+        valid: [],
+        invalid: [
+          {
+            code: dedent`
+              import {
+                D,
+                A,
+
+                C,
+
+                E,
+                B,
+              } from 'module'
+            `,
+            output: dedent`
+              import {
+                A,
+                D,
+
+                C,
+
+                B,
+                E,
+              } from 'module'
+            `,
+            options: [
+              {
+                ...options,
+                partitionByNewLine: true,
+              },
+            ],
+            errors: [
+              {
+                messageId: 'unexpectedNamedImportsOrder',
+                data: {
+                  left: 'D',
+                  right: 'A',
+                },
+              },
+              {
+                messageId: 'unexpectedNamedImportsOrder',
+                data: {
+                  left: 'E',
+                  right: 'B',
+                },
+              },
+            ],
+          },
+        ],
+      },
+    )
+
+    describe('partition comments', () => {
+      ruleTester.run(
+        `${ruleName}(${type}): allows to use partition comments`,
+        rule,
+        {
+          valid: [],
+          invalid: [
+            {
+              code: dedent`
+                import {
+                  // Part: A
+                  CC,
+                  type D,
+                  // Not partition comment
+                  BBB,
+                  // Part: B
+                  AAAA,
+                  E,
+                  // Part: C
+                  GG,
+                  // Not partition comment
+                  FFF,
+                } from 'module'
+              `,
+              output: dedent`
+                import {
+                  // Part: A
+                  type D,
+                  // Not partition comment
+                  BBB,
+                  CC,
+                  // Part: B
+                  AAAA,
+                  E,
+                  // Part: C
+                  // Not partition comment
+                  FFF,
+                  GG,
+                } from 'module'
+              `,
+              options: [
+                {
+                  ...options,
+                  partitionByComment: 'Part**',
+                  groupKind: 'types-first',
+                },
+              ],
+              errors: [
+                {
+                  messageId: 'unexpectedNamedImportsOrder',
+                  data: {
+                    left: 'CC',
+                    right: 'D',
+                  },
+                },
+                {
+                  messageId: 'unexpectedNamedImportsOrder',
+                  data: {
+                    left: 'GG',
+                    right: 'FFF',
+                  },
+                },
+              ],
+            },
+          ],
+        },
+      )
+
+      ruleTester.run(
+        `${ruleName}(${type}): allows to use all comments as parts`,
+        rule,
+        {
+          valid: [
+            {
+              code: dedent`
+                import {
+                  // Comment
+                  BB,
+                  // Other comment
+                  A,
+                } from 'module'
+              `,
+              options: [
+                {
+                  ...options,
+                  partitionByComment: true,
+                },
+              ],
+            },
+          ],
+          invalid: [],
+        },
+      )
+
+      ruleTester.run(
+        `${ruleName}(${type}): allows to use multiple partition comments`,
+        rule,
+        {
+          valid: [],
+          invalid: [
+            {
+              code: dedent`
+                import {
+                  /* Partition Comment */
+                  // Part: A
+                  D,
+                  // Part: B
+                  AAA,
+                  C,
+                  BB,
+                  /* Other */
+                  E,
+                } from 'module'
+              `,
+              output: dedent`
+                import {
+                  /* Partition Comment */
+                  // Part: A
+                  D,
+                  // Part: B
+                  AAA,
+                  BB,
+                  C,
+                  /* Other */
+                  E,
+                } from 'module'
+            `,
+              options: [
+                {
+                  ...options,
+                  partitionByComment: ['Partition Comment', 'Part: *', 'Other'],
+                },
+              ],
+              errors: [
+                {
+                  messageId: 'unexpectedNamedImportsOrder',
+                  data: {
+                    left: 'C',
+                    right: 'BB',
+                  },
+                },
+              ],
+            },
+          ],
+        },
+      )
+    })
   })
 
   describe(`${ruleName}: sorting by natural order`, () => {
