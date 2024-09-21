@@ -1977,12 +1977,15 @@ describe(ruleName, () => {
       )
     })
 
-    describe('handles complex comment cases', () => {
-      ruleTester.run(`keeps comments associated to their node`, rule, {
-        valid: [],
-        invalid: [
-          {
-            code: dedent`
+    describe(`${ruleName}: handles complex comment cases`, () => {
+      ruleTester.run(
+        `${ruleName}: keeps comments associated to their node`,
+        rule,
+        {
+          valid: [],
+          invalid: [
+            {
+              code: dedent`
               enum Enum {
                 // Ignore this comment
 
@@ -2002,7 +2005,7 @@ describe(ruleName, () => {
                 A = 'A',
               }
             `,
-            output: dedent`
+              output: dedent`
               enum Enum {
                 // Ignore this comment
 
@@ -2022,25 +2025,26 @@ describe(ruleName, () => {
                 B = 'B',
               }
             `,
-            options: [
-              {
-                type: 'alphabetical',
-              },
-            ],
-            errors: [
-              {
-                messageId: 'unexpectedEnumsOrder',
-                data: {
-                  left: 'B',
-                  right: 'A',
+              options: [
+                {
+                  type: 'alphabetical',
                 },
-              },
-            ],
-          },
-        ],
-      })
+              ],
+              errors: [
+                {
+                  messageId: 'unexpectedEnumsOrder',
+                  data: {
+                    left: 'B',
+                    right: 'A',
+                  },
+                },
+              ],
+            },
+          ],
+        },
+      )
 
-      ruleTester.run(`handles partition comments`, rule, {
+      ruleTester.run(`${ruleName}: handles partition comments`, rule, {
         valid: [],
         invalid: [
           {
@@ -2119,6 +2123,58 @@ describe(ruleName, () => {
           },
         ],
       })
+    })
+
+    ruleTester.run(`${ruleName}: allows to use new line as partition`, rule, {
+      valid: [],
+      invalid: [
+        {
+          code: dedent`
+            enum Enum {
+              D = 'D',
+              C = 'C',
+
+              B = 'B',
+
+              E = 'E',
+              A = 'A',
+            }
+          `,
+          output: dedent`
+            enum Enum {
+              C = 'C',
+              D = 'D',
+
+              B = 'B',
+
+              A = 'A',
+              E = 'E',
+            }
+          `,
+          options: [
+            {
+              type: 'alphabetical',
+              partitionByNewLine: true,
+            },
+          ],
+          errors: [
+            {
+              messageId: 'unexpectedEnumsOrder',
+              data: {
+                left: 'D',
+                right: 'C',
+              },
+            },
+            {
+              messageId: 'unexpectedEnumsOrder',
+              data: {
+                left: 'E',
+                right: 'A',
+              },
+            },
+          ],
+        },
+      ],
     })
   })
 })
