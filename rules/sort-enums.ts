@@ -10,6 +10,7 @@ import {
 import { hasPartitionComment } from '../utils/is-partition-comment'
 import { getCommentsBefore } from '../utils/get-comments-before'
 import { createEslintRule } from '../utils/create-eslint-rule'
+import { getLinesBetween } from '../utils/get-lines-between'
 import { getSourceCode } from '../utils/get-source-code'
 import { toSingleLine } from '../utils/to-single-line'
 import { rangeToDiff } from '../utils/range-to-diff'
@@ -25,6 +26,7 @@ export type Options = [
   Partial<{
     type: 'alphabetical' | 'line-length' | 'natural'
     partitionByComment: string[] | boolean | string
+    partitionByNewLine: boolean
     forceNumericSort: boolean
     order: 'desc' | 'asc'
     sortByValue: boolean
@@ -87,6 +89,11 @@ export default createEslintRule<Options, MESSAGE_ID>({
               },
             ],
           },
+          partitionByNewLine: {
+            description:
+              'Allows to use spaces to separate the nodes into logical groups.',
+            type: 'boolean',
+          },
         },
         additionalProperties: false,
       },
@@ -104,6 +111,7 @@ export default createEslintRule<Options, MESSAGE_ID>({
       ignoreCase: true,
       sortByValue: false,
       partitionByComment: false,
+      partitionByNewLine: false,
       forceNumericSort: false,
     },
   ],
@@ -122,6 +130,7 @@ export default createEslintRule<Options, MESSAGE_ID>({
 
         let options = complete(context.options.at(0), settings, {
           partitionByComment: false,
+          partitionByNewLine: false,
           type: 'alphabetical',
           ignoreCase: true,
           order: 'asc',
@@ -181,20 +190,6 @@ export default createEslintRule<Options, MESSAGE_ID>({
 
         let formattedMembers: SortingNodeWithDependencies[][] = members.reduce(
           (accumulator: SortingNodeWithDependencies[][], member) => {
-            let comments = getCommentsBefore(member, sourceCode)
-
-            if (
-              partitionComment &&
-              hasPartitionComment(partitionComment, comments)
-            ) {
-              accumulator.push([])
-            }
-
-            let name =
-              member.id.type === 'Literal'
-                ? `${member.id.value}`
-                : `${sourceCode.text.slice(...member.id.range)}`
-
             let dependencies: string[] = []
             if (member.initializer) {
               dependencies = extractDependencies(
@@ -202,13 +197,30 @@ export default createEslintRule<Options, MESSAGE_ID>({
                 node.id.name,
               )
             }
-
+            let lastSortingNode = accumulator.at(-1)?.at(-1)
             let sortingNode: SortingNodeWithDependencies = {
               size: rangeToDiff(member.range),
               node: member,
               dependencies,
-              name,
+              name:
+                member.id.type === 'Literal'
+                  ? `${member.id.value}`
+                  : `${sourceCode.text.slice(...member.id.range)}`,
             }
+
+            if (
+              (partitionComment &&
+                hasPartitionComment(
+                  partitionComment,
+                  getCommentsBefore(member, sourceCode),
+                )) ||
+              (options.partitionByNewLine &&
+                lastSortingNode &&
+                getLinesBetween(sourceCode, lastSortingNode, sortingNode))
+            ) {
+              accumulator.push([])
+            }
+
             accumulator.at(-1)!.push(sortingNode)
             return accumulator
           },
