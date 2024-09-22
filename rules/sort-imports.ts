@@ -2,7 +2,6 @@ import type { TSESTree } from '@typescript-eslint/types'
 import type { TSESLint } from '@typescript-eslint/utils'
 
 import { builtinModules } from 'node:module'
-import { minimatch } from 'minimatch'
 
 import type { SortingNode } from '../typings'
 
@@ -21,6 +20,7 @@ import { sortNodes } from '../utils/sort-nodes'
 import { complete } from '../utils/complete'
 import { pairwise } from '../utils/pairwise'
 import { compare } from '../utils/compare'
+import { matches } from '../utils/matches'
 
 type MESSAGE_ID =
   | 'missedSpacingBetweenImports'
@@ -58,6 +58,7 @@ type Options<T extends string[]> = [
     type: 'alphabetical' | 'line-length' | 'natural'
     newlinesBetween: 'ignore' | 'always' | 'never'
     groups: (Group<T>[] | Group<T>)[]
+    matcher: 'minimatch' | 'regex'
     environment: 'node' | 'bun'
     internalPattern: string[]
     sortSideEffects: boolean
@@ -90,6 +91,11 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
               'Determines whether the sorted items should be in ascending or descending order.',
             type: 'string',
             enum: ['asc', 'desc'],
+          },
+          matcher: {
+            description: 'Specifies the string matcher.',
+            type: 'string',
+            enum: ['minimatch', 'regex'],
           },
           ignoreCase: {
             description:
@@ -209,6 +215,7 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
       sortSideEffects: false,
       newlinesBetween: 'always',
       maxLineLength: undefined,
+      matcher: 'minimatch',
       groups: [
         'type',
         ['builtin', 'external'],
@@ -237,6 +244,7 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
         'object',
         'unknown',
       ],
+      matcher: 'minimatch',
       customGroups: { type: {}, value: {} },
       internalPattern: ['~/**'],
       newlinesBetween: 'always',
@@ -328,14 +336,15 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
 
       let isSibling = (value: string) => value.startsWith('./')
 
-      let { getGroup, defineGroup, setCustomGroups } = useGroups(options.groups)
+      let { getGroup, defineGroup, setCustomGroups } = useGroups(
+        options.groups,
+        options.matcher,
+      )
 
       let isInternal = (value: string) =>
         options.internalPattern.length &&
         options.internalPattern.some(pattern =>
-          minimatch(value, pattern, {
-            nocomment: true,
-          }),
+          matches(value, pattern, options.matcher),
         )
 
       let isCoreModule = (value: string) => {
