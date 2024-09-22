@@ -4,6 +4,8 @@ import type { SortingNode } from '../typings'
 
 import { validateGroupsConfiguration } from '../utils/validate-groups-configuration'
 import { sortNodesByGroups } from '../utils/sort-nodes-by-groups'
+import { hasPartitionComment } from '../utils/is-partition-comment'
+import { getCommentsBefore } from '../utils/get-comments-before'
 import { createEslintRule } from '../utils/create-eslint-rule'
 import { getLinesBetween } from '../utils/get-lines-between'
 import { getGroupNumber } from '../utils/get-group-number'
@@ -27,12 +29,15 @@ type Options<T extends string[]> = [
     groupKind: 'required-first' | 'optional-first' | 'mixed'
     customGroups: { [key in T[number]]: string[] | string }
     type: 'alphabetical' | 'line-length' | 'natural'
+    partitionByComment: string[] | boolean | string
     groups: (Group<T>[] | Group<T>)[]
     partitionByNewLine: boolean
     order: 'desc' | 'asc'
     ignoreCase: boolean
   }>,
 ]
+
+type SortObjectTypesSortingNode = SortingNode<TSESTree.TypeElement>
 
 export default createEslintRule<Options<string[]>, MESSAGE_ID>({
   name: 'sort-object-types',
@@ -61,6 +66,24 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
             description:
               'Controls whether sorting should be case-sensitive or not.',
             type: 'boolean',
+          },
+          partitionByComment: {
+            description:
+              'Allows you to use comments to separate the type members into logical groups.',
+            anyOf: [
+              {
+                type: 'array',
+                items: {
+                  type: 'string',
+                },
+              },
+              {
+                type: 'boolean',
+              },
+              {
+                type: 'string',
+              },
+            ],
           },
           partitionByNewLine: {
             description:
@@ -122,6 +145,7 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
       type: 'alphabetical',
       order: 'asc',
       ignoreCase: true,
+      partitionByComment: false,
       partitionByNewLine: false,
       groupKind: 'mixed',
       groups: [],
@@ -134,6 +158,7 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
         let settings = getSettings(context.settings)
 
         let options = complete(context.options.at(0), settings, {
+          partitionByComment: false,
           partitionByNewLine: false,
           type: 'alphabetical',
           groupKind: 'mixed',
@@ -150,16 +175,17 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
         )
 
         let sourceCode = getSourceCode(context)
+        let partitionComment = options.partitionByComment
 
-        let formattedMembers: SortingNode<TSESTree.TypeElement>[][] =
+        let formattedMembers: SortObjectTypesSortingNode[][] =
           node.members.reduce(
-            (accumulator: SortingNode<TSESTree.TypeElement>[][], member) => {
+            (accumulator: SortObjectTypesSortingNode[][], member) => {
               let name: string
               let raw = sourceCode.text.slice(
                 member.range.at(0),
                 member.range.at(1),
               )
-              let lastMember = accumulator.at(-1)?.at(-1)
+              let lastSortingNode = accumulator.at(-1)?.at(-1)
 
               let { getGroup, defineGroup, setCustomGroups } = useGroups(
                 options.groups,
@@ -201,24 +227,27 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
               let endsWithComma = raw.endsWith(';') || raw.endsWith(',')
               let endSize = endsWithComma ? 1 : 0
 
-              let memberSortingNode = {
+              let sortingNode: SortObjectTypesSortingNode = {
                 size: rangeToDiff(member.range) - endSize,
+                group: getGroup(),
                 node: member,
                 name,
               }
 
               if (
-                options.partitionByNewLine &&
-                lastMember &&
-                getLinesBetween(sourceCode, lastMember, memberSortingNode)
+                (partitionComment &&
+                  hasPartitionComment(
+                    partitionComment,
+                    getCommentsBefore(member, sourceCode),
+                  )) ||
+                (options.partitionByNewLine &&
+                  lastSortingNode &&
+                  getLinesBetween(sourceCode, lastSortingNode, sortingNode))
               ) {
                 accumulator.push([])
               }
 
-              accumulator.at(-1)?.push({
-                ...memberSortingNode,
-                group: getGroup(),
-              })
+              accumulator.at(-1)?.push(sortingNode)
 
               return accumulator
             },
