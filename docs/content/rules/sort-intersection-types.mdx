@@ -102,6 +102,37 @@ Controls whether sorting should be case-sensitive or not.
 - `true` — Ignore case when sorting alphabetically or naturally (e.g., “A” and “a” are the same).
 - `false` — Consider case when sorting (e.g., “A” comes before “a”).
 
+### partitionByComment
+
+<sub>default: `false`</sub>
+
+Allows you to use comments to separate the members of intersection types into logical groups. This can help in organizing and maintaining large enums by creating partitions within the enum based on comments.
+
+- `true` — All comments will be treated as delimiters, creating partitions.
+-	`false` — Comments will not be used as delimiters.
+- `string` — A glob pattern to specify which comments should act as delimiters.
+- `string[]` — A list of glob patterns to specify which comments should act as delimiters.
+
+### partitionByNewLine
+
+<sub>default: `false`</sub>
+
+When `true`, the rule will not sort the members of an intersection type if there is an empty line between them. This can be useful for keeping logically separated groups of members in their defined order.
+
+```ts
+type Employee =
+  // Group 1
+  FirstName &
+  LastName &
+
+  // Group 2
+  Age &
+
+  // Group 3
+  Address &
+  Country
+```
+
 ### groups
 
 <sub>default: `[]`</sub>
@@ -180,6 +211,8 @@ type Example =
                   type: 'alphabetical',
                   order: 'asc',
                   ignoreCase: true,
+                  partitionByNewLine: false,
+                  partitionByNewLine: false,
                   groups: [],
                 },
               ],
@@ -204,6 +237,8 @@ type Example =
                 type: 'alphabetical',
                 order: 'asc',
                 ignoreCase: true,
+                partitionByNewLine: false,
+                partitionByComment: false,
                 groups: [],
               },
             ],
