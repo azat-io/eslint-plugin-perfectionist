@@ -38,10 +38,18 @@ export let compare = (
   let orderCoefficient = options.order === 'asc' ? 1 : -1
   let sortingFunction: (a: SortingNode, b: SortingNode) => number
 
-  let formatString =
-    options.type === 'line-length' || !options.ignoreCase
-      ? (string: string) => string
-      : (string: string) => string.toLowerCase()
+  let formatString: (value: string) => string
+  if (options.type === 'line-length') {
+    formatString = (string: string) => string
+  } else {
+    formatString = (value: string) => {
+      let valueToCompare = value
+      if (options.ignoreCase) {
+        valueToCompare = valueToCompare.toLowerCase()
+      }
+      return valueToCompare.replaceAll(/\s/g, '')
+    }
+  }
 
   let nodeValueGetter =
     options.nodeValueGetter ?? ((node: SortingNode) => node.name)
