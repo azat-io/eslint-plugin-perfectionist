@@ -202,6 +202,7 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
                 return accumulator
               }
 
+              let lastElement = accumulator.at(-1)?.at(-1)
               let name: string
 
               let { getGroup, defineGroup, setCustomGroups } = useGroups(
@@ -238,22 +239,16 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
                 name,
               }
 
-              let shouldPartition = false
-              if (partitionComment) {
-                let comments = getCommentsBefore(element, sourceCode)
-                shouldPartition = hasPartitionComment(
-                  partitionComment,
-                  comments,
-                )
-              } else if (options.partitionByNewLine) {
-                let lastElement = accumulator.at(-1)?.at(-1)
-                shouldPartition = !!(
+              if (
+                (partitionComment &&
+                  hasPartitionComment(
+                    partitionComment,
+                    getCommentsBefore(element, sourceCode),
+                  )) ||
+                (options.partitionByNewLine &&
                   lastElement &&
-                  getLinesBetween(sourceCode, lastElement, elementSortingNode)
-                )
-              }
-
-              if (shouldPartition) {
+                  getLinesBetween(sourceCode, lastElement, elementSortingNode))
+              ) {
                 accumulator.push([])
               }
 
