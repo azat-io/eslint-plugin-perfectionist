@@ -1,6 +1,9 @@
-import { minimatch } from 'minimatch'
+import { matches } from './matches'
 
-export let useGroups = (groups: (string[] | string)[]) => {
+export let useGroups = (
+  groups: (string[] | string)[],
+  matcher: 'minimatch' | 'regex' = 'minimatch',
+) => {
   let group: undefined | string
   // For lookup performance
   let groupsSet = new Set(groups.flat())
@@ -24,21 +27,12 @@ export let useGroups = (groups: (string[] | string)[]) => {
       for (let [key, pattern] of Object.entries(customGroups)) {
         if (
           Array.isArray(pattern) &&
-          pattern.some(patternValue =>
-            minimatch(name, patternValue, {
-              nocomment: true,
-            }),
-          )
+          pattern.some(patternValue => matches(name, patternValue, matcher))
         ) {
           defineGroup(key, params.override)
         }
 
-        if (
-          typeof pattern === 'string' &&
-          minimatch(name, pattern, {
-            nocomment: true,
-          })
-        ) {
+        if (typeof pattern === 'string' && matches(name, pattern, matcher)) {
           defineGroup(key, params.override)
         }
       }
