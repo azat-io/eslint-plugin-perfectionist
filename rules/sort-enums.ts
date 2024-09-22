@@ -71,7 +71,7 @@ export default createEslintRule<Options, MESSAGE_ID>({
           },
           partitionByComment: {
             description:
-              'Allows you to use comments to separate the class members into logical groups.',
+              'Allows you to use comments to separate the members of enums into logical groups.',
             anyOf: [
               {
                 type: 'array',
