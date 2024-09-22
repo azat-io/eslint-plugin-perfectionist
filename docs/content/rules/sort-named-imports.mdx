@@ -145,6 +145,44 @@ Allows you to group named imports by their kind, determining whether value impor
 - `values-first` — Group all value imports before type imports.
 - `types-first` — Group all type imports before value imports.
 
+### partitionByComment
+
+<sub>default: `false`</sub>
+
+Allows you to use comments to separate the members of named imports into logical groups. This can help in organizing and maintaining large enums by creating partitions within the enum based on comments.
+
+- `true` — All comments will be treated as delimiters, creating partitions.
+-	`false` — Comments will not be used as delimiters.
+- `string` — A glob pattern to specify which comments should act as delimiters.
+- `string[]` — A list of glob patterns to specify which comments should act as delimiters.
+
+### partitionByNewLine
+
+<sub>default: `false`</sub>
+
+When `true`, the rule will not sort the members of named imports if there is an empty line between them. This can be useful for keeping logically separated groups of members in their defined order.
+
+```ts
+import {
+     // Group 1
+    Drone,
+    Keyboard,
+    Mouse,
+    Smartphone,
+
+    // Group 2
+    Laptop,
+    Monitor,
+    Smartwatch,
+    Tablet,
+
+    // Group 3
+    Headphones,
+    Router,
+} from './devices'
+```
+
+
 ## Usage
 
 <CodeTabs
@@ -168,6 +206,8 @@ Allows you to group named imports by their kind, determining whether value impor
                   ignoreAlias: false,
                   ignoreCase: true,
                   groupKind: 'mixed',
+                  partitionByNewLine: false,
+                  partitionByComment: false,
                 },
               ],
             },
@@ -193,6 +233,8 @@ Allows you to group named imports by their kind, determining whether value impor
                 ignoreAlias: false,
                 ignoreCase: true,
                 groupKind: 'mixed',
+                partitionByNewLine: false,
+                partitionByComment: false,
               },
             ],
           },
