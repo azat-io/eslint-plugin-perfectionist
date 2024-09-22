@@ -164,6 +164,42 @@ Allows you to group set elements by their kind, determining whether spread value
 - `literals-first` — Group all literal values before spread values.
 - `spreads-first` — Group all spread values before literal values.
 
+### partitionByComment
+
+<sub>default: `false`</sub>
+
+Allows you to use comments to separate the members of enums into logical groups. This can help in organizing and maintaining large enums by creating partitions within the enum based on comments.
+
+- `true` — All comments will be treated as delimiters, creating partitions.
+-	`false` — Comments will not be used as delimiters.
+- `string` — A glob pattern to specify which comments should act as delimiters.
+- `string[]` — A list of glob patterns to specify which comments should act as delimiters.
+
+### partitionByNewLine
+
+<sub>default: `false`</sub>
+
+When `true`, the rule will not sort the members of a set if there is an empty line between them. This can be useful for keeping logically separated groups of members in their defined order.
+
+```ts
+let items = new Set([
+     // Group 1
+    'Drone',
+    'Keyboard',
+    'Mouse',
+    'Smartphone',
+
+    // Group 2
+    'Laptop',
+    'Monitor',
+    'Smartwatch',
+    'Tablet',
+
+    // Group 3
+    'Headphones',
+    'Router',
+  ])
+```
 
 ## Usage
 

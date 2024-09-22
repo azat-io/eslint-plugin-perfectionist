@@ -4,7 +4,10 @@ import type { TSESTree } from '@typescript-eslint/types'
 
 import type { SortingNode } from '../typings'
 
+import { hasPartitionComment } from '../utils/is-partition-comment'
+import { getCommentsBefore } from '../utils/get-comments-before'
 import { createEslintRule } from '../utils/create-eslint-rule'
+import { getLinesBetween } from '../utils/get-lines-between'
 import { getGroupNumber } from '../utils/get-group-number'
 import { getSourceCode } from '../utils/get-source-code'
 import { toSingleLine } from '../utils/to-single-line'
@@ -23,6 +26,8 @@ export type Options = [
   Partial<{
     groupKind: 'literals-first' | 'spreads-first' | 'mixed'
     type: 'alphabetical' | 'line-length' | 'natural'
+    partitionByComment: string[] | boolean | string
+    partitionByNewLine: boolean
     order: 'desc' | 'asc'
     ignoreCase: boolean
   }>,
@@ -51,6 +56,29 @@ export let jsonSchema: JSONSchema4 = {
       enum: ['mixed', 'literals-first', 'spreads-first'],
       type: 'string',
     },
+    partitionByComment: {
+      description:
+        'Allows you to use comments to separate the array members into logical groups.',
+      anyOf: [
+        {
+          type: 'array',
+          items: {
+            type: 'string',
+          },
+        },
+        {
+          type: 'boolean',
+        },
+        {
+          type: 'string',
+        },
+      ],
+    },
+    partitionByNewLine: {
+      description:
+        'Allows to use spaces to separate the nodes into logical groups.',
+      type: 'boolean',
+    },
   },
   additionalProperties: false,
 }
@@ -75,6 +103,8 @@ export default createEslintRule<Options, MESSAGE_ID>({
       order: 'asc',
       ignoreCase: true,
       groupKind: 'literals-first',
+      partitionByComment: false,
+      partitionByNewLine: false,
     },
   ],
   create: context => ({
@@ -108,76 +138,96 @@ export let sortArray = <MessageIds extends string>(
       type: 'alphabetical',
       ignoreCase: true,
       order: 'asc',
+      partitionByComment: false,
+      partitionByNewLine: false,
     } as const)
 
     let sourceCode = getSourceCode(context)
-    let nodes: ({ type: string } & SortingNode)[] = elements
-      .reduce(
-        (
-          accumulator: ({ type: string } & SortingNode)[][],
-          element: TSESTree.SpreadElement | TSESTree.Expression | null,
-        ) => {
-          if (element !== null) {
-            let group = 'unknown'
-            if (typeof options.groupKind === 'string') {
-              group = element.type === 'SpreadElement' ? 'spread' : 'literal'
-            }
-            accumulator.at(0)!.push({
-              name:
-                element.type === 'Literal'
-                  ? `${element.value}`
-                  : sourceCode.text.slice(...element.range),
-              size: rangeToDiff(element.range),
-              type: element.type,
-              node: element,
-              group,
-            })
+    let partitionComment = options.partitionByComment
+
+    let formattedMembers: SortingNode[][] = elements.reduce(
+      (
+        accumulator: SortingNode[][],
+        element: TSESTree.SpreadElement | TSESTree.Expression | null,
+      ) => {
+        if (element !== null) {
+          let group = 'unknown'
+          if (typeof options.groupKind === 'string') {
+            group = element.type === 'SpreadElement' ? 'spread' : 'literal'
           }
 
-          return accumulator
-        },
-        [[], []],
-      )
-      .flat()
+          let lastSortingNode = accumulator.at(-1)?.at(-1)
+          let sortingNode: SortingNode = {
+            name:
+              element.type === 'Literal'
+                ? `${element.value}`
+                : sourceCode.text.slice(...element.range),
+            size: rangeToDiff(element.range),
+            node: element,
+            group,
+          }
+          if (
+            (partitionComment &&
+              hasPartitionComment(
+                partitionComment,
+                getCommentsBefore(element, sourceCode),
+              )) ||
+            (options.partitionByNewLine &&
+              lastSortingNode &&
+              getLinesBetween(sourceCode, lastSortingNode, sortingNode))
+          ) {
+            accumulator.push([])
+          }
 
-    pairwise(nodes, (left, right) => {
-      let groupKindOrder = ['unknown']
+          accumulator.at(-1)!.push(sortingNode)
+        }
 
-      if (typeof options.groupKind === 'string') {
-        groupKindOrder =
-          options.groupKind === 'literals-first'
-            ? ['literal', 'spread']
-            : ['spread', 'literal']
-      }
+        return accumulator
+      },
+      [[]],
+    )
 
-      let leftNum = getGroupNumber(groupKindOrder, left)
-      let rightNum = getGroupNumber(groupKindOrder, right)
+    for (let nodes of formattedMembers) {
+      pairwise(nodes, (left, right) => {
+        let groupKindOrder = ['unknown']
 
-      if (
-        (options.groupKind !== 'mixed' && leftNum > rightNum) ||
-        ((options.groupKind === 'mixed' || leftNum === rightNum) &&
-          isPositive(compare(left, right, options)))
-      ) {
-        context.report({
-          messageId,
-          data: {
-            left: toSingleLine(left.name),
-            right: toSingleLine(right.name),
-          },
-          node: right.node,
-          fix: fixer => {
-            let sortedNodes =
-              options.groupKind !== 'mixed'
-                ? groupKindOrder
-                    .map(group => nodes.filter(n => n.group === group))
-                    .map(groupedNodes => sortNodes(groupedNodes, options))
-                    .flat()
-                : sortNodes(nodes, options)
+        if (typeof options.groupKind === 'string') {
+          groupKindOrder =
+            options.groupKind === 'literals-first'
+              ? ['literal', 'spread']
+              : ['spread', 'literal']
+        }
+        let leftNum = getGroupNumber(groupKindOrder, left)
+        let rightNum = getGroupNumber(groupKindOrder, right)
 
-            return makeFixes(fixer, nodes, sortedNodes, sourceCode)
-          },
-        })
-      }
-    })
+        if (
+          (options.groupKind !== 'mixed' && leftNum > rightNum) ||
+          ((options.groupKind === 'mixed' || leftNum === rightNum) &&
+            isPositive(compare(left, right, options)))
+        ) {
+          context.report({
+            messageId,
+            data: {
+              left: toSingleLine(left.name),
+              right: toSingleLine(right.name),
+            },
+            node: right.node,
+            fix: fixer => {
+              let sortedNodes =
+                options.groupKind !== 'mixed'
+                  ? groupKindOrder
+                      .map(group => nodes.filter(n => n.group === group))
+                      .map(groupedNodes => sortNodes(groupedNodes, options))
+                      .flat()
+                  : sortNodes(nodes, options)
+
+              return makeFixes(fixer, nodes, sortedNodes, sourceCode, {
+                partitionComment,
+              })
+            },
+          })
+        }
+      })
+    }
   }
 }
