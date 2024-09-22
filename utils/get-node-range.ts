@@ -44,18 +44,14 @@ export let getNodeRange = (
     }
   }
   let comments = getCommentsBefore(node, sourceCode)
+  let partitionComment = additionalOptions?.partitionComment ?? false
 
   // Iterate on all comments starting from the bottom until we reach the last
   // of the comments, a newline between comments, or a partition comment
   let relevantTopComment: TSESTree.Comment | undefined
   for (let i = comments.length - 1; i >= 0; i--) {
     let comment = comments[i]
-    if (
-      isPartitionComment(
-        additionalOptions?.partitionComment ?? false,
-        comment.value,
-      )
-    ) {
+    if (isPartitionComment(partitionComment, comment.value)) {
       break
     }
     // Check for newlines between comments or between the first comment and
