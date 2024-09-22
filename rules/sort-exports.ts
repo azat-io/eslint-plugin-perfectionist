@@ -2,6 +2,8 @@ import type { TSESTree } from '@typescript-eslint/types'
 
 import type { SortingNode } from '../typings'
 
+import { hasPartitionComment } from '../utils/is-partition-comment'
+import { getCommentsBefore } from '../utils/get-comments-before'
 import { createEslintRule } from '../utils/create-eslint-rule'
 import { getLinesBetween } from '../utils/get-lines-between'
 import { getSourceCode } from '../utils/get-source-code'
@@ -18,6 +20,7 @@ type Options = [
   Partial<{
     groupKind: 'values-first' | 'types-first' | 'mixed'
     type: 'alphabetical' | 'line-length' | 'natural'
+    partitionByComment: string[] | boolean | string
     partitionByNewLine: boolean
     order: 'desc' | 'asc'
     ignoreCase: boolean
@@ -56,6 +59,24 @@ export default createEslintRule<Options, MESSAGE_ID>({
               'Controls whether sorting should be case-sensitive or not.',
             type: 'boolean',
           },
+          partitionByComment: {
+            description:
+              'Allows you to use comments to separate the exports into logical groups.',
+            anyOf: [
+              {
+                type: 'array',
+                items: {
+                  type: 'string',
+                },
+              },
+              {
+                type: 'boolean',
+              },
+              {
+                type: 'string',
+              },
+            ],
+          },
           partitionByNewLine: {
             description:
               'Allows to use spaces to separate the nodes into logical groups.',
@@ -79,6 +100,7 @@ export default createEslintRule<Options, MESSAGE_ID>({
       type: 'alphabetical',
       order: 'asc',
       ignoreCase: true,
+      partitionByComment: false,
       partitionByNewLine: false,
       groupKind: 'mixed',
     },
@@ -90,11 +112,13 @@ export default createEslintRule<Options, MESSAGE_ID>({
       type: 'alphabetical',
       ignoreCase: true,
       order: 'asc',
+      partitionByComment: false,
       partitionByNewLine: false,
       groupKind: 'mixed',
     } as const)
 
     let sourceCode = getSourceCode(context)
+    let partitionComment = options.partitionByComment
 
     let parts: SortExportsSortingNode[][] = [[]]
 
@@ -110,9 +134,14 @@ export default createEslintRule<Options, MESSAGE_ID>({
       }
       let lastNode = parts.at(-1)?.at(-1)
       if (
-        options.partitionByNewLine &&
-        lastNode &&
-        getLinesBetween(sourceCode, lastNode, sortingNode)
+        (partitionComment &&
+          hasPartitionComment(
+            partitionComment,
+            getCommentsBefore(node, sourceCode),
+          )) ||
+        (options.partitionByNewLine &&
+          lastNode &&
+          getLinesBetween(sourceCode, lastNode, sortingNode))
       ) {
         parts.push([])
       }
@@ -164,7 +193,10 @@ export default createEslintRule<Options, MESSAGE_ID>({
                   right: right.name,
                 },
                 node: right.node,
-                fix: fixer => makeFixes(fixer, nodes, sortedNodes, sourceCode),
+                fix: fixer =>
+                  makeFixes(fixer, nodes, sortedNodes, sourceCode, {
+                    partitionComment,
+                  }),
               })
             }
           })

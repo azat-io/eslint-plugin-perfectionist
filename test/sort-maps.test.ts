@@ -237,6 +237,209 @@ describe(ruleName, () => {
         },
       ],
     })
+
+    ruleTester.run(
+      `${ruleName}(${type}): allows to use new line as partition`,
+      rule,
+      {
+        valid: [],
+        invalid: [
+          {
+            code: dedent`
+              new Map([
+                [d, 'd'],
+                [a, 'a'],
+
+                [c, 'c'],
+
+                [e, 'e'],
+                [b, 'b'],
+              ])
+            `,
+            output: dedent`
+              new Map([
+                [a, 'a'],
+                [d, 'd'],
+
+                [c, 'c'],
+
+                [b, 'b'],
+                [e, 'e'],
+              ])
+            `,
+            options: [
+              {
+                ...options,
+                partitionByNewLine: true,
+              },
+            ],
+            errors: [
+              {
+                messageId: 'unexpectedMapElementsOrder',
+                data: {
+                  left: 'd',
+                  right: 'a',
+                },
+              },
+              {
+                messageId: 'unexpectedMapElementsOrder',
+                data: {
+                  left: 'e',
+                  right: 'b',
+                },
+              },
+            ],
+          },
+        ],
+      },
+    )
+
+    describe(`${ruleName}(${type}): partition comments`, () => {
+      ruleTester.run(
+        `${ruleName}(${type}): allows to use partition comments`,
+        rule,
+        {
+          valid: [],
+          invalid: [
+            {
+              code: dedent`
+                new Map([
+                  // Part: A
+                  [cc, 'cc'],
+                  [d, 'd'],
+                  // Not partition comment
+                  [bbb, 'bbb'],
+                  // Part: B
+                  [aaaa, 'aaaa'],
+                  [e, 'e'],
+                  // Part: C
+                  [gg, 'gg'],
+                  // Not partition comment
+                  [fff, 'fff'],
+                ])
+              `,
+              output: dedent`
+                new Map([
+                  // Part: A
+                  // Not partition comment
+                  [bbb, 'bbb'],
+                  [cc, 'cc'],
+                  [d, 'd'],
+                  // Part: B
+                  [aaaa, 'aaaa'],
+                  [e, 'e'],
+                  // Part: C
+                  // Not partition comment
+                  [fff, 'fff'],
+                  [gg, 'gg'],
+                ])
+              `,
+              options: [
+                {
+                  ...options,
+                  partitionByComment: 'Part**',
+                },
+              ],
+              errors: [
+                {
+                  messageId: 'unexpectedMapElementsOrder',
+                  data: {
+                    left: 'd',
+                    right: 'bbb',
+                  },
+                },
+                {
+                  messageId: 'unexpectedMapElementsOrder',
+                  data: {
+                    left: 'gg',
+                    right: 'fff',
+                  },
+                },
+              ],
+            },
+          ],
+        },
+      )
+
+      ruleTester.run(
+        `${ruleName}(${type}): allows to use all comments as parts`,
+        rule,
+        {
+          valid: [
+            {
+              code: dedent`
+                new Map([
+                  // Comment
+                  [bb, 'bb'],
+                  // Other comment
+                  [a, 'a'],
+                ])
+              `,
+              options: [
+                {
+                  ...options,
+                  partitionByComment: true,
+                },
+              ],
+            },
+          ],
+          invalid: [],
+        },
+      )
+
+      ruleTester.run(
+        `${ruleName}(${type}): allows to use multiple partition comments`,
+        rule,
+        {
+          valid: [],
+          invalid: [
+            {
+              code: dedent`
+                new Map([
+                  /* Partition Comment */
+                  // Part: A
+                  [d, 'd'],
+                  // Part: B
+                  [aaa, 'aaa'],
+                  [c, 'c'],
+                  [bb, 'bb'],
+                  /* Other */
+                  [e, 'e'],
+                ])
+              `,
+              output: dedent`
+                new Map([
+                  /* Partition Comment */
+                  // Part: A
+                  [d, 'd'],
+                  // Part: B
+                  [aaa, 'aaa'],
+                  [bb, 'bb'],
+                  [c, 'c'],
+                  /* Other */
+                  [e, 'e'],
+                ])
+              `,
+              options: [
+                {
+                  ...options,
+                  partitionByComment: ['Partition Comment', 'Part: *', 'Other'],
+                },
+              ],
+              errors: [
+                {
+                  messageId: 'unexpectedMapElementsOrder',
+                  data: {
+                    left: 'c',
+                    right: 'bb',
+                  },
+                },
+              ],
+            },
+          ],
+        },
+      )
+    })
   })
 
   describe(`${ruleName}: sorting by natural order`, () => {

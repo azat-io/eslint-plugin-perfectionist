@@ -135,6 +135,43 @@ Allows you to group named exports by their kind, determining whether value expor
 - `values-first` — Group all value exports before type exports.
 - `types-first` — Group all type exports before value exports.
 
+### partitionByComment
+
+<sub>default: `false`</sub>
+
+Allows you to use comments to separate the members of named exports into logical groups. This can help in organizing and maintaining large enums by creating partitions within the enum based on comments.
+
+- `true` — All comments will be treated as delimiters, creating partitions.
+-	`false` — Comments will not be used as delimiters.
+- `string` — A glob pattern to specify which comments should act as delimiters.
+- `string[]` — A list of glob patterns to specify which comments should act as delimiters.
+
+### partitionByNewLine
+
+<sub>default: `false`</sub>
+
+When `true`, the rule will not sort the members of named exports if there is an empty line between them. This can be useful for keeping logically separated groups of members in their defined order.
+
+```ts
+export {
+     // Group 1
+    Drone,
+    Keyboard,
+    Mouse,
+    Smartphone,
+
+    // Group 2
+    Laptop,
+    Monitor,
+    Smartwatch,
+    Tablet,
+
+    // Group 3
+    Headphones,
+    Router,
+} from './devices'
+```
+
 ## Usage
 
 <CodeTabs

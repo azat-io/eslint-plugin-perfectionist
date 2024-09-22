@@ -72,7 +72,7 @@ export default createEslintRule<SortClassesOptions, MESSAGE_ID>({
           },
           partitionByComment: {
             description:
-              'Allows to use comments to separate the nodes into logical groups.',
+              'Allows to use comments to separate the class members into logical groups.',
             anyOf: [
               {
                 type: 'array',
@@ -634,6 +634,7 @@ export default createEslintRule<SortClassesOptions, MESSAGE_ID>({
           [[]],
         )
 
+        let sortedNodes: SortingNodeWithDependencies[] = []
         for (let nodes of formattedNodes) {
           let nodesByNonIgnoredGroupNumber: {
             [key: number]: SortingNodeWithDependencies[]
@@ -650,7 +651,6 @@ export default createEslintRule<SortClassesOptions, MESSAGE_ID>({
             nodesByNonIgnoredGroupNumber[groupNum].push(sortingNode)
           }
 
-          let sortedNodes: SortingNodeWithDependencies[] = []
           for (let groupNumber of Object.keys(
             nodesByNonIgnoredGroupNumber,
           ).sort((a, b) => Number(a) - Number(b))) {
@@ -674,54 +674,54 @@ export default createEslintRule<SortClassesOptions, MESSAGE_ID>({
           for (let ignoredIndex of ignoredNodeIndices) {
             sortedNodes.splice(ignoredIndex, 0, nodes[ignoredIndex])
           }
-
-          sortedNodes = sortNodesByDependencies(sortedNodes)
-
-          pairwise(nodes, (left, right) => {
-            let leftNum = getGroupNumber(options.groups, left)
-            let rightNum = getGroupNumber(options.groups, right)
-            // Ignore nodes belonging to `unknown` group when that group is not referenced in the
-            // `groups` option.
-            let isLeftOrRightIgnored =
-              leftNum === options.groups.length ||
-              rightNum === options.groups.length
-
-            let indexOfLeft = sortedNodes.indexOf(left)
-            let indexOfRight = sortedNodes.indexOf(right)
-            let firstUnorderedNodeDependentOnRight =
-              getFirstUnorderedNodeDependentOn(right, nodes)
-            if (
-              firstUnorderedNodeDependentOnRight ||
-              (!isLeftOrRightIgnored && indexOfLeft > indexOfRight)
-            ) {
-              let messageId: MESSAGE_ID
-              if (firstUnorderedNodeDependentOnRight) {
-                messageId = 'unexpectedClassesDependencyOrder'
-              } else {
-                messageId =
-                  leftNum !== rightNum
-                    ? 'unexpectedClassesGroupOrder'
-                    : 'unexpectedClassesOrder'
-              }
-              context.report({
-                messageId,
-                data: {
-                  left: toSingleLine(left.name),
-                  leftGroup: left.group,
-                  right: toSingleLine(right.name),
-                  rightGroup: right.group,
-                  nodeDependentOnRight:
-                    firstUnorderedNodeDependentOnRight?.name,
-                },
-                node: right.node,
-                fix: (fixer: TSESLint.RuleFixer) =>
-                  makeFixes(fixer, nodes, sortedNodes, sourceCode, {
-                    partitionComment: options.partitionByComment,
-                  }),
-              })
-            }
-          })
         }
+
+        sortedNodes = sortNodesByDependencies(sortedNodes)
+        let nodes = formattedNodes.flat()
+
+        pairwise(nodes, (left, right) => {
+          let leftNum = getGroupNumber(options.groups, left)
+          let rightNum = getGroupNumber(options.groups, right)
+          // Ignore nodes belonging to `unknown` group when that group is not referenced in the
+          // `groups` option.
+          let isLeftOrRightIgnored =
+            leftNum === options.groups.length ||
+            rightNum === options.groups.length
+
+          let indexOfLeft = sortedNodes.indexOf(left)
+          let indexOfRight = sortedNodes.indexOf(right)
+          let firstUnorderedNodeDependentOnRight =
+            getFirstUnorderedNodeDependentOn(right, nodes)
+          if (
+            firstUnorderedNodeDependentOnRight ||
+            (!isLeftOrRightIgnored && indexOfLeft > indexOfRight)
+          ) {
+            let messageId: MESSAGE_ID
+            if (firstUnorderedNodeDependentOnRight) {
+              messageId = 'unexpectedClassesDependencyOrder'
+            } else {
+              messageId =
+                leftNum !== rightNum
+                  ? 'unexpectedClassesGroupOrder'
+                  : 'unexpectedClassesOrder'
+            }
+            context.report({
+              messageId,
+              data: {
+                left: toSingleLine(left.name),
+                leftGroup: left.group,
+                right: toSingleLine(right.name),
+                rightGroup: right.group,
+                nodeDependentOnRight: firstUnorderedNodeDependentOnRight?.name,
+              },
+              node: right.node,
+              fix: (fixer: TSESLint.RuleFixer) =>
+                makeFixes(fixer, nodes, sortedNodes, sourceCode, {
+                  partitionComment: options.partitionByComment,
+                }),
+            })
+          }
+        })
       }
     },
   }),

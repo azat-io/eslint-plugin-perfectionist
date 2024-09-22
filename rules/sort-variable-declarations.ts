@@ -6,7 +6,10 @@ import {
   getFirstUnorderedNodeDependentOn,
   sortNodesByDependencies,
 } from '../utils/sort-nodes-by-dependencies'
+import { hasPartitionComment } from '../utils/is-partition-comment'
+import { getCommentsBefore } from '../utils/get-comments-before'
 import { createEslintRule } from '../utils/create-eslint-rule'
+import { getLinesBetween } from '../utils/get-lines-between'
 import { getSourceCode } from '../utils/get-source-code'
 import { toSingleLine } from '../utils/to-single-line'
 import { rangeToDiff } from '../utils/range-to-diff'
@@ -23,6 +26,8 @@ type MESSAGE_ID =
 type Options = [
   Partial<{
     type: 'alphabetical' | 'line-length' | 'natural'
+    partitionByComment: string[] | boolean | string
+    partitionByNewLine: boolean
     order: 'desc' | 'asc'
     ignoreCase: boolean
   }>,
@@ -56,6 +61,29 @@ export default createEslintRule<Options, MESSAGE_ID>({
               'Controls whether sorting should be case-sensitive or not.',
             type: 'boolean',
           },
+          partitionByComment: {
+            description:
+              'Allows you to use comments to separate the variable declarations into logical groups.',
+            anyOf: [
+              {
+                type: 'array',
+                items: {
+                  type: 'string',
+                },
+              },
+              {
+                type: 'boolean',
+              },
+              {
+                type: 'string',
+              },
+            ],
+          },
+          partitionByNewLine: {
+            description:
+              'Allows to use spaces to separate the nodes into logical groups.',
+            type: 'boolean',
+          },
         },
         additionalProperties: false,
       },
@@ -72,6 +100,8 @@ export default createEslintRule<Options, MESSAGE_ID>({
       type: 'alphabetical',
       order: 'asc',
       ignoreCase: true,
+      partitionByComment: false,
+      partitionByNewLine: false,
     },
   ],
   create: context => ({
@@ -82,10 +112,13 @@ export default createEslintRule<Options, MESSAGE_ID>({
         let options = complete(context.options.at(0), settings, {
           type: 'alphabetical',
           ignoreCase: true,
+          partitionByNewLine: false,
+          partitionByComment: false,
           order: 'asc',
         } as const)
 
         let sourceCode = getSourceCode(context)
+        let partitionComment = options.partitionByComment
 
         let extractDependencies = (init: TSESTree.Expression): string[] => {
           let dependencies: string[] = []
@@ -170,8 +203,8 @@ export default createEslintRule<Options, MESSAGE_ID>({
           return dependencies
         }
 
-        let nodes = node.declarations.map(
-          (declaration): SortingNodeWithDependencies => {
+        let formattedMembers = node.declarations.reduce(
+          (accumulator: SortingNodeWithDependencies[][], declaration) => {
             let name
 
             if (
@@ -188,16 +221,37 @@ export default createEslintRule<Options, MESSAGE_ID>({
               dependencies = extractDependencies(declaration.init)
             }
 
-            return {
+            let lastSortingNode = accumulator.at(-1)?.at(-1)
+            let sortingNode: SortingNodeWithDependencies = {
               size: rangeToDiff(declaration.range),
               node: declaration,
               dependencies,
               name,
             }
-          },
-        )
-        let sortedNodes = sortNodesByDependencies(sortNodes(nodes, options))
+            if (
+              (partitionComment &&
+                hasPartitionComment(
+                  partitionComment,
+                  getCommentsBefore(declaration, sourceCode),
+                )) ||
+              (options.partitionByNewLine &&
+                lastSortingNode &&
+                getLinesBetween(sourceCode, lastSortingNode, sortingNode))
+            ) {
+              accumulator.push([])
+            }
 
+            accumulator.at(-1)?.push(sortingNode)
+
+            return accumulator
+          },
+          [[]],
+        )
+
+        let sortedNodes = sortNodesByDependencies(
+          formattedMembers.map(nodes => sortNodes(nodes, options)).flat(),
+        )
+        let nodes = formattedMembers.flat()
         pairwise(nodes, (left, right) => {
           let indexOfLeft = sortedNodes.indexOf(left)
           let indexOfRight = sortedNodes.indexOf(right)
@@ -214,7 +268,10 @@ export default createEslintRule<Options, MESSAGE_ID>({
                 nodeDependentOnRight: firstUnorderedNodeDependentOnRight?.name,
               },
               node: right.node,
-              fix: fixer => makeFixes(fixer, nodes, sortedNodes, sourceCode),
+              fix: fixer =>
+                makeFixes(fixer, nodes, sortedNodes, sourceCode, {
+                  partitionComment,
+                }),
             })
           }
         })

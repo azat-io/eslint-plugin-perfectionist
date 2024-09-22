@@ -86,7 +86,7 @@ export default createEslintRule<Options, MESSAGE_ID>({
           },
           partitionByComment: {
             description:
-              'Allows you to use comments to separate the class members into logical groups.',
+              'Allows you to use comments to separate the keys of objects into logical groups.',
             anyOf: [
               {
                 type: 'array',
@@ -435,7 +435,10 @@ export default createEslintRule<Options, MESSAGE_ID>({
             [[]],
           )
 
-        for (let nodes of formatProperties(node.properties)) {
+        let sortedNodes: SortingNodeWithDependencies[] = []
+
+        let formattedNodes = formatProperties(node.properties)
+        for (let nodes of formattedNodes) {
           let grouped: {
             [key: string]: SortingNodeWithDependencies[]
           } = {}
@@ -450,56 +453,54 @@ export default createEslintRule<Options, MESSAGE_ID>({
             }
           }
 
-          let sortedNodes: SortingNodeWithDependencies[] = []
-
           for (let group of Object.keys(grouped).sort(
             (a, b) => Number(a) - Number(b),
           )) {
             sortedNodes.push(...sortNodes(grouped[group], options))
           }
-
-          sortedNodes = sortNodesByDependencies(sortedNodes)
-
-          pairwise(nodes, (left, right) => {
-            let indexOfLeft = sortedNodes.indexOf(left)
-            let indexOfRight = sortedNodes.indexOf(right)
-
-            if (indexOfLeft > indexOfRight) {
-              let firstUnorderedNodeDependentOnRight =
-                getFirstUnorderedNodeDependentOn(right, nodes)
-              let fix:
-                | ((fixer: TSESLint.RuleFixer) => TSESLint.RuleFix[])
-                | undefined = fixer =>
-                makeFixes(fixer, nodes, sortedNodes, sourceCode, {
-                  partitionComment: options.partitionByComment,
-                })
-              let leftNum = getGroupNumber(options.groups, left)
-              let rightNum = getGroupNumber(options.groups, right)
-              let messageId: MESSAGE_ID
-              if (firstUnorderedNodeDependentOnRight) {
-                messageId = 'unexpectedObjectsDependencyOrder'
-              } else {
-                messageId =
-                  leftNum !== rightNum
-                    ? 'unexpectedObjectsGroupOrder'
-                    : 'unexpectedObjectsOrder'
-              }
-              context.report({
-                messageId,
-                data: {
-                  left: toSingleLine(left.name),
-                  leftGroup: left.group,
-                  right: toSingleLine(right.name),
-                  rightGroup: right.group,
-                  nodeDependentOnRight:
-                    firstUnorderedNodeDependentOnRight?.name,
-                },
-                node: right.node,
-                fix,
-              })
-            }
-          })
         }
+
+        sortedNodes = sortNodesByDependencies(sortedNodes)
+        let nodes = formattedNodes.flat()
+
+        pairwise(nodes, (left, right) => {
+          let indexOfLeft = sortedNodes.indexOf(left)
+          let indexOfRight = sortedNodes.indexOf(right)
+
+          if (indexOfLeft > indexOfRight) {
+            let firstUnorderedNodeDependentOnRight =
+              getFirstUnorderedNodeDependentOn(right, nodes)
+            let fix:
+              | ((fixer: TSESLint.RuleFixer) => TSESLint.RuleFix[])
+              | undefined = fixer =>
+              makeFixes(fixer, nodes, sortedNodes, sourceCode, {
+                partitionComment: options.partitionByComment,
+              })
+            let leftNum = getGroupNumber(options.groups, left)
+            let rightNum = getGroupNumber(options.groups, right)
+            let messageId: MESSAGE_ID
+            if (firstUnorderedNodeDependentOnRight) {
+              messageId = 'unexpectedObjectsDependencyOrder'
+            } else {
+              messageId =
+                leftNum !== rightNum
+                  ? 'unexpectedObjectsGroupOrder'
+                  : 'unexpectedObjectsOrder'
+            }
+            context.report({
+              messageId,
+              data: {
+                left: toSingleLine(left.name),
+                leftGroup: left.group,
+                right: toSingleLine(right.name),
+                rightGroup: right.group,
+                nodeDependentOnRight: firstUnorderedNodeDependentOnRight?.name,
+              },
+              node: right.node,
+              fix,
+            })
+          }
+        })
       }
     }
 

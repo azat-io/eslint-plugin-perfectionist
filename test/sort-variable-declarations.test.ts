@@ -649,6 +649,202 @@ describe(ruleName, () => {
         invalid: [],
       },
     )
+
+    ruleTester.run(
+      `${ruleName}(${type}): allows to use new line as partition`,
+      rule,
+      {
+        valid: [],
+        invalid: [
+          {
+            code: dedent`
+              const
+                d = 'D',
+                a = 'A',
+
+                c = 'C',
+
+                e = 'E',
+                b = 'B'
+            `,
+            output: dedent`
+              const
+                a = 'A',
+                d = 'D',
+
+                c = 'C',
+
+                b = 'B',
+                e = 'E'
+            `,
+            options: [
+              {
+                type: 'alphabetical',
+                partitionByNewLine: true,
+              },
+            ],
+            errors: [
+              {
+                messageId: 'unexpectedVariableDeclarationsOrder',
+                data: {
+                  left: 'd',
+                  right: 'a',
+                },
+              },
+              {
+                messageId: 'unexpectedVariableDeclarationsOrder',
+                data: {
+                  left: 'e',
+                  right: 'b',
+                },
+              },
+            ],
+          },
+        ],
+      },
+    )
+
+    describe(`${ruleName}(${type}): partition comments`, () => {
+      ruleTester.run(
+        `${ruleName}(${type}): allows to use partition comments`,
+        rule,
+        {
+          valid: [],
+          invalid: [
+            {
+              code: dedent`
+                const
+                  // Part: A
+                  cc = 'CC',
+                  d = 'D',
+                  // Not partition comment
+                  bbb = 'BBB',
+                  // Part: B
+                  aaa = 'AAA',
+                  e = 'E',
+                  // Part: C
+                  gg = 'GG',
+                  // Not partition comment
+                  fff = 'FFF'
+              `,
+              output: dedent`
+                const
+                  // Part: A
+                  // Not partition comment
+                  bbb = 'BBB',
+                  cc = 'CC',
+                  d = 'D',
+                  // Part: B
+                  aaa = 'AAA',
+                  e = 'E',
+                  // Part: C
+                  // Not partition comment
+                  fff = 'FFF',
+                  gg = 'GG'
+              `,
+              options: [
+                {
+                  ...options,
+                  partitionByComment: 'Part**',
+                },
+              ],
+              errors: [
+                {
+                  messageId: 'unexpectedVariableDeclarationsOrder',
+                  data: {
+                    left: 'd',
+                    right: 'bbb',
+                  },
+                },
+                {
+                  messageId: 'unexpectedVariableDeclarationsOrder',
+                  data: {
+                    left: 'gg',
+                    right: 'fff',
+                  },
+                },
+              ],
+            },
+          ],
+        },
+      )
+
+      ruleTester.run(
+        `${ruleName}(${type}): allows to use all comments as parts`,
+        rule,
+        {
+          valid: [
+            {
+              code: dedent`
+                const
+                  // Comment
+                  bb = 'bb',
+                  // Other comment
+                  a = 'a'
+              `,
+              options: [
+                {
+                  ...options,
+                  partitionByComment: true,
+                },
+              ],
+            },
+          ],
+          invalid: [],
+        },
+      )
+
+      ruleTester.run(
+        `${ruleName}(${type}): allows to use multiple partition comments`,
+        rule,
+        {
+          valid: [],
+          invalid: [
+            {
+              code: dedent`
+                  const
+                    /* Partition Comment */
+                    // Part: A
+                    d = 'D',
+                    // Part: B
+                    aaa = 'AAA',
+                    c = 'C',
+                    bb = 'BB',
+                    /* Other */
+                    e = 'E'
+                `,
+              output: dedent`
+                  const
+                    /* Partition Comment */
+                    // Part: A
+                    d = 'D',
+                    // Part: B
+                    aaa = 'AAA',
+                    bb = 'BB',
+                    c = 'C',
+                    /* Other */
+                    e = 'E'
+                `,
+              options: [
+                {
+                  ...options,
+                  partitionByComment: ['Partition Comment', 'Part: *', 'Other'],
+                },
+              ],
+              errors: [
+                {
+                  messageId: 'unexpectedVariableDeclarationsOrder',
+                  data: {
+                    left: 'c',
+                    right: 'bb',
+                  },
+                },
+              ],
+            },
+          ],
+        },
+      )
+    })
   })
 
   describe(`${ruleName}: sorting by natural order`, () => {

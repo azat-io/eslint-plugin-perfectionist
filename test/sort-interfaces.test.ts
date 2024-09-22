@@ -773,6 +773,151 @@ describe(ruleName, () => {
         ],
       },
     )
+
+    ruleTester.run(
+      `${ruleName}(${type}): allows to use partition comments`,
+      rule,
+      {
+        valid: [],
+        invalid: [
+          {
+            code: dedent`
+              interface MyInterface {
+                // Part: A
+                cc: string;
+                d: string;
+                // Not partition comment
+                bbb: string;
+                // Part: B
+                aaaa: string;
+                e: string;
+                // Part: C
+                'gg': string;
+                // Not partition comment
+                fff: string;
+              }
+            `,
+            output: dedent`
+              interface MyInterface {
+                // Part: A
+                // Not partition comment
+                bbb: string;
+                cc: string;
+                d: string;
+                // Part: B
+                aaaa: string;
+                e: string;
+                // Part: C
+                // Not partition comment
+                fff: string;
+                'gg': string;
+              }
+            `,
+            options: [
+              {
+                ...options,
+                partitionByComment: 'Part**',
+              },
+            ],
+            errors: [
+              {
+                messageId: 'unexpectedInterfacePropertiesOrder',
+                data: {
+                  left: 'd',
+                  right: 'bbb',
+                },
+              },
+              {
+                messageId: 'unexpectedInterfacePropertiesOrder',
+                data: {
+                  left: 'gg',
+                  right: 'fff',
+                },
+              },
+            ],
+          },
+        ],
+      },
+    )
+
+    ruleTester.run(
+      `${ruleName}(${type}): allows to use all comments as parts`,
+      rule,
+      {
+        valid: [
+          {
+            code: dedent`
+              interface MyInterface {
+                // Comment
+                bb: string;
+                // Other comment
+                a: string;
+              }
+            `,
+            options: [
+              {
+                ...options,
+                partitionByComment: true,
+              },
+            ],
+          },
+        ],
+        invalid: [],
+      },
+    )
+
+    ruleTester.run(
+      `${ruleName}(${type}): allows to use multiple partition comments`,
+      rule,
+      {
+        valid: [],
+        invalid: [
+          {
+            code: dedent`
+              interface MyInterface {
+                /* Partition Comment */
+                // Part: A
+                d: string;
+                // Part: B
+                aaa: string;
+                c: string;
+                bb: string;
+                /* Other */
+                e: string;
+              }
+            `,
+            output: dedent`
+              interface MyInterface {
+                /* Partition Comment */
+                // Part: A
+                d: string;
+                // Part: B
+                aaa: string;
+                bb: string;
+                c: string;
+                /* Other */
+                e: string;
+              }
+            `,
+            options: [
+              {
+                ...options,
+                partitionByComment: ['Partition Comment', 'Part: *', 'Other'],
+              },
+            ],
+            errors: [
+              {
+                messageId: 'unexpectedInterfacePropertiesOrder',
+                data: {
+                  left: 'c',
+                  right: 'bb',
+                },
+              },
+            ],
+          },
+        ],
+      },
+    )
   })
 
   describe(`${ruleName}: sorting by natural order`, () => {
@@ -1385,6 +1530,151 @@ describe(ruleName, () => {
         },
       ],
     })
+
+    ruleTester.run(
+      `${ruleName}(${type}): allows to use partition comments`,
+      rule,
+      {
+        valid: [],
+        invalid: [
+          {
+            code: dedent`
+              interface MyInterface {
+                // Part: A
+                cc: string;
+                d: string;
+                // Not partition comment
+                bbb: boolean;
+                // Part: B
+                aaaa: string;
+                e: string;
+                // Part: C
+                'gg': string;
+                // Not partition comment
+                fff: string;
+              }
+            `,
+            output: dedent`
+              interface MyInterface {
+                // Part: A
+                // Not partition comment
+                bbb: boolean;
+                cc: string;
+                d: string;
+                // Part: B
+                aaaa: string;
+                e: string;
+                // Part: C
+                // Not partition comment
+                fff: string;
+                'gg': string;
+              }
+            `,
+            options: [
+              {
+                ...options,
+                partitionByComment: 'Part**',
+              },
+            ],
+            errors: [
+              {
+                messageId: 'unexpectedInterfacePropertiesOrder',
+                data: {
+                  left: 'd',
+                  right: 'bbb',
+                },
+              },
+              {
+                messageId: 'unexpectedInterfacePropertiesOrder',
+                data: {
+                  left: 'gg',
+                  right: 'fff',
+                },
+              },
+            ],
+          },
+        ],
+      },
+    )
+
+    ruleTester.run(
+      `${ruleName}(${type}): allows to use all comments as parts`,
+      rule,
+      {
+        valid: [
+          {
+            code: dedent`
+              interface MyInterface {
+                // Comment
+                bb: string;
+                // Other comment
+                a: string;
+              }
+            `,
+            options: [
+              {
+                ...options,
+                partitionByComment: true,
+              },
+            ],
+          },
+        ],
+        invalid: [],
+      },
+    )
+
+    ruleTester.run(
+      `${ruleName}(${type}): allows to use multiple partition comments`,
+      rule,
+      {
+        valid: [],
+        invalid: [
+          {
+            code: dedent`
+              interface MyInterface {
+                /* Partition Comment */
+                // Part: A
+                d: string;
+                // Part: B
+                aaa: string;
+                c: string;
+                bb: string;
+                /* Other */
+                e: string;
+              }
+            `,
+            output: dedent`
+              interface MyInterface {
+                /* Partition Comment */
+                // Part: A
+                d: string;
+                // Part: B
+                aaa: string;
+                bb: string;
+                c: string;
+                /* Other */
+                e: string;
+              }
+            `,
+            options: [
+              {
+                ...options,
+                partitionByComment: ['Partition Comment', 'Part: *', 'Other'],
+              },
+            ],
+            errors: [
+              {
+                messageId: 'unexpectedInterfacePropertiesOrder',
+                data: {
+                  left: 'c',
+                  right: 'bb',
+                },
+              },
+            ],
+          },
+        ],
+      },
+    )
   })
 
   describe(`${ruleName}: sorting by line length`, () => {
@@ -2204,6 +2494,144 @@ describe(ruleName, () => {
                 data: {
                   left: 'avatarUrl',
                   right: 'createdAt',
+                },
+              },
+            ],
+          },
+        ],
+      },
+    )
+
+    ruleTester.run(
+      `${ruleName}(${type}): allows to use partition comments`,
+      rule,
+      {
+        valid: [],
+        invalid: [
+          {
+            code: dedent`
+              interface MyInterface {
+                // Part: A
+                cc: string;
+                d: string;
+                // Not partition comment
+                bbb: string;
+                // Part: B
+                aaaa: string;
+                e: string;
+                // Part: C
+                'gg': string;
+                // Not partition comment
+                fff: string;
+              }
+            `,
+            output: dedent`
+              interface MyInterface {
+                // Part: A
+                // Not partition comment
+                bbb: string;
+                cc: string;
+                d: string;
+                // Part: B
+                aaaa: string;
+                e: string;
+                // Part: C
+                'gg': string;
+                // Not partition comment
+                fff: string;
+              }
+            `,
+            options: [
+              {
+                ...options,
+                partitionByComment: 'Part**',
+              },
+            ],
+            errors: [
+              {
+                messageId: 'unexpectedInterfacePropertiesOrder',
+                data: {
+                  left: 'd',
+                  right: 'bbb',
+                },
+              },
+            ],
+          },
+        ],
+      },
+    )
+
+    ruleTester.run(
+      `${ruleName}(${type}): allows to use all comments as parts`,
+      rule,
+      {
+        valid: [
+          {
+            code: dedent`
+              interface MyInterface {
+                // Comment
+                bb: string;
+                // Other comment
+                a: string;
+              }
+            `,
+            options: [
+              {
+                ...options,
+                partitionByComment: true,
+              },
+            ],
+          },
+        ],
+        invalid: [],
+      },
+    )
+
+    ruleTester.run(
+      `${ruleName}(${type}): allows to use multiple partition comments`,
+      rule,
+      {
+        valid: [],
+        invalid: [
+          {
+            code: dedent`
+              interface MyInterface {
+                /* Partition Comment */
+                // Part: A
+                d: string;
+                // Part: B
+                aaa: string;
+                c: string;
+                bb: string;
+                /* Other */
+                e: string;
+              }
+            `,
+            output: dedent`
+              interface MyInterface {
+                /* Partition Comment */
+                // Part: A
+                d: string;
+                // Part: B
+                aaa: string;
+                bb: string;
+                c: string;
+                /* Other */
+                e: string;
+              }
+            `,
+            options: [
+              {
+                ...options,
+                partitionByComment: ['Partition Comment', 'Part: *', 'Other'],
+              },
+            ],
+            errors: [
+              {
+                messageId: 'unexpectedInterfacePropertiesOrder',
+                data: {
+                  left: 'c',
+                  right: 'bb',
                 },
               },
             ],

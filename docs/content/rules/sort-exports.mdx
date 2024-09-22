@@ -106,6 +106,17 @@ Controls whether sorting should be case-sensitive or not.
 - `true` — Ignore case when sorting alphabetically or naturally (e.g., “A” and “a” are the same).
 - `false` — Consider case when sorting (e.g., “A” comes before “a”).
 
+### partitionByComment
+
+<sub>default: `false`</sub>
+
+Allows you to use comments to separate the exports into logical groups. This can help in organizing and maintaining large enums by creating partitions within the enum based on comments.
+
+- `true` — All comments will be treated as delimiters, creating partitions.
+-	`false` — Comments will not be used as delimiters.
+- `string` — A glob pattern to specify which comments should act as delimiters.
+- `string[]` — A list of glob patterns to specify which comments should act as delimiters.
+
 ### partitionByNewLine
 
 <sub>default: `false`</sub>
@@ -155,6 +166,7 @@ Allows you to group exports by their kind, determining whether value exports sho
                   type: 'alphabetical',
                   order: 'asc',
                   ignoreCase: true,
+                  partitionByComment: false,
                   partitionByNewLine: false,
                   groupKind: 'mixed',
                 },
@@ -180,6 +192,7 @@ Allows you to group exports by their kind, determining whether value exports sho
                 type: 'alphabetical',
                 order: 'asc',
                 ignoreCase: true,
+                partitionByComment: false,
                 partitionByNewLine: false,
                 groupKind: 'mixed',
               },
