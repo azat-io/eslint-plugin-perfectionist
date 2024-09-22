@@ -4,6 +4,7 @@ import type { TSESLint } from '@typescript-eslint/utils'
 import type { SortingNode } from '../typings'
 
 import { createEslintRule } from '../utils/create-eslint-rule'
+import { getLinesBetween } from '../utils/get-lines-between'
 import { getSourceCode } from '../utils/get-source-code'
 import { rangeToDiff } from '../utils/range-to-diff'
 import { getSettings } from '../utils/get-settings'
@@ -19,6 +20,7 @@ type MESSAGE_ID = 'unexpectedSwitchCaseOrder'
 type Options = [
   Partial<{
     type: 'alphabetical' | 'line-length' | 'natural'
+    partitionByNewLine: boolean
     order: 'desc' | 'asc'
     ignoreCase: boolean
   }>,
@@ -56,6 +58,11 @@ export default createEslintRule<Options, MESSAGE_ID>({
               'Controls whether sorting should be case-sensitive or not.',
             type: 'boolean',
           },
+          partitionByNewLine: {
+            description:
+              'Allows to use spaces to separate the nodes into logical groups.',
+            type: 'boolean',
+          },
         },
         additionalProperties: false,
       },
@@ -70,6 +77,7 @@ export default createEslintRule<Options, MESSAGE_ID>({
       type: 'alphabetical',
       order: 'asc',
       ignoreCase: true,
+      partitionByNewLine: false,
     },
   ],
   create: context => ({
@@ -80,6 +88,7 @@ export default createEslintRule<Options, MESSAGE_ID>({
         type: 'alphabetical',
         ignoreCase: true,
         order: 'asc',
+        partitionByNewLine: false,
       } as const)
 
       let sourceCode = getSourceCode(context)
@@ -98,171 +107,188 @@ export default createEslintRule<Options, MESSAGE_ID>({
         )
 
       if (isDiscriminantIdentifier && isCasesHasBreak) {
-        let nodes = node.cases.map<SortSwitchCaseSortingNode>(
-          (caseNode: TSESTree.SwitchCase) => {
-            let name: string
-            let isDefaultClause = false
-            if (caseNode.test?.type === 'Literal') {
-              name = `${caseNode.test.value}`
-            } else if (caseNode.test === null) {
-              name = 'default'
-              isDefaultClause = true
-            } else {
-              name = sourceCode.text.slice(...caseNode.test.range)
-            }
-
-            return {
-              size: rangeToDiff(caseNode.test?.range ?? caseNode.range),
-              node: caseNode,
-              isDefaultClause,
-              name,
-            }
-          },
-        )
-
-        pairwise(nodes, (left, right, iteration) => {
-          let compareValue: boolean
-          let lefter = nodes.at(iteration - 1)
-          let isCaseGrouped =
-            lefter?.node.consequent.length === 0 &&
-            left.node.consequent.length !== 0
-
-          let isGroupContainsDefault = (group: SortSwitchCaseSortingNode[]) =>
-            group.some(currentNode => currentNode.isDefaultClause)
-
-          let leftCaseGroup = [left]
-          let rightCaseGroup = [right]
-          for (let i = iteration - 1; i >= 0; i--) {
-            if (nodes.at(i)!.node.consequent.length === 0) {
-              leftCaseGroup.unshift(nodes.at(i)!)
-            } else {
-              break
-            }
+        let formattedMembers: SortSwitchCaseSortingNode[][] = [[]]
+        for (let caseNode of node.cases) {
+          let name: string
+          let isDefaultClause = false
+          if (caseNode.test?.type === 'Literal') {
+            name = `${caseNode.test.value}`
+          } else if (caseNode.test === null) {
+            name = 'default'
+            isDefaultClause = true
+          } else {
+            name = sourceCode.text.slice(...caseNode.test.range)
           }
-          if (right.node.consequent.length === 0) {
-            for (let i = iteration + 1; i < nodes.length; i++) {
+
+          let lastSortingNode = formattedMembers.at(-1)?.at(-1)
+          let sortingNode: SortSwitchCaseSortingNode = {
+            size: rangeToDiff(caseNode.test?.range ?? caseNode.range),
+            node: caseNode,
+            isDefaultClause,
+            name,
+          }
+
+          if (
+            options.partitionByNewLine &&
+            lastSortingNode &&
+            getLinesBetween(sourceCode, lastSortingNode, sortingNode)
+          ) {
+            formattedMembers.push([])
+          }
+
+          formattedMembers.at(-1)!.push(sortingNode)
+        }
+
+        for (let nodes of formattedMembers) {
+          pairwise(nodes, (left, right, iteration) => {
+            let compareValue: boolean
+            let lefter = nodes.at(iteration - 1)
+            let isCaseGrouped =
+              lefter?.node.consequent.length === 0 &&
+              left.node.consequent.length !== 0
+
+            let isGroupContainsDefault = (group: SortSwitchCaseSortingNode[]) =>
+              group.some(currentNode => currentNode.isDefaultClause)
+
+            let leftCaseGroup = [left]
+            let rightCaseGroup = [right]
+            for (let i = iteration - 1; i >= 0; i--) {
               if (nodes.at(i)!.node.consequent.length === 0) {
-                rightCaseGroup.push(nodes.at(i)!)
+                leftCaseGroup.unshift(nodes.at(i)!)
               } else {
-                rightCaseGroup.push(nodes.at(i)!)
                 break
               }
             }
-          }
+            if (right.node.consequent.length === 0) {
+              for (let i = iteration + 1; i < nodes.length; i++) {
+                if (nodes.at(i)!.node.consequent.length === 0) {
+                  rightCaseGroup.push(nodes.at(i)!)
+                } else {
+                  rightCaseGroup.push(nodes.at(i)!)
+                  break
+                }
+              }
+            }
 
-          if (isGroupContainsDefault(leftCaseGroup)) {
-            compareValue = true
-          } else if (isGroupContainsDefault(rightCaseGroup)) {
-            compareValue = false
-          } else if (isCaseGrouped) {
-            compareValue = isPositive(compare(leftCaseGroup[0], right, options))
-          } else {
-            compareValue = isPositive(compare(left, right, options))
-          }
+            if (isGroupContainsDefault(leftCaseGroup)) {
+              compareValue = true
+            } else if (isGroupContainsDefault(rightCaseGroup)) {
+              compareValue = false
+            } else if (isCaseGrouped) {
+              compareValue = isPositive(
+                compare(leftCaseGroup[0], right, options),
+              )
+            } else {
+              compareValue = isPositive(compare(left, right, options))
+            }
 
-          if (compareValue) {
-            context.report({
-              messageId: 'unexpectedSwitchCaseOrder',
-              data: {
-                left: left.name,
-                right: right.name,
-              },
-              node: right.node,
-              fix: fixer => {
-                let additionalFixes: TSESLint.RuleFix[] = []
-                let nodeGroups = nodes.reduce<SortSwitchCaseSortingNode[][]>(
-                  (
-                    accumulator: SortSwitchCaseSortingNode[][],
-                    currentNode: SortSwitchCaseSortingNode,
-                    index,
-                  ) => {
-                    if (index === 0) {
-                      accumulator.at(-1)!.push(currentNode)
-                    } else if (
-                      accumulator.at(-1)!.at(-1)?.node.consequent.length === 0
-                    ) {
-                      accumulator.at(-1)!.push(currentNode)
-                    } else {
-                      accumulator.push([currentNode])
-                    }
-                    return accumulator
-                  },
-                  [[]],
-                )
+            if (compareValue) {
+              context.report({
+                messageId: 'unexpectedSwitchCaseOrder',
+                data: {
+                  left: left.name,
+                  right: right.name,
+                },
+                node: right.node,
+                fix: fixer => {
+                  let additionalFixes: TSESLint.RuleFix[] = []
+                  let nodeGroups = nodes.reduce<SortSwitchCaseSortingNode[][]>(
+                    (
+                      accumulator: SortSwitchCaseSortingNode[][],
+                      currentNode: SortSwitchCaseSortingNode,
+                      index,
+                    ) => {
+                      if (index === 0) {
+                        accumulator.at(-1)!.push(currentNode)
+                      } else if (
+                        accumulator.at(-1)!.at(-1)?.node.consequent.length === 0
+                      ) {
+                        accumulator.at(-1)!.push(currentNode)
+                      } else {
+                        accumulator.push([currentNode])
+                      }
+                      return accumulator
+                    },
+                    [[]],
+                  )
 
-                let sortedNodeGroups = nodeGroups
-                  .map(group => {
-                    let sortedGroup = sortNodes(group, options).sort((a, b) => {
-                      if (b.isDefaultClause) {
+                  let sortedNodeGroups = nodeGroups
+                    .map(group => {
+                      let sortedGroup = sortNodes(group, options).sort(
+                        (a, b) => {
+                          if (b.isDefaultClause) {
+                            return -1
+                          }
+                          return 1
+                        },
+                      )
+
+                      if (group.at(-1)!.name !== sortedGroup.at(-1)!.name) {
+                        let consequentNodeIndex = sortedGroup.findIndex(
+                          currentNode =>
+                            currentNode.node.consequent.length !== 0,
+                        )
+                        let firstSortedNodeConsequent =
+                          sortedGroup.at(consequentNodeIndex)!.node.consequent
+                        let consequentStart = firstSortedNodeConsequent
+                          .at(0)
+                          ?.range.at(0)
+                        let consequentEnd = firstSortedNodeConsequent
+                          .at(-1)
+                          ?.range.at(1)
+                        let lastNode = group.at(-1)!.node
+
+                        if (consequentStart && consequentEnd && lastNode.test) {
+                          lastNode.range = [
+                            lastNode.range.at(0)!,
+                            lastNode.test.range.at(1)! + 1,
+                          ]
+                          additionalFixes.push(
+                            ...makeFixes(fixer, group, sortedGroup, sourceCode),
+                            fixer.removeRange([
+                              lastNode.range.at(1)!,
+                              consequentEnd,
+                            ]),
+                            fixer.insertTextAfter(
+                              lastNode,
+                              sourceCode.text.slice(
+                                lastNode.range.at(1),
+                                consequentEnd,
+                              ),
+                            ),
+                          )
+                        }
+                      }
+
+                      return sortedGroup
+                    })
+                    .sort((a, b) => {
+                      if (isGroupContainsDefault(a)) {
+                        return 1
+                      } else if (isGroupContainsDefault(b)) {
                         return -1
                       }
-                      return 1
+                      return compare(a.at(0)!, b.at(0)!, options)
                     })
 
-                    if (group.at(-1)!.name !== sortedGroup.at(-1)!.name) {
-                      let consequentNodeIndex = sortedGroup.findIndex(
-                        currentNode => currentNode.node.consequent.length !== 0,
-                      )
-                      let firstSortedNodeConsequent =
-                        sortedGroup.at(consequentNodeIndex)!.node.consequent
-                      let consequentStart = firstSortedNodeConsequent
-                        .at(0)
-                        ?.range.at(0)
-                      let consequentEnd = firstSortedNodeConsequent
-                        .at(-1)
-                        ?.range.at(1)
-                      let lastNode = group.at(-1)!.node
+                  let sortedNodes = sortedNodeGroups.flat()
 
-                      if (consequentStart && consequentEnd && lastNode.test) {
-                        lastNode.range = [
-                          lastNode.range.at(0)!,
-                          lastNode.test.range.at(1)! + 1,
-                        ]
-                        additionalFixes.push(
-                          ...makeFixes(fixer, group, sortedGroup, sourceCode),
-                          fixer.removeRange([
-                            lastNode.range.at(1)!,
-                            consequentEnd,
-                          ]),
-                          fixer.insertTextAfter(
-                            lastNode,
-                            sourceCode.text.slice(
-                              lastNode.range.at(1),
-                              consequentEnd,
-                            ),
-                          ),
-                        )
-                      }
+                  for (let max = sortedNodes.length, i = 0; i < max; i++) {
+                    if (sortedNodes.at(i)!.isDefaultClause) {
+                      sortedNodes.push(sortedNodes.splice(i, 1).at(0)!)
                     }
-
-                    return sortedGroup
-                  })
-                  .sort((a, b) => {
-                    if (isGroupContainsDefault(a)) {
-                      return 1
-                    } else if (isGroupContainsDefault(b)) {
-                      return -1
-                    }
-                    return compare(a.at(0)!, b.at(0)!, options)
-                  })
-
-                let sortedNodes = sortedNodeGroups.flat()
-
-                for (let max = sortedNodes.length, i = 0; i < max; i++) {
-                  if (sortedNodes.at(i)!.isDefaultClause) {
-                    sortedNodes.push(sortedNodes.splice(i, 1).at(0)!)
                   }
-                }
 
-                if (additionalFixes.length) {
-                  return additionalFixes
-                }
+                  if (additionalFixes.length) {
+                    return additionalFixes
+                  }
 
-                return makeFixes(fixer, nodes, sortedNodes, sourceCode)
-              },
-            })
-          }
-        })
+                  return makeFixes(fixer, nodes, sortedNodes, sourceCode)
+                },
+              })
+            }
+          })
+        }
       }
     },
   }),
