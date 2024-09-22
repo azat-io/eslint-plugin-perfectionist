@@ -3,6 +3,7 @@ import type { TSESTree } from '@typescript-eslint/types'
 import type { SortingNode } from '../typings'
 
 import { validateGroupsConfiguration } from '../utils/validate-groups-configuration'
+import { sortNodesByGroups } from '../utils/sort-nodes-by-groups'
 import { createEslintRule } from '../utils/create-eslint-rule'
 import { getLinesBetween } from '../utils/get-lines-between'
 import { getGroupNumber } from '../utils/get-group-number'
@@ -10,13 +11,10 @@ import { getSourceCode } from '../utils/get-source-code'
 import { toSingleLine } from '../utils/to-single-line'
 import { rangeToDiff } from '../utils/range-to-diff'
 import { getSettings } from '../utils/get-settings'
-import { isPositive } from '../utils/is-positive'
-import { sortNodes } from '../utils/sort-nodes'
 import { makeFixes } from '../utils/make-fixes'
 import { useGroups } from '../utils/use-groups'
 import { complete } from '../utils/complete'
 import { pairwise } from '../utils/pairwise'
-import { compare } from '../utils/compare'
 
 type MESSAGE_ID =
   | 'unexpectedObjectTypesGroupOrder'
@@ -228,58 +226,43 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
           )
 
         for (let nodes of formattedMembers) {
+          let groupedByKind
+          if (options.groupKind !== 'mixed') {
+            groupedByKind = nodes.reduce<SortingNode<TSESTree.TypeElement>[][]>(
+              (accumulator, currentNode) => {
+                let requiredIndex =
+                  options.groupKind === 'required-first' ? 0 : 1
+                let optionalIndex =
+                  options.groupKind === 'required-first' ? 1 : 0
+
+                if (
+                  'optional' in currentNode.node &&
+                  currentNode.node.optional
+                ) {
+                  accumulator[optionalIndex].push(currentNode)
+                } else {
+                  accumulator[requiredIndex].push(currentNode)
+                }
+                return accumulator
+              },
+              [[], []],
+            )
+          } else {
+            groupedByKind = [nodes]
+          }
+
+          let sortedNodes: SortingNode[] = []
+
+          for (let nodesByKind of groupedByKind) {
+            sortedNodes.push(...sortNodesByGroups(nodesByKind, options))
+          }
+
           pairwise(nodes, (left, right) => {
-            let leftNum = getGroupNumber(options.groups, left)
-            let rightNum = getGroupNumber(options.groups, right)
-
-            let getIsOptionalValue = (nodeValue: TSESTree.TypeElement) => {
-              if (
-                nodeValue.type === 'TSCallSignatureDeclaration' ||
-                nodeValue.type === 'TSConstructSignatureDeclaration' ||
-                nodeValue.type === 'TSIndexSignature'
-              ) {
-                return false
-              }
-              return nodeValue.optional
-            }
-
-            let isLeftOptional = getIsOptionalValue(left.node)
-            let isRightOptional = getIsOptionalValue(right.node)
-
-            let compareValue
-            if (
-              options.groupKind === 'optional-first' &&
-              isLeftOptional &&
-              !isRightOptional
-            ) {
-              compareValue = false
-            } else if (
-              options.groupKind === 'optional-first' &&
-              !isLeftOptional &&
-              isRightOptional
-            ) {
-              compareValue = true
-            } else if (
-              options.groupKind === 'required-first' &&
-              !isLeftOptional &&
-              isRightOptional
-            ) {
-              compareValue = false
-            } else if (
-              options.groupKind === 'required-first' &&
-              isLeftOptional &&
-              !isRightOptional
-            ) {
-              compareValue = true
-            } else if (leftNum > rightNum) {
-              compareValue = true
-            } else if (leftNum === rightNum) {
-              compareValue = isPositive(compare(left, right, options))
-            } else {
-              compareValue = false
-            }
-
-            if (compareValue) {
+            let indexOfLeft = sortedNodes.indexOf(left)
+            let indexOfRight = sortedNodes.indexOf(right)
+            if (indexOfLeft > indexOfRight) {
+              let leftNum = getGroupNumber(options.groups, left)
+              let rightNum = getGroupNumber(options.groups, right)
               context.report({
                 messageId:
                   leftNum !== rightNum
@@ -292,60 +275,7 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
                   rightGroup: right.group,
                 },
                 node: right.node,
-                fix: fixer => {
-                  let groupedByKind
-                  if (options.groupKind !== 'mixed') {
-                    groupedByKind = nodes.reduce<
-                      SortingNode<TSESTree.TypeElement>[][]
-                    >(
-                      (accumulator, currentNode) => {
-                        let requiredIndex =
-                          options.groupKind === 'required-first' ? 0 : 1
-                        let optionalIndex =
-                          options.groupKind === 'required-first' ? 1 : 0
-
-                        if (getIsOptionalValue(currentNode.node)) {
-                          accumulator[optionalIndex].push(currentNode)
-                        } else {
-                          accumulator[requiredIndex].push(currentNode)
-                        }
-                        return accumulator
-                      },
-                      [[], []],
-                    )
-                  } else {
-                    groupedByKind = [nodes]
-                  }
-
-                  let sortedNodes: SortingNode[] = []
-
-                  for (let nodesByKind of groupedByKind) {
-                    let grouped: {
-                      [key: string]: SortingNode[]
-                    } = {}
-
-                    for (let currentNode of nodesByKind) {
-                      let groupNum = getGroupNumber(options.groups, currentNode)
-
-                      if (!(groupNum in grouped)) {
-                        grouped[groupNum] = [currentNode]
-                      } else {
-                        grouped[groupNum] = sortNodes(
-                          [...grouped[groupNum], currentNode],
-                          options,
-                        )
-                      }
-                    }
-
-                    for (let group of Object.keys(grouped).sort(
-                      (a, b) => Number(a) - Number(b),
-                    )) {
-                      sortedNodes.push(...sortNodes(grouped[group], options))
-                    }
-                  }
-
-                  return makeFixes(fixer, nodes, sortedNodes, sourceCode)
-                },
+                fix: fixer => makeFixes(fixer, nodes, sortedNodes, sourceCode),
               })
             }
           })
