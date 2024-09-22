@@ -418,6 +418,202 @@ describe(ruleName, () => {
         },
       ],
     })
+
+    ruleTester.run(
+      `${ruleName}(${type}): allows to use new line as partition`,
+      rule,
+      {
+        valid: [],
+        invalid: [
+          {
+            code: dedent`
+              type Type =
+                D |
+                A |
+
+                C |
+
+                E |
+                B
+            `,
+            output: dedent`
+              type Type =
+                A |
+                D |
+
+                C |
+
+                B |
+                E
+            `,
+            options: [
+              {
+                type: 'alphabetical',
+                partitionByNewLine: true,
+              },
+            ],
+            errors: [
+              {
+                messageId: 'unexpectedUnionTypesOrder',
+                data: {
+                  left: 'D',
+                  right: 'A',
+                },
+              },
+              {
+                messageId: 'unexpectedUnionTypesOrder',
+                data: {
+                  left: 'E',
+                  right: 'B',
+                },
+              },
+            ],
+          },
+        ],
+      },
+    )
+
+    describe('partition comments', () => {
+      ruleTester.run(
+        `${ruleName}(${type}): allows to use partition comments`,
+        rule,
+        {
+          valid: [],
+          invalid: [
+            {
+              code: dedent`
+                type T =
+                  // Part: A
+                  CC |
+                  D |
+                  // Not partition comment
+                  BBB |
+                  // Part: B
+                  AAA |
+                  E |
+                  // Part: C
+                  GG |
+                  // Not partition comment
+                  FFF
+              `,
+              output: dedent`
+                type T =
+                  // Part: A
+                  // Not partition comment
+                  BBB |
+                  CC |
+                  D |
+                  // Part: B
+                  AAA |
+                  E |
+                  // Part: C
+                  // Not partition comment
+                  FFF |
+                  GG
+              `,
+              options: [
+                {
+                  ...options,
+                  partitionByComment: 'Part**',
+                },
+              ],
+              errors: [
+                {
+                  messageId: 'unexpectedUnionTypesOrder',
+                  data: {
+                    left: 'D',
+                    right: 'BBB',
+                  },
+                },
+                {
+                  messageId: 'unexpectedUnionTypesOrder',
+                  data: {
+                    left: 'GG',
+                    right: 'FFF',
+                  },
+                },
+              ],
+            },
+          ],
+        },
+      )
+
+      ruleTester.run(
+        `${ruleName}(${type}): allows to use all comments as parts`,
+        rule,
+        {
+          valid: [
+            {
+              code: dedent`
+                type T =
+                  // Comment
+                  BB |
+                  // Other comment
+                  A
+              `,
+              options: [
+                {
+                  ...options,
+                  partitionByComment: true,
+                },
+              ],
+            },
+          ],
+          invalid: [],
+        },
+      )
+
+      ruleTester.run(
+        `${ruleName}(${type}): allows to use multiple partition comments`,
+        rule,
+        {
+          valid: [],
+          invalid: [
+            {
+              code: dedent`
+                  type T =
+                    /* Partition Comment */
+                    // Part: A
+                    D |
+                    // Part: B
+                    AAA |
+                    C |
+                    BB |
+                    /* Other */
+                    E
+                `,
+              output: dedent`
+                  type T =
+                    /* Partition Comment */
+                    // Part: A
+                    D |
+                    // Part: B
+                    AAA |
+                    BB |
+                    C |
+                    /* Other */
+                    E
+                `,
+              options: [
+                {
+                  ...options,
+                  partitionByComment: ['Partition Comment', 'Part: *', 'Other'],
+                },
+              ],
+              errors: [
+                {
+                  messageId: 'unexpectedUnionTypesOrder',
+                  data: {
+                    left: 'C',
+                    right: 'BB',
+                  },
+                },
+              ],
+            },
+          ],
+        },
+      )
+    })
   })
 
   describe(`${ruleName}: sorting by natural order`, () => {
