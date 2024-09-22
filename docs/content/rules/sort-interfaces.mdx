@@ -169,6 +169,17 @@ Allows you to specify names or patterns for interfaces that should be ignored by
 
 You can specify their names or a glob pattern to ignore, for example: `'Component*'` to ignore all interfaces whose names begin with the word “Component”.
 
+### partitionByComment
+
+<sub>default: `false`</sub>
+
+Allows you to use comments to separate the properties of interfaces into logical groups. This can help in organizing and maintaining large interfaces by creating partitions within the interface based on comments.
+
+- `true` — All comments will be treated as delimiters, creating partitions.
+- `false` — Comments will not be used as delimiters.
+- `string` — A glob pattern to specify which comments should act as delimiters.
+- `string[]` — An array of glob patterns to specify which comments should act as delimiters.
+
 ### partitionByNewLine
 
 <sub>default: `false`</sub>

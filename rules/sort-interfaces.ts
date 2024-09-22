@@ -3,6 +3,8 @@ import { minimatch } from 'minimatch'
 import type { SortingNode } from '../typings'
 
 import { validateGroupsConfiguration } from '../utils/validate-groups-configuration'
+import { hasPartitionComment } from '../utils/is-partition-comment'
+import { getCommentsBefore } from '../utils/get-comments-before'
 import { createEslintRule } from '../utils/create-eslint-rule'
 import { isMemberOptional } from '../utils/is-member-optional'
 import { getLinesBetween } from '../utils/get-lines-between'
@@ -30,6 +32,7 @@ type Options<T extends string[]> = [
     groupKind: 'optional-first' | 'required-first' | 'mixed'
     customGroups: { [key: string]: string[] | string }
     type: 'alphabetical' | 'line-length' | 'natural'
+    partitionByComment: string[] | boolean | string
     groups: (Group<T>[] | Group<T>)[]
     partitionByNewLine: boolean
     ignorePattern: string[]
@@ -73,6 +76,24 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
               type: 'string',
             },
             type: 'array',
+          },
+          partitionByComment: {
+            description:
+              'Allows you to use comments to separate the interface properties into logical groups.',
+            anyOf: [
+              {
+                type: 'boolean',
+              },
+              {
+                type: 'string',
+              },
+              {
+                type: 'array',
+                items: {
+                  type: 'string',
+                },
+              },
+            ],
           },
           partitionByNewLine: {
             description:
@@ -135,6 +156,7 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
       order: 'asc',
       ignoreCase: true,
       ignorePattern: [],
+      partitionByComment: false,
       partitionByNewLine: false,
       groupKind: 'mixed',
       groups: [],
@@ -146,6 +168,7 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
       if (node.body.body.length > 1) {
         let settings = getSettings(context.settings)
         let options = complete(context.options.at(0), settings, {
+          partitionByComment: false,
           partitionByNewLine: false,
           type: 'alphabetical',
           groupKind: 'mixed',
@@ -163,6 +186,7 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
         )
 
         let sourceCode = getSourceCode(context)
+        let partitionComment = options.partitionByComment
 
         if (
           !options.ignorePattern.some(pattern =>
@@ -176,6 +200,13 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
               if (element.type === 'TSCallSignatureDeclaration') {
                 accumulator.push([])
                 return accumulator
+              }
+
+              if (partitionComment) {
+                let comments = getCommentsBefore(element, sourceCode)
+                if (hasPartitionComment(partitionComment, comments)) {
+                  accumulator.push([])
+                }
               }
 
               let lastElement = accumulator.at(-1)?.at(-1)
@@ -353,7 +384,9 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
                       sortedNodes = toSorted(nodes)
                     }
 
-                    return makeFixes(fixer, nodes, sortedNodes, sourceCode)
+                    return makeFixes(fixer, nodes, sortedNodes, sourceCode, {
+                      partitionComment,
+                    })
                   },
                 })
               }
