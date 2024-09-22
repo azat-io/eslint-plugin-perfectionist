@@ -1,6 +1,9 @@
 import type { SortingNode } from '../typings'
 
+import { hasPartitionComment } from '../utils/is-partition-comment'
+import { getCommentsBefore } from '../utils/get-comments-before'
 import { createEslintRule } from '../utils/create-eslint-rule'
+import { getLinesBetween } from '../utils/get-lines-between'
 import { getGroupNumber } from '../utils/get-group-number'
 import { getSourceCode } from '../utils/get-source-code'
 import { rangeToDiff } from '../utils/range-to-diff'
@@ -18,6 +21,8 @@ type Options = [
   Partial<{
     groupKind: 'values-first' | 'types-first' | 'mixed'
     type: 'alphabetical' | 'line-length' | 'natural'
+    partitionByComment: string[] | boolean | string
+    partitionByNewLine: boolean
     order: 'desc' | 'asc'
     ignoreCase: boolean
   }>,
@@ -56,6 +61,29 @@ export default createEslintRule<Options, MESSAGE_ID>({
             enum: ['mixed', 'values-first', 'types-first'],
             type: 'string',
           },
+          partitionByComment: {
+            description:
+              'Allows you to use comments to separate the named exports members into logical groups.',
+            anyOf: [
+              {
+                type: 'array',
+                items: {
+                  type: 'string',
+                },
+              },
+              {
+                type: 'boolean',
+              },
+              {
+                type: 'string',
+              },
+            ],
+          },
+          partitionByNewLine: {
+            description:
+              'Allows to use spaces to separate the nodes into logical groups.',
+            type: 'boolean',
+          },
         },
         additionalProperties: false,
       },
@@ -70,6 +98,8 @@ export default createEslintRule<Options, MESSAGE_ID>({
       type: 'alphabetical',
       order: 'asc',
       ignoreCase: true,
+      partitionByNewLine: false,
+      partitionByComment: false,
       groupKind: 'mixed',
     },
   ],
@@ -82,25 +112,45 @@ export default createEslintRule<Options, MESSAGE_ID>({
           type: 'alphabetical',
           groupKind: 'mixed',
           ignoreCase: true,
+          partitionByNewLine: false,
+          partitionByComment: false,
           order: 'asc',
         } as const)
 
         let sourceCode = getSourceCode(context)
+        let partitionComment = options.partitionByComment
 
-        let nodes: SortingNode[] = node.specifiers.map(specifier => {
+        let formattedMembers: SortingNode[][] = [[]]
+        for (let specifier of node.specifiers) {
           let group: undefined | 'value' | 'type'
           if (specifier.exportKind === 'type') {
             group = 'type'
           } else {
             group = 'value'
           }
-          return {
+
+          let lastSortingNode = formattedMembers.at(-1)?.at(-1)
+          let sortingNode: SortingNode = {
             size: rangeToDiff(specifier.range),
             name: specifier.local.name,
             node: specifier,
             group,
           }
-        })
+          if (
+            (partitionComment &&
+              hasPartitionComment(
+                partitionComment,
+                getCommentsBefore(specifier, sourceCode),
+              )) ||
+            (options.partitionByNewLine &&
+              lastSortingNode &&
+              getLinesBetween(sourceCode, lastSortingNode, sortingNode))
+          ) {
+            formattedMembers.push([])
+          }
+
+          formattedMembers.at(-1)!.push(sortingNode)
+        }
 
         let shouldGroupByKind = options.groupKind !== 'mixed'
         let groupKindOrder =
@@ -108,33 +158,38 @@ export default createEslintRule<Options, MESSAGE_ID>({
             ? ['value', 'type']
             : ['type', 'value']
 
-        pairwise(nodes, (left, right) => {
-          let leftNum = getGroupNumber(groupKindOrder, left)
-          let rightNum = getGroupNumber(groupKindOrder, right)
+        for (let nodes of formattedMembers) {
+          pairwise(nodes, (left, right) => {
+            let leftNum = getGroupNumber(groupKindOrder, left)
+            let rightNum = getGroupNumber(groupKindOrder, right)
 
-          if (
-            (shouldGroupByKind && leftNum > rightNum) ||
-            ((!shouldGroupByKind || leftNum === rightNum) &&
-              isPositive(compare(left, right, options)))
-          ) {
-            let sortedNodes = shouldGroupByKind
-              ? groupKindOrder
-                  .map(group => nodes.filter(n => n.group === group))
-                  .map(groupedNodes => sortNodes(groupedNodes, options))
-                  .flat()
-              : sortNodes(nodes, options)
+            if (
+              (shouldGroupByKind && leftNum > rightNum) ||
+              ((!shouldGroupByKind || leftNum === rightNum) &&
+                isPositive(compare(left, right, options)))
+            ) {
+              let sortedNodes = shouldGroupByKind
+                ? groupKindOrder
+                    .map(group => nodes.filter(n => n.group === group))
+                    .map(groupedNodes => sortNodes(groupedNodes, options))
+                    .flat()
+                : sortNodes(nodes, options)
 
-            context.report({
-              messageId: 'unexpectedNamedExportsOrder',
-              data: {
-                left: left.name,
-                right: right.name,
-              },
-              node: right.node,
-              fix: fixer => makeFixes(fixer, nodes, sortedNodes, sourceCode),
-            })
-          }
-        })
+              context.report({
+                messageId: 'unexpectedNamedExportsOrder',
+                data: {
+                  left: left.name,
+                  right: right.name,
+                },
+                node: right.node,
+                fix: fixer =>
+                  makeFixes(fixer, nodes, sortedNodes, sourceCode, {
+                    partitionComment,
+                  }),
+              })
+            }
+          })
+        }
       }
     },
   }),

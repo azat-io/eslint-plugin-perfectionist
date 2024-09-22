@@ -151,6 +151,210 @@ describe(ruleName, () => {
         ],
       },
     )
+
+    ruleTester.run(
+      `${ruleName}(${type}): allows to use new line as partition`,
+      rule,
+      {
+        valid: [],
+        invalid: [
+          {
+            code: dedent`
+              export {
+                D,
+                A,
+
+                C,
+
+                E,
+                B,
+              }
+            `,
+            output: dedent`
+              export {
+                A,
+                D,
+
+                C,
+
+                B,
+                E,
+              }
+            `,
+            options: [
+              {
+                ...options,
+                partitionByNewLine: true,
+              },
+            ],
+            errors: [
+              {
+                messageId: 'unexpectedNamedExportsOrder',
+                data: {
+                  left: 'D',
+                  right: 'A',
+                },
+              },
+              {
+                messageId: 'unexpectedNamedExportsOrder',
+                data: {
+                  left: 'E',
+                  right: 'B',
+                },
+              },
+            ],
+          },
+        ],
+      },
+    )
+
+    describe('partition comments', () => {
+      ruleTester.run(
+        `${ruleName}(${type}): allows to use partition comments`,
+        rule,
+        {
+          valid: [],
+          invalid: [
+            {
+              code: dedent`
+                export {
+                  // Part: A
+                  CC,
+                  type D,
+                  // Not partition comment
+                  BBB,
+                  // Part: B
+                  AAAA,
+                  E,
+                  // Part: C
+                  GG,
+                  // Not partition comment
+                  FFF,
+                }
+              `,
+              output: dedent`
+                export {
+                  // Part: A
+                  type D,
+                  // Not partition comment
+                  BBB,
+                  CC,
+                  // Part: B
+                  AAAA,
+                  E,
+                  // Part: C
+                  // Not partition comment
+                  FFF,
+                  GG,
+                }
+              `,
+              options: [
+                {
+                  ...options,
+                  partitionByComment: 'Part**',
+                  groupKind: 'types-first',
+                },
+              ],
+              errors: [
+                {
+                  messageId: 'unexpectedNamedExportsOrder',
+                  data: {
+                    left: 'CC',
+                    right: 'D',
+                  },
+                },
+                {
+                  messageId: 'unexpectedNamedExportsOrder',
+                  data: {
+                    left: 'GG',
+                    right: 'FFF',
+                  },
+                },
+              ],
+            },
+          ],
+        },
+      )
+
+      ruleTester.run(
+        `${ruleName}(${type}): allows to use all comments as parts`,
+        rule,
+        {
+          valid: [
+            {
+              code: dedent`
+                export {
+                  // Comment
+                  BB,
+                  // Other comment
+                  A,
+                }
+              `,
+              options: [
+                {
+                  ...options,
+                  partitionByComment: true,
+                },
+              ],
+            },
+          ],
+          invalid: [],
+        },
+      )
+
+      ruleTester.run(
+        `${ruleName}(${type}): allows to use multiple partition comments`,
+        rule,
+        {
+          valid: [],
+          invalid: [
+            {
+              code: dedent`
+                export {
+                  /* Partition Comment */
+                  // Part: A
+                  D,
+                  // Part: B
+                  AAA,
+                  C,
+                  BB,
+                  /* Other */
+                  E,
+                }
+              `,
+              output: dedent`
+                export {
+                  /* Partition Comment */
+                  // Part: A
+                  D,
+                  // Part: B
+                  AAA,
+                  BB,
+                  C,
+                  /* Other */
+                  E,
+                }
+              `,
+              options: [
+                {
+                  ...options,
+                  partitionByComment: ['Partition Comment', 'Part: *', 'Other'],
+                },
+              ],
+              errors: [
+                {
+                  messageId: 'unexpectedNamedExportsOrder',
+                  data: {
+                    left: 'C',
+                    right: 'BB',
+                  },
+                },
+              ],
+            },
+          ],
+        },
+      )
+    })
   })
 
   describe(`${ruleName}: sorting by natural order`, () => {
