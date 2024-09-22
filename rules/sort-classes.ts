@@ -72,7 +72,7 @@ export default createEslintRule<SortClassesOptions, MESSAGE_ID>({
           },
           partitionByComment: {
             description:
-              'Allows to use comments to separate the nodes into logical groups.',
+              'Allows to use comments to separate the class members into logical groups.',
             anyOf: [
               {
                 type: 'array',
