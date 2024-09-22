@@ -2,7 +2,10 @@ import type { TSESTree } from '@typescript-eslint/types'
 
 import type { SortingNode } from '../typings'
 
+import { hasPartitionComment } from '../utils/is-partition-comment'
+import { getCommentsBefore } from '../utils/get-comments-before'
 import { createEslintRule } from '../utils/create-eslint-rule'
+import { getLinesBetween } from '../utils/get-lines-between'
 import { getSourceCode } from '../utils/get-source-code'
 import { toSingleLine } from '../utils/to-single-line'
 import { rangeToDiff } from '../utils/range-to-diff'
@@ -19,6 +22,8 @@ type MESSAGE_ID = 'unexpectedMapElementsOrder'
 type Options = [
   Partial<{
     type: 'alphabetical' | 'line-length' | 'natural'
+    partitionByComment: string[] | boolean | string
+    partitionByNewLine: boolean
     order: 'desc' | 'asc'
     ignoreCase: boolean
   }>,
@@ -52,6 +57,29 @@ export default createEslintRule<Options, MESSAGE_ID>({
               'Controls whether sorting should be case-sensitive or not.',
             type: 'boolean',
           },
+          partitionByComment: {
+            description:
+              'Allows you to use comments to separate the maps members into logical groups.',
+            anyOf: [
+              {
+                type: 'array',
+                items: {
+                  type: 'string',
+                },
+              },
+              {
+                type: 'boolean',
+              },
+              {
+                type: 'string',
+              },
+            ],
+          },
+          partitionByNewLine: {
+            description:
+              'Allows to use spaces to separate the nodes into logical groups.',
+            type: 'boolean',
+          },
         },
         additionalProperties: false,
       },
@@ -66,6 +94,8 @@ export default createEslintRule<Options, MESSAGE_ID>({
       type: 'alphabetical',
       order: 'asc',
       ignoreCase: true,
+      partitionByComment: false,
+      partitionByNewLine: false,
     },
   ],
   create: context => ({
@@ -85,9 +115,12 @@ export default createEslintRule<Options, MESSAGE_ID>({
             type: 'alphabetical',
             ignoreCase: true,
             order: 'asc',
+            partitionByComment: false,
+            partitionByNewLine: false,
           } as const)
 
           let sourceCode = getSourceCode(context)
+          let partitionComment = options.partitionByComment
 
           let parts: TSESTree.Expression[][] = elements.reduce(
             (
@@ -105,7 +138,8 @@ export default createEslintRule<Options, MESSAGE_ID>({
           )
 
           for (let part of parts) {
-            let nodes: SortingNode[] = part.map(element => {
+            let formattedMembers: SortingNode[][] = [[]]
+            for (let element of part) {
               let name: string
 
               if (element.type === 'ArrayExpression') {
@@ -122,32 +156,53 @@ export default createEslintRule<Options, MESSAGE_ID>({
                 name = sourceCode.text.slice(...element.range)
               }
 
-              return {
+              let lastSortingNode = formattedMembers.at(-1)?.at(-1)
+              let sortingNode: SortingNode = {
                 size: rangeToDiff(element.range),
                 node: element,
                 name,
               }
-            })
 
-            pairwise(nodes, (left, right) => {
-              if (isPositive(compare(left, right, options))) {
-                context.report({
-                  messageId: 'unexpectedMapElementsOrder',
-                  data: {
-                    left: toSingleLine(left.name),
-                    right: toSingleLine(right.name),
-                  },
-                  node: right.node,
-                  fix: fixer =>
-                    makeFixes(
-                      fixer,
-                      nodes,
-                      sortNodes(nodes, options),
-                      sourceCode,
-                    ),
-                })
+              if (
+                (partitionComment &&
+                  hasPartitionComment(
+                    partitionComment,
+                    getCommentsBefore(element, sourceCode),
+                  )) ||
+                (options.partitionByNewLine &&
+                  lastSortingNode &&
+                  getLinesBetween(sourceCode, lastSortingNode, sortingNode))
+              ) {
+                formattedMembers.push([])
               }
-            })
+
+              formattedMembers.at(-1)!.push(sortingNode)
+            }
+
+            for (let nodes of formattedMembers) {
+              pairwise(nodes, (left, right) => {
+                if (isPositive(compare(left, right, options))) {
+                  context.report({
+                    messageId: 'unexpectedMapElementsOrder',
+                    data: {
+                      left: toSingleLine(left.name),
+                      right: toSingleLine(right.name),
+                    },
+                    node: right.node,
+                    fix: fixer =>
+                      makeFixes(
+                        fixer,
+                        nodes,
+                        sortNodes(nodes, options),
+                        sourceCode,
+                        {
+                          partitionComment,
+                        },
+                      ),
+                  })
+                }
+              })
+            }
           }
         }
       }
