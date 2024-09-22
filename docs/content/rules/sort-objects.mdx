@@ -188,8 +188,9 @@ Controls whether sorting should be case-sensitive or not.
 Allows you to use comments to separate the keys of objects into logical groups. This can help in organizing and maintaining large enums by creating partitions within the enum based on comments.
 
 - `true` — All comments will be treated as delimiters, creating partitions.
--	`false` — Comments will not be used as delimiters.
-- string — A glob pattern to specify which comments should act as delimiters.
+- `false` — Comments will not be used as delimiters.
+- `string` — A glob pattern to specify which comments should act as delimiters.
+- `string[]` — An array of glob patterns to specify which comments should act as delimiters.
 
 ### partitionByNewLine
 
