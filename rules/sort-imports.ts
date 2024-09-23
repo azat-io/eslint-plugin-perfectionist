@@ -233,7 +233,8 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
   create: context => {
     let settings = getSettings(context.settings)
 
-    let options = complete(context.options.at(0), settings, {
+    let defaultOptions = context.options.at(0)
+    let options = complete(defaultOptions, settings, {
       groups: [
         'type',
         ['builtin', 'external'],
@@ -246,7 +247,8 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
       ],
       matcher: 'minimatch',
       customGroups: { type: {}, value: {} },
-      internalPattern: ['~/**'],
+      internalPattern:
+        defaultOptions?.matcher === 'regex' ? ['^~/.*'] : ['~/**'],
       newlinesBetween: 'always',
       sortSideEffects: false,
       type: 'alphabetical',
