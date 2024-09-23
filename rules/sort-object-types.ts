@@ -3,8 +3,8 @@ import type { TSESTree } from '@typescript-eslint/types'
 import type { SortingNode } from '../typings'
 
 import { validateGroupsConfiguration } from '../utils/validate-groups-configuration'
-import { sortNodesByGroups } from '../utils/sort-nodes-by-groups'
 import { hasPartitionComment } from '../utils/is-partition-comment'
+import { sortNodesByGroups } from '../utils/sort-nodes-by-groups'
 import { getCommentsBefore } from '../utils/get-comments-before'
 import { createEslintRule } from '../utils/create-eslint-rule'
 import { getLinesBetween } from '../utils/get-lines-between'
@@ -257,7 +257,7 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
         for (let nodes of formattedMembers) {
           let groupedByKind
           if (options.groupKind !== 'mixed') {
-            groupedByKind = nodes.reduce<SortingNode<TSESTree.TypeElement>[][]>(
+            groupedByKind = nodes.reduce<SortObjectTypesSortingNode[][]>(
               (accumulator, currentNode) => {
                 let requiredIndex =
                   options.groupKind === 'required-first' ? 0 : 1
@@ -280,7 +280,7 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
             groupedByKind = [nodes]
           }
 
-          let sortedNodes: SortingNode[] = []
+          let sortedNodes: SortObjectTypesSortingNode[] = []
 
           for (let nodesByKind of groupedByKind) {
             sortedNodes.push(...sortNodesByGroups(nodesByKind, options))
@@ -304,7 +304,10 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
                   rightGroup: right.group,
                 },
                 node: right.node,
-                fix: fixer => makeFixes(fixer, nodes, sortedNodes, sourceCode),
+                fix: fixer =>
+                  makeFixes(fixer, nodes, sortedNodes, sourceCode, {
+                    partitionComment,
+                  }),
               })
             }
           })
