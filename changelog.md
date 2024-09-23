@@ -1,6 +1,35 @@
 # Changelog
 
 
+## v3.7.0
+
+[compare changes](https://github.com/azat-io/eslint-plugin-perfectionist/compare/v3.6.0...v3.7.0)
+
+### 🚀 Features
+
+- Add partition by new line and group kind in sort-exports ([4db2c5e](https://github.com/azat-io/eslint-plugin-perfectionist/commit/4db2c5e))
+- Add dependency order errors ([125e1cb](https://github.com/azat-io/eslint-plugin-perfectionist/commit/125e1cb))
+- Add partition by comment option in sort-exports ([f6b7803](https://github.com/azat-io/eslint-plugin-perfectionist/commit/f6b7803))
+- Add partition by comment and partition by new line in sort-intersection-types ([9fe8abd](https://github.com/azat-io/eslint-plugin-perfectionist/commit/9fe8abd))
+- Add partition by comment and partition by new line in sort-union-types ([4a0931b](https://github.com/azat-io/eslint-plugin-perfectionist/commit/4a0931b))
+- Add partition by comment and partition by new line in sort-named-imports ([41e18b9](https://github.com/azat-io/eslint-plugin-perfectionist/commit/41e18b9))
+- Add partition by comment and partition by new line in sort-named-exports ([928246e](https://github.com/azat-io/eslint-plugin-perfectionist/commit/928246e))
+- Add partition by comment and partition by new line in sort-maps ([7bf6756](https://github.com/azat-io/eslint-plugin-perfectionist/commit/7bf6756))
+- Add partition by comment and partition by new line in sort-variable-declarations ([aa29335](https://github.com/azat-io/eslint-plugin-perfectionist/commit/aa29335))
+- Add partition by comment and partition by new line in sort-interfaces ([fae756a](https://github.com/azat-io/eslint-plugin-perfectionist/commit/fae756a))
+- Add partition by comment and partition by new line in sort-array-includes and sort-sets ([e4fc538](https://github.com/azat-io/eslint-plugin-perfectionist/commit/e4fc538))
+- Add partition by comment option in sort-objects-types ([69b643e](https://github.com/azat-io/eslint-plugin-perfectionist/commit/69b643e))
+- Add partition by new line option in sort-enums ([defd370](https://github.com/azat-io/eslint-plugin-perfectionist/commit/defd370))
+
+### 🐞 Bug Fixes
+
+- Prioritize dependencies over partitions by comment and partitions by line ([199ab39](https://github.com/azat-io/eslint-plugin-perfectionist/commit/199ab39))
+
+### ❤️ Contributors
+
+- Hugo ([@hugop95](http://github.com/hugop95))
+- Chirokas ([@chirokas](http://github.com/chirokas))
+
 ## v3.6.0
 
 [compare changes](https://github.com/azat-io/eslint-plugin-perfectionist/compare/v3.5.0...v3.6.0)
