@@ -6,17 +6,15 @@ import path from 'node:path'
 import type { SortingNode } from '../typings'
 
 import { validateGroupsConfiguration } from '../utils/validate-groups-configuration'
+import { sortNodesByGroups } from '../utils/sort-nodes-by-groups'
 import { createEslintRule } from '../utils/create-eslint-rule'
 import { getGroupNumber } from '../utils/get-group-number'
 import { getSourceCode } from '../utils/get-source-code'
 import { rangeToDiff } from '../utils/range-to-diff'
-import { isPositive } from '../utils/is-positive'
 import { useGroups } from '../utils/use-groups'
-import { sortNodes } from '../utils/sort-nodes'
 import { makeFixes } from '../utils/make-fixes'
 import { complete } from '../utils/complete'
 import { pairwise } from '../utils/pairwise'
-import { compare } from '../utils/compare'
 
 type MESSAGE_ID =
   | 'unexpectedVueAttributesGroupOrder'
@@ -206,15 +204,13 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
           )
 
           for (let nodes of parts) {
+            let sortedNodes = sortNodesByGroups(nodes, options)
             pairwise(nodes, (left, right) => {
-              let leftNum = getGroupNumber(options.groups, left)
-              let rightNum = getGroupNumber(options.groups, right)
-
-              if (
-                leftNum > rightNum ||
-                (leftNum === rightNum &&
-                  isPositive(compare(left, right, options)))
-              ) {
+              let indexOfLeft = sortedNodes.indexOf(left)
+              let indexOfRight = sortedNodes.indexOf(right)
+              if (indexOfLeft > indexOfRight) {
+                let leftNum = getGroupNumber(options.groups, left)
+                let rightNum = getGroupNumber(options.groups, right)
                 context.report({
                   messageId:
                     leftNum !== rightNum
@@ -226,36 +222,9 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
                     right: right.name,
                     rightGroup: right.group,
                   },
-                  // @ts-ignore
                   node: right.node,
-                  fix: fixer => {
-                    let grouped: {
-                      [key: string]: SortingNode[]
-                    } = {}
-
-                    for (let currentNode of nodes) {
-                      let groupNum = getGroupNumber(options.groups, currentNode)
-
-                      if (!(groupNum in grouped)) {
-                        grouped[groupNum] = [currentNode]
-                      } else {
-                        grouped[groupNum] = sortNodes(
-                          [...grouped[groupNum], currentNode],
-                          options,
-                        )
-                      }
-                    }
-
-                    let sortedNodes: SortingNode[] = []
-
-                    for (let group of Object.keys(grouped).sort(
-                      (a, b) => Number(a) - Number(b),
-                    )) {
-                      sortedNodes.push(...sortNodes(grouped[group], options))
-                    }
-
-                    return makeFixes(fixer, nodes, sortedNodes, sourceCode)
-                  },
+                  fix: fixer =>
+                    makeFixes(fixer, nodes, sortedNodes, sourceCode),
                 })
               }
             })
