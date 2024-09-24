@@ -1,7 +1,5 @@
 import type { TSESTree } from '@typescript-eslint/utils'
 
-import { minimatch } from 'minimatch'
-
 import type {
   SortClassesOptions,
   SingleCustomGroup,
@@ -11,8 +9,11 @@ import type {
 } from './sort-classes.types'
 import type { CompareOptions } from '../utils/compare'
 
+import { matches } from '../utils/matches'
+
 interface CustomGroupMatchesProps {
   customGroup: SingleCustomGroup | CustomGroupBlock
+  matcher: 'minimatch' | 'regex'
   selectors: Selector[]
   modifiers: Modifier[]
   decorators: string[]
@@ -184,12 +185,10 @@ export const customGroupMatches = (props: CustomGroupMatchesProps): boolean => {
     'elementNamePattern' in props.customGroup &&
     props.customGroup.elementNamePattern
   ) {
-    let matchesElementNamePattern: boolean = minimatch(
+    let matchesElementNamePattern: boolean = matches(
       props.elementName,
       props.customGroup.elementNamePattern,
-      {
-        nocomment: true,
-      },
+      props.matcher,
     )
     if (!matchesElementNamePattern) {
       return false
@@ -202,10 +201,7 @@ export const customGroupMatches = (props: CustomGroupMatchesProps): boolean => {
   ) {
     let decoratorPattern = props.customGroup.decoratorNamePattern
     let matchesDecoratorNamePattern: boolean = props.decorators.some(
-      decorator =>
-        minimatch(decorator, decoratorPattern, {
-          nocomment: true,
-        }),
+      decorator => matches(decorator, decoratorPattern, props.matcher),
     )
     if (!matchesDecoratorNamePattern) {
       return false

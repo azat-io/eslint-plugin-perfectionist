@@ -33,6 +33,7 @@ type Options<T extends string[]> = [
     customGroups: { [key in T[number]]: string[] | string }
     type: 'alphabetical' | 'line-length' | 'natural'
     groups: (Group<T>[] | Group<T>)[]
+    matcher: 'minimatch' | 'regex'
     order: 'desc' | 'asc'
     ignoreCase: boolean
   }>,
@@ -60,6 +61,11 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
               'Determines whether the sorted items should be in ascending or descending order.',
             type: 'string',
             enum: ['asc', 'desc'],
+          },
+          matcher: {
+            description: 'Specifies the string matcher.',
+            type: 'string',
+            enum: ['minimatch', 'regex'],
           },
           ignoreCase: {
             description:
@@ -116,6 +122,7 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
       type: 'alphabetical',
       order: 'asc',
       ignoreCase: true,
+      matcher: 'minimatch',
       groups: [],
       customGroups: {},
     },
@@ -134,6 +141,7 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
             type: 'alphabetical',
             ignoreCase: true,
             customGroups: {},
+            matcher: 'minimatch',
             order: 'asc',
             groups: [],
           } as const)
@@ -155,9 +163,8 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
 
               let name: string
 
-              let { getGroup, defineGroup, setCustomGroups } = useGroups(
-                options.groups,
-              )
+              let { getGroup, defineGroup, setCustomGroups } =
+                useGroups(options)
 
               if (attribute.key.type === 'SvelteSpecialDirectiveKey') {
                 name = sourceCode.text.slice(...attribute.key.range)

@@ -1,9 +1,11 @@
 import { matches } from './matches'
 
-export let useGroups = (
-  groups: (string[] | string)[],
-  matcher: 'minimatch' | 'regex' = 'minimatch',
-) => {
+interface UseGroupProps {
+  matcher: 'minimatch' | 'regex'
+  groups: (string[] | string)[]
+}
+
+export let useGroups = ({ matcher, groups }: UseGroupProps) => {
   let group: undefined | string
   // For lookup performance
   let groupsSet = new Set(groups.flat())

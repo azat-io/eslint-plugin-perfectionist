@@ -27,6 +27,7 @@ export type Options = [
     groupKind: 'literals-first' | 'spreads-first' | 'mixed'
     type: 'alphabetical' | 'line-length' | 'natural'
     partitionByComment: string[] | boolean | string
+    matcher: 'minimatch' | 'regex'
     partitionByNewLine: boolean
     order: 'desc' | 'asc'
     ignoreCase: boolean
@@ -46,6 +47,11 @@ export let jsonSchema: JSONSchema4 = {
         'Determines whether the sorted items should be in ascending or descending order.',
       type: 'string',
       enum: ['asc', 'desc'],
+    },
+    matcher: {
+      description: 'Specifies the string matcher.',
+      type: 'string',
+      enum: ['minimatch', 'regex'],
     },
     ignoreCase: {
       description: 'Controls whether sorting should be case-sensitive or not.',
@@ -102,6 +108,7 @@ export default createEslintRule<Options, MESSAGE_ID>({
       type: 'alphabetical',
       order: 'asc',
       ignoreCase: true,
+      matcher: 'minimatch',
       groupKind: 'literals-first',
       partitionByComment: false,
       partitionByNewLine: false,
@@ -137,6 +144,7 @@ export let sortArray = <MessageIds extends string>(
       groupKind: 'literals-first',
       type: 'alphabetical',
       ignoreCase: true,
+      matcher: 'minimatch',
       order: 'asc',
       partitionByComment: false,
       partitionByNewLine: false,
@@ -171,6 +179,7 @@ export let sortArray = <MessageIds extends string>(
               hasPartitionComment(
                 partitionComment,
                 getCommentsBefore(element, sourceCode),
+                options.matcher,
               )) ||
             (options.partitionByNewLine &&
               lastSortingNode &&
@@ -221,9 +230,7 @@ export let sortArray = <MessageIds extends string>(
                       .flat()
                   : sortNodes(nodes, options)
 
-              return makeFixes(fixer, nodes, sortedNodes, sourceCode, {
-                partitionComment,
-              })
+              return makeFixes(fixer, nodes, sortedNodes, sourceCode, options)
             },
           })
         }

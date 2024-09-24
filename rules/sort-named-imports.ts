@@ -22,6 +22,7 @@ type Options = [
     groupKind: 'values-first' | 'types-first' | 'mixed'
     type: 'alphabetical' | 'line-length' | 'natural'
     partitionByComment: string[] | boolean | string
+    matcher: 'minimatch' | 'regex'
     partitionByNewLine: boolean
     order: 'desc' | 'asc'
     ignoreAlias: boolean
@@ -51,6 +52,11 @@ export default createEslintRule<Options, MESSAGE_ID>({
               'Determines whether the sorted items should be in ascending or descending order.',
             type: 'string',
             enum: ['asc', 'desc'],
+          },
+          matcher: {
+            description: 'Specifies the string matcher.',
+            type: 'string',
+            enum: ['minimatch', 'regex'],
           },
           ignoreCase: {
             description:
@@ -123,6 +129,7 @@ export default createEslintRule<Options, MESSAGE_ID>({
           ignoreAlias: false,
           groupKind: 'mixed',
           ignoreCase: true,
+          matcher: 'minimatch',
           partitionByNewLine: false,
           partitionByComment: false,
           order: 'asc',
@@ -162,6 +169,7 @@ export default createEslintRule<Options, MESSAGE_ID>({
               hasPartitionComment(
                 partitionComment,
                 getCommentsBefore(specifier, sourceCode),
+                options.matcher,
               )) ||
             (options.partitionByNewLine &&
               lastSortingNode &&
@@ -203,9 +211,7 @@ export default createEslintRule<Options, MESSAGE_ID>({
                 },
                 node: right.node,
                 fix: fixer =>
-                  makeFixes(fixer, nodes, sortedNodes, sourceCode, {
-                    partitionComment,
-                  }),
+                  makeFixes(fixer, nodes, sortedNodes, sourceCode, options),
               })
             }
           })

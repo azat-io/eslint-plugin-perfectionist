@@ -65,6 +65,11 @@ export default createEslintRule<SortClassesOptions, MESSAGE_ID>({
             type: 'string',
             enum: ['asc', 'desc'],
           },
+          matcher: {
+            description: 'Specifies the string matcher.',
+            type: 'string',
+            enum: ['minimatch', 'regex'],
+          },
           ignoreCase: {
             description:
               'Controls whether sorting should be case-sensitive or not.',
@@ -181,6 +186,7 @@ export default createEslintRule<SortClassesOptions, MESSAGE_ID>({
       type: 'alphabetical',
       order: 'asc',
       ignoreCase: true,
+      matcher: 'minimatch',
       partitionByComment: false,
       groups: [
         'index-signature',
@@ -221,6 +227,7 @@ export default createEslintRule<SortClassesOptions, MESSAGE_ID>({
             ['get-method', 'set-method'],
             'unknown',
           ],
+          matcher: 'minimatch',
           partitionByComment: false,
           type: 'alphabetical',
           ignoreCase: true,
@@ -377,16 +384,18 @@ export default createEslintRule<SortClassesOptions, MESSAGE_ID>({
 
             if (
               options.partitionByComment &&
-              hasPartitionComment(options.partitionByComment, comments)
+              hasPartitionComment(
+                options.partitionByComment,
+                comments,
+                options.matcher,
+              )
             ) {
               accumulator.push([])
             }
 
             let name: string
             let dependencies: string[] = []
-            let { getGroup, defineGroup, setCustomGroups } = useGroups(
-              options.groups,
-            )
+            let { getGroup, defineGroup, setCustomGroups } = useGroups(options)
 
             if (member.type === 'StaticBlock') {
               name = 'static'
@@ -589,6 +598,7 @@ export default createEslintRule<SortClassesOptions, MESSAGE_ID>({
                     modifiers,
                     selectors,
                     decorators,
+                    matcher: options.matcher,
                   })
                 ) {
                   defineGroup(customGroup.groupName, true)
@@ -709,9 +719,7 @@ export default createEslintRule<SortClassesOptions, MESSAGE_ID>({
               },
               node: right.node,
               fix: (fixer: TSESLint.RuleFixer) =>
-                makeFixes(fixer, nodes, sortedNodes, sourceCode, {
-                  partitionComment: options.partitionByComment,
-                }),
+                makeFixes(fixer, nodes, sortedNodes, sourceCode, options),
             })
           }
         })

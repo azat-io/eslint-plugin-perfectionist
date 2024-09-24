@@ -338,10 +338,7 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
 
       let isSibling = (value: string) => value.startsWith('./')
 
-      let { getGroup, defineGroup, setCustomGroups } = useGroups(
-        options.groups,
-        options.matcher,
-      )
+      let { getGroup, defineGroup, setCustomGroups } = useGroups(options)
 
       let isInternal = (value: string) =>
         options.internalPattern.length &&
@@ -568,8 +565,10 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
 
             fixes.push(
               fixer.replaceTextRange(
-                getNodeRange(nodesToFix.at(i)!.node, sourceCode),
-                sourceCode.text.slice(...getNodeRange(node.node, sourceCode)),
+                getNodeRange(nodesToFix.at(i)!.node, sourceCode, options),
+                sourceCode.text.slice(
+                  ...getNodeRange(node.node, sourceCode, options),
+                ),
               ),
             )
 
@@ -593,10 +592,16 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
                 ) {
                   fixes.push(
                     fixer.removeRange([
-                      getNodeRange(nodesToFix.at(i)!.node, sourceCode).at(1)!,
-                      getNodeRange(nodesToFix.at(i + 1)!.node, sourceCode).at(
-                        0,
-                      )! - 1,
+                      getNodeRange(
+                        nodesToFix.at(i)!.node,
+                        sourceCode,
+                        options,
+                      ).at(1)!,
+                      getNodeRange(
+                        nodesToFix.at(i + 1)!.node,
+                        sourceCode,
+                        options,
+                      ).at(0)! - 1,
                     ]),
                   )
                 }
@@ -610,10 +615,16 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
                   fixes.push(
                     fixer.replaceTextRange(
                       [
-                        getNodeRange(nodesToFix.at(i)!.node, sourceCode).at(1)!,
-                        getNodeRange(nodesToFix.at(i + 1)!.node, sourceCode).at(
-                          0,
-                        )! - 1,
+                        getNodeRange(
+                          nodesToFix.at(i)!.node,
+                          sourceCode,
+                          options,
+                        ).at(1)!,
+                        getNodeRange(
+                          nodesToFix.at(i + 1)!.node,
+                          sourceCode,
+                          options,
+                        ).at(0)! - 1,
                       ],
                       '\n',
                     ),
@@ -628,7 +639,7 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
                 ) {
                   fixes.push(
                     fixer.insertTextAfterRange(
-                      getNodeRange(nodesToFix.at(i)!.node, sourceCode),
+                      getNodeRange(nodesToFix.at(i)!.node, sourceCode, options),
                       '\n',
                     ),
                   )

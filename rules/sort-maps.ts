@@ -23,6 +23,7 @@ type Options = [
   Partial<{
     type: 'alphabetical' | 'line-length' | 'natural'
     partitionByComment: string[] | boolean | string
+    matcher: 'minimatch' | 'regex'
     partitionByNewLine: boolean
     order: 'desc' | 'asc'
     ignoreCase: boolean
@@ -51,6 +52,11 @@ export default createEslintRule<Options, MESSAGE_ID>({
               'Determines whether the sorted items should be in ascending or descending order.',
             type: 'string',
             enum: ['asc', 'desc'],
+          },
+          matcher: {
+            description: 'Specifies the string matcher.',
+            type: 'string',
+            enum: ['minimatch', 'regex'],
           },
           ignoreCase: {
             description:
@@ -94,6 +100,7 @@ export default createEslintRule<Options, MESSAGE_ID>({
       type: 'alphabetical',
       order: 'asc',
       ignoreCase: true,
+      matcher: 'minimatch',
       partitionByComment: false,
       partitionByNewLine: false,
     },
@@ -115,6 +122,7 @@ export default createEslintRule<Options, MESSAGE_ID>({
             type: 'alphabetical',
             ignoreCase: true,
             order: 'asc',
+            matcher: 'minimatch',
             partitionByComment: false,
             partitionByNewLine: false,
           } as const)
@@ -168,6 +176,7 @@ export default createEslintRule<Options, MESSAGE_ID>({
                   hasPartitionComment(
                     partitionComment,
                     getCommentsBefore(element, sourceCode),
+                    options.matcher,
                   )) ||
                 (options.partitionByNewLine &&
                   lastSortingNode &&
@@ -195,9 +204,7 @@ export default createEslintRule<Options, MESSAGE_ID>({
                         nodes,
                         sortNodes(nodes, options),
                         sourceCode,
-                        {
-                          partitionComment,
-                        },
+                        options,
                       ),
                   })
                 }

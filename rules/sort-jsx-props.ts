@@ -1,7 +1,5 @@
 import type { TSESTree } from '@typescript-eslint/types'
 
-import { minimatch } from 'minimatch'
-
 import type { SortingNode } from '../typings'
 
 import { validateGroupsConfiguration } from '../utils/validate-groups-configuration'
@@ -15,6 +13,7 @@ import { useGroups } from '../utils/use-groups'
 import { makeFixes } from '../utils/make-fixes'
 import { pairwise } from '../utils/pairwise'
 import { complete } from '../utils/complete'
+import { matches } from '../utils/matches'
 
 type MESSAGE_ID = 'unexpectedJSXPropsGroupOrder' | 'unexpectedJSXPropsOrder'
 
@@ -29,6 +28,7 @@ type Options<T extends string[]> = [
     customGroups: { [key in T[number]]: string[] | string }
     type: 'alphabetical' | 'line-length' | 'natural'
     groups: (Group<T>[] | Group<T>)[]
+    matcher: 'minimatch' | 'regex'
     ignorePattern: string[]
     order: 'desc' | 'asc'
     ignoreCase: boolean
@@ -57,6 +57,11 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
               'Determines whether the sorted items should be in ascending or descending order.',
             type: 'string',
             enum: ['asc', 'desc'],
+          },
+          matcher: {
+            description: 'Specifies the string matcher.',
+            type: 'string',
+            enum: ['minimatch', 'regex'],
           },
           ignoreCase: {
             description:
@@ -121,6 +126,7 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
       type: 'alphabetical',
       order: 'asc',
       ignoreCase: true,
+      matcher: 'minimatch',
       ignorePattern: [],
       groups: [],
       customGroups: {},
@@ -135,6 +141,7 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
           type: 'alphabetical',
           ignorePattern: [],
           ignoreCase: true,
+          matcher: 'minimatch',
           customGroups: {},
           order: 'asc',
           groups: [],
@@ -152,7 +159,7 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
         if (options.ignorePattern.length) {
           let tagName = sourceCode.text.slice(...node.openingElement.name.range)
           shouldIgnore = options.ignorePattern.some(pattern =>
-            minimatch(tagName, pattern),
+            matches(tagName, pattern, options.matcher),
           )
         }
 
@@ -172,9 +179,8 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
                   ? `${attribute.name.namespace.name}:${attribute.name.name.name}`
                   : attribute.name.name
 
-              let { getGroup, defineGroup, setCustomGroups } = useGroups(
-                options.groups,
-              )
+              let { getGroup, defineGroup, setCustomGroups } =
+                useGroups(options)
 
               setCustomGroups(options.customGroups, name)
 
