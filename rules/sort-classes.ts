@@ -680,11 +680,6 @@ export default createEslintRule<SortClassesOptions, MESSAGE_ID>({
         pairwise(nodes, (left, right) => {
           let leftNum = getGroupNumber(options.groups, left)
           let rightNum = getGroupNumber(options.groups, right)
-          // Ignore nodes belonging to `unknown` group when that group is not referenced in the
-          // `groups` option.
-          let isLeftOrRightIgnored =
-            leftNum === options.groups.length ||
-            rightNum === options.groups.length
 
           let indexOfLeft = sortedNodes.indexOf(left)
           let indexOfRight = sortedNodes.indexOf(right)
@@ -692,7 +687,7 @@ export default createEslintRule<SortClassesOptions, MESSAGE_ID>({
             getFirstUnorderedNodeDependentOn(right, nodes)
           if (
             firstUnorderedNodeDependentOnRight ||
-            (!isLeftOrRightIgnored && indexOfLeft > indexOfRight)
+            indexOfLeft > indexOfRight
           ) {
             let messageId: MESSAGE_ID
             if (firstUnorderedNodeDependentOnRight) {
