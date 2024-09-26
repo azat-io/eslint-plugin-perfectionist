@@ -37,16 +37,11 @@ export let compare = (
 ): number => {
   let orderCoefficient = options.order === 'asc' ? 1 : -1
   let sortingFunction: (a: SortingNode, b: SortingNode) => number
-
-  let formatString =
-    options.type === 'line-length' || !options.ignoreCase
-      ? (string: string) => string
-      : (string: string) => string.toLowerCase()
-
   let nodeValueGetter =
     options.nodeValueGetter ?? ((node: SortingNode) => node.name)
 
   if (options.type === 'alphabetical') {
+    let formatString = getFormatStringFunc(!!options.ignoreCase)
     sortingFunction = (aNode, bNode) =>
       formatString(nodeValueGetter(aNode)).localeCompare(
         formatString(nodeValueGetter(bNode)),
@@ -59,11 +54,13 @@ export let compare = (
       }
       return string
     }
-    sortingFunction = (aNode, bNode) =>
-      naturalCompare(
+    sortingFunction = (aNode, bNode) => {
+      let formatString = getFormatStringFunc(!!options.ignoreCase)
+      return naturalCompare(
         prepareNumeric(formatString(nodeValueGetter(aNode))),
         prepareNumeric(formatString(nodeValueGetter(bNode))),
       )
+    }
   } else {
     sortingFunction = (aNode, bNode) => {
       let aSize = aNode.size
@@ -89,4 +86,12 @@ export let compare = (
   }
 
   return orderCoefficient * sortingFunction(a, b)
+}
+
+let getFormatStringFunc = (ignoreCase: boolean) => (value: string) => {
+  let valueToCompare = value
+  if (ignoreCase) {
+    valueToCompare = valueToCompare.toLowerCase()
+  }
+  return valueToCompare.replaceAll(/\s/g, '')
 }
