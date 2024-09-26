@@ -1439,5 +1439,19 @@ describe(ruleName, () => {
         ],
       },
     )
+
+    ruleTester.run(`${ruleName}: should ignore whitespaces`, rule, {
+      valid: [
+        {
+          code: dedent`
+            type T =
+            { a: string } &
+            {  b: string }
+          `,
+          options: [{}],
+        },
+      ],
+      invalid: [],
+    })
   })
 })
