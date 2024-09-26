@@ -257,10 +257,8 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
             hasUnknownGroup = true
           }
         }
-      } else {
-        if (group === 'unknown') {
-          hasUnknownGroup = true
-        }
+      } else if (group === 'unknown') {
+        hasUnknownGroup = true
       }
     }
 
@@ -326,9 +324,9 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
           '.',
         ].includes(value)
 
-      let isParent = (value: string) => value.indexOf('..') === 0
+      let isParent = (value: string) => value.startsWith('..')
 
-      let isSibling = (value: string) => value.indexOf('./') === 0
+      let isSibling = (value: string) => value.startsWith('./')
 
       let { getGroup, defineGroup, setCustomGroups } = useGroups(options.groups)
 
@@ -531,15 +529,16 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
 
             if (!(groupNum in grouped)) {
               grouped[groupNum] = [node]
+            } else if (
+              !options.sortSideEffects &&
+              isSideEffectImport(node.node)
+            ) {
+              grouped[groupNum] = [...grouped[groupNum], node]
             } else {
-              if (!options.sortSideEffects && isSideEffectImport(node.node)) {
-                grouped[groupNum] = [...grouped[groupNum], node]
-              } else {
-                grouped[groupNum] = sortNodes(
-                  [...grouped[groupNum], node],
-                  options,
-                )
-              }
+              grouped[groupNum] = sortNodes(
+                [...grouped[groupNum], node],
+                options,
+              )
             }
           }
 

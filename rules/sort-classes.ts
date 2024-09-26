@@ -395,12 +395,10 @@ export default createEslintRule<SortClassesOptions, MESSAGE_ID>({
                 member.range.at(0),
                 member.typeAnnotation?.range.at(0) ?? member.range.at(1),
               )
+            } else if (member.key.type === 'Identifier') {
+              ;({ name } = member.key)
             } else {
-              if (member.key.type === 'Identifier') {
-                ;({ name } = member.key)
-              } else {
-                name = sourceCode.text.slice(...member.key.range)
-              }
+              name = sourceCode.text.slice(...member.key.range)
             }
 
             let isPrivateHash =

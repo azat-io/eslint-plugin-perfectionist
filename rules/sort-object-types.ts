@@ -192,7 +192,7 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
               )
 
               let formatName = (value: string): string =>
-                value.replace(/(,|;)$/, '')
+                value.replace(/([,;])$/, '')
 
               if (member.type === 'TSPropertySignature') {
                 if (member.key.type === 'Identifier') {

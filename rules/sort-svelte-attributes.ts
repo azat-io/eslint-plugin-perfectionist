@@ -161,12 +161,10 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
 
               if (attribute.key.type === 'SvelteSpecialDirectiveKey') {
                 name = sourceCode.text.slice(...attribute.key.range)
+              } else if (typeof attribute.key.name === 'string') {
+                ;({ name } = attribute.key)
               } else {
-                if (typeof attribute.key.name === 'string') {
-                  ;({ name } = attribute.key)
-                } else {
-                  name = sourceCode.text.slice(...attribute.key.range)
-                }
+                name = sourceCode.text.slice(...attribute.key.range)
               }
 
               setCustomGroups(options.customGroups, name)
