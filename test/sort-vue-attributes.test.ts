@@ -308,6 +308,39 @@ describe(ruleName, () => {
         ],
       },
     )
+
+    ruleTester.run(
+      `${ruleName}(${type}): allows to use regex matcher for custom groups`,
+      rule,
+      {
+        valid: [
+          {
+            filename: 'file.vue',
+            code: dedent`
+              <template>
+                <component
+                  iHaveFooInMyName="iHaveFooInMyName"
+                  meTooIHaveFoo="meTooIHaveFoo"
+                  a="a"
+                  b="b"
+                ></component>
+              </template>
+            `,
+            options: [
+              {
+                ...options,
+                matcher: 'regex',
+                groups: ['unknown', 'elementsWithoutFoo'],
+                customGroups: {
+                  elementsWithoutFoo: '^(?!.*Foo).*$',
+                },
+              },
+            ],
+          },
+        ],
+        invalid: [],
+      },
+    )
   })
 
   describe(`${ruleName}: sorting by natural order`, () => {
