@@ -471,6 +471,41 @@ describe(ruleName, () => {
         },
       ],
     })
+
+    ruleTester.run(
+      `${ruleName}(${type}): allows to use regex matcher for custom groups`,
+      rule,
+      {
+        valid: [
+          {
+            filename: 'file.svelte',
+            code: dedent`
+            <script>
+              import Component from '~/file.svelte'
+            </script>
+
+            <Component
+              iHaveFooInMyName="iHaveFooInMyName"
+              meTooIHaveFoo="meTooIHaveFoo"
+              a="a"
+              b="b"
+            />
+            `,
+            options: [
+              {
+                ...options,
+                matcher: 'regex',
+                groups: ['unknown', 'elementsWithoutFoo'],
+                customGroups: {
+                  elementsWithoutFoo: '^(?!.*Foo).*$',
+                },
+              },
+            ],
+          },
+        ],
+        invalid: [],
+      },
+    )
   })
 
   describe(`${ruleName}: sorting by natural order`, () => {
