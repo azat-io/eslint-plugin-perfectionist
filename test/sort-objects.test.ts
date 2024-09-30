@@ -3287,6 +3287,16 @@ describe(ruleName, () => {
   })
 
   describe(`${ruleName}: misc`, () => {
+    let ruleTesterJSX = new RuleTester({
+      languageOptions: {
+        parserOptions: {
+          ecmaFeatures: {
+            jsx: true,
+          },
+        },
+      },
+    })
+
     ruleTester.run(
       `${ruleName}: sets alphabetical asc sorting as default`,
       rule,
@@ -3787,5 +3797,34 @@ describe(ruleName, () => {
         ],
       })
     })
+
+    ruleTesterJSX.run(
+      'allows to disable sorting object is style prop in jsx',
+      rule,
+      {
+        valid: [
+          {
+            code: dedent`
+            let Element = () => (
+              <div
+                style={{
+                  display: 'block',
+                  margin: 0,
+                  padding: 20,
+                  background: 'orange',
+                }}
+              />
+            )
+          `,
+            options: [
+              {
+                styledComponents: false,
+              },
+            ],
+          },
+        ],
+        invalid: [],
+      },
+    )
   })
 })

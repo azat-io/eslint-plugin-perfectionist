@@ -263,12 +263,15 @@ export default createEslintRule<Options, MESSAGE_ID>({
           styledNode: TSESTree.Node | undefined,
         ): boolean =>
           styledNode !== undefined &&
-          styledNode.type === 'CallExpression' &&
-          (isCssCallExpression(styledNode.callee) ||
-            (styledNode.callee.type === 'MemberExpression' &&
-              isStyledCallExpression(styledNode.callee.object)) ||
-            (styledNode.callee.type === 'CallExpression' &&
-              isStyledCallExpression(styledNode.callee.callee)))
+          ((styledNode.type === 'CallExpression' &&
+            (isCssCallExpression(styledNode.callee) ||
+              (styledNode.callee.type === 'MemberExpression' &&
+                isStyledCallExpression(styledNode.callee.object)) ||
+              (styledNode.callee.type === 'CallExpression' &&
+                isStyledCallExpression(styledNode.callee.callee)))) ||
+            (styledNode.type === 'JSXExpressionContainer' &&
+              styledNode.parent.type === 'JSXAttribute' &&
+              styledNode.parent.name.name === 'style'))
         if (
           !options.styledComponents &&
           (isStyledComponents(node.parent) ||
