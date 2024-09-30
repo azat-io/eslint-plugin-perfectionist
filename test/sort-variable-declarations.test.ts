@@ -844,6 +844,33 @@ describe(ruleName, () => {
           ],
         },
       )
+
+      ruleTester.run(
+        `${ruleName}(${type}): allows to use regex matcher`,
+        rule,
+        {
+          valid: [
+            {
+              code: dedent`
+              const
+                e = 'e',
+                f = 'f',
+                // I am a partition comment because I don't have f o o
+                a = 'a',
+                b = 'b'
+            `,
+              options: [
+                {
+                  ...options,
+                  matcher: 'regex',
+                  partitionByComment: ['^(?!.*foo).*$'],
+                },
+              ],
+            },
+          ],
+          invalid: [],
+        },
+      )
     })
   })
 
