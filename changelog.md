@@ -1,6 +1,25 @@
 # Changelog
 
 
+## v3.8.0
+
+[compare changes](https://github.com/azat-io/eslint-plugin-perfectionist/compare/v3.7.0...v3.8.0)
+
+### 🚀 Features
+
+- Add matcher option ([9434334](https://github.com/azat-io/eslint-plugin-perfectionist/commit/9434334))
+- Add ability to disable sorting objects in jsx styles ([45f7661](https://github.com/azat-io/eslint-plugin-perfectionist/commit/45f7661))
+
+### 🐞 Bug Fixes
+
+- Ignore whitespaces in node names ([7a0a96c](https://github.com/azat-io/eslint-plugin-perfectionist/commit/7a0a96c))
+- Fix linting of nodes that are neighboring to ignored nodes ([a11841a](https://github.com/azat-io/eslint-plugin-perfectionist/commit/a11841a))
+
+### ❤️ Contributors
+
+- Azat S. ([@azat-io](http://github.com/azat-io))
+- Hugo ([@hugop95](http://github.com/hugop95))
+
 ## v3.7.0
 
 [compare changes](https://github.com/azat-io/eslint-plugin-perfectionist/compare/v3.6.0...v3.7.0)
