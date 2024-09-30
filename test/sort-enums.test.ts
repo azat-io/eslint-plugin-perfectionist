@@ -399,6 +399,34 @@ describe(ruleName, () => {
       },
     )
 
+    ruleTester.run(
+      `${ruleName}(${type}): allows to use regex matcher for partition comments`,
+      rule,
+      {
+        valid: [
+          {
+            code: dedent`
+              enum Enum {
+                E = 'E',
+                F = 'F',
+                // I am a partition comment because I don't have f o o
+                A = 'A',
+                B = 'B',
+              }
+            `,
+            options: [
+              {
+                ...options,
+                matcher: 'regex',
+                partitionByComment: ['^(?!.*foo).*$'],
+              },
+            ],
+          },
+        ],
+        invalid: [],
+      },
+    )
+
     ruleTester.run(`${ruleName}: sort enum values correctly`, rule, {
       valid: [],
       invalid: [
