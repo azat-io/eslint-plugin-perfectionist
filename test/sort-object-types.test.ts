@@ -366,6 +366,36 @@ describe(ruleName, () => {
     )
 
     ruleTester.run(
+      `${ruleName}(${type}): allows to use regex matcher for custom groups`,
+      rule,
+      {
+        valid: [
+          {
+            code: dedent`
+              type T = {
+                iHaveFooInMyName: string
+                meTooIHaveFoo: string
+                a: string
+                b: string
+              }
+            `,
+            options: [
+              {
+                ...options,
+                matcher: 'regex',
+                groups: ['unknown', 'elementsWithoutFoo'],
+                customGroups: {
+                  elementsWithoutFoo: '^(?!.*Foo).*$',
+                },
+              },
+            ],
+          },
+        ],
+        invalid: [],
+      },
+    )
+
+    ruleTester.run(
       `${ruleName}(${type}): allows to use in class methods`,
       rule,
       {
@@ -624,6 +654,34 @@ describe(ruleName, () => {
               ],
             },
           ],
+        },
+      )
+
+      ruleTester.run(
+        `${ruleName}(${type}): allows to use regex matcher for partition comments`,
+        rule,
+        {
+          valid: [
+            {
+              code: dedent`
+              type Type = {
+                e: string
+                f: string
+                // I am a partition comment because I don't have f o o
+                a: string
+                b: string
+              }
+            `,
+              options: [
+                {
+                  ...options,
+                  matcher: 'regex',
+                  partitionByComment: ['^(?!.*foo).*$'],
+                },
+              ],
+            },
+          ],
+          invalid: [],
         },
       )
     })
