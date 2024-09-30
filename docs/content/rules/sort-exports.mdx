@@ -144,6 +144,14 @@ Allows you to group exports by their kind, determining whether value exports sho
 - `values-first` — Group all value exports before type exports.
 - `types-first` — Group all type exports before value exports.
 
+### matcher
+
+<sub>default: `'minimatch'`</sub>
+
+Determines the matcher used for patterns in the `partitionByComment` option.
+
+- `'minimatch'` — Use the [minimatch](https://github.com/isaacs/minimatch) library for pattern matching.
+- `'regex'` — Use regular expressions for pattern matching.
 
 ## Usage
 
