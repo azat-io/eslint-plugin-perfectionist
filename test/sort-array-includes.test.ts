@@ -616,6 +616,30 @@ describe(ruleName, () => {
         },
       )
     })
+
+    ruleTester.run(`${ruleName}(${type}): allows to use regex matcher`, rule, {
+      valid: [
+        {
+          code: dedent`
+              [
+                'e',
+                'f',
+                // I am a partition comment because I don't have f o o
+                'a',
+                'b',
+              ].includes(value)
+            `,
+          options: [
+            {
+              ...options,
+              matcher: 'regex',
+              partitionByComment: ['^(?!.*foo).*$'],
+            },
+          ],
+        },
+      ],
+      invalid: [],
+    })
   })
 
   describe(`${ruleName}: sorting by natural order`, () => {

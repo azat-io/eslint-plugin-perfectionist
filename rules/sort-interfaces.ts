@@ -1,5 +1,3 @@
-import { minimatch } from 'minimatch'
-
 import type { SortingNode } from '../typings'
 
 import { validateGroupsConfiguration } from '../utils/validate-groups-configuration'
@@ -18,6 +16,7 @@ import { useGroups } from '../utils/use-groups'
 import { makeFixes } from '../utils/make-fixes'
 import { complete } from '../utils/complete'
 import { pairwise } from '../utils/pairwise'
+import { matches } from '../utils/matches'
 
 type MESSAGE_ID =
   | 'unexpectedInterfacePropertiesGroupOrder'
@@ -32,6 +31,7 @@ type Options<T extends string[]> = [
     type: 'alphabetical' | 'line-length' | 'natural'
     partitionByComment: string[] | boolean | string
     groups: (Group<T>[] | Group<T>)[]
+    matcher: 'minimatch' | 'regex'
     partitionByNewLine: boolean
     ignorePattern: string[]
     order: 'desc' | 'asc'
@@ -61,6 +61,11 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
               'Determines whether the sorted items should be in ascending or descending order.',
             type: 'string',
             enum: ['asc', 'desc'],
+          },
+          matcher: {
+            description: 'Specifies the string matcher.',
+            type: 'string',
+            enum: ['minimatch', 'regex'],
           },
           ignoreCase: {
             description:
@@ -153,6 +158,7 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
       type: 'alphabetical',
       order: 'asc',
       ignoreCase: true,
+      matcher: 'minimatch',
       ignorePattern: [],
       partitionByComment: false,
       partitionByNewLine: false,
@@ -170,6 +176,7 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
           partitionByNewLine: false,
           type: 'alphabetical',
           groupKind: 'mixed',
+          matcher: 'minimatch',
           ignorePattern: [],
           ignoreCase: true,
           customGroups: {},
@@ -188,9 +195,7 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
 
         if (
           !options.ignorePattern.some(pattern =>
-            minimatch(node.id.name, pattern, {
-              nocomment: true,
-            }),
+            matches(node.id.name, pattern, options.matcher),
           )
         ) {
           let formattedMembers: SortingNode[][] = node.body.body.reduce(
@@ -203,9 +208,8 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
               let lastElement = accumulator.at(-1)?.at(-1)
               let name: string
 
-              let { getGroup, defineGroup, setCustomGroups } = useGroups(
-                options.groups,
-              )
+              let { getGroup, defineGroup, setCustomGroups } =
+                useGroups(options)
 
               if (element.type === 'TSPropertySignature') {
                 if (element.key.type === 'Identifier') {
@@ -249,6 +253,7 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
                   hasPartitionComment(
                     partitionComment,
                     getCommentsBefore(element, sourceCode),
+                    options.matcher,
                   )) ||
                 (options.partitionByNewLine &&
                   lastElement &&
@@ -310,9 +315,7 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
                   },
                   node: right.node,
                   fix: fixer =>
-                    makeFixes(fixer, nodes, sortedNodes, sourceCode, {
-                      partitionComment,
-                    }),
+                    makeFixes(fixer, nodes, sortedNodes, sourceCode, options),
                 })
               }
             })

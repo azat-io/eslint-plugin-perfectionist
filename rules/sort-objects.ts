@@ -1,8 +1,6 @@
 import type { TSESTree } from '@typescript-eslint/types'
 import type { TSESLint } from '@typescript-eslint/utils'
 
-import { minimatch } from 'minimatch'
-
 import type { SortingNodeWithDependencies } from '../utils/sort-nodes-by-dependencies'
 
 import {
@@ -25,6 +23,7 @@ import { useGroups } from '../utils/use-groups'
 import { makeFixes } from '../utils/make-fixes'
 import { complete } from '../utils/complete'
 import { pairwise } from '../utils/pairwise'
+import { matches } from '../utils/matches'
 
 type MESSAGE_ID =
   | 'unexpectedObjectsDependencyOrder'
@@ -46,6 +45,7 @@ type Options = [
     customGroups: { [key: string]: string[] | string }
     type: 'alphabetical' | 'line-length' | 'natural'
     partitionByComment: string[] | boolean | string
+    matcher: 'minimatch' | 'regex'
     groups: (Group[] | Group)[]
     partitionByNewLine: boolean
     styledComponents: boolean
@@ -78,6 +78,11 @@ export default createEslintRule<Options, MESSAGE_ID>({
               'Determines whether the sorted items should be in ascending or descending order.',
             type: 'string',
             enum: ['asc', 'desc'],
+          },
+          matcher: {
+            description: 'Specifies the string matcher.',
+            type: 'string',
+            enum: ['minimatch', 'regex'],
           },
           ignoreCase: {
             description:
@@ -174,6 +179,7 @@ export default createEslintRule<Options, MESSAGE_ID>({
       type: 'alphabetical',
       order: 'asc',
       ignoreCase: true,
+      matcher: 'minimatch',
       partitionByComment: false,
       partitionByNewLine: false,
       styledComponents: true,
@@ -196,6 +202,7 @@ export default createEslintRule<Options, MESSAGE_ID>({
         destructureOnly: false,
         type: 'alphabetical',
         ignorePattern: [],
+        matcher: 'minimatch',
         ignoreCase: true,
         customGroups: {},
         order: 'asc',
@@ -226,9 +233,7 @@ export default createEslintRule<Options, MESSAGE_ID>({
 
         let checkMatch = (identifier: string) =>
           options.ignorePattern.some(pattern =>
-            minimatch(identifier, pattern, {
-              nocomment: true,
-            }),
+            matches(identifier, pattern, options.matcher),
           )
 
         if (typeof varIdentifier === 'string' && checkMatch(varIdentifier)) {
@@ -382,7 +387,11 @@ export default createEslintRule<Options, MESSAGE_ID>({
 
               if (
                 options.partitionByComment &&
-                hasPartitionComment(options.partitionByComment, comments)
+                hasPartitionComment(
+                  options.partitionByComment,
+                  comments,
+                  options.matcher,
+                )
               ) {
                 accumulator.push([])
               }
@@ -391,7 +400,7 @@ export default createEslintRule<Options, MESSAGE_ID>({
               let position: Position = Position.ignore
               let dependencies: string[] = []
 
-              let { getGroup, setCustomGroups } = useGroups(options.groups)
+              let { getGroup, setCustomGroups } = useGroups(options)
 
               if (prop.key.type === 'Identifier') {
                 ;({ name } = prop.key)
@@ -471,9 +480,7 @@ export default createEslintRule<Options, MESSAGE_ID>({
               },
               node: right.node,
               fix: (fixer: TSESLint.RuleFixer) =>
-                makeFixes(fixer, nodes, sortedNodes, sourceCode, {
-                  partitionComment: options.partitionByComment,
-                }),
+                makeFixes(fixer, nodes, sortedNodes, sourceCode, options),
             })
           }
         })

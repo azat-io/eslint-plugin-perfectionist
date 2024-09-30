@@ -2,7 +2,6 @@ import type { TSESTree } from '@typescript-eslint/types'
 import type { TSESLint } from '@typescript-eslint/utils'
 
 import { builtinModules } from 'node:module'
-import { minimatch } from 'minimatch'
 
 import type { SortingNode } from '../typings'
 
@@ -21,6 +20,7 @@ import { sortNodes } from '../utils/sort-nodes'
 import { complete } from '../utils/complete'
 import { pairwise } from '../utils/pairwise'
 import { compare } from '../utils/compare'
+import { matches } from '../utils/matches'
 
 type MESSAGE_ID =
   | 'missedSpacingBetweenImports'
@@ -58,6 +58,7 @@ type Options<T extends string[]> = [
     type: 'alphabetical' | 'line-length' | 'natural'
     newlinesBetween: 'ignore' | 'always' | 'never'
     groups: (Group<T>[] | Group<T>)[]
+    matcher: 'minimatch' | 'regex'
     environment: 'node' | 'bun'
     internalPattern: string[]
     sortSideEffects: boolean
@@ -90,6 +91,11 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
               'Determines whether the sorted items should be in ascending or descending order.',
             type: 'string',
             enum: ['asc', 'desc'],
+          },
+          matcher: {
+            description: 'Specifies the string matcher.',
+            type: 'string',
+            enum: ['minimatch', 'regex'],
           },
           ignoreCase: {
             description:
@@ -209,6 +215,7 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
       sortSideEffects: false,
       newlinesBetween: 'always',
       maxLineLength: undefined,
+      matcher: 'minimatch',
       groups: [
         'type',
         ['builtin', 'external'],
@@ -226,7 +233,8 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
   create: context => {
     let settings = getSettings(context.settings)
 
-    let options = complete(context.options.at(0), settings, {
+    let defaultOptions = context.options.at(0)
+    let options = complete(defaultOptions, settings, {
       groups: [
         'type',
         ['builtin', 'external'],
@@ -237,8 +245,10 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
         'object',
         'unknown',
       ],
+      matcher: 'minimatch',
       customGroups: { type: {}, value: {} },
-      internalPattern: ['~/**'],
+      internalPattern:
+        defaultOptions?.matcher === 'regex' ? ['^~/.*'] : ['~/**'],
       newlinesBetween: 'always',
       sortSideEffects: false,
       type: 'alphabetical',
@@ -328,14 +338,12 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
 
       let isSibling = (value: string) => value.startsWith('./')
 
-      let { getGroup, defineGroup, setCustomGroups } = useGroups(options.groups)
+      let { getGroup, defineGroup, setCustomGroups } = useGroups(options)
 
       let isInternal = (value: string) =>
         options.internalPattern.length &&
         options.internalPattern.some(pattern =>
-          minimatch(value, pattern, {
-            nocomment: true,
-          }),
+          matches(value, pattern, options.matcher),
         )
 
       let isCoreModule = (value: string) => {
@@ -557,8 +565,10 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
 
             fixes.push(
               fixer.replaceTextRange(
-                getNodeRange(nodesToFix.at(i)!.node, sourceCode),
-                sourceCode.text.slice(...getNodeRange(node.node, sourceCode)),
+                getNodeRange(nodesToFix.at(i)!.node, sourceCode, options),
+                sourceCode.text.slice(
+                  ...getNodeRange(node.node, sourceCode, options),
+                ),
               ),
             )
 
@@ -582,10 +592,16 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
                 ) {
                   fixes.push(
                     fixer.removeRange([
-                      getNodeRange(nodesToFix.at(i)!.node, sourceCode).at(1)!,
-                      getNodeRange(nodesToFix.at(i + 1)!.node, sourceCode).at(
-                        0,
-                      )! - 1,
+                      getNodeRange(
+                        nodesToFix.at(i)!.node,
+                        sourceCode,
+                        options,
+                      ).at(1)!,
+                      getNodeRange(
+                        nodesToFix.at(i + 1)!.node,
+                        sourceCode,
+                        options,
+                      ).at(0)! - 1,
                     ]),
                   )
                 }
@@ -599,10 +615,16 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
                   fixes.push(
                     fixer.replaceTextRange(
                       [
-                        getNodeRange(nodesToFix.at(i)!.node, sourceCode).at(1)!,
-                        getNodeRange(nodesToFix.at(i + 1)!.node, sourceCode).at(
-                          0,
-                        )! - 1,
+                        getNodeRange(
+                          nodesToFix.at(i)!.node,
+                          sourceCode,
+                          options,
+                        ).at(1)!,
+                        getNodeRange(
+                          nodesToFix.at(i + 1)!.node,
+                          sourceCode,
+                          options,
+                        ).at(0)! - 1,
                       ],
                       '\n',
                     ),
@@ -617,7 +639,7 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
                 ) {
                   fixes.push(
                     fixer.insertTextAfterRange(
-                      getNodeRange(nodesToFix.at(i)!.node, sourceCode),
+                      getNodeRange(nodesToFix.at(i)!.node, sourceCode, options),
                       '\n',
                     ),
                   )

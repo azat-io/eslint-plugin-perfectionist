@@ -6646,6 +6646,104 @@ describe(ruleName, () => {
         },
       ],
     })
+
+    ruleTester.run(
+      `${ruleName}: allows to use regex matcher for element names in custom groups with old API`,
+      rule,
+      {
+        valid: [
+          {
+            code: dedent`
+              class Class {
+                iHaveFooInMyName: string
+                meTooIHaveFoo: string
+                a: string
+                b: string
+              }
+            `,
+            options: [
+              {
+                type: 'alphabetical',
+                matcher: 'regex',
+                groups: ['unknown', 'elementsWithoutFoo'],
+                customGroups: {
+                  elementsWithoutFoo: '^(?!.*Foo).*$',
+                },
+              },
+            ],
+          },
+        ],
+        invalid: [],
+      },
+    )
+
+    ruleTester.run(
+      `${ruleName}: allows to use regex matcher for element names in custom groups with new API`,
+      rule,
+      {
+        valid: [
+          {
+            code: dedent`
+              class Class {
+                iHaveFooInMyName: string
+                meTooIHaveFoo: string
+                a: string
+                b: string
+              }
+            `,
+            options: [
+              {
+                type: 'alphabetical',
+                matcher: 'regex',
+                groups: ['unknown', 'elementsWithoutFoo'],
+                customGroups: [
+                  {
+                    groupName: 'elementsWithoutFoo',
+                    elementNamePattern: '^(?!.*Foo).*$',
+                  },
+                ],
+              },
+            ],
+          },
+        ],
+        invalid: [],
+      },
+    )
+
+    ruleTester.run(
+      `${ruleName}: allows to use regex matcher for decorator names in custom groups with new API`,
+      rule,
+      {
+        valid: [
+          {
+            code: dedent`
+              class Class {
+                @IHaveFooInMyName
+                x: string
+                @MeTooIHaveFoo
+                y: string
+                a: string
+                b: string
+              }
+            `,
+            options: [
+              {
+                type: 'alphabetical',
+                matcher: 'regex',
+                groups: ['decoratorsWithFoo', 'unknown'],
+                customGroups: [
+                  {
+                    groupName: 'decoratorsWithFoo',
+                    decoratorNamePattern: '^.*Foo.*$',
+                  },
+                ],
+              },
+            ],
+          },
+        ],
+        invalid: [],
+      },
+    )
   })
 
   describe(`${ruleName}: misc`, () => {
@@ -6980,84 +7078,114 @@ describe(ruleName, () => {
         ],
       })
 
-      ruleTester.run(`handles partition comments`, rule, {
-        valid: [],
-        invalid: [
+      describe('partition comments', () => {
+        ruleTester.run(`handles partition comments`, rule, {
+          valid: [],
+          invalid: [
+            {
+              code: dedent`
+              class Class {
+                // Ignore this comment
+
+                // C2
+                // C1
+                c
+
+                // B2
+                /**
+                  * B1
+                  */
+                b
+
+                // Above a partition comment ignore me
+                // PartitionComment: 1
+                /**
+                  * D2
+                  */
+                // D1
+                d
+
+                a
+              }
+            `,
+              output: dedent`
+              class Class {
+                // Ignore this comment
+
+                // B2
+                /**
+                  * B1
+                  */
+                b
+
+                // C2
+                // C1
+                c
+
+                // Above a partition comment ignore me
+                // PartitionComment: 1
+                a
+
+                /**
+                  * D2
+                  */
+                // D1
+                d
+              }
+            `,
+              options: [
+                {
+                  type: 'alphabetical',
+                  partitionByComment: 'PartitionComment:*',
+                },
+              ],
+              errors: [
+                {
+                  messageId: 'unexpectedClassesOrder',
+                  data: {
+                    left: 'c',
+                    right: 'b',
+                  },
+                },
+                {
+                  messageId: 'unexpectedClassesOrder',
+                  data: {
+                    left: 'd',
+                    right: 'a',
+                  },
+                },
+              ],
+            },
+          ],
+        })
+
+        ruleTester.run(
+          `${ruleName}: allows to use regex matcher for partition comments`,
+          rule,
           {
-            code: dedent`
-              class Class {
-                // Ignore this comment
-
-                // C2
-                // C1
-                c
-
-                // B2
-                /**
-                  * B1
-                  */
-                b
-
-                // Above a partition comment ignore me
-                // PartitionComment: 1
-                /**
-                  * D2
-                  */
-                // D1
-                d
-
-                a
-              }
-            `,
-            output: dedent`
-              class Class {
-                // Ignore this comment
-
-                // B2
-                /**
-                  * B1
-                  */
-                b
-
-                // C2
-                // C1
-                c
-
-                // Above a partition comment ignore me
-                // PartitionComment: 1
-                a
-
-                /**
-                  * D2
-                  */
-                // D1
-                d
-              }
-            `,
-            options: [
+            valid: [
               {
-                type: 'alphabetical',
-                partitionByComment: 'PartitionComment:*',
+                code: dedent`
+                  class Class {
+                    e
+                    f
+                    // I am a partition comment because I don't have f o o
+                    a
+                    b
+                  }
+                `,
+                options: [
+                  {
+                    type: 'alphabetical',
+                    matcher: 'regex',
+                    partitionByComment: ['^(?!.*foo).*$'],
+                  },
+                ],
               },
             ],
-            errors: [
-              {
-                messageId: 'unexpectedClassesOrder',
-                data: {
-                  left: 'c',
-                  right: 'b',
-                },
-              },
-              {
-                messageId: 'unexpectedClassesOrder',
-                data: {
-                  left: 'd',
-                  right: 'a',
-                },
-              },
-            ],
+            invalid: [],
           },
-        ],
+        )
       })
     })
   })

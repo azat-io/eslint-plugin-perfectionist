@@ -188,6 +188,7 @@ export type SortClassesOptions = [
     customGroups: { [key: string]: string[] | string } | CustomGroup[]
     type: 'alphabetical' | 'line-length' | 'natural'
     partitionByComment: string[] | boolean | string
+    matcher: 'minimatch' | 'regex'
     groups: (Group[] | Group)[]
     order: 'desc' | 'asc'
     ignoreCase: boolean

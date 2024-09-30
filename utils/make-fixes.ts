@@ -12,7 +12,8 @@ export let makeFixes = (
   sortedNodes: SortingNode[],
   source: TSESLint.SourceCode,
   additionalOptions?: {
-    partitionComment?: string[] | boolean | string
+    partitionByComment: string[] | boolean | string
+    matcher: 'minimatch' | 'regex'
   },
 ) => {
   let fixes: TSESLint.RuleFix[] = []

@@ -31,6 +31,7 @@ type Options<T extends string[]> = [
     type: 'alphabetical' | 'line-length' | 'natural'
     partitionByComment: string[] | boolean | string
     groups: (Group<T>[] | Group<T>)[]
+    matcher: 'minimatch' | 'regex'
     partitionByNewLine: boolean
     order: 'desc' | 'asc'
     ignoreCase: boolean
@@ -61,6 +62,11 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
               'Determines whether the sorted items should be in ascending or descending order.',
             type: 'string',
             enum: ['asc', 'desc'],
+          },
+          matcher: {
+            description: 'Specifies the string matcher.',
+            type: 'string',
+            enum: ['minimatch', 'regex'],
           },
           ignoreCase: {
             description:
@@ -145,6 +151,7 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
       type: 'alphabetical',
       order: 'asc',
       ignoreCase: true,
+      matcher: 'minimatch',
       partitionByComment: false,
       partitionByNewLine: false,
       groupKind: 'mixed',
@@ -162,6 +169,7 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
           partitionByNewLine: false,
           type: 'alphabetical',
           groupKind: 'mixed',
+          matcher: 'minimatch',
           ignoreCase: true,
           customGroups: {},
           order: 'asc',
@@ -187,9 +195,8 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
               )
               let lastSortingNode = accumulator.at(-1)?.at(-1)
 
-              let { getGroup, defineGroup, setCustomGroups } = useGroups(
-                options.groups,
-              )
+              let { getGroup, defineGroup, setCustomGroups } =
+                useGroups(options)
 
               let formatName = (value: string): string =>
                 value.replace(/([,;])$/, '')
@@ -239,6 +246,7 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
                   hasPartitionComment(
                     partitionComment,
                     getCommentsBefore(member, sourceCode),
+                    options.matcher,
                   )) ||
                 (options.partitionByNewLine &&
                   lastSortingNode &&
@@ -305,9 +313,7 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
                 },
                 node: right.node,
                 fix: fixer =>
-                  makeFixes(fixer, nodes, sortedNodes, sourceCode, {
-                    partitionComment,
-                  }),
+                  makeFixes(fixer, nodes, sortedNodes, sourceCode, options),
               })
             }
           })
