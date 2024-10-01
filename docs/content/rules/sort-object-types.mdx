@@ -177,12 +177,12 @@ Allows you to group type object keys by their kind, determining whether required
 
 Allows you to specify a list of type properties groups for sorting. Groups help organize properties into categories, making your type definitions more readable and maintainable. Multiple groups can be combined to achieve the desired sorting order.
 
-There are predefined group: `'multiline'`.
-
-Predefined Group:
+Predefined groups:
 
 - `'multiline'` — Properties with multiline definitions, such as methods or complex type declarations.
-- `'unknown'` — Properties that don’t fit into any other group.
+- `'unknown'` — Properties that don’t fit into any group specified in the `groups` option.
+
+If the `unknown` group is not specified in the `groups` option, it will automatically be added to the end of the list.
 
 ### customGroups
 

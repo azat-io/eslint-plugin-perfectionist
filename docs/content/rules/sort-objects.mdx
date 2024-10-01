@@ -245,7 +245,11 @@ Allows you to sort only objects that are part of a destructuring pattern. When s
 
 Allows you to specify a list of object keys groups for sorting. Groups help organize object keys into categories, making your objects more readable and maintainable. Multiple groups can be combined to achieve the desired sorting order.
 
-There are no predefined groups. You must use this with the `customGroups` option.
+Predefined groups:
+
+- `'unknown'` — Properties that don’t fit into any group specified in the `groups` option.
+
+If the `unknown` group is not specified in the `groups` option, it will automatically be added to the end of the list.
 
 ### customGroups
 

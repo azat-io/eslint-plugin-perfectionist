@@ -198,11 +198,9 @@ This option is only available when the type is set to `'line-length'`.
   ```
 </sub>
 
-Allows you to set up a list of import groups for sorting. Groups help organize imports into meaningful categories, making your code more readable and maintainable. Multiple groups can be combined.
+Allows you to specify a list of import groups for sorting. Groups help organize imports into meaningful categories, making your code more readable and maintainable. Multiple groups can be combined.
 
-There are a lot of predefined groups.
-
-Predefined Groups:
+Predefined groups:
 
 - `'builtin'` — Node.js Built-in Modules.
 - `'external'` — External modules installed in the project.
@@ -220,7 +218,9 @@ Predefined Groups:
 - `'parent-type'` — TypeScript type imports from the parent directory.
 - `'sibling-type'` — TypeScript type imports from the same directory.
 - `'index-type'` — TypeScript type imports from the main directory file.
-- `'unknown'` — Imports that don’t fit into any other group.
+- `'unknown'` — Imports that don’t fit into any group specified in the `groups` option.
+
+If the `unknown` group is not specified in the `groups` option, it will automatically be added to the end of the list.
 
 Example:
 

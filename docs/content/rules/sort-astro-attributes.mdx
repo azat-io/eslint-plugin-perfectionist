@@ -142,14 +142,14 @@ Controls whether sorting should be case-sensitive or not.
 
 Allows you to specify a list of Astro attribute groups for sorting. Groups help organize attributes into categories, prioritizing them during sorting. Multiple groups can be combined to achieve the desired sorting order.
 
-There are predefined groups available: `'multiline'`, `'shorthand'`, `'astro-shorthand'`.
-
-Predefined Groups:
+Predefined groups:
 
 - `'multiline'` — Attributes with multiline values.
 -	`'shorthand'` — Shorthand attributes, which are used without a value, typically for boolean props.
 -	`'astro-shorthand'` — Astro shorthand attributes, where the attribute name and value are the same.
-- `'unknown'` — Attributes that don’t fit into any other group.
+- `'unknown'` — Attributes that don’t fit into any group specified in the `groups` option.
+
+If the `unknown` group is not specified in the `groups` option, it will automatically be added to the end of the list.
 
 Example:
 

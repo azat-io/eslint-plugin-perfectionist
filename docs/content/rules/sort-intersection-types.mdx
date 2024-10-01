@@ -139,9 +139,7 @@ type Employee =
 
 Allows you to specify a list of intersection type groups for sorting. Groups help organize types into categories, making your type definitions more readable and maintainable. Multiple groups can be combined to achieve the desired sorting order.
 
-There are a lot of predefined groups.
-
-Predefined Groups:
+Predefined groups:
 
 - `'conditional`' — Conditional types.
 - `'function`' — Function types.
@@ -155,7 +153,9 @@ Predefined Groups:
 - `'tuple`' — Tuple types.
 - `'union`' — Union types.
 - `'nullish`' — Nullish types (`null` or `undefined`).
-- `'unknown`' — Types that don’t fit into any other group.
+- `'unknown`' — Types that don’t fit into any group specified in the `groups` option.
+
+If the `unknown` group is not specified in the `groups` option, it will automatically be added to the end of the list.
 
 Example:
 

@@ -171,13 +171,13 @@ Controls whether sorting should be case-sensitive or not.
 
 Allows you to specify a list of Vue attribute groups for sorting. Groups help organize attributes into categories, making your components more readable and maintainable. Multiple groups can be combined to achieve the desired sorting order.
 
-There are predefined groups: `'multiline'`, `'shorthand'`.
-
-Predefined Groups:
+Predefined groups:
 
 - `'multiline'` — Attributes with multiline values, such as event handlers or functions.
 - `'shorthand'` — Shorthand attributes, which are used without a value, typically for boolean props.
-- `'unknown'` — Vue attributes that don’t fit into any other group.
+- `'unknown'` — Vue attributes that don’t fit into any group specified in the `groups` option.
+
+If the `unknown` group is not specified in the `groups` option, it will automatically be added to the end of the list.
 
 ### customGroups
 
