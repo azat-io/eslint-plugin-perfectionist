@@ -6259,6 +6259,58 @@ describe(ruleName, () => {
       ],
     })
 
+    ruleTester.run(`${ruleName}: filters on elementValuePattern`, rule, {
+      valid: [],
+      invalid: [
+        {
+          code: dedent`
+              class Class {
+                a = computed(A)
+                b = inject(B)
+                y = inject(Y)
+                z = computed(Z)
+                c() {}
+              }
+            `,
+          output: dedent`
+              class Class {
+                a = computed(A)
+                z = computed(Z)
+                b = inject(B)
+                y = inject(Y)
+                c() {}
+              }
+            `,
+          options: [
+            {
+              groups: ['computed', 'inject', 'unknown'],
+              customGroups: [
+                {
+                  groupName: 'inject',
+                  elementValuePattern: 'inject*',
+                },
+                {
+                  groupName: 'computed',
+                  elementValuePattern: 'computed*',
+                },
+              ],
+            },
+          ],
+          errors: [
+            {
+              messageId: 'unexpectedClassesGroupOrder',
+              data: {
+                left: 'y',
+                leftGroup: 'inject',
+                right: 'z',
+                rightGroup: 'computed',
+              },
+            },
+          ],
+        },
+      ],
+    })
+
     ruleTester.run(`${ruleName}: filters on decoratorNamePattern`, rule, {
       valid: [],
       invalid: [
@@ -6700,6 +6752,39 @@ describe(ruleName, () => {
                   {
                     groupName: 'elementsWithoutFoo',
                     elementNamePattern: '^(?!.*Foo).*$',
+                  },
+                ],
+              },
+            ],
+          },
+        ],
+        invalid: [],
+      },
+    )
+
+    ruleTester.run(
+      `${ruleName}: allows to use regex matcher for element values in custom groups with new API`,
+      rule,
+      {
+        valid: [
+          {
+            code: dedent`
+              class Class {
+                x = "iHaveFooInMyName"
+                z = "MeTooIHaveFoo"
+                a = "a"
+                b = "b"
+              }
+            `,
+            options: [
+              {
+                type: 'alphabetical',
+                matcher: 'regex',
+                groups: ['unknown', 'elementsWithoutFoo'],
+                customGroups: [
+                  {
+                    groupName: 'elementsWithoutFoo',
+                    elementValuePattern: '^(?!.*Foo).*$',
                   },
                 ],
               },
