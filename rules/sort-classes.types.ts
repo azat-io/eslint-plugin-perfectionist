@@ -156,6 +156,7 @@ interface BaseSingleCustomGroup<T extends Selector> {
 
 type AdvancedSingleCustomGroup<T extends Selector> = {
   decoratorNamePattern?: string
+  elementValuePattern?: string
   elementNamePattern?: string
 } & BaseSingleCustomGroup<T>
 
@@ -260,6 +261,10 @@ export const singleCustomGroupJsonSchema: Record<string, JSONSchema4> = {
   },
   elementNamePattern: {
     description: 'Element name pattern filter.',
+    type: 'string',
+  },
+  elementValuePattern: {
+    description: 'Element value pattern filter for properties.',
     type: 'string',
   },
   decoratorNamePattern: {
