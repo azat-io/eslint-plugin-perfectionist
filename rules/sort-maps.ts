@@ -23,6 +23,7 @@ type Options = [
   Partial<{
     type: 'alphabetical' | 'line-length' | 'natural'
     partitionByComment: string[] | boolean | string
+    specialCharacters: 'remove' | 'trim' | 'keep'
     matcher: 'minimatch' | 'regex'
     partitionByNewLine: boolean
     order: 'desc' | 'asc'
@@ -63,6 +64,12 @@ export default createEslintRule<Options, MESSAGE_ID>({
               'Controls whether sorting should be case-sensitive or not.',
             type: 'boolean',
           },
+          specialCharacters: {
+            description:
+              'Controls how special characters should be handled before sorting.',
+            type: 'string',
+            enum: ['remove', 'trim', 'keep'],
+          },
           partitionByComment: {
             description:
               'Allows you to use comments to separate the maps members into logical groups.',
@@ -100,6 +107,7 @@ export default createEslintRule<Options, MESSAGE_ID>({
       type: 'alphabetical',
       order: 'asc',
       ignoreCase: true,
+      specialCharacters: 'keep',
       matcher: 'minimatch',
       partitionByComment: false,
       partitionByNewLine: false,
@@ -121,6 +129,7 @@ export default createEslintRule<Options, MESSAGE_ID>({
           let options = complete(context.options.at(0), settings, {
             type: 'alphabetical',
             ignoreCase: true,
+            specialCharacters: 'keep',
             order: 'asc',
             matcher: 'minimatch',
             partitionByComment: false,
