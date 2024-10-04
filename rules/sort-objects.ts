@@ -45,6 +45,7 @@ type Options = [
     customGroups: { [key: string]: string[] | string }
     type: 'alphabetical' | 'line-length' | 'natural'
     partitionByComment: string[] | boolean | string
+    specialCharacters: 'remove' | 'trim' | 'keep'
     matcher: 'minimatch' | 'regex'
     groups: (Group[] | Group)[]
     partitionByNewLine: boolean
@@ -88,6 +89,12 @@ export default createEslintRule<Options, MESSAGE_ID>({
             description:
               'Controls whether sorting should be case-sensitive or not.',
             type: 'boolean',
+          },
+          specialCharacters: {
+            description:
+              'Controls how special characters should be handled before sorting.',
+            type: 'string',
+            enum: ['remove', 'trim', 'keep'],
           },
           partitionByComment: {
             description:
@@ -179,6 +186,7 @@ export default createEslintRule<Options, MESSAGE_ID>({
       type: 'alphabetical',
       order: 'asc',
       ignoreCase: true,
+      specialCharacters: 'keep',
       matcher: 'minimatch',
       partitionByComment: false,
       partitionByNewLine: false,
@@ -204,6 +212,7 @@ export default createEslintRule<Options, MESSAGE_ID>({
         ignorePattern: [],
         matcher: 'minimatch',
         ignoreCase: true,
+        specialCharacters: 'keep',
         customGroups: {},
         order: 'asc',
         groups: [],
