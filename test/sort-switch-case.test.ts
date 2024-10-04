@@ -531,6 +531,64 @@ describe(ruleName, () => {
         ],
       },
     )
+
+    ruleTester.run(
+      `${ruleName}(${type}): allows to use new line as partition`,
+      rule,
+      {
+        valid: [],
+        invalid: [
+          {
+            code: dedent`
+              switch (x) {
+                case 'd':
+                case 'a':
+
+                case 'c':
+
+                case 'e':
+                case 'b':
+                   break
+              }
+            `,
+            output: dedent`
+              switch (x) {
+                case 'a':
+                case 'd':
+
+                case 'c':
+
+                case 'b':
+                case 'e':
+                   break
+              }
+            `,
+            options: [
+              {
+                ...options,
+                partitionByNewLine: true,
+              },
+            ],
+            errors: [
+              {
+                messageId: 'unexpectedSwitchCaseOrder',
+                data: {
+                  left: 'd',
+                  right: 'a',
+                },
+              },
+              {
+                messageId: 'unexpectedSwitchCaseOrder',
+                data: {
+                  left: 'e',
+                  right: 'b',
+                },
+              },
+            ],
+          },
+        ],
+      },
+    )
   })
 
   describe(`${ruleName}: sorting by natural order`, () => {

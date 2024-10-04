@@ -174,6 +174,32 @@ Controls whether sorting should be case-sensitive or not.
 - `true` — Ignore case when sorting alphabetically or naturally (e.g., “A” and “a” are the same).
 - `false` — Consider case when sorting (e.g., “A” comes before “a”).
 
+### partitionByNewLine
+
+<sub>default: `false`</sub>
+
+When `true`, the rule will not sort the members of an enum if there is an empty line between them. This can be useful for keeping logically separated groups of members in their defined order.
+
+```ts
+switch (action) {
+     // Group 1
+    case 'Drone':
+    case 'Keyboard':
+    case 'Mouse':
+    case 'Smartphone':
+
+    // Group 2
+    case 'Laptop':
+    case 'Monitor':
+    case 'Smartwatch':
+    case 'Tablet':
+
+    // Group 3
+    case 'Headphones':
+    case 'Router':
+}
+```
+
 ## Usage
 
 <CodeTabs
@@ -195,6 +221,7 @@ Controls whether sorting should be case-sensitive or not.
                   type: 'alphabetical',
                   order: 'asc',
                   ignoreCase: true,
+                  partitionByNewLine: false
                 },
               ],
             },
@@ -218,6 +245,7 @@ Controls whether sorting should be case-sensitive or not.
                 type: 'alphabetical',
                 order: 'asc',
                 ignoreCase: true,
+                partitionByNewLine: false
               },
             ],
           },
