@@ -19,6 +19,7 @@ type MESSAGE_ID = 'unexpectedSwitchCaseOrder'
 type Options = [
   Partial<{
     type: 'alphabetical' | 'line-length' | 'natural'
+    specialCharacters: 'remove' | 'trim' | 'keep'
     order: 'desc' | 'asc'
     ignoreCase: boolean
   }>,
@@ -56,6 +57,12 @@ export default createEslintRule<Options, MESSAGE_ID>({
               'Controls whether sorting should be case-sensitive or not.',
             type: 'boolean',
           },
+          specialCharacters: {
+            description:
+              'Controls how special characters should be handled before sorting.',
+            type: 'string',
+            enum: ['remove', 'trim', 'keep'],
+          },
         },
         additionalProperties: false,
       },
@@ -70,6 +77,7 @@ export default createEslintRule<Options, MESSAGE_ID>({
       type: 'alphabetical',
       order: 'asc',
       ignoreCase: true,
+      specialCharacters: 'keep',
     },
   ],
   create: context => ({
@@ -79,6 +87,7 @@ export default createEslintRule<Options, MESSAGE_ID>({
       let options = complete(context.options.at(0), settings, {
         type: 'alphabetical',
         ignoreCase: true,
+        specialCharacters: 'keep',
         order: 'asc',
       } as const)
 
