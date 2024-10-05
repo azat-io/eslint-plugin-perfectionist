@@ -271,6 +271,15 @@ All members of the groups in the array will be sorted together as if they were p
 
 You can define your own groups for object keys using custom glob patterns or regex for matching.
 
+Use the `matcher` option to specify the pattern matching method.
+
+Each key of `customGroups` represents a group name which you can then use in the `groups` option. The value for each key can either be of type:
+- `string` — An object attribute's name matching the value will be marked as part of the group referenced by the key.
+- `string[]` — An object attribute's name matching any of the values of the array will be marked as part of the group referenced by the key.
+The order of values in the array does not matter.
+
+Custom group matching takes precedence over predefined group matching.
+
 Example:
 
 ```js
