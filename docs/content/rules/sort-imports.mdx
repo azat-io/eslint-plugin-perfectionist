@@ -145,6 +145,16 @@ Controls whether sorting should be case-sensitive or not.
 - `true` — Ignore case when sorting alphabetically or naturally (e.g., “A” and “a” are the same).
 - `false` — Consider case when sorting (e.g., “A” comes before “a”).
 
+### specialCharacters
+
+<sub>default: `keep`</sub>
+
+Controls whether special characters should be trimmed, removed or kept before sorting.
+
+- `'keep'` — Keep special characters when sorting (e.g., “_z” comes before “z”).
+- `'trim'` — Trims special characters when sorting alphabetically or naturally (e.g., “_a” and “a” are the same).
+- `'remove'` — Remove special characters when sorting (e.g., “/a/b” and “ab” are the same).
+
 ### internalPattern
 
 <sub>default: `['~/**']` for `minimatch` matcher, `['^~/.*']` for `regex` matcher</sub>
