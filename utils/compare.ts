@@ -11,9 +11,9 @@ interface BaseCompareOptions {
 }
 
 interface AlphabeticalCompareOptions extends BaseCompareOptions {
-  specialCharacters?: 'remove' | 'trim' | 'keep'
+  specialCharacters: 'remove' | 'trim' | 'keep'
   type: 'alphabetical'
-  ignoreCase?: boolean
+  ignoreCase: boolean
 }
 
 interface LineLengthCompareOptions extends BaseCompareOptions {
@@ -22,8 +22,8 @@ interface LineLengthCompareOptions extends BaseCompareOptions {
 }
 
 interface NaturalCompareOptions extends BaseCompareOptions {
-  specialCharacters?: 'remove' | 'trim' | 'keep'
-  ignoreCase?: boolean
+  specialCharacters: 'remove' | 'trim' | 'keep'
+  ignoreCase: boolean
   type: 'natural'
 }
 
@@ -44,8 +44,8 @@ export let compare = (
 
   if (options.type === 'alphabetical') {
     let formatString = getFormatStringFunc(
-      !!options.ignoreCase,
-      options.specialCharacters ?? 'keep',
+      options.ignoreCase,
+      options.specialCharacters,
     )
     sortingFunction = (aNode, bNode) =>
       formatString(nodeValueGetter(aNode)).localeCompare(
@@ -61,8 +61,8 @@ export let compare = (
     }
     sortingFunction = (aNode, bNode) => {
       let formatString = getFormatStringFunc(
-        !!options.ignoreCase,
-        options.specialCharacters ?? 'keep',
+        options.ignoreCase,
+        options.specialCharacters,
       )
       return naturalCompare(
         prepareNumeric(formatString(nodeValueGetter(aNode))),
