@@ -273,7 +273,7 @@ You can define your own groups for object keys using custom glob patterns for ma
 
 <sub>default: `'minimatch'`</sub>
 
-Determines the matcher used for patterns in the `internalPattern` and `customGroups` options.
+Determines the matcher used for patterns in the `partitionByComment`, `ignorePattern` and `customGroups` options.
 
 - `'minimatch'` — Use the [minimatch](https://github.com/isaacs/minimatch) library for pattern matching.
 - `'regex'` — Use regular expressions for pattern matching.
@@ -303,7 +303,7 @@ Determines the matcher used for patterns in the `internalPattern` and `customGro
                   partitionByNewLine: false,
                   styledComponents: true,
                   ignorePattern: [],
-                  customIgnore: [],
+                  matcher: 'minimatch',
                   groups: [],
                   customGroups: {},
                 },
@@ -333,7 +333,7 @@ Determines the matcher used for patterns in the `internalPattern` and `customGro
                 partitionByNewLine: false,
                 styledComponents: true,
                 ignorePattern: [],
-                customIgnore: [],
+                matcher: 'minimatch',
                 groups: [],
                 customGroups: {},
               },

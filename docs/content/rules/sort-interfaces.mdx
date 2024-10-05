@@ -253,7 +253,7 @@ Example:
 
 <sub>default: `'minimatch'`</sub>
 
-Determines the matcher used for patterns in the `partitionByComment` and `customGroups` option.
+Determines the matcher used for patterns in the `partitionByComment`, `ignorePattern` and `customGroups` options.
 
 - `'minimatch'` — Use the [minimatch](https://github.com/isaacs/minimatch) library for pattern matching.
 - `'regex'` — Use regular expressions for pattern matching.
@@ -282,6 +282,7 @@ Determines the matcher used for patterns in the `partitionByComment` and `custom
                   ignorePattern: [],
                   partitionByNewLine: false,
                   optionalityOrder: 'ignore',
+                  matcher: 'minimatch',
                   groups: [],
                   customGroups: {},
                 },
@@ -310,6 +311,7 @@ Determines the matcher used for patterns in the `partitionByComment` and `custom
                 ignorePattern: [],
                 partitionByNewLine: false,
                 optionalityOrder: 'ignore',
+                matcher: 'minimatch',
                 groups: [],
                 customGroups: {},
               },
