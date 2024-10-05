@@ -172,7 +172,7 @@ Controls whether sorting should be case-sensitive or not.
 </sub>
 <sub>default: `[]`</sub>
 
-Allows you to specify a list of Vue attribute groups for sorting. Groups help organize attributes into categories, making your components more readable and maintainable. Multiple groups can be combined to achieve the desired sorting order.
+Allows you to specify a list of Vue attribute groups for sorting. Groups help organize attributes into categories, making your components more readable and maintainable.
 
 Predefined groups:
 
@@ -181,6 +181,14 @@ Predefined groups:
 - `'unknown'` — Vue attributes that don’t fit into any group specified in the `groups` option.
 
 If the `unknown` group is not specified in the `groups` option, it will automatically be added to the end of the list.
+
+Each attribute will be assigned a single group specified in the `groups` option (or the `unknown` group if no match is found).
+The order of items in the `groups` option determines how groups are ordered.
+
+Within a given group, members will be sorted according to the `type`, `order`, `ignoreCase`, etc. options.
+
+Individual groups can be combined together by placing them in an array. The order of groups in that array does not matter.
+All members of the groups in the array will be sorted together as if they were part of a single group.
 
 ### customGroups
 
