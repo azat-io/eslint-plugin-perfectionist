@@ -264,9 +264,18 @@ import type { BaseOptions } from './index.d.ts'
 
 ### customGroups
 
+<sub>
+  type:
+  ```
+  {
+    value: { [groupName: string]: string | string[] }
+    type: { [groupName: string]: string | string[] }
+  }
+  ```
+</sub>
 <sub>default: `{ value: {}, type: {} }`</sub>
 
-You can define your own groups for importing values of types using custom glob patterns or regex for matching.
+You can define your own groups for import values or types using custom glob patterns or regex for matching.
 
 Example:
 
