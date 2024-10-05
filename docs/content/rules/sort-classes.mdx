@@ -194,6 +194,9 @@ Allows you to use comments to separate the class members into logical groups. Th
 ### groups
 
 <sub>
+  type: `Array<string | string[]>`
+</sub>
+<sub>
   default:
   ```
   [
@@ -214,7 +217,15 @@ Allows you to use comments to separate the class members into logical groups. Th
   ```
 </sub>
 
-Allows you to specify a list of class member groups for sorting. Groups help organize class members into categories, prioritizing them during sorting. Multiple groups can be combined to achieve the desired sorting order.
+Allows you to specify a list of class member groups for sorting. Groups help organize class members into categories, prioritizing them during sorting.
+
+Each class member will be assigned a single group specified in the `groups` option (or the `unknown` group if no match is found).
+The order of items in the `groups` option determines how groups are ordered.
+
+Within a given group, members will be sorted according to the `type`, `order`, `ignoreCase`, etc. options.
+
+Individual groups can be combined together by placing them in an array. The order of groups in that array does not matter.
+All members of the groups in the array will be sorted together as if they were part of a single group.
 
 Predefined groups are characterized by a single selector and potentially multiple modifiers. You may enter modifiers in any order, but the selector must always come at the end.
 
@@ -275,7 +286,7 @@ Elements that are not `protected` nor `private` will be matched with the `public
 
 
 ##### The `unknown` group
-Members that don’t fit into any group entered by the user will be placed in the `unknown` group. If the `unknown` group is not specified in `groups`,
+Members that don’t fit into any group specified in the `groups` option will be placed in the `unknown` group. If the `unknown` group is not specified in the `groups` option,
 the members will remain in their original order.
 
 ##### Behavior when multiple groups match an element
@@ -288,6 +299,7 @@ In case of multiple groups matching an element, the following rules will be appl
 3. If modifiers quantity is the same, order will be chosen based on modifier importance as listed above.
 
 Example 1:
+
 ```ts
 abstract class Class {
 
@@ -307,7 +319,7 @@ abstract class Class {
 - `method`.
 - `unknown`.
 
-Example 2: (The most important group is written in the comments)
+Example 2 (The most important group is written in the comments):
 
 ```ts
 abstract class Example extends BaseExample {
@@ -450,9 +462,14 @@ abstract class Example extends BaseExample {
 
 ### customGroups
 
+<sub>
+  type: `Array<CustomGroupDefinition | CustomGroupBlockDefinition>`
+</sub>
 <sub>default: `[]`</sub>
 
-You can define your own groups to match very specific members.
+You can define your own groups and use custom glob patterns or regex for matching very specific class members.
+
+Use the `matcher` option to specify the pattern matching method.
 
 A custom group definition may follow one of the two following interfaces:
 
@@ -561,7 +578,7 @@ Example:
 
 <sub>default: `'minimatch'`</sub>
 
-Determines the matcher used for patterns in the `internalPattern` and `customGroups` options.
+Determines the matcher used for patterns in the `partitionByComment` and `customGroups` options.
 
 - `'minimatch'` — Use the [minimatch](https://github.com/isaacs/minimatch) library for pattern matching.
 - `'regex'` — Use regular expressions for pattern matching.
@@ -588,6 +605,7 @@ Determines the matcher used for patterns in the `internalPattern` and `customGro
                   order: 'asc',
                   ignoreCase: true,
                   partitionByComment: false,
+                  matcher: 'minimatch',
                   groups: [
                     'static-block',
                     'index-signature',
@@ -628,6 +646,7 @@ Determines the matcher used for patterns in the `internalPattern` and `customGro
                 order: 'asc',
                 ignoreCase: true,
                 partitionByComment: false,
+                matcher: 'minimatch',
                 groups: [
                   'static-block',
                   'index-signature',

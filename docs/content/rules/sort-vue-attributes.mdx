@@ -167,33 +167,90 @@ Controls whether sorting should be case-sensitive or not.
 
 ### groups
 
+<sub>
+  type: `Array<string | string[]>`
+</sub>
 <sub>default: `[]`</sub>
 
-Allows you to specify a list of Vue attribute groups for sorting. Groups help organize attributes into categories, making your components more readable and maintainable. Multiple groups can be combined to achieve the desired sorting order.
+Allows you to specify a list of Vue attribute groups for sorting. Groups help organize attributes into categories, making your components more readable and maintainable.
 
-There are predefined groups: `'multiline'`, `'shorthand'`.
-
-Predefined Groups:
+Predefined groups:
 
 - `'multiline'` — Attributes with multiline values, such as event handlers or functions.
 - `'shorthand'` — Shorthand attributes, which are used without a value, typically for boolean props.
-- `'unknown'` — Vue attributes that don’t fit into any other group.
+- `'unknown'` — Vue attributes that don’t fit into any group specified in the `groups` option.
+
+If the `unknown` group is not specified in the `groups` option, it will automatically be added to the end of the list.
+
+Each attribute will be assigned a single group specified in the `groups` option (or the `unknown` group if no match is found).
+The order of items in the `groups` option determines how groups are ordered.
+
+Within a given group, members will be sorted according to the `type`, `order`, `ignoreCase`, etc. options.
+
+Individual groups can be combined together by placing them in an array. The order of groups in that array does not matter.
+All members of the groups in the array will be sorted together as if they were part of a single group.
+
+#### Example
+
+```vue
+<Form
+  @onClick="() => {   // 'multiline'
+    g.value = false
+  }"
+  validate            // 'shorthand'
+/>
+```
+
+`groups` option configuration:
+
+```js
+{
+  groups: [
+    'multiline',
+    'shorthand',
+    'unknown',
+  ]
+}
+```
 
 ### customGroups
 
+<sub>
+  type: `{ [groupName: string]: string | string[] }`
+</sub>
 <sub>default: `{}`</sub>
 
-You can define your own groups for Vue attributes using custom glob patterns for matching.
+You can define your own groups and use custom glob patterns or regex to match specific Vue attributes.
 
-Example:
+Use the `matcher` option to specify the pattern matching method.
+
+Each key of `customGroups` represents a group name which you can then use in the `groups` option. The value for each key can either be of type:
+- `string` — An attribute's name matching the value will be marked as part of the group referenced by the key.
+- `string[]` — An attribute's name matching any of the values of the array will be marked as part of the group referenced by the key.
+The order of values in the array does not matter.
+
+Custom group matching takes precedence over predefined group matching.
+
+#### Example
+
+```vue
+<form
+  @onClick="@count++" // 'callback'
+  validate            // 'shorthand'
+  @notCallbackEvent={ // 'unknown' because 'multiline' is not in groups
+    console.log('bar')
+  }
+/>
+```
+
+`groups` and `customGroups` configuration:
 
 ```js
  {
    groups: [
-     'multiline',
-     'unknown',
-     'shorthand',
 +    'callback',     // [!code ++]
+     'shorthand',
+     'unknown',
    ],
 +  customGroups: {   // [!code ++]
 +    callback: 'on*' // [!code ++]
@@ -267,6 +324,7 @@ In order to start using this rule, you need to install additional dependency:
                   type: 'alphabetical',
                   order: 'asc',
                   ignoreCase: true,
+                  matcher: 'minimatch',
                   groups: [],
                   customGroups: {},
                 },
@@ -298,6 +356,7 @@ In order to start using this rule, you need to install additional dependency:
                 type: 'alphabetical',
                 order: 'asc',
                 ignoreCase: true,
+                matcher: 'minimatch',
                 groups: [],
                 customGroups: {},
               },

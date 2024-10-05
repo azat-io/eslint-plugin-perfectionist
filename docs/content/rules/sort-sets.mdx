@@ -201,6 +201,8 @@ let items = new Set([
   ])
 ```
 
+Each group of elements (separated by empty lines) is treated independently, and the order within each group is preserved.
+
 ### matcher
 
 <sub>default: `'minimatch'`</sub>
@@ -232,6 +234,8 @@ Determines the matcher used for patterns in the `partitionByComment` option.
                   order: 'asc',
                   ignoreCase: true,
                   groupKind: 'literals-first',
+                  partitionByNewLine: false,
+                  matcher: 'minimatch',
                 },
               ],
             },
@@ -256,6 +260,8 @@ Determines the matcher used for patterns in the `partitionByComment` option.
                 order: 'asc',
                 ignoreCase: true,
                 groupKind: 'literals-first',
+                partitionByNewLine: false,
+                matcher: 'minimatch',
               },
             ],
           },

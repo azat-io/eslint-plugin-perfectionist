@@ -202,7 +202,7 @@ interface User {
 }
 ```
 
-In this example, the partitionByNewLine option will cause the rule to treat each group of members (separated by empty lines) independently, preserving their order within each group.
+Each group of members (separated by empty lines) is treated independently, and the order within each group is preserved.
 
 ### groupKind
 
@@ -216,36 +216,105 @@ Specifies how optional and required members should be ordered in TypeScript inte
 
 ### groups
 
+<sub>
+  type: `Array<string | string[]>`
+</sub>
 <sub>default: `[]`</sub>
 
-Allows you to specify a list of interface member groups for sorting. Groups help organize members into categories, making your interfaces more readable and maintainable. Multiple groups can be combined to achieve the desired sorting order.
+Allows you to specify a list of interface member groups for sorting. Groups help organize members into categories, making your interfaces more readable and maintainable.
 
-There are predefined group: `'multiline'`.
-
-Predefined Groups:
+Predefined groups:
 
 - `'multiline'` — Members with multiline definitions, such as methods or properties with complex types.
-- `'unknown'` — Interface members that don’t fit into any other group.
+- `'unknown'` — Interface members that don’t fit into any group specified in the `groups` option.
+
+If the `unknown` group is not specified in the `groups` option, it will automatically be added to the end of the list.
+
+Each interface member will be assigned a single group specified in the `groups` option (or the `unknown` group if no match is found).
+The order of items in the `groups` option determines how groups are ordered.
+
+Within a given group, members will be sorted according to the `type`, `order`, `ignoreCase`, etc. options.
+
+Individual groups can be combined together by placing them in an array. The order of groups in that array does not matter.
+All members of the groups in the array will be sorted together as if they were part of a single group.
+
+#### Example
+
+```ts
+interface User {
+  firstName: string // unknown
+  lastName: string  // unknown
+  username: string  // unknown
+  job: {            // multiline
+    // Stuff about job
+  }
+  localization: {   // multiline
+    // Stuff about localization
+  }
+}
+```
+
+`groups` option configuration:
+
+```js
+{
+  groups: [
+    'unknown',
+    'multiline',
+  ]
+}
+```
 
 ### customGroups
 
+<sub>
+  type: `{ [groupName: string]: string | string[] }`
+</sub>
 <sub>default: `{}`</sub>
 
-You can define your own groups for interface members using custom glob patterns for matching.
+You can define your own groups and use custom glob patterns or regex to match specific interface members.
 
-Example:
+Use the `matcher` option to specify the pattern matching method.
+
+Each key of `customGroups` represents a group name which you can then use in the `groups` option. The value for each key can either be of type:
+- `string` — An interface member's name matching the value will be marked as part of the group referenced by the key.
+- `string[]` — An interface member's name matching any of the values of the array will be marked as part of the group referenced by the key.
+The order of values in the array does not matter.
+
+Custom group matching takes precedence over predefined group matching.
+
+#### Example
+
+Put all properties starting with `id` and `name` at the top, combine and sort metadata and multiline properties at the bottom.
+Anything else is put in the middle.
+
+```ts
+interface User {
+  id: string                 // top
+  name: string               // top
+  age: number                // unknown
+  isAdmin: boolean           // unknown
+  lastUpdated_metadata: Date // bottom
+  localization: {            // multiline
+    // Stuff about localization
+  }
+  version_metadata: string   // bottom
+}
+```
+
+`groups` and `customGroups` configuration:
 
 ```js
  {
    groups: [
-+    'top',          // [!code ++]
-     'multiline',
++    'top',                  // [!code ++]
      'unknown',
-     ['shorthand', 'astro-shorthand'],
+     ['multiline', 'bottom'] // [!code ++]
    ],
-+  customGroups: {   // [!code ++]
-+    top: 'id'       // [!code ++]
-+  }                 // [!code ++]
++  customGroups: {           // [!code ++]
++    top: ['id', 'name']     // [!code ++]
++    bottom: '*_metadata'     // [!code ++]
++  }                         // [!code ++]
  }
 ```
 
@@ -253,7 +322,7 @@ Example:
 
 <sub>default: `'minimatch'`</sub>
 
-Determines the matcher used for patterns in the `partitionByComment` and `customGroups` option.
+Determines the matcher used for patterns in the `partitionByComment`, `ignorePattern` and `customGroups` options.
 
 - `'minimatch'` — Use the [minimatch](https://github.com/isaacs/minimatch) library for pattern matching.
 - `'regex'` — Use regular expressions for pattern matching.
@@ -282,6 +351,7 @@ Determines the matcher used for patterns in the `partitionByComment` and `custom
                   ignorePattern: [],
                   partitionByNewLine: false,
                   optionalityOrder: 'ignore',
+                  matcher: 'minimatch',
                   groups: [],
                   customGroups: {},
                 },
@@ -310,6 +380,7 @@ Determines the matcher used for patterns in the `partitionByComment` and `custom
                 ignorePattern: [],
                 partitionByNewLine: false,
                 optionalityOrder: 'ignore',
+                matcher: 'minimatch',
                 groups: [],
                 customGroups: {},
               },

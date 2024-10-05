@@ -172,25 +172,48 @@ You can specify their names or a glob pattern to ignore, for example: `'Table*'`
 
 ### groups
 
+<sub>
+  type: `Array<string | string[]>`
+</sub>
 <sub>default: `[]`</sub>
 
-Allows you to specify a list of JSX props groups for sorting. Groups help organize props into categories, making your components more readable and maintainable. Multiple groups can be combined to achieve the desired sorting order.
+Allows you to specify a list of JSX props groups for sorting. Groups help organize props into categories, making your components more readable and maintainable.
 
-There are predefined groups: `'multiline'`, `'shorthand'`.
-
-Predefined Groups:
+Predefined groups:
 
 - `'multiline'` — Props with multiline values.
 - `'shorthand'` — Shorthand props, which are used without a value, typically for boolean props.
-- `'unknown'` — Props that don’t fit into any other group.
+- `'unknown'` — Props that don’t fit into any group specified in the `groups` option.
+
+If the `unknown` group is not specified in the `groups` option, it will automatically be added to the end of the list.
+
+Each JSX prop will be assigned a single group specified in the `groups` option (or the `unknown` group if no match is found).
+The order of items in the `groups` option determines how groups are ordered.
+
+Within a given group, members will be sorted according to the `type`, `order`, `ignoreCase`, etc. options.
+
+Individual groups can be combined together by placing them in an array. The order of groups in that array does not matter.
+All members of the groups in the array will be sorted together as if they were part of a single group.
 
 ### customGroups
 
+<sub>
+  type: `{ [groupName: string]: string | string[] }`
+</sub>
 <sub>default: `{}`</sub>
 
-You can define your own groups for JSX props using custom glob patterns for matching.
+You can define your own groups and use custom glob patterns or regex to match specific JSX attributes.
 
-Example:
+Use the `matcher` option to specify the pattern matching method.
+
+Each key of `customGroups` represents a group name which you can then use in the `groups` option. The value for each key can either be of type:
+- `string` — A JSX prop's name matching the value will be marked as part of the group referenced by the key.
+- `string[]` — A JSX prop's name matching any of the values of the array will be marked as part of the group referenced by the key.
+The order of values in the array does not matter.
+
+Custom group matching takes precedence over predefined group matching.
+
+#### Example
 
 ```js
  {
@@ -210,7 +233,7 @@ Example:
 
 <sub>default: `'minimatch'`</sub>
 
-Determines the matcher used for patterns in the `customGroups` option.
+Determines the matcher used for patterns in the `ignorePattern` and `customGroups` options.
 
 - `'minimatch'` — Use the [minimatch](https://github.com/isaacs/minimatch) library for pattern matching.
 - `'regex'` — Use regular expressions for pattern matching.
@@ -237,6 +260,7 @@ Determines the matcher used for patterns in the `customGroups` option.
                   order: 'asc',
                   ignoreCase: true,
                   ignorePattern: [],
+                  matcher: 'minimatch',
                   groups: [],
                   customGroups: {},
                 },
@@ -263,6 +287,7 @@ Determines the matcher used for patterns in the `customGroups` option.
                 order: 'asc',
                 ignoreCase: true,
                 ignorePattern: [],
+                matcher: 'minimatch',
                 groups: [],
                 customGroups: {},
               },
