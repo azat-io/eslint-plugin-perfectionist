@@ -238,6 +238,33 @@ Within a given group, members will be sorted according to the `type`, `order`, `
 Individual groups can be combined together by placing them in an array. The order of groups in that array does not matter.
 All members of the groups in the array will be sorted together as if they were part of a single group.
 
+#### Example
+
+```ts
+interface User {
+  firstName: string // unknown
+  lastName: string  // unknown
+  username: string  // unknown
+  job: {            // multiline
+    // Stuff about job
+  }
+  localization: {   // multiline
+    // Stuff about localization
+  }
+}
+```
+
+`groups` option configuration:
+
+```js
+{
+  groups: [
+    'unknown',
+    'multiline',
+  ]
+}
+```
+
 ### customGroups
 
 <sub>
@@ -256,19 +283,38 @@ The order of values in the array does not matter.
 
 Custom group matching takes precedence over predefined group matching.
 
-Example:
+#### Example
+
+Put all properties starting with `id` and `name` at the top, combine and sort metadata and multiline properties at the bottom.
+Anything else is put in the middle.
+
+```ts
+interface User {
+  id: string                 // top
+  name: string               // top
+  age: number                // unknown
+  isAdmin: boolean           // unknown
+  lastUpdated_metadata: Date // bottom
+  localization: {            // multiline
+    // Stuff about localization
+  }
+  version_metadata: string   // bottom
+}
+```
+
+`groups` and `customGroups` configuration:
 
 ```js
  {
    groups: [
-+    'top',          // [!code ++]
-     'multiline',
++    'top',                  // [!code ++]
      'unknown',
-     ['shorthand', 'astro-shorthand'],
+     ['multiline', 'bottom'] // [!code ++]
    ],
-+  customGroups: {   // [!code ++]
-+    top: 'id'       // [!code ++]
-+  }                 // [!code ++]
++  customGroups: {           // [!code ++]
++    top: ['id', 'name']     // [!code ++]
++    bottom: '*_metadata'     // [!code ++]
++  }                         // [!code ++]
  }
 ```
 

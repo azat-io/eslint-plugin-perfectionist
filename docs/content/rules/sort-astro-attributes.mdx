@@ -162,7 +162,7 @@ Within a given group, members will be sorted according to the `type`, `order`, `
 Individual groups can be combined together by placing them in an array. The order of groups in that array does not matter.
 All members of the groups in the array will be sorted together as if they were part of a single group.
 
-Example:
+#### Example
 
 ```astro
 <Form
@@ -176,6 +176,19 @@ Example:
   {/* 'astro-shorthand' */}
   {success}
 />
+```
+
+`groups` option configuration:
+
+```js
+{
+  groups: [
+    'multiline',
+    'shorthand',
+    'astro-shorthand',
+    'unknown',
+  ]
+}
 ```
 
 ### customGroups
@@ -196,15 +209,34 @@ The order of values in the array does not matter.
 
 Custom group matching takes precedence over predefined group matching.
 
-Example:
+#### Example
+
+```astro
+<Form
+  {/* 'callback' */}
+  onClick={event => {
+    event.preventDefault()
+    handleSubmit()
+  }}
+  {/* 'shorthand' */}
+  validate
+  {/* 'astro-shorthand' */}
+  {success}
+  {/* 'unknown' because 'multiline' is not in groups */}
+  notCallbackEvent={foo => {
+    console.log('bar')
+  }}
+/>
+```
+
+`groups` and `customGroups` configuration:
 
 ```js
  {
    groups: [
-     'multiline',
-     'unknown',
-     ['shorthand', 'astro-shorthand'],
 +    'callback',     // [!code ++]
+     ['shorthand', 'astro-shorthand'],
+     'unknown',
    ],
 +  customGroups: {   // [!code ++]
 +    callback: 'on*' // [!code ++]

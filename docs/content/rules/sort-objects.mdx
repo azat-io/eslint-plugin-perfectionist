@@ -280,17 +280,38 @@ The order of values in the array does not matter.
 
 Custom group matching takes precedence over predefined group matching.
 
-Example:
+#### Example
+
+Put all properties starting with `id` and `name` at the top, put metadata at the bottom.
+Anything else is put in the middle.
+
+```ts
+const user = {
+  id: 'id',                   // top
+  name: 'John',               // top
+  age: 40,                    // unknown
+  isAdmin: false,             // unknown
+  localization: {             // unknown
+    // Stuff about localization
+  },
+  lastUpdated_metadata: null, // bottom
+  version_metadata: '1'       // bottom
+}
+```
+
+`groups` and `customGroups` configuration:
 
 ```js
  {
    groups: [
-+    'top',              // [!code ++]
++    'top',                  // [!code ++]
      'unknown',
+     'bottom'                // [!code ++]
    ],
-+  customGroups: {       // [!code ++]
-+    top: ['id', 'name'] // [!code ++]
-+  }                     // [!code ++]
++  customGroups: {           // [!code ++]
++    top: ['id', 'name']     // [!code ++]
++    bottom: '*_metadata'    // [!code ++]
++  }                         // [!code ++]
  }
 ```
 

@@ -157,22 +157,35 @@ Within a given group, members will be sorted according to the `type`, `order`, `
 Individual groups can be combined together by placing them in an array. The order of groups in that array does not matter.
 All members of the groups in the array will be sorted together as if they were part of a single group.
 
-Example:
+#### Example
 
 ```svelte
 <button
-  {/* 'multiline' - Props whose length exceeds one line */}
+  {/* 'multiline' */}
   on:click={event => {
     event.preventDefault()
     fetchDate()
   }}
-  {/* 'shorthand' - Shorthand property for props with `true` value */}
+  {/* 'shorthand' */}
   autofocus
-  {/* 'svelte-shorthand' - Svelte's shorthand for replacing name={name} with {name} */}
+  {/* 'svelte-shorthand' */}
   {disabled}
 >
   Click me
 </button>
+```
+
+`groups` option configuration:
+
+```js
+{
+  groups: [
+    'multiline',
+    'shorthand',
+    'svelte-shorthand',
+    'unknown',
+  ]
+}
 ```
 
 ### customGroups
@@ -193,7 +206,7 @@ The order of values in the array does not matter.
 
 Custom group matching takes precedence over predefined group matching.
 
-Example:
+#### Example
 
 ```js
  {

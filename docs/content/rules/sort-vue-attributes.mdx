@@ -190,6 +190,29 @@ Within a given group, members will be sorted according to the `type`, `order`, `
 Individual groups can be combined together by placing them in an array. The order of groups in that array does not matter.
 All members of the groups in the array will be sorted together as if they were part of a single group.
 
+#### Example
+
+```vue
+<Form
+  @onClick="() => {   // 'multiline'
+    g.value = false
+  }"
+  validate            // 'shorthand'
+/>
+```
+
+`groups` option configuration:
+
+```js
+{
+  groups: [
+    'multiline',
+    'shorthand',
+    'unknown',
+  ]
+}
+```
+
 ### customGroups
 
 <sub>
@@ -207,15 +230,27 @@ Each key of `customGroups` represents a group name which you can then use in the
 The order of values in the array does not matter.
 
 Custom group matching takes precedence over predefined group matching.
-Example:
+
+#### Example
+
+```vue
+<form
+  @onClick="@count++" // 'callback'
+  validate            // 'shorthand'
+  @notCallbackEvent={ // 'unknown' because 'multiline' is not in groups
+    console.log('bar')
+  }
+/>
+```
+
+`groups` and `customGroups` configuration:
 
 ```js
  {
    groups: [
-     'multiline',
-     'unknown',
-     'shorthand',
 +    'callback',     // [!code ++]
+     'shorthand',
+     'unknown',
    ],
 +  customGroups: {   // [!code ++]
 +    callback: 'on*' // [!code ++]
