@@ -1,6 +1,11 @@
 import { describe, expect, it } from 'vitest'
 
-import { generateOfficialGroups } from '../rules/sort-classes-utils'
+import {
+  validateGroupsConfiguration,
+  generateOfficialGroups,
+  getCombinations,
+} from '../rules/sort-classes-utils'
+import { allModifiers, allSelectors } from '../rules/sort-classes.types'
 
 describe('sort-classes-utils', () => {
   it('sort-classes-utils: should generate official groups', () => {
@@ -44,4 +49,78 @@ describe('sort-classes-utils', () => {
       'method',
     ])
   })
+
+  describe('validateGroupsConfiguration', () => {
+    it('should allow predefined groups', () => {
+      let allModifierCombinationPermutations =
+        getAllNonEmptyCombinations(allModifiers)
+      let allPredefinedGroups = allSelectors
+        .map(selector =>
+          allModifierCombinationPermutations.map(
+            modifiers => `${modifiers.join('-')}-${selector}`,
+          ),
+        )
+        .flat()
+        .concat(allSelectors)
+      expect(
+        validateGroupsConfiguration(allPredefinedGroups, []),
+      ).toBeUndefined()
+    })
+
+    it('should allow custom groups with new API', () => {
+      expect(
+        validateGroupsConfiguration(
+          ['static-property', 'myCustomGroup'],
+          [
+            {
+              groupName: 'myCustomGroup',
+            },
+          ],
+        ),
+      ).toBeUndefined()
+    })
+
+    it('should not allow predefined groups with duplicate modifiers', () => {
+      expect(() =>
+        validateGroupsConfiguration(['static-static-property'], []),
+      ).toThrow('Invalid group(s): static-static-property')
+    })
+
+    it('should not allow invalid groups with new API', () => {
+      expect(() =>
+        validateGroupsConfiguration(
+          ['static-property', 'myCustomGroup', ''],
+          [
+            {
+              groupName: 'myCustomGroupNotReferenced',
+            },
+          ],
+        ),
+      ).toThrow('Invalid group(s): myCustomGroup')
+    })
+
+    it('should allow groups with old API', () => {
+      expect(
+        validateGroupsConfiguration(['static-property', 'myCustomGroup'], {
+          myCustomGroup: 'foo',
+        }),
+      ).toBeUndefined()
+    })
+
+    it('should not allow invalid custom groups with old API', () => {
+      expect(() =>
+        validateGroupsConfiguration(['static-property', 'myCustomGroup'], {
+          myCustomGroupNotReferenced: 'foo',
+        }),
+      ).toThrow('Invalid group(s): myCustomGroup')
+    })
+  })
 })
+
+const getAllNonEmptyCombinations = (array: string[]): string[][] => {
+  let result: string[][] = []
+  for (let i = 1; i < array.length; i++) {
+    result = [...result, ...getCombinations(array, i)]
+  }
+  return result
+}
