@@ -4,9 +4,14 @@ import type {
 } from '@typescript-eslint/utils/ts-eslint'
 
 import sortVariableDeclarations from './rules/sort-variable-declarations'
+import sortParameterDecorators from './rules/sort-parameter-decorators'
+import sortAccessorDecorators from './rules/sort-accessor-decorators'
+import sortPropertyDecorators from './rules/sort-property-decorators'
 import sortIntersectionTypes from './rules/sort-intersection-types'
 import sortSvelteAttributes from './rules/sort-svelte-attributes'
+import sortMethodDecorators from './rules/sort-method-decorators'
 import sortAstroAttributes from './rules/sort-astro-attributes'
+import sortClassDecorators from './rules/sort-class-decorators'
 import sortArrayIncludes from './rules/sort-array-includes'
 import sortVueAttributes from './rules/sort-vue-attributes'
 import sortNamedImports from './rules/sort-named-imports'
@@ -38,8 +43,13 @@ let name = 'perfectionist'
 let plugin = {
   rules: {
     'sort-variable-declarations': sortVariableDeclarations,
+    'sort-parameter-decorators': sortParameterDecorators,
+    'sort-accessor-decorators': sortAccessorDecorators,
+    'sort-property-decorators': sortPropertyDecorators,
     'sort-intersection-types': sortIntersectionTypes,
+    'sort-method-decorators': sortMethodDecorators,
     'sort-svelte-attributes': sortSvelteAttributes,
+    'sort-class-decorators': sortClassDecorators,
     'sort-astro-attributes': sortAstroAttributes,
     'sort-vue-attributes': sortVueAttributes,
     'sort-array-includes': sortArrayIncludes,
