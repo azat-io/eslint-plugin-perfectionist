@@ -9,6 +9,7 @@ import type {
 } from './sort-classes.types'
 import type { CompareOptions } from '../utils/compare'
 
+import { validateNoDuplicatedGroups } from '../utils/validate-groups-configuration'
 import { allModifiers, allSelectors } from './sort-classes.types'
 import { matches } from '../utils/matches'
 
@@ -271,6 +272,7 @@ export let validateGroupsConfiguration = (
   if (invalidGroups.length) {
     throw new Error('Invalid group(s): ' + invalidGroups.join(', '))
   }
+  validateNoDuplicatedGroups(groups)
 }
 
 const isPredefinedGroup = (input: string): boolean => {
@@ -294,6 +296,6 @@ const isPredefinedGroup = (input: string): boolean => {
   let modifiers = input.split('-').slice(0, isTwoWordSelectorValid ? -2 : -1)
   return (
     new Set(modifiers).size === modifiers.length &&
-    !modifiers.some(modifier => !allModifiers.includes(modifier as Modifier))
+    modifiers.every(modifier => allModifiers.includes(modifier as Modifier))
   )
 }

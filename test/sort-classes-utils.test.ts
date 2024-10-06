@@ -51,7 +51,7 @@ describe('sort-classes-utils', () => {
   })
 
   describe('validateGroupsConfiguration', () => {
-    it('should allow predefined groups', () => {
+    it('allows predefined groups', () => {
       let allModifierCombinationPermutations =
         getAllNonEmptyCombinations(allModifiers)
       let allPredefinedGroups = allSelectors
@@ -67,7 +67,7 @@ describe('sort-classes-utils', () => {
       ).toBeUndefined()
     })
 
-    it('should allow custom groups with new API', () => {
+    it('allows custom groups with the new API', () => {
       expect(
         validateGroupsConfiguration(
           ['static-property', 'myCustomGroup'],
@@ -80,13 +80,19 @@ describe('sort-classes-utils', () => {
       ).toBeUndefined()
     })
 
-    it('should not allow predefined groups with duplicate modifiers', () => {
+    it('throws an error with predefined groups with duplicate modifiers', () => {
       expect(() =>
         validateGroupsConfiguration(['static-static-property'], []),
       ).toThrow('Invalid group(s): static-static-property')
     })
 
-    it('should not allow invalid groups with new API', () => {
+    it('throws an error if a duplicate group is provided', () => {
+      expect(() =>
+        validateGroupsConfiguration(['static-property', 'static-property'], []),
+      ).toThrow('Duplicated group(s): static-property')
+    })
+
+    it('throws an error if invalid groups are provided with the new API', () => {
       expect(() =>
         validateGroupsConfiguration(
           ['static-property', 'myCustomGroup', ''],
@@ -99,7 +105,7 @@ describe('sort-classes-utils', () => {
       ).toThrow('Invalid group(s): myCustomGroup')
     })
 
-    it('should allow groups with old API', () => {
+    it('allows groups with the old API', () => {
       expect(
         validateGroupsConfiguration(['static-property', 'myCustomGroup'], {
           myCustomGroup: 'foo',
@@ -107,7 +113,7 @@ describe('sort-classes-utils', () => {
       ).toBeUndefined()
     })
 
-    it('should not allow invalid custom groups with old API', () => {
+    it('throws an error if invalid custom groups are provided with the old API', () => {
       expect(() =>
         validateGroupsConfiguration(['static-property', 'myCustomGroup'], {
           myCustomGroupNotReferenced: 'foo',

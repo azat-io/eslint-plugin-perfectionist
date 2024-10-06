@@ -21,4 +21,14 @@ describe('validate-groups-configuration', () => {
       )
     }).toThrow('Invalid group(s): invalidGroup1, invalidGroup2')
   })
+
+  it('throws an error when a duplicate group is provided', () => {
+    expect(() => {
+      validateGroupsConfiguration(
+        ['predefinedGroup', 'predefinedGroup'],
+        ['predefinedGroup'],
+        [],
+      )
+    }).toThrow('Duplicated group(s): predefinedGroup')
+  })
 })
