@@ -535,6 +535,55 @@ describe(ruleName, () => {
         },
       ],
     })
+
+    ruleTester.run(
+      `${ruleName}(${type}): allows to trim special characters`,
+      rule,
+      {
+        valid: [
+          {
+            code: dedent`
+              enum Enum {
+                _A = 'A',
+                B = 'B',
+                _C = 'C',
+              }
+            `,
+            options: [
+              {
+                ...options,
+                specialCharacters: 'trim',
+              },
+            ],
+          },
+        ],
+        invalid: [],
+      },
+    )
+
+    ruleTester.run(
+      `${ruleName}(${type}): allows to remove special characters`,
+      rule,
+      {
+        valid: [
+          {
+            code: dedent`
+              enum Enum {
+                AB = 'AB',
+                A_C = 'AC',
+              }
+            `,
+            options: [
+              {
+                ...options,
+                specialCharacters: 'remove',
+              },
+            ],
+          },
+        ],
+        invalid: [],
+      },
+    )
   })
 
   describe(`${ruleName}: sorting by natural order`, () => {

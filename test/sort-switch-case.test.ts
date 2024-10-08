@@ -531,6 +531,57 @@ describe(ruleName, () => {
         ],
       },
     )
+
+    ruleTester.run(
+      `${ruleName}(${type}): allows to trim special characters`,
+      rule,
+      {
+        valid: [
+          {
+            code: dedent`
+              switch (x) {
+                case '_a':
+                case 'b':
+                case '_c':
+                  break;
+              }
+            `,
+            options: [
+              {
+                ...options,
+                specialCharacters: 'trim',
+              },
+            ],
+          },
+        ],
+        invalid: [],
+      },
+    )
+
+    ruleTester.run(
+      `${ruleName}(${type}): allows to remove special characters`,
+      rule,
+      {
+        valid: [
+          {
+            code: dedent`
+              switch (x) {
+                case 'ab':
+                case 'a_c':
+                  break;
+              }
+            `,
+            options: [
+              {
+                ...options,
+                specialCharacters: 'remove',
+              },
+            ],
+          },
+        ],
+        invalid: [],
+      },
+    )
   })
 
   describe(`${ruleName}: sorting by natural order`, () => {

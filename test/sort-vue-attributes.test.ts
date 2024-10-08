@@ -341,6 +341,74 @@ describe(ruleName, () => {
         invalid: [],
       },
     )
+
+    ruleTester.run(
+      `${ruleName}(${type}): allows to trim special characters`,
+      rule,
+      {
+        valid: [
+          {
+            filename: 'file.vue',
+            code: dedent`
+              <script lang="ts" setup>
+                import Component from '../file.vue'
+
+                let b = 'b'
+              </script>
+
+              <template>
+                <jujutsu-sorcerer
+                  :a="a"
+                  b="b"
+                  :c="c"
+                  z="z"
+                />
+              </template>
+            `,
+            options: [
+              {
+                ...options,
+                specialCharacters: 'trim',
+              },
+            ],
+          },
+        ],
+        invalid: [],
+      },
+    )
+
+    ruleTester.run(
+      `${ruleName}(${type}): allows to remove special characters`,
+      rule,
+      {
+        valid: [
+          {
+            filename: 'file.vue',
+            code: dedent`
+              <script lang="ts" setup>
+                import Component from '../file.vue'
+
+                let b = 'b'
+              </script>
+
+              <template>
+                <jujutsu-sorcerer
+                  aa="aa"
+                  :a:b="ab"
+                />
+              </template>
+            `,
+            options: [
+              {
+                ...options,
+                specialCharacters: 'remove',
+              },
+            ],
+          },
+        ],
+        invalid: [],
+      },
+    )
   })
 
   describe(`${ruleName}: sorting by natural order`, () => {

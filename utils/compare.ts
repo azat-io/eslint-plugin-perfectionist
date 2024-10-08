@@ -11,8 +11,9 @@ interface BaseCompareOptions {
 }
 
 interface AlphabeticalCompareOptions extends BaseCompareOptions {
+  specialCharacters: 'remove' | 'trim' | 'keep'
   type: 'alphabetical'
-  ignoreCase?: boolean
+  ignoreCase: boolean
 }
 
 interface LineLengthCompareOptions extends BaseCompareOptions {
@@ -21,7 +22,8 @@ interface LineLengthCompareOptions extends BaseCompareOptions {
 }
 
 interface NaturalCompareOptions extends BaseCompareOptions {
-  ignoreCase?: boolean
+  specialCharacters: 'remove' | 'trim' | 'keep'
+  ignoreCase: boolean
   type: 'natural'
 }
 
@@ -41,7 +43,10 @@ export let compare = (
     options.nodeValueGetter ?? ((node: SortingNode) => node.name)
 
   if (options.type === 'alphabetical') {
-    let formatString = getFormatStringFunc(!!options.ignoreCase)
+    let formatString = getFormatStringFunc(
+      options.ignoreCase,
+      options.specialCharacters,
+    )
     sortingFunction = (aNode, bNode) =>
       formatString(nodeValueGetter(aNode)).localeCompare(
         formatString(nodeValueGetter(bNode)),
@@ -55,7 +60,10 @@ export let compare = (
       return string
     }
     sortingFunction = (aNode, bNode) => {
-      let formatString = getFormatStringFunc(!!options.ignoreCase)
+      let formatString = getFormatStringFunc(
+        options.ignoreCase,
+        options.specialCharacters,
+      )
       return naturalCompare(
         prepareNumeric(formatString(nodeValueGetter(aNode))),
         prepareNumeric(formatString(nodeValueGetter(bNode))),
@@ -88,10 +96,20 @@ export let compare = (
   return orderCoefficient * sortingFunction(a, b)
 }
 
-let getFormatStringFunc = (ignoreCase: boolean) => (value: string) => {
-  let valueToCompare = value
-  if (ignoreCase) {
-    valueToCompare = valueToCompare.toLowerCase()
+let getFormatStringFunc =
+  (ignoreCase: boolean, specialCharacters: 'remove' | 'trim' | 'keep') =>
+  (value: string) => {
+    let valueToCompare = value
+    if (ignoreCase) {
+      valueToCompare = valueToCompare.toLowerCase()
+    }
+    switch (specialCharacters) {
+      case 'remove':
+        valueToCompare = valueToCompare.replaceAll(/[^A-Za-zÀ-ž]+/g, '')
+        break
+      case 'trim':
+        valueToCompare = valueToCompare.replaceAll(/^[^A-Za-zÀ-ž]+/g, '')
+        break
+    }
+    return valueToCompare.replaceAll(/\s/g, '')
   }
-  return valueToCompare.replaceAll(/\s/g, '')
-}

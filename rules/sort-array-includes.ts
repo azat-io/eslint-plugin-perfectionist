@@ -27,6 +27,7 @@ export type Options = [
     groupKind: 'literals-first' | 'spreads-first' | 'mixed'
     type: 'alphabetical' | 'line-length' | 'natural'
     partitionByComment: string[] | boolean | string
+    specialCharacters: 'remove' | 'trim' | 'keep'
     matcher: 'minimatch' | 'regex'
     partitionByNewLine: boolean
     order: 'desc' | 'asc'
@@ -56,6 +57,12 @@ export let jsonSchema: JSONSchema4 = {
     ignoreCase: {
       description: 'Controls whether sorting should be case-sensitive or not.',
       type: 'boolean',
+    },
+    specialCharacters: {
+      description:
+        'Controls how special characters should be handled before sorting.',
+      type: 'string',
+      enum: ['remove', 'trim', 'keep'],
     },
     groupKind: {
       description: 'Specifies top-level groups.',
@@ -108,6 +115,7 @@ export default createEslintRule<Options, MESSAGE_ID>({
       type: 'alphabetical',
       order: 'asc',
       ignoreCase: true,
+      specialCharacters: 'keep',
       matcher: 'minimatch',
       groupKind: 'literals-first',
       partitionByComment: false,
@@ -144,6 +152,7 @@ export let sortArray = <MessageIds extends string>(
       groupKind: 'literals-first',
       type: 'alphabetical',
       ignoreCase: true,
+      specialCharacters: 'keep',
       matcher: 'minimatch',
       order: 'asc',
       partitionByComment: false,

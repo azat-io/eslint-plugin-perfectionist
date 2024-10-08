@@ -234,6 +234,7 @@ export const getCompareOptions = (
       customGroup && 'order' in customGroup && customGroup.order
         ? customGroup.order
         : options.order,
+    specialCharacters: options.specialCharacters,
     ignoreCase: options.ignoreCase,
   }
 }

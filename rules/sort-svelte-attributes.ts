@@ -32,6 +32,7 @@ type Options<T extends string[]> = [
   Partial<{
     customGroups: { [key in T[number]]: string[] | string }
     type: 'alphabetical' | 'line-length' | 'natural'
+    specialCharacters: 'remove' | 'trim' | 'keep'
     groups: (Group<T>[] | Group<T>)[]
     matcher: 'minimatch' | 'regex'
     order: 'desc' | 'asc'
@@ -71,6 +72,12 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
             description:
               'Controls whether sorting should be case-sensitive or not.',
             type: 'boolean',
+          },
+          specialCharacters: {
+            description:
+              'Controls how special characters should be handled before sorting.',
+            type: 'string',
+            enum: ['remove', 'trim', 'keep'],
           },
           groups: {
             description: 'Specifies the order of the groups.',
@@ -122,6 +129,7 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
       type: 'alphabetical',
       order: 'asc',
       ignoreCase: true,
+      specialCharacters: 'keep',
       matcher: 'minimatch',
       groups: [],
       customGroups: {},
@@ -140,6 +148,7 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
           let options = complete(context.options.at(0), settings, {
             type: 'alphabetical',
             ignoreCase: true,
+            specialCharacters: 'keep',
             customGroups: {},
             matcher: 'minimatch',
             order: 'asc',

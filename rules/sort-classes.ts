@@ -75,6 +75,12 @@ export default createEslintRule<SortClassesOptions, MESSAGE_ID>({
               'Controls whether sorting should be case-sensitive or not.',
             type: 'boolean',
           },
+          specialCharacters: {
+            description:
+              'Controls how special characters should be handled before sorting.',
+            type: 'string',
+            enum: ['remove', 'trim', 'keep'],
+          },
           partitionByComment: {
             description:
               'Allows to use comments to separate the class members into logical groups.',
@@ -186,6 +192,7 @@ export default createEslintRule<SortClassesOptions, MESSAGE_ID>({
       type: 'alphabetical',
       order: 'asc',
       ignoreCase: true,
+      specialCharacters: 'keep',
       matcher: 'minimatch',
       partitionByComment: false,
       groups: [
@@ -231,6 +238,7 @@ export default createEslintRule<SortClassesOptions, MESSAGE_ID>({
           partitionByComment: false,
           type: 'alphabetical',
           ignoreCase: true,
+          specialCharacters: 'keep',
           customGroups: [],
           order: 'asc',
         } as const)

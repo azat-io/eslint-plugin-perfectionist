@@ -506,6 +506,64 @@ describe(ruleName, () => {
         invalid: [],
       },
     )
+
+    ruleTester.run(
+      `${ruleName}(${type}): allows to trim special characters`,
+      rule,
+      {
+        valid: [
+          {
+            filename: 'file.svelte',
+            code: dedent`
+              <script>
+                import Component from '~/file.svelte'
+              </script>
+
+              <Component
+                {a}
+                b="b"
+                {c}
+              />
+            `,
+            options: [
+              {
+                ...options,
+                specialCharacters: 'trim',
+              },
+            ],
+          },
+        ],
+        invalid: [],
+      },
+    )
+
+    ruleTester.run(
+      `${ruleName}(${type}): allows to remove special characters`,
+      rule,
+      {
+        valid: [
+          {
+            filename: 'file.svelte',
+            code: dedent`
+              <script>
+                import Component from '~/file.svelte'
+              </script>
+              <Component
+                ab
+                a$c
+              />
+            `,
+            options: [
+              {
+                ...options,
+                specialCharacters: 'remove',
+              },
+            ],
+          },
+        ],
+        invalid: [],
+      },
+    )
   })
 
   describe(`${ruleName}: sorting by natural order`, () => {

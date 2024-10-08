@@ -57,6 +57,7 @@ type Options<T extends string[]> = [
     }
     type: 'alphabetical' | 'line-length' | 'natural'
     newlinesBetween: 'ignore' | 'always' | 'never'
+    specialCharacters: 'remove' | 'trim' | 'keep'
     groups: (Group<T>[] | Group<T>)[]
     matcher: 'minimatch' | 'regex'
     environment: 'node' | 'bun'
@@ -101,6 +102,12 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
             description:
               'Controls whether sorting should be case-sensitive or not.',
             type: 'boolean',
+          },
+          specialCharacters: {
+            description:
+              'Controls how special characters should be handled before sorting.',
+            type: 'string',
+            enum: ['remove', 'trim', 'keep'],
           },
           internalPattern: {
             description: 'Specifies the pattern for internal modules.',
@@ -211,6 +218,7 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
       type: 'alphabetical',
       order: 'asc',
       ignoreCase: true,
+      specialCharacters: 'keep',
       internalPattern: ['~/**'],
       sortSideEffects: false,
       newlinesBetween: 'always',
@@ -254,6 +262,7 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
       type: 'alphabetical',
       environment: 'node',
       ignoreCase: true,
+      specialCharacters: 'keep',
       order: 'asc',
     } as const)
 
