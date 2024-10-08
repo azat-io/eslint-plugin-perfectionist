@@ -275,16 +275,6 @@ export default createEslintRule<SortClassesOptions, MESSAGE_ID>({
           let dependencies: string[] = []
 
           let checkNode = (nodeValue: TSESTree.Node) => {
-            /**
-             * No need to check the body of functions and arrow functions
-             */
-            if (
-              nodeValue.type === 'ArrowFunctionExpression' ||
-              nodeValue.type === 'FunctionExpression'
-            ) {
-              return
-            }
-
             if (
               nodeValue.type === 'MemberExpression' &&
               (nodeValue.object.type === 'ThisExpression' ||

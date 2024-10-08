@@ -2681,7 +2681,7 @@ describe(ruleName, () => {
       )
 
       ruleTester.run(
-        `${ruleName}(${type}) detects function expression dependencies`,
+        `${ruleName}(${type}) detects function property dependencies`,
         rule,
         {
           valid: [
@@ -2796,6 +2796,22 @@ describe(ruleName, () => {
                     return 1
                   }
                   static a = [1].map(Class.b)
+                }
+              `,
+              options: [
+                {
+                  ...options,
+                  groups: [['property', 'method']],
+                },
+              ],
+            },
+            {
+              code: dedent`
+                class Class {
+                  querystring = createQueryString();
+                  state = createState((set) => {
+                      set('query', this.queryString.value);
+                   });
                 }
               `,
               options: [
@@ -2834,13 +2850,13 @@ describe(ruleName, () => {
             {
               code: dedent`
                 class Class {
+                  static z = true;
                   static {
                     const method = () => {
                       return (Class.z || true) && (false || this.z);
                     };
                     method();
                   }
-                  static z = true;
                 }
               `,
               options: [
