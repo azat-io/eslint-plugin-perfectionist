@@ -31,9 +31,7 @@ describe(ruleName, () => {
           code: dedent`
             class Class {
 
-              @A
-              @B
-              @C
+              @A @B() @C
               property
 
             }
@@ -476,9 +474,7 @@ describe(ruleName, () => {
           code: dedent`
             class Class {
 
-              @A
-              @B
-              @C
+              @A @B() @C
               property
 
             }
@@ -920,9 +916,7 @@ describe(ruleName, () => {
           code: dedent`
             class Class {
 
-              @A
-              @B
-              @C
+              @B() @A @C
               property
 
             }
