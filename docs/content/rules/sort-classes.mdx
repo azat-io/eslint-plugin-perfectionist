@@ -491,6 +491,7 @@ interface CustomGroupDefinition {
   selector?: string
   modifiers?: string[]
   elementNamePattern?: string
+  elementValuePattern?: string
   decoratorNamePattern?: string
 }
 ```
@@ -507,6 +508,7 @@ interface CustomGroupBlockDefinition {
       selector?: string
       modifiers?: string[]
       elementNamePattern?: string
+      elementValuePattern?: string
       decoratorNamePattern?: string
   }>
 }
@@ -520,6 +522,7 @@ A class member will match a `CustomGroupBlockDefinition` group if it matches all
 - `selector`: Filter on the `selector` of the element.
 - `modifiers`: Filter on the `modifiers` of the element. (All the modifiers of the element must be present in that list)
 - `elementNamePattern`: If entered, will check that the name of the element matches the pattern entered.
+- `elementValuePattern`: Only for non-function properties. If entered, will check that the value of the property matches the pattern entered.
 - `decoratorNamePattern`: If entered, will check that at least one `decorator` matches the pattern entered.
 - `type`: Overrides the sort type for that custom group. `unsorted` will not sort the group.
 - `order`: Overrides the sort order for that custom group

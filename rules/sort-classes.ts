@@ -428,6 +428,7 @@ export default createEslintRule<SortClassesOptions, MESSAGE_ID>({
               }
             }
 
+            let memberValue: undefined | string
             let modifiers: Modifier[] = []
             let selectors: Selector[] = []
             if (
@@ -568,6 +569,10 @@ export default createEslintRule<SortClassesOptions, MESSAGE_ID>({
                 selectors.push('function-property')
               }
 
+              if (!isFunctionProperty && member.value) {
+                memberValue = sourceCode.getText(member.value)
+              }
+
               selectors.push('property')
 
               if (
@@ -593,6 +598,7 @@ export default createEslintRule<SortClassesOptions, MESSAGE_ID>({
                   customGroupMatches({
                     customGroup,
                     elementName: name,
+                    elementValue: memberValue,
                     modifiers,
                     selectors,
                     decorators,
@@ -619,7 +625,7 @@ export default createEslintRule<SortClassesOptions, MESSAGE_ID>({
               .find(overloadSignatures => overloadSignatures.includes(member))
               ?.at(-1)
 
-            let value: SortingNodeWithDependencies = {
+            let sortingNode: SortingNodeWithDependencies = {
               size: overloadSignatureGroupMember
                 ? rangeToDiff(overloadSignatureGroupMember.range)
                 : rangeToDiff(member.range),
@@ -633,7 +639,7 @@ export default createEslintRule<SortClassesOptions, MESSAGE_ID>({
               ),
             }
 
-            accumulator.at(-1)!.push(value)
+            accumulator.at(-1)!.push(sortingNode)
 
             return accumulator
           },
