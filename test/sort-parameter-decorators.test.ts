@@ -48,10 +48,7 @@ describe(ruleName, () => {
             class Class {
 
               method(
-                @A
-                @C
-                @B()
-                property) {}
+                @A @C @B() property) {}
 
             }
           `,
@@ -59,10 +56,7 @@ describe(ruleName, () => {
             class Class {
 
               method(
-                @A
-                @B()
-                @C
-                property) {}
+                @A @B() @C property) {}
 
             }
           `,
@@ -509,10 +503,7 @@ describe(ruleName, () => {
             class Class {
 
               method(
-                @A
-                @C
-                @B()
-                property) {}
+                @A @C @B() property) {}
 
             }
           `,
@@ -520,10 +511,7 @@ describe(ruleName, () => {
             class Class {
 
               method(
-                @A
-                @B()
-                @C
-                property) {}
+                @A @B() @C property) {}
 
             }
           `,
@@ -969,10 +957,7 @@ describe(ruleName, () => {
             class Class {
 
               method(
-                @A
-                @C
-                @B()
-                property) {}
+                @A @C @B() property) {}
 
             }
           `,
@@ -980,10 +965,7 @@ describe(ruleName, () => {
             class Class {
 
               method(
-                @B()
-                @A
-                @C
-                property) {}
+                @B() @A @C property) {}
 
             }
           `,

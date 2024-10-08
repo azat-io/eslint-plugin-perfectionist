@@ -47,15 +47,11 @@ describe(ruleName, () => {
       invalid: [
         {
           code: dedent`
-            @A
-            @C
-            @B()
+            @A @C @B()
             class Class {}
           `,
           output: dedent`
-            @A
-            @B()
-            @C
+            @A @B() @C
             class Class {}
           `,
           options: [options],
@@ -439,15 +435,11 @@ describe(ruleName, () => {
       invalid: [
         {
           code: dedent`
-            @A
-            @C
-            @B()
+            @A @C @B()
             class Class {}
           `,
           output: dedent`
-            @A
-            @B()
-            @C
+            @A @B() @C
             class Class {}
           `,
           options: [options],
@@ -830,15 +822,11 @@ describe(ruleName, () => {
       invalid: [
         {
           code: dedent`
-            @A
-            @C
-            @B()
+            @A @C @B()
             class Class {}
           `,
           output: dedent`
-            @B()
-            @A
-            @C
+            @B() @A @C
             class Class {}
           `,
           options: [options],
