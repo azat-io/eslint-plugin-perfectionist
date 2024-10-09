@@ -1443,5 +1443,28 @@ describe(ruleName, () => {
         invalid: [],
       },
     )
+
+    ruleTester.run(`${ruleName}: allows to be disabled`, rule, {
+      valid: [
+        {
+          code: dedent`
+            class Class {
+
+              method(
+                @B
+                @A
+                parameter) {}
+
+            }
+          `,
+          options: [
+            {
+              sortOnParameters: false,
+            },
+          ],
+        },
+      ],
+      invalid: [],
+    })
   })
 })
