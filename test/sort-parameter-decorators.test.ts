@@ -2,9 +2,9 @@ import { RuleTester } from '@typescript-eslint/rule-tester'
 import { afterAll, describe, it } from 'vitest'
 import { dedent } from 'ts-dedent'
 
-import rule from '../rules/sort-parameter-decorators'
+import rule from '../rules/sort-decorators'
 
-let ruleName = 'sort-parameter-decorators'
+let ruleName = 'sort-decorators(parameters)'
 
 describe(ruleName, () => {
   RuleTester.describeSkip = describe.skip
@@ -63,7 +63,7 @@ describe(ruleName, () => {
           options: [options],
           errors: [
             {
-              messageId: 'unexpectedParameterDecoratorsOrder',
+              messageId: 'unexpectedDecoratorsOrder',
               data: {
                 left: 'C',
                 right: 'B',
@@ -124,14 +124,14 @@ describe(ruleName, () => {
             options: [options],
             errors: [
               {
-                messageId: 'unexpectedParameterDecoratorsOrder',
+                messageId: 'unexpectedDecoratorsOrder',
                 data: {
                   left: 'B',
                   right: 'A',
                 },
               },
               {
-                messageId: 'unexpectedParameterDecoratorsOrder',
+                messageId: 'unexpectedDecoratorsOrder',
                 data: {
                   left: 'D',
                   right: 'C',
@@ -173,7 +173,7 @@ describe(ruleName, () => {
             options: [options],
             errors: [
               {
-                messageId: 'unexpectedParameterDecoratorsOrder',
+                messageId: 'unexpectedDecoratorsOrder',
                 data: {
                   left: 'B',
                   right: 'A',
@@ -225,7 +225,7 @@ describe(ruleName, () => {
             ],
             errors: [
               {
-                messageId: 'unexpectedParameterDecoratorsGroupOrder',
+                messageId: 'unexpectedDecoratorsGroupOrder',
                 data: {
                   left: 'NoPublicAttributeError',
                   leftGroup: 'error',
@@ -328,14 +328,14 @@ describe(ruleName, () => {
             ],
             errors: [
               {
-                messageId: 'unexpectedParameterDecoratorsOrder',
+                messageId: 'unexpectedDecoratorsOrder',
                 data: {
                   left: 'D',
                   right: 'Bbb',
                 },
               },
               {
-                messageId: 'unexpectedParameterDecoratorsOrder',
+                messageId: 'unexpectedDecoratorsOrder',
                 data: {
                   left: 'Gg',
                   right: 'Fff',
@@ -426,7 +426,7 @@ describe(ruleName, () => {
             ],
             errors: [
               {
-                messageId: 'unexpectedParameterDecoratorsOrder',
+                messageId: 'unexpectedDecoratorsOrder',
                 data: {
                   left: 'C',
                   right: 'Bb',
@@ -573,7 +573,7 @@ describe(ruleName, () => {
           options: [options],
           errors: [
             {
-              messageId: 'unexpectedParameterDecoratorsOrder',
+              messageId: 'unexpectedDecoratorsOrder',
               data: {
                 left: 'C',
                 right: 'B',
@@ -634,14 +634,14 @@ describe(ruleName, () => {
             options: [options],
             errors: [
               {
-                messageId: 'unexpectedParameterDecoratorsOrder',
+                messageId: 'unexpectedDecoratorsOrder',
                 data: {
                   left: 'B',
                   right: 'A',
                 },
               },
               {
-                messageId: 'unexpectedParameterDecoratorsOrder',
+                messageId: 'unexpectedDecoratorsOrder',
                 data: {
                   left: 'D',
                   right: 'C',
@@ -683,7 +683,7 @@ describe(ruleName, () => {
             options: [options],
             errors: [
               {
-                messageId: 'unexpectedParameterDecoratorsOrder',
+                messageId: 'unexpectedDecoratorsOrder',
                 data: {
                   left: 'B',
                   right: 'A',
@@ -735,7 +735,7 @@ describe(ruleName, () => {
             ],
             errors: [
               {
-                messageId: 'unexpectedParameterDecoratorsGroupOrder',
+                messageId: 'unexpectedDecoratorsGroupOrder',
                 data: {
                   left: 'NoPublicAttributeError',
                   leftGroup: 'error',
@@ -838,14 +838,14 @@ describe(ruleName, () => {
             ],
             errors: [
               {
-                messageId: 'unexpectedParameterDecoratorsOrder',
+                messageId: 'unexpectedDecoratorsOrder',
                 data: {
                   left: 'D',
                   right: 'Bbb',
                 },
               },
               {
-                messageId: 'unexpectedParameterDecoratorsOrder',
+                messageId: 'unexpectedDecoratorsOrder',
                 data: {
                   left: 'Gg',
                   right: 'Fff',
@@ -936,7 +936,7 @@ describe(ruleName, () => {
             ],
             errors: [
               {
-                messageId: 'unexpectedParameterDecoratorsOrder',
+                messageId: 'unexpectedDecoratorsOrder',
                 data: {
                   left: 'C',
                   right: 'Bb',
@@ -1027,7 +1027,7 @@ describe(ruleName, () => {
           options: [options],
           errors: [
             {
-              messageId: 'unexpectedParameterDecoratorsOrder',
+              messageId: 'unexpectedDecoratorsOrder',
               data: {
                 left: 'C',
                 right: 'B',
@@ -1088,7 +1088,7 @@ describe(ruleName, () => {
             options: [options],
             errors: [
               {
-                messageId: 'unexpectedParameterDecoratorsOrder',
+                messageId: 'unexpectedDecoratorsOrder',
                 data: {
                   left: 'A',
                   right: 'DDDD',
@@ -1130,7 +1130,7 @@ describe(ruleName, () => {
             options: [options],
             errors: [
               {
-                messageId: 'unexpectedParameterDecoratorsOrder',
+                messageId: 'unexpectedDecoratorsOrder',
                 data: {
                   left: 'A',
                   right: 'BB',
@@ -1182,7 +1182,7 @@ describe(ruleName, () => {
             ],
             errors: [
               {
-                messageId: 'unexpectedParameterDecoratorsGroupOrder',
+                messageId: 'unexpectedDecoratorsGroupOrder',
                 data: {
                   left: 'NoPublicAttributeError',
                   leftGroup: 'error',
@@ -1285,7 +1285,7 @@ describe(ruleName, () => {
             ],
             errors: [
               {
-                messageId: 'unexpectedParameterDecoratorsOrder',
+                messageId: 'unexpectedDecoratorsOrder',
                 data: {
                   left: 'D',
                   right: 'Bbb',
@@ -1376,7 +1376,7 @@ describe(ruleName, () => {
             ],
             errors: [
               {
-                messageId: 'unexpectedParameterDecoratorsOrder',
+                messageId: 'unexpectedDecoratorsOrder',
                 data: {
                   left: 'C',
                   right: 'Bb',
