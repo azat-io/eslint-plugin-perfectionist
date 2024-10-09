@@ -1404,5 +1404,27 @@ describe(ruleName, () => {
         invalid: [],
       },
     )
+
+    ruleTester.run(`${ruleName}: allows to be disabled`, rule, {
+      valid: [
+        {
+          code: dedent`
+            class Class {
+
+              @B
+              @A
+              accessor property
+
+            }
+          `,
+          options: [
+            {
+              sortOnAccessors: false,
+            },
+          ],
+        },
+      ],
+      invalid: [],
+    })
   })
 })
