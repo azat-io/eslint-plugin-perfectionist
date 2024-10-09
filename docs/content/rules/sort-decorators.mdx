@@ -27,21 +27,59 @@ Consistently sorted decorators enhance the overall clarity and organization of y
 
 <CodeExample
   alphabetical={dedent`
-    @Authenticated()
     @ApiDescription('Create a new user')
+    @Authenticated()
     @Controller()
     @Post('/users')
     class CreateUserController {
-      // ...
+
+      @AutoInjected()
+      @NotNull()
+      userService: UserService;
+
+      @IsBoolean()
+      @NotNull()
+      accessor disableController: boolean;
+
+      @ApiError({ status: 400, description: 'Bad request' })
+      @ApiResponse({ status: 200, description: 'User created successfully' })
+      createUser(
+        @Body()
+        @IsNotEmpty()
+        @ValidateNested()
+        createUserDto: CreateUserDto
+      ): UserDto {
+        // ...
+      }
+
     }
   `}
   lineLength={dedent`
     @ApiDescription('Create a new user')
-    @Post('/users')
     @Authenticated()
+    @Post('/users')
     @Controller()
     class CreateUserController {
-      // ...
+
+      @AutoInjected()
+      @NotNull()
+      userService: UserService;
+
+      @IsBoolean()
+      @NotNull()
+      accessor disableController: boolean;
+
+      @ApiResponse({ status: 200, description: 'User created successfully' })
+      @ApiError({ status: 400, description: 'Bad request' })
+      createUser(
+        @ValidateNested()
+        @IsNotEmpty()
+        @Body()
+        createUserDto: CreateUserDto
+      ): UserDto {
+        // ...
+      }
+
     }
   `}
   initial={dedent`
@@ -50,7 +88,26 @@ Consistently sorted decorators enhance the overall clarity and organization of y
     @Authenticated()
     @Controller()
     class CreateUserController {
-      // ...
+
+      @NotNull()
+      @AutoInjected()
+      userService: UserService;
+
+      @NotNull()
+      @IsBoolean()
+      accessor disableController: boolean;
+
+      @ApiError({ status: 400, description: 'Bad request' })
+      @ApiResponse({ status: 200, description: 'User created successfully' })
+      createUser(
+        @IsNotEmpty()
+        @ValidateNested()
+        @Body()
+        createUserDto: CreateUserDto
+      ): UserDto {
+        // ...
+      }
+
     }
   `}
   client:load
@@ -111,7 +168,7 @@ Controls whether sorting should be enabled for class property decorators.
 
 <sub>default: `true`</sub>
 
-Controls whether sorting should be enabled for class accessor decorators.
+Controls whether sorting should be enabled for class auto-accessor decorators.
 
 ### sortOnParameters
 
@@ -181,7 +238,9 @@ The order of values in the array does not matter.
 
 Custom group matching takes precedence over predefined group matching.
 
-#### Example for class decorators
+#### Example for class decorators (same for the rest of the elements):
+
+```ts
 
 Put all error-related decorators at the bottom:
 
