@@ -40,6 +40,12 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
               'Controls whether sorting should be case-sensitive or not.',
             type: 'boolean',
           },
+          specialCharacters: {
+            description:
+              'Controls how special characters should be handled before sorting.',
+            type: 'string',
+            enum: ['remove', 'trim', 'keep'],
+          },
           partitionByComment: {
             description:
               'Allows you to use comments to separate the decorators into logical groups.',
@@ -108,6 +114,7 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
       type: 'alphabetical',
       order: 'asc',
       ignoreCase: true,
+      specialCharacters: 'keep',
       partitionByComment: false,
       matcher: 'minimatch',
       groups: [],
