@@ -9,6 +9,7 @@ import type {
 import type { SortingNodeWithDependencies } from '../utils/sort-nodes-by-dependencies'
 
 import {
+  validateGroupsConfiguration,
   getOverloadSignatureGroups,
   generateOfficialGroups,
   customGroupMatches,
@@ -242,6 +243,8 @@ export default createEslintRule<SortClassesOptions, MESSAGE_ID>({
           customGroups: [],
           order: 'asc',
         } as const)
+
+        validateGroupsConfiguration(options.groups, options.customGroups)
 
         let sourceCode = getSourceCode(context)
         let className = node.parent.id?.name

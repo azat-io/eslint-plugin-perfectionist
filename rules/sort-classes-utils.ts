@@ -9,6 +9,8 @@ import type {
 } from './sort-classes.types'
 import type { CompareOptions } from '../utils/compare'
 
+import { validateNoDuplicatedGroups } from '../utils/validate-groups-configuration'
+import { allModifiers, allSelectors } from './sort-classes.types'
 import { matches } from '../utils/matches'
 
 interface CustomGroupMatchesProps {
@@ -72,7 +74,7 @@ export const generateOfficialGroups = (
 /**
  * Get possible combinations of n elements from an array
  */
-const getCombinations = (array: string[], n: number): string[][] => {
+export const getCombinations = (array: string[], n: number): string[][] => {
   let result: string[][] = []
 
   let backtrack = (start: number, comb: string[]) => {
@@ -252,4 +254,48 @@ export const getCompareOptions = (
     specialCharacters: options.specialCharacters,
     ignoreCase: options.ignoreCase,
   }
+}
+
+export let validateGroupsConfiguration = (
+  groups: Required<SortClassesOptions[0]>['groups'],
+  customGroups: Required<SortClassesOptions[0]>['customGroups'],
+): void => {
+  let availableCustomGroupNames = Array.isArray(customGroups)
+    ? customGroups.map(customGroup => customGroup.groupName)
+    : Object.keys(customGroups)
+  let invalidGroups = groups
+    .flat()
+    .filter(
+      group =>
+        !isPredefinedGroup(group) && !availableCustomGroupNames.includes(group),
+    )
+  if (invalidGroups.length) {
+    throw new Error('Invalid group(s): ' + invalidGroups.join(', '))
+  }
+  validateNoDuplicatedGroups(groups)
+}
+
+const isPredefinedGroup = (input: string): boolean => {
+  if (input === 'unknown') {
+    return true
+  }
+  let singleWordSelector = input.split('-').at(-1)
+  if (!singleWordSelector) {
+    return false
+  }
+  let twoWordsSelector = input.split('-').slice(-2).join('-')
+  let isTwoWordSelectorValid = allSelectors.includes(
+    twoWordsSelector as Selector,
+  )
+  if (
+    !allSelectors.includes(singleWordSelector as Selector) &&
+    !isTwoWordSelectorValid
+  ) {
+    return false
+  }
+  let modifiers = input.split('-').slice(0, isTwoWordSelectorValid ? -2 : -1)
+  return (
+    new Set(modifiers).size === modifiers.length &&
+    modifiers.every(modifier => allModifiers.includes(modifier as Modifier))
+  )
 }
