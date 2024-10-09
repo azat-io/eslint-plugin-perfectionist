@@ -531,6 +531,60 @@ describe(ruleName, () => {
                 },
               ],
             },
+            {
+              code: dedent`
+                type T =
+                  // Part: A
+                  & CC
+                  & D
+                  // Not partition comment
+                  & BBB
+                  // Part: B
+                  & AAA
+                  & E
+                  // Part: C
+                  & GG
+                  // Not partition comment
+                  & FFF
+              `,
+              output: dedent`
+                type T =
+                  // Part: A
+                  & BBB
+                  & CC
+                  // Not partition comment
+                  & D
+                  // Part: B
+                  & AAA
+                  & E
+                  // Part: C
+                  & FFF
+                  // Not partition comment
+                  & GG
+              `,
+              options: [
+                {
+                  ...options,
+                  partitionByComment: 'Part**',
+                },
+              ],
+              errors: [
+                {
+                  messageId: 'unexpectedIntersectionTypesOrder',
+                  data: {
+                    left: 'D',
+                    right: 'BBB',
+                  },
+                },
+                {
+                  messageId: 'unexpectedIntersectionTypesOrder',
+                  data: {
+                    left: 'GG',
+                    right: 'FFF',
+                  },
+                },
+              ],
+            },
           ],
         },
       )
