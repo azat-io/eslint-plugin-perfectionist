@@ -22,7 +22,7 @@ type MESSAGE_ID =
   | 'unexpectedInterfacePropertiesGroupOrder'
   | 'unexpectedInterfacePropertiesOrder'
 
-type Group<T extends string[]> = 'multiline' | 'unknown' | T[number]
+type Group<T extends string[]> = 'multiline' | 'unknown' | T[number] | 'method'
 
 type Options<T extends string[]> = [
   Partial<{
@@ -195,7 +195,7 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
 
         validateGroupsConfiguration(
           options.groups,
-          ['multiline', 'unknown'],
+          ['multiline', 'method', 'unknown'],
           Object.keys(options.customGroups),
         )
 
@@ -245,6 +245,15 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
               }
 
               setCustomGroups(options.customGroups, name)
+
+              if (
+                element.type === 'TSMethodSignature' ||
+                (element.type === 'TSPropertySignature' &&
+                  element.typeAnnotation?.typeAnnotation.type ===
+                    'TSFunctionType')
+              ) {
+                defineGroup('method')
+              }
 
               if (element.loc.start.line !== element.loc.end.line) {
                 defineGroup('multiline')

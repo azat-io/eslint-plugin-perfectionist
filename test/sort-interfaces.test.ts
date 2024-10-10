@@ -1025,6 +1025,28 @@ describe(ruleName, () => {
         invalid: [],
       },
     )
+
+    ruleTester.run(`${ruleName}(${type}): allows to use method group`, rule, {
+      valid: [
+        {
+          code: dedent`
+              interface Interface {
+                b(): void
+                c: () => void
+                a: string
+                d: string
+              }
+            `,
+          options: [
+            {
+              ...options,
+              groups: ['method', 'unknown'],
+            },
+          ],
+        },
+      ],
+      invalid: [],
+    })
   })
 
   describe(`${ruleName}: sorting by natural order`, () => {
@@ -1782,6 +1804,28 @@ describe(ruleName, () => {
         ],
       },
     )
+
+    ruleTester.run(`${ruleName}(${type}): allows to use method group`, rule, {
+      valid: [
+        {
+          code: dedent`
+              interface Interface {
+                b(): void
+                c: () => void
+                a: string
+                d: string
+              }
+            `,
+          options: [
+            {
+              ...options,
+              groups: ['method', 'unknown'],
+            },
+          ],
+        },
+      ],
+      invalid: [],
+    })
   })
 
   describe(`${ruleName}: sorting by line length`, () => {
@@ -2746,6 +2790,28 @@ describe(ruleName, () => {
         ],
       },
     )
+
+    ruleTester.run(`${ruleName}(${type}): allows to use method group`, rule, {
+      valid: [
+        {
+          code: dedent`
+              interface Interface {
+                c: () => void
+                b(): void
+                a: string
+                d: string
+              }
+            `,
+          options: [
+            {
+              ...options,
+              groups: ['method', 'unknown'],
+            },
+          ],
+        },
+      ],
+      invalid: [],
+    })
   })
 
   describe(`${ruleName}: validating group configuration`, () => {
