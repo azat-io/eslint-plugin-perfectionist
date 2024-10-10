@@ -177,6 +177,7 @@ module.exports = {
 | [sort-array-includes](https://perfectionist.dev/rules/sort-array-includes)               | Enforce sorted arrays before include method | 🔧  |
 | [sort-astro-attributes](https://perfectionist.dev/rules/sort-astro-attributes)           | Enforce sorted Astro attributes             | 🔧  |
 | [sort-classes](https://perfectionist.dev/rules/sort-classes)                             | Enforce sorted classes                      | 🔧  |
+| [sort-decorators](https://perfectionist.dev/rules/sort-decorators)                       | Enforce sorted decorators                   | 🔧  |
 | [sort-enums](https://perfectionist.dev/rules/sort-enums)                                 | Enforce sorted TypeScript enums             | 🔧  |
 | [sort-exports](https://perfectionist.dev/rules/sort-exports)                             | Enforce sorted exports                      | 🔧  |
 | [sort-imports](https://perfectionist.dev/rules/sort-imports)                             | Enforce sorted imports                      | 🔧  |
