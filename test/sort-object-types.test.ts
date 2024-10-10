@@ -867,6 +867,28 @@ describe(ruleName, () => {
         invalid: [],
       },
     )
+
+    ruleTester.run(`${ruleName}(${type}): allows to use method group`, rule, {
+      valid: [
+        {
+          code: dedent`
+              type Type = {
+                b(): void
+                c: () => void
+                a: string
+                d: string
+              }
+            `,
+          options: [
+            {
+              ...options,
+              groups: ['method', 'unknown'],
+            },
+          ],
+        },
+      ],
+      invalid: [],
+    })
   })
 
   describe(`${ruleName}: sorting by natural order`, () => {
@@ -1426,6 +1448,28 @@ describe(ruleName, () => {
         ],
       },
     )
+
+    ruleTester.run(`${ruleName}(${type}): allows to use method group`, rule, {
+      valid: [
+        {
+          code: dedent`
+              type Type = {
+                b(): void
+                c: () => void
+                a: string
+                d: string
+              }
+            `,
+          options: [
+            {
+              ...options,
+              groups: ['method', 'unknown'],
+            },
+          ],
+        },
+      ],
+      invalid: [],
+    })
   })
 
   describe(`${ruleName}: sorting by line length`, () => {
@@ -1998,6 +2042,28 @@ describe(ruleName, () => {
         ],
       },
     )
+
+    ruleTester.run(`${ruleName}(${type}): allows to use method group`, rule, {
+      valid: [
+        {
+          code: dedent`
+              type Type = {
+                c: () => void
+                b(): void
+                a: string
+                d: string
+              }
+            `,
+          options: [
+            {
+              ...options,
+              groups: ['method', 'unknown'],
+            },
+          ],
+        },
+      ],
+      invalid: [],
+    })
   })
 
   describe(`${ruleName}: validating group configuration`, () => {
@@ -2016,7 +2082,7 @@ describe(ruleName, () => {
           `,
             options: [
               {
-                groups: ['multiline', 'unknown', 'myCustomGroup'],
+                groups: ['multiline', 'method', 'unknown', 'myCustomGroup'],
                 customGroups: {
                   myCustomGroup: 'x',
                 },

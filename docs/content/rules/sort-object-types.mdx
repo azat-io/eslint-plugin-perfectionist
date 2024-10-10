@@ -193,6 +193,7 @@ Allows you to specify a list of type properties groups for sorting. Groups help 
 Predefined groups:
 
 - `'multiline'` — Properties with multiline definitions, such as methods or complex type declarations.
+- `'method'` - Members that are methods.
 - `'unknown'` — Properties that don’t fit into any group specified in the `groups` option.
 
 If the `unknown` group is not specified in the `groups` option, it will automatically be added to the end of the list.
@@ -227,6 +228,7 @@ type User = {
 {
   groups: [
     'unknown',
+    'method',
     'multiline',
   ]
 }
