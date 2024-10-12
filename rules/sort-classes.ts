@@ -25,6 +25,7 @@ import {
   sortNodesByDependencies,
 } from '../utils/sort-nodes-by-dependencies'
 import { hasPartitionComment } from '../utils/is-partition-comment'
+import { sortNodesByGroups } from '../utils/sort-nodes-by-groups'
 import { getCommentsBefore } from '../utils/get-comments-before'
 import { createEslintRule } from '../utils/create-eslint-rule'
 import { getGroupNumber } from '../utils/get-group-number'
@@ -33,7 +34,6 @@ import { toSingleLine } from '../utils/to-single-line'
 import { rangeToDiff } from '../utils/range-to-diff'
 import { getSettings } from '../utils/get-settings'
 import { useGroups } from '../utils/use-groups'
-import { sortNodes } from '../utils/sort-nodes'
 import { makeFixes } from '../utils/make-fixes'
 import { complete } from '../utils/complete'
 import { pairwise } from '../utils/pairwise'
@@ -649,47 +649,17 @@ export default createEslintRule<SortClassesOptions, MESSAGE_ID>({
           [[]],
         )
 
-        let sortedNodes: SortingNodeWithDependencies[] = []
-        for (let nodes of formattedNodes) {
-          let nodesByNonIgnoredGroupNumber: {
-            [key: number]: SortingNodeWithDependencies[]
-          } = {}
-          let ignoredNodeIndices: number[] = []
-          for (let [index, sortingNode] of nodes.entries()) {
-            let groupNum = getGroupNumber(options.groups, sortingNode)
-            if (groupNum === options.groups.length) {
-              ignoredNodeIndices.push(index)
-              continue
-            }
-            nodesByNonIgnoredGroupNumber[groupNum] =
-              nodesByNonIgnoredGroupNumber[groupNum] ?? []
-            nodesByNonIgnoredGroupNumber[groupNum].push(sortingNode)
-          }
-
-          for (let groupNumber of Object.keys(
-            nodesByNonIgnoredGroupNumber,
-          ).sort((a, b) => Number(a) - Number(b))) {
-            let compareOptions = getCompareOptions(options, Number(groupNumber))
-            if (!compareOptions) {
-              // Do not sort this group
-              sortedNodes.push(
-                ...nodesByNonIgnoredGroupNumber[Number(groupNumber)],
-              )
-            } else {
-              sortedNodes.push(
-                ...sortNodes(
-                  nodesByNonIgnoredGroupNumber[Number(groupNumber)],
-                  compareOptions,
-                ),
-              )
-            }
-          }
-
-          // Add ignored nodes at the same position as they were before linting
-          for (let ignoredIndex of ignoredNodeIndices) {
-            sortedNodes.splice(ignoredIndex, 0, nodes[ignoredIndex])
-          }
-        }
+        let sortedNodes = formattedNodes
+          .map(nodes =>
+            sortNodesByGroups(nodes, options, {
+              getGroupCompareOptions: groupNumber =>
+                getCompareOptions(options, groupNumber),
+              isNodeIgnored: sortingNode =>
+                getGroupNumber(options.groups, sortingNode) ===
+                options.groups.length,
+            }),
+          )
+          .flat()
 
         sortedNodes = sortNodesByDependencies(sortedNodes)
         let nodes = formattedNodes.flat()
