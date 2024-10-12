@@ -176,6 +176,89 @@ describe(ruleName, () => {
       },
     )
 
+    ruleTester.run(
+      `${ruleName}(${type}): sorts switch cases with block statements`,
+      rule,
+      {
+        valid: [
+          {
+            code: dedent`
+              function func(name) {
+                let size
+                switch(name) {
+                  case 'aaa': {
+                    height = 1
+                  }
+                  case 'bb': {
+                    height = 2
+                  }
+                  case 'c': {
+                    height = 3
+                  }
+                  default:
+                    height = NaN
+                }
+                return size
+              }
+            `,
+            options: [options],
+          },
+        ],
+        invalid: [
+          {
+            code: dedent`
+              function func(name) {
+                let size
+                switch(name) {
+                  case 'aaa': {
+                    height = 1
+                  }
+                  case 'c': {
+                    height = 3
+                  }
+                  case 'bb': {
+                    height = 2
+                  }
+                  default:
+                    height = NaN
+                }
+                return size
+              }
+            `,
+            output: dedent`
+              function func(name) {
+                let size
+                switch(name) {
+                  case 'aaa': {
+                    height = 1
+                  }
+                  case 'bb': {
+                    height = 2
+                  }
+                  case 'c': {
+                    height = 3
+                  }
+                  default:
+                    height = NaN
+                }
+                return size
+              }
+            `,
+            options: [options],
+            errors: [
+              {
+                messageId: 'unexpectedSwitchCaseOrder',
+                data: {
+                  left: 'c',
+                  right: 'bb',
+                },
+              },
+            ],
+          },
+        ],
+      },
+    )
+
     ruleTester.run(`${ruleName}(${type}): works with grouped cases`, rule, {
       valid: [
         {
@@ -744,6 +827,89 @@ describe(ruleName, () => {
       },
     )
 
+    ruleTester.run(
+      `${ruleName}(${type}): sorts switch cases with block statements`,
+      rule,
+      {
+        valid: [
+          {
+            code: dedent`
+              function func(name) {
+                let size
+                switch(name) {
+                  case 'aaa': {
+                    height = 1
+                  }
+                  case 'bb': {
+                    height = 2
+                  }
+                  case 'c': {
+                    height = 3
+                  }
+                  default:
+                    height = NaN
+                }
+                return size
+              }
+            `,
+            options: [options],
+          },
+        ],
+        invalid: [
+          {
+            code: dedent`
+              function func(name) {
+                let size
+                switch(name) {
+                  case 'aaa': {
+                    height = 1
+                  }
+                  case 'c': {
+                    height = 3
+                  }
+                  case 'bb': {
+                    height = 2
+                  }
+                  default:
+                    height = NaN
+                }
+                return size
+              }
+            `,
+            output: dedent`
+              function func(name) {
+                let size
+                switch(name) {
+                  case 'aaa': {
+                    height = 1
+                  }
+                  case 'bb': {
+                    height = 2
+                  }
+                  case 'c': {
+                    height = 3
+                  }
+                  default:
+                    height = NaN
+                }
+                return size
+              }
+            `,
+            options: [options],
+            errors: [
+              {
+                messageId: 'unexpectedSwitchCaseOrder',
+                data: {
+                  left: 'c',
+                  right: 'bb',
+                },
+              },
+            ],
+          },
+        ],
+      },
+    )
+
     ruleTester.run(`${ruleName}(${type}): works with grouped cases`, rule, {
       valid: [
         {
@@ -1239,6 +1405,89 @@ describe(ruleName, () => {
                   case 'c':
                     height = 3
                     break
+                  default:
+                    height = NaN
+                }
+                return size
+              }
+            `,
+            options: [options],
+            errors: [
+              {
+                messageId: 'unexpectedSwitchCaseOrder',
+                data: {
+                  left: 'c',
+                  right: 'bb',
+                },
+              },
+            ],
+          },
+        ],
+      },
+    )
+
+    ruleTester.run(
+      `${ruleName}(${type}): sorts switch cases with block statements`,
+      rule,
+      {
+        valid: [
+          {
+            code: dedent`
+              function func(name) {
+                let size
+                switch(name) {
+                  case 'aaa': {
+                    height = 1
+                  }
+                  case 'bb': {
+                    height = 2
+                  }
+                  case 'c': {
+                    height = 3
+                  }
+                  default:
+                    height = NaN
+                }
+                return size
+              }
+            `,
+            options: [options],
+          },
+        ],
+        invalid: [
+          {
+            code: dedent`
+              function func(name) {
+                let size
+                switch(name) {
+                  case 'aaa': {
+                    height = 1
+                  }
+                  case 'c': {
+                    height = 3
+                  }
+                  case 'bb': {
+                    height = 2
+                  }
+                  default:
+                    height = NaN
+                }
+                return size
+              }
+            `,
+            output: dedent`
+              function func(name) {
+                let size
+                switch(name) {
+                  case 'aaa': {
+                    height = 1
+                  }
+                  case 'bb': {
+                    height = 2
+                  }
+                  case 'c': {
+                    height = 3
+                  }
                   default:
                     height = NaN
                 }
