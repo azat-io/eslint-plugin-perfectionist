@@ -1,6 +1,10 @@
+import type { RuleContext } from '@typescript-eslint/utils/ts-eslint'
+
 import { RuleTester } from '@typescript-eslint/rule-tester'
-import { afterAll, describe, it } from 'vitest'
+import { afterAll, describe, expect, it } from 'vitest'
 import { dedent } from 'ts-dedent'
+
+import type { MESSAGE_ID, Options } from '../rules/sort-imports'
 
 import rule from '../rules/sort-imports'
 
@@ -1553,6 +1557,331 @@ describe(ruleName, () => {
         ],
       },
     )
+
+    describe(`${ruleName}(${type}): disabling side-effect sorting`, () => {
+      ruleTester.run(
+        `${ruleName}(${type}): allows 'side-effect' and 'side-effect-style' groups to stay in place`,
+        rule,
+        {
+          valid: [],
+          invalid: [
+            {
+              code: dedent`
+                import "./z-side-effect.scss";
+                import b from "./b";
+                import './b-side-effect'
+                import "./g-side-effect.css";
+                import './a-side-effect'
+                import a from "./a";
+              `,
+              output: dedent`
+                import "./z-side-effect.scss";
+                import a from "./a";
+                import './b-side-effect'
+                import "./g-side-effect.css";
+                import './a-side-effect'
+                import b from "./b";
+              `,
+              options: [
+                {
+                  ...options,
+                  newlinesBetween: 'always',
+                  groups: ['unknown'],
+                },
+              ],
+              errors: [
+                {
+                  messageId: 'unexpectedImportsOrder',
+                  data: {
+                    left: './b',
+                    right: './b-side-effect',
+                  },
+                },
+                {
+                  messageId: 'unexpectedImportsOrder',
+                  data: {
+                    left: './a-side-effect',
+                    right: './a',
+                  },
+                },
+              ],
+            },
+          ],
+        },
+      )
+
+      ruleTester.run(
+        `${ruleName}(${type}): allows 'side-effect' to be grouped together but not sorted`,
+        rule,
+        {
+          valid: [],
+          invalid: [
+            {
+              code: dedent`
+                import "./z-side-effect.scss";
+                import b from "./b";
+                import './b-side-effect'
+                import "./g-side-effect.css";
+                import './a-side-effect'
+                import a from "./a";
+              `,
+              output: dedent`
+                import "./z-side-effect.scss";
+                import './b-side-effect'
+                import "./g-side-effect.css";
+                import './a-side-effect'
+
+                import a from "./a";
+                import b from "./b";
+              `,
+              options: [
+                {
+                  ...options,
+                  newlinesBetween: 'always',
+                  groups: ['side-effect', 'unknown'],
+                },
+              ],
+              errors: [
+                {
+                  messageId: 'missedSpacingBetweenImports',
+                  data: {
+                    left: './z-side-effect.scss',
+                    right: './b',
+                  },
+                },
+                {
+                  messageId: 'unexpectedImportsGroupOrder',
+                  data: {
+                    left: './b',
+                    leftGroup: 'unknown',
+                    right: './b-side-effect',
+                    rightGroup: 'side-effect',
+                  },
+                },
+                {
+                  messageId: 'missedSpacingBetweenImports',
+                  data: {
+                    left: './a-side-effect',
+                    right: './a',
+                  },
+                },
+              ],
+            },
+          ],
+        },
+      )
+
+      ruleTester.run(
+        `${ruleName}(${type}): allows 'side-effect' and 'side-effect-style' to be grouped together
+         in the same group but not sorted`,
+        rule,
+        {
+          valid: [],
+          invalid: [
+            {
+              code: dedent`
+                import "./z-side-effect.scss";
+                import b from "./b";
+                import './b-side-effect'
+                import "./g-side-effect.css";
+                import './a-side-effect'
+                import a from "./a";
+              `,
+              output: dedent`
+                import "./z-side-effect.scss";
+                import './b-side-effect'
+                import "./g-side-effect.css";
+                import './a-side-effect'
+
+                import a from "./a";
+                import b from "./b";
+              `,
+              options: [
+                {
+                  ...options,
+                  newlinesBetween: 'always',
+                  groups: [['side-effect', 'side-effect-style'], 'unknown'],
+                },
+              ],
+              errors: [
+                {
+                  messageId: 'missedSpacingBetweenImports',
+                  data: {
+                    left: './z-side-effect.scss',
+                    right: './b',
+                  },
+                },
+                {
+                  messageId: 'unexpectedImportsGroupOrder',
+                  data: {
+                    left: './b',
+                    leftGroup: 'unknown',
+                    right: './b-side-effect',
+                    rightGroup: 'side-effect',
+                  },
+                },
+                {
+                  messageId: 'missedSpacingBetweenImports',
+                  data: {
+                    left: './a-side-effect',
+                    right: './a',
+                  },
+                },
+              ],
+            },
+          ],
+        },
+      )
+
+      ruleTester.run(
+        `${ruleName}(${type}): allows 'side-effect' and 'side-effect-style' to be grouped together but not sorted`,
+        rule,
+        {
+          valid: [],
+          invalid: [
+            {
+              code: dedent`
+                import "./z-side-effect.scss";
+                import b from "./b";
+                import './b-side-effect'
+                import "./g-side-effect.css";
+                import './a-side-effect'
+                import a from "./a";
+              `,
+              output: dedent`
+                import './b-side-effect'
+                import './a-side-effect'
+
+                import "./z-side-effect.scss";
+                import "./g-side-effect.css";
+
+                import a from "./a";
+                import b from "./b";
+              `,
+              options: [
+                {
+                  ...options,
+                  newlinesBetween: 'always',
+                  groups: ['side-effect', 'side-effect-style', 'unknown'],
+                },
+              ],
+              errors: [
+                {
+                  messageId: 'missedSpacingBetweenImports',
+                  data: {
+                    left: './z-side-effect.scss',
+                    right: './b',
+                  },
+                },
+                {
+                  messageId: 'unexpectedImportsGroupOrder',
+                  data: {
+                    left: './b',
+                    leftGroup: 'unknown',
+                    right: './b-side-effect',
+                    rightGroup: 'side-effect',
+                  },
+                },
+                {
+                  messageId: 'missedSpacingBetweenImports',
+                  data: {
+                    left: './b-side-effect',
+                    right: './g-side-effect.css',
+                  },
+                },
+                {
+                  messageId: 'unexpectedImportsGroupOrder',
+                  data: {
+                    left: './g-side-effect.css',
+                    leftGroup: 'side-effect-style',
+                    right: './a-side-effect',
+                    rightGroup: 'side-effect',
+                  },
+                },
+                {
+                  messageId: 'missedSpacingBetweenImports',
+                  data: {
+                    left: './a-side-effect',
+                    right: './a',
+                  },
+                },
+              ],
+            },
+          ],
+        },
+      )
+
+      ruleTester.run(
+        `${ruleName}(${type}): allows 'side-effect-style' to be grouped together but not sorted`,
+        rule,
+        {
+          valid: [],
+          invalid: [
+            {
+              code: dedent`
+                import "./z-side-effect";
+                import b from "./b";
+                import './b-side-effect.scss'
+                import "./g-side-effect";
+                import './a-side-effect.css'
+                import a from "./a";
+              `,
+              output: dedent`
+                import "./z-side-effect";
+
+                import './b-side-effect.scss'
+                import './a-side-effect.css'
+
+                import "./g-side-effect";
+                import a from "./a";
+                import b from "./b";
+              `,
+              options: [
+                {
+                  ...options,
+                  newlinesBetween: 'always',
+                  groups: ['side-effect-style', 'unknown'],
+                },
+              ],
+              errors: [
+                {
+                  messageId: 'unexpectedImportsGroupOrder',
+                  data: {
+                    left: './b',
+                    leftGroup: 'unknown',
+                    right: './b-side-effect.scss',
+                    rightGroup: 'side-effect-style',
+                  },
+                },
+                {
+                  messageId: 'missedSpacingBetweenImports',
+                  data: {
+                    left: './b-side-effect.scss',
+                    right: './g-side-effect',
+                  },
+                },
+                {
+                  messageId: 'unexpectedImportsGroupOrder',
+                  data: {
+                    left: './g-side-effect',
+                    leftGroup: 'unknown',
+                    right: './a-side-effect.css',
+                    rightGroup: 'side-effect-style',
+                  },
+                },
+                {
+                  messageId: 'missedSpacingBetweenImports',
+                  data: {
+                    left: './a-side-effect.css',
+                    right: './a',
+                  },
+                },
+              ],
+            },
+          ],
+        },
+      )
+    })
 
     ruleTester.run(
       `${ruleName}(${type}): allows to trim special characters`,
@@ -5216,6 +5545,59 @@ describe(ruleName, () => {
         },
       ],
       invalid: [],
+    })
+
+    describe(`${ruleName}: checks compatibility between 'sortSideEffects' and 'groups'`, () => {
+      let createRule = (
+        groups: Options<string[]>[0]['groups'],
+        sortSideEffects: boolean = false,
+      ) =>
+        rule.create({
+          options: [
+            {
+              groups,
+              sortSideEffects,
+            },
+          ],
+        } as Readonly<RuleContext<MESSAGE_ID, Options<string[]>>>)
+      let expectedThrownError =
+        "Side effect groups cannot be nested with non side effect groups when 'sortSideEffects' is 'false'."
+
+      it(`${ruleName}: throws if 'sideEffects' is in a non side effects only nested group`, () => {
+        expect(() =>
+          createRule(['external', ['side-effect', 'internal']]),
+        ).toThrow(expectedThrownError)
+      })
+
+      it(`${ruleName}: throws if 'sideEffectsStyle' is in a non side effects only nested group`, () => {
+        expect(() =>
+          createRule(['external', ['side-effect-style', 'internal']]),
+        ).toThrow(expectedThrownError)
+      })
+
+      it(`${ruleName}: throws if 'sideEffectsStyle' and 'sideEffectsStyle' are in a non side effects only nested group`, () => {
+        expect(() =>
+          createRule([
+            'external',
+            ['side-effect-style', 'internal', 'side-effect'],
+          ]),
+        ).toThrow(expectedThrownError)
+      })
+
+      it(`${ruleName}: allows 'sideEffects' and 'sideEffectsStyle' in the same group`, () => {
+        expect(() =>
+          createRule(['external', ['side-effect-style', 'side-effect']]),
+        ).not.toThrow(expectedThrownError)
+      })
+
+      it(`${ruleName}: allows 'sideEffects' and 'sideEffectsStyle' anywhere 'sortSideEffects' is true`, () => {
+        expect(() =>
+          createRule(
+            ['external', ['side-effect-style', 'internal', 'side-effect']],
+            true,
+          ),
+        ).not.toThrow(expectedThrownError)
+      })
     })
 
     describe(`${ruleName}: allows to use regex matcher`, () => {
