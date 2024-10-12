@@ -267,23 +267,6 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
     } as const)
 
     let sourceCode = getSourceCode(context)
-    let hasUnknownGroup = false
-
-    for (let group of options.groups) {
-      if (Array.isArray(group)) {
-        for (let subGroup of group) {
-          if (subGroup === 'unknown') {
-            hasUnknownGroup = true
-          }
-        }
-      } else if (group === 'unknown') {
-        hasUnknownGroup = true
-      }
-    }
-
-    if (!hasUnknownGroup) {
-      options.groups = [...options.groups, 'unknown']
-    }
 
     validateGroupsConfiguration(
       options.groups,
