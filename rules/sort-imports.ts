@@ -6,9 +6,9 @@ import { builtinModules } from 'node:module'
 import type { SortingNode } from '../typings'
 
 import { validateGroupsConfiguration } from '../utils/validate-groups-configuration'
+import { getOptionsWithCleanGroups } from '../utils/get-options-with-clean-groups'
 import { sortNodesByGroups } from '../utils/sort-nodes-by-groups'
 import { getCommentsBefore } from '../utils/get-comments-before'
-import { cleanGroupsOption } from '../utils/clean-groups-option'
 import { createEslintRule } from '../utils/create-eslint-rule'
 import { getLinesBetween } from '../utils/get-lines-between'
 import { getGroupNumber } from '../utils/get-group-number'
@@ -246,7 +246,7 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
     let settings = getSettings(context.settings)
 
     let userOptions = context.options.at(0)
-    let options = cleanGroupsOption(
+    let options = getOptionsWithCleanGroups(
       complete(userOptions, settings, {
         groups: [
           'type',

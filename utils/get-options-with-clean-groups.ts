@@ -2,7 +2,9 @@ interface GroupOptions {
   groups: (string[] | string)[]
 }
 
-export const cleanGroupsOption = <T extends GroupOptions>(options: T): T => ({
+export const getOptionsWithCleanGroups = <T extends GroupOptions>(
+  options: T,
+): T => ({
   ...options,
   groups: options.groups
     .filter(group => group.length > 0)

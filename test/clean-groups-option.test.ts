@@ -1,11 +1,11 @@
 import { describe, expect, it } from 'vitest'
 
-import { cleanGroupsOption } from '../utils/clean-groups-option'
+import { getOptionsWithCleanGroups } from '../utils/get-options-with-clean-groups'
 
-describe('clean-groups-option', () => {
-  it('cleans the groups option', () => {
+describe('get-options-with-cleaned-groups', () => {
+  it('get options with cleaned groups', () => {
     expect(
-      cleanGroupsOption({
+      getOptionsWithCleanGroups({
         groups: [
           'predefinedGroup',
           [],
