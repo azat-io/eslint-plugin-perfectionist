@@ -159,9 +159,9 @@ describe(ruleName, () => {
 
             import a from '.'
             import h from '../../h'
+            import './style.css'
             import { j } from '../j'
             import { K, L, M } from '../k'
-            import './style.css'
           `,
           options: [
             {
@@ -250,13 +250,6 @@ describe(ruleName, () => {
               data: {
                 left: 't',
                 right: './style.css',
-              },
-            },
-            {
-              messageId: 'unexpectedImportsOrder',
-              data: {
-                left: './style.css',
-                right: '../j',
               },
             },
           ],
@@ -2068,9 +2061,9 @@ describe(ruleName, () => {
 
             import a from '.'
             import h from '../../h'
+            import './style.css'
             import { j } from '../j'
             import { K, L, M } from '../k'
-            import './style.css'
           `,
           options: [
             {
@@ -2159,13 +2152,6 @@ describe(ruleName, () => {
               data: {
                 left: 't',
                 right: './style.css',
-              },
-            },
-            {
-              messageId: 'unexpectedImportsOrder',
-              data: {
-                left: './style.css',
-                right: '../j',
               },
             },
           ],
@@ -3606,8 +3592,8 @@ describe(ruleName, () => {
 
             import { K, L, M } from '../k'
             import { j } from '../j'
-            import h from '../../h'
             import './style.css'
+            import h from '../../h'
             import a from '.'
           `,
           options: [
@@ -5280,6 +5266,15 @@ describe(ruleName, () => {
                 data: {
                   left: '~/hooks/useClient',
                   right: '~/data',
+                },
+              },
+              {
+                messageId: 'unexpectedImportsGroupOrder',
+                data: {
+                  left: '~/data',
+                  leftGroup: 'side-effect',
+                  right: '~/css/globals.css',
+                  rightGroup: 'side-effect-style',
                 },
               },
             ],
