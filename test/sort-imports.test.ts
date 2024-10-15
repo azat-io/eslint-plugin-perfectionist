@@ -1920,6 +1920,146 @@ describe(ruleName, () => {
         invalid: [],
       },
     )
+
+    describe(`${ruleName}: newlinesBetween`, () => {
+      ruleTester.run(
+        `${ruleName}(${type}): removes newlines when never`,
+        rule,
+        {
+          valid: [],
+          invalid: [
+            {
+              code: dedent`
+                  import { A } from 'a'
+
+
+                 import y from '~/y'
+                import z from '~/z'
+
+                    import b from '~/b'
+                `,
+              output: dedent`
+                  import { A } from 'a'
+                 import b from '~/b'
+                import y from '~/y'
+                    import z from '~/z'
+                `,
+              options: [
+                {
+                  ...options,
+                  newlinesBetween: 'never',
+                },
+              ],
+              errors: [
+                {
+                  messageId: 'extraSpacingBetweenImports',
+                  data: {
+                    left: 'a',
+                    right: '~/y',
+                  },
+                },
+                {
+                  messageId: 'unexpectedImportsOrder',
+                  data: {
+                    left: '~/z',
+                    right: '~/b',
+                  },
+                },
+                {
+                  messageId: 'extraSpacingBetweenImports',
+                  data: {
+                    left: '~/z',
+                    right: '~/b',
+                  },
+                },
+              ],
+            },
+          ],
+        },
+      )
+
+      ruleTester.run(
+        `${ruleName}(${type}): keeps one newline when always`,
+        rule,
+        {
+          valid: [],
+          invalid: [
+            {
+              code: dedent`
+                  import c from 'c';    import a from '~/a'
+                `,
+              output: dedent`
+                  import c from 'c';    
+
+                  import a from '~/a'
+                `,
+              options: [
+                {
+                  ...options,
+                  newlinesBetween: 'always',
+                },
+              ],
+              errors: [
+                {
+                  messageId: 'missedSpacingBetweenImports',
+                  data: {
+                    left: 'c',
+                    right: '~/a',
+                  },
+                },
+              ],
+            },
+            {
+              code: dedent`
+                  import { A } from 'a'
+
+
+                 import c from '~/c'
+                import b from '~/b'
+
+                    import d from '~/d'
+                `,
+              output: dedent`
+                  import { A } from 'a'
+
+                 import b from '~/b'
+                import c from '~/c'
+                    import d from '~/d'
+                `,
+              options: [
+                {
+                  ...options,
+                  newlinesBetween: 'always',
+                },
+              ],
+              errors: [
+                {
+                  messageId: 'extraSpacingBetweenImports',
+                  data: {
+                    left: 'a',
+                    right: '~/c',
+                  },
+                },
+                {
+                  messageId: 'unexpectedImportsOrder',
+                  data: {
+                    left: '~/c',
+                    right: '~/b',
+                  },
+                },
+                {
+                  messageId: 'extraSpacingBetweenImports',
+                  data: {
+                    left: '~/b',
+                    right: '~/d',
+                  },
+                },
+              ],
+            },
+          ],
+        },
+      )
+    })
   })
 
   describe(`${ruleName}: sorting by natural order`, () => {
