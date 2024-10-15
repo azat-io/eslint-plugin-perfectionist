@@ -348,6 +348,45 @@ abstract class Example extends BaseExample {
     console.log("I am a static block");
   }
 
+  // 'public-property'
+  public description: string;
+
+  // 'public-decorated-property'
+  @SomeDecorator
+  public value: number;
+
+  // 'public-decorated-accessor-property'
+  @SomeDecorator
+  public accessor value: number;
+
+  // 'public-decorated-get-method'
+  @SomeDecorator
+  get decoratedValue() {
+    return this._value;
+  }
+
+  // 'public-decorated-set-method'
+  @SomeDecorator
+  set decoratedValue(value: number) {
+    this._value = value;
+  }
+
+  // 'public-decorated-get-method'
+  @SomeDecorator
+  get value() {
+    return this._value;
+  }
+
+  // 'public-get-method'
+  get value() {
+    return this._value;
+  }
+
+  // 'public-set-method'
+  set value(value: number) {
+    this._value = value;
+  }
+
   // 'protected-abstract-override-readonly-decorated-property'
   @SomeDecorator
   protected abstract override readonly _value: number;
@@ -359,6 +398,12 @@ abstract class Example extends BaseExample {
   // 'protected-property'
   protected name: string;
 
+  // 'protected-decorated-get-method'
+  @SomeDecorator
+  protected get value() {
+    return this._value;
+  }
+
   // 'private-decorated-property'
   @SomeDecorator
   private _value: number;
@@ -367,25 +412,14 @@ abstract class Example extends BaseExample {
   @SomeDecorator
   private accessor _value: number;
 
-  // private-function-property
-  private arrowProperty = () => {};
-
-  // private-function-property
-  private functionProperty = function() {};
-
   // 'private-property'
   private name: string;
 
-  // 'public-property'
-  public description: string;
-
-  // 'public-decorated-property'
+  // 'private-decorated-get-method'
   @SomeDecorator
-  public value: number;
-
-  // 'public-decorated-accessor-property'
-  @SomeDecorator
-  public accessor value: number;
+  private get value() {
+    return this._value;
+  }
 
   // 'public-constructor'
   constructor(value: number) {
@@ -407,16 +441,6 @@ abstract class Example extends BaseExample {
     this.instance = new Example(0);
   }
 
-  // 'protected-method'
-  protected calculate() {
-    return this._value * 2;
-  }
-
-  // 'private-method'
-  private calculate() {
-    return this._value * 2;
-  }
-
   // 'public-decorated-method'
   @SomeDecorator
   public decoratedMethod() {
@@ -428,45 +452,21 @@ abstract class Example extends BaseExample {
     console.log(this._value);
   }
 
-  // 'public-decorated-get-method'
-  @SomeDecorator
-  get decoratedValue() {
-    return this._value;
+  // 'protected-method'
+  protected calculate() {
+    return this._value * 2;
   }
 
-  // 'public-decorated-set-method'
-  @SomeDecorator
-  set decoratedValue(value: number) {
-    this._value = value;
+  // private-function-property
+  private arrowProperty = () => {};
+
+  // 'private-method'
+  private calculate() {
+    return this._value * 2;
   }
 
-  // 'protected-decorated-get-method'
-  @SomeDecorator
-  protected get value() {
-    return this._value;
-  }
-
-  // 'private-decorated-get-method'
-  @SomeDecorator
-  private get value() {
-    return this._value;
-  }
-
-  // 'public-decorated-get-method'
-  @SomeDecorator
-  get value() {
-    return this._value;
-  }
-
-  // 'public-get-method'
-  get value() {
-    return this._value;
-  }
-
-  // 'public-set-method'
-  set value(value: number) {
-    this._value = value;
-  }
+  // private-function-property
+  private functionProperty = function() {};
 }
 ```
 
@@ -621,18 +621,24 @@ Determines the matcher used for patterns in the `partitionByComment` and `custom
                   partitionByComment: false,
                   matcher: 'minimatch',
                   groups: [
-                    'static-block',
                     'index-signature',
                     'static-property',
-                    ['protected-property', 'protected-accessor-property'],
-                    ['private-property', 'private-accessor-property'],
+                    'protected-static-property',
+                    'private-static-property',
+                    'static-block',
                     ['property', 'accessor-property'],
-                    'constructor',
-                    'static-method',
-                    'protected-method',
-                    'private-method',
-                    'method',
                     ['get-method', 'set-method'],
+                    ['protected-property', 'protected-accessor-property'],
+                    ['protected-get-method', 'protected-set-method'],
+                    ['private-property', 'private-accessor-property'],
+                    ['private-get-method', 'private-set-method'],
+                    'constructor',
+                    ['static-method', 'static-function-property'],
+                    ['protected-static-method', 'protected-static-function-property'],
+                    ['private-static-method', 'private-static-function-property'],
+                    ['method', 'function-property'],
+                    ['protected-method', 'protected-function-property'],
+                    ['private-method', 'private-function-property'],
                     'unknown',
                   ],
                   customGroups: [],
@@ -663,18 +669,24 @@ Determines the matcher used for patterns in the `partitionByComment` and `custom
                 partitionByComment: false,
                 matcher: 'minimatch',
                 groups: [
-                  'static-block',
                   'index-signature',
                   'static-property',
-                  ['protected-property', 'protected-accessor-property'],
-                  ['private-property', 'private-accessor-property'],
+                  'protected-static-property',
+                  'private-static-property',
+                  'static-block',
                   ['property', 'accessor-property'],
-                  'constructor',
-                  'static-method',
-                  'protected-method',
-                  'private-method',
-                  'method',
                   ['get-method', 'set-method'],
+                  ['protected-property', 'protected-accessor-property'],
+                  ['protected-get-method', 'protected-set-method'],
+                  ['private-property', 'private-accessor-property'],
+                  ['private-get-method', 'private-set-method'],
+                  'constructor',
+                  ['static-method', 'static-function-property'],
+                  ['protected-static-method', 'protected-static-function-property'],
+                  ['private-static-method', 'private-static-function-property'],
+                  ['method', 'function-property'],
+                  ['protected-method', 'protected-function-property'],
+                  ['private-method', 'private-function-property'],
                   'unknown',
                 ],
                 customGroups: [],

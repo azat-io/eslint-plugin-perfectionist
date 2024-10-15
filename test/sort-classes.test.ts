@@ -6985,31 +6985,31 @@ describe(ruleName, () => {
         {
           code: dedent`
               class Class {
-                set setMethod() {}
-
-                get getMethod() {}
-
-                public publicMethod() {}
-
                 private privateMethod() {}
 
                 protected protectedMethod() {}
+
+                public publicMethod() {}
 
                 static staticMethod() {}
 
                 constructor() {}
 
-                public accessor publicAccessorProperty
-
-                public publicProperty
+                private privateProperty
 
                 private accessor privateAccessorProperty
 
-                private privateProperty
+                protected protectedProperty
+
+                public publicProperty
+
+                public accessor publicAccessorProperty
+
+                set setMethod() {}
+
+                get getMethod() {}
 
                 protected accessor protectedAccessorProperty
-
-                protected protectedProperty
 
                 static {}
 
@@ -7026,6 +7026,14 @@ describe(ruleName, () => {
 
                 static {}
 
+                public accessor publicAccessorProperty
+
+                public publicProperty
+
+                get getMethod() {}
+
+                set setMethod() {}
+
                 protected accessor protectedAccessorProperty
 
                 protected protectedProperty
@@ -7034,51 +7042,18 @@ describe(ruleName, () => {
 
                 private privateProperty
 
-                public accessor publicAccessorProperty
-
-                public publicProperty
-
                 constructor() {}
 
                 static staticMethod() {}
 
+                public publicMethod() {}
+
                 protected protectedMethod() {}
 
                 private privateMethod() {}
-
-                public publicMethod() {}
-
-                get getMethod() {}
-
-                set setMethod() {}
               }
             `,
           errors: [
-            {
-              messageId: 'unexpectedClassesOrder',
-              data: {
-                left: 'setMethod',
-                right: 'getMethod',
-              },
-            },
-            {
-              messageId: 'unexpectedClassesGroupOrder',
-              data: {
-                left: 'getMethod',
-                leftGroup: 'get-method',
-                right: 'publicMethod',
-                rightGroup: 'method',
-              },
-            },
-            {
-              messageId: 'unexpectedClassesGroupOrder',
-              data: {
-                left: 'publicMethod',
-                leftGroup: 'method',
-                right: 'privateMethod',
-                rightGroup: 'private-method',
-              },
-            },
             {
               messageId: 'unexpectedClassesGroupOrder',
               data: {
@@ -7093,6 +7068,15 @@ describe(ruleName, () => {
               data: {
                 left: 'protectedMethod',
                 leftGroup: 'protected-method',
+                right: 'publicMethod',
+                rightGroup: 'method',
+              },
+            },
+            {
+              messageId: 'unexpectedClassesGroupOrder',
+              data: {
+                left: 'publicMethod',
+                leftGroup: 'method',
                 right: 'staticMethod',
                 rightGroup: 'static-method',
               },
@@ -7111,26 +7095,24 @@ describe(ruleName, () => {
               data: {
                 left: 'constructor',
                 leftGroup: 'constructor',
-                right: 'publicAccessorProperty',
-                rightGroup: 'accessor-property',
+                right: 'privateProperty',
+                rightGroup: 'private-property',
               },
             },
             {
-              messageId: 'unexpectedClassesGroupOrder',
-              data: {
-                left: 'publicProperty',
-                leftGroup: 'property',
-                right: 'privateAccessorProperty',
-                rightGroup: 'private-accessor-property',
-              },
-            },
-            {
-              messageId: 'unexpectedClassesGroupOrder',
+              messageId: 'unexpectedClassesOrder',
               data: {
                 left: 'privateProperty',
-                leftGroup: 'private-property',
-                right: 'protectedAccessorProperty',
-                rightGroup: 'protected-accessor-property',
+                right: 'privateAccessorProperty',
+              },
+            },
+            {
+              messageId: 'unexpectedClassesGroupOrder',
+              data: {
+                left: 'privateAccessorProperty',
+                leftGroup: 'private-accessor-property',
+                right: 'protectedProperty',
+                rightGroup: 'protected-property',
               },
             },
             {
@@ -7138,6 +7120,29 @@ describe(ruleName, () => {
               data: {
                 left: 'protectedProperty',
                 leftGroup: 'protected-property',
+                right: 'publicProperty',
+                rightGroup: 'property',
+              },
+            },
+            {
+              messageId: 'unexpectedClassesOrder',
+              data: {
+                left: 'publicProperty',
+                right: 'publicAccessorProperty',
+              },
+            },
+            {
+              messageId: 'unexpectedClassesOrder',
+              data: {
+                left: 'setMethod',
+                right: 'getMethod',
+              },
+            },
+            {
+              messageId: 'unexpectedClassesGroupOrder',
+              data: {
+                left: 'protectedAccessorProperty',
+                leftGroup: 'protected-accessor-property',
                 right: 'static',
                 rightGroup: 'static-block',
               },
