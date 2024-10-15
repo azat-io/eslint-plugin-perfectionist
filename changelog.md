@@ -1,6 +1,31 @@
 # Changelog
 
 
+## v3.9.0
+
+[compare changes](https://github.com/azat-io/eslint-plugin-perfectionist/compare/v3.8.0...v3.9.0)
+
+### 🚀 Features
+
+- Adds possibility to trim / remove special characters before sorting ([96f8b10](https://github.com/azat-io/eslint-plugin-perfectionist/commit/96f8b10))
+- Add element value pattern filter for properties in sort-classes ([4e7e5ad](https://github.com/azat-io/eslint-plugin-perfectionist/commit/4e7e5ad))
+- Throw error when a group does not exist or duplicated in sort-classes ([d447ffb](https://github.com/azat-io/eslint-plugin-perfectionist/commit/d447ffb))
+- Add method group in sort-interfaces ([b797371](https://github.com/azat-io/eslint-plugin-perfectionist/commit/b797371))
+- Add method group in sort-object-types ([4609ad2](https://github.com/azat-io/eslint-plugin-perfectionist/commit/4609ad2))
+- Add special characters and matcher to settings ([a7d3f8c](https://github.com/azat-io/eslint-plugin-perfectionist/commit/a7d3f8c))
+- Improve side-effect handling behavior in sort-imports ([398ac13](https://github.com/azat-io/eslint-plugin-perfectionist/commit/398ac13))
+- Deprecate sort-astro-attributes, sort-svelte-attributes and sort-vue-attributes ([46790ea](https://github.com/azat-io/eslint-plugin-perfectionist/commit/46790ea))
+
+### 🐞 Bug Fixes
+
+- Fix runtime error related o dependencies in sort-classes ([7dfcb8e](https://github.com/azat-io/eslint-plugin-perfectionist/commit/7dfcb8e))
+- Fix unrecognized break statements in sort-switch-case ([552c65c](https://github.com/azat-io/eslint-plugin-perfectionist/commit/552c65c))
+
+### ❤️ Contributors
+
+- Azat S. ([@azat-io](http://github.com/azat-io))
+- Hugo ([@hugop95](http://github.com/hugop95))
+
 ## v3.8.0
 
 [compare changes](https://github.com/azat-io/eslint-plugin-perfectionist/compare/v3.7.0...v3.8.0)
