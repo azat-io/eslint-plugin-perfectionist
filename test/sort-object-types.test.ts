@@ -889,6 +889,131 @@ describe(ruleName, () => {
       ],
       invalid: [],
     })
+
+    describe(`${ruleName}: newlinesBetween`, () => {
+      ruleTester.run(
+        `${ruleName}(${type}): removes newlines when never`,
+        rule,
+        {
+          valid: [],
+          invalid: [
+            {
+              code: dedent`
+                  type Type = {
+                    a: () => void
+
+
+                   c: string
+                  b: string
+
+                      d: string
+                  }
+                `,
+              output: dedent`
+                  type Type = {
+                    a: () => void
+                   b: string
+                  c: string
+                      d: string
+                  }
+                `,
+              options: [
+                {
+                  ...options,
+                  newlinesBetween: 'never',
+                  groups: ['method', 'unknown'],
+                },
+              ],
+              errors: [
+                {
+                  messageId: 'extraSpacingBetweenObjectTypeMembers',
+                  data: {
+                    left: 'a',
+                    right: 'c',
+                  },
+                },
+                {
+                  messageId: 'unexpectedObjectTypesOrder',
+                  data: {
+                    left: 'c',
+                    right: 'b',
+                  },
+                },
+                {
+                  messageId: 'extraSpacingBetweenObjectTypeMembers',
+                  data: {
+                    left: 'b',
+                    right: 'd',
+                  },
+                },
+              ],
+            },
+          ],
+        },
+      )
+
+      ruleTester.run(
+        `${ruleName}(${type}): keeps one newline when always`,
+        rule,
+        {
+          valid: [],
+          invalid: [
+            {
+              code: dedent`
+                  type Type = {
+                    a: () => void
+
+
+                   c: string
+                  b: string
+
+                      d: string
+                  }
+                `,
+              output: dedent`
+                  type Type = {
+                    a: () => void
+
+                   b: string
+                  c: string
+                      d: string
+                  }
+                `,
+              options: [
+                {
+                  ...options,
+                  newlinesBetween: 'always',
+                  groups: ['method', 'unknown'],
+                },
+              ],
+              errors: [
+                {
+                  messageId: 'extraSpacingBetweenObjectTypeMembers',
+                  data: {
+                    left: 'a',
+                    right: 'c',
+                  },
+                },
+                {
+                  messageId: 'unexpectedObjectTypesOrder',
+                  data: {
+                    left: 'c',
+                    right: 'b',
+                  },
+                },
+                {
+                  messageId: 'extraSpacingBetweenObjectTypeMembers',
+                  data: {
+                    left: 'b',
+                    right: 'd',
+                  },
+                },
+              ],
+            },
+          ],
+        },
+      )
+    })
   })
 
   describe(`${ruleName}: sorting by natural order`, () => {
