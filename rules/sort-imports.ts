@@ -609,11 +609,17 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
             }
 
             if (options.newlinesBetween === 'always') {
-              if (leftNum < rightNum && numberOfEmptyLinesBetween === 0) {
+              if (
+                leftNum < rightNum &&
+                numberOfEmptyLinesBetween === 0 &&
+                indexOfLeft === indexOfRight - 1
+              ) {
                 messageIds.push('missedSpacingBetweenImports')
               } else if (
                 numberOfEmptyLinesBetween > 1 ||
-                (leftNum === rightNum && numberOfEmptyLinesBetween > 0)
+                (leftNum === rightNum &&
+                  indexOfLeft === indexOfRight - 1 &&
+                  numberOfEmptyLinesBetween > 0)
               ) {
                 messageIds.push('extraSpacingBetweenImports')
               }
