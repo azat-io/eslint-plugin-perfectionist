@@ -22,6 +22,7 @@ let configs = defineCollection({
 let rules = defineCollection({
   schema: z.object({
     keywords: z.array(z.string()).optional(),
+    deprecated: z.boolean().optional(),
     shortDescription: z.string(),
     description: z.string(),
     title: z.string(),

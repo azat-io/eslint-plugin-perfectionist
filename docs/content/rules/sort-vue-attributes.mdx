@@ -15,9 +15,11 @@ keywords:
   - vue elements attributes
   - vue elements order
   - vue elements structure
+deprecated: true
 ---
 
 import CodeExample from '../../components/CodeExample.svelte'
+import Important from '../../components/Important.astro'
 import CodeTabs from '../../components/CodeTabs.svelte'
 import { dedent } from 'ts-dedent'
 
@@ -26,6 +28,12 @@ Enforce sorted attributes in Vue elements.
 Ensuring a consistent order of attributes in Vue elements is essential for readability and maintainability.
 
 This rule enforces attribute sorting, making the structure of Vue components more predictable and easier to manage. By adopting this rule, developers can maintain a high standard of code organization and clarity in their Vue projects.
+
+<Important title="Deprecated">
+This rule has been deprecated in favor of the [`vue/attributes-order`](https://eslint.vuejs.org/rules/attributes-order.html) rule.
+
+See [Deprecate rules for sorting Vue, Svelte and Astro attributes](https://github.com/azat-io/eslint-plugin-perfectionist/issues/175) issue for more information.
+</Important>
 
 ## Try it out
 
