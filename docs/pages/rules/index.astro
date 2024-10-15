@@ -61,6 +61,7 @@ let rules = await getCollection('rules')
         <th>Description</th>
         <th></th>
         <th></th>
+        <th></th>
       </tr>
     </thead>
     <tbody>
@@ -74,9 +75,8 @@ let rules = await getCollection('rules')
             <td>
               <Icon name="tool" size="s" />
             </td>
-            <td>
-              <Icon name="star" size="s" />
-            </td>
+            <td>{!rule.data.deprecated && <Icon name="star" size="s" />}</td>
+            <td>{rule.data.deprecated && <Icon name="delete" size="s" />}</td>
           </tr>
         ))
       }
