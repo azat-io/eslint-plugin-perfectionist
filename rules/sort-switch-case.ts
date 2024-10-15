@@ -102,7 +102,8 @@ export default createEslintRule<Options, MESSAGE_ID>({
             caseNode.consequent.some(
               currentConsequent =>
                 currentConsequent.type === 'BreakStatement' ||
-                currentConsequent.type === 'ReturnStatement',
+                currentConsequent.type === 'ReturnStatement' ||
+                currentConsequent.type === 'BlockStatement',
             ),
         )
 

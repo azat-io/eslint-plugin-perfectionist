@@ -3,6 +3,8 @@ import type { TSESLint } from '@typescript-eslint/utils'
 export type Settings = Partial<{
   type: 'alphabetical' | 'line-length' | 'natural'
   partitionByComment: string[] | boolean | string
+  specialCharacters: 'remove' | 'trim' | 'keep'
+  matcher: 'minimatch' | 'regex'
   partitionByNewLine: boolean
   ignorePattern: string[]
   order: 'desc' | 'asc'
@@ -16,34 +18,31 @@ export let getSettings = (
     return {}
   }
 
-  let validateOptions = (object: Record<string, unknown>) => {
-    let allowedOptions = [
+  let getInvalidOptions = (object: Record<string, unknown>) => {
+    let allowedOptions: (keyof Settings)[] = [
       'partitionByComment',
       'partitionByNewLine',
+      'specialCharacters',
       'ignorePattern',
       'ignoreCase',
+      'matcher',
       'order',
       'type',
     ]
 
-    let keys = Object.keys(object)
-    for (let key of keys) {
-      /* c8 ignore start */
-      if (!allowedOptions.includes(key)) {
-        return false
-      }
-      /* c8 ignore end */
-    }
-    return true
+    return Object.keys(object).filter(
+      key => !allowedOptions.includes(key as keyof Settings),
+    )
   }
 
   let perfectionistSettings = settings.perfectionist as Record<string, unknown>
 
-  /* c8 ignore start */
-  if (!validateOptions(perfectionistSettings)) {
-    throw new Error('Invalid Perfectionist settings')
+  let invalidOptions = getInvalidOptions(perfectionistSettings)
+  if (invalidOptions.length) {
+    throw new Error(
+      'Invalid Perfectionist setting(s): ' + invalidOptions.join(', '),
+    )
   }
-  /* c8 ignore end */
 
   return settings.perfectionist as Settings
 }
