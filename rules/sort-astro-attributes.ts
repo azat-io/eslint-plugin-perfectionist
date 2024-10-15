@@ -48,6 +48,8 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
       description: 'Enforce sorted Astro attributes.',
     },
     fixable: 'code',
+    deprecated: true,
+    replacedBy: ['astro/sort-attributes'],
     schema: [
       {
         type: 'object',

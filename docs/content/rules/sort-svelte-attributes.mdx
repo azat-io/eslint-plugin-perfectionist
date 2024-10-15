@@ -12,6 +12,7 @@ keywords:
   - javascript linting
   - svelte attributes sorting
   - svelte props sorting
+deprecated: true
 ---
 
 import CodeExample from '../../components/CodeExample.svelte'
@@ -25,8 +26,10 @@ Maintaining a consistent order of attributes in Svelte elements enhances readabi
 
 It's **safe**. The rule considers spread elements in an attributes list and does not break component functionality.
 
-<Important>
-If you use the [`sort-attributes`](https://sveltejs.github.io/eslint-plugin-svelte/rules/sort-attributes/) rule from the [`eslint-plugin-svelte`](https://sveltejs.github.io/eslint-plugin-svelte) plugin, it is highly recommended to [disable it](https://eslint.org/docs/latest/use/configure/rules#using-configuration-files-1) to avoid conflicts.
+<Important title="Deprecated">
+This rule has been deprecated in favor of the [`svelte/sort-attributes`](https://sveltejs.github.io/eslint-plugin-svelte/rules/sort-attributes/) rule.
+
+See [Deprecate rules for sorting Vue, Svelte and Astro attributes](https://github.com/azat-io/eslint-plugin-perfectionist/issues/175) issue for more information.
 </Important>
 
 ## Try it out

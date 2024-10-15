@@ -48,6 +48,8 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
       description: 'Enforce sorted Svelte attributes.',
     },
     fixable: 'code',
+    deprecated: true,
+    replacedBy: ['svelte/sort-attributes'],
     schema: [
       {
         type: 'object',

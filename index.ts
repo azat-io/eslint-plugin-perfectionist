@@ -63,10 +63,13 @@ let plugin = {
 
 let getRules = (options: BaseOptions): Record<string, RuleDeclaration> =>
   Object.fromEntries(
-    Object.keys(plugin.rules).map(rule => [
-      `${name}/${rule}`,
-      ['error', options],
-    ]),
+    Object.entries(plugin.rules).reduce(
+      (accumulator: [string, RuleDeclaration][], [ruleName, ruleValue]) =>
+        ruleValue.meta.deprecated
+          ? accumulator
+          : [...accumulator, [`${name}/${ruleName}`, ['error', options]]],
+      [],
+    ),
   )
 
 let createConfig = (options: BaseOptions): FlatConfig.Config => ({
