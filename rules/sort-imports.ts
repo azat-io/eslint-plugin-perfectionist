@@ -6,6 +6,8 @@ import { builtinModules } from 'node:module'
 import type { SortingNode } from '../typings'
 
 import { validateGroupsConfiguration } from '../utils/validate-groups-configuration'
+import { getOptionsWithCleanGroups } from '../utils/get-options-with-clean-groups'
+import { sortNodesByGroups } from '../utils/sort-nodes-by-groups'
 import { getCommentsBefore } from '../utils/get-comments-before'
 import { createEslintRule } from '../utils/create-eslint-rule'
 import { getLinesBetween } from '../utils/get-lines-between'
@@ -14,15 +16,13 @@ import { getSourceCode } from '../utils/get-source-code'
 import { getNodeRange } from '../utils/get-node-range'
 import { rangeToDiff } from '../utils/range-to-diff'
 import { getSettings } from '../utils/get-settings'
-import { isPositive } from '../utils/is-positive'
 import { useGroups } from '../utils/use-groups'
-import { sortNodes } from '../utils/sort-nodes'
+import { makeFixes } from '../utils/make-fixes'
 import { complete } from '../utils/complete'
 import { pairwise } from '../utils/pairwise'
-import { compare } from '../utils/compare'
 import { matches } from '../utils/matches'
 
-type MESSAGE_ID =
+export type MESSAGE_ID =
   | 'missedSpacingBetweenImports'
   | 'unexpectedImportsGroupOrder'
   | 'extraSpacingBetweenImports'
@@ -49,7 +49,7 @@ type Group<T extends string[]> =
   | 'style'
   | 'type'
 
-type Options<T extends string[]> = [
+export type Options<T extends string[]> = [
   Partial<{
     customGroups: {
       value?: { [key in T[number]]: string[] | string }
@@ -68,6 +68,10 @@ type Options<T extends string[]> = [
     ignoreCase: boolean
   }>,
 ]
+
+interface SortImportsSortingNode extends SortingNode {
+  isIgnored: boolean
+}
 
 export default createEslintRule<Options<string[]>, MESSAGE_ID>({
   name: 'sort-imports',
@@ -241,49 +245,32 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
   create: context => {
     let settings = getSettings(context.settings)
 
-    let defaultOptions = context.options.at(0)
-    let options = complete(defaultOptions, settings, {
-      groups: [
-        'type',
-        ['builtin', 'external'],
-        'internal-type',
-        'internal',
-        ['parent-type', 'sibling-type', 'index-type'],
-        ['parent', 'sibling', 'index'],
-        'object',
-        'unknown',
-      ],
-      matcher: 'minimatch',
-      customGroups: { type: {}, value: {} },
-      internalPattern:
-        defaultOptions?.matcher === 'regex' ? ['^~/.*'] : ['~/**'],
-      newlinesBetween: 'always',
-      sortSideEffects: false,
-      type: 'alphabetical',
-      environment: 'node',
-      ignoreCase: true,
-      specialCharacters: 'keep',
-      order: 'asc',
-    } as const)
-
-    let sourceCode = getSourceCode(context)
-    let hasUnknownGroup = false
-
-    for (let group of options.groups) {
-      if (Array.isArray(group)) {
-        for (let subGroup of group) {
-          if (subGroup === 'unknown') {
-            hasUnknownGroup = true
-          }
-        }
-      } else if (group === 'unknown') {
-        hasUnknownGroup = true
-      }
-    }
-
-    if (!hasUnknownGroup) {
-      options.groups = [...options.groups, 'unknown']
-    }
+    let userOptions = context.options.at(0)
+    let options = getOptionsWithCleanGroups(
+      complete(userOptions, settings, {
+        groups: [
+          'type',
+          ['builtin', 'external'],
+          'internal-type',
+          'internal',
+          ['parent-type', 'sibling-type', 'index-type'],
+          ['parent', 'sibling', 'index'],
+          'object',
+          'unknown',
+        ],
+        matcher: 'minimatch',
+        customGroups: { type: {}, value: {} },
+        internalPattern:
+          userOptions?.matcher === 'regex' ? ['^~/.*'] : ['~/**'],
+        newlinesBetween: 'always',
+        sortSideEffects: false,
+        type: 'alphabetical',
+        environment: 'node',
+        ignoreCase: true,
+        specialCharacters: 'keep',
+        order: 'asc',
+      } as const),
+    )
 
     validateGroupsConfiguration(
       options.groups,
@@ -313,7 +300,41 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
       ],
     )
 
-    let nodes: SortingNode[] = []
+    let isSideEffectOnlyGroup = (
+      group: undefined | string[] | string,
+    ): boolean => {
+      if (!group) {
+        return false
+      }
+      if (typeof group === 'string') {
+        return group === 'side-effect' || group === 'side-effect-style'
+      }
+
+      return group.every(isSideEffectOnlyGroup)
+    }
+
+    // Ensure that if `sortSideEffects: false`, no side effect group is in a
+    // nested group with non-side-effect groups.
+    if (!options.sortSideEffects) {
+      let hasInvalidGroup = options.groups
+        .filter(group => Array.isArray(group))
+        .some(
+          nestedGroup =>
+            !isSideEffectOnlyGroup(nestedGroup) &&
+            nestedGroup.some(
+              subGroup =>
+                subGroup === 'side-effect' || subGroup === 'side-effect-style',
+            ),
+        )
+      if (hasInvalidGroup) {
+        throw new Error(
+          "Side effect groups cannot be nested with non side effect groups when 'sortSideEffects' is 'false'.",
+        )
+      }
+    }
+
+    let sourceCode = getSourceCode(context)
+    let nodes: SortImportsSortingNode[] = []
 
     let isSideEffectImport = (node: TSESTree.Node) =>
       node.type === 'ImportDeclaration' &&
@@ -321,16 +342,40 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
       /* Avoid matching on named imports without specifiers */
       !/}\s*from\s+/.test(sourceCode.getText(node))
 
-    let computeGroup = (
+    let isStyle = (value: string) =>
+      ['.less', '.scss', '.sass', '.styl', '.pcss', '.css', '.sss'].some(
+        extension => value.endsWith(extension),
+      )
+
+    let hasMultipleImportDeclarations = (
+      node: TSESTree.ImportDeclaration,
+    ): boolean => node.specifiers.length > 1
+
+    let flatGroups = options.groups.flat()
+    let shouldRegroupSideEffectNodes = flatGroups.includes('side-effect')
+    let shouldRegroupSideEffectStyleNodes =
+      flatGroups.includes('side-effect-style')
+    let registerNode = (
       node:
         | TSESTree.TSImportEqualsDeclaration
         | TSESTree.VariableDeclaration
         | TSESTree.ImportDeclaration,
-    ): Group<string[]> => {
-      let isStyle = (value: string) =>
-        ['.less', '.scss', '.sass', '.styl', '.pcss', '.css', '.sss'].some(
-          extension => value.endsWith(extension),
-        )
+    ) => {
+      let name: string
+
+      if (node.type === 'ImportDeclaration') {
+        name = node.source.value
+      } else if (node.type === 'TSImportEqualsDeclaration') {
+        if (node.moduleReference.type === 'TSExternalModuleReference') {
+          name = `${node.moduleReference.expression.value}`
+        } else {
+          name = sourceCode.text.slice(...node.moduleReference.range)
+        }
+      } else {
+        let decl = node.declarations[0].init as TSESTree.CallExpression
+        let { value } = decl.arguments[0] as TSESTree.Literal
+        name = value!.toString()
+      }
 
       let isIndex = (value: string) =>
         [
@@ -412,6 +457,8 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
         defineGroup('type')
       }
 
+      let isSideEffect = isSideEffectImport(node)
+      let isStyleSideEffect = false
       if (
         node.type === 'ImportDeclaration' ||
         node.type === 'VariableDeclaration'
@@ -424,18 +471,20 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
           let declValue = (decl.arguments[0] as TSESTree.Literal).value
           value = declValue!.toString()
         }
+        let isStyleValue = isStyle(value)
+        isStyleSideEffect = isSideEffect && isStyleValue
 
         setCustomGroups(options.customGroups.value, value)
 
-        if (isSideEffectImport(node) && isStyle(value)) {
+        if (isStyleSideEffect) {
           defineGroup('side-effect-style')
         }
 
-        if (isSideEffectImport(node)) {
+        if (isSideEffect) {
           defineGroup('side-effect')
         }
 
-        if (isStyle(value)) {
+        if (isStyleValue) {
           defineGroup('style')
         }
 
@@ -464,39 +513,15 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
         }
       }
 
-      return getGroup()
-    }
-
-    let hasMultipleImportDeclarations = (
-      node: TSESTree.ImportDeclaration,
-    ): boolean => node.specifiers.length > 1
-
-    let registerNode = (
-      node:
-        | TSESTree.TSImportEqualsDeclaration
-        | TSESTree.VariableDeclaration
-        | TSESTree.ImportDeclaration,
-    ) => {
-      let name: string
-
-      if (node.type === 'ImportDeclaration') {
-        name = node.source.value
-      } else if (node.type === 'TSImportEqualsDeclaration') {
-        if (node.moduleReference.type === 'TSExternalModuleReference') {
-          name = `${node.moduleReference.expression.value}`
-        } else {
-          name = sourceCode.text.slice(...node.moduleReference.range)
-        }
-      } else {
-        let decl = node.declarations[0].init as TSESTree.CallExpression
-        let { value } = decl.arguments[0] as TSESTree.Literal
-        name = value!.toString()
-      }
-
       nodes.push({
         size: rangeToDiff(node.range),
-        group: computeGroup(node),
+        group: getGroup(),
         node,
+        isIgnored:
+          !options.sortSideEffects &&
+          isSideEffect &&
+          !shouldRegroupSideEffectNodes &&
+          (!isStyleSideEffect || !shouldRegroupSideEffectStyleNodes),
         name,
         ...(options.type === 'line-length' &&
           options.maxLineLength && {
@@ -523,182 +548,80 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
       },
       'Program:exit': () => {
         let hasContentBetweenNodes = (
-          left: SortingNode,
-          right: SortingNode,
+          left: SortImportsSortingNode,
+          right: SortImportsSortingNode,
         ): boolean =>
           getCommentsBefore(right.node, sourceCode).length > 0 ||
           !!sourceCode.getTokensBetween(left.node, right.node, {
             includeComments: false,
           }).length
 
-        let fix = (
-          fixer: TSESLint.RuleFixer,
-          nodesToFix: SortingNode[],
-        ): TSESLint.RuleFix[] => {
-          let fixes: TSESLint.RuleFix[] = []
-
-          let grouped: {
-            [key: string]: SortingNode[]
-          } = {}
-
-          for (let node of nodesToFix) {
-            let groupNum = getGroupNumber(options.groups, node)
-
-            if (!(groupNum in grouped)) {
-              grouped[groupNum] = [node]
-            } else if (
-              !options.sortSideEffects &&
-              isSideEffectImport(node.node)
-            ) {
-              grouped[groupNum] = [...grouped[groupNum], node]
-            } else {
-              grouped[groupNum] = sortNodes(
-                [...grouped[groupNum], node],
-                options,
-              )
-            }
-          }
-
-          let formatted = Object.keys(grouped)
-            .sort((a, b) => Number(a) - Number(b))
-            .reduce(
-              (accumulator: SortingNode[], group: string) => [
-                ...accumulator,
-                ...grouped[group],
-              ],
-              [],
-            )
-
-          for (let max = formatted.length, i = 0; i < max; i++) {
-            let node = formatted.at(i)!
-
-            fixes.push(
-              fixer.replaceTextRange(
-                getNodeRange(nodesToFix.at(i)!.node, sourceCode, options),
-                sourceCode.text.slice(
-                  ...getNodeRange(node.node, sourceCode, options),
-                ),
-              ),
-            )
-
-            if (options.newlinesBetween !== 'ignore') {
-              let nextNode = formatted.at(i + 1)
-
-              if (nextNode) {
-                let linesBetweenImports = getLinesBetween(
-                  sourceCode,
-                  nodesToFix.at(i)!,
-                  nodesToFix.at(i + 1)!,
-                )
-
-                if (
-                  (options.newlinesBetween === 'always' &&
-                    getGroupNumber(options.groups, node) ===
-                      getGroupNumber(options.groups, nextNode) &&
-                    linesBetweenImports !== 0) ||
-                  (options.newlinesBetween === 'never' &&
-                    linesBetweenImports > 0)
-                ) {
-                  fixes.push(
-                    fixer.removeRange([
-                      getNodeRange(
-                        nodesToFix.at(i)!.node,
-                        sourceCode,
-                        options,
-                      ).at(1)!,
-                      getNodeRange(
-                        nodesToFix.at(i + 1)!.node,
-                        sourceCode,
-                        options,
-                      ).at(0)! - 1,
-                    ]),
-                  )
-                }
-
-                if (
-                  options.newlinesBetween === 'always' &&
-                  getGroupNumber(options.groups, node) !==
-                    getGroupNumber(options.groups, nextNode) &&
-                  linesBetweenImports > 1
-                ) {
-                  fixes.push(
-                    fixer.replaceTextRange(
-                      [
-                        getNodeRange(
-                          nodesToFix.at(i)!.node,
-                          sourceCode,
-                          options,
-                        ).at(1)!,
-                        getNodeRange(
-                          nodesToFix.at(i + 1)!.node,
-                          sourceCode,
-                          options,
-                        ).at(0)! - 1,
-                      ],
-                      '\n',
-                    ),
-                  )
-                }
-
-                if (
-                  options.newlinesBetween === 'always' &&
-                  getGroupNumber(options.groups, node) !==
-                    getGroupNumber(options.groups, nextNode) &&
-                  linesBetweenImports === 0
-                ) {
-                  fixes.push(
-                    fixer.insertTextAfterRange(
-                      getNodeRange(nodesToFix.at(i)!.node, sourceCode, options),
-                      '\n',
-                    ),
-                  )
-                }
-              }
-            }
-          }
-
-          return fixes
-        }
-
-        let splittedNodes: SortingNode[][] = [[]]
+        let splitNodes: SortImportsSortingNode[][] = [[]]
 
         for (let node of nodes) {
-          let lastNode = splittedNodes.at(-1)?.at(-1)
+          let lastNode = splitNodes.at(-1)?.at(-1)
 
           if (lastNode && hasContentBetweenNodes(lastNode, node)) {
-            splittedNodes.push([node])
+            splitNodes.push([node])
           } else {
-            splittedNodes.at(-1)!.push(node)
+            splitNodes.at(-1)!.push(node)
           }
         }
 
-        for (let nodeList of splittedNodes) {
+        for (let nodeList of splitNodes) {
+          let sortedNodes = sortNodesByGroups(nodeList, options, {
+            isNodeIgnored: node => node.isIgnored,
+            getGroupCompareOptions: groupNumber => {
+              if (options.sortSideEffects) {
+                return options
+              }
+              let group = options.groups[groupNumber]
+              return isSideEffectOnlyGroup(group) ? null : options
+            },
+          })
           pairwise(nodeList, (left, right) => {
             let leftNum = getGroupNumber(options.groups, left)
             let rightNum = getGroupNumber(options.groups, right)
+
+            let indexOfLeft = sortedNodes.indexOf(left)
+            let indexOfRight = sortedNodes.indexOf(right)
+
+            let messageIds: MESSAGE_ID[] = []
+
+            if (indexOfLeft > indexOfRight) {
+              messageIds.push(
+                leftNum !== rightNum
+                  ? 'unexpectedImportsGroupOrder'
+                  : 'unexpectedImportsOrder',
+              )
+            }
 
             let numberOfEmptyLinesBetween = getLinesBetween(
               sourceCode,
               left,
               right,
             )
-
             if (
-              !(
-                !options.sortSideEffects &&
-                isSideEffectImport(left.node) &&
-                isSideEffectImport(right.node)
-              ) &&
-              !hasContentBetweenNodes(left, right) &&
-              (leftNum > rightNum ||
-                (leftNum === rightNum &&
-                  isPositive(compare(left, right, options))))
+              options.newlinesBetween === 'never' &&
+              numberOfEmptyLinesBetween > 0
             ) {
+              messageIds.push('extraSpacingBetweenImports')
+            }
+
+            if (options.newlinesBetween === 'always') {
+              if (leftNum < rightNum && numberOfEmptyLinesBetween === 0) {
+                messageIds.push('missedSpacingBetweenImports')
+              } else if (
+                numberOfEmptyLinesBetween > 1 ||
+                (leftNum === rightNum && numberOfEmptyLinesBetween > 0)
+              ) {
+                messageIds.push('extraSpacingBetweenImports')
+              }
+            }
+
+            for (let messageId of messageIds) {
               context.report({
-                messageId:
-                  leftNum !== rightNum
-                    ? 'unexpectedImportsGroupOrder'
-                    : 'unexpectedImportsOrder',
+                messageId,
                 data: {
                   left: left.name,
                   leftGroup: left.group,
@@ -706,50 +629,79 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
                   rightGroup: right.group,
                 },
                 node: right.node,
-                fix: fixer => fix(fixer, nodeList),
-              })
-            }
+                fix: fixer => {
+                  let newlinesFixes: TSESLint.RuleFix[] = []
 
-            if (
-              options.newlinesBetween === 'never' &&
-              numberOfEmptyLinesBetween > 0
-            ) {
-              context.report({
-                messageId: 'extraSpacingBetweenImports',
-                data: {
-                  left: left.name,
-                  right: right.name,
+                  for (let max = sortedNodes.length, i = 0; i < max; i++) {
+                    let node = sortedNodes.at(i)!
+                    let nextNode = sortedNodes.at(i + 1)
+
+                    if (options.newlinesBetween === 'ignore' || !nextNode) {
+                      continue
+                    }
+
+                    let nodeGroupNumber = getGroupNumber(options.groups, node)
+                    let nextNodeGroupNumber = getGroupNumber(
+                      options.groups,
+                      nextNode,
+                    )
+                    let currentNodeRange = getNodeRange(
+                      nodeList.at(i)!.node,
+                      sourceCode,
+                      options,
+                    )
+                    let nextNodeRange =
+                      getNodeRange(
+                        nodeList.at(i + 1)!.node,
+                        sourceCode,
+                        options,
+                      ).at(0)! - 1
+
+                    let linesBetweenImports = getLinesBetween(
+                      sourceCode,
+                      nodeList.at(i)!,
+                      nodeList.at(i + 1)!,
+                    )
+
+                    if (
+                      (options.newlinesBetween === 'always' &&
+                        nodeGroupNumber === nextNodeGroupNumber &&
+                        linesBetweenImports !== 0) ||
+                      (options.newlinesBetween === 'never' &&
+                        linesBetweenImports > 0)
+                    ) {
+                      newlinesFixes.push(
+                        fixer.removeRange([
+                          currentNodeRange.at(1)!,
+                          nextNodeRange,
+                        ]),
+                      )
+                    }
+                    if (
+                      options.newlinesBetween === 'always' &&
+                      nodeGroupNumber !== nextNodeGroupNumber
+                    ) {
+                      if (linesBetweenImports > 1) {
+                        newlinesFixes.push(
+                          fixer.replaceTextRange(
+                            [currentNodeRange.at(1)!, nextNodeRange],
+                            '\n',
+                          ),
+                        )
+                      } else if (linesBetweenImports === 0) {
+                        newlinesFixes.push(
+                          fixer.insertTextAfterRange(currentNodeRange, '\n'),
+                        )
+                      }
+                    }
+                  }
+
+                  return [
+                    ...makeFixes(fixer, nodeList, sortedNodes, sourceCode),
+                    ...newlinesFixes,
+                  ]
                 },
-                node: right.node,
-                fix: fixer => fix(fixer, nodeList),
               })
-            }
-
-            if (options.newlinesBetween === 'always') {
-              if (leftNum < rightNum && numberOfEmptyLinesBetween === 0) {
-                context.report({
-                  messageId: 'missedSpacingBetweenImports',
-                  data: {
-                    left: left.name,
-                    right: right.name,
-                  },
-                  node: right.node,
-                  fix: fixer => fix(fixer, nodeList),
-                })
-              } else if (
-                numberOfEmptyLinesBetween > 1 ||
-                (leftNum === rightNum && numberOfEmptyLinesBetween > 0)
-              ) {
-                context.report({
-                  messageId: 'extraSpacingBetweenImports',
-                  data: {
-                    left: left.name,
-                    right: right.name,
-                  },
-                  node: right.node,
-                  fix: fixer => fix(fixer, nodeList),
-                })
-              }
             }
           })
         }

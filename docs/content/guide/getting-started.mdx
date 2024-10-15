@@ -144,8 +144,10 @@ In settings you can set the following options:
 - `order` — The order of sorting. Possible values are `'asc'` and `'desc'`.
 - `ignoreCase` — Ignore case when sorting.
 - `ignorePattern` — Ignore sorting for elements that match the pattern.
+- `specialCharacters` — Control whether special characters should be kept, trimmed or removed before sorting. Values can be `'keep'`, `'trim'` or `'remove'`.
 - `partitionByComment` — Partition the sorted elements by comments. Values can be `true`, `false` or glob pattern string.
 - `partitionByNewLine` — Partition the sorted elements by new lines. Values can be `true` or `false`.
+- `matcher` — Determine the matcher used for patterns in options such as `partitionByComment`. Values can be `minimatch` or `regex`.
 
 Example:
 

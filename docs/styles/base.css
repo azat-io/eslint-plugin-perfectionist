@@ -101,11 +101,6 @@ code {
   background: var(--color-code-background);
 }
 
-pre,
-code:not(pre code) {
-  border: 1px solid var(--color-border-primary);
-}
-
 code {
   border-radius: var(--border-radius);
 
@@ -116,6 +111,11 @@ code {
   @media print {
     white-space: pre-wrap;
   }
+}
+
+pre,
+code:not(pre code) {
+  border: 1px solid var(--color-border-primary);
 }
 
 pre {

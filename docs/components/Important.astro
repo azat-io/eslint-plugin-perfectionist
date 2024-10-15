@@ -1,9 +1,15 @@
 ---
 import Typography from './Typography.astro'
+
+interface Props {
+  title?: string
+}
+
+let { title = 'Important' } = Astro.props
 ---
 
 <div class="important">
-  <Typography class="title" size="l" bold> Important</Typography>
+  <Typography class="title" size="l" bold>{title}</Typography>
   <slot />
 </div>
 
