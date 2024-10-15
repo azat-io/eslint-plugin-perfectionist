@@ -694,6 +694,127 @@ describe(ruleName, () => {
         invalid: [],
       },
     )
+
+    describe(`${ruleName}: newlinesBetween`, () => {
+      ruleTester.run(
+        `${ruleName}(${type}): removes newlines when never`,
+        rule,
+        {
+          valid: [],
+          invalid: [
+            {
+              code: dedent`
+                type T =
+                  (() => null)
+
+
+                 | Y
+                | Z
+
+                    | B
+              `,
+              output: dedent`
+                type T =
+                  (() => null)
+                 | B
+                | Y
+                    | Z
+              `,
+              options: [
+                {
+                  ...options,
+                  newlinesBetween: 'never',
+                  groups: ['function', 'unknown'],
+                },
+              ],
+              errors: [
+                {
+                  messageId: 'extraSpacingBetweenUnionTypes',
+                  data: {
+                    left: '() => null',
+                    right: 'Y',
+                  },
+                },
+                {
+                  messageId: 'unexpectedUnionTypesOrder',
+                  data: {
+                    left: 'Z',
+                    right: 'B',
+                  },
+                },
+                {
+                  messageId: 'extraSpacingBetweenUnionTypes',
+                  data: {
+                    left: 'Z',
+                    right: 'B',
+                  },
+                },
+              ],
+            },
+          ],
+        },
+      )
+
+      ruleTester.run(
+        `${ruleName}(${type}): keeps one newline when always`,
+        rule,
+        {
+          valid: [],
+          invalid: [
+            {
+              code: dedent`
+                type T =
+                  (() => null)
+
+
+                 | Z
+                | Y
+                    | "A"
+              `,
+              output: dedent`
+                type T =
+                  (() => null)
+
+                 | Y
+                | Z
+
+                    | "A"
+                `,
+              options: [
+                {
+                  ...options,
+                  newlinesBetween: 'always',
+                  groups: ['function', 'unknown', 'literal'],
+                },
+              ],
+              errors: [
+                {
+                  messageId: 'extraSpacingBetweenUnionTypes',
+                  data: {
+                    left: '() => null',
+                    right: 'Z',
+                  },
+                },
+                {
+                  messageId: 'unexpectedUnionTypesOrder',
+                  data: {
+                    left: 'Z',
+                    right: 'Y',
+                  },
+                },
+                {
+                  messageId: 'missedSpacingBetweenUnionTypes',
+                  data: {
+                    left: 'Y',
+                    right: '"A"',
+                  },
+                },
+              ],
+            },
+          ],
+        },
+      )
+    })
   })
 
   describe(`${ruleName}: sorting by natural order`, () => {
