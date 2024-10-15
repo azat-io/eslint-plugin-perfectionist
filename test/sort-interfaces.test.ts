@@ -2,6 +2,8 @@ import { RuleTester } from '@typescript-eslint/rule-tester'
 import { afterAll, describe, it } from 'vitest'
 import { dedent } from 'ts-dedent'
 
+import type { Options } from '../rules/sort-interfaces'
+
 import rule from '../rules/sort-interfaces'
 
 let ruleName = 'sort-interfaces'
@@ -19,7 +21,7 @@ describe(ruleName, () => {
   describe(`${ruleName}: sorting by alphabetical order`, () => {
     let type = 'alphabetical-order'
 
-    let options = {
+    let options: Options<string[]>[0] = {
       type: 'alphabetical',
       ignoreCase: true,
       order: 'asc',
@@ -1046,6 +1048,131 @@ describe(ruleName, () => {
         },
       ],
       invalid: [],
+    })
+
+    describe(`${ruleName}: newlinesBetween`, () => {
+      ruleTester.run(
+        `${ruleName}(${type}): removes newlines when never`,
+        rule,
+        {
+          valid: [],
+          invalid: [
+            {
+              code: dedent`
+                  interface Interface {
+                    a: () => void
+
+
+                   c: string
+                  b: string
+
+                      d: string
+                  }
+                `,
+              output: dedent`
+                  interface Interface {
+                    a: () => void
+                   b: string
+                  c: string
+                      d: string
+                  }
+                `,
+              options: [
+                {
+                  ...options,
+                  newlinesBetween: 'never',
+                  groups: ['method', 'unknown'],
+                },
+              ],
+              errors: [
+                {
+                  messageId: 'extraSpacingBetweenInterfaceMembers',
+                  data: {
+                    left: 'a',
+                    right: 'c',
+                  },
+                },
+                {
+                  messageId: 'unexpectedInterfacePropertiesOrder',
+                  data: {
+                    left: 'c',
+                    right: 'b',
+                  },
+                },
+                {
+                  messageId: 'extraSpacingBetweenInterfaceMembers',
+                  data: {
+                    left: 'b',
+                    right: 'd',
+                  },
+                },
+              ],
+            },
+          ],
+        },
+      )
+
+      ruleTester.run(
+        `${ruleName}(${type}): keeps one newline when always`,
+        rule,
+        {
+          valid: [],
+          invalid: [
+            {
+              code: dedent`
+                  interface Interface {
+                    a: () => void
+
+
+                   c: string
+                  b: string
+
+                      d: string
+                  }
+                `,
+              output: dedent`
+                  interface Interface {
+                    a: () => void
+
+                   b: string
+                  c: string
+                      d: string
+                  }
+                `,
+              options: [
+                {
+                  ...options,
+                  newlinesBetween: 'always',
+                  groups: ['method', 'unknown'],
+                },
+              ],
+              errors: [
+                {
+                  messageId: 'extraSpacingBetweenInterfaceMembers',
+                  data: {
+                    left: 'a',
+                    right: 'c',
+                  },
+                },
+                {
+                  messageId: 'unexpectedInterfacePropertiesOrder',
+                  data: {
+                    left: 'c',
+                    right: 'b',
+                  },
+                },
+                {
+                  messageId: 'extraSpacingBetweenInterfaceMembers',
+                  data: {
+                    left: 'b',
+                    right: 'd',
+                  },
+                },
+              ],
+            },
+          ],
+        },
+      )
     })
   })
 
