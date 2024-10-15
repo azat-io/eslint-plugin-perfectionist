@@ -226,6 +226,18 @@ const user = {
 
 Each group of keys (separated by empty lines) is treated independently, and the order within each group is preserved.
 
+### newlinesBetween
+
+<sub>default: `'ignore'`</sub>
+
+Specifies how new lines should be handled between object groups.
+
+- `ignore` — Do not report errors related to new lines between object groups.
+- `always` — Enforce one new line between each group, and forbid new lines inside a group.
+- `never` — No new lines are allowed in objects.
+
+This options is only applicable when `partitionByNewLine` is `false`.
+
 ### styledComponents
 
 <sub>default: `true`</sub>
@@ -362,6 +374,7 @@ Determines the matcher used for patterns in the `partitionByComment`, `ignorePat
                   specialCharacters: 'keep',
                   partitionByComment: false,
                   partitionByNewLine: false,
+                  newlinesBetween: 'ignore',
                   styledComponents: true,
                   ignorePattern: [],
                   matcher: 'minimatch',
@@ -393,6 +406,7 @@ Determines the matcher used for patterns in the `partitionByComment`, `ignorePat
                 specialCharacters: 'keep',
                 partitionByComment: false,
                 partitionByNewLine: false,
+                newlinesBetween: 'ignore',
                 styledComponents: true,
                 ignorePattern: [],
                 matcher: 'minimatch',
