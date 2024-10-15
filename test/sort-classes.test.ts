@@ -6991,7 +6991,11 @@ describe(ruleName, () => {
 
                 public publicMethod() {}
 
-                static staticMethod() {}
+                private static privateStaticMethod() {}
+
+                protected static protectedStaticMethod() {}
+
+                public static publicStaticMethod() {}
 
                 constructor() {}
 
@@ -7005,15 +7009,19 @@ describe(ruleName, () => {
 
                 public accessor publicAccessorProperty
 
-                set setMethod() {}
+                public set publicSetMethod() {}
 
-                get getMethod() {}
+                public get publicGetMethod() {}
 
                 protected accessor protectedAccessorProperty
 
                 static {}
 
-                static staticProperty
+                private static privateStaticProperty
+
+                protected static protectedStaticProperty
+
+                public static publicStaticProperty
 
                 [key: string]: string
               }
@@ -7022,7 +7030,11 @@ describe(ruleName, () => {
               class Class {
                 [key: string]: string
 
-                static staticProperty
+                public static publicStaticProperty
+
+                protected static protectedStaticProperty
+
+                private static privateStaticProperty
 
                 static {}
 
@@ -7030,9 +7042,9 @@ describe(ruleName, () => {
 
                 public publicProperty
 
-                get getMethod() {}
+                public get publicGetMethod() {}
 
-                set setMethod() {}
+                public set publicSetMethod() {}
 
                 protected accessor protectedAccessorProperty
 
@@ -7044,7 +7056,11 @@ describe(ruleName, () => {
 
                 constructor() {}
 
-                static staticMethod() {}
+                public static publicStaticMethod() {}
+
+                protected static protectedStaticMethod() {}
+
+                private static privateStaticMethod() {}
 
                 public publicMethod() {}
 
@@ -7077,14 +7093,32 @@ describe(ruleName, () => {
               data: {
                 left: 'publicMethod',
                 leftGroup: 'method',
-                right: 'staticMethod',
+                right: 'privateStaticMethod',
+                rightGroup: 'private-static-method',
+              },
+            },
+            {
+              messageId: 'unexpectedClassesGroupOrder',
+              data: {
+                left: 'privateStaticMethod',
+                leftGroup: 'private-static-method',
+                right: 'protectedStaticMethod',
+                rightGroup: 'protected-static-method',
+              },
+            },
+            {
+              messageId: 'unexpectedClassesGroupOrder',
+              data: {
+                left: 'protectedStaticMethod',
+                leftGroup: 'protected-static-method',
+                right: 'publicStaticMethod',
                 rightGroup: 'static-method',
               },
             },
             {
               messageId: 'unexpectedClassesGroupOrder',
               data: {
-                left: 'staticMethod',
+                left: 'publicStaticMethod',
                 leftGroup: 'static-method',
                 right: 'constructor',
                 rightGroup: 'constructor',
@@ -7134,8 +7168,8 @@ describe(ruleName, () => {
             {
               messageId: 'unexpectedClassesOrder',
               data: {
-                left: 'setMethod',
-                right: 'getMethod',
+                left: 'publicSetMethod',
+                right: 'publicGetMethod',
               },
             },
             {
@@ -7152,14 +7186,32 @@ describe(ruleName, () => {
               data: {
                 left: 'static',
                 leftGroup: 'static-block',
-                right: 'staticProperty',
+                right: 'privateStaticProperty',
+                rightGroup: 'private-static-property',
+              },
+            },
+            {
+              messageId: 'unexpectedClassesGroupOrder',
+              data: {
+                left: 'privateStaticProperty',
+                leftGroup: 'private-static-property',
+                right: 'protectedStaticProperty',
+                rightGroup: 'protected-static-property',
+              },
+            },
+            {
+              messageId: 'unexpectedClassesGroupOrder',
+              data: {
+                left: 'protectedStaticProperty',
+                leftGroup: 'protected-static-property',
+                right: 'publicStaticProperty',
                 rightGroup: 'static-property',
               },
             },
             {
               messageId: 'unexpectedClassesGroupOrder',
               data: {
-                left: 'staticProperty',
+                left: 'publicStaticProperty',
                 leftGroup: 'static-property',
                 right: '[key: string]',
                 rightGroup: 'index-signature',

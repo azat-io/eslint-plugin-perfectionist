@@ -45,9 +45,12 @@ type MESSAGE_ID =
 
 const defaultGroups: SortClassesOptions[0]['groups'] = [
   'index-signature',
-  'static-property',
-  'protected-static-property',
-  'private-static-property',
+  ['static-property', 'static-accessor-property'],
+  ['static-get-method', 'static-set-method'],
+  ['protected-static-property', 'protected-static-accessor-property'],
+  ['protected-static-get-method', 'protected-static-set-method'],
+  ['private-static-property', 'private-static-accessor-property'],
+  ['private-static-get-method', 'private-static-set-method'],
   'static-block',
   ['property', 'accessor-property'],
   ['get-method', 'set-method'],
