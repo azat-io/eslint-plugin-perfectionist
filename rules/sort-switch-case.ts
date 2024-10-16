@@ -93,7 +93,8 @@ export default createEslintRule<Options, MESSAGE_ID>({
 
       let sourceCode = getSourceCode(context)
 
-      let isDiscriminantIdentifier = node.discriminant.type === 'Identifier'
+      let isDiscriminantTrue =
+        node.discriminant.type === 'Literal' && node.discriminant.value === true
       let isCasesHasBreak = node.cases
         .filter(caseNode => caseNode.test !== null)
         .every(
@@ -107,7 +108,7 @@ export default createEslintRule<Options, MESSAGE_ID>({
             ),
         )
 
-      if (isDiscriminantIdentifier && isCasesHasBreak) {
+      if (!isDiscriminantTrue && isCasesHasBreak) {
         let nodes = node.cases.map<SortSwitchCaseSortingNode>(
           (caseNode: TSESTree.SwitchCase) => {
             let name: string
