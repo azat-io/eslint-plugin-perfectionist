@@ -11,7 +11,7 @@
 [![Version](https://img.shields.io/npm/v/eslint-plugin-perfectionist.svg?color=4a32c3&labelColor=26272b)](https://npmjs.com/package/eslint-plugin-perfectionist)
 [![Monthly Download](https://img.shields.io/npm/dm/eslint-plugin-perfectionist.svg?color=4a32c3&labelColor=26272b)](https://npmjs.com/package/eslint-plugin-perfectionist)
 [![Code Coverage](https://img.shields.io/codecov/c/github/azat-io/eslint-plugin-perfectionist.svg?color=4a32c3&labelColor=26272b)](https://npmjs.com/package/eslint-plugin-perfectionist)
-[![GitHub License](https://img.shields.io/badge/license-MIT-232428.svg?color=4a32c3&labelColor=26272b)](https://github.com/azat-io/eslint-plugin-perfectionist/blob/main/license)
+[![GitHub License](https://img.shields.io/badge/license-MIT-232428.svg?color=4a32c3&labelColor=26272b)](https://github.com/azat-io/eslint-plugin-perfectionist/blob/main/license.md)
 
 ESLint plugin that sets rules to format your code and make it consistent.
 
