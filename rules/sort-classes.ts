@@ -43,6 +43,31 @@ type MESSAGE_ID =
   | 'unexpectedClassesGroupOrder'
   | 'unexpectedClassesOrder'
 
+const defaultGroups: SortClassesOptions[0]['groups'] = [
+  'index-signature',
+  ['static-property', 'static-accessor-property'],
+  ['static-get-method', 'static-set-method'],
+  ['protected-static-property', 'protected-static-accessor-property'],
+  ['protected-static-get-method', 'protected-static-set-method'],
+  ['private-static-property', 'private-static-accessor-property'],
+  ['private-static-get-method', 'private-static-set-method'],
+  'static-block',
+  ['property', 'accessor-property'],
+  ['get-method', 'set-method'],
+  ['protected-property', 'protected-accessor-property'],
+  ['protected-get-method', 'protected-set-method'],
+  ['private-property', 'private-accessor-property'],
+  ['private-get-method', 'private-set-method'],
+  'constructor',
+  ['static-method', 'static-function-property'],
+  ['protected-static-method', 'protected-static-function-property'],
+  ['private-static-method', 'private-static-function-property'],
+  ['method', 'function-property'],
+  ['protected-method', 'protected-function-property'],
+  ['private-method', 'private-function-property'],
+  'unknown',
+]
+
 export default createEslintRule<SortClassesOptions, MESSAGE_ID>({
   name: 'sort-classes',
   meta: {
@@ -196,21 +221,7 @@ export default createEslintRule<SortClassesOptions, MESSAGE_ID>({
       specialCharacters: 'keep',
       matcher: 'minimatch',
       partitionByComment: false,
-      groups: [
-        'index-signature',
-        'static-property',
-        'static-block',
-        ['protected-property', 'protected-accessor-property'],
-        ['private-property', 'private-accessor-property'],
-        ['property', 'accessor-property'],
-        'constructor',
-        'static-method',
-        'protected-method',
-        'private-method',
-        'method',
-        ['get-method', 'set-method'],
-        'unknown',
-      ],
+      groups: defaultGroups,
       customGroups: [],
     },
   ],
@@ -220,21 +231,7 @@ export default createEslintRule<SortClassesOptions, MESSAGE_ID>({
         let settings = getSettings(context.settings)
 
         let options = complete(context.options.at(0), settings, {
-          groups: [
-            'index-signature',
-            'static-property',
-            'static-block',
-            ['protected-property', 'protected-accessor-property'],
-            ['private-property', 'private-accessor-property'],
-            ['property', 'accessor-property'],
-            'constructor',
-            'static-method',
-            'protected-method',
-            'private-method',
-            'method',
-            ['get-method', 'set-method'],
-            'unknown',
-          ],
+          groups: defaultGroups,
           matcher: 'minimatch',
           partitionByComment: false,
           type: 'alphabetical',
