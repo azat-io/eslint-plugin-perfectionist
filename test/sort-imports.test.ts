@@ -198,33 +198,12 @@ describe(ruleName, () => {
               },
             },
             {
-              messageId: 'missedSpacingBetweenImports',
-              data: {
-                left: '~/i',
-                right: './d',
-              },
-            },
-            {
               messageId: 'unexpectedImportsGroupOrder',
               data: {
                 left: './d',
                 leftGroup: 'sibling-type',
                 right: 'fs',
                 rightGroup: 'builtin',
-              },
-            },
-            {
-              messageId: 'missedSpacingBetweenImports',
-              data: {
-                left: 'fs',
-                right: '~/c',
-              },
-            },
-            {
-              messageId: 'missedSpacingBetweenImports',
-              data: {
-                left: '../f',
-                right: '../../h',
               },
             },
             {
@@ -243,13 +222,6 @@ describe(ruleName, () => {
                 leftGroup: 'index',
                 right: 't',
                 rightGroup: 'type',
-              },
-            },
-            {
-              messageId: 'missedSpacingBetweenImports',
-              data: {
-                left: 't',
-                right: './style.css',
               },
             },
           ],
@@ -1030,20 +1002,6 @@ describe(ruleName, () => {
                 },
               },
               {
-                messageId: 'extraSpacingBetweenImports',
-                data: {
-                  left: 't',
-                  right: '@a/a1',
-                },
-              },
-              {
-                messageId: 'missedSpacingBetweenImports',
-                data: {
-                  left: '@a/a2',
-                  right: '@b/b1',
-                },
-              },
-              {
                 messageId: 'missedSpacingBetweenImports',
                 data: {
                   left: '@b/b3',
@@ -1177,13 +1135,6 @@ describe(ruleName, () => {
               },
             ],
             errors: [
-              {
-                messageId: 'missedSpacingBetweenImports',
-                data: {
-                  left: '#b',
-                  right: '#c',
-                },
-              },
               {
                 messageId: 'unexpectedImportsOrder',
                 data: {
@@ -1392,21 +1343,7 @@ describe(ruleName, () => {
                 },
               },
               {
-                messageId: 'missedSpacingBetweenImports',
-                data: {
-                  left: 'fs',
-                  right: '~/c',
-                },
-              },
-              {
                 messageId: 'unexpectedImportsOrder',
-                data: {
-                  left: '../../h',
-                  right: '.',
-                },
-              },
-              {
-                messageId: 'extraSpacingBetweenImports',
                 data: {
                   left: '../../h',
                   right: '.',
@@ -1499,13 +1436,6 @@ describe(ruleName, () => {
                 data: {
                   left: 'e',
                   right: 'aaaa',
-                },
-              },
-              {
-                messageId: 'missedSpacingBetweenImports',
-                data: {
-                  left: 'aaaa',
-                  right: '../d',
                 },
               },
             ],
@@ -1636,13 +1566,6 @@ describe(ruleName, () => {
               ],
               errors: [
                 {
-                  messageId: 'missedSpacingBetweenImports',
-                  data: {
-                    left: './z-side-effect.scss',
-                    right: './b',
-                  },
-                },
-                {
                   messageId: 'unexpectedImportsGroupOrder',
                   data: {
                     left: './b',
@@ -1697,13 +1620,6 @@ describe(ruleName, () => {
                 },
               ],
               errors: [
-                {
-                  messageId: 'missedSpacingBetweenImports',
-                  data: {
-                    left: './z-side-effect.scss',
-                    right: './b',
-                  },
-                },
                 {
                   messageId: 'unexpectedImportsGroupOrder',
                   data: {
@@ -1760,13 +1676,6 @@ describe(ruleName, () => {
               ],
               errors: [
                 {
-                  messageId: 'missedSpacingBetweenImports',
-                  data: {
-                    left: './z-side-effect.scss',
-                    right: './b',
-                  },
-                },
-                {
                   messageId: 'unexpectedImportsGroupOrder',
                   data: {
                     left: './b',
@@ -1776,26 +1685,12 @@ describe(ruleName, () => {
                   },
                 },
                 {
-                  messageId: 'missedSpacingBetweenImports',
-                  data: {
-                    left: './b-side-effect',
-                    right: './g-side-effect.css',
-                  },
-                },
-                {
                   messageId: 'unexpectedImportsGroupOrder',
                   data: {
                     left: './g-side-effect.css',
                     leftGroup: 'side-effect-style',
                     right: './a-side-effect',
                     rightGroup: 'side-effect',
-                  },
-                },
-                {
-                  messageId: 'missedSpacingBetweenImports',
-                  data: {
-                    left: './a-side-effect',
-                    right: './a',
                   },
                 },
               ],
@@ -1847,26 +1742,12 @@ describe(ruleName, () => {
                   },
                 },
                 {
-                  messageId: 'missedSpacingBetweenImports',
-                  data: {
-                    left: './b-side-effect.scss',
-                    right: './g-side-effect',
-                  },
-                },
-                {
                   messageId: 'unexpectedImportsGroupOrder',
                   data: {
                     left: './g-side-effect',
                     leftGroup: 'unknown',
                     right: './a-side-effect.css',
                     rightGroup: 'side-effect-style',
-                  },
-                },
-                {
-                  messageId: 'missedSpacingBetweenImports',
-                  data: {
-                    left: './a-side-effect.css',
-                    right: './a',
                   },
                 },
               ],
@@ -2100,33 +1981,12 @@ describe(ruleName, () => {
               },
             },
             {
-              messageId: 'missedSpacingBetweenImports',
-              data: {
-                left: '~/i',
-                right: './d',
-              },
-            },
-            {
               messageId: 'unexpectedImportsGroupOrder',
               data: {
                 left: './d',
                 leftGroup: 'sibling-type',
                 right: 'fs',
                 rightGroup: 'builtin',
-              },
-            },
-            {
-              messageId: 'missedSpacingBetweenImports',
-              data: {
-                left: 'fs',
-                right: '~/c',
-              },
-            },
-            {
-              messageId: 'missedSpacingBetweenImports',
-              data: {
-                left: '../f',
-                right: '../../h',
               },
             },
             {
@@ -2145,13 +2005,6 @@ describe(ruleName, () => {
                 leftGroup: 'index',
                 right: 't',
                 rightGroup: 'type',
-              },
-            },
-            {
-              messageId: 'missedSpacingBetweenImports',
-              data: {
-                left: 't',
-                right: './style.css',
               },
             },
           ],
@@ -2932,20 +2785,6 @@ describe(ruleName, () => {
                 },
               },
               {
-                messageId: 'extraSpacingBetweenImports',
-                data: {
-                  left: 't',
-                  right: '@a/a1',
-                },
-              },
-              {
-                messageId: 'missedSpacingBetweenImports',
-                data: {
-                  left: '@a/a2',
-                  right: '@b/b1',
-                },
-              },
-              {
                 messageId: 'missedSpacingBetweenImports',
                 data: {
                   left: '@b/b3',
@@ -3079,13 +2918,6 @@ describe(ruleName, () => {
               },
             ],
             errors: [
-              {
-                messageId: 'missedSpacingBetweenImports',
-                data: {
-                  left: '#b',
-                  right: '#c',
-                },
-              },
               {
                 messageId: 'unexpectedImportsOrder',
                 data: {
@@ -3294,21 +3126,7 @@ describe(ruleName, () => {
                 },
               },
               {
-                messageId: 'missedSpacingBetweenImports',
-                data: {
-                  left: 'fs',
-                  right: '~/c',
-                },
-              },
-              {
                 messageId: 'unexpectedImportsOrder',
-                data: {
-                  left: '../../h',
-                  right: '.',
-                },
-              },
-              {
-                messageId: 'extraSpacingBetweenImports',
                 data: {
                   left: '../../h',
                   right: '.',
@@ -3401,13 +3219,6 @@ describe(ruleName, () => {
                 data: {
                   left: 'e',
                   right: 'aaaa',
-                },
-              },
-              {
-                messageId: 'missedSpacingBetweenImports',
-                data: {
-                  left: 'aaaa',
-                  right: '../d',
                 },
               },
             ],
@@ -3624,26 +3435,12 @@ describe(ruleName, () => {
               },
             },
             {
-              messageId: 'missedSpacingBetweenImports',
-              data: {
-                left: '~/i',
-                right: './d',
-              },
-            },
-            {
               messageId: 'unexpectedImportsGroupOrder',
               data: {
                 left: './d',
                 leftGroup: 'sibling-type',
                 right: 'fs',
                 rightGroup: 'builtin',
-              },
-            },
-            {
-              messageId: 'missedSpacingBetweenImports',
-              data: {
-                left: 'fs',
-                right: '~/c',
               },
             },
             {
@@ -3658,13 +3455,6 @@ describe(ruleName, () => {
               data: {
                 left: '.',
                 right: '../f',
-              },
-            },
-            {
-              messageId: 'missedSpacingBetweenImports',
-              data: {
-                left: '../f',
-                right: '../../h',
               },
             },
             {
@@ -3683,13 +3473,6 @@ describe(ruleName, () => {
                 leftGroup: 'index',
                 right: 't',
                 rightGroup: 'type',
-              },
-            },
-            {
-              messageId: 'missedSpacingBetweenImports',
-              data: {
-                left: 't',
-                right: './style.css',
               },
             },
             {
@@ -4595,13 +4378,6 @@ describe(ruleName, () => {
             ],
             errors: [
               {
-                messageId: 'missedSpacingBetweenImports',
-                data: {
-                  left: '#b',
-                  right: '#c',
-                },
-              },
-              {
                 messageId: 'unexpectedImportsOrder',
                 data: {
                   left: '#c',
@@ -4884,13 +4660,6 @@ describe(ruleName, () => {
                 },
               },
               {
-                messageId: 'missedSpacingBetweenImports',
-                data: {
-                  left: 'fs',
-                  right: '~/c',
-                },
-              },
-              {
                 messageId: 'unexpectedImportsOrder',
                 data: {
                   left: '~/c',
@@ -5005,13 +4774,6 @@ describe(ruleName, () => {
                 data: {
                   left: 'e',
                   right: 'aaaa',
-                },
-              },
-              {
-                messageId: 'missedSpacingBetweenImports',
-                data: {
-                  left: 'aaaa',
-                  right: '../d',
                 },
               },
             ],
@@ -5262,13 +5024,6 @@ describe(ruleName, () => {
             ],
             errors: [
               {
-                messageId: 'missedSpacingBetweenImports',
-                data: {
-                  left: '~/hooks/useClient',
-                  right: '~/data',
-                },
-              },
-              {
                 messageId: 'unexpectedImportsGroupOrder',
                 data: {
                   left: '~/data',
@@ -5469,26 +5224,12 @@ describe(ruleName, () => {
                 },
               },
               {
-                messageId: 'missedSpacingBetweenImports',
-                data: {
-                  left: '~/stores/userStore.ts',
-                  right: '~/utils/dateTime.ts',
-                },
-              },
-              {
                 messageId: 'unexpectedImportsGroupOrder',
                 data: {
                   left: '~/composable/useFetch.ts',
                   leftGroup: 'composable',
                   right: '~/stores/cartStore.ts',
                   rightGroup: 'stores',
-                },
-              },
-              {
-                messageId: 'missedSpacingBetweenImports',
-                data: {
-                  left: '~/stores/cartStore.ts',
-                  right: '~/composable/useDebounce.ts',
                 },
               },
             ],
