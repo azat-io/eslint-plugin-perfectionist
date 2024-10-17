@@ -260,7 +260,7 @@ export default createEslintRule<Options, MESSAGE_ID>({
             (partitionComment &&
               hasPartitionComment(
                 partitionComment,
-                getCommentsBefore(type, sourceCode),
+                getCommentsBefore(type, sourceCode, '|'),
                 options.matcher,
               )) ||
             (options.partitionByNewLine &&
