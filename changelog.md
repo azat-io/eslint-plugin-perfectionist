@@ -1,6 +1,18 @@
 # Changelog
 
 
+## v3.9.1
+
+[compare changes](https://github.com/azat-io/eslint-plugin-perfectionist/compare/v3.9.0...v3.9.1)
+
+### 🐞 Bug Fixes
+
+- **sort-switch-case:** Fixe expressions being ignored ([3fb34fc](https://github.com/azat-io/eslint-plugin-perfectionist/commit/3fb34fc))
+
+### ❤️ Contributors
+
+- Hugo ([@hugop95](http://github.com/hugop95))
+
 ## v3.9.0
 
 [compare changes](https://github.com/azat-io/eslint-plugin-perfectionist/compare/v3.8.0...v3.9.0)
