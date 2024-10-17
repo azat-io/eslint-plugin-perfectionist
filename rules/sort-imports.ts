@@ -1,5 +1,4 @@
 import type { TSESTree } from '@typescript-eslint/types'
-import type { TSESLint } from '@typescript-eslint/utils'
 
 import { builtinModules } from 'node:module'
 
@@ -9,11 +8,11 @@ import { validateGroupsConfiguration } from '../utils/validate-groups-configurat
 import { getOptionsWithCleanGroups } from '../utils/get-options-with-clean-groups'
 import { sortNodesByGroups } from '../utils/sort-nodes-by-groups'
 import { getCommentsBefore } from '../utils/get-comments-before'
+import { makeNewlinesFixes } from '../utils/make-newlines-fixes'
+import { getNewlinesErrors } from '../utils/get-newlines-errors'
 import { createEslintRule } from '../utils/create-eslint-rule'
-import { getLinesBetween } from '../utils/get-lines-between'
 import { getGroupNumber } from '../utils/get-group-number'
 import { getSourceCode } from '../utils/get-source-code'
-import { getNodeRange } from '../utils/get-node-range'
 import { rangeToDiff } from '../utils/range-to-diff'
 import { getSettings } from '../utils/get-settings'
 import { useGroups } from '../utils/use-groups'
@@ -596,28 +595,19 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
               )
             }
 
-            let numberOfEmptyLinesBetween = getLinesBetween(
-              sourceCode,
-              left,
-              right,
-            )
-            if (
-              options.newlinesBetween === 'never' &&
-              numberOfEmptyLinesBetween > 0
-            ) {
-              messageIds.push('extraSpacingBetweenImports')
-            }
-
-            if (options.newlinesBetween === 'always') {
-              if (leftNum < rightNum && numberOfEmptyLinesBetween === 0) {
-                messageIds.push('missedSpacingBetweenImports')
-              } else if (
-                numberOfEmptyLinesBetween > 1 ||
-                (leftNum === rightNum && numberOfEmptyLinesBetween > 0)
-              ) {
-                messageIds.push('extraSpacingBetweenImports')
-              }
-            }
+            messageIds = [
+              ...messageIds,
+              ...getNewlinesErrors({
+                left,
+                leftNum,
+                right,
+                rightNum,
+                sourceCode,
+                missedSpacingError: 'missedSpacingBetweenImports',
+                extraSpacingError: 'extraSpacingBetweenImports',
+                options,
+              }),
+            ]
 
             for (let messageId of messageIds) {
               context.report({
@@ -629,78 +619,16 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
                   rightGroup: right.group,
                 },
                 node: right.node,
-                fix: fixer => {
-                  let newlinesFixes: TSESLint.RuleFix[] = []
-
-                  for (let max = sortedNodes.length, i = 0; i < max; i++) {
-                    let node = sortedNodes.at(i)!
-                    let nextNode = sortedNodes.at(i + 1)
-
-                    if (options.newlinesBetween === 'ignore' || !nextNode) {
-                      continue
-                    }
-
-                    let nodeGroupNumber = getGroupNumber(options.groups, node)
-                    let nextNodeGroupNumber = getGroupNumber(
-                      options.groups,
-                      nextNode,
-                    )
-                    let currentNodeRange = getNodeRange(
-                      nodeList.at(i)!.node,
-                      sourceCode,
-                      options,
-                    )
-                    let nextNodeRange =
-                      getNodeRange(
-                        nodeList.at(i + 1)!.node,
-                        sourceCode,
-                        options,
-                      ).at(0)! - 1
-
-                    let linesBetweenImports = getLinesBetween(
-                      sourceCode,
-                      nodeList.at(i)!,
-                      nodeList.at(i + 1)!,
-                    )
-
-                    if (
-                      (options.newlinesBetween === 'always' &&
-                        nodeGroupNumber === nextNodeGroupNumber &&
-                        linesBetweenImports !== 0) ||
-                      (options.newlinesBetween === 'never' &&
-                        linesBetweenImports > 0)
-                    ) {
-                      newlinesFixes.push(
-                        fixer.removeRange([
-                          currentNodeRange.at(1)!,
-                          nextNodeRange,
-                        ]),
-                      )
-                    }
-                    if (
-                      options.newlinesBetween === 'always' &&
-                      nodeGroupNumber !== nextNodeGroupNumber
-                    ) {
-                      if (linesBetweenImports > 1) {
-                        newlinesFixes.push(
-                          fixer.replaceTextRange(
-                            [currentNodeRange.at(1)!, nextNodeRange],
-                            '\n',
-                          ),
-                        )
-                      } else if (linesBetweenImports === 0) {
-                        newlinesFixes.push(
-                          fixer.insertTextAfterRange(currentNodeRange, '\n'),
-                        )
-                      }
-                    }
-                  }
-
-                  return [
-                    ...makeFixes(fixer, nodeList, sortedNodes, sourceCode),
-                    ...newlinesFixes,
-                  ]
-                },
+                fix: fixer => [
+                  ...makeFixes(fixer, nodeList, sortedNodes, sourceCode),
+                  ...makeNewlinesFixes(
+                    fixer,
+                    nodeList,
+                    sortedNodes,
+                    sourceCode,
+                    options,
+                  ),
+                ],
               })
             }
           })
