@@ -12,6 +12,7 @@ import sortObjectTypes from './rules/sort-object-types'
 import sortSwitchCase from './rules/sort-switch-case'
 import sortUnionTypes from './rules/sort-union-types'
 import sortInterfaces from './rules/sort-interfaces'
+import sortDecorators from './rules/sort-decorators'
 import sortJsxProps from './rules/sort-jsx-props'
 import sortClasses from './rules/sort-classes'
 import sortImports from './rules/sort-imports'
@@ -42,6 +43,7 @@ let plugin = {
     'sort-object-types': sortObjectTypes,
     'sort-union-types': sortUnionTypes,
     'sort-switch-case': sortSwitchCase,
+    'sort-decorators': sortDecorators,
     'sort-interfaces': sortInterfaces,
     'sort-jsx-props': sortJsxProps,
     'sort-classes': sortClasses,
