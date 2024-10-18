@@ -6074,10 +6074,16 @@ describe(ruleName, () => {
           options: [
             {
               ...options,
-              customGroups: {
-                'my-first-group': 'customFirst*',
-                'my-last-group': 'customLast*',
-              },
+              customGroups: [
+                {
+                  groupName: 'my-first-group',
+                  elementNamePattern: 'customFirst*',
+                },
+                {
+                  groupName: 'my-last-group',
+                  elementNamePattern: 'customLast*',
+                },
+              ],
               groups: [
                 'my-first-group',
                 'decorated-accessor-property',
@@ -6765,37 +6771,7 @@ describe(ruleName, () => {
     })
 
     ruleTester.run(
-      `${ruleName}: allows to use regex matcher for element names in custom groups with old API`,
-      rule,
-      {
-        valid: [
-          {
-            code: dedent`
-              class Class {
-                iHaveFooInMyName: string
-                meTooIHaveFoo: string
-                a: string
-                b: string
-              }
-            `,
-            options: [
-              {
-                type: 'alphabetical',
-                matcher: 'regex',
-                groups: ['unknown', 'elementsWithoutFoo'],
-                customGroups: {
-                  elementsWithoutFoo: '^(?!.*Foo).*$',
-                },
-              },
-            ],
-          },
-        ],
-        invalid: [],
-      },
-    )
-
-    ruleTester.run(
-      `${ruleName}: allows to use regex matcher for element names in custom groups with new API`,
+      `${ruleName}: allows to use regex matcher for element names in custom groups`,
       rule,
       {
         valid: [
@@ -6828,7 +6804,7 @@ describe(ruleName, () => {
     )
 
     ruleTester.run(
-      `${ruleName}: allows to use regex matcher for element values in custom groups with new API`,
+      `${ruleName}: allows to use regex matcher for element values in custom groups`,
       rule,
       {
         valid: [
@@ -6861,7 +6837,7 @@ describe(ruleName, () => {
     )
 
     ruleTester.run(
-      `${ruleName}: allows to use regex matcher for decorator names in custom groups with new API`,
+      `${ruleName}: allows to use regex matcher for decorator names in custom groups`,
       rule,
       {
         valid: [
