@@ -268,14 +268,20 @@ describe(ruleName, () => {
           code: dedent`
             type Type =
               & A
+              & intrinsic
               & SomeClass['name']
               & string[]
               & any
               & bigint
               & boolean
+              & number
+              & this
+              & unknown
+              & keyof { a: string; b: number }
               & keyof A
               & typeof B
               & 'aaa'
+              & \`\${A}\`
               & 1
               & (new () => SomeClass)
               & (import('path'))
