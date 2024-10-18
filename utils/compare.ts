@@ -50,6 +50,7 @@ export let compare = (
     sortingFunction = (aNode, bNode) =>
       formatString(nodeValueGetter(aNode)).localeCompare(
         formatString(nodeValueGetter(bNode)),
+        'en-US',
       )
   } else if (options.type === 'natural') {
     let prepareNumeric = (string: string) => {
