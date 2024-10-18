@@ -332,7 +332,7 @@ describe(ruleName, () => {
               iHaveFooInMyName: string,
               meTooIHaveFoo: string,
               a: string,
-              b: string,
+              b: "b",
             }
             `,
             options: [
@@ -1646,6 +1646,135 @@ describe(ruleName, () => {
         invalid: [],
       },
     )
+
+    describe(`${ruleName}: newlinesBetween`, () => {
+      ruleTester.run(
+        `${ruleName}(${type}): removes newlines when never`,
+        rule,
+        {
+          valid: [],
+          invalid: [
+            {
+              code: dedent`
+                let Obj = {
+                  a: () => null,
+
+
+                 y: "y",
+                z: "z",
+
+                    b: "b",
+                }
+              `,
+              output: dedent`
+                let Obj = {
+                  a: () => null,
+                 b: "b",
+                y: "y",
+                    z: "z",
+                }
+              `,
+              options: [
+                {
+                  ...options,
+                  newlinesBetween: 'never',
+                  groups: ['method', 'unknown'],
+                },
+              ],
+              errors: [
+                {
+                  messageId: 'extraSpacingBetweenObjectMembers',
+                  data: {
+                    left: 'a',
+                    right: 'y',
+                  },
+                },
+                {
+                  messageId: 'unexpectedObjectsOrder',
+                  data: {
+                    left: 'z',
+                    right: 'b',
+                  },
+                },
+                {
+                  messageId: 'extraSpacingBetweenObjectMembers',
+                  data: {
+                    left: 'z',
+                    right: 'b',
+                  },
+                },
+              ],
+            },
+          ],
+        },
+      )
+
+      ruleTester.run(
+        `${ruleName}(${type}): keeps one newline when always`,
+        rule,
+        {
+          valid: [],
+          invalid: [
+            {
+              code: dedent`
+                let Obj = {
+                  a: () => null,
+
+
+                 z: "z",
+                y: "y",
+                    b: {
+                      // Newline stuff
+                    },
+                }
+              `,
+              output: dedent`
+                let Obj = {
+                  a: () => null,
+
+                 y: "y",
+                z: "z",
+
+                    b: {
+                      // Newline stuff
+                    },
+                }
+                `,
+              options: [
+                {
+                  ...options,
+                  newlinesBetween: 'always',
+                  groups: ['method', 'unknown', 'multiline'],
+                },
+              ],
+              errors: [
+                {
+                  messageId: 'extraSpacingBetweenObjectMembers',
+                  data: {
+                    left: 'a',
+                    right: 'z',
+                  },
+                },
+                {
+                  messageId: 'unexpectedObjectsOrder',
+                  data: {
+                    left: 'z',
+                    right: 'y',
+                  },
+                },
+                {
+                  messageId: 'missedSpacingBetweenObjectMembers',
+                  data: {
+                    left: 'y',
+                    right: 'b',
+                  },
+                },
+              ],
+            },
+          ],
+        },
+      )
+    })
   })
 
   describe(`${ruleName}: sorting by natural order`, () => {
