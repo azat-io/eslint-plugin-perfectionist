@@ -14,6 +14,7 @@ keywords:
 ---
 
 import CodeExample from '../../components/CodeExample.svelte'
+import Important from '../../components/Important.astro'
 import CodeTabs from '../../components/CodeTabs.svelte'
 import { dedent } from 'ts-dedent'
 
@@ -471,6 +472,34 @@ abstract class Example extends BaseExample {
 ```
 
 ### customGroups
+
+<Important title="ℹ️ Migrating from the old API">
+Support for the object-based `customGroups` option has been removed.
+
+Migrating from the old to the current API is easy:
+
+Old API:
+```ts
+{
+  "key1": "value1",
+  "key2": "value2"
+}
+```
+
+Current API:
+```ts
+[
+  {
+    "groupName": "key1",
+    "elementNamePattern": "value1"
+  },
+  {
+    "groupName": "key2",
+    "elementNamePattern": "value2"
+  }
+]
+```
+</Important>
 
 <sub>
   type: `Array<CustomGroupDefinition | CustomGroupBlockDefinition>`
