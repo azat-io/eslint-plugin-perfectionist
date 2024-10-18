@@ -260,6 +260,8 @@ Allows you to specify a list of object keys groups for sorting. Groups help orga
 
 Predefined groups:
 
+- `'multiline'` — Properties with multiline definitions, such as methods or complex type declarations.
+- `'method'` - Members that are methods.
 - `'unknown'` — Properties that don’t fit into any group specified in the `groups` option.
 
 If the `unknown` group is not specified in the `groups` option, it will automatically be added to the end of the list.
@@ -293,17 +295,18 @@ Custom group matching takes precedence over predefined group matching.
 #### Example
 
 Put all properties starting with `id` and `name` at the top, put metadata at the bottom.
-Anything else is put in the middle.
+Regroup multiline and in the middle, above unknown-matched properties.
 
 ```ts
 const user = {
   id: 'id',                   // top
   name: 'John',               // top
-  age: 40,                    // unknown
-  isAdmin: false,             // unknown
-  localization: {             // unknown
+  getEmail: () => null,       // method
+  localization: {             // multiline
     // Stuff about localization
   },
+  age: 40,                    // unknown
+  isAdmin: false,             // unknown
   lastUpdated_metadata: null, // bottom
   version_metadata: '1'       // bottom
 }
@@ -314,14 +317,15 @@ const user = {
 ```js
  {
    groups: [
-+    'top',                  // [!code ++]
-     'unknown',
-     'bottom'                // [!code ++]
++    'top',                     // [!code ++]
+     ['multiline', 'method'],   // [!code ++]
+     ['unknown'],               // [!code ++]
+     'bottom'                   // [!code ++]
    ],
-+  customGroups: {           // [!code ++]
-+    top: ['id', 'name']     // [!code ++]
-+    bottom: '*_metadata'    // [!code ++]
-+  }                         // [!code ++]
++  customGroups: {              // [!code ++]
++    top: ['id', 'name']        // [!code ++]
++    bottom: '*_metadata'       // [!code ++]
++  }                            // [!code ++]
  }
 ```
 

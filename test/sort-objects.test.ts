@@ -1617,6 +1617,35 @@ describe(ruleName, () => {
         invalid: [],
       },
     )
+
+    ruleTester.run(
+      `${ruleName}(${type}): allows to set groups for sorting`,
+      rule,
+      {
+        valid: [
+          {
+            code: dedent`
+              let obj = {
+                z: {
+                  // Some multiline stuff
+                },
+                f: 'a',
+                a1: () => {},
+                a2: function() {},
+                a3() {},
+              }
+            `,
+            options: [
+              {
+                ...options,
+                groups: ['multiline', 'unknown', 'method'],
+              },
+            ],
+          },
+        ],
+        invalid: [],
+      },
+    )
   })
 
   describe(`${ruleName}: sorting by natural order`, () => {

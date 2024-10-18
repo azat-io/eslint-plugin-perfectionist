@@ -646,6 +646,47 @@ describe(ruleName, () => {
         invalid: [],
       },
     )
+
+    ruleTester.run(`${ruleName}(${type}): works with arbitrary names`, rule, {
+      valid: [
+        {
+          code: dedent`
+            import { "A" as a, "B" as b } from 'module';
+          `,
+          options: [
+            {
+              ...options,
+              ignoreAlias: true,
+            },
+          ],
+        },
+      ],
+      invalid: [
+        {
+          code: dedent`
+            import { "B" as b, "A" as a } from 'module';
+          `,
+          output: dedent`
+            import { "A" as a, "B" as b } from 'module';
+          `,
+          options: [
+            {
+              ...options,
+              ignoreAlias: true,
+            },
+          ],
+          errors: [
+            {
+              messageId: 'unexpectedNamedImportsOrder',
+              data: {
+                left: 'B',
+                right: 'A',
+              },
+            },
+          ],
+        },
+      ],
+    })
   })
 
   describe(`${ruleName}: sorting by natural order`, () => {

@@ -30,15 +30,7 @@ type MESSAGE_ID =
   | 'unexpectedObjectsGroupOrder'
   | 'unexpectedObjectsOrder'
 
-export enum Position {
-  'exception' = 'exception',
-  'ignore' = 'ignore',
-}
-
-type Group = 'unknown' | string
-type SortingNodeWithPosition = SortingNodeWithDependencies & {
-  position: Position
-}
+type Group = 'multiline' | 'unknown' | 'method' | string
 
 type Options = [
   Partial<{
@@ -220,7 +212,7 @@ export default createEslintRule<Options, MESSAGE_ID>({
 
       validateGroupsConfiguration(
         options.groups,
-        ['unknown'],
+        ['multiline', 'method', 'unknown'],
         Object.keys(options.customGroups),
       )
 
@@ -383,9 +375,9 @@ export default createEslintRule<Options, MESSAGE_ID>({
             | TSESTree.RestElement
             | TSESTree.Property
           )[],
-        ): SortingNodeWithPosition[][] =>
+        ): SortingNodeWithDependencies[][] =>
           props.reduce(
-            (accumulator: SortingNodeWithPosition[][], prop) => {
+            (accumulator: SortingNodeWithDependencies[][], prop) => {
               if (
                 prop.type === 'SpreadElement' ||
                 prop.type === 'RestElement'
@@ -409,10 +401,10 @@ export default createEslintRule<Options, MESSAGE_ID>({
               }
 
               let name: string
-              let position: Position = Position.ignore
               let dependencies: string[] = []
 
-              let { getGroup, setCustomGroups } = useGroups(options)
+              let { getGroup, defineGroup, setCustomGroups } =
+                useGroups(options)
 
               if (prop.key.type === 'Identifier') {
                 ;({ name } = prop.key)
@@ -422,9 +414,28 @@ export default createEslintRule<Options, MESSAGE_ID>({
                 name = sourceCode.text.slice(...prop.key.range)
               }
 
-              let propSortingNode = {
+              if (prop.value.type === 'AssignmentPattern') {
+                dependencies = extractDependencies(prop.value)
+              }
+
+              setCustomGroups(options.customGroups, name)
+
+              if (
+                prop.value.type === 'ArrowFunctionExpression' ||
+                prop.value.type === 'FunctionExpression'
+              ) {
+                defineGroup('method')
+              }
+
+              if (prop.loc.start.line !== prop.loc.end.line) {
+                defineGroup('multiline')
+              }
+
+              let propSortingNode: SortingNodeWithDependencies = {
                 size: rangeToDiff(prop.range),
                 node: prop,
+                group: getGroup(),
+                dependencies,
                 name,
               }
 
@@ -436,20 +447,7 @@ export default createEslintRule<Options, MESSAGE_ID>({
                 accumulator.push([])
               }
 
-              if (prop.value.type === 'AssignmentPattern') {
-                dependencies = extractDependencies(prop.value)
-              }
-
-              setCustomGroups(options.customGroups, name)
-
-              let value = {
-                ...propSortingNode,
-                group: getGroup(),
-                dependencies,
-                position,
-              }
-
-              accumulator.at(-1)!.push(value)
+              accumulator.at(-1)!.push(propSortingNode)
 
               return accumulator
             },
