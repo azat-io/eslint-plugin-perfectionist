@@ -35,6 +35,17 @@ export type Options = [
   }>,
 ]
 
+export const defaultOptions: Required<Options[0]> = {
+  groupKind: 'literals-first',
+  type: 'alphabetical',
+  ignoreCase: true,
+  specialCharacters: 'keep',
+  matcher: 'minimatch',
+  order: 'asc',
+  partitionByComment: false,
+  partitionByNewLine: false,
+}
+
 export let jsonSchema: JSONSchema4 = {
   type: 'object',
   properties: {
@@ -110,18 +121,7 @@ export default createEslintRule<Options, MESSAGE_ID>({
         'Expected "{{right}}" to come before "{{left}}".',
     },
   },
-  defaultOptions: [
-    {
-      type: 'alphabetical',
-      order: 'asc',
-      ignoreCase: true,
-      specialCharacters: 'keep',
-      matcher: 'minimatch',
-      groupKind: 'literals-first',
-      partitionByComment: false,
-      partitionByNewLine: false,
-    },
-  ],
+  defaultOptions: [defaultOptions],
   create: context => ({
     MemberExpression: node => {
       if (
@@ -149,15 +149,8 @@ export let sortArray = <MessageIds extends string>(
 
   if (elements.length > 1) {
     let options = complete(context.options.at(0), settings, {
-      groupKind: 'literals-first',
-      type: 'alphabetical',
-      ignoreCase: true,
-      specialCharacters: 'keep',
-      matcher: 'minimatch',
-      order: 'asc',
-      partitionByComment: false,
-      partitionByNewLine: false,
-    } as const)
+      ...defaultOptions,
+    })
 
     let sourceCode = getSourceCode(context)
     let partitionComment = options.partitionByComment

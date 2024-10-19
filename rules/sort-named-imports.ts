@@ -31,6 +31,18 @@ type Options = [
   }>,
 ]
 
+const defaultOptions: Required<Options[0]> = {
+  type: 'alphabetical',
+  ignoreAlias: false,
+  groupKind: 'mixed',
+  ignoreCase: true,
+  specialCharacters: 'keep',
+  matcher: 'minimatch',
+  partitionByNewLine: false,
+  partitionByComment: false,
+  order: 'asc',
+}
+
 export default createEslintRule<Options, MESSAGE_ID>({
   name: 'sort-named-imports',
   meta: {
@@ -111,18 +123,7 @@ export default createEslintRule<Options, MESSAGE_ID>({
         'Expected "{{right}}" to come before "{{left}}".',
     },
   },
-  defaultOptions: [
-    {
-      type: 'alphabetical',
-      order: 'asc',
-      ignoreAlias: false,
-      ignoreCase: true,
-      specialCharacters: 'keep',
-      partitionByNewLine: false,
-      partitionByComment: false,
-      groupKind: 'mixed',
-    },
-  ],
+  defaultOptions: [defaultOptions],
   create: context => ({
     ImportDeclaration: node => {
       let specifiers = node.specifiers.filter(
@@ -133,16 +134,8 @@ export default createEslintRule<Options, MESSAGE_ID>({
         let settings = getSettings(context.settings)
 
         let options = complete(context.options.at(0), settings, {
-          type: 'alphabetical',
-          ignoreAlias: false,
-          groupKind: 'mixed',
-          ignoreCase: true,
-          specialCharacters: 'keep',
-          matcher: 'minimatch',
-          partitionByNewLine: false,
-          partitionByComment: false,
-          order: 'asc',
-        } as const)
+          ...defaultOptions,
+        })
 
         let sourceCode = getSourceCode(context)
         let partitionComment = options.partitionByComment

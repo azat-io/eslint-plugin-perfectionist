@@ -45,6 +45,21 @@ export type Options<T extends string[]> = [
   }>,
 ]
 
+const defaultOptions: Required<Options<string[]>[0]> = {
+  partitionByComment: false,
+  partitionByNewLine: false,
+  type: 'alphabetical',
+  groupKind: 'mixed',
+  matcher: 'minimatch',
+  newlinesBetween: 'ignore',
+  ignorePattern: [],
+  ignoreCase: true,
+  specialCharacters: 'keep',
+  customGroups: {},
+  order: 'asc',
+  groups: [],
+}
+
 export default createEslintRule<Options<string[]>, MESSAGE_ID>({
   name: 'sort-interfaces',
   meta: {
@@ -175,39 +190,14 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
         'Extra spacing between "{{left}}" and "{{right}}" interfaces.',
     },
   },
-  defaultOptions: [
-    {
-      type: 'alphabetical',
-      order: 'asc',
-      ignoreCase: true,
-      specialCharacters: 'keep',
-      matcher: 'minimatch',
-      ignorePattern: [],
-      partitionByComment: false,
-      partitionByNewLine: false,
-      groupKind: 'mixed',
-      groups: [],
-      customGroups: {},
-    },
-  ],
+  defaultOptions: [defaultOptions],
   create: context => ({
     TSInterfaceDeclaration: node => {
       if (node.body.body.length > 1) {
         let settings = getSettings(context.settings)
         let options = complete(context.options.at(0), settings, {
-          partitionByComment: false,
-          partitionByNewLine: false,
-          type: 'alphabetical',
-          groupKind: 'mixed',
-          matcher: 'minimatch',
-          ignorePattern: [],
-          ignoreCase: true,
-          newlinesBetween: 'ignore',
-          specialCharacters: 'keep',
-          customGroups: {},
-          order: 'asc',
-          groups: [],
-        } as const)
+          ...defaultOptions,
+        })
 
         validateGroupsConfiguration(
           options.groups,

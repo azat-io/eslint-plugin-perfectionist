@@ -54,6 +54,18 @@ type Options = [
   }>,
 ]
 
+const defaultOptions: Required<Options[0]> = {
+  type: 'alphabetical',
+  ignoreCase: true,
+  specialCharacters: 'keep',
+  order: 'asc',
+  matcher: 'minimatch',
+  newlinesBetween: 'ignore',
+  partitionByComment: false,
+  partitionByNewLine: false,
+  groups: [],
+}
+
 export default createEslintRule<Options, MESSAGE_ID>({
   name: 'sort-intersection-types',
   meta: {
@@ -154,33 +166,14 @@ export default createEslintRule<Options, MESSAGE_ID>({
         'Extra spacing between "{{left}}" and "{{right}}" types.',
     },
   },
-  defaultOptions: [
-    {
-      type: 'alphabetical',
-      order: 'asc',
-      ignoreCase: true,
-      specialCharacters: 'keep',
-      matcher: 'minimatch',
-      partitionByNewLine: false,
-      partitionByComment: false,
-      groups: [],
-    },
-  ],
+  defaultOptions: [defaultOptions],
   create: context => ({
     TSIntersectionType: node => {
       let settings = getSettings(context.settings)
 
       let options = complete(context.options.at(0), settings, {
-        type: 'alphabetical',
-        ignoreCase: true,
-        specialCharacters: 'keep',
-        order: 'asc',
-        matcher: 'minimatch',
-        newlinesBetween: 'ignore',
-        partitionByComment: false,
-        partitionByNewLine: false,
-        groups: [],
-      } as const)
+        ...defaultOptions,
+      })
 
       validateGroupsConfiguration(
         options.groups,

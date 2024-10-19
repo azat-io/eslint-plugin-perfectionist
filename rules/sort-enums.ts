@@ -36,6 +36,18 @@ export type Options = [
   }>,
 ]
 
+const defaultOptions: Required<Options[0]> = {
+  partitionByComment: false,
+  partitionByNewLine: false,
+  type: 'alphabetical',
+  matcher: 'minimatch',
+  ignoreCase: true,
+  specialCharacters: 'keep',
+  order: 'asc',
+  sortByValue: false,
+  forceNumericSort: false,
+}
+
 export default createEslintRule<Options, MESSAGE_ID>({
   name: 'sort-enums',
   meta: {
@@ -117,19 +129,7 @@ export default createEslintRule<Options, MESSAGE_ID>({
         'Expected dependency "{{right}}" to come before "{{nodeDependentOnRight}}".',
     },
   },
-  defaultOptions: [
-    {
-      type: 'alphabetical',
-      order: 'asc',
-      ignoreCase: true,
-      specialCharacters: 'keep',
-      matcher: 'minimatch',
-      sortByValue: false,
-      partitionByComment: false,
-      partitionByNewLine: false,
-      forceNumericSort: false,
-    },
-  ],
+  defaultOptions: [defaultOptions],
   create: context => ({
     TSEnumDeclaration: node => {
       let getMembers = (nodeValue: TSESTree.TSEnumDeclaration) =>
@@ -144,16 +144,8 @@ export default createEslintRule<Options, MESSAGE_ID>({
         let settings = getSettings(context.settings)
 
         let options = complete(context.options.at(0), settings, {
-          partitionByComment: false,
-          partitionByNewLine: false,
-          type: 'alphabetical',
-          matcher: 'minimatch',
-          ignoreCase: true,
-          specialCharacters: 'keep',
-          order: 'asc',
-          sortByValue: false,
-          forceNumericSort: false,
-        } as const)
+          ...defaultOptions,
+        })
 
         let sourceCode = getSourceCode(context)
         let partitionComment = options.partitionByComment

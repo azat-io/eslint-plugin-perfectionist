@@ -31,6 +31,16 @@ type Options = [
   }>,
 ]
 
+const defaultOptions: Required<Options[0]> = {
+  type: 'alphabetical',
+  order: 'asc',
+  ignoreCase: true,
+  specialCharacters: 'keep',
+  matcher: 'minimatch',
+  partitionByComment: false,
+  partitionByNewLine: false,
+}
+
 export default createEslintRule<Options, MESSAGE_ID>({
   name: 'sort-maps',
   meta: {
@@ -102,17 +112,7 @@ export default createEslintRule<Options, MESSAGE_ID>({
         'Expected "{{right}}" to come before "{{left}}".',
     },
   },
-  defaultOptions: [
-    {
-      type: 'alphabetical',
-      order: 'asc',
-      ignoreCase: true,
-      specialCharacters: 'keep',
-      matcher: 'minimatch',
-      partitionByComment: false,
-      partitionByNewLine: false,
-    },
-  ],
+  defaultOptions: [defaultOptions],
   create: context => ({
     NewExpression: node => {
       if (
@@ -127,14 +127,8 @@ export default createEslintRule<Options, MESSAGE_ID>({
           let settings = getSettings(context.settings)
 
           let options = complete(context.options.at(0), settings, {
-            type: 'alphabetical',
-            ignoreCase: true,
-            specialCharacters: 'keep',
-            order: 'asc',
-            matcher: 'minimatch',
-            partitionByComment: false,
-            partitionByNewLine: false,
-          } as const)
+            ...defaultOptions,
+          })
 
           let sourceCode = getSourceCode(context)
           let partitionComment = options.partitionByComment

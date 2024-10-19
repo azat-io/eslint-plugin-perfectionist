@@ -34,6 +34,16 @@ export type Options<T extends string[]> = [
   }>,
 ]
 
+const defaultOptions: Required<Options<string[]>[0]> = {
+  type: 'alphabetical',
+  matcher: 'minimatch',
+  ignoreCase: true,
+  specialCharacters: 'keep',
+  customGroups: {},
+  order: 'asc',
+  groups: [],
+}
+
 export default createEslintRule<Options<string[]>, MESSAGE_ID>({
   name: 'sort-heritage-clauses',
   meta: {
@@ -118,29 +128,13 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
         'Expected "{{right}}" to come before "{{left}}".',
     },
   },
-  defaultOptions: [
-    {
-      type: 'alphabetical',
-      order: 'asc',
-      ignoreCase: true,
-      specialCharacters: 'keep',
-      matcher: 'minimatch',
-      groups: [],
-      customGroups: {},
-    },
-  ],
+  defaultOptions: [defaultOptions],
   create: context => {
     let settings = getSettings(context.settings)
 
     let options = complete(context.options.at(0), settings, {
-      type: 'alphabetical',
-      matcher: 'minimatch',
-      ignoreCase: true,
-      specialCharacters: 'keep',
-      customGroups: {},
-      order: 'asc',
-      groups: [],
-    } as const)
+      ...defaultOptions,
+    })
 
     validateGroupsConfiguration(
       options.groups,

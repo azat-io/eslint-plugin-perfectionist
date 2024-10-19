@@ -43,6 +43,22 @@ export type Options<T extends string[]> = [
 
 type SortDecoratorsSortingNode = SortingNode<TSESTree.Decorator>
 
+const defaultOptions: Required<Options<string[]>[0]> = {
+  type: 'alphabetical',
+  matcher: 'minimatch',
+  ignoreCase: true,
+  specialCharacters: 'keep',
+  partitionByComment: false,
+  customGroups: {},
+  order: 'asc',
+  groups: [],
+  sortOnClasses: true,
+  sortOnMethods: true,
+  sortOnAccessors: true,
+  sortOnProperties: true,
+  sortOnParameters: true,
+}
+
 export default createEslintRule<Options<string[]>, MESSAGE_ID>({
   name: 'sort-decorators',
   meta: {
@@ -170,41 +186,13 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
         'Expected "{{right}}" to come before "{{left}}".',
     },
   },
-  defaultOptions: [
-    {
-      type: 'alphabetical',
-      order: 'asc',
-      ignoreCase: true,
-      specialCharacters: 'keep',
-      partitionByComment: false,
-      matcher: 'minimatch',
-      groups: [],
-      customGroups: {},
-      sortOnClasses: true,
-      sortOnMethods: true,
-      sortOnAccessors: true,
-      sortOnProperties: true,
-      sortOnParameters: true,
-    },
-  ],
+  defaultOptions: [defaultOptions],
   create: context => {
     let settings = getSettings(context.settings)
 
     let options = complete(context.options.at(0), settings, {
-      type: 'alphabetical',
-      matcher: 'minimatch',
-      ignoreCase: true,
-      specialCharacters: 'keep',
-      partitionByComment: false,
-      customGroups: {},
-      order: 'asc',
-      groups: [],
-      sortOnClasses: true,
-      sortOnMethods: true,
-      sortOnAccessors: true,
-      sortOnProperties: true,
-      sortOnParameters: true,
-    } as const)
+      ...defaultOptions,
+    })
 
     validateGroupsConfiguration(
       options.groups,

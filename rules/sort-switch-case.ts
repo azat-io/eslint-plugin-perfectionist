@@ -29,6 +29,13 @@ interface SortSwitchCaseSortingNode extends SortingNode<TSESTree.SwitchCase> {
   isDefaultClause: boolean
 }
 
+const defaultOptions: Required<Options[0]> = {
+  type: 'alphabetical',
+  ignoreCase: true,
+  specialCharacters: 'keep',
+  order: 'asc',
+}
+
 export default createEslintRule<Options, MESSAGE_ID>({
   name: 'sort-switch-case',
   meta: {
@@ -72,24 +79,14 @@ export default createEslintRule<Options, MESSAGE_ID>({
         'Expected "{{right}}" to come before "{{left}}".',
     },
   },
-  defaultOptions: [
-    {
-      type: 'alphabetical',
-      order: 'asc',
-      ignoreCase: true,
-      specialCharacters: 'keep',
-    },
-  ],
+  defaultOptions: [defaultOptions],
   create: context => ({
     SwitchStatement: node => {
       let settings = getSettings(context.settings)
 
       let options = complete(context.options.at(0), settings, {
-        type: 'alphabetical',
-        ignoreCase: true,
-        specialCharacters: 'keep',
-        order: 'asc',
-      } as const)
+        ...defaultOptions,
+      })
 
       let sourceCode = getSourceCode(context)
 

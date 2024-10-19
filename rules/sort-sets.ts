@@ -1,7 +1,7 @@
 import type { Options } from './sort-array-includes'
 
+import { defaultOptions, jsonSchema, sortArray } from './sort-array-includes'
 import { createEslintRule } from '../utils/create-eslint-rule'
-import { jsonSchema, sortArray } from './sort-array-includes'
 
 type MESSAGE_ID = 'unexpectedSetsOrder'
 
@@ -18,16 +18,7 @@ export default createEslintRule<Options, MESSAGE_ID>({
       unexpectedSetsOrder: 'Expected "{{right}}" to come before "{{left}}".',
     },
   },
-  defaultOptions: [
-    {
-      type: 'alphabetical',
-      order: 'asc',
-      ignoreCase: true,
-      specialCharacters: 'keep',
-      matcher: 'minimatch',
-      groupKind: 'literals-first',
-    },
-  ],
+  defaultOptions: [defaultOptions],
   create: context => ({
     NewExpression: node => {
       if (

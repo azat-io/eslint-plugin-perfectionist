@@ -35,6 +35,16 @@ type Options = [
   }>,
 ]
 
+const defaultOptions: Required<Options[0]> = {
+  type: 'alphabetical',
+  ignoreCase: true,
+  specialCharacters: 'keep',
+  partitionByNewLine: false,
+  matcher: 'minimatch',
+  partitionByComment: false,
+  order: 'asc',
+}
+
 export default createEslintRule<Options, MESSAGE_ID>({
   name: 'sort-variable-declarations',
   meta: {
@@ -108,31 +118,15 @@ export default createEslintRule<Options, MESSAGE_ID>({
         'Expected dependency "{{right}}" to come before "{{nodeDependentOnRight}}".',
     },
   },
-  defaultOptions: [
-    {
-      type: 'alphabetical',
-      order: 'asc',
-      ignoreCase: true,
-      specialCharacters: 'keep',
-      matcher: 'minimatch',
-      partitionByComment: false,
-      partitionByNewLine: false,
-    },
-  ],
+  defaultOptions: [defaultOptions],
   create: context => ({
     VariableDeclaration: node => {
       if (node.declarations.length > 1) {
         let settings = getSettings(context.settings)
 
         let options = complete(context.options.at(0), settings, {
-          type: 'alphabetical',
-          ignoreCase: true,
-          specialCharacters: 'keep',
-          partitionByNewLine: false,
-          matcher: 'minimatch',
-          partitionByComment: false,
-          order: 'asc',
-        } as const)
+          ...defaultOptions,
+        })
 
         let sourceCode = getSourceCode(context)
         let partitionComment = options.partitionByComment

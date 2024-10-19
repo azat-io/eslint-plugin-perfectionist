@@ -43,30 +43,39 @@ type MESSAGE_ID =
   | 'unexpectedClassesGroupOrder'
   | 'unexpectedClassesOrder'
 
-const defaultGroups: SortClassesOptions[0]['groups'] = [
-  'index-signature',
-  ['static-property', 'static-accessor-property'],
-  ['static-get-method', 'static-set-method'],
-  ['protected-static-property', 'protected-static-accessor-property'],
-  ['protected-static-get-method', 'protected-static-set-method'],
-  ['private-static-property', 'private-static-accessor-property'],
-  ['private-static-get-method', 'private-static-set-method'],
-  'static-block',
-  ['property', 'accessor-property'],
-  ['get-method', 'set-method'],
-  ['protected-property', 'protected-accessor-property'],
-  ['protected-get-method', 'protected-set-method'],
-  ['private-property', 'private-accessor-property'],
-  ['private-get-method', 'private-set-method'],
-  'constructor',
-  ['static-method', 'static-function-property'],
-  ['protected-static-method', 'protected-static-function-property'],
-  ['private-static-method', 'private-static-function-property'],
-  ['method', 'function-property'],
-  ['protected-method', 'protected-function-property'],
-  ['private-method', 'private-function-property'],
-  'unknown',
-]
+const defaultOptions: Required<SortClassesOptions[0]> = {
+  groups: [
+    'index-signature',
+    ['static-property', 'static-accessor-property'],
+    ['static-get-method', 'static-set-method'],
+    ['protected-static-property', 'protected-static-accessor-property'],
+    ['protected-static-get-method', 'protected-static-set-method'],
+    ['private-static-property', 'private-static-accessor-property'],
+    ['private-static-get-method', 'private-static-set-method'],
+    'static-block',
+    ['property', 'accessor-property'],
+    ['get-method', 'set-method'],
+    ['protected-property', 'protected-accessor-property'],
+    ['protected-get-method', 'protected-set-method'],
+    ['private-property', 'private-accessor-property'],
+    ['private-get-method', 'private-set-method'],
+    'constructor',
+    ['static-method', 'static-function-property'],
+    ['protected-static-method', 'protected-static-function-property'],
+    ['private-static-method', 'private-static-function-property'],
+    ['method', 'function-property'],
+    ['protected-method', 'protected-function-property'],
+    ['private-method', 'private-function-property'],
+    'unknown',
+  ],
+  matcher: 'minimatch',
+  partitionByComment: false,
+  type: 'alphabetical',
+  ignoreCase: true,
+  specialCharacters: 'keep',
+  customGroups: [],
+  order: 'asc',
+}
 
 export default createEslintRule<SortClassesOptions, MESSAGE_ID>({
   name: 'sort-classes',
@@ -192,33 +201,15 @@ export default createEslintRule<SortClassesOptions, MESSAGE_ID>({
         'Expected dependency "{{right}}" to come before "{{nodeDependentOnRight}}".',
     },
   },
-  defaultOptions: [
-    {
-      type: 'alphabetical',
-      order: 'asc',
-      ignoreCase: true,
-      specialCharacters: 'keep',
-      matcher: 'minimatch',
-      partitionByComment: false,
-      groups: defaultGroups,
-      customGroups: [],
-    },
-  ],
+  defaultOptions: [defaultOptions],
   create: context => ({
     ClassBody: node => {
       if (node.body.length > 1) {
         let settings = getSettings(context.settings)
 
         let options = complete(context.options.at(0), settings, {
-          groups: defaultGroups,
-          matcher: 'minimatch',
-          partitionByComment: false,
-          type: 'alphabetical',
-          ignoreCase: true,
-          specialCharacters: 'keep',
-          customGroups: [],
-          order: 'asc',
-        } as const)
+          ...defaultOptions,
+        })
 
         validateGroupsConfiguration(options.groups, options.customGroups)
 

@@ -36,6 +36,17 @@ type Options<T extends string[]> = [
   }>,
 ]
 
+const defaultOptions: Required<Options<string[]>[0]> = {
+  type: 'alphabetical',
+  ignorePattern: [],
+  ignoreCase: true,
+  specialCharacters: 'keep',
+  matcher: 'minimatch',
+  customGroups: {},
+  order: 'asc',
+  groups: [],
+}
+
 export default createEslintRule<Options<string[]>, MESSAGE_ID>({
   name: 'sort-jsx-props',
   meta: {
@@ -128,33 +139,15 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
         'Expected "{{right}}" to come before "{{left}}".',
     },
   },
-  defaultOptions: [
-    {
-      type: 'alphabetical',
-      order: 'asc',
-      ignoreCase: true,
-      specialCharacters: 'keep',
-      matcher: 'minimatch',
-      ignorePattern: [],
-      groups: [],
-      customGroups: {},
-    },
-  ],
+  defaultOptions: [defaultOptions],
   create: context => ({
     JSXElement: node => {
       if (node.openingElement.attributes.length > 1) {
         let settings = getSettings(context.settings)
 
         let options = complete(context.options.at(0), settings, {
-          type: 'alphabetical',
-          ignorePattern: [],
-          ignoreCase: true,
-          specialCharacters: 'keep',
-          matcher: 'minimatch',
-          customGroups: {},
-          order: 'asc',
-          groups: [],
-        } as const)
+          ...defaultOptions,
+        })
 
         validateGroupsConfiguration(
           options.groups,
