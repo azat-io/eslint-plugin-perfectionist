@@ -5,16 +5,14 @@ import type {
 
 import sortVariableDeclarations from './rules/sort-variable-declarations'
 import sortIntersectionTypes from './rules/sort-intersection-types'
-import sortSvelteAttributes from './rules/sort-svelte-attributes'
-import sortAstroAttributes from './rules/sort-astro-attributes'
 import sortArrayIncludes from './rules/sort-array-includes'
-import sortVueAttributes from './rules/sort-vue-attributes'
 import sortNamedImports from './rules/sort-named-imports'
 import sortNamedExports from './rules/sort-named-exports'
 import sortObjectTypes from './rules/sort-object-types'
 import sortSwitchCase from './rules/sort-switch-case'
 import sortUnionTypes from './rules/sort-union-types'
 import sortInterfaces from './rules/sort-interfaces'
+import sortDecorators from './rules/sort-decorators'
 import sortJsxProps from './rules/sort-jsx-props'
 import sortClasses from './rules/sort-classes'
 import sortImports from './rules/sort-imports'
@@ -39,15 +37,13 @@ let plugin = {
   rules: {
     'sort-variable-declarations': sortVariableDeclarations,
     'sort-intersection-types': sortIntersectionTypes,
-    'sort-svelte-attributes': sortSvelteAttributes,
-    'sort-astro-attributes': sortAstroAttributes,
-    'sort-vue-attributes': sortVueAttributes,
     'sort-array-includes': sortArrayIncludes,
     'sort-named-imports': sortNamedImports,
     'sort-named-exports': sortNamedExports,
     'sort-object-types': sortObjectTypes,
     'sort-union-types': sortUnionTypes,
     'sort-switch-case': sortSwitchCase,
+    'sort-decorators': sortDecorators,
     'sort-interfaces': sortInterfaces,
     'sort-jsx-props': sortJsxProps,
     'sort-classes': sortClasses,
@@ -63,13 +59,10 @@ let plugin = {
 
 let getRules = (options: BaseOptions): Record<string, RuleDeclaration> =>
   Object.fromEntries(
-    Object.entries(plugin.rules).reduce(
-      (accumulator: [string, RuleDeclaration][], [ruleName, ruleValue]) =>
-        ruleValue.meta.deprecated
-          ? accumulator
-          : [...accumulator, [`${name}/${ruleName}`, ['error', options]]],
-      [],
-    ),
+    Object.keys(plugin.rules).map(ruleName => [
+      `${name}/${ruleName}`,
+      ['error', options],
+    ]),
   )
 
 let createConfig = (options: BaseOptions): FlatConfig.Config => ({

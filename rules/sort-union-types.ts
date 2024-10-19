@@ -191,6 +191,25 @@ export default createEslintRule<Options, MESSAGE_ID>({
           let { getGroup, defineGroup } = useGroups(options)
 
           switch (type.type) {
+            case 'TSTemplateLiteralType':
+            case 'TSLiteralType':
+              defineGroup('literal')
+              break
+            case 'TSIndexedAccessType':
+            case 'TSTypeReference':
+            case 'TSQualifiedName':
+            case 'TSArrayType':
+            case 'TSInferType':
+              defineGroup('named')
+              break
+            case 'TSIntersectionType':
+              defineGroup('intersection')
+              break
+            case 'TSUndefinedKeyword':
+            case 'TSNullKeyword':
+            case 'TSVoidKeyword':
+              defineGroup('nullish')
+              break
             case 'TSConditionalType':
               defineGroup('conditional')
               break
@@ -198,54 +217,34 @@ export default createEslintRule<Options, MESSAGE_ID>({
             case 'TSFunctionType':
               defineGroup('function')
               break
-            case 'TSImportType':
-              defineGroup('import')
-              break
-            case 'TSIntersectionType':
-              defineGroup('intersection')
-              break
-            case 'TSAnyKeyword':
-            case 'TSBigIntKeyword':
             case 'TSBooleanKeyword':
-            case 'TSNeverKeyword':
+            case 'TSUnknownKeyword':
+            case 'TSBigIntKeyword':
             case 'TSNumberKeyword':
             case 'TSObjectKeyword':
             case 'TSStringKeyword':
             case 'TSSymbolKeyword':
+            case 'TSNeverKeyword':
+            case 'TSAnyKeyword':
             case 'TSThisType':
-            case 'TSUnknownKeyword':
-            case 'TSIntrinsicKeyword':
               defineGroup('keyword')
               break
-            case 'TSLiteralType':
-            case 'TSTemplateLiteralType':
-              defineGroup('literal')
+            case 'TSTypeOperator':
+            case 'TSTypeQuery':
+              defineGroup('operator')
               break
-            case 'TSArrayType':
-            case 'TSIndexedAccessType':
-            case 'TSInferType':
-            case 'TSTypeReference':
-            case 'TSQualifiedName':
-              defineGroup('named')
-              break
-            case 'TSMappedType':
             case 'TSTypeLiteral':
+            case 'TSMappedType':
               defineGroup('object')
               break
-            case 'TSTypeQuery':
-            case 'TSTypeOperator':
-              defineGroup('operator')
+            case 'TSImportType':
+              defineGroup('import')
               break
             case 'TSTupleType':
               defineGroup('tuple')
               break
             case 'TSUnionType':
               defineGroup('union')
-              break
-            case 'TSNullKeyword':
-            case 'TSUndefinedKeyword':
-            case 'TSVoidKeyword':
-              defineGroup('nullish')
               break
           }
 

@@ -52,6 +52,46 @@ describe(ruleName, () => {
           {
             code: dedent`
               function func(name) {
+                switch(<any> myFunc(a! + b?.c as any)) {
+                  case 'bb':
+                    return 'b'
+                  case 'aaa':
+                    return 'a'
+                  case 'c':
+                    return 'c'
+                  default:
+                    return 'x'
+                }
+              }
+            `,
+            output: dedent`
+              function func(name) {
+                switch(<any> myFunc(a! + b?.c as any)) {
+                  case 'aaa':
+                    return 'a'
+                  case 'bb':
+                    return 'b'
+                  case 'c':
+                    return 'c'
+                  default:
+                    return 'x'
+                }
+              }
+            `,
+            options: [options],
+            errors: [
+              {
+                messageId: 'unexpectedSwitchCaseOrder',
+                data: {
+                  left: 'bb',
+                  right: 'aaa',
+                },
+              },
+            ],
+          },
+          {
+            code: dedent`
+              function func(name) {
                 switch(name) {
                   case 'bb':
                     return 'b'
@@ -1867,12 +1907,9 @@ describe(ruleName, () => {
   })
 
   describe(`${ruleName}: misc`, () => {
-    ruleTester.run(
-      `${ruleName}: not works if discriminant is not literal`,
-      rule,
-      {
-        valid: [
-          dedent`
+    ruleTester.run(`${ruleName}: not works if discriminant is true`, rule, {
+      valid: [
+        dedent`
             switch (true) {
               case name === 'bb':
                 return 'b'
@@ -1884,10 +1921,9 @@ describe(ruleName, () => {
                 return 'x'
             }
           `,
-        ],
-        invalid: [],
-      },
-    )
+      ],
+      invalid: [],
+    })
   })
 
   ruleTester.run(`${ruleName}: default should be last`, rule, {

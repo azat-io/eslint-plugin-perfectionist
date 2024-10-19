@@ -11,7 +11,7 @@
 [![Version](https://img.shields.io/npm/v/eslint-plugin-perfectionist.svg?color=4a32c3&labelColor=26272b)](https://npmjs.com/package/eslint-plugin-perfectionist)
 [![Monthly Download](https://img.shields.io/npm/dm/eslint-plugin-perfectionist.svg?color=4a32c3&labelColor=26272b)](https://npmjs.com/package/eslint-plugin-perfectionist)
 [![Code Coverage](https://img.shields.io/codecov/c/github/azat-io/eslint-plugin-perfectionist.svg?color=4a32c3&labelColor=26272b)](https://npmjs.com/package/eslint-plugin-perfectionist)
-[![GitHub License](https://img.shields.io/badge/license-MIT-232428.svg?color=4a32c3&labelColor=26272b)](https://github.com/azat-io/eslint-plugin-perfectionist/blob/main/license)
+[![GitHub License](https://img.shields.io/badge/license-MIT-232428.svg?color=4a32c3&labelColor=26272b)](https://github.com/azat-io/eslint-plugin-perfectionist/blob/main/license.md)
 
 ESLint plugin that sets rules to format your code and make it consistent.
 
@@ -175,8 +175,8 @@ module.exports = {
 | Name                                                                                     | Description                                 | 🔧  |
 | :--------------------------------------------------------------------------------------- | :------------------------------------------ | :-- |
 | [sort-array-includes](https://perfectionist.dev/rules/sort-array-includes)               | Enforce sorted arrays before include method | 🔧  |
-| [sort-astro-attributes](https://perfectionist.dev/rules/sort-astro-attributes)           | Enforce sorted Astro attributes             | 🔧  |
 | [sort-classes](https://perfectionist.dev/rules/sort-classes)                             | Enforce sorted classes                      | 🔧  |
+| [sort-decorators](https://perfectionist.dev/rules/sort-decorators)                       | Enforce sorted decorators                   | 🔧  |
 | [sort-enums](https://perfectionist.dev/rules/sort-enums)                                 | Enforce sorted TypeScript enums             | 🔧  |
 | [sort-exports](https://perfectionist.dev/rules/sort-exports)                             | Enforce sorted exports                      | 🔧  |
 | [sort-imports](https://perfectionist.dev/rules/sort-imports)                             | Enforce sorted imports                      | 🔧  |
@@ -189,11 +189,9 @@ module.exports = {
 | [sort-object-types](https://perfectionist.dev/rules/sort-object-types)                   | Enforce sorted object types                 | 🔧  |
 | [sort-objects](https://perfectionist.dev/rules/sort-objects)                             | Enforce sorted objects                      | 🔧  |
 | [sort-sets](https://perfectionist.dev/rules/sort-sets)                                   | Enforce sorted Set elements                 | 🔧  |
-| [sort-svelte-attributes](https://perfectionist.dev/rules/sort-svelte-attributes)         | Enforce sorted Svelte attributes            | 🔧  |
 | [sort-switch-case](https://perfectionist.dev/rules/sort-switch-case)                     | Enforce sorted switch case statements       | 🔧  |
 | [sort-union-types](https://perfectionist.dev/rules/sort-union-types)                     | Enforce sorted union types                  | 🔧  |
 | [sort-variable-declarations](https://perfectionist.dev/rules/sort-variable-declarations) | Enforce sorted variable declarations        | 🔧  |
-| [sort-vue-attributes](https://perfectionist.dev/rules/sort-vue-attributes)               | Enforce sorted Vue attributes               | 🔧  |
 
 <!-- end auto-generated rules list -->
 
