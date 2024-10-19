@@ -9,19 +9,20 @@ import type {
 import type { SortingNodeWithDependencies } from '../utils/sort-nodes-by-dependencies'
 
 import {
-  validateGroupsConfiguration,
-  getOverloadSignatureGroups,
-  generateOfficialGroups,
-  customGroupMatches,
-  getCompareOptions,
-} from './sort-classes-utils'
-import {
+  partitionByCommentJsonSchema,
   specialCharactersJsonSchema,
   ignoreCaseJsonSchema,
   matcherJsonSchema,
   orderJsonSchema,
   typeJsonSchema,
 } from '../utils/common-json-schemas'
+import {
+  validateGroupsConfiguration,
+  getOverloadSignatureGroups,
+  generateOfficialGroups,
+  customGroupMatches,
+  getCompareOptions,
+} from './sort-classes-utils'
 import {
   singleCustomGroupJsonSchema,
   customGroupNameJsonSchema,
@@ -102,22 +103,9 @@ export default createEslintRule<SortClassesOptions, MESSAGE_ID>({
           ignoreCase: ignoreCaseJsonSchema,
           specialCharacters: specialCharactersJsonSchema,
           partitionByComment: {
+            ...partitionByCommentJsonSchema,
             description:
               'Allows to use comments to separate the class members into logical groups.',
-            anyOf: [
-              {
-                type: 'array',
-                items: {
-                  type: 'string',
-                },
-              },
-              {
-                type: 'boolean',
-              },
-              {
-                type: 'string',
-              },
-            ],
           },
           groups: {
             description: 'Specifies the order of the groups.',

@@ -4,6 +4,7 @@ import type { SortingNodeWithDependencies } from '../utils/sort-nodes-by-depende
 import type { CompareOptions } from '../utils/compare'
 
 import {
+  partitionByCommentJsonSchema,
   specialCharactersJsonSchema,
   ignoreCaseJsonSchema,
   matcherJsonSchema,
@@ -82,22 +83,9 @@ export default createEslintRule<Options, MESSAGE_ID>({
             type: 'boolean',
           },
           partitionByComment: {
+            ...partitionByCommentJsonSchema,
             description:
               'Allows you to use comments to separate the members of enums into logical groups.',
-            anyOf: [
-              {
-                type: 'array',
-                items: {
-                  type: 'string',
-                },
-              },
-              {
-                type: 'boolean',
-              },
-              {
-                type: 'string',
-              },
-            ],
           },
           partitionByNewLine: {
             description:

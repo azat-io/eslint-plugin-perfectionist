@@ -4,6 +4,7 @@ import type { TSESTree } from '@typescript-eslint/types'
 import type { SortingNode } from '../typings'
 
 import {
+  partitionByCommentJsonSchema,
   specialCharactersJsonSchema,
   ignoreCaseJsonSchema,
   matcherJsonSchema,
@@ -109,22 +110,9 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
             type: 'boolean',
           },
           partitionByComment: {
+            ...partitionByCommentJsonSchema,
             description:
               'Allows you to use comments to separate the decorators into logical groups.',
-            anyOf: [
-              {
-                type: 'boolean',
-              },
-              {
-                type: 'string',
-              },
-              {
-                type: 'array',
-                items: {
-                  type: 'string',
-                },
-              },
-            ],
           },
           groups: {
             description: 'Specifies the order of the groups.',

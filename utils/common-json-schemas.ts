@@ -30,3 +30,20 @@ export let specialCharactersJsonSchema: JSONSchema4 = {
   enum: ['remove', 'trim', 'keep'],
   type: 'string',
 }
+
+export let partitionByCommentJsonSchema: JSONSchema4 = {
+  anyOf: [
+    {
+      items: {
+        type: 'string',
+      },
+      type: 'array',
+    },
+    {
+      type: 'boolean',
+    },
+    {
+      type: 'string',
+    },
+  ],
+}
