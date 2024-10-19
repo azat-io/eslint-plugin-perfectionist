@@ -5,6 +5,7 @@ import {
   specialCharactersJsonSchema,
   ignoreCaseJsonSchema,
   matcherJsonSchema,
+  groupsJsonSchema,
   orderJsonSchema,
   typeJsonSchema,
 } from '../utils/common-json-schemas'
@@ -91,23 +92,7 @@ export default createEslintRule<Options, MESSAGE_ID>({
           matcher: matcherJsonSchema,
           ignoreCase: ignoreCaseJsonSchema,
           specialCharacters: specialCharactersJsonSchema,
-          groups: {
-            description: 'Specifies the order of the groups.',
-            type: 'array',
-            items: {
-              oneOf: [
-                {
-                  type: 'string',
-                },
-                {
-                  type: 'array',
-                  items: {
-                    type: 'string',
-                  },
-                },
-              ],
-            },
-          },
+          groups: groupsJsonSchema,
           partitionByComment: {
             ...partitionByCommentJsonSchema,
             description:

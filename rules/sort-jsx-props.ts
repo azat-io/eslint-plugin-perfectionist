@@ -6,6 +6,7 @@ import {
   specialCharactersJsonSchema,
   ignoreCaseJsonSchema,
   matcherJsonSchema,
+  groupsJsonSchema,
   orderJsonSchema,
   typeJsonSchema,
 } from '../utils/common-json-schemas'
@@ -79,23 +80,7 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
             },
             type: 'array',
           },
-          groups: {
-            description: 'Specifies the order of the groups.',
-            type: 'array',
-            items: {
-              oneOf: [
-                {
-                  type: 'string',
-                },
-                {
-                  type: 'array',
-                  items: {
-                    type: 'string',
-                  },
-                },
-              ],
-            },
-          },
+          groups: groupsJsonSchema,
           customGroups: {
             description: 'Specifies custom groups.',
             type: 'object',

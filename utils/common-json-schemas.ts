@@ -31,6 +31,24 @@ export let specialCharactersJsonSchema: JSONSchema4 = {
   type: 'string',
 }
 
+export let groupsJsonSchema: JSONSchema4 = {
+  items: {
+    oneOf: [
+      {
+        type: 'string',
+      },
+      {
+        items: {
+          type: 'string',
+        },
+        type: 'array',
+      },
+    ],
+  },
+  description: 'Specifies the order of the groups.',
+  type: 'array',
+}
+
 export let partitionByCommentJsonSchema: JSONSchema4 = {
   anyOf: [
     {
