@@ -4,6 +4,13 @@ import type { TSESTree } from '@typescript-eslint/types'
 
 import type { SortingNode } from '../typings'
 
+import {
+  specialCharactersJsonSchema,
+  ignoreCaseJsonSchema,
+  matcherJsonSchema,
+  orderJsonSchema,
+  typeJsonSchema,
+} from '../utils/common-json-schemas'
 import { hasPartitionComment } from '../utils/is-partition-comment'
 import { getCommentsBefore } from '../utils/get-comments-before'
 import { createEslintRule } from '../utils/create-eslint-rule'
@@ -49,32 +56,11 @@ export const defaultOptions: Required<Options[0]> = {
 export let jsonSchema: JSONSchema4 = {
   type: 'object',
   properties: {
-    type: {
-      description: 'Specifies the sorting method.',
-      type: 'string',
-      enum: ['alphabetical', 'natural', 'line-length'],
-    },
-    order: {
-      description:
-        'Determines whether the sorted items should be in ascending or descending order.',
-      type: 'string',
-      enum: ['asc', 'desc'],
-    },
-    matcher: {
-      description: 'Specifies the string matcher.',
-      type: 'string',
-      enum: ['minimatch', 'regex'],
-    },
-    ignoreCase: {
-      description: 'Controls whether sorting should be case-sensitive or not.',
-      type: 'boolean',
-    },
-    specialCharacters: {
-      description:
-        'Controls how special characters should be handled before sorting.',
-      type: 'string',
-      enum: ['remove', 'trim', 'keep'],
-    },
+    type: typeJsonSchema,
+    order: orderJsonSchema,
+    matcher: matcherJsonSchema,
+    ignoreCase: ignoreCaseJsonSchema,
+    specialCharacters: specialCharactersJsonSchema,
     groupKind: {
       description: 'Specifies top-level groups.',
       enum: ['mixed', 'literals-first', 'spreads-first'],
