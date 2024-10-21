@@ -1,0 +1,991 @@
+import { RuleTester } from '@typescript-eslint/rule-tester'
+import { afterAll, describe, it } from 'vitest'
+import { dedent } from 'ts-dedent'
+
+import rule from '../rules/sort-heritage-clauses'
+
+let ruleName = 'sort-heritage-clauses'
+
+describe(ruleName, () => {
+  RuleTester.describeSkip = describe.skip
+  RuleTester.afterAll = afterAll
+  RuleTester.describe = describe
+  RuleTester.itOnly = it.only
+  RuleTester.itSkip = it.skip
+  RuleTester.it = it
+
+  let ruleTester = new RuleTester()
+
+  describe(`${ruleName}: sorting by alphabetical order`, () => {
+    let type = 'alphabetical-order'
+
+    let options = {
+      type: 'alphabetical',
+      ignoreCase: true,
+      order: 'asc',
+    } as const
+
+    ruleTester.run(`${ruleName}(${type}): sorts heritage clauses`, rule, {
+      valid: [
+        {
+          code: dedent`
+            interface Interface extends
+              a,
+              b,
+              c {
+            }
+          `,
+          options: [options],
+        },
+        {
+          code: dedent`
+            interface Interface extends
+              a {
+            }
+          `,
+          options: [options],
+        },
+      ],
+      invalid: [
+        {
+          code: dedent`
+            interface Interface extends
+              a,
+              c,
+              b {
+            }
+          `,
+          output: dedent`
+            interface Interface extends
+              a,
+              b,
+              c {
+            }
+          `,
+          options: [options],
+          errors: [
+            {
+              messageId: 'unexpectedHeritageClausesOrder',
+              data: {
+                left: 'c',
+                right: 'b',
+              },
+            },
+          ],
+        },
+        {
+          code: dedent`
+            interface Interface extends
+              A.a,
+              C.c,
+              B.b {
+            }
+          `,
+          output: dedent`
+            interface Interface extends
+              A.a,
+              B.b,
+              C.c {
+            }
+          `,
+          options: [options],
+          errors: [
+            {
+              messageId: 'unexpectedHeritageClausesOrder',
+              data: {
+                left: 'c',
+                right: 'b',
+              },
+            },
+          ],
+        },
+      ],
+    })
+
+    ruleTester.run(`${ruleName}(${type}): does not break docs`, rule, {
+      valid: [],
+      invalid: [
+        {
+          code: dedent`
+              interface Interface extends
+                /**
+                 * Comment B
+                 */
+                b,
+                /**
+                 * Comment A
+                 */
+                a,
+                // Comment D
+                d,
+                /* Comment C */
+                c {
+              }
+            `,
+          output: dedent`
+              interface Interface extends
+                /**
+                 * Comment A
+                 */
+                a,
+                /**
+                 * Comment B
+                 */
+                b,
+                /* Comment C */
+                c,
+                // Comment D
+                d {
+              }
+            `,
+          options: [options],
+          errors: [
+            {
+              messageId: 'unexpectedHeritageClausesOrder',
+              data: {
+                left: 'b',
+                right: 'a',
+              },
+            },
+            {
+              messageId: 'unexpectedHeritageClausesOrder',
+              data: {
+                left: 'd',
+                right: 'c',
+              },
+            },
+          ],
+        },
+      ],
+    })
+
+    ruleTester.run(
+      `${ruleName}(${type}): sorts heritage clauses with comments on the same line`,
+      rule,
+      {
+        valid: [],
+        invalid: [
+          {
+            code: dedent`
+              interface Interface extends
+                b // Comment B
+                , a // Comment A
+                {
+              }
+            `,
+            output: dedent`
+              interface Interface extends
+                a // Comment A
+                , b // Comment B
+                {
+              }
+            `,
+            options: [options],
+            errors: [
+              {
+                messageId: 'unexpectedHeritageClausesOrder',
+                data: {
+                  left: 'b',
+                  right: 'a',
+                },
+              },
+            ],
+          },
+        ],
+      },
+    )
+
+    ruleTester.run(
+      `${ruleName}(${type}): allows to set groups for sorting`,
+      rule,
+      {
+        valid: [
+          {
+            code: dedent`
+              interface Interface extends
+                g,
+                a {
+              }
+            `,
+            options: [
+              {
+                ...options,
+                groups: ['g'],
+                customGroups: {
+                  g: 'g',
+                },
+              },
+            ],
+          },
+        ],
+        invalid: [
+          {
+            code: dedent`
+              interface Interface extends
+                a,
+                g {
+              }
+            `,
+            output: dedent`
+              interface Interface extends
+                g,
+                a {
+              }
+            `,
+            options: [
+              {
+                ...options,
+                groups: ['g'],
+                customGroups: {
+                  g: 'g',
+                },
+              },
+            ],
+            errors: [
+              {
+                messageId: 'unexpectedHeritageClausesGroupOrder',
+                data: {
+                  left: 'a',
+                  leftGroup: 'unknown',
+                  right: 'g',
+                  rightGroup: 'g',
+                },
+              },
+            ],
+          },
+        ],
+      },
+    )
+
+    ruleTester.run(
+      `${ruleName}(${type}): allows to use regex matcher for custom groups`,
+      rule,
+      {
+        valid: [
+          {
+            code: dedent`
+              interface Interface extends
+                  iHaveFooInMyName,
+                  meTooIHaveFoo,
+                  a,
+                  b {
+              }
+            `,
+            options: [
+              {
+                ...options,
+                matcher: 'regex',
+                groups: ['unknown', 'elementsWithoutFoo'],
+                customGroups: {
+                  elementsWithoutFoo: '^(?!.*Foo).*$',
+                },
+              },
+            ],
+          },
+        ],
+        invalid: [],
+      },
+    )
+
+    ruleTester.run(
+      `${ruleName}(${type}): allows to trim special characters`,
+      rule,
+      {
+        valid: [
+          {
+            code: dedent`
+              interface MyInterface extends
+                _a,
+                b,
+                _c {
+              }
+            `,
+            options: [
+              {
+                ...options,
+                specialCharacters: 'trim',
+              },
+            ],
+          },
+        ],
+        invalid: [],
+      },
+    )
+
+    ruleTester.run(
+      `${ruleName}(${type}): allows to remove special characters`,
+      rule,
+      {
+        valid: [
+          {
+            code: dedent`
+              interface MyInterface extends
+                ab,
+                a_c {
+              }
+            `,
+            options: [
+              {
+                ...options,
+                specialCharacters: 'remove',
+              },
+            ],
+          },
+        ],
+        invalid: [],
+      },
+    )
+  })
+
+  describe(`${ruleName}: sorting by natural order`, () => {
+    let type = 'natural-order'
+
+    let options = {
+      type: 'natural',
+      ignoreCase: true,
+      order: 'asc',
+    } as const
+
+    ruleTester.run(`${ruleName}(${type}): sorts heritage clauses`, rule, {
+      valid: [
+        {
+          code: dedent`
+            interface Interface extends
+              a,
+              b,
+              c {
+            }
+          `,
+          options: [options],
+        },
+      ],
+      invalid: [
+        {
+          code: dedent`
+            interface Interface extends
+              a,
+              c,
+              b {
+            }
+          `,
+          output: dedent`
+            interface Interface extends
+              a,
+              b,
+              c {
+            }
+          `,
+          options: [options],
+          errors: [
+            {
+              messageId: 'unexpectedHeritageClausesOrder',
+              data: {
+                left: 'c',
+                right: 'b',
+              },
+            },
+          ],
+        },
+      ],
+    })
+
+    ruleTester.run(`${ruleName}(${type}): does not break docs`, rule, {
+      valid: [],
+      invalid: [
+        {
+          code: dedent`
+              interface Interface extends
+                /**
+                 * Comment B
+                 */
+                b,
+                /**
+                 * Comment A
+                 */
+                a,
+                // Comment D
+                d,
+                /* Comment C */
+                c {
+              }
+            `,
+          output: dedent`
+              interface Interface extends
+                /**
+                 * Comment A
+                 */
+                a,
+                /**
+                 * Comment B
+                 */
+                b,
+                /* Comment C */
+                c,
+                // Comment D
+                d {
+              }
+            `,
+          options: [options],
+          errors: [
+            {
+              messageId: 'unexpectedHeritageClausesOrder',
+              data: {
+                left: 'b',
+                right: 'a',
+              },
+            },
+            {
+              messageId: 'unexpectedHeritageClausesOrder',
+              data: {
+                left: 'd',
+                right: 'c',
+              },
+            },
+          ],
+        },
+      ],
+    })
+
+    ruleTester.run(
+      `${ruleName}(${type}): sorts heritage clauses with comments on the same line`,
+      rule,
+      {
+        valid: [],
+        invalid: [
+          {
+            code: dedent`
+              interface Interface extends
+                b // Comment B
+                , a // Comment A
+                {
+              }
+            `,
+            output: dedent`
+              interface Interface extends
+                a // Comment A
+                , b // Comment B
+                {
+              }
+            `,
+            options: [options],
+            errors: [
+              {
+                messageId: 'unexpectedHeritageClausesOrder',
+                data: {
+                  left: 'b',
+                  right: 'a',
+                },
+              },
+            ],
+          },
+        ],
+      },
+    )
+
+    ruleTester.run(
+      `${ruleName}(${type}): allows to set groups for sorting`,
+      rule,
+      {
+        valid: [
+          {
+            code: dedent`
+              interface Interface extends
+                g,
+                a {
+              }
+            `,
+            options: [
+              {
+                ...options,
+                groups: ['g'],
+                customGroups: {
+                  g: 'g',
+                },
+              },
+            ],
+          },
+        ],
+        invalid: [
+          {
+            code: dedent`
+              interface Interface extends
+                a,
+                g {
+              }
+            `,
+            output: dedent`
+              interface Interface extends
+                g,
+                a {
+              }
+            `,
+            options: [
+              {
+                ...options,
+                groups: ['g'],
+                customGroups: {
+                  g: 'g',
+                },
+              },
+            ],
+            errors: [
+              {
+                messageId: 'unexpectedHeritageClausesGroupOrder',
+                data: {
+                  left: 'a',
+                  leftGroup: 'unknown',
+                  right: 'g',
+                  rightGroup: 'g',
+                },
+              },
+            ],
+          },
+        ],
+      },
+    )
+
+    ruleTester.run(
+      `${ruleName}(${type}): allows to use regex matcher for custom groups`,
+      rule,
+      {
+        valid: [
+          {
+            code: dedent`
+              interface Interface extends
+                  iHaveFooInMyName,
+                  meTooIHaveFoo,
+                  a,
+                  b {
+              }
+            `,
+            options: [
+              {
+                ...options,
+                matcher: 'regex',
+                groups: ['unknown', 'elementsWithoutFoo'],
+                customGroups: {
+                  elementsWithoutFoo: '^(?!.*Foo).*$',
+                },
+              },
+            ],
+          },
+        ],
+        invalid: [],
+      },
+    )
+
+    ruleTester.run(
+      `${ruleName}(${type}): allows to trim special characters`,
+      rule,
+      {
+        valid: [
+          {
+            code: dedent`
+              interface MyInterface extends
+                _a,
+                b,
+                _c {
+              }
+            `,
+            options: [
+              {
+                ...options,
+                specialCharacters: 'trim',
+              },
+            ],
+          },
+        ],
+        invalid: [],
+      },
+    )
+
+    ruleTester.run(
+      `${ruleName}(${type}): allows to remove special characters`,
+      rule,
+      {
+        valid: [
+          {
+            code: dedent`
+              interface MyInterface extends
+                ab,
+                a_c {
+              }
+            `,
+            options: [
+              {
+                ...options,
+                specialCharacters: 'remove',
+              },
+            ],
+          },
+        ],
+        invalid: [],
+      },
+    )
+  })
+
+  describe(`${ruleName}: sorting by line length`, () => {
+    let type = 'line-length-order'
+
+    let options = {
+      type: 'line-length',
+      ignoreCase: true,
+      order: 'desc',
+    } as const
+
+    ruleTester.run(`${ruleName}(${type}): sorts heritage clauses`, rule, {
+      valid: [
+        {
+          code: dedent`
+            interface Interface extends
+              aaa,
+              bb,
+              c {
+            }
+          `,
+          options: [options],
+        },
+        {
+          code: dedent`
+            class Class implements
+              aaa,
+              bb,
+              c {
+            }
+          `,
+          options: [options],
+        },
+      ],
+      invalid: [
+        {
+          code: dedent`
+            interface Interface extends
+              aaa,
+              c,
+              bb {
+            }
+          `,
+          output: dedent`
+            interface Interface extends
+              aaa,
+              bb,
+              c {
+            }
+          `,
+          options: [options],
+          errors: [
+            {
+              messageId: 'unexpectedHeritageClausesOrder',
+              data: {
+                left: 'c',
+                right: 'bb',
+              },
+            },
+          ],
+        },
+        {
+          code: dedent`
+            class Class implements
+              aaa,
+              c,
+              bb {
+            }
+          `,
+          output: dedent`
+            class Class implements
+              aaa,
+              bb,
+              c {
+            }
+          `,
+          options: [options],
+          errors: [
+            {
+              messageId: 'unexpectedHeritageClausesOrder',
+              data: {
+                left: 'c',
+                right: 'bb',
+              },
+            },
+          ],
+        },
+      ],
+    })
+
+    ruleTester.run(`${ruleName}(${type}): does not break docs`, rule, {
+      valid: [],
+      invalid: [
+        {
+          code: dedent`
+              interface Interface extends
+                /**
+                 * Comment B
+                 */
+                bbb,
+                /**
+                 * Comment A
+                 */
+                aaaa,
+                // Comment D
+                d,
+                /* Comment C */
+                cc {
+              }
+            `,
+          output: dedent`
+              interface Interface extends
+                /**
+                 * Comment A
+                 */
+                aaaa,
+                /**
+                 * Comment B
+                 */
+                bbb,
+                /* Comment C */
+                cc,
+                // Comment D
+                d {
+              }
+            `,
+          options: [options],
+          errors: [
+            {
+              messageId: 'unexpectedHeritageClausesOrder',
+              data: {
+                left: 'bbb',
+                right: 'aaaa',
+              },
+            },
+            {
+              messageId: 'unexpectedHeritageClausesOrder',
+              data: {
+                left: 'd',
+                right: 'cc',
+              },
+            },
+          ],
+        },
+      ],
+    })
+
+    ruleTester.run(
+      `${ruleName}(${type}): sorts heritage clauses with comments on the same line`,
+      rule,
+      {
+        valid: [],
+        invalid: [
+          {
+            code: dedent`
+              interface Interface extends
+                b // Comment B
+                , aa // Comment A
+                {
+              }
+            `,
+            output: dedent`
+              interface Interface extends
+                aa // Comment A
+                , b // Comment B
+                {
+              }
+            `,
+            options: [options],
+            errors: [
+              {
+                messageId: 'unexpectedHeritageClausesOrder',
+                data: {
+                  left: 'b',
+                  right: 'aa',
+                },
+              },
+            ],
+          },
+        ],
+      },
+    )
+
+    ruleTester.run(
+      `${ruleName}(${type}): allows to set groups for sorting`,
+      rule,
+      {
+        valid: [
+          {
+            code: dedent`
+              interface Interface extends
+                g,
+                aa {
+              }
+            `,
+            options: [
+              {
+                ...options,
+                groups: ['g'],
+                customGroups: {
+                  g: 'g',
+                },
+              },
+            ],
+          },
+        ],
+        invalid: [
+          {
+            code: dedent`
+              interface Interface extends
+                aa,
+                g {
+              }
+            `,
+            output: dedent`
+              interface Interface extends
+                g,
+                aa {
+              }
+            `,
+            options: [
+              {
+                ...options,
+                groups: ['g'],
+                customGroups: {
+                  g: 'g',
+                },
+              },
+            ],
+            errors: [
+              {
+                messageId: 'unexpectedHeritageClausesGroupOrder',
+                data: {
+                  left: 'aa',
+                  leftGroup: 'unknown',
+                  right: 'g',
+                  rightGroup: 'g',
+                },
+              },
+            ],
+          },
+        ],
+      },
+    )
+
+    ruleTester.run(
+      `${ruleName}(${type}): allows to use regex matcher for custom groups`,
+      rule,
+      {
+        valid: [
+          {
+            code: dedent`
+              interface Interface extends
+                  iHaveFooInMyName,
+                  meTooIHaveFoo,
+                  a,
+                  b {
+              }
+            `,
+            options: [
+              {
+                ...options,
+                matcher: 'regex',
+                groups: ['unknown', 'elementsWithoutFoo'],
+                customGroups: {
+                  elementsWithoutFoo: '^(?!.*Foo).*$',
+                },
+              },
+            ],
+          },
+        ],
+        invalid: [],
+      },
+    )
+
+    ruleTester.run(
+      `${ruleName}(${type}): allows to trim special characters`,
+      rule,
+      {
+        valid: [
+          {
+            code: dedent`
+              interface MyInterface extends
+                _aaa,
+                bb,
+                _c {
+              }
+            `,
+            options: [
+              {
+                ...options,
+                specialCharacters: 'trim',
+              },
+            ],
+          },
+        ],
+        invalid: [],
+      },
+    )
+
+    ruleTester.run(
+      `${ruleName}(${type}): allows to remove special characters`,
+      rule,
+      {
+        valid: [
+          {
+            code: dedent`
+              interface MyInterface extends
+                aaa,
+                a_c {
+              }
+            `,
+            options: [
+              {
+                ...options,
+                specialCharacters: 'remove',
+              },
+            ],
+          },
+        ],
+        invalid: [],
+      },
+    )
+  })
+
+  describe(`${ruleName}: misc`, () => {
+    ruleTester.run(
+      `${ruleName}: sets alphabetical asc sorting as default`,
+      rule,
+      {
+        valid: [
+          dedent`
+            interface Interface extends
+              a,
+              b {
+            }
+          `,
+        ],
+        invalid: [
+          {
+            code: dedent`
+              interface Interface extends
+                b,
+                a {
+              }
+            `,
+            output: dedent`
+              interface Interface extends
+                a,
+                b {
+              }
+            `,
+            errors: [
+              {
+                messageId: 'unexpectedHeritageClausesOrder',
+                data: {
+                  left: 'b',
+                  right: 'a',
+                },
+              },
+            ],
+          },
+        ],
+      },
+    )
+  })
+})
