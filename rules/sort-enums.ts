@@ -222,7 +222,7 @@ export default createEslintRule<Options, MESSAGE_ID>({
               name:
                 member.id.type === 'Literal'
                   ? `${member.id.value}`
-                  : `${sourceCode.text.slice(...member.id.range)}`,
+                  : `${sourceCode.getText(member.id)}`,
             }
 
             if (
