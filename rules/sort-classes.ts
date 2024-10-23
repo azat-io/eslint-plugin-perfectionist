@@ -384,7 +384,7 @@ export default createEslintRule<SortClassesOptions, MESSAGE_ID>({
             } else if (member.key.type === 'Identifier') {
               ;({ name } = member.key)
             } else {
-              name = sourceCode.text.slice(...member.key.range)
+              name = sourceCode.getText(member.key)
             }
 
             let isPrivateHash =

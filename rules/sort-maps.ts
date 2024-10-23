@@ -167,10 +167,10 @@ export default createEslintRule<Options, MESSAGE_ID>({
                 } else if (left.type === 'Literal') {
                   name = left.raw
                 } else {
-                  name = sourceCode.text.slice(...left.range)
+                  name = sourceCode.getText(left)
                 }
               } else {
-                name = sourceCode.text.slice(...element.range)
+                name = sourceCode.getText(element)
               }
 
               let lastSortingNode = formattedMembers.at(-1)?.at(-1)

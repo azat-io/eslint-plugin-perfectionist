@@ -270,7 +270,7 @@ export default createEslintRule<Options, MESSAGE_ID>({
 
           let lastSortingNode = accumulator.at(-1)?.at(-1)
           let sortingNode: SortingNode = {
-            name: sourceCode.text.slice(...type.range),
+            name: sourceCode.getText(type),
             size: rangeToDiff(type, sourceCode),
             group: getGroup(),
             node: type,

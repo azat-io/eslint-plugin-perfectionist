@@ -166,7 +166,7 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
 
         let shouldIgnore = false
         if (options.ignorePattern.length) {
-          let tagName = sourceCode.text.slice(...node.openingElement.name.range)
+          let tagName = sourceCode.getText(node.openingElement.name)
           shouldIgnore = options.ignorePattern.some(pattern =>
             matches(tagName, pattern, options.matcher),
           )

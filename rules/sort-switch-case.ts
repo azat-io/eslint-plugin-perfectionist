@@ -119,7 +119,7 @@ export default createEslintRule<Options, MESSAGE_ID>({
               name = 'default'
               isDefaultClause = true
             } else {
-              name = sourceCode.text.slice(...caseNode.test.range)
+              name = sourceCode.getText(caseNode.test)
             }
 
             return {

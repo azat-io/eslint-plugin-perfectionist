@@ -368,7 +368,7 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
         if (node.moduleReference.type === 'TSExternalModuleReference') {
           name = `${node.moduleReference.expression.value}`
         } else {
-          name = sourceCode.text.slice(...node.moduleReference.range)
+          name = sourceCode.getText(node.moduleReference)
         }
       } else {
         let decl = node.declarations[0].init as TSESTree.CallExpression

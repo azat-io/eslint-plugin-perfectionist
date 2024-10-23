@@ -416,7 +416,7 @@ export default createEslintRule<Options, MESSAGE_ID>({
               } else if (prop.key.type === 'Literal') {
                 name = `${prop.key.value}`
               } else {
-                name = sourceCode.text.slice(...prop.key.range)
+                name = sourceCode.getText(prop.key)
               }
 
               if (prop.value.type === 'AssignmentPattern') {
