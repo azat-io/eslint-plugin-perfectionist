@@ -252,7 +252,7 @@ describe(ruleName, () => {
             func<{ b: 'b'; a: 'aa' }>(/* ... */)
           `,
           output: dedent`
-            func<{ a: 'aa'; b: 'b' }>(/* ... */)
+            func<{ a: 'aa'; b: 'b'; }>(/* ... */)
           `,
           options: [options],
           errors: [
@@ -310,17 +310,6 @@ describe(ruleName, () => {
               }
             `,
             output: [
-              dedent`
-                type Type = {
-                  b: 'bb'
-                  a: 'aaa'
-                  c: 'c'
-                  d: {
-                    f: 'f'
-                    e: 'ee'
-                  }
-                }
-              `,
               dedent`
                 type Type = {
                   b: 'bb'
@@ -1256,7 +1245,7 @@ describe(ruleName, () => {
             func<{ b: 'b'; a: 'aa' }>(/* ... */)
           `,
           output: dedent`
-            func<{ a: 'aa'; b: 'b' }>(/* ... */)
+            func<{ a: 'aa'; b: 'b'; }>(/* ... */)
           `,
           options: [options],
           errors: [
@@ -1314,17 +1303,6 @@ describe(ruleName, () => {
               }
             `,
             output: [
-              dedent`
-                type Type = {
-                  b: 'bb'
-                  a: 'aaa'
-                  c: 'c'
-                  d: {
-                    f: 'f'
-                    e: 'ee'
-                  }
-                }
-              `,
               dedent`
                 type Type = {
                   b: 'bb'
@@ -1850,7 +1828,7 @@ describe(ruleName, () => {
             func<{ b: 'b'; a: 'aa' }>(/* ... */)
           `,
           output: dedent`
-            func<{ a: 'aa'; b: 'b' }>(/* ... */)
+            func<{ a: 'aa'; b: 'b'; }>(/* ... */)
           `,
           options: [options],
           errors: [
@@ -1908,17 +1886,6 @@ describe(ruleName, () => {
               }
             `,
             output: [
-              dedent`
-                type Type = {
-                  b: 'bb'
-                  a: 'aaa'
-                  c: 'c'
-                  d: {
-                    f: 'f'
-                    e: 'ee'
-                  }
-                }
-              `,
               dedent`
                 type Type = {
                   b: 'bb'
