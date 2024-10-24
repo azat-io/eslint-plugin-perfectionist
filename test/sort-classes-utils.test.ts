@@ -67,7 +67,7 @@ describe('sort-classes-utils', () => {
       ).toBeUndefined()
     })
 
-    it('allows custom groups with the new API', () => {
+    it('allows custom groups', () => {
       expect(
         validateGroupsConfiguration(
           ['static-property', 'myCustomGroup'],
@@ -92,7 +92,7 @@ describe('sort-classes-utils', () => {
       ).toThrow('Duplicated group(s): static-property')
     })
 
-    it('throws an error if invalid groups are provided with the new API', () => {
+    it('throws an error if invalid groups are provided', () => {
       expect(() =>
         validateGroupsConfiguration(
           ['static-property', 'myCustomGroup', ''],
@@ -102,22 +102,6 @@ describe('sort-classes-utils', () => {
             },
           ],
         ),
-      ).toThrow('Invalid group(s): myCustomGroup')
-    })
-
-    it('allows groups with the old API', () => {
-      expect(
-        validateGroupsConfiguration(['static-property', 'myCustomGroup'], {
-          myCustomGroup: 'foo',
-        }),
-      ).toBeUndefined()
-    })
-
-    it('throws an error if invalid custom groups are provided with the old API', () => {
-      expect(() =>
-        validateGroupsConfiguration(['static-property', 'myCustomGroup'], {
-          myCustomGroupNotReferenced: 'foo',
-        }),
       ).toThrow('Invalid group(s): myCustomGroup')
     })
   })

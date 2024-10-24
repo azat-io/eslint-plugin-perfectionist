@@ -144,62 +144,41 @@ export default createEslintRule<SortClassesOptions, MESSAGE_ID>({
           },
           customGroups: {
             description: 'Specifies custom groups.',
-            oneOf: [
-              {
-                type: 'object',
-                additionalProperties: {
-                  oneOf: [
-                    {
-                      type: 'string',
-                    },
-                    {
+            type: 'array',
+            items: {
+              oneOf: [
+                {
+                  description: 'Custom group block.',
+                  type: 'object',
+                  additionalProperties: false,
+                  properties: {
+                    ...customGroupNameJsonSchema,
+                    ...customGroupSortJsonSchema,
+                    anyOf: {
                       type: 'array',
                       items: {
-                        type: 'string',
-                      },
-                    },
-                  ],
-                },
-              },
-              {
-                type: 'array',
-                items: {
-                  description: 'Advanced custom groups.',
-                  oneOf: [
-                    {
-                      description: 'Custom group block.',
-                      type: 'object',
-                      additionalProperties: false,
-                      properties: {
-                        ...customGroupNameJsonSchema,
-                        ...customGroupSortJsonSchema,
-                        anyOf: {
-                          type: 'array',
-                          items: {
-                            description: 'Custom group.',
-                            type: 'object',
-                            additionalProperties: false,
-                            properties: {
-                              ...singleCustomGroupJsonSchema,
-                            },
-                          },
+                        description: 'Custom group.',
+                        type: 'object',
+                        additionalProperties: false,
+                        properties: {
+                          ...singleCustomGroupJsonSchema,
                         },
                       },
                     },
-                    {
-                      description: 'Custom group.',
-                      type: 'object',
-                      additionalProperties: false,
-                      properties: {
-                        ...customGroupNameJsonSchema,
-                        ...customGroupSortJsonSchema,
-                        ...singleCustomGroupJsonSchema,
-                      },
-                    },
-                  ],
+                  },
                 },
-              },
-            ],
+                {
+                  description: 'Custom group.',
+                  type: 'object',
+                  additionalProperties: false,
+                  properties: {
+                    ...customGroupNameJsonSchema,
+                    ...customGroupSortJsonSchema,
+                    ...singleCustomGroupJsonSchema,
+                  },
+                },
+              ],
+            },
           },
         },
         additionalProperties: false,
@@ -393,7 +372,7 @@ export default createEslintRule<SortClassesOptions, MESSAGE_ID>({
 
             let name: string
             let dependencies: string[] = []
-            let { getGroup, defineGroup, setCustomGroups } = useGroups(options)
+            let { getGroup, defineGroup } = useGroups(options)
 
             if (member.type === 'StaticBlock') {
               name = 'static'
@@ -591,32 +570,24 @@ export default createEslintRule<SortClassesOptions, MESSAGE_ID>({
               defineGroup(officialGroup)
             }
 
-            if (Array.isArray(options.customGroups)) {
-              // New API
-              for (let customGroup of options.customGroups) {
-                if (
-                  customGroupMatches({
-                    customGroup,
-                    elementName: name,
-                    elementValue: memberValue,
-                    modifiers,
-                    selectors,
-                    decorators,
-                    matcher: options.matcher,
-                  })
-                ) {
-                  defineGroup(customGroup.groupName, true)
-                  // If the custom group is not referenced in the `groups` option, it will be ignored
-                  if (getGroup() === customGroup.groupName) {
-                    break
-                  }
+            for (let customGroup of options.customGroups) {
+              if (
+                customGroupMatches({
+                  customGroup,
+                  elementName: name,
+                  elementValue: memberValue,
+                  modifiers,
+                  selectors,
+                  decorators,
+                  matcher: options.matcher,
+                })
+              ) {
+                defineGroup(customGroup.groupName, true)
+                // If the custom group is not referenced in the `groups` option, it will be ignored
+                if (getGroup() === customGroup.groupName) {
+                  break
                 }
               }
-            } else {
-              // Old API
-              setCustomGroups(options.customGroups, name, {
-                override: true,
-              })
             }
 
             // Members belonging to the same overload signature group should have the same size in order to keep line-length sorting between them consistent.
