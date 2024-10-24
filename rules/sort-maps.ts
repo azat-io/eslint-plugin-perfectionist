@@ -175,7 +175,7 @@ export default createEslintRule<Options, MESSAGE_ID>({
 
               let lastSortingNode = formattedMembers.at(-1)?.at(-1)
               let sortingNode: SortingNode = {
-                size: rangeToDiff(element.range),
+                size: rangeToDiff(element, sourceCode),
                 node: element,
                 name,
               }

@@ -602,8 +602,8 @@ export default createEslintRule<SortClassesOptions, MESSAGE_ID>({
 
             let sortingNode: SortingNodeWithDependencies = {
               size: overloadSignatureGroupMember
-                ? rangeToDiff(overloadSignatureGroupMember.range)
-                : rangeToDiff(member.range),
+                ? rangeToDiff(overloadSignatureGroupMember, sourceCode)
+                : rangeToDiff(member, sourceCode),
               group: getGroup(),
               node: member,
               dependencies,

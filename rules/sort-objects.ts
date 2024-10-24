@@ -437,7 +437,7 @@ export default createEslintRule<Options, MESSAGE_ID>({
               }
 
               let propSortingNode: SortingNodeWithDependencies = {
-                size: rangeToDiff(prop.range),
+                size: rangeToDiff(prop, sourceCode),
                 node: prop,
                 group: getGroup(),
                 dependencies,

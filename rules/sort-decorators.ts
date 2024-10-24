@@ -279,7 +279,7 @@ let sortDecorators = (
       setCustomGroups(options.customGroups, name)
 
       let sortingNode: SortDecoratorsSortingNode = {
-        size: rangeToDiff(decorator.range),
+        size: rangeToDiff(decorator, sourceCode),
         node: decorator,
         group: getGroup(),
         name,

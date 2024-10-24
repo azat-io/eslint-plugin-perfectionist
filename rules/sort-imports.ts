@@ -513,7 +513,7 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
       }
 
       nodes.push({
-        size: rangeToDiff(node.range),
+        size: rangeToDiff(node, sourceCode),
         group: getGroup(),
         node,
         requiresEndingSemicolonWhenInline: true,
