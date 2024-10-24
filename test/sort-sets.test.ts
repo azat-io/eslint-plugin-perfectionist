@@ -640,6 +640,60 @@ describe(ruleName, () => {
         invalid: [],
       },
     )
+
+    ruleTester.run(
+      `${ruleName}(${type}): sorts inline elements correctly`,
+      rule,
+      {
+        valid: [],
+        invalid: [
+          {
+            code: dedent`
+              new Set([
+                b, a
+              ])
+            `,
+            output: dedent`
+              new Set([
+                a, b
+              ])
+            `,
+            options: [options],
+            errors: [
+              {
+                messageId: 'unexpectedSetsOrder',
+                data: {
+                  left: 'b',
+                  right: 'a',
+                },
+              },
+            ],
+          },
+          {
+            code: dedent`
+              new Set([
+                b, a,
+              ])
+            `,
+            output: dedent`
+              new Set([
+                a, b,
+              ])
+            `,
+            options: [options],
+            errors: [
+              {
+                messageId: 'unexpectedSetsOrder',
+                data: {
+                  left: 'b',
+                  right: 'a',
+                },
+              },
+            ],
+          },
+        ],
+      },
+    )
   })
 
   describe(`${ruleName}: sorting by natural order`, () => {
