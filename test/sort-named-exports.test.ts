@@ -425,6 +425,37 @@ describe(ruleName, () => {
         invalid: [],
       },
     )
+
+    ruleTester.run(`${ruleName}(${type}): works with arbitrary names`, rule, {
+      valid: [
+        {
+          code: dedent`
+            export { a as "A", b as "B" };
+          `,
+          options: [options],
+        },
+      ],
+      invalid: [
+        {
+          code: dedent`
+            export { b as "B", a as "A" };
+          `,
+          output: dedent`
+            export { a as "A", b as "B" };
+          `,
+          options: [options],
+          errors: [
+            {
+              messageId: 'unexpectedNamedExportsOrder',
+              data: {
+                left: 'B',
+                right: 'A',
+              },
+            },
+          ],
+        },
+      ],
+    })
   })
 
   describe(`${ruleName}: sorting by natural order`, () => {

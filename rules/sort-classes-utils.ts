@@ -239,7 +239,7 @@ export const getCompareOptions = (
 ): CompareOptions | null => {
   let group = options.groups[groupNumber]
   let customGroup =
-    typeof group === 'string' && Array.isArray(options.customGroups)
+    typeof group === 'string'
       ? options.customGroups.find(g => group === g.groupName)
       : null
   if (customGroup?.type === 'unsorted') {
@@ -260,9 +260,9 @@ export let validateGroupsConfiguration = (
   groups: Required<SortClassesOptions[0]>['groups'],
   customGroups: Required<SortClassesOptions[0]>['customGroups'],
 ): void => {
-  let availableCustomGroupNames = Array.isArray(customGroups)
-    ? customGroups.map(customGroup => customGroup.groupName)
-    : Object.keys(customGroups)
+  let availableCustomGroupNames = customGroups.map(
+    customGroup => customGroup.groupName,
+  )
   let invalidGroups = groups
     .flat()
     .filter(

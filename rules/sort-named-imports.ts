@@ -153,7 +153,11 @@ export default createEslintRule<Options, MESSAGE_ID>({
           let { name } = specifier.local
 
           if (specifier.type === 'ImportSpecifier' && options.ignoreAlias) {
-            ;({ name } = specifier.imported)
+            if (specifier.imported.type === 'Identifier') {
+              ;({ name } = specifier.imported)
+            } else {
+              name = specifier.imported.value
+            }
           }
 
           if (

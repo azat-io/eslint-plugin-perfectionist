@@ -146,12 +146,20 @@ export default createEslintRule<Options, MESSAGE_ID>({
             group = 'value'
           }
 
+          let name: string
+
+          if (specifier.exported.type === 'Identifier') {
+            ;({ name } = specifier.exported)
+          } else {
+            name = specifier.exported.value
+          }
+
           let lastSortingNode = formattedMembers.at(-1)?.at(-1)
           let sortingNode: SortingNode = {
             size: rangeToDiff(specifier.range),
-            name: specifier.local.name,
             node: specifier,
             group,
+            name,
           }
           if (
             (partitionComment &&
