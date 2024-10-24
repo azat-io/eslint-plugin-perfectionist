@@ -689,6 +689,60 @@ describe(ruleName, () => {
         invalid: [],
       },
     )
+
+    ruleTester.run(
+      `${ruleName}(${type}): sorts inline elements correctly`,
+      rule,
+      {
+        valid: [],
+        invalid: [
+          {
+            code: dedent`
+              [
+                b, a
+              ].includes(value)
+            `,
+            output: dedent`
+              [
+                a, b
+              ].includes(value)
+            `,
+            options: [options],
+            errors: [
+              {
+                messageId: 'unexpectedArrayIncludesOrder',
+                data: {
+                  left: 'b',
+                  right: 'a',
+                },
+              },
+            ],
+          },
+          {
+            code: dedent`
+              [
+                b, a,
+              ].includes(value)
+            `,
+            output: dedent`
+              [
+                a, b,
+              ].includes(value)
+            `,
+            options: [options],
+            errors: [
+              {
+                messageId: 'unexpectedArrayIncludesOrder',
+                data: {
+                  left: 'b',
+                  right: 'a',
+                },
+              },
+            ],
+          },
+        ],
+      },
+    )
   })
 
   describe(`${ruleName}: sorting by natural order`, () => {

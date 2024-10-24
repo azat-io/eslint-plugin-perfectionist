@@ -240,7 +240,7 @@ export default createEslintRule<Options, MESSAGE_ID>({
 
             let lastSortingNode = accumulator.at(-1)?.at(-1)
             let sortingNode: SortingNodeWithDependencies = {
-              size: rangeToDiff(declaration.range),
+              size: rangeToDiff(declaration, sourceCode),
               node: declaration,
               dependencies,
               name,

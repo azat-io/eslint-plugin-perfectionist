@@ -166,7 +166,7 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
 
         let shouldIgnore = false
         if (options.ignorePattern.length) {
-          let tagName = sourceCode.text.slice(...node.openingElement.name.range)
+          let tagName = sourceCode.getText(node.openingElement.name)
           shouldIgnore = options.ignorePattern.some(pattern =>
             matches(tagName, pattern, options.matcher),
           )
@@ -202,10 +202,11 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
               }
 
               let jsxNode = {
-                size: rangeToDiff(attribute.range),
+                size: rangeToDiff(attribute, sourceCode),
                 group: getGroup(),
                 node: attribute,
                 name,
+                requiresEndingSemicolonOrCommaWhenInline: true,
               }
 
               accumulator.at(-1)!.push(jsxNode)

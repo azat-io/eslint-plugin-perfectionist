@@ -260,10 +260,11 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
               }
 
               let elementSortingNode: SortingNode = {
-                size: rangeToDiff(element.range),
+                size: rangeToDiff(element, sourceCode),
                 node: element,
                 group: getGroup(),
                 name,
+                requiresEndingSemicolonWhenInline: true,
               }
 
               if (

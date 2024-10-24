@@ -687,6 +687,60 @@ describe(ruleName, () => {
         },
       ],
     })
+
+    ruleTester.run(
+      `${ruleName}(${type}): sorts inline elements correctly`,
+      rule,
+      {
+        valid: [],
+        invalid: [
+          {
+            code: dedent`
+              import {
+                b, a
+              } from 'module'
+            `,
+            output: dedent`
+              import {
+                a, b
+              } from 'module'
+            `,
+            options: [options],
+            errors: [
+              {
+                messageId: 'unexpectedNamedImportsOrder',
+                data: {
+                  left: 'b',
+                  right: 'a',
+                },
+              },
+            ],
+          },
+          {
+            code: dedent`
+              import {
+                b, a,
+              } from 'module'
+            `,
+            output: dedent`
+              import {
+                a, b,
+              } from 'module'
+            `,
+            options: [options],
+            errors: [
+              {
+                messageId: 'unexpectedNamedImportsOrder',
+                data: {
+                  left: 'b',
+                  right: 'a',
+                },
+              },
+            ],
+          },
+        ],
+      },
+    )
   })
 
   describe(`${ruleName}: sorting by natural order`, () => {

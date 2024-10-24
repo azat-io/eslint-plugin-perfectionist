@@ -691,6 +691,56 @@ describe(ruleName, () => {
         invalid: [],
       },
     )
+
+    ruleTester.run(
+      `${ruleName}(${type}): sorts inline elements correctly`,
+      rule,
+      {
+        valid: [],
+        invalid: [
+          {
+            code: dedent`
+              type T =
+                & B & A
+            `,
+            output: dedent`
+              type T =
+                & A & B
+            `,
+            options: [options],
+            errors: [
+              {
+                messageId: 'unexpectedIntersectionTypesOrder',
+                data: {
+                  left: 'B',
+                  right: 'A',
+                },
+              },
+            ],
+          },
+          {
+            code: dedent`
+              type T =
+                B & A
+            `,
+            output: dedent`
+              type T =
+                A & B
+            `,
+            options: [options],
+            errors: [
+              {
+                messageId: 'unexpectedIntersectionTypesOrder',
+                data: {
+                  left: 'B',
+                  right: 'A',
+                },
+              },
+            ],
+          },
+        ],
+      },
+    )
   })
 
   describe(`${ruleName}: sorting by natural order`, () => {

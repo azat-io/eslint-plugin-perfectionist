@@ -119,11 +119,11 @@ export default createEslintRule<Options, MESSAGE_ID>({
               name = 'default'
               isDefaultClause = true
             } else {
-              name = sourceCode.text.slice(...caseNode.test.range)
+              name = sourceCode.getText(caseNode.test)
             }
 
             return {
-              size: rangeToDiff(caseNode.test?.range ?? caseNode.range),
+              size: rangeToDiff(caseNode.test ?? caseNode, sourceCode),
               node: caseNode,
               isDefaultClause,
               name,
