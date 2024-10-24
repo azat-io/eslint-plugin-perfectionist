@@ -410,6 +410,7 @@ export default createEslintRule<SortClassesOptions, MESSAGE_ID>({
             let memberValue: undefined | string
             let modifiers: Modifier[] = []
             let selectors: Selector[] = []
+            let requiresEndingSemicolon: boolean = true
             if (
               member.type === 'MethodDefinition' ||
               member.type === 'TSAbstractMethodDefinition'
@@ -424,6 +425,8 @@ export default createEslintRule<SortClassesOptions, MESSAGE_ID>({
               }
               if (member.type === 'TSAbstractMethodDefinition') {
                 modifiers.push('abstract')
+              } else {
+                requiresEndingSemicolon = false
               }
 
               if (decorated) {
@@ -469,6 +472,8 @@ export default createEslintRule<SortClassesOptions, MESSAGE_ID>({
 
               selectors.push('index-signature')
             } else if (member.type === 'StaticBlock') {
+              requiresEndingSemicolon = false
+
               selectors.push('static-block')
 
               dependencies = extractDependencies(member, true)
@@ -502,7 +507,6 @@ export default createEslintRule<SortClassesOptions, MESSAGE_ID>({
               selectors.push('accessor-property')
             } else {
               // Member is necessarily a Property
-
               // Similarly to above for methods, prioritize 'static', 'declare', 'decorated', 'abstract', 'override' and 'readonly'
               // over accessibility modifiers
               if (member.static) {
@@ -604,6 +608,7 @@ export default createEslintRule<SortClassesOptions, MESSAGE_ID>({
               node: member,
               dependencies,
               name,
+              requiresEndingSemicolonWhenInline: requiresEndingSemicolon,
               dependencyName: getDependencyName(
                 name,
                 modifiers.includes('static'),

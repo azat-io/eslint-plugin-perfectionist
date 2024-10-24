@@ -126,6 +126,7 @@ export default createEslintRule<Options, MESSAGE_ID>({
               size: rangeToDiff(caseNode.test?.range ?? caseNode.range),
               node: caseNode,
               isDefaultClause,
+              requiresEndingSemicolonWhenInline: true,
               name,
             }
           },

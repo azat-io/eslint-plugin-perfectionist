@@ -516,6 +516,7 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
         size: rangeToDiff(node.range),
         group: getGroup(),
         node,
+        requiresEndingSemicolonWhenInline: true,
         isIgnored:
           !options.sortSideEffects &&
           isSideEffect &&

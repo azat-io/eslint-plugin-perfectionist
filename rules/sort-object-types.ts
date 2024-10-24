@@ -276,6 +276,7 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
                 group: getGroup(),
                 node: member,
                 name,
+                requiresEndingSemicolonWhenInline: true,
               }
 
               if (
