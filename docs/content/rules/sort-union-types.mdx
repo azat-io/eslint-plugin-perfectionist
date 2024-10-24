@@ -165,6 +165,18 @@ type CarBrand =
 
 Each group of union types (separated by empty lines) is treated independently, and the order within each group is preserved.
 
+### newlinesBetween
+
+<sub>default: `'ignore'`</sub>
+
+Specifies how new lines should be handled between union type groups.
+
+- `ignore` — Do not report errors related to new lines between union type groups.
+- `always` — Enforce one new line between each group, and forbid new lines inside a group.
+- `never` — No new lines are allowed in union types.
+
+This options is only applicable when `partitionByNewLine` is `false`.
+
 ### groups
 
 <sub>
@@ -314,8 +326,9 @@ Determines the matcher used for patterns in the `partitionByComment` option.
                   order: 'asc',
                   ignoreCase: true,
                   specialCharacters: 'keep',
-                  partitionByNewLine: false,
                   partitionByComment: false,
+                  partitionByNewLine: false,
+                  newlinesBetween: 'ignore',
                   matcher: 'minimatch',
                   groups: [],
                 },
@@ -342,8 +355,9 @@ Determines the matcher used for patterns in the `partitionByComment` option.
                 order: 'asc',
                 ignoreCase: true,
                 specialCharacters: 'keep',
-                partitionByNewLine: false,
                 partitionByComment: false,
+                partitionByNewLine: false,
+                newlinesBetween: 'ignore',
                 matcher: 'minimatch',
                 groups: [],
               },

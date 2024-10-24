@@ -1,5 +1,4 @@
 import type { TSESTree } from '@typescript-eslint/types'
-import type { TSESLint } from '@typescript-eslint/utils'
 
 import type { SortingNodeWithDependencies } from '../utils/sort-nodes-by-dependencies'
 
@@ -7,16 +6,18 @@ import {
   getFirstUnorderedNodeDependentOn,
   sortNodesByDependencies,
 } from '../utils/sort-nodes-by-dependencies'
+import { validateNewlinesAndPartitionConfiguration } from '../utils/validate-newlines-and-partition-configuration'
 import { validateGroupsConfiguration } from '../utils/validate-groups-configuration'
 import { hasPartitionComment } from '../utils/is-partition-comment'
 import { sortNodesByGroups } from '../utils/sort-nodes-by-groups'
 import { getCommentsBefore } from '../utils/get-comments-before'
+import { makeNewlinesFixes } from '../utils/make-newlines-fixes'
+import { getNewlinesErrors } from '../utils/get-newlines-errors'
 import { createEslintRule } from '../utils/create-eslint-rule'
 import { getLinesBetween } from '../utils/get-lines-between'
 import { getGroupNumber } from '../utils/get-group-number'
 import { getSourceCode } from '../utils/get-source-code'
 import { getNodeParent } from '../utils/get-node-parent'
-import { toSingleLine } from '../utils/to-single-line'
 import { rangeToDiff } from '../utils/range-to-diff'
 import { getSettings } from '../utils/get-settings'
 import { useGroups } from '../utils/use-groups'
@@ -26,7 +27,9 @@ import { pairwise } from '../utils/pairwise'
 import { matches } from '../utils/matches'
 
 type MESSAGE_ID =
+  | 'missedSpacingBetweenObjectMembers'
   | 'unexpectedObjectsDependencyOrder'
+  | 'extraSpacingBetweenObjectMembers'
   | 'unexpectedObjectsGroupOrder'
   | 'unexpectedObjectsOrder'
 
@@ -37,6 +40,7 @@ type Options = [
     customGroups: { [key: string]: string[] | string }
     type: 'alphabetical' | 'line-length' | 'natural'
     partitionByComment: string[] | boolean | string
+    newlinesBetween: 'ignore' | 'always' | 'never'
     specialCharacters: 'remove' | 'trim' | 'keep'
     matcher: 'minimatch' | 'regex'
     groups: (Group[] | Group)[]
@@ -111,6 +115,12 @@ export default createEslintRule<Options, MESSAGE_ID>({
               'Allows to use spaces to separate the nodes into logical groups.',
             type: 'boolean',
           },
+          newlinesBetween: {
+            description:
+              'Specifies how new lines should be handled between object types groups.',
+            enum: ['ignore', 'always', 'never'],
+            type: 'string',
+          },
           styledComponents: {
             description: 'Controls whether to sort styled components.',
             type: 'boolean',
@@ -171,6 +181,10 @@ export default createEslintRule<Options, MESSAGE_ID>({
       unexpectedObjectsOrder: 'Expected "{{right}}" to come before "{{left}}".',
       unexpectedObjectsDependencyOrder:
         'Expected dependency "{{right}}" to come before "{{nodeDependentOnRight}}".',
+      missedSpacingBetweenObjectMembers:
+        'Missed spacing between "{{left}}" and "{{right}}" objects.',
+      extraSpacingBetweenObjectMembers:
+        'Extra spacing between "{{left}}" and "{{right}}" objects.',
     },
   },
   defaultOptions: [
@@ -204,6 +218,7 @@ export default createEslintRule<Options, MESSAGE_ID>({
         ignorePattern: [],
         matcher: 'minimatch',
         ignoreCase: true,
+        newlinesBetween: 'ignore',
         specialCharacters: 'keep',
         customGroups: {},
         order: 'asc',
@@ -215,6 +230,7 @@ export default createEslintRule<Options, MESSAGE_ID>({
         ['multiline', 'method', 'unknown'],
         Object.keys(options.customGroups),
       )
+      validateNewlinesAndPartitionConfiguration(options)
 
       let shouldIgnore = false
 
@@ -389,17 +405,6 @@ export default createEslintRule<Options, MESSAGE_ID>({
               let comments = getCommentsBefore(prop, sourceCode)
               let lastProp = accumulator.at(-1)?.at(-1)
 
-              if (
-                options.partitionByComment &&
-                hasPartitionComment(
-                  options.partitionByComment,
-                  comments,
-                  options.matcher,
-                )
-              ) {
-                accumulator.push([])
-              }
-
               let name: string
               let dependencies: string[] = []
 
@@ -440,9 +445,15 @@ export default createEslintRule<Options, MESSAGE_ID>({
               }
 
               if (
-                options.partitionByNewLine &&
-                lastProp &&
-                getLinesBetween(sourceCode, lastProp, propSortingNode)
+                (options.partitionByNewLine &&
+                  lastProp &&
+                  getLinesBetween(sourceCode, lastProp, propSortingNode)) ||
+                (options.partitionByComment &&
+                  hasPartitionComment(
+                    options.partitionByComment,
+                    comments,
+                    options.matcher,
+                  ))
               ) {
                 accumulator.push([])
               }
@@ -461,36 +472,68 @@ export default createEslintRule<Options, MESSAGE_ID>({
             .flat(),
         )
         let nodes = formattedMembers.flat()
+
         pairwise(nodes, (left, right) => {
+          let leftNum = getGroupNumber(options.groups, left)
+          let rightNum = getGroupNumber(options.groups, right)
+
           let indexOfLeft = sortedNodes.indexOf(left)
           let indexOfRight = sortedNodes.indexOf(right)
 
+          let messageIds: MESSAGE_ID[] = []
+          let firstUnorderedNodeDependentOnRight:
+            | SortingNodeWithDependencies
+            | undefined
+
           if (indexOfLeft > indexOfRight) {
-            let firstUnorderedNodeDependentOnRight =
+            firstUnorderedNodeDependentOnRight =
               getFirstUnorderedNodeDependentOn(right, nodes)
-            let leftNum = getGroupNumber(options.groups, left)
-            let rightNum = getGroupNumber(options.groups, right)
-            let messageId: MESSAGE_ID
             if (firstUnorderedNodeDependentOnRight) {
-              messageId = 'unexpectedObjectsDependencyOrder'
+              messageIds.push('unexpectedObjectsDependencyOrder')
             } else {
-              messageId =
+              messageIds.push(
                 leftNum !== rightNum
                   ? 'unexpectedObjectsGroupOrder'
-                  : 'unexpectedObjectsOrder'
+                  : 'unexpectedObjectsOrder',
+              )
             }
+          }
+
+          messageIds = [
+            ...messageIds,
+            ...getNewlinesErrors({
+              left,
+              leftNum,
+              right,
+              rightNum,
+              sourceCode,
+              missedSpacingError: 'missedSpacingBetweenObjectMembers',
+              extraSpacingError: 'extraSpacingBetweenObjectMembers',
+              options,
+            }),
+          ]
+
+          for (let messageId of messageIds) {
             context.report({
               messageId,
               data: {
-                left: toSingleLine(left.name),
+                left: left.name,
                 leftGroup: left.group,
-                right: toSingleLine(right.name),
+                right: right.name,
                 rightGroup: right.group,
                 nodeDependentOnRight: firstUnorderedNodeDependentOnRight?.name,
               },
               node: right.node,
-              fix: (fixer: TSESLint.RuleFixer) =>
-                makeFixes(fixer, nodes, sortedNodes, sourceCode, options),
+              fix: fixer => [
+                ...makeFixes(fixer, nodes, sortedNodes, sourceCode, options),
+                ...makeNewlinesFixes(
+                  fixer,
+                  nodes,
+                  sortedNodes,
+                  sourceCode,
+                  options,
+                ),
+              ],
             })
           }
         })

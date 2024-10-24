@@ -1,15 +1,17 @@
 import type { SortingNode } from '../typings'
 
+import { validateNewlinesAndPartitionConfiguration } from '../utils/validate-newlines-and-partition-configuration'
 import { validateGroupsConfiguration } from '../utils/validate-groups-configuration'
 import { hasPartitionComment } from '../utils/is-partition-comment'
 import { sortNodesByGroups } from '../utils/sort-nodes-by-groups'
 import { getCommentsBefore } from '../utils/get-comments-before'
+import { makeNewlinesFixes } from '../utils/make-newlines-fixes'
+import { getNewlinesErrors } from '../utils/get-newlines-errors'
 import { createEslintRule } from '../utils/create-eslint-rule'
 import { isMemberOptional } from '../utils/is-member-optional'
 import { getLinesBetween } from '../utils/get-lines-between'
 import { getGroupNumber } from '../utils/get-group-number'
 import { getSourceCode } from '../utils/get-source-code'
-import { toSingleLine } from '../utils/to-single-line'
 import { rangeToDiff } from '../utils/range-to-diff'
 import { getSettings } from '../utils/get-settings'
 import { useGroups } from '../utils/use-groups'
@@ -20,16 +22,19 @@ import { matches } from '../utils/matches'
 
 type MESSAGE_ID =
   | 'unexpectedInterfacePropertiesGroupOrder'
+  | 'missedSpacingBetweenInterfaceMembers'
+  | 'extraSpacingBetweenInterfaceMembers'
   | 'unexpectedInterfacePropertiesOrder'
 
 type Group<T extends string[]> = 'multiline' | 'unknown' | T[number] | 'method'
 
-type Options<T extends string[]> = [
+export type Options<T extends string[]> = [
   Partial<{
     groupKind: 'optional-first' | 'required-first' | 'mixed'
     customGroups: { [key: string]: string[] | string }
     type: 'alphabetical' | 'line-length' | 'natural'
     partitionByComment: string[] | boolean | string
+    newlinesBetween: 'ignore' | 'always' | 'never'
     specialCharacters: 'remove' | 'trim' | 'keep'
     groups: (Group<T>[] | Group<T>)[]
     matcher: 'minimatch' | 'regex'
@@ -110,6 +115,12 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
               'Allows to use spaces to separate the nodes into logical groups.',
             type: 'boolean',
           },
+          newlinesBetween: {
+            description:
+              'Specifies how new lines should be handled between object types groups.',
+            enum: ['ignore', 'always', 'never'],
+            type: 'string',
+          },
           groupKind: {
             description: 'Specifies the order of optional and required nodes.',
             enum: ['mixed', 'optional-first', 'required-first'],
@@ -158,6 +169,10 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
         'Expected "{{right}}" ({{rightGroup}}) to come before "{{left}}" ({{leftGroup}}).',
       unexpectedInterfacePropertiesOrder:
         'Expected "{{right}}" to come before "{{left}}".',
+      missedSpacingBetweenInterfaceMembers:
+        'Missed spacing between "{{left}}" and "{{right}}" interfaces.',
+      extraSpacingBetweenInterfaceMembers:
+        'Extra spacing between "{{left}}" and "{{right}}" interfaces.',
     },
   },
   defaultOptions: [
@@ -187,6 +202,7 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
           matcher: 'minimatch',
           ignorePattern: [],
           ignoreCase: true,
+          newlinesBetween: 'ignore',
           specialCharacters: 'keep',
           customGroups: {},
           order: 'asc',
@@ -198,6 +214,7 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
           ['multiline', 'method', 'unknown'],
           Object.keys(options.customGroups),
         )
+        validateNewlinesAndPartitionConfiguration(options)
 
         let sourceCode = getSourceCode(context)
         let partitionComment = options.partitionByComment
@@ -315,25 +332,62 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
             }
 
             pairwise(nodes, (left, right) => {
+              let leftNum = getGroupNumber(options.groups, left)
+              let rightNum = getGroupNumber(options.groups, right)
+
               let indexOfLeft = sortedNodes.indexOf(left)
               let indexOfRight = sortedNodes.indexOf(right)
+
+              let messageIds: MESSAGE_ID[] = []
+
               if (indexOfLeft > indexOfRight) {
-                let leftNum = getGroupNumber(options.groups, left)
-                let rightNum = getGroupNumber(options.groups, right)
+                messageIds.push(
+                  leftNum !== rightNum
+                    ? 'unexpectedInterfacePropertiesGroupOrder'
+                    : 'unexpectedInterfacePropertiesOrder',
+                )
+              }
+
+              messageIds = [
+                ...messageIds,
+                ...getNewlinesErrors({
+                  left,
+                  leftNum,
+                  right,
+                  rightNum,
+                  sourceCode,
+                  missedSpacingError: 'missedSpacingBetweenInterfaceMembers',
+                  extraSpacingError: 'extraSpacingBetweenInterfaceMembers',
+                  options,
+                }),
+              ]
+
+              for (let messageId of messageIds) {
                 context.report({
-                  messageId:
-                    leftNum !== rightNum
-                      ? 'unexpectedInterfacePropertiesGroupOrder'
-                      : 'unexpectedInterfacePropertiesOrder',
+                  messageId,
                   data: {
-                    left: toSingleLine(left.name),
+                    left: left.name,
                     leftGroup: left.group,
-                    right: toSingleLine(right.name),
+                    right: right.name,
                     rightGroup: right.group,
                   },
                   node: right.node,
-                  fix: fixer =>
-                    makeFixes(fixer, nodes, sortedNodes, sourceCode, options),
+                  fix: fixer => [
+                    ...makeFixes(
+                      fixer,
+                      nodes,
+                      sortedNodes,
+                      sourceCode,
+                      options,
+                    ),
+                    ...makeNewlinesFixes(
+                      fixer,
+                      nodes,
+                      sortedNodes,
+                      sourceCode,
+                      options,
+                    ),
+                  ],
                 })
               }
             })
