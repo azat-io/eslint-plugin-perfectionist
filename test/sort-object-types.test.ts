@@ -878,6 +878,82 @@ describe(ruleName, () => {
       ],
       invalid: [],
     })
+
+    ruleTester.run(
+      `${ruleName}(${type}): sorts inline elements correctly`,
+      rule,
+      {
+        valid: [],
+        invalid: [
+          {
+            code: dedent`
+              type Type = {
+                b: string, a: string
+              }
+            `,
+            output: dedent`
+              type Type = {
+                a: string; b: string,
+              }
+            `,
+            options: [options],
+            errors: [
+              {
+                messageId: 'unexpectedObjectTypesOrder',
+                data: {
+                  left: 'b',
+                  right: 'a',
+                },
+              },
+            ],
+          },
+          {
+            code: dedent`
+              type Type = {
+                b: string, a: string;
+              }
+            `,
+            output: dedent`
+              type Type = {
+                a: string; b: string,
+              }
+            `,
+            options: [options],
+            errors: [
+              {
+                messageId: 'unexpectedObjectTypesOrder',
+                data: {
+                  left: 'b',
+                  right: 'a',
+                },
+              },
+            ],
+          },
+          {
+            code: dedent`
+              type Type = {
+                b: string, a: string,
+              }
+            `,
+            output: dedent`
+              type Type = {
+                a: string, b: string,
+              }
+            `,
+            options: [options],
+            errors: [
+              {
+                messageId: 'unexpectedObjectTypesOrder',
+                data: {
+                  left: 'b',
+                  right: 'a',
+                },
+              },
+            ],
+          },
+        ],
+      },
+    )
   })
 
   describe(`${ruleName}: sorting by natural order`, () => {
