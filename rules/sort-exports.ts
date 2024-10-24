@@ -145,7 +145,7 @@ export default createEslintRule<Options, MESSAGE_ID>({
         | TSESTree.ExportAllDeclaration,
     ) => {
       let sortingNode: SortExportsSortingNode = {
-        size: rangeToDiff(node.range),
+        size: rangeToDiff(node, sourceCode),
         name: node.source.value,
         node,
         requiresEndingSemicolonWhenInline: true,

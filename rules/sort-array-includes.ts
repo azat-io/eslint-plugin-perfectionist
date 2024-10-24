@@ -179,7 +179,7 @@ export let sortArray = <MessageIds extends string>(
               element.type === 'Literal'
                 ? `${element.value}`
                 : sourceCode.text.slice(...element.range),
-            size: rangeToDiff(element.range),
+            size: rangeToDiff(element, sourceCode),
             node: element,
             group,
           }

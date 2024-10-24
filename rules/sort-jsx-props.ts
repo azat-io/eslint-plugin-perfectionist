@@ -202,10 +202,11 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
               }
 
               let jsxNode = {
-                size: rangeToDiff(attribute.range),
+                size: rangeToDiff(attribute, sourceCode),
                 group: getGroup(),
                 node: attribute,
                 name,
+                requiresEndingSemicolonOrCommaWhenInline: true,
               }
 
               accumulator.at(-1)!.push(jsxNode)
