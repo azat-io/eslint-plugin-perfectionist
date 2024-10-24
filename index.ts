@@ -5,6 +5,7 @@ import type {
 
 import sortVariableDeclarations from './rules/sort-variable-declarations'
 import sortIntersectionTypes from './rules/sort-intersection-types'
+import sortHeritageClauses from './rules/sort-heritage-clauses'
 import sortArrayIncludes from './rules/sort-array-includes'
 import sortNamedImports from './rules/sort-named-imports'
 import sortNamedExports from './rules/sort-named-exports'
@@ -37,6 +38,7 @@ let plugin = {
   rules: {
     'sort-variable-declarations': sortVariableDeclarations,
     'sort-intersection-types': sortIntersectionTypes,
+    'sort-heritage-clauses': sortHeritageClauses,
     'sort-array-includes': sortArrayIncludes,
     'sort-named-imports': sortNamedImports,
     'sort-named-exports': sortNamedExports,
