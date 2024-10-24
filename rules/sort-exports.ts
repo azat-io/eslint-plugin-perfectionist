@@ -148,6 +148,7 @@ export default createEslintRule<Options, MESSAGE_ID>({
         size: rangeToDiff(node.range),
         name: node.source.value,
         node,
+        requiresEndingSemicolonWhenInline: true,
       }
       let lastNode = parts.at(-1)?.at(-1)
       if (
