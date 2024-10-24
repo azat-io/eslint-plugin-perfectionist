@@ -919,6 +919,56 @@ describe(ruleName, () => {
         invalid: [],
       },
     )
+
+    ruleTester.run(
+      `${ruleName}(${type}): sorts inline elements correctly`,
+      rule,
+      {
+        valid: [],
+        invalid: [
+          {
+            code: dedent`
+              const
+                b = 'b', a = 'a'
+            `,
+            output: dedent`
+              const
+                a = 'a', b = 'b'
+            `,
+            options: [options],
+            errors: [
+              {
+                messageId: 'unexpectedVariableDeclarationsOrder',
+                data: {
+                  left: 'b',
+                  right: 'a',
+                },
+              },
+            ],
+          },
+          {
+            code: dedent`
+              const
+                b = 'b', a = 'a',
+            `,
+            output: dedent`
+              const
+                a = 'a', b = 'b',
+            `,
+            options: [options],
+            errors: [
+              {
+                messageId: 'unexpectedVariableDeclarationsOrder',
+                data: {
+                  left: 'b',
+                  right: 'a',
+                },
+              },
+            ],
+          },
+        ],
+      },
+    )
   })
 
   describe(`${ruleName}: sorting by natural order`, () => {
