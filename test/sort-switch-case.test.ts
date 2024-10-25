@@ -705,6 +705,104 @@ describe(ruleName, () => {
         invalid: [],
       },
     )
+
+    ruleTester.run(
+      `${ruleName}(${type}): sorts inline elements correctly`,
+      rule,
+      {
+        valid: [],
+        invalid: [
+          {
+            code: dedent`
+              switch (x) {
+                case "b": break; case "a": break
+              }
+            `,
+            output: dedent`
+              switch (x) {
+                case "a": break; case "b": break;
+              }
+            `,
+            options: [options],
+            errors: [
+              {
+                messageId: 'unexpectedSwitchCaseOrder',
+                data: {
+                  left: 'b',
+                  right: 'a',
+                },
+              },
+            ],
+          },
+          {
+            code: dedent`
+              switch (x) {
+                case "b": break; case "a": break;
+              }
+            `,
+            output: dedent`
+              switch (x) {
+                case "a": break; case "b": break;
+              }
+            `,
+            options: [options],
+            errors: [
+              {
+                messageId: 'unexpectedSwitchCaseOrder',
+                data: {
+                  left: 'b',
+                  right: 'a',
+                },
+              },
+            ],
+          },
+          {
+            code: dedent`
+              switch (x) {
+                case "b": { break } case "a": { break }
+              }
+            `,
+            output: dedent`
+              switch (x) {
+                case "a": { break }; case "b": { break }
+              }
+            `,
+            options: [options],
+            errors: [
+              {
+                messageId: 'unexpectedSwitchCaseOrder',
+                data: {
+                  left: 'b',
+                  right: 'a',
+                },
+              },
+            ],
+          },
+          {
+            code: dedent`
+              switch (x) {
+                case "b": { break } case "a": { break };
+              }
+            `,
+            output: dedent`
+              switch (x) {
+                case "a": { break }; case "b": { break }
+              }
+            `,
+            options: [options],
+            errors: [
+              {
+                messageId: 'unexpectedSwitchCaseOrder',
+                data: {
+                  left: 'b',
+                  right: 'a',
+                },
+              },
+            ],
+          },
+        ],
+      },
+    )
   })
 
   describe(`${ruleName}: sorting by natural order`, () => {
