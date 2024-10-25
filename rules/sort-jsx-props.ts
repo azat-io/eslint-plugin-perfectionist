@@ -100,9 +100,7 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
       if (node.openingElement.attributes.length > 1) {
         let settings = getSettings(context.settings)
 
-        let options = complete(context.options.at(0), settings, {
-          ...defaultOptions,
-        })
+        let options = complete(context.options.at(0), settings, defaultOptions)
 
         validateGroupsConfiguration(
           options.groups,

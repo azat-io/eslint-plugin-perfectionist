@@ -122,9 +122,7 @@ export let sortArray = <MessageIds extends string>(
   let settings = getSettings(context.settings)
 
   if (elements.length > 1) {
-    let options = complete(context.options.at(0), settings, {
-      ...defaultOptions,
-    })
+    let options = complete(context.options.at(0), settings, defaultOptions)
 
     let sourceCode = getSourceCode(context)
     let partitionComment = options.partitionByComment

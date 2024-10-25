@@ -106,9 +106,7 @@ export default createEslintRule<Options, MESSAGE_ID>({
       if (specifiers.length > 1) {
         let settings = getSettings(context.settings)
 
-        let options = complete(context.options.at(0), settings, {
-          ...defaultOptions,
-        })
+        let options = complete(context.options.at(0), settings, defaultOptions)
 
         let sourceCode = getSourceCode(context)
         let partitionComment = options.partitionByComment
