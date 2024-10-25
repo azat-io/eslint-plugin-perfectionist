@@ -410,7 +410,7 @@ export default createEslintRule<SortClassesOptions, MESSAGE_ID>({
             let memberValue: undefined | string
             let modifiers: Modifier[] = []
             let selectors: Selector[] = []
-            let requiresEndingSemicolon: boolean = true
+            let addSafetySemicolonWhenInline: boolean = true
             if (
               member.type === 'MethodDefinition' ||
               member.type === 'TSAbstractMethodDefinition'
@@ -426,7 +426,7 @@ export default createEslintRule<SortClassesOptions, MESSAGE_ID>({
               if (member.type === 'TSAbstractMethodDefinition') {
                 modifiers.push('abstract')
               } else {
-                requiresEndingSemicolon = false
+                addSafetySemicolonWhenInline = false
               }
 
               if (decorated) {
@@ -472,7 +472,7 @@ export default createEslintRule<SortClassesOptions, MESSAGE_ID>({
 
               selectors.push('index-signature')
             } else if (member.type === 'StaticBlock') {
-              requiresEndingSemicolon = false
+              addSafetySemicolonWhenInline = false
 
               selectors.push('static-block')
 
@@ -608,7 +608,7 @@ export default createEslintRule<SortClassesOptions, MESSAGE_ID>({
               node: member,
               dependencies,
               name,
-              addSafetySemicolonWhenInline: requiresEndingSemicolon,
+              addSafetySemicolonWhenInline,
               dependencyName: getDependencyName(
                 name,
                 modifiers.includes('static'),
