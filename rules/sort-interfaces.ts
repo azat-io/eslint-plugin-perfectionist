@@ -281,7 +281,7 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
                 node: element,
                 group: getGroup(),
                 name,
-                requiresEndingSemicolonWhenInline: true,
+                addSafetySemicolonWhenInline: true,
               }
 
               if (

@@ -40,7 +40,7 @@ export let makeFixes = (
       if (
         !sortedNodeText.endsWith(';') &&
         !sortedNodeText.endsWith(',') &&
-        sortedSortingNode.requiresEndingSemicolonWhenInline &&
+        sortedSortingNode.addSafetySemicolonWhenInline &&
         nextToken &&
         node.loc.start.line === nextToken.loc.start.line &&
         nextToken.value !== ';' &&

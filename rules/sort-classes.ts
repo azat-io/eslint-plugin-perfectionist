@@ -608,7 +608,7 @@ export default createEslintRule<SortClassesOptions, MESSAGE_ID>({
               node: member,
               dependencies,
               name,
-              requiresEndingSemicolonWhenInline: requiresEndingSemicolon,
+              addSafetySemicolonWhenInline: requiresEndingSemicolon,
               dependencyName: getDependencyName(
                 name,
                 modifiers.includes('static'),
