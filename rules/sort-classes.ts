@@ -9,6 +9,15 @@ import type {
 import type { SortingNodeWithDependencies } from '../utils/sort-nodes-by-dependencies'
 
 import {
+  partitionByCommentJsonSchema,
+  specialCharactersJsonSchema,
+  ignoreCaseJsonSchema,
+  matcherJsonSchema,
+  groupsJsonSchema,
+  orderJsonSchema,
+  typeJsonSchema,
+} from '../utils/common-json-schemas'
+import {
   validateGroupsConfiguration,
   getOverloadSignatureGroups,
   generateOfficialGroups,
@@ -43,30 +52,39 @@ type MESSAGE_ID =
   | 'unexpectedClassesGroupOrder'
   | 'unexpectedClassesOrder'
 
-const defaultGroups: SortClassesOptions[0]['groups'] = [
-  'index-signature',
-  ['static-property', 'static-accessor-property'],
-  ['static-get-method', 'static-set-method'],
-  ['protected-static-property', 'protected-static-accessor-property'],
-  ['protected-static-get-method', 'protected-static-set-method'],
-  ['private-static-property', 'private-static-accessor-property'],
-  ['private-static-get-method', 'private-static-set-method'],
-  'static-block',
-  ['property', 'accessor-property'],
-  ['get-method', 'set-method'],
-  ['protected-property', 'protected-accessor-property'],
-  ['protected-get-method', 'protected-set-method'],
-  ['private-property', 'private-accessor-property'],
-  ['private-get-method', 'private-set-method'],
-  'constructor',
-  ['static-method', 'static-function-property'],
-  ['protected-static-method', 'protected-static-function-property'],
-  ['private-static-method', 'private-static-function-property'],
-  ['method', 'function-property'],
-  ['protected-method', 'protected-function-property'],
-  ['private-method', 'private-function-property'],
-  'unknown',
-]
+const defaultOptions: Required<SortClassesOptions[0]> = {
+  groups: [
+    'index-signature',
+    ['static-property', 'static-accessor-property'],
+    ['static-get-method', 'static-set-method'],
+    ['protected-static-property', 'protected-static-accessor-property'],
+    ['protected-static-get-method', 'protected-static-set-method'],
+    ['private-static-property', 'private-static-accessor-property'],
+    ['private-static-get-method', 'private-static-set-method'],
+    'static-block',
+    ['property', 'accessor-property'],
+    ['get-method', 'set-method'],
+    ['protected-property', 'protected-accessor-property'],
+    ['protected-get-method', 'protected-set-method'],
+    ['private-property', 'private-accessor-property'],
+    ['private-get-method', 'private-set-method'],
+    'constructor',
+    ['static-method', 'static-function-property'],
+    ['protected-static-method', 'protected-static-function-property'],
+    ['private-static-method', 'private-static-function-property'],
+    ['method', 'function-property'],
+    ['protected-method', 'protected-function-property'],
+    ['private-method', 'private-function-property'],
+    'unknown',
+  ],
+  matcher: 'minimatch',
+  partitionByComment: false,
+  type: 'alphabetical',
+  ignoreCase: true,
+  specialCharacters: 'keep',
+  customGroups: [],
+  order: 'asc',
+}
 
 export default createEslintRule<SortClassesOptions, MESSAGE_ID>({
   name: 'sort-classes',
@@ -80,68 +98,17 @@ export default createEslintRule<SortClassesOptions, MESSAGE_ID>({
       {
         type: 'object',
         properties: {
-          type: {
-            description: 'Specifies the sorting method.',
-            type: 'string',
-            enum: ['alphabetical', 'natural', 'line-length'],
-          },
-          order: {
-            description:
-              'Determines whether the sorted items should be in ascending or descending order.',
-            type: 'string',
-            enum: ['asc', 'desc'],
-          },
-          matcher: {
-            description: 'Specifies the string matcher.',
-            type: 'string',
-            enum: ['minimatch', 'regex'],
-          },
-          ignoreCase: {
-            description:
-              'Controls whether sorting should be case-sensitive or not.',
-            type: 'boolean',
-          },
-          specialCharacters: {
-            description:
-              'Controls how special characters should be handled before sorting.',
-            type: 'string',
-            enum: ['remove', 'trim', 'keep'],
-          },
+          type: typeJsonSchema,
+          order: orderJsonSchema,
+          matcher: matcherJsonSchema,
+          ignoreCase: ignoreCaseJsonSchema,
+          specialCharacters: specialCharactersJsonSchema,
           partitionByComment: {
+            ...partitionByCommentJsonSchema,
             description:
               'Allows to use comments to separate the class members into logical groups.',
-            anyOf: [
-              {
-                type: 'array',
-                items: {
-                  type: 'string',
-                },
-              },
-              {
-                type: 'boolean',
-              },
-              {
-                type: 'string',
-              },
-            ],
           },
-          groups: {
-            description: 'Specifies the order of the groups.',
-            type: 'array',
-            items: {
-              oneOf: [
-                {
-                  type: 'string',
-                },
-                {
-                  type: 'array',
-                  items: {
-                    type: 'string',
-                  },
-                },
-              ],
-            },
-          },
+          groups: groupsJsonSchema,
           customGroups: {
             description: 'Specifies custom groups.',
             type: 'array',
@@ -192,33 +159,13 @@ export default createEslintRule<SortClassesOptions, MESSAGE_ID>({
         'Expected dependency "{{right}}" to come before "{{nodeDependentOnRight}}".',
     },
   },
-  defaultOptions: [
-    {
-      type: 'alphabetical',
-      order: 'asc',
-      ignoreCase: true,
-      specialCharacters: 'keep',
-      matcher: 'minimatch',
-      partitionByComment: false,
-      groups: defaultGroups,
-      customGroups: [],
-    },
-  ],
+  defaultOptions: [defaultOptions],
   create: context => ({
     ClassBody: node => {
       if (node.body.length > 1) {
         let settings = getSettings(context.settings)
 
-        let options = complete(context.options.at(0), settings, {
-          groups: defaultGroups,
-          matcher: 'minimatch',
-          partitionByComment: false,
-          type: 'alphabetical',
-          ignoreCase: true,
-          specialCharacters: 'keep',
-          customGroups: [],
-          order: 'asc',
-        } as const)
+        let options = complete(context.options.at(0), settings, defaultOptions)
 
         validateGroupsConfiguration(options.groups, options.customGroups)
 

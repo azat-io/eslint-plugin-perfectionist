@@ -4,6 +4,14 @@ import type { SortingNodeWithDependencies } from '../utils/sort-nodes-by-depende
 import type { CompareOptions } from '../utils/compare'
 
 import {
+  partitionByCommentJsonSchema,
+  specialCharactersJsonSchema,
+  ignoreCaseJsonSchema,
+  matcherJsonSchema,
+  orderJsonSchema,
+  typeJsonSchema,
+} from '../utils/common-json-schemas'
+import {
   getFirstUnorderedNodeDependentOn,
   sortNodesByDependencies,
 } from '../utils/sort-nodes-by-dependencies'
@@ -36,6 +44,18 @@ export type Options = [
   }>,
 ]
 
+const defaultOptions: Required<Options[0]> = {
+  partitionByComment: false,
+  partitionByNewLine: false,
+  type: 'alphabetical',
+  matcher: 'minimatch',
+  ignoreCase: true,
+  specialCharacters: 'keep',
+  order: 'asc',
+  sortByValue: false,
+  forceNumericSort: false,
+}
+
 export default createEslintRule<Options, MESSAGE_ID>({
   name: 'sort-enums',
   meta: {
@@ -48,33 +68,11 @@ export default createEslintRule<Options, MESSAGE_ID>({
       {
         type: 'object',
         properties: {
-          type: {
-            description: 'Specifies the sorting method.',
-            type: 'string',
-            enum: ['alphabetical', 'natural', 'line-length'],
-          },
-          order: {
-            description:
-              'Determines whether the sorted items should be in ascending or descending order.',
-            type: 'string',
-            enum: ['asc', 'desc'],
-          },
-          matcher: {
-            description: 'Specifies the string matcher.',
-            type: 'string',
-            enum: ['minimatch', 'regex'],
-          },
-          ignoreCase: {
-            description:
-              'Controls whether sorting should be case-sensitive or not.',
-            type: 'boolean',
-          },
-          specialCharacters: {
-            description:
-              'Controls how special characters should be handled before sorting.',
-            type: 'string',
-            enum: ['remove', 'trim', 'keep'],
-          },
+          type: typeJsonSchema,
+          order: orderJsonSchema,
+          matcher: matcherJsonSchema,
+          ignoreCase: ignoreCaseJsonSchema,
+          specialCharacters: specialCharactersJsonSchema,
           sortByValue: {
             description: 'Compare enum values instead of names.',
             type: 'boolean',
@@ -85,22 +83,9 @@ export default createEslintRule<Options, MESSAGE_ID>({
             type: 'boolean',
           },
           partitionByComment: {
+            ...partitionByCommentJsonSchema,
             description:
               'Allows you to use comments to separate the members of enums into logical groups.',
-            anyOf: [
-              {
-                type: 'array',
-                items: {
-                  type: 'string',
-                },
-              },
-              {
-                type: 'boolean',
-              },
-              {
-                type: 'string',
-              },
-            ],
           },
           partitionByNewLine: {
             description:
@@ -117,19 +102,7 @@ export default createEslintRule<Options, MESSAGE_ID>({
         'Expected dependency "{{right}}" to come before "{{nodeDependentOnRight}}".',
     },
   },
-  defaultOptions: [
-    {
-      type: 'alphabetical',
-      order: 'asc',
-      ignoreCase: true,
-      specialCharacters: 'keep',
-      matcher: 'minimatch',
-      sortByValue: false,
-      partitionByComment: false,
-      partitionByNewLine: false,
-      forceNumericSort: false,
-    },
-  ],
+  defaultOptions: [defaultOptions],
   create: context => ({
     TSEnumDeclaration: node => {
       let getMembers = (nodeValue: TSESTree.TSEnumDeclaration) =>
@@ -143,17 +116,7 @@ export default createEslintRule<Options, MESSAGE_ID>({
       ) {
         let settings = getSettings(context.settings)
 
-        let options = complete(context.options.at(0), settings, {
-          partitionByComment: false,
-          partitionByNewLine: false,
-          type: 'alphabetical',
-          matcher: 'minimatch',
-          ignoreCase: true,
-          specialCharacters: 'keep',
-          order: 'asc',
-          sortByValue: false,
-          forceNumericSort: false,
-        } as const)
+        let options = complete(context.options.at(0), settings, defaultOptions)
 
         let sourceCode = getSourceCode(context)
         let partitionComment = options.partitionByComment

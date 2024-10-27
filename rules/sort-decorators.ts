@@ -3,6 +3,16 @@ import type { TSESTree } from '@typescript-eslint/types'
 
 import type { SortingNode } from '../typings'
 
+import {
+  partitionByCommentJsonSchema,
+  specialCharactersJsonSchema,
+  customGroupsJsonSchema,
+  ignoreCaseJsonSchema,
+  matcherJsonSchema,
+  groupsJsonSchema,
+  orderJsonSchema,
+  typeJsonSchema,
+} from '../utils/common-json-schemas'
 import { validateGroupsConfiguration } from '../utils/validate-groups-configuration'
 import { hasPartitionComment } from '../utils/is-partition-comment'
 import { sortNodesByGroups } from '../utils/sort-nodes-by-groups'
@@ -43,6 +53,22 @@ export type Options<T extends string[]> = [
 
 type SortDecoratorsSortingNode = SortingNode<TSESTree.Decorator>
 
+const defaultOptions: Required<Options<string[]>[0]> = {
+  type: 'alphabetical',
+  matcher: 'minimatch',
+  ignoreCase: true,
+  specialCharacters: 'keep',
+  partitionByComment: false,
+  customGroups: {},
+  order: 'asc',
+  groups: [],
+  sortOnClasses: true,
+  sortOnMethods: true,
+  sortOnAccessors: true,
+  sortOnProperties: true,
+  sortOnParameters: true,
+}
+
 export default createEslintRule<Options<string[]>, MESSAGE_ID>({
   name: 'sort-decorators',
   meta: {
@@ -55,33 +81,11 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
       {
         type: 'object',
         properties: {
-          type: {
-            description: 'Specifies the sorting method.',
-            type: 'string',
-            enum: ['alphabetical', 'natural', 'line-length'],
-          },
-          order: {
-            description:
-              'Determines whether the sorted items should be in ascending or descending order.',
-            type: 'string',
-            enum: ['asc', 'desc'],
-          },
-          matcher: {
-            description: 'Specifies the string matcher.',
-            type: 'string',
-            enum: ['minimatch', 'regex'],
-          },
-          ignoreCase: {
-            description:
-              'Controls whether sorting should be case-sensitive or not.',
-            type: 'boolean',
-          },
-          specialCharacters: {
-            description:
-              'Controls how special characters should be handled before sorting.',
-            type: 'string',
-            enum: ['remove', 'trim', 'keep'],
-          },
+          type: typeJsonSchema,
+          order: orderJsonSchema,
+          matcher: matcherJsonSchema,
+          ignoreCase: ignoreCaseJsonSchema,
+          specialCharacters: specialCharactersJsonSchema,
           sortOnClasses: {
             description:
               'Controls whether sorting should be enabled for class decorators.',
@@ -108,57 +112,12 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
             type: 'boolean',
           },
           partitionByComment: {
+            ...partitionByCommentJsonSchema,
             description:
               'Allows you to use comments to separate the decorators into logical groups.',
-            anyOf: [
-              {
-                type: 'boolean',
-              },
-              {
-                type: 'string',
-              },
-              {
-                type: 'array',
-                items: {
-                  type: 'string',
-                },
-              },
-            ],
           },
-          groups: {
-            description: 'Specifies the order of the groups.',
-            type: 'array',
-            items: {
-              oneOf: [
-                {
-                  type: 'string',
-                },
-                {
-                  type: 'array',
-                  items: {
-                    type: 'string',
-                  },
-                },
-              ],
-            },
-          },
-          customGroups: {
-            description: 'Specifies custom groups.',
-            type: 'object',
-            additionalProperties: {
-              oneOf: [
-                {
-                  type: 'string',
-                },
-                {
-                  type: 'array',
-                  items: {
-                    type: 'string',
-                  },
-                },
-              ],
-            },
-          },
+          groups: groupsJsonSchema,
+          customGroups: customGroupsJsonSchema,
         },
         additionalProperties: false,
       },
@@ -170,41 +129,11 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
         'Expected "{{right}}" to come before "{{left}}".',
     },
   },
-  defaultOptions: [
-    {
-      type: 'alphabetical',
-      order: 'asc',
-      ignoreCase: true,
-      specialCharacters: 'keep',
-      partitionByComment: false,
-      matcher: 'minimatch',
-      groups: [],
-      customGroups: {},
-      sortOnClasses: true,
-      sortOnMethods: true,
-      sortOnAccessors: true,
-      sortOnProperties: true,
-      sortOnParameters: true,
-    },
-  ],
+  defaultOptions: [defaultOptions],
   create: context => {
     let settings = getSettings(context.settings)
 
-    let options = complete(context.options.at(0), settings, {
-      type: 'alphabetical',
-      matcher: 'minimatch',
-      ignoreCase: true,
-      specialCharacters: 'keep',
-      partitionByComment: false,
-      customGroups: {},
-      order: 'asc',
-      groups: [],
-      sortOnClasses: true,
-      sortOnMethods: true,
-      sortOnAccessors: true,
-      sortOnProperties: true,
-      sortOnParameters: true,
-    } as const)
+    let options = complete(context.options.at(0), settings, defaultOptions)
 
     validateGroupsConfiguration(
       options.groups,
