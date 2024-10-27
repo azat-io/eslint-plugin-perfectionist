@@ -1,5 +1,15 @@
 import type { SortingNode } from '../typings'
 
+import {
+  partitionByCommentJsonSchema,
+  specialCharactersJsonSchema,
+  customGroupsJsonSchema,
+  ignoreCaseJsonSchema,
+  matcherJsonSchema,
+  groupsJsonSchema,
+  orderJsonSchema,
+  typeJsonSchema,
+} from '../utils/common-json-schemas'
 import { validateNewlinesAndPartitionConfiguration } from '../utils/validate-newlines-and-partition-configuration'
 import { validateGroupsConfiguration } from '../utils/validate-groups-configuration'
 import { hasPartitionComment } from '../utils/is-partition-comment'
@@ -45,6 +55,21 @@ export type Options<T extends string[]> = [
   }>,
 ]
 
+const defaultOptions: Required<Options<string[]>[0]> = {
+  partitionByComment: false,
+  partitionByNewLine: false,
+  type: 'alphabetical',
+  groupKind: 'mixed',
+  matcher: 'minimatch',
+  newlinesBetween: 'ignore',
+  ignorePattern: [],
+  ignoreCase: true,
+  specialCharacters: 'keep',
+  customGroups: {},
+  order: 'asc',
+  groups: [],
+}
+
 export default createEslintRule<Options<string[]>, MESSAGE_ID>({
   name: 'sort-interfaces',
   meta: {
@@ -57,33 +82,11 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
       {
         type: 'object',
         properties: {
-          type: {
-            description: 'Specifies the sorting method.',
-            type: 'string',
-            enum: ['alphabetical', 'natural', 'line-length'],
-          },
-          order: {
-            description:
-              'Determines whether the sorted items should be in ascending or descending order.',
-            type: 'string',
-            enum: ['asc', 'desc'],
-          },
-          matcher: {
-            description: 'Specifies the string matcher.',
-            type: 'string',
-            enum: ['minimatch', 'regex'],
-          },
-          ignoreCase: {
-            description:
-              'Controls whether sorting should be case-sensitive or not.',
-            type: 'boolean',
-          },
-          specialCharacters: {
-            description:
-              'Controls how special characters should be handled before sorting.',
-            type: 'string',
-            enum: ['remove', 'trim', 'keep'],
-          },
+          type: typeJsonSchema,
+          order: orderJsonSchema,
+          matcher: matcherJsonSchema,
+          ignoreCase: ignoreCaseJsonSchema,
+          specialCharacters: specialCharactersJsonSchema,
           ignorePattern: {
             description:
               'Specifies names or patterns for nodes that should be ignored by rule.',
@@ -93,22 +96,9 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
             type: 'array',
           },
           partitionByComment: {
+            ...partitionByCommentJsonSchema,
             description:
               'Allows you to use comments to separate the interface properties into logical groups.',
-            anyOf: [
-              {
-                type: 'boolean',
-              },
-              {
-                type: 'string',
-              },
-              {
-                type: 'array',
-                items: {
-                  type: 'string',
-                },
-              },
-            ],
           },
           partitionByNewLine: {
             description:
@@ -126,40 +116,8 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
             enum: ['mixed', 'optional-first', 'required-first'],
             type: 'string',
           },
-          groups: {
-            description: 'Specifies the order of the groups.',
-            type: 'array',
-            items: {
-              oneOf: [
-                {
-                  type: 'string',
-                },
-                {
-                  type: 'array',
-                  items: {
-                    type: 'string',
-                  },
-                },
-              ],
-            },
-          },
-          customGroups: {
-            description: 'Specifies custom groups.',
-            type: 'object',
-            additionalProperties: {
-              oneOf: [
-                {
-                  type: 'string',
-                },
-                {
-                  type: 'array',
-                  items: {
-                    type: 'string',
-                  },
-                },
-              ],
-            },
-          },
+          groups: groupsJsonSchema,
+          customGroups: customGroupsJsonSchema,
         },
         additionalProperties: false,
       },
@@ -175,39 +133,12 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
         'Extra spacing between "{{left}}" and "{{right}}" interfaces.',
     },
   },
-  defaultOptions: [
-    {
-      type: 'alphabetical',
-      order: 'asc',
-      ignoreCase: true,
-      specialCharacters: 'keep',
-      matcher: 'minimatch',
-      ignorePattern: [],
-      partitionByComment: false,
-      partitionByNewLine: false,
-      groupKind: 'mixed',
-      groups: [],
-      customGroups: {},
-    },
-  ],
+  defaultOptions: [defaultOptions],
   create: context => ({
     TSInterfaceDeclaration: node => {
       if (node.body.body.length > 1) {
         let settings = getSettings(context.settings)
-        let options = complete(context.options.at(0), settings, {
-          partitionByComment: false,
-          partitionByNewLine: false,
-          type: 'alphabetical',
-          groupKind: 'mixed',
-          matcher: 'minimatch',
-          ignorePattern: [],
-          ignoreCase: true,
-          newlinesBetween: 'ignore',
-          specialCharacters: 'keep',
-          customGroups: {},
-          order: 'asc',
-          groups: [],
-        } as const)
+        let options = complete(context.options.at(0), settings, defaultOptions)
 
         validateGroupsConfiguration(
           options.groups,

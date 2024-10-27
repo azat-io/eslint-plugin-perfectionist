@@ -1,5 +1,13 @@
 import type { SortingNode } from '../typings'
 
+import {
+  partitionByCommentJsonSchema,
+  specialCharactersJsonSchema,
+  ignoreCaseJsonSchema,
+  matcherJsonSchema,
+  orderJsonSchema,
+  typeJsonSchema,
+} from '../utils/common-json-schemas'
 import { hasPartitionComment } from '../utils/is-partition-comment'
 import { getCommentsBefore } from '../utils/get-comments-before'
 import { createEslintRule } from '../utils/create-eslint-rule'
@@ -30,6 +38,17 @@ type Options = [
   }>,
 ]
 
+const defaultOptions: Required<Options[0]> = {
+  type: 'alphabetical',
+  order: 'asc',
+  ignoreCase: true,
+  specialCharacters: 'keep',
+  matcher: 'minimatch',
+  partitionByNewLine: false,
+  partitionByComment: false,
+  groupKind: 'mixed',
+}
+
 export default createEslintRule<Options, MESSAGE_ID>({
   name: 'sort-named-exports',
   meta: {
@@ -42,55 +61,20 @@ export default createEslintRule<Options, MESSAGE_ID>({
       {
         type: 'object',
         properties: {
-          type: {
-            description: 'Specifies the sorting method.',
-            type: 'string',
-            enum: ['alphabetical', 'natural', 'line-length'],
-          },
-          order: {
-            description:
-              'Determines whether the sorted items should be in ascending or descending order.',
-            type: 'string',
-            enum: ['asc', 'desc'],
-          },
-          matcher: {
-            description: 'Specifies the string matcher.',
-            type: 'string',
-            enum: ['minimatch', 'regex'],
-          },
-          ignoreCase: {
-            description:
-              'Controls whether sorting should be case-sensitive or not.',
-            type: 'boolean',
-          },
-          specialCharacters: {
-            description:
-              'Controls how special characters should be handled before sorting.',
-            type: 'string',
-            enum: ['remove', 'trim', 'keep'],
-          },
+          type: typeJsonSchema,
+          order: orderJsonSchema,
+          matcher: matcherJsonSchema,
+          ignoreCase: ignoreCaseJsonSchema,
+          specialCharacters: specialCharactersJsonSchema,
           groupKind: {
             description: 'Specifies top-level groups.',
             enum: ['mixed', 'values-first', 'types-first'],
             type: 'string',
           },
           partitionByComment: {
+            ...partitionByCommentJsonSchema,
             description:
               'Allows you to use comments to separate the named exports members into logical groups.',
-            anyOf: [
-              {
-                type: 'array',
-                items: {
-                  type: 'string',
-                },
-              },
-              {
-                type: 'boolean',
-              },
-              {
-                type: 'string',
-              },
-            ],
           },
           partitionByNewLine: {
             description:
@@ -106,33 +90,13 @@ export default createEslintRule<Options, MESSAGE_ID>({
         'Expected "{{right}}" to come before "{{left}}".',
     },
   },
-  defaultOptions: [
-    {
-      type: 'alphabetical',
-      order: 'asc',
-      ignoreCase: true,
-      specialCharacters: 'keep',
-      matcher: 'minimatch',
-      partitionByNewLine: false,
-      partitionByComment: false,
-      groupKind: 'mixed',
-    },
-  ],
+  defaultOptions: [defaultOptions],
   create: context => ({
     ExportNamedDeclaration: node => {
       if (node.specifiers.length > 1) {
         let settings = getSettings(context.settings)
 
-        let options = complete(context.options.at(0), settings, {
-          type: 'alphabetical',
-          groupKind: 'mixed',
-          ignoreCase: true,
-          specialCharacters: 'keep',
-          matcher: 'minimatch',
-          partitionByNewLine: false,
-          partitionByComment: false,
-          order: 'asc',
-        } as const)
+        let options = complete(context.options.at(0), settings, defaultOptions)
 
         let sourceCode = getSourceCode(context)
         let partitionComment = options.partitionByComment

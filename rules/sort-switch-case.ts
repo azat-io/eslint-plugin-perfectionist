@@ -3,6 +3,12 @@ import type { TSESLint } from '@typescript-eslint/utils'
 
 import type { SortingNode } from '../typings'
 
+import {
+  specialCharactersJsonSchema,
+  ignoreCaseJsonSchema,
+  orderJsonSchema,
+  typeJsonSchema,
+} from '../utils/common-json-schemas'
 import { createEslintRule } from '../utils/create-eslint-rule'
 import { getSourceCode } from '../utils/get-source-code'
 import { rangeToDiff } from '../utils/range-to-diff'
@@ -29,6 +35,13 @@ interface SortSwitchCaseSortingNode extends SortingNode<TSESTree.SwitchCase> {
   isDefaultClause: boolean
 }
 
+const defaultOptions: Required<Options[0]> = {
+  type: 'alphabetical',
+  ignoreCase: true,
+  specialCharacters: 'keep',
+  order: 'asc',
+}
+
 export default createEslintRule<Options, MESSAGE_ID>({
   name: 'sort-switch-case',
   meta: {
@@ -41,28 +54,10 @@ export default createEslintRule<Options, MESSAGE_ID>({
       {
         type: 'object',
         properties: {
-          type: {
-            description: 'Specifies the sorting method.',
-            type: 'string',
-            enum: ['alphabetical', 'natural', 'line-length'],
-          },
-          order: {
-            description:
-              'Determines whether the sorted items should be in ascending or descending order.',
-            type: 'string',
-            enum: ['asc', 'desc'],
-          },
-          ignoreCase: {
-            description:
-              'Controls whether sorting should be case-sensitive or not.',
-            type: 'boolean',
-          },
-          specialCharacters: {
-            description:
-              'Controls how special characters should be handled before sorting.',
-            type: 'string',
-            enum: ['remove', 'trim', 'keep'],
-          },
+          type: typeJsonSchema,
+          order: orderJsonSchema,
+          ignoreCase: ignoreCaseJsonSchema,
+          specialCharacters: specialCharactersJsonSchema,
         },
         additionalProperties: false,
       },
@@ -72,24 +67,12 @@ export default createEslintRule<Options, MESSAGE_ID>({
         'Expected "{{right}}" to come before "{{left}}".',
     },
   },
-  defaultOptions: [
-    {
-      type: 'alphabetical',
-      order: 'asc',
-      ignoreCase: true,
-      specialCharacters: 'keep',
-    },
-  ],
+  defaultOptions: [defaultOptions],
   create: context => ({
     SwitchStatement: node => {
       let settings = getSettings(context.settings)
 
-      let options = complete(context.options.at(0), settings, {
-        type: 'alphabetical',
-        ignoreCase: true,
-        specialCharacters: 'keep',
-        order: 'asc',
-      } as const)
+      let options = complete(context.options.at(0), settings, defaultOptions)
 
       let sourceCode = getSourceCode(context)
 

@@ -2,6 +2,15 @@ import type { TSESTree } from '@typescript-eslint/types'
 
 import type { SortingNode } from '../typings'
 
+import {
+  specialCharactersJsonSchema,
+  customGroupsJsonSchema,
+  ignoreCaseJsonSchema,
+  matcherJsonSchema,
+  groupsJsonSchema,
+  orderJsonSchema,
+  typeJsonSchema,
+} from '../utils/common-json-schemas'
 import { validateGroupsConfiguration } from '../utils/validate-groups-configuration'
 import { sortNodesByGroups } from '../utils/sort-nodes-by-groups'
 import { createEslintRule } from '../utils/create-eslint-rule'
@@ -36,6 +45,17 @@ type Options<T extends string[]> = [
   }>,
 ]
 
+const defaultOptions: Required<Options<string[]>[0]> = {
+  type: 'alphabetical',
+  ignorePattern: [],
+  ignoreCase: true,
+  specialCharacters: 'keep',
+  matcher: 'minimatch',
+  customGroups: {},
+  order: 'asc',
+  groups: [],
+}
+
 export default createEslintRule<Options<string[]>, MESSAGE_ID>({
   name: 'sort-jsx-props',
   meta: {
@@ -48,33 +68,11 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
       {
         type: 'object',
         properties: {
-          type: {
-            description: 'Specifies the sorting method.',
-            type: 'string',
-            enum: ['alphabetical', 'natural', 'line-length'],
-          },
-          order: {
-            description:
-              'Determines whether the sorted items should be in ascending or descending order.',
-            type: 'string',
-            enum: ['asc', 'desc'],
-          },
-          matcher: {
-            description: 'Specifies the string matcher.',
-            type: 'string',
-            enum: ['minimatch', 'regex'],
-          },
-          ignoreCase: {
-            description:
-              'Controls whether sorting should be case-sensitive or not.',
-            type: 'boolean',
-          },
-          specialCharacters: {
-            description:
-              'Controls how special characters should be handled before sorting.',
-            type: 'string',
-            enum: ['remove', 'trim', 'keep'],
-          },
+          type: typeJsonSchema,
+          order: orderJsonSchema,
+          matcher: matcherJsonSchema,
+          ignoreCase: ignoreCaseJsonSchema,
+          specialCharacters: specialCharactersJsonSchema,
           ignorePattern: {
             description:
               'Specifies names or patterns for nodes that should be ignored by rule.',
@@ -83,40 +81,8 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
             },
             type: 'array',
           },
-          groups: {
-            description: 'Specifies the order of the groups.',
-            type: 'array',
-            items: {
-              oneOf: [
-                {
-                  type: 'string',
-                },
-                {
-                  type: 'array',
-                  items: {
-                    type: 'string',
-                  },
-                },
-              ],
-            },
-          },
-          customGroups: {
-            description: 'Specifies custom groups.',
-            type: 'object',
-            additionalProperties: {
-              oneOf: [
-                {
-                  type: 'string',
-                },
-                {
-                  type: 'array',
-                  items: {
-                    type: 'string',
-                  },
-                },
-              ],
-            },
-          },
+          groups: groupsJsonSchema,
+          customGroups: customGroupsJsonSchema,
         },
         additionalProperties: false,
       },
@@ -128,33 +94,13 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
         'Expected "{{right}}" to come before "{{left}}".',
     },
   },
-  defaultOptions: [
-    {
-      type: 'alphabetical',
-      order: 'asc',
-      ignoreCase: true,
-      specialCharacters: 'keep',
-      matcher: 'minimatch',
-      ignorePattern: [],
-      groups: [],
-      customGroups: {},
-    },
-  ],
+  defaultOptions: [defaultOptions],
   create: context => ({
     JSXElement: node => {
       if (node.openingElement.attributes.length > 1) {
         let settings = getSettings(context.settings)
 
-        let options = complete(context.options.at(0), settings, {
-          type: 'alphabetical',
-          ignorePattern: [],
-          ignoreCase: true,
-          specialCharacters: 'keep',
-          matcher: 'minimatch',
-          customGroups: {},
-          order: 'asc',
-          groups: [],
-        } as const)
+        let options = complete(context.options.at(0), settings, defaultOptions)
 
         validateGroupsConfiguration(
           options.groups,
