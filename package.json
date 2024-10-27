@@ -1,6 +1,7 @@
 {
   "name": "eslint-plugin-perfectionist",
   "description": "ESLint plugin for sorting various data such as objects, imports, types, enums, JSX props, etc.",
+  "type": "commonjs",
   "version": "3.9.1",
   "homepage": "https://perfectionist.dev",
   "repository": "azat-io/eslint-plugin-perfectionist",
@@ -38,13 +39,9 @@
   "files": [
     "./dist"
   ],
-  "main": "./dist/index.js",
-  "module": "./dist/index.mjs",
-  "types": "./dist/index.d.ts",
   "exports": {
     ".": {
-      "require": "./dist/index.js",
-      "import": "./dist/index.mjs",
+      "default": "./dist/index.js",
       "types": "./dist/index.d.ts"
     },
     "./package.json": "./package.json"
