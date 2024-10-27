@@ -4063,6 +4063,340 @@ describe(ruleName, () => {
         invalid: [],
       },
     )
+
+    describe(`${ruleName}(${type}): sorts inline elements correctly`, () => {
+      describe(`${ruleName}(${type}): methods`, () => {
+        describe(`${ruleName}(${type}): non-abstract methods`, () => {
+          ruleTester.run(
+            `${ruleName}(${type}): sorts inline non-abstract methods correctly`,
+            rule,
+            {
+              valid: [],
+              invalid: [
+                {
+                  code: dedent`
+                  class Class {
+                    b(){} a(){}
+                  }
+                `,
+                  output: dedent`
+                  class Class {
+                    a(){} b(){}
+                  }
+                `,
+                  options: [options],
+                  errors: [
+                    {
+                      messageId: 'unexpectedClassesOrder',
+                      data: {
+                        left: 'b',
+                        right: 'a',
+                      },
+                    },
+                  ],
+                },
+                {
+                  code: dedent`
+                  class Class {
+                    b(){} a(){};
+                  }
+                `,
+                  output: dedent`
+                  class Class {
+                    a(){} b(){};
+                  }
+                `,
+                  options: [options],
+                  errors: [
+                    {
+                      messageId: 'unexpectedClassesOrder',
+                      data: {
+                        left: 'b',
+                        right: 'a',
+                      },
+                    },
+                  ],
+                },
+                {
+                  code: dedent`
+                  class Class {
+                    b(){}; a(){}
+                  }
+                `,
+                  output: dedent`
+                  class Class {
+                    a(){}; b(){}
+                  }
+                `,
+                  options: [options],
+                  errors: [
+                    {
+                      messageId: 'unexpectedClassesOrder',
+                      data: {
+                        left: 'b',
+                        right: 'a',
+                      },
+                    },
+                  ],
+                },
+              ],
+            },
+          )
+        })
+
+        describe(`${ruleName}(${type}): abstract methods`, () => {
+          ruleTester.run(
+            `${ruleName}(${type}): sorts inline abstract methods correctly`,
+            rule,
+            {
+              valid: [],
+              invalid: [
+                {
+                  code: dedent`
+                  abstract class Class {
+                    abstract b(); abstract a()
+                  }
+                `,
+                  output: dedent`
+                  abstract class Class {
+                    abstract a(); abstract b();
+                  }
+                `,
+                  options: [options],
+                  errors: [
+                    {
+                      messageId: 'unexpectedClassesOrder',
+                      data: {
+                        left: 'b',
+                        right: 'a',
+                      },
+                    },
+                  ],
+                },
+                {
+                  code: dedent`
+                  abstract class Class {
+                    abstract b(); abstract a();
+                  }
+                `,
+                  output: dedent`
+                  abstract class Class {
+                    abstract a(); abstract b();
+                  }
+                `,
+                  options: [options],
+                  errors: [
+                    {
+                      messageId: 'unexpectedClassesOrder',
+                      data: {
+                        left: 'b',
+                        right: 'a',
+                      },
+                    },
+                  ],
+                },
+              ],
+            },
+          )
+        })
+      })
+
+      ruleTester.run(
+        `${ruleName}(${type}): sorts inline properties correctly`,
+        rule,
+        {
+          valid: [],
+          invalid: [
+            {
+              code: dedent`
+                  class Class {
+                    b; a
+                  }
+                `,
+              output: dedent`
+                  class Class {
+                    a; b;
+                  }
+                `,
+              options: [options],
+              errors: [
+                {
+                  messageId: 'unexpectedClassesOrder',
+                  data: {
+                    left: 'b',
+                    right: 'a',
+                  },
+                },
+              ],
+            },
+            {
+              code: dedent`
+                  class Class {
+                    b; a;
+                  }
+                `,
+              output: dedent`
+                  class Class {
+                    a; b;
+                  }
+                `,
+              options: [options],
+              errors: [
+                {
+                  messageId: 'unexpectedClassesOrder',
+                  data: {
+                    left: 'b',
+                    right: 'a',
+                  },
+                },
+              ],
+            },
+          ],
+        },
+      )
+
+      ruleTester.run(
+        `${ruleName}(${type}): sorts inline accessors correctly`,
+        rule,
+        {
+          valid: [],
+          invalid: [
+            {
+              code: dedent`
+                  class Class {
+                    accessor b; accessor a
+                  }
+                `,
+              output: dedent`
+                  class Class {
+                    accessor a; accessor b;
+                  }
+                `,
+              options: [options],
+              errors: [
+                {
+                  messageId: 'unexpectedClassesOrder',
+                  data: {
+                    left: 'b',
+                    right: 'a',
+                  },
+                },
+              ],
+            },
+            {
+              code: dedent`
+                  class Class {
+                    accessor b; accessor a;
+                  }
+                `,
+              output: dedent`
+                  class Class {
+                    accessor a; accessor b;
+                  }
+                `,
+              options: [options],
+              errors: [
+                {
+                  messageId: 'unexpectedClassesOrder',
+                  data: {
+                    left: 'b',
+                    right: 'a',
+                  },
+                },
+              ],
+            },
+          ],
+        },
+      )
+
+      ruleTester.run(
+        `${ruleName}(${type}): sorts inline index-signatures correctly`,
+        rule,
+        {
+          valid: [],
+          invalid: [
+            {
+              code: dedent`
+                  class Class {
+                    [key: string]: string; [key: number]: string
+                  }
+                `,
+              output: dedent`
+                  class Class {
+                    [key: number]: string; [key: string]: string;
+                  }
+                `,
+              options: [options],
+              errors: [
+                {
+                  messageId: 'unexpectedClassesOrder',
+                  data: {
+                    left: '[key: string]',
+                    right: '[key: number]',
+                  },
+                },
+              ],
+            },
+            {
+              code: dedent`
+                  class Class {
+                    [key: string]: string; [key: number]: string;
+                  }
+                `,
+              output: dedent`
+                  class Class {
+                    [key: number]: string; [key: string]: string;
+                  }
+                `,
+              options: [options],
+              errors: [
+                {
+                  messageId: 'unexpectedClassesOrder',
+                  data: {
+                    left: '[key: string]',
+                    right: '[key: number]',
+                  },
+                },
+              ],
+            },
+          ],
+        },
+      )
+
+      ruleTester.run(
+        `${ruleName}(${type}): sorts inline static-block correctly`,
+        rule,
+        {
+          valid: [],
+          invalid: [
+            {
+              code: dedent`
+                  class Class {
+                    a; static {}
+                  }
+                `,
+              output: dedent`
+                  class Class {
+                    static {} a;
+                  }
+                `,
+              options: [options],
+              errors: [
+                {
+                  messageId: 'unexpectedClassesGroupOrder',
+                  data: {
+                    left: 'a',
+                    leftGroup: 'property',
+                    right: 'static',
+                    rightGroup: 'static-block',
+                  },
+                },
+              ],
+            },
+          ],
+        },
+      )
+    })
   })
 
   describe(`${ruleName}: sorting by natural order`, () => {

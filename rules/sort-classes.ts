@@ -384,7 +384,7 @@ export default createEslintRule<SortClassesOptions, MESSAGE_ID>({
             } else if (member.key.type === 'Identifier') {
               ;({ name } = member.key)
             } else {
-              name = sourceCode.text.slice(...member.key.range)
+              name = sourceCode.getText(member.key)
             }
 
             let isPrivateHash =
@@ -410,6 +410,7 @@ export default createEslintRule<SortClassesOptions, MESSAGE_ID>({
             let memberValue: undefined | string
             let modifiers: Modifier[] = []
             let selectors: Selector[] = []
+            let addSafetySemicolonWhenInline: boolean = true
             if (
               member.type === 'MethodDefinition' ||
               member.type === 'TSAbstractMethodDefinition'
@@ -424,6 +425,8 @@ export default createEslintRule<SortClassesOptions, MESSAGE_ID>({
               }
               if (member.type === 'TSAbstractMethodDefinition') {
                 modifiers.push('abstract')
+              } else {
+                addSafetySemicolonWhenInline = false
               }
 
               if (decorated) {
@@ -469,6 +472,8 @@ export default createEslintRule<SortClassesOptions, MESSAGE_ID>({
 
               selectors.push('index-signature')
             } else if (member.type === 'StaticBlock') {
+              addSafetySemicolonWhenInline = false
+
               selectors.push('static-block')
 
               dependencies = extractDependencies(member, true)
@@ -502,7 +507,6 @@ export default createEslintRule<SortClassesOptions, MESSAGE_ID>({
               selectors.push('accessor-property')
             } else {
               // Member is necessarily a Property
-
               // Similarly to above for methods, prioritize 'static', 'declare', 'decorated', 'abstract', 'override' and 'readonly'
               // over accessibility modifiers
               if (member.static) {
@@ -598,12 +602,13 @@ export default createEslintRule<SortClassesOptions, MESSAGE_ID>({
 
             let sortingNode: SortingNodeWithDependencies = {
               size: overloadSignatureGroupMember
-                ? rangeToDiff(overloadSignatureGroupMember.range)
-                : rangeToDiff(member.range),
+                ? rangeToDiff(overloadSignatureGroupMember, sourceCode)
+                : rangeToDiff(member, sourceCode),
               group: getGroup(),
               node: member,
               dependencies,
               name,
+              addSafetySemicolonWhenInline,
               dependencyName: getDependencyName(
                 name,
                 modifiers.includes('static'),

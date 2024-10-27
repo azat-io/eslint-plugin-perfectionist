@@ -584,6 +584,60 @@ describe(ruleName, () => {
         invalid: [],
       },
     )
+
+    ruleTester.run(
+      `${ruleName}(${type}): sorts inline elements correctly`,
+      rule,
+      {
+        valid: [],
+        invalid: [
+          {
+            code: dedent`
+              enum Enum {
+                B = "B", A = "A"
+              }
+            `,
+            output: dedent`
+              enum Enum {
+                A = "A", B = "B"
+              }
+            `,
+            options: [options],
+            errors: [
+              {
+                messageId: 'unexpectedEnumsOrder',
+                data: {
+                  left: 'B',
+                  right: 'A',
+                },
+              },
+            ],
+          },
+          {
+            code: dedent`
+              enum Enum {
+                B = "B", A = "A",
+              }
+            `,
+            output: dedent`
+              enum Enum {
+                A = "A", B = "B",
+              }
+            `,
+            options: [options],
+            errors: [
+              {
+                messageId: 'unexpectedEnumsOrder',
+                data: {
+                  left: 'B',
+                  right: 'A',
+                },
+              },
+            ],
+          },
+        ],
+      },
+    )
   })
 
   describe(`${ruleName}: sorting by natural order`, () => {

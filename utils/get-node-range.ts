@@ -17,8 +17,6 @@ export let getNodeRange = (
   let start = node.range.at(0)!
   let end = node.range.at(1)!
 
-  let raw = sourceCode.text.slice(start, end)
-
   if (ASTUtils.isParenthesized(node, sourceCode)) {
     let bodyOpeningParen = sourceCode.getTokenBefore(
       node,
@@ -34,16 +32,6 @@ export let getNodeRange = (
     end = bodyClosingParen.range.at(1)!
   }
 
-  if (raw.endsWith(';') || raw.endsWith(',')) {
-    let tokensAfter = sourceCode.getTokensAfter(node, {
-      includeComments: true,
-      count: 2,
-    })
-
-    if (node.loc.start.line === tokensAfter.at(1)?.loc.start.line) {
-      end -= 1
-    }
-  }
   let comments = getCommentsBefore(node, sourceCode)
   let partitionComment = additionalOptions?.partitionByComment ?? false
   let partitionCommentMatcher = additionalOptions?.matcher ?? 'minimatch'

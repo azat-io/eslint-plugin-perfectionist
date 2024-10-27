@@ -145,9 +145,10 @@ export default createEslintRule<Options, MESSAGE_ID>({
         | TSESTree.ExportAllDeclaration,
     ) => {
       let sortingNode: SortExportsSortingNode = {
-        size: rangeToDiff(node.range),
+        size: rangeToDiff(node, sourceCode),
         name: node.source.value,
         node,
+        addSafetySemicolonWhenInline: true,
       }
       let lastNode = parts.at(-1)?.at(-1)
       if (

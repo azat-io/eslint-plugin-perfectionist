@@ -335,6 +335,60 @@ describe(ruleName, () => {
         invalid: [],
       },
     )
+
+    ruleTester.run(
+      `${ruleName}(${type}): sorts inline elements correctly`,
+      rule,
+      {
+        valid: [],
+        invalid: [
+          {
+            code: dedent`
+              interface Interface extends
+                B, A
+              {}
+            `,
+            output: dedent`
+              interface Interface extends
+                A, B
+              {}
+            `,
+            options: [options],
+            errors: [
+              {
+                messageId: 'unexpectedHeritageClausesOrder',
+                data: {
+                  left: 'B',
+                  right: 'A',
+                },
+              },
+            ],
+          },
+          {
+            code: dedent`
+              class Class implements
+                B, A
+              {}
+            `,
+            output: dedent`
+              class Class implements
+                A, B
+              {}
+            `,
+            options: [options],
+            errors: [
+              {
+                messageId: 'unexpectedHeritageClausesOrder',
+                data: {
+                  left: 'B',
+                  right: 'A',
+                },
+              },
+            ],
+          },
+        ],
+      },
+    )
   })
 
   describe(`${ruleName}: sorting by natural order`, () => {

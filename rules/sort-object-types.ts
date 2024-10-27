@@ -217,10 +217,6 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
           node.members.reduce(
             (accumulator: SortObjectTypesSortingNode[][], member) => {
               let name: string
-              let raw = sourceCode.text.slice(
-                member.range.at(0),
-                member.range.at(1),
-              )
               let lastSortingNode = accumulator.at(-1)?.at(-1)
 
               let { getGroup, defineGroup, setCustomGroups } =
@@ -268,14 +264,12 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
                 defineGroup('multiline')
               }
 
-              let endsWithComma = raw.endsWith(';') || raw.endsWith(',')
-              let endSize = endsWithComma ? 1 : 0
-
               let sortingNode: SortObjectTypesSortingNode = {
-                size: rangeToDiff(member.range) - endSize,
+                size: rangeToDiff(member, sourceCode),
                 group: getGroup(),
                 node: member,
                 name,
+                addSafetySemicolonWhenInline: true,
               }
 
               if (
