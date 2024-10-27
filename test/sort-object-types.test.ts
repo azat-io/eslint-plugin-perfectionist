@@ -252,7 +252,7 @@ describe(ruleName, () => {
             func<{ b: 'b'; a: 'aa' }>(/* ... */)
           `,
           output: dedent`
-            func<{ a: 'aa'; b: 'b' }>(/* ... */)
+            func<{ a: 'aa'; b: 'b'; }>(/* ... */)
           `,
           options: [options],
           errors: [
@@ -310,17 +310,6 @@ describe(ruleName, () => {
               }
             `,
             output: [
-              dedent`
-                type Type = {
-                  b: 'bb'
-                  a: 'aaa'
-                  c: 'c'
-                  d: {
-                    f: 'f'
-                    e: 'ee'
-                  }
-                }
-              `,
               dedent`
                 type Type = {
                   b: 'bb'
@@ -1018,6 +1007,82 @@ describe(ruleName, () => {
         },
       )
     })
+
+    ruleTester.run(
+      `${ruleName}(${type}): sorts inline elements correctly`,
+      rule,
+      {
+        valid: [],
+        invalid: [
+          {
+            code: dedent`
+              type Type = {
+                b: string, a: string
+              }
+            `,
+            output: dedent`
+              type Type = {
+                a: string; b: string,
+              }
+            `,
+            options: [options],
+            errors: [
+              {
+                messageId: 'unexpectedObjectTypesOrder',
+                data: {
+                  left: 'b',
+                  right: 'a',
+                },
+              },
+            ],
+          },
+          {
+            code: dedent`
+              type Type = {
+                b: string, a: string;
+              }
+            `,
+            output: dedent`
+              type Type = {
+                a: string; b: string,
+              }
+            `,
+            options: [options],
+            errors: [
+              {
+                messageId: 'unexpectedObjectTypesOrder',
+                data: {
+                  left: 'b',
+                  right: 'a',
+                },
+              },
+            ],
+          },
+          {
+            code: dedent`
+              type Type = {
+                b: string, a: string,
+              }
+            `,
+            output: dedent`
+              type Type = {
+                a: string, b: string,
+              }
+            `,
+            options: [options],
+            errors: [
+              {
+                messageId: 'unexpectedObjectTypesOrder',
+                data: {
+                  left: 'b',
+                  right: 'a',
+                },
+              },
+            ],
+          },
+        ],
+      },
+    )
   })
 
   describe(`${ruleName}: sorting by natural order`, () => {
@@ -1256,7 +1321,7 @@ describe(ruleName, () => {
             func<{ b: 'b'; a: 'aa' }>(/* ... */)
           `,
           output: dedent`
-            func<{ a: 'aa'; b: 'b' }>(/* ... */)
+            func<{ a: 'aa'; b: 'b'; }>(/* ... */)
           `,
           options: [options],
           errors: [
@@ -1314,17 +1379,6 @@ describe(ruleName, () => {
               }
             `,
             output: [
-              dedent`
-                type Type = {
-                  b: 'bb'
-                  a: 'aaa'
-                  c: 'c'
-                  d: {
-                    f: 'f'
-                    e: 'ee'
-                  }
-                }
-              `,
               dedent`
                 type Type = {
                   b: 'bb'
@@ -1850,7 +1904,7 @@ describe(ruleName, () => {
             func<{ b: 'b'; a: 'aa' }>(/* ... */)
           `,
           output: dedent`
-            func<{ a: 'aa'; b: 'b' }>(/* ... */)
+            func<{ a: 'aa'; b: 'b'; }>(/* ... */)
           `,
           options: [options],
           errors: [
@@ -1908,17 +1962,6 @@ describe(ruleName, () => {
               }
             `,
             output: [
-              dedent`
-                type Type = {
-                  b: 'bb'
-                  a: 'aaa'
-                  c: 'c'
-                  d: {
-                    f: 'f'
-                    e: 'ee'
-                  }
-                }
-              `,
               dedent`
                 type Type = {
                   b: 'bb'

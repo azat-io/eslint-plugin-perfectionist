@@ -176,7 +176,7 @@ const sortHeritageClauses = (
     setCustomGroups(options.customGroups, name)
 
     return {
-      size: rangeToDiff(heritageClause.range),
+      size: rangeToDiff(heritageClause, sourceCode),
       node: heritageClause,
       group: getGroup(),
       name,

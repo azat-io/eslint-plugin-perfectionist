@@ -216,13 +216,13 @@ export default createEslintRule<Options, MESSAGE_ID>({
             }
             let lastSortingNode = accumulator.at(-1)?.at(-1)
             let sortingNode: SortingNodeWithDependencies = {
-              size: rangeToDiff(member.range),
+              size: rangeToDiff(member, sourceCode),
               node: member,
               dependencies,
               name:
                 member.id.type === 'Literal'
                   ? `${member.id.value}`
-                  : `${sourceCode.text.slice(...member.id.range)}`,
+                  : `${sourceCode.getText(member.id)}`,
             }
 
             if (
