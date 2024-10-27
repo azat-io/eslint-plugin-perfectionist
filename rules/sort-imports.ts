@@ -159,9 +159,11 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
             properties: {
               type: {
                 type: 'object',
+                description: 'Specifies custom groups for type imports.',
               },
               value: {
                 type: 'object',
+                description: 'Specifies custom groups for value imports.',
               },
             },
             additionalProperties: false,
