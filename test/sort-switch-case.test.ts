@@ -821,6 +821,130 @@ describe(ruleName, () => {
         ],
       },
     )
+
+    ruleTester.run(`${ruleName}: handles comments`, rule, {
+      valid: [],
+      invalid: [
+        {
+          code: dedent`
+            switch (value) {
+              case "b": // b
+              case "a": // a
+                break;
+            }
+            `,
+          output: [
+            dedent`
+              switch (value) {
+                case "a": // a
+                case "b": // b
+                  break;
+              }
+              `,
+          ],
+          options: [{}],
+          errors: [
+            {
+              messageId: 'unexpectedSwitchCaseOrder',
+            },
+          ],
+        },
+        {
+          code: dedent`
+            switch (value) {
+              default: // default
+              case "a": // a
+                break;
+            }
+            `,
+          output: [
+            dedent`
+              switch (value) {
+                case "a": // a
+                default: // default
+                  break;
+              }
+              `,
+          ],
+          options: [{}],
+          errors: [
+            {
+              messageId: 'unexpectedSwitchCaseOrder',
+            },
+          ],
+        },
+        {
+          code: dedent`
+            switch (value) {
+              case "z": { return; } // z
+              default    : // default
+              case "y": // y
+              case      "x"
+                 : // x
+                  let a;
+              case "b": // b
+                return;
+              case "a": // A
+                break;
+            }
+            `,
+          output: [
+            dedent`
+              switch (value) {
+                case "z": { return; } // z
+                case      "x"
+                   : // x
+                case "y": // y
+                default    : // default
+                    let a;
+                case "b": // b
+                  return;
+                case "a": // A
+                  break;
+              }
+              `,
+            dedent`
+              switch (value) {
+                case "a": // A
+                  break;
+                case "z": { return; } // z
+                case      "x"
+                   : // x
+                case "y": // y
+                default    : // default
+                    let a;
+                case "b": // b
+                  return;
+              }
+            `,
+          ],
+          options: [{}],
+          errors: [
+            {
+              messageId: 'unexpectedSwitchCaseOrder',
+              data: {
+                left: 'default',
+                right: 'x',
+              },
+            },
+            {
+              messageId: 'unexpectedSwitchCaseOrder',
+              data: {
+                left: 'y',
+                right: 'x',
+              },
+            },
+            {
+              messageId: 'unexpectedSwitchCaseOrder',
+              data: {
+                left: 'b',
+                right: 'a',
+              },
+            },
+          ],
+        },
+      ],
+    })
   })
 
   describe(`${ruleName}: sorting by natural order`, () => {
