@@ -339,22 +339,40 @@ describe(ruleName, () => {
                 return 'unknown'
             }
           `,
-          output: dedent`
-            switch (value) {
-              case 'aaaaaa':
-                return 'primary'
-              case 'bbbbb':
-              case 'ddd':
-                return 'secondary'
-              case 'cccc':
-              case 'ee':
-              case 'f':
-                return 'tertiary'
-              case 'x':
-              default:
-                return 'unknown'
-            }
-          `,
+          output: [
+            dedent`
+              switch (value) {
+                case 'aaaaaa':
+                  return 'primary'
+                case 'cccc':
+                case 'ee':
+                case 'f':
+                  return 'tertiary'
+                case 'bbbbb':
+                case 'ddd':
+                  return 'secondary'
+                case 'x':
+                default:
+                  return 'unknown'
+              }
+            `,
+            dedent`
+              switch (value) {
+                case 'aaaaaa':
+                  return 'primary'
+                case 'bbbbb':
+                case 'ddd':
+                  return 'secondary'
+                case 'cccc':
+                case 'ee':
+                case 'f':
+                  return 'tertiary'
+                case 'x':
+                default:
+                  return 'unknown'
+              }
+            `,
+          ],
           options: [options],
           errors: [
             {
@@ -1088,22 +1106,40 @@ describe(ruleName, () => {
                 return 'unknown'
             }
           `,
-          output: dedent`
-            switch (value) {
-              case 'aaaaaa':
-                return 'primary'
-              case 'bbbbb':
-              case 'ddd':
-                return 'secondary'
-              case 'cccc':
-              case 'ee':
-              case 'f':
-                return 'tertiary'
-              case 'x':
-              default:
-                return 'unknown'
-            }
-          `,
+          output: [
+            dedent`
+              switch (value) {
+                case 'aaaaaa':
+                  return 'primary'
+                case 'cccc':
+                case 'ee':
+                case 'f':
+                  return 'tertiary'
+                case 'bbbbb':
+                case 'ddd':
+                  return 'secondary'
+                case 'x':
+                default:
+                  return 'unknown'
+              }
+            `,
+            dedent`
+              switch (value) {
+                case 'aaaaaa':
+                  return 'primary'
+                case 'bbbbb':
+                case 'ddd':
+                  return 'secondary'
+                case 'cccc':
+                case 'ee':
+                case 'f':
+                  return 'tertiary'
+                case 'x':
+                default:
+                  return 'unknown'
+              }
+            `,
+          ],
           options: [options],
           errors: [
             {
@@ -1687,22 +1723,40 @@ describe(ruleName, () => {
                 return 'unknown'
             }
           `,
-          output: dedent`
-            switch (value) {
-              case 'aaaaaa':
-                return 'primary'
-              case 'bbbbb':
-              case 'ddd':
-                return 'secondary'
-              case 'cccc':
-              case 'ee':
-              case 'f':
-                return 'tertiary'
-              case 'x':
-              default:
-                return 'unknown'
-            }
-          `,
+          output: [
+            dedent`
+              switch (value) {
+                case 'aaaaaa':
+                  return 'primary'
+                case 'cccc':
+                case 'ee':
+                case 'f':
+                  return 'tertiary'
+                case 'bbbbb':
+                case 'ddd':
+                  return 'secondary'
+                case 'x':
+                default:
+                  return 'unknown'
+              }
+            `,
+            dedent`
+              switch (value) {
+                case 'aaaaaa':
+                  return 'primary'
+                case 'bbbbb':
+                case 'ddd':
+                  return 'secondary'
+                case 'cccc':
+                case 'ee':
+                case 'f':
+                  return 'tertiary'
+                case 'x':
+                default:
+                  return 'unknown'
+              }
+            `,
+          ],
           options: [options],
           errors: [
             {
