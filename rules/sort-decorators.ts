@@ -8,6 +8,7 @@ import {
   specialCharactersJsonSchema,
   customGroupsJsonSchema,
   ignoreCaseJsonSchema,
+  localesJsonSchema,
   groupsJsonSchema,
   orderJsonSchema,
   typeJsonSchema,
@@ -38,6 +39,7 @@ export type Options<T extends string[]> = [
     type: 'alphabetical' | 'line-length' | 'natural'
     partitionByComment: string[] | boolean | string
     specialCharacters: 'remove' | 'trim' | 'keep'
+    locales: NonNullable<Intl.LocalesArgument>
     groups: (Group<T>[] | Group<T>)[]
     sortOnParameters: boolean
     sortOnProperties: boolean
@@ -64,6 +66,7 @@ const defaultOptions: Required<Options<string[]>[0]> = {
   sortOnAccessors: true,
   sortOnProperties: true,
   sortOnParameters: true,
+  locales: 'en-US',
 }
 
 export default createEslintRule<Options<string[]>, MESSAGE_ID>({
@@ -80,6 +83,7 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
         properties: {
           type: typeJsonSchema,
           order: orderJsonSchema,
+          locales: localesJsonSchema,
           ignoreCase: ignoreCaseJsonSchema,
           specialCharacters: specialCharactersJsonSchema,
           sortOnClasses: {

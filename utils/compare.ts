@@ -12,6 +12,7 @@ interface BaseCompareOptions {
 
 interface AlphabeticalCompareOptions extends BaseCompareOptions {
   specialCharacters: 'remove' | 'trim' | 'keep'
+  locales: NonNullable<Intl.LocalesArgument>
   type: 'alphabetical'
   ignoreCase: boolean
 }
@@ -50,6 +51,7 @@ export let compare = (
     sortingFunction = (aNode, bNode) =>
       formatString(nodeValueGetter(aNode)).localeCompare(
         formatString(nodeValueGetter(bNode)),
+        options.locales,
       )
   } else if (options.type === 'natural') {
     let prepareNumeric = (string: string) => {

@@ -7,6 +7,7 @@ import type { SortingNode } from '../typings'
 import {
   specialCharactersJsonSchema,
   ignoreCaseJsonSchema,
+  localesJsonSchema,
   groupsJsonSchema,
   orderJsonSchema,
   typeJsonSchema,
@@ -64,6 +65,7 @@ export type Options<T extends string[]> = [
     type: 'alphabetical' | 'line-length' | 'natural'
     newlinesBetween: 'ignore' | 'always' | 'never'
     specialCharacters: 'remove' | 'trim' | 'keep'
+    locales: NonNullable<Intl.LocalesArgument>
     groups: (Group<T>[] | Group<T>)[]
     environment: 'node' | 'bun'
     internalPattern: string[]
@@ -93,6 +95,7 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
         properties: {
           type: typeJsonSchema,
           order: orderJsonSchema,
+          locales: localesJsonSchema,
           ignoreCase: ignoreCaseJsonSchema,
           specialCharacters: specialCharactersJsonSchema,
           internalPattern: {
@@ -207,6 +210,7 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
       ],
       customGroups: { type: {}, value: {} },
       environment: 'node',
+      locales: 'en-US',
     },
   ],
   create: context => {
@@ -234,6 +238,7 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
         ignoreCase: true,
         specialCharacters: 'keep',
         order: 'asc',
+        locales: 'en-US',
       } as const),
     )
 

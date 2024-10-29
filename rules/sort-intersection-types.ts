@@ -4,6 +4,7 @@ import {
   partitionByCommentJsonSchema,
   specialCharactersJsonSchema,
   ignoreCaseJsonSchema,
+  localesJsonSchema,
   groupsJsonSchema,
   orderJsonSchema,
   typeJsonSchema,
@@ -54,6 +55,7 @@ type Options = [
     partitionByComment: string[] | boolean | string
     newlinesBetween: 'ignore' | 'always' | 'never'
     specialCharacters: 'remove' | 'trim' | 'keep'
+    locales: NonNullable<Intl.LocalesArgument>
     groups: (Group[] | Group)[]
     partitionByNewLine: boolean
     order: 'desc' | 'asc'
@@ -70,6 +72,7 @@ const defaultOptions: Required<Options[0]> = {
   partitionByComment: false,
   partitionByNewLine: false,
   groups: [],
+  locales: 'en-US',
 }
 
 export default createEslintRule<Options, MESSAGE_ID>({
@@ -86,6 +89,7 @@ export default createEslintRule<Options, MESSAGE_ID>({
         properties: {
           type: typeJsonSchema,
           order: orderJsonSchema,
+          locales: localesJsonSchema,
           ignoreCase: ignoreCaseJsonSchema,
           specialCharacters: specialCharactersJsonSchema,
           groups: groupsJsonSchema,

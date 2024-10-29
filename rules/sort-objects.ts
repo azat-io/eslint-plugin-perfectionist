@@ -7,6 +7,7 @@ import {
   specialCharactersJsonSchema,
   customGroupsJsonSchema,
   ignoreCaseJsonSchema,
+  localesJsonSchema,
   groupsJsonSchema,
   orderJsonSchema,
   typeJsonSchema,
@@ -51,6 +52,7 @@ type Options = [
     partitionByComment: string[] | boolean | string
     newlinesBetween: 'ignore' | 'always' | 'never'
     specialCharacters: 'remove' | 'trim' | 'keep'
+    locales: NonNullable<Intl.LocalesArgument>
     groups: (Group[] | Group)[]
     partitionByNewLine: boolean
     styledComponents: boolean
@@ -74,6 +76,7 @@ const defaultOptions: Required<Options[0]> = {
   customGroups: {},
   order: 'asc',
   groups: [],
+  locales: 'en-US',
 }
 
 export default createEslintRule<Options, MESSAGE_ID>({
@@ -90,6 +93,7 @@ export default createEslintRule<Options, MESSAGE_ID>({
         properties: {
           type: typeJsonSchema,
           order: orderJsonSchema,
+          locales: localesJsonSchema,
           ignoreCase: ignoreCaseJsonSchema,
           specialCharacters: specialCharactersJsonSchema,
           partitionByComment: {

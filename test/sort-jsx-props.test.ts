@@ -571,6 +571,25 @@ describe(ruleName, () => {
         invalid: [],
       },
     )
+
+    ruleTester.run(`${ruleName}(${type}): allows to use locale`, rule, {
+      valid: [
+        {
+          code: dedent`
+              <Component
+                你好
+                世界
+                a
+                A
+                b
+                B
+              />
+            `,
+          options: [{ ...options, locales: 'zh-CN' }],
+        },
+      ],
+      invalid: [],
+    })
   })
 
   describe(`${ruleName}: sorting by natural order`, () => {

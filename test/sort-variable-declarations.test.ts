@@ -915,6 +915,24 @@ describe(ruleName, () => {
       },
     )
 
+    ruleTester.run(`${ruleName}(${type}): allows to use locale`, rule, {
+      valid: [
+        {
+          code: dedent`
+              const
+                你好 = '你好',
+                世界 = '世界',
+                a = 'a',
+                A = 'A',
+                b = 'b',
+                B = 'B'
+            `,
+          options: [{ ...options, locales: 'zh-CN' }],
+        },
+      ],
+      invalid: [],
+    })
+
     ruleTester.run(
       `${ruleName}(${type}): sorts inline elements correctly`,
       rule,
