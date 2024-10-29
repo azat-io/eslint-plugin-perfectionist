@@ -36,14 +36,18 @@ export const makeFixes = (
       count: 1,
     })
     let nextToken = tokensAfter.at(0)
+
+    let sortedNextNodeEndsWithSafeCharacter =
+      sortedNodeText.endsWith(';') || sortedNodeText.endsWith(',')
+    let isNextTokenOnSameLineAsNode =
+      nextToken?.loc.start.line === node.loc.end.line
+    let isNextTokenSafeCharacter =
+      nextToken?.value === ';' || nextToken?.value === ','
     if (
-      !sortedNodeText.endsWith(';') &&
-      !sortedNodeText.endsWith(',') &&
       sortedSortingNode.addSafetySemicolonWhenInline &&
-      nextToken &&
-      node.loc.start.line === nextToken.loc.start.line &&
-      nextToken.value !== ';' &&
-      nextToken.value !== ','
+      isNextTokenOnSameLineAsNode &&
+      !sortedNextNodeEndsWithSafeCharacter &&
+      !isNextTokenSafeCharacter
     ) {
       sortedNodeCode += ';'
     }
