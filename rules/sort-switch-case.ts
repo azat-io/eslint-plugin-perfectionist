@@ -9,11 +9,11 @@ import {
   orderJsonSchema,
   typeJsonSchema,
 } from '../utils/common-json-schemas'
+import { makeCommentAfterFixes } from '../utils/make-comment-after-fixes'
 import { createEslintRule } from '../utils/create-eslint-rule'
 import { getSourceCode } from '../utils/get-source-code'
 import { rangeToDiff } from '../utils/range-to-diff'
 import { getSettings } from '../utils/get-settings'
-import { isPositive } from '../utils/is-positive'
 import { makeFixes } from '../utils/make-fixes'
 import { sortNodes } from '../utils/sort-nodes'
 import { pairwise } from '../utils/pairwise'
@@ -69,7 +69,7 @@ export default createEslintRule<Options, MESSAGE_ID>({
   },
   defaultOptions: [defaultOptions],
   create: context => ({
-    SwitchStatement: node => {
+    SwitchStatement: switchNode => {
       let settings = getSettings(context.settings)
 
       let options = complete(context.options.at(0), settings, defaultOptions)
@@ -77,188 +77,224 @@ export default createEslintRule<Options, MESSAGE_ID>({
       let sourceCode = getSourceCode(context)
 
       let isDiscriminantTrue =
-        node.discriminant.type === 'Literal' && node.discriminant.value === true
-      let isCasesHasBreak = node.cases
-        .filter(caseNode => caseNode.test !== null)
-        .every(
-          caseNode =>
-            caseNode.consequent.length === 0 ||
-            caseNode.consequent.some(
-              currentConsequent =>
-                currentConsequent.type === 'BreakStatement' ||
-                currentConsequent.type === 'ReturnStatement' ||
-                currentConsequent.type === 'BlockStatement',
-            ),
-        )
+        switchNode.discriminant.type === 'Literal' &&
+        switchNode.discriminant.value === true
+      if (isDiscriminantTrue) {
+        return
+      }
 
-      if (!isDiscriminantTrue && isCasesHasBreak) {
-        let nodes = node.cases.map<SortSwitchCaseSortingNode>(
-          (caseNode: TSESTree.SwitchCase) => {
-            let name: string
-            let isDefaultClause = false
-            if (caseNode.test?.type === 'Literal') {
-              name = `${caseNode.test.value}`
-            } else if (caseNode.test === null) {
-              name = 'default'
-              isDefaultClause = true
-            } else {
-              name = sourceCode.getText(caseNode.test)
-            }
-
-            return {
-              size: rangeToDiff(caseNode.test ?? caseNode, sourceCode),
-              node: caseNode,
-              isDefaultClause,
-              addSafetySemicolonWhenInline: true,
-              name,
-            }
-          },
-        )
-
-        pairwise(nodes, (left, right, iteration) => {
-          let compareValue: boolean
-          let lefter = nodes.at(iteration - 1)
-          let isCaseGrouped =
-            lefter?.node.consequent.length === 0 &&
-            left.node.consequent.length !== 0
-
-          let isGroupContainsDefault = (group: SortSwitchCaseSortingNode[]) =>
-            group.some(currentNode => currentNode.isDefaultClause)
-
-          let leftCaseGroup = [left]
-          let rightCaseGroup = [right]
-          for (let i = iteration - 1; i >= 0; i--) {
-            if (nodes.at(i)!.node.consequent.length === 0) {
-              leftCaseGroup.unshift(nodes.at(i)!)
-            } else {
-              break
-            }
-          }
-          if (right.node.consequent.length === 0) {
-            for (let i = iteration + 1; i < nodes.length; i++) {
-              if (nodes.at(i)!.node.consequent.length === 0) {
-                rightCaseGroup.push(nodes.at(i)!)
-              } else {
-                rightCaseGroup.push(nodes.at(i)!)
-                break
-              }
-            }
-          }
-
-          if (isGroupContainsDefault(leftCaseGroup)) {
-            compareValue = true
-          } else if (isGroupContainsDefault(rightCaseGroup)) {
-            compareValue = false
-          } else if (isCaseGrouped) {
-            compareValue = isPositive(compare(leftCaseGroup[0], right, options))
-          } else {
-            compareValue = isPositive(compare(left, right, options))
-          }
-
-          if (compareValue) {
-            context.report({
-              messageId: 'unexpectedSwitchCaseOrder',
-              data: {
-                left: left.name,
-                right: right.name,
-              },
-              node: right.node,
-              fix: fixer => {
-                let additionalFixes: TSESLint.RuleFix[] = []
-                let nodeGroups = nodes.reduce<SortSwitchCaseSortingNode[][]>(
-                  (
-                    accumulator: SortSwitchCaseSortingNode[][],
-                    currentNode: SortSwitchCaseSortingNode,
-                    index,
-                  ) => {
-                    if (index === 0) {
-                      accumulator.at(-1)!.push(currentNode)
-                    } else if (
-                      accumulator.at(-1)!.at(-1)?.node.consequent.length === 0
-                    ) {
-                      accumulator.at(-1)!.push(currentNode)
-                    } else {
-                      accumulator.push([currentNode])
-                    }
-                    return accumulator
-                  },
-                  [[]],
-                )
-
-                let sortedNodeGroups = nodeGroups
-                  .map(group => {
-                    let sortedGroup = sortNodes(group, options).sort((a, b) => {
-                      if (b.isDefaultClause) {
-                        return -1
-                      }
-                      return 1
-                    })
-
-                    if (group.at(-1)!.name !== sortedGroup.at(-1)!.name) {
-                      let consequentNodeIndex = sortedGroup.findIndex(
-                        currentNode => currentNode.node.consequent.length !== 0,
-                      )
-                      let firstSortedNodeConsequent =
-                        sortedGroup.at(consequentNodeIndex)!.node.consequent
-                      let consequentStart = firstSortedNodeConsequent
-                        .at(0)
-                        ?.range.at(0)
-                      let consequentEnd = firstSortedNodeConsequent
-                        .at(-1)
-                        ?.range.at(1)
-                      let lastNode = group.at(-1)!.node
-
-                      if (consequentStart && consequentEnd && lastNode.test) {
-                        lastNode.range = [
-                          lastNode.range.at(0)!,
-                          lastNode.test.range.at(1)! + 1,
-                        ]
-                        additionalFixes.push(
-                          ...makeFixes(fixer, group, sortedGroup, sourceCode),
-                          fixer.removeRange([
-                            lastNode.range.at(1)!,
-                            consequentEnd,
-                          ]),
-                          fixer.insertTextAfter(
-                            lastNode,
-                            sourceCode.text.slice(
-                              lastNode.range.at(1),
-                              consequentEnd,
-                            ),
-                          ),
-                        )
-                      }
-                    }
-
-                    return sortedGroup
-                  })
-                  .sort((a, b) => {
-                    if (isGroupContainsDefault(a)) {
-                      return 1
-                    } else if (isGroupContainsDefault(b)) {
-                      return -1
-                    }
-                    return compare(a.at(0)!, b.at(0)!, options)
-                  })
-
-                let sortedNodes = sortedNodeGroups.flat()
-
-                for (let max = sortedNodes.length, i = 0; i < max; i++) {
-                  if (sortedNodes.at(i)!.isDefaultClause) {
-                    sortedNodes.push(sortedNodes.splice(i, 1).at(0)!)
-                  }
-                }
-
-                if (additionalFixes.length) {
-                  return additionalFixes
-                }
-
-                return makeFixes(fixer, nodes, sortedNodes, sourceCode)
-              },
+      let caseNameSortingNodeGroups = switchNode.cases.reduce(
+        (
+          accumulator: SortingNode[][],
+          caseNode: TSESTree.SwitchCase,
+          index: number,
+        ) => {
+          if (caseNode.test) {
+            accumulator.at(-1)!.push({
+              size: rangeToDiff(caseNode.test, sourceCode),
+              node: caseNode.test,
+              name: getCaseName(sourceCode, caseNode),
             })
           }
+          if (
+            caseNode.consequent.length &&
+            index !== switchNode.cases.length - 1
+          ) {
+            accumulator.push([])
+          }
+          return accumulator
+        },
+        [[]],
+      )
+
+      // For each case group, ensure the nodes are in the correct order
+      let hasUnsortedNodes = false
+      for (let caseNodesSortingNodeGroup of caseNameSortingNodeGroups) {
+        let sortedCaseNameSortingNodes = sortNodes(
+          caseNodesSortingNodeGroup,
+          options,
+        )
+        hasUnsortedNodes =
+          hasUnsortedNodes ||
+          sortedCaseNameSortingNodes.some(
+            (node, index) => node !== caseNodesSortingNodeGroup[index],
+          )
+
+        pairwise(caseNodesSortingNodeGroup, (left, right) => {
+          let indexOfLeft = sortedCaseNameSortingNodes.indexOf(left)
+          let indexOfRight = sortedCaseNameSortingNodes.indexOf(right)
+          if (indexOfLeft < indexOfRight) {
+            return
+          }
+
+          context.report({
+            messageId: 'unexpectedSwitchCaseOrder',
+            data: {
+              left: left.name,
+              right: right.name,
+            },
+            node: right.node,
+            fix: fixer =>
+              makeFixes(
+                fixer,
+                caseNodesSortingNodeGroup,
+                sortedCaseNameSortingNodes,
+                sourceCode,
+              ),
+          })
         })
       }
+
+      let sortingNodes = switchNode.cases.map(
+        (caseNode: TSESTree.SwitchCase) => ({
+          size: caseNode.test
+            ? rangeToDiff(caseNode.test, sourceCode)
+            : 'default'.length,
+          node: caseNode,
+          isDefaultClause: !caseNode.test,
+          name: getCaseName(sourceCode, caseNode),
+          addSafetySemicolonWhenInline: true,
+        }),
+      )
+
+      // Ensure default is at the end
+      let sortingNodeGroupsForDefaultSort = reduceCaseSortingNodes(
+        sortingNodes,
+        caseNode => !!caseNode.node.consequent.length,
+      )
+      let sortingNodesGroupWithDefault = sortingNodeGroupsForDefaultSort.find(
+        caseNodeGroup => caseNodeGroup.some(node => node.isDefaultClause),
+      )
+      if (
+        sortingNodesGroupWithDefault &&
+        !sortingNodesGroupWithDefault.at(-1)!.isDefaultClause
+      ) {
+        let defaultCase = sortingNodesGroupWithDefault.find(
+          node => node.isDefaultClause,
+        )!
+        let lastCase = sortingNodesGroupWithDefault.at(-1)!
+        context.report({
+          messageId: 'unexpectedSwitchCaseOrder',
+          data: {
+            left: defaultCase.name,
+            right: lastCase.name,
+          },
+          node: defaultCase.node,
+          fix: fixer => {
+            let punctuatorAfterLastCase = sourceCode.getTokenAfter(
+              lastCase.node.test!,
+            )!
+            let lastCaseRange = [
+              lastCase.node.range[0],
+              punctuatorAfterLastCase.range[1],
+            ] as const
+            return [
+              fixer.replaceText(
+                defaultCase.node,
+                sourceCode.text.slice(...lastCaseRange),
+              ),
+              fixer.replaceTextRange(
+                lastCaseRange,
+                sourceCode.getText(defaultCase.node),
+              ),
+              ...makeCommentAfterFixes(
+                fixer,
+                defaultCase.node,
+                punctuatorAfterLastCase,
+                sourceCode,
+              ),
+              ...makeCommentAfterFixes(
+                fixer,
+                punctuatorAfterLastCase,
+                defaultCase.node,
+                sourceCode,
+              ),
+            ]
+          },
+        })
+      }
+
+      // Ensure case blocks are in the correct order
+      let sortingNodeGroupsForBlockSort = reduceCaseSortingNodes(
+        sortingNodes,
+        caseNode =>
+          caseNode.node.consequent.some(
+            currentConsequent =>
+              currentConsequent.type === 'BreakStatement' ||
+              currentConsequent.type === 'ReturnStatement' ||
+              currentConsequent.type === 'BlockStatement',
+          ),
+      )
+      let sortedSortingNodeGroupsForBlockSort = [
+        ...sortingNodeGroupsForBlockSort,
+      ]
+        .sort((a, b) => {
+          if (a.some(node => node.isDefaultClause)) {
+            return 1
+          }
+          if (b.some(node => node.isDefaultClause)) {
+            return -1
+          }
+          return compare(a.at(0)!, b.at(0)!, options)
+        })
+        .flat()
+      let sortingNodeGroupsForBlockSortFlat =
+        sortingNodeGroupsForBlockSort.flat()
+      pairwise(sortingNodeGroupsForBlockSortFlat, (left, right) => {
+        let indexOfLeft = sortedSortingNodeGroupsForBlockSort.indexOf(left)
+        let indexOfRight = sortedSortingNodeGroupsForBlockSort.indexOf(right)
+        if (indexOfLeft < indexOfRight) {
+          return
+        }
+        context.report({
+          messageId: 'unexpectedSwitchCaseOrder',
+          data: {
+            left: left.name,
+            right: right.name,
+          },
+          node: right.node,
+          fix: fixer =>
+            hasUnsortedNodes
+              ? [] // Raise errors but only sort on second iteration
+              : makeFixes(
+                  fixer,
+                  sortingNodeGroupsForBlockSortFlat,
+                  sortedSortingNodeGroupsForBlockSort,
+                  sourceCode,
+                ),
+        })
+      })
     },
   }),
 })
+
+const getCaseName = (
+  sourceCode: TSESLint.SourceCode,
+  caseNode: TSESTree.SwitchCase,
+) => {
+  if (caseNode.test?.type === 'Literal') {
+    return `${caseNode.test.value}`
+  } else if (caseNode.test === null) {
+    return 'default'
+  }
+  return sourceCode.getText(caseNode.test)
+}
+
+const reduceCaseSortingNodes = (
+  caseNodes: SortSwitchCaseSortingNode[],
+  endsBlock: (caseNode: SortSwitchCaseSortingNode) => boolean,
+): SortSwitchCaseSortingNode[][] =>
+  caseNodes.reduce(
+    (
+      accumulator: SortSwitchCaseSortingNode[][],
+      caseNode: SortSwitchCaseSortingNode,
+      index: number,
+    ) => {
+      accumulator.at(-1)!.push(caseNode)
+      if (endsBlock(caseNode) && index !== caseNodes.length - 1) {
+        accumulator.push([])
+      }
+      return accumulator
+    },
+    [[]],
+  )
