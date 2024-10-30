@@ -32,6 +32,22 @@ describe(ruleName, () => {
         valid: [
           {
             code: dedent`
+              switch(x) {
+              }
+            `,
+            options: [{}],
+          },
+          {
+            code: dedent`
+              switch(x) {
+                case "a":
+                  break;
+              }
+            `,
+            options: [{}],
+          },
+          {
+            code: dedent`
               function func(name) {
                 switch(name) {
                   case 'aaa':
@@ -252,15 +268,19 @@ describe(ruleName, () => {
                 switch(name) {
                   case 'aaa': {
                     height = 1
+                    break
                   }
                   case 'c': {
                     height = 3
+                    break
                   }
                   case 'bb': {
                     height = 2
+                    break
                   }
                   default:
                     height = NaN
+                    break
                 }
                 return size
               }
@@ -271,15 +291,19 @@ describe(ruleName, () => {
                 switch(name) {
                   case 'aaa': {
                     height = 1
+                    break
                   }
                   case 'bb': {
                     height = 2
+                    break
                   }
                   case 'c': {
                     height = 3
+                    break
                   }
                   default:
                     height = NaN
+                    break
                 }
                 return size
               }
@@ -291,6 +315,109 @@ describe(ruleName, () => {
                 data: {
                   left: 'c',
                   right: 'bb',
+                },
+              },
+            ],
+          },
+        ],
+      },
+    )
+
+    ruleTester.run(
+      `${ruleName}(${type}): sorts switch cases without ending statements`,
+      rule,
+      {
+        valid: [
+          {
+            code: dedent`
+              function func(name) {
+                switch(name) {
+                  case 'b':
+                    let b
+                    break
+                  case 'a':
+                }
+              }
+            `,
+            options: [options],
+          },
+          {
+            code: dedent`
+              function func(name) {
+                switch(name) {
+                  case 'b':
+                    let b
+                    break
+                  case 'a':
+                    let a
+                }
+              }
+            `,
+            options: [options],
+          },
+          {
+            code: dedent`
+              function func(name) {
+                switch(name) {
+                  case 'b':
+                    let b
+                    break
+                  default:
+                }
+              }
+            `,
+            options: [options],
+          },
+          {
+            code: dedent`
+              function func(name) {
+                switch(name) {
+                  case 'b':
+                    let b
+                    break
+                  default:
+                    let x
+                }
+              }
+            `,
+            options: [options],
+          },
+        ],
+        invalid: [
+          {
+            code: dedent`
+              function func(name) {
+                switch(name) {
+                  case 'c':
+                    let c
+                    break
+                  case 'b':
+                    let b
+                    break
+                  case 'a':
+                }
+              }
+            `,
+            output: dedent`
+              function func(name) {
+                switch(name) {
+                  case 'b':
+                    let b
+                    break
+                  case 'c':
+                    let c
+                    break
+                  case 'a':
+                }
+              }
+            `,
+            options: [options],
+            errors: [
+              {
+                messageId: 'unexpectedSwitchCaseOrder',
+                data: {
+                  left: 'c',
+                  right: 'b',
                 },
               },
             ],
@@ -945,6 +1072,91 @@ describe(ruleName, () => {
         },
       ],
     })
+
+    ruleTester.run(`${ruleName}: handles last case without break`, rule, {
+      valid: [
+        {
+          code: dedent`
+              switch(x) {
+                case "b": {
+                  break
+                }
+                case "a": {
+                  let a
+                }
+              }
+            `,
+          options: [{}],
+        },
+        {
+          code: dedent`
+              switch(x) {
+                default: {
+                  break
+                }
+                case "a": {
+                  let a
+                }
+              }
+            `,
+          options: [{}],
+        },
+        {
+          code: dedent`
+              switch(x) {
+                case "b":
+                  break
+                case "a":
+                  let a
+              }
+            `,
+          options: [{}],
+        },
+        {
+          code: dedent`
+              switch(x) {
+                default:
+                  break;
+                case "a":
+                  let a
+              }
+            `,
+          options: [{}],
+        },
+      ],
+      invalid: [
+        {
+          code: dedent`
+            switch(x) {
+              default:
+                break;
+              case "a":
+                break;
+              case "a":
+            }
+          `,
+          output: dedent`
+            switch(x) {
+              case "a":
+                break;
+              default:
+                break;
+              case "a":
+            }
+          `,
+          options: [{}],
+          errors: [
+            {
+              messageId: 'unexpectedSwitchCaseOrder',
+              data: {
+                left: 'default',
+                right: 'a',
+              },
+            },
+          ],
+        },
+      ],
+    })
   })
 
   describe(`${ruleName}: sorting by natural order`, () => {
@@ -1143,15 +1355,19 @@ describe(ruleName, () => {
                 switch(name) {
                   case 'aaa': {
                     height = 1
+                    break
                   }
                   case 'c': {
                     height = 3
+                    break
                   }
                   case 'bb': {
                     height = 2
+                    break
                   }
                   default:
                     height = NaN
+                    break
                 }
                 return size
               }
@@ -1162,15 +1378,19 @@ describe(ruleName, () => {
                 switch(name) {
                   case 'aaa': {
                     height = 1
+                    break
                   }
                   case 'bb': {
                     height = 2
+                    break
                   }
                   case 'c': {
                     height = 3
+                    break
                   }
                   default:
                     height = NaN
+                    break
                 }
                 return size
               }
@@ -1760,15 +1980,19 @@ describe(ruleName, () => {
                 switch(name) {
                   case 'aaa': {
                     height = 1
+                    break
                   }
                   case 'c': {
                     height = 3
+                    break
                   }
                   case 'bb': {
                     height = 2
+                    break
                   }
                   default:
                     height = NaN
+                    break
                 }
                 return size
               }
@@ -1779,15 +2003,19 @@ describe(ruleName, () => {
                 switch(name) {
                   case 'aaa': {
                     height = 1
+                    break
                   }
                   case 'bb': {
                     height = 2
+                    break
                   }
                   case 'c': {
                     height = 3
+                    break
                   }
                   default:
                     height = NaN
+                    break
                 }
                 return size
               }
