@@ -217,13 +217,7 @@ export default createEslintRule<Options, MESSAGE_ID>({
       // Ensure case blocks are in the correct order
       let sortingNodeGroupsForBlockSort = reduceCaseSortingNodes(
         sortingNodes,
-        caseNode =>
-          caseNode.node.consequent.some(
-            currentConsequent =>
-              currentConsequent.type === 'BreakStatement' ||
-              currentConsequent.type === 'ReturnStatement' ||
-              currentConsequent.type === 'BlockStatement',
-          ),
+        caseNode => caseHasBreakOrReturn(caseNode.node),
       )
       let sortedSortingNodeGroupsForBlockSort = [
         ...sortingNodeGroupsForBlockSort,
@@ -298,3 +292,18 @@ const reduceCaseSortingNodes = (
     },
     [[]],
   )
+
+const caseHasBreakOrReturn = (caseNode: TSESTree.SwitchCase) => {
+  if (caseNode.consequent.length === 0) {
+    return false
+  }
+  if (caseNode.consequent[0]?.type === 'BlockStatement') {
+    return caseNode.consequent[0].body.some(statementIsBreakOrReturn)
+  }
+  return caseNode.consequent.some(currentConsequent =>
+    statementIsBreakOrReturn(currentConsequent),
+  )
+}
+
+const statementIsBreakOrReturn = (statement: TSESTree.Statement) =>
+  statement.type === 'BreakStatement' || statement.type === 'ReturnStatement'

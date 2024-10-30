@@ -252,15 +252,19 @@ describe(ruleName, () => {
                 switch(name) {
                   case 'aaa': {
                     height = 1
+                    break
                   }
                   case 'c': {
                     height = 3
+                    break
                   }
                   case 'bb': {
                     height = 2
+                    break
                   }
                   default:
                     height = NaN
+                    break
                 }
                 return size
               }
@@ -271,15 +275,19 @@ describe(ruleName, () => {
                 switch(name) {
                   case 'aaa': {
                     height = 1
+                    break
                   }
                   case 'bb': {
                     height = 2
+                    break
                   }
                   case 'c': {
                     height = 3
+                    break
                   }
                   default:
                     height = NaN
+                    break
                 }
                 return size
               }
@@ -1143,15 +1151,19 @@ describe(ruleName, () => {
                 switch(name) {
                   case 'aaa': {
                     height = 1
+                    break
                   }
                   case 'c': {
                     height = 3
+                    break
                   }
                   case 'bb': {
                     height = 2
+                    break
                   }
                   default:
                     height = NaN
+                    break
                 }
                 return size
               }
@@ -1162,15 +1174,19 @@ describe(ruleName, () => {
                 switch(name) {
                   case 'aaa': {
                     height = 1
+                    break
                   }
                   case 'bb': {
                     height = 2
+                    break
                   }
                   case 'c': {
                     height = 3
+                    break
                   }
                   default:
                     height = NaN
+                    break
                 }
                 return size
               }
@@ -1760,15 +1776,19 @@ describe(ruleName, () => {
                 switch(name) {
                   case 'aaa': {
                     height = 1
+                    break
                   }
                   case 'c': {
                     height = 3
+                    break
                   }
                   case 'bb': {
                     height = 2
+                    break
                   }
                   default:
                     height = NaN
+                    break
                 }
                 return size
               }
@@ -1779,15 +1799,19 @@ describe(ruleName, () => {
                 switch(name) {
                   case 'aaa': {
                     height = 1
+                    break
                   }
                   case 'bb': {
                     height = 2
+                    break
                   }
                   case 'c': {
                     height = 3
+                    break
                   }
                   default:
                     height = NaN
+                    break
                 }
                 return size
               }
