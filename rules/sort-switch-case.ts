@@ -70,6 +70,10 @@ export default createEslintRule<Options, MESSAGE_ID>({
   defaultOptions: [defaultOptions],
   create: context => ({
     SwitchStatement: switchNode => {
+      if (switchNode.cases.length <= 1) {
+        return
+      }
+
       let settings = getSettings(context.settings)
 
       let options = complete(context.options.at(0), settings, defaultOptions)
@@ -217,18 +221,28 @@ export default createEslintRule<Options, MESSAGE_ID>({
       // Ensure case blocks are in the correct order
       let sortingNodeGroupsForBlockSort = reduceCaseSortingNodes(
         sortingNodes,
-        caseNode =>
-          caseNode.node.consequent.some(
-            currentConsequent =>
-              currentConsequent.type === 'BreakStatement' ||
-              currentConsequent.type === 'ReturnStatement' ||
-              currentConsequent.type === 'BlockStatement',
-          ),
+        caseNode => caseHasBreakOrReturn(caseNode.node),
+      )
+      // If the last case does not have a return/break, leave its group at its place
+      let lastNodeGroup = sortingNodeGroupsForBlockSort.at(-1)
+      let lastBlockCaseShouldStayInPlace = !caseHasBreakOrReturn(
+        lastNodeGroup!.at(-1)!.node,
       )
       let sortedSortingNodeGroupsForBlockSort = [
         ...sortingNodeGroupsForBlockSort,
       ]
         .sort((a, b) => {
+          if (lastBlockCaseShouldStayInPlace) {
+            if (a === lastNodeGroup) {
+              return 1
+            }
+            /* c8 ignore start - last element might never be b */
+            if (b === lastNodeGroup) {
+              return -1
+              /* c8 ignore end */
+            }
+          }
+
           if (a.some(node => node.isDefaultClause)) {
             return 1
           }
@@ -298,3 +312,18 @@ const reduceCaseSortingNodes = (
     },
     [[]],
   )
+
+const caseHasBreakOrReturn = (caseNode: TSESTree.SwitchCase) => {
+  if (caseNode.consequent.length === 0) {
+    return false
+  }
+  if (caseNode.consequent[0]?.type === 'BlockStatement') {
+    return caseNode.consequent[0].body.some(statementIsBreakOrReturn)
+  }
+  return caseNode.consequent.some(currentConsequent =>
+    statementIsBreakOrReturn(currentConsequent),
+  )
+}
+
+const statementIsBreakOrReturn = (statement: TSESTree.Statement) =>
+  statement.type === 'BreakStatement' || statement.type === 'ReturnStatement'
