@@ -1,7 +1,4 @@
-import type {
-  ClassicConfig,
-  FlatConfig,
-} from '@typescript-eslint/utils/ts-eslint'
+import type { ESLint, Linter, Rule } from 'eslint'
 
 import sortVariableDeclarations from './rules/sort-variable-declarations'
 import sortIntersectionTypes from './rules/sort-intersection-types'
@@ -23,14 +20,43 @@ import sortEnums from './rules/sort-enums'
 import sortMaps from './rules/sort-maps'
 import sortSets from './rules/sort-sets'
 
+interface PluginConfig {
+  rules: {
+    'sort-variable-declarations': Rule.RuleModule
+    'sort-intersection-types': Rule.RuleModule
+    'sort-heritage-clauses': Rule.RuleModule
+    'sort-array-includes': Rule.RuleModule
+    'sort-named-imports': Rule.RuleModule
+    'sort-named-exports': Rule.RuleModule
+    'sort-object-types': Rule.RuleModule
+    'sort-union-types': Rule.RuleModule
+    'sort-switch-case': Rule.RuleModule
+    'sort-interfaces': Rule.RuleModule
+    'sort-decorators': Rule.RuleModule
+    'sort-jsx-props': Rule.RuleModule
+    'sort-classes': Rule.RuleModule
+    'sort-imports': Rule.RuleModule
+    'sort-exports': Rule.RuleModule
+    'sort-objects': Rule.RuleModule
+    'sort-enums': Rule.RuleModule
+    'sort-sets': Rule.RuleModule
+    'sort-maps': Rule.RuleModule
+  }
+  configs: {
+    'recommended-alphabetical-legacy': Linter.LegacyConfig
+    'recommended-line-length-legacy': Linter.LegacyConfig
+    'recommended-natural-legacy': Linter.LegacyConfig
+    'recommended-alphabetical': Linter.Config
+    'recommended-line-length': Linter.Config
+    'recommended-natural': Linter.Config
+  }
+  name: string
+}
+
 interface BaseOptions {
   type: 'alphabetical' | 'line-length' | 'natural'
   order: 'desc' | 'asc'
 }
-
-type RuleSeverity = 'error' | 'warn' | 'off'
-
-type RuleDeclaration = [RuleSeverity, Object?]
 
 let name = 'perfectionist'
 
@@ -57,24 +83,24 @@ let plugin = {
     'sort-maps': sortMaps,
   },
   name,
-}
+} as unknown as ESLint.Plugin
 
-let getRules = (options: BaseOptions): Record<string, RuleDeclaration> =>
+let getRules = (options: BaseOptions): Linter.RulesRecord =>
   Object.fromEntries(
-    Object.keys(plugin.rules).map(ruleName => [
+    Object.keys(plugin.rules!).map(ruleName => [
       `${name}/${ruleName}`,
       ['error', options],
     ]),
   )
 
-let createConfig = (options: BaseOptions): FlatConfig.Config => ({
+let createConfig = (options: BaseOptions): Linter.Config => ({
   plugins: {
     [name]: plugin,
   },
   rules: getRules(options),
 })
 
-let createLegacyConfig = (options: BaseOptions): ClassicConfig.Config => ({
+let createLegacyConfig = (options: BaseOptions): Linter.LegacyConfig => ({
   rules: getRules(options),
   plugins: [name],
 })
@@ -107,4 +133,4 @@ export default {
       order: 'asc',
     }),
   },
-}
+} as PluginConfig
