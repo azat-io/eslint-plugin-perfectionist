@@ -32,6 +32,22 @@ describe(ruleName, () => {
         valid: [
           {
             code: dedent`
+              switch(x) {
+              }
+            `,
+            options: [{}],
+          },
+          {
+            code: dedent`
+              switch(x) {
+                case "a":
+                  break;
+              }
+            `,
+            options: [{}],
+          },
+          {
+            code: dedent`
               function func(name) {
                 switch(name) {
                   case 'aaa':
@@ -946,6 +962,91 @@ describe(ruleName, () => {
               messageId: 'unexpectedSwitchCaseOrder',
               data: {
                 left: 'b',
+                right: 'a',
+              },
+            },
+          ],
+        },
+      ],
+    })
+
+    ruleTester.run(`${ruleName}: handles last case without break`, rule, {
+      valid: [
+        {
+          code: dedent`
+              switch(x) {
+                case "b": {
+                  break
+                }
+                case "a": {
+                  let a
+                }
+              }
+            `,
+          options: [{}],
+        },
+        {
+          code: dedent`
+              switch(x) {
+                default: {
+                  break
+                }
+                case "a": {
+                  let a
+                }
+              }
+            `,
+          options: [{}],
+        },
+        {
+          code: dedent`
+              switch(x) {
+                case "b":
+                  break
+                case "a":
+                  let a
+              }
+            `,
+          options: [{}],
+        },
+        {
+          code: dedent`
+              switch(x) {
+                default:
+                  break;
+                case "a":
+                  let a
+              }
+            `,
+          options: [{}],
+        },
+      ],
+      invalid: [
+        {
+          code: dedent`
+            switch(x) {
+              default:
+                break;
+              case "a":
+                break;
+              case "a":
+            }
+          `,
+          output: dedent`
+            switch(x) {
+              case "a":
+                break;
+              default:
+                break;
+              case "a":
+            }
+          `,
+          options: [{}],
+          errors: [
+            {
+              messageId: 'unexpectedSwitchCaseOrder',
+              data: {
+                left: 'default',
                 right: 'a',
               },
             },

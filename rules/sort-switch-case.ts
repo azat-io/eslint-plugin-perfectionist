@@ -70,6 +70,10 @@ export default createEslintRule<Options, MESSAGE_ID>({
   defaultOptions: [defaultOptions],
   create: context => ({
     SwitchStatement: switchNode => {
+      if (switchNode.cases.length <= 1) {
+        return
+      }
+
       let settings = getSettings(context.settings)
 
       let options = complete(context.options.at(0), settings, defaultOptions)
@@ -219,10 +223,26 @@ export default createEslintRule<Options, MESSAGE_ID>({
         sortingNodes,
         caseNode => caseHasBreakOrReturn(caseNode.node),
       )
+      // If the last case does not have a return/break, leave its group at its place
+      let lastNodeGroup = sortingNodeGroupsForBlockSort.at(-1)
+      let lastBlockCaseShouldStayInPlace = !caseHasBreakOrReturn(
+        lastNodeGroup!.at(-1)!.node,
+      )
       let sortedSortingNodeGroupsForBlockSort = [
         ...sortingNodeGroupsForBlockSort,
       ]
         .sort((a, b) => {
+          if (lastBlockCaseShouldStayInPlace) {
+            if (a === lastNodeGroup) {
+              return 1
+            }
+            /* c8 ignore start - last element might never be b */
+            if (b === lastNodeGroup) {
+              return -1
+              /* c8 ignore end */
+            }
+          }
+
           if (a.some(node => node.isDefaultClause)) {
             return 1
           }
