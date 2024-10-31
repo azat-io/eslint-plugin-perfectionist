@@ -157,11 +157,11 @@ Controls whether special characters should be trimmed, removed or kept before so
 
 ### internalPattern
 
-<sub>default: `['~/**']` for `minimatch` matcher, `['^~/.*']` for `regex` matcher</sub>
+<sub>default: `['^~/.*']`</sub>
 
 Allows you to specify a pattern for identifying internal imports. This is useful for distinguishing your own modules from external dependencies.
 
-You can use glob patterns to define these internal imports.
+You can use regexp patterns to define these internal imports.
 
 ### sortSideEffects
 
@@ -293,9 +293,7 @@ import type { BaseOptions } from './index.d.ts'
 </sub>
 <sub>default: `{ value: {}, type: {} }`</sub>
 
-You can define your own groups and use custom glob patterns or regex to match specific imports.
-
-Use the `matcher` option to specify the pattern matching method.
+You can define your own groups and use regexp pattern to match specific imports.
 
 Each key of the `value` or `type` fields represents a group name which you can then use in the `groups` option. The value for each key can either be of type:
 - `string` — An import matching the value will be marked as part of the group referenced by the key.
@@ -308,10 +306,10 @@ Custom group matching takes precedence over predefined group matching.
 
 ```js
    groups: [
-+    'react',                       // [!code ++]
++    'react',                           // [!code ++]
      'type',
      ['builtin', 'external'],
-+    'lodash',                      // [!code ++]
++    'lodash',                          // [!code ++]
      'internal-type',
      'internal',
      ['parent-type', 'sibling-type', 'index-type'],
@@ -319,26 +317,17 @@ Custom group matching takes precedence over predefined group matching.
      'object',
      'unknown',
    ],
-+  customGroups: {                  // [!code ++]
-+    value: {                       // [!code ++]
-+     react: ['react', 'react-*'],  // [!code ++]
-+     lodash: 'lodash',             // [!code ++]
-+    },                             // [!code ++]
-+    type: {                        // [!code ++]
-+      react: ['react', 'react-*'], // [!code ++]
-+    }                              // [!code ++]
-+  },                               // [!code ++]
++  customGroups: {                      // [!code ++]
++    value: {                           // [!code ++]
++     react: ['^react$', '^react-.+'],  // [!code ++]
++     lodash: 'lodash',                 // [!code ++]
++    },                                 // [!code ++]
++    type: {                            // [!code ++]
++      react: ['^react$', '^react-.+'], // [!code ++]
++    }                                  // [!code ++]
++  },                                   // [!code ++]
  }
 ```
-
-### matcher
-
-<sub>default: `'minimatch'`</sub>
-
-Determines the matcher used for patterns in the `internalPattern` and `customGroups` options.
-
-- `'minimatch'` — Use the [minimatch](https://github.com/isaacs/minimatch) library for pattern matching.
-- `'regex'` — Use regular expressions for pattern matching.
 
 ### environment
 
@@ -368,11 +357,9 @@ Specifies which environment’s built-in modules should be recognized. If you ar
                   order: 'asc',
                   ignoreCase: true,
                   specialCharacters: 'keep',
-                  matcher: 'minimatch',
-                  internalPattern: ['~/**'],
+                  internalPattern: ['^~/.+'],
                   newlinesBetween: 'always',
                   maxLineLength: undefined,
-                  matcher: 'minimatch',
                   groups: [
                     'type',
                     ['builtin', 'external'],
@@ -409,11 +396,9 @@ Specifies which environment’s built-in modules should be recognized. If you ar
                 order: 'asc',
                 ignoreCase: true,
                 specialCharacters: 'keep',
-                matcher: 'minimatch',
-                internalPattern: ['~/**'],
+                internalPattern: ['^~/.+'],
                 newlinesBetween: 'always',
                 maxLineLength: undefined,
-                matcher: 'minimatch',
                 groups: [
                   'type',
                   ['builtin', 'external'],

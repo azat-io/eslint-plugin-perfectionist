@@ -1,11 +1,10 @@
 import { matches } from './matches'
 
 interface UseGroupProps {
-  matcher: 'minimatch' | 'regex'
   groups: (string[] | string)[]
 }
 
-export let useGroups = ({ matcher, groups }: UseGroupProps) => {
+export let useGroups = ({ groups }: UseGroupProps) => {
   let group: undefined | string
   // For lookup performance
   let groupsSet = new Set(groups.flat())
@@ -29,12 +28,12 @@ export let useGroups = ({ matcher, groups }: UseGroupProps) => {
       for (let [key, pattern] of Object.entries(customGroups)) {
         if (
           Array.isArray(pattern) &&
-          pattern.some(patternValue => matches(name, patternValue, matcher))
+          pattern.some(patternValue => matches(name, patternValue))
         ) {
           defineGroup(key, params.override)
         }
 
-        if (typeof pattern === 'string' && matches(name, pattern, matcher)) {
+        if (typeof pattern === 'string' && matches(name, pattern)) {
           defineGroup(key, params.override)
         }
       }

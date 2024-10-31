@@ -745,7 +745,7 @@ describe(ruleName, () => {
               options: [
                 {
                   ...options,
-                  partitionByComment: 'Part**',
+                  partitionByComment: '^Part*',
                 },
               ],
               errors: [
@@ -845,13 +845,10 @@ describe(ruleName, () => {
         },
       )
 
-      ruleTester.run(
-        `${ruleName}(${type}): allows to use regex matcher`,
-        rule,
-        {
-          valid: [
-            {
-              code: dedent`
+      ruleTester.run(`${ruleName}(${type}): allows to use regex`, rule, {
+        valid: [
+          {
+            code: dedent`
               const
                 e = 'e',
                 f = 'f',
@@ -859,18 +856,16 @@ describe(ruleName, () => {
                 a = 'a',
                 b = 'b'
             `,
-              options: [
-                {
-                  ...options,
-                  matcher: 'regex',
-                  partitionByComment: ['^(?!.*foo).*$'],
-                },
-              ],
-            },
-          ],
-          invalid: [],
-        },
-      )
+            options: [
+              {
+                ...options,
+                partitionByComment: ['^(?!.*foo).*$'],
+              },
+            ],
+          },
+        ],
+        invalid: [],
+      })
     })
 
     ruleTester.run(

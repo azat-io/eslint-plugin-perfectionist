@@ -13,12 +13,6 @@ export let orderJsonSchema: JSONSchema4 = {
   type: 'string',
 }
 
-export let matcherJsonSchema: JSONSchema4 = {
-  description: 'Specifies the string matcher.',
-  enum: ['minimatch', 'regex'],
-  type: 'string',
-}
-
 export let ignoreCaseJsonSchema: JSONSchema4 = {
   description: 'Controls whether sorting should be case-sensitive or not.',
   type: 'boolean',

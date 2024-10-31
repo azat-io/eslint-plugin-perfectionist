@@ -500,7 +500,7 @@ describe(ruleName, () => {
               options: [
                 {
                   ...options,
-                  partitionByComment: 'Part**',
+                  partitionByComment: '^Part*',
                   groupKind: 'types-first',
                 },
               ],

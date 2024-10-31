@@ -16,7 +16,6 @@ import { matches } from '../utils/matches'
 interface CustomGroupMatchesProps {
   customGroup: SingleCustomGroup | CustomGroupBlock
   elementValue: undefined | string
-  matcher: 'minimatch' | 'regex'
   selectors: Selector[]
   modifiers: Modifier[]
   decorators: string[]
@@ -191,7 +190,6 @@ export const customGroupMatches = (props: CustomGroupMatchesProps): boolean => {
     let matchesElementNamePattern: boolean = matches(
       props.elementName,
       props.customGroup.elementNamePattern,
-      props.matcher,
     )
     if (!matchesElementNamePattern) {
       return false
@@ -205,7 +203,6 @@ export const customGroupMatches = (props: CustomGroupMatchesProps): boolean => {
     let matchesElementValuePattern: boolean = matches(
       props.elementValue ?? '',
       props.customGroup.elementValuePattern,
-      props.matcher,
     )
     if (!matchesElementValuePattern) {
       return false
@@ -218,7 +215,7 @@ export const customGroupMatches = (props: CustomGroupMatchesProps): boolean => {
   ) {
     let decoratorPattern = props.customGroup.decoratorNamePattern
     let matchesDecoratorNamePattern: boolean = props.decorators.some(
-      decorator => matches(decorator, decoratorPattern, props.matcher),
+      decorator => matches(decorator, decoratorPattern),
     )
     if (!matchesDecoratorNamePattern) {
       return false

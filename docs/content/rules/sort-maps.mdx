@@ -125,8 +125,8 @@ Allows you to use comments to separate the members of maps into logical groups. 
 
 - `true` — All comments will be treated as delimiters, creating partitions.
 -	`false` — Comments will not be used as delimiters.
-- `string` — A glob pattern to specify which comments should act as delimiters.
-- `string[]` — A list of glob patterns to specify which comments should act as delimiters.
+- `string` — A regexp pattern to specify which comments should act as delimiters.
+- `string[]` — A list of regexp patterns to specify which comments should act as delimiters.
 
 ### partitionByNewLine
 
@@ -156,16 +156,6 @@ new Map([
 
 Each group of map members (separated by empty lines) is treated independently, and the order within each group is preserved.
 
-
-### matcher
-
-<sub>default: `'minimatch'`</sub>
-
-Determines the matcher used for patterns in the `partitionByComment` option.
-
-- `'minimatch'` — Use the [minimatch](https://github.com/isaacs/minimatch) library for pattern matching.
-- `'regex'` — Use regular expressions for pattern matching.
-
 ## Usage
 
 <CodeTabs
@@ -190,7 +180,6 @@ Determines the matcher used for patterns in the `partitionByComment` option.
                   specialCharacters: 'keep',
                   partitionByNewLine: false,
                   partitionByComment: false,
-                  matcher: 'minimatch',
                 },
               ],
             },
@@ -217,7 +206,6 @@ Determines the matcher used for patterns in the `partitionByComment` option.
                 specialCharacters: 'keep',
                 partitionByNewLine: false,
                 partitionByComment: false,
-                matcher: 'minimatch',
               },
             ],
           },

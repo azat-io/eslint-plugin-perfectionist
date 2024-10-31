@@ -4,7 +4,6 @@ import {
   partitionByCommentJsonSchema,
   specialCharactersJsonSchema,
   ignoreCaseJsonSchema,
-  matcherJsonSchema,
   groupsJsonSchema,
   orderJsonSchema,
   typeJsonSchema,
@@ -55,7 +54,6 @@ type Options = [
     partitionByComment: string[] | boolean | string
     newlinesBetween: 'ignore' | 'always' | 'never'
     specialCharacters: 'remove' | 'trim' | 'keep'
-    matcher: 'minimatch' | 'regex'
     groups: (Group[] | Group)[]
     partitionByNewLine: boolean
     order: 'desc' | 'asc'
@@ -68,7 +66,6 @@ const defaultOptions: Required<Options[0]> = {
   ignoreCase: true,
   specialCharacters: 'keep',
   order: 'asc',
-  matcher: 'minimatch',
   newlinesBetween: 'ignore',
   partitionByComment: false,
   partitionByNewLine: false,
@@ -89,7 +86,6 @@ export default createEslintRule<Options, MESSAGE_ID>({
         properties: {
           type: typeJsonSchema,
           order: orderJsonSchema,
-          matcher: matcherJsonSchema,
           ignoreCase: ignoreCaseJsonSchema,
           specialCharacters: specialCharactersJsonSchema,
           groups: groupsJsonSchema,
@@ -229,7 +225,6 @@ export default createEslintRule<Options, MESSAGE_ID>({
               hasPartitionComment(
                 partitionComment,
                 getCommentsBefore(type, sourceCode, '&'),
-                options.matcher,
               )) ||
             (options.partitionByNewLine &&
               lastSortingNode &&
