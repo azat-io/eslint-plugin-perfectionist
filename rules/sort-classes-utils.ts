@@ -250,6 +250,7 @@ export const getCompareOptions = (
         : options.order,
     specialCharacters: options.specialCharacters,
     ignoreCase: options.ignoreCase,
+    locales: options.locales,
   }
 }
 

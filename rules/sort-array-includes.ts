@@ -8,6 +8,7 @@ import {
   partitionByCommentJsonSchema,
   specialCharactersJsonSchema,
   ignoreCaseJsonSchema,
+  localesJsonSchema,
   orderJsonSchema,
   typeJsonSchema,
 } from '../utils/common-json-schemas'
@@ -35,6 +36,7 @@ export type Options = [
     type: 'alphabetical' | 'line-length' | 'natural'
     partitionByComment: string[] | boolean | string
     specialCharacters: 'remove' | 'trim' | 'keep'
+    locales: NonNullable<Intl.LocalesArgument>
     partitionByNewLine: boolean
     order: 'desc' | 'asc'
     ignoreCase: boolean
@@ -49,6 +51,7 @@ export const defaultOptions: Required<Options[0]> = {
   order: 'asc',
   partitionByComment: false,
   partitionByNewLine: false,
+  locales: 'en-US',
 }
 
 export let jsonSchema: JSONSchema4 = {
@@ -56,6 +59,7 @@ export let jsonSchema: JSONSchema4 = {
   properties: {
     type: typeJsonSchema,
     order: orderJsonSchema,
+    locales: localesJsonSchema,
     ignoreCase: ignoreCaseJsonSchema,
     specialCharacters: specialCharactersJsonSchema,
     groupKind: {

@@ -13,6 +13,21 @@ export let orderJsonSchema: JSONSchema4 = {
   type: 'string',
 }
 
+export let localesJsonSchema: JSONSchema4 = {
+  oneOf: [
+    {
+      type: 'string',
+    },
+    {
+      items: {
+        type: 'string',
+      },
+      type: 'array',
+    },
+  ],
+  description: 'Specifies the sorting locales.',
+}
+
 export let ignoreCaseJsonSchema: JSONSchema4 = {
   description: 'Controls whether sorting should be case-sensitive or not.',
   type: 'boolean',

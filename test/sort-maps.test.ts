@@ -512,6 +512,25 @@ describe(ruleName, () => {
         invalid: [],
       },
     )
+
+    ruleTester.run(`${ruleName}(${type}): allows to use locale`, rule, {
+      valid: [
+        {
+          code: dedent`
+              new Map([
+                [你好, '你好'],
+                [世界, '世界'],
+                [a, 'a'],
+                [A, 'A'],
+                [b, 'b'],
+                [B, 'B'],
+              ])
+            `,
+          options: [{ ...options, locales: 'zh-CN' }],
+        },
+      ],
+      invalid: [],
+    })
   })
 
   describe(`${ruleName}: sorting by natural order`, () => {

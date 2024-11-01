@@ -12,6 +12,7 @@ import {
   partitionByCommentJsonSchema,
   specialCharactersJsonSchema,
   ignoreCaseJsonSchema,
+  localesJsonSchema,
   groupsJsonSchema,
   orderJsonSchema,
   typeJsonSchema,
@@ -82,6 +83,7 @@ const defaultOptions: Required<SortClassesOptions[0]> = {
   specialCharacters: 'keep',
   customGroups: [],
   order: 'asc',
+  locales: 'en-US',
 }
 
 export default createEslintRule<SortClassesOptions, MESSAGE_ID>({
@@ -98,6 +100,7 @@ export default createEslintRule<SortClassesOptions, MESSAGE_ID>({
         properties: {
           type: typeJsonSchema,
           order: orderJsonSchema,
+          locales: localesJsonSchema,
           ignoreCase: ignoreCaseJsonSchema,
           specialCharacters: specialCharactersJsonSchema,
           partitionByComment: {

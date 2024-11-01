@@ -6,6 +6,7 @@ import type { SortingNode } from '../typings'
 import {
   specialCharactersJsonSchema,
   ignoreCaseJsonSchema,
+  localesJsonSchema,
   orderJsonSchema,
   typeJsonSchema,
 } from '../utils/common-json-schemas'
@@ -26,6 +27,7 @@ type Options = [
   Partial<{
     type: 'alphabetical' | 'line-length' | 'natural'
     specialCharacters: 'remove' | 'trim' | 'keep'
+    locales: NonNullable<Intl.LocalesArgument>
     order: 'desc' | 'asc'
     ignoreCase: boolean
   }>,
@@ -40,6 +42,7 @@ const defaultOptions: Required<Options[0]> = {
   ignoreCase: true,
   specialCharacters: 'keep',
   order: 'asc',
+  locales: 'en-US',
 }
 
 export default createEslintRule<Options, MESSAGE_ID>({
@@ -56,6 +59,7 @@ export default createEslintRule<Options, MESSAGE_ID>({
         properties: {
           type: typeJsonSchema,
           order: orderJsonSchema,
+          locales: localesJsonSchema,
           ignoreCase: ignoreCaseJsonSchema,
           specialCharacters: specialCharactersJsonSchema,
         },

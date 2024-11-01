@@ -1014,6 +1014,58 @@ describe(ruleName, () => {
         invalid: [],
       },
     )
+
+    ruleTester.run(`${ruleName}(${type}): allows to use locale`, rule, {
+      valid: [
+        {
+          code: dedent`
+
+            @你好
+            @世界
+            @a
+            @A
+            @b
+            @B
+            class Class {
+
+              @你好
+              @世界
+              @a
+              @A
+              @b
+              @B
+              property
+
+              @你好
+              @世界
+              @a
+              @A
+              @b
+              @B
+              accessor field
+
+              @你好
+              @世界
+              @a
+              @A
+              @b
+              @B
+              method(
+                @你好
+                @世界
+                @a
+                @A
+                @b
+                @B
+                parameter) {}
+
+            }
+          `,
+          options: [{ ...options, locales: 'zh-CN' }],
+        },
+      ],
+      invalid: [],
+    })
   })
 
   describe(`${ruleName}: sorting by natural order`, () => {

@@ -855,6 +855,25 @@ describe(ruleName, () => {
       },
     )
 
+    ruleTester.run(`${ruleName}(${type}): allows to use locale`, rule, {
+      valid: [
+        {
+          code: dedent`
+              type Type = {
+                你好: string
+                世界: string
+                a: string
+                A: string
+                b: string
+                B: string
+              }
+            `,
+          options: [{ ...options, locales: 'zh-CN' }],
+        },
+      ],
+      invalid: [],
+    })
+
     ruleTester.run(`${ruleName}(${type}): allows to use method group`, rule, {
       valid: [
         {
