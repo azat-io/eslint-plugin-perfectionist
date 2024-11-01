@@ -189,7 +189,6 @@ export type SortClassesOptions = [
     type: 'alphabetical' | 'line-length' | 'natural'
     partitionByComment: string[] | boolean | string
     specialCharacters: 'remove' | 'trim' | 'keep'
-    matcher: 'minimatch' | 'regex'
     customGroups: CustomGroup[]
     groups: (Group[] | Group)[]
     order: 'desc' | 'asc'

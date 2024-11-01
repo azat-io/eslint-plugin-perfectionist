@@ -5,7 +5,6 @@ import {
   specialCharactersJsonSchema,
   customGroupsJsonSchema,
   ignoreCaseJsonSchema,
-  matcherJsonSchema,
   groupsJsonSchema,
   orderJsonSchema,
   typeJsonSchema,
@@ -47,7 +46,6 @@ export type Options<T extends string[]> = [
     newlinesBetween: 'ignore' | 'always' | 'never'
     specialCharacters: 'remove' | 'trim' | 'keep'
     groups: (Group<T>[] | Group<T>)[]
-    matcher: 'minimatch' | 'regex'
     partitionByNewLine: boolean
     ignorePattern: string[]
     order: 'desc' | 'asc'
@@ -60,7 +58,6 @@ const defaultOptions: Required<Options<string[]>[0]> = {
   partitionByNewLine: false,
   type: 'alphabetical',
   groupKind: 'mixed',
-  matcher: 'minimatch',
   newlinesBetween: 'ignore',
   ignorePattern: [],
   ignoreCase: true,
@@ -84,7 +81,6 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
         properties: {
           type: typeJsonSchema,
           order: orderJsonSchema,
-          matcher: matcherJsonSchema,
           ignoreCase: ignoreCaseJsonSchema,
           specialCharacters: specialCharactersJsonSchema,
           ignorePattern: {
@@ -151,9 +147,7 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
         let partitionComment = options.partitionByComment
 
         if (
-          !options.ignorePattern.some(pattern =>
-            matches(node.id.name, pattern, options.matcher),
-          )
+          !options.ignorePattern.some(pattern => matches(node.id.name, pattern))
         ) {
           let formattedMembers: SortingNode[][] = node.body.body.reduce(
             (accumulator: SortingNode[][], element) => {
@@ -220,7 +214,6 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
                   hasPartitionComment(
                     partitionComment,
                     getCommentsBefore(element, sourceCode),
-                    options.matcher,
                   )) ||
                 (options.partitionByNewLine &&
                   lastElement &&

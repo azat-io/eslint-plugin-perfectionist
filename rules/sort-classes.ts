@@ -12,7 +12,6 @@ import {
   partitionByCommentJsonSchema,
   specialCharactersJsonSchema,
   ignoreCaseJsonSchema,
-  matcherJsonSchema,
   groupsJsonSchema,
   orderJsonSchema,
   typeJsonSchema,
@@ -77,7 +76,6 @@ const defaultOptions: Required<SortClassesOptions[0]> = {
     ['private-method', 'private-function-property'],
     'unknown',
   ],
-  matcher: 'minimatch',
   partitionByComment: false,
   type: 'alphabetical',
   ignoreCase: true,
@@ -100,7 +98,6 @@ export default createEslintRule<SortClassesOptions, MESSAGE_ID>({
         properties: {
           type: typeJsonSchema,
           order: orderJsonSchema,
-          matcher: matcherJsonSchema,
           ignoreCase: ignoreCaseJsonSchema,
           specialCharacters: specialCharactersJsonSchema,
           partitionByComment: {
@@ -308,11 +305,7 @@ export default createEslintRule<SortClassesOptions, MESSAGE_ID>({
 
             if (
               options.partitionByComment &&
-              hasPartitionComment(
-                options.partitionByComment,
-                comments,
-                options.matcher,
-              )
+              hasPartitionComment(options.partitionByComment, comments)
             ) {
               accumulator.push([])
             }
@@ -530,7 +523,6 @@ export default createEslintRule<SortClassesOptions, MESSAGE_ID>({
                   modifiers,
                   selectors,
                   decorators,
-                  matcher: options.matcher,
                 })
               ) {
                 defineGroup(customGroup.groupName, true)

@@ -4,7 +4,6 @@ export type Settings = Partial<{
   type: 'alphabetical' | 'line-length' | 'natural'
   partitionByComment: string[] | boolean | string
   specialCharacters: 'remove' | 'trim' | 'keep'
-  matcher: 'minimatch' | 'regex'
   partitionByNewLine: boolean
   ignorePattern: string[]
   order: 'desc' | 'asc'
@@ -25,7 +24,6 @@ export let getSettings = (
       'specialCharacters',
       'ignorePattern',
       'ignoreCase',
-      'matcher',
       'order',
       'type',
     ]

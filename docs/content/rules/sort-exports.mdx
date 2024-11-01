@@ -124,8 +124,8 @@ Allows you to use comments to separate the exports into logical groups. This can
 
 - `true` — All comments will be treated as delimiters, creating partitions.
 -	`false` — Comments will not be used as delimiters.
-- `string` — A glob pattern to specify which comments should act as delimiters.
-- `string[]` — A list of glob patterns to specify which comments should act as delimiters.
+- `string` — A regexp pattern to specify which comments should act as delimiters.
+- `string[]` — A list of regexp patterns to specify which comments should act as delimiters.
 
 ### partitionByNewLine
 
@@ -156,15 +156,6 @@ Allows you to group exports by their kind, determining whether value exports sho
 - `values-first` — Group all value exports before type exports.
 - `types-first` — Group all type exports before value exports.
 
-### matcher
-
-<sub>default: `'minimatch'`</sub>
-
-Determines the matcher used for patterns in the `partitionByComment` option.
-
-- `'minimatch'` — Use the [minimatch](https://github.com/isaacs/minimatch) library for pattern matching.
-- `'regex'` — Use regular expressions for pattern matching.
-
 ## Usage
 
 <CodeTabs
@@ -190,7 +181,6 @@ Determines the matcher used for patterns in the `partitionByComment` option.
                   partitionByComment: false,
                   partitionByNewLine: false,
                   groupKind: 'mixed',
-                  matcher: 'minimatch',
                 },
               ],
             },
@@ -218,7 +208,6 @@ Determines the matcher used for patterns in the `partitionByComment` option.
                 partitionByComment: false,
                 partitionByNewLine: false,
                 groupKind: 'mixed',
-                matcher: 'minimatch',
               },
             ],
           },

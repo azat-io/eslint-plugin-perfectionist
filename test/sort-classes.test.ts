@@ -7105,7 +7105,7 @@ describe(ruleName, () => {
     })
 
     ruleTester.run(
-      `${ruleName}: allows to use regex matcher for element names in custom groups`,
+      `${ruleName}: allows to use regex for element names in custom groups`,
       rule,
       {
         valid: [
@@ -7121,7 +7121,6 @@ describe(ruleName, () => {
             options: [
               {
                 type: 'alphabetical',
-                matcher: 'regex',
                 groups: ['unknown', 'elementsWithoutFoo'],
                 customGroups: [
                   {
@@ -7138,7 +7137,7 @@ describe(ruleName, () => {
     )
 
     ruleTester.run(
-      `${ruleName}: allows to use regex matcher for element values in custom groups`,
+      `${ruleName}: allows to use regex for element values in custom groups`,
       rule,
       {
         valid: [
@@ -7154,7 +7153,6 @@ describe(ruleName, () => {
             options: [
               {
                 type: 'alphabetical',
-                matcher: 'regex',
                 groups: ['unknown', 'elementsWithoutFoo'],
                 customGroups: [
                   {
@@ -7171,7 +7169,7 @@ describe(ruleName, () => {
     )
 
     ruleTester.run(
-      `${ruleName}: allows to use regex matcher for decorator names in custom groups`,
+      `${ruleName}: allows to use regex for decorator names in custom groups`,
       rule,
       {
         valid: [
@@ -7189,7 +7187,6 @@ describe(ruleName, () => {
             options: [
               {
                 type: 'alphabetical',
-                matcher: 'regex',
                 groups: ['decoratorsWithFoo', 'unknown'],
                 customGroups: [
                   {
@@ -7677,7 +7674,7 @@ describe(ruleName, () => {
         })
 
         ruleTester.run(
-          `${ruleName}: allows to use regex matcher for partition comments`,
+          `${ruleName}: allows to use regex for partition comments`,
           rule,
           {
             valid: [
@@ -7694,7 +7691,6 @@ describe(ruleName, () => {
                 options: [
                   {
                     type: 'alphabetical',
-                    matcher: 'regex',
                     partitionByComment: ['^(?!.*foo).*$'],
                   },
                 ],

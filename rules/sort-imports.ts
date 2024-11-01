@@ -7,7 +7,6 @@ import type { SortingNode } from '../typings'
 import {
   specialCharactersJsonSchema,
   ignoreCaseJsonSchema,
-  matcherJsonSchema,
   groupsJsonSchema,
   orderJsonSchema,
   typeJsonSchema,
@@ -66,7 +65,6 @@ export type Options<T extends string[]> = [
     newlinesBetween: 'ignore' | 'always' | 'never'
     specialCharacters: 'remove' | 'trim' | 'keep'
     groups: (Group<T>[] | Group<T>)[]
-    matcher: 'minimatch' | 'regex'
     environment: 'node' | 'bun'
     internalPattern: string[]
     sortSideEffects: boolean
@@ -95,7 +93,6 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
         properties: {
           type: typeJsonSchema,
           order: orderJsonSchema,
-          matcher: matcherJsonSchema,
           ignoreCase: ignoreCaseJsonSchema,
           specialCharacters: specialCharactersJsonSchema,
           internalPattern: {
@@ -198,7 +195,6 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
       sortSideEffects: false,
       newlinesBetween: 'always',
       maxLineLength: undefined,
-      matcher: 'minimatch',
       groups: [
         'type',
         ['builtin', 'external'],
@@ -229,10 +225,8 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
           'object',
           'unknown',
         ],
-        matcher: 'minimatch',
         customGroups: { type: {}, value: {} },
-        internalPattern:
-          userOptions?.matcher === 'regex' ? ['^~/.*'] : ['~/**'],
+        internalPattern: ['^~/.*'],
         newlinesBetween: 'always',
         sortSideEffects: false,
         type: 'alphabetical',
@@ -367,9 +361,7 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
 
       let isInternal = (value: string) =>
         options.internalPattern.length &&
-        options.internalPattern.some(pattern =>
-          matches(value, pattern, options.matcher),
-        )
+        options.internalPattern.some(pattern => matches(value, pattern))
 
       let isCoreModule = (value: string) => {
         let bunModules = [

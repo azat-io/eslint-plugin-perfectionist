@@ -8,7 +8,6 @@ import {
   specialCharactersJsonSchema,
   customGroupsJsonSchema,
   ignoreCaseJsonSchema,
-  matcherJsonSchema,
   groupsJsonSchema,
   orderJsonSchema,
   typeJsonSchema,
@@ -40,7 +39,6 @@ export type Options<T extends string[]> = [
     partitionByComment: string[] | boolean | string
     specialCharacters: 'remove' | 'trim' | 'keep'
     groups: (Group<T>[] | Group<T>)[]
-    matcher: 'minimatch' | 'regex'
     sortOnParameters: boolean
     sortOnProperties: boolean
     sortOnAccessors: boolean
@@ -55,7 +53,6 @@ type SortDecoratorsSortingNode = SortingNode<TSESTree.Decorator>
 
 const defaultOptions: Required<Options<string[]>[0]> = {
   type: 'alphabetical',
-  matcher: 'minimatch',
   ignoreCase: true,
   specialCharacters: 'keep',
   partitionByComment: false,
@@ -83,7 +80,6 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
         properties: {
           type: typeJsonSchema,
           order: orderJsonSchema,
-          matcher: matcherJsonSchema,
           ignoreCase: ignoreCaseJsonSchema,
           specialCharacters: specialCharactersJsonSchema,
           sortOnClasses: {
@@ -196,7 +192,6 @@ let sortDecorators = (
         hasPartitionComment(
           partitionComment,
           getCommentsBefore(decorator, sourceCode),
-          options.matcher,
         )
       ) {
         accumulator.push([])

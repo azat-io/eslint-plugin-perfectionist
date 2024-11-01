@@ -200,7 +200,7 @@ Allows you to use comments to separate the class members into logical groups. Th
 
 - `true` — All comments will be treated as delimiters, creating partitions.
 -	`false` — Comments will not be used as delimiters.
-- string — A glob pattern to specify which comments should act as delimiters.
+- string — A regexp pattern to specify which comments should act as delimiters.
 
 ### groups
 
@@ -506,9 +506,7 @@ Current API:
 </sub>
 <sub>default: `[]`</sub>
 
-You can define your own groups and use custom glob patterns or regex for matching very specific class members.
-
-Use the `matcher` option to specify the pattern matching method.
+You can define your own groups and use regex for matching very specific class members.
 
 A custom group definition may follow one of the two following interfaces:
 
@@ -616,14 +614,6 @@ Example:
  }
 ```
 
-### matcher
-
-<sub>default: `'minimatch'`</sub>
-
-Determines the matcher used for patterns in the `partitionByComment` and `customGroups` options.
-
-- `'minimatch'` — Use the [minimatch](https://github.com/isaacs/minimatch) library for pattern matching.
-- `'regex'` — Use regular expressions for pattern matching.
 
 ## Usage
 
@@ -648,7 +638,6 @@ Determines the matcher used for patterns in the `partitionByComment` and `custom
                   ignoreCase: true,
                   specialCharacters: 'keep',
                   partitionByComment: false,
-                  matcher: 'minimatch',
                   groups: [
                     'index-signature',
                     ['static-property', 'static-accessor-property'],
@@ -699,7 +688,6 @@ Determines the matcher used for patterns in the `partitionByComment` and `custom
                 ignoreCase: true,
                 specialCharacters: 'keep',
                 partitionByComment: false,
-                matcher: 'minimatch',
                 groups: [
                   'index-signature',
                   ['static-property', 'static-accessor-property'],

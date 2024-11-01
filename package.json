@@ -52,7 +52,6 @@
   "dependencies": {
     "@typescript-eslint/types": "^8.12.2",
     "@typescript-eslint/utils": "^8.12.2",
-    "minimatch": "^9.0.5",
     "natural-compare-lite": "^1.4.0"
   },
   "devDependencies": {

@@ -12,7 +12,6 @@ export const makeFixes = (
   sourceCode: TSESLint.SourceCode,
   additionalOptions?: {
     partitionByComment: string[] | boolean | string
-    matcher: 'minimatch' | 'regex'
   },
 ) => {
   let fixes: TSESLint.RuleFix[] = []

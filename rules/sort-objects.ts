@@ -7,7 +7,6 @@ import {
   specialCharactersJsonSchema,
   customGroupsJsonSchema,
   ignoreCaseJsonSchema,
-  matcherJsonSchema,
   groupsJsonSchema,
   orderJsonSchema,
   typeJsonSchema,
@@ -52,7 +51,6 @@ type Options = [
     partitionByComment: string[] | boolean | string
     newlinesBetween: 'ignore' | 'always' | 'never'
     specialCharacters: 'remove' | 'trim' | 'keep'
-    matcher: 'minimatch' | 'regex'
     groups: (Group[] | Group)[]
     partitionByNewLine: boolean
     styledComponents: boolean
@@ -70,7 +68,6 @@ const defaultOptions: Required<Options[0]> = {
   destructureOnly: false,
   type: 'alphabetical',
   ignorePattern: [],
-  matcher: 'minimatch',
   newlinesBetween: 'ignore',
   ignoreCase: true,
   specialCharacters: 'keep',
@@ -93,7 +90,6 @@ export default createEslintRule<Options, MESSAGE_ID>({
         properties: {
           type: typeJsonSchema,
           order: orderJsonSchema,
-          matcher: matcherJsonSchema,
           ignoreCase: ignoreCaseJsonSchema,
           specialCharacters: specialCharactersJsonSchema,
           partitionByComment: {
@@ -179,9 +175,7 @@ export default createEslintRule<Options, MESSAGE_ID>({
           parentId?.type === 'Identifier' ? parentId.name : null
 
         let checkMatch = (identifier: string) =>
-          options.ignorePattern.some(pattern =>
-            matches(identifier, pattern, options.matcher),
-          )
+          options.ignorePattern.some(pattern => matches(identifier, pattern))
 
         if (typeof varIdentifier === 'string' && checkMatch(varIdentifier)) {
           shouldIgnore = true
@@ -379,11 +373,7 @@ export default createEslintRule<Options, MESSAGE_ID>({
                   lastProp &&
                   getLinesBetween(sourceCode, lastProp, propSortingNode)) ||
                 (options.partitionByComment &&
-                  hasPartitionComment(
-                    options.partitionByComment,
-                    comments,
-                    options.matcher,
-                  ))
+                  hasPartitionComment(options.partitionByComment, comments))
               ) {
                 accumulator.push([])
               }

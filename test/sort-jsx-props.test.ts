@@ -495,7 +495,7 @@ describe(ruleName, () => {
     })
 
     ruleTester.run(
-      `${ruleName}(${type}): allows to use regex matcher for custom groups`,
+      `${ruleName}(${type}): allows to use regex for custom groups`,
       rule,
       {
         valid: [
@@ -511,7 +511,6 @@ describe(ruleName, () => {
             options: [
               {
                 ...options,
-                matcher: 'regex',
                 groups: ['unknown', 'elementsWithoutFoo'],
                 customGroups: {
                   elementsWithoutFoo: '^(?!.*Foo).*$',
