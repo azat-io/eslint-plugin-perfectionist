@@ -129,9 +129,7 @@ All members of the groups in the array will be sorted together as if they were p
 </sub>
 <sub>default: `{}`</sub>
 
-You can define your own groups and use custom glob patterns or regex to match specific heritage clauses.
-
-Use the `matcher` option to specify the pattern matching method.
+You can define your own groups and use regex to match specific heritage clauses.
 
 Each key of `customGroups` represents a group name which you can then use in the `groups` option. The value for each key can either be of type:
 - `string` — A heritage clause's name matching the value will be marked as part of the group referenced by the key.
@@ -159,19 +157,10 @@ interface Interface extends WithId, Logged, StartupService {
      'unknown'
    ],
 +  customGroups: {                // [!code ++]
-+    withIdInterface: 'WithId'   // [!code ++]
++    withIdInterface: '^WithId'   // [!code ++]
 +  }                              // [!code ++]
  }
 ```
-
-### matcher
-
-<sub>default: `'minimatch'`</sub>
-
-Determines the matcher used for patterns in the `customGroups` option.
-
-- `'minimatch'` — Use the [minimatch](https://github.com/isaacs/minimatch) library for pattern matching.
-- `'regex'` — Use regular expressions for pattern matching.
 
 ## Usage
 
@@ -195,7 +184,6 @@ Determines the matcher used for patterns in the `customGroups` option.
                   order: 'asc',
                   ignoreCase: true,
                   specialCharacters: 'keep',
-                  matcher: 'minimatch',
                   groups: [],
                   customGroups: {}
                 },
@@ -222,7 +210,6 @@ Determines the matcher used for patterns in the `customGroups` option.
                 order: 'asc',
                 ignoreCase: true,
                 specialCharacters: 'keep',
-                matcher: 'minimatch',
                 groups: [],
                 customGroups: {}
               },

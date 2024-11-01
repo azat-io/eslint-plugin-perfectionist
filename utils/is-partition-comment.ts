@@ -5,21 +5,15 @@ import { matches } from './matches'
 export let isPartitionComment = (
   partitionComment: string[] | boolean | string,
   comment: string,
-  matcher: 'minimatch' | 'regex',
 ) =>
   (Array.isArray(partitionComment) &&
-    partitionComment.some(pattern =>
-      matches(comment.trim(), pattern, matcher),
-    )) ||
+    partitionComment.some(pattern => matches(comment.trim(), pattern))) ||
   (typeof partitionComment === 'string' &&
-    matches(comment.trim(), partitionComment, matcher)) ||
+    matches(comment.trim(), partitionComment)) ||
   partitionComment === true
 
 export let hasPartitionComment = (
   partitionComment: string[] | boolean | string,
   comments: TSESTree.Comment[],
-  matcher: 'minimatch' | 'regex',
 ): boolean =>
-  comments.some(comment =>
-    isPartitionComment(partitionComment, comment.value, matcher),
-  )
+  comments.some(comment => isPartitionComment(partitionComment, comment.value))

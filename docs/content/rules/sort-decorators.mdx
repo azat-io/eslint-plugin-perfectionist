@@ -194,8 +194,8 @@ Allows you to use comments to separate class decorators into logical groups.
 
 - `true` — All comments will be treated as delimiters, creating partitions.
 - `false` — Comments will not be used as delimiters.
-- `string` — A glob pattern to specify which comments should act as delimiters.
-- `string[]` — An array of glob patterns to specify which comments should act as delimiters.
+- `string` — A regexp pattern to specify which comments should act as delimiters.
+- `string[]` — An array of regexp patterns to specify which comments should act as delimiters.
 
 ### groups
 
@@ -227,9 +227,7 @@ All members of the groups in the array will be sorted together as if they were p
 </sub>
 <sub>default: `{}`</sub>
 
-You can define your own groups and use custom glob patterns or regex to match specific decorators.
-
-Use the `matcher` option to specify the pattern matching method.
+You can define your own groups and use regex to match specific decorators.
 
 Each key of `customGroups` represents a group name which you can then use in the `groups` option. The value for each key can either be of type:
 - `string` — A decorator's name matching the value will be marked as part of the group referenced by the key.
@@ -267,15 +265,6 @@ class MyClass {
  }
 ```
 
-### matcher
-
-<sub>default: `'minimatch'`</sub>
-
-Determines the matcher used for patterns in the `partitionByComment` and `customGroups` options.
-
-- `'minimatch'` — Use the [minimatch](https://github.com/isaacs/minimatch) library for pattern matching.
-- `'regex'` — Use regular expressions for pattern matching.
-
 ## Usage
 
 <CodeTabs
@@ -298,7 +287,6 @@ Determines the matcher used for patterns in the `partitionByComment` and `custom
                   order: 'asc',
                   ignoreCase: true,
                   specialCharacters: 'keep',
-                  matcher: 'minimatch',
                   groups: [],
                   customGroups: {},
                   sortOnClasses: true,
@@ -330,7 +318,6 @@ Determines the matcher used for patterns in the `partitionByComment` and `custom
                 order: 'asc',
                 ignoreCase: true,
                 specialCharacters: 'keep',
-                matcher: 'minimatch',
                 groups: [],
                 customGroups: {},
                 sortOnClasses: true,

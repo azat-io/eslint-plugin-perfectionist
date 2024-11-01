@@ -178,7 +178,7 @@ Controls whether special characters should be trimmed, removed or kept before so
 
 Allows you to specify names or patterns for JSX elements that should be ignored by this rule. This can be useful if you have specific components that you do not want to sort.
 
-You can specify their names or a glob pattern to ignore, for example: `'Table*'` to ignore all object types whose names begin with the word Table.
+You can specify their names or a regexp pattern to ignore, for example: `'^Table.+'` to ignore all object types whose names begin with the word Table.
 
 ### groups
 
@@ -212,9 +212,7 @@ All members of the groups in the array will be sorted together as if they were p
 </sub>
 <sub>default: `{}`</sub>
 
-You can define your own groups and use custom glob patterns or regex to match specific JSX attributes.
-
-Use the `matcher` option to specify the pattern matching method.
+You can define your own groups and use regexp pattern to match specific JSX attributes.
 
 Each key of `customGroups` represents a group name which you can then use in the `groups` option. The value for each key can either be of type:
 - `string` — A JSX prop's name matching the value will be marked as part of the group referenced by the key.
@@ -231,22 +229,13 @@ Custom group matching takes precedence over predefined group matching.
      'multiline',
      'unknown',
      'shorthand',
-+    'callback',     // [!code ++]
++    'callback',       // [!code ++]
    ],
-+  customGroups: {   // [!code ++]
-+    callback: 'on*' // [!code ++]
-+  }                 // [!code ++]
++  customGroups: {     // [!code ++]
++    callback: '^on.+' // [!code ++]
++  }                   // [!code ++]
  }
 ```
-
-### matcher
-
-<sub>default: `'minimatch'`</sub>
-
-Determines the matcher used for patterns in the `ignorePattern` and `customGroups` options.
-
-- `'minimatch'` — Use the [minimatch](https://github.com/isaacs/minimatch) library for pattern matching.
-- `'regex'` — Use regular expressions for pattern matching.
 
 ## Usage
 
@@ -271,7 +260,6 @@ Determines the matcher used for patterns in the `ignorePattern` and `customGroup
                   ignoreCase: true,
                   specialCharacters: 'keep',
                   ignorePattern: [],
-                  matcher: 'minimatch',
                   groups: [],
                   customGroups: {},
                 },
@@ -299,7 +287,6 @@ Determines the matcher used for patterns in the `ignorePattern` and `customGroup
                 ignoreCase: true,
                 specialCharacters: 'keep',
                 ignorePattern: [],
-                matcher: 'minimatch',
                 groups: [],
                 customGroups: {},
               },

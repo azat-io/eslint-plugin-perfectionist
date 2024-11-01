@@ -14,9 +14,6 @@ importers:
       '@typescript-eslint/utils':
         specifier: ^8.12.2
         version: 8.12.2(eslint@9.13.0(jiti@2.3.3))(typescript@5.6.3)
-      minimatch:
-        specifier: ^9.0.5
-        version: 9.0.5
       natural-compare-lite:
         specifier: ^1.4.0
         version: 1.4.0

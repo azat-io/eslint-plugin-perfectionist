@@ -6,7 +6,6 @@ import {
   specialCharactersJsonSchema,
   customGroupsJsonSchema,
   ignoreCaseJsonSchema,
-  matcherJsonSchema,
   groupsJsonSchema,
   orderJsonSchema,
   typeJsonSchema,
@@ -38,7 +37,6 @@ type Options<T extends string[]> = [
     type: 'alphabetical' | 'line-length' | 'natural'
     specialCharacters: 'remove' | 'trim' | 'keep'
     groups: (Group<T>[] | Group<T>)[]
-    matcher: 'minimatch' | 'regex'
     ignorePattern: string[]
     order: 'desc' | 'asc'
     ignoreCase: boolean
@@ -50,7 +48,6 @@ const defaultOptions: Required<Options<string[]>[0]> = {
   ignorePattern: [],
   ignoreCase: true,
   specialCharacters: 'keep',
-  matcher: 'minimatch',
   customGroups: {},
   order: 'asc',
   groups: [],
@@ -70,7 +67,6 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
         properties: {
           type: typeJsonSchema,
           order: orderJsonSchema,
-          matcher: matcherJsonSchema,
           ignoreCase: ignoreCaseJsonSchema,
           specialCharacters: specialCharactersJsonSchema,
           ignorePattern: {
@@ -114,7 +110,7 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
         if (options.ignorePattern.length) {
           let tagName = sourceCode.getText(node.openingElement.name)
           shouldIgnore = options.ignorePattern.some(pattern =>
-            matches(tagName, pattern, options.matcher),
+            matches(tagName, pattern),
           )
         }
 

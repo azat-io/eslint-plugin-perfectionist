@@ -177,7 +177,7 @@ Controls whether special characters should be trimmed, removed or kept before so
 
 Allows you to specify names or patterns for interfaces that should be ignored by this rule. This can be useful if you have specific interfaces that you do not want to sort.
 
-You can specify their names or a glob pattern to ignore, for example: `'Component*'` to ignore all interfaces whose names begin with the word “Component”.
+You can specify their names or a regexp pattern to ignore, for example: `'^Component.+'` to ignore all interfaces whose names begin with the word “Component”.
 
 ### partitionByComment
 
@@ -187,8 +187,8 @@ Allows you to use comments to separate the properties of interfaces into logical
 
 - `true` — All comments will be treated as delimiters, creating partitions.
 - `false` — Comments will not be used as delimiters.
-- `string` — A glob pattern to specify which comments should act as delimiters.
-- `string[]` — An array of glob patterns to specify which comments should act as delimiters.
+- `string` — A regexp pattern to specify which comments should act as delimiters.
+- `string[]` — An array of regexp patterns to specify which comments should act as delimiters.
 
 ### partitionByNewLine
 
@@ -296,9 +296,7 @@ interface User {
 </sub>
 <sub>default: `{}`</sub>
 
-You can define your own groups and use custom glob patterns or regex to match specific interface members.
-
-Use the `matcher` option to specify the pattern matching method.
+You can define your own groups and use regexp patterns to match specific interface members.
 
 Each key of `customGroups` represents a group name which you can then use in the `groups` option. The value for each key can either be of type:
 - `string` — An interface member's name matching the value will be marked as part of the group referenced by the key.
@@ -336,20 +334,11 @@ interface User {
      ['multiline', 'bottom'] // [!code ++]
    ],
 +  customGroups: {           // [!code ++]
-+    top: ['id', 'name']     // [!code ++]
-+    bottom: '*_metadata'     // [!code ++]
++    top: ['^id$', '^name$'] // [!code ++]
++    bottom: '.+_metadata$'  // [!code ++]
 +  }                         // [!code ++]
  }
 ```
-
-### matcher
-
-<sub>default: `'minimatch'`</sub>
-
-Determines the matcher used for patterns in the `partitionByComment`, `ignorePattern` and `customGroups` options.
-
-- `'minimatch'` — Use the [minimatch](https://github.com/isaacs/minimatch) library for pattern matching.
-- `'regex'` — Use regular expressions for pattern matching.
 
 ## Usage
 
@@ -378,7 +367,6 @@ Determines the matcher used for patterns in the `partitionByComment`, `ignorePat
                   partitionByNewLine: false,
                   newlinesBetween: 'ignore',
                   groupKind: 'mixed',
-                  matcher: 'minimatch',
                   groups: [],
                   customGroups: {},
                 },
@@ -410,7 +398,6 @@ Determines the matcher used for patterns in the `partitionByComment`, `ignorePat
                 partitionByNewLine: false,
                 newlinesBetween: 'ignore',
                 groupKind: 'mixed',
-                matcher: 'minimatch',
                 groups: [],
                 customGroups: {},
               },

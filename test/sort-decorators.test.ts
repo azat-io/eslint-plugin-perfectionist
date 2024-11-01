@@ -431,7 +431,7 @@ describe(ruleName, () => {
                 ...options,
                 groups: ['unknown', 'error'],
                 customGroups: {
-                  error: '*Error',
+                  error: 'Error$',
                 },
               },
             ],
@@ -452,7 +452,7 @@ describe(ruleName, () => {
     )
 
     ruleTester.run(
-      `${ruleName}(${type}): allows to use regex matcher for custom groups`,
+      `${ruleName}(${type}): allows to use regex for custom groups`,
       rule,
       {
         valid: [
@@ -492,7 +492,6 @@ describe(ruleName, () => {
             options: [
               {
                 ...options,
-                matcher: 'regex',
                 groups: ['unknown', 'elementsWithoutFoo'],
                 customGroups: {
                   elementsWithoutFoo: '^(?!.*Foo).*$',
@@ -659,7 +658,7 @@ describe(ruleName, () => {
             options: [
               {
                 ...options,
-                partitionByComment: 'Part**',
+                partitionByComment: '^Part*',
               },
             ],
             errors: duplicate5Times([
@@ -875,7 +874,7 @@ describe(ruleName, () => {
     )
 
     ruleTester.run(
-      `${ruleName}(${type}): allows to use regex matcher for partition comments`,
+      `${ruleName}(${type}): allows to use regex for partition comments`,
       rule,
       {
         valid: [
@@ -920,7 +919,6 @@ describe(ruleName, () => {
             options: [
               {
                 ...options,
-                matcher: 'regex',
                 partitionByComment: ['^(?!.*foo).*$'],
               },
             ],
@@ -1431,7 +1429,7 @@ describe(ruleName, () => {
                 ...options,
                 groups: ['unknown', 'error'],
                 customGroups: {
-                  error: '*Error',
+                  error: 'Error$',
                 },
               },
             ],
@@ -1452,7 +1450,7 @@ describe(ruleName, () => {
     )
 
     ruleTester.run(
-      `${ruleName}(${type}): allows to use regex matcher for custom groups`,
+      `${ruleName}(${type}): allows to use regex for custom groups`,
       rule,
       {
         valid: [
@@ -1492,7 +1490,6 @@ describe(ruleName, () => {
             options: [
               {
                 ...options,
-                matcher: 'regex',
                 groups: ['unknown', 'elementsWithoutFoo'],
                 customGroups: {
                   elementsWithoutFoo: '^(?!.*Foo).*$',
@@ -1659,7 +1656,7 @@ describe(ruleName, () => {
             options: [
               {
                 ...options,
-                partitionByComment: 'Part**',
+                partitionByComment: '^Part*',
               },
             ],
             errors: duplicate5Times([
@@ -1875,7 +1872,7 @@ describe(ruleName, () => {
     )
 
     ruleTester.run(
-      `${ruleName}(${type}): allows to use regex matcher for partition comments`,
+      `${ruleName}(${type}): allows to use regex for partition comments`,
       rule,
       {
         valid: [
@@ -1920,7 +1917,6 @@ describe(ruleName, () => {
             options: [
               {
                 ...options,
-                matcher: 'regex',
                 partitionByComment: ['^(?!.*foo).*$'],
               },
             ],
@@ -2425,7 +2421,7 @@ describe(ruleName, () => {
                 ...options,
                 groups: ['unknown', 'error'],
                 customGroups: {
-                  error: '*Error',
+                  error: 'Error$',
                 },
               },
             ],
@@ -2446,7 +2442,7 @@ describe(ruleName, () => {
     )
 
     ruleTester.run(
-      `${ruleName}(${type}): allows to use regex matcher for custom groups`,
+      `${ruleName}(${type}): allows to use regex for custom groups`,
       rule,
       {
         valid: [
@@ -2486,7 +2482,6 @@ describe(ruleName, () => {
             options: [
               {
                 ...options,
-                matcher: 'regex',
                 groups: ['unknown', 'elementsWithoutFoo'],
                 customGroups: {
                   elementsWithoutFoo: '^(?!.*Foo).*$',
@@ -2653,7 +2648,7 @@ describe(ruleName, () => {
             options: [
               {
                 ...options,
-                partitionByComment: 'Part**',
+                partitionByComment: '^Part*',
               },
             ],
             errors: duplicate5Times([
@@ -2876,7 +2871,7 @@ describe(ruleName, () => {
     )
 
     ruleTester.run(
-      `${ruleName}(${type}): allows to use regex matcher for partition comments`,
+      `${ruleName}(${type}): allows to use regex for partition comments`,
       rule,
       {
         valid: [
@@ -2921,7 +2916,6 @@ describe(ruleName, () => {
             options: [
               {
                 ...options,
-                matcher: 'regex',
                 partitionByComment: ['^(?!.*foo).*$'],
               },
             ],

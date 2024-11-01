@@ -8,7 +8,6 @@ import {
   partitionByCommentJsonSchema,
   specialCharactersJsonSchema,
   ignoreCaseJsonSchema,
-  matcherJsonSchema,
   orderJsonSchema,
   typeJsonSchema,
 } from '../utils/common-json-schemas'
@@ -36,7 +35,6 @@ export type Options = [
     type: 'alphabetical' | 'line-length' | 'natural'
     partitionByComment: string[] | boolean | string
     specialCharacters: 'remove' | 'trim' | 'keep'
-    matcher: 'minimatch' | 'regex'
     partitionByNewLine: boolean
     order: 'desc' | 'asc'
     ignoreCase: boolean
@@ -48,7 +46,6 @@ export const defaultOptions: Required<Options[0]> = {
   type: 'alphabetical',
   ignoreCase: true,
   specialCharacters: 'keep',
-  matcher: 'minimatch',
   order: 'asc',
   partitionByComment: false,
   partitionByNewLine: false,
@@ -59,7 +56,6 @@ export let jsonSchema: JSONSchema4 = {
   properties: {
     type: typeJsonSchema,
     order: orderJsonSchema,
-    matcher: matcherJsonSchema,
     ignoreCase: ignoreCaseJsonSchema,
     specialCharacters: specialCharactersJsonSchema,
     groupKind: {
@@ -153,7 +149,6 @@ export let sortArray = <MessageIds extends string>(
               hasPartitionComment(
                 partitionComment,
                 getCommentsBefore(element, sourceCode),
-                options.matcher,
               )) ||
             (options.partitionByNewLine &&
               lastSortingNode &&
