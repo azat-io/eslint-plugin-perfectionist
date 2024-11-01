@@ -1921,6 +1921,23 @@ describe(ruleName, () => {
       },
     )
 
+    ruleTester.run(`${ruleName}(${type}): allows to use locale`, rule, {
+      valid: [
+        {
+          code: dedent`
+              import '你好'
+              import '世界'
+              import 'a'
+              import 'A'
+              import 'b'
+              import 'B'
+            `,
+          options: [{ ...options, locales: 'zh-CN' }],
+        },
+      ],
+      invalid: [],
+    })
+
     describe(`${ruleName}: newlinesBetween`, () => {
       ruleTester.run(
         `${ruleName}(${type}): removes newlines when never`,

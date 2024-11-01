@@ -647,6 +647,18 @@ describe(ruleName, () => {
       },
     )
 
+    ruleTester.run(`${ruleName}(${type}): allows to use locale`, rule, {
+      valid: [
+        {
+          code: dedent`
+              import { 你好, 世界, a, A, b, B } from 'module'
+            `,
+          options: [{ ...options, locales: 'zh-CN' }],
+        },
+      ],
+      invalid: [],
+    })
+
     ruleTester.run(`${ruleName}(${type}): works with arbitrary names`, rule, {
       valid: [
         {

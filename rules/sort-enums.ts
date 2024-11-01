@@ -7,6 +7,7 @@ import {
   partitionByCommentJsonSchema,
   specialCharactersJsonSchema,
   ignoreCaseJsonSchema,
+  localesJsonSchema,
   orderJsonSchema,
   typeJsonSchema,
 } from '../utils/common-json-schemas'
@@ -34,6 +35,7 @@ export type Options = [
     type: 'alphabetical' | 'line-length' | 'natural'
     partitionByComment: string[] | boolean | string
     specialCharacters: 'remove' | 'trim' | 'keep'
+    locales: NonNullable<Intl.LocalesArgument>
     partitionByNewLine: boolean
     forceNumericSort: boolean
     order: 'desc' | 'asc'
@@ -51,6 +53,7 @@ const defaultOptions: Required<Options[0]> = {
   order: 'asc',
   sortByValue: false,
   forceNumericSort: false,
+  locales: 'en-US',
 }
 
 export default createEslintRule<Options, MESSAGE_ID>({
@@ -67,6 +70,7 @@ export default createEslintRule<Options, MESSAGE_ID>({
         properties: {
           type: typeJsonSchema,
           order: orderJsonSchema,
+          locales: localesJsonSchema,
           ignoreCase: ignoreCaseJsonSchema,
           specialCharacters: specialCharactersJsonSchema,
           sortByValue: {
@@ -217,6 +221,7 @@ export default createEslintRule<Options, MESSAGE_ID>({
           order: options.order,
           ignoreCase: options.ignoreCase,
           specialCharacters: options.specialCharacters,
+          locales: options.locales,
           // Get the enum value rather than the name if needed
           nodeValueGetter:
             options.sortByValue || (isNumericEnum && options.forceNumericSort)

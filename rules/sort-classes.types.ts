@@ -189,6 +189,7 @@ export type SortClassesOptions = [
     type: 'alphabetical' | 'line-length' | 'natural'
     partitionByComment: string[] | boolean | string
     specialCharacters: 'remove' | 'trim' | 'keep'
+    locales: NonNullable<Intl.LocalesArgument>
     customGroups: CustomGroup[]
     groups: (Group[] | Group)[]
     order: 'desc' | 'asc'
