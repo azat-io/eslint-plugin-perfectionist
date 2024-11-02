@@ -13,9 +13,9 @@
 [![Code Coverage](https://img.shields.io/codecov/c/github/azat-io/eslint-plugin-perfectionist.svg?color=4a32c3&labelColor=26272b)](https://npmjs.com/package/eslint-plugin-perfectionist)
 [![GitHub License](https://img.shields.io/badge/license-MIT-232428.svg?color=4a32c3&labelColor=26272b)](https://github.com/azat-io/eslint-plugin-perfectionist/blob/main/license.md)
 
-ESLint plugin that sets rules to format your code and make it consistent.
+An ESLint plugin that sets rules to format your code and make it consistent.
 
-This plugin defines rules for sorting various data, such as objects, imports, TypeScript types, enums, JSX props, Svelte attributes, etc. alphabetically, naturally, or by line length
+This plugin defines rules for sorting various data, such as objects, imports, TypeScript types, enums, JSX props, Svelte attributes, etc. alphabetically, naturally, or by line length.
 
 All rules are automatically fixable. It's safe!
 
@@ -27,7 +27,7 @@ Sorting imports and properties in software development offers numerous benefits:
 
 - **Maintainability**: Sorting imports and properties is considered a good practice in software development, contributing to code quality and consistency across the codebase.
 
-- **Code Review and Collaboration**: If you set rules that say you can only do things one way, then no one will have to spend time thinking about how to do it.
+- **Code Review and Collaboration**: If you set rules that say you can only do things one way, no one will have to spend time thinking about how to do it.
 
 - **Code Uniformity**: When all code looks exactly the same, it is very hard to see who wrote it, which makes achieving the lofty goal of _collective code ownership_ easier.
 
@@ -202,7 +202,7 @@ module.exports = {
 
 Yes. To do this, you need to enable autofix in ESLint when you save the file in your editor. Instructions for your editor can be found [here](https://perfectionist.dev/guide/integrations).
 
-### Is it safety?
+### Is it safe?
 
 On the whole, yes. We are very careful to make sure that the work of the plugin does not negatively affect the work of the code. For example, the plugin takes into account spread operators in JSX and objects, comments to the code. Safety is our priority. If you encounter any problem, you can create an [issue](https://github.com/azat-io/eslint-plugin-perfectionist/issues/new/choose).
 
