@@ -9,15 +9,21 @@ import { getTypescriptImport } from './get-typescript-import'
 
 interface InputProps {
   tsconfigRootDir: string
+  contextCwd: string
   filePath: string
 }
 
+interface OutputProps {
+  compilerOptions: ts.CompilerOptions
+  cache: ts.ModuleResolutionCache
+}
+
 export const directoryCacheByPath = new Map<string, string>()
-export const contentCacheByPath = new Map<string, ts.CompilerOptions>()
+export const contentCacheByPath = new Map<string, OutputProps>()
 
 export const readClosestTsConfigByPath = (
   input: InputProps,
-): ts.CompilerOptions | null => {
+): OutputProps | null => {
   let typescriptImport = getTypescriptImport()
   if (!typescriptImport) {
     return null
@@ -37,7 +43,11 @@ export const readClosestTsConfigByPath = (
       for (let dir of checkedDirectories) {
         directoryCacheByPath.set(dir, cachedDirectory)
       }
-      return getCompilerOptions(typescriptImport, cachedDirectory)
+      return getCompilerOptions(
+        typescriptImport,
+        input.contextCwd,
+        cachedDirectory,
+      )
     }
 
     directory = path.dirname(directory)
@@ -52,7 +62,11 @@ export const readClosestTsConfigByPath = (
   )
 }
 
-const getCompilerOptions = (typescriptImport: typeof ts, filePath: string) => {
+const getCompilerOptions = (
+  typescriptImport: typeof ts,
+  contextCwd: string,
+  filePath: string,
+): OutputProps => {
   if (contentCacheByPath.has(filePath)) {
     return contentCacheByPath.get(filePath)!
   }
@@ -81,6 +95,15 @@ const getCompilerOptions = (typescriptImport: typeof ts, filePath: string) => {
         JSON.stringify(compilerOptionsConverted.errors),
     )
   }
-  contentCacheByPath.set(filePath, compilerOptionsConverted.options)
-  return compilerOptionsConverted.options
+  let cache = typescriptImport.createModuleResolutionCache(
+    contextCwd,
+    fileName => typescriptImport.sys.resolvePath(fileName),
+    compilerOptionsConverted.options,
+  )
+  let output: OutputProps = {
+    compilerOptions: compilerOptionsConverted.options,
+    cache,
+  }
+  contentCacheByPath.set(filePath, output)
+  return output
 }

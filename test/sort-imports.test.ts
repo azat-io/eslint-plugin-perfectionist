@@ -3,6 +3,7 @@ import type { CompilerOptions } from 'typescript'
 
 import { afterAll, describe, expect, it, vi } from 'vitest'
 import { RuleTester } from '@typescript-eslint/rule-tester'
+import { createModuleResolutionCache } from 'typescript'
 import { dedent } from 'ts-dedent'
 
 import type { MESSAGE_ID, Options } from '../rules/sort-imports'
@@ -5918,12 +5919,23 @@ describe(ruleName, () => {
     })
 
     let mockReadClosestTsConfigByPathWith = (
-      returnValue: CompilerOptions | null,
+      compilerOptions: CompilerOptions | null,
     ) => {
       vi.spyOn(
         readClosestTsConfigUtils,
         'readClosestTsConfigByPath',
-      ).mockReturnValue(returnValue)
+      ).mockReturnValue(
+        !compilerOptions
+          ? null
+          : {
+              compilerOptions,
+              cache: createModuleResolutionCache(
+                '.',
+                filename => filename,
+                compilerOptions,
+              ),
+            },
+      )
     }
   })
 })

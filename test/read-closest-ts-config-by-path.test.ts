@@ -24,6 +24,7 @@ vi.mock('node:module', _ => ({
       mockParseJsonConfigFileContent(content),
     convertCompilerOptionsFromJson: (content: object) =>
       mockConvertCompilerOptionsFromJson(content),
+    createModuleResolutionCache: () => vi.fn(),
     sys: ts.sys,
   }),
 }))
@@ -36,6 +37,7 @@ vi.mock('../utils/get-typescript-import', () => ({
 const testInput = {
   filePath: './repos/repo/packages/package/file.ts',
   tsconfigRootDir: './repos/repo',
+  contextCwd: './',
 }
 
 const tsConfigContent = {
@@ -118,7 +120,9 @@ describe('readClosestTsConfigByPath', () => {
         readClosestTsConfigByPath(testInput)
         let actual = readClosestTsConfigByPath(testInput)
 
-        expect(actual).toEqual(tsConfigContent.raw.config.compilerOptions)
+        expect(actual?.compilerOptions).toEqual(
+          tsConfigContent.raw.config.compilerOptions,
+        )
         expect(mockExistsSync).toHaveBeenCalledTimes(1)
       })
 
@@ -134,6 +138,7 @@ describe('readClosestTsConfigByPath', () => {
         readClosestTsConfigByPath({
           filePath: './a/b/c/d.ts',
           tsconfigRootDir: './a',
+          contextCwd: './',
         })
 
         // This should call to fs.existsSync once: e
@@ -141,9 +146,12 @@ describe('readClosestTsConfigByPath', () => {
         let actual = readClosestTsConfigByPath({
           filePath: './a/b/c/e/f.ts',
           tsconfigRootDir: './a',
+          contextCwd: './',
         })
 
-        expect(actual).toEqual(tsConfigContent.raw.config.compilerOptions)
+        expect(actual?.compilerOptions).toEqual(
+          tsConfigContent.raw.config.compilerOptions,
+        )
         expect(mockExistsSync).toHaveBeenCalledTimes(4)
       })
 
@@ -159,6 +167,7 @@ describe('readClosestTsConfigByPath', () => {
         readClosestTsConfigByPath({
           filePath: './a/b/c/d/e.ts',
           tsconfigRootDir: './a',
+          contextCwd: './',
         })
 
         // This should call to fs.existsSync 2: g, f
@@ -166,9 +175,12 @@ describe('readClosestTsConfigByPath', () => {
         let actual = readClosestTsConfigByPath({
           filePath: './a/b/f/g/h.ts',
           tsconfigRootDir: './a',
+          contextCwd: './',
         })
 
-        expect(actual).toEqual(tsConfigContent.raw.config.compilerOptions)
+        expect(actual?.compilerOptions).toEqual(
+          tsConfigContent.raw.config.compilerOptions,
+        )
         expect(mockExistsSync).toHaveBeenCalledTimes(6)
       })
     })
@@ -182,7 +194,9 @@ describe('readClosestTsConfigByPath', () => {
 
         let actual = readClosestTsConfigByPath(testInput)
 
-        expect(actual).toEqual(tsConfigContent.raw.config.compilerOptions)
+        expect(actual?.compilerOptions).toEqual(
+          tsConfigContent.raw.config.compilerOptions,
+        )
       })
 
       it('returns a parent tsconfig.json when matched', () => {
@@ -195,7 +209,9 @@ describe('readClosestTsConfigByPath', () => {
 
         let actual = readClosestTsConfigByPath(testInput)
 
-        expect(actual).toEqual(tsConfigContent.raw.config.compilerOptions)
+        expect(actual?.compilerOptions).toEqual(
+          tsConfigContent.raw.config.compilerOptions,
+        )
       })
 
       it('throws when searching hits.', () => {

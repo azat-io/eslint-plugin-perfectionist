@@ -278,9 +278,10 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
       ],
     )
 
-    let compilerOptions = options.tsconfigRootDir
+    let tsConfigOutput = options.tsconfigRootDir
       ? readClosestTsConfigByPath({
           filePath: context.physicalFilename,
+          contextCwd: context.cwd,
           tsconfigRootDir: options.tsconfigRootDir,
         })
       : null
@@ -420,15 +421,16 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
         if (isRelativeImport) {
           return null
         }
-        if (!compilerOptions) {
+        if (!tsConfigOutput) {
           return 'external'
         }
 
         let resolution = typescriptImport.resolveModuleName(
           value,
           context.filename,
-          compilerOptions,
+          tsConfigOutput.compilerOptions,
           typescriptImport.sys,
+          tsConfigOutput.cache,
         )
         // If the module can't be resolved, assume it is external
         if (resolution.resolvedModule?.isExternalLibraryImport === undefined) {
