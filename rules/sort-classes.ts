@@ -37,6 +37,7 @@ import { hasPartitionComment } from '../utils/is-partition-comment'
 import { sortNodesByGroups } from '../utils/sort-nodes-by-groups'
 import { getCommentsBefore } from '../utils/get-comments-before'
 import { createEslintRule } from '../utils/create-eslint-rule'
+import { getLinesBetween } from '../utils/get-lines-between'
 import { getGroupNumber } from '../utils/get-group-number'
 import { getSourceCode } from '../utils/get-source-code'
 import { toSingleLine } from '../utils/to-single-line'
@@ -78,6 +79,7 @@ const defaultOptions: Required<SortClassesOptions[0]> = {
     'unknown',
   ],
   partitionByComment: false,
+  partitionByNewLine: false,
   type: 'alphabetical',
   ignoreCase: true,
   specialCharacters: 'keep',
@@ -107,6 +109,11 @@ export default createEslintRule<SortClassesOptions, MESSAGE_ID>({
             ...partitionByCommentJsonSchema,
             description:
               'Allows to use comments to separate the class members into logical groups.',
+          },
+          partitionByNewLine: {
+            description:
+              'Allows to use spaces to separate the nodes into logical groups.',
+            type: 'boolean',
           },
           groups: groupsJsonSchema,
           customGroups: {
@@ -304,15 +311,6 @@ export default createEslintRule<SortClassesOptions, MESSAGE_ID>({
 
         let formattedNodes: SortingNodeWithDependencies[][] = node.body.reduce(
           (accumulator: SortingNodeWithDependencies[][], member) => {
-            let comments = getCommentsBefore(member, sourceCode)
-
-            if (
-              options.partitionByComment &&
-              hasPartitionComment(options.partitionByComment, comments)
-            ) {
-              accumulator.push([])
-            }
-
             let name: string
             let dependencies: string[] = []
             let { getGroup, defineGroup } = useGroups(options)
@@ -555,6 +553,24 @@ export default createEslintRule<SortClassesOptions, MESSAGE_ID>({
                 name,
                 modifiers.includes('static'),
               ),
+            }
+
+            let comments = getCommentsBefore(member, sourceCode)
+            let lastMember = accumulator.at(-1)?.at(-1)
+            if (
+              options.partitionByComment &&
+              hasPartitionComment(options.partitionByComment, comments)
+            ) {
+              accumulator.push([])
+            }
+            if (
+              (options.partitionByNewLine &&
+                lastMember &&
+                getLinesBetween(sourceCode, lastMember, sortingNode)) ||
+              (options.partitionByComment &&
+                hasPartitionComment(options.partitionByComment, comments))
+            ) {
+              accumulator.push([])
             }
 
             accumulator.at(-1)!.push(sortingNode)

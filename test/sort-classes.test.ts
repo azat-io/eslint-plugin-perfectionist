@@ -3836,6 +3836,47 @@ describe(ruleName, () => {
       )
 
       ruleTester.run(
+        `${ruleName}(${type}): prioritizes dependencies over partitionByNewLine`,
+        rule,
+        {
+          valid: [],
+          invalid: [
+            {
+              code: dedent`
+                class Class {
+                  b = this.a
+
+                  a
+                }
+              `,
+              output: dedent`
+                class Class {
+                  a
+
+                  b = this.a
+                }
+              `,
+              options: [
+                {
+                  ...options,
+                  partitionByNewLine: true,
+                },
+              ],
+              errors: [
+                {
+                  messageId: 'unexpectedClassesDependencyOrder',
+                  data: {
+                    right: 'a',
+                    nodeDependentOnRight: 'b',
+                  },
+                },
+              ],
+            },
+          ],
+        },
+      )
+
+      ruleTester.run(
         `${ruleName}(${type}): works with left and right dependencies`,
         rule,
         {
@@ -7723,6 +7764,76 @@ describe(ruleName, () => {
             invalid: [],
           },
         )
+      })
+
+      ruleTester.run(`${ruleName}: allows to use new line as partition`, rule, {
+        valid: [
+          {
+            code: dedent`
+              class Class {
+                d = 'dd'
+                e = 'e'
+
+                c = 'ccc'
+
+                a = 'aaaaa'
+                b = 'bbbb'
+              }
+            `,
+            options: [
+              {
+                partitionByNewLine: true,
+              },
+            ],
+          },
+        ],
+        invalid: [
+          {
+            code: dedent`
+              class Class {
+                e = 'e'
+                d = 'dd'
+
+                c = 'ccc'
+
+                b = 'bbbb'
+                a = 'aaaaa'
+              }
+            `,
+            output: dedent`
+              class Class {
+                d = 'dd'
+                e = 'e'
+
+                c = 'ccc'
+
+                a = 'aaaaa'
+                b = 'bbbb'
+              }
+            `,
+            options: [
+              {
+                partitionByNewLine: true,
+              },
+            ],
+            errors: [
+              {
+                messageId: 'unexpectedClassesOrder',
+                data: {
+                  left: 'e',
+                  right: 'd',
+                },
+              },
+              {
+                messageId: 'unexpectedClassesOrder',
+                data: {
+                  left: 'b',
+                  right: 'a',
+                },
+              },
+            ],
+          },
+        ],
       })
     })
   })

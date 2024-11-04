@@ -213,6 +213,39 @@ Allows you to use comments to separate the class members into logical groups. Th
 -	`false` — Comments will not be used as delimiters.
 - string — A regexp pattern to specify which comments should act as delimiters.
 
+### partitionByNewLine
+
+<sub>default: `false`</sub>
+
+When `true`, the rule will not sort the members of a class if there is an empty line between them. This can be useful for keeping logically separated groups of members in their defined order.
+
+```ts
+class User {
+  // Group 1
+  firstName: string;
+  lastName: string;
+
+  // Group 2
+  age: number;
+  birthDate: Date;
+
+  // Group 3
+  address: {
+    street: string;
+    city: string;
+  };
+  phone?: string;
+
+  // Group 4
+  updateAddress(address: string) {}
+  updatePhone(phone?: string) {}
+
+  // Group 5
+  editFirstName(firstName: string) {}
+  editLastName(lastName: string) {}
+};
+```
+
 ### groups
 
 <sub>
