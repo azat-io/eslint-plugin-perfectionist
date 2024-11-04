@@ -4,6 +4,7 @@ import type { SortingNode } from '../typings'
 
 import {
   partitionByCommentJsonSchema,
+  partitionByNewLineJsonSchema,
   specialCharactersJsonSchema,
   ignoreCaseJsonSchema,
   localesJsonSchema,
@@ -74,11 +75,7 @@ export default createEslintRule<Options, MESSAGE_ID>({
             description:
               'Allows you to use comments to separate the exports into logical groups.',
           },
-          partitionByNewLine: {
-            description:
-              'Allows to use spaces to separate the nodes into logical groups.',
-            type: 'boolean',
-          },
+          partitionByNewLine: partitionByNewLineJsonSchema,
           groupKind: {
             description: 'Specifies top-level groups.',
             type: 'string',

@@ -92,3 +92,9 @@ export let partitionByCommentJsonSchema: JSONSchema4 = {
     },
   ],
 }
+
+export let partitionByNewLineJsonSchema: JSONSchema4 = {
+  description:
+    'Allows to use newlines to separate the nodes into logical groups.',
+  type: 'boolean',
+}
