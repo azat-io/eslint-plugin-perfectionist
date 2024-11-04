@@ -10,6 +10,7 @@ import type { SortingNodeWithDependencies } from '../utils/sort-nodes-by-depende
 
 import {
   partitionByCommentJsonSchema,
+  partitionByNewLineJsonSchema,
   specialCharactersJsonSchema,
   ignoreCaseJsonSchema,
   localesJsonSchema,
@@ -116,11 +117,7 @@ export default createEslintRule<SortClassesOptions, MESSAGE_ID>({
             description:
               'Allows to use comments to separate the class members into logical groups.',
           },
-          partitionByNewLine: {
-            description:
-              'Allows to use spaces to separate the nodes into logical groups.',
-            type: 'boolean',
-          },
+          partitionByNewLine: partitionByNewLineJsonSchema,
           newlinesBetween: {
             description:
               'Specifies how new lines should be handled between class members groups.',

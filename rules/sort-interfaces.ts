@@ -2,6 +2,7 @@ import type { SortingNode } from '../typings'
 
 import {
   partitionByCommentJsonSchema,
+  partitionByNewLineJsonSchema,
   specialCharactersJsonSchema,
   customGroupsJsonSchema,
   ignoreCaseJsonSchema,
@@ -100,11 +101,7 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
             description:
               'Allows you to use comments to separate the interface properties into logical groups.',
           },
-          partitionByNewLine: {
-            description:
-              'Allows to use spaces to separate the nodes into logical groups.',
-            type: 'boolean',
-          },
+          partitionByNewLine: partitionByNewLineJsonSchema,
           newlinesBetween: {
             description:
               'Specifies how new lines should be handled between object types groups.',

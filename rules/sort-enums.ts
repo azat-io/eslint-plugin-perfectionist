@@ -5,6 +5,7 @@ import type { CompareOptions } from '../utils/compare'
 
 import {
   partitionByCommentJsonSchema,
+  partitionByNewLineJsonSchema,
   specialCharactersJsonSchema,
   ignoreCaseJsonSchema,
   localesJsonSchema,
@@ -87,11 +88,7 @@ export default createEslintRule<Options, MESSAGE_ID>({
             description:
               'Allows you to use comments to separate the members of enums into logical groups.',
           },
-          partitionByNewLine: {
-            description:
-              'Allows to use spaces to separate the nodes into logical groups.',
-            type: 'boolean',
-          },
+          partitionByNewLine: partitionByNewLineJsonSchema,
         },
         additionalProperties: false,
       },
