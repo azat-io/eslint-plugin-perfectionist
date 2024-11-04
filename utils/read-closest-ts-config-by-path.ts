@@ -68,12 +68,12 @@ const getCompilerOptions = (typescriptImport: typeof ts, filePath: string) => {
   let parsedContent = typescriptImport.parseJsonConfigFileContent(
     configFileRead,
     typescriptImport.sys,
-    './',
+    path.dirname(filePath),
   )
   let compilerOptionsConverted =
     typescriptImport.convertCompilerOptionsFromJson(
       parsedContent.raw.config.compilerOptions,
-      './',
+      path.dirname(filePath),
     )
   if (compilerOptionsConverted.errors.length) {
     throw new Error(
