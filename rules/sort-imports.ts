@@ -72,7 +72,7 @@ export type Options<T extends string[]> = [
     environment: 'node' | 'bun'
     internalPattern: string[]
     sortSideEffects: boolean
-    tsConfigRootDir?: string
+    tsconfigRootDir?: string
     maxLineLength?: number
     order: 'desc' | 'asc'
     ignoreCase: boolean
@@ -125,7 +125,7 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
             minimum: 0,
             exclusiveMinimum: true,
           },
-          tsConfigRootDir: {
+          tsconfigRootDir: {
             description: 'Specifies the tsConfig root directory.',
             type: 'string',
           },
@@ -205,7 +205,7 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
       sortSideEffects: false,
       newlinesBetween: 'always',
       maxLineLength: undefined,
-      tsConfigRootDir: undefined,
+      tsconfigRootDir: undefined,
       groups: [
         'type',
         ['builtin', 'external'],
@@ -278,10 +278,10 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
       ],
     )
 
-    let compilerOptions = options.tsConfigRootDir
+    let compilerOptions = options.tsconfigRootDir
       ? readClosestTsConfigByPath({
           filePath: context.physicalFilename,
-          tsConfigRootDir: options.tsConfigRootDir,
+          tsconfigRootDir: options.tsconfigRootDir,
         })
       : null
 

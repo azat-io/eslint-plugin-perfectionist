@@ -8,7 +8,7 @@ import { getTypescriptImport } from './get-typescript-import'
 // Heavily inspired from https://github.com/typescript-eslint/typescript-eslint/blob/main/packages/typescript-estree/src/parseSettings/getProjectConfigFiles.ts
 
 interface InputProps {
-  tsConfigRootDir: string
+  tsconfigRootDir: string
   filePath: string
 }
 
@@ -44,11 +44,11 @@ export const readClosestTsConfigByPath = (
     checkedDirectories.push(directory)
   } while (
     directory.length > 1 &&
-    directory.length >= input.tsConfigRootDir.length
+    directory.length >= input.tsconfigRootDir.length
   )
 
   throw new Error(
-    `Couldn't find any tsconfig.json relative to '${input.filePath}' within '${input.tsConfigRootDir}'.`,
+    `Couldn't find any tsconfig.json relative to '${input.filePath}' within '${input.tsconfigRootDir}'.`,
   )
 }
 

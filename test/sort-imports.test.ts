@@ -5815,7 +5815,7 @@ describe(ruleName, () => {
               `,
               options: [
                 {
-                  tsConfigRootDir: '.',
+                  tsconfigRootDir: '.',
                   groups: ['internal', 'unknown'],
                 },
               ],
@@ -5843,7 +5843,7 @@ describe(ruleName, () => {
               `,
               options: [
                 {
-                  tsConfigRootDir: '.',
+                  tsconfigRootDir: '.',
                   groups: ['external', 'unknown'],
                 },
               ],
@@ -5871,7 +5871,7 @@ describe(ruleName, () => {
               `,
               options: [
                 {
-                  tsConfigRootDir: '.',
+                  tsconfigRootDir: '.',
                   groups: ['external', 'unknown'],
                 },
               ],
@@ -5899,7 +5899,7 @@ describe(ruleName, () => {
               `,
               options: [
                 {
-                  tsConfigRootDir: '.',
+                  tsconfigRootDir: '.',
                   groups: ['external', 'unknown'],
                 },
               ],
