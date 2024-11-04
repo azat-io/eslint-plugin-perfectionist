@@ -4129,6 +4129,131 @@ describe(ruleName, () => {
       invalid: [],
     })
 
+    describe(`${ruleName}: newlinesBetween`, () => {
+      ruleTester.run(
+        `${ruleName}(${type}): removes newlines when never`,
+        rule,
+        {
+          valid: [],
+          invalid: [
+            {
+              code: dedent`
+                class Class {
+                  a = () => null
+
+
+                 y = "y"
+                z = "z"
+
+                    b = "b"
+                }
+              `,
+              output: dedent`
+                class Class {
+                  a = () => null
+                 b = "b"
+                y = "y"
+                    z = "z"
+                }
+              `,
+              options: [
+                {
+                  ...options,
+                  newlinesBetween: 'never',
+                  groups: ['method', 'unknown'],
+                },
+              ],
+              errors: [
+                {
+                  messageId: 'extraSpacingBetweenClassMembers',
+                  data: {
+                    left: 'a',
+                    right: 'y',
+                  },
+                },
+                {
+                  messageId: 'unexpectedClassesOrder',
+                  data: {
+                    left: 'z',
+                    right: 'b',
+                  },
+                },
+                {
+                  messageId: 'extraSpacingBetweenClassMembers',
+                  data: {
+                    left: 'z',
+                    right: 'b',
+                  },
+                },
+              ],
+            },
+          ],
+        },
+      )
+
+      ruleTester.run(
+        `${ruleName}(${type}): keeps one newline when always`,
+        rule,
+        {
+          valid: [],
+          invalid: [
+            {
+              code: dedent`
+                class Class {
+                  a = () => null
+
+
+                 z = "z"
+                y = "y"
+                    b() {}
+                }
+              `,
+              output: dedent`
+                class Class {
+                  a = () => null
+
+                 y = "y"
+                z = "z"
+
+                    b() {}
+                }
+                `,
+              options: [
+                {
+                  ...options,
+                  newlinesBetween: 'always',
+                  groups: ['function-property', 'unknown', 'method'],
+                },
+              ],
+              errors: [
+                {
+                  messageId: 'extraSpacingBetweenClassMembers',
+                  data: {
+                    left: 'a',
+                    right: 'z',
+                  },
+                },
+                {
+                  messageId: 'unexpectedClassesOrder',
+                  data: {
+                    left: 'z',
+                    right: 'y',
+                  },
+                },
+                {
+                  messageId: 'missedSpacingBetweenClassMembers',
+                  data: {
+                    left: 'y',
+                    right: 'b',
+                  },
+                },
+              ],
+            },
+          ],
+        },
+      )
+    })
+
     describe(`${ruleName}(${type}): sorts inline elements correctly`, () => {
       describe(`${ruleName}(${type}): methods`, () => {
         describe(`${ruleName}(${type}): non-abstract methods`, () => {
