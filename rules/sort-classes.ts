@@ -10,6 +10,7 @@ import type { SortingNodeWithDependencies } from '../utils/sort-nodes-by-depende
 
 import {
   partitionByCommentJsonSchema,
+  partitionByNewLineJsonSchema,
   specialCharactersJsonSchema,
   ignoreCaseJsonSchema,
   localesJsonSchema,
@@ -33,10 +34,14 @@ import {
   getFirstUnorderedNodeDependentOn,
   sortNodesByDependencies,
 } from '../utils/sort-nodes-by-dependencies'
+import { validateNewlinesAndPartitionConfiguration } from '../utils/validate-newlines-and-partition-configuration'
 import { hasPartitionComment } from '../utils/is-partition-comment'
 import { sortNodesByGroups } from '../utils/sort-nodes-by-groups'
 import { getCommentsBefore } from '../utils/get-comments-before'
+import { makeNewlinesFixes } from '../utils/make-newlines-fixes'
+import { getNewlinesErrors } from '../utils/get-newlines-errors'
 import { createEslintRule } from '../utils/create-eslint-rule'
+import { getLinesBetween } from '../utils/get-lines-between'
 import { getGroupNumber } from '../utils/get-group-number'
 import { getSourceCode } from '../utils/get-source-code'
 import { toSingleLine } from '../utils/to-single-line'
@@ -49,6 +54,8 @@ import { pairwise } from '../utils/pairwise'
 
 type MESSAGE_ID =
   | 'unexpectedClassesDependencyOrder'
+  | 'missedSpacingBetweenClassMembers'
+  | 'extraSpacingBetweenClassMembers'
   | 'unexpectedClassesGroupOrder'
   | 'unexpectedClassesOrder'
 
@@ -78,6 +85,8 @@ const defaultOptions: Required<SortClassesOptions[0]> = {
     'unknown',
   ],
   partitionByComment: false,
+  partitionByNewLine: false,
+  newlinesBetween: 'ignore',
   type: 'alphabetical',
   ignoreCase: true,
   specialCharacters: 'keep',
@@ -107,6 +116,13 @@ export default createEslintRule<SortClassesOptions, MESSAGE_ID>({
             ...partitionByCommentJsonSchema,
             description:
               'Allows to use comments to separate the class members into logical groups.',
+          },
+          partitionByNewLine: partitionByNewLineJsonSchema,
+          newlinesBetween: {
+            description:
+              'Specifies how new lines should be handled between class members groups.',
+            enum: ['ignore', 'always', 'never'],
+            type: 'string',
           },
           groups: groupsJsonSchema,
           customGroups: {
@@ -157,6 +173,10 @@ export default createEslintRule<SortClassesOptions, MESSAGE_ID>({
       unexpectedClassesOrder: 'Expected "{{right}}" to come before "{{left}}".',
       unexpectedClassesDependencyOrder:
         'Expected dependency "{{right}}" to come before "{{nodeDependentOnRight}}".',
+      missedSpacingBetweenClassMembers:
+        'Missed spacing between "{{left}}" and "{{right}}" objects.',
+      extraSpacingBetweenClassMembers:
+        'Extra spacing between "{{left}}" and "{{right}}" objects.',
     },
   },
   defaultOptions: [defaultOptions],
@@ -168,6 +188,7 @@ export default createEslintRule<SortClassesOptions, MESSAGE_ID>({
         let options = complete(context.options.at(0), settings, defaultOptions)
 
         validateGroupsConfiguration(options.groups, options.customGroups)
+        validateNewlinesAndPartitionConfiguration(options)
 
         let sourceCode = getSourceCode(context)
         let className = node.parent.id?.name
@@ -304,15 +325,6 @@ export default createEslintRule<SortClassesOptions, MESSAGE_ID>({
 
         let formattedNodes: SortingNodeWithDependencies[][] = node.body.reduce(
           (accumulator: SortingNodeWithDependencies[][], member) => {
-            let comments = getCommentsBefore(member, sourceCode)
-
-            if (
-              options.partitionByComment &&
-              hasPartitionComment(options.partitionByComment, comments)
-            ) {
-              accumulator.push([])
-            }
-
             let name: string
             let dependencies: string[] = []
             let { getGroup, defineGroup } = useGroups(options)
@@ -557,6 +569,24 @@ export default createEslintRule<SortClassesOptions, MESSAGE_ID>({
               ),
             }
 
+            let comments = getCommentsBefore(member, sourceCode)
+            let lastMember = accumulator.at(-1)?.at(-1)
+            if (
+              options.partitionByComment &&
+              hasPartitionComment(options.partitionByComment, comments)
+            ) {
+              accumulator.push([])
+            }
+            if (
+              (options.partitionByNewLine &&
+                lastMember &&
+                getLinesBetween(sourceCode, lastMember, sortingNode)) ||
+              (options.partitionByComment &&
+                hasPartitionComment(options.partitionByComment, comments))
+            ) {
+              accumulator.push([])
+            }
+
             accumulator.at(-1)!.push(sortingNode)
 
             return accumulator
@@ -585,21 +615,40 @@ export default createEslintRule<SortClassesOptions, MESSAGE_ID>({
 
           let indexOfLeft = sortedNodes.indexOf(left)
           let indexOfRight = sortedNodes.indexOf(right)
+
+          let messageIds: MESSAGE_ID[] = []
           let firstUnorderedNodeDependentOnRight =
             getFirstUnorderedNodeDependentOn(right, nodes)
           if (
             firstUnorderedNodeDependentOnRight ||
             indexOfLeft > indexOfRight
           ) {
-            let messageId: MESSAGE_ID
             if (firstUnorderedNodeDependentOnRight) {
-              messageId = 'unexpectedClassesDependencyOrder'
+              messageIds.push('unexpectedClassesDependencyOrder')
             } else {
-              messageId =
+              messageIds.push(
                 leftNum !== rightNum
                   ? 'unexpectedClassesGroupOrder'
-                  : 'unexpectedClassesOrder'
+                  : 'unexpectedClassesOrder',
+              )
             }
+          }
+
+          messageIds = [
+            ...messageIds,
+            ...getNewlinesErrors({
+              left,
+              leftNum,
+              right,
+              rightNum,
+              sourceCode,
+              missedSpacingError: 'missedSpacingBetweenClassMembers',
+              extraSpacingError: 'extraSpacingBetweenClassMembers',
+              options,
+            }),
+          ]
+
+          for (let messageId of messageIds) {
             context.report({
               messageId,
               data: {
@@ -610,8 +659,16 @@ export default createEslintRule<SortClassesOptions, MESSAGE_ID>({
                 nodeDependentOnRight: firstUnorderedNodeDependentOnRight?.name,
               },
               node: right.node,
-              fix: (fixer: TSESLint.RuleFixer) =>
-                makeFixes(fixer, nodes, sortedNodes, sourceCode, options),
+              fix: (fixer: TSESLint.RuleFixer) => [
+                ...makeFixes(fixer, nodes, sortedNodes, sourceCode, options),
+                ...makeNewlinesFixes(
+                  fixer,
+                  nodes,
+                  sortedNodes,
+                  sourceCode,
+                  options,
+                ),
+              ],
             })
           }
         })
