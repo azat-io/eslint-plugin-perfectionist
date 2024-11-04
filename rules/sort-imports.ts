@@ -13,7 +13,9 @@ import {
   typeJsonSchema,
 } from '../utils/common-json-schemas'
 import { validateGroupsConfiguration } from '../utils/validate-groups-configuration'
+import { readClosestTsConfigByPath } from '../utils/read-closest-ts-config-by-path'
 import { getOptionsWithCleanGroups } from '../utils/get-options-with-clean-groups'
+import { getTypescriptImport } from '../utils/get-typescript-import'
 import { sortNodesByGroups } from '../utils/sort-nodes-by-groups'
 import { getCommentsBefore } from '../utils/get-comments-before'
 import { makeNewlinesFixes } from '../utils/make-newlines-fixes'
@@ -70,6 +72,7 @@ export type Options<T extends string[]> = [
     environment: 'node' | 'bun'
     internalPattern: string[]
     sortSideEffects: boolean
+    tsConfigRootDir?: string
     maxLineLength?: number
     order: 'desc' | 'asc'
     ignoreCase: boolean
@@ -121,6 +124,10 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
             type: 'integer',
             minimum: 0,
             exclusiveMinimum: true,
+          },
+          tsConfigRootDir: {
+            description: 'Specifies the tsConfig root directory.',
+            type: 'string',
           },
           groups: groupsJsonSchema,
           customGroups: {
@@ -198,6 +205,7 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
       sortSideEffects: false,
       newlinesBetween: 'always',
       maxLineLength: undefined,
+      tsConfigRootDir: undefined,
       groups: [
         'type',
         ['builtin', 'external'],
@@ -269,6 +277,13 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
         ...Object.keys(options.customGroups.value ?? {}),
       ],
     )
+
+    let compilerOptions = options.tsConfigRootDir
+      ? readClosestTsConfigByPath({
+          filePath: context.physicalFilename,
+          tsConfigRootDir: options.tsConfigRootDir,
+        })
+      : null
 
     let isSideEffectOnlyGroup = (
       group: undefined | string[] | string,
@@ -364,7 +379,7 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
 
       let { getGroup, defineGroup, setCustomGroups } = useGroups(options)
 
-      let isInternal = (value: string) =>
+      let matchesInternalPattern = (value: string) =>
         options.internalPattern.length &&
         options.internalPattern.some(pattern => matches(value, pattern))
 
@@ -390,12 +405,47 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
         )
       }
 
-      let isExternal = (value: string) =>
-        !(value.startsWith('.') || value.startsWith('/'))
+      let getInternalOrExternalGroup = (
+        value: string,
+      ): 'internal' | 'external' | null => {
+        let typescriptImport = getTypescriptImport()
+        if (!typescriptImport) {
+          return !value.startsWith('.') && !value.startsWith('/')
+            ? 'external'
+            : null
+        }
+
+        let isRelativeImport =
+          typescriptImport.isExternalModuleNameRelative(value)
+        if (isRelativeImport) {
+          return null
+        }
+        if (!compilerOptions) {
+          return 'external'
+        }
+
+        let resolution = typescriptImport.resolveModuleName(
+          value,
+          context.filename,
+          compilerOptions,
+          typescriptImport.sys,
+        )
+        // If the module can't be resolved, assume it is external
+        if (resolution.resolvedModule?.isExternalLibraryImport === undefined) {
+          return 'external'
+        }
+
+        return resolution.resolvedModule.isExternalLibraryImport
+          ? 'external'
+          : 'internal'
+      }
 
       if (node.type !== 'VariableDeclaration' && node.importKind === 'type') {
         if (node.type === 'ImportDeclaration') {
           setCustomGroups(options.customGroups.type, node.source.value)
+          let internalExternalGroup = matchesInternalPattern(node.source.value)
+            ? 'internal'
+            : getInternalOrExternalGroup(node.source.value)
 
           if (isIndex(node.source.value)) {
             defineGroup('index-type')
@@ -409,7 +459,7 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
             defineGroup('parent-type')
           }
 
-          if (isInternal(node.source.value)) {
+          if (internalExternalGroup === 'internal') {
             defineGroup('internal-type')
           }
 
@@ -417,7 +467,7 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
             defineGroup('builtin-type')
           }
 
-          if (isExternal(node.source.value)) {
+          if (internalExternalGroup === 'external') {
             defineGroup('external-type')
           }
         }
@@ -439,6 +489,9 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
           let declValue = (decl.arguments[0] as TSESTree.Literal).value
           value = declValue!.toString()
         }
+        let internalExternalGroup = matchesInternalPattern(value)
+          ? 'internal'
+          : getInternalOrExternalGroup(value)
         let isStyleValue = isStyle(value)
         isStyleSideEffect = isSideEffect && isStyleValue
 
@@ -468,7 +521,7 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
           defineGroup('parent')
         }
 
-        if (isInternal(value)) {
+        if (internalExternalGroup === 'internal') {
           defineGroup('internal')
         }
 
@@ -476,7 +529,7 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
           defineGroup('builtin')
         }
 
-        if (isExternal(value)) {
+        if (internalExternalGroup === 'external') {
           defineGroup('external')
         }
       }
