@@ -3836,6 +3836,47 @@ describe(ruleName, () => {
       )
 
       ruleTester.run(
+        `${ruleName}(${type}): prioritizes dependencies over partitionByNewLine`,
+        rule,
+        {
+          valid: [],
+          invalid: [
+            {
+              code: dedent`
+                class Class {
+                  b = this.a
+
+                  a
+                }
+              `,
+              output: dedent`
+                class Class {
+                  a
+
+                  b = this.a
+                }
+              `,
+              options: [
+                {
+                  ...options,
+                  partitionByNewLine: true,
+                },
+              ],
+              errors: [
+                {
+                  messageId: 'unexpectedClassesDependencyOrder',
+                  data: {
+                    right: 'a',
+                    nodeDependentOnRight: 'b',
+                  },
+                },
+              ],
+            },
+          ],
+        },
+      )
+
+      ruleTester.run(
         `${ruleName}(${type}): works with left and right dependencies`,
         rule,
         {
@@ -4086,6 +4127,131 @@ describe(ruleName, () => {
         },
       ],
       invalid: [],
+    })
+
+    describe(`${ruleName}: newlinesBetween`, () => {
+      ruleTester.run(
+        `${ruleName}(${type}): removes newlines when never`,
+        rule,
+        {
+          valid: [],
+          invalid: [
+            {
+              code: dedent`
+                class Class {
+                  a = () => null
+
+
+                 y = "y"
+                z = "z"
+
+                    b = "b"
+                }
+              `,
+              output: dedent`
+                class Class {
+                  a = () => null
+                 b = "b"
+                y = "y"
+                    z = "z"
+                }
+              `,
+              options: [
+                {
+                  ...options,
+                  newlinesBetween: 'never',
+                  groups: ['method', 'unknown'],
+                },
+              ],
+              errors: [
+                {
+                  messageId: 'extraSpacingBetweenClassMembers',
+                  data: {
+                    left: 'a',
+                    right: 'y',
+                  },
+                },
+                {
+                  messageId: 'unexpectedClassesOrder',
+                  data: {
+                    left: 'z',
+                    right: 'b',
+                  },
+                },
+                {
+                  messageId: 'extraSpacingBetweenClassMembers',
+                  data: {
+                    left: 'z',
+                    right: 'b',
+                  },
+                },
+              ],
+            },
+          ],
+        },
+      )
+
+      ruleTester.run(
+        `${ruleName}(${type}): keeps one newline when always`,
+        rule,
+        {
+          valid: [],
+          invalid: [
+            {
+              code: dedent`
+                class Class {
+                  a = () => null
+
+
+                 z = "z"
+                y = "y"
+                    b() {}
+                }
+              `,
+              output: dedent`
+                class Class {
+                  a = () => null
+
+                 y = "y"
+                z = "z"
+
+                    b() {}
+                }
+                `,
+              options: [
+                {
+                  ...options,
+                  newlinesBetween: 'always',
+                  groups: ['function-property', 'unknown', 'method'],
+                },
+              ],
+              errors: [
+                {
+                  messageId: 'extraSpacingBetweenClassMembers',
+                  data: {
+                    left: 'a',
+                    right: 'z',
+                  },
+                },
+                {
+                  messageId: 'unexpectedClassesOrder',
+                  data: {
+                    left: 'z',
+                    right: 'y',
+                  },
+                },
+                {
+                  messageId: 'missedSpacingBetweenClassMembers',
+                  data: {
+                    left: 'y',
+                    right: 'b',
+                  },
+                },
+              ],
+            },
+          ],
+        },
+      )
     })
 
     describe(`${ruleName}(${type}): sorts inline elements correctly`, () => {
@@ -7723,6 +7889,76 @@ describe(ruleName, () => {
             invalid: [],
           },
         )
+      })
+
+      ruleTester.run(`${ruleName}: allows to use new line as partition`, rule, {
+        valid: [
+          {
+            code: dedent`
+              class Class {
+                d = 'dd'
+                e = 'e'
+
+                c = 'ccc'
+
+                a = 'aaaaa'
+                b = 'bbbb'
+              }
+            `,
+            options: [
+              {
+                partitionByNewLine: true,
+              },
+            ],
+          },
+        ],
+        invalid: [
+          {
+            code: dedent`
+              class Class {
+                e = 'e'
+                d = 'dd'
+
+                c = 'ccc'
+
+                b = 'bbbb'
+                a = 'aaaaa'
+              }
+            `,
+            output: dedent`
+              class Class {
+                d = 'dd'
+                e = 'e'
+
+                c = 'ccc'
+
+                a = 'aaaaa'
+                b = 'bbbb'
+              }
+            `,
+            options: [
+              {
+                partitionByNewLine: true,
+              },
+            ],
+            errors: [
+              {
+                messageId: 'unexpectedClassesOrder',
+                data: {
+                  left: 'e',
+                  right: 'd',
+                },
+              },
+              {
+                messageId: 'unexpectedClassesOrder',
+                data: {
+                  left: 'b',
+                  right: 'a',
+                },
+              },
+            ],
+          },
+        ],
       })
     })
   })

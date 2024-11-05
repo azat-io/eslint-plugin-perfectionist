@@ -188,8 +188,10 @@ export type SortClassesOptions = [
   Partial<{
     type: 'alphabetical' | 'line-length' | 'natural'
     partitionByComment: string[] | boolean | string
+    newlinesBetween: 'ignore' | 'always' | 'never'
     specialCharacters: 'remove' | 'trim' | 'keep'
     locales: NonNullable<Intl.LocalesArgument>
+    partitionByNewLine: boolean
     customGroups: CustomGroup[]
     groups: (Group[] | Group)[]
     order: 'desc' | 'asc'
