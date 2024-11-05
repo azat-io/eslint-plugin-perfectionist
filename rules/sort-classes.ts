@@ -584,12 +584,7 @@ export default createEslintRule<SortClassesOptions, MESSAGE_ID>({
 
             let comments = getCommentsBefore(member, sourceCode)
             let lastMember = accumulator.at(-1)?.at(-1)
-            if (
-              options.partitionByComment &&
-              hasPartitionComment(options.partitionByComment, comments)
-            ) {
-              accumulator.push([])
-            }
+
             if (
               (options.partitionByNewLine &&
                 lastMember &&
