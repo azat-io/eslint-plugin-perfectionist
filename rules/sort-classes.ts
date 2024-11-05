@@ -193,8 +193,12 @@ export default createEslintRule<SortClassesOptions, MESSAGE_ID>({
         let sourceCode = getSourceCode(context)
         let className = node.parent.id?.name
 
-        let getDependencyName = (nodeName: string, isStatic: boolean) =>
-          `${isStatic ? 'static ' : ''}${nodeName}`
+        let getDependencyName = (
+          nodeName: string,
+          isStatic: boolean,
+          isPrivateIdentifier: boolean,
+        ) =>
+          `${isStatic ? 'static ' : ''}${isPrivateIdentifier ? '#' : ''}${nodeName}`
 
         /**
          * Class methods should not be considered as dependencies
@@ -208,7 +212,11 @@ export default createEslintRule<SortClassesOptions, MESSAGE_ID>({
                   member.type === 'TSAbstractMethodDefinition') &&
                 'name' in member.key
               ) {
-                return getDependencyName(member.key.name, member.static)
+                return getDependencyName(
+                  member.key.name,
+                  member.static,
+                  member.key.type === 'PrivateIdentifier',
+                )
               }
               return null
             })
@@ -227,13 +235,15 @@ export default createEslintRule<SortClassesOptions, MESSAGE_ID>({
               (nodeValue.object.type === 'ThisExpression' ||
                 (nodeValue.object.type === 'Identifier' &&
                   nodeValue.object.name === className)) &&
-              nodeValue.property.type === 'Identifier'
+              (nodeValue.property.type === 'Identifier' ||
+                nodeValue.property.type === 'PrivateIdentifier')
             ) {
               let isStaticDependency =
                 isMemberStatic || nodeValue.object.type === 'Identifier'
               let dependencyName = getDependencyName(
                 nodeValue.property.name,
                 isStaticDependency,
+                nodeValue.property.type === 'PrivateIdentifier',
               )
               if (!classMethodsDependencyNames.has(dependencyName)) {
                 dependencies.push(dependencyName)
@@ -566,6 +576,7 @@ export default createEslintRule<SortClassesOptions, MESSAGE_ID>({
               dependencyName: getDependencyName(
                 name,
                 modifiers.includes('static'),
+                false,
               ),
             }
 

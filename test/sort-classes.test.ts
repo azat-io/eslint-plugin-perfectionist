@@ -3612,6 +3612,54 @@ describe(ruleName, () => {
         },
       )
 
+      ruleTester.run(`${ruleName}(${type}): detects # dependencies`, rule, {
+        valid: [
+          {
+            code: dedent`
+              class Class {
+               static a = Class.a
+               static b = 1
+               static #b = 1
+               static #a = this.#b
+              }
+            `,
+            options: [
+              {
+                ...options,
+              },
+            ],
+          },
+          {
+            code: dedent`
+              class Class {
+               static #b = () => 1
+               static #a = this.#b()
+              }
+            `,
+            options: [
+              {
+                ...options,
+              },
+            ],
+          },
+          {
+            code: dedent`
+              class Class {
+               static #a = this.#b()
+               static #b() {}
+              }
+            `,
+            options: [
+              {
+                ...options,
+                groups: ['unknown'],
+              },
+            ],
+          },
+        ],
+        invalid: [],
+      })
+
       ruleTester.run(
         `${ruleName}(${type}) separates static from non-static dependencies`,
         rule,
