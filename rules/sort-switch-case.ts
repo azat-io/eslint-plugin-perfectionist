@@ -101,6 +101,7 @@ export default createEslintRule<Options, MESSAGE_ID>({
             accumulator.at(-1)!.push({
               size: rangeToDiff(caseNode.test, sourceCode),
               node: caseNode.test,
+              isEslintDisabled: false,
               name: getCaseName(sourceCode, caseNode),
             })
           }
@@ -159,6 +160,7 @@ export default createEslintRule<Options, MESSAGE_ID>({
             ? rangeToDiff(caseNode.test, sourceCode)
             : 'default'.length,
           node: caseNode,
+          isEslintDisabled: false,
           isDefaultClause: !caseNode.test,
           name: getCaseName(sourceCode, caseNode),
           addSafetySemicolonWhenInline: true,

@@ -15,6 +15,7 @@ interface ExtraOptions<T extends SortingNode> {
    */
   getGroupCompareOptions?: (groupNumber: number) => CompareOptions | null
   isNodeIgnored?: (node: T) => boolean
+  ignoreEslintDisabledNodes?: boolean
 }
 
 export let sortNodesByGroups = <T extends SortingNode>(
@@ -27,7 +28,11 @@ export let sortNodesByGroups = <T extends SortingNode>(
   } = {}
   let ignoredNodeIndices: number[] = []
   for (let [index, sortingNode] of nodes.entries()) {
-    if (extraOptions?.isNodeIgnored?.(sortingNode)) {
+    if (
+      (sortingNode.isEslintDisabled &&
+        extraOptions?.ignoreEslintDisabledNodes) ||
+      extraOptions?.isNodeIgnored?.(sortingNode)
+    ) {
       ignoredNodeIndices.push(index)
       continue
     }
