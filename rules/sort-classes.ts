@@ -193,8 +193,12 @@ export default createEslintRule<SortClassesOptions, MESSAGE_ID>({
         let sourceCode = getSourceCode(context)
         let className = node.parent.id?.name
 
-        let getDependencyName = (nodeName: string, isStatic: boolean) =>
-          `${isStatic ? 'static ' : ''}${nodeName}`
+        let getDependencyName = (props: {
+          nodeNameWithoutStartingHash: string
+          isPrivateHash: boolean
+          isStatic: boolean
+        }) =>
+          `${props.isStatic ? 'static ' : ''}${props.isPrivateHash ? '#' : ''}${props.nodeNameWithoutStartingHash}`
 
         /**
          * Class methods should not be considered as dependencies
@@ -208,7 +212,11 @@ export default createEslintRule<SortClassesOptions, MESSAGE_ID>({
                   member.type === 'TSAbstractMethodDefinition') &&
                 'name' in member.key
               ) {
-                return getDependencyName(member.key.name, member.static)
+                return getDependencyName({
+                  nodeNameWithoutStartingHash: member.key.name,
+                  isStatic: member.static,
+                  isPrivateHash: member.key.type === 'PrivateIdentifier',
+                })
               }
               return null
             })
@@ -227,14 +235,16 @@ export default createEslintRule<SortClassesOptions, MESSAGE_ID>({
               (nodeValue.object.type === 'ThisExpression' ||
                 (nodeValue.object.type === 'Identifier' &&
                   nodeValue.object.name === className)) &&
-              nodeValue.property.type === 'Identifier'
+              (nodeValue.property.type === 'Identifier' ||
+                nodeValue.property.type === 'PrivateIdentifier')
             ) {
               let isStaticDependency =
                 isMemberStatic || nodeValue.object.type === 'Identifier'
-              let dependencyName = getDependencyName(
-                nodeValue.property.name,
-                isStaticDependency,
-              )
+              let dependencyName = getDependencyName({
+                nodeNameWithoutStartingHash: nodeValue.property.name,
+                isStatic: isStaticDependency,
+                isPrivateHash: nodeValue.property.type === 'PrivateIdentifier',
+              })
               if (!classMethodsDependencyNames.has(dependencyName)) {
                 dependencies.push(dependencyName)
               }
@@ -563,20 +573,18 @@ export default createEslintRule<SortClassesOptions, MESSAGE_ID>({
               dependencies,
               name,
               addSafetySemicolonWhenInline,
-              dependencyName: getDependencyName(
-                name,
-                modifiers.includes('static'),
-              ),
+              dependencyName: getDependencyName({
+                nodeNameWithoutStartingHash: name.startsWith('#')
+                  ? name.slice(1)
+                  : name,
+                isPrivateHash,
+                isStatic: modifiers.includes('static'),
+              }),
             }
 
             let comments = getCommentsBefore(member, sourceCode)
             let lastMember = accumulator.at(-1)?.at(-1)
-            if (
-              options.partitionByComment &&
-              hasPartitionComment(options.partitionByComment, comments)
-            ) {
-              accumulator.push([])
-            }
+
             if (
               (options.partitionByNewLine &&
                 lastMember &&
