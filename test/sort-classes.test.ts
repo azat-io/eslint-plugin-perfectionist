@@ -8041,5 +8041,369 @@ describe(ruleName, () => {
         ],
       })
     })
+
+    let eslintDisableRuleTesterName = `${ruleName}: supports 'eslint-disable' for individual nodes`
+    ruleTester.run(eslintDisableRuleTesterName, rule, {
+      valid: [],
+      invalid: [
+        {
+          code: dedent`
+            class Class {
+              c
+              b
+              // eslint-disable-next-line
+              a
+            }
+          `,
+          output: dedent`
+            class Class {
+              b
+              c
+              // eslint-disable-next-line
+              a
+            }
+          `,
+          options: [{}],
+          errors: [
+            {
+              messageId: 'unexpectedClassesOrder',
+              data: {
+                left: 'c',
+                right: 'b',
+              },
+            },
+          ],
+        },
+        {
+          code: dedent`
+            class Class {
+              d
+              c
+              // eslint-disable-next-line
+              a
+              b
+            }
+          `,
+          output: dedent`
+            class Class {
+              b
+              c
+              // eslint-disable-next-line
+              a
+              d
+            }
+          `,
+          options: [
+            {
+              partitionByComment: true,
+            },
+          ],
+          errors: [
+            {
+              messageId: 'unexpectedClassesOrder',
+              data: {
+                left: 'd',
+                right: 'c',
+              },
+            },
+            {
+              messageId: 'unexpectedClassesOrder',
+              data: {
+                left: 'a',
+                right: 'b',
+              },
+            },
+          ],
+        },
+        {
+          code: dedent`
+            class Class {
+              c
+              b = this.a
+              // eslint-disable-next-line
+              a
+            }
+          `,
+          output: dedent`
+            class Class {
+              b = this.a
+              c
+              // eslint-disable-next-line
+              a
+            }
+          `,
+          options: [{}],
+          errors: [
+            {
+              messageId: 'unexpectedClassesOrder',
+              data: {
+                left: 'c',
+                right: 'b',
+              },
+            },
+          ],
+        },
+        {
+          code: dedent`
+            class Class {
+              c
+              b
+              a // eslint-disable-line
+            }
+          `,
+          output: dedent`
+            class Class {
+              b
+              c
+              a // eslint-disable-line
+            }
+          `,
+          options: [{}],
+          errors: [
+            {
+              messageId: 'unexpectedClassesOrder',
+              data: {
+                left: 'c',
+                right: 'b',
+              },
+            },
+          ],
+        },
+        {
+          code: dedent`
+            class Class {
+              c
+              b
+              /* eslint-disable-next-line */
+              a
+            }
+          `,
+          output: dedent`
+            class Class {
+              b
+              c
+              /* eslint-disable-next-line */
+              a
+            }
+          `,
+          options: [{}],
+          errors: [
+            {
+              messageId: 'unexpectedClassesOrder',
+              data: {
+                left: 'c',
+                right: 'b',
+              },
+            },
+          ],
+        },
+        {
+          code: dedent`
+            class Class {
+              c
+              b
+              a /* eslint-disable-line */
+            }
+          `,
+          output: dedent`
+            class Class {
+              b
+              c
+              a /* eslint-disable-line */
+            }
+          `,
+          options: [{}],
+          errors: [
+            {
+              messageId: 'unexpectedClassesOrder',
+              data: {
+                left: 'c',
+                right: 'b',
+              },
+            },
+          ],
+        },
+        {
+          code: dedent`
+            class Class {
+              d
+              e
+              /* eslint-disable */
+              c
+              b
+              // Shouldn't move
+              /* eslint-enable */
+              a
+            }
+          `,
+          output: dedent`
+            class Class {
+              a
+              d
+              /* eslint-disable */
+              c
+              b
+              // Shouldn't move
+              /* eslint-enable */
+              e
+            }
+          `,
+          options: [{}],
+          errors: [
+            {
+              messageId: 'unexpectedClassesOrder',
+              data: {
+                left: 'b',
+                right: 'a',
+              },
+            },
+          ],
+        },
+        {
+          code: dedent`
+            class Class {
+              c
+              b
+              // eslint-disable-next-line @rule-tester/${eslintDisableRuleTesterName}
+              a
+            }
+          `,
+          output: dedent`
+            class Class {
+              b
+              c
+              // eslint-disable-next-line @rule-tester/${eslintDisableRuleTesterName}
+              a
+            }
+          `,
+          options: [{}],
+          errors: [
+            {
+              messageId: 'unexpectedClassesOrder',
+              data: {
+                left: 'c',
+                right: 'b',
+              },
+            },
+          ],
+        },
+        {
+          code: dedent`
+            class Class {
+              c
+              b
+              a // eslint-disable-line @rule-tester/${eslintDisableRuleTesterName}
+            }
+          `,
+          output: dedent`
+            class Class {
+              b
+              c
+              a // eslint-disable-line @rule-tester/${eslintDisableRuleTesterName}
+            }
+          `,
+          options: [{}],
+          errors: [
+            {
+              messageId: 'unexpectedClassesOrder',
+              data: {
+                left: 'c',
+                right: 'b',
+              },
+            },
+          ],
+        },
+        {
+          code: dedent`
+            class Class {
+              c
+              b
+              /* eslint-disable-next-line @rule-tester/${eslintDisableRuleTesterName} */
+              a
+            }
+          `,
+          output: dedent`
+            class Class {
+              b
+              c
+              /* eslint-disable-next-line @rule-tester/${eslintDisableRuleTesterName} */
+              a
+            }
+          `,
+          options: [{}],
+          errors: [
+            {
+              messageId: 'unexpectedClassesOrder',
+              data: {
+                left: 'c',
+                right: 'b',
+              },
+            },
+          ],
+        },
+        {
+          code: dedent`
+            class Class {
+              c
+              b
+              a /* eslint-disable-line @rule-tester/${eslintDisableRuleTesterName} */
+            }
+          `,
+          output: dedent`
+            class Class {
+              b
+              c
+              a /* eslint-disable-line @rule-tester/${eslintDisableRuleTesterName} */
+            }
+          `,
+          options: [{}],
+          errors: [
+            {
+              messageId: 'unexpectedClassesOrder',
+              data: {
+                left: 'c',
+                right: 'b',
+              },
+            },
+          ],
+        },
+        {
+          code: dedent`
+            class Class {
+              d
+              e
+              /* eslint-disable @rule-tester/${eslintDisableRuleTesterName} */
+              c
+              b
+              // Shouldn't move
+              /* eslint-enable */
+              a
+            }
+          `,
+          output: dedent`
+            class Class {
+              a
+              d
+              /* eslint-disable @rule-tester/${eslintDisableRuleTesterName} */
+              c
+              b
+              // Shouldn't move
+              /* eslint-enable */
+              e
+            }
+          `,
+          options: [{}],
+          errors: [
+            {
+              messageId: 'unexpectedClassesOrder',
+              data: {
+                left: 'b',
+                right: 'a',
+              },
+            },
+          ],
+        },
+      ],
+    })
   })
 })
