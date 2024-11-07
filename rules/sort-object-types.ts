@@ -15,12 +15,15 @@ import {
 } from '../utils/common-json-schemas'
 import { validateNewlinesAndPartitionConfiguration } from '../utils/validate-newlines-and-partition-configuration'
 import { validateGroupsConfiguration } from '../utils/validate-groups-configuration'
+import { getEslintDisabledLines } from '../utils/get-eslint-disabled-lines'
+import { isNodeEslintDisabled } from '../utils/is-node-eslint-disabled'
 import { hasPartitionComment } from '../utils/is-partition-comment'
 import { sortNodesByGroups } from '../utils/sort-nodes-by-groups'
 import { getCommentsBefore } from '../utils/get-comments-before'
 import { makeNewlinesFixes } from '../utils/make-newlines-fixes'
 import { getNewlinesErrors } from '../utils/get-newlines-errors'
 import { createEslintRule } from '../utils/create-eslint-rule'
+import { isMemberOptional } from '../utils/is-member-optional'
 import { getLinesBetween } from '../utils/get-lines-between'
 import { getGroupNumber } from '../utils/get-group-number'
 import { getSourceCode } from '../utils/get-source-code'
@@ -56,7 +59,9 @@ type Options<T extends string[]> = [
   }>,
 ]
 
-type SortObjectTypesSortingNode = SortingNode<TSESTree.TypeElement>
+interface SortObjectTypesSortingNode extends SortingNode<TSESTree.TypeElement> {
+  groupKind: 'required' | 'optional'
+}
 
 const defaultOptions: Required<Options<string[]>[0]> = {
   partitionByComment: false,
@@ -138,8 +143,13 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
         Object.keys(options.customGroups),
       )
       validateNewlinesAndPartitionConfiguration(options)
+
       let sourceCode = getSourceCode(context)
-      let partitionComment = options.partitionByComment
+      let eslintDisabledLines = getEslintDisabledLines({
+        sourceCode,
+        ruleName: context.id,
+      })
+
       let formattedMembers: SortObjectTypesSortingNode[][] =
         node.members.reduce(
           (accumulator: SortObjectTypesSortingNode[][], member) => {
@@ -192,15 +202,20 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
             let sortingNode: SortObjectTypesSortingNode = {
               size: rangeToDiff(member, sourceCode),
               group: getGroup(),
+              groupKind: isMemberOptional(member) ? 'optional' : 'required',
               node: member,
+              isEslintDisabled: isNodeEslintDisabled(
+                member,
+                eslintDisabledLines,
+              ),
               name,
               addSafetySemicolonWhenInline: true,
             }
 
             if (
-              (partitionComment &&
+              (options.partitionByComment &&
                 hasPartitionComment(
-                  partitionComment,
+                  options.partitionByComment,
                   getCommentsBefore(member, sourceCode),
                 )) ||
               (options.partitionByNewLine &&
@@ -216,32 +231,29 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
           },
           [[]],
         )
+      let groupKindOrder
+      if (options.groupKind === 'required-first') {
+        groupKindOrder = ['required', 'optional'] as const
+      } else if (options.groupKind === 'optional-first') {
+        groupKindOrder = ['optional', 'required'] as const
+      } else {
+        groupKindOrder = ['any'] as const
+      }
       for (let nodes of formattedMembers) {
-        let groupedByKind
-        if (options.groupKind !== 'mixed') {
-          groupedByKind = nodes.reduce<SortObjectTypesSortingNode[][]>(
-            (accumulator, currentNode) => {
-              let requiredIndex = options.groupKind === 'required-first' ? 0 : 1
-              let optionalIndex = options.groupKind === 'required-first' ? 1 : 0
-
-              if ('optional' in currentNode.node && currentNode.node.optional) {
-                accumulator[optionalIndex].push(currentNode)
-              } else {
-                accumulator[requiredIndex].push(currentNode)
-              }
-              return accumulator
-            },
-            [[], []],
+        let filteredGroupKindNodes = groupKindOrder.map(groupKind =>
+          nodes.filter(n => groupKind === 'any' || n.groupKind === groupKind),
+        )
+        let sortNodesExcludingEslintDisabled = (
+          ignoreEslintDisabledNodes: boolean,
+        ) =>
+          filteredGroupKindNodes.flatMap(groupedNodes =>
+            sortNodesByGroups(groupedNodes, options, {
+              ignoreEslintDisabledNodes,
+            }),
           )
-        } else {
-          groupedByKind = [nodes]
-        }
-
-        let sortedNodes: SortObjectTypesSortingNode[] = []
-
-        for (let nodesByKind of groupedByKind) {
-          sortedNodes.push(...sortNodesByGroups(nodesByKind, options))
-        }
+        let sortedNodes = sortNodesExcludingEslintDisabled(false)
+        let sortedNodesExcludingEslintDisabled =
+          sortNodesExcludingEslintDisabled(true)
 
         pairwise(nodes, (left, right) => {
           let leftNum = getGroupNumber(options.groups, left)
@@ -249,10 +261,15 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
 
           let indexOfLeft = sortedNodes.indexOf(left)
           let indexOfRight = sortedNodes.indexOf(right)
+          let indexOfRightExcludingEslintDisabled =
+            sortedNodesExcludingEslintDisabled.indexOf(right)
 
           let messageIds: MESSAGE_ID[] = []
 
-          if (indexOfLeft > indexOfRight) {
+          if (
+            indexOfLeft > indexOfRight ||
+            indexOfLeft >= indexOfRightExcludingEslintDisabled
+          ) {
             messageIds.push(
               leftNum !== rightNum
                 ? 'unexpectedObjectTypesGroupOrder'
@@ -285,11 +302,17 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
               },
               node: right.node,
               fix: fixer => [
-                ...makeFixes(fixer, nodes, sortedNodes, sourceCode, options),
+                ...makeFixes(
+                  fixer,
+                  nodes,
+                  sortedNodesExcludingEslintDisabled,
+                  sourceCode,
+                  options,
+                ),
                 ...makeNewlinesFixes(
                   fixer,
                   nodes,
-                  sortedNodes,
+                  sortedNodesExcludingEslintDisabled,
                   sourceCode,
                   options,
                 ),
