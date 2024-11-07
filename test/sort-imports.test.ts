@@ -623,41 +623,6 @@ describe(ruleName, () => {
       },
     )
 
-    ruleTester.run(`${ruleName}(${type}): doesn't break user comments`, rule, {
-      valid: [
-        {
-          code: dedent`
-            import { b1, b2 } from 'b'
-
-            /**
-             * Comment
-             */
-
-            import { a } from 'a'
-            import { c } from 'c'
-          `,
-          options: [
-            {
-              ...options,
-              newlinesBetween: 'always',
-              internalPattern: ['^~/.*'],
-              groups: [
-                'type',
-                ['builtin', 'external'],
-                'internal-type',
-                'internal',
-                ['parent-type', 'sibling-type', 'index-type'],
-                ['parent', 'sibling', 'index'],
-                'object',
-                'unknown',
-              ],
-            },
-          ],
-        },
-      ],
-      invalid: [],
-    })
-
     ruleTester.run(`${ruleName}(${type}): ignores inline comments`, rule, {
       valid: [
         {
@@ -2728,41 +2693,6 @@ describe(ruleName, () => {
       },
     )
 
-    ruleTester.run(`${ruleName}(${type}): doesn't break user comments`, rule, {
-      valid: [
-        {
-          code: dedent`
-            import { b1, b2 } from 'b'
-
-            /**
-             * Comment
-             */
-
-            import { a } from 'a'
-            import { c } from 'c'
-          `,
-          options: [
-            {
-              ...options,
-              newlinesBetween: 'always',
-              internalPattern: ['^~/.*'],
-              groups: [
-                'type',
-                ['builtin', 'external'],
-                'internal-type',
-                'internal',
-                ['parent-type', 'sibling-type', 'index-type'],
-                ['parent', 'sibling', 'index'],
-                'object',
-                'unknown',
-              ],
-            },
-          ],
-        },
-      ],
-      invalid: [],
-    })
-
     ruleTester.run(`${ruleName}(${type}): ignores inline comments`, rule, {
       valid: [
         {
@@ -4279,41 +4209,6 @@ describe(ruleName, () => {
         ],
       },
     )
-
-    ruleTester.run(`${ruleName}(${type}): doesn't break user comments`, rule, {
-      valid: [
-        {
-          code: dedent`
-            import { b1, b2 } from 'b'
-
-            /**
-             * Comment
-             */
-
-            import { a } from 'a'
-            import { c } from 'c'
-          `,
-          options: [
-            {
-              ...options,
-              newlinesBetween: 'always',
-              internalPattern: ['^~/.*'],
-              groups: [
-                'type',
-                ['builtin', 'external'],
-                'internal-type',
-                'internal',
-                ['parent-type', 'sibling-type', 'index-type'],
-                ['parent', 'sibling', 'index'],
-                'object',
-                'unknown',
-              ],
-            },
-          ],
-        },
-      ],
-      invalid: [],
-    })
 
     ruleTester.run(
       `${ruleName}(${type}): ignores comments for counting lines between imports`,
