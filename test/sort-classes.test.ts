@@ -30,6 +30,14 @@ describe(ruleName, () => {
         {
           code: dedent`
             class Class {
+              a
+            }
+          `,
+          options: [options],
+        },
+        {
+          code: dedent`
+            class Class {
               static a = 'a'
 
               protected b = 'b'

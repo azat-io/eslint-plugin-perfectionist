@@ -33,6 +33,14 @@ describe(ruleName, () => {
           {
             code: dedent`
               new Map([
+                ['a', 'a'],
+              ])
+            `,
+            options: [options],
+          },
+          {
+            code: dedent`
+              new Map([
                 ['c', 'cc'],
                 ['d', 'd'],
                 ...rest,

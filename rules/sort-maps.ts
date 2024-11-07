@@ -86,105 +86,99 @@ export default createEslintRule<Options, MESSAGE_ID>({
   create: context => ({
     NewExpression: node => {
       if (
-        node.callee.type === 'Identifier' &&
-        node.callee.name === 'Map' &&
-        node.arguments.length &&
-        node.arguments[0]?.type === 'ArrayExpression'
+        node.callee.type !== 'Identifier' ||
+        node.callee.name !== 'Map' ||
+        !node.arguments.length ||
+        node.arguments[0]?.type !== 'ArrayExpression'
       ) {
-        let [{ elements }] = node.arguments
+        return
+      }
+      let [{ elements }] = node.arguments
+      if (elements.length <= 1) {
+        return
+      }
 
-        if (elements.length > 1) {
-          let settings = getSettings(context.settings)
+      let settings = getSettings(context.settings)
+      let options = complete(context.options.at(0), settings, defaultOptions)
+      let sourceCode = getSourceCode(context)
+      let partitionComment = options.partitionByComment
+      let parts: TSESTree.Expression[][] = elements.reduce(
+        (
+          accumulator: TSESTree.Expression[][],
+          element: TSESTree.SpreadElement | TSESTree.Expression | null,
+        ) => {
+          if (element === null || element.type === 'SpreadElement') {
+            accumulator.push([])
+          } else {
+            accumulator.at(-1)!.push(element)
+          }
+          return accumulator
+        },
+        [[]],
+      )
+      for (let part of parts) {
+        let formattedMembers: SortingNode[][] = [[]]
+        for (let element of part) {
+          let name: string
 
-          let options = complete(
-            context.options.at(0),
-            settings,
-            defaultOptions,
-          )
+          if (element.type === 'ArrayExpression') {
+            let [left] = element.elements
 
-          let sourceCode = getSourceCode(context)
-          let partitionComment = options.partitionByComment
-
-          let parts: TSESTree.Expression[][] = elements.reduce(
-            (
-              accumulator: TSESTree.Expression[][],
-              element: TSESTree.SpreadElement | TSESTree.Expression | null,
-            ) => {
-              if (element === null || element.type === 'SpreadElement') {
-                accumulator.push([])
-              } else {
-                accumulator.at(-1)!.push(element)
-              }
-              return accumulator
-            },
-            [[]],
-          )
-
-          for (let part of parts) {
-            let formattedMembers: SortingNode[][] = [[]]
-            for (let element of part) {
-              let name: string
-
-              if (element.type === 'ArrayExpression') {
-                let [left] = element.elements
-
-                if (!left) {
-                  name = `${left}`
-                } else if (left.type === 'Literal') {
-                  name = left.raw
-                } else {
-                  name = sourceCode.getText(left)
-                }
-              } else {
-                name = sourceCode.getText(element)
-              }
-
-              let lastSortingNode = formattedMembers.at(-1)?.at(-1)
-              let sortingNode: SortingNode = {
-                size: rangeToDiff(element, sourceCode),
-                node: element,
-                name,
-              }
-
-              if (
-                (partitionComment &&
-                  hasPartitionComment(
-                    partitionComment,
-                    getCommentsBefore(element, sourceCode),
-                  )) ||
-                (options.partitionByNewLine &&
-                  lastSortingNode &&
-                  getLinesBetween(sourceCode, lastSortingNode, sortingNode))
-              ) {
-                formattedMembers.push([])
-              }
-
-              formattedMembers.at(-1)!.push(sortingNode)
+            if (!left) {
+              name = `${left}`
+            } else if (left.type === 'Literal') {
+              name = left.raw
+            } else {
+              name = sourceCode.getText(left)
             }
+          } else {
+            name = sourceCode.getText(element)
+          }
 
-            for (let nodes of formattedMembers) {
-              pairwise(nodes, (left, right) => {
-                if (isPositive(compare(left, right, options))) {
-                  context.report({
-                    messageId: 'unexpectedMapElementsOrder',
-                    data: {
-                      left: toSingleLine(left.name),
-                      right: toSingleLine(right.name),
-                    },
-                    node: right.node,
-                    fix: fixer =>
-                      makeFixes(
-                        fixer,
-                        nodes,
-                        sortNodes(nodes, options),
-                        sourceCode,
-                        options,
-                      ),
-                  })
-                }
+          let lastSortingNode = formattedMembers.at(-1)?.at(-1)
+          let sortingNode: SortingNode = {
+            size: rangeToDiff(element, sourceCode),
+            node: element,
+            name,
+          }
+
+          if (
+            (partitionComment &&
+              hasPartitionComment(
+                partitionComment,
+                getCommentsBefore(element, sourceCode),
+              )) ||
+            (options.partitionByNewLine &&
+              lastSortingNode &&
+              getLinesBetween(sourceCode, lastSortingNode, sortingNode))
+          ) {
+            formattedMembers.push([])
+          }
+
+          formattedMembers.at(-1)!.push(sortingNode)
+        }
+
+        for (let nodes of formattedMembers) {
+          pairwise(nodes, (left, right) => {
+            if (isPositive(compare(left, right, options))) {
+              context.report({
+                messageId: 'unexpectedMapElementsOrder',
+                data: {
+                  left: toSingleLine(left.name),
+                  right: toSingleLine(right.name),
+                },
+                node: right.node,
+                fix: fixer =>
+                  makeFixes(
+                    fixer,
+                    nodes,
+                    sortNodes(nodes, options),
+                    sourceCode,
+                    options,
+                  ),
               })
             }
-          }
+          })
         }
       }
     },
