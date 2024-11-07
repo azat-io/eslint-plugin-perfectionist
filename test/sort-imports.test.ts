@@ -2116,6 +2116,7 @@ describe(ruleName, () => {
               {
                 ...options,
                 partitionByNewLine: true,
+                newlinesBetween: 'ignore',
               },
             ],
             errors: [

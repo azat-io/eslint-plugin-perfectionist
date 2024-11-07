@@ -14,6 +14,7 @@ import {
   orderJsonSchema,
   typeJsonSchema,
 } from '../utils/common-json-schemas'
+import { validateNewlinesAndPartitionConfiguration } from '../utils/validate-newlines-and-partition-configuration'
 import { validateGroupsConfiguration } from '../utils/validate-groups-configuration'
 import { getOptionsWithCleanGroups } from '../utils/get-options-with-clean-groups'
 import { hasPartitionComment } from '../utils/is-partition-comment'
@@ -285,6 +286,7 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
         ...Object.keys(options.customGroups.value ?? {}),
       ],
     )
+    validateNewlinesAndPartitionConfiguration(options)
 
     let isSideEffectOnlyGroup = (
       group: undefined | string[] | string,
