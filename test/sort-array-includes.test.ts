@@ -1411,5 +1411,382 @@ describe(ruleName, () => {
       ],
       invalid: [],
     })
+
+    let eslintDisableRuleTesterName = `${ruleName}: supports 'eslint-disable' for individual nodes`
+    ruleTester.run(eslintDisableRuleTesterName, rule, {
+      valid: [],
+      invalid: [
+        {
+          code: dedent`
+            [
+              'c',
+              'b',
+              // eslint-disable-next-line
+              'a',
+            ].includes(value)
+          `,
+          output: dedent`
+            [
+              'b',
+              'c',
+              // eslint-disable-next-line
+              'a',
+            ].includes(value)
+          `,
+          options: [{}],
+          errors: [
+            {
+              messageId: 'unexpectedArrayIncludesOrder',
+              data: {
+                left: 'c',
+                right: 'b',
+              },
+            },
+          ],
+        },
+        {
+          code: dedent`
+            [
+              'd',
+              'c',
+              // eslint-disable-next-line
+              'a',
+              'b'
+            ].includes(value)
+          `,
+          output: dedent`
+            [
+              'b',
+              'c',
+              // eslint-disable-next-line
+              'a',
+              'd'
+            ].includes(value)
+          `,
+          options: [
+            {
+              partitionByComment: true,
+            },
+          ],
+          errors: [
+            {
+              messageId: 'unexpectedArrayIncludesOrder',
+              data: {
+                left: 'd',
+                right: 'c',
+              },
+            },
+            {
+              messageId: 'unexpectedArrayIncludesOrder',
+              data: {
+                left: 'a',
+                right: 'b',
+              },
+            },
+          ],
+        },
+        {
+          code: dedent`
+            [
+              'c',
+              'b',
+              // eslint-disable-next-line
+              'a',
+              ...anotherArray
+            ].includes(value)
+          `,
+          output: dedent`
+            [
+              ...anotherArray,
+              'b',
+              // eslint-disable-next-line
+              'a',
+              'c'
+            ].includes(value)
+          `,
+          options: [
+            {
+              groupKind: 'mixed',
+            },
+          ],
+          errors: [
+            {
+              messageId: 'unexpectedArrayIncludesOrder',
+              data: {
+                left: 'c',
+                right: 'b',
+              },
+            },
+            {
+              messageId: 'unexpectedArrayIncludesOrder',
+              data: {
+                left: 'a',
+                right: '...anotherArray',
+              },
+            },
+          ],
+        },
+        {
+          code: dedent`
+            [
+              'c',
+              'b',
+              'a', // eslint-disable-line
+            ].includes(value)
+          `,
+          output: dedent`
+            [
+              'b',
+              'c',
+              'a', // eslint-disable-line
+            ].includes(value)
+          `,
+          options: [{}],
+          errors: [
+            {
+              messageId: 'unexpectedArrayIncludesOrder',
+              data: {
+                left: 'c',
+                right: 'b',
+              },
+            },
+          ],
+        },
+        {
+          code: dedent`
+            [
+              'c',
+              'b',
+              /* eslint-disable-next-line */
+              'a',
+            ].includes(value)
+          `,
+          output: dedent`
+            [
+              'b',
+              'c',
+              /* eslint-disable-next-line */
+              'a',
+            ].includes(value)
+          `,
+          options: [{}],
+          errors: [
+            {
+              messageId: 'unexpectedArrayIncludesOrder',
+              data: {
+                left: 'c',
+                right: 'b',
+              },
+            },
+          ],
+        },
+        {
+          code: dedent`
+            [
+              'c',
+              'b',
+              'a', /* eslint-disable-line */
+            ].includes(value)
+          `,
+          output: dedent`
+            [
+              'b',
+              'c',
+              'a', /* eslint-disable-line */
+            ].includes(value)
+          `,
+          options: [{}],
+          errors: [
+            {
+              messageId: 'unexpectedArrayIncludesOrder',
+              data: {
+                left: 'c',
+                right: 'b',
+              },
+            },
+          ],
+        },
+        {
+          code: dedent`
+            [
+              'd',
+              'e',
+              /* eslint-disable */
+              'c',
+              'b',
+              // Shouldn't move
+              /* eslint-enable */
+              'a',
+            ].includes(value)
+          `,
+          output: dedent`
+            [
+              'a',
+              'd',
+              /* eslint-disable */
+              'c',
+              'b',
+              // Shouldn't move
+              /* eslint-enable */
+              'e',
+            ].includes(value)
+          `,
+          options: [{}],
+          errors: [
+            {
+              messageId: 'unexpectedArrayIncludesOrder',
+              data: {
+                left: 'b',
+                right: 'a',
+              },
+            },
+          ],
+        },
+        {
+          code: dedent`
+            [
+              'c',
+              'b',
+              // eslint-disable-next-line @rule-tester/${eslintDisableRuleTesterName}
+              'a',
+            ].includes(value)
+          `,
+          output: dedent`
+            [
+              'b',
+              'c',
+              // eslint-disable-next-line @rule-tester/${eslintDisableRuleTesterName}
+              'a',
+            ].includes(value)
+          `,
+          options: [{}],
+          errors: [
+            {
+              messageId: 'unexpectedArrayIncludesOrder',
+              data: {
+                left: 'c',
+                right: 'b',
+              },
+            },
+          ],
+        },
+        {
+          code: dedent`
+            [
+              'c',
+              'b',
+              'a', // eslint-disable-line @rule-tester/${eslintDisableRuleTesterName}
+            ].includes(value)
+          `,
+          output: dedent`
+            [
+              'b',
+              'c',
+              'a', // eslint-disable-line @rule-tester/${eslintDisableRuleTesterName}
+            ].includes(value)
+          `,
+          options: [{}],
+          errors: [
+            {
+              messageId: 'unexpectedArrayIncludesOrder',
+              data: {
+                left: 'c',
+                right: 'b',
+              },
+            },
+          ],
+        },
+        {
+          code: dedent`
+            [
+              'c',
+              'b',
+              /* eslint-disable-next-line @rule-tester/${eslintDisableRuleTesterName} */
+              'a',
+            ].includes(value)
+          `,
+          output: dedent`
+            [
+              'b',
+              'c',
+              /* eslint-disable-next-line @rule-tester/${eslintDisableRuleTesterName} */
+              'a',
+            ].includes(value)
+          `,
+          options: [{}],
+          errors: [
+            {
+              messageId: 'unexpectedArrayIncludesOrder',
+              data: {
+                left: 'c',
+                right: 'b',
+              },
+            },
+          ],
+        },
+        {
+          code: dedent`
+            [
+              'c',
+              'b',
+              'a', /* eslint-disable-line @rule-tester/${eslintDisableRuleTesterName} */
+            ].includes(value)
+          `,
+          output: dedent`
+            [
+              'b',
+              'c',
+              'a', /* eslint-disable-line @rule-tester/${eslintDisableRuleTesterName} */
+            ].includes(value)
+          `,
+          options: [{}],
+          errors: [
+            {
+              messageId: 'unexpectedArrayIncludesOrder',
+              data: {
+                left: 'c',
+                right: 'b',
+              },
+            },
+          ],
+        },
+        {
+          code: dedent`
+            [
+              'd',
+              'e',
+              /* eslint-disable @rule-tester/${eslintDisableRuleTesterName} */
+              'c',
+              'b',
+              // Shouldn't move
+              /* eslint-enable */
+              'a',
+            ].includes(value)
+          `,
+          output: dedent`
+            [
+              'a',
+              'd',
+              /* eslint-disable @rule-tester/${eslintDisableRuleTesterName} */
+              'c',
+              'b',
+              // Shouldn't move
+              /* eslint-enable */
+              'e',
+            ].includes(value)
+          `,
+          options: [{}],
+          errors: [
+            {
+              messageId: 'unexpectedArrayIncludesOrder',
+              data: {
+                left: 'b',
+                right: 'a',
+              },
+            },
+          ],
+        },
+      ],
+    })
   })
 })
