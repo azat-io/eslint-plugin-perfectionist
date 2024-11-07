@@ -1458,5 +1458,341 @@ describe(ruleName, () => {
         ],
       },
     )
+
+    let eslintDisableRuleTesterName = `${ruleName}: supports 'eslint-disable' for individual nodes`
+    ruleTester.run(eslintDisableRuleTesterName, rule, {
+      valid: [],
+      invalid: [
+        {
+          code: dedent`
+            import {
+              c,
+              b,
+              // eslint-disable-next-line
+              a
+            } from 'module'
+          `,
+          output: dedent`
+            import {
+              b,
+              c,
+              // eslint-disable-next-line
+              a
+            } from 'module'
+          `,
+          options: [{}],
+          errors: [
+            {
+              messageId: 'unexpectedNamedImportsOrder',
+              data: {
+                left: 'c',
+                right: 'b',
+              },
+            },
+          ],
+        },
+        {
+          code: dedent`
+            import {
+              d,
+              c,
+              // eslint-disable-next-line
+              a,
+              b
+            } from 'module'
+          `,
+          output: dedent`
+            import {
+              b,
+              c,
+              // eslint-disable-next-line
+              a,
+              d
+            } from 'module'
+          `,
+          options: [
+            {
+              partitionByComment: true,
+            },
+          ],
+          errors: [
+            {
+              messageId: 'unexpectedNamedImportsOrder',
+              data: {
+                left: 'd',
+                right: 'c',
+              },
+            },
+            {
+              messageId: 'unexpectedNamedImportsOrder',
+              data: {
+                left: 'a',
+                right: 'b',
+              },
+            },
+          ],
+        },
+        {
+          code: dedent`
+            import {
+              c,
+              b,
+              a // eslint-disable-line
+            } from 'module'
+          `,
+          output: dedent`
+            import {
+              b,
+              c,
+              a // eslint-disable-line
+            } from 'module'
+          `,
+          options: [{}],
+          errors: [
+            {
+              messageId: 'unexpectedNamedImportsOrder',
+              data: {
+                left: 'c',
+                right: 'b',
+              },
+            },
+          ],
+        },
+        {
+          code: dedent`
+            import {
+              c,
+              b,
+              /* eslint-disable-next-line */
+              a
+            } from 'module'
+          `,
+          output: dedent`
+            import {
+              b,
+              c,
+              /* eslint-disable-next-line */
+              a
+            } from 'module'
+          `,
+          options: [{}],
+          errors: [
+            {
+              messageId: 'unexpectedNamedImportsOrder',
+              data: {
+                left: 'c',
+                right: 'b',
+              },
+            },
+          ],
+        },
+        {
+          code: dedent`
+            import {
+              c,
+              b,
+              a /* eslint-disable-line */
+            } from 'module'
+          `,
+          output: dedent`
+            import {
+              b,
+              c,
+              a /* eslint-disable-line */
+            } from 'module'
+          `,
+          options: [{}],
+          errors: [
+            {
+              messageId: 'unexpectedNamedImportsOrder',
+              data: {
+                left: 'c',
+                right: 'b',
+              },
+            },
+          ],
+        },
+        {
+          code: dedent`
+            import {
+              d,
+              e,
+              /* eslint-disable */
+              c,
+              b,
+              // Shouldn't move
+              /* eslint-enable */
+              a,
+            } from 'module'
+          `,
+          output: dedent`
+            import {
+              a,
+              d,
+              /* eslint-disable */
+              c,
+              b,
+              // Shouldn't move
+              /* eslint-enable */
+              e,
+            } from 'module'
+          `,
+          options: [{}],
+          errors: [
+            {
+              messageId: 'unexpectedNamedImportsOrder',
+              data: {
+                left: 'b',
+                right: 'a',
+              },
+            },
+          ],
+        },
+        {
+          code: dedent`
+            import {
+              c,
+              b,
+              // eslint-disable-next-line @rule-tester/${eslintDisableRuleTesterName}
+              a
+            } from 'module'
+          `,
+          output: dedent`
+            import {
+              b,
+              c,
+              // eslint-disable-next-line @rule-tester/${eslintDisableRuleTesterName}
+              a
+            } from 'module'
+          `,
+          options: [{}],
+          errors: [
+            {
+              messageId: 'unexpectedNamedImportsOrder',
+              data: {
+                left: 'c',
+                right: 'b',
+              },
+            },
+          ],
+        },
+        {
+          code: dedent`
+            import {
+              c,
+              b,
+              a // eslint-disable-line @rule-tester/${eslintDisableRuleTesterName}
+            } from 'module'
+          `,
+          output: dedent`
+            import {
+              b,
+              c,
+              a // eslint-disable-line @rule-tester/${eslintDisableRuleTesterName}
+            } from 'module'
+          `,
+          options: [{}],
+          errors: [
+            {
+              messageId: 'unexpectedNamedImportsOrder',
+              data: {
+                left: 'c',
+                right: 'b',
+              },
+            },
+          ],
+        },
+        {
+          code: dedent`
+            import {
+              c,
+              b,
+              /* eslint-disable-next-line @rule-tester/${eslintDisableRuleTesterName} */
+              a
+            } from 'module'
+          `,
+          output: dedent`
+            import {
+              b,
+              c,
+              /* eslint-disable-next-line @rule-tester/${eslintDisableRuleTesterName} */
+              a
+            } from 'module'
+          `,
+          options: [{}],
+          errors: [
+            {
+              messageId: 'unexpectedNamedImportsOrder',
+              data: {
+                left: 'c',
+                right: 'b',
+              },
+            },
+          ],
+        },
+        {
+          code: dedent`
+            import {
+              c,
+              b,
+              a /* eslint-disable-line @rule-tester/${eslintDisableRuleTesterName} */
+            } from 'module'
+          `,
+          output: dedent`
+            import {
+              b,
+              c,
+              a /* eslint-disable-line @rule-tester/${eslintDisableRuleTesterName} */
+            } from 'module'
+          `,
+          options: [{}],
+          errors: [
+            {
+              messageId: 'unexpectedNamedImportsOrder',
+              data: {
+                left: 'c',
+                right: 'b',
+              },
+            },
+          ],
+        },
+        {
+          code: dedent`
+            import {
+              d,
+              e,
+              /* eslint-disable @rule-tester/${eslintDisableRuleTesterName} */
+              c,
+              b,
+              // Shouldn't move
+              /* eslint-enable */
+              a,
+            } from 'module'
+          `,
+          output: dedent`
+            import {
+              a,
+              d,
+              /* eslint-disable @rule-tester/${eslintDisableRuleTesterName} */
+              c,
+              b,
+              // Shouldn't move
+              /* eslint-enable */
+              e,
+            } from 'module'
+          `,
+          options: [{}],
+          errors: [
+            {
+              messageId: 'unexpectedNamedImportsOrder',
+              data: {
+                left: 'b',
+                right: 'a',
+              },
+            },
+          ],
+        },
+      ],
+    })
   })
 })
