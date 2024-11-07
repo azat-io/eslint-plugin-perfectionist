@@ -99,96 +99,92 @@ export default createEslintRule<Options, MESSAGE_ID>({
       let specifiers = node.specifiers.filter(
         ({ type }) => type === 'ImportSpecifier',
       )
+      if (specifiers.length <= 1) {
+        return
+      }
 
-      if (specifiers.length > 1) {
-        let settings = getSettings(context.settings)
+      let settings = getSettings(context.settings)
+      let options = complete(context.options.at(0), settings, defaultOptions)
+      let sourceCode = getSourceCode(context)
+      let partitionComment = options.partitionByComment
+      let formattedMembers: SortingNode[][] = [[]]
+      for (let specifier of specifiers) {
+        let group: undefined | 'value' | 'type'
+        let { name } = specifier.local
 
-        let options = complete(context.options.at(0), settings, defaultOptions)
-
-        let sourceCode = getSourceCode(context)
-        let partitionComment = options.partitionByComment
-
-        let formattedMembers: SortingNode[][] = [[]]
-        for (let specifier of specifiers) {
-          let group: undefined | 'value' | 'type'
-          let { name } = specifier.local
-
-          if (specifier.type === 'ImportSpecifier' && options.ignoreAlias) {
-            if (specifier.imported.type === 'Identifier') {
-              ;({ name } = specifier.imported)
-            } else {
-              name = specifier.imported.value
-            }
-          }
-
-          if (
-            specifier.type === 'ImportSpecifier' &&
-            specifier.importKind === 'type'
-          ) {
-            group = 'type'
+        if (specifier.type === 'ImportSpecifier' && options.ignoreAlias) {
+          if (specifier.imported.type === 'Identifier') {
+            ;({ name } = specifier.imported)
           } else {
-            group = 'value'
+            name = specifier.imported.value
           }
+        }
 
-          let lastSortingNode = formattedMembers.at(-1)?.at(-1)
-          let sortingNode: SortingNode = {
-            size: rangeToDiff(specifier, sourceCode),
-            node: specifier,
-            group,
-            name,
-          }
+        if (
+          specifier.type === 'ImportSpecifier' &&
+          specifier.importKind === 'type'
+        ) {
+          group = 'type'
+        } else {
+          group = 'value'
+        }
 
+        let lastSortingNode = formattedMembers.at(-1)?.at(-1)
+        let sortingNode: SortingNode = {
+          size: rangeToDiff(specifier, sourceCode),
+          node: specifier,
+          group,
+          name,
+        }
+
+        if (
+          (partitionComment &&
+            hasPartitionComment(
+              partitionComment,
+              getCommentsBefore(specifier, sourceCode),
+            )) ||
+          (options.partitionByNewLine &&
+            lastSortingNode &&
+            getLinesBetween(sourceCode, lastSortingNode, sortingNode))
+        ) {
+          formattedMembers.push([])
+        }
+
+        formattedMembers.at(-1)!.push(sortingNode)
+      }
+      let shouldGroupByKind = options.groupKind !== 'mixed'
+      let groupKindOrder =
+        options.groupKind === 'values-first'
+          ? ['value', 'type']
+          : ['type', 'value']
+      for (let nodes of formattedMembers) {
+        pairwise(nodes, (left, right) => {
+          let leftNum = getGroupNumber(groupKindOrder, left)
+          let rightNum = getGroupNumber(groupKindOrder, right)
           if (
-            (partitionComment &&
-              hasPartitionComment(
-                partitionComment,
-                getCommentsBefore(specifier, sourceCode),
-              )) ||
-            (options.partitionByNewLine &&
-              lastSortingNode &&
-              getLinesBetween(sourceCode, lastSortingNode, sortingNode))
+            (shouldGroupByKind && leftNum > rightNum) ||
+            ((!shouldGroupByKind || leftNum === rightNum) &&
+              isPositive(compare(left, right, options)))
           ) {
-            formattedMembers.push([])
+            let sortedNodes = shouldGroupByKind
+              ? groupKindOrder
+                  .map(group => nodes.filter(n => n.group === group))
+                  .map(groupedNodes => sortNodes(groupedNodes, options))
+                  .flat()
+              : sortNodes(nodes, options)
+
+            context.report({
+              messageId: 'unexpectedNamedImportsOrder',
+              data: {
+                left: left.name,
+                right: right.name,
+              },
+              node: right.node,
+              fix: fixer =>
+                makeFixes(fixer, nodes, sortedNodes, sourceCode, options),
+            })
           }
-
-          formattedMembers.at(-1)!.push(sortingNode)
-        }
-
-        let shouldGroupByKind = options.groupKind !== 'mixed'
-        let groupKindOrder =
-          options.groupKind === 'values-first'
-            ? ['value', 'type']
-            : ['type', 'value']
-
-        for (let nodes of formattedMembers) {
-          pairwise(nodes, (left, right) => {
-            let leftNum = getGroupNumber(groupKindOrder, left)
-            let rightNum = getGroupNumber(groupKindOrder, right)
-            if (
-              (shouldGroupByKind && leftNum > rightNum) ||
-              ((!shouldGroupByKind || leftNum === rightNum) &&
-                isPositive(compare(left, right, options)))
-            ) {
-              let sortedNodes = shouldGroupByKind
-                ? groupKindOrder
-                    .map(group => nodes.filter(n => n.group === group))
-                    .map(groupedNodes => sortNodes(groupedNodes, options))
-                    .flat()
-                : sortNodes(nodes, options)
-
-              context.report({
-                messageId: 'unexpectedNamedImportsOrder',
-                data: {
-                  left: left.name,
-                  right: right.name,
-                },
-                node: right.node,
-                fix: fixer =>
-                  makeFixes(fixer, nodes, sortedNodes, sourceCode, options),
-              })
-            }
-          })
-        }
+        })
       }
     },
   }),
