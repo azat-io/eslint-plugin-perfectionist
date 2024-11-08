@@ -154,192 +154,191 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
       )
       validateNewlinesAndPartitionConfiguration(options)
 
+      if (
+        options.ignorePattern.some(pattern => matches(node.id.name, pattern))
+      ) {
+        return
+      }
+
       let sourceCode = getSourceCode(context)
       let eslintDisabledLines = getEslintDisabledLines({
         sourceCode,
         ruleName: context.id,
       })
 
-      if (
-        !options.ignorePattern.some(pattern => matches(node.id.name, pattern))
-      ) {
-        let formattedMembers: SortInterfacesSortingNode[][] =
-          node.body.body.reduce(
-            (accumulator: SortInterfacesSortingNode[][], element) => {
-              if (element.type === 'TSCallSignatureDeclaration') {
-                accumulator.push([])
-                return accumulator
-              }
-
-              let lastElement = accumulator.at(-1)?.at(-1)
-              let name: string
-
-              let { getGroup, defineGroup, setCustomGroups } =
-                useGroups(options)
-
-              if (element.type === 'TSPropertySignature') {
-                if (element.key.type === 'Identifier') {
-                  ;({ name } = element.key)
-                } else if (element.key.type === 'Literal') {
-                  name = `${element.key.value}`
-                } else {
-                  let end: number =
-                    element.typeAnnotation?.range.at(0) ??
-                    element.range.at(1)! - (element.optional ? '?'.length : 0)
-
-                  name = sourceCode.text.slice(element.range.at(0), end)
-                }
-              } else if (element.type === 'TSIndexSignature') {
-                let endIndex: number =
-                  element.typeAnnotation?.range.at(0) ?? element.range.at(1)!
-
-                name = sourceCode.text.slice(element.range.at(0), endIndex)
-              } else {
-                let endIndex: number =
-                  element.returnType?.range.at(0) ?? element.range.at(1)!
-
-                name = sourceCode.text.slice(element.range.at(0), endIndex)
-              }
-
-              setCustomGroups(options.customGroups, name)
-
-              if (
-                element.type === 'TSMethodSignature' ||
-                (element.type === 'TSPropertySignature' &&
-                  element.typeAnnotation?.typeAnnotation.type ===
-                    'TSFunctionType')
-              ) {
-                defineGroup('method')
-              }
-
-              if (element.loc.start.line !== element.loc.end.line) {
-                defineGroup('multiline')
-              }
-
-              let elementSortingNode: SortInterfacesSortingNode = {
-                size: rangeToDiff(element, sourceCode),
-                node: element,
-                group: getGroup(),
-                name,
-                isEslintDisabled: isNodeEslintDisabled(
-                  element,
-                  eslintDisabledLines,
-                ),
-                groupKind: isMemberOptional(element) ? 'optional' : 'required',
-                addSafetySemicolonWhenInline: true,
-              }
-
-              if (
-                (options.partitionByComment &&
-                  hasPartitionComment(
-                    options.partitionByComment,
-                    getCommentsBefore(element, sourceCode),
-                  )) ||
-                (options.partitionByNewLine &&
-                  lastElement &&
-                  getLinesBetween(sourceCode, lastElement, elementSortingNode))
-              ) {
-                accumulator.push([])
-              }
-
-              accumulator.at(-1)!.push(elementSortingNode)
-
+      let formattedMembers: SortInterfacesSortingNode[][] =
+        node.body.body.reduce(
+          (accumulator: SortInterfacesSortingNode[][], element) => {
+            if (element.type === 'TSCallSignatureDeclaration') {
+              accumulator.push([])
               return accumulator
-            },
-            [[]],
-          )
+            }
 
-        let groupKindOrder
-        if (options.groupKind === 'required-first') {
-          groupKindOrder = ['required', 'optional'] as const
-        } else if (options.groupKind === 'optional-first') {
-          groupKindOrder = ['optional', 'required'] as const
-        } else {
-          groupKindOrder = ['any'] as const
-        }
+            let lastElement = accumulator.at(-1)?.at(-1)
+            let name: string
 
-        for (let nodes of formattedMembers) {
-          let filteredGroupKindNodes = groupKindOrder.map(groupKind =>
-            nodes.filter(n => groupKind === 'any' || n.groupKind === groupKind),
-          )
-          let sortNodesExcludingEslintDisabled = (
-            ignoreEslintDisabledNodes: boolean,
-          ) =>
-            filteredGroupKindNodes.flatMap(groupedNodes =>
-              sortNodesByGroups(groupedNodes, options, {
-                ignoreEslintDisabledNodes,
-              }),
-            )
-          let sortedNodes = sortNodesExcludingEslintDisabled(false)
-          let sortedNodesExcludingEslintDisabled =
-            sortNodesExcludingEslintDisabled(true)
+            let { getGroup, defineGroup, setCustomGroups } = useGroups(options)
 
-          pairwise(nodes, (left, right) => {
-            let leftNum = getGroupNumber(options.groups, left)
-            let rightNum = getGroupNumber(options.groups, right)
+            if (element.type === 'TSPropertySignature') {
+              if (element.key.type === 'Identifier') {
+                ;({ name } = element.key)
+              } else if (element.key.type === 'Literal') {
+                name = `${element.key.value}`
+              } else {
+                let end: number =
+                  element.typeAnnotation?.range.at(0) ??
+                  element.range.at(1)! - (element.optional ? '?'.length : 0)
 
-            let indexOfLeft = sortedNodes.indexOf(left)
-            let indexOfRight = sortedNodes.indexOf(right)
-            let indexOfRightExcludingEslintDisabled =
-              sortedNodesExcludingEslintDisabled.indexOf(right)
+                name = sourceCode.text.slice(element.range.at(0), end)
+              }
+            } else if (element.type === 'TSIndexSignature') {
+              let endIndex: number =
+                element.typeAnnotation?.range.at(0) ?? element.range.at(1)!
 
-            let messageIds: MESSAGE_ID[] = []
+              name = sourceCode.text.slice(element.range.at(0), endIndex)
+            } else {
+              let endIndex: number =
+                element.returnType?.range.at(0) ?? element.range.at(1)!
+
+              name = sourceCode.text.slice(element.range.at(0), endIndex)
+            }
+
+            setCustomGroups(options.customGroups, name)
 
             if (
-              indexOfLeft > indexOfRight ||
-              indexOfLeft >= indexOfRightExcludingEslintDisabled
+              element.type === 'TSMethodSignature' ||
+              (element.type === 'TSPropertySignature' &&
+                element.typeAnnotation?.typeAnnotation.type ===
+                  'TSFunctionType')
             ) {
-              messageIds.push(
-                leftNum !== rightNum
-                  ? 'unexpectedInterfacePropertiesGroupOrder'
-                  : 'unexpectedInterfacePropertiesOrder',
-              )
+              defineGroup('method')
             }
 
-            messageIds = [
-              ...messageIds,
-              ...getNewlinesErrors({
-                left,
-                leftNum,
-                right,
-                rightNum,
-                sourceCode,
-                missedSpacingError: 'missedSpacingBetweenInterfaceMembers',
-                extraSpacingError: 'extraSpacingBetweenInterfaceMembers',
-                options,
-              }),
-            ]
-
-            for (let messageId of messageIds) {
-              context.report({
-                messageId,
-                data: {
-                  left: left.name,
-                  leftGroup: left.group,
-                  right: right.name,
-                  rightGroup: right.group,
-                },
-                node: right.node,
-                fix: fixer => [
-                  ...makeFixes(
-                    fixer,
-                    nodes,
-                    sortedNodesExcludingEslintDisabled,
-                    sourceCode,
-                    options,
-                  ),
-                  ...makeNewlinesFixes(
-                    fixer,
-                    nodes,
-                    sortedNodesExcludingEslintDisabled,
-                    sourceCode,
-                    options,
-                  ),
-                ],
-              })
+            if (element.loc.start.line !== element.loc.end.line) {
+              defineGroup('multiline')
             }
-          })
-        }
+
+            let elementSortingNode: SortInterfacesSortingNode = {
+              size: rangeToDiff(element, sourceCode),
+              node: element,
+              group: getGroup(),
+              name,
+              isEslintDisabled: isNodeEslintDisabled(
+                element,
+                eslintDisabledLines,
+              ),
+              groupKind: isMemberOptional(element) ? 'optional' : 'required',
+              addSafetySemicolonWhenInline: true,
+            }
+
+            if (
+              (options.partitionByComment &&
+                hasPartitionComment(
+                  options.partitionByComment,
+                  getCommentsBefore(element, sourceCode),
+                )) ||
+              (options.partitionByNewLine &&
+                lastElement &&
+                getLinesBetween(sourceCode, lastElement, elementSortingNode))
+            ) {
+              accumulator.push([])
+            }
+
+            accumulator.at(-1)!.push(elementSortingNode)
+
+            return accumulator
+          },
+          [[]],
+        )
+      let groupKindOrder
+      if (options.groupKind === 'required-first') {
+        groupKindOrder = ['required', 'optional'] as const
+      } else if (options.groupKind === 'optional-first') {
+        groupKindOrder = ['optional', 'required'] as const
+      } else {
+        groupKindOrder = ['any'] as const
+      }
+      for (let nodes of formattedMembers) {
+        let filteredGroupKindNodes = groupKindOrder.map(groupKind =>
+          nodes.filter(n => groupKind === 'any' || n.groupKind === groupKind),
+        )
+        let sortNodesExcludingEslintDisabled = (
+          ignoreEslintDisabledNodes: boolean,
+        ) =>
+          filteredGroupKindNodes.flatMap(groupedNodes =>
+            sortNodesByGroups(groupedNodes, options, {
+              ignoreEslintDisabledNodes,
+            }),
+          )
+        let sortedNodes = sortNodesExcludingEslintDisabled(false)
+        let sortedNodesExcludingEslintDisabled =
+          sortNodesExcludingEslintDisabled(true)
+
+        pairwise(nodes, (left, right) => {
+          let leftNum = getGroupNumber(options.groups, left)
+          let rightNum = getGroupNumber(options.groups, right)
+
+          let indexOfLeft = sortedNodes.indexOf(left)
+          let indexOfRight = sortedNodes.indexOf(right)
+          let indexOfRightExcludingEslintDisabled =
+            sortedNodesExcludingEslintDisabled.indexOf(right)
+
+          let messageIds: MESSAGE_ID[] = []
+
+          if (
+            indexOfLeft > indexOfRight ||
+            indexOfLeft >= indexOfRightExcludingEslintDisabled
+          ) {
+            messageIds.push(
+              leftNum !== rightNum
+                ? 'unexpectedInterfacePropertiesGroupOrder'
+                : 'unexpectedInterfacePropertiesOrder',
+            )
+          }
+
+          messageIds = [
+            ...messageIds,
+            ...getNewlinesErrors({
+              left,
+              leftNum,
+              right,
+              rightNum,
+              sourceCode,
+              missedSpacingError: 'missedSpacingBetweenInterfaceMembers',
+              extraSpacingError: 'extraSpacingBetweenInterfaceMembers',
+              options,
+            }),
+          ]
+
+          for (let messageId of messageIds) {
+            context.report({
+              messageId,
+              data: {
+                left: left.name,
+                leftGroup: left.group,
+                right: right.name,
+                rightGroup: right.group,
+              },
+              node: right.node,
+              fix: fixer => [
+                ...makeFixes(
+                  fixer,
+                  nodes,
+                  sortedNodesExcludingEslintDisabled,
+                  sourceCode,
+                  options,
+                ),
+                ...makeNewlinesFixes(
+                  fixer,
+                  nodes,
+                  sortedNodesExcludingEslintDisabled,
+                  sourceCode,
+                  options,
+                ),
+              ],
+            })
+          }
+        })
       }
     },
   }),
