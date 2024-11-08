@@ -96,7 +96,7 @@ describe(ruleName, () => {
             {
               ...options,
               newlinesBetween: 'always',
-              internalPattern: ['~/**'],
+              internalPattern: ['^~/.*'],
               groups: [
                 'type',
                 ['builtin', 'external'],
@@ -167,7 +167,7 @@ describe(ruleName, () => {
             {
               ...options,
               newlinesBetween: 'always',
-              internalPattern: ['~/**'],
+              internalPattern: ['^~/.*'],
               groups: [
                 'type',
                 ['builtin', 'external'],
@@ -272,7 +272,7 @@ describe(ruleName, () => {
             {
               ...options,
               newlinesBetween: 'never',
-              internalPattern: ['~/**'],
+              internalPattern: ['^~/.*'],
               groups: [
                 'type',
                 ['builtin', 'external'],
@@ -311,7 +311,7 @@ describe(ruleName, () => {
             {
               ...options,
               newlinesBetween: 'never',
-              internalPattern: ['~/**'],
+              internalPattern: ['^~/.*'],
               groups: [
                 'type',
                 ['builtin', 'external'],
@@ -385,7 +385,7 @@ describe(ruleName, () => {
             {
               ...options,
               newlinesBetween: 'always',
-              internalPattern: ['~/**'],
+              internalPattern: ['^~/.*'],
               groups: [
                 'type',
                 ['builtin', 'external'],
@@ -422,7 +422,7 @@ describe(ruleName, () => {
             {
               ...options,
               newlinesBetween: 'always',
-              internalPattern: ['~/**'],
+              internalPattern: ['^~/.*'],
               groups: [
                 'type',
                 ['builtin', 'external'],
@@ -475,7 +475,7 @@ describe(ruleName, () => {
               {
                 ...options,
                 newlinesBetween: 'always',
-                internalPattern: ['~/**'],
+                internalPattern: ['^~/.*'],
                 groups: [
                   'type',
                   ['builtin', 'external'],
@@ -515,7 +515,7 @@ describe(ruleName, () => {
               {
                 ...options,
                 newlinesBetween: 'always',
-                internalPattern: ['~/**'],
+                internalPattern: ['^~/.*'],
                 groups: [
                   'type',
                   ['builtin', 'external'],
@@ -564,7 +564,7 @@ describe(ruleName, () => {
               {
                 ...options,
                 newlinesBetween: 'always',
-                internalPattern: ['~/**'],
+                internalPattern: ['^~/.*'],
                 groups: [
                   'type',
                   ['builtin', 'external'],
@@ -593,7 +593,7 @@ describe(ruleName, () => {
               {
                 ...options,
                 newlinesBetween: 'always',
-                internalPattern: ['~/**'],
+                internalPattern: ['^~/.*'],
                 groups: [
                   'type',
                   ['builtin', 'external'],
@@ -640,7 +640,7 @@ describe(ruleName, () => {
             {
               ...options,
               newlinesBetween: 'always',
-              internalPattern: ['~/**'],
+              internalPattern: ['^~/.*'],
               groups: [
                 'type',
                 ['builtin', 'external'],
@@ -670,7 +670,7 @@ describe(ruleName, () => {
             {
               ...options,
               newlinesBetween: 'always',
-              internalPattern: ['~/**'],
+              internalPattern: ['^~/.*'],
               groups: [
                 'type',
                 ['builtin', 'external'],
@@ -704,7 +704,7 @@ describe(ruleName, () => {
               {
                 ...options,
                 newlinesBetween: 'always',
-                internalPattern: ['~/**'],
+                internalPattern: ['^~/.*'],
                 groups: [
                   'type',
                   ['builtin', 'external'],
@@ -740,7 +740,7 @@ describe(ruleName, () => {
               {
                 ...options,
                 newlinesBetween: 'always',
-                internalPattern: ['~/**'],
+                internalPattern: ['^~/.*'],
                 groups: [
                   'type',
                   ['builtin', 'external'],
@@ -775,7 +775,7 @@ describe(ruleName, () => {
               {
                 ...options,
                 newlinesBetween: 'always',
-                internalPattern: ['~/**'],
+                internalPattern: ['^~/.*'],
                 groups: [
                   'type',
                   ['builtin', 'external'],
@@ -812,7 +812,7 @@ describe(ruleName, () => {
               {
                 ...options,
                 newlinesBetween: 'always',
-                internalPattern: ['~/**'],
+                internalPattern: ['^~/.*'],
                 groups: [
                   'type',
                   ['builtin', 'external'],
@@ -847,7 +847,7 @@ describe(ruleName, () => {
               {
                 ...options,
                 newlinesBetween: 'always',
-                internalPattern: ['~/**'],
+                internalPattern: ['^~/.*'],
                 groups: ['builtin-type', 'type'],
               },
             ],
@@ -877,7 +877,7 @@ describe(ruleName, () => {
               {
                 ...options,
                 newlinesBetween: 'always',
-                internalPattern: ['~/**'],
+                internalPattern: ['^~/.*'],
                 groups: [
                   'type',
                   ['builtin', 'external'],
@@ -1000,11 +1000,11 @@ describe(ruleName, () => {
                 ...options,
                 customGroups: {
                   type: {
-                    primary: ['t', '@a/**'],
+                    primary: ['t', '@a/.+'],
                   },
                   value: {
-                    primary: ['t', '@a/**'],
-                    secondary: '@b/**',
+                    primary: ['t', '@a/.+'],
+                    secondary: '@b/.+',
                   },
                 },
                 groups: [
@@ -1119,7 +1119,7 @@ describe(ruleName, () => {
               {
                 ...options,
                 newlinesBetween: 'always',
-                internalPattern: ['#**'],
+                internalPattern: ['#.+'],
                 groups: [
                   'type',
                   ['builtin', 'external'],
@@ -1163,7 +1163,7 @@ describe(ruleName, () => {
               {
                 ...options,
                 newlinesBetween: 'always',
-                internalPattern: ['#**'],
+                internalPattern: ['#.+'],
                 groups: [
                   'type',
                   ['builtin', 'external'],
@@ -1307,7 +1307,7 @@ describe(ruleName, () => {
               {
                 ...options,
                 newlinesBetween: 'always',
-                internalPattern: ['~/**'],
+                internalPattern: ['^~/.*'],
                 groups: [
                   'type',
                   ['builtin', 'external'],
@@ -1361,7 +1361,7 @@ describe(ruleName, () => {
               {
                 ...options,
                 newlinesBetween: 'always',
-                internalPattern: ['~/**'],
+                internalPattern: ['^~/.*'],
                 groups: [
                   'type',
                   ['builtin', 'external'],
@@ -1435,7 +1435,7 @@ describe(ruleName, () => {
               {
                 ...options,
                 newlinesBetween: 'always',
-                internalPattern: ['~/**'],
+                internalPattern: ['^~/.*'],
                 groups: ['external', 'side-effect', 'unknown'],
                 sortSideEffects: false,
               },
@@ -1451,7 +1451,7 @@ describe(ruleName, () => {
               {
                 ...options,
                 newlinesBetween: 'always',
-                internalPattern: ['~/**'],
+                internalPattern: ['^~/.*'],
                 groups: ['external', 'side-effect', 'unknown'],
                 sortSideEffects: false,
               },
@@ -1479,7 +1479,7 @@ describe(ruleName, () => {
               {
                 ...options,
                 newlinesBetween: 'always',
-                internalPattern: ['~/**'],
+                internalPattern: ['^~/.*'],
                 groups: ['external', 'side-effect', 'unknown'],
                 sortSideEffects: false,
               },
@@ -1525,7 +1525,7 @@ describe(ruleName, () => {
               {
                 ...options,
                 newlinesBetween: 'always',
-                internalPattern: ['~/**'],
+                internalPattern: ['^~/.*'],
                 groups: ['external', 'side-effect', 'unknown'],
                 sortSideEffects: true,
               },
@@ -1920,6 +1920,209 @@ describe(ruleName, () => {
         invalid: [],
       },
     )
+
+    ruleTester.run(`${ruleName}(${type}): allows to use locale`, rule, {
+      valid: [
+        {
+          code: dedent`
+              import '你好'
+              import '世界'
+              import 'a'
+              import 'A'
+              import 'b'
+              import 'B'
+            `,
+          options: [{ ...options, locales: 'zh-CN' }],
+        },
+      ],
+      invalid: [],
+    })
+
+    describe(`${ruleName}: newlinesBetween`, () => {
+      ruleTester.run(
+        `${ruleName}(${type}): removes newlines when never`,
+        rule,
+        {
+          valid: [],
+          invalid: [
+            {
+              code: dedent`
+                  import { A } from 'a'
+
+
+                 import y from '~/y'
+                import z from '~/z'
+
+                    import b from '~/b'
+                `,
+              output: dedent`
+                  import { A } from 'a'
+                 import b from '~/b'
+                import y from '~/y'
+                    import z from '~/z'
+                `,
+              options: [
+                {
+                  ...options,
+                  newlinesBetween: 'never',
+                },
+              ],
+              errors: [
+                {
+                  messageId: 'extraSpacingBetweenImports',
+                  data: {
+                    left: 'a',
+                    right: '~/y',
+                  },
+                },
+                {
+                  messageId: 'unexpectedImportsOrder',
+                  data: {
+                    left: '~/z',
+                    right: '~/b',
+                  },
+                },
+                {
+                  messageId: 'extraSpacingBetweenImports',
+                  data: {
+                    left: '~/z',
+                    right: '~/b',
+                  },
+                },
+              ],
+            },
+          ],
+        },
+      )
+
+      ruleTester.run(
+        `${ruleName}(${type}): keeps one newline when always`,
+        rule,
+        {
+          valid: [],
+          invalid: [
+            {
+              code: dedent`
+                  import c from 'c';    import a from '~/a'
+                `,
+              output: dedent`
+                  import c from 'c';    
+
+                  import a from '~/a'
+                `,
+              options: [
+                {
+                  ...options,
+                  newlinesBetween: 'always',
+                },
+              ],
+              errors: [
+                {
+                  messageId: 'missedSpacingBetweenImports',
+                  data: {
+                    left: 'c',
+                    right: '~/a',
+                  },
+                },
+              ],
+            },
+            {
+              code: dedent`
+                  import { A } from 'a'
+
+
+                 import c from '~/c'
+                import b from '~/b'
+
+                    import d from '~/d'
+                `,
+              output: dedent`
+                  import { A } from 'a'
+
+                 import b from '~/b'
+                import c from '~/c'
+                    import d from '~/d'
+                `,
+              options: [
+                {
+                  ...options,
+                  newlinesBetween: 'always',
+                },
+              ],
+              errors: [
+                {
+                  messageId: 'extraSpacingBetweenImports',
+                  data: {
+                    left: 'a',
+                    right: '~/c',
+                  },
+                },
+                {
+                  messageId: 'unexpectedImportsOrder',
+                  data: {
+                    left: '~/c',
+                    right: '~/b',
+                  },
+                },
+                {
+                  messageId: 'extraSpacingBetweenImports',
+                  data: {
+                    left: '~/b',
+                    right: '~/d',
+                  },
+                },
+              ],
+            },
+          ],
+        },
+      )
+    })
+
+    ruleTester.run(
+      `${ruleName}(${type}): sorts inline elements correctly`,
+      rule,
+      {
+        valid: [],
+        invalid: [
+          {
+            code: dedent`
+              import { b } from "b"; import { a } from "a"
+            `,
+            output: dedent`
+              import { a } from "a"; import { b } from "b";
+            `,
+            options: [options],
+            errors: [
+              {
+                messageId: 'unexpectedImportsOrder',
+                data: {
+                  left: 'b',
+                  right: 'a',
+                },
+              },
+            ],
+          },
+          {
+            code: dedent`
+              import { b } from "b"; import { a } from "a";
+            `,
+            output: dedent`
+              import { a } from "a"; import { b } from "b";
+            `,
+            options: [options],
+            errors: [
+              {
+                messageId: 'unexpectedImportsOrder',
+                data: {
+                  left: 'b',
+                  right: 'a',
+                },
+              },
+            ],
+          },
+        ],
+      },
+    )
   })
 
   describe(`${ruleName}: sorting by natural order`, () => {
@@ -1998,7 +2201,7 @@ describe(ruleName, () => {
             {
               ...options,
               newlinesBetween: 'always',
-              internalPattern: ['~/**'],
+              internalPattern: ['^~/.*'],
               groups: [
                 'type',
                 ['builtin', 'external'],
@@ -2069,7 +2272,7 @@ describe(ruleName, () => {
             {
               ...options,
               newlinesBetween: 'always',
-              internalPattern: ['~/**'],
+              internalPattern: ['^~/.*'],
               groups: [
                 'type',
                 ['builtin', 'external'],
@@ -2174,7 +2377,7 @@ describe(ruleName, () => {
             {
               ...options,
               newlinesBetween: 'never',
-              internalPattern: ['~/**'],
+              internalPattern: ['^~/.*'],
               groups: [
                 'type',
                 ['builtin', 'external'],
@@ -2213,7 +2416,7 @@ describe(ruleName, () => {
             {
               ...options,
               newlinesBetween: 'never',
-              internalPattern: ['~/**'],
+              internalPattern: ['^~/.*'],
               groups: [
                 'type',
                 ['builtin', 'external'],
@@ -2287,7 +2490,7 @@ describe(ruleName, () => {
             {
               ...options,
               newlinesBetween: 'always',
-              internalPattern: ['~/**'],
+              internalPattern: ['^~/.*'],
               groups: [
                 'type',
                 ['builtin', 'external'],
@@ -2324,7 +2527,7 @@ describe(ruleName, () => {
             {
               ...options,
               newlinesBetween: 'always',
-              internalPattern: ['~/**'],
+              internalPattern: ['^~/.*'],
               groups: [
                 'type',
                 ['builtin', 'external'],
@@ -2377,7 +2580,7 @@ describe(ruleName, () => {
               {
                 ...options,
                 newlinesBetween: 'always',
-                internalPattern: ['~/**'],
+                internalPattern: ['^~/.*'],
                 groups: [
                   'type',
                   ['builtin', 'external'],
@@ -2417,7 +2620,7 @@ describe(ruleName, () => {
               {
                 ...options,
                 newlinesBetween: 'always',
-                internalPattern: ['~/**'],
+                internalPattern: ['^~/.*'],
                 groups: [
                   'type',
                   ['builtin', 'external'],
@@ -2466,7 +2669,7 @@ describe(ruleName, () => {
               {
                 ...options,
                 newlinesBetween: 'always',
-                internalPattern: ['~/**'],
+                internalPattern: ['^~/.*'],
                 groups: [
                   'type',
                   ['builtin', 'external'],
@@ -2495,7 +2698,7 @@ describe(ruleName, () => {
               {
                 ...options,
                 newlinesBetween: 'always',
-                internalPattern: ['~/**'],
+                internalPattern: ['^~/.*'],
                 groups: [
                   'type',
                   ['builtin', 'external'],
@@ -2542,7 +2745,7 @@ describe(ruleName, () => {
             {
               ...options,
               newlinesBetween: 'always',
-              internalPattern: ['~/**'],
+              internalPattern: ['^~/.*'],
               groups: [
                 'type',
                 ['builtin', 'external'],
@@ -2572,7 +2775,7 @@ describe(ruleName, () => {
             {
               ...options,
               newlinesBetween: 'always',
-              internalPattern: ['~/**'],
+              internalPattern: ['^~/.*'],
               groups: [
                 'type',
                 ['builtin', 'external'],
@@ -2606,7 +2809,7 @@ describe(ruleName, () => {
               {
                 ...options,
                 newlinesBetween: 'always',
-                internalPattern: ['~/**'],
+                internalPattern: ['^~/.*'],
                 groups: [
                   'type',
                   ['builtin', 'external'],
@@ -2642,7 +2845,7 @@ describe(ruleName, () => {
               {
                 ...options,
                 newlinesBetween: 'always',
-                internalPattern: ['~/**'],
+                internalPattern: ['^~/.*'],
                 groups: [
                   'type',
                   ['builtin', 'external'],
@@ -2677,7 +2880,7 @@ describe(ruleName, () => {
               {
                 ...options,
                 newlinesBetween: 'always',
-                internalPattern: ['~/**'],
+                internalPattern: ['^~/.*'],
                 groups: [
                   'type',
                   ['builtin', 'external'],
@@ -2714,7 +2917,7 @@ describe(ruleName, () => {
               {
                 ...options,
                 newlinesBetween: 'always',
-                internalPattern: ['~/**'],
+                internalPattern: ['^~/.*'],
                 groups: [
                   'type',
                   ['builtin', 'external'],
@@ -2749,7 +2952,7 @@ describe(ruleName, () => {
               {
                 ...options,
                 newlinesBetween: 'always',
-                internalPattern: ['~/**'],
+                internalPattern: ['^~/.*'],
                 groups: ['builtin-type', 'type'],
               },
             ],
@@ -2779,7 +2982,7 @@ describe(ruleName, () => {
               {
                 ...options,
                 newlinesBetween: 'always',
-                internalPattern: ['~/**'],
+                internalPattern: ['^~/.*'],
                 groups: [
                   'type',
                   ['builtin', 'external'],
@@ -2902,11 +3105,11 @@ describe(ruleName, () => {
                 ...options,
                 customGroups: {
                   type: {
-                    primary: ['t', '@a/**'],
+                    primary: ['t', '@a/.+'],
                   },
                   value: {
-                    primary: ['t', '@a/**'],
-                    secondary: '@b/**',
+                    primary: ['t', '@a/.+'],
+                    secondary: '@b/.+',
                   },
                 },
                 groups: [
@@ -3021,7 +3224,7 @@ describe(ruleName, () => {
               {
                 ...options,
                 newlinesBetween: 'always',
-                internalPattern: ['#**'],
+                internalPattern: ['#.+'],
                 groups: [
                   'type',
                   ['builtin', 'external'],
@@ -3065,7 +3268,7 @@ describe(ruleName, () => {
               {
                 ...options,
                 newlinesBetween: 'always',
-                internalPattern: ['#**'],
+                internalPattern: ['#.+'],
                 groups: [
                   'type',
                   ['builtin', 'external'],
@@ -3209,7 +3412,7 @@ describe(ruleName, () => {
               {
                 ...options,
                 newlinesBetween: 'always',
-                internalPattern: ['~/**'],
+                internalPattern: ['^~/.*'],
                 groups: [
                   'type',
                   ['builtin', 'external'],
@@ -3263,7 +3466,7 @@ describe(ruleName, () => {
               {
                 ...options,
                 newlinesBetween: 'always',
-                internalPattern: ['~/**'],
+                internalPattern: ['^~/.*'],
                 groups: [
                   'type',
                   ['builtin', 'external'],
@@ -3337,7 +3540,7 @@ describe(ruleName, () => {
               {
                 ...options,
                 newlinesBetween: 'always',
-                internalPattern: ['~/**'],
+                internalPattern: ['^~/.*'],
                 groups: ['external', 'side-effect', 'unknown'],
                 sortSideEffects: false,
               },
@@ -3353,7 +3556,7 @@ describe(ruleName, () => {
               {
                 ...options,
                 newlinesBetween: 'always',
-                internalPattern: ['~/**'],
+                internalPattern: ['^~/.*'],
                 groups: ['external', 'side-effect', 'unknown'],
                 sortSideEffects: false,
               },
@@ -3381,7 +3584,7 @@ describe(ruleName, () => {
               {
                 ...options,
                 newlinesBetween: 'always',
-                internalPattern: ['~/**'],
+                internalPattern: ['^~/.*'],
                 groups: ['external', 'side-effect', 'unknown'],
                 sortSideEffects: false,
               },
@@ -3427,7 +3630,7 @@ describe(ruleName, () => {
               {
                 ...options,
                 newlinesBetween: 'always',
-                internalPattern: ['~/**'],
+                internalPattern: ['^~/.*'],
                 groups: ['external', 'side-effect', 'unknown'],
                 sortSideEffects: true,
               },
@@ -3529,7 +3732,7 @@ describe(ruleName, () => {
             {
               ...options,
               newlinesBetween: 'always',
-              internalPattern: ['~/**'],
+              internalPattern: ['^~/.*'],
               groups: [
                 'type',
                 ['builtin', 'external'],
@@ -3600,7 +3803,7 @@ describe(ruleName, () => {
             {
               ...options,
               newlinesBetween: 'always',
-              internalPattern: ['~/**'],
+              internalPattern: ['^~/.*'],
               groups: [
                 'type',
                 ['builtin', 'external'],
@@ -3726,7 +3929,7 @@ describe(ruleName, () => {
             {
               ...options,
               newlinesBetween: 'never',
-              internalPattern: ['~/**'],
+              internalPattern: ['^~/.*'],
               groups: [
                 'type',
                 ['builtin', 'external'],
@@ -3765,7 +3968,7 @@ describe(ruleName, () => {
             {
               ...options,
               newlinesBetween: 'never',
-              internalPattern: ['~/**'],
+              internalPattern: ['^~/.*'],
               groups: [
                 'type',
                 ['builtin', 'external'],
@@ -3839,7 +4042,7 @@ describe(ruleName, () => {
             {
               ...options,
               newlinesBetween: 'always',
-              internalPattern: ['~/**'],
+              internalPattern: ['^~/.*'],
               groups: [
                 'type',
                 ['builtin', 'external'],
@@ -3876,7 +4079,7 @@ describe(ruleName, () => {
             {
               ...options,
               newlinesBetween: 'always',
-              internalPattern: ['~/**'],
+              internalPattern: ['^~/.*'],
               groups: [
                 'type',
                 ['builtin', 'external'],
@@ -3929,7 +4132,7 @@ describe(ruleName, () => {
               {
                 ...options,
                 newlinesBetween: 'always',
-                internalPattern: ['~/**'],
+                internalPattern: ['^~/.*'],
                 groups: [
                   'type',
                   ['builtin', 'external'],
@@ -3969,7 +4172,7 @@ describe(ruleName, () => {
               {
                 ...options,
                 newlinesBetween: 'always',
-                internalPattern: ['~/**'],
+                internalPattern: ['^~/.*'],
                 groups: [
                   'type',
                   ['builtin', 'external'],
@@ -4018,7 +4221,7 @@ describe(ruleName, () => {
               {
                 ...options,
                 newlinesBetween: 'always',
-                internalPattern: ['~/**'],
+                internalPattern: ['^~/.*'],
                 groups: [
                   'type',
                   ['builtin', 'external'],
@@ -4047,7 +4250,7 @@ describe(ruleName, () => {
               {
                 ...options,
                 newlinesBetween: 'always',
-                internalPattern: ['~/**'],
+                internalPattern: ['^~/.*'],
                 groups: [
                   'type',
                   ['builtin', 'external'],
@@ -4094,7 +4297,7 @@ describe(ruleName, () => {
             {
               ...options,
               newlinesBetween: 'always',
-              internalPattern: ['~/**'],
+              internalPattern: ['^~/.*'],
               groups: [
                 'type',
                 ['builtin', 'external'],
@@ -4128,7 +4331,7 @@ describe(ruleName, () => {
               {
                 ...options,
                 newlinesBetween: 'always',
-                internalPattern: ['~/**'],
+                internalPattern: ['^~/.*'],
                 groups: [
                   'type',
                   ['builtin', 'external'],
@@ -4164,7 +4367,7 @@ describe(ruleName, () => {
               {
                 ...options,
                 newlinesBetween: 'always',
-                internalPattern: ['~/**'],
+                internalPattern: ['^~/.*'],
                 groups: [
                   'type',
                   ['builtin', 'external'],
@@ -4199,7 +4402,7 @@ describe(ruleName, () => {
               {
                 ...options,
                 newlinesBetween: 'always',
-                internalPattern: ['~/**'],
+                internalPattern: ['^~/.*'],
                 groups: [
                   'type',
                   ['builtin', 'external'],
@@ -4236,7 +4439,7 @@ describe(ruleName, () => {
               {
                 ...options,
                 newlinesBetween: 'always',
-                internalPattern: ['~/**'],
+                internalPattern: ['^~/.*'],
                 groups: [
                   'type',
                   ['builtin', 'external'],
@@ -4271,7 +4474,7 @@ describe(ruleName, () => {
               {
                 ...options,
                 newlinesBetween: 'always',
-                internalPattern: ['~/**'],
+                internalPattern: ['^~/.*'],
                 groups: ['builtin-type', 'type'],
               },
             ],
@@ -4301,7 +4504,7 @@ describe(ruleName, () => {
               {
                 ...options,
                 newlinesBetween: 'always',
-                internalPattern: ['~/**'],
+                internalPattern: ['^~/.*'],
                 groups: [
                   'type',
                   ['builtin', 'external'],
@@ -4424,11 +4627,11 @@ describe(ruleName, () => {
                 ...options,
                 customGroups: {
                   type: {
-                    primary: ['t', '@a/**'],
+                    primary: ['t', '@a/.+'],
                   },
                   value: {
-                    primary: ['t', '@a/**'],
-                    secondary: '@b/**',
+                    primary: ['t', '@a/.+'],
+                    secondary: '@b/.+',
                   },
                 },
                 groups: [
@@ -4536,7 +4739,7 @@ describe(ruleName, () => {
               {
                 ...options,
                 newlinesBetween: 'always',
-                internalPattern: ['#**'],
+                internalPattern: ['#.+'],
                 groups: [
                   'type',
                   ['builtin', 'external'],
@@ -4580,7 +4783,7 @@ describe(ruleName, () => {
               {
                 ...options,
                 newlinesBetween: 'always',
-                internalPattern: ['#**'],
+                internalPattern: ['#.+'],
                 groups: [
                   'type',
                   ['builtin', 'external'],
@@ -4806,7 +5009,7 @@ describe(ruleName, () => {
               {
                 ...options,
                 newlinesBetween: 'always',
-                internalPattern: ['~/**'],
+                internalPattern: ['^~/.*'],
                 groups: [
                   'type',
                   ['builtin', 'external'],
@@ -4860,7 +5063,7 @@ describe(ruleName, () => {
               {
                 ...options,
                 newlinesBetween: 'always',
-                internalPattern: ['~/**'],
+                internalPattern: ['^~/.*'],
                 groups: [
                   'type',
                   ['builtin', 'external'],
@@ -4941,7 +5144,7 @@ describe(ruleName, () => {
               {
                 ...options,
                 newlinesBetween: 'always',
-                internalPattern: ['~/**'],
+                internalPattern: ['^~/.*'],
                 groups: ['external', 'side-effect', 'unknown'],
                 sortSideEffects: false,
               },
@@ -4957,7 +5160,7 @@ describe(ruleName, () => {
               {
                 ...options,
                 newlinesBetween: 'always',
-                internalPattern: ['~/**'],
+                internalPattern: ['^~/.*'],
                 groups: ['external', 'side-effect', 'unknown'],
                 sortSideEffects: false,
               },
@@ -4985,7 +5188,7 @@ describe(ruleName, () => {
               {
                 ...options,
                 newlinesBetween: 'always',
-                internalPattern: ['~/**'],
+                internalPattern: ['^~/.*'],
                 groups: ['external', 'side-effect', 'unknown'],
                 sortSideEffects: false,
               },
@@ -5031,7 +5234,7 @@ describe(ruleName, () => {
               {
                 ...options,
                 newlinesBetween: 'always',
-                internalPattern: ['~/**'],
+                internalPattern: ['^~/.*'],
                 groups: ['external', 'side-effect', 'unknown'],
                 sortSideEffects: true,
               },
@@ -5336,21 +5539,21 @@ describe(ruleName, () => {
                 ],
                 customGroups: {
                   value: {
-                    stores: ['~/stores/**'],
-                    services: ['~/services/**'],
-                    validators: ['~/validators/**'],
-                    utils: ['~/utils/**'],
-                    logics: ['~/logics/**'],
-                    composable: ['~/composable/**'],
-                    ui: ['~/ui/**'],
-                    components: ['~/components/**'],
-                    pages: ['~/pages/**'],
-                    widgets: ['~/widgets/**'],
-                    assets: ['~/assets/**'],
+                    stores: ['^~/stores/.+'],
+                    services: ['^~/services/.+'],
+                    validators: ['^~/validators/.+'],
+                    utils: ['^~/utils/.+'],
+                    logics: ['^~/logics/.+'],
+                    composable: ['^~/composable/.+'],
+                    ui: ['^~/ui/.+'],
+                    components: ['^~/components/.+'],
+                    pages: ['^~/pages/.+'],
+                    widgets: ['^~/widgets/.+'],
+                    assets: ['^~/assets/.+'],
                   },
                 },
                 newlinesBetween: 'always',
-                internalPattern: ['~/**'],
+                internalPattern: ['^~/.*'],
               },
             ],
           },
@@ -5423,21 +5626,21 @@ describe(ruleName, () => {
                 ],
                 customGroups: {
                   value: {
-                    stores: ['~/stores/**'],
-                    services: ['~/services/**'],
-                    validators: ['~/validators/**'],
-                    utils: ['~/utils/**'],
-                    logics: ['~/logics/**'],
-                    composable: ['~/composable/**'],
-                    ui: ['~/ui/**'],
-                    components: ['~/components/**'],
-                    pages: ['~/pages/**'],
-                    widgets: ['~/widgets/**'],
-                    assets: ['~/assets/**'],
+                    stores: ['~/stores/.+'],
+                    services: ['~/services/.+'],
+                    validators: ['~/validators/.+'],
+                    utils: ['~/utils/.+'],
+                    logics: ['~/logics/.+'],
+                    composable: ['~/composable/.+'],
+                    ui: ['~/ui/.+'],
+                    components: ['~/components/.+'],
+                    pages: ['~/pages/.+'],
+                    widgets: ['~/widgets/.+'],
+                    assets: ['~/assets/.+'],
                   },
                 },
                 newlinesBetween: 'always',
-                internalPattern: ['~/**'],
+                internalPattern: ['^~/.*'],
               },
             ],
             errors: [
@@ -5593,115 +5796,6 @@ describe(ruleName, () => {
           ),
         ).not.toThrow(expectedThrownError)
       })
-    })
-
-    describe(`${ruleName}: allows to use regex matcher`, () => {
-      let options = {
-        type: 'alphabetical',
-        ignoreCase: true,
-        order: 'asc',
-        matcher: 'regex',
-      } as const
-
-      ruleTester.run(
-        `${ruleName}: uses default internalPattern for regex`,
-        rule,
-        {
-          valid: [
-            {
-              code: dedent`
-                import type { T } from 't'
-
-                import { a1, a2, a3 } from 'a'
-
-                import { b1, b2 } from '~/b'
-                import { c1, c2, c3 } from '~/c'
-
-                import { e1, e2, e3 } from '../../e'
-              `,
-              options: [
-                {
-                  ...options,
-                  groups: ['type', 'external', 'internal', 'parent'],
-                },
-              ],
-            },
-          ],
-          invalid: [],
-        },
-      )
-
-      ruleTester.run(
-        `${ruleName}: allows to use regex matcher for custom groups`,
-        rule,
-        {
-          valid: [
-            {
-              code: dedent`
-                import type { T } from 't'
-
-                import { i18n } from "../../../../../Basics/Language";
-                import { i18n } from "../../../Basics/Language";
-
-                import { b1, b2 } from '~/b'
-                import { c1, c2, c3 } from '~/c'
-              `,
-              options: [
-                {
-                  ...options,
-                  customGroups: {
-                    value: {
-                      primary: '^(?:\\.\\.\\/)+Basics\\/Language$',
-                    },
-                  },
-                  groups: ['type', 'primary', 'unknown'],
-                },
-              ],
-            },
-          ],
-          invalid: [],
-        },
-      )
-
-      ruleTester.run(
-        `${ruleName}: allows hash symbol in internal pattern`,
-        rule,
-        {
-          valid: [
-            {
-              code: dedent`
-              import type { T } from 'a'
-
-              import { a } from 'a'
-
-              import type { S } from '#b'
-
-              import { b1, b2 } from '#b'
-              import c from '#c'
-
-              import { d } from '../d'
-            `,
-              options: [
-                {
-                  ...options,
-                  internalPattern: ['^#.*$'],
-                  groups: [
-                    'type',
-                    ['builtin', 'external'],
-                    'internal-type',
-                    'internal',
-                    ['parent-type', 'sibling-type', 'index-type'],
-                    ['parent', 'sibling', 'index'],
-                    'object',
-                    'unknown',
-                  ],
-                },
-              ],
-            },
-          ],
-          invalid: [],
-        },
-      )
     })
   })
 })

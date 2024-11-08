@@ -460,7 +460,7 @@ describe(ruleName, () => {
               options: [
                 {
                   ...options,
-                  partitionByComment: 'Part**',
+                  partitionByComment: '^Part*',
                 },
               ],
               errors: [
@@ -591,7 +591,7 @@ describe(ruleName, () => {
               options: [
                 {
                   ...options,
-                  partitionByComment: 'Part: *',
+                  partitionByComment: '^Part: *',
                   groupKind: 'spreads-first',
                 },
               ],
@@ -617,7 +617,7 @@ describe(ruleName, () => {
       )
     })
 
-    ruleTester.run(`${ruleName}(${type}): allows to use regex matcher`, rule, {
+    ruleTester.run(`${ruleName}(${type}): allows to use regex`, rule, {
       valid: [
         {
           code: dedent`
@@ -632,7 +632,6 @@ describe(ruleName, () => {
           options: [
             {
               ...options,
-              matcher: 'regex',
               partitionByComment: ['^(?!.*foo).*$'],
             },
           ],
@@ -687,6 +686,79 @@ describe(ruleName, () => {
           },
         ],
         invalid: [],
+      },
+    )
+
+    ruleTester.run(`${ruleName}(${type}): allows to use locale`, rule, {
+      valid: [
+        {
+          code: dedent`
+            [
+              '你好',
+              '世界',
+              'a',
+              'A',
+              'b',
+              'B'
+            ].includes(value)
+          `,
+          options: [{ ...options, locales: 'zh-CN' }],
+        },
+      ],
+      invalid: [],
+    })
+
+    ruleTester.run(
+      `${ruleName}(${type}): sorts inline elements correctly`,
+      rule,
+      {
+        valid: [],
+        invalid: [
+          {
+            code: dedent`
+              [
+                b, a
+              ].includes(value)
+            `,
+            output: dedent`
+              [
+                a, b
+              ].includes(value)
+            `,
+            options: [options],
+            errors: [
+              {
+                messageId: 'unexpectedArrayIncludesOrder',
+                data: {
+                  left: 'b',
+                  right: 'a',
+                },
+              },
+            ],
+          },
+          {
+            code: dedent`
+              [
+                b, a,
+              ].includes(value)
+            `,
+            output: dedent`
+              [
+                a, b,
+              ].includes(value)
+            `,
+            options: [options],
+            errors: [
+              {
+                messageId: 'unexpectedArrayIncludesOrder',
+                data: {
+                  left: 'b',
+                  right: 'a',
+                },
+              },
+            ],
+          },
+        ],
       },
     )
   })

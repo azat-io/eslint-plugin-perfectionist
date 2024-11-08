@@ -248,7 +248,7 @@ describe(ruleName, () => {
               options: [
                 {
                   ...options,
-                  partitionByComment: 'Part**',
+                  partitionByComment: '^Part*',
                 },
               ],
               errors: [
@@ -347,7 +347,7 @@ describe(ruleName, () => {
     })
 
     ruleTester.run(
-      `${ruleName}(${type}): allows to use regex matcher for partition comments`,
+      `${ruleName}(${type}): allows to use regex for partition comments`,
       rule,
       {
         valid: [
@@ -362,7 +362,6 @@ describe(ruleName, () => {
             options: [
               {
                 ...options,
-                matcher: 'regex',
                 partitionByComment: ['^(?!.*foo).*$'],
               },
             ],
@@ -514,6 +513,69 @@ describe(ruleName, () => {
           },
         ],
         invalid: [],
+      },
+    )
+
+    ruleTester.run(`${ruleName}(${type}): allows to use locale`, rule, {
+      valid: [
+        {
+          code: dedent`
+              export { 你好 } from '你好'
+              export { 世界 } from '世界'
+              export { a } from 'a'
+              export { A } from 'A'
+              export { b } from 'b'
+              export { B } from 'B'
+            `,
+          options: [{ ...options, locales: 'zh-CN' }],
+        },
+      ],
+      invalid: [],
+    })
+
+    ruleTester.run(
+      `${ruleName}(${type}): sorts inline elements correctly`,
+      rule,
+      {
+        valid: [],
+        invalid: [
+          {
+            code: dedent`
+              export { b } from "b"; export { a } from "a"
+            `,
+            output: dedent`
+              export { a } from "a"; export { b } from "b";
+            `,
+            options: [options],
+            errors: [
+              {
+                messageId: 'unexpectedExportsOrder',
+                data: {
+                  left: 'b',
+                  right: 'a',
+                },
+              },
+            ],
+          },
+          {
+            code: dedent`
+              export { b } from "b"; export { a } from "a";
+            `,
+            output: dedent`
+              export { a } from "a"; export { b } from "b";
+            `,
+            options: [options],
+            errors: [
+              {
+                messageId: 'unexpectedExportsOrder',
+                data: {
+                  left: 'b',
+                  right: 'a',
+                },
+              },
+            ],
+          },
+        ],
       },
     )
   })

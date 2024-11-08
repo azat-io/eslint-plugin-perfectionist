@@ -17,14 +17,7 @@ export let shiki = computed([shikiHighlighter], highlighter => ({
 onMount(shikiHighlighter, () => {
   task(async () => {
     let highlighter = await createHighlighter({
-      langs: [
-        import('shiki/langs/svelte.mjs'),
-        import('shiki/langs/astro.mjs'),
-        import('shiki/langs/bash.mjs'),
-        import('shiki/langs/vue.mjs'),
-        import('shiki/langs/tsx.mjs'),
-        import('shiki/langs/js.mjs'),
-      ],
+      langs: [import('shiki/langs/bash.mjs'), import('shiki/langs/tsx.mjs')],
       themes: [colorTheme],
       engine: jsEngine,
     })

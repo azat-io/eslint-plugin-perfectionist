@@ -2,6 +2,8 @@ import { RuleTester } from '@typescript-eslint/rule-tester'
 import { afterAll, describe, it } from 'vitest'
 import { dedent } from 'ts-dedent'
 
+import type { Options } from '../rules/sort-interfaces'
+
 import rule from '../rules/sort-interfaces'
 
 let ruleName = 'sort-interfaces'
@@ -19,7 +21,7 @@ describe(ruleName, () => {
   describe(`${ruleName}: sorting by alphabetical order`, () => {
     let type = 'alphabetical-order'
 
-    let options = {
+    let options: Options<string[]>[0] = {
       type: 'alphabetical',
       ignoreCase: true,
       order: 'asc',
@@ -27,6 +29,14 @@ describe(ruleName, () => {
 
     ruleTester.run(`${ruleName}(${type}): sorts interface properties`, rule, {
       valid: [
+        {
+          code: dedent`
+            interface Interface {
+              a: string
+            }
+          `,
+          options: [options],
+        },
         {
           code: dedent`
             interface Interface {
@@ -579,7 +589,7 @@ describe(ruleName, () => {
     )
 
     ruleTester.run(
-      `${ruleName}(${type}): allows to use regex matcher for custom groups`,
+      `${ruleName}(${type}): allows to use regex for custom groups`,
       rule,
       {
         valid: [
@@ -595,7 +605,6 @@ describe(ruleName, () => {
             options: [
               {
                 ...options,
-                matcher: 'regex',
                 groups: ['unknown', 'elementsWithoutFoo'],
                 customGroups: {
                   elementsWithoutFoo: '^(?!.*Foo).*$',
@@ -846,7 +855,7 @@ describe(ruleName, () => {
             options: [
               {
                 ...options,
-                partitionByComment: 'Part**',
+                partitionByComment: '^Part*',
               },
             ],
             errors: [
@@ -950,7 +959,7 @@ describe(ruleName, () => {
     )
 
     ruleTester.run(
-      `${ruleName}(${type}): allows to use regex matcher for partition comments`,
+      `${ruleName}(${type}): allows to use regex for partition comments`,
       rule,
       {
         valid: [
@@ -967,7 +976,6 @@ describe(ruleName, () => {
             options: [
               {
                 ...options,
-                matcher: 'regex',
                 partitionByComment: ['^(?!.*foo).*$'],
               },
             ],
@@ -1026,6 +1034,25 @@ describe(ruleName, () => {
       },
     )
 
+    ruleTester.run(`${ruleName}(${type}): allows to use locale`, rule, {
+      valid: [
+        {
+          code: dedent`
+              interface MyInterface {
+                你好: string
+                世界: string
+                a: string
+                A: string
+                b: string
+                B: string
+              }
+            `,
+          options: [{ ...options, locales: 'zh-CN' }],
+        },
+      ],
+      invalid: [],
+    })
+
     ruleTester.run(`${ruleName}(${type}): allows to use method group`, rule, {
       valid: [
         {
@@ -1047,6 +1074,211 @@ describe(ruleName, () => {
       ],
       invalid: [],
     })
+
+    describe(`${ruleName}: newlinesBetween`, () => {
+      ruleTester.run(
+        `${ruleName}(${type}): removes newlines when never`,
+        rule,
+        {
+          valid: [],
+          invalid: [
+            {
+              code: dedent`
+                interface Interface {
+                  a: () => null,
+
+
+                 y: "y",
+                z: "z",
+
+                    b: "b",
+                }
+              `,
+              output: dedent`
+                interface Interface {
+                  a: () => null,
+                 b: "b",
+                y: "y",
+                    z: "z",
+                }
+              `,
+              options: [
+                {
+                  ...options,
+                  newlinesBetween: 'never',
+                  groups: ['method', 'unknown'],
+                },
+              ],
+              errors: [
+                {
+                  messageId: 'extraSpacingBetweenInterfaceMembers',
+                  data: {
+                    left: 'a',
+                    right: 'y',
+                  },
+                },
+                {
+                  messageId: 'unexpectedInterfacePropertiesOrder',
+                  data: {
+                    left: 'z',
+                    right: 'b',
+                  },
+                },
+                {
+                  messageId: 'extraSpacingBetweenInterfaceMembers',
+                  data: {
+                    left: 'z',
+                    right: 'b',
+                  },
+                },
+              ],
+            },
+          ],
+        },
+      )
+
+      ruleTester.run(
+        `${ruleName}(${type}): keeps one newline when always`,
+        rule,
+        {
+          valid: [],
+          invalid: [
+            {
+              code: dedent`
+                interface Interface {
+                  a: () => null,
+
+
+                 z: "z",
+                y: "y",
+                    b: {
+                      // Newline stuff
+                    },
+                }
+              `,
+              output: dedent`
+                interface Interface {
+                  a: () => null,
+
+                 y: "y",
+                z: "z",
+
+                    b: {
+                      // Newline stuff
+                    },
+                }
+                `,
+              options: [
+                {
+                  ...options,
+                  newlinesBetween: 'always',
+                  groups: ['method', 'unknown', 'multiline'],
+                },
+              ],
+              errors: [
+                {
+                  messageId: 'extraSpacingBetweenInterfaceMembers',
+                  data: {
+                    left: 'a',
+                    right: 'z',
+                  },
+                },
+                {
+                  messageId: 'unexpectedInterfacePropertiesOrder',
+                  data: {
+                    left: 'z',
+                    right: 'y',
+                  },
+                },
+                {
+                  messageId: 'missedSpacingBetweenInterfaceMembers',
+                  data: {
+                    left: 'y',
+                    right: 'b',
+                  },
+                },
+              ],
+            },
+          ],
+        },
+      )
+    })
+
+    ruleTester.run(
+      `${ruleName}(${type}): sorts inline elements correctly`,
+      rule,
+      {
+        valid: [],
+        invalid: [
+          {
+            code: dedent`
+              interface Interface {
+                b: string, a: string
+              }
+            `,
+            output: dedent`
+              interface Interface {
+                a: string; b: string,
+              }
+            `,
+            options: [options],
+            errors: [
+              {
+                messageId: 'unexpectedInterfacePropertiesOrder',
+                data: {
+                  left: 'b',
+                  right: 'a',
+                },
+              },
+            ],
+          },
+          {
+            code: dedent`
+              interface Interface {
+                b: string, a: string;
+              }
+            `,
+            output: dedent`
+              interface Interface {
+                a: string; b: string,
+              }
+            `,
+            options: [options],
+            errors: [
+              {
+                messageId: 'unexpectedInterfacePropertiesOrder',
+                data: {
+                  left: 'b',
+                  right: 'a',
+                },
+              },
+            ],
+          },
+          {
+            code: dedent`
+              interface Interface {
+                b: string, a: string,
+              }
+            `,
+            output: dedent`
+              interface Interface {
+                a: string, b: string,
+              }
+            `,
+            options: [options],
+            errors: [
+              {
+                messageId: 'unexpectedInterfacePropertiesOrder',
+                data: {
+                  left: 'b',
+                  right: 'a',
+                },
+              },
+            ],
+          },
+        ],
+      },
+    )
   })
 
   describe(`${ruleName}: sorting by natural order`, () => {
@@ -1702,7 +1934,7 @@ describe(ruleName, () => {
             options: [
               {
                 ...options,
-                partitionByComment: 'Part**',
+                partitionByComment: '^Part*',
               },
             ],
             errors: [
@@ -2554,7 +2786,7 @@ describe(ruleName, () => {
               {
                 ...options,
                 customGroups: {
-                  callback: 'on*',
+                  callback: '^on.+',
                 },
                 groups: ['unknown', 'callback'],
                 groupKind: 'required-first',
@@ -2695,7 +2927,7 @@ describe(ruleName, () => {
             options: [
               {
                 ...options,
-                partitionByComment: 'Part**',
+                partitionByComment: '^Part*',
               },
             ],
             errors: [

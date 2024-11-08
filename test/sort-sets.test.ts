@@ -460,7 +460,7 @@ describe(ruleName, () => {
               options: [
                 {
                   ...options,
-                  partitionByComment: 'Part**',
+                  partitionByComment: '^Part*',
                 },
               ],
               errors: [
@@ -563,13 +563,10 @@ describe(ruleName, () => {
         },
       )
 
-      ruleTester.run(
-        `${ruleName}(${type}): allows to use regex matcher`,
-        rule,
-        {
-          valid: [
-            {
-              code: dedent`
+      ruleTester.run(`${ruleName}(${type}): allows to use regex`, rule, {
+        valid: [
+          {
+            code: dedent`
               new Set([
                 'e',
                 'f',
@@ -578,18 +575,16 @@ describe(ruleName, () => {
                 'b',
               ])
             `,
-              options: [
-                {
-                  ...options,
-                  matcher: 'regex',
-                  partitionByComment: ['^(?!.*foo).*$'],
-                },
-              ],
-            },
-          ],
-          invalid: [],
-        },
-      )
+            options: [
+              {
+                ...options,
+                partitionByComment: ['^(?!.*foo).*$'],
+              },
+            ],
+          },
+        ],
+        invalid: [],
+      })
     })
 
     ruleTester.run(
@@ -638,6 +633,79 @@ describe(ruleName, () => {
           },
         ],
         invalid: [],
+      },
+    )
+
+    ruleTester.run(`${ruleName}(${type}): allows to use locale`, rule, {
+      valid: [
+        {
+          code: dedent`
+              new Set([
+                '你好',
+                '世界',
+                'a',
+                'A',
+                'b',
+                'B',
+              ])
+            `,
+          options: [{ ...options, locales: 'zh-CN' }],
+        },
+      ],
+      invalid: [],
+    })
+
+    ruleTester.run(
+      `${ruleName}(${type}): sorts inline elements correctly`,
+      rule,
+      {
+        valid: [],
+        invalid: [
+          {
+            code: dedent`
+              new Set([
+                b, a
+              ])
+            `,
+            output: dedent`
+              new Set([
+                a, b
+              ])
+            `,
+            options: [options],
+            errors: [
+              {
+                messageId: 'unexpectedSetsOrder',
+                data: {
+                  left: 'b',
+                  right: 'a',
+                },
+              },
+            ],
+          },
+          {
+            code: dedent`
+              new Set([
+                b, a,
+              ])
+            `,
+            output: dedent`
+              new Set([
+                a, b,
+              ])
+            `,
+            options: [options],
+            errors: [
+              {
+                messageId: 'unexpectedSetsOrder',
+                data: {
+                  left: 'b',
+                  right: 'a',
+                },
+              },
+            ],
+          },
+        ],
       },
     )
   })

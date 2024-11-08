@@ -28,6 +28,10 @@ describe(ruleName, () => {
     ruleTester.run(`${ruleName}(${type}): sorts named exports`, rule, {
       valid: [
         {
+          code: 'export { a }',
+          options: [options],
+        },
+        {
           code: 'export { aaa, bb, c }',
           options: [options],
         },
@@ -251,7 +255,7 @@ describe(ruleName, () => {
               options: [
                 {
                   ...options,
-                  partitionByComment: 'Part**',
+                  partitionByComment: '^Part*',
                   groupKind: 'types-first',
                 },
               ],
@@ -356,7 +360,7 @@ describe(ruleName, () => {
       )
 
       ruleTester.run(
-        `${ruleName}(${type}): allows to use regex matcher for partition comments`,
+        `${ruleName}(${type}): allows to use regex for partition comments`,
         rule,
         {
           valid: [
@@ -373,7 +377,6 @@ describe(ruleName, () => {
               options: [
                 {
                   ...options,
-                  matcher: 'regex',
                   partitionByComment: ['^(?!.*foo).*$'],
                 },
               ],
@@ -423,6 +426,103 @@ describe(ruleName, () => {
           },
         ],
         invalid: [],
+      },
+    )
+
+    ruleTester.run(`${ruleName}(${type}): allows to use locale`, rule, {
+      valid: [
+        {
+          code: dedent`
+              export { 你好, 世界, a, A, b, B }
+            `,
+          options: [{ ...options, locales: 'zh-CN' }],
+        },
+      ],
+      invalid: [],
+    })
+
+    ruleTester.run(`${ruleName}(${type}): works with arbitrary names`, rule, {
+      valid: [
+        {
+          code: dedent`
+            export { a as "A", b as "B" };
+          `,
+          options: [options],
+        },
+      ],
+      invalid: [
+        {
+          code: dedent`
+            export { b as "B", a as "A" };
+          `,
+          output: dedent`
+            export { a as "A", b as "B" };
+          `,
+          options: [options],
+          errors: [
+            {
+              messageId: 'unexpectedNamedExportsOrder',
+              data: {
+                left: 'B',
+                right: 'A',
+              },
+            },
+          ],
+        },
+      ],
+    })
+
+    ruleTester.run(
+      `${ruleName}(${type}): sorts inline elements correctly`,
+      rule,
+      {
+        valid: [],
+        invalid: [
+          {
+            code: dedent`
+              export {
+                b, a
+              }
+            `,
+            output: dedent`
+              export {
+                a, b
+              }
+            `,
+            options: [options],
+            errors: [
+              {
+                messageId: 'unexpectedNamedExportsOrder',
+                data: {
+                  left: 'b',
+                  right: 'a',
+                },
+              },
+            ],
+          },
+          {
+            code: dedent`
+              export {
+                b, a,
+              }
+            `,
+            output: dedent`
+              export {
+                a, b,
+              }
+            `,
+            options: [options],
+            errors: [
+              {
+                messageId: 'unexpectedNamedExportsOrder',
+                data: {
+                  left: 'b',
+                  right: 'a',
+                },
+              },
+            ],
+          },
+        ],
       },
     )
   })

@@ -1,9 +1,22 @@
 import type { SortingNode } from '../typings'
 
+import {
+  partitionByCommentJsonSchema,
+  partitionByNewLineJsonSchema,
+  specialCharactersJsonSchema,
+  ignoreCaseJsonSchema,
+  localesJsonSchema,
+  groupsJsonSchema,
+  orderJsonSchema,
+  typeJsonSchema,
+} from '../utils/common-json-schemas'
+import { validateNewlinesAndPartitionConfiguration } from '../utils/validate-newlines-and-partition-configuration'
 import { validateGroupsConfiguration } from '../utils/validate-groups-configuration'
 import { hasPartitionComment } from '../utils/is-partition-comment'
 import { sortNodesByGroups } from '../utils/sort-nodes-by-groups'
 import { getCommentsBefore } from '../utils/get-comments-before'
+import { makeNewlinesFixes } from '../utils/make-newlines-fixes'
+import { getNewlinesErrors } from '../utils/get-newlines-errors'
 import { createEslintRule } from '../utils/create-eslint-rule'
 import { getLinesBetween } from '../utils/get-lines-between'
 import { getGroupNumber } from '../utils/get-group-number'
@@ -16,7 +29,11 @@ import { makeFixes } from '../utils/make-fixes'
 import { complete } from '../utils/complete'
 import { pairwise } from '../utils/pairwise'
 
-type MESSAGE_ID = 'unexpectedUnionTypesGroupOrder' | 'unexpectedUnionTypesOrder'
+type MESSAGE_ID =
+  | 'missedSpacingBetweenUnionTypes'
+  | 'unexpectedUnionTypesGroupOrder'
+  | 'extraSpacingBetweenUnionTypes'
+  | 'unexpectedUnionTypesOrder'
 
 type Group =
   | 'intersection'
@@ -37,14 +54,27 @@ type Options = [
   Partial<{
     type: 'alphabetical' | 'line-length' | 'natural'
     partitionByComment: string[] | boolean | string
+    newlinesBetween: 'ignore' | 'always' | 'never'
     specialCharacters: 'remove' | 'trim' | 'keep'
-    matcher: 'minimatch' | 'regex'
+    locales: NonNullable<Intl.LocalesArgument>
     groups: (Group[] | Group)[]
     partitionByNewLine: boolean
     order: 'desc' | 'asc'
     ignoreCase: boolean
   }>,
 ]
+
+const defaultOptions: Required<Options[0]> = {
+  type: 'alphabetical',
+  ignoreCase: true,
+  specialCharacters: 'keep',
+  order: 'asc',
+  groups: [],
+  newlinesBetween: 'ignore',
+  partitionByNewLine: false,
+  partitionByComment: false,
+  locales: 'en-US',
+}
 
 export default createEslintRule<Options, MESSAGE_ID>({
   name: 'sort-union-types',
@@ -58,72 +88,23 @@ export default createEslintRule<Options, MESSAGE_ID>({
       {
         type: 'object',
         properties: {
-          type: {
-            description: 'Specifies the sorting method.',
-            type: 'string',
-            enum: ['alphabetical', 'natural', 'line-length'],
-          },
-          order: {
-            description:
-              'Determines whether the sorted items should be in ascending or descending order.',
-            type: 'string',
-            enum: ['asc', 'desc'],
-          },
-          matcher: {
-            description: 'Specifies the string matcher.',
-            type: 'string',
-            enum: ['minimatch', 'regex'],
-          },
-          ignoreCase: {
-            description:
-              'Controls whether sorting should be case-sensitive or not.',
-            type: 'boolean',
-          },
-          specialCharacters: {
-            description:
-              'Controls how special characters should be handled before sorting.',
-            type: 'string',
-            enum: ['remove', 'trim', 'keep'],
-          },
-          groups: {
-            description: 'Specifies the order of the groups.',
-            type: 'array',
-            items: {
-              oneOf: [
-                {
-                  type: 'string',
-                },
-                {
-                  type: 'array',
-                  items: {
-                    type: 'string',
-                  },
-                },
-              ],
-            },
-          },
+          type: typeJsonSchema,
+          order: orderJsonSchema,
+          locales: localesJsonSchema,
+          ignoreCase: ignoreCaseJsonSchema,
+          specialCharacters: specialCharactersJsonSchema,
+          groups: groupsJsonSchema,
           partitionByComment: {
+            ...partitionByCommentJsonSchema,
             description:
               'Allows you to use comments to separate the union types into logical groups.',
-            anyOf: [
-              {
-                type: 'array',
-                items: {
-                  type: 'string',
-                },
-              },
-              {
-                type: 'boolean',
-              },
-              {
-                type: 'string',
-              },
-            ],
           },
-          partitionByNewLine: {
+          partitionByNewLine: partitionByNewLineJsonSchema,
+          newlinesBetween: {
             description:
-              'Allows to use spaces to separate the nodes into logical groups.',
-            type: 'boolean',
+              'Specifies how new lines should be handled between object types groups.',
+            enum: ['ignore', 'always', 'never'],
+            type: 'string',
           },
         },
         additionalProperties: false,
@@ -134,34 +115,18 @@ export default createEslintRule<Options, MESSAGE_ID>({
         'Expected "{{right}}" ({{rightGroup}}) to come before "{{left}}" ({{leftGroup}}).',
       unexpectedUnionTypesOrder:
         'Expected "{{right}}" to come before "{{left}}".',
+      missedSpacingBetweenUnionTypes:
+        'Missed spacing between "{{left}}" and "{{right}}" types.',
+      extraSpacingBetweenUnionTypes:
+        'Extra spacing between "{{left}}" and "{{right}}" types.',
     },
   },
-  defaultOptions: [
-    {
-      type: 'alphabetical',
-      order: 'asc',
-      ignoreCase: true,
-      specialCharacters: 'keep',
-      matcher: 'minimatch',
-      partitionByNewLine: false,
-      partitionByComment: false,
-      groups: [],
-    },
-  ],
+  defaultOptions: [defaultOptions],
   create: context => ({
     TSUnionType: node => {
       let settings = getSettings(context.settings)
 
-      let options = complete(context.options.at(0), settings, {
-        type: 'alphabetical',
-        ignoreCase: true,
-        specialCharacters: 'keep',
-        order: 'asc',
-        groups: [],
-        matcher: 'minimatch',
-        partitionByNewLine: false,
-        partitionByComment: false,
-      } as const)
+      let options = complete(context.options.at(0), settings, defaultOptions)
 
       validateGroupsConfiguration(
         options.groups,
@@ -182,6 +147,7 @@ export default createEslintRule<Options, MESSAGE_ID>({
         ],
         [],
       )
+      validateNewlinesAndPartitionConfiguration(options)
 
       let sourceCode = getSourceCode(context)
       let partitionComment = options.partitionByComment
@@ -191,6 +157,25 @@ export default createEslintRule<Options, MESSAGE_ID>({
           let { getGroup, defineGroup } = useGroups(options)
 
           switch (type.type) {
+            case 'TSTemplateLiteralType':
+            case 'TSLiteralType':
+              defineGroup('literal')
+              break
+            case 'TSIndexedAccessType':
+            case 'TSTypeReference':
+            case 'TSQualifiedName':
+            case 'TSArrayType':
+            case 'TSInferType':
+              defineGroup('named')
+              break
+            case 'TSIntersectionType':
+              defineGroup('intersection')
+              break
+            case 'TSUndefinedKeyword':
+            case 'TSNullKeyword':
+            case 'TSVoidKeyword':
+              defineGroup('nullish')
+              break
             case 'TSConditionalType':
               defineGroup('conditional')
               break
@@ -198,43 +183,28 @@ export default createEslintRule<Options, MESSAGE_ID>({
             case 'TSFunctionType':
               defineGroup('function')
               break
-            case 'TSImportType':
-              defineGroup('import')
-              break
-            case 'TSIntersectionType':
-              defineGroup('intersection')
-              break
-            case 'TSAnyKeyword':
-            case 'TSBigIntKeyword':
             case 'TSBooleanKeyword':
-            case 'TSNeverKeyword':
+            case 'TSUnknownKeyword':
+            case 'TSBigIntKeyword':
             case 'TSNumberKeyword':
             case 'TSObjectKeyword':
             case 'TSStringKeyword':
             case 'TSSymbolKeyword':
+            case 'TSNeverKeyword':
+            case 'TSAnyKeyword':
             case 'TSThisType':
-            case 'TSUnknownKeyword':
-            case 'TSIntrinsicKeyword':
               defineGroup('keyword')
               break
-            case 'TSLiteralType':
-            case 'TSTemplateLiteralType':
-              defineGroup('literal')
+            case 'TSTypeOperator':
+            case 'TSTypeQuery':
+              defineGroup('operator')
               break
-            case 'TSArrayType':
-            case 'TSIndexedAccessType':
-            case 'TSInferType':
-            case 'TSTypeReference':
-            case 'TSQualifiedName':
-              defineGroup('named')
-              break
-            case 'TSMappedType':
             case 'TSTypeLiteral':
+            case 'TSMappedType':
               defineGroup('object')
               break
-            case 'TSTypeQuery':
-            case 'TSTypeOperator':
-              defineGroup('operator')
+            case 'TSImportType':
+              defineGroup('import')
               break
             case 'TSTupleType':
               defineGroup('tuple')
@@ -242,17 +212,12 @@ export default createEslintRule<Options, MESSAGE_ID>({
             case 'TSUnionType':
               defineGroup('union')
               break
-            case 'TSNullKeyword':
-            case 'TSUndefinedKeyword':
-            case 'TSVoidKeyword':
-              defineGroup('nullish')
-              break
           }
 
           let lastSortingNode = accumulator.at(-1)?.at(-1)
           let sortingNode: SortingNode = {
-            name: sourceCode.text.slice(...type.range),
-            size: rangeToDiff(type.range),
+            name: sourceCode.getText(type),
+            size: rangeToDiff(type, sourceCode),
             group: getGroup(),
             node: type,
           }
@@ -260,8 +225,7 @@ export default createEslintRule<Options, MESSAGE_ID>({
             (partitionComment &&
               hasPartitionComment(
                 partitionComment,
-                getCommentsBefore(type, sourceCode),
-                options.matcher,
+                getCommentsBefore(type, sourceCode, '|'),
               )) ||
             (options.partitionByNewLine &&
               lastSortingNode &&
@@ -278,17 +242,41 @@ export default createEslintRule<Options, MESSAGE_ID>({
 
       for (let nodes of formattedMembers) {
         let sortedNodes = sortNodesByGroups(nodes, options)
+
         pairwise(nodes, (left, right) => {
+          let leftNum = getGroupNumber(options.groups, left)
+          let rightNum = getGroupNumber(options.groups, right)
+
           let indexOfLeft = sortedNodes.indexOf(left)
           let indexOfRight = sortedNodes.indexOf(right)
+
+          let messageIds: MESSAGE_ID[] = []
+
           if (indexOfLeft > indexOfRight) {
-            let leftNum = getGroupNumber(options.groups, left)
-            let rightNum = getGroupNumber(options.groups, right)
+            messageIds.push(
+              leftNum !== rightNum
+                ? 'unexpectedUnionTypesGroupOrder'
+                : 'unexpectedUnionTypesOrder',
+            )
+          }
+
+          messageIds = [
+            ...messageIds,
+            ...getNewlinesErrors({
+              left,
+              leftNum,
+              right,
+              rightNum,
+              sourceCode,
+              missedSpacingError: 'missedSpacingBetweenUnionTypes',
+              extraSpacingError: 'extraSpacingBetweenUnionTypes',
+              options,
+            }),
+          ]
+
+          for (let messageId of messageIds) {
             context.report({
-              messageId:
-                leftNum !== rightNum
-                  ? 'unexpectedUnionTypesGroupOrder'
-                  : 'unexpectedUnionTypesOrder',
+              messageId,
               data: {
                 left: toSingleLine(left.name),
                 leftGroup: left.group,
@@ -296,8 +284,16 @@ export default createEslintRule<Options, MESSAGE_ID>({
                 rightGroup: right.group,
               },
               node: right.node,
-              fix: fixer =>
-                makeFixes(fixer, nodes, sortedNodes, sourceCode, options),
+              fix: fixer => [
+                ...makeFixes(fixer, nodes, sortedNodes, sourceCode, options),
+                ...makeNewlinesFixes(
+                  fixer,
+                  nodes,
+                  sortedNodes,
+                  sourceCode,
+                  options,
+                ),
+              ],
             })
           }
         })

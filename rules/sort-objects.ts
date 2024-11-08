@@ -1,22 +1,34 @@
 import type { TSESTree } from '@typescript-eslint/types'
-import type { TSESLint } from '@typescript-eslint/utils'
 
 import type { SortingNodeWithDependencies } from '../utils/sort-nodes-by-dependencies'
 
 import {
+  partitionByCommentJsonSchema,
+  partitionByNewLineJsonSchema,
+  specialCharactersJsonSchema,
+  customGroupsJsonSchema,
+  ignoreCaseJsonSchema,
+  localesJsonSchema,
+  groupsJsonSchema,
+  orderJsonSchema,
+  typeJsonSchema,
+} from '../utils/common-json-schemas'
+import {
   getFirstUnorderedNodeDependentOn,
   sortNodesByDependencies,
 } from '../utils/sort-nodes-by-dependencies'
+import { validateNewlinesAndPartitionConfiguration } from '../utils/validate-newlines-and-partition-configuration'
 import { validateGroupsConfiguration } from '../utils/validate-groups-configuration'
 import { hasPartitionComment } from '../utils/is-partition-comment'
 import { sortNodesByGroups } from '../utils/sort-nodes-by-groups'
 import { getCommentsBefore } from '../utils/get-comments-before'
+import { makeNewlinesFixes } from '../utils/make-newlines-fixes'
+import { getNewlinesErrors } from '../utils/get-newlines-errors'
 import { createEslintRule } from '../utils/create-eslint-rule'
 import { getLinesBetween } from '../utils/get-lines-between'
 import { getGroupNumber } from '../utils/get-group-number'
 import { getSourceCode } from '../utils/get-source-code'
 import { getNodeParent } from '../utils/get-node-parent'
-import { toSingleLine } from '../utils/to-single-line'
 import { rangeToDiff } from '../utils/range-to-diff'
 import { getSettings } from '../utils/get-settings'
 import { useGroups } from '../utils/use-groups'
@@ -26,27 +38,22 @@ import { pairwise } from '../utils/pairwise'
 import { matches } from '../utils/matches'
 
 type MESSAGE_ID =
+  | 'missedSpacingBetweenObjectMembers'
   | 'unexpectedObjectsDependencyOrder'
+  | 'extraSpacingBetweenObjectMembers'
   | 'unexpectedObjectsGroupOrder'
   | 'unexpectedObjectsOrder'
 
-export enum Position {
-  'exception' = 'exception',
-  'ignore' = 'ignore',
-}
-
-type Group = 'unknown' | string
-type SortingNodeWithPosition = SortingNodeWithDependencies & {
-  position: Position
-}
+type Group = 'multiline' | 'unknown' | 'method' | string
 
 type Options = [
   Partial<{
     customGroups: { [key: string]: string[] | string }
     type: 'alphabetical' | 'line-length' | 'natural'
     partitionByComment: string[] | boolean | string
+    newlinesBetween: 'ignore' | 'always' | 'never'
     specialCharacters: 'remove' | 'trim' | 'keep'
-    matcher: 'minimatch' | 'regex'
+    locales: NonNullable<Intl.LocalesArgument>
     groups: (Group[] | Group)[]
     partitionByNewLine: boolean
     styledComponents: boolean
@@ -56,6 +63,22 @@ type Options = [
     ignoreCase: boolean
   }>,
 ]
+
+const defaultOptions: Required<Options[0]> = {
+  partitionByNewLine: false,
+  partitionByComment: false,
+  styledComponents: true,
+  destructureOnly: false,
+  type: 'alphabetical',
+  ignorePattern: [],
+  newlinesBetween: 'ignore',
+  ignoreCase: true,
+  specialCharacters: 'keep',
+  customGroups: {},
+  order: 'asc',
+  groups: [],
+  locales: 'en-US',
+}
 
 export default createEslintRule<Options, MESSAGE_ID>({
   name: 'sort-objects',
@@ -69,55 +92,22 @@ export default createEslintRule<Options, MESSAGE_ID>({
       {
         type: 'object',
         properties: {
-          type: {
-            description: 'Specifies the sorting method.',
-            type: 'string',
-            enum: ['alphabetical', 'natural', 'line-length'],
-          },
-          order: {
-            description:
-              'Determines whether the sorted items should be in ascending or descending order.',
-            type: 'string',
-            enum: ['asc', 'desc'],
-          },
-          matcher: {
-            description: 'Specifies the string matcher.',
-            type: 'string',
-            enum: ['minimatch', 'regex'],
-          },
-          ignoreCase: {
-            description:
-              'Controls whether sorting should be case-sensitive or not.',
-            type: 'boolean',
-          },
-          specialCharacters: {
-            description:
-              'Controls how special characters should be handled before sorting.',
-            type: 'string',
-            enum: ['remove', 'trim', 'keep'],
-          },
+          type: typeJsonSchema,
+          order: orderJsonSchema,
+          locales: localesJsonSchema,
+          ignoreCase: ignoreCaseJsonSchema,
+          specialCharacters: specialCharactersJsonSchema,
           partitionByComment: {
+            ...partitionByCommentJsonSchema,
             description:
               'Allows you to use comments to separate the keys of objects into logical groups.',
-            anyOf: [
-              {
-                type: 'array',
-                items: {
-                  type: 'string',
-                },
-              },
-              {
-                type: 'boolean',
-              },
-              {
-                type: 'string',
-              },
-            ],
           },
-          partitionByNewLine: {
+          partitionByNewLine: partitionByNewLineJsonSchema,
+          newlinesBetween: {
             description:
-              'Allows to use spaces to separate the nodes into logical groups.',
-            type: 'boolean',
+              'Specifies how new lines should be handled between object types groups.',
+            enum: ['ignore', 'always', 'never'],
+            type: 'string',
           },
           styledComponents: {
             description: 'Controls whether to sort styled components.',
@@ -135,40 +125,8 @@ export default createEslintRule<Options, MESSAGE_ID>({
             },
             type: 'array',
           },
-          groups: {
-            description: 'Specifies the order of the groups.',
-            type: 'array',
-            items: {
-              oneOf: [
-                {
-                  type: 'string',
-                },
-                {
-                  type: 'array',
-                  items: {
-                    type: 'string',
-                  },
-                },
-              ],
-            },
-          },
-          customGroups: {
-            description: 'Specifies custom groups.',
-            type: 'object',
-            additionalProperties: {
-              oneOf: [
-                {
-                  type: 'string',
-                },
-                {
-                  type: 'array',
-                  items: {
-                    type: 'string',
-                  },
-                },
-              ],
-            },
-          },
+          groups: groupsJsonSchema,
+          customGroups: customGroupsJsonSchema,
         },
         additionalProperties: false,
       },
@@ -179,50 +137,27 @@ export default createEslintRule<Options, MESSAGE_ID>({
       unexpectedObjectsOrder: 'Expected "{{right}}" to come before "{{left}}".',
       unexpectedObjectsDependencyOrder:
         'Expected dependency "{{right}}" to come before "{{nodeDependentOnRight}}".',
+      missedSpacingBetweenObjectMembers:
+        'Missed spacing between "{{left}}" and "{{right}}" objects.',
+      extraSpacingBetweenObjectMembers:
+        'Extra spacing between "{{left}}" and "{{right}}" objects.',
     },
   },
-  defaultOptions: [
-    {
-      type: 'alphabetical',
-      order: 'asc',
-      ignoreCase: true,
-      specialCharacters: 'keep',
-      matcher: 'minimatch',
-      partitionByComment: false,
-      partitionByNewLine: false,
-      styledComponents: true,
-      destructureOnly: false,
-      ignorePattern: [],
-      groups: [],
-      customGroups: {},
-    },
-  ],
+  defaultOptions: [defaultOptions],
   create: context => {
     let sortObject = (
       node: TSESTree.ObjectExpression | TSESTree.ObjectPattern,
     ) => {
       let settings = getSettings(context.settings)
 
-      let options = complete(context.options.at(0), settings, {
-        partitionByNewLine: false,
-        partitionByComment: false,
-        styledComponents: true,
-        destructureOnly: false,
-        type: 'alphabetical',
-        ignorePattern: [],
-        matcher: 'minimatch',
-        ignoreCase: true,
-        specialCharacters: 'keep',
-        customGroups: {},
-        order: 'asc',
-        groups: [],
-      } as const)
+      let options = complete(context.options.at(0), settings, defaultOptions)
 
       validateGroupsConfiguration(
         options.groups,
-        ['unknown'],
+        ['multiline', 'method', 'unknown'],
         Object.keys(options.customGroups),
       )
+      validateNewlinesAndPartitionConfiguration(options)
 
       let shouldIgnore = false
 
@@ -241,9 +176,7 @@ export default createEslintRule<Options, MESSAGE_ID>({
           parentId?.type === 'Identifier' ? parentId.name : null
 
         let checkMatch = (identifier: string) =>
-          options.ignorePattern.some(pattern =>
-            matches(identifier, pattern, options.matcher),
-          )
+          options.ignorePattern.some(pattern => matches(identifier, pattern))
 
         if (typeof varIdentifier === 'string' && checkMatch(varIdentifier)) {
           shouldIgnore = true
@@ -260,243 +193,262 @@ export default createEslintRule<Options, MESSAGE_ID>({
           shouldIgnore = true
         }
       }
-
-      if (!shouldIgnore && node.properties.length > 1) {
-        let isStyledCallExpression = (identifier: TSESTree.Expression) =>
-          identifier.type === 'Identifier' && identifier.name === 'styled'
-
-        let isCssCallExpression = (identifier: TSESTree.Expression) =>
-          identifier.type === 'Identifier' && identifier.name === 'css'
-
-        let isStyledComponents = (
-          styledNode: TSESTree.Node | undefined,
-        ): boolean =>
-          styledNode !== undefined &&
-          ((styledNode.type === 'CallExpression' &&
-            (isCssCallExpression(styledNode.callee) ||
-              (styledNode.callee.type === 'MemberExpression' &&
-                isStyledCallExpression(styledNode.callee.object)) ||
-              (styledNode.callee.type === 'CallExpression' &&
-                isStyledCallExpression(styledNode.callee.callee)))) ||
-            (styledNode.type === 'JSXExpressionContainer' &&
-              styledNode.parent.type === 'JSXAttribute' &&
-              styledNode.parent.name.name === 'style'))
-        if (
-          !options.styledComponents &&
-          (isStyledComponents(node.parent) ||
-            (node.parent.type === 'ArrowFunctionExpression' &&
-              isStyledComponents(node.parent.parent)))
-        ) {
-          return
-        }
-
-        let sourceCode = getSourceCode(context)
-
-        let extractDependencies = (
-          init: TSESTree.AssignmentPattern,
-        ): string[] => {
-          let dependencies: string[] = []
-
-          let checkNode = (nodeValue: TSESTree.Node) => {
-            /**
-             * No need to check the body of functions and arrow functions
-             */
-            if (
-              nodeValue.type === 'ArrowFunctionExpression' ||
-              nodeValue.type === 'FunctionExpression'
-            ) {
-              return
-            }
-
-            if (nodeValue.type === 'Identifier') {
-              dependencies.push(nodeValue.name)
-            }
-
-            if (nodeValue.type === 'Property') {
-              traverseNode(nodeValue.key)
-              traverseNode(nodeValue.value)
-            }
-
-            if (nodeValue.type === 'ConditionalExpression') {
-              traverseNode(nodeValue.test)
-              traverseNode(nodeValue.consequent)
-              traverseNode(nodeValue.alternate)
-            }
-
-            if (
-              'expression' in nodeValue &&
-              typeof nodeValue.expression !== 'boolean'
-            ) {
-              traverseNode(nodeValue.expression)
-            }
-
-            if ('object' in nodeValue) {
-              traverseNode(nodeValue.object)
-            }
-
-            if ('callee' in nodeValue) {
-              traverseNode(nodeValue.callee)
-            }
-
-            if ('left' in nodeValue) {
-              traverseNode(nodeValue.left)
-            }
-
-            if ('right' in nodeValue) {
-              traverseNode(nodeValue.right as TSESTree.Node)
-            }
-
-            if ('elements' in nodeValue) {
-              nodeValue.elements
-                .filter(currentNode => currentNode !== null)
-                .forEach(traverseNode)
-            }
-
-            if ('argument' in nodeValue && nodeValue.argument) {
-              traverseNode(nodeValue.argument)
-            }
-
-            if ('arguments' in nodeValue) {
-              nodeValue.arguments.forEach(traverseNode)
-            }
-
-            if ('properties' in nodeValue) {
-              nodeValue.properties.forEach(traverseNode)
-            }
-
-            if ('expressions' in nodeValue) {
-              nodeValue.expressions.forEach(traverseNode)
-            }
-          }
-
-          let traverseNode = (nodeValue: TSESTree.Node) => {
-            checkNode(nodeValue)
-          }
-
-          traverseNode(init)
-          return dependencies
-        }
-
-        let formatProperties = (
-          props: (
-            | TSESTree.ObjectLiteralElement
-            | TSESTree.RestElement
-            | TSESTree.Property
-          )[],
-        ): SortingNodeWithPosition[][] =>
-          props.reduce(
-            (accumulator: SortingNodeWithPosition[][], prop) => {
-              if (
-                prop.type === 'SpreadElement' ||
-                prop.type === 'RestElement'
-              ) {
-                accumulator.push([])
-                return accumulator
-              }
-
-              let comments = getCommentsBefore(prop, sourceCode)
-              let lastProp = accumulator.at(-1)?.at(-1)
-
-              if (
-                options.partitionByComment &&
-                hasPartitionComment(
-                  options.partitionByComment,
-                  comments,
-                  options.matcher,
-                )
-              ) {
-                accumulator.push([])
-              }
-
-              let name: string
-              let position: Position = Position.ignore
-              let dependencies: string[] = []
-
-              let { getGroup, setCustomGroups } = useGroups(options)
-
-              if (prop.key.type === 'Identifier') {
-                ;({ name } = prop.key)
-              } else if (prop.key.type === 'Literal') {
-                name = `${prop.key.value}`
-              } else {
-                name = sourceCode.text.slice(...prop.key.range)
-              }
-
-              let propSortingNode = {
-                size: rangeToDiff(prop.range),
-                node: prop,
-                name,
-              }
-
-              if (
-                options.partitionByNewLine &&
-                lastProp &&
-                getLinesBetween(sourceCode, lastProp, propSortingNode)
-              ) {
-                accumulator.push([])
-              }
-
-              if (prop.value.type === 'AssignmentPattern') {
-                dependencies = extractDependencies(prop.value)
-              }
-
-              setCustomGroups(options.customGroups, name)
-
-              let value = {
-                ...propSortingNode,
-                group: getGroup(),
-                dependencies,
-                position,
-              }
-
-              accumulator.at(-1)!.push(value)
-
-              return accumulator
-            },
-            [[]],
-          )
-
-        let formattedMembers = formatProperties(node.properties)
-        let sortedNodes = sortNodesByDependencies(
-          formattedMembers
-            .map(nodes => sortNodesByGroups(nodes, options))
-            .flat(),
-        )
-        let nodes = formattedMembers.flat()
-        pairwise(nodes, (left, right) => {
-          let indexOfLeft = sortedNodes.indexOf(left)
-          let indexOfRight = sortedNodes.indexOf(right)
-
-          if (indexOfLeft > indexOfRight) {
-            let firstUnorderedNodeDependentOnRight =
-              getFirstUnorderedNodeDependentOn(right, nodes)
-            let leftNum = getGroupNumber(options.groups, left)
-            let rightNum = getGroupNumber(options.groups, right)
-            let messageId: MESSAGE_ID
-            if (firstUnorderedNodeDependentOnRight) {
-              messageId = 'unexpectedObjectsDependencyOrder'
-            } else {
-              messageId =
-                leftNum !== rightNum
-                  ? 'unexpectedObjectsGroupOrder'
-                  : 'unexpectedObjectsOrder'
-            }
-            context.report({
-              messageId,
-              data: {
-                left: toSingleLine(left.name),
-                leftGroup: left.group,
-                right: toSingleLine(right.name),
-                rightGroup: right.group,
-                nodeDependentOnRight: firstUnorderedNodeDependentOnRight?.name,
-              },
-              node: right.node,
-              fix: (fixer: TSESLint.RuleFixer) =>
-                makeFixes(fixer, nodes, sortedNodes, sourceCode, options),
-            })
-          }
-        })
+      if (shouldIgnore || node.properties.length <= 1) {
+        return
       }
+
+      let isStyledCallExpression = (identifier: TSESTree.Expression) =>
+        identifier.type === 'Identifier' && identifier.name === 'styled'
+      let isCssCallExpression = (identifier: TSESTree.Expression) =>
+        identifier.type === 'Identifier' && identifier.name === 'css'
+      let isStyledComponents = (
+        styledNode: TSESTree.Node | undefined,
+      ): boolean =>
+        styledNode !== undefined &&
+        ((styledNode.type === 'CallExpression' &&
+          (isCssCallExpression(styledNode.callee) ||
+            (styledNode.callee.type === 'MemberExpression' &&
+              isStyledCallExpression(styledNode.callee.object)) ||
+            (styledNode.callee.type === 'CallExpression' &&
+              isStyledCallExpression(styledNode.callee.callee)))) ||
+          (styledNode.type === 'JSXExpressionContainer' &&
+            styledNode.parent.type === 'JSXAttribute' &&
+            styledNode.parent.name.name === 'style'))
+      if (
+        !options.styledComponents &&
+        (isStyledComponents(node.parent) ||
+          (node.parent.type === 'ArrowFunctionExpression' &&
+            isStyledComponents(node.parent.parent)))
+      ) {
+        return
+      }
+      let sourceCode = getSourceCode(context)
+      let extractDependencies = (
+        init: TSESTree.AssignmentPattern,
+      ): string[] => {
+        let dependencies: string[] = []
+
+        let checkNode = (nodeValue: TSESTree.Node) => {
+          /**
+           * No need to check the body of functions and arrow functions
+           */
+          if (
+            nodeValue.type === 'ArrowFunctionExpression' ||
+            nodeValue.type === 'FunctionExpression'
+          ) {
+            return
+          }
+
+          if (nodeValue.type === 'Identifier') {
+            dependencies.push(nodeValue.name)
+          }
+
+          if (nodeValue.type === 'Property') {
+            traverseNode(nodeValue.key)
+            traverseNode(nodeValue.value)
+          }
+
+          if (nodeValue.type === 'ConditionalExpression') {
+            traverseNode(nodeValue.test)
+            traverseNode(nodeValue.consequent)
+            traverseNode(nodeValue.alternate)
+          }
+
+          if (
+            'expression' in nodeValue &&
+            typeof nodeValue.expression !== 'boolean'
+          ) {
+            traverseNode(nodeValue.expression)
+          }
+
+          if ('object' in nodeValue) {
+            traverseNode(nodeValue.object)
+          }
+
+          if ('callee' in nodeValue) {
+            traverseNode(nodeValue.callee)
+          }
+
+          if ('left' in nodeValue) {
+            traverseNode(nodeValue.left)
+          }
+
+          if ('right' in nodeValue) {
+            traverseNode(nodeValue.right as TSESTree.Node)
+          }
+
+          if ('elements' in nodeValue) {
+            nodeValue.elements
+              .filter(currentNode => currentNode !== null)
+              .forEach(traverseNode)
+          }
+
+          if ('argument' in nodeValue && nodeValue.argument) {
+            traverseNode(nodeValue.argument)
+          }
+
+          if ('arguments' in nodeValue) {
+            nodeValue.arguments.forEach(traverseNode)
+          }
+
+          if ('properties' in nodeValue) {
+            nodeValue.properties.forEach(traverseNode)
+          }
+
+          if ('expressions' in nodeValue) {
+            nodeValue.expressions.forEach(traverseNode)
+          }
+        }
+
+        let traverseNode = (nodeValue: TSESTree.Node) => {
+          checkNode(nodeValue)
+        }
+
+        traverseNode(init)
+        return dependencies
+      }
+      let formatProperties = (
+        props: (
+          | TSESTree.ObjectLiteralElement
+          | TSESTree.RestElement
+          | TSESTree.Property
+        )[],
+      ): SortingNodeWithDependencies[][] =>
+        props.reduce(
+          (accumulator: SortingNodeWithDependencies[][], prop) => {
+            if (prop.type === 'SpreadElement' || prop.type === 'RestElement') {
+              accumulator.push([])
+              return accumulator
+            }
+
+            let comments = getCommentsBefore(prop, sourceCode)
+            let lastProp = accumulator.at(-1)?.at(-1)
+
+            let name: string
+            let dependencies: string[] = []
+
+            let { getGroup, defineGroup, setCustomGroups } = useGroups(options)
+
+            if (prop.key.type === 'Identifier') {
+              ;({ name } = prop.key)
+            } else if (prop.key.type === 'Literal') {
+              name = `${prop.key.value}`
+            } else {
+              name = sourceCode.getText(prop.key)
+            }
+
+            if (prop.value.type === 'AssignmentPattern') {
+              dependencies = extractDependencies(prop.value)
+            }
+
+            setCustomGroups(options.customGroups, name)
+
+            if (
+              prop.value.type === 'ArrowFunctionExpression' ||
+              prop.value.type === 'FunctionExpression'
+            ) {
+              defineGroup('method')
+            }
+
+            if (prop.loc.start.line !== prop.loc.end.line) {
+              defineGroup('multiline')
+            }
+
+            let propSortingNode: SortingNodeWithDependencies = {
+              size: rangeToDiff(prop, sourceCode),
+              node: prop,
+              group: getGroup(),
+              dependencies,
+              name,
+            }
+
+            if (
+              (options.partitionByNewLine &&
+                lastProp &&
+                getLinesBetween(sourceCode, lastProp, propSortingNode)) ||
+              (options.partitionByComment &&
+                hasPartitionComment(options.partitionByComment, comments))
+            ) {
+              accumulator.push([])
+            }
+
+            accumulator.at(-1)!.push(propSortingNode)
+
+            return accumulator
+          },
+          [[]],
+        )
+      let formattedMembers = formatProperties(node.properties)
+      let sortedNodes = sortNodesByDependencies(
+        formattedMembers.map(nodes => sortNodesByGroups(nodes, options)).flat(),
+      )
+      let nodes = formattedMembers.flat()
+      pairwise(nodes, (left, right) => {
+        let leftNum = getGroupNumber(options.groups, left)
+        let rightNum = getGroupNumber(options.groups, right)
+
+        let indexOfLeft = sortedNodes.indexOf(left)
+        let indexOfRight = sortedNodes.indexOf(right)
+
+        let messageIds: MESSAGE_ID[] = []
+        let firstUnorderedNodeDependentOnRight:
+          | SortingNodeWithDependencies
+          | undefined
+
+        if (indexOfLeft > indexOfRight) {
+          firstUnorderedNodeDependentOnRight = getFirstUnorderedNodeDependentOn(
+            right,
+            nodes,
+          )
+          if (firstUnorderedNodeDependentOnRight) {
+            messageIds.push('unexpectedObjectsDependencyOrder')
+          } else {
+            messageIds.push(
+              leftNum !== rightNum
+                ? 'unexpectedObjectsGroupOrder'
+                : 'unexpectedObjectsOrder',
+            )
+          }
+        }
+
+        messageIds = [
+          ...messageIds,
+          ...getNewlinesErrors({
+            left,
+            leftNum,
+            right,
+            rightNum,
+            sourceCode,
+            missedSpacingError: 'missedSpacingBetweenObjectMembers',
+            extraSpacingError: 'extraSpacingBetweenObjectMembers',
+            options,
+          }),
+        ]
+
+        for (let messageId of messageIds) {
+          context.report({
+            messageId,
+            data: {
+              left: left.name,
+              leftGroup: left.group,
+              right: right.name,
+              rightGroup: right.group,
+              nodeDependentOnRight: firstUnorderedNodeDependentOnRight?.name,
+            },
+            node: right.node,
+            fix: fixer => [
+              ...makeFixes(fixer, nodes, sortedNodes, sourceCode, options),
+              ...makeNewlinesFixes(
+                fixer,
+                nodes,
+                sortedNodes,
+                sourceCode,
+                options,
+              ),
+            ],
+          })
+        }
+      })
     }
 
     return {

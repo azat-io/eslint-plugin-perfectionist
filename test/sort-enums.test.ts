@@ -296,7 +296,7 @@ describe(ruleName, () => {
             options: [
               {
                 ...options,
-                partitionByComment: 'Part**',
+                partitionByComment: '^Part*',
               },
             ],
             errors: [
@@ -400,7 +400,7 @@ describe(ruleName, () => {
     )
 
     ruleTester.run(
-      `${ruleName}(${type}): allows to use regex matcher for partition comments`,
+      `${ruleName}(${type}): allows to use regex for partition comments`,
       rule,
       {
         valid: [
@@ -417,7 +417,6 @@ describe(ruleName, () => {
             options: [
               {
                 ...options,
-                matcher: 'regex',
                 partitionByComment: ['^(?!.*foo).*$'],
               },
             ],
@@ -582,6 +581,79 @@ describe(ruleName, () => {
           },
         ],
         invalid: [],
+      },
+    )
+
+    ruleTester.run(`${ruleName}(${type}): allows to use locale`, rule, {
+      valid: [
+        {
+          code: dedent`
+              enum Enum {
+                你好 = '你好',
+                世界 = '世界',
+                a = 'a',
+                A = 'A',
+                b = 'b',
+                B = 'B',
+              }
+            `,
+          options: [{ ...options, locales: 'zh-CN' }],
+        },
+      ],
+      invalid: [],
+    })
+
+    ruleTester.run(
+      `${ruleName}(${type}): sorts inline elements correctly`,
+      rule,
+      {
+        valid: [],
+        invalid: [
+          {
+            code: dedent`
+              enum Enum {
+                B = "B", A = "A"
+              }
+            `,
+            output: dedent`
+              enum Enum {
+                A = "A", B = "B"
+              }
+            `,
+            options: [options],
+            errors: [
+              {
+                messageId: 'unexpectedEnumsOrder',
+                data: {
+                  left: 'B',
+                  right: 'A',
+                },
+              },
+            ],
+          },
+          {
+            code: dedent`
+              enum Enum {
+                B = "B", A = "A",
+              }
+            `,
+            output: dedent`
+              enum Enum {
+                A = "A", B = "B",
+              }
+            `,
+            options: [options],
+            errors: [
+              {
+                messageId: 'unexpectedEnumsOrder',
+                data: {
+                  left: 'B',
+                  right: 'A',
+                },
+              },
+            ],
+          },
+        ],
       },
     )
   })
@@ -864,7 +936,7 @@ describe(ruleName, () => {
             options: [
               {
                 ...options,
-                partitionByComment: 'Part**',
+                partitionByComment: '^Part*',
               },
             ],
             errors: [
@@ -1347,7 +1419,7 @@ describe(ruleName, () => {
             options: [
               {
                 ...options,
-                partitionByComment: 'Part**',
+                partitionByComment: '^Part*',
               },
             ],
             errors: [
@@ -2036,7 +2108,7 @@ describe(ruleName, () => {
               options: [
                 {
                   type: 'alphabetical',
-                  partitionByComment: 'Part**',
+                  partitionByComment: '^Part*',
                 },
               ],
               errors: [

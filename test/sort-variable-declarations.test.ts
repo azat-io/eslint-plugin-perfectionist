@@ -745,7 +745,7 @@ describe(ruleName, () => {
               options: [
                 {
                   ...options,
-                  partitionByComment: 'Part**',
+                  partitionByComment: '^Part*',
                 },
               ],
               errors: [
@@ -845,13 +845,10 @@ describe(ruleName, () => {
         },
       )
 
-      ruleTester.run(
-        `${ruleName}(${type}): allows to use regex matcher`,
-        rule,
-        {
-          valid: [
-            {
-              code: dedent`
+      ruleTester.run(`${ruleName}(${type}): allows to use regex`, rule, {
+        valid: [
+          {
+            code: dedent`
               const
                 e = 'e',
                 f = 'f',
@@ -859,18 +856,16 @@ describe(ruleName, () => {
                 a = 'a',
                 b = 'b'
             `,
-              options: [
-                {
-                  ...options,
-                  matcher: 'regex',
-                  partitionByComment: ['^(?!.*foo).*$'],
-                },
-              ],
-            },
-          ],
-          invalid: [],
-        },
-      )
+            options: [
+              {
+                ...options,
+                partitionByComment: ['^(?!.*foo).*$'],
+              },
+            ],
+          },
+        ],
+        invalid: [],
+      })
     })
 
     ruleTester.run(
@@ -917,6 +912,74 @@ describe(ruleName, () => {
           },
         ],
         invalid: [],
+      },
+    )
+
+    ruleTester.run(`${ruleName}(${type}): allows to use locale`, rule, {
+      valid: [
+        {
+          code: dedent`
+              const
+                你好 = '你好',
+                世界 = '世界',
+                a = 'a',
+                A = 'A',
+                b = 'b',
+                B = 'B'
+            `,
+          options: [{ ...options, locales: 'zh-CN' }],
+        },
+      ],
+      invalid: [],
+    })
+
+    ruleTester.run(
+      `${ruleName}(${type}): sorts inline elements correctly`,
+      rule,
+      {
+        valid: [],
+        invalid: [
+          {
+            code: dedent`
+              const
+                b = 'b', a = 'a'
+            `,
+            output: dedent`
+              const
+                a = 'a', b = 'b'
+            `,
+            options: [options],
+            errors: [
+              {
+                messageId: 'unexpectedVariableDeclarationsOrder',
+                data: {
+                  left: 'b',
+                  right: 'a',
+                },
+              },
+            ],
+          },
+          {
+            code: dedent`
+              const
+                b = 'b', a = 'a',
+            `,
+            output: dedent`
+              const
+                a = 'a', b = 'b',
+            `,
+            options: [options],
+            errors: [
+              {
+                messageId: 'unexpectedVariableDeclarationsOrder',
+                data: {
+                  left: 'b',
+                  right: 'a',
+                },
+              },
+            ],
+          },
+        ],
       },
     )
   })

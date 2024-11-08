@@ -1,19 +1,26 @@
 import type { TSESTree } from '@typescript-eslint/types'
-import type { TSESLint } from '@typescript-eslint/utils'
 
 import { builtinModules } from 'node:module'
 
 import type { SortingNode } from '../typings'
 
+import {
+  specialCharactersJsonSchema,
+  ignoreCaseJsonSchema,
+  localesJsonSchema,
+  groupsJsonSchema,
+  orderJsonSchema,
+  typeJsonSchema,
+} from '../utils/common-json-schemas'
 import { validateGroupsConfiguration } from '../utils/validate-groups-configuration'
 import { getOptionsWithCleanGroups } from '../utils/get-options-with-clean-groups'
 import { sortNodesByGroups } from '../utils/sort-nodes-by-groups'
 import { getCommentsBefore } from '../utils/get-comments-before'
+import { makeNewlinesFixes } from '../utils/make-newlines-fixes'
+import { getNewlinesErrors } from '../utils/get-newlines-errors'
 import { createEslintRule } from '../utils/create-eslint-rule'
-import { getLinesBetween } from '../utils/get-lines-between'
 import { getGroupNumber } from '../utils/get-group-number'
 import { getSourceCode } from '../utils/get-source-code'
-import { getNodeRange } from '../utils/get-node-range'
 import { rangeToDiff } from '../utils/range-to-diff'
 import { getSettings } from '../utils/get-settings'
 import { useGroups } from '../utils/use-groups'
@@ -58,8 +65,8 @@ export type Options<T extends string[]> = [
     type: 'alphabetical' | 'line-length' | 'natural'
     newlinesBetween: 'ignore' | 'always' | 'never'
     specialCharacters: 'remove' | 'trim' | 'keep'
+    locales: NonNullable<Intl.LocalesArgument>
     groups: (Group<T>[] | Group<T>)[]
-    matcher: 'minimatch' | 'regex'
     environment: 'node' | 'bun'
     internalPattern: string[]
     sortSideEffects: boolean
@@ -86,33 +93,11 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
         id: 'sort-imports',
         type: 'object',
         properties: {
-          type: {
-            description: 'Specifies the sorting method.',
-            type: 'string',
-            enum: ['alphabetical', 'natural', 'line-length'],
-          },
-          order: {
-            description:
-              'Determines whether the sorted items should be in ascending or descending order.',
-            type: 'string',
-            enum: ['asc', 'desc'],
-          },
-          matcher: {
-            description: 'Specifies the string matcher.',
-            type: 'string',
-            enum: ['minimatch', 'regex'],
-          },
-          ignoreCase: {
-            description:
-              'Controls whether sorting should be case-sensitive or not.',
-            type: 'boolean',
-          },
-          specialCharacters: {
-            description:
-              'Controls how special characters should be handled before sorting.',
-            type: 'string',
-            enum: ['remove', 'trim', 'keep'],
-          },
+          type: typeJsonSchema,
+          order: orderJsonSchema,
+          locales: localesJsonSchema,
+          ignoreCase: ignoreCaseJsonSchema,
+          specialCharacters: specialCharactersJsonSchema,
           internalPattern: {
             description: 'Specifies the pattern for internal modules.',
             items: {
@@ -137,32 +122,18 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
             minimum: 0,
             exclusiveMinimum: true,
           },
-          groups: {
-            description: 'Specifies the order of the groups.',
-            type: 'array',
-            items: {
-              oneOf: [
-                {
-                  type: 'string',
-                },
-                {
-                  type: 'array',
-                  items: {
-                    type: 'string',
-                  },
-                },
-              ],
-            },
-          },
+          groups: groupsJsonSchema,
           customGroups: {
             description: 'Specifies custom groups.',
             type: 'object',
             properties: {
               type: {
                 type: 'object',
+                description: 'Specifies custom groups for type imports.',
               },
               value: {
                 type: 'object',
+                description: 'Specifies custom groups for value imports.',
               },
             },
             additionalProperties: false,
@@ -227,7 +198,6 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
       sortSideEffects: false,
       newlinesBetween: 'always',
       maxLineLength: undefined,
-      matcher: 'minimatch',
       groups: [
         'type',
         ['builtin', 'external'],
@@ -240,6 +210,7 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
       ],
       customGroups: { type: {}, value: {} },
       environment: 'node',
+      locales: 'en-US',
     },
   ],
   create: context => {
@@ -258,10 +229,8 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
           'object',
           'unknown',
         ],
-        matcher: 'minimatch',
         customGroups: { type: {}, value: {} },
-        internalPattern:
-          userOptions?.matcher === 'regex' ? ['^~/.*'] : ['~/**'],
+        internalPattern: ['^~/.*'],
         newlinesBetween: 'always',
         sortSideEffects: false,
         type: 'alphabetical',
@@ -269,6 +238,7 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
         ignoreCase: true,
         specialCharacters: 'keep',
         order: 'asc',
+        locales: 'en-US',
       } as const),
     )
 
@@ -369,7 +339,7 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
         if (node.moduleReference.type === 'TSExternalModuleReference') {
           name = `${node.moduleReference.expression.value}`
         } else {
-          name = sourceCode.text.slice(...node.moduleReference.range)
+          name = sourceCode.getText(node.moduleReference)
         }
       } else {
         let decl = node.declarations[0].init as TSESTree.CallExpression
@@ -396,9 +366,7 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
 
       let isInternal = (value: string) =>
         options.internalPattern.length &&
-        options.internalPattern.some(pattern =>
-          matches(value, pattern, options.matcher),
-        )
+        options.internalPattern.some(pattern => matches(value, pattern))
 
       let isCoreModule = (value: string) => {
         let bunModules = [
@@ -514,9 +482,10 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
       }
 
       nodes.push({
-        size: rangeToDiff(node.range),
+        size: rangeToDiff(node, sourceCode),
         group: getGroup(),
         node,
+        addSafetySemicolonWhenInline: true,
         isIgnored:
           !options.sortSideEffects &&
           isSideEffect &&
@@ -596,28 +565,19 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
               )
             }
 
-            let numberOfEmptyLinesBetween = getLinesBetween(
-              sourceCode,
-              left,
-              right,
-            )
-            if (
-              options.newlinesBetween === 'never' &&
-              numberOfEmptyLinesBetween > 0
-            ) {
-              messageIds.push('extraSpacingBetweenImports')
-            }
-
-            if (options.newlinesBetween === 'always') {
-              if (leftNum < rightNum && numberOfEmptyLinesBetween === 0) {
-                messageIds.push('missedSpacingBetweenImports')
-              } else if (
-                numberOfEmptyLinesBetween > 1 ||
-                (leftNum === rightNum && numberOfEmptyLinesBetween > 0)
-              ) {
-                messageIds.push('extraSpacingBetweenImports')
-              }
-            }
+            messageIds = [
+              ...messageIds,
+              ...getNewlinesErrors({
+                left,
+                leftNum,
+                right,
+                rightNum,
+                sourceCode,
+                missedSpacingError: 'missedSpacingBetweenImports',
+                extraSpacingError: 'extraSpacingBetweenImports',
+                options,
+              }),
+            ]
 
             for (let messageId of messageIds) {
               context.report({
@@ -629,78 +589,16 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
                   rightGroup: right.group,
                 },
                 node: right.node,
-                fix: fixer => {
-                  let newlinesFixes: TSESLint.RuleFix[] = []
-
-                  for (let max = sortedNodes.length, i = 0; i < max; i++) {
-                    let node = sortedNodes.at(i)!
-                    let nextNode = sortedNodes.at(i + 1)
-
-                    if (options.newlinesBetween === 'ignore' || !nextNode) {
-                      continue
-                    }
-
-                    let nodeGroupNumber = getGroupNumber(options.groups, node)
-                    let nextNodeGroupNumber = getGroupNumber(
-                      options.groups,
-                      nextNode,
-                    )
-                    let currentNodeRange = getNodeRange(
-                      nodeList.at(i)!.node,
-                      sourceCode,
-                      options,
-                    )
-                    let nextNodeRange =
-                      getNodeRange(
-                        nodeList.at(i + 1)!.node,
-                        sourceCode,
-                        options,
-                      ).at(0)! - 1
-
-                    let linesBetweenImports = getLinesBetween(
-                      sourceCode,
-                      nodeList.at(i)!,
-                      nodeList.at(i + 1)!,
-                    )
-
-                    if (
-                      (options.newlinesBetween === 'always' &&
-                        nodeGroupNumber === nextNodeGroupNumber &&
-                        linesBetweenImports !== 0) ||
-                      (options.newlinesBetween === 'never' &&
-                        linesBetweenImports > 0)
-                    ) {
-                      newlinesFixes.push(
-                        fixer.removeRange([
-                          currentNodeRange.at(1)!,
-                          nextNodeRange,
-                        ]),
-                      )
-                    }
-                    if (
-                      options.newlinesBetween === 'always' &&
-                      nodeGroupNumber !== nextNodeGroupNumber
-                    ) {
-                      if (linesBetweenImports > 1) {
-                        newlinesFixes.push(
-                          fixer.replaceTextRange(
-                            [currentNodeRange.at(1)!, nextNodeRange],
-                            '\n',
-                          ),
-                        )
-                      } else if (linesBetweenImports === 0) {
-                        newlinesFixes.push(
-                          fixer.insertTextAfterRange(currentNodeRange, '\n'),
-                        )
-                      }
-                    }
-                  }
-
-                  return [
-                    ...makeFixes(fixer, nodeList, sortedNodes, sourceCode),
-                    ...newlinesFixes,
-                  ]
-                },
+                fix: fixer => [
+                  ...makeFixes(fixer, nodeList, sortedNodes, sourceCode),
+                  ...makeNewlinesFixes(
+                    fixer,
+                    nodeList,
+                    sortedNodes,
+                    sourceCode,
+                    options,
+                  ),
+                ],
               })
             }
           })

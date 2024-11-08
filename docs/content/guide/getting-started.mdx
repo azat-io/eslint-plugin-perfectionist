@@ -129,7 +129,7 @@ Add `perfectionist` to the plugins section of your ESLint configuration. Then co
 ]}
 type="config-type"
 client:load
-lang="js"
+lang="tsx"
 />
 
 ## Settings
@@ -145,9 +145,9 @@ In settings you can set the following options:
 - `ignoreCase` — Ignore case when sorting.
 - `ignorePattern` — Ignore sorting for elements that match the pattern.
 - `specialCharacters` — Control whether special characters should be kept, trimmed or removed before sorting. Values can be `'keep'`, `'trim'` or `'remove'`.
-- `partitionByComment` — Partition the sorted elements by comments. Values can be `true`, `false` or glob pattern string.
+- `locales` - The locales of sorting. Values can be a string with a BCP 47 language tag, or an array of such strings. See [String.prototype.localeCompare() - locales](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String/localeCompare#locales).
+- `partitionByComment` — Partition the sorted elements by comments. Values can be `true`, `false` or regexp pattern.
 - `partitionByNewLine` — Partition the sorted elements by new lines. Values can be `true` or `false`.
-- `matcher` — Determine the matcher used for patterns in options such as `partitionByComment`. Values can be `minimatch` or `regex`.
 
 Example:
 
@@ -209,5 +209,5 @@ Example:
 ]}
 type="config-type"
 client:load
-lang="js"
+lang="tsx"
 />

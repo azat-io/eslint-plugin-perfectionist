@@ -25,9 +25,9 @@ describe('get-settings', () => {
       specialCharacters: 'keep',
       ignorePattern: [],
       ignoreCase: true,
-      matcher: 'regex',
       order: 'asc',
       type: 'alphabetical',
+      locales: 'en-US',
     }
     expect(() => {
       getSettings({

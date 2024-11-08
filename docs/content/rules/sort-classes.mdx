@@ -14,6 +14,7 @@ keywords:
 ---
 
 import CodeExample from '../../components/CodeExample.svelte'
+import Important from '../../components/Important.astro'
 import CodeTabs from '../../components/CodeTabs.svelte'
 import { dedent } from 'ts-dedent'
 
@@ -146,7 +147,7 @@ By sorting class members systematically, confusion is minimized, and the code be
     }
   `}
   client:load
-  lang="ts"
+  lang="tsx"
 />
 
 ## Options
@@ -159,8 +160,8 @@ This rule accepts an options object with the following properties:
 
 Specifies the sorting method.
 
-- `'alphabetical'` — Sort items alphabetically (e.g., “a” < “b” < “c”).
-- `'natural'` — Sort items in a natural order (e.g., “item2” < “item10”).
+- `'alphabetical'` — Sort items alphabetically (e.g., “a” < “b” < “c”) using [localeCompare](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String/localeCompare).
+- `'natural'` — Sort items in a [natural](https://github.com/litejs/natural-compare-lite) order (e.g., “item2” < “item10”).
 - `'line-length'` — Sort items by the length of the code line (shorter lines first).
 
 ### order
@@ -179,7 +180,7 @@ Determines whether the sorted items should be in ascending or descending order.
 Controls whether sorting should be case-sensitive or not.
 
 - `true` — Ignore case when sorting alphabetically or naturally (e.g., “A” and “a” are the same).
-- `false` — Consider case when sorting (e.g., “A” comes before “a”).
+- `false` — Consider case when sorting (e.g., “a” comes before “A”).
 
 ### specialCharacters
 
@@ -191,15 +192,71 @@ Controls whether special characters should be trimmed, removed or kept before so
 - `'trim'` — Trim special characters when sorting alphabetically or naturally (e.g., “_a” and “a” are the same).
 - `'remove'` — Remove special characters when sorting (e.g., “/a/b” and “ab” are the same).
 
+### locales
+
+<sub>default: `'en-US'`</sub>
+
+Specifies the sorting locales. See [String.prototype.localeCompare() - locales](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String/localeCompare#locales).
+
+- `string` — A BCP 47 language tag (e.g. `'en'`, `'en-US'`, `'zh-CN'`).
+- `string[]` — An array of BCP 47 language tags.
+
+**Note:** Only effective when `type` is `alphabetical`.
+
 ### partitionByComment
 
 <sub>default: `false`</sub>
 
-Allows you to use comments to separate the class members into logical groups. This can help in organizing and maintaining large enums by creating partitions within the enum based on comments.
+Allows you to use comments to separate the class members into logical groups. This can help in organizing and maintaining large classes by creating partitions within the enum based on comments.
 
 - `true` — All comments will be treated as delimiters, creating partitions.
 -	`false` — Comments will not be used as delimiters.
-- string — A glob pattern to specify which comments should act as delimiters.
+- string — A regexp pattern to specify which comments should act as delimiters.
+
+### partitionByNewLine
+
+<sub>default: `false`</sub>
+
+When `true`, the rule will not sort the members of a class if there is an empty line between them. This can be useful for keeping logically separated groups of members in their defined order.
+
+```ts
+class User {
+  // Group 1
+  firstName: string;
+  lastName: string;
+
+  // Group 2
+  age: number;
+  birthDate: Date;
+
+  // Group 3
+  address: {
+    street: string;
+    city: string;
+  };
+  phone?: string;
+
+  // Group 4
+  updateAddress(address: string) {}
+  updatePhone(phone?: string) {}
+
+  // Group 5
+  editFirstName(firstName: string) {}
+  editLastName(lastName: string) {}
+};
+```
+
+### newlinesBetween
+
+<sub>default: `'ignore'`</sub>
+
+Specifies how new lines should be handled between class member groups.
+
+- `ignore` — Do not report errors related to new lines between object type groups.
+- `always` — Enforce one new line between each group, and forbid new lines inside a group.
+- `never` — No new lines are allowed in object types.
+
+This options is only applicable when `partitionByNewLine` is `false`.
 
 ### groups
 
@@ -348,6 +405,45 @@ abstract class Example extends BaseExample {
     console.log("I am a static block");
   }
 
+  // 'public-property'
+  public description: string;
+
+  // 'public-decorated-property'
+  @SomeDecorator
+  public value: number;
+
+  // 'public-decorated-accessor-property'
+  @SomeDecorator
+  public accessor value: number;
+
+  // 'public-decorated-get-method'
+  @SomeDecorator
+  get decoratedValue() {
+    return this._value;
+  }
+
+  // 'public-decorated-set-method'
+  @SomeDecorator
+  set decoratedValue(value: number) {
+    this._value = value;
+  }
+
+  // 'public-decorated-get-method'
+  @SomeDecorator
+  get value() {
+    return this._value;
+  }
+
+  // 'public-get-method'
+  get value() {
+    return this._value;
+  }
+
+  // 'public-set-method'
+  set value(value: number) {
+    this._value = value;
+  }
+
   // 'protected-abstract-override-readonly-decorated-property'
   @SomeDecorator
   protected abstract override readonly _value: number;
@@ -359,6 +455,12 @@ abstract class Example extends BaseExample {
   // 'protected-property'
   protected name: string;
 
+  // 'protected-decorated-get-method'
+  @SomeDecorator
+  protected get value() {
+    return this._value;
+  }
+
   // 'private-decorated-property'
   @SomeDecorator
   private _value: number;
@@ -367,25 +469,14 @@ abstract class Example extends BaseExample {
   @SomeDecorator
   private accessor _value: number;
 
-  // private-function-property
-  private arrowProperty = () => {};
-
-  // private-function-property
-  private functionProperty = function() {};
-
   // 'private-property'
   private name: string;
 
-  // 'public-property'
-  public description: string;
-
-  // 'public-decorated-property'
+  // 'private-decorated-get-method'
   @SomeDecorator
-  public value: number;
-
-  // 'public-decorated-accessor-property'
-  @SomeDecorator
-  public accessor value: number;
+  private get value() {
+    return this._value;
+  }
 
   // 'public-constructor'
   constructor(value: number) {
@@ -407,16 +498,6 @@ abstract class Example extends BaseExample {
     this.instance = new Example(0);
   }
 
-  // 'protected-method'
-  protected calculate() {
-    return this._value * 2;
-  }
-
-  // 'private-method'
-  private calculate() {
-    return this._value * 2;
-  }
-
   // 'public-decorated-method'
   @SomeDecorator
   public decoratedMethod() {
@@ -428,58 +509,60 @@ abstract class Example extends BaseExample {
     console.log(this._value);
   }
 
-  // 'public-decorated-get-method'
-  @SomeDecorator
-  get decoratedValue() {
-    return this._value;
+  // 'protected-method'
+  protected calculate() {
+    return this._value * 2;
   }
 
-  // 'public-decorated-set-method'
-  @SomeDecorator
-  set decoratedValue(value: number) {
-    this._value = value;
+  // private-function-property
+  private arrowProperty = () => {};
+
+  // 'private-method'
+  private calculate() {
+    return this._value * 2;
   }
 
-  // 'protected-decorated-get-method'
-  @SomeDecorator
-  protected get value() {
-    return this._value;
-  }
-
-  // 'private-decorated-get-method'
-  @SomeDecorator
-  private get value() {
-    return this._value;
-  }
-
-  // 'public-decorated-get-method'
-  @SomeDecorator
-  get value() {
-    return this._value;
-  }
-
-  // 'public-get-method'
-  get value() {
-    return this._value;
-  }
-
-  // 'public-set-method'
-  set value(value: number) {
-    this._value = value;
-  }
+  // private-function-property
+  private functionProperty = function() {};
 }
 ```
 
 ### customGroups
+
+<Important title="Migrating from the old API">
+Support for the object-based `customGroups` option has been removed.
+
+Migrating from the old to the current API is easy:
+
+Old API:
+```ts
+{
+  "key1": "value1",
+  "key2": "value2"
+}
+```
+
+Current API:
+```ts
+[
+  {
+    "groupName": "key1",
+    "elementNamePattern": "value1"
+  },
+  {
+    "groupName": "key2",
+    "elementNamePattern": "value2"
+  }
+]
+```
+</Important>
 
 <sub>
   type: `Array<CustomGroupDefinition | CustomGroupBlockDefinition>`
 </sub>
 <sub>default: `[]`</sub>
 
-You can define your own groups and use custom glob patterns or regex for matching very specific class members.
-
-Use the `matcher` option to specify the pattern matching method.
+You can define your own groups and use regex for matching very specific class members.
 
 A custom group definition may follow one of the two following interfaces:
 
@@ -587,14 +670,6 @@ Example:
  }
 ```
 
-### matcher
-
-<sub>default: `'minimatch'`</sub>
-
-Determines the matcher used for patterns in the `partitionByComment` and `customGroups` options.
-
-- `'minimatch'` — Use the [minimatch](https://github.com/isaacs/minimatch) library for pattern matching.
-- `'regex'` — Use regular expressions for pattern matching.
 
 ## Usage
 
@@ -619,20 +694,28 @@ Determines the matcher used for patterns in the `partitionByComment` and `custom
                   ignoreCase: true,
                   specialCharacters: 'keep',
                   partitionByComment: false,
-                  matcher: 'minimatch',
                   groups: [
-                    'static-block',
                     'index-signature',
-                    'static-property',
-                    ['protected-property', 'protected-accessor-property'],
-                    ['private-property', 'private-accessor-property'],
+                    ['static-property', 'static-accessor-property'],
+                    ['static-get-method', 'static-set-method'],
+                    ['protected-static-property', 'protected-static-accessor-property'],
+                    ['protected-static-get-method', 'protected-static-set-method'],
+                    ['private-static-property', 'private-static-accessor-property'],
+                    ['private-static-get-method', 'private-static-set-method'],
+                    'static-block',
                     ['property', 'accessor-property'],
-                    'constructor',
-                    'static-method',
-                    'protected-method',
-                    'private-method',
-                    'method',
                     ['get-method', 'set-method'],
+                    ['protected-property', 'protected-accessor-property'],
+                    ['protected-get-method', 'protected-set-method'],
+                    ['private-property', 'private-accessor-property'],
+                    ['private-get-method', 'private-set-method'],
+                    'constructor',
+                    ['static-method', 'static-function-property'],
+                    ['protected-static-method', 'protected-static-function-property'],
+                    ['private-static-method', 'private-static-function-property'],
+                    ['method', 'function-property'],
+                    ['protected-method', 'protected-function-property'],
+                    ['private-method', 'private-function-property'],
                     'unknown',
                   ],
                   customGroups: [],
@@ -661,20 +744,28 @@ Determines the matcher used for patterns in the `partitionByComment` and `custom
                 ignoreCase: true,
                 specialCharacters: 'keep',
                 partitionByComment: false,
-                matcher: 'minimatch',
                 groups: [
-                  'static-block',
                   'index-signature',
-                  'static-property',
-                  ['protected-property', 'protected-accessor-property'],
-                  ['private-property', 'private-accessor-property'],
+                  ['static-property', 'static-accessor-property'],
+                  ['static-get-method', 'static-set-method'],
+                  ['protected-static-property', 'protected-static-accessor-property'],
+                  ['protected-static-get-method', 'protected-static-set-method'],
+                  ['private-static-property', 'private-static-accessor-property'],
+                  ['private-static-get-method', 'private-static-set-method'],
+                  'static-block',
                   ['property', 'accessor-property'],
-                  'constructor',
-                  'static-method',
-                  'protected-method',
-                  'private-method',
-                  'method',
                   ['get-method', 'set-method'],
+                  ['protected-property', 'protected-accessor-property'],
+                  ['protected-get-method', 'protected-set-method'],
+                  ['private-property', 'private-accessor-property'],
+                  ['private-get-method', 'private-set-method'],
+                  'constructor',
+                  ['static-method', 'static-function-property'],
+                  ['protected-static-method', 'protected-static-function-property'],
+                  ['private-static-method', 'private-static-function-property'],
+                  ['method', 'function-property'],
+                  ['protected-method', 'protected-function-property'],
+                  ['private-method', 'private-function-property'],
                   'unknown',
                 ],
                 customGroups: [],
@@ -689,7 +780,7 @@ Determines the matcher used for patterns in the `partitionByComment` and `custom
   ]}
   type="config-type"
   client:load
-  lang="ts"
+  lang="tsx"
 />
 
 ## Version

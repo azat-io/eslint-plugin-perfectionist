@@ -16,7 +16,6 @@ import { matches } from '../utils/matches'
 interface CustomGroupMatchesProps {
   customGroup: SingleCustomGroup | CustomGroupBlock
   elementValue: undefined | string
-  matcher: 'minimatch' | 'regex'
   selectors: Selector[]
   modifiers: Modifier[]
   decorators: string[]
@@ -191,7 +190,6 @@ export const customGroupMatches = (props: CustomGroupMatchesProps): boolean => {
     let matchesElementNamePattern: boolean = matches(
       props.elementName,
       props.customGroup.elementNamePattern,
-      props.matcher,
     )
     if (!matchesElementNamePattern) {
       return false
@@ -205,7 +203,6 @@ export const customGroupMatches = (props: CustomGroupMatchesProps): boolean => {
     let matchesElementValuePattern: boolean = matches(
       props.elementValue ?? '',
       props.customGroup.elementValuePattern,
-      props.matcher,
     )
     if (!matchesElementValuePattern) {
       return false
@@ -218,7 +215,7 @@ export const customGroupMatches = (props: CustomGroupMatchesProps): boolean => {
   ) {
     let decoratorPattern = props.customGroup.decoratorNamePattern
     let matchesDecoratorNamePattern: boolean = props.decorators.some(
-      decorator => matches(decorator, decoratorPattern, props.matcher),
+      decorator => matches(decorator, decoratorPattern),
     )
     if (!matchesDecoratorNamePattern) {
       return false
@@ -239,7 +236,7 @@ export const getCompareOptions = (
 ): CompareOptions | null => {
   let group = options.groups[groupNumber]
   let customGroup =
-    typeof group === 'string' && Array.isArray(options.customGroups)
+    typeof group === 'string'
       ? options.customGroups.find(g => group === g.groupName)
       : null
   if (customGroup?.type === 'unsorted') {
@@ -253,6 +250,7 @@ export const getCompareOptions = (
         : options.order,
     specialCharacters: options.specialCharacters,
     ignoreCase: options.ignoreCase,
+    locales: options.locales,
   }
 }
 
@@ -260,9 +258,9 @@ export let validateGroupsConfiguration = (
   groups: Required<SortClassesOptions[0]>['groups'],
   customGroups: Required<SortClassesOptions[0]>['customGroups'],
 ): void => {
-  let availableCustomGroupNames = Array.isArray(customGroups)
-    ? customGroups.map(customGroup => customGroup.groupName)
-    : Object.keys(customGroups)
+  let availableCustomGroupNames = customGroups.map(
+    customGroup => customGroup.groupName,
+  )
   let invalidGroups = groups
     .flat()
     .filter(

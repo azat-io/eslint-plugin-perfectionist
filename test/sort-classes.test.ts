@@ -30,6 +30,14 @@ describe(ruleName, () => {
         {
           code: dedent`
             class Class {
+              a
+            }
+          `,
+          options: [options],
+        },
+        {
+          code: dedent`
+            class Class {
               static a = 'a'
 
               protected b = 'b'
@@ -3612,6 +3620,54 @@ describe(ruleName, () => {
         },
       )
 
+      ruleTester.run(`${ruleName}(${type}): detects # dependencies`, rule, {
+        valid: [
+          {
+            code: dedent`
+              class Class {
+               static a = Class.a
+               static b = 1
+               static #b = 1
+               static #a = this.#b
+              }
+            `,
+            options: [
+              {
+                ...options,
+              },
+            ],
+          },
+          {
+            code: dedent`
+              class Class {
+               static #b = () => 1
+               static #a = this.#b()
+              }
+            `,
+            options: [
+              {
+                ...options,
+              },
+            ],
+          },
+          {
+            code: dedent`
+              class Class {
+               static #a = this.#b()
+               static #b() {}
+              }
+            `,
+            options: [
+              {
+                ...options,
+                groups: ['unknown'],
+              },
+            ],
+          },
+        ],
+        invalid: [],
+      })
+
       ruleTester.run(
         `${ruleName}(${type}) separates static from non-static dependencies`,
         rule,
@@ -3819,6 +3875,47 @@ describe(ruleName, () => {
                 {
                   ...options,
                   partitionByComment: 'Part*',
+                },
+              ],
+              errors: [
+                {
+                  messageId: 'unexpectedClassesDependencyOrder',
+                  data: {
+                    right: 'a',
+                    nodeDependentOnRight: 'b',
+                  },
+                },
+              ],
+            },
+          ],
+        },
+      )
+
+      ruleTester.run(
+        `${ruleName}(${type}): prioritizes dependencies over partitionByNewLine`,
+        rule,
+        {
+          valid: [],
+          invalid: [
+            {
+              code: dedent`
+                class Class {
+                  b = this.a
+
+                  a
+                }
+              `,
+              output: dedent`
+                class Class {
+                  a
+
+                  b = this.a
+                }
+              `,
+              options: [
+                {
+                  ...options,
+                  partitionByNewLine: true,
                 },
               ],
               errors: [
@@ -4063,6 +4160,489 @@ describe(ruleName, () => {
         invalid: [],
       },
     )
+
+    ruleTester.run(`${ruleName}(${type}): allows to use locale`, rule, {
+      valid: [
+        {
+          code: dedent`
+            class Class {
+              你好 = '你好'
+
+              世界 = '世界'
+
+              a = 'a'
+
+              A = 'A'
+
+              b = 'b'
+
+              B = 'B'
+            }
+          `,
+          options: [{ ...options, locales: 'zh-CN' }],
+        },
+      ],
+      invalid: [],
+    })
+
+    describe(`${ruleName}: newlinesBetween`, () => {
+      ruleTester.run(
+        `${ruleName}(${type}): removes newlines when never`,
+        rule,
+        {
+          valid: [],
+          invalid: [
+            {
+              code: dedent`
+                class Class {
+                  a = () => null
+
+
+                 y = "y"
+                z = "z"
+
+                    b = "b"
+                }
+              `,
+              output: dedent`
+                class Class {
+                  a = () => null
+                 b = "b"
+                y = "y"
+                    z = "z"
+                }
+              `,
+              options: [
+                {
+                  ...options,
+                  newlinesBetween: 'never',
+                  groups: ['method', 'unknown'],
+                },
+              ],
+              errors: [
+                {
+                  messageId: 'extraSpacingBetweenClassMembers',
+                  data: {
+                    left: 'a',
+                    right: 'y',
+                  },
+                },
+                {
+                  messageId: 'unexpectedClassesOrder',
+                  data: {
+                    left: 'z',
+                    right: 'b',
+                  },
+                },
+                {
+                  messageId: 'extraSpacingBetweenClassMembers',
+                  data: {
+                    left: 'z',
+                    right: 'b',
+                  },
+                },
+              ],
+            },
+          ],
+        },
+      )
+
+      ruleTester.run(
+        `${ruleName}(${type}): keeps one newline when always`,
+        rule,
+        {
+          valid: [],
+          invalid: [
+            {
+              code: dedent`
+                class Class {
+                  a = () => null
+
+
+                 z = "z"
+                y = "y"
+                    b() {}
+                }
+              `,
+              output: dedent`
+                class Class {
+                  a = () => null
+
+                 y = "y"
+                z = "z"
+
+                    b() {}
+                }
+                `,
+              options: [
+                {
+                  ...options,
+                  newlinesBetween: 'always',
+                  groups: ['function-property', 'unknown', 'method'],
+                },
+              ],
+              errors: [
+                {
+                  messageId: 'extraSpacingBetweenClassMembers',
+                  data: {
+                    left: 'a',
+                    right: 'z',
+                  },
+                },
+                {
+                  messageId: 'unexpectedClassesOrder',
+                  data: {
+                    left: 'z',
+                    right: 'y',
+                  },
+                },
+                {
+                  messageId: 'missedSpacingBetweenClassMembers',
+                  data: {
+                    left: 'y',
+                    right: 'b',
+                  },
+                },
+              ],
+            },
+          ],
+        },
+      )
+    })
+
+    describe(`${ruleName}(${type}): sorts inline elements correctly`, () => {
+      describe(`${ruleName}(${type}): methods`, () => {
+        describe(`${ruleName}(${type}): non-abstract methods`, () => {
+          ruleTester.run(
+            `${ruleName}(${type}): sorts inline non-abstract methods correctly`,
+            rule,
+            {
+              valid: [],
+              invalid: [
+                {
+                  code: dedent`
+                  class Class {
+                    b(){} a(){}
+                  }
+                `,
+                  output: dedent`
+                  class Class {
+                    a(){} b(){}
+                  }
+                `,
+                  options: [options],
+                  errors: [
+                    {
+                      messageId: 'unexpectedClassesOrder',
+                      data: {
+                        left: 'b',
+                        right: 'a',
+                      },
+                    },
+                  ],
+                },
+                {
+                  code: dedent`
+                  class Class {
+                    b(){} a(){};
+                  }
+                `,
+                  output: dedent`
+                  class Class {
+                    a(){} b(){};
+                  }
+                `,
+                  options: [options],
+                  errors: [
+                    {
+                      messageId: 'unexpectedClassesOrder',
+                      data: {
+                        left: 'b',
+                        right: 'a',
+                      },
+                    },
+                  ],
+                },
+                {
+                  code: dedent`
+                  class Class {
+                    b(){}; a(){}
+                  }
+                `,
+                  output: dedent`
+                  class Class {
+                    a(){}; b(){}
+                  }
+                `,
+                  options: [options],
+                  errors: [
+                    {
+                      messageId: 'unexpectedClassesOrder',
+                      data: {
+                        left: 'b',
+                        right: 'a',
+                      },
+                    },
+                  ],
+                },
+              ],
+            },
+          )
+        })
+
+        describe(`${ruleName}(${type}): abstract methods`, () => {
+          ruleTester.run(
+            `${ruleName}(${type}): sorts inline abstract methods correctly`,
+            rule,
+            {
+              valid: [],
+              invalid: [
+                {
+                  code: dedent`
+                  abstract class Class {
+                    abstract b(); abstract a()
+                  }
+                `,
+                  output: dedent`
+                  abstract class Class {
+                    abstract a(); abstract b();
+                  }
+                `,
+                  options: [options],
+                  errors: [
+                    {
+                      messageId: 'unexpectedClassesOrder',
+                      data: {
+                        left: 'b',
+                        right: 'a',
+                      },
+                    },
+                  ],
+                },
+                {
+                  code: dedent`
+                  abstract class Class {
+                    abstract b(); abstract a();
+                  }
+                `,
+                  output: dedent`
+                  abstract class Class {
+                    abstract a(); abstract b();
+                  }
+                `,
+                  options: [options],
+                  errors: [
+                    {
+                      messageId: 'unexpectedClassesOrder',
+                      data: {
+                        left: 'b',
+                        right: 'a',
+                      },
+                    },
+                  ],
+                },
+              ],
+            },
+          )
+        })
+      })
+
+      ruleTester.run(
+        `${ruleName}(${type}): sorts inline properties correctly`,
+        rule,
+        {
+          valid: [],
+          invalid: [
+            {
+              code: dedent`
+                  class Class {
+                    b; a
+                  }
+                `,
+              output: dedent`
+                  class Class {
+                    a; b;
+                  }
+                `,
+              options: [options],
+              errors: [
+                {
+                  messageId: 'unexpectedClassesOrder',
+                  data: {
+                    left: 'b',
+                    right: 'a',
+                  },
+                },
+              ],
+            },
+            {
+              code: dedent`
+                  class Class {
+                    b; a;
+                  }
+                `,
+              output: dedent`
+                  class Class {
+                    a; b;
+                  }
+                `,
+              options: [options],
+              errors: [
+                {
+                  messageId: 'unexpectedClassesOrder',
+                  data: {
+                    left: 'b',
+                    right: 'a',
+                  },
+                },
+              ],
+            },
+          ],
+        },
+      )
+
+      ruleTester.run(
+        `${ruleName}(${type}): sorts inline accessors correctly`,
+        rule,
+        {
+          valid: [],
+          invalid: [
+            {
+              code: dedent`
+                  class Class {
+                    accessor b; accessor a
+                  }
+                `,
+              output: dedent`
+                  class Class {
+                    accessor a; accessor b;
+                  }
+                `,
+              options: [options],
+              errors: [
+                {
+                  messageId: 'unexpectedClassesOrder',
+                  data: {
+                    left: 'b',
+                    right: 'a',
+                  },
+                },
+              ],
+            },
+            {
+              code: dedent`
+                  class Class {
+                    accessor b; accessor a;
+                  }
+                `,
+              output: dedent`
+                  class Class {
+                    accessor a; accessor b;
+                  }
+                `,
+              options: [options],
+              errors: [
+                {
+                  messageId: 'unexpectedClassesOrder',
+                  data: {
+                    left: 'b',
+                    right: 'a',
+                  },
+                },
+              ],
+            },
+          ],
+        },
+      )
+
+      ruleTester.run(
+        `${ruleName}(${type}): sorts inline index-signatures correctly`,
+        rule,
+        {
+          valid: [],
+          invalid: [
+            {
+              code: dedent`
+                  class Class {
+                    [key: string]: string; [key: number]: string
+                  }
+                `,
+              output: dedent`
+                  class Class {
+                    [key: number]: string; [key: string]: string;
+                  }
+                `,
+              options: [options],
+              errors: [
+                {
+                  messageId: 'unexpectedClassesOrder',
+                  data: {
+                    left: '[key: string]',
+                    right: '[key: number]',
+                  },
+                },
+              ],
+            },
+            {
+              code: dedent`
+                  class Class {
+                    [key: string]: string; [key: number]: string;
+                  }
+                `,
+              output: dedent`
+                  class Class {
+                    [key: number]: string; [key: string]: string;
+                  }
+                `,
+              options: [options],
+              errors: [
+                {
+                  messageId: 'unexpectedClassesOrder',
+                  data: {
+                    left: '[key: string]',
+                    right: '[key: number]',
+                  },
+                },
+              ],
+            },
+          ],
+        },
+      )
+
+      ruleTester.run(
+        `${ruleName}(${type}): sorts inline static-block correctly`,
+        rule,
+        {
+          valid: [],
+          invalid: [
+            {
+              code: dedent`
+                  class Class {
+                    a; static {}
+                  }
+                `,
+              output: dedent`
+                  class Class {
+                    static {} a;
+                  }
+                `,
+              options: [options],
+              errors: [
+                {
+                  messageId: 'unexpectedClassesGroupOrder',
+                  data: {
+                    left: 'a',
+                    leftGroup: 'property',
+                    right: 'static',
+                    rightGroup: 'static-block',
+                  },
+                },
+              ],
+            },
+          ],
+        },
+      )
+    })
   })
 
   describe(`${ruleName}: sorting by natural order`, () => {
@@ -6074,10 +6654,16 @@ describe(ruleName, () => {
           options: [
             {
               ...options,
-              customGroups: {
-                'my-first-group': 'customFirst*',
-                'my-last-group': 'customLast*',
-              },
+              customGroups: [
+                {
+                  groupName: 'my-first-group',
+                  elementNamePattern: 'customFirst*',
+                },
+                {
+                  groupName: 'my-last-group',
+                  elementNamePattern: 'customLast*',
+                },
+              ],
               groups: [
                 'my-first-group',
                 'decorated-accessor-property',
@@ -6765,7 +7351,7 @@ describe(ruleName, () => {
     })
 
     ruleTester.run(
-      `${ruleName}: allows to use regex matcher for element names in custom groups with old API`,
+      `${ruleName}: allows to use regex for element names in custom groups`,
       rule,
       {
         valid: [
@@ -6781,37 +7367,6 @@ describe(ruleName, () => {
             options: [
               {
                 type: 'alphabetical',
-                matcher: 'regex',
-                groups: ['unknown', 'elementsWithoutFoo'],
-                customGroups: {
-                  elementsWithoutFoo: '^(?!.*Foo).*$',
-                },
-              },
-            ],
-          },
-        ],
-        invalid: [],
-      },
-    )
-
-    ruleTester.run(
-      `${ruleName}: allows to use regex matcher for element names in custom groups with new API`,
-      rule,
-      {
-        valid: [
-          {
-            code: dedent`
-              class Class {
-                iHaveFooInMyName: string
-                meTooIHaveFoo: string
-                a: string
-                b: string
-              }
-            `,
-            options: [
-              {
-                type: 'alphabetical',
-                matcher: 'regex',
                 groups: ['unknown', 'elementsWithoutFoo'],
                 customGroups: [
                   {
@@ -6828,7 +7383,7 @@ describe(ruleName, () => {
     )
 
     ruleTester.run(
-      `${ruleName}: allows to use regex matcher for element values in custom groups with new API`,
+      `${ruleName}: allows to use regex for element values in custom groups`,
       rule,
       {
         valid: [
@@ -6844,7 +7399,6 @@ describe(ruleName, () => {
             options: [
               {
                 type: 'alphabetical',
-                matcher: 'regex',
                 groups: ['unknown', 'elementsWithoutFoo'],
                 customGroups: [
                   {
@@ -6861,7 +7415,7 @@ describe(ruleName, () => {
     )
 
     ruleTester.run(
-      `${ruleName}: allows to use regex matcher for decorator names in custom groups with new API`,
+      `${ruleName}: allows to use regex for decorator names in custom groups`,
       rule,
       {
         valid: [
@@ -6879,7 +7433,6 @@ describe(ruleName, () => {
             options: [
               {
                 type: 'alphabetical',
-                matcher: 'regex',
                 groups: ['decoratorsWithFoo', 'unknown'],
                 customGroups: [
                   {
@@ -6985,35 +7538,43 @@ describe(ruleName, () => {
         {
           code: dedent`
               class Class {
-                set setMethod() {}
-
-                get getMethod() {}
-
-                public publicMethod() {}
-
                 private privateMethod() {}
 
                 protected protectedMethod() {}
 
-                static staticMethod() {}
+                public publicMethod() {}
+
+                private static privateStaticMethod() {}
+
+                protected static protectedStaticMethod() {}
+
+                public static publicStaticMethod() {}
 
                 constructor() {}
 
-                public accessor publicAccessorProperty
-
-                public publicProperty
+                private privateProperty
 
                 private accessor privateAccessorProperty
 
-                private privateProperty
+                protected protectedProperty
+
+                public publicProperty
+
+                public accessor publicAccessorProperty
+
+                public set publicSetMethod() {}
+
+                public get publicGetMethod() {}
 
                 protected accessor protectedAccessorProperty
 
-                protected protectedProperty
-
                 static {}
 
-                static staticProperty
+                private static privateStaticProperty
+
+                protected static protectedStaticProperty
+
+                public static publicStaticProperty
 
                 [key: string]: string
               }
@@ -7022,9 +7583,21 @@ describe(ruleName, () => {
               class Class {
                 [key: string]: string
 
-                static staticProperty
+                public static publicStaticProperty
+
+                protected static protectedStaticProperty
+
+                private static privateStaticProperty
 
                 static {}
+
+                public accessor publicAccessorProperty
+
+                public publicProperty
+
+                public get publicGetMethod() {}
+
+                public set publicSetMethod() {}
 
                 protected accessor protectedAccessorProperty
 
@@ -7034,51 +7607,22 @@ describe(ruleName, () => {
 
                 private privateProperty
 
-                public accessor publicAccessorProperty
-
-                public publicProperty
-
                 constructor() {}
 
-                static staticMethod() {}
+                public static publicStaticMethod() {}
+
+                protected static protectedStaticMethod() {}
+
+                private static privateStaticMethod() {}
+
+                public publicMethod() {}
 
                 protected protectedMethod() {}
 
                 private privateMethod() {}
-
-                public publicMethod() {}
-
-                get getMethod() {}
-
-                set setMethod() {}
               }
             `,
           errors: [
-            {
-              messageId: 'unexpectedClassesOrder',
-              data: {
-                left: 'setMethod',
-                right: 'getMethod',
-              },
-            },
-            {
-              messageId: 'unexpectedClassesGroupOrder',
-              data: {
-                left: 'getMethod',
-                leftGroup: 'get-method',
-                right: 'publicMethod',
-                rightGroup: 'method',
-              },
-            },
-            {
-              messageId: 'unexpectedClassesGroupOrder',
-              data: {
-                left: 'publicMethod',
-                leftGroup: 'method',
-                right: 'privateMethod',
-                rightGroup: 'private-method',
-              },
-            },
             {
               messageId: 'unexpectedClassesGroupOrder',
               data: {
@@ -7093,14 +7637,41 @@ describe(ruleName, () => {
               data: {
                 left: 'protectedMethod',
                 leftGroup: 'protected-method',
-                right: 'staticMethod',
+                right: 'publicMethod',
+                rightGroup: 'method',
+              },
+            },
+            {
+              messageId: 'unexpectedClassesGroupOrder',
+              data: {
+                left: 'publicMethod',
+                leftGroup: 'method',
+                right: 'privateStaticMethod',
+                rightGroup: 'private-static-method',
+              },
+            },
+            {
+              messageId: 'unexpectedClassesGroupOrder',
+              data: {
+                left: 'privateStaticMethod',
+                leftGroup: 'private-static-method',
+                right: 'protectedStaticMethod',
+                rightGroup: 'protected-static-method',
+              },
+            },
+            {
+              messageId: 'unexpectedClassesGroupOrder',
+              data: {
+                left: 'protectedStaticMethod',
+                leftGroup: 'protected-static-method',
+                right: 'publicStaticMethod',
                 rightGroup: 'static-method',
               },
             },
             {
               messageId: 'unexpectedClassesGroupOrder',
               data: {
-                left: 'staticMethod',
+                left: 'publicStaticMethod',
                 leftGroup: 'static-method',
                 right: 'constructor',
                 rightGroup: 'constructor',
@@ -7111,26 +7682,24 @@ describe(ruleName, () => {
               data: {
                 left: 'constructor',
                 leftGroup: 'constructor',
-                right: 'publicAccessorProperty',
-                rightGroup: 'accessor-property',
+                right: 'privateProperty',
+                rightGroup: 'private-property',
               },
             },
             {
-              messageId: 'unexpectedClassesGroupOrder',
-              data: {
-                left: 'publicProperty',
-                leftGroup: 'property',
-                right: 'privateAccessorProperty',
-                rightGroup: 'private-accessor-property',
-              },
-            },
-            {
-              messageId: 'unexpectedClassesGroupOrder',
+              messageId: 'unexpectedClassesOrder',
               data: {
                 left: 'privateProperty',
-                leftGroup: 'private-property',
-                right: 'protectedAccessorProperty',
-                rightGroup: 'protected-accessor-property',
+                right: 'privateAccessorProperty',
+              },
+            },
+            {
+              messageId: 'unexpectedClassesGroupOrder',
+              data: {
+                left: 'privateAccessorProperty',
+                leftGroup: 'private-accessor-property',
+                right: 'protectedProperty',
+                rightGroup: 'protected-property',
               },
             },
             {
@@ -7138,6 +7707,29 @@ describe(ruleName, () => {
               data: {
                 left: 'protectedProperty',
                 leftGroup: 'protected-property',
+                right: 'publicProperty',
+                rightGroup: 'property',
+              },
+            },
+            {
+              messageId: 'unexpectedClassesOrder',
+              data: {
+                left: 'publicProperty',
+                right: 'publicAccessorProperty',
+              },
+            },
+            {
+              messageId: 'unexpectedClassesOrder',
+              data: {
+                left: 'publicSetMethod',
+                right: 'publicGetMethod',
+              },
+            },
+            {
+              messageId: 'unexpectedClassesGroupOrder',
+              data: {
+                left: 'protectedAccessorProperty',
+                leftGroup: 'protected-accessor-property',
                 right: 'static',
                 rightGroup: 'static-block',
               },
@@ -7147,14 +7739,32 @@ describe(ruleName, () => {
               data: {
                 left: 'static',
                 leftGroup: 'static-block',
-                right: 'staticProperty',
+                right: 'privateStaticProperty',
+                rightGroup: 'private-static-property',
+              },
+            },
+            {
+              messageId: 'unexpectedClassesGroupOrder',
+              data: {
+                left: 'privateStaticProperty',
+                leftGroup: 'private-static-property',
+                right: 'protectedStaticProperty',
+                rightGroup: 'protected-static-property',
+              },
+            },
+            {
+              messageId: 'unexpectedClassesGroupOrder',
+              data: {
+                left: 'protectedStaticProperty',
+                leftGroup: 'protected-static-property',
+                right: 'publicStaticProperty',
                 rightGroup: 'static-property',
               },
             },
             {
               messageId: 'unexpectedClassesGroupOrder',
               data: {
-                left: 'staticProperty',
+                left: 'publicStaticProperty',
                 leftGroup: 'static-property',
                 right: '[key: string]',
                 rightGroup: 'index-signature',
@@ -7310,7 +7920,7 @@ describe(ruleName, () => {
         })
 
         ruleTester.run(
-          `${ruleName}: allows to use regex matcher for partition comments`,
+          `${ruleName}: allows to use regex for partition comments`,
           rule,
           {
             valid: [
@@ -7327,7 +7937,6 @@ describe(ruleName, () => {
                 options: [
                   {
                     type: 'alphabetical',
-                    matcher: 'regex',
                     partitionByComment: ['^(?!.*foo).*$'],
                   },
                 ],
@@ -7336,6 +7945,76 @@ describe(ruleName, () => {
             invalid: [],
           },
         )
+      })
+
+      ruleTester.run(`${ruleName}: allows to use new line as partition`, rule, {
+        valid: [
+          {
+            code: dedent`
+              class Class {
+                d = 'dd'
+                e = 'e'
+
+                c = 'ccc'
+
+                a = 'aaaaa'
+                b = 'bbbb'
+              }
+            `,
+            options: [
+              {
+                partitionByNewLine: true,
+              },
+            ],
+          },
+        ],
+        invalid: [
+          {
+            code: dedent`
+              class Class {
+                e = 'e'
+                d = 'dd'
+
+                c = 'ccc'
+
+                b = 'bbbb'
+                a = 'aaaaa'
+              }
+            `,
+            output: dedent`
+              class Class {
+                d = 'dd'
+                e = 'e'
+
+                c = 'ccc'
+
+                a = 'aaaaa'
+                b = 'bbbb'
+              }
+            `,
+            options: [
+              {
+                partitionByNewLine: true,
+              },
+            ],
+            errors: [
+              {
+                messageId: 'unexpectedClassesOrder',
+                data: {
+                  left: 'e',
+                  right: 'd',
+                },
+              },
+              {
+                messageId: 'unexpectedClassesOrder',
+                data: {
+                  left: 'b',
+                  right: 'a',
+                },
+              },
+            ],
+          },
+        ],
       })
     })
   })

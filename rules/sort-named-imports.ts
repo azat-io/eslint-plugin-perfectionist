@@ -1,5 +1,14 @@
 import type { SortingNode } from '../typings'
 
+import {
+  partitionByCommentJsonSchema,
+  partitionByNewLineJsonSchema,
+  specialCharactersJsonSchema,
+  ignoreCaseJsonSchema,
+  localesJsonSchema,
+  orderJsonSchema,
+  typeJsonSchema,
+} from '../utils/common-json-schemas'
 import { hasPartitionComment } from '../utils/is-partition-comment'
 import { getCommentsBefore } from '../utils/get-comments-before'
 import { createEslintRule } from '../utils/create-eslint-rule'
@@ -23,13 +32,25 @@ type Options = [
     type: 'alphabetical' | 'line-length' | 'natural'
     partitionByComment: string[] | boolean | string
     specialCharacters: 'remove' | 'trim' | 'keep'
-    matcher: 'minimatch' | 'regex'
+    locales: NonNullable<Intl.LocalesArgument>
     partitionByNewLine: boolean
     order: 'desc' | 'asc'
     ignoreAlias: boolean
     ignoreCase: boolean
   }>,
 ]
+
+const defaultOptions: Required<Options[0]> = {
+  type: 'alphabetical',
+  ignoreAlias: false,
+  groupKind: 'mixed',
+  ignoreCase: true,
+  specialCharacters: 'keep',
+  partitionByNewLine: false,
+  partitionByComment: false,
+  order: 'asc',
+  locales: 'en-US',
+}
 
 export default createEslintRule<Options, MESSAGE_ID>({
   name: 'sort-named-imports',
@@ -43,33 +64,11 @@ export default createEslintRule<Options, MESSAGE_ID>({
       {
         type: 'object',
         properties: {
-          type: {
-            description: 'Specifies the sorting method.',
-            type: 'string',
-            enum: ['alphabetical', 'natural', 'line-length'],
-          },
-          order: {
-            description:
-              'Determines whether the sorted items should be in ascending or descending order.',
-            type: 'string',
-            enum: ['asc', 'desc'],
-          },
-          matcher: {
-            description: 'Specifies the string matcher.',
-            type: 'string',
-            enum: ['minimatch', 'regex'],
-          },
-          ignoreCase: {
-            description:
-              'Controls whether sorting should be case-sensitive or not.',
-            type: 'boolean',
-          },
-          specialCharacters: {
-            description:
-              'Controls how special characters should be handled before sorting.',
-            type: 'string',
-            enum: ['remove', 'trim', 'keep'],
-          },
+          type: typeJsonSchema,
+          order: orderJsonSchema,
+          locales: localesJsonSchema,
+          ignoreCase: ignoreCaseJsonSchema,
+          specialCharacters: specialCharactersJsonSchema,
           ignoreAlias: {
             description: 'Controls whether to ignore alias names.',
             type: 'boolean',
@@ -80,28 +79,11 @@ export default createEslintRule<Options, MESSAGE_ID>({
             type: 'string',
           },
           partitionByComment: {
+            ...partitionByCommentJsonSchema,
             description:
               'Allows you to use comments to separate the named imports members into logical groups.',
-            anyOf: [
-              {
-                type: 'array',
-                items: {
-                  type: 'string',
-                },
-              },
-              {
-                type: 'boolean',
-              },
-              {
-                type: 'string',
-              },
-            ],
           },
-          partitionByNewLine: {
-            description:
-              'Allows to use spaces to separate the nodes into logical groups.',
-            type: 'boolean',
-          },
+          partitionByNewLine: partitionByNewLineJsonSchema,
         },
         additionalProperties: false,
       },
@@ -111,120 +93,98 @@ export default createEslintRule<Options, MESSAGE_ID>({
         'Expected "{{right}}" to come before "{{left}}".',
     },
   },
-  defaultOptions: [
-    {
-      type: 'alphabetical',
-      order: 'asc',
-      ignoreAlias: false,
-      ignoreCase: true,
-      specialCharacters: 'keep',
-      partitionByNewLine: false,
-      partitionByComment: false,
-      groupKind: 'mixed',
-    },
-  ],
+  defaultOptions: [defaultOptions],
   create: context => ({
     ImportDeclaration: node => {
       let specifiers = node.specifiers.filter(
         ({ type }) => type === 'ImportSpecifier',
       )
+      if (specifiers.length <= 1) {
+        return
+      }
 
-      if (specifiers.length > 1) {
-        let settings = getSettings(context.settings)
+      let settings = getSettings(context.settings)
+      let options = complete(context.options.at(0), settings, defaultOptions)
+      let sourceCode = getSourceCode(context)
+      let partitionComment = options.partitionByComment
+      let formattedMembers: SortingNode[][] = [[]]
+      for (let specifier of specifiers) {
+        let group: undefined | 'value' | 'type'
+        let { name } = specifier.local
 
-        let options = complete(context.options.at(0), settings, {
-          type: 'alphabetical',
-          ignoreAlias: false,
-          groupKind: 'mixed',
-          ignoreCase: true,
-          specialCharacters: 'keep',
-          matcher: 'minimatch',
-          partitionByNewLine: false,
-          partitionByComment: false,
-          order: 'asc',
-        } as const)
-
-        let sourceCode = getSourceCode(context)
-        let partitionComment = options.partitionByComment
-
-        let formattedMembers: SortingNode[][] = [[]]
-        for (let specifier of specifiers) {
-          let group: undefined | 'value' | 'type'
-          let { name } = specifier.local
-
-          if (specifier.type === 'ImportSpecifier' && options.ignoreAlias) {
+        if (specifier.type === 'ImportSpecifier' && options.ignoreAlias) {
+          if (specifier.imported.type === 'Identifier') {
             ;({ name } = specifier.imported)
-          }
-
-          if (
-            specifier.type === 'ImportSpecifier' &&
-            specifier.importKind === 'type'
-          ) {
-            group = 'type'
           } else {
-            group = 'value'
+            name = specifier.imported.value
           }
+        }
 
-          let lastSortingNode = formattedMembers.at(-1)?.at(-1)
-          let sortingNode: SortingNode = {
-            size: rangeToDiff(specifier.range),
-            node: specifier,
-            group,
-            name,
-          }
+        if (
+          specifier.type === 'ImportSpecifier' &&
+          specifier.importKind === 'type'
+        ) {
+          group = 'type'
+        } else {
+          group = 'value'
+        }
 
+        let lastSortingNode = formattedMembers.at(-1)?.at(-1)
+        let sortingNode: SortingNode = {
+          size: rangeToDiff(specifier, sourceCode),
+          node: specifier,
+          group,
+          name,
+        }
+
+        if (
+          (partitionComment &&
+            hasPartitionComment(
+              partitionComment,
+              getCommentsBefore(specifier, sourceCode),
+            )) ||
+          (options.partitionByNewLine &&
+            lastSortingNode &&
+            getLinesBetween(sourceCode, lastSortingNode, sortingNode))
+        ) {
+          formattedMembers.push([])
+        }
+
+        formattedMembers.at(-1)!.push(sortingNode)
+      }
+      let shouldGroupByKind = options.groupKind !== 'mixed'
+      let groupKindOrder =
+        options.groupKind === 'values-first'
+          ? ['value', 'type']
+          : ['type', 'value']
+      for (let nodes of formattedMembers) {
+        pairwise(nodes, (left, right) => {
+          let leftNum = getGroupNumber(groupKindOrder, left)
+          let rightNum = getGroupNumber(groupKindOrder, right)
           if (
-            (partitionComment &&
-              hasPartitionComment(
-                partitionComment,
-                getCommentsBefore(specifier, sourceCode),
-                options.matcher,
-              )) ||
-            (options.partitionByNewLine &&
-              lastSortingNode &&
-              getLinesBetween(sourceCode, lastSortingNode, sortingNode))
+            (shouldGroupByKind && leftNum > rightNum) ||
+            ((!shouldGroupByKind || leftNum === rightNum) &&
+              isPositive(compare(left, right, options)))
           ) {
-            formattedMembers.push([])
+            let sortedNodes = shouldGroupByKind
+              ? groupKindOrder
+                  .map(group => nodes.filter(n => n.group === group))
+                  .map(groupedNodes => sortNodes(groupedNodes, options))
+                  .flat()
+              : sortNodes(nodes, options)
+
+            context.report({
+              messageId: 'unexpectedNamedImportsOrder',
+              data: {
+                left: left.name,
+                right: right.name,
+              },
+              node: right.node,
+              fix: fixer =>
+                makeFixes(fixer, nodes, sortedNodes, sourceCode, options),
+            })
           }
-
-          formattedMembers.at(-1)!.push(sortingNode)
-        }
-
-        let shouldGroupByKind = options.groupKind !== 'mixed'
-        let groupKindOrder =
-          options.groupKind === 'values-first'
-            ? ['value', 'type']
-            : ['type', 'value']
-
-        for (let nodes of formattedMembers) {
-          pairwise(nodes, (left, right) => {
-            let leftNum = getGroupNumber(groupKindOrder, left)
-            let rightNum = getGroupNumber(groupKindOrder, right)
-            if (
-              (shouldGroupByKind && leftNum > rightNum) ||
-              ((!shouldGroupByKind || leftNum === rightNum) &&
-                isPositive(compare(left, right, options)))
-            ) {
-              let sortedNodes = shouldGroupByKind
-                ? groupKindOrder
-                    .map(group => nodes.filter(n => n.group === group))
-                    .map(groupedNodes => sortNodes(groupedNodes, options))
-                    .flat()
-                : sortNodes(nodes, options)
-
-              context.report({
-                messageId: 'unexpectedNamedImportsOrder',
-                data: {
-                  left: left.name,
-                  right: right.name,
-                },
-                node: right.node,
-                fix: fixer =>
-                  makeFixes(fixer, nodes, sortedNodes, sourceCode, options),
-              })
-            }
-          })
-        }
+        })
       }
     },
   }),

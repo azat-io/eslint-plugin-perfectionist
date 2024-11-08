@@ -500,7 +500,7 @@ describe(ruleName, () => {
               options: [
                 {
                   ...options,
-                  partitionByComment: 'Part**',
+                  partitionByComment: '^Part*',
                   groupKind: 'types-first',
                 },
               ],
@@ -644,6 +644,113 @@ describe(ruleName, () => {
           },
         ],
         invalid: [],
+      },
+    )
+
+    ruleTester.run(`${ruleName}(${type}): allows to use locale`, rule, {
+      valid: [
+        {
+          code: dedent`
+              import { 你好, 世界, a, A, b, B } from 'module'
+            `,
+          options: [{ ...options, locales: 'zh-CN' }],
+        },
+      ],
+      invalid: [],
+    })
+
+    ruleTester.run(`${ruleName}(${type}): works with arbitrary names`, rule, {
+      valid: [
+        {
+          code: dedent`
+            import { "A" as a, "B" as b } from 'module';
+          `,
+          options: [
+            {
+              ...options,
+              ignoreAlias: true,
+            },
+          ],
+        },
+      ],
+      invalid: [
+        {
+          code: dedent`
+            import { "B" as b, "A" as a } from 'module';
+          `,
+          output: dedent`
+            import { "A" as a, "B" as b } from 'module';
+          `,
+          options: [
+            {
+              ...options,
+              ignoreAlias: true,
+            },
+          ],
+          errors: [
+            {
+              messageId: 'unexpectedNamedImportsOrder',
+              data: {
+                left: 'B',
+                right: 'A',
+              },
+            },
+          ],
+        },
+      ],
+    })
+
+    ruleTester.run(
+      `${ruleName}(${type}): sorts inline elements correctly`,
+      rule,
+      {
+        valid: [],
+        invalid: [
+          {
+            code: dedent`
+              import {
+                b, a
+              } from 'module'
+            `,
+            output: dedent`
+              import {
+                a, b
+              } from 'module'
+            `,
+            options: [options],
+            errors: [
+              {
+                messageId: 'unexpectedNamedImportsOrder',
+                data: {
+                  left: 'b',
+                  right: 'a',
+                },
+              },
+            ],
+          },
+          {
+            code: dedent`
+              import {
+                b, a,
+              } from 'module'
+            `,
+            output: dedent`
+              import {
+                a, b,
+              } from 'module'
+            `,
+            options: [options],
+            errors: [
+              {
+                messageId: 'unexpectedNamedImportsOrder',
+                data: {
+                  left: 'b',
+                  right: 'a',
+                },
+              },
+            ],
+          },
+        ],
       },
     )
   })

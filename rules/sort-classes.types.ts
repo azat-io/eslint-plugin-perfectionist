@@ -186,11 +186,13 @@ export type CustomGroup = (
 
 export type SortClassesOptions = [
   Partial<{
-    customGroups: { [key: string]: string[] | string } | CustomGroup[]
     type: 'alphabetical' | 'line-length' | 'natural'
     partitionByComment: string[] | boolean | string
+    newlinesBetween: 'ignore' | 'always' | 'never'
     specialCharacters: 'remove' | 'trim' | 'keep'
-    matcher: 'minimatch' | 'regex'
+    locales: NonNullable<Intl.LocalesArgument>
+    partitionByNewLine: boolean
+    customGroups: CustomGroup[]
     groups: (Group[] | Group)[]
     order: 'desc' | 'asc'
     ignoreCase: boolean

@@ -268,14 +268,20 @@ describe(ruleName, () => {
           code: dedent`
             type Type =
               & A
+              & intrinsic
               & SomeClass['name']
               & string[]
               & any
               & bigint
               & boolean
+              & number
+              & this
+              & unknown
+              & keyof { a: string; b: number }
               & keyof A
               & typeof B
               & 'aaa'
+              & \`\${A}\`
               & 1
               & (new () => SomeClass)
               & (import('path'))
@@ -511,7 +517,61 @@ describe(ruleName, () => {
               options: [
                 {
                   ...options,
-                  partitionByComment: 'Part**',
+                  partitionByComment: '^Part*',
+                },
+              ],
+              errors: [
+                {
+                  messageId: 'unexpectedIntersectionTypesOrder',
+                  data: {
+                    left: 'D',
+                    right: 'BBB',
+                  },
+                },
+                {
+                  messageId: 'unexpectedIntersectionTypesOrder',
+                  data: {
+                    left: 'GG',
+                    right: 'FFF',
+                  },
+                },
+              ],
+            },
+            {
+              code: dedent`
+                type T =
+                  // Part: A
+                  & CC
+                  & D
+                  // Not partition comment
+                  & BBB
+                  // Part: B
+                  & AAA
+                  & E
+                  // Part: C
+                  & GG
+                  // Not partition comment
+                  & FFF
+              `,
+              output: dedent`
+                type T =
+                  // Part: A
+                  & BBB
+                  & CC
+                  // Not partition comment
+                  & D
+                  // Part: B
+                  & AAA
+                  & E
+                  // Part: C
+                  & FFF
+                  // Not partition comment
+                  & GG
+              `,
+              options: [
+                {
+                  ...options,
+                  partitionByComment: '^Part*',
                 },
               ],
               errors: [
@@ -612,7 +672,7 @@ describe(ruleName, () => {
       )
 
       ruleTester.run(
-        `${ruleName}(${type}): allows to use regex matcher for partition comments`,
+        `${ruleName}(${type}): allows to use regex for partition comments`,
         rule,
         {
           valid: [
@@ -628,7 +688,6 @@ describe(ruleName, () => {
               options: [
                 {
                   ...options,
-                  matcher: 'regex',
                   partitionByComment: ['^(?!.*foo).*$'],
                 },
               ],
@@ -683,6 +742,195 @@ describe(ruleName, () => {
           },
         ],
         invalid: [],
+      },
+    )
+
+    ruleTester.run(`${ruleName}(${type}): allows to use locale`, rule, {
+      valid: [
+        {
+          code: dedent`
+              type T =
+                你好 &
+                世界 &
+                a &
+                A &
+                b &
+                B
+            `,
+          options: [{ ...options, locales: 'zh-CN' }],
+        },
+      ],
+      invalid: [],
+    })
+
+    describe(`${ruleName}: newlinesBetween`, () => {
+      ruleTester.run(
+        `${ruleName}(${type}): removes newlines when never`,
+        rule,
+        {
+          valid: [],
+          invalid: [
+            {
+              code: dedent`
+                type T =
+                  (() => null)
+
+
+                 & Y
+                & Z
+
+                    & B
+              `,
+              output: dedent`
+                type T =
+                  (() => null)
+                 & B
+                & Y
+                    & Z
+              `,
+              options: [
+                {
+                  ...options,
+                  newlinesBetween: 'never',
+                  groups: ['function', 'unknown'],
+                },
+              ],
+              errors: [
+                {
+                  messageId: 'extraSpacingBetweenIntersectionTypes',
+                  data: {
+                    left: '() => null',
+                    right: 'Y',
+                  },
+                },
+                {
+                  messageId: 'unexpectedIntersectionTypesOrder',
+                  data: {
+                    left: 'Z',
+                    right: 'B',
+                  },
+                },
+                {
+                  messageId: 'extraSpacingBetweenIntersectionTypes',
+                  data: {
+                    left: 'Z',
+                    right: 'B',
+                  },
+                },
+              ],
+            },
+          ],
+        },
+      )
+
+      ruleTester.run(
+        `${ruleName}(${type}): keeps one newline when always`,
+        rule,
+        {
+          valid: [],
+          invalid: [
+            {
+              code: dedent`
+                type T =
+                  (() => null)
+
+
+                 & Z
+                & Y
+                    & "A"
+              `,
+              output: dedent`
+                type T =
+                  (() => null)
+
+                 & Y
+                & Z
+
+                    & "A"
+                `,
+              options: [
+                {
+                  ...options,
+                  newlinesBetween: 'always',
+                  groups: ['function', 'unknown', 'literal'],
+                },
+              ],
+              errors: [
+                {
+                  messageId: 'extraSpacingBetweenIntersectionTypes',
+                  data: {
+                    left: '() => null',
+                    right: 'Z',
+                  },
+                },
+                {
+                  messageId: 'unexpectedIntersectionTypesOrder',
+                  data: {
+                    left: 'Z',
+                    right: 'Y',
+                  },
+                },
+                {
+                  messageId: 'missedSpacingBetweenIntersectionTypes',
+                  data: {
+                    left: 'Y',
+                    right: '"A"',
+                  },
+                },
+              ],
+            },
+          ],
+        },
+      )
+    })
+
+    ruleTester.run(
+      `${ruleName}(${type}): sorts inline elements correctly`,
+      rule,
+      {
+        valid: [],
+        invalid: [
+          {
+            code: dedent`
+              type T =
+                & B & A
+            `,
+            output: dedent`
+              type T =
+                & A & B
+            `,
+            options: [options],
+            errors: [
+              {
+                messageId: 'unexpectedIntersectionTypesOrder',
+                data: {
+                  left: 'B',
+                  right: 'A',
+                },
+              },
+            ],
+          },
+          {
+            code: dedent`
+              type T =
+                B & A
+            `,
+            output: dedent`
+              type T =
+                A & B
+            `,
+            options: [options],
+            errors: [
+              {
+                messageId: 'unexpectedIntersectionTypesOrder',
+                data: {
+                  left: 'B',
+                  right: 'A',
+                },
+              },
+            ],
+          },
+        ],
       },
     )
   })

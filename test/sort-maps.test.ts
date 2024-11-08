@@ -33,6 +33,14 @@ describe(ruleName, () => {
           {
             code: dedent`
               new Map([
+                ['a', 'a'],
+              ])
+            `,
+            options: [options],
+          },
+          {
+            code: dedent`
+              new Map([
                 ['c', 'cc'],
                 ['d', 'd'],
                 ...rest,
@@ -337,7 +345,7 @@ describe(ruleName, () => {
               options: [
                 {
                   ...options,
-                  partitionByComment: 'Part**',
+                  partitionByComment: '^Part*',
                 },
               ],
               errors: [
@@ -440,13 +448,10 @@ describe(ruleName, () => {
         },
       )
 
-      ruleTester.run(
-        `${ruleName}(${type}): allows to use regex matcher`,
-        rule,
-        {
-          valid: [
-            {
-              code: dedent`
+      ruleTester.run(`${ruleName}(${type}): allows to use regex`, rule, {
+        valid: [
+          {
+            code: dedent`
               new Map([
                 ['e', 'e'],
                 ['f', 'f'],
@@ -455,18 +460,16 @@ describe(ruleName, () => {
                 ['b', 'b'],
               ])
             `,
-              options: [
-                {
-                  ...options,
-                  matcher: 'regex',
-                  partitionByComment: ['^(?!.*foo).*$'],
-                },
-              ],
-            },
-          ],
-          invalid: [],
-        },
-      )
+            options: [
+              {
+                ...options,
+                partitionByComment: ['^(?!.*foo).*$'],
+              },
+            ],
+          },
+        ],
+        invalid: [],
+      })
     })
 
     ruleTester.run(
@@ -517,6 +520,25 @@ describe(ruleName, () => {
         invalid: [],
       },
     )
+
+    ruleTester.run(`${ruleName}(${type}): allows to use locale`, rule, {
+      valid: [
+        {
+          code: dedent`
+              new Map([
+                [你好, '你好'],
+                [世界, '世界'],
+                [a, 'a'],
+                [A, 'A'],
+                [b, 'b'],
+                [B, 'B'],
+              ])
+            `,
+          options: [{ ...options, locales: 'zh-CN' }],
+        },
+      ],
+      invalid: [],
+    })
   })
 
   describe(`${ruleName}: sorting by natural order`, () => {

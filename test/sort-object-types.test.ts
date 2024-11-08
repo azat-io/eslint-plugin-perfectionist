@@ -252,7 +252,7 @@ describe(ruleName, () => {
             func<{ b: 'b'; a: 'aa' }>(/* ... */)
           `,
           output: dedent`
-            func<{ a: 'aa'; b: 'b' }>(/* ... */)
+            func<{ a: 'aa'; b: 'b'; }>(/* ... */)
           `,
           options: [options],
           errors: [
@@ -316,17 +316,6 @@ describe(ruleName, () => {
                   a: 'aaa'
                   c: 'c'
                   d: {
-                    f: 'f'
-                    e: 'ee'
-                  }
-                }
-              `,
-              dedent`
-                type Type = {
-                  b: 'bb'
-                  a: 'aaa'
-                  c: 'c'
-                  d: {
                     e: 'ee'
                     f: 'f'
                   }
@@ -366,7 +355,7 @@ describe(ruleName, () => {
     )
 
     ruleTester.run(
-      `${ruleName}(${type}): allows to use regex matcher for custom groups`,
+      `${ruleName}(${type}): allows to use regex for custom groups`,
       rule,
       {
         valid: [
@@ -382,7 +371,6 @@ describe(ruleName, () => {
             options: [
               {
                 ...options,
-                matcher: 'regex',
                 groups: ['unknown', 'elementsWithoutFoo'],
                 customGroups: {
                   elementsWithoutFoo: '^(?!.*Foo).*$',
@@ -554,7 +542,7 @@ describe(ruleName, () => {
               options: [
                 {
                   ...options,
-                  partitionByComment: 'Part**',
+                  partitionByComment: '^Part*',
                 },
               ],
               errors: [
@@ -658,7 +646,7 @@ describe(ruleName, () => {
       )
 
       ruleTester.run(
-        `${ruleName}(${type}): allows to use regex matcher for partition comments`,
+        `${ruleName}(${type}): allows to use regex for partition comments`,
         rule,
         {
           valid: [
@@ -675,7 +663,6 @@ describe(ruleName, () => {
               options: [
                 {
                   ...options,
-                  matcher: 'regex',
                   partitionByComment: ['^(?!.*foo).*$'],
                 },
               ],
@@ -868,6 +855,25 @@ describe(ruleName, () => {
       },
     )
 
+    ruleTester.run(`${ruleName}(${type}): allows to use locale`, rule, {
+      valid: [
+        {
+          code: dedent`
+              type Type = {
+                你好: string
+                世界: string
+                a: string
+                A: string
+                b: string
+                B: string
+              }
+            `,
+          options: [{ ...options, locales: 'zh-CN' }],
+        },
+      ],
+      invalid: [],
+    })
+
     ruleTester.run(`${ruleName}(${type}): allows to use method group`, rule, {
       valid: [
         {
@@ -889,6 +895,211 @@ describe(ruleName, () => {
       ],
       invalid: [],
     })
+
+    describe(`${ruleName}: newlinesBetween`, () => {
+      ruleTester.run(
+        `${ruleName}(${type}): removes newlines when never`,
+        rule,
+        {
+          valid: [],
+          invalid: [
+            {
+              code: dedent`
+                type Type = {
+                  a: () => null,
+
+
+                 y: "y",
+                z: "z",
+
+                    b: "b",
+                }
+              `,
+              output: dedent`
+                type Type = {
+                  a: () => null,
+                 b: "b",
+                y: "y",
+                    z: "z",
+                }
+              `,
+              options: [
+                {
+                  ...options,
+                  newlinesBetween: 'never',
+                  groups: ['method', 'unknown'],
+                },
+              ],
+              errors: [
+                {
+                  messageId: 'extraSpacingBetweenObjectTypeMembers',
+                  data: {
+                    left: 'a',
+                    right: 'y',
+                  },
+                },
+                {
+                  messageId: 'unexpectedObjectTypesOrder',
+                  data: {
+                    left: 'z',
+                    right: 'b',
+                  },
+                },
+                {
+                  messageId: 'extraSpacingBetweenObjectTypeMembers',
+                  data: {
+                    left: 'z',
+                    right: 'b',
+                  },
+                },
+              ],
+            },
+          ],
+        },
+      )
+
+      ruleTester.run(
+        `${ruleName}(${type}): keeps one newline when always`,
+        rule,
+        {
+          valid: [],
+          invalid: [
+            {
+              code: dedent`
+                type Type = {
+                  a: () => null,
+
+
+                 z: "z",
+                y: "y",
+                    b: {
+                      // Newline stuff
+                    },
+                }
+              `,
+              output: dedent`
+                type Type = {
+                  a: () => null,
+
+                 y: "y",
+                z: "z",
+
+                    b: {
+                      // Newline stuff
+                    },
+                }
+                `,
+              options: [
+                {
+                  ...options,
+                  newlinesBetween: 'always',
+                  groups: ['method', 'unknown', 'multiline'],
+                },
+              ],
+              errors: [
+                {
+                  messageId: 'extraSpacingBetweenObjectTypeMembers',
+                  data: {
+                    left: 'a',
+                    right: 'z',
+                  },
+                },
+                {
+                  messageId: 'unexpectedObjectTypesOrder',
+                  data: {
+                    left: 'z',
+                    right: 'y',
+                  },
+                },
+                {
+                  messageId: 'missedSpacingBetweenObjectTypeMembers',
+                  data: {
+                    left: 'y',
+                    right: 'b',
+                  },
+                },
+              ],
+            },
+          ],
+        },
+      )
+    })
+
+    ruleTester.run(
+      `${ruleName}(${type}): sorts inline elements correctly`,
+      rule,
+      {
+        valid: [],
+        invalid: [
+          {
+            code: dedent`
+              type Type = {
+                b: string, a: string
+              }
+            `,
+            output: dedent`
+              type Type = {
+                a: string; b: string,
+              }
+            `,
+            options: [options],
+            errors: [
+              {
+                messageId: 'unexpectedObjectTypesOrder',
+                data: {
+                  left: 'b',
+                  right: 'a',
+                },
+              },
+            ],
+          },
+          {
+            code: dedent`
+              type Type = {
+                b: string, a: string;
+              }
+            `,
+            output: dedent`
+              type Type = {
+                a: string; b: string,
+              }
+            `,
+            options: [options],
+            errors: [
+              {
+                messageId: 'unexpectedObjectTypesOrder',
+                data: {
+                  left: 'b',
+                  right: 'a',
+                },
+              },
+            ],
+          },
+          {
+            code: dedent`
+              type Type = {
+                b: string, a: string,
+              }
+            `,
+            output: dedent`
+              type Type = {
+                a: string, b: string,
+              }
+            `,
+            options: [options],
+            errors: [
+              {
+                messageId: 'unexpectedObjectTypesOrder',
+                data: {
+                  left: 'b',
+                  right: 'a',
+                },
+              },
+            ],
+          },
+        ],
+      },
+    )
   })
 
   describe(`${ruleName}: sorting by natural order`, () => {
@@ -1127,7 +1338,7 @@ describe(ruleName, () => {
             func<{ b: 'b'; a: 'aa' }>(/* ... */)
           `,
           output: dedent`
-            func<{ a: 'aa'; b: 'b' }>(/* ... */)
+            func<{ a: 'aa'; b: 'b'; }>(/* ... */)
           `,
           options: [options],
           errors: [
@@ -1185,17 +1396,6 @@ describe(ruleName, () => {
               }
             `,
             output: [
-              dedent`
-                type Type = {
-                  b: 'bb'
-                  a: 'aaa'
-                  c: 'c'
-                  d: {
-                    f: 'f'
-                    e: 'ee'
-                  }
-                }
-              `,
               dedent`
                 type Type = {
                   b: 'bb'
@@ -1721,7 +1921,7 @@ describe(ruleName, () => {
             func<{ b: 'b'; a: 'aa' }>(/* ... */)
           `,
           output: dedent`
-            func<{ a: 'aa'; b: 'b' }>(/* ... */)
+            func<{ a: 'aa'; b: 'b'; }>(/* ... */)
           `,
           options: [options],
           errors: [
@@ -1779,17 +1979,6 @@ describe(ruleName, () => {
               }
             `,
             output: [
-              dedent`
-                type Type = {
-                  b: 'bb'
-                  a: 'aaa'
-                  c: 'c'
-                  d: {
-                    f: 'f'
-                    e: 'ee'
-                  }
-                }
-              `,
               dedent`
                 type Type = {
                   b: 'bb'

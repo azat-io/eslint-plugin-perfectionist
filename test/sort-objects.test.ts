@@ -322,7 +322,7 @@ describe(ruleName, () => {
     })
 
     ruleTester.run(
-      `${ruleName}(${type}): allows to use regex matcher for custom groups`,
+      `${ruleName}(${type}): allows to use regex for custom groups`,
       rule,
       {
         valid: [
@@ -332,13 +332,12 @@ describe(ruleName, () => {
               iHaveFooInMyName: string,
               meTooIHaveFoo: string,
               a: string,
-              b: string,
+              b: "b",
             }
             `,
             options: [
               {
                 ...options,
-                matcher: 'regex',
                 groups: ['unknown', 'elementsWithoutFoo'],
                 customGroups: {
                   elementsWithoutFoo: '^(?!.*Foo).*$',
@@ -1261,7 +1260,7 @@ describe(ruleName, () => {
               options: [
                 {
                   ...options,
-                  partitionByComment: 'Part**',
+                  partitionByComment: '^Part*',
                 },
               ],
               errors: [
@@ -1362,7 +1361,7 @@ describe(ruleName, () => {
             options: [
               {
                 ...options,
-                partitionByComment: 'Part**',
+                partitionByComment: '^Part*',
               },
             ],
             errors: [
@@ -1466,7 +1465,7 @@ describe(ruleName, () => {
     )
 
     ruleTester.run(
-      `${ruleName}(${type}): allows to use regex matcher for partition comments`,
+      `${ruleName}(${type}): allows to use regex for partition comments`,
       rule,
       {
         valid: [
@@ -1483,7 +1482,6 @@ describe(ruleName, () => {
             options: [
               {
                 ...options,
-                matcher: 'regex',
                 partitionByComment: ['^(?!.*foo).*$'],
               },
             ],
@@ -1615,6 +1613,237 @@ describe(ruleName, () => {
           },
         ],
         invalid: [],
+      },
+    )
+
+    ruleTester.run(`${ruleName}(${type}): allows to use locale`, rule, {
+      valid: [
+        {
+          code: dedent`
+              let obj = {
+                你好 = '你好',
+                世界 = '世界',
+                a = 'a',
+                A = 'A',
+                b = 'b',
+                B = 'B',
+              }
+            `,
+          options: [{ ...options, locales: 'zh-CN' }],
+        },
+      ],
+      invalid: [],
+    })
+
+    ruleTester.run(
+      `${ruleName}(${type}): allows to set groups for sorting`,
+      rule,
+      {
+        valid: [
+          {
+            code: dedent`
+              let obj = {
+                z: {
+                  // Some multiline stuff
+                },
+                f: 'a',
+                a1: () => {},
+                a2: function() {},
+                a3() {},
+              }
+            `,
+            options: [
+              {
+                ...options,
+                groups: ['multiline', 'unknown', 'method'],
+              },
+            ],
+          },
+        ],
+        invalid: [],
+      },
+    )
+
+    describe(`${ruleName}: newlinesBetween`, () => {
+      ruleTester.run(
+        `${ruleName}(${type}): removes newlines when never`,
+        rule,
+        {
+          valid: [],
+          invalid: [
+            {
+              code: dedent`
+                let Obj = {
+                  a: () => null,
+
+
+                 y: "y",
+                z: "z",
+
+                    b: "b",
+                }
+              `,
+              output: dedent`
+                let Obj = {
+                  a: () => null,
+                 b: "b",
+                y: "y",
+                    z: "z",
+                }
+              `,
+              options: [
+                {
+                  ...options,
+                  newlinesBetween: 'never',
+                  groups: ['method', 'unknown'],
+                },
+              ],
+              errors: [
+                {
+                  messageId: 'extraSpacingBetweenObjectMembers',
+                  data: {
+                    left: 'a',
+                    right: 'y',
+                  },
+                },
+                {
+                  messageId: 'unexpectedObjectsOrder',
+                  data: {
+                    left: 'z',
+                    right: 'b',
+                  },
+                },
+                {
+                  messageId: 'extraSpacingBetweenObjectMembers',
+                  data: {
+                    left: 'z',
+                    right: 'b',
+                  },
+                },
+              ],
+            },
+          ],
+        },
+      )
+
+      ruleTester.run(
+        `${ruleName}(${type}): keeps one newline when always`,
+        rule,
+        {
+          valid: [],
+          invalid: [
+            {
+              code: dedent`
+                let Obj = {
+                  a: () => null,
+
+
+                 z: "z",
+                y: "y",
+                    b: {
+                      // Newline stuff
+                    },
+                }
+              `,
+              output: dedent`
+                let Obj = {
+                  a: () => null,
+
+                 y: "y",
+                z: "z",
+
+                    b: {
+                      // Newline stuff
+                    },
+                }
+                `,
+              options: [
+                {
+                  ...options,
+                  newlinesBetween: 'always',
+                  groups: ['method', 'unknown', 'multiline'],
+                },
+              ],
+              errors: [
+                {
+                  messageId: 'extraSpacingBetweenObjectMembers',
+                  data: {
+                    left: 'a',
+                    right: 'z',
+                  },
+                },
+                {
+                  messageId: 'unexpectedObjectsOrder',
+                  data: {
+                    left: 'z',
+                    right: 'y',
+                  },
+                },
+                {
+                  messageId: 'missedSpacingBetweenObjectMembers',
+                  data: {
+                    left: 'y',
+                    right: 'b',
+                  },
+                },
+              ],
+            },
+          ],
+        },
+      )
+    })
+
+    ruleTester.run(
+      `${ruleName}(${type}): sorts inline elements correctly`,
+      rule,
+      {
+        valid: [],
+        invalid: [
+          {
+            code: dedent`
+              let obj = {
+                b: string, a: string
+              }
+            `,
+            output: dedent`
+              let obj = {
+                a: string, b: string
+              }
+            `,
+            options: [options],
+            errors: [
+              {
+                messageId: 'unexpectedObjectsOrder',
+                data: {
+                  left: 'b',
+                  right: 'a',
+                },
+              },
+            ],
+          },
+          {
+            code: dedent`
+              let obj = {
+                b: string, a: string,
+              }
+            `,
+            output: dedent`
+              let obj = {
+                a: string, b: string,
+              }
+            `,
+            options: [options],
+            errors: [
+              {
+                messageId: 'unexpectedObjectsOrder',
+                data: {
+                  left: 'b',
+                  right: 'a',
+                },
+              },
+            ],
+          },
+        ],
       },
     )
   })
@@ -2296,7 +2525,7 @@ describe(ruleName, () => {
             options: [
               {
                 ...options,
-                partitionByComment: 'Part**',
+                partitionByComment: '^Part*',
               },
             ],
             errors: [
@@ -3099,7 +3328,7 @@ describe(ruleName, () => {
             options: [
               {
                 ...options,
-                partitionByComment: 'Part**',
+                partitionByComment: '^Part*',
               },
             ],
             errors: [
@@ -3483,7 +3712,7 @@ describe(ruleName, () => {
           `,
           options: [
             {
-              ignorePattern: ['*Styles'],
+              ignorePattern: ['Styles$'],
             },
           ],
         },
