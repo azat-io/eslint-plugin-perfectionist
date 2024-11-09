@@ -1,11 +1,15 @@
 import type { RuleContext } from '@typescript-eslint/utils/ts-eslint'
+import type { CompilerOptions } from 'typescript'
 
+import { afterAll, describe, expect, it, vi } from 'vitest'
 import { RuleTester } from '@typescript-eslint/rule-tester'
-import { afterAll, describe, expect, it } from 'vitest'
+import { createModuleResolutionCache } from 'typescript'
 import { dedent } from 'ts-dedent'
 
 import type { MESSAGE_ID, Options } from '../rules/sort-imports'
 
+import * as readClosestTsConfigUtils from '../utils/read-closest-ts-config-by-path'
+import * as getTypescriptImportUtils from '../utils/get-typescript-import'
 import rule from '../rules/sort-imports'
 
 let ruleName = 'sort-imports'
@@ -5905,5 +5909,141 @@ describe(ruleName, () => {
         ).not.toThrow(expectedThrownError)
       })
     })
+
+    describe(`${ruleName}: handles tsconfig.json`, () => {
+      ruleTester.run(
+        `${ruleName}: marks internal imports as 'internal'`,
+        rule,
+        {
+          valid: [
+            {
+              code: dedent`
+                import { x } from 'sort-imports'
+
+                import { a } from './a';
+              `,
+              options: [
+                {
+                  tsconfigRootDir: '.',
+                  groups: ['internal', 'unknown'],
+                },
+              ],
+              before: () => {
+                mockReadClosestTsConfigByPathWith({
+                  baseUrl: './rules/',
+                })
+              },
+            },
+          ],
+          invalid: [],
+        },
+      )
+
+      ruleTester.run(
+        `${ruleName}: marks external imports as 'external'`,
+        rule,
+        {
+          valid: [
+            {
+              code: dedent`
+                import type { ParsedCommandLine } from 'typescript'
+
+                import { a } from './a';
+              `,
+              options: [
+                {
+                  tsconfigRootDir: '.',
+                  groups: ['external', 'unknown'],
+                },
+              ],
+              before: () => {
+                mockReadClosestTsConfigByPathWith({
+                  baseUrl: '.',
+                })
+              },
+            },
+          ],
+          invalid: [],
+        },
+      )
+
+      ruleTester.run(
+        `${ruleName}: marks non-resolved imports as 'external'`,
+        rule,
+        {
+          valid: [
+            {
+              code: dedent`
+                import { b } from 'b'
+
+                import { a } from './a';
+              `,
+              options: [
+                {
+                  tsconfigRootDir: '.',
+                  groups: ['external', 'unknown'],
+                },
+              ],
+              before: () => {
+                mockReadClosestTsConfigByPathWith({
+                  baseUrl: '.',
+                })
+              },
+            },
+          ],
+          invalid: [],
+        },
+      )
+
+      ruleTester.run(
+        `${ruleName}: uses the fallback algorithm if typescript is not present`,
+        rule,
+        {
+          valid: [
+            {
+              code: dedent`
+                import { b } from 'b'
+
+                import { a } from './a';
+              `,
+              options: [
+                {
+                  tsconfigRootDir: '.',
+                  groups: ['external', 'unknown'],
+                },
+              ],
+              before: () => {
+                mockReadClosestTsConfigByPathWith(null)
+                vi.spyOn(
+                  getTypescriptImportUtils,
+                  'getTypescriptImport',
+                ).mockReturnValue(null)
+              },
+            },
+          ],
+          invalid: [],
+        },
+      )
+    })
+
+    let mockReadClosestTsConfigByPathWith = (
+      compilerOptions: CompilerOptions | null,
+    ) => {
+      vi.spyOn(
+        readClosestTsConfigUtils,
+        'readClosestTsConfigByPath',
+      ).mockReturnValue(
+        !compilerOptions
+          ? null
+          : {
+              compilerOptions,
+              cache: createModuleResolutionCache(
+                '.',
+                filename => filename,
+                compilerOptions,
+              ),
+            },
+      )
+    }
   })
 })

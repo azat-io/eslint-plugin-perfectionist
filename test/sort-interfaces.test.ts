@@ -33,6 +33,14 @@ describe(ruleName, () => {
           code: dedent`
             interface Interface {
               a: string
+            }
+          `,
+          options: [options],
+        },
+        {
+          code: dedent`
+            interface Interface {
+              a: string
               b: 'b1' | 'b2',
               c: string
             }

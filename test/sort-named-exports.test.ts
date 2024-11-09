@@ -28,6 +28,10 @@ describe(ruleName, () => {
     ruleTester.run(`${ruleName}(${type}): sorts named exports`, rule, {
       valid: [
         {
+          code: 'export { a }',
+          options: [options],
+        },
+        {
           code: 'export { aaa, bb, c }',
           options: [options],
         },

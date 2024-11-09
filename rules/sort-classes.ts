@@ -182,505 +182,493 @@ export default createEslintRule<SortClassesOptions, MESSAGE_ID>({
   defaultOptions: [defaultOptions],
   create: context => ({
     ClassBody: node => {
-      if (node.body.length > 1) {
-        let settings = getSettings(context.settings)
+      if (node.body.length <= 1) {
+        return
+      }
 
-        let options = complete(context.options.at(0), settings, defaultOptions)
-
-        validateGroupsConfiguration(options.groups, options.customGroups)
-        validateNewlinesAndPartitionConfiguration(options)
-
-        let sourceCode = getSourceCode(context)
-        let className = node.parent.id?.name
-
-        let getDependencyName = (props: {
-          nodeNameWithoutStartingHash: string
-          isPrivateHash: boolean
-          isStatic: boolean
-        }) =>
-          `${props.isStatic ? 'static ' : ''}${props.isPrivateHash ? '#' : ''}${props.nodeNameWithoutStartingHash}`
-
-        /**
-         * Class methods should not be considered as dependencies
-         * because they can be put in any order without causing a reference error.
-         */
-        let classMethodsDependencyNames = new Set(
-          node.body
-            .map(member => {
-              if (
-                (member.type === 'MethodDefinition' ||
-                  member.type === 'TSAbstractMethodDefinition') &&
-                'name' in member.key
-              ) {
-                return getDependencyName({
-                  nodeNameWithoutStartingHash: member.key.name,
-                  isStatic: member.static,
-                  isPrivateHash: member.key.type === 'PrivateIdentifier',
-                })
-              }
-              return null
-            })
-            .filter(m => m !== null),
-        )
-
-        let extractDependencies = (
-          expression: TSESTree.StaticBlock | TSESTree.Expression,
-          isMemberStatic: boolean,
-        ): string[] => {
-          let dependencies: string[] = []
-
-          let checkNode = (nodeValue: TSESTree.Node) => {
+      let settings = getSettings(context.settings)
+      let options = complete(context.options.at(0), settings, defaultOptions)
+      validateGroupsConfiguration(options.groups, options.customGroups)
+      validateNewlinesAndPartitionConfiguration(options)
+      let sourceCode = getSourceCode(context)
+      let className = node.parent.id?.name
+      let getDependencyName = (props: {
+        nodeNameWithoutStartingHash: string
+        isPrivateHash: boolean
+        isStatic: boolean
+      }) =>
+        `${props.isStatic ? 'static ' : ''}${props.isPrivateHash ? '#' : ''}${props.nodeNameWithoutStartingHash}`
+      /**
+       * Class methods should not be considered as dependencies
+       * because they can be put in any order without causing a reference error.
+       */
+      let classMethodsDependencyNames = new Set(
+        node.body
+          .map(member => {
             if (
-              nodeValue.type === 'MemberExpression' &&
-              (nodeValue.object.type === 'ThisExpression' ||
-                (nodeValue.object.type === 'Identifier' &&
-                  nodeValue.object.name === className)) &&
-              (nodeValue.property.type === 'Identifier' ||
-                nodeValue.property.type === 'PrivateIdentifier')
+              (member.type === 'MethodDefinition' ||
+                member.type === 'TSAbstractMethodDefinition') &&
+              'name' in member.key
             ) {
-              let isStaticDependency =
-                isMemberStatic || nodeValue.object.type === 'Identifier'
-              let dependencyName = getDependencyName({
-                nodeNameWithoutStartingHash: nodeValue.property.name,
-                isStatic: isStaticDependency,
-                isPrivateHash: nodeValue.property.type === 'PrivateIdentifier',
+              return getDependencyName({
+                nodeNameWithoutStartingHash: member.key.name,
+                isStatic: member.static,
+                isPrivateHash: member.key.type === 'PrivateIdentifier',
               })
-              if (!classMethodsDependencyNames.has(dependencyName)) {
-                dependencies.push(dependencyName)
-              }
             }
+            return null
+          })
+          .filter(m => m !== null),
+      )
+      let extractDependencies = (
+        expression: TSESTree.StaticBlock | TSESTree.Expression,
+        isMemberStatic: boolean,
+      ): string[] => {
+        let dependencies: string[] = []
 
-            if (nodeValue.type === 'Property') {
-              traverseNode(nodeValue.key)
-              traverseNode(nodeValue.value)
-            }
-
-            if (nodeValue.type === 'ConditionalExpression') {
-              traverseNode(nodeValue.test)
-              traverseNode(nodeValue.consequent)
-              traverseNode(nodeValue.alternate)
-            }
-
-            if (
-              'expression' in nodeValue &&
-              typeof nodeValue.expression !== 'boolean'
-            ) {
-              traverseNode(nodeValue.expression)
-            }
-
-            if ('object' in nodeValue) {
-              traverseNode(nodeValue.object)
-            }
-
-            if ('callee' in nodeValue) {
-              traverseNode(nodeValue.callee)
-            }
-
-            if ('init' in nodeValue && nodeValue.init) {
-              traverseNode(nodeValue.init)
-            }
-
-            if ('body' in nodeValue && nodeValue.body) {
-              traverseNode(nodeValue.body)
-            }
-
-            if ('left' in nodeValue) {
-              traverseNode(nodeValue.left)
-            }
-
-            if ('right' in nodeValue) {
-              traverseNode(nodeValue.right)
-            }
-
-            if ('elements' in nodeValue) {
-              nodeValue.elements
-                .filter(currentNode => currentNode !== null)
-                .forEach(traverseNode)
-            }
-
-            if ('argument' in nodeValue && nodeValue.argument) {
-              traverseNode(nodeValue.argument)
-            }
-
-            if ('arguments' in nodeValue) {
-              nodeValue.arguments.forEach(traverseNode)
-            }
-
-            if ('declarations' in nodeValue) {
-              nodeValue.declarations.forEach(traverseNode)
-            }
-
-            if ('properties' in nodeValue) {
-              nodeValue.properties.forEach(traverseNode)
-            }
-
-            if ('expressions' in nodeValue) {
-              nodeValue.expressions.forEach(traverseNode)
+        let checkNode = (nodeValue: TSESTree.Node) => {
+          if (
+            nodeValue.type === 'MemberExpression' &&
+            (nodeValue.object.type === 'ThisExpression' ||
+              (nodeValue.object.type === 'Identifier' &&
+                nodeValue.object.name === className)) &&
+            (nodeValue.property.type === 'Identifier' ||
+              nodeValue.property.type === 'PrivateIdentifier')
+          ) {
+            let isStaticDependency =
+              isMemberStatic || nodeValue.object.type === 'Identifier'
+            let dependencyName = getDependencyName({
+              nodeNameWithoutStartingHash: nodeValue.property.name,
+              isStatic: isStaticDependency,
+              isPrivateHash: nodeValue.property.type === 'PrivateIdentifier',
+            })
+            if (!classMethodsDependencyNames.has(dependencyName)) {
+              dependencies.push(dependencyName)
             }
           }
 
-          let traverseNode = (nodeValue: TSESTree.Node[] | TSESTree.Node) => {
-            if (Array.isArray(nodeValue)) {
-              nodeValue.forEach(traverseNode)
-            } else {
-              checkNode(nodeValue)
-            }
+          if (nodeValue.type === 'Property') {
+            traverseNode(nodeValue.key)
+            traverseNode(nodeValue.value)
           }
 
-          traverseNode(expression)
-          return dependencies
+          if (nodeValue.type === 'ConditionalExpression') {
+            traverseNode(nodeValue.test)
+            traverseNode(nodeValue.consequent)
+            traverseNode(nodeValue.alternate)
+          }
+
+          if (
+            'expression' in nodeValue &&
+            typeof nodeValue.expression !== 'boolean'
+          ) {
+            traverseNode(nodeValue.expression)
+          }
+
+          if ('object' in nodeValue) {
+            traverseNode(nodeValue.object)
+          }
+
+          if ('callee' in nodeValue) {
+            traverseNode(nodeValue.callee)
+          }
+
+          if ('init' in nodeValue && nodeValue.init) {
+            traverseNode(nodeValue.init)
+          }
+
+          if ('body' in nodeValue && nodeValue.body) {
+            traverseNode(nodeValue.body)
+          }
+
+          if ('left' in nodeValue) {
+            traverseNode(nodeValue.left)
+          }
+
+          if ('right' in nodeValue) {
+            traverseNode(nodeValue.right)
+          }
+
+          if ('elements' in nodeValue) {
+            nodeValue.elements
+              .filter(currentNode => currentNode !== null)
+              .forEach(traverseNode)
+          }
+
+          if ('argument' in nodeValue && nodeValue.argument) {
+            traverseNode(nodeValue.argument)
+          }
+
+          if ('arguments' in nodeValue) {
+            nodeValue.arguments.forEach(traverseNode)
+          }
+
+          if ('declarations' in nodeValue) {
+            nodeValue.declarations.forEach(traverseNode)
+          }
+
+          if ('properties' in nodeValue) {
+            nodeValue.properties.forEach(traverseNode)
+          }
+
+          if ('expressions' in nodeValue) {
+            nodeValue.expressions.forEach(traverseNode)
+          }
         }
 
-        let overloadSignatureGroups = getOverloadSignatureGroups(node.body)
-
-        let formattedNodes: SortingNodeWithDependencies[][] = node.body.reduce(
-          (accumulator: SortingNodeWithDependencies[][], member) => {
-            let name: string
-            let dependencies: string[] = []
-            let { getGroup, defineGroup } = useGroups(options)
-
-            if (member.type === 'StaticBlock') {
-              name = 'static'
-            } else if (member.type === 'TSIndexSignature') {
-              name = sourceCode.text.slice(
-                member.range.at(0),
-                member.typeAnnotation?.range.at(0) ?? member.range.at(1),
-              )
-            } else if (member.key.type === 'Identifier') {
-              ;({ name } = member.key)
-            } else {
-              name = sourceCode.getText(member.key)
-            }
-
-            let isPrivateHash =
-              'key' in member && member.key.type === 'PrivateIdentifier'
-
-            let decorated = false
-            let decorators: string[] = []
-
-            if ('decorators' in member) {
-              decorated = member.decorators.length > 0
-              for (let decorator of member.decorators) {
-                if (decorator.expression.type === 'Identifier') {
-                  decorators.push(decorator.expression.name)
-                } else if (
-                  decorator.expression.type === 'CallExpression' &&
-                  decorator.expression.callee.type === 'Identifier'
-                ) {
-                  decorators.push(decorator.expression.callee.name)
-                }
-              }
-            }
-
-            let memberValue: undefined | string
-            let modifiers: Modifier[] = []
-            let selectors: Selector[] = []
-            let addSafetySemicolonWhenInline: boolean = true
-            if (
-              member.type === 'MethodDefinition' ||
-              member.type === 'TSAbstractMethodDefinition'
-            ) {
-              // By putting the static modifier before accessibility modifiers,
-              // we prioritize 'static' over those in cases like:
-              // Config: ['static-method', 'public-method']
-              // Element: public static method();
-              // Element will be classified as 'static-method' before 'public-method'
-              if (member.static) {
-                modifiers.push('static')
-              }
-              if (member.type === 'TSAbstractMethodDefinition') {
-                modifiers.push('abstract')
-              } else {
-                addSafetySemicolonWhenInline = false
-              }
-
-              if (decorated) {
-                modifiers.push('decorated')
-              }
-
-              if (member.override) {
-                modifiers.push('override')
-              }
-
-              if (member.accessibility === 'protected') {
-                modifiers.push('protected')
-              } else if (member.accessibility === 'private' || isPrivateHash) {
-                modifiers.push('private')
-              } else {
-                modifiers.push('public')
-              }
-
-              if (member.optional) {
-                modifiers.push('optional')
-              }
-
-              if (member.kind === 'constructor') {
-                selectors.push('constructor')
-              }
-
-              if (member.kind === 'get') {
-                selectors.push('get-method')
-              }
-
-              if (member.kind === 'set') {
-                selectors.push('set-method')
-              }
-              selectors.push('method')
-            } else if (member.type === 'TSIndexSignature') {
-              if (member.static) {
-                modifiers.push('static')
-              }
-
-              if (member.readonly) {
-                modifiers.push('readonly')
-              }
-
-              selectors.push('index-signature')
-            } else if (member.type === 'StaticBlock') {
-              addSafetySemicolonWhenInline = false
-
-              selectors.push('static-block')
-
-              dependencies = extractDependencies(member, true)
-            } else if (
-              member.type === 'AccessorProperty' ||
-              member.type === 'TSAbstractAccessorProperty'
-            ) {
-              if (member.static) {
-                modifiers.push('static')
-              }
-
-              if (member.type === 'TSAbstractAccessorProperty') {
-                modifiers.push('abstract')
-              }
-
-              if (decorated) {
-                modifiers.push('decorated')
-              }
-
-              if (member.override) {
-                modifiers.push('override')
-              }
-
-              if (member.accessibility === 'protected') {
-                modifiers.push('protected')
-              } else if (member.accessibility === 'private' || isPrivateHash) {
-                modifiers.push('private')
-              } else {
-                modifiers.push('public')
-              }
-              selectors.push('accessor-property')
-            } else {
-              // Member is necessarily a Property
-              // Similarly to above for methods, prioritize 'static', 'declare', 'decorated', 'abstract', 'override' and 'readonly'
-              // over accessibility modifiers
-              if (member.static) {
-                modifiers.push('static')
-              }
-
-              if (member.declare) {
-                modifiers.push('declare')
-              }
-
-              if (member.type === 'TSAbstractPropertyDefinition') {
-                modifiers.push('abstract')
-              }
-
-              if (decorated) {
-                modifiers.push('decorated')
-              }
-
-              if (member.override) {
-                modifiers.push('override')
-              }
-
-              if (member.readonly) {
-                modifiers.push('readonly')
-              }
-
-              if (member.accessibility === 'protected') {
-                modifiers.push('protected')
-              } else if (member.accessibility === 'private' || isPrivateHash) {
-                modifiers.push('private')
-              } else {
-                modifiers.push('public')
-              }
-
-              if (member.optional) {
-                modifiers.push('optional')
-              }
-
-              let isFunctionProperty =
-                member.value?.type === 'ArrowFunctionExpression' ||
-                member.value?.type === 'FunctionExpression'
-              if (isFunctionProperty) {
-                selectors.push('function-property')
-              }
-
-              if (!isFunctionProperty && member.value) {
-                memberValue = sourceCode.getText(member.value)
-              }
-
-              selectors.push('property')
-
-              if (
-                member.type === 'PropertyDefinition' &&
-                member.value &&
-                !isFunctionProperty
-              ) {
-                dependencies = extractDependencies(member.value, member.static)
-              }
-            }
-
-            for (let officialGroup of generateOfficialGroups(
-              modifiers,
-              selectors,
-            )) {
-              defineGroup(officialGroup)
-            }
-
-            for (let customGroup of options.customGroups) {
-              if (
-                customGroupMatches({
-                  customGroup,
-                  elementName: name,
-                  elementValue: memberValue,
-                  modifiers,
-                  selectors,
-                  decorators,
-                })
-              ) {
-                defineGroup(customGroup.groupName, true)
-                // If the custom group is not referenced in the `groups` option, it will be ignored
-                if (getGroup() === customGroup.groupName) {
-                  break
-                }
-              }
-            }
-
-            // Members belonging to the same overload signature group should have the same size in order to keep line-length sorting between them consistent.
-            // It is unclear what should be considered the size of an overload signature group. Take the size of the implementation by default.
-            let overloadSignatureGroupMember = overloadSignatureGroups
-              .find(overloadSignatures => overloadSignatures.includes(member))
-              ?.at(-1)
-
-            let sortingNode: SortingNodeWithDependencies = {
-              size: overloadSignatureGroupMember
-                ? rangeToDiff(overloadSignatureGroupMember, sourceCode)
-                : rangeToDiff(member, sourceCode),
-              group: getGroup(),
-              node: member,
-              dependencies,
-              name,
-              addSafetySemicolonWhenInline,
-              dependencyName: getDependencyName({
-                nodeNameWithoutStartingHash: name.startsWith('#')
-                  ? name.slice(1)
-                  : name,
-                isPrivateHash,
-                isStatic: modifiers.includes('static'),
-              }),
-            }
-
-            let comments = getCommentsBefore(member, sourceCode)
-            let lastMember = accumulator.at(-1)?.at(-1)
-
-            if (
-              (options.partitionByNewLine &&
-                lastMember &&
-                getLinesBetween(sourceCode, lastMember, sortingNode)) ||
-              (options.partitionByComment &&
-                hasPartitionComment(options.partitionByComment, comments))
-            ) {
-              accumulator.push([])
-            }
-
-            accumulator.at(-1)!.push(sortingNode)
-
-            return accumulator
-          },
-          [[]],
-        )
-
-        let sortedNodes = formattedNodes
-          .map(nodes =>
-            sortNodesByGroups(nodes, options, {
-              getGroupCompareOptions: groupNumber =>
-                getCompareOptions(options, groupNumber),
-              isNodeIgnored: sortingNode =>
-                getGroupNumber(options.groups, sortingNode) ===
-                options.groups.length,
-            }),
-          )
-          .flat()
-
-        sortedNodes = sortNodesByDependencies(sortedNodes)
-        let nodes = formattedNodes.flat()
-
-        pairwise(nodes, (left, right) => {
-          let leftNum = getGroupNumber(options.groups, left)
-          let rightNum = getGroupNumber(options.groups, right)
-
-          let indexOfLeft = sortedNodes.indexOf(left)
-          let indexOfRight = sortedNodes.indexOf(right)
-
-          let messageIds: MESSAGE_ID[] = []
-          let firstUnorderedNodeDependentOnRight =
-            getFirstUnorderedNodeDependentOn(right, nodes)
-          if (
-            firstUnorderedNodeDependentOnRight ||
-            indexOfLeft > indexOfRight
-          ) {
-            if (firstUnorderedNodeDependentOnRight) {
-              messageIds.push('unexpectedClassesDependencyOrder')
-            } else {
-              messageIds.push(
-                leftNum !== rightNum
-                  ? 'unexpectedClassesGroupOrder'
-                  : 'unexpectedClassesOrder',
-              )
-            }
+        let traverseNode = (nodeValue: TSESTree.Node[] | TSESTree.Node) => {
+          if (Array.isArray(nodeValue)) {
+            nodeValue.forEach(traverseNode)
+          } else {
+            checkNode(nodeValue)
           }
+        }
 
-          messageIds = [
-            ...messageIds,
-            ...getNewlinesErrors({
-              left,
-              leftNum,
-              right,
-              rightNum,
-              sourceCode,
-              missedSpacingError: 'missedSpacingBetweenClassMembers',
-              extraSpacingError: 'extraSpacingBetweenClassMembers',
-              options,
-            }),
-          ]
-
-          for (let messageId of messageIds) {
-            context.report({
-              messageId,
-              data: {
-                left: toSingleLine(left.name),
-                leftGroup: left.group,
-                right: toSingleLine(right.name),
-                rightGroup: right.group,
-                nodeDependentOnRight: firstUnorderedNodeDependentOnRight?.name,
-              },
-              node: right.node,
-              fix: (fixer: TSESLint.RuleFixer) => [
-                ...makeFixes(fixer, nodes, sortedNodes, sourceCode, options),
-                ...makeNewlinesFixes(
-                  fixer,
-                  nodes,
-                  sortedNodes,
-                  sourceCode,
-                  options,
-                ),
-              ],
-            })
-          }
-        })
+        traverseNode(expression)
+        return dependencies
       }
+      let overloadSignatureGroups = getOverloadSignatureGroups(node.body)
+      let formattedNodes: SortingNodeWithDependencies[][] = node.body.reduce(
+        (accumulator: SortingNodeWithDependencies[][], member) => {
+          let name: string
+          let dependencies: string[] = []
+          let { getGroup, defineGroup } = useGroups(options)
+
+          if (member.type === 'StaticBlock') {
+            name = 'static'
+          } else if (member.type === 'TSIndexSignature') {
+            name = sourceCode.text.slice(
+              member.range.at(0),
+              member.typeAnnotation?.range.at(0) ?? member.range.at(1),
+            )
+          } else if (member.key.type === 'Identifier') {
+            ;({ name } = member.key)
+          } else {
+            name = sourceCode.getText(member.key)
+          }
+
+          let isPrivateHash =
+            'key' in member && member.key.type === 'PrivateIdentifier'
+
+          let decorated = false
+          let decorators: string[] = []
+
+          if ('decorators' in member) {
+            decorated = member.decorators.length > 0
+            for (let decorator of member.decorators) {
+              if (decorator.expression.type === 'Identifier') {
+                decorators.push(decorator.expression.name)
+              } else if (
+                decorator.expression.type === 'CallExpression' &&
+                decorator.expression.callee.type === 'Identifier'
+              ) {
+                decorators.push(decorator.expression.callee.name)
+              }
+            }
+          }
+
+          let memberValue: undefined | string
+          let modifiers: Modifier[] = []
+          let selectors: Selector[] = []
+          let addSafetySemicolonWhenInline: boolean = true
+          if (
+            member.type === 'MethodDefinition' ||
+            member.type === 'TSAbstractMethodDefinition'
+          ) {
+            // By putting the static modifier before accessibility modifiers,
+            // we prioritize 'static' over those in cases like:
+            // Config: ['static-method', 'public-method']
+            // Element: public static method();
+            // Element will be classified as 'static-method' before 'public-method'
+            if (member.static) {
+              modifiers.push('static')
+            }
+            if (member.type === 'TSAbstractMethodDefinition') {
+              modifiers.push('abstract')
+            } else {
+              addSafetySemicolonWhenInline = false
+            }
+
+            if (decorated) {
+              modifiers.push('decorated')
+            }
+
+            if (member.override) {
+              modifiers.push('override')
+            }
+
+            if (member.accessibility === 'protected') {
+              modifiers.push('protected')
+            } else if (member.accessibility === 'private' || isPrivateHash) {
+              modifiers.push('private')
+            } else {
+              modifiers.push('public')
+            }
+
+            if (member.optional) {
+              modifiers.push('optional')
+            }
+
+            if (member.kind === 'constructor') {
+              selectors.push('constructor')
+            }
+
+            if (member.kind === 'get') {
+              selectors.push('get-method')
+            }
+
+            if (member.kind === 'set') {
+              selectors.push('set-method')
+            }
+            selectors.push('method')
+          } else if (member.type === 'TSIndexSignature') {
+            if (member.static) {
+              modifiers.push('static')
+            }
+
+            if (member.readonly) {
+              modifiers.push('readonly')
+            }
+
+            selectors.push('index-signature')
+          } else if (member.type === 'StaticBlock') {
+            addSafetySemicolonWhenInline = false
+
+            selectors.push('static-block')
+
+            dependencies = extractDependencies(member, true)
+          } else if (
+            member.type === 'AccessorProperty' ||
+            member.type === 'TSAbstractAccessorProperty'
+          ) {
+            if (member.static) {
+              modifiers.push('static')
+            }
+
+            if (member.type === 'TSAbstractAccessorProperty') {
+              modifiers.push('abstract')
+            }
+
+            if (decorated) {
+              modifiers.push('decorated')
+            }
+
+            if (member.override) {
+              modifiers.push('override')
+            }
+
+            if (member.accessibility === 'protected') {
+              modifiers.push('protected')
+            } else if (member.accessibility === 'private' || isPrivateHash) {
+              modifiers.push('private')
+            } else {
+              modifiers.push('public')
+            }
+            selectors.push('accessor-property')
+          } else {
+            // Member is necessarily a Property
+            // Similarly to above for methods, prioritize 'static', 'declare', 'decorated', 'abstract', 'override' and 'readonly'
+            // over accessibility modifiers
+            if (member.static) {
+              modifiers.push('static')
+            }
+
+            if (member.declare) {
+              modifiers.push('declare')
+            }
+
+            if (member.type === 'TSAbstractPropertyDefinition') {
+              modifiers.push('abstract')
+            }
+
+            if (decorated) {
+              modifiers.push('decorated')
+            }
+
+            if (member.override) {
+              modifiers.push('override')
+            }
+
+            if (member.readonly) {
+              modifiers.push('readonly')
+            }
+
+            if (member.accessibility === 'protected') {
+              modifiers.push('protected')
+            } else if (member.accessibility === 'private' || isPrivateHash) {
+              modifiers.push('private')
+            } else {
+              modifiers.push('public')
+            }
+
+            if (member.optional) {
+              modifiers.push('optional')
+            }
+
+            let isFunctionProperty =
+              member.value?.type === 'ArrowFunctionExpression' ||
+              member.value?.type === 'FunctionExpression'
+            if (isFunctionProperty) {
+              selectors.push('function-property')
+            }
+
+            if (!isFunctionProperty && member.value) {
+              memberValue = sourceCode.getText(member.value)
+            }
+
+            selectors.push('property')
+
+            if (
+              member.type === 'PropertyDefinition' &&
+              member.value &&
+              !isFunctionProperty
+            ) {
+              dependencies = extractDependencies(member.value, member.static)
+            }
+          }
+
+          for (let officialGroup of generateOfficialGroups(
+            modifiers,
+            selectors,
+          )) {
+            defineGroup(officialGroup)
+          }
+
+          for (let customGroup of options.customGroups) {
+            if (
+              customGroupMatches({
+                customGroup,
+                elementName: name,
+                elementValue: memberValue,
+                modifiers,
+                selectors,
+                decorators,
+              })
+            ) {
+              defineGroup(customGroup.groupName, true)
+              // If the custom group is not referenced in the `groups` option, it will be ignored
+              if (getGroup() === customGroup.groupName) {
+                break
+              }
+            }
+          }
+
+          // Members belonging to the same overload signature group should have the same size in order to keep line-length sorting between them consistent.
+          // It is unclear what should be considered the size of an overload signature group. Take the size of the implementation by default.
+          let overloadSignatureGroupMember = overloadSignatureGroups
+            .find(overloadSignatures => overloadSignatures.includes(member))
+            ?.at(-1)
+
+          let sortingNode: SortingNodeWithDependencies = {
+            size: overloadSignatureGroupMember
+              ? rangeToDiff(overloadSignatureGroupMember, sourceCode)
+              : rangeToDiff(member, sourceCode),
+            group: getGroup(),
+            node: member,
+            dependencies,
+            name,
+            addSafetySemicolonWhenInline,
+            dependencyName: getDependencyName({
+              nodeNameWithoutStartingHash: name.startsWith('#')
+                ? name.slice(1)
+                : name,
+              isPrivateHash,
+              isStatic: modifiers.includes('static'),
+            }),
+          }
+
+          let comments = getCommentsBefore(member, sourceCode)
+          let lastMember = accumulator.at(-1)?.at(-1)
+
+          if (
+            (options.partitionByNewLine &&
+              lastMember &&
+              getLinesBetween(sourceCode, lastMember, sortingNode)) ||
+            (options.partitionByComment &&
+              hasPartitionComment(options.partitionByComment, comments))
+          ) {
+            accumulator.push([])
+          }
+
+          accumulator.at(-1)!.push(sortingNode)
+
+          return accumulator
+        },
+        [[]],
+      )
+      let sortedNodes = formattedNodes
+        .map(nodes =>
+          sortNodesByGroups(nodes, options, {
+            getGroupCompareOptions: groupNumber =>
+              getCompareOptions(options, groupNumber),
+            isNodeIgnored: sortingNode =>
+              getGroupNumber(options.groups, sortingNode) ===
+              options.groups.length,
+          }),
+        )
+        .flat()
+      sortedNodes = sortNodesByDependencies(sortedNodes)
+      let nodes = formattedNodes.flat()
+      pairwise(nodes, (left, right) => {
+        let leftNum = getGroupNumber(options.groups, left)
+        let rightNum = getGroupNumber(options.groups, right)
+
+        let indexOfLeft = sortedNodes.indexOf(left)
+        let indexOfRight = sortedNodes.indexOf(right)
+
+        let messageIds: MESSAGE_ID[] = []
+        let firstUnorderedNodeDependentOnRight =
+          getFirstUnorderedNodeDependentOn(right, nodes)
+        if (firstUnorderedNodeDependentOnRight || indexOfLeft > indexOfRight) {
+          if (firstUnorderedNodeDependentOnRight) {
+            messageIds.push('unexpectedClassesDependencyOrder')
+          } else {
+            messageIds.push(
+              leftNum !== rightNum
+                ? 'unexpectedClassesGroupOrder'
+                : 'unexpectedClassesOrder',
+            )
+          }
+        }
+
+        messageIds = [
+          ...messageIds,
+          ...getNewlinesErrors({
+            left,
+            leftNum,
+            right,
+            rightNum,
+            sourceCode,
+            missedSpacingError: 'missedSpacingBetweenClassMembers',
+            extraSpacingError: 'extraSpacingBetweenClassMembers',
+            options,
+          }),
+        ]
+
+        for (let messageId of messageIds) {
+          context.report({
+            messageId,
+            data: {
+              left: toSingleLine(left.name),
+              leftGroup: left.group,
+              right: toSingleLine(right.name),
+              rightGroup: right.group,
+              nodeDependentOnRight: firstUnorderedNodeDependentOnRight?.name,
+            },
+            node: right.node,
+            fix: (fixer: TSESLint.RuleFixer) => [
+              ...makeFixes(fixer, nodes, sortedNodes, sourceCode, options),
+              ...makeNewlinesFixes(
+                fixer,
+                nodes,
+                sortedNodes,
+                sourceCode,
+                options,
+              ),
+            ],
+          })
+        }
+      })
     },
   }),
 })

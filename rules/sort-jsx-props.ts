@@ -97,98 +97,96 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
   defaultOptions: [defaultOptions],
   create: context => ({
     JSXElement: node => {
-      if (node.openingElement.attributes.length > 1) {
-        let settings = getSettings(context.settings)
+      if (node.openingElement.attributes.length <= 1) {
+        return
+      }
 
-        let options = complete(context.options.at(0), settings, defaultOptions)
-
-        validateGroupsConfiguration(
-          options.groups,
-          ['multiline', 'shorthand', 'unknown'],
-          Object.keys(options.customGroups),
+      let settings = getSettings(context.settings)
+      let options = complete(context.options.at(0), settings, defaultOptions)
+      validateGroupsConfiguration(
+        options.groups,
+        ['multiline', 'shorthand', 'unknown'],
+        Object.keys(options.customGroups),
+      )
+      let sourceCode = getSourceCode(context)
+      let shouldIgnore = false
+      if (options.ignorePattern.length) {
+        let tagName = sourceCode.getText(node.openingElement.name)
+        shouldIgnore = options.ignorePattern.some(pattern =>
+          matches(tagName, pattern),
         )
+      }
+      if (shouldIgnore || node.openingElement.attributes.length <= 1) {
+        return
+      }
 
-        let sourceCode = getSourceCode(context)
-
-        let shouldIgnore = false
-        if (options.ignorePattern.length) {
-          let tagName = sourceCode.getText(node.openingElement.name)
-          shouldIgnore = options.ignorePattern.some(pattern =>
-            matches(tagName, pattern),
-          )
-        }
-
-        if (!shouldIgnore && node.openingElement.attributes.length > 1) {
-          let parts: SortingNode[][] = node.openingElement.attributes.reduce(
-            (
-              accumulator: SortingNode[][],
-              attribute: TSESTree.JSXSpreadAttribute | TSESTree.JSXAttribute,
-            ) => {
-              if (attribute.type === 'JSXSpreadAttribute') {
-                accumulator.push([])
-                return accumulator
-              }
-
-              let name =
-                attribute.name.type === 'JSXNamespacedName'
-                  ? `${attribute.name.namespace.name}:${attribute.name.name.name}`
-                  : attribute.name.name
-
-              let { getGroup, defineGroup, setCustomGroups } =
-                useGroups(options)
-
-              setCustomGroups(options.customGroups, name)
-
-              if (attribute.value === null) {
-                defineGroup('shorthand')
-              }
-
-              if (attribute.loc.start.line !== attribute.loc.end.line) {
-                defineGroup('multiline')
-              }
-
-              let jsxNode = {
-                size: rangeToDiff(attribute, sourceCode),
-                group: getGroup(),
-                node: attribute,
-                name,
-                requiresEndingSemicolonOrCommaWhenInline: true,
-              }
-
-              accumulator.at(-1)!.push(jsxNode)
-
-              return accumulator
-            },
-            [[]],
-          )
-
-          for (let nodes of parts) {
-            let sortedNodes = sortNodesByGroups(nodes, options)
-            pairwise(nodes, (left, right) => {
-              let indexOfLeft = sortedNodes.indexOf(left)
-              let indexOfRight = sortedNodes.indexOf(right)
-              if (indexOfLeft > indexOfRight) {
-                let leftNum = getGroupNumber(options.groups, left)
-                let rightNum = getGroupNumber(options.groups, right)
-                context.report({
-                  messageId:
-                    leftNum !== rightNum
-                      ? 'unexpectedJSXPropsGroupOrder'
-                      : 'unexpectedJSXPropsOrder',
-                  data: {
-                    left: left.name,
-                    leftGroup: left.group,
-                    right: right.name,
-                    rightGroup: right.group,
-                  },
-                  node: right.node,
-                  fix: fixer =>
-                    makeFixes(fixer, nodes, sortedNodes, sourceCode),
-                })
-              }
-            })
+      let parts: SortingNode[][] = node.openingElement.attributes.reduce(
+        (
+          accumulator: SortingNode[][],
+          attribute: TSESTree.JSXSpreadAttribute | TSESTree.JSXAttribute,
+        ) => {
+          if (attribute.type === 'JSXSpreadAttribute') {
+            accumulator.push([])
+            return accumulator
           }
-        }
+
+          let name =
+            attribute.name.type === 'JSXNamespacedName'
+              ? `${attribute.name.namespace.name}:${attribute.name.name.name}`
+              : attribute.name.name
+
+          let { getGroup, defineGroup, setCustomGroups } = useGroups(options)
+
+          setCustomGroups(options.customGroups, name)
+
+          if (attribute.value === null) {
+            defineGroup('shorthand')
+          }
+
+          if (attribute.loc.start.line !== attribute.loc.end.line) {
+            defineGroup('multiline')
+          }
+
+          let jsxNode = {
+            size: rangeToDiff(attribute, sourceCode),
+            group: getGroup(),
+            node: attribute,
+            name,
+            requiresEndingSemicolonOrCommaWhenInline: true,
+          }
+
+          accumulator.at(-1)!.push(jsxNode)
+
+          return accumulator
+        },
+        [[]],
+      )
+      for (let nodes of parts) {
+        let sortedNodes = sortNodesByGroups(nodes, options)
+        pairwise(nodes, (left, right) => {
+          let indexOfLeft = sortedNodes.indexOf(left)
+          let indexOfRight = sortedNodes.indexOf(right)
+          if (indexOfLeft <= indexOfRight) {
+            return
+          }
+
+          let leftNum = getGroupNumber(options.groups, left)
+          let rightNum = getGroupNumber(options.groups, right)
+          context.report({
+            messageId:
+              leftNum !== rightNum
+                ? 'unexpectedJSXPropsGroupOrder'
+                : 'unexpectedJSXPropsOrder',
+            data: {
+              left: left.name,
+              leftGroup: left.group,
+              right: right.name,
+              rightGroup: right.group,
+            },
+            node: right.node,
+            fix: fixer => makeFixes(fixer, nodes, sortedNodes, sourceCode),
+          })
+        })
       }
     },
   }),
