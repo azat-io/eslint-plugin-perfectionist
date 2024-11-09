@@ -627,41 +627,6 @@ describe(ruleName, () => {
       },
     )
 
-    ruleTester.run(`${ruleName}(${type}): doesn't break user comments`, rule, {
-      valid: [
-        {
-          code: dedent`
-            import { b1, b2 } from 'b'
-
-            /**
-             * Comment
-             */
-
-            import { a } from 'a'
-            import { c } from 'c'
-          `,
-          options: [
-            {
-              ...options,
-              newlinesBetween: 'always',
-              internalPattern: ['^~/.*'],
-              groups: [
-                'type',
-                ['builtin', 'external'],
-                'internal-type',
-                'internal',
-                ['parent-type', 'sibling-type', 'index-type'],
-                ['parent', 'sibling', 'index'],
-                'object',
-                'unknown',
-              ],
-            },
-          ],
-        },
-      ],
-      invalid: [],
-    })
-
     ruleTester.run(`${ruleName}(${type}): ignores inline comments`, rule, {
       valid: [
         {
@@ -2127,6 +2092,219 @@ describe(ruleName, () => {
         ],
       },
     )
+
+    ruleTester.run(
+      `${ruleName}(${type}): allows to use new line as partition`,
+      rule,
+      {
+        valid: [],
+        invalid: [
+          {
+            code: dedent`
+              import * as organisms from "./organisms";
+              import * as atoms from "./atoms";
+              import * as shared from "./shared";
+
+              import { AnotherNamed } from './second-folder';
+              import { Named } from './folder';
+            `,
+            output: dedent`
+              import * as atoms from "./atoms";
+              import * as organisms from "./organisms";
+              import * as shared from "./shared";
+
+              import { Named } from './folder';
+              import { AnotherNamed } from './second-folder';
+            `,
+            options: [
+              {
+                ...options,
+                partitionByNewLine: true,
+                newlinesBetween: 'ignore',
+              },
+            ],
+            errors: [
+              {
+                messageId: 'unexpectedImportsOrder',
+                data: {
+                  left: './organisms',
+                  right: './atoms',
+                },
+              },
+              {
+                messageId: 'unexpectedImportsOrder',
+                data: {
+                  left: './second-folder',
+                  right: './folder',
+                },
+              },
+            ],
+          },
+        ],
+      },
+    )
+
+    describe(`${ruleName}(${type}): partition comments`, () => {
+      ruleTester.run(
+        `${ruleName}(${type}): allows to use partition comments`,
+        rule,
+        {
+          valid: [],
+          invalid: [
+            {
+              code: dedent`
+                // Part: A
+                import cc from './cc';
+                import d from './d';
+                // Not partition comment
+                import bbb from './bbb';
+                // Part: B
+                import aaaa from './aaaa';
+                import e from './e';
+                // Part: C
+                import gg from './gg';
+                // Not partition comment
+                import fff from './fff';
+              `,
+              output: dedent`
+                // Part: A
+                // Not partition comment
+                import bbb from './bbb';
+                import cc from './cc';
+                import d from './d';
+                // Part: B
+                import aaaa from './aaaa';
+                import e from './e';
+                // Part: C
+                // Not partition comment
+                import fff from './fff';
+                import gg from './gg';
+              `,
+              options: [
+                {
+                  ...options,
+                  partitionByComment: '^Part*',
+                },
+              ],
+              errors: [
+                {
+                  messageId: 'unexpectedImportsOrder',
+                  data: {
+                    left: './d',
+                    right: './bbb',
+                  },
+                },
+                {
+                  messageId: 'unexpectedImportsOrder',
+                  data: {
+                    left: './gg',
+                    right: './fff',
+                  },
+                },
+              ],
+            },
+          ],
+        },
+      )
+
+      ruleTester.run(
+        `${ruleName}(${type}): allows to use all comments as parts`,
+        rule,
+        {
+          valid: [
+            {
+              code: dedent`
+                // Comment
+                import bb from './bb';
+                // Other comment
+                import a from './a';
+              `,
+              options: [
+                {
+                  ...options,
+                  partitionByComment: true,
+                },
+              ],
+            },
+          ],
+          invalid: [],
+        },
+      )
+
+      ruleTester.run(
+        `${ruleName}(${type}): allows to use multiple partition comments`,
+        rule,
+        {
+          valid: [],
+          invalid: [
+            {
+              code: dedent`
+                /* Partition Comment */
+                // Part: A
+                import d from './d'
+                // Part: B
+                import aaa from './aaa'
+                import c from './c'
+                import bb from './bb'
+                /* Other */
+                import e from './e'
+              `,
+              output: dedent`
+                /* Partition Comment */
+                // Part: A
+                import d from './d'
+                // Part: B
+                import aaa from './aaa'
+                import bb from './bb'
+                import c from './c'
+                /* Other */
+                import e from './e'
+              `,
+              options: [
+                {
+                  ...options,
+                  partitionByComment: ['Partition Comment', 'Part: *', 'Other'],
+                },
+              ],
+              errors: [
+                {
+                  messageId: 'unexpectedImportsOrder',
+                  data: {
+                    left: './c',
+                    right: './bb',
+                  },
+                },
+              ],
+            },
+          ],
+        },
+      )
+    })
+
+    ruleTester.run(
+      `${ruleName}(${type}): allows to use regex for partition comments`,
+      rule,
+      {
+        valid: [
+          {
+            code: dedent`
+              import e from './e'
+              import f from './f'
+              // I am a partition comment because I don't have f o o
+              import a from './a'
+              import b from './b'
+            `,
+            options: [
+              {
+                ...options,
+                partitionByComment: ['^(?!.*foo).*$'],
+              },
+            ],
+          },
+        ],
+        invalid: [],
+      },
+    )
   })
 
   describe(`${ruleName}: sorting by natural order`, () => {
@@ -2731,41 +2909,6 @@ describe(ruleName, () => {
         ],
       },
     )
-
-    ruleTester.run(`${ruleName}(${type}): doesn't break user comments`, rule, {
-      valid: [
-        {
-          code: dedent`
-            import { b1, b2 } from 'b'
-
-            /**
-             * Comment
-             */
-
-            import { a } from 'a'
-            import { c } from 'c'
-          `,
-          options: [
-            {
-              ...options,
-              newlinesBetween: 'always',
-              internalPattern: ['^~/.*'],
-              groups: [
-                'type',
-                ['builtin', 'external'],
-                'internal-type',
-                'internal',
-                ['parent-type', 'sibling-type', 'index-type'],
-                ['parent', 'sibling', 'index'],
-                'object',
-                'unknown',
-              ],
-            },
-          ],
-        },
-      ],
-      invalid: [],
-    })
 
     ruleTester.run(`${ruleName}(${type}): ignores inline comments`, rule, {
       valid: [
@@ -4283,41 +4426,6 @@ describe(ruleName, () => {
         ],
       },
     )
-
-    ruleTester.run(`${ruleName}(${type}): doesn't break user comments`, rule, {
-      valid: [
-        {
-          code: dedent`
-            import { b1, b2 } from 'b'
-
-            /**
-             * Comment
-             */
-
-            import { a } from 'a'
-            import { c } from 'c'
-          `,
-          options: [
-            {
-              ...options,
-              newlinesBetween: 'always',
-              internalPattern: ['^~/.*'],
-              groups: [
-                'type',
-                ['builtin', 'external'],
-                'internal-type',
-                'internal',
-                ['parent-type', 'sibling-type', 'index-type'],
-                ['parent', 'sibling', 'index'],
-                'object',
-                'unknown',
-              ],
-            },
-          ],
-        },
-      ],
-      invalid: [],
-    })
 
     ruleTester.run(
       `${ruleName}(${type}): ignores comments for counting lines between imports`,

@@ -5,6 +5,8 @@ import { builtinModules } from 'node:module'
 import type { SortingNode } from '../typings'
 
 import {
+  partitionByCommentJsonSchema,
+  partitionByNewLineJsonSchema,
   specialCharactersJsonSchema,
   ignoreCaseJsonSchema,
   localesJsonSchema,
@@ -12,15 +14,18 @@ import {
   orderJsonSchema,
   typeJsonSchema,
 } from '../utils/common-json-schemas'
+import { validateNewlinesAndPartitionConfiguration } from '../utils/validate-newlines-and-partition-configuration'
 import { validateGroupsConfiguration } from '../utils/validate-groups-configuration'
 import { readClosestTsConfigByPath } from '../utils/read-closest-ts-config-by-path'
 import { getOptionsWithCleanGroups } from '../utils/get-options-with-clean-groups'
 import { getTypescriptImport } from '../utils/get-typescript-import'
+import { hasPartitionComment } from '../utils/is-partition-comment'
 import { sortNodesByGroups } from '../utils/sort-nodes-by-groups'
 import { getCommentsBefore } from '../utils/get-comments-before'
 import { makeNewlinesFixes } from '../utils/make-newlines-fixes'
 import { getNewlinesErrors } from '../utils/get-newlines-errors'
 import { createEslintRule } from '../utils/create-eslint-rule'
+import { getLinesBetween } from '../utils/get-lines-between'
 import { getGroupNumber } from '../utils/get-group-number'
 import { getSourceCode } from '../utils/get-source-code'
 import { rangeToDiff } from '../utils/range-to-diff'
@@ -65,11 +70,13 @@ export type Options<T extends string[]> = [
       type?: { [key in T[number]]: string[] | string }
     }
     type: 'alphabetical' | 'line-length' | 'natural'
+    partitionByComment: string[] | boolean | string
     newlinesBetween: 'ignore' | 'always' | 'never'
     specialCharacters: 'remove' | 'trim' | 'keep'
     locales: NonNullable<Intl.LocalesArgument>
     groups: (Group<T>[] | Group<T>)[]
     environment: 'node' | 'bun'
+    partitionByNewLine: boolean
     internalPattern: string[]
     sortSideEffects: boolean
     tsconfigRootDir?: string
@@ -113,6 +120,12 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
               'Controls whether side-effect imports should be sorted.',
             type: 'boolean',
           },
+          partitionByComment: {
+            ...partitionByCommentJsonSchema,
+            description:
+              'Allows you to use comments to separate the interface properties into logical groups.',
+          },
+          partitionByNewLine: partitionByNewLineJsonSchema,
           newlinesBetween: {
             description:
               'Specifies how new lines should be handled between import groups.',
@@ -197,6 +210,8 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
   },
   defaultOptions: [
     {
+      partitionByComment: false,
+      partitionByNewLine: false,
       type: 'alphabetical',
       order: 'asc',
       ignoreCase: true,
@@ -237,6 +252,8 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
           'object',
           'unknown',
         ],
+        partitionByComment: false,
+        partitionByNewLine: false,
         customGroups: { type: {}, value: {} },
         internalPattern: ['^~/.*'],
         newlinesBetween: 'always',
@@ -277,6 +294,7 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
         ...Object.keys(options.customGroups.value ?? {}),
       ],
     )
+    validateNewlinesAndPartitionConfiguration(options)
 
     let tsConfigOutput = options.tsconfigRootDir
       ? readClosestTsConfigByPath({
@@ -575,24 +593,33 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
           left: SortImportsSortingNode,
           right: SortImportsSortingNode,
         ): boolean =>
-          getCommentsBefore(right.node, sourceCode).length > 0 ||
           !!sourceCode.getTokensBetween(left.node, right.node, {
             includeComments: false,
           }).length
 
-        let splitNodes: SortImportsSortingNode[][] = [[]]
+        let formattedMembers: SortImportsSortingNode[][] = [[]]
+        for (let sortingNode of nodes) {
+          let lastSortingNode = formattedMembers.at(-1)?.at(-1)
 
-        for (let node of nodes) {
-          let lastNode = splitNodes.at(-1)?.at(-1)
-
-          if (lastNode && hasContentBetweenNodes(lastNode, node)) {
-            splitNodes.push([node])
-          } else {
-            splitNodes.at(-1)!.push(node)
+          if (
+            (options.partitionByComment &&
+              hasPartitionComment(
+                options.partitionByComment,
+                getCommentsBefore(sortingNode.node, sourceCode),
+              )) ||
+            (options.partitionByNewLine &&
+              lastSortingNode &&
+              getLinesBetween(sourceCode, lastSortingNode, sortingNode)) ||
+            (lastSortingNode &&
+              hasContentBetweenNodes(lastSortingNode, sortingNode))
+          ) {
+            formattedMembers.push([])
           }
+
+          formattedMembers.at(-1)!.push(sortingNode)
         }
 
-        for (let nodeList of splitNodes) {
+        for (let nodeList of formattedMembers) {
           let sortedNodes = sortNodesByGroups(nodeList, options, {
             isNodeIgnored: node => node.isIgnored,
             getGroupCompareOptions: groupNumber => {
@@ -645,7 +672,13 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
                 },
                 node: right.node,
                 fix: fixer => [
-                  ...makeFixes(fixer, nodeList, sortedNodes, sourceCode),
+                  ...makeFixes(
+                    fixer,
+                    nodeList,
+                    sortedNodes,
+                    sourceCode,
+                    options,
+                  ),
                   ...makeNewlinesFixes(
                     fixer,
                     nodeList,
