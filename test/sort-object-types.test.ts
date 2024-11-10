@@ -2363,5 +2363,341 @@ describe(ruleName, () => {
         ],
       },
     )
+
+    let eslintDisableRuleTesterName = `${ruleName}: supports 'eslint-disable' for individual nodes`
+    ruleTester.run(eslintDisableRuleTesterName, rule, {
+      valid: [],
+      invalid: [
+        {
+          code: dedent`
+            type Type = {
+              c: string
+              b: string
+              // eslint-disable-next-line
+              a: string
+            }
+          `,
+          output: dedent`
+            type Type = {
+              b: string
+              c: string
+              // eslint-disable-next-line
+              a: string
+            }
+          `,
+          options: [{}],
+          errors: [
+            {
+              messageId: 'unexpectedObjectTypesOrder',
+              data: {
+                left: 'c',
+                right: 'b',
+              },
+            },
+          ],
+        },
+        {
+          code: dedent`
+            type Type = {
+              d: string
+              c: string
+              // eslint-disable-next-line
+              a: string
+              b: string
+            }
+          `,
+          output: dedent`
+            type Type = {
+              b: string
+              c: string
+              // eslint-disable-next-line
+              a: string
+              d: string
+            }
+          `,
+          options: [
+            {
+              partitionByComment: true,
+            },
+          ],
+          errors: [
+            {
+              messageId: 'unexpectedObjectTypesOrder',
+              data: {
+                left: 'd',
+                right: 'c',
+              },
+            },
+            {
+              messageId: 'unexpectedObjectTypesOrder',
+              data: {
+                left: 'a',
+                right: 'b',
+              },
+            },
+          ],
+        },
+        {
+          code: dedent`
+            type Type = {
+              c: string
+              b: string
+              a: string // eslint-disable-line
+            }
+          `,
+          output: dedent`
+            type Type = {
+              b: string
+              c: string
+              a: string // eslint-disable-line
+            }
+          `,
+          options: [{}],
+          errors: [
+            {
+              messageId: 'unexpectedObjectTypesOrder',
+              data: {
+                left: 'c',
+                right: 'b',
+              },
+            },
+          ],
+        },
+        {
+          code: dedent`
+            type Type = {
+              c: string
+              b: string
+              /* eslint-disable-next-line */
+              a: string
+            }
+          `,
+          output: dedent`
+            type Type = {
+              b: string
+              c: string
+              /* eslint-disable-next-line */
+              a: string
+            }
+          `,
+          options: [{}],
+          errors: [
+            {
+              messageId: 'unexpectedObjectTypesOrder',
+              data: {
+                left: 'c',
+                right: 'b',
+              },
+            },
+          ],
+        },
+        {
+          code: dedent`
+            type Type = {
+              c: string
+              b: string
+              a: string /* eslint-disable-line */
+            }
+          `,
+          output: dedent`
+            type Type = {
+              b: string
+              c: string
+              a: string /* eslint-disable-line */
+            }
+          `,
+          options: [{}],
+          errors: [
+            {
+              messageId: 'unexpectedObjectTypesOrder',
+              data: {
+                left: 'c',
+                right: 'b',
+              },
+            },
+          ],
+        },
+        {
+          code: dedent`
+            type Type = {
+              d: string
+              e: string
+              /* eslint-disable */
+              c: string
+              b: string
+              // Shouldn't move
+              /* eslint-enable */
+              a: string
+            }
+          `,
+          output: dedent`
+            type Type = {
+              a: string
+              d: string
+              /* eslint-disable */
+              c: string
+              b: string
+              // Shouldn't move
+              /* eslint-enable */
+              e: string
+            }
+          `,
+          options: [{}],
+          errors: [
+            {
+              messageId: 'unexpectedObjectTypesOrder',
+              data: {
+                left: 'b',
+                right: 'a',
+              },
+            },
+          ],
+        },
+        {
+          code: dedent`
+            type Type = {
+              c: string
+              b: string
+              // eslint-disable-next-line @rule-tester/${eslintDisableRuleTesterName}
+              a: string
+            }
+          `,
+          output: dedent`
+            type Type = {
+              b: string
+              c: string
+              // eslint-disable-next-line @rule-tester/${eslintDisableRuleTesterName}
+              a: string
+            }
+          `,
+          options: [{}],
+          errors: [
+            {
+              messageId: 'unexpectedObjectTypesOrder',
+              data: {
+                left: 'c',
+                right: 'b',
+              },
+            },
+          ],
+        },
+        {
+          code: dedent`
+            type Type = {
+              c: string
+              b: string
+              a: string // eslint-disable-line @rule-tester/${eslintDisableRuleTesterName}
+            }
+          `,
+          output: dedent`
+            type Type = {
+              b: string
+              c: string
+              a: string // eslint-disable-line @rule-tester/${eslintDisableRuleTesterName}
+            }
+          `,
+          options: [{}],
+          errors: [
+            {
+              messageId: 'unexpectedObjectTypesOrder',
+              data: {
+                left: 'c',
+                right: 'b',
+              },
+            },
+          ],
+        },
+        {
+          code: dedent`
+            type Type = {
+              c: string
+              b: string
+              /* eslint-disable-next-line @rule-tester/${eslintDisableRuleTesterName} */
+              a: string
+            }
+          `,
+          output: dedent`
+            type Type = {
+              b: string
+              c: string
+              /* eslint-disable-next-line @rule-tester/${eslintDisableRuleTesterName} */
+              a: string
+            }
+          `,
+          options: [{}],
+          errors: [
+            {
+              messageId: 'unexpectedObjectTypesOrder',
+              data: {
+                left: 'c',
+                right: 'b',
+              },
+            },
+          ],
+        },
+        {
+          code: dedent`
+            type Type = {
+              c: string
+              b: string
+              a: string /* eslint-disable-line @rule-tester/${eslintDisableRuleTesterName} */
+            }
+          `,
+          output: dedent`
+            type Type = {
+              b: string
+              c: string
+              a: string /* eslint-disable-line @rule-tester/${eslintDisableRuleTesterName} */
+            }
+          `,
+          options: [{}],
+          errors: [
+            {
+              messageId: 'unexpectedObjectTypesOrder',
+              data: {
+                left: 'c',
+                right: 'b',
+              },
+            },
+          ],
+        },
+        {
+          code: dedent`
+            type Type = {
+              d: string
+              e: string
+              /* eslint-disable @rule-tester/${eslintDisableRuleTesterName} */
+              c: string
+              b: string
+              // Shouldn't move
+              /* eslint-enable */
+              a: string
+            }
+          `,
+          output: dedent`
+            type Type = {
+              a: string
+              d: string
+              /* eslint-disable @rule-tester/${eslintDisableRuleTesterName} */
+              c: string
+              b: string
+              // Shouldn't move
+              /* eslint-enable */
+              e: string
+            }
+          `,
+          options: [{}],
+          errors: [
+            {
+              messageId: 'unexpectedObjectTypesOrder',
+              data: {
+                left: 'b',
+                right: 'a',
+              },
+            },
+          ],
+        },
+      ],
+    })
   })
 })

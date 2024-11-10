@@ -12,6 +12,8 @@ import {
 } from '../utils/common-json-schemas'
 import { validateNewlinesAndPartitionConfiguration } from '../utils/validate-newlines-and-partition-configuration'
 import { validateGroupsConfiguration } from '../utils/validate-groups-configuration'
+import { getEslintDisabledLines } from '../utils/get-eslint-disabled-lines'
+import { isNodeEslintDisabled } from '../utils/is-node-eslint-disabled'
 import { hasPartitionComment } from '../utils/is-partition-comment'
 import { sortNodesByGroups } from '../utils/sort-nodes-by-groups'
 import { getCommentsBefore } from '../utils/get-comments-before'
@@ -150,7 +152,10 @@ export default createEslintRule<Options, MESSAGE_ID>({
       validateNewlinesAndPartitionConfiguration(options)
 
       let sourceCode = getSourceCode(context)
-      let partitionComment = options.partitionByComment
+      let eslintDisabledLines = getEslintDisabledLines({
+        sourceCode,
+        ruleName: context.id,
+      })
 
       let formattedMembers: SortingNode[][] = node.types.reduce(
         (accumulator: SortingNode[][], type) => {
@@ -219,12 +224,13 @@ export default createEslintRule<Options, MESSAGE_ID>({
             name: sourceCode.getText(type),
             size: rangeToDiff(type, sourceCode),
             group: getGroup(),
+            isEslintDisabled: isNodeEslintDisabled(type, eslintDisabledLines),
             node: type,
           }
           if (
-            (partitionComment &&
+            (options.partitionByComment &&
               hasPartitionComment(
-                partitionComment,
+                options.partitionByComment,
                 getCommentsBefore(type, sourceCode, '&'),
               )) ||
             (options.partitionByNewLine &&
@@ -242,7 +248,12 @@ export default createEslintRule<Options, MESSAGE_ID>({
       )
 
       for (let nodes of formattedMembers) {
-        let sortedNodes = sortNodesByGroups(nodes, options)
+        let sortNodesExcludingEslintDisabled = (
+          ignoreEslintDisabledNodes: boolean,
+        ) => sortNodesByGroups(nodes, options, { ignoreEslintDisabledNodes })
+        let sortedNodes = sortNodesExcludingEslintDisabled(false)
+        let sortedNodesExcludingEslintDisabled =
+          sortNodesExcludingEslintDisabled(true)
 
         pairwise(nodes, (left, right) => {
           let leftNum = getGroupNumber(options.groups, left)
@@ -250,10 +261,15 @@ export default createEslintRule<Options, MESSAGE_ID>({
 
           let indexOfLeft = sortedNodes.indexOf(left)
           let indexOfRight = sortedNodes.indexOf(right)
+          let indexOfRightExcludingEslintDisabled =
+            sortedNodesExcludingEslintDisabled.indexOf(right)
 
           let messageIds: MESSAGE_ID[] = []
 
-          if (indexOfLeft > indexOfRight) {
+          if (
+            indexOfLeft > indexOfRight ||
+            indexOfLeft >= indexOfRightExcludingEslintDisabled
+          ) {
             messageIds.push(
               leftNum !== rightNum
                 ? 'unexpectedIntersectionTypesGroupOrder'
@@ -286,11 +302,17 @@ export default createEslintRule<Options, MESSAGE_ID>({
               },
               node: right.node,
               fix: fixer => [
-                ...makeFixes(fixer, nodes, sortedNodes, sourceCode, options),
+                ...makeFixes(
+                  fixer,
+                  nodes,
+                  sortedNodesExcludingEslintDisabled,
+                  sourceCode,
+                  options,
+                ),
                 ...makeNewlinesFixes(
                   fixer,
                   nodes,
-                  sortedNodes,
+                  sortedNodesExcludingEslintDisabled,
                   sourceCode,
                   options,
                 ),

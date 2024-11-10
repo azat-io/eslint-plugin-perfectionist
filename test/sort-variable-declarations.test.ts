@@ -1361,4 +1361,346 @@ describe(ruleName, () => {
       },
     )
   })
+
+  describe(`${ruleName}: misc`, () => {
+    let eslintDisableRuleTesterName = `${ruleName}: supports 'eslint-disable' for individual nodes`
+    ruleTester.run(eslintDisableRuleTesterName, rule, {
+      valid: [],
+      invalid: [
+        {
+          code: dedent`
+            let
+              c,
+              b,
+              // eslint-disable-next-line
+              a
+          `,
+          output: dedent`
+            let
+              b,
+              c,
+              // eslint-disable-next-line
+              a
+          `,
+          options: [{}],
+          errors: [
+            {
+              messageId: 'unexpectedVariableDeclarationsOrder',
+              data: {
+                left: 'c',
+                right: 'b',
+              },
+            },
+          ],
+        },
+        {
+          code: dedent`
+            let
+              d,
+              c,
+              // eslint-disable-next-line
+              a,
+              b
+          `,
+          output: dedent`
+            let
+              b,
+              c,
+              // eslint-disable-next-line
+              a,
+              d
+          `,
+          options: [
+            {
+              partitionByComment: true,
+            },
+          ],
+          errors: [
+            {
+              messageId: 'unexpectedVariableDeclarationsOrder',
+              data: {
+                left: 'd',
+                right: 'c',
+              },
+            },
+            {
+              messageId: 'unexpectedVariableDeclarationsOrder',
+              data: {
+                left: 'a',
+                right: 'b',
+              },
+            },
+          ],
+        },
+        {
+          code: dedent`
+            let
+              c,
+              b = a,
+              // eslint-disable-next-line
+              a
+          `,
+          output: dedent`
+            let
+              b = a,
+              c,
+              // eslint-disable-next-line
+              a
+          `,
+          options: [{}],
+          errors: [
+            {
+              messageId: 'unexpectedVariableDeclarationsOrder',
+              data: {
+                left: 'c',
+                right: 'b',
+              },
+            },
+          ],
+        },
+        {
+          code: dedent`
+            let
+              c,
+              b,
+              a // eslint-disable-line
+          `,
+          output: dedent`
+            let
+              b,
+              c,
+              a // eslint-disable-line
+          `,
+          options: [{}],
+          errors: [
+            {
+              messageId: 'unexpectedVariableDeclarationsOrder',
+              data: {
+                left: 'c',
+                right: 'b',
+              },
+            },
+          ],
+        },
+        {
+          code: dedent`
+            let
+              c,
+              b,
+              /* eslint-disable-next-line */
+              a
+          `,
+          output: dedent`
+            let
+              b,
+              c,
+              /* eslint-disable-next-line */
+              a
+          `,
+          options: [{}],
+          errors: [
+            {
+              messageId: 'unexpectedVariableDeclarationsOrder',
+              data: {
+                left: 'c',
+                right: 'b',
+              },
+            },
+          ],
+        },
+        {
+          code: dedent`
+            let
+              c,
+              b,
+              a /* eslint-disable-line */
+          `,
+          output: dedent`
+            let
+              b,
+              c,
+              a /* eslint-disable-line */
+          `,
+          options: [{}],
+          errors: [
+            {
+              messageId: 'unexpectedVariableDeclarationsOrder',
+              data: {
+                left: 'c',
+                right: 'b',
+              },
+            },
+          ],
+        },
+        {
+          code: dedent`
+            let
+              d,
+              e,
+              /* eslint-disable */
+              c,
+              b,
+              // Shouldn't move
+              /* eslint-enable */
+              a
+          `,
+          output: dedent`
+            let
+              a,
+              d,
+              /* eslint-disable */
+              c,
+              b,
+              // Shouldn't move
+              /* eslint-enable */
+              e
+          `,
+          options: [{}],
+          errors: [
+            {
+              messageId: 'unexpectedVariableDeclarationsOrder',
+              data: {
+                left: 'b',
+                right: 'a',
+              },
+            },
+          ],
+        },
+        {
+          code: dedent`
+            let
+              c,
+              b,
+              // eslint-disable-next-line @rule-tester/${eslintDisableRuleTesterName}
+              a
+          `,
+          output: dedent`
+            let
+              b,
+              c,
+              // eslint-disable-next-line @rule-tester/${eslintDisableRuleTesterName}
+              a
+          `,
+          options: [{}],
+          errors: [
+            {
+              messageId: 'unexpectedVariableDeclarationsOrder',
+              data: {
+                left: 'c',
+                right: 'b',
+              },
+            },
+          ],
+        },
+        {
+          code: dedent`
+            let
+              c,
+              b,
+              a // eslint-disable-line @rule-tester/${eslintDisableRuleTesterName}
+          `,
+          output: dedent`
+            let
+              b,
+              c,
+              a // eslint-disable-line @rule-tester/${eslintDisableRuleTesterName}
+          `,
+          options: [{}],
+          errors: [
+            {
+              messageId: 'unexpectedVariableDeclarationsOrder',
+              data: {
+                left: 'c',
+                right: 'b',
+              },
+            },
+          ],
+        },
+        {
+          code: dedent`
+            let
+              c,
+              b,
+              /* eslint-disable-next-line @rule-tester/${eslintDisableRuleTesterName} */
+              a
+          `,
+          output: dedent`
+            let
+              b,
+              c,
+              /* eslint-disable-next-line @rule-tester/${eslintDisableRuleTesterName} */
+              a
+          `,
+          options: [{}],
+          errors: [
+            {
+              messageId: 'unexpectedVariableDeclarationsOrder',
+              data: {
+                left: 'c',
+                right: 'b',
+              },
+            },
+          ],
+        },
+        {
+          code: dedent`
+            let
+              c,
+              b,
+              a /* eslint-disable-line @rule-tester/${eslintDisableRuleTesterName} */
+          `,
+          output: dedent`
+            let
+              b,
+              c,
+              a /* eslint-disable-line @rule-tester/${eslintDisableRuleTesterName} */
+          `,
+          options: [{}],
+          errors: [
+            {
+              messageId: 'unexpectedVariableDeclarationsOrder',
+              data: {
+                left: 'c',
+                right: 'b',
+              },
+            },
+          ],
+        },
+        {
+          code: dedent`
+            let
+              d,
+              e,
+              /* eslint-disable @rule-tester/${eslintDisableRuleTesterName} */
+              c,
+              b,
+              // Shouldn't move
+              /* eslint-enable */
+              a
+          `,
+          output: dedent`
+            let
+              a,
+              d,
+              /* eslint-disable @rule-tester/${eslintDisableRuleTesterName} */
+              c,
+              b,
+              // Shouldn't move
+              /* eslint-enable */
+              e
+          `,
+          options: [{}],
+          errors: [
+            {
+              messageId: 'unexpectedVariableDeclarationsOrder',
+              data: {
+                left: 'b',
+                right: 'a',
+              },
+            },
+          ],
+        },
+      ],
+    })
+  })
 })

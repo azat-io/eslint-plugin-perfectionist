@@ -11,6 +11,8 @@ import {
   orderJsonSchema,
   typeJsonSchema,
 } from '../utils/common-json-schemas'
+import { getEslintDisabledLines } from '../utils/get-eslint-disabled-lines'
+import { isNodeEslintDisabled } from '../utils/is-node-eslint-disabled'
 import { hasPartitionComment } from '../utils/is-partition-comment'
 import { getCommentsBefore } from '../utils/get-comments-before'
 import { createEslintRule } from '../utils/create-eslint-rule'
@@ -19,12 +21,10 @@ import { getSourceCode } from '../utils/get-source-code'
 import { toSingleLine } from '../utils/to-single-line'
 import { rangeToDiff } from '../utils/range-to-diff'
 import { getSettings } from '../utils/get-settings'
-import { isPositive } from '../utils/is-positive'
 import { sortNodes } from '../utils/sort-nodes'
 import { makeFixes } from '../utils/make-fixes'
 import { complete } from '../utils/complete'
 import { pairwise } from '../utils/pairwise'
-import { compare } from '../utils/compare'
 
 type MESSAGE_ID = 'unexpectedMapElementsOrder'
 
@@ -101,7 +101,11 @@ export default createEslintRule<Options, MESSAGE_ID>({
       let settings = getSettings(context.settings)
       let options = complete(context.options.at(0), settings, defaultOptions)
       let sourceCode = getSourceCode(context)
-      let partitionComment = options.partitionByComment
+      let eslintDisabledLines = getEslintDisabledLines({
+        sourceCode,
+        ruleName: context.id,
+      })
+
       let parts: TSESTree.Expression[][] = elements.reduce(
         (
           accumulator: TSESTree.Expression[][],
@@ -139,13 +143,17 @@ export default createEslintRule<Options, MESSAGE_ID>({
           let sortingNode: SortingNode = {
             size: rangeToDiff(element, sourceCode),
             node: element,
+            isEslintDisabled: isNodeEslintDisabled(
+              element,
+              eslintDisabledLines,
+            ),
             name,
           }
 
           if (
-            (partitionComment &&
+            (options.partitionByComment &&
               hasPartitionComment(
-                partitionComment,
+                options.partitionByComment,
                 getCommentsBefore(element, sourceCode),
               )) ||
             (options.partitionByNewLine &&
@@ -159,25 +167,41 @@ export default createEslintRule<Options, MESSAGE_ID>({
         }
 
         for (let nodes of formattedMembers) {
+          let sortNodesExcludingEslintDisabled = (
+            ignoreEslintDisabledNodes: boolean,
+          ) => sortNodes(nodes, options, { ignoreEslintDisabledNodes })
+          let sortedNodes = sortNodesExcludingEslintDisabled(false)
+          let sortedNodesExcludingEslintDisabled =
+            sortNodesExcludingEslintDisabled(true)
+
           pairwise(nodes, (left, right) => {
-            if (isPositive(compare(left, right, options))) {
-              context.report({
-                messageId: 'unexpectedMapElementsOrder',
-                data: {
-                  left: toSingleLine(left.name),
-                  right: toSingleLine(right.name),
-                },
-                node: right.node,
-                fix: fixer =>
-                  makeFixes(
-                    fixer,
-                    nodes,
-                    sortNodes(nodes, options),
-                    sourceCode,
-                    options,
-                  ),
-              })
+            let indexOfLeft = sortedNodes.indexOf(left)
+            let indexOfRight = sortedNodes.indexOf(right)
+            let indexOfRightExcludingEslintDisabled =
+              sortedNodesExcludingEslintDisabled.indexOf(right)
+            if (
+              indexOfLeft < indexOfRight &&
+              indexOfLeft < indexOfRightExcludingEslintDisabled
+            ) {
+              return
             }
+
+            context.report({
+              messageId: 'unexpectedMapElementsOrder',
+              data: {
+                left: toSingleLine(left.name),
+                right: toSingleLine(right.name),
+              },
+              node: right.node,
+              fix: fixer =>
+                makeFixes(
+                  fixer,
+                  nodes,
+                  sortedNodesExcludingEslintDisabled,
+                  sourceCode,
+                  options,
+                ),
+            })
           })
         }
       }

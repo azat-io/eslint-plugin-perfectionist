@@ -1,3 +1,5 @@
+import type { TSESTree } from '@typescript-eslint/types'
+
 import type { SortingNode } from '../typings'
 
 import {
@@ -13,6 +15,8 @@ import {
 } from '../utils/common-json-schemas'
 import { validateNewlinesAndPartitionConfiguration } from '../utils/validate-newlines-and-partition-configuration'
 import { validateGroupsConfiguration } from '../utils/validate-groups-configuration'
+import { getEslintDisabledLines } from '../utils/get-eslint-disabled-lines'
+import { isNodeEslintDisabled } from '../utils/is-node-eslint-disabled'
 import { hasPartitionComment } from '../utils/is-partition-comment'
 import { sortNodesByGroups } from '../utils/sort-nodes-by-groups'
 import { getCommentsBefore } from '../utils/get-comments-before'
@@ -55,6 +59,10 @@ export type Options<T extends string[]> = [
     ignoreCase: boolean
   }>,
 ]
+
+interface SortInterfacesSortingNode extends SortingNode<TSESTree.TypeElement> {
+  groupKind: 'required' | 'optional'
+}
 
 const defaultOptions: Required<Options<string[]>[0]> = {
   partitionByComment: false,
@@ -145,13 +153,22 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
         Object.keys(options.customGroups),
       )
       validateNewlinesAndPartitionConfiguration(options)
-      let sourceCode = getSourceCode(context)
-      let partitionComment = options.partitionByComment
+
       if (
-        !options.ignorePattern.some(pattern => matches(node.id.name, pattern))
+        options.ignorePattern.some(pattern => matches(node.id.name, pattern))
       ) {
-        let formattedMembers: SortingNode[][] = node.body.body.reduce(
-          (accumulator: SortingNode[][], element) => {
+        return
+      }
+
+      let sourceCode = getSourceCode(context)
+      let eslintDisabledLines = getEslintDisabledLines({
+        sourceCode,
+        ruleName: context.id,
+      })
+
+      let formattedMembers: SortInterfacesSortingNode[][] =
+        node.body.body.reduce(
+          (accumulator: SortInterfacesSortingNode[][], element) => {
             if (element.type === 'TSCallSignatureDeclaration') {
               accumulator.push([])
               return accumulator
@@ -201,18 +218,23 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
               defineGroup('multiline')
             }
 
-            let elementSortingNode: SortingNode = {
+            let elementSortingNode: SortInterfacesSortingNode = {
               size: rangeToDiff(element, sourceCode),
               node: element,
               group: getGroup(),
               name,
+              isEslintDisabled: isNodeEslintDisabled(
+                element,
+                eslintDisabledLines,
+              ),
+              groupKind: isMemberOptional(element) ? 'optional' : 'required',
               addSafetySemicolonWhenInline: true,
             }
 
             if (
-              (partitionComment &&
+              (options.partitionByComment &&
                 hasPartitionComment(
-                  partitionComment,
+                  options.partitionByComment,
                   getCommentsBefore(element, sourceCode),
                 )) ||
               (options.partitionByNewLine &&
@@ -228,89 +250,95 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
           },
           [[]],
         )
+      let groupKindOrder
+      if (options.groupKind === 'required-first') {
+        groupKindOrder = ['required', 'optional'] as const
+      } else if (options.groupKind === 'optional-first') {
+        groupKindOrder = ['optional', 'required'] as const
+      } else {
+        groupKindOrder = ['any'] as const
+      }
+      for (let nodes of formattedMembers) {
+        let filteredGroupKindNodes = groupKindOrder.map(groupKind =>
+          nodes.filter(n => groupKind === 'any' || n.groupKind === groupKind),
+        )
+        let sortNodesExcludingEslintDisabled = (
+          ignoreEslintDisabledNodes: boolean,
+        ) =>
+          filteredGroupKindNodes.flatMap(groupedNodes =>
+            sortNodesByGroups(groupedNodes, options, {
+              ignoreEslintDisabledNodes,
+            }),
+          )
+        let sortedNodes = sortNodesExcludingEslintDisabled(false)
+        let sortedNodesExcludingEslintDisabled =
+          sortNodesExcludingEslintDisabled(true)
 
-        let { groupKind } = options
+        pairwise(nodes, (left, right) => {
+          let leftNum = getGroupNumber(options.groups, left)
+          let rightNum = getGroupNumber(options.groups, right)
 
-        for (let nodes of formattedMembers) {
-          let sortedNodes: SortingNode[]
+          let indexOfLeft = sortedNodes.indexOf(left)
+          let indexOfRight = sortedNodes.indexOf(right)
+          let indexOfRightExcludingEslintDisabled =
+            sortedNodesExcludingEslintDisabled.indexOf(right)
 
-          if (groupKind !== 'mixed') {
-            let optionalNodes = nodes.filter(member =>
-              isMemberOptional(member.node),
+          let messageIds: MESSAGE_ID[] = []
+
+          if (
+            indexOfLeft > indexOfRight ||
+            indexOfLeft >= indexOfRightExcludingEslintDisabled
+          ) {
+            messageIds.push(
+              leftNum !== rightNum
+                ? 'unexpectedInterfacePropertiesGroupOrder'
+                : 'unexpectedInterfacePropertiesOrder',
             )
-            let requiredNodes = nodes.filter(
-              member => !isMemberOptional(member.node),
-            )
-
-            sortedNodes =
-              groupKind === 'optional-first'
-                ? [
-                    ...sortNodesByGroups(optionalNodes, options),
-                    ...sortNodesByGroups(requiredNodes, options),
-                  ]
-                : [
-                    ...sortNodesByGroups(requiredNodes, options),
-                    ...sortNodesByGroups(optionalNodes, options),
-                  ]
-          } else {
-            sortedNodes = sortNodesByGroups(nodes, options)
           }
 
-          pairwise(nodes, (left, right) => {
-            let leftNum = getGroupNumber(options.groups, left)
-            let rightNum = getGroupNumber(options.groups, right)
+          messageIds = [
+            ...messageIds,
+            ...getNewlinesErrors({
+              left,
+              leftNum,
+              right,
+              rightNum,
+              sourceCode,
+              missedSpacingError: 'missedSpacingBetweenInterfaceMembers',
+              extraSpacingError: 'extraSpacingBetweenInterfaceMembers',
+              options,
+            }),
+          ]
 
-            let indexOfLeft = sortedNodes.indexOf(left)
-            let indexOfRight = sortedNodes.indexOf(right)
-
-            let messageIds: MESSAGE_ID[] = []
-
-            if (indexOfLeft > indexOfRight) {
-              messageIds.push(
-                leftNum !== rightNum
-                  ? 'unexpectedInterfacePropertiesGroupOrder'
-                  : 'unexpectedInterfacePropertiesOrder',
-              )
-            }
-
-            messageIds = [
-              ...messageIds,
-              ...getNewlinesErrors({
-                left,
-                leftNum,
-                right,
-                rightNum,
-                sourceCode,
-                missedSpacingError: 'missedSpacingBetweenInterfaceMembers',
-                extraSpacingError: 'extraSpacingBetweenInterfaceMembers',
-                options,
-              }),
-            ]
-
-            for (let messageId of messageIds) {
-              context.report({
-                messageId,
-                data: {
-                  left: left.name,
-                  leftGroup: left.group,
-                  right: right.name,
-                  rightGroup: right.group,
-                },
-                node: right.node,
-                fix: fixer => [
-                  ...makeFixes(fixer, nodes, sortedNodes, sourceCode, options),
-                  ...makeNewlinesFixes(
-                    fixer,
-                    nodes,
-                    sortedNodes,
-                    sourceCode,
-                    options,
-                  ),
-                ],
-              })
-            }
-          })
-        }
+          for (let messageId of messageIds) {
+            context.report({
+              messageId,
+              data: {
+                left: left.name,
+                leftGroup: left.group,
+                right: right.name,
+                rightGroup: right.group,
+              },
+              node: right.node,
+              fix: fixer => [
+                ...makeFixes(
+                  fixer,
+                  nodes,
+                  sortedNodesExcludingEslintDisabled,
+                  sourceCode,
+                  options,
+                ),
+                ...makeNewlinesFixes(
+                  fixer,
+                  nodes,
+                  sortedNodesExcludingEslintDisabled,
+                  sourceCode,
+                  options,
+                ),
+              ],
+            })
+          }
+        })
       }
     },
   }),

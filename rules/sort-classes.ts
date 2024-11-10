@@ -35,6 +35,8 @@ import {
   sortNodesByDependencies,
 } from '../utils/sort-nodes-by-dependencies'
 import { validateNewlinesAndPartitionConfiguration } from '../utils/validate-newlines-and-partition-configuration'
+import { getEslintDisabledLines } from '../utils/get-eslint-disabled-lines'
+import { isNodeEslintDisabled } from '../utils/is-node-eslint-disabled'
 import { hasPartitionComment } from '../utils/is-partition-comment'
 import { sortNodesByGroups } from '../utils/sort-nodes-by-groups'
 import { getCommentsBefore } from '../utils/get-comments-before'
@@ -201,6 +203,10 @@ export default createEslintRule<SortClassesOptions, MESSAGE_ID>({
       validateGroupsConfiguration(options.groups, options.customGroups)
       validateNewlinesAndPartitionConfiguration(options)
       let sourceCode = getSourceCode(context)
+      let eslintDisabledLines = getEslintDisabledLines({
+        sourceCode,
+        ruleName: context.id,
+      })
       let className = node.parent.id?.name
       let getDependencyName = (props: {
         nodeNameWithoutStartingHash: string
@@ -588,7 +594,9 @@ export default createEslintRule<SortClassesOptions, MESSAGE_ID>({
             group: getGroup(),
             node: member,
             dependencies,
+            isEslintDisabled: isNodeEslintDisabled(member, eslintDisabledLines),
             name,
+
             addSafetySemicolonWhenInline,
             dependencyName: getDependencyName({
               nodeNameWithoutStartingHash: name.startsWith('#')
@@ -618,30 +626,47 @@ export default createEslintRule<SortClassesOptions, MESSAGE_ID>({
         },
         [[]],
       )
-      let sortedNodes = formattedNodes
-        .map(nodes =>
-          sortNodesByGroups(nodes, options, {
-            getGroupCompareOptions: groupNumber =>
-              getCompareOptions(options, groupNumber),
-            isNodeIgnored: sortingNode =>
-              getGroupNumber(options.groups, sortingNode) ===
-              options.groups.length,
-          }),
+
+      let sortNodesIgnoringEslintDisabledNodes = (
+        ignoreEslintDisabledNodes: boolean,
+      ) =>
+        sortNodesByDependencies(
+          formattedNodes.flatMap(nodes =>
+            sortNodesByGroups(nodes, options, {
+              getGroupCompareOptions: groupNumber =>
+                getCompareOptions(options, groupNumber),
+              ignoreEslintDisabledNodes,
+              isNodeIgnored: sortingNode =>
+                getGroupNumber(options.groups, sortingNode) ===
+                options.groups.length,
+            }),
+          ),
+          {
+            ignoreEslintDisabledNodes,
+          },
         )
-        .flat()
-      sortedNodes = sortNodesByDependencies(sortedNodes)
+      let sortedNodes = sortNodesIgnoringEslintDisabledNodes(false)
+      let sortedNodesExcludingEslintDisabled =
+        sortNodesIgnoringEslintDisabledNodes(true)
       let nodes = formattedNodes.flat()
+
       pairwise(nodes, (left, right) => {
         let leftNum = getGroupNumber(options.groups, left)
         let rightNum = getGroupNumber(options.groups, right)
 
         let indexOfLeft = sortedNodes.indexOf(left)
         let indexOfRight = sortedNodes.indexOf(right)
+        let indexOfRightExcludingEslintDisabled =
+          sortedNodesExcludingEslintDisabled.indexOf(right)
 
         let messageIds: MESSAGE_ID[] = []
         let firstUnorderedNodeDependentOnRight =
           getFirstUnorderedNodeDependentOn(right, nodes)
-        if (firstUnorderedNodeDependentOnRight || indexOfLeft > indexOfRight) {
+        if (
+          firstUnorderedNodeDependentOnRight ||
+          indexOfLeft > indexOfRight ||
+          indexOfLeft >= indexOfRightExcludingEslintDisabled
+        ) {
           if (firstUnorderedNodeDependentOnRight) {
             messageIds.push('unexpectedClassesDependencyOrder')
           } else {
@@ -679,11 +704,17 @@ export default createEslintRule<SortClassesOptions, MESSAGE_ID>({
             },
             node: right.node,
             fix: (fixer: TSESLint.RuleFixer) => [
-              ...makeFixes(fixer, nodes, sortedNodes, sourceCode, options),
+              ...makeFixes(
+                fixer,
+                nodes,
+                sortedNodesExcludingEslintDisabled,
+                sourceCode,
+                options,
+              ),
               ...makeNewlinesFixes(
                 fixer,
                 nodes,
-                sortedNodes,
+                sortedNodesExcludingEslintDisabled,
                 sourceCode,
                 options,
               ),

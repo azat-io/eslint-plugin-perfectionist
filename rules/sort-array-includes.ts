@@ -12,21 +12,20 @@ import {
   orderJsonSchema,
   typeJsonSchema,
 } from '../utils/common-json-schemas'
+import { getEslintDisabledLines } from '../utils/get-eslint-disabled-lines'
+import { isNodeEslintDisabled } from '../utils/is-node-eslint-disabled'
 import { hasPartitionComment } from '../utils/is-partition-comment'
 import { getCommentsBefore } from '../utils/get-comments-before'
 import { createEslintRule } from '../utils/create-eslint-rule'
 import { getLinesBetween } from '../utils/get-lines-between'
-import { getGroupNumber } from '../utils/get-group-number'
 import { getSourceCode } from '../utils/get-source-code'
 import { toSingleLine } from '../utils/to-single-line'
 import { rangeToDiff } from '../utils/range-to-diff'
 import { getSettings } from '../utils/get-settings'
-import { isPositive } from '../utils/is-positive'
 import { sortNodes } from '../utils/sort-nodes'
 import { makeFixes } from '../utils/make-fixes'
 import { complete } from '../utils/complete'
 import { pairwise } from '../utils/pairwise'
-import { compare } from '../utils/compare'
 
 type MESSAGE_ID = 'unexpectedArrayIncludesOrder'
 
@@ -42,6 +41,11 @@ export type Options = [
     ignoreCase: boolean
   }>,
 ]
+
+interface SortArrayIncludesSortingNode
+  extends SortingNode<TSESTree.SpreadElement | TSESTree.Expression> {
+  groupKind: 'literal' | 'spread'
+}
 
 export const defaultOptions: Required<Options[0]> = {
   groupKind: 'literals-first',
@@ -126,86 +130,102 @@ export let sortArray = <MessageIds extends string>(
   let settings = getSettings(context.settings)
   let options = complete(context.options.at(0), settings, defaultOptions)
   let sourceCode = getSourceCode(context)
-  let partitionComment = options.partitionByComment
-  let formattedMembers: SortingNode[][] = elements.reduce(
+  let eslintDisabledLines = getEslintDisabledLines({
+    sourceCode,
+    ruleName: context.id,
+  })
+  let formattedMembers: SortArrayIncludesSortingNode[][] = elements.reduce(
     (
-      accumulator: SortingNode[][],
+      accumulator: SortArrayIncludesSortingNode[][],
       element: TSESTree.SpreadElement | TSESTree.Expression | null,
     ) => {
-      if (element !== null) {
-        let group = 'unknown'
-        if (typeof options.groupKind === 'string') {
-          group = element.type === 'SpreadElement' ? 'spread' : 'literal'
-        }
-
-        let lastSortingNode = accumulator.at(-1)?.at(-1)
-        let sortingNode: SortingNode = {
-          name:
-            element.type === 'Literal'
-              ? `${element.value}`
-              : sourceCode.getText(element),
-          size: rangeToDiff(element, sourceCode),
-          node: element,
-          group,
-        }
-        if (
-          (partitionComment &&
-            hasPartitionComment(
-              partitionComment,
-              getCommentsBefore(element, sourceCode),
-            )) ||
-          (options.partitionByNewLine &&
-            lastSortingNode &&
-            getLinesBetween(sourceCode, lastSortingNode, sortingNode))
-        ) {
-          accumulator.push([])
-        }
-
-        accumulator.at(-1)!.push(sortingNode)
+      if (element === null) {
+        return accumulator
       }
+
+      let lastSortingNode = accumulator.at(-1)?.at(-1)
+      let sortingNode: SortArrayIncludesSortingNode = {
+        name:
+          element.type === 'Literal'
+            ? `${element.value}`
+            : sourceCode.getText(element),
+        size: rangeToDiff(element, sourceCode),
+        node: element,
+        isEslintDisabled: isNodeEslintDisabled(element, eslintDisabledLines),
+        groupKind: element.type === 'SpreadElement' ? 'spread' : 'literal',
+      }
+      if (
+        (options.partitionByComment &&
+          hasPartitionComment(
+            options.partitionByComment,
+            getCommentsBefore(element, sourceCode),
+          )) ||
+        (options.partitionByNewLine &&
+          lastSortingNode &&
+          getLinesBetween(sourceCode, lastSortingNode, sortingNode))
+      ) {
+        accumulator.push([])
+      }
+
+      accumulator.at(-1)!.push(sortingNode)
 
       return accumulator
     },
     [[]],
   )
+
+  let groupKindOrder
+  if (options.groupKind === 'literals-first') {
+    groupKindOrder = ['literal', 'spread'] as const
+  } else if (options.groupKind === 'spreads-first') {
+    groupKindOrder = ['spread', 'literal'] as const
+  } else {
+    groupKindOrder = ['any'] as const
+  }
+
   for (let nodes of formattedMembers) {
+    let filteredGroupKindNodes = groupKindOrder.map(groupKind =>
+      nodes.filter(n => groupKind === 'any' || n.groupKind === groupKind),
+    )
+
+    let sortNodesIgnoringEslintDisabledNodes = (
+      ignoreEslintDisabledNodes: boolean,
+    ) =>
+      filteredGroupKindNodes.flatMap(groupedNodes =>
+        sortNodes(groupedNodes, options, { ignoreEslintDisabledNodes }),
+      )
+    let sortedNodes = sortNodesIgnoringEslintDisabledNodes(false)
+    let sortedNodesExcludingEslintDisabled =
+      sortNodesIgnoringEslintDisabledNodes(true)
+
     pairwise(nodes, (left, right) => {
-      let groupKindOrder = ['unknown']
-
-      if (typeof options.groupKind === 'string') {
-        groupKindOrder =
-          options.groupKind === 'literals-first'
-            ? ['literal', 'spread']
-            : ['spread', 'literal']
-      }
-      let leftNum = getGroupNumber(groupKindOrder, left)
-      let rightNum = getGroupNumber(groupKindOrder, right)
-
+      let indexOfLeft = sortedNodes.indexOf(left)
+      let indexOfRight = sortedNodes.indexOf(right)
+      let indexOfRightExcludingEslintDisabled =
+        sortedNodesExcludingEslintDisabled.indexOf(right)
       if (
-        (options.groupKind !== 'mixed' && leftNum > rightNum) ||
-        ((options.groupKind === 'mixed' || leftNum === rightNum) &&
-          isPositive(compare(left, right, options)))
+        indexOfLeft < indexOfRight &&
+        indexOfLeft < indexOfRightExcludingEslintDisabled
       ) {
-        context.report({
-          messageId,
-          data: {
-            left: toSingleLine(left.name),
-            right: toSingleLine(right.name),
-          },
-          node: right.node,
-          fix: fixer => {
-            let sortedNodes =
-              options.groupKind !== 'mixed'
-                ? groupKindOrder
-                    .map(group => nodes.filter(n => n.group === group))
-                    .map(groupedNodes => sortNodes(groupedNodes, options))
-                    .flat()
-                : sortNodes(nodes, options)
-
-            return makeFixes(fixer, nodes, sortedNodes, sourceCode, options)
-          },
-        })
+        return
       }
+
+      context.report({
+        messageId,
+        data: {
+          left: toSingleLine(left.name),
+          right: toSingleLine(right.name),
+        },
+        node: right.node,
+        fix: fixer =>
+          makeFixes(
+            fixer,
+            nodes,
+            sortedNodesExcludingEslintDisabled,
+            sourceCode,
+            options,
+          ),
+      })
     })
   }
 }

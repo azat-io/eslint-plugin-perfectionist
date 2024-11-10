@@ -18,6 +18,8 @@ import { validateNewlinesAndPartitionConfiguration } from '../utils/validate-new
 import { validateGroupsConfiguration } from '../utils/validate-groups-configuration'
 import { readClosestTsConfigByPath } from '../utils/read-closest-ts-config-by-path'
 import { getOptionsWithCleanGroups } from '../utils/get-options-with-clean-groups'
+import { getEslintDisabledLines } from '../utils/get-eslint-disabled-lines'
+import { isNodeEslintDisabled } from '../utils/is-node-eslint-disabled'
 import { getTypescriptImport } from '../utils/get-typescript-import'
 import { hasPartitionComment } from '../utils/is-partition-comment'
 import { sortNodesByGroups } from '../utils/sort-nodes-by-groups'
@@ -338,6 +340,10 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
     }
 
     let sourceCode = getSourceCode(context)
+    let eslintDisabledLines = getEslintDisabledLines({
+      sourceCode,
+      ruleName: context.id,
+    })
     let nodes: SortImportsSortingNode[] = []
 
     let isSideEffectImport = (node: TSESTree.Node) =>
@@ -559,6 +565,7 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
         group: getGroup(),
         node,
         addSafetySemicolonWhenInline: true,
+        isEslintDisabled: isNodeEslintDisabled(node, eslintDisabledLines),
         isIgnored:
           !options.sortSideEffects &&
           isSideEffect &&
@@ -620,26 +627,39 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
         }
 
         for (let nodeList of formattedMembers) {
-          let sortedNodes = sortNodesByGroups(nodeList, options, {
-            isNodeIgnored: node => node.isIgnored,
-            getGroupCompareOptions: groupNumber => {
-              if (options.sortSideEffects) {
-                return options
-              }
-              let group = options.groups[groupNumber]
-              return isSideEffectOnlyGroup(group) ? null : options
-            },
-          })
+          let sortNodesExcludingEslintDisabled = (
+            ignoreEslintDisabledNodes: boolean,
+          ) =>
+            sortNodesByGroups(nodeList, options, {
+              ignoreEslintDisabledNodes,
+              isNodeIgnored: node => node.isIgnored,
+              getGroupCompareOptions: groupNumber => {
+                if (options.sortSideEffects) {
+                  return options
+                }
+                let group = options.groups[groupNumber]
+                return isSideEffectOnlyGroup(group) ? null : options
+              },
+            })
+          let sortedNodes = sortNodesExcludingEslintDisabled(false)
+          let sortedNodesExcludingEslintDisabled =
+            sortNodesExcludingEslintDisabled(true)
+
           pairwise(nodeList, (left, right) => {
             let leftNum = getGroupNumber(options.groups, left)
             let rightNum = getGroupNumber(options.groups, right)
 
             let indexOfLeft = sortedNodes.indexOf(left)
             let indexOfRight = sortedNodes.indexOf(right)
+            let indexOfRightExcludingEslintDisabled =
+              sortedNodesExcludingEslintDisabled.indexOf(right)
 
             let messageIds: MESSAGE_ID[] = []
 
-            if (indexOfLeft > indexOfRight) {
+            if (
+              indexOfLeft > indexOfRight ||
+              indexOfLeft >= indexOfRightExcludingEslintDisabled
+            ) {
               messageIds.push(
                 leftNum !== rightNum
                   ? 'unexpectedImportsGroupOrder'
@@ -675,14 +695,14 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
                   ...makeFixes(
                     fixer,
                     nodeList,
-                    sortedNodes,
+                    sortedNodesExcludingEslintDisabled,
                     sourceCode,
                     options,
                   ),
                   ...makeNewlinesFixes(
                     fixer,
                     nodeList,
-                    sortedNodes,
+                    sortedNodesExcludingEslintDisabled,
                     sourceCode,
                     options,
                   ),

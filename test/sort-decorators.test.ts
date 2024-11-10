@@ -3212,6 +3212,804 @@ describe(ruleName, () => {
         },
       )
     })
+
+    let eslintDisableRuleTesterName = `${ruleName}: supports 'eslint-disable' for individual nodes`
+    ruleTester.run(eslintDisableRuleTesterName, rule, {
+      valid: [],
+      invalid: [
+        {
+          code: dedent`
+            @C
+            @B
+            @A // eslint-disable-line
+            class Class {
+
+              @C
+              @B
+              @A // eslint-disable-line
+              property
+
+              @C
+              @B
+              @A // eslint-disable-line
+              accessor field
+
+              @C
+              @B
+              @A // eslint-disable-line
+              method(
+                @C
+                @B
+                @A // eslint-disable-line
+                parameter) {}
+            }
+          `,
+          output: dedent`
+            @B
+            @C
+            @A // eslint-disable-line
+            class Class {
+
+              @B
+              @C
+              @A // eslint-disable-line
+              property
+
+              @B
+              @C
+              @A // eslint-disable-line
+              accessor field
+
+              @B
+              @C
+              @A // eslint-disable-line
+              method(
+                @B
+                @C
+                @A // eslint-disable-line
+                parameter) {}
+            }
+          `,
+          options: [{}],
+          errors: duplicate5Times([
+            {
+              messageId: 'unexpectedDecoratorsOrder',
+              data: {
+                left: 'C',
+                right: 'B',
+              },
+            },
+          ]),
+        },
+        {
+          code: dedent`
+            @D
+            @C
+            @A // eslint-disable-line
+            @B
+            class Class {
+
+              @D
+              @C
+              @A // eslint-disable-line
+              @B
+              property
+
+              @D
+              @C
+              @A // eslint-disable-line
+              @B
+              accessor field
+
+              @D
+              @C
+              @A // eslint-disable-line
+              @B
+              method(
+                @D
+                @C
+                @A // eslint-disable-line
+                @B
+                parameter) {}
+            }
+          `,
+          output: dedent`
+            @B
+            @C
+            @A // eslint-disable-line
+            @D
+            class Class {
+
+              @B
+              @C
+              @A // eslint-disable-line
+              @D
+              property
+
+              @B
+              @C
+              @A // eslint-disable-line
+              @D
+              accessor field
+
+              @B
+              @C
+              @A // eslint-disable-line
+              @D
+              method(
+                @B
+                @C
+                @A // eslint-disable-line
+                @D
+                parameter) {}
+            }
+          `,
+          options: [
+            {
+              partitionByComment: true,
+            },
+          ],
+          errors: duplicate5Times([
+            {
+              messageId: 'unexpectedDecoratorsOrder',
+              data: {
+                left: 'D',
+                right: 'C',
+              },
+            },
+            {
+              messageId: 'unexpectedDecoratorsOrder',
+              data: {
+                left: 'A',
+                right: 'B',
+              },
+            },
+          ]),
+        },
+        {
+          code: dedent`
+            @C
+            @B
+            /* eslint-disable-next-line */
+            @A
+            class Class {
+
+              @C
+              @B
+              /* eslint-disable-next-line */
+              @A
+              property
+
+              @C
+              @B
+              /* eslint-disable-next-line */
+              @A
+              accessor field
+
+              @C
+              @B
+              /* eslint-disable-next-line */
+              @A
+              method(
+                @C
+                @B
+                /* eslint-disable-next-line */
+                @A
+                parameter) {}
+            }
+          `,
+          output: dedent`
+            @B
+            @C
+            /* eslint-disable-next-line */
+            @A
+            class Class {
+
+              @B
+              @C
+              /* eslint-disable-next-line */
+              @A
+              property
+
+              @B
+              @C
+              /* eslint-disable-next-line */
+              @A
+              accessor field
+
+              @B
+              @C
+              /* eslint-disable-next-line */
+              @A
+              method(
+                @B
+                @C
+                /* eslint-disable-next-line */
+                @A
+                parameter) {}
+            }
+          `,
+          options: [{}],
+          errors: duplicate5Times([
+            {
+              messageId: 'unexpectedDecoratorsOrder',
+              data: {
+                left: 'C',
+                right: 'B',
+              },
+            },
+          ]),
+        },
+        {
+          code: dedent`
+            @C
+            @B
+            @A /* eslint-disable-line */
+            class Class {
+
+              @C
+              @B
+              @A /* eslint-disable-line */
+              property
+
+              @C
+              @B
+              @A /* eslint-disable-line */
+              accessor field
+
+              @C
+              @B
+              @A /* eslint-disable-line */
+              method(
+                @C
+                @B
+                @A /* eslint-disable-line */
+                parameter) {}
+            }
+          `,
+          output: dedent`
+            @B
+            @C
+            @A /* eslint-disable-line */
+            class Class {
+
+              @B
+              @C
+              @A /* eslint-disable-line */
+              property
+
+              @B
+              @C
+              @A /* eslint-disable-line */
+              accessor field
+
+              @B
+              @C
+              @A /* eslint-disable-line */
+              method(
+                @B
+                @C
+                @A /* eslint-disable-line */
+                parameter) {}
+            }
+          `,
+          options: [{}],
+          errors: duplicate5Times([
+            {
+              messageId: 'unexpectedDecoratorsOrder',
+              data: {
+                left: 'C',
+                right: 'B',
+              },
+            },
+          ]),
+        },
+        {
+          code: dedent`
+            @C
+            @B
+            // eslint-disable-next-line @rule-tester/${eslintDisableRuleTesterName}
+            @A
+            class Class {
+
+              @C
+              @B
+              // eslint-disable-next-line @rule-tester/${eslintDisableRuleTesterName}
+              @A
+              property
+
+              @C
+              @B
+              // eslint-disable-next-line @rule-tester/${eslintDisableRuleTesterName}
+              @A
+              accessor field
+
+              @C
+              @B
+              // eslint-disable-next-line @rule-tester/${eslintDisableRuleTesterName}
+              @A
+              method(
+                @C
+                @B
+                // eslint-disable-next-line @rule-tester/${eslintDisableRuleTesterName}
+                @A
+                parameter) {}
+            }
+          `,
+          output: dedent`
+            @B
+            @C
+            // eslint-disable-next-line @rule-tester/${eslintDisableRuleTesterName}
+            @A
+            class Class {
+
+              @B
+              @C
+              // eslint-disable-next-line @rule-tester/${eslintDisableRuleTesterName}
+              @A
+              property
+
+              @B
+              @C
+              // eslint-disable-next-line @rule-tester/${eslintDisableRuleTesterName}
+              @A
+              accessor field
+
+              @B
+              @C
+              // eslint-disable-next-line @rule-tester/${eslintDisableRuleTesterName}
+              @A
+              method(
+                @B
+                @C
+                // eslint-disable-next-line @rule-tester/${eslintDisableRuleTesterName}
+                @A
+                parameter) {}
+            }
+          `,
+          options: [{}],
+          errors: duplicate5Times([
+            {
+              messageId: 'unexpectedDecoratorsOrder',
+              data: {
+                left: 'C',
+                right: 'B',
+              },
+            },
+          ]),
+        },
+        {
+          code: dedent`
+            @D
+            @E
+            /* eslint-disable */
+            @C
+            @B
+            // Shouldn't move
+            /* eslint-enable */
+            @A
+            class Class {
+
+              @D
+              @E
+              /* eslint-disable */
+              @C
+              @B
+              // Shouldn't move
+              /* eslint-enable */
+              @A
+              property
+
+              @D
+              @E
+              /* eslint-disable */
+              @C
+              @B
+              // Shouldn't move
+              /* eslint-enable */
+              @A
+              accessor field
+
+              @D
+              @E
+              /* eslint-disable */
+              @C
+              @B
+              // Shouldn't move
+              /* eslint-enable */
+              @A
+              method(
+                @D
+                @E
+                /* eslint-disable */
+                @C
+                @B
+                // Shouldn't move
+                /* eslint-enable */
+                @A
+                parameter) {}
+            }
+          `,
+          output: dedent`
+            @A
+            @D
+            /* eslint-disable */
+            @C
+            @B
+            // Shouldn't move
+            /* eslint-enable */
+            @E
+            class Class {
+
+              @A
+              @D
+              /* eslint-disable */
+              @C
+              @B
+              // Shouldn't move
+              /* eslint-enable */
+              @E
+              property
+
+              @A
+              @D
+              /* eslint-disable */
+              @C
+              @B
+              // Shouldn't move
+              /* eslint-enable */
+              @E
+              accessor field
+
+              @A
+              @D
+              /* eslint-disable */
+              @C
+              @B
+              // Shouldn't move
+              /* eslint-enable */
+              @E
+              method(
+                @A
+                @D
+                /* eslint-disable */
+                @C
+                @B
+                // Shouldn't move
+                /* eslint-enable */
+                @E
+                parameter) {}
+            }
+          `,
+          options: [{}],
+          errors: duplicate5Times([
+            {
+              messageId: 'unexpectedDecoratorsOrder',
+              data: {
+                left: 'B',
+                right: 'A',
+              },
+            },
+          ]),
+        },
+        {
+          code: dedent`
+            @C
+            @B
+            @A // eslint-disable-line @rule-tester/${eslintDisableRuleTesterName}
+            class Class {
+
+              @C
+              @B
+              @A // eslint-disable-line @rule-tester/${eslintDisableRuleTesterName}
+              property
+
+              @C
+              @B
+              @A // eslint-disable-line @rule-tester/${eslintDisableRuleTesterName}
+              accessor field
+
+              @C
+              @B
+              @A // eslint-disable-line @rule-tester/${eslintDisableRuleTesterName}
+              method(
+                @C
+                @B
+                @A // eslint-disable-line @rule-tester/${eslintDisableRuleTesterName}
+                parameter) {}
+            }
+          `,
+          output: dedent`
+            @B
+            @C
+            @A // eslint-disable-line @rule-tester/${eslintDisableRuleTesterName}
+            class Class {
+
+              @B
+              @C
+              @A // eslint-disable-line @rule-tester/${eslintDisableRuleTesterName}
+              property
+
+              @B
+              @C
+              @A // eslint-disable-line @rule-tester/${eslintDisableRuleTesterName}
+              accessor field
+
+              @B
+              @C
+              @A // eslint-disable-line @rule-tester/${eslintDisableRuleTesterName}
+              method(
+                @B
+                @C
+                @A // eslint-disable-line @rule-tester/${eslintDisableRuleTesterName}
+                parameter) {}
+            }
+          `,
+          options: [{}],
+          errors: duplicate5Times([
+            {
+              messageId: 'unexpectedDecoratorsOrder',
+              data: {
+                left: 'C',
+                right: 'B',
+              },
+            },
+          ]),
+        },
+        {
+          code: dedent`
+            @C
+            @B
+            /* eslint-disable-next-line @rule-tester/${eslintDisableRuleTesterName} */
+            @A
+            class Class {
+
+              @C
+              @B
+              /* eslint-disable-next-line @rule-tester/${eslintDisableRuleTesterName} */
+              @A
+              property
+
+              @C
+              @B
+              /* eslint-disable-next-line @rule-tester/${eslintDisableRuleTesterName} */
+              @A
+              accessor field
+
+              @C
+              @B
+              /* eslint-disable-next-line @rule-tester/${eslintDisableRuleTesterName} */
+              @A
+              method(
+                @C
+                @B
+                /* eslint-disable-next-line @rule-tester/${eslintDisableRuleTesterName} */
+                @A
+                parameter) {}
+            }
+          `,
+          output: dedent`
+            @B
+            @C
+            /* eslint-disable-next-line @rule-tester/${eslintDisableRuleTesterName} */
+            @A
+            class Class {
+
+              @B
+              @C
+              /* eslint-disable-next-line @rule-tester/${eslintDisableRuleTesterName} */
+              @A
+              property
+
+              @B
+              @C
+              /* eslint-disable-next-line @rule-tester/${eslintDisableRuleTesterName} */
+              @A
+              accessor field
+
+              @B
+              @C
+              /* eslint-disable-next-line @rule-tester/${eslintDisableRuleTesterName} */
+              @A
+              method(
+                @B
+                @C
+                /* eslint-disable-next-line @rule-tester/${eslintDisableRuleTesterName} */
+                @A
+                parameter) {}
+            }
+          `,
+          options: [{}],
+          errors: duplicate5Times([
+            {
+              messageId: 'unexpectedDecoratorsOrder',
+              data: {
+                left: 'C',
+                right: 'B',
+              },
+            },
+          ]),
+        },
+        {
+          code: dedent`
+            @C
+            @B
+            @A /* eslint-disable-line @rule-tester/${eslintDisableRuleTesterName} */
+            class Class {
+
+              @C
+              @B
+              @A /* eslint-disable-line @rule-tester/${eslintDisableRuleTesterName} */
+              property
+
+              @C
+              @B
+              @A /* eslint-disable-line @rule-tester/${eslintDisableRuleTesterName} */
+              accessor field
+
+              @C
+              @B
+              @A /* eslint-disable-line @rule-tester/${eslintDisableRuleTesterName} */
+              method(
+                @C
+                @B
+                @A /* eslint-disable-line @rule-tester/${eslintDisableRuleTesterName} */
+                parameter) {}
+            }
+          `,
+          output: dedent`
+            @B
+            @C
+            @A /* eslint-disable-line @rule-tester/${eslintDisableRuleTesterName} */
+            class Class {
+
+              @B
+              @C
+              @A /* eslint-disable-line @rule-tester/${eslintDisableRuleTesterName} */
+              property
+
+              @B
+              @C
+              @A /* eslint-disable-line @rule-tester/${eslintDisableRuleTesterName} */
+              accessor field
+
+              @B
+              @C
+              @A /* eslint-disable-line @rule-tester/${eslintDisableRuleTesterName} */
+              method(
+                @B
+                @C
+                @A /* eslint-disable-line @rule-tester/${eslintDisableRuleTesterName} */
+                parameter) {}
+            }
+          `,
+          options: [{}],
+          errors: duplicate5Times([
+            {
+              messageId: 'unexpectedDecoratorsOrder',
+              data: {
+                left: 'C',
+                right: 'B',
+              },
+            },
+          ]),
+        },
+        {
+          code: dedent`
+            @D
+            @E
+            /* eslint-disable @rule-tester/${eslintDisableRuleTesterName} */
+            @C
+            @B
+            // Shouldn't move
+            /* eslint-enable */
+            @A
+            class Class {
+
+              @D
+              @E
+              /* eslint-disable @rule-tester/${eslintDisableRuleTesterName} */
+              @C
+              @B
+              // Shouldn't move
+              /* eslint-enable */
+              @A
+              property
+
+              @D
+              @E
+              /* eslint-disable @rule-tester/${eslintDisableRuleTesterName} */
+              @C
+              @B
+              // Shouldn't move
+              /* eslint-enable */
+              @A
+              accessor field
+
+              @D
+              @E
+              /* eslint-disable @rule-tester/${eslintDisableRuleTesterName} */
+              @C
+              @B
+              // Shouldn't move
+              /* eslint-enable */
+              @A
+              method(
+                @D
+                @E
+                /* eslint-disable @rule-tester/${eslintDisableRuleTesterName} */
+                @C
+                @B
+                // Shouldn't move
+                /* eslint-enable */
+                @A
+                parameter) {}
+            }
+          `,
+          output: dedent`
+            @A
+            @D
+            /* eslint-disable @rule-tester/${eslintDisableRuleTesterName} */
+            @C
+            @B
+            // Shouldn't move
+            /* eslint-enable */
+            @E
+            class Class {
+
+              @A
+              @D
+              /* eslint-disable @rule-tester/${eslintDisableRuleTesterName} */
+              @C
+              @B
+              // Shouldn't move
+              /* eslint-enable */
+              @E
+              property
+
+              @A
+              @D
+              /* eslint-disable @rule-tester/${eslintDisableRuleTesterName} */
+              @C
+              @B
+              // Shouldn't move
+              /* eslint-enable */
+              @E
+              accessor field
+
+              @A
+              @D
+              /* eslint-disable @rule-tester/${eslintDisableRuleTesterName} */
+              @C
+              @B
+              // Shouldn't move
+              /* eslint-enable */
+              @E
+              method(
+                @A
+                @D
+                /* eslint-disable @rule-tester/${eslintDisableRuleTesterName} */
+                @C
+                @B
+                // Shouldn't move
+                /* eslint-enable */
+                @E
+                parameter) {}
+            }
+          `,
+          options: [{}],
+          errors: duplicate5Times([
+            {
+              messageId: 'unexpectedDecoratorsOrder',
+              data: {
+                left: 'B',
+                right: 'A',
+              },
+            },
+          ]),
+        },
+      ],
+    })
   })
 })
 

@@ -12,34 +12,45 @@ export interface SortingNodeWithDependencies<
   dependencies: string[]
 }
 
+interface ExtraOptions {
+  ignoreEslintDisabledNodes?: boolean
+}
+
 /**
  * Returns nodes topologically sorted by their dependencies
  */
 export let sortNodesByDependencies = <T extends SortingNodeWithDependencies>(
   nodes: T[],
+  extraOptions?: ExtraOptions,
 ): T[] => {
   let result: T[] = []
   let visitedNodes = new Set<T>()
   let inProcessNodes = new Set<T>()
 
-  let visitNode = (node: T) => {
-    if (visitedNodes.has(node)) {
+  let visitNode = (sortingNode: T) => {
+    if (visitedNodes.has(sortingNode)) {
       return
     }
-    if (inProcessNodes.has(node)) {
+    if (inProcessNodes.has(sortingNode)) {
       // Circular dependency
       return
     }
-    inProcessNodes.add(node)
+    inProcessNodes.add(sortingNode)
+
     let dependentNodes = nodes.filter(n =>
-      node.dependencies.includes(n.dependencyName ?? n.name),
+      sortingNode.dependencies.includes(n.dependencyName ?? n.name),
     )
     for (let dependentNode of dependentNodes) {
-      visitNode(dependentNode)
+      if (
+        !extraOptions?.ignoreEslintDisabledNodes ||
+        !dependentNode.isEslintDisabled
+      ) {
+        visitNode(dependentNode)
+      }
     }
-    visitedNodes.add(node)
-    inProcessNodes.delete(node)
-    result.push(node)
+    visitedNodes.add(sortingNode)
+    inProcessNodes.delete(sortingNode)
+    result.push(sortingNode)
   }
 
   for (let node of nodes) {
