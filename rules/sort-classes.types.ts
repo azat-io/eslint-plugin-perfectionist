@@ -190,6 +190,7 @@ export type SortClassesOptions = [
     partitionByComment: string[] | boolean | string
     newlinesBetween: 'ignore' | 'always' | 'never'
     specialCharacters: 'remove' | 'trim' | 'keep'
+    ignoreCallbackDependenciesPatterns: string[]
     locales: NonNullable<Intl.LocalesArgument>
     partitionByNewLine: boolean
     customGroups: CustomGroup[]

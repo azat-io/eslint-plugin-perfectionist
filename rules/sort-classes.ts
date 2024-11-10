@@ -51,6 +51,7 @@ import { useGroups } from '../utils/use-groups'
 import { makeFixes } from '../utils/make-fixes'
 import { complete } from '../utils/complete'
 import { pairwise } from '../utils/pairwise'
+import { matches } from '../utils/matches'
 
 type MESSAGE_ID =
   | 'unexpectedClassesDependencyOrder'
@@ -84,6 +85,7 @@ const defaultOptions: Required<SortClassesOptions[0]> = {
     ['private-method', 'private-function-property'],
     'unknown',
   ],
+  ignoreCallbackDependenciesPatterns: [],
   partitionByComment: false,
   partitionByNewLine: false,
   newlinesBetween: 'ignore',
@@ -161,6 +163,14 @@ export default createEslintRule<SortClassesOptions, MESSAGE_ID>({
                   },
                 },
               ],
+            },
+          },
+          ignoreCallbackDependenciesPatterns: {
+            description:
+              'Patterns that should be ignored when detecting dependencies in method callbacks.',
+            type: 'array',
+            items: {
+              type: 'string',
             },
           },
         },
@@ -300,7 +310,19 @@ export default createEslintRule<SortClassesOptions, MESSAGE_ID>({
           }
 
           if ('arguments' in nodeValue) {
-            nodeValue.arguments.forEach(traverseNode)
+            let shouldIgnore = false
+            if (nodeValue.type === 'CallExpression') {
+              let functionName =
+                'name' in nodeValue.callee ? nodeValue.callee.name : null
+              shouldIgnore =
+                functionName !== null &&
+                options.ignoreCallbackDependenciesPatterns.some(pattern =>
+                  matches(functionName, pattern),
+                )
+            }
+            if (!shouldIgnore) {
+              nodeValue.arguments.forEach(traverseNode)
+            }
           }
 
           if ('declarations' in nodeValue) {

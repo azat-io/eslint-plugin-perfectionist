@@ -3990,6 +3990,30 @@ describe(ruleName, () => {
           ],
         },
       )
+
+      ruleTester.run(
+        `${ruleName}(${type}): should ignore callback dependencies in 'ignoreCallbackDependenciesPatterns'`,
+        rule,
+        {
+          invalid: [],
+          valid: [
+            {
+              code: dedent`
+                class Class {
+                  a = computed(() => this.c)
+                  c
+                  b = notComputed(() => this.c)
+                }
+              `,
+              options: [
+                {
+                  ignoreCallbackDependenciesPatterns: ['^computed$'],
+                },
+              ],
+            },
+          ],
+        },
+      )
     })
 
     ruleTester.run(`${ruleName}(${type}): should ignore unknown group`, rule, {
