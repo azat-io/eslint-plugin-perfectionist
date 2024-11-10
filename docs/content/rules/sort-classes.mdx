@@ -258,6 +258,24 @@ Specifies how new lines should be handled between class member groups.
 
 This options is only applicable when `partitionByNewLine` is `false`.
 
+### ignoreCallbackDependenciesPatterns
+
+<sub>default: `[]`</sub>
+
+Allows you to specify regexp patterns of function names that should ignore dependency sorting in their callback functions.
+
+Example with `ignoreCallbackDependenciesPatterns: ['^computed$']`:
+
+```ts
+class User {
+  fullName = computed(() => this.role + ' - ' + this.username);
+  role = signal('admin');
+  username = signal('John');
+};
+```
+
+Without `ignoreCallbackDependenciesPatterns: ['^computed$']`, `role` and `username` would be sorted before `fullName` as it depends on them.
+
 ### groups
 
 <sub>
