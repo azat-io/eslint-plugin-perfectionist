@@ -1807,5 +1807,319 @@ describe(ruleName, () => {
       ],
       invalid: [],
     })
+
+    let eslintDisableRuleTesterName = `${ruleName}: supports 'eslint-disable' for individual nodes`
+    ruleTester.run(eslintDisableRuleTesterName, rule, {
+      valid: [],
+      invalid: [
+        {
+          code: dedent`
+          type T =
+            C
+            | B
+            // eslint-disable-next-line
+            | A
+        `,
+          output: dedent`
+          type T =
+            B
+            | C
+            // eslint-disable-next-line
+            | A
+          `,
+          options: [{}],
+          errors: [
+            {
+              messageId: 'unexpectedUnionTypesOrder',
+              data: {
+                left: 'C',
+                right: 'B',
+              },
+            },
+          ],
+        },
+        {
+          code: dedent`
+            type T =
+              D
+              | C
+              // eslint-disable-next-line
+              | A
+              | B
+          `,
+          output: dedent`
+            type T =
+              B
+              | C
+              // eslint-disable-next-line
+              | A
+              | D
+          `,
+          options: [
+            {
+              partitionByComment: true,
+            },
+          ],
+          errors: [
+            {
+              messageId: 'unexpectedUnionTypesOrder',
+              data: {
+                left: 'D',
+                right: 'C',
+              },
+            },
+            {
+              messageId: 'unexpectedUnionTypesOrder',
+              data: {
+                left: 'A',
+                right: 'B',
+              },
+            },
+          ],
+        },
+        {
+          code: dedent`
+          type T =
+            C
+            | B
+            | A // eslint-disable-line
+        `,
+          output: dedent`
+          type T =
+            B
+            | C
+            | A // eslint-disable-line
+          `,
+          options: [{}],
+          errors: [
+            {
+              messageId: 'unexpectedUnionTypesOrder',
+              data: {
+                left: 'C',
+                right: 'B',
+              },
+            },
+          ],
+        },
+        {
+          code: dedent`
+          type T =
+            C
+            | B
+            /* eslint-disable-next-line */
+            | A
+        `,
+          output: dedent`
+          type T =
+            B
+            | C
+            /* eslint-disable-next-line */
+            | A
+          `,
+          options: [{}],
+          errors: [
+            {
+              messageId: 'unexpectedUnionTypesOrder',
+              data: {
+                left: 'C',
+                right: 'B',
+              },
+            },
+          ],
+        },
+        {
+          code: dedent`
+          type T =
+            C
+            | B
+            | A /* eslint-disable-line */
+        `,
+          output: dedent`
+          type T =
+            B
+            | C
+            | A /* eslint-disable-line */
+          `,
+          options: [{}],
+          errors: [
+            {
+              messageId: 'unexpectedUnionTypesOrder',
+              data: {
+                left: 'C',
+                right: 'B',
+              },
+            },
+          ],
+        },
+        {
+          code: dedent`
+            type Type =
+              D
+              | E
+              /* eslint-disable */
+              | C
+              | B
+              // Shouldn't move
+              /* eslint-enable */
+              | A
+          `,
+          output: dedent`
+            type Type =
+              A
+              | D
+              /* eslint-disable */
+              | C
+              | B
+              // Shouldn't move
+              /* eslint-enable */
+              | E
+          `,
+          options: [{}],
+          errors: [
+            {
+              messageId: 'unexpectedUnionTypesOrder',
+              data: {
+                left: 'B',
+                right: 'A',
+              },
+            },
+          ],
+        },
+        {
+          code: dedent`
+          type T =
+            C
+            | B
+            // eslint-disable-next-line @rule-tester/${eslintDisableRuleTesterName}
+            | A
+        `,
+          output: dedent`
+          type T =
+            B
+            | C
+            // eslint-disable-next-line @rule-tester/${eslintDisableRuleTesterName}
+            | A
+          `,
+          options: [{}],
+          errors: [
+            {
+              messageId: 'unexpectedUnionTypesOrder',
+              data: {
+                left: 'C',
+                right: 'B',
+              },
+            },
+          ],
+        },
+        {
+          code: dedent`
+          type T =
+            C
+            | B
+            | A // eslint-disable-line @rule-tester/${eslintDisableRuleTesterName}
+        `,
+          output: dedent`
+          type T =
+            B
+            | C
+            | A // eslint-disable-line @rule-tester/${eslintDisableRuleTesterName}
+          `,
+          options: [{}],
+          errors: [
+            {
+              messageId: 'unexpectedUnionTypesOrder',
+              data: {
+                left: 'C',
+                right: 'B',
+              },
+            },
+          ],
+        },
+        {
+          code: dedent`
+          type T =
+            C
+            | B
+            /* eslint-disable-next-line @rule-tester/${eslintDisableRuleTesterName} */
+            | A
+        `,
+          output: dedent`
+          type T =
+            B
+            | C
+            /* eslint-disable-next-line @rule-tester/${eslintDisableRuleTesterName} */
+            | A
+          `,
+          options: [{}],
+          errors: [
+            {
+              messageId: 'unexpectedUnionTypesOrder',
+              data: {
+                left: 'C',
+                right: 'B',
+              },
+            },
+          ],
+        },
+        {
+          code: dedent`
+          type T =
+            C
+            | B
+            | A /* eslint-disable-line @rule-tester/${eslintDisableRuleTesterName} */
+        `,
+          output: dedent`
+          type T =
+            B
+            | C
+            | A /* eslint-disable-line @rule-tester/${eslintDisableRuleTesterName} */
+          `,
+          options: [{}],
+          errors: [
+            {
+              messageId: 'unexpectedUnionTypesOrder',
+              data: {
+                left: 'C',
+                right: 'B',
+              },
+            },
+          ],
+        },
+        {
+          code: dedent`
+            type Type =
+              D
+              | E
+              /* eslint-disable @rule-tester/${eslintDisableRuleTesterName} */
+              | C
+              | B
+              // Shouldn't move
+              /* eslint-enable */
+              | A
+          `,
+          output: dedent`
+            type Type =
+              A
+              | D
+              /* eslint-disable @rule-tester/${eslintDisableRuleTesterName} */
+              | C
+              | B
+              // Shouldn't move
+              /* eslint-enable */
+              | E
+          `,
+          options: [{}],
+          errors: [
+            {
+              messageId: 'unexpectedUnionTypesOrder',
+              data: {
+                left: 'B',
+                right: 'A',
+              },
+            },
+          ],
+        },
+      ],
+    })
   })
 })

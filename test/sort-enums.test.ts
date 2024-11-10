@@ -2325,5 +2325,369 @@ describe(ruleName, () => {
         },
       ],
     })
+
+    let eslintDisableRuleTesterName = `${ruleName}: supports 'eslint-disable' for individual nodes`
+    ruleTester.run(eslintDisableRuleTesterName, rule, {
+      valid: [],
+      invalid: [
+        {
+          code: dedent`
+            enum Enum {
+              C = 'C',
+              B = 'B',
+              // eslint-disable-next-line
+              A = 'A'
+            }
+          `,
+          output: dedent`
+            enum Enum {
+              B = 'B',
+              C = 'C',
+              // eslint-disable-next-line
+              A = 'A'
+            }
+          `,
+          options: [{}],
+          errors: [
+            {
+              messageId: 'unexpectedEnumsOrder',
+              data: {
+                left: 'C',
+                right: 'B',
+              },
+            },
+          ],
+        },
+        {
+          code: dedent`
+            enum Enum {
+              D = 'D',
+              C = 'C',
+              // eslint-disable-next-line
+              A = 'A',
+              B = 'B'
+            }
+          `,
+          output: dedent`
+            enum Enum {
+              B = 'B',
+              C = 'C',
+              // eslint-disable-next-line
+              A = 'A',
+              D = 'D'
+            }
+          `,
+          options: [
+            {
+              partitionByComment: true,
+            },
+          ],
+          errors: [
+            {
+              messageId: 'unexpectedEnumsOrder',
+              data: {
+                left: 'D',
+                right: 'C',
+              },
+            },
+            {
+              messageId: 'unexpectedEnumsOrder',
+              data: {
+                left: 'A',
+                right: 'B',
+              },
+            },
+          ],
+        },
+        {
+          code: dedent`
+            enum Enum {
+              C = 'C',
+              B = A,
+              // eslint-disable-next-line
+              A = 'A'
+            }
+          `,
+          output: dedent`
+            enum Enum {
+              B = A,
+              C = 'C',
+              // eslint-disable-next-line
+              A = 'A'
+            }
+          `,
+          options: [{}],
+          errors: [
+            {
+              messageId: 'unexpectedEnumsOrder',
+              data: {
+                left: 'C',
+                right: 'B',
+              },
+            },
+          ],
+        },
+        {
+          code: dedent`
+            enum Enum {
+              C = 'C',
+              B = 'B',
+              A = 'A' // eslint-disable-line
+            }
+          `,
+          output: dedent`
+            enum Enum {
+              B = 'B',
+              C = 'C',
+              A = 'A' // eslint-disable-line
+            }
+          `,
+          options: [{}],
+          errors: [
+            {
+              messageId: 'unexpectedEnumsOrder',
+              data: {
+                left: 'C',
+                right: 'B',
+              },
+            },
+          ],
+        },
+        {
+          code: dedent`
+            enum Enum {
+              C = 'C',
+              B = 'B',
+              /* eslint-disable-next-line */
+              A = 'A'
+            }
+          `,
+          output: dedent`
+            enum Enum {
+              B = 'B',
+              C = 'C',
+              /* eslint-disable-next-line */
+              A = 'A'
+            }
+          `,
+          options: [{}],
+          errors: [
+            {
+              messageId: 'unexpectedEnumsOrder',
+              data: {
+                left: 'C',
+                right: 'B',
+              },
+            },
+          ],
+        },
+        {
+          code: dedent`
+            enum Enum {
+              C = 'C',
+              B = 'B',
+              A = 'A' /* eslint-disable-line */
+            }
+          `,
+          output: dedent`
+            enum Enum {
+              B = 'B',
+              C = 'C',
+              A = 'A' /* eslint-disable-line */
+            }
+          `,
+          options: [{}],
+          errors: [
+            {
+              messageId: 'unexpectedEnumsOrder',
+              data: {
+                left: 'C',
+                right: 'B',
+              },
+            },
+          ],
+        },
+        {
+          code: dedent`
+            enum Enum {
+              D = 'D',
+              E = 'E',
+              /* eslint-disable */
+              C = 'C',
+              B = 'B',
+              // Shouldn't move
+              /* eslint-enable */
+              A = 'A'
+            }
+          `,
+          output: dedent`
+            enum Enum {
+              A = 'A',
+              D = 'D',
+              /* eslint-disable */
+              C = 'C',
+              B = 'B',
+              // Shouldn't move
+              /* eslint-enable */
+              E = 'E'
+            }
+          `,
+          options: [{}],
+          errors: [
+            {
+              messageId: 'unexpectedEnumsOrder',
+              data: {
+                left: 'B',
+                right: 'A',
+              },
+            },
+          ],
+        },
+        {
+          code: dedent`
+            enum Enum {
+              C = 'C',
+              B = 'B',
+              // eslint-disable-next-line @rule-tester/${eslintDisableRuleTesterName}
+              A = 'A'
+            }
+          `,
+          output: dedent`
+            enum Enum {
+              B = 'B',
+              C = 'C',
+              // eslint-disable-next-line @rule-tester/${eslintDisableRuleTesterName}
+              A = 'A'
+            }
+          `,
+          options: [{}],
+          errors: [
+            {
+              messageId: 'unexpectedEnumsOrder',
+              data: {
+                left: 'C',
+                right: 'B',
+              },
+            },
+          ],
+        },
+        {
+          code: dedent`
+            enum Enum {
+              C = 'C',
+              B = 'B',
+              A = 'A' // eslint-disable-line @rule-tester/${eslintDisableRuleTesterName}
+            }
+          `,
+          output: dedent`
+            enum Enum {
+              B = 'B',
+              C = 'C',
+              A = 'A' // eslint-disable-line @rule-tester/${eslintDisableRuleTesterName}
+            }
+          `,
+          options: [{}],
+          errors: [
+            {
+              messageId: 'unexpectedEnumsOrder',
+              data: {
+                left: 'C',
+                right: 'B',
+              },
+            },
+          ],
+        },
+        {
+          code: dedent`
+            enum Enum {
+              C = 'C',
+              B = 'B',
+              /* eslint-disable-next-line @rule-tester/${eslintDisableRuleTesterName} */
+              A = 'A'
+            }
+          `,
+          output: dedent`
+            enum Enum {
+              B = 'B',
+              C = 'C',
+              /* eslint-disable-next-line @rule-tester/${eslintDisableRuleTesterName} */
+              A = 'A'
+            }
+          `,
+          options: [{}],
+          errors: [
+            {
+              messageId: 'unexpectedEnumsOrder',
+              data: {
+                left: 'C',
+                right: 'B',
+              },
+            },
+          ],
+        },
+        {
+          code: dedent`
+            enum Enum {
+              C = 'C',
+              B = 'B',
+              A = 'A' /* eslint-disable-line @rule-tester/${eslintDisableRuleTesterName} */
+            }
+          `,
+          output: dedent`
+            enum Enum {
+              B = 'B',
+              C = 'C',
+              A = 'A' /* eslint-disable-line @rule-tester/${eslintDisableRuleTesterName} */
+            }
+          `,
+          options: [{}],
+          errors: [
+            {
+              messageId: 'unexpectedEnumsOrder',
+              data: {
+                left: 'C',
+                right: 'B',
+              },
+            },
+          ],
+        },
+        {
+          code: dedent`
+            enum Enum {
+              D = 'D',
+              E = 'E',
+              /* eslint-disable @rule-tester/${eslintDisableRuleTesterName} */
+              C = 'C',
+              B = 'B',
+              // Shouldn't move
+              /* eslint-enable */
+              A = 'A'
+            }
+          `,
+          output: dedent`
+            enum Enum {
+              A = 'A',
+              D = 'D',
+              /* eslint-disable @rule-tester/${eslintDisableRuleTesterName} */
+              C = 'C',
+              B = 'B',
+              // Shouldn't move
+              /* eslint-enable */
+              E = 'E'
+            }
+          `,
+          options: [{}],
+          errors: [
+            {
+              messageId: 'unexpectedEnumsOrder',
+              data: {
+                left: 'B',
+                right: 'A',
+              },
+            },
+          ],
+        },
+      ],
+    })
   })
 })

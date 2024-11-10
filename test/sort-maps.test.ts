@@ -1188,5 +1188,341 @@ describe(ruleName, () => {
         ],
       },
     )
+
+    let eslintDisableRuleTesterName = `${ruleName}: supports 'eslint-disable' for individual nodes`
+    ruleTester.run(eslintDisableRuleTesterName, rule, {
+      valid: [],
+      invalid: [
+        {
+          code: dedent`
+            new Map([
+              [c, 'c'],
+              [b, 'b'],
+              // eslint-disable-next-line
+              [a, 'a']
+            ])
+          `,
+          output: dedent`
+            new Map([
+              [b, 'b'],
+              [c, 'c'],
+              // eslint-disable-next-line
+              [a, 'a']
+            ])
+          `,
+          options: [{}],
+          errors: [
+            {
+              messageId: 'unexpectedMapElementsOrder',
+              data: {
+                left: 'c',
+                right: 'b',
+              },
+            },
+          ],
+        },
+        {
+          code: dedent`
+            new Map([
+              [d, 'd'],
+              [c, 'c'],
+              // eslint-disable-next-line
+              [a, 'a'],
+              [b, 'b']
+            ])
+          `,
+          output: dedent`
+            new Map([
+              [b, 'b'],
+              [c, 'c'],
+              // eslint-disable-next-line
+              [a, 'a'],
+              [d, 'd']
+            ])
+          `,
+          options: [
+            {
+              partitionByComment: true,
+            },
+          ],
+          errors: [
+            {
+              messageId: 'unexpectedMapElementsOrder',
+              data: {
+                left: 'd',
+                right: 'c',
+              },
+            },
+            {
+              messageId: 'unexpectedMapElementsOrder',
+              data: {
+                left: 'a',
+                right: 'b',
+              },
+            },
+          ],
+        },
+        {
+          code: dedent`
+            new Map([
+              [c, 'c'],
+              [b, 'b'],
+              [a, 'a'] // eslint-disable-line
+            ])
+          `,
+          output: dedent`
+            new Map([
+              [b, 'b'],
+              [c, 'c'],
+              [a, 'a'] // eslint-disable-line
+            ])
+          `,
+          options: [{}],
+          errors: [
+            {
+              messageId: 'unexpectedMapElementsOrder',
+              data: {
+                left: 'c',
+                right: 'b',
+              },
+            },
+          ],
+        },
+        {
+          code: dedent`
+            new Map([
+              [c, 'c'],
+              [b, 'b'],
+              /* eslint-disable-next-line */
+              [a, 'a']
+            ])
+          `,
+          output: dedent`
+            new Map([
+              [b, 'b'],
+              [c, 'c'],
+              /* eslint-disable-next-line */
+              [a, 'a']
+            ])
+          `,
+          options: [{}],
+          errors: [
+            {
+              messageId: 'unexpectedMapElementsOrder',
+              data: {
+                left: 'c',
+                right: 'b',
+              },
+            },
+          ],
+        },
+        {
+          code: dedent`
+            new Map([
+              [c, 'c'],
+              [b, 'b'],
+              [a, 'a'] /* eslint-disable-line */
+            ])
+          `,
+          output: dedent`
+            new Map([
+              [b, 'b'],
+              [c, 'c'],
+              [a, 'a'] /* eslint-disable-line */
+            ])
+          `,
+          options: [{}],
+          errors: [
+            {
+              messageId: 'unexpectedMapElementsOrder',
+              data: {
+                left: 'c',
+                right: 'b',
+              },
+            },
+          ],
+        },
+        {
+          code: dedent`
+            new Map([
+              [d, 'd'],
+              [e, 'e'],
+              /* eslint-disable */
+              [c, 'c'],
+              [b, 'b'],
+              // Shouldn't move
+              /* eslint-enable */
+              [a, 'a'],
+            ])
+          `,
+          output: dedent`
+            new Map([
+              [a, 'a'],
+              [d, 'd'],
+              /* eslint-disable */
+              [c, 'c'],
+              [b, 'b'],
+              // Shouldn't move
+              /* eslint-enable */
+              [e, 'e'],
+            ])
+          `,
+          options: [{}],
+          errors: [
+            {
+              messageId: 'unexpectedMapElementsOrder',
+              data: {
+                left: 'b',
+                right: 'a',
+              },
+            },
+          ],
+        },
+        {
+          code: dedent`
+            new Map([
+              [c, 'c'],
+              [b, 'b'],
+              // eslint-disable-next-line @rule-tester/${eslintDisableRuleTesterName}
+              [a, 'a']
+            ])
+          `,
+          output: dedent`
+            new Map([
+              [b, 'b'],
+              [c, 'c'],
+              // eslint-disable-next-line @rule-tester/${eslintDisableRuleTesterName}
+              [a, 'a']
+            ])
+          `,
+          options: [{}],
+          errors: [
+            {
+              messageId: 'unexpectedMapElementsOrder',
+              data: {
+                left: 'c',
+                right: 'b',
+              },
+            },
+          ],
+        },
+        {
+          code: dedent`
+            new Map([
+              [c, 'c'],
+              [b, 'b'],
+              [a, 'a'] // eslint-disable-line @rule-tester/${eslintDisableRuleTesterName}
+            ])
+          `,
+          output: dedent`
+            new Map([
+              [b, 'b'],
+              [c, 'c'],
+              [a, 'a'] // eslint-disable-line @rule-tester/${eslintDisableRuleTesterName}
+            ])
+          `,
+          options: [{}],
+          errors: [
+            {
+              messageId: 'unexpectedMapElementsOrder',
+              data: {
+                left: 'c',
+                right: 'b',
+              },
+            },
+          ],
+        },
+        {
+          code: dedent`
+            new Map([
+              [c, 'c'],
+              [b, 'b'],
+              /* eslint-disable-next-line @rule-tester/${eslintDisableRuleTesterName} */
+              [a, 'a']
+            ])
+          `,
+          output: dedent`
+            new Map([
+              [b, 'b'],
+              [c, 'c'],
+              /* eslint-disable-next-line @rule-tester/${eslintDisableRuleTesterName} */
+              [a, 'a']
+            ])
+          `,
+          options: [{}],
+          errors: [
+            {
+              messageId: 'unexpectedMapElementsOrder',
+              data: {
+                left: 'c',
+                right: 'b',
+              },
+            },
+          ],
+        },
+        {
+          code: dedent`
+            new Map([
+              [c, 'c'],
+              [b, 'b'],
+              [a, 'a'] /* eslint-disable-line @rule-tester/${eslintDisableRuleTesterName} */
+            ])
+          `,
+          output: dedent`
+            new Map([
+              [b, 'b'],
+              [c, 'c'],
+              [a, 'a'] /* eslint-disable-line @rule-tester/${eslintDisableRuleTesterName} */
+            ])
+          `,
+          options: [{}],
+          errors: [
+            {
+              messageId: 'unexpectedMapElementsOrder',
+              data: {
+                left: 'c',
+                right: 'b',
+              },
+            },
+          ],
+        },
+        {
+          code: dedent`
+            new Map([
+              [d, 'd'],
+              [e, 'e'],
+              /* eslint-disable @rule-tester/${eslintDisableRuleTesterName} */
+              [c, 'c'],
+              [b, 'b'],
+              // Shouldn't move
+              /* eslint-enable */
+              [a, 'a'],
+            ])
+          `,
+          output: dedent`
+            new Map([
+              [a, 'a'],
+              [d, 'd'],
+              /* eslint-disable @rule-tester/${eslintDisableRuleTesterName} */
+              [c, 'c'],
+              [b, 'b'],
+              // Shouldn't move
+              /* eslint-enable */
+              [e, 'e'],
+            ])
+          `,
+          options: [{}],
+          errors: [
+            {
+              messageId: 'unexpectedMapElementsOrder',
+              data: {
+                left: 'b',
+                right: 'a',
+              },
+            },
+          ],
+        },
+      ],
+    })
   })
 })

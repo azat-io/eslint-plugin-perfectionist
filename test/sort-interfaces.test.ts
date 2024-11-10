@@ -3147,5 +3147,341 @@ describe(ruleName, () => {
       ],
       invalid: [],
     })
+
+    let eslintDisableRuleTesterName = `${ruleName}: supports 'eslint-disable' for individual nodes`
+    ruleTester.run(eslintDisableRuleTesterName, rule, {
+      valid: [],
+      invalid: [
+        {
+          code: dedent`
+            interface Interface {
+              c: string
+              b: string
+              // eslint-disable-next-line
+              a: string
+            }
+          `,
+          output: dedent`
+            interface Interface {
+              b: string
+              c: string
+              // eslint-disable-next-line
+              a: string
+            }
+          `,
+          options: [{}],
+          errors: [
+            {
+              messageId: 'unexpectedInterfacePropertiesOrder',
+              data: {
+                left: 'c',
+                right: 'b',
+              },
+            },
+          ],
+        },
+        {
+          code: dedent`
+            interface Interface {
+              d: string
+              c: string
+              // eslint-disable-next-line
+              a: string
+              b: string
+            }
+          `,
+          output: dedent`
+            interface Interface {
+              b: string
+              c: string
+              // eslint-disable-next-line
+              a: string
+              d: string
+            }
+          `,
+          options: [
+            {
+              partitionByComment: true,
+            },
+          ],
+          errors: [
+            {
+              messageId: 'unexpectedInterfacePropertiesOrder',
+              data: {
+                left: 'd',
+                right: 'c',
+              },
+            },
+            {
+              messageId: 'unexpectedInterfacePropertiesOrder',
+              data: {
+                left: 'a',
+                right: 'b',
+              },
+            },
+          ],
+        },
+        {
+          code: dedent`
+            interface Interface {
+              c: string
+              b: string
+              a: string // eslint-disable-line
+            }
+          `,
+          output: dedent`
+            interface Interface {
+              b: string
+              c: string
+              a: string // eslint-disable-line
+            }
+          `,
+          options: [{}],
+          errors: [
+            {
+              messageId: 'unexpectedInterfacePropertiesOrder',
+              data: {
+                left: 'c',
+                right: 'b',
+              },
+            },
+          ],
+        },
+        {
+          code: dedent`
+            interface Interface {
+              c: string
+              b: string
+              /* eslint-disable-next-line */
+              a: string
+            }
+          `,
+          output: dedent`
+            interface Interface {
+              b: string
+              c: string
+              /* eslint-disable-next-line */
+              a: string
+            }
+          `,
+          options: [{}],
+          errors: [
+            {
+              messageId: 'unexpectedInterfacePropertiesOrder',
+              data: {
+                left: 'c',
+                right: 'b',
+              },
+            },
+          ],
+        },
+        {
+          code: dedent`
+            interface Interface {
+              c: string
+              b: string
+              a: string /* eslint-disable-line */
+            }
+          `,
+          output: dedent`
+            interface Interface {
+              b: string
+              c: string
+              a: string /* eslint-disable-line */
+            }
+          `,
+          options: [{}],
+          errors: [
+            {
+              messageId: 'unexpectedInterfacePropertiesOrder',
+              data: {
+                left: 'c',
+                right: 'b',
+              },
+            },
+          ],
+        },
+        {
+          code: dedent`
+            interface Interface {
+              d: string
+              e: string
+              /* eslint-disable */
+              c: string
+              b: string
+              // Shouldn't move
+              /* eslint-enable */
+              a: string
+            }
+          `,
+          output: dedent`
+            interface Interface {
+              a: string
+              d: string
+              /* eslint-disable */
+              c: string
+              b: string
+              // Shouldn't move
+              /* eslint-enable */
+              e: string
+            }
+          `,
+          options: [{}],
+          errors: [
+            {
+              messageId: 'unexpectedInterfacePropertiesOrder',
+              data: {
+                left: 'b',
+                right: 'a',
+              },
+            },
+          ],
+        },
+        {
+          code: dedent`
+            interface Interface {
+              c: string
+              b: string
+              // eslint-disable-next-line @rule-tester/${eslintDisableRuleTesterName}
+              a: string
+            }
+          `,
+          output: dedent`
+            interface Interface {
+              b: string
+              c: string
+              // eslint-disable-next-line @rule-tester/${eslintDisableRuleTesterName}
+              a: string
+            }
+          `,
+          options: [{}],
+          errors: [
+            {
+              messageId: 'unexpectedInterfacePropertiesOrder',
+              data: {
+                left: 'c',
+                right: 'b',
+              },
+            },
+          ],
+        },
+        {
+          code: dedent`
+            interface Interface {
+              c: string
+              b: string
+              a: string // eslint-disable-line @rule-tester/${eslintDisableRuleTesterName}
+            }
+          `,
+          output: dedent`
+            interface Interface {
+              b: string
+              c: string
+              a: string // eslint-disable-line @rule-tester/${eslintDisableRuleTesterName}
+            }
+          `,
+          options: [{}],
+          errors: [
+            {
+              messageId: 'unexpectedInterfacePropertiesOrder',
+              data: {
+                left: 'c',
+                right: 'b',
+              },
+            },
+          ],
+        },
+        {
+          code: dedent`
+            interface Interface {
+              c: string
+              b: string
+              /* eslint-disable-next-line @rule-tester/${eslintDisableRuleTesterName} */
+              a: string
+            }
+          `,
+          output: dedent`
+            interface Interface {
+              b: string
+              c: string
+              /* eslint-disable-next-line @rule-tester/${eslintDisableRuleTesterName} */
+              a: string
+            }
+          `,
+          options: [{}],
+          errors: [
+            {
+              messageId: 'unexpectedInterfacePropertiesOrder',
+              data: {
+                left: 'c',
+                right: 'b',
+              },
+            },
+          ],
+        },
+        {
+          code: dedent`
+            interface Interface {
+              c: string
+              b: string
+              a: string /* eslint-disable-line @rule-tester/${eslintDisableRuleTesterName} */
+            }
+          `,
+          output: dedent`
+            interface Interface {
+              b: string
+              c: string
+              a: string /* eslint-disable-line @rule-tester/${eslintDisableRuleTesterName} */
+            }
+          `,
+          options: [{}],
+          errors: [
+            {
+              messageId: 'unexpectedInterfacePropertiesOrder',
+              data: {
+                left: 'c',
+                right: 'b',
+              },
+            },
+          ],
+        },
+        {
+          code: dedent`
+            interface Interface {
+              d: string
+              e: string
+              /* eslint-disable @rule-tester/${eslintDisableRuleTesterName} */
+              c: string
+              b: string
+              // Shouldn't move
+              /* eslint-enable */
+              a: string
+            }
+          `,
+          output: dedent`
+            interface Interface {
+              a: string
+              d: string
+              /* eslint-disable @rule-tester/${eslintDisableRuleTesterName} */
+              c: string
+              b: string
+              // Shouldn't move
+              /* eslint-enable */
+              e: string
+            }
+          `,
+          options: [{}],
+          errors: [
+            {
+              messageId: 'unexpectedInterfacePropertiesOrder',
+              data: {
+                left: 'b',
+                right: 'a',
+              },
+            },
+          ],
+        },
+      ],
+    })
   })
 })

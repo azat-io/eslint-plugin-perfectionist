@@ -1641,5 +1641,309 @@ describe(ruleName, () => {
         invalid: [],
       },
     )
+
+    let eslintDisableRuleTesterName = `${ruleName}: supports 'eslint-disable' for individual nodes`
+    ruleTester.run(eslintDisableRuleTesterName, rule, {
+      valid: [],
+      invalid: [
+        {
+          code: dedent`
+            <Element
+              c="c"
+              b="b"
+              a="a" // eslint-disable-line
+            />
+          `,
+          output: dedent`
+            <Element
+              b="b"
+              c="c"
+              a="a" // eslint-disable-line
+            />
+          `,
+          options: [{}],
+          errors: [
+            {
+              messageId: 'unexpectedJSXPropsOrder',
+              data: {
+                left: 'c',
+                right: 'b',
+              },
+            },
+          ],
+        },
+        {
+          code: dedent`
+            <Element
+              d="d"
+              c="c"
+              // eslint-disable-next-line
+              a="a"
+              b="b"
+            />
+          `,
+          output: dedent`
+            <Element
+              b="b"
+              c="c"
+              // eslint-disable-next-line
+              a="a"
+              d="d"
+            />
+          `,
+          options: [{}],
+          errors: [
+            {
+              messageId: 'unexpectedJSXPropsOrder',
+              data: {
+                left: 'd',
+                right: 'c',
+              },
+            },
+            {
+              messageId: 'unexpectedJSXPropsOrder',
+              data: {
+                left: 'a',
+                right: 'b',
+              },
+            },
+          ],
+        },
+        {
+          code: dedent`
+            <Element
+              c="c"
+              b="b"
+              /* eslint-disable-next-line */
+              a="a"
+            />
+          `,
+          output: dedent`
+            <Element
+              b="b"
+              c="c"
+              /* eslint-disable-next-line */
+              a="a"
+            />
+          `,
+          options: [{}],
+          errors: [
+            {
+              messageId: 'unexpectedJSXPropsOrder',
+              data: {
+                left: 'c',
+                right: 'b',
+              },
+            },
+          ],
+        },
+        {
+          code: dedent`
+            <Element
+              c="c"
+              b="b"
+              a="a" /* eslint-disable-line */
+            />
+          `,
+          output: dedent`
+            <Element
+              b="b"
+              c="c"
+              a="a" /* eslint-disable-line */
+            />
+          `,
+          options: [{}],
+          errors: [
+            {
+              messageId: 'unexpectedJSXPropsOrder',
+              data: {
+                left: 'c',
+                right: 'b',
+              },
+            },
+          ],
+        },
+        {
+          code: dedent`
+            <Element
+              d="d"
+              e="e"
+              /* eslint-disable */
+              c="c"
+              b="b"
+              // Shouldn't move
+              /* eslint-enable */
+              a="a"
+            />
+          `,
+          output: dedent`
+            <Element
+              a="a"
+              d="d"
+              /* eslint-disable */
+              c="c"
+              b="b"
+              // Shouldn't move
+              /* eslint-enable */
+              e="e"
+            />
+          `,
+          options: [{}],
+          errors: [
+            {
+              messageId: 'unexpectedJSXPropsOrder',
+              data: {
+                left: 'b',
+                right: 'a',
+              },
+            },
+          ],
+        },
+        {
+          code: dedent`
+            <Element
+              c="c"
+              b="b"
+              // eslint-disable-next-line @rule-tester/${eslintDisableRuleTesterName}
+              a="a"
+            />
+          `,
+          output: dedent`
+            <Element
+              b="b"
+              c="c"
+              // eslint-disable-next-line @rule-tester/${eslintDisableRuleTesterName}
+              a="a"
+            />
+          `,
+          options: [{}],
+          errors: [
+            {
+              messageId: 'unexpectedJSXPropsOrder',
+              data: {
+                left: 'c',
+                right: 'b',
+              },
+            },
+          ],
+        },
+        {
+          code: dedent`
+            <Element
+              c="c"
+              b="b"
+              a="a" // eslint-disable-line @rule-tester/${eslintDisableRuleTesterName}
+            />
+          `,
+          output: dedent`
+            <Element
+              b="b"
+              c="c"
+              a="a" // eslint-disable-line @rule-tester/${eslintDisableRuleTesterName}
+            />
+          `,
+          options: [{}],
+          errors: [
+            {
+              messageId: 'unexpectedJSXPropsOrder',
+              data: {
+                left: 'c',
+                right: 'b',
+              },
+            },
+          ],
+        },
+        {
+          code: dedent`
+            <Element
+              c="c"
+              b="b"
+              /* eslint-disable-next-line @rule-tester/${eslintDisableRuleTesterName} */
+              a="a"
+            />
+          `,
+          output: dedent`
+            <Element
+              b="b"
+              c="c"
+              /* eslint-disable-next-line @rule-tester/${eslintDisableRuleTesterName} */
+              a="a"
+            />
+          `,
+          options: [{}],
+          errors: [
+            {
+              messageId: 'unexpectedJSXPropsOrder',
+              data: {
+                left: 'c',
+                right: 'b',
+              },
+            },
+          ],
+        },
+        {
+          code: dedent`
+            <Element
+              c="c"
+              b="b"
+              a="a" /* eslint-disable-line @rule-tester/${eslintDisableRuleTesterName} */
+            />
+          `,
+          output: dedent`
+            <Element
+              b="b"
+              c="c"
+              a="a" /* eslint-disable-line @rule-tester/${eslintDisableRuleTesterName} */
+            />
+          `,
+          options: [{}],
+          errors: [
+            {
+              messageId: 'unexpectedJSXPropsOrder',
+              data: {
+                left: 'c',
+                right: 'b',
+              },
+            },
+          ],
+        },
+        {
+          code: dedent`
+            <Element
+              d="d"
+              e="e"
+              /* eslint-disable @rule-tester/${eslintDisableRuleTesterName} */
+              c="c"
+              b="b"
+              // Shouldn't move
+              /* eslint-enable */
+              a="a"
+            />
+          `,
+          output: dedent`
+            <Element
+              a="a"
+              d="d"
+              /* eslint-disable @rule-tester/${eslintDisableRuleTesterName} */
+              c="c"
+              b="b"
+              // Shouldn't move
+              /* eslint-enable */
+              e="e"
+            />
+          `,
+          options: [{}],
+          errors: [
+            {
+              messageId: 'unexpectedJSXPropsOrder',
+              data: {
+                left: 'b',
+                right: 'a',
+              },
+            },
+          ],
+        },
+      ],
+    })
   })
 })

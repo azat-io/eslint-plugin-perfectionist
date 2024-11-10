@@ -14,6 +14,8 @@ import {
   typeJsonSchema,
 } from '../utils/common-json-schemas'
 import { validateGroupsConfiguration } from '../utils/validate-groups-configuration'
+import { getEslintDisabledLines } from '../utils/get-eslint-disabled-lines'
+import { isNodeEslintDisabled } from '../utils/is-node-eslint-disabled'
 import { hasPartitionComment } from '../utils/is-partition-comment'
 import { sortNodesByGroups } from '../utils/sort-nodes-by-groups'
 import { getCommentsBefore } from '../utils/get-comments-before'
@@ -187,14 +189,17 @@ let sortDecorators = (
     return
   }
   let sourceCode = getSourceCode(context)
-  let partitionComment = options.partitionByComment
+  let eslintDisabledLines = getEslintDisabledLines({
+    sourceCode,
+    ruleName: context.id,
+  })
 
   let formattedMembers: SortDecoratorsSortingNode[][] = decorators.reduce(
     (accumulator: SortDecoratorsSortingNode[][], decorator) => {
       if (
-        partitionComment &&
+        options.partitionByComment &&
         hasPartitionComment(
-          partitionComment,
+          options.partitionByComment,
           getCommentsBefore(decorator, sourceCode),
         )
       ) {
@@ -210,6 +215,7 @@ let sortDecorators = (
         size: rangeToDiff(decorator, sourceCode),
         node: decorator,
         group: getGroup(),
+        isEslintDisabled: isNodeEslintDisabled(decorator, eslintDisabledLines),
         name,
       }
 
@@ -220,15 +226,24 @@ let sortDecorators = (
     [[]],
   )
 
-  let sortedNodes = formattedMembers.flatMap(nodes =>
-    sortNodesByGroups(nodes, options),
-  )
-
+  let sortNodesExcludingEslintDisabled = (ignoreEslintDisabledNodes: boolean) =>
+    formattedMembers.flatMap(nodes =>
+      sortNodesByGroups(nodes, options, { ignoreEslintDisabledNodes }),
+    )
+  let sortedNodes = sortNodesExcludingEslintDisabled(false)
+  let sortedNodesExcludingEslintDisabled =
+    sortNodesExcludingEslintDisabled(true)
   let nodes = formattedMembers.flat()
+
   pairwise(nodes, (left, right) => {
     let indexOfLeft = sortedNodes.indexOf(left)
     let indexOfRight = sortedNodes.indexOf(right)
-    if (indexOfLeft <= indexOfRight) {
+    let indexOfRightExcludingEslintDisabled =
+      sortedNodesExcludingEslintDisabled.indexOf(right)
+    if (
+      indexOfLeft < indexOfRight &&
+      indexOfLeft < indexOfRightExcludingEslintDisabled
+    ) {
       return
     }
     let leftNum = getGroupNumber(options.groups, left)
@@ -245,7 +260,14 @@ let sortDecorators = (
         rightGroup: right.group,
       },
       node: right.node,
-      fix: fixer => makeFixes(fixer, nodes, sortedNodes, sourceCode, options),
+      fix: fixer =>
+        makeFixes(
+          fixer,
+          nodes,
+          sortedNodesExcludingEslintDisabled,
+          sourceCode,
+          options,
+        ),
     })
   })
 }

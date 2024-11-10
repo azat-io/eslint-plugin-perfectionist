@@ -12,6 +12,8 @@ import {
   typeJsonSchema,
 } from '../utils/common-json-schemas'
 import { validateGroupsConfiguration } from '../utils/validate-groups-configuration'
+import { getEslintDisabledLines } from '../utils/get-eslint-disabled-lines'
+import { isNodeEslintDisabled } from '../utils/is-node-eslint-disabled'
 import { sortNodesByGroups } from '../utils/sort-nodes-by-groups'
 import { createEslintRule } from '../utils/create-eslint-rule'
 import { getGroupNumber } from '../utils/get-group-number'
@@ -108,7 +110,9 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
         ['multiline', 'shorthand', 'unknown'],
         Object.keys(options.customGroups),
       )
+
       let sourceCode = getSourceCode(context)
+
       let shouldIgnore = false
       if (options.ignorePattern.length) {
         let tagName = sourceCode.getText(node.openingElement.name)
@@ -119,6 +123,11 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
       if (shouldIgnore || node.openingElement.attributes.length <= 1) {
         return
       }
+
+      let eslintDisabledLines = getEslintDisabledLines({
+        sourceCode,
+        ruleName: context.id,
+      })
 
       let parts: SortingNode[][] = node.openingElement.attributes.reduce(
         (
@@ -147,12 +156,15 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
             defineGroup('multiline')
           }
 
-          let jsxNode = {
+          let jsxNode: SortingNode = {
             size: rangeToDiff(attribute, sourceCode),
             group: getGroup(),
             node: attribute,
+            isEslintDisabled: isNodeEslintDisabled(
+              attribute,
+              eslintDisabledLines,
+            ),
             name,
-            requiresEndingSemicolonOrCommaWhenInline: true,
           }
 
           accumulator.at(-1)!.push(jsxNode)
@@ -161,12 +173,24 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
         },
         [[]],
       )
+
       for (let nodes of parts) {
-        let sortedNodes = sortNodesByGroups(nodes, options)
+        let sortNodesExcludingEslintDisabled = (
+          ignoreEslintDisabledNodes: boolean,
+        ) => sortNodesByGroups(nodes, options, { ignoreEslintDisabledNodes })
+        let sortedNodes = sortNodesExcludingEslintDisabled(false)
+        let sortedNodesExcludingEslintDisabled =
+          sortNodesExcludingEslintDisabled(true)
+
         pairwise(nodes, (left, right) => {
           let indexOfLeft = sortedNodes.indexOf(left)
           let indexOfRight = sortedNodes.indexOf(right)
-          if (indexOfLeft <= indexOfRight) {
+          let indexOfRightExcludingEslintDisabled =
+            sortedNodesExcludingEslintDisabled.indexOf(right)
+          if (
+            indexOfLeft < indexOfRight &&
+            indexOfLeft < indexOfRightExcludingEslintDisabled
+          ) {
             return
           }
 
@@ -184,7 +208,13 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
               rightGroup: right.group,
             },
             node: right.node,
-            fix: fixer => makeFixes(fixer, nodes, sortedNodes, sourceCode),
+            fix: fixer =>
+              makeFixes(
+                fixer,
+                nodes,
+                sortedNodesExcludingEslintDisabled,
+                sourceCode,
+              ),
           })
         })
       }

@@ -19,6 +19,8 @@ import {
 } from '../utils/sort-nodes-by-dependencies'
 import { validateNewlinesAndPartitionConfiguration } from '../utils/validate-newlines-and-partition-configuration'
 import { validateGroupsConfiguration } from '../utils/validate-groups-configuration'
+import { getEslintDisabledLines } from '../utils/get-eslint-disabled-lines'
+import { isNodeEslintDisabled } from '../utils/is-node-eslint-disabled'
 import { hasPartitionComment } from '../utils/is-partition-comment'
 import { sortNodesByGroups } from '../utils/sort-nodes-by-groups'
 import { getCommentsBefore } from '../utils/get-comments-before'
@@ -222,7 +224,13 @@ export default createEslintRule<Options, MESSAGE_ID>({
       ) {
         return
       }
+
       let sourceCode = getSourceCode(context)
+      let eslintDisabledLines = getEslintDisabledLines({
+        sourceCode,
+        ruleName: context.id,
+      })
+
       let extractDependencies = (
         init: TSESTree.AssignmentPattern,
       ): string[] => {
@@ -358,6 +366,7 @@ export default createEslintRule<Options, MESSAGE_ID>({
               size: rangeToDiff(prop, sourceCode),
               node: prop,
               group: getGroup(),
+              isEslintDisabled: isNodeEslintDisabled(prop, eslintDisabledLines),
               dependencies,
               name,
             }
@@ -379,23 +388,43 @@ export default createEslintRule<Options, MESSAGE_ID>({
           [[]],
         )
       let formattedMembers = formatProperties(node.properties)
-      let sortedNodes = sortNodesByDependencies(
-        formattedMembers.map(nodes => sortNodesByGroups(nodes, options)).flat(),
-      )
+
+      let sortNodesIgnoringEslintDisabledNodes = (
+        ignoreEslintDisabledNodes: boolean,
+      ) =>
+        sortNodesByDependencies(
+          formattedMembers.flatMap(nodes =>
+            sortNodesByGroups(nodes, options, {
+              ignoreEslintDisabledNodes,
+            }),
+          ),
+          {
+            ignoreEslintDisabledNodes,
+          },
+        )
+      let sortedNodes = sortNodesIgnoringEslintDisabledNodes(false)
+      let sortedNodesExcludingEslintDisabled =
+        sortNodesIgnoringEslintDisabledNodes(true)
       let nodes = formattedMembers.flat()
+
       pairwise(nodes, (left, right) => {
         let leftNum = getGroupNumber(options.groups, left)
         let rightNum = getGroupNumber(options.groups, right)
 
         let indexOfLeft = sortedNodes.indexOf(left)
         let indexOfRight = sortedNodes.indexOf(right)
+        let indexOfRightExcludingEslintDisabled =
+          sortedNodesExcludingEslintDisabled.indexOf(right)
 
         let messageIds: MESSAGE_ID[] = []
         let firstUnorderedNodeDependentOnRight:
           | SortingNodeWithDependencies
           | undefined
 
-        if (indexOfLeft > indexOfRight) {
+        if (
+          indexOfLeft > indexOfRight ||
+          indexOfLeft >= indexOfRightExcludingEslintDisabled
+        ) {
           firstUnorderedNodeDependentOnRight = getFirstUnorderedNodeDependentOn(
             right,
             nodes,
@@ -437,11 +466,17 @@ export default createEslintRule<Options, MESSAGE_ID>({
             },
             node: right.node,
             fix: fixer => [
-              ...makeFixes(fixer, nodes, sortedNodes, sourceCode, options),
+              ...makeFixes(
+                fixer,
+                nodes,
+                sortedNodesExcludingEslintDisabled,
+                sourceCode,
+                options,
+              ),
               ...makeNewlinesFixes(
                 fixer,
                 nodes,
-                sortedNodes,
+                sortedNodesExcludingEslintDisabled,
                 sourceCode,
                 options,
               ),

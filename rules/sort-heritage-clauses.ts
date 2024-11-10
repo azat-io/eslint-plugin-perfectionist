@@ -13,6 +13,8 @@ import {
   typeJsonSchema,
 } from '../utils/common-json-schemas'
 import { validateGroupsConfiguration } from '../utils/validate-groups-configuration'
+import { getEslintDisabledLines } from '../utils/get-eslint-disabled-lines'
+import { isNodeEslintDisabled } from '../utils/is-node-eslint-disabled'
 import { sortNodesByGroups } from '../utils/sort-nodes-by-groups'
 import { createEslintRule } from '../utils/create-eslint-rule'
 import { getGroupNumber } from '../utils/get-group-number'
@@ -115,8 +117,12 @@ const sortHeritageClauses = (
     return
   }
   let sourceCode = getSourceCode(context)
+  let eslintDisabledLines = getEslintDisabledLines({
+    sourceCode,
+    ruleName: context.id,
+  })
 
-  let formattedNodes: SortingNode[] = heritageClauses.map(heritageClause => {
+  let nodes: SortingNode[] = heritageClauses.map(heritageClause => {
     let name = getHeritageClauseExpressionName(heritageClause.expression)
 
     let { getGroup, setCustomGroups } = useGroups(options)
@@ -126,15 +132,29 @@ const sortHeritageClauses = (
       size: rangeToDiff(heritageClause, sourceCode),
       node: heritageClause,
       group: getGroup(),
+      isEslintDisabled: isNodeEslintDisabled(
+        heritageClause,
+        eslintDisabledLines,
+      ),
       name,
     }
   })
 
-  let sortedNodes = sortNodesByGroups(formattedNodes, options)
-  pairwise(formattedNodes, (left, right) => {
+  let sortNodesExcludingEslintDisabled = (ignoreEslintDisabledNodes: boolean) =>
+    sortNodesByGroups(nodes, options, { ignoreEslintDisabledNodes })
+  let sortedNodes = sortNodesExcludingEslintDisabled(false)
+  let sortedNodesExcludingEslintDisabled =
+    sortNodesExcludingEslintDisabled(true)
+
+  pairwise(nodes, (left, right) => {
     let indexOfLeft = sortedNodes.indexOf(left)
     let indexOfRight = sortedNodes.indexOf(right)
-    if (indexOfLeft <= indexOfRight) {
+    let indexOfRightExcludingEslintDisabled =
+      sortedNodesExcludingEslintDisabled.indexOf(right)
+    if (
+      indexOfLeft < indexOfRight &&
+      indexOfLeft < indexOfRightExcludingEslintDisabled
+    ) {
       return
     }
     let leftNum = getGroupNumber(options.groups, left)
@@ -151,7 +171,8 @@ const sortHeritageClauses = (
         rightGroup: right.group,
       },
       node: right.node,
-      fix: fixer => makeFixes(fixer, formattedNodes, sortedNodes, sourceCode),
+      fix: fixer =>
+        makeFixes(fixer, nodes, sortedNodesExcludingEslintDisabled, sourceCode),
     })
   })
 }

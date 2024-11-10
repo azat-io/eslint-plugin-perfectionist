@@ -4104,5 +4104,369 @@ describe(ruleName, () => {
         invalid: [],
       },
     )
+
+    let eslintDisableRuleTesterName = `${ruleName}: supports 'eslint-disable' for individual nodes`
+    ruleTester.run(eslintDisableRuleTesterName, rule, {
+      valid: [],
+      invalid: [
+        {
+          code: dedent`
+            let obj = {
+              c = 'c',
+              b = 'b',
+              // eslint-disable-next-line
+              a = 'a'
+            }
+          `,
+          output: dedent`
+            let obj = {
+              b = 'b',
+              c = 'c',
+              // eslint-disable-next-line
+              a = 'a'
+            }
+          `,
+          options: [{}],
+          errors: [
+            {
+              messageId: 'unexpectedObjectsOrder',
+              data: {
+                left: 'c',
+                right: 'b',
+              },
+            },
+          ],
+        },
+        {
+          code: dedent`
+            let obj = {
+              d: 'd',
+              c: 'c',
+              // eslint-disable-next-line
+              a: 'a',
+              b: 'b'
+            }
+          `,
+          output: dedent`
+            let obj = {
+              b: 'b',
+              c: 'c',
+              // eslint-disable-next-line
+              a: 'a',
+              d: 'd'
+            }
+          `,
+          options: [
+            {
+              partitionByComment: true,
+            },
+          ],
+          errors: [
+            {
+              messageId: 'unexpectedObjectsOrder',
+              data: {
+                left: 'd',
+                right: 'c',
+              },
+            },
+            {
+              messageId: 'unexpectedObjectsOrder',
+              data: {
+                left: 'a',
+                right: 'b',
+              },
+            },
+          ],
+        },
+        {
+          code: dedent`
+            let obj = {
+              c = 'c',
+              b = a,
+              // eslint-disable-next-line
+              a = 'a'
+            }
+          `,
+          output: dedent`
+            let obj = {
+              b = a,
+              c = 'c',
+              // eslint-disable-next-line
+              a = 'a'
+            }
+          `,
+          options: [{}],
+          errors: [
+            {
+              messageId: 'unexpectedObjectsOrder',
+              data: {
+                left: 'c',
+                right: 'b',
+              },
+            },
+          ],
+        },
+        {
+          code: dedent`
+            let obj = {
+              c = 'c',
+              b = 'b',
+              a = 'a' // eslint-disable-line
+            }
+          `,
+          output: dedent`
+            let obj = {
+              b = 'b',
+              c = 'c',
+              a = 'a' // eslint-disable-line
+            }
+          `,
+          options: [{}],
+          errors: [
+            {
+              messageId: 'unexpectedObjectsOrder',
+              data: {
+                left: 'c',
+                right: 'b',
+              },
+            },
+          ],
+        },
+        {
+          code: dedent`
+            let obj = {
+              c = 'c',
+              b = 'b',
+              /* eslint-disable-next-line */
+              a = 'a'
+            }
+          `,
+          output: dedent`
+            let obj = {
+              b = 'b',
+              c = 'c',
+              /* eslint-disable-next-line */
+              a = 'a'
+            }
+          `,
+          options: [{}],
+          errors: [
+            {
+              messageId: 'unexpectedObjectsOrder',
+              data: {
+                left: 'c',
+                right: 'b',
+              },
+            },
+          ],
+        },
+        {
+          code: dedent`
+            let obj = {
+              c = 'c',
+              b = 'b',
+              a = 'a' /* eslint-disable-line */
+            }
+          `,
+          output: dedent`
+            let obj = {
+              b = 'b',
+              c = 'c',
+              a = 'a' /* eslint-disable-line */
+            }
+          `,
+          options: [{}],
+          errors: [
+            {
+              messageId: 'unexpectedObjectsOrder',
+              data: {
+                left: 'c',
+                right: 'b',
+              },
+            },
+          ],
+        },
+        {
+          code: dedent`
+            let obj = {
+              d = 'd',
+              e = 'e',
+              /* eslint-disable */
+              c = 'c',
+              b = 'b',
+              // Shouldn't move
+              /* eslint-enable */
+              a = 'a'
+            }
+          `,
+          output: dedent`
+            let obj = {
+              a = 'a',
+              d = 'd',
+              /* eslint-disable */
+              c = 'c',
+              b = 'b',
+              // Shouldn't move
+              /* eslint-enable */
+              e = 'e'
+            }
+          `,
+          options: [{}],
+          errors: [
+            {
+              messageId: 'unexpectedObjectsOrder',
+              data: {
+                left: 'b',
+                right: 'a',
+              },
+            },
+          ],
+        },
+        {
+          code: dedent`
+            let obj = {
+              c = 'c',
+              b = 'b',
+              // eslint-disable-next-line @rule-tester/${eslintDisableRuleTesterName}
+              a = 'a'
+            }
+          `,
+          output: dedent`
+            let obj = {
+              b = 'b',
+              c = 'c',
+              // eslint-disable-next-line @rule-tester/${eslintDisableRuleTesterName}
+              a = 'a'
+            }
+          `,
+          options: [{}],
+          errors: [
+            {
+              messageId: 'unexpectedObjectsOrder',
+              data: {
+                left: 'c',
+                right: 'b',
+              },
+            },
+          ],
+        },
+        {
+          code: dedent`
+            let obj = {
+              c = 'c',
+              b = 'b',
+              a = 'a' // eslint-disable-line @rule-tester/${eslintDisableRuleTesterName}
+            }
+          `,
+          output: dedent`
+            let obj = {
+              b = 'b',
+              c = 'c',
+              a = 'a' // eslint-disable-line @rule-tester/${eslintDisableRuleTesterName}
+            }
+          `,
+          options: [{}],
+          errors: [
+            {
+              messageId: 'unexpectedObjectsOrder',
+              data: {
+                left: 'c',
+                right: 'b',
+              },
+            },
+          ],
+        },
+        {
+          code: dedent`
+            let obj = {
+              c = 'c',
+              b = 'b',
+              /* eslint-disable-next-line @rule-tester/${eslintDisableRuleTesterName} */
+              a = 'a'
+            }
+          `,
+          output: dedent`
+            let obj = {
+              b = 'b',
+              c = 'c',
+              /* eslint-disable-next-line @rule-tester/${eslintDisableRuleTesterName} */
+              a = 'a'
+            }
+          `,
+          options: [{}],
+          errors: [
+            {
+              messageId: 'unexpectedObjectsOrder',
+              data: {
+                left: 'c',
+                right: 'b',
+              },
+            },
+          ],
+        },
+        {
+          code: dedent`
+            let obj = {
+              c = 'c',
+              b = 'b',
+              a = 'a' /* eslint-disable-line @rule-tester/${eslintDisableRuleTesterName} */
+            }
+          `,
+          output: dedent`
+            let obj = {
+              b = 'b',
+              c = 'c',
+              a = 'a' /* eslint-disable-line @rule-tester/${eslintDisableRuleTesterName} */
+            }
+          `,
+          options: [{}],
+          errors: [
+            {
+              messageId: 'unexpectedObjectsOrder',
+              data: {
+                left: 'c',
+                right: 'b',
+              },
+            },
+          ],
+        },
+        {
+          code: dedent`
+            let obj = {
+              d = 'd',
+              e = 'e',
+              /* eslint-disable @rule-tester/${eslintDisableRuleTesterName} */
+              c = 'c',
+              b = 'b',
+              // Shouldn't move
+              /* eslint-enable */
+              a = 'a'
+            }
+          `,
+          output: dedent`
+            let obj = {
+              a = 'a',
+              d = 'd',
+              /* eslint-disable @rule-tester/${eslintDisableRuleTesterName} */
+              c = 'c',
+              b = 'b',
+              // Shouldn't move
+              /* eslint-enable */
+              e = 'e'
+            }
+          `,
+          options: [{}],
+          errors: [
+            {
+              messageId: 'unexpectedObjectsOrder',
+              data: {
+                left: 'b',
+                right: 'a',
+              },
+            },
+          ],
+        },
+      ],
+    })
   })
 })

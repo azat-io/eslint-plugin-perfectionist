@@ -3,6 +3,7 @@ import type { TSESLint } from '@typescript-eslint/utils'
 
 import { ASTUtils } from '@typescript-eslint/utils'
 
+import { getEslintDisabledRules } from './get-eslint-disabled-rules'
 import { isPartitionComment } from './is-partition-comment'
 import { getCommentsBefore } from './get-comments-before'
 
@@ -35,11 +36,17 @@ export let getNodeRange = (
   let partitionComment = additionalOptions?.partitionByComment ?? false
 
   // Iterate on all comments starting from the bottom until we reach the last
-  // of the comments, a newline between comments, or a partition comment
+  // of the comments, a newline between comments, a partition comment,
+  // or a eslint-disable comment
   let relevantTopComment: TSESTree.Comment | undefined
   for (let i = comments.length - 1; i >= 0; i--) {
     let comment = comments[i]
-    if (isPartitionComment(partitionComment, comment.value)) {
+    let eslintDisabledRules = getEslintDisabledRules(comment.value)
+    if (
+      isPartitionComment(partitionComment, comment.value) ||
+      eslintDisabledRules?.eslintDisableDirective === 'eslint-disable' ||
+      eslintDisabledRules?.eslintDisableDirective === 'eslint-enable'
+    ) {
       break
     }
     // Check for newlines between comments or between the first comment and

@@ -1087,5 +1087,297 @@ describe(ruleName, () => {
         invalid: [],
       },
     )
+
+    let eslintDisableRuleTesterName = `${ruleName}: supports 'eslint-disable' for individual nodes`
+    ruleTester.run(eslintDisableRuleTesterName, rule, {
+      valid: [],
+      invalid: [
+        {
+          code: dedent`
+            export { c } from './c'
+            export { b } from './b'
+            // eslint-disable-next-line
+            export { a } from './a'
+          `,
+          output: dedent`
+            export { b } from './b'
+            export { c } from './c'
+            // eslint-disable-next-line
+            export { a } from './a'
+          `,
+          options: [{}],
+          errors: [
+            {
+              messageId: 'unexpectedExportsOrder',
+              data: {
+                left: './c',
+                right: './b',
+              },
+            },
+          ],
+        },
+        {
+          code: dedent`
+            export { d } from './d'
+            export { c } from './c'
+            // eslint-disable-next-line
+            export { a } from './a'
+            export { b } from './b'
+          `,
+          output: dedent`
+            export { b } from './b'
+            export { c } from './c'
+            // eslint-disable-next-line
+            export { a } from './a'
+            export { d } from './d'
+          `,
+          options: [
+            {
+              partitionByComment: true,
+            },
+          ],
+          errors: [
+            {
+              messageId: 'unexpectedExportsOrder',
+              data: {
+                left: './d',
+                right: './c',
+              },
+            },
+            {
+              messageId: 'unexpectedExportsOrder',
+              data: {
+                left: './a',
+                right: './b',
+              },
+            },
+          ],
+        },
+        {
+          code: dedent`
+            export { c } from './c'
+            export { b } from './b'
+            export { a } from './a' // eslint-disable-line
+          `,
+          output: dedent`
+            export { b } from './b'
+            export { c } from './c'
+            export { a } from './a' // eslint-disable-line
+          `,
+          options: [{}],
+          errors: [
+            {
+              messageId: 'unexpectedExportsOrder',
+              data: {
+                left: './c',
+                right: './b',
+              },
+            },
+          ],
+        },
+        {
+          code: dedent`
+            export { c } from './c'
+            export { b } from './b'
+            /* eslint-disable-next-line */
+            export { a } from './a'
+          `,
+          output: dedent`
+            export { b } from './b'
+            export { c } from './c'
+            /* eslint-disable-next-line */
+            export { a } from './a'
+          `,
+          options: [{}],
+          errors: [
+            {
+              messageId: 'unexpectedExportsOrder',
+              data: {
+                left: './c',
+                right: './b',
+              },
+            },
+          ],
+        },
+        {
+          code: dedent`
+            export { c } from './c'
+            export { b } from './b'
+            export { a } from './a' /* eslint-disable-line */
+          `,
+          output: dedent`
+            export { b } from './b'
+            export { c } from './c'
+            export { a } from './a' /* eslint-disable-line */
+          `,
+          options: [{}],
+          errors: [
+            {
+              messageId: 'unexpectedExportsOrder',
+              data: {
+                left: './c',
+                right: './b',
+              },
+            },
+          ],
+        },
+        {
+          code: dedent`
+            export { d } from './d'
+            export { e } from './e'
+            /* eslint-disable */
+            export { c } from './c'
+            export { b } from './b'
+            // Shouldn't move
+            /* eslint-enable */
+            export { a } from './a'
+          `,
+          output: dedent`
+            export { a } from './a'
+            export { d } from './d'
+            /* eslint-disable */
+            export { c } from './c'
+            export { b } from './b'
+            // Shouldn't move
+            /* eslint-enable */
+            export { e } from './e'
+          `,
+          options: [{}],
+          errors: [
+            {
+              messageId: 'unexpectedExportsOrder',
+              data: {
+                left: './b',
+                right: './a',
+              },
+            },
+          ],
+        },
+        {
+          code: dedent`
+            export { c } from './c'
+            export { b } from './b'
+            // eslint-disable-next-line @rule-tester/${eslintDisableRuleTesterName}
+            export { a } from './a'
+          `,
+          output: dedent`
+            export { b } from './b'
+            export { c } from './c'
+            // eslint-disable-next-line @rule-tester/${eslintDisableRuleTesterName}
+            export { a } from './a'
+          `,
+          options: [{}],
+          errors: [
+            {
+              messageId: 'unexpectedExportsOrder',
+              data: {
+                left: './c',
+                right: './b',
+              },
+            },
+          ],
+        },
+        {
+          code: dedent`
+            export { c } from './c'
+            export { b } from './b'
+            export { a } from './a' // eslint-disable-line @rule-tester/${eslintDisableRuleTesterName}
+          `,
+          output: dedent`
+            export { b } from './b'
+            export { c } from './c'
+            export { a } from './a' // eslint-disable-line @rule-tester/${eslintDisableRuleTesterName}
+          `,
+          options: [{}],
+          errors: [
+            {
+              messageId: 'unexpectedExportsOrder',
+              data: {
+                left: './c',
+                right: './b',
+              },
+            },
+          ],
+        },
+        {
+          code: dedent`
+            export { c } from './c'
+            export { b } from './b'
+            /* eslint-disable-next-line @rule-tester/${eslintDisableRuleTesterName} */
+            export { a } from './a'
+          `,
+          output: dedent`
+            export { b } from './b'
+            export { c } from './c'
+            /* eslint-disable-next-line @rule-tester/${eslintDisableRuleTesterName} */
+            export { a } from './a'
+          `,
+          options: [{}],
+          errors: [
+            {
+              messageId: 'unexpectedExportsOrder',
+              data: {
+                left: './c',
+                right: './b',
+              },
+            },
+          ],
+        },
+        {
+          code: dedent`
+            export { c } from './c'
+            export { b } from './b'
+            export { a } from './a' /* eslint-disable-line @rule-tester/${eslintDisableRuleTesterName} */
+          `,
+          output: dedent`
+            export { b } from './b'
+            export { c } from './c'
+            export { a } from './a' /* eslint-disable-line @rule-tester/${eslintDisableRuleTesterName} */
+          `,
+          options: [{}],
+          errors: [
+            {
+              messageId: 'unexpectedExportsOrder',
+              data: {
+                left: './c',
+                right: './b',
+              },
+            },
+          ],
+        },
+        {
+          code: dedent`
+            export { d } from './d'
+            export { e } from './e'
+            /* eslint-disable @rule-tester/${eslintDisableRuleTesterName} */
+            export { c } from './c'
+            export { b } from './b'
+            // Shouldn't move
+            /* eslint-enable */
+            export { a } from './a'
+          `,
+          output: dedent`
+            export { a } from './a'
+            export { d } from './d'
+            /* eslint-disable @rule-tester/${eslintDisableRuleTesterName} */
+            export { c } from './c'
+            export { b } from './b'
+            // Shouldn't move
+            /* eslint-enable */
+            export { e } from './e'
+          `,
+          options: [{}],
+          errors: [
+            {
+              messageId: 'unexpectedExportsOrder',
+              data: {
+                left: './b',
+                right: './a',
+              },
+            },
+          ],
+        },
+      ],
+    })
   })
 })

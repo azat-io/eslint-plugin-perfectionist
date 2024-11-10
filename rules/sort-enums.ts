@@ -16,6 +16,8 @@ import {
   getFirstUnorderedNodeDependentOn,
   sortNodesByDependencies,
 } from '../utils/sort-nodes-by-dependencies'
+import { getEslintDisabledLines } from '../utils/get-eslint-disabled-lines'
+import { isNodeEslintDisabled } from '../utils/is-node-eslint-disabled'
 import { hasPartitionComment } from '../utils/is-partition-comment'
 import { getCommentsBefore } from '../utils/get-comments-before'
 import { createEslintRule } from '../utils/create-eslint-rule'
@@ -115,7 +117,11 @@ export default createEslintRule<Options, MESSAGE_ID>({
       let settings = getSettings(context.settings)
       let options = complete(context.options.at(0), settings, defaultOptions)
       let sourceCode = getSourceCode(context)
-      let partitionComment = options.partitionByComment
+      let eslintDisabledLines = getEslintDisabledLines({
+        sourceCode,
+        ruleName: context.id,
+      })
+
       let extractDependencies = (
         expression: TSESTree.Expression,
         enumName: string,
@@ -173,6 +179,7 @@ export default createEslintRule<Options, MESSAGE_ID>({
             size: rangeToDiff(member, sourceCode),
             node: member,
             dependencies,
+            isEslintDisabled: isNodeEslintDisabled(member, eslintDisabledLines),
             name:
               member.id.type === 'Literal'
                 ? `${member.id.value}`
@@ -180,9 +187,9 @@ export default createEslintRule<Options, MESSAGE_ID>({
           }
 
           if (
-            (partitionComment &&
+            (options.partitionByComment &&
               hasPartitionComment(
-                partitionComment,
+                options.partitionByComment,
                 getCommentsBefore(member, sourceCode),
               )) ||
             (options.partitionByNewLine &&
@@ -226,15 +233,34 @@ export default createEslintRule<Options, MESSAGE_ID>({
               }
             : undefined,
       }
-      let sortedNodes = sortNodesByDependencies(
-        formattedMembers.map(nodes => sortNodes(nodes, compareOptions)).flat(),
-      )
+
+      let sortNodesIgnoringEslintDisabledNodes = (
+        ignoreEslintDisabledNodes: boolean,
+      ) =>
+        sortNodesByDependencies(
+          formattedMembers.flatMap(nodes =>
+            sortNodes(nodes, compareOptions, {
+              ignoreEslintDisabledNodes,
+            }),
+          ),
+          {
+            ignoreEslintDisabledNodes,
+          },
+        )
+      let sortedNodes = sortNodesIgnoringEslintDisabledNodes(false)
+      let sortedNodesExcludingEslintDisabled =
+        sortNodesIgnoringEslintDisabledNodes(true)
       let nodes = formattedMembers.flat()
 
       pairwise(nodes, (left, right) => {
         let indexOfLeft = sortedNodes.indexOf(left)
         let indexOfRight = sortedNodes.indexOf(right)
-        if (indexOfLeft <= indexOfRight) {
+        let indexOfRightExcludingEslintDisabled =
+          sortedNodesExcludingEslintDisabled.indexOf(right)
+        if (
+          indexOfLeft < indexOfRight &&
+          indexOfLeft < indexOfRightExcludingEslintDisabled
+        ) {
           return
         }
 
@@ -251,7 +277,13 @@ export default createEslintRule<Options, MESSAGE_ID>({
           },
           node: right.node,
           fix: fixer =>
-            makeFixes(fixer, nodes, sortedNodes, sourceCode, options),
+            makeFixes(
+              fixer,
+              nodes,
+              sortedNodesExcludingEslintDisabled,
+              sourceCode,
+              options,
+            ),
         })
       })
     },

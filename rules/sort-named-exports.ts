@@ -1,3 +1,5 @@
+import type { TSESTree } from '@typescript-eslint/types'
+
 import type { SortingNode } from '../typings'
 
 import {
@@ -9,20 +11,19 @@ import {
   orderJsonSchema,
   typeJsonSchema,
 } from '../utils/common-json-schemas'
+import { getEslintDisabledLines } from '../utils/get-eslint-disabled-lines'
+import { isNodeEslintDisabled } from '../utils/is-node-eslint-disabled'
 import { hasPartitionComment } from '../utils/is-partition-comment'
 import { getCommentsBefore } from '../utils/get-comments-before'
 import { createEslintRule } from '../utils/create-eslint-rule'
 import { getLinesBetween } from '../utils/get-lines-between'
-import { getGroupNumber } from '../utils/get-group-number'
 import { getSourceCode } from '../utils/get-source-code'
 import { rangeToDiff } from '../utils/range-to-diff'
 import { getSettings } from '../utils/get-settings'
-import { isPositive } from '../utils/is-positive'
 import { sortNodes } from '../utils/sort-nodes'
 import { makeFixes } from '../utils/make-fixes'
 import { complete } from '../utils/complete'
 import { pairwise } from '../utils/pairwise'
-import { compare } from '../utils/compare'
 
 type MESSAGE_ID = 'unexpectedNamedExportsOrder'
 
@@ -38,6 +39,11 @@ type Options = [
     ignoreCase: boolean
   }>,
 ]
+
+interface SortNamedExportsSortingNode
+  extends SortingNode<TSESTree.ExportSpecifier> {
+  groupKind: 'value' | 'type'
+}
 
 const defaultOptions: Required<Options[0]> = {
   type: 'alphabetical',
@@ -97,15 +103,15 @@ export default createEslintRule<Options, MESSAGE_ID>({
       let settings = getSettings(context.settings)
       let options = complete(context.options.at(0), settings, defaultOptions)
       let sourceCode = getSourceCode(context)
-      let partitionComment = options.partitionByComment
-      let formattedMembers: SortingNode[][] = [[]]
+      let eslintDisabledLines = getEslintDisabledLines({
+        sourceCode,
+        ruleName: context.id,
+      })
+
+      let formattedMembers: SortNamedExportsSortingNode[][] = [[]]
       for (let specifier of node.specifiers) {
-        let group: undefined | 'value' | 'type'
-        if (specifier.exportKind === 'type') {
-          group = 'type'
-        } else {
-          group = 'value'
-        }
+        let groupKind: 'value' | 'type' =
+          specifier.exportKind === 'type' ? 'type' : ('value' as const)
 
         let name: string
 
@@ -116,16 +122,20 @@ export default createEslintRule<Options, MESSAGE_ID>({
         }
 
         let lastSortingNode = formattedMembers.at(-1)?.at(-1)
-        let sortingNode: SortingNode = {
+        let sortingNode: SortNamedExportsSortingNode = {
           size: rangeToDiff(specifier, sourceCode),
           node: specifier,
-          group,
+          groupKind,
+          isEslintDisabled: isNodeEslintDisabled(
+            specifier,
+            eslintDisabledLines,
+          ),
           name,
         }
         if (
-          (partitionComment &&
+          (options.partitionByComment &&
             hasPartitionComment(
-              partitionComment,
+              options.partitionByComment,
               getCommentsBefore(specifier, sourceCode),
             )) ||
           (options.partitionByNewLine &&
@@ -138,40 +148,59 @@ export default createEslintRule<Options, MESSAGE_ID>({
         formattedMembers.at(-1)!.push(sortingNode)
       }
 
-      let shouldGroupByKind = options.groupKind !== 'mixed'
-      let groupKindOrder =
-        options.groupKind === 'values-first'
-          ? ['value', 'type']
-          : ['type', 'value']
+      let groupKindOrder
+      if (options.groupKind === 'values-first') {
+        groupKindOrder = ['value', 'type'] as const
+      } else if (options.groupKind === 'types-first') {
+        groupKindOrder = ['type', 'value'] as const
+      } else {
+        groupKindOrder = ['any'] as const
+      }
 
       for (let nodes of formattedMembers) {
+        let filteredGroupKindNodes = groupKindOrder.map(groupKind =>
+          nodes.filter(n => groupKind === 'any' || n.groupKind === groupKind),
+        )
+        let sortNodesExcludingEslintDisabled = (
+          ignoreEslintDisabledNodes: boolean,
+        ) =>
+          filteredGroupKindNodes.flatMap(groupedNodes =>
+            sortNodes(groupedNodes, options, {
+              ignoreEslintDisabledNodes,
+            }),
+          )
+        let sortedNodes = sortNodesExcludingEslintDisabled(false)
+        let sortedNodesExcludingEslintDisabled =
+          sortNodesExcludingEslintDisabled(true)
+
         pairwise(nodes, (left, right) => {
-          let leftNum = getGroupNumber(groupKindOrder, left)
-          let rightNum = getGroupNumber(groupKindOrder, right)
-
+          let indexOfLeft = sortedNodes.indexOf(left)
+          let indexOfRight = sortedNodes.indexOf(right)
+          let indexOfRightExcludingEslintDisabled =
+            sortedNodesExcludingEslintDisabled.indexOf(right)
           if (
-            (shouldGroupByKind && leftNum > rightNum) ||
-            ((!shouldGroupByKind || leftNum === rightNum) &&
-              isPositive(compare(left, right, options)))
+            indexOfLeft < indexOfRight &&
+            indexOfLeft < indexOfRightExcludingEslintDisabled
           ) {
-            let sortedNodes = shouldGroupByKind
-              ? groupKindOrder
-                  .map(group => nodes.filter(n => n.group === group))
-                  .map(groupedNodes => sortNodes(groupedNodes, options))
-                  .flat()
-              : sortNodes(nodes, options)
-
-            context.report({
-              messageId: 'unexpectedNamedExportsOrder',
-              data: {
-                left: left.name,
-                right: right.name,
-              },
-              node: right.node,
-              fix: fixer =>
-                makeFixes(fixer, nodes, sortedNodes, sourceCode, options),
-            })
+            return
           }
+
+          context.report({
+            messageId: 'unexpectedNamedExportsOrder',
+            data: {
+              left: left.name,
+              right: right.name,
+            },
+            node: right.node,
+            fix: fixer =>
+              makeFixes(
+                fixer,
+                nodes,
+                sortedNodesExcludingEslintDisabled,
+                sourceCode,
+                options,
+              ),
+          })
         })
       }
     },
