@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest'
 
 import { getEslintDisabledRules } from '../utils/get-eslint-disabled-rules'
 
-const eslintDisableDirectives = [
+let eslintDisableDirectives = [
   'eslint-disable',
   'eslint-enable',
   'eslint-disable-line',

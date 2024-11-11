@@ -35,9 +35,11 @@ export let getNodeRange = (
   let comments = getCommentsBefore(node, sourceCode)
   let partitionComment = additionalOptions?.partitionByComment ?? false
 
-  // Iterate on all comments starting from the bottom until we reach the last
-  // of the comments, a newline between comments, a partition comment,
-  // or a eslint-disable comment
+  /**
+   * Iterate on all comments starting from the bottom until we reach the last
+   * of the comments, a newline between comments, a partition comment,
+   * or a eslint-disable comment
+   */
   let relevantTopComment: TSESTree.Comment | undefined
   for (let i = comments.length - 1; i >= 0; i--) {
     let comment = comments[i]
@@ -50,7 +52,7 @@ export let getNodeRange = (
       break
     }
     // Check for newlines between comments or between the first comment and
-    // the node.
+    // The node.
     let previousCommentOrNodeStartLine =
       i === comments.length - 1
         ? node.loc.start.line

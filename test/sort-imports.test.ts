@@ -1,4 +1,7 @@
-import type { RuleContext } from '@typescript-eslint/utils/ts-eslint'
+import type {
+  RuleListener,
+  RuleContext,
+} from '@typescript-eslint/utils/ts-eslint'
 import type { CompilerOptions } from 'typescript'
 
 import { afterAll, describe, expect, it, vi } from 'vitest'
@@ -5861,7 +5864,7 @@ describe(ruleName, () => {
       let createRule = (
         groups: Options<string[]>[0]['groups'],
         sortSideEffects: boolean = false,
-      ) =>
+      ): RuleListener =>
         rule.create({
           options: [
             {
@@ -6027,21 +6030,21 @@ describe(ruleName, () => {
 
       let mockReadClosestTsConfigByPathWith = (
         compilerOptions: CompilerOptions | null,
-      ) => {
+      ): void => {
         vi.spyOn(
           readClosestTsConfigUtils,
           'readClosestTsConfigByPath',
         ).mockReturnValue(
-          !compilerOptions
-            ? null
-            : {
+          compilerOptions
+            ? {
                 compilerOptions,
                 cache: createModuleResolutionCache(
                   '.',
                   filename => filename,
                   compilerOptions,
                 ),
-              },
+              }
+            : null,
         )
       }
     })

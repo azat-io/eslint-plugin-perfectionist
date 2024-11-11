@@ -29,6 +29,7 @@ import { getGroupNumber } from '../utils/get-group-number'
 import { getSourceCode } from '../utils/get-source-code'
 import { rangeToDiff } from '../utils/range-to-diff'
 import { getSettings } from '../utils/get-settings'
+import { isSortable } from '../utils/is-sortable'
 import { useGroups } from '../utils/use-groups'
 import { makeFixes } from '../utils/make-fixes'
 import { complete } from '../utils/complete'
@@ -46,8 +47,8 @@ type Group<T extends string[]> = 'multiline' | 'unknown' | T[number] | 'method'
 export type Options<T extends string[]> = [
   Partial<{
     groupKind: 'optional-first' | 'required-first' | 'mixed'
-    customGroups: { [key: string]: string[] | string }
     type: 'alphabetical' | 'line-length' | 'natural'
+    customGroups: Record<string, string[] | string>
     partitionByComment: string[] | boolean | string
     newlinesBetween: 'ignore' | 'always' | 'never'
     specialCharacters: 'remove' | 'trim' | 'keep'
@@ -64,7 +65,7 @@ interface SortInterfacesSortingNode extends SortingNode<TSESTree.TypeElement> {
   groupKind: 'required' | 'optional'
 }
 
-const defaultOptions: Required<Options<string[]>[0]> = {
+let defaultOptions: Required<Options<string[]>[0]> = {
   partitionByComment: false,
   partitionByNewLine: false,
   type: 'alphabetical',
@@ -141,7 +142,7 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
   defaultOptions: [defaultOptions],
   create: context => ({
     TSInterfaceDeclaration: node => {
-      if (node.body.body.length <= 1) {
+      if (!isSortable(node.body.body)) {
         return
       }
 
@@ -260,11 +261,14 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
       }
       for (let nodes of formattedMembers) {
         let filteredGroupKindNodes = groupKindOrder.map(groupKind =>
-          nodes.filter(n => groupKind === 'any' || n.groupKind === groupKind),
+          nodes.filter(
+            currentNode =>
+              groupKind === 'any' || currentNode.groupKind === groupKind,
+          ),
         )
         let sortNodesExcludingEslintDisabled = (
           ignoreEslintDisabledNodes: boolean,
-        ) =>
+        ): SortInterfacesSortingNode[] =>
           filteredGroupKindNodes.flatMap(groupedNodes =>
             sortNodesByGroups(groupedNodes, options, {
               ignoreEslintDisabledNodes,
@@ -275,8 +279,8 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
           sortNodesExcludingEslintDisabled(true)
 
         pairwise(nodes, (left, right) => {
-          let leftNum = getGroupNumber(options.groups, left)
-          let rightNum = getGroupNumber(options.groups, right)
+          let leftNumber = getGroupNumber(options.groups, left)
+          let rightNumber = getGroupNumber(options.groups, right)
 
           let indexOfLeft = sortedNodes.indexOf(left)
           let indexOfRight = sortedNodes.indexOf(right)
@@ -290,9 +294,9 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
             indexOfLeft >= indexOfRightExcludingEslintDisabled
           ) {
             messageIds.push(
-              leftNum !== rightNum
-                ? 'unexpectedInterfacePropertiesGroupOrder'
-                : 'unexpectedInterfacePropertiesOrder',
+              leftNumber === rightNumber
+                ? 'unexpectedInterfacePropertiesOrder'
+                : 'unexpectedInterfacePropertiesGroupOrder',
             )
           }
 
@@ -300,9 +304,9 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
             ...messageIds,
             ...getNewlinesErrors({
               left,
-              leftNum,
+              leftNum: leftNumber,
               right,
-              rightNum,
+              rightNum: rightNumber,
               sourceCode,
               missedSpacingError: 'missedSpacingBetweenInterfaceMembers',
               extraSpacingError: 'extraSpacingBetweenInterfaceMembers',

@@ -27,7 +27,7 @@ export let sortNodesByDependencies = <T extends SortingNodeWithDependencies>(
   let visitedNodes = new Set<T>()
   let inProcessNodes = new Set<T>()
 
-  let visitNode = (sortingNode: T) => {
+  let visitNode = (sortingNode: T): void => {
     if (visitedNodes.has(sortingNode)) {
       return
     }
@@ -37,8 +37,8 @@ export let sortNodesByDependencies = <T extends SortingNodeWithDependencies>(
     }
     inProcessNodes.add(sortingNode)
 
-    let dependentNodes = nodes.filter(n =>
-      sortingNode.dependencies.includes(n.dependencyName ?? n.name),
+    let dependentNodes = nodes.filter(({ dependencyName, name }) =>
+      sortingNode.dependencies.includes(dependencyName ?? name),
     )
     for (let dependentNode of dependentNodes) {
       if (

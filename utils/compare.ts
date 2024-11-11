@@ -6,7 +6,7 @@ interface BaseCompareOptions {
   /**
    * Custom function to get the value of the node. By default, returns the node's name.
    */
-  nodeValueGetter?: (node: SortingNode) => string
+  nodeValueGetter?: ((node: SortingNode) => string) | null
   order: 'desc' | 'asc'
 }
 
@@ -44,7 +44,7 @@ export let compare = (
     options.nodeValueGetter ?? ((node: SortingNode) => node.name)
 
   if (options.type === 'alphabetical') {
-    let formatString = getFormatStringFunc(
+    let formatString = getFormatStringFunction(
       options.ignoreCase,
       options.specialCharacters,
     )
@@ -54,15 +54,15 @@ export let compare = (
         options.locales,
       )
   } else if (options.type === 'natural') {
-    let prepareNumeric = (string: string) => {
-      let formattedNumberPattern = /^[+-]?[\d ,_]+(\.[\d ,_]+)?$/
+    let prepareNumeric = (string: string): string => {
+      let formattedNumberPattern = /^[+-]?[\d ,_]+(?:\.[\d ,_]+)?$/u
       if (formattedNumberPattern.test(string)) {
-        return string.replaceAll(/[ ,_]/g, '')
+        return string.replaceAll(/[ ,_]/gu, '')
       }
       return string
     }
     sortingFunction = (aNode, bNode) => {
-      let formatString = getFormatStringFunc(
+      let formatString = getFormatStringFunction(
         options.ignoreCase,
         options.specialCharacters,
       )
@@ -79,7 +79,10 @@ export let compare = (
       let { maxLineLength } = options
 
       if (maxLineLength) {
-        let isTooLong = (size: number, node: SortingNode) =>
+        let isTooLong = (
+          size: number,
+          node: SortingNode,
+        ): undefined | boolean =>
           size > maxLineLength && node.hasMultipleImportDeclarations
 
         if (isTooLong(aSize, aNode)) {
@@ -98,7 +101,7 @@ export let compare = (
   return orderCoefficient * sortingFunction(a, b)
 }
 
-let getFormatStringFunc =
+let getFormatStringFunction =
   (ignoreCase: boolean, specialCharacters: 'remove' | 'trim' | 'keep') =>
   (value: string) => {
     let valueToCompare = value
@@ -107,11 +110,11 @@ let getFormatStringFunc =
     }
     switch (specialCharacters) {
       case 'remove':
-        valueToCompare = valueToCompare.replaceAll(/[^A-Za-zÀ-ž]+/g, '')
+        valueToCompare = valueToCompare.replaceAll(/[^a-zà-öø-ÿ]+/giu, '')
         break
       case 'trim':
-        valueToCompare = valueToCompare.replaceAll(/^[^A-Za-zÀ-ž]+/g, '')
+        valueToCompare = valueToCompare.replaceAll(/^[^a-zà-öø-ÿ]+/giu, '')
         break
     }
-    return valueToCompare.replaceAll(/\s/g, '')
+    return valueToCompare.replaceAll(/\s/gu, '')
   }

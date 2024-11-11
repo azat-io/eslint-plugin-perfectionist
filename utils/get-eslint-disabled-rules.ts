@@ -1,4 +1,4 @@
-const eslintDisableDirectives = [
+let eslintDisableDirectives = [
   'eslint-disable',
   'eslint-enable',
   'eslint-disable-line',
@@ -7,7 +7,7 @@ const eslintDisableDirectives = [
 
 export type EslintDisableDirective = (typeof eslintDisableDirectives)[number]
 
-export const getEslintDisabledRules = (
+export let getEslintDisabledRules = (
   comment: string,
 ): {
   eslintDisableDirective: EslintDisableDirective
@@ -28,10 +28,10 @@ export const getEslintDisabledRules = (
   return null
 }
 
-const getEslintDisabledRulesByType = (
+let getEslintDisabledRulesByType = (
   comment: string,
   eslintDisableDirective: EslintDisableDirective,
-) => {
+): string[] | 'all' | null => {
   let trimmedCommentValue = comment.trim()
   if (eslintDisableDirective === trimmedCommentValue) {
     return 'all' as const

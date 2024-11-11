@@ -3,12 +3,12 @@ import type { TSESTree } from '@typescript-eslint/types'
 
 import { getCommentAfter } from './get-comment-after'
 
-export const makeCommentAfterFixes = (
+export let makeCommentAfterFixes = (
   fixer: TSESLint.RuleFixer,
   node: TSESTree.Token | TSESTree.Node,
   sortedNode: TSESTree.Token | TSESTree.Node,
   sourceCode: TSESLint.SourceCode,
-) => {
+): TSESLint.RuleFix[] => {
   let commentAfter = getCommentAfter(sortedNode, sourceCode)
   let areNodesOnSameLine = node.loc.start.line === sortedNode.loc.end.line
   if (!commentAfter || areNodesOnSameLine) {

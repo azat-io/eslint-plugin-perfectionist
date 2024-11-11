@@ -6,7 +6,7 @@ export let getLinesBetween = (
   source: TSESLint.SourceCode,
   left: SortingNode,
   right: SortingNode,
-) => {
+): number => {
   let linesBetween = source.lines.slice(
     left.node.loc.end.line,
     right.node.loc.start.line - 1,

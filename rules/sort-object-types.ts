@@ -30,6 +30,7 @@ import { getSourceCode } from '../utils/get-source-code'
 import { toSingleLine } from '../utils/to-single-line'
 import { rangeToDiff } from '../utils/range-to-diff'
 import { getSettings } from '../utils/get-settings'
+import { isSortable } from '../utils/is-sortable'
 import { makeFixes } from '../utils/make-fixes'
 import { useGroups } from '../utils/use-groups'
 import { complete } from '../utils/complete'
@@ -46,7 +47,7 @@ type Group<T extends string[]> = 'multiline' | 'unknown' | T[number] | 'method'
 type Options<T extends string[]> = [
   Partial<{
     groupKind: 'required-first' | 'optional-first' | 'mixed'
-    customGroups: { [key in T[number]]: string[] | string }
+    customGroups: Record<T[number], string[] | string>
     type: 'alphabetical' | 'line-length' | 'natural'
     partitionByComment: string[] | boolean | string
     newlinesBetween: 'ignore' | 'always' | 'never'
@@ -63,7 +64,7 @@ interface SortObjectTypesSortingNode extends SortingNode<TSESTree.TypeElement> {
   groupKind: 'required' | 'optional'
 }
 
-const defaultOptions: Required<Options<string[]>[0]> = {
+let defaultOptions: Required<Options<string[]>[0]> = {
   partitionByComment: false,
   partitionByNewLine: false,
   type: 'alphabetical',
@@ -131,7 +132,7 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
   defaultOptions: [defaultOptions],
   create: context => ({
     TSTypeLiteral: node => {
-      if (node.members.length <= 1) {
+      if (!isSortable(node.members)) {
         return
       }
 
@@ -159,7 +160,7 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
             let { getGroup, defineGroup, setCustomGroups } = useGroups(options)
 
             let formatName = (value: string): string =>
-              value.replace(/([,;])$/, '')
+              value.replace(/[,;]$/u, '')
 
             if (member.type === 'TSPropertySignature') {
               if (member.key.type === 'Identifier') {
@@ -241,11 +242,14 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
       }
       for (let nodes of formattedMembers) {
         let filteredGroupKindNodes = groupKindOrder.map(groupKind =>
-          nodes.filter(n => groupKind === 'any' || n.groupKind === groupKind),
+          nodes.filter(
+            currentNode =>
+              groupKind === 'any' || currentNode.groupKind === groupKind,
+          ),
         )
         let sortNodesExcludingEslintDisabled = (
           ignoreEslintDisabledNodes: boolean,
-        ) =>
+        ): SortObjectTypesSortingNode[] =>
           filteredGroupKindNodes.flatMap(groupedNodes =>
             sortNodesByGroups(groupedNodes, options, {
               ignoreEslintDisabledNodes,
@@ -256,8 +260,8 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
           sortNodesExcludingEslintDisabled(true)
 
         pairwise(nodes, (left, right) => {
-          let leftNum = getGroupNumber(options.groups, left)
-          let rightNum = getGroupNumber(options.groups, right)
+          let leftNumber = getGroupNumber(options.groups, left)
+          let rightNumber = getGroupNumber(options.groups, right)
 
           let indexOfLeft = sortedNodes.indexOf(left)
           let indexOfRight = sortedNodes.indexOf(right)
@@ -271,9 +275,9 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
             indexOfLeft >= indexOfRightExcludingEslintDisabled
           ) {
             messageIds.push(
-              leftNum !== rightNum
-                ? 'unexpectedObjectTypesGroupOrder'
-                : 'unexpectedObjectTypesOrder',
+              leftNumber === rightNumber
+                ? 'unexpectedObjectTypesOrder'
+                : 'unexpectedObjectTypesGroupOrder',
             )
           }
 
@@ -281,9 +285,9 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
             ...messageIds,
             ...getNewlinesErrors({
               left,
-              leftNum,
+              leftNum: leftNumber,
               right,
-              rightNum,
+              rightNum: rightNumber,
               sourceCode,
               missedSpacingError: 'missedSpacingBetweenObjectTypeMembers',
               extraSpacingError: 'extraSpacingBetweenObjectTypeMembers',

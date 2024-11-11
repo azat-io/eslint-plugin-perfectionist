@@ -15,7 +15,7 @@ let { class: className, title, url, ...props } = Astro.props
   class:list={[
     'link',
     className,
-    pathname.replace(/\.html$/, '') === url && 'active-link',
+    pathname.replace(/\.html$/u, '') === url && 'active-link',
   ]}
   href={url}
   {...props}

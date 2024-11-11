@@ -21,8 +21,9 @@ module.exports = [
   },
   {
     rules: {
+      '@typescript-eslint/method-signature-style': ['error', 'method'],
       'perfectionist/sort-objects': 'off',
     },
-    files: ['**/test/**', '**/rules/**'],
+    files: ['**/test/**', '**/rules/**', '**/utils/**'],
   },
 ]

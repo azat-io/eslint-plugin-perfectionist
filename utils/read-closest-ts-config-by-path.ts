@@ -18,10 +18,10 @@ interface OutputProps {
   cache: ts.ModuleResolutionCache
 }
 
-export const directoryCacheByPath = new Map<string, string>()
-export const contentCacheByPath = new Map<string, OutputProps>()
+export let directoryCacheByPath = new Map<string, string>()
+export let contentCacheByPath = new Map<string, OutputProps>()
 
-export const readClosestTsConfigByPath = (
+export let readClosestTsConfigByPath = (
   input: InputProps,
 ): OutputProps | null => {
   let typescriptImport = getTypescriptImport()
@@ -40,8 +40,8 @@ export const readClosestTsConfigByPath = (
     }
 
     if (cachedDirectory) {
-      for (let dir of checkedDirectories) {
-        directoryCacheByPath.set(dir, cachedDirectory)
+      for (let checkedDirectory of checkedDirectories) {
+        directoryCacheByPath.set(checkedDirectory, cachedDirectory)
       }
       return getCompilerOptions(
         typescriptImport,
@@ -62,7 +62,7 @@ export const readClosestTsConfigByPath = (
   )
 }
 
-const getCompilerOptions = (
+let getCompilerOptions = (
   typescriptImport: typeof ts,
   contextCwd: string,
   filePath: string,
@@ -76,7 +76,7 @@ const getCompilerOptions = (
   )
   if (configFileRead.error) {
     throw new Error(
-      'Error reading tsconfig file: ' + JSON.stringify(configFileRead.error),
+      `Error reading tsconfig file: ${JSON.stringify(configFileRead.error)}`,
     )
   }
   let parsedContent = typescriptImport.parseJsonConfigFileContent(
@@ -91,8 +91,9 @@ const getCompilerOptions = (
     )
   if (compilerOptionsConverted.errors.length) {
     throw new Error(
-      'Error getting compiler options: ' +
-        JSON.stringify(compilerOptionsConverted.errors),
+      `Error getting compiler options: ${JSON.stringify(
+        compilerOptionsConverted.errors,
+      )}`,
     )
   }
   let cache = typescriptImport.createModuleResolutionCache(

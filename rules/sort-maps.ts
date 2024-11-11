@@ -1,5 +1,7 @@
 import type { TSESTree } from '@typescript-eslint/types'
 
+import { isSortable } from 'utils/is-sortable'
+
 import type { SortingNode } from '../typings'
 
 import {
@@ -40,7 +42,7 @@ type Options = [
   }>,
 ]
 
-const defaultOptions: Required<Options[0]> = {
+let defaultOptions: Required<Options[0]> = {
   type: 'alphabetical',
   order: 'asc',
   ignoreCase: true,
@@ -94,7 +96,7 @@ export default createEslintRule<Options, MESSAGE_ID>({
         return
       }
       let [{ elements }] = node.arguments
-      if (elements.length <= 1) {
+      if (!isSortable(elements)) {
         return
       }
 
@@ -169,7 +171,8 @@ export default createEslintRule<Options, MESSAGE_ID>({
         for (let nodes of formattedMembers) {
           let sortNodesExcludingEslintDisabled = (
             ignoreEslintDisabledNodes: boolean,
-          ) => sortNodes(nodes, options, { ignoreEslintDisabledNodes })
+          ): SortingNode[] =>
+            sortNodes(nodes, options, { ignoreEslintDisabledNodes })
           let sortedNodes = sortNodesExcludingEslintDisabled(false)
           let sortedNodesExcludingEslintDisabled =
             sortNodesExcludingEslintDisabled(true)

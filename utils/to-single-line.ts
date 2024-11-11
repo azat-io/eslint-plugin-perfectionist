@@ -1,2 +1,2 @@
 export let toSingleLine = (string: string): string =>
-  string.replaceAll(/\s\s+/g, ' ').trim()
+  string.replaceAll(/\s{2,}/gu, ' ').trim()

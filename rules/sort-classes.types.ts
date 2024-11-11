@@ -200,7 +200,7 @@ export type SortClassesOptions = [
   }>,
 ]
 
-export const allSelectors: Selector[] = [
+export let allSelectors: Selector[] = [
   'accessor-property',
   'index-signature',
   'constructor',
@@ -212,7 +212,7 @@ export const allSelectors: Selector[] = [
   'method',
 ]
 
-export const allModifiers: Modifier[] = [
+export let allModifiers: Modifier[] = [
   'protected',
   'private',
   'public',
@@ -225,7 +225,7 @@ export const allModifiers: Modifier[] = [
   'optional',
 ]
 
-export const customGroupSortJsonSchema: Record<string, JSONSchema4> = {
+export let customGroupSortJsonSchema: Record<string, JSONSchema4> = {
   type: {
     description: 'Custom group sort type.',
     type: 'string',
@@ -238,7 +238,7 @@ export const customGroupSortJsonSchema: Record<string, JSONSchema4> = {
   },
 }
 
-export const customGroupNameJsonSchema: Record<string, JSONSchema4> = {
+export let customGroupNameJsonSchema: Record<string, JSONSchema4> = {
   groupName: {
     description: 'Custom group name.',
     type: 'string',
@@ -249,7 +249,7 @@ export const customGroupNameJsonSchema: Record<string, JSONSchema4> = {
  * Ideally, we should generate as many schemas as there are selectors, and ensure
  * that users do not enter invalid modifiers for a given selector
  */
-export const singleCustomGroupJsonSchema: Record<string, JSONSchema4> = {
+export let singleCustomGroupJsonSchema: Record<string, JSONSchema4> = {
   selector: {
     description: 'Selector filter.',
     type: 'string',

@@ -6,7 +6,7 @@ import { matches } from './matches'
 export let isPartitionComment = (
   partitionComment: string[] | boolean | string,
   comment: string,
-) => {
+): boolean => {
   if (getEslintDisabledRules(comment)) {
     return false
   }

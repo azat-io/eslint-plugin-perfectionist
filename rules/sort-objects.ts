@@ -33,6 +33,7 @@ import { getSourceCode } from '../utils/get-source-code'
 import { getNodeParent } from '../utils/get-node-parent'
 import { rangeToDiff } from '../utils/range-to-diff'
 import { getSettings } from '../utils/get-settings'
+import { isSortable } from '../utils/is-sortable'
 import { useGroups } from '../utils/use-groups'
 import { makeFixes } from '../utils/make-fixes'
 import { complete } from '../utils/complete'
@@ -50,8 +51,8 @@ type Group = 'multiline' | 'unknown' | 'method' | string
 
 type Options = [
   Partial<{
-    customGroups: { [key: string]: string[] | string }
     type: 'alphabetical' | 'line-length' | 'natural'
+    customGroups: Record<string, string[] | string>
     partitionByComment: string[] | boolean | string
     newlinesBetween: 'ignore' | 'always' | 'never'
     specialCharacters: 'remove' | 'trim' | 'keep'
@@ -66,7 +67,7 @@ type Options = [
   }>,
 ]
 
-const defaultOptions: Required<Options[0]> = {
+let defaultOptions: Required<Options[0]> = {
   partitionByNewLine: false,
   partitionByComment: false,
   styledComponents: true,
@@ -149,7 +150,7 @@ export default createEslintRule<Options, MESSAGE_ID>({
   create: context => {
     let sortObject = (
       node: TSESTree.ObjectExpression | TSESTree.ObjectPattern,
-    ) => {
+    ): void => {
       let settings = getSettings(context.settings)
 
       let options = complete(context.options.at(0), settings, defaultOptions)
@@ -168,19 +169,25 @@ export default createEslintRule<Options, MESSAGE_ID>({
       }
 
       if (!shouldIgnore && options.ignorePattern.length) {
-        let varParent = getNodeParent(node, ['VariableDeclarator', 'Property'])
+        let variableParent = getNodeParent(node, [
+          'VariableDeclarator',
+          'Property',
+        ])
         let parentId =
-          varParent?.type === 'VariableDeclarator'
-            ? varParent.id
-            : (varParent as TSESTree.Property | null)?.key
+          variableParent?.type === 'VariableDeclarator'
+            ? variableParent.id
+            : (variableParent as TSESTree.Property | null)?.key
 
-        let varIdentifier =
+        let variableIdentifier =
           parentId?.type === 'Identifier' ? parentId.name : null
 
-        let checkMatch = (identifier: string) =>
+        let checkMatch = (identifier: string): boolean =>
           options.ignorePattern.some(pattern => matches(identifier, pattern))
 
-        if (typeof varIdentifier === 'string' && checkMatch(varIdentifier)) {
+        if (
+          typeof variableIdentifier === 'string' &&
+          checkMatch(variableIdentifier)
+        ) {
           shouldIgnore = true
         }
 
@@ -195,18 +202,18 @@ export default createEslintRule<Options, MESSAGE_ID>({
           shouldIgnore = true
         }
       }
-      if (shouldIgnore || node.properties.length <= 1) {
+      if (shouldIgnore || !isSortable(node.properties)) {
         return
       }
 
-      let isStyledCallExpression = (identifier: TSESTree.Expression) =>
+      let isStyledCallExpression = (identifier: TSESTree.Expression): boolean =>
         identifier.type === 'Identifier' && identifier.name === 'styled'
-      let isCssCallExpression = (identifier: TSESTree.Expression) =>
+      let isCssCallExpression = (identifier: TSESTree.Expression): boolean =>
         identifier.type === 'Identifier' && identifier.name === 'css'
       let isStyledComponents = (
         styledNode: TSESTree.Node | undefined,
       ): boolean =>
-        styledNode !== undefined &&
+        !!styledNode &&
         ((styledNode.type === 'CallExpression' &&
           (isCssCallExpression(styledNode.callee) ||
             (styledNode.callee.type === 'MemberExpression' &&
@@ -236,7 +243,7 @@ export default createEslintRule<Options, MESSAGE_ID>({
       ): string[] => {
         let dependencies: string[] = []
 
-        let checkNode = (nodeValue: TSESTree.Node) => {
+        let checkNode = (nodeValue: TSESTree.Node): void => {
           /**
            * No need to check the body of functions and arrow functions
            */
@@ -308,7 +315,7 @@ export default createEslintRule<Options, MESSAGE_ID>({
           }
         }
 
-        let traverseNode = (nodeValue: TSESTree.Node) => {
+        let traverseNode = (nodeValue: TSESTree.Node): void => {
           checkNode(nodeValue)
         }
 
@@ -323,65 +330,75 @@ export default createEslintRule<Options, MESSAGE_ID>({
         )[],
       ): SortingNodeWithDependencies[][] =>
         props.reduce(
-          (accumulator: SortingNodeWithDependencies[][], prop) => {
-            if (prop.type === 'SpreadElement' || prop.type === 'RestElement') {
+          (accumulator: SortingNodeWithDependencies[][], property) => {
+            if (
+              property.type === 'SpreadElement' ||
+              property.type === 'RestElement'
+            ) {
               accumulator.push([])
               return accumulator
             }
 
-            let comments = getCommentsBefore(prop, sourceCode)
-            let lastProp = accumulator.at(-1)?.at(-1)
+            let comments = getCommentsBefore(property, sourceCode)
+            let lastProperty = accumulator.at(-1)?.at(-1)
 
             let name: string
             let dependencies: string[] = []
 
             let { getGroup, defineGroup, setCustomGroups } = useGroups(options)
 
-            if (prop.key.type === 'Identifier') {
-              ;({ name } = prop.key)
-            } else if (prop.key.type === 'Literal') {
-              name = `${prop.key.value}`
+            if (property.key.type === 'Identifier') {
+              ;({ name } = property.key)
+            } else if (property.key.type === 'Literal') {
+              name = `${property.key.value}`
             } else {
-              name = sourceCode.getText(prop.key)
+              name = sourceCode.getText(property.key)
             }
 
-            if (prop.value.type === 'AssignmentPattern') {
-              dependencies = extractDependencies(prop.value)
+            if (property.value.type === 'AssignmentPattern') {
+              dependencies = extractDependencies(property.value)
             }
 
             setCustomGroups(options.customGroups, name)
 
             if (
-              prop.value.type === 'ArrowFunctionExpression' ||
-              prop.value.type === 'FunctionExpression'
+              property.value.type === 'ArrowFunctionExpression' ||
+              property.value.type === 'FunctionExpression'
             ) {
               defineGroup('method')
             }
 
-            if (prop.loc.start.line !== prop.loc.end.line) {
+            if (property.loc.start.line !== property.loc.end.line) {
               defineGroup('multiline')
             }
 
-            let propSortingNode: SortingNodeWithDependencies = {
-              size: rangeToDiff(prop, sourceCode),
-              node: prop,
+            let propertySortingNode: SortingNodeWithDependencies = {
+              size: rangeToDiff(property, sourceCode),
+              node: property,
               group: getGroup(),
-              isEslintDisabled: isNodeEslintDisabled(prop, eslintDisabledLines),
+              isEslintDisabled: isNodeEslintDisabled(
+                property,
+                eslintDisabledLines,
+              ),
               dependencies,
               name,
             }
 
             if (
               (options.partitionByNewLine &&
-                lastProp &&
-                getLinesBetween(sourceCode, lastProp, propSortingNode)) ||
+                lastProperty &&
+                getLinesBetween(
+                  sourceCode,
+                  lastProperty,
+                  propertySortingNode,
+                )) ||
               (options.partitionByComment &&
                 hasPartitionComment(options.partitionByComment, comments))
             ) {
               accumulator.push([])
             }
 
-            accumulator.at(-1)!.push(propSortingNode)
+            accumulator.at(-1)!.push(propertySortingNode)
 
             return accumulator
           },
@@ -391,7 +408,7 @@ export default createEslintRule<Options, MESSAGE_ID>({
 
       let sortNodesIgnoringEslintDisabledNodes = (
         ignoreEslintDisabledNodes: boolean,
-      ) =>
+      ): SortingNodeWithDependencies[] =>
         sortNodesByDependencies(
           formattedMembers.flatMap(nodes =>
             sortNodesByGroups(nodes, options, {
@@ -408,8 +425,8 @@ export default createEslintRule<Options, MESSAGE_ID>({
       let nodes = formattedMembers.flat()
 
       pairwise(nodes, (left, right) => {
-        let leftNum = getGroupNumber(options.groups, left)
-        let rightNum = getGroupNumber(options.groups, right)
+        let leftNumber = getGroupNumber(options.groups, left)
+        let rightNumber = getGroupNumber(options.groups, right)
 
         let indexOfLeft = sortedNodes.indexOf(left)
         let indexOfRight = sortedNodes.indexOf(right)
@@ -433,9 +450,9 @@ export default createEslintRule<Options, MESSAGE_ID>({
             messageIds.push('unexpectedObjectsDependencyOrder')
           } else {
             messageIds.push(
-              leftNum !== rightNum
-                ? 'unexpectedObjectsGroupOrder'
-                : 'unexpectedObjectsOrder',
+              leftNumber === rightNumber
+                ? 'unexpectedObjectsOrder'
+                : 'unexpectedObjectsGroupOrder',
             )
           }
         }
@@ -444,9 +461,9 @@ export default createEslintRule<Options, MESSAGE_ID>({
           ...messageIds,
           ...getNewlinesErrors({
             left,
-            leftNum,
+            leftNum: leftNumber,
             right,
-            rightNum,
+            rightNum: rightNumber,
             sourceCode,
             missedSpacingError: 'missedSpacingBetweenObjectMembers',
             extraSpacingError: 'extraSpacingBetweenObjectMembers',

@@ -1,5 +1,5 @@
 <script lang="ts">
-  export let color: 'primary' | 'secondary' = 'primary'
+  export let color: 'secondary' | 'primary' = 'primary'
   export let onClick: () => void = () => {}
   export let content: string = ''
 </script>

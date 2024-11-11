@@ -2,7 +2,7 @@ interface GroupOptions {
   groups: (string[] | string)[]
 }
 
-export const getOptionsWithCleanGroups = <T extends GroupOptions>(
+export let getOptionsWithCleanGroups = <T extends GroupOptions>(
   options: T,
 ): T => ({
   ...options,
@@ -13,5 +13,5 @@ export const getOptionsWithCleanGroups = <T extends GroupOptions>(
     ),
 })
 
-const getCleanedNestedGroups = (nestedGroup: string[]): string[] | string =>
+let getCleanedNestedGroups = (nestedGroup: string[]): string[] | string =>
   nestedGroup.length === 1 ? nestedGroup[0] : nestedGroup

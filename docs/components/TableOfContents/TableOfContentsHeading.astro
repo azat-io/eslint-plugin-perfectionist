@@ -13,11 +13,11 @@ interface Props {
   } & Heading
 }
 
-const { heading } = Astro.props
+let { heading } = Astro.props
 ---
 
 <li class="item">
-  <a href={'#' + heading.slug} class="link">
+  <a href={`#${heading.slug}`} class="link">
     <Typography tag="span" size="xs">
       {heading.text}
     </Typography>
