@@ -18,6 +18,7 @@ import { validateNewlinesAndPartitionConfiguration } from '../utils/validate-new
 import { validateGroupsConfiguration } from '../utils/validate-groups-configuration'
 import { readClosestTsConfigByPath } from '../utils/read-closest-ts-config-by-path'
 import { getOptionsWithCleanGroups } from '../utils/get-options-with-clean-groups'
+import { matchesPartitionByNewLine } from '../utils/matches-partition-by-new-line'
 import { getEslintDisabledLines } from '../utils/get-eslint-disabled-lines'
 import { isNodeEslintDisabled } from '../utils/is-node-eslint-disabled'
 import { getTypescriptImport } from '../utils/get-typescript-import'
@@ -27,7 +28,6 @@ import { getCommentsBefore } from '../utils/get-comments-before'
 import { makeNewlinesFixes } from '../utils/make-newlines-fixes'
 import { getNewlinesErrors } from '../utils/get-newlines-errors'
 import { createEslintRule } from '../utils/create-eslint-rule'
-import { getLinesBetween } from '../utils/get-lines-between'
 import { getGroupNumber } from '../utils/get-group-number'
 import { getSourceCode } from '../utils/get-source-code'
 import { rangeToDiff } from '../utils/range-to-diff'
@@ -77,9 +77,9 @@ export type Options<T extends string[]> = [
     newlinesBetween: 'ignore' | 'always' | 'never'
     specialCharacters: 'remove' | 'trim' | 'keep'
     locales: NonNullable<Intl.LocalesArgument>
+    partitionByNewLine: boolean | number
     groups: (Group<T>[] | Group<T>)[]
     environment: 'node' | 'bun'
-    partitionByNewLine: boolean
     internalPattern: string[]
     sortSideEffects: boolean
     tsconfigRootDir?: string
@@ -615,9 +615,13 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
                 options.partitionByComment,
                 getCommentsBefore(sortingNode.node, sourceCode),
               )) ||
-            (options.partitionByNewLine &&
-              lastSortingNode &&
-              getLinesBetween(sourceCode, lastSortingNode, sortingNode)) ||
+            (lastSortingNode &&
+              matchesPartitionByNewLine({
+                options,
+                sortingNode,
+                sourceCode,
+                lastSortingNode,
+              })) ||
             (lastSortingNode &&
               hasContentBetweenNodes(lastSortingNode, sortingNode))
           ) {
