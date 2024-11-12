@@ -796,6 +796,54 @@ describe(ruleName, () => {
               },
             ],
           },
+          {
+            code: dedent`
+            switch (x) {
+              default:
+              case 'default':
+                break;
+              case 'somethingElse':
+                break;
+            }
+          `,
+            output: [
+              dedent`
+                switch (x) {
+                  case 'default':
+                  default:
+                    break;
+                  case 'somethingElse':
+                    break;
+                }
+              `,
+              dedent`
+                switch (x) {
+                  case 'somethingElse':
+                    break;
+                  case 'default':
+                  default:
+                    break;
+                }
+              `,
+            ],
+            options: [options],
+            errors: [
+              {
+                messageId: 'unexpectedSwitchCaseOrder',
+                data: {
+                  left: 'default',
+                  right: 'default',
+                },
+              },
+              {
+                messageId: 'unexpectedSwitchCaseOrder',
+                data: {
+                  left: 'default',
+                  right: 'somethingElse',
+                },
+              },
+            ],
+          },
         ],
       },
     )
