@@ -11,12 +11,12 @@ import {
   orderJsonSchema,
   typeJsonSchema,
 } from '../utils/common-json-schemas'
+import { matchesPartitionByNewLine } from '../utils/matches-partition-by-new-line'
 import { getEslintDisabledLines } from '../utils/get-eslint-disabled-lines'
 import { isNodeEslintDisabled } from '../utils/is-node-eslint-disabled'
 import { hasPartitionComment } from '../utils/is-partition-comment'
 import { getCommentsBefore } from '../utils/get-comments-before'
 import { createEslintRule } from '../utils/create-eslint-rule'
-import { getLinesBetween } from '../utils/get-lines-between'
 import { getSourceCode } from '../utils/get-source-code'
 import { rangeToDiff } from '../utils/range-to-diff'
 import { getSettings } from '../utils/get-settings'
@@ -34,7 +34,7 @@ type Options = [
     partitionByComment: string[] | boolean | string
     specialCharacters: 'remove' | 'trim' | 'keep'
     locales: NonNullable<Intl.LocalesArgument>
-    partitionByNewLine: boolean
+    partitionByNewLine: boolean | number
     order: 'desc' | 'asc'
     ignoreCase: boolean
   }>,
@@ -122,16 +122,20 @@ export default createEslintRule<Options, MESSAGE_ID>({
         groupKind: node.exportKind === 'value' ? 'value' : 'type',
         addSafetySemicolonWhenInline: true,
       }
-      let lastNode = parts.at(-1)?.at(-1)
+      let lastSortingNode = parts.at(-1)?.at(-1)
       if (
         (partitionComment &&
           hasPartitionComment(
             partitionComment,
             getCommentsBefore(node, sourceCode),
           )) ||
-        (options.partitionByNewLine &&
-          lastNode &&
-          getLinesBetween(sourceCode, lastNode, sortingNode))
+        (lastSortingNode &&
+          matchesPartitionByNewLine({
+            options,
+            sortingNode,
+            sourceCode,
+            lastSortingNode,
+          }))
       ) {
         parts.push([])
       }

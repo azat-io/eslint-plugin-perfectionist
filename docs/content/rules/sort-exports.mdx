@@ -140,9 +140,16 @@ Allows you to use comments to separate the exports into logical groups. This can
 
 ### partitionByNewLine
 
+<sub>
+  type: `boolean | number`
+</sub>
 <sub>default: `false`</sub>
 
-When `true`, the rule will not sort the exports if there is an empty line between them. This can be useful for keeping logically separated groups of exports in their defined order.
+The rule will not sort the exports if:
+- `true` — There is an empty line between them.
+- `number` — There are at least `number` empty lines between them.
+
+This can be useful for keeping logically separated groups of exports in their defined order.
 
 ```js
 // Group 1
