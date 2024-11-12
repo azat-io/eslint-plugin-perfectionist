@@ -15,12 +15,12 @@ import {
   getFirstUnorderedNodeDependentOn,
   sortNodesByDependencies,
 } from '../utils/sort-nodes-by-dependencies'
+import { matchesPartitionByNewLine } from '../utils/matches-partition-by-new-line'
 import { getEslintDisabledLines } from '../utils/get-eslint-disabled-lines'
 import { isNodeEslintDisabled } from '../utils/is-node-eslint-disabled'
 import { hasPartitionComment } from '../utils/is-partition-comment'
 import { getCommentsBefore } from '../utils/get-comments-before'
 import { createEslintRule } from '../utils/create-eslint-rule'
-import { getLinesBetween } from '../utils/get-lines-between'
 import { getSourceCode } from '../utils/get-source-code'
 import { toSingleLine } from '../utils/to-single-line'
 import { rangeToDiff } from '../utils/range-to-diff'
@@ -41,7 +41,7 @@ type Options = [
     partitionByComment: string[] | boolean | string
     specialCharacters: 'remove' | 'trim' | 'keep'
     locales: NonNullable<Intl.LocalesArgument>
-    partitionByNewLine: boolean
+    partitionByNewLine: boolean | number
     order: 'desc' | 'asc'
     ignoreCase: boolean
   }>,
@@ -223,9 +223,13 @@ export default createEslintRule<Options, MESSAGE_ID>({
                 options.partitionByComment,
                 getCommentsBefore(declaration, sourceCode),
               )) ||
-            (options.partitionByNewLine &&
-              lastSortingNode &&
-              getLinesBetween(sourceCode, lastSortingNode, sortingNode))
+            (lastSortingNode &&
+              matchesPartitionByNewLine({
+                options,
+                sortingNode,
+                sourceCode,
+                lastSortingNode,
+              }))
           ) {
             accumulator.push([])
           }
