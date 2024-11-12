@@ -4472,6 +4472,60 @@ describe(ruleName, () => {
       })
 
       ruleTester.run(
+        `${ruleName}(${type}): sorts inline declare class methods correctly`,
+        rule,
+        {
+          valid: [],
+          invalid: [
+            {
+              code: dedent`
+                  declare class Class {
+                    b(); a()
+                  }
+                `,
+              output: dedent`
+                  declare class Class {
+                    a(); b();
+                  }
+                `,
+              options: [options],
+              errors: [
+                {
+                  messageId: 'unexpectedClassesOrder',
+                  data: {
+                    left: 'b',
+                    right: 'a',
+                  },
+                },
+              ],
+            },
+            {
+              code: dedent`
+                  abstract class Class {
+                    abstract b(); abstract a();
+                  }
+                `,
+              output: dedent`
+                  abstract class Class {
+                    abstract a(); abstract b();
+                  }
+                `,
+              options: [options],
+              errors: [
+                {
+                  messageId: 'unexpectedClassesOrder',
+                  data: {
+                    left: 'b',
+                    right: 'a',
+                  },
+                },
+              ],
+            },
+          ],
+        },
+      )
+
+      ruleTester.run(
         `${ruleName}(${type}): sorts inline properties correctly`,
         rule,
         {
