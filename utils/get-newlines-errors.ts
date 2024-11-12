@@ -28,7 +28,7 @@ export let getNewlinesErrors = <T extends string>({
   options,
   right,
   left,
-}: Props<T>) => {
+}: Props<T>): T[] => {
   let errors: T[] = []
 
   let numberOfEmptyLinesBetween = getLinesBetween(sourceCode, left, right)

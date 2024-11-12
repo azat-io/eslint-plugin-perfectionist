@@ -13,9 +13,9 @@ interface ExtraOptions<T extends SortingNode> {
    * If not provided, `options` will be used. If function returns null, nodes
    * will not be sorted within the group.
    */
-  getGroupCompareOptions?: (groupNumber: number) => CompareOptions | null
-  isNodeIgnored?: (node: T) => boolean
+  getGroupCompareOptions?(groupNumber: number): CompareOptions | null
   ignoreEslintDisabledNodes?: boolean
+  isNodeIgnored?(node: T): boolean
 }
 
 export let sortNodesByGroups = <T extends SortingNode>(
@@ -23,9 +23,7 @@ export let sortNodesByGroups = <T extends SortingNode>(
   options: CompareOptions & GroupOptions,
   extraOptions?: ExtraOptions<T>,
 ): T[] => {
-  let nodesByNonIgnoredGroupNumber: {
-    [key: number]: T[]
-  } = {}
+  let nodesByNonIgnoredGroupNumber: Record<number, T[]> = {}
   let ignoredNodeIndices: number[] = []
   for (let [index, sortingNode] of nodes.entries()) {
     if (
@@ -36,10 +34,9 @@ export let sortNodesByGroups = <T extends SortingNode>(
       ignoredNodeIndices.push(index)
       continue
     }
-    let groupNum = getGroupNumber(options.groups, sortingNode)
-    nodesByNonIgnoredGroupNumber[groupNum] =
-      nodesByNonIgnoredGroupNumber[groupNum] ?? []
-    nodesByNonIgnoredGroupNumber[groupNum].push(sortingNode)
+    let groupNumber = getGroupNumber(options.groups, sortingNode)
+    nodesByNonIgnoredGroupNumber[groupNumber] ??= []
+    nodesByNonIgnoredGroupNumber[groupNumber].push(sortingNode)
   }
 
   let sortedNodes: T[] = []

@@ -5,7 +5,7 @@ import type { SortingNode } from '../typings'
 import { makeCommentAfterFixes } from './make-comment-after-fixes'
 import { getNodeRange } from './get-node-range'
 
-export const makeFixes = (
+export let makeFixes = (
   fixer: TSESLint.RuleFixer,
   nodes: SortingNode[],
   sortedNodes: SortingNode[],
@@ -13,14 +13,14 @@ export const makeFixes = (
   additionalOptions?: {
     partitionByComment: string[] | boolean | string
   },
-) => {
+): TSESLint.RuleFix[] => {
   let fixes: TSESLint.RuleFix[] = []
 
   for (let max = nodes.length, i = 0; i < max; i++) {
     let sortingNode = nodes.at(i)!
     let sortedSortingNode = sortedNodes.at(i)!
     let { node } = sortingNode
-    let { node: sortedNode } = sortedSortingNode
+    let { addSafetySemicolonWhenInline, node: sortedNode } = sortedSortingNode
 
     if (node === sortedNode) {
       continue
@@ -43,7 +43,7 @@ export const makeFixes = (
     let isNextTokenSafeCharacter =
       nextToken?.value === ';' || nextToken?.value === ','
     if (
-      sortedSortingNode.addSafetySemicolonWhenInline &&
+      addSafetySemicolonWhenInline &&
       isNextTokenOnSameLineAsNode &&
       !sortedNextNodeEndsWithSafeCharacter &&
       !isNextTokenSafeCharacter

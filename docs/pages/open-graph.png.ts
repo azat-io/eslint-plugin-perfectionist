@@ -1,3 +1,6 @@
+import type { ImageResponse } from '@vercel/og'
+
 import { openGraph } from '../utils/open-graph'
 
-export let GET = async () => await openGraph('Take Your Code to a Beauty Salon')
+export let GET = async (): Promise<ImageResponse> =>
+  await openGraph('Take Your Code to a Beauty Salon')

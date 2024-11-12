@@ -2,10 +2,10 @@ import type { TSESLint } from '@typescript-eslint/utils'
 
 import { getEslintDisabledRules } from './get-eslint-disabled-rules'
 
-export const getEslintDisabledLines = (props: {
+export let getEslintDisabledLines = (props: {
   sourceCode: TSESLint.SourceCode
   ruleName: string
-}) => {
+}): number[] => {
   let { sourceCode, ruleName } = props
   let returnValue: number[] = []
   let lineRulePermanentlyDisabled: number | null = null
@@ -25,8 +25,7 @@ export const getEslintDisabledLines = (props: {
         returnValue.push(comment.loc.start.line)
         continue
       case 'eslint-disable':
-        lineRulePermanentlyDisabled =
-          lineRulePermanentlyDisabled ?? comment.loc.start.line
+        lineRulePermanentlyDisabled ??= comment.loc.start.line
         break
       case 'eslint-enable':
         /* v8 ignore next 3 - Hard to cover in test without raising another ESLint error */
@@ -46,5 +45,5 @@ export const getEslintDisabledLines = (props: {
   return returnValue
 }
 
-const createArrayFromTo = (i: number, j: number) =>
-  Array.from({ length: j - i + 1 }, (_, k) => i + k)
+let createArrayFromTo = (i: number, index: number): number[] =>
+  Array.from({ length: index - i + 1 }, (_, item) => i + item)

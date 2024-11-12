@@ -3,7 +3,7 @@ interface Options {
   newlinesBetween: 'ignore' | 'always' | 'never'
 }
 
-export const validateNewlinesAndPartitionConfiguration = ({
+export let validateNewlinesAndPartitionConfiguration = ({
   partitionByNewLine,
   newlinesBetween,
 }: Options): void => {

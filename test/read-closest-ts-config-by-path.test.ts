@@ -1,4 +1,5 @@
 import type { Diagnostic } from 'typescript'
+import type { Mock } from 'vitest'
 
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import path from 'node:path'
@@ -8,14 +9,22 @@ import type { readClosestTsConfigByPath as testedFunction } from '../utils/read-
 
 // Heavily inspired from https://github.com/typescript-eslint/typescript-eslint/blob/main/packages/typescript-estree/tests/lib/getProjectConfigFiles.test.ts
 
-const mockExistsSync = vi.fn()
+let mockExistsSync: Mock<(filePath: string) => boolean> = vi.fn()
+
 vi.mock('node:fs', () => ({
   existsSync: (filePath: string): boolean => mockExistsSync(filePath),
 }))
 
-const mockConvertCompilerOptionsFromJson = vi.fn()
-const mockReadConfigFile = vi.fn()
-const mockParseJsonConfigFileContent = vi.fn()
+let mockConvertCompilerOptionsFromJson: Mock<(content: object) => unknown> =
+  vi.fn()
+
+let mockReadConfigFile: Mock<(filePath: string) => ts.ParsedCommandLine> =
+  vi.fn()
+
+let mockParseJsonConfigFileContent: Mock<
+  (content: object) => ts.ParsedCommandLine
+> = vi.fn()
+
 vi.mock('node:module', _ => ({
   createRequire: () => () => ({
     readConfigFile: (filePath: string): ts.ParsedCommandLine =>
@@ -29,18 +38,19 @@ vi.mock('node:module', _ => ({
   }),
 }))
 
-const mockGetTypescriptImport = vi.fn()
+let mockGetTypescriptImport: Mock<() => null> = vi.fn()
+
 vi.mock('../utils/get-typescript-import', () => ({
   getTypescriptImport: () => mockGetTypescriptImport(),
 }))
 
-const testInput = {
+let testInput = {
   filePath: './repos/repo/packages/package/file.ts',
   tsconfigRootDir: './repos/repo',
   contextCwd: './',
 }
 
-const tsConfigContent = {
+let tsConfigContent = {
   raw: {
     config: {
       compilerOptions: {
@@ -48,7 +58,7 @@ const tsConfigContent = {
       },
     },
   },
-} as const
+} as ts.ParsedCommandLine
 
 describe('readClosestTsConfigByPath', () => {
   let readClosestTsConfigByPath: typeof testedFunction
@@ -80,7 +90,7 @@ describe('readClosestTsConfigByPath', () => {
       )
     })
 
-    it("throws an error if the config can't be read", async () => {
+    it("throws an error if the config can't be read", () => {
       mockExistsSync.mockReturnValue(true)
       mockReadConfigFileReturnValue({
         error: {
@@ -95,7 +105,7 @@ describe('readClosestTsConfigByPath', () => {
       )
     })
 
-    it("throws an error if the compiler options can't be converted", async () => {
+    it("throws an error if the compiler options can't be converted", () => {
       mockExistsSync.mockReturnValue(true)
       mockReadConfigFileReturnValue()
       mockParseJsonConfigFileContentReturnValue()
@@ -128,7 +138,7 @@ describe('readClosestTsConfigByPath', () => {
 
       it('returns a nearby parent tsconfig.json when it was previously cached by a different directory search', () => {
         mockExistsSync.mockImplementation(
-          input => input === path.normalize('a/tsconfig.json'),
+          (input: string) => input === path.normalize('a/tsconfig.json'),
         )
         mockReadConfigFileReturnValue()
         mockParseJsonConfigFileContentReturnValue()
@@ -241,15 +251,15 @@ describe('readClosestTsConfigByPath', () => {
 
     let mockReadConfigFileReturnValue = (
       value: ReturnType<typeof ts.readConfigFile> = {},
-    ) => {
-      mockReadConfigFile.mockReturnValue(value)
+    ): void => {
+      mockReadConfigFile.mockReturnValue(value as ts.ParsedCommandLine)
     }
 
-    let mockParseJsonConfigFileContentReturnValue = () => {
+    let mockParseJsonConfigFileContentReturnValue = (): void => {
       mockParseJsonConfigFileContent.mockReturnValue(tsConfigContent)
     }
 
-    let mockConvertCompilerOptionsFromJsonReturnValue = () => {
+    let mockConvertCompilerOptionsFromJsonReturnValue = (): void => {
       mockConvertCompilerOptionsFromJson.mockReturnValue({
         options: tsConfigContent.raw.config.compilerOptions,
         errors: [],

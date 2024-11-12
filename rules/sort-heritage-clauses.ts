@@ -22,6 +22,7 @@ import { getSourceCode } from '../utils/get-source-code'
 import { toSingleLine } from '../utils/to-single-line'
 import { rangeToDiff } from '../utils/range-to-diff'
 import { getSettings } from '../utils/get-settings'
+import { isSortable } from '../utils/is-sortable'
 import { useGroups } from '../utils/use-groups'
 import { makeFixes } from '../utils/make-fixes'
 import { complete } from '../utils/complete'
@@ -35,7 +36,7 @@ type Group<T extends string[]> = 'unknown' | T[number]
 
 export type Options<T extends string[]> = [
   Partial<{
-    customGroups: { [key in T[number]]: string[] | string }
+    customGroups: Record<T[number], string[] | string>
     type: 'alphabetical' | 'line-length' | 'natural'
     specialCharacters: 'remove' | 'trim' | 'keep'
     locales: NonNullable<Intl.LocalesArgument>
@@ -45,7 +46,7 @@ export type Options<T extends string[]> = [
   }>,
 ]
 
-const defaultOptions: Required<Options<string[]>[0]> = {
+let defaultOptions: Required<Options<string[]>[0]> = {
   type: 'alphabetical',
   ignoreCase: true,
   specialCharacters: 'keep',
@@ -106,14 +107,14 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
   },
 })
 
-const sortHeritageClauses = (
+let sortHeritageClauses = (
   context: Readonly<RuleContext<MESSAGE_ID, Options<string[]>>>,
   options: Required<Options<string[]>[0]>,
   heritageClauses:
     | TSESTree.TSInterfaceHeritage[]
     | TSESTree.TSClassImplements[],
-) => {
-  if (heritageClauses.length < 2) {
+): void => {
+  if (!isSortable(heritageClauses)) {
     return
   }
   let sourceCode = getSourceCode(context)
@@ -140,7 +141,9 @@ const sortHeritageClauses = (
     }
   })
 
-  let sortNodesExcludingEslintDisabled = (ignoreEslintDisabledNodes: boolean) =>
+  let sortNodesExcludingEslintDisabled = (
+    ignoreEslintDisabledNodes: boolean,
+  ): SortingNode[] =>
     sortNodesByGroups(nodes, options, { ignoreEslintDisabledNodes })
   let sortedNodes = sortNodesExcludingEslintDisabled(false)
   let sortedNodesExcludingEslintDisabled =
@@ -157,13 +160,13 @@ const sortHeritageClauses = (
     ) {
       return
     }
-    let leftNum = getGroupNumber(options.groups, left)
-    let rightNum = getGroupNumber(options.groups, right)
+    let leftNumber = getGroupNumber(options.groups, left)
+    let rightNumber = getGroupNumber(options.groups, right)
     context.report({
       messageId:
-        leftNum !== rightNum
-          ? 'unexpectedHeritageClausesGroupOrder'
-          : 'unexpectedHeritageClausesOrder',
+        leftNumber === rightNumber
+          ? 'unexpectedHeritageClausesOrder'
+          : 'unexpectedHeritageClausesGroupOrder',
       data: {
         left: toSingleLine(left.name),
         leftGroup: left.group,
@@ -177,19 +180,19 @@ const sortHeritageClauses = (
   })
 }
 
-const getHeritageClauseExpressionName = (
+let getHeritageClauseExpressionName = (
   expression: TSESTree.PrivateIdentifier | TSESTree.Expression,
-) => {
+): string => {
   if (expression.type === 'Identifier') {
     return expression.name
   }
   if ('property' in expression) {
     return getHeritageClauseExpressionName(expression.property)
-    /* c8 ignore start - should never throw */
+    /* v8 ignore start - should never throw */
   }
   throw new Error(
     'Unexpected heritage clause expression. Please report this issue ' +
       'here: https://github.com/azat-io/eslint-plugin-perfectionist/issues',
   )
-  /* c8 ignore end */
+  /* v8 ignore end */
 }

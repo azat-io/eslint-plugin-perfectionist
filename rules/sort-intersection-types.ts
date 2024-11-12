@@ -66,7 +66,7 @@ type Options = [
   }>,
 ]
 
-const defaultOptions: Required<Options[0]> = {
+let defaultOptions: Required<Options[0]> = {
   type: 'alphabetical',
   ignoreCase: true,
   specialCharacters: 'keep',
@@ -250,14 +250,15 @@ export default createEslintRule<Options, MESSAGE_ID>({
       for (let nodes of formattedMembers) {
         let sortNodesExcludingEslintDisabled = (
           ignoreEslintDisabledNodes: boolean,
-        ) => sortNodesByGroups(nodes, options, { ignoreEslintDisabledNodes })
+        ): SortingNode[] =>
+          sortNodesByGroups(nodes, options, { ignoreEslintDisabledNodes })
         let sortedNodes = sortNodesExcludingEslintDisabled(false)
         let sortedNodesExcludingEslintDisabled =
           sortNodesExcludingEslintDisabled(true)
 
         pairwise(nodes, (left, right) => {
-          let leftNum = getGroupNumber(options.groups, left)
-          let rightNum = getGroupNumber(options.groups, right)
+          let leftNumber = getGroupNumber(options.groups, left)
+          let rightNumber = getGroupNumber(options.groups, right)
 
           let indexOfLeft = sortedNodes.indexOf(left)
           let indexOfRight = sortedNodes.indexOf(right)
@@ -271,9 +272,9 @@ export default createEslintRule<Options, MESSAGE_ID>({
             indexOfLeft >= indexOfRightExcludingEslintDisabled
           ) {
             messageIds.push(
-              leftNum !== rightNum
-                ? 'unexpectedIntersectionTypesGroupOrder'
-                : 'unexpectedIntersectionTypesOrder',
+              leftNumber === rightNumber
+                ? 'unexpectedIntersectionTypesOrder'
+                : 'unexpectedIntersectionTypesGroupOrder',
             )
           }
 
@@ -281,9 +282,9 @@ export default createEslintRule<Options, MESSAGE_ID>({
             ...messageIds,
             ...getNewlinesErrors({
               left,
-              leftNum,
+              leftNum: leftNumber,
               right,
-              rightNum,
+              rightNum: rightNumber,
               sourceCode,
               missedSpacingError: 'missedSpacingBetweenIntersectionTypes',
               extraSpacingError: 'extraSpacingBetweenIntersectionTypes',

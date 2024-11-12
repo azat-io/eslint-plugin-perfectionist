@@ -17,10 +17,11 @@
     lineLength,
     initial,
   }
-  let initialLines = initial.split(/\r\n|\r|\n/).length
+  let initialLines = initial.split(/\r\n|\r|\n/u).length
   let mounted = false
 
-  $: selected = 'initial' as Type
+  let selected = 'initial' as Type
+  $: ({ highlighter, theme } = $shiki)
 
   onMount(() => {
     mounted = true
@@ -52,25 +53,25 @@
     content="Reset"
   />
 </div>
-{#if mounted && $shiki.highlighter}
+{#if mounted && highlighter}
   <ShikiMagicMove
     options={{
       animateContainer: true,
       duration: 500,
       stagger: 3,
     }}
-    highlighter={$shiki.highlighter}
     code={code[selected]}
-    theme={$shiki.theme}
+    {highlighter}
     tabindex={0}
     class="code"
+    {theme}
     {lang}
   />
 {:else}
   <div
-    style="block-size: calc({initialLines}lh + var(--space-m) * 2)"
+    style:block-size="calc({initialLines}lh + var(--space-m) * 2)"
     class="code-loader"
-  ></div>
+  />
 {/if}
 
 <style>

@@ -8,7 +8,7 @@ import type { TSESTree } from '@typescript-eslint/types'
  * @param source The source code
  * @param tokenValueToIgnoreBefore Allows the following token to directly precede the node
  */
-export const getCommentsBefore = (
+export let getCommentsBefore = (
   node: TSESTree.Node,
   source: TSESLint.SourceCode,
   tokenValueToIgnoreBefore?: string,
@@ -25,10 +25,10 @@ export const getCommentsBefore = (
   return getCommentsBeforeNodeOrToken(source, tokenBeforeNode)
 }
 
-const getCommentsBeforeNodeOrToken = (
+let getCommentsBeforeNodeOrToken = (
   source: TSESLint.SourceCode,
   node: TSESTree.Token | TSESTree.Node,
-) =>
+): TSESTree.Comment[] =>
   source.getCommentsBefore(node).filter(comment => {
     // 'getCommentsBefore' also returns comments that are right after code, filter those out
     let tokenBeforeComment = source.getTokenBefore(comment)

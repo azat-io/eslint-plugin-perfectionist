@@ -49,6 +49,7 @@ import { getSourceCode } from '../utils/get-source-code'
 import { toSingleLine } from '../utils/to-single-line'
 import { rangeToDiff } from '../utils/range-to-diff'
 import { getSettings } from '../utils/get-settings'
+import { isSortable } from '../utils/is-sortable'
 import { useGroups } from '../utils/use-groups'
 import { makeFixes } from '../utils/make-fixes'
 import { complete } from '../utils/complete'
@@ -62,7 +63,7 @@ type MESSAGE_ID =
   | 'unexpectedClassesGroupOrder'
   | 'unexpectedClassesOrder'
 
-const defaultOptions: Required<SortClassesOptions[0]> = {
+let defaultOptions: Required<SortClassesOptions[0]> = {
   groups: [
     'index-signature',
     ['static-property', 'static-accessor-property'],
@@ -194,7 +195,7 @@ export default createEslintRule<SortClassesOptions, MESSAGE_ID>({
   defaultOptions: [defaultOptions],
   create: context => ({
     ClassBody: node => {
-      if (node.body.length <= 1) {
+      if (!isSortable(node.body)) {
         return
       }
 
@@ -212,7 +213,7 @@ export default createEslintRule<SortClassesOptions, MESSAGE_ID>({
         nodeNameWithoutStartingHash: string
         isPrivateHash: boolean
         isStatic: boolean
-      }) =>
+      }): string =>
         `${props.isStatic ? 'static ' : ''}${props.isPrivateHash ? '#' : ''}${props.nodeNameWithoutStartingHash}`
       /**
        * Class methods should not be considered as dependencies
@@ -234,7 +235,7 @@ export default createEslintRule<SortClassesOptions, MESSAGE_ID>({
             }
             return null
           })
-          .filter(m => m !== null),
+          .filter(Boolean),
       )
       let extractDependencies = (
         expression: TSESTree.StaticBlock | TSESTree.Expression,
@@ -242,7 +243,7 @@ export default createEslintRule<SortClassesOptions, MESSAGE_ID>({
       ): string[] => {
         let dependencies: string[] = []
 
-        let checkNode = (nodeValue: TSESTree.Node) => {
+        let checkNode = (nodeValue: TSESTree.Node): void => {
           if (
             nodeValue.type === 'MemberExpression' &&
             (nodeValue.object.type === 'ThisExpression' ||
@@ -344,7 +345,9 @@ export default createEslintRule<SortClassesOptions, MESSAGE_ID>({
           }
         }
 
-        let traverseNode = (nodeValue: TSESTree.Node[] | TSESTree.Node) => {
+        let traverseNode = (
+          nodeValue: TSESTree.Node[] | TSESTree.Node,
+        ): void => {
           if (Array.isArray(nodeValue)) {
             nodeValue.forEach(traverseNode)
           } else {
@@ -404,7 +407,7 @@ export default createEslintRule<SortClassesOptions, MESSAGE_ID>({
             member.type === 'TSAbstractMethodDefinition'
           ) {
             // By putting the static modifier before accessibility modifiers,
-            // we prioritize 'static' over those in cases like:
+            // We prioritize 'static' over those in cases like:
             // Config: ['static-method', 'public-method']
             // Element: public static method();
             // Element will be classified as 'static-method' before 'public-method'
@@ -496,7 +499,7 @@ export default createEslintRule<SortClassesOptions, MESSAGE_ID>({
           } else {
             // Member is necessarily a Property
             // Similarly to above for methods, prioritize 'static', 'declare', 'decorated', 'abstract', 'override' and 'readonly'
-            // over accessibility modifiers
+            // Over accessibility modifiers
             if (member.static) {
               modifiers.push('static')
             }
@@ -629,7 +632,7 @@ export default createEslintRule<SortClassesOptions, MESSAGE_ID>({
 
       let sortNodesIgnoringEslintDisabledNodes = (
         ignoreEslintDisabledNodes: boolean,
-      ) =>
+      ): SortingNodeWithDependencies[] =>
         sortNodesByDependencies(
           formattedNodes.flatMap(nodes =>
             sortNodesByGroups(nodes, options, {
@@ -651,8 +654,8 @@ export default createEslintRule<SortClassesOptions, MESSAGE_ID>({
       let nodes = formattedNodes.flat()
 
       pairwise(nodes, (left, right) => {
-        let leftNum = getGroupNumber(options.groups, left)
-        let rightNum = getGroupNumber(options.groups, right)
+        let leftNumber = getGroupNumber(options.groups, left)
+        let rightNumber = getGroupNumber(options.groups, right)
 
         let indexOfLeft = sortedNodes.indexOf(left)
         let indexOfRight = sortedNodes.indexOf(right)
@@ -671,9 +674,9 @@ export default createEslintRule<SortClassesOptions, MESSAGE_ID>({
             messageIds.push('unexpectedClassesDependencyOrder')
           } else {
             messageIds.push(
-              leftNum !== rightNum
-                ? 'unexpectedClassesGroupOrder'
-                : 'unexpectedClassesOrder',
+              leftNumber === rightNumber
+                ? 'unexpectedClassesOrder'
+                : 'unexpectedClassesGroupOrder',
             )
           }
         }
@@ -682,9 +685,9 @@ export default createEslintRule<SortClassesOptions, MESSAGE_ID>({
           ...messageIds,
           ...getNewlinesErrors({
             left,
-            leftNum,
+            leftNum: leftNumber,
             right,
-            rightNum,
+            rightNum: rightNumber,
             sourceCode,
             missedSpacingError: 'missedSpacingBetweenClassMembers',
             extraSpacingError: 'extraSpacingBetweenClassMembers',

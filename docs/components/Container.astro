@@ -11,13 +11,13 @@ let Tag = tag
 ---
 
 <Tag
-  class:list={Array.from(
-    new Set([
+  class:list={[
+    ...new Set([
       `size-${size}`,
       'container',
       ...(className?.split(' ').flat() ?? []),
     ]),
-  )}
+  ]}
   {...rest}
 >
   <slot />

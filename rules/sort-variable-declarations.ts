@@ -25,6 +25,7 @@ import { getSourceCode } from '../utils/get-source-code'
 import { toSingleLine } from '../utils/to-single-line'
 import { rangeToDiff } from '../utils/range-to-diff'
 import { getSettings } from '../utils/get-settings'
+import { isSortable } from '../utils/is-sortable'
 import { sortNodes } from '../utils/sort-nodes'
 import { makeFixes } from '../utils/make-fixes'
 import { complete } from '../utils/complete'
@@ -46,7 +47,7 @@ type Options = [
   }>,
 ]
 
-const defaultOptions: Required<Options[0]> = {
+let defaultOptions: Required<Options[0]> = {
   type: 'alphabetical',
   ignoreCase: true,
   specialCharacters: 'keep',
@@ -93,7 +94,7 @@ export default createEslintRule<Options, MESSAGE_ID>({
   defaultOptions: [defaultOptions],
   create: context => ({
     VariableDeclaration: node => {
-      if (node.declarations.length <= 1) {
+      if (!isSortable(node.declarations)) {
         return
       }
 
@@ -108,7 +109,7 @@ export default createEslintRule<Options, MESSAGE_ID>({
       let extractDependencies = (init: TSESTree.Expression): string[] => {
         let dependencies: string[] = []
 
-        let checkNode = (nodeValue: TSESTree.Node) => {
+        let checkNode = (nodeValue: TSESTree.Node): void => {
           /**
            * No need to check the body of functions and arrow functions
            */
@@ -180,7 +181,7 @@ export default createEslintRule<Options, MESSAGE_ID>({
           }
         }
 
-        let traverseNode = (nodeValue: TSESTree.Node) => {
+        let traverseNode = (nodeValue: TSESTree.Node): void => {
           checkNode(nodeValue)
         }
 
@@ -238,7 +239,7 @@ export default createEslintRule<Options, MESSAGE_ID>({
 
       let sortNodesIgnoringEslintDisabledNodes = (
         ignoreEslintDisabledNodes: boolean,
-      ) =>
+      ): SortingNodeWithDependencies[] =>
         sortNodesByDependencies(
           formattedMembers.flatMap(nodes =>
             sortNodes(nodes, options, {

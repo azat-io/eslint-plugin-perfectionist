@@ -8,7 +8,7 @@ let hasTriedLoadingTypescript = false
 /**
  * Dynamically loads the typescript module if it's available and caches it.
  */
-export const getTypescriptImport = (): typeof ts | null => {
+export let getTypescriptImport = (): typeof ts | null => {
   if (cachedImport) {
     return cachedImport
   }
@@ -18,7 +18,7 @@ export const getTypescriptImport = (): typeof ts | null => {
   hasTriedLoadingTypescript = true
   try {
     cachedImport = createRequire(import.meta.url)('typescript') as typeof ts
-  } catch (_) {
+  } catch (_error) {
     return null
   }
   return cachedImport

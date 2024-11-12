@@ -47,7 +47,7 @@ interface SortExportsSortingNode
   groupKind: 'value' | 'type'
 }
 
-const defaultOptions: Required<Options[0]> = {
+let defaultOptions: Required<Options[0]> = {
   type: 'alphabetical',
   ignoreCase: true,
   specialCharacters: 'keep',
@@ -113,7 +113,7 @@ export default createEslintRule<Options, MESSAGE_ID>({
       node:
         | TSESTree.ExportNamedDeclarationWithSource
         | TSESTree.ExportAllDeclaration,
-    ) => {
+    ): void => {
       let sortingNode: SortExportsSortingNode = {
         size: rangeToDiff(node, sourceCode),
         name: node.source.value,
@@ -157,11 +157,14 @@ export default createEslintRule<Options, MESSAGE_ID>({
 
         for (let nodes of parts) {
           let filteredGroupKindNodes = groupKindOrder.map(groupKind =>
-            nodes.filter(n => groupKind === 'any' || n.groupKind === groupKind),
+            nodes.filter(
+              currentNode =>
+                groupKind === 'any' || currentNode.groupKind === groupKind,
+            ),
           )
           let sortNodesExcludingEslintDisabled = (
             ignoreEslintDisabledNodes: boolean,
-          ) =>
+          ): SortExportsSortingNode[] =>
             filteredGroupKindNodes.flatMap(groupedNodes =>
               sortNodes(groupedNodes, options, {
                 ignoreEslintDisabledNodes,

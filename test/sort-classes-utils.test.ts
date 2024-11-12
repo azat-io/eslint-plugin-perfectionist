@@ -54,14 +54,14 @@ describe('sort-classes-utils', () => {
     it('allows predefined groups', () => {
       let allModifierCombinationPermutations =
         getAllNonEmptyCombinations(allModifiers)
-      let allPredefinedGroups = allSelectors
-        .map(selector =>
+      let allPredefinedGroups = [
+        ...allSelectors.flatMap(selector =>
           allModifierCombinationPermutations.map(
             modifiers => `${modifiers.join('-')}-${selector}`,
           ),
-        )
-        .flat()
-        .concat(allSelectors)
+        ),
+        ...allSelectors,
+      ]
       expect(
         validateGroupsConfiguration(allPredefinedGroups, []),
       ).toBeUndefined()
@@ -107,7 +107,7 @@ describe('sort-classes-utils', () => {
   })
 })
 
-const getAllNonEmptyCombinations = (array: string[]): string[][] => {
+let getAllNonEmptyCombinations = (array: string[]): string[][] => {
   let result: string[][] = []
   for (let i = 1; i < array.length; i++) {
     result = [...result, ...getCombinations(array, i)]

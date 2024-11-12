@@ -4013,8 +4013,10 @@ describe(ruleName, () => {
   })
 })
 
-const duplicate5Times = (
+let duplicate5Times = (
   errors: TestCaseError<
     'unexpectedDecoratorsGroupOrder' | 'unexpectedDecoratorsOrder'
   >[],
-) => Array.from({ length: 5 }, () => errors).flat()
+): TestCaseError<
+  'unexpectedDecoratorsGroupOrder' | 'unexpectedDecoratorsOrder'
+>[] => Array.from({ length: 5 }, () => errors).flat()
