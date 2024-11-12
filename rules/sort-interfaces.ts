@@ -15,6 +15,7 @@ import {
 } from '../utils/common-json-schemas'
 import { validateNewlinesAndPartitionConfiguration } from '../utils/validate-newlines-and-partition-configuration'
 import { validateGroupsConfiguration } from '../utils/validate-groups-configuration'
+import { matchesPartitionByNewLine } from '../utils/matches-partition-by-new-line'
 import { getEslintDisabledLines } from '../utils/get-eslint-disabled-lines'
 import { isNodeEslintDisabled } from '../utils/is-node-eslint-disabled'
 import { hasPartitionComment } from '../utils/is-partition-comment'
@@ -24,7 +25,6 @@ import { makeNewlinesFixes } from '../utils/make-newlines-fixes'
 import { getNewlinesErrors } from '../utils/get-newlines-errors'
 import { createEslintRule } from '../utils/create-eslint-rule'
 import { isMemberOptional } from '../utils/is-member-optional'
-import { getLinesBetween } from '../utils/get-lines-between'
 import { getGroupNumber } from '../utils/get-group-number'
 import { getSourceCode } from '../utils/get-source-code'
 import { rangeToDiff } from '../utils/range-to-diff'
@@ -53,8 +53,8 @@ export type Options<T extends string[]> = [
     newlinesBetween: 'ignore' | 'always' | 'never'
     specialCharacters: 'remove' | 'trim' | 'keep'
     locales: NonNullable<Intl.LocalesArgument>
+    partitionByNewLine: boolean | number
     groups: (Group<T>[] | Group<T>)[]
-    partitionByNewLine: boolean
     ignorePattern: string[]
     order: 'desc' | 'asc'
     ignoreCase: boolean
@@ -175,7 +175,7 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
               return accumulator
             }
 
-            let lastElement = accumulator.at(-1)?.at(-1)
+            let lastSortingNode = accumulator.at(-1)?.at(-1)
             let name: string
 
             let { getGroup, defineGroup, setCustomGroups } = useGroups(options)
@@ -219,7 +219,7 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
               defineGroup('multiline')
             }
 
-            let elementSortingNode: SortInterfacesSortingNode = {
+            let sortingNode: SortInterfacesSortingNode = {
               size: rangeToDiff(element, sourceCode),
               node: element,
               group: getGroup(),
@@ -238,14 +238,18 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
                   options.partitionByComment,
                   getCommentsBefore(element, sourceCode),
                 )) ||
-              (options.partitionByNewLine &&
-                lastElement &&
-                getLinesBetween(sourceCode, lastElement, elementSortingNode))
+              (lastSortingNode &&
+                matchesPartitionByNewLine({
+                  options,
+                  sortingNode,
+                  sourceCode,
+                  lastSortingNode,
+                }))
             ) {
               accumulator.push([])
             }
 
-            accumulator.at(-1)!.push(elementSortingNode)
+            accumulator.at(-1)!.push(sortingNode)
 
             return accumulator
           },
