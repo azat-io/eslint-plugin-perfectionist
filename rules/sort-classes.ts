@@ -416,7 +416,7 @@ export default createEslintRule<SortClassesOptions, MESSAGE_ID>({
             }
             if (member.type === 'TSAbstractMethodDefinition') {
               modifiers.push('abstract')
-            } else {
+            } else if (!node.parent.declare) {
               addSafetySemicolonWhenInline = false
             }
 
