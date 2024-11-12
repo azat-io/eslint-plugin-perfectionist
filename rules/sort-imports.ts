@@ -353,10 +353,12 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
       /* Avoid matching on named imports without specifiers */
       !/\}\s*from\s+/u.test(sourceCode.getText(node))
 
-    let isStyle = (value: string): boolean =>
-      ['.less', '.scss', '.sass', '.styl', '.pcss', '.css', '.sss'].some(
-        extension => value.endsWith(extension),
+    let isStyle = (value: string): boolean => {
+      let [cleanedValue] = value.split('?')
+      return ['.less', '.scss', '.sass', '.styl', '.pcss', '.css', '.sss'].some(
+        extension => cleanedValue.endsWith(extension),
       )
+    }
 
     let flatGroups = new Set(options.groups.flat())
     let shouldRegroupSideEffectNodes = flatGroups.has('side-effect')

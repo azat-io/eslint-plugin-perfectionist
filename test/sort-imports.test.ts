@@ -2308,6 +2308,63 @@ describe(ruleName, () => {
         invalid: [],
       },
     )
+
+    ruleTester.run(
+      `${ruleName}(${type}): supports style imports with optional chaining`,
+      rule,
+      {
+        valid: [
+          {
+            code: dedent`
+              import b from './b.css?raw'
+              import c from './c.css'
+
+              import a from './a.js'
+            `,
+            options: [
+              {
+                ...options,
+                groups: ['style', 'unknown'],
+                newlinesBetween: 'always',
+              },
+            ],
+          },
+        ],
+        invalid: [
+          {
+            code: dedent`
+              import a from './a.js'
+              import b from './b.css?raw'
+              import c from './c.css'
+            `,
+            output: dedent`
+              import b from './b.css?raw'
+              import c from './c.css'
+
+              import a from './a.js'
+            `,
+            options: [
+              {
+                ...options,
+                groups: ['style', 'unknown'],
+                newlinesBetween: 'always',
+              },
+            ],
+            errors: [
+              {
+                messageId: 'unexpectedImportsGroupOrder',
+                data: {
+                  left: './a.js',
+                  leftGroup: 'unknown',
+                  right: './b.css?raw',
+                  rightGroup: 'style',
+                },
+              },
+            ],
+          },
+        ],
+      },
+    )
   })
 
   describe(`${ruleName}: sorting by natural order`, () => {
@@ -3798,6 +3855,63 @@ describe(ruleName, () => {
                 data: {
                   left: 'bb',
                   right: 'aaa',
+                },
+              },
+            ],
+          },
+        ],
+      },
+    )
+
+    ruleTester.run(
+      `${ruleName}(${type}): supports style imports with optional chaining`,
+      rule,
+      {
+        valid: [
+          {
+            code: dedent`
+              import b from './b.css?raw'
+              import c from './c.css'
+
+              import a from './a.js'
+            `,
+            options: [
+              {
+                ...options,
+                groups: ['style', 'unknown'],
+                newlinesBetween: 'always',
+              },
+            ],
+          },
+        ],
+        invalid: [
+          {
+            code: dedent`
+              import a from './a.js'
+              import b from './b.css?raw'
+              import c from './c.css'
+            `,
+            output: dedent`
+              import b from './b.css?raw'
+              import c from './c.css'
+
+              import a from './a.js'
+            `,
+            options: [
+              {
+                ...options,
+                groups: ['style', 'unknown'],
+                newlinesBetween: 'always',
+              },
+            ],
+            errors: [
+              {
+                messageId: 'unexpectedImportsGroupOrder',
+                data: {
+                  left: './a.js',
+                  leftGroup: 'unknown',
+                  right: './b.css?raw',
+                  rightGroup: 'style',
                 },
               },
             ],
@@ -5367,6 +5481,63 @@ describe(ruleName, () => {
                 data: {
                   left: 'bb',
                   right: 'aaa',
+                },
+              },
+            ],
+          },
+        ],
+      },
+    )
+
+    ruleTester.run(
+      `${ruleName}(${type}): supports style imports with optional chaining`,
+      rule,
+      {
+        valid: [
+          {
+            code: dedent`
+              import b from './b.css?raw'
+              import c from './c.css'
+
+              import a from './a.js'
+            `,
+            options: [
+              {
+                ...options,
+                groups: ['style', 'unknown'],
+                newlinesBetween: 'always',
+              },
+            ],
+          },
+        ],
+        invalid: [
+          {
+            code: dedent`
+              import a from './a.js'
+              import b from './b.css?raw'
+              import c from './c.css'
+            `,
+            output: dedent`
+              import b from './b.css?raw'
+              import c from './c.css'
+
+              import a from './a.js'
+            `,
+            options: [
+              {
+                ...options,
+                groups: ['style', 'unknown'],
+                newlinesBetween: 'always',
+              },
+            ],
+            errors: [
+              {
+                messageId: 'unexpectedImportsGroupOrder',
+                data: {
+                  left: './a.js',
+                  leftGroup: 'unknown',
+                  right: './b.css?raw',
+                  rightGroup: 'style',
                 },
               },
             ],
