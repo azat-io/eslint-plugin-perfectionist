@@ -311,7 +311,39 @@ describe(ruleName, () => {
         `${ruleName}(${type}): allows to use new line as partition`,
         rule,
         {
-          valid: [],
+          valid: [
+            {
+              code: dedent`
+                [
+                  'a',
+
+                  'b',
+                ].includes(value)
+              `,
+              options: [
+                {
+                  ...options,
+                  partitionByNewLine: 2,
+                },
+              ],
+            },
+            {
+              code: dedent`
+                [
+                  'b',
+
+
+                  'a',
+                ].includes(value)
+              `,
+              options: [
+                {
+                  ...options,
+                  partitionByNewLine: 2,
+                },
+              ],
+            },
+          ],
           invalid: [
             {
               code: dedent`

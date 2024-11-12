@@ -6,18 +6,19 @@ import type { SortingNode } from '../typings'
 
 import {
   partitionByCommentJsonSchema,
+  partitionByNewLineJsonSchema,
   specialCharactersJsonSchema,
   ignoreCaseJsonSchema,
   localesJsonSchema,
   orderJsonSchema,
   typeJsonSchema,
 } from '../utils/common-json-schemas'
+import { matchesPartitionByNewLine } from '../utils/matches-partition-by-new-line'
 import { getEslintDisabledLines } from '../utils/get-eslint-disabled-lines'
 import { isNodeEslintDisabled } from '../utils/is-node-eslint-disabled'
 import { hasPartitionComment } from '../utils/is-partition-comment'
 import { getCommentsBefore } from '../utils/get-comments-before'
 import { createEslintRule } from '../utils/create-eslint-rule'
-import { getLinesBetween } from '../utils/get-lines-between'
 import { getSourceCode } from '../utils/get-source-code'
 import { toSingleLine } from '../utils/to-single-line'
 import { rangeToDiff } from '../utils/range-to-diff'
@@ -37,7 +38,7 @@ export type Options = [
     partitionByComment: string[] | boolean | string
     specialCharacters: 'remove' | 'trim' | 'keep'
     locales: NonNullable<Intl.LocalesArgument>
-    partitionByNewLine: boolean
+    partitionByNewLine: boolean | number
     order: 'desc' | 'asc'
     ignoreCase: boolean
   }>,
@@ -77,11 +78,7 @@ export let jsonSchema: JSONSchema4 = {
       description:
         'Allows you to use comments to separate the array members into logical groups.',
     },
-    partitionByNewLine: {
-      description:
-        'Allows to use spaces to separate the nodes into logical groups.',
-      type: 'boolean',
-    },
+    partitionByNewLine: partitionByNewLineJsonSchema,
   },
   additionalProperties: false,
 }
@@ -161,9 +158,13 @@ export let sortArray = <MessageIds extends string>(
             options.partitionByComment,
             getCommentsBefore(element, sourceCode),
           )) ||
-        (options.partitionByNewLine &&
-          lastSortingNode &&
-          getLinesBetween(sourceCode, lastSortingNode, sortingNode))
+        (lastSortingNode &&
+          matchesPartitionByNewLine({
+            options,
+            sortingNode,
+            sourceCode,
+            lastSortingNode,
+          }))
       ) {
         accumulator.push([])
       }
