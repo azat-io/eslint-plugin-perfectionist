@@ -22,6 +22,7 @@ import { getSourceCode } from '../utils/get-source-code'
 import { toSingleLine } from '../utils/to-single-line'
 import { rangeToDiff } from '../utils/range-to-diff'
 import { getSettings } from '../utils/get-settings'
+import { isSortable } from '../utils/is-sortable'
 import { sortNodes } from '../utils/sort-nodes'
 import { makeFixes } from '../utils/make-fixes'
 import { complete } from '../utils/complete'
@@ -47,7 +48,7 @@ interface SortArrayIncludesSortingNode
   groupKind: 'literal' | 'spread'
 }
 
-export const defaultOptions: Required<Options[0]> = {
+export let defaultOptions: Required<Options[0]> = {
   groupKind: 'literals-first',
   type: 'alphabetical',
   ignoreCase: true,
@@ -122,8 +123,8 @@ export let sortArray = <MessageIds extends string>(
   context: Readonly<RuleContext<MessageIds, Options>>,
   messageId: MessageIds,
   elements: (TSESTree.SpreadElement | TSESTree.Expression | null)[],
-) => {
-  if (elements.length <= 1) {
+): void => {
+  if (!isSortable(elements)) {
     return
   }
 
@@ -185,12 +186,15 @@ export let sortArray = <MessageIds extends string>(
 
   for (let nodes of formattedMembers) {
     let filteredGroupKindNodes = groupKindOrder.map(groupKind =>
-      nodes.filter(n => groupKind === 'any' || n.groupKind === groupKind),
+      nodes.filter(
+        currentNode =>
+          groupKind === 'any' || currentNode.groupKind === groupKind,
+      ),
     )
 
     let sortNodesIgnoringEslintDisabledNodes = (
       ignoreEslintDisabledNodes: boolean,
-    ) =>
+    ): SortArrayIncludesSortingNode[] =>
       filteredGroupKindNodes.flatMap(groupedNodes =>
         sortNodes(groupedNodes, options, { ignoreEslintDisabledNodes }),
       )

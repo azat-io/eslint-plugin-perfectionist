@@ -17,7 +17,7 @@ export let validateGroupsConfiguration = (
     .flat()
     .filter(group => !allowedGroupsSet.has(group))
   if (invalidGroups.length) {
-    throw new Error('Invalid group(s): ' + invalidGroups.join(', '))
+    throw new Error(`Invalid group(s): ${invalidGroups.join(', ')}`)
   }
   validateNoDuplicatedGroups(groups)
 }
@@ -33,6 +33,6 @@ export let validateNoDuplicatedGroups = (
     (group, index) => flattenGroups.indexOf(group) !== index,
   )
   if (duplicatedGroups.length) {
-    throw new Error('Duplicated group(s): ' + duplicatedGroups.join(', '))
+    throw new Error(`Duplicated group(s): ${duplicatedGroups.join(', ')}`)
   }
 }

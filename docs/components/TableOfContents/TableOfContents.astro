@@ -12,25 +12,28 @@ interface Props {
   headings?: Heading[] | undefined
 }
 
+type HeadingWithSubheadings = { subheadings: Heading[] } & Heading
+
 let { headings } = Astro.props
 
-let buildToc = (
-  headingsValue?: Heading[],
-): ({ subheadings: Heading[] } & Heading)[] => {
-  if (!headingsValue) {
+let buildToc = (headingsValues?: Heading[]): HeadingWithSubheadings[] => {
+  if (!headingsValues) {
     return []
   }
-  let toc: ({ subheadings: Heading[] } & Heading)[] = []
-  let parentHeadings = new Map()
-  headingsValue.forEach(h => {
-    let heading = { ...h, subheadings: [] }
+  let toc: HeadingWithSubheadings[] = []
+  let parentHeadings = new Map<number, HeadingWithSubheadings>()
+  for (let headingsValue of headingsValues) {
+    let heading: { subheadings: Heading[] } & Heading = {
+      ...headingsValue,
+      subheadings: [],
+    }
     parentHeadings.set(heading.depth, heading)
     if (heading.depth === 2) {
       toc.push(heading)
     } else {
       parentHeadings.get(heading.depth - 1)?.subheadings.push(heading)
     }
-  })
+  }
   return toc
 }
 

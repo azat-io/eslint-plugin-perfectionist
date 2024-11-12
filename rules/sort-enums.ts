@@ -26,6 +26,7 @@ import { getSourceCode } from '../utils/get-source-code'
 import { toSingleLine } from '../utils/to-single-line'
 import { rangeToDiff } from '../utils/range-to-diff'
 import { getSettings } from '../utils/get-settings'
+import { isSortable } from '../utils/is-sortable'
 import { sortNodes } from '../utils/sort-nodes'
 import { makeFixes } from '../utils/make-fixes'
 import { complete } from '../utils/complete'
@@ -47,7 +48,7 @@ export type Options = [
   }>,
 ]
 
-const defaultOptions: Required<Options[0]> = {
+let defaultOptions: Required<Options[0]> = {
   partitionByComment: false,
   partitionByNewLine: false,
   type: 'alphabetical',
@@ -108,7 +109,7 @@ export default createEslintRule<Options, MESSAGE_ID>({
       // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
       let members = node.body.members ?? node.members ?? []
       if (
-        members.length <= 1 ||
+        !isSortable(members) ||
         !members.every(({ initializer }) => initializer)
       ) {
         return
@@ -128,7 +129,7 @@ export default createEslintRule<Options, MESSAGE_ID>({
       ): string[] => {
         let dependencies: string[] = []
 
-        let checkNode = (nodeValue: TSESTree.Node) => {
+        let checkNode = (nodeValue: TSESTree.Node): void => {
           if (
             nodeValue.type === 'MemberExpression' &&
             nodeValue.object.type === 'Identifier' &&
@@ -136,7 +137,7 @@ export default createEslintRule<Options, MESSAGE_ID>({
             nodeValue.property.type === 'Identifier'
           ) {
             /**
-             * enum Enum {
+             * Enum Enum {
              *   A = 1,
              *   B = Enum.A
              * }
@@ -144,7 +145,7 @@ export default createEslintRule<Options, MESSAGE_ID>({
             dependencies.push(nodeValue.property.name)
           } else if (nodeValue.type === 'Identifier') {
             /**
-             * enum Enum {
+             * Enum Enum {
              *   A = 1,
              *   B = A
              * }
@@ -161,7 +162,9 @@ export default createEslintRule<Options, MESSAGE_ID>({
           }
 
           if ('expressions' in nodeValue) {
-            nodeValue.expressions.forEach(checkNode)
+            for (let currentExpression of nodeValue.expressions) {
+              checkNode(currentExpression)
+            }
           }
         }
 
@@ -183,7 +186,7 @@ export default createEslintRule<Options, MESSAGE_ID>({
             name:
               member.id.type === 'Literal'
                 ? `${member.id.value}`
-                : `${sourceCode.getText(member.id)}`,
+                : sourceCode.getText(member.id),
           }
 
           if (
@@ -231,12 +234,12 @@ export default createEslintRule<Options, MESSAGE_ID>({
                 }
                 return ''
               }
-            : undefined,
+            : null,
       }
 
       let sortNodesIgnoringEslintDisabledNodes = (
         ignoreEslintDisabledNodes: boolean,
-      ) =>
+      ): SortingNodeWithDependencies[] =>
         sortNodesByDependencies(
           formattedMembers.flatMap(nodes =>
             sortNodes(nodes, compareOptions, {

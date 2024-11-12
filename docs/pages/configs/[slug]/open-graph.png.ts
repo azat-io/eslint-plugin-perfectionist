@@ -1,4 +1,5 @@
 import type { CollectionEntry } from 'astro:content'
+import type { ImageResponse } from '@vercel/og'
 
 import { getCollection } from 'astro:content'
 
@@ -11,9 +12,17 @@ interface Props {
   }
 }
 
-export let GET = async ({ props }: Props) => await openGraph(props.slug)
+export let GET = async ({ props }: Props): Promise<ImageResponse> =>
+  await openGraph(props.slug)
 
-export let getStaticPaths = async () => {
+export let getStaticPaths = async (): Promise<
+  {
+    params: {
+      slug: string
+    }
+    props: CollectionEntry<'configs'>
+  }[]
+> => {
   let rules = await getCollection('configs')
   return rules.map(currentRule => ({
     params: {

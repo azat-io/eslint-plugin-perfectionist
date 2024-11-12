@@ -11,6 +11,7 @@ import type { CompareOptions } from '../utils/compare'
 
 import { validateNoDuplicatedGroups } from '../utils/validate-groups-configuration'
 import { allModifiers, allSelectors } from './sort-classes.types'
+import { isSortable } from '../utils/is-sortable'
 import { matches } from '../utils/matches'
 
 interface CustomGroupMatchesProps {
@@ -24,7 +25,7 @@ interface CustomGroupMatchesProps {
 /**
  * Cache computed groups by modifiers and selectors for performance
  */
-const cachedGroupsByModifiersAndSelectors = new Map<string, string[]>()
+let cachedGroupsByModifiersAndSelectors = new Map<string, string[]>()
 
 /**
  * Generates an ordered list of groups associated to modifiers and selectors entered
@@ -34,11 +35,11 @@ const cachedGroupsByModifiersAndSelectors = new Map<string, string[]>()
  * @param modifiers List of modifiers associated to the selector, i.e ['abstract', 'protected']
  * @param selectors List of selectors, i.e ['get-method', 'method', 'property']
  */
-export const generateOfficialGroups = (
+export let generateOfficialGroups = (
   modifiers: Modifier[],
   selectors: Selector[],
 ): string[] => {
-  let modifiersAndSelectorsKey = modifiers.join('&') + '/' + selectors.join('&')
+  let modifiersAndSelectorsKey = `${modifiers.join('&')}/${selectors.join('&')}`
   let cachedValue = cachedGroupsByModifiersAndSelectors.get(
     modifiersAndSelectorsKey,
   )
@@ -73,11 +74,11 @@ export const generateOfficialGroups = (
 /**
  * Get possible combinations of n elements from an array
  */
-export const getCombinations = (array: string[], n: number): string[][] => {
+export let getCombinations = (array: string[], number: number): string[][] => {
   let result: string[][] = []
 
-  let backtrack = (start: number, comb: string[]) => {
-    if (comb.length === n) {
+  let backtrack = (start: number, comb: string[]): void => {
+    if (comb.length === number) {
       result.push([...comb])
       return
     }
@@ -99,9 +100,9 @@ export const getCombinations = (array: string[], n: number): string[][] => {
  * This can theoretically cause performance issues in case users enter too many modifiers at once? 8 modifiers would result
  * in 40320 permutations, 9 in 362880.
  */
-const getPermutations = (elements: string[]): string[][] => {
+let getPermutations = (elements: string[]): string[][] => {
   let result: string[][] = []
-  let backtrack = (first: number) => {
+  let backtrack = (first: number): void => {
     if (first === elements.length) {
       result.push([...elements])
       return
@@ -120,7 +121,7 @@ const getPermutations = (elements: string[]): string[][] => {
 /**
  * Returns a list of groups of overload signatures.
  */
-export const getOverloadSignatureGroups = (
+export let getOverloadSignatureGroups = (
   members: TSESTree.ClassElement[],
 ): TSESTree.ClassElement[][] => {
   let methods = members
@@ -155,13 +156,13 @@ export const getOverloadSignatureGroups = (
   return [
     ...overloadSignaturesByName.values(),
     ...staticOverloadSignaturesByName.values(),
-  ].filter(group => group.length > 1)
+  ].filter(isSortable)
 }
 
 /**
  * Returns whether a custom group matches the given properties
  */
-export const customGroupMatches = (props: CustomGroupMatchesProps): boolean => {
+export let customGroupMatches = (props: CustomGroupMatchesProps): boolean => {
   if ('anyOf' in props.customGroup) {
     // At least one subgroup must match
     return props.customGroup.anyOf.some(subgroup =>
@@ -230,14 +231,16 @@ export const customGroupMatches = (props: CustomGroupMatchesProps): boolean => {
  * If the group is a custom group, its options will be favored over the default options.
  * Returns null if the group should not be sorted
  */
-export const getCompareOptions = (
+export let getCompareOptions = (
   options: Required<SortClassesOptions[0]>,
   groupNumber: number,
 ): CompareOptions | null => {
   let group = options.groups[groupNumber]
   let customGroup =
     typeof group === 'string'
-      ? options.customGroups.find(g => group === g.groupName)
+      ? options.customGroups.find(
+          currentGroup => group === currentGroup.groupName,
+        )
       : null
   if (customGroup?.type === 'unsorted') {
     return null
@@ -258,22 +261,22 @@ export let validateGroupsConfiguration = (
   groups: Required<SortClassesOptions[0]>['groups'],
   customGroups: Required<SortClassesOptions[0]>['customGroups'],
 ): void => {
-  let availableCustomGroupNames = customGroups.map(
-    customGroup => customGroup.groupName,
+  let availableCustomGroupNames = new Set(
+    customGroups.map(customGroup => customGroup.groupName),
   )
   let invalidGroups = groups
     .flat()
     .filter(
       group =>
-        !isPredefinedGroup(group) && !availableCustomGroupNames.includes(group),
+        !isPredefinedGroup(group) && !availableCustomGroupNames.has(group),
     )
   if (invalidGroups.length) {
-    throw new Error('Invalid group(s): ' + invalidGroups.join(', '))
+    throw new Error(`Invalid group(s): ${invalidGroups.join(', ')}`)
   }
   validateNoDuplicatedGroups(groups)
 }
 
-const isPredefinedGroup = (input: string): boolean => {
+let isPredefinedGroup = (input: string): boolean => {
   if (input === 'unknown') {
     return true
   }

@@ -34,7 +34,7 @@ export default defineConfig({
       },
     }),
     sitemap({
-      filter: page => !new RegExp(`^${site}/guide$`).test(page),
+      filter: page => !new RegExp(`^${site}/guide$`, 'u').test(page),
     }),
     mdx(),
   ],

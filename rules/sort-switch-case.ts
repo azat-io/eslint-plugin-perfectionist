@@ -15,6 +15,7 @@ import { createEslintRule } from '../utils/create-eslint-rule'
 import { getSourceCode } from '../utils/get-source-code'
 import { rangeToDiff } from '../utils/range-to-diff'
 import { getSettings } from '../utils/get-settings'
+import { isSortable } from '../utils/is-sortable'
 import { makeFixes } from '../utils/make-fixes'
 import { sortNodes } from '../utils/sort-nodes'
 import { pairwise } from '../utils/pairwise'
@@ -37,7 +38,7 @@ interface SortSwitchCaseSortingNode extends SortingNode<TSESTree.SwitchCase> {
   isDefaultClause: boolean
 }
 
-const defaultOptions: Required<Options[0]> = {
+let defaultOptions: Required<Options[0]> = {
   type: 'alphabetical',
   ignoreCase: true,
   specialCharacters: 'keep',
@@ -74,7 +75,7 @@ export default createEslintRule<Options, MESSAGE_ID>({
   defaultOptions: [defaultOptions],
   create: context => ({
     SwitchStatement: switchNode => {
-      if (switchNode.cases.length <= 1) {
+      if (!isSortable(switchNode.cases)) {
         return
       }
 
@@ -123,11 +124,9 @@ export default createEslintRule<Options, MESSAGE_ID>({
           caseNodesSortingNodeGroup,
           options,
         )
-        hasUnsortedNodes =
-          hasUnsortedNodes ||
-          sortedCaseNameSortingNodes.some(
-            (node, index) => node !== caseNodesSortingNodeGroup[index],
-          )
+        hasUnsortedNodes ||= sortedCaseNameSortingNodes.some(
+          (node, index) => node !== caseNodesSortingNodeGroup[index],
+        )
 
         pairwise(caseNodesSortingNodeGroup, (left, right) => {
           let indexOfLeft = sortedCaseNameSortingNodes.indexOf(left)
@@ -242,10 +241,10 @@ export default createEslintRule<Options, MESSAGE_ID>({
             if (a === lastNodeGroup) {
               return 1
             }
-            /* c8 ignore start - last element might never be b */
+            /* v8 ignore start - last element might never be b */
             if (b === lastNodeGroup) {
               return -1
-              /* c8 ignore end */
+              /* v8 ignore end */
             }
           }
 
@@ -288,10 +287,10 @@ export default createEslintRule<Options, MESSAGE_ID>({
   }),
 })
 
-const getCaseName = (
+let getCaseName = (
   sourceCode: TSESLint.SourceCode,
   caseNode: TSESTree.SwitchCase,
-) => {
+): string => {
   if (caseNode.test?.type === 'Literal') {
     return `${caseNode.test.value}`
   } else if (caseNode.test === null) {
@@ -300,7 +299,7 @@ const getCaseName = (
   return sourceCode.getText(caseNode.test)
 }
 
-const reduceCaseSortingNodes = (
+let reduceCaseSortingNodes = (
   caseNodes: SortSwitchCaseSortingNode[],
   endsBlock: (caseNode: SortSwitchCaseSortingNode) => boolean,
 ): SortSwitchCaseSortingNode[][] =>
@@ -319,7 +318,7 @@ const reduceCaseSortingNodes = (
     [[]],
   )
 
-const caseHasBreakOrReturn = (caseNode: TSESTree.SwitchCase) => {
+let caseHasBreakOrReturn = (caseNode: TSESTree.SwitchCase): boolean => {
   if (caseNode.consequent.length === 0) {
     return false
   }
@@ -331,5 +330,7 @@ const caseHasBreakOrReturn = (caseNode: TSESTree.SwitchCase) => {
   )
 }
 
-const statementIsBreakOrReturn = (statement: TSESTree.Statement) =>
+let statementIsBreakOrReturn = (
+  statement: TSESTree.Statement,
+): statement is TSESTree.ReturnStatement | TSESTree.BreakStatement =>
   statement.type === 'BreakStatement' || statement.type === 'ReturnStatement'

@@ -1,5 +1,6 @@
 import type { TSESTree } from '@typescript-eslint/types'
 
+import { isSortable } from 'utils/is-sortable'
 import { builtinModules } from 'node:module'
 
 import type { SortingNode } from '../typings'
@@ -68,8 +69,8 @@ type Group<T extends string[]> =
 export type Options<T extends string[]> = [
   Partial<{
     customGroups: {
-      value?: { [key in T[number]]: string[] | string }
-      type?: { [key in T[number]]: string[] | string }
+      value?: Record<T[number], string[] | string>
+      type?: Record<T[number], string[] | string>
     }
     type: 'alphabetical' | 'line-length' | 'natural'
     partitionByComment: string[] | boolean | string
@@ -320,7 +321,7 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
     }
 
     // Ensure that if `sortSideEffects: false`, no side effect group is in a
-    // nested group with non-side-effect groups.
+    // Nested group with non-side-effect groups.
     if (!options.sortSideEffects) {
       let hasInvalidGroup = options.groups
         .filter(group => Array.isArray(group))
@@ -346,38 +347,33 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
     })
     let nodes: SortImportsSortingNode[] = []
 
-    let isSideEffectImport = (node: TSESTree.Node) =>
+    let isSideEffectImport = (node: TSESTree.Node): boolean =>
       node.type === 'ImportDeclaration' &&
       node.specifiers.length === 0 &&
       /* Avoid matching on named imports without specifiers */
-      !/}\s*from\s+/.test(sourceCode.getText(node))
+      !/\}\s*from\s+/u.test(sourceCode.getText(node))
 
-    let isStyle = (value: string) =>
+    let isStyle = (value: string): boolean =>
       ['.less', '.scss', '.sass', '.styl', '.pcss', '.css', '.sss'].some(
         extension => value.endsWith(extension),
       )
 
-    let hasMultipleImportDeclarations = (
-      node: TSESTree.ImportDeclaration,
-    ): boolean => node.specifiers.length > 1
-
-    let flatGroups = options.groups.flat()
-    let shouldRegroupSideEffectNodes = flatGroups.includes('side-effect')
-    let shouldRegroupSideEffectStyleNodes =
-      flatGroups.includes('side-effect-style')
+    let flatGroups = new Set(options.groups.flat())
+    let shouldRegroupSideEffectNodes = flatGroups.has('side-effect')
+    let shouldRegroupSideEffectStyleNodes = flatGroups.has('side-effect-style')
     let registerNode = (
       node:
         | TSESTree.TSImportEqualsDeclaration
         | TSESTree.VariableDeclaration
         | TSESTree.ImportDeclaration,
-    ) => {
+    ): void => {
       let name: string
 
       if (node.type === 'ImportDeclaration') {
         name = node.source.value
       } else if (node.type === 'TSImportEqualsDeclaration') {
         if (node.moduleReference.type === 'TSExternalModuleReference') {
-          name = `${node.moduleReference.expression.value}`
+          name = node.moduleReference.expression.value
         } else {
           name = sourceCode.getText(node.moduleReference)
         }
@@ -387,7 +383,7 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
         name = value!.toString()
       }
 
-      let isIndex = (value: string) =>
+      let isIndex = (value: string): boolean =>
         [
           './index.d.js',
           './index.d.ts',
@@ -398,17 +394,17 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
           '.',
         ].includes(value)
 
-      let isParent = (value: string) => value.startsWith('..')
+      let isParent = (value: string): boolean => value.startsWith('..')
 
-      let isSibling = (value: string) => value.startsWith('./')
+      let isSibling = (value: string): boolean => value.startsWith('./')
 
       let { getGroup, defineGroup, setCustomGroups } = useGroups(options)
 
-      let matchesInternalPattern = (value: string) =>
+      let matchesInternalPattern = (value: string): boolean | number =>
         options.internalPattern.length &&
         options.internalPattern.some(pattern => matches(value, pattern))
 
-      let isCoreModule = (value: string) => {
+      let isCoreModule = (value: string): boolean => {
         let bunModules = [
           'bun',
           'bun:ffi',
@@ -457,7 +453,10 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
           tsConfigOutput.cache,
         )
         // If the module can't be resolved, assume it is external
-        if (resolution.resolvedModule?.isExternalLibraryImport === undefined) {
+        if (
+          typeof resolution.resolvedModule?.isExternalLibraryImport !==
+          'boolean'
+        ) {
           return 'external'
         }
 
@@ -574,8 +573,8 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
         name,
         ...(options.type === 'line-length' &&
           options.maxLineLength && {
-            hasMultipleImportDeclarations: hasMultipleImportDeclarations(
-              node as TSESTree.ImportDeclaration,
+            hasMultipleImportDeclarations: isSortable(
+              (node as TSESTree.ImportDeclaration).specifiers,
             ),
           }),
       })
@@ -629,7 +628,7 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
         for (let nodeList of formattedMembers) {
           let sortNodesExcludingEslintDisabled = (
             ignoreEslintDisabledNodes: boolean,
-          ) =>
+          ): SortImportsSortingNode[] =>
             sortNodesByGroups(nodeList, options, {
               ignoreEslintDisabledNodes,
               isNodeIgnored: node => node.isIgnored,
@@ -646,8 +645,8 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
             sortNodesExcludingEslintDisabled(true)
 
           pairwise(nodeList, (left, right) => {
-            let leftNum = getGroupNumber(options.groups, left)
-            let rightNum = getGroupNumber(options.groups, right)
+            let leftNumber = getGroupNumber(options.groups, left)
+            let rightNumber = getGroupNumber(options.groups, right)
 
             let indexOfLeft = sortedNodes.indexOf(left)
             let indexOfRight = sortedNodes.indexOf(right)
@@ -661,9 +660,9 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
               indexOfLeft >= indexOfRightExcludingEslintDisabled
             ) {
               messageIds.push(
-                leftNum !== rightNum
-                  ? 'unexpectedImportsGroupOrder'
-                  : 'unexpectedImportsOrder',
+                leftNumber === rightNumber
+                  ? 'unexpectedImportsOrder'
+                  : 'unexpectedImportsGroupOrder',
               )
             }
 
@@ -671,9 +670,9 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
               ...messageIds,
               ...getNewlinesErrors({
                 left,
-                leftNum,
+                leftNum: leftNumber,
                 right,
-                rightNum,
+                rightNum: rightNumber,
                 sourceCode,
                 missedSpacingError: 'missedSpacingBetweenImports',
                 extraSpacingError: 'extraSpacingBetweenImports',

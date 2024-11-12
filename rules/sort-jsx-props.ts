@@ -1,5 +1,7 @@
 import type { TSESTree } from '@typescript-eslint/types'
 
+import { isSortable } from 'utils/is-sortable'
+
 import type { SortingNode } from '../typings'
 
 import {
@@ -36,7 +38,7 @@ type Group<T extends string[]> =
 
 type Options<T extends string[]> = [
   Partial<{
-    customGroups: { [key in T[number]]: string[] | string }
+    customGroups: Record<T[number], string[] | string>
     type: 'alphabetical' | 'line-length' | 'natural'
     specialCharacters: 'remove' | 'trim' | 'keep'
     locales: NonNullable<Intl.LocalesArgument>
@@ -47,7 +49,7 @@ type Options<T extends string[]> = [
   }>,
 ]
 
-const defaultOptions: Required<Options<string[]>[0]> = {
+let defaultOptions: Required<Options<string[]>[0]> = {
   type: 'alphabetical',
   ignorePattern: [],
   ignoreCase: true,
@@ -99,7 +101,7 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
   defaultOptions: [defaultOptions],
   create: context => ({
     JSXElement: node => {
-      if (node.openingElement.attributes.length <= 1) {
+      if (!isSortable(node.openingElement.attributes)) {
         return
       }
 
@@ -120,7 +122,7 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
           matches(tagName, pattern),
         )
       }
-      if (shouldIgnore || node.openingElement.attributes.length <= 1) {
+      if (shouldIgnore || !isSortable(node.openingElement.attributes)) {
         return
       }
 
@@ -177,7 +179,8 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
       for (let nodes of parts) {
         let sortNodesExcludingEslintDisabled = (
           ignoreEslintDisabledNodes: boolean,
-        ) => sortNodesByGroups(nodes, options, { ignoreEslintDisabledNodes })
+        ): SortingNode[] =>
+          sortNodesByGroups(nodes, options, { ignoreEslintDisabledNodes })
         let sortedNodes = sortNodesExcludingEslintDisabled(false)
         let sortedNodesExcludingEslintDisabled =
           sortNodesExcludingEslintDisabled(true)
@@ -194,13 +197,13 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
             return
           }
 
-          let leftNum = getGroupNumber(options.groups, left)
-          let rightNum = getGroupNumber(options.groups, right)
+          let leftNumber = getGroupNumber(options.groups, left)
+          let rightNumber = getGroupNumber(options.groups, right)
           context.report({
             messageId:
-              leftNum !== rightNum
-                ? 'unexpectedJSXPropsGroupOrder'
-                : 'unexpectedJSXPropsOrder',
+              leftNumber === rightNumber
+                ? 'unexpectedJSXPropsOrder'
+                : 'unexpectedJSXPropsGroupOrder',
             data: {
               left: left.name,
               leftGroup: left.group,

@@ -6,11 +6,11 @@ import fs from 'node:fs/promises'
 import prettier from 'prettier'
 import path from 'node:path'
 
-let getAllFiles = async (dir: string) => {
-  let files = await fs.readdir(dir)
+let getAllFiles = async (directory: string): Promise<string[]> => {
+  let files = await fs.readdir(directory)
   files = (await Promise.all(
     files.map(async file => {
-      let filePath = path.join(dir, file)
+      let filePath = path.join(directory, file)
       let stats = await fs.stat(filePath)
       if (stats.isDirectory()) {
         return getAllFiles(filePath)
@@ -26,32 +26,34 @@ let getAllFiles = async (dir: string) => {
 }
 
 let prettierPlugin = (): Plugin => {
-  let outDir: string = 'dist'
+  let outputDirectory: string = 'dist'
   return {
     closeBundle: async () => {
-      let outputDir = path.resolve(outDir)
+      let resolvedOutputDirectory = path.resolve(outputDirectory)
 
-      if (!outputDir) {
+      if (!resolvedOutputDirectory) {
         console.warn(
           'Output directory or file is not specified in the bundle options.',
         )
         return
       }
 
-      let files = await getAllFiles(outputDir)
+      let files = await getAllFiles(resolvedOutputDirectory)
 
-      for (let file of files) {
-        let fileContent = await fs.readFile(file, 'utf8')
-        let prettierConfig = await prettier.resolveConfig(file)
-        let formattedContent = await prettier.format(fileContent, {
-          ...prettierConfig,
-          filepath: file,
-        })
-        await fs.writeFile(file, formattedContent, 'utf8')
-      }
+      await Promise.all(
+        files.map(async file => {
+          let fileContent = await fs.readFile(file, 'utf8')
+          let prettierConfig = await prettier.resolveConfig(file)
+          let formattedContent = await prettier.format(fileContent, {
+            ...prettierConfig,
+            filepath: file,
+          })
+          await fs.writeFile(file, formattedContent, 'utf8')
+        }),
+      )
     },
     configResolved: config => {
-      ;({ outDir } = config.build)
+      outputDirectory = config.build.outDir
     },
     name: 'vite-plugin-prettier',
   }
@@ -86,9 +88,9 @@ export default defineConfig({
       afterBuild: async () => {
         await fs.writeFile(
           'dist/index.d.ts',
-          (await fs.readFile('dist/index.d.ts'))
+          `${(await fs.readFile('dist/index.d.ts'))
             .toString()
-            .replace(/\nexport .+/, '') + 'export = _default',
+            .replace(/\nexport .+/u, '')}export = _default`,
         )
       },
       include: [

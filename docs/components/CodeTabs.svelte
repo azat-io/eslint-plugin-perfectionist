@@ -20,33 +20,40 @@
 
   let copied = false
   let mounted = false
-  let initial = code[0]!.source
-  let initialLines = initial.split(/\r\n|\r|\n/).length
+  let initial = code[0]?.source ?? ''
+  let initialLines = initial.split(/\r\n|\r|\n/u).length
 
-  const copyCode = () => {
-    navigator.clipboard.writeText(
-      code.find(({ value }) => value === codeSettings.get()[type])?.source!,
-    )
-    copied = true
-    setTimeout(() => {
-      copied = false
-    }, 2000)
+  $: currentCodeSettings = $codeSettings[type]
+
+  $: ({ highlighter, theme } = $shiki)
+
+  let copyCode = async (): Promise<void> => {
+    let codeSource = code.find(
+      ({ value }) => value === codeSettings.get()[type],
+    )?.source
+    if (codeSource) {
+      await navigator.clipboard.writeText(codeSource)
+      copied = true
+      setTimeout(() => {
+        copied = false
+      }, 2000)
+    }
   }
 
   onMount(() => {
     mounted = true
-    startKeyUX(window, [focusGroupKeyUX()])
+    startKeyUX(globalThis, [focusGroupKeyUX()])
   })
 </script>
 
 <ul aria-orientation="horizontal" role="tablist" class="tabs">
-  {#each code as codeValue}
+  {#each code as codeValue (codeValue)}
     <button
       on:click={() => {
         codeSettings.setKey(type, codeValue.value)
       }}
-      class:active-tab={mounted && $codeSettings[type] === codeValue.value}
-      aria-selected={$codeSettings[type] === codeValue.value}
+      class:active-tab={mounted && currentCodeSettings === codeValue.value}
+      aria-selected={currentCodeSettings === codeValue.value}
       type="button"
       class="tab"
       role="tab"
@@ -55,7 +62,7 @@
     </button>
   {/each}
 </ul>
-{#if mounted && $shiki.highlighter && $codeSettings[type]}
+{#if mounted && highlighter && currentCodeSettings}
   <div class="code-wrapper">
     <ShikiMagicMove
       options={{
@@ -63,12 +70,12 @@
         duration: 500,
         stagger: 3,
       }}
-      code={code.find(({ value }) => value === $codeSettings[type])?.source ??
+      code={code.find(({ value }) => value === currentCodeSettings)?.source ??
         ''}
-      highlighter={$shiki.highlighter}
-      theme={$shiki.theme}
+      {highlighter}
       tabindex={0}
       class="code"
+      {theme}
       {lang}
     />
     <button
@@ -87,9 +94,9 @@
   </div>
 {:else}
   <div
-    style="block-size: calc({initialLines}lh + var(--space-m) * 2 + 2px)"
+    style:block-size="calc({initialLines}lh + var(--space-m) * 2 + 2px)"
     class="code-loader"
-  ></div>
+  />
 {/if}
 
 <style>

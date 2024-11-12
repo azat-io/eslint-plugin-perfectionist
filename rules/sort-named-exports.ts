@@ -20,6 +20,7 @@ import { getLinesBetween } from '../utils/get-lines-between'
 import { getSourceCode } from '../utils/get-source-code'
 import { rangeToDiff } from '../utils/range-to-diff'
 import { getSettings } from '../utils/get-settings'
+import { isSortable } from '../utils/is-sortable'
 import { sortNodes } from '../utils/sort-nodes'
 import { makeFixes } from '../utils/make-fixes'
 import { complete } from '../utils/complete'
@@ -45,7 +46,7 @@ interface SortNamedExportsSortingNode
   groupKind: 'value' | 'type'
 }
 
-const defaultOptions: Required<Options[0]> = {
+let defaultOptions: Required<Options[0]> = {
   type: 'alphabetical',
   order: 'asc',
   ignoreCase: true,
@@ -96,7 +97,7 @@ export default createEslintRule<Options, MESSAGE_ID>({
   defaultOptions: [defaultOptions],
   create: context => ({
     ExportNamedDeclaration: node => {
-      if (node.specifiers.length <= 1) {
+      if (!isSortable(node.specifiers)) {
         return
       }
 
@@ -159,11 +160,14 @@ export default createEslintRule<Options, MESSAGE_ID>({
 
       for (let nodes of formattedMembers) {
         let filteredGroupKindNodes = groupKindOrder.map(groupKind =>
-          nodes.filter(n => groupKind === 'any' || n.groupKind === groupKind),
+          nodes.filter(
+            currentNode =>
+              groupKind === 'any' || currentNode.groupKind === groupKind,
+          ),
         )
         let sortNodesExcludingEslintDisabled = (
           ignoreEslintDisabledNodes: boolean,
-        ) =>
+        ): SortNamedExportsSortingNode[] =>
           filteredGroupKindNodes.flatMap(groupedNodes =>
             sortNodes(groupedNodes, options, {
               ignoreEslintDisabledNodes,

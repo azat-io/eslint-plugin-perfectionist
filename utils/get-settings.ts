@@ -13,13 +13,13 @@ export type Settings = Partial<{
 
 export let getSettings = (
   settings: TSESLint.SharedConfigurationSettings = {},
-) => {
+): Settings => {
   if (!settings.perfectionist) {
     return {}
   }
 
-  let getInvalidOptions = (object: Record<string, unknown>) => {
-    let allowedOptions: (keyof Settings)[] = [
+  let getInvalidOptions = (object: Record<string, unknown>): string[] => {
+    let allowedOptions = new Set<keyof Settings>([
       'partitionByComment',
       'partitionByNewLine',
       'specialCharacters',
@@ -28,10 +28,10 @@ export let getSettings = (
       'locales',
       'order',
       'type',
-    ]
+    ])
 
     return Object.keys(object).filter(
-      key => !allowedOptions.includes(key as keyof Settings),
+      key => !allowedOptions.has(key as keyof Settings),
     )
   }
 
@@ -40,7 +40,7 @@ export let getSettings = (
   let invalidOptions = getInvalidOptions(perfectionistSettings)
   if (invalidOptions.length) {
     throw new Error(
-      'Invalid Perfectionist setting(s): ' + invalidOptions.join(', '),
+      `Invalid Perfectionist setting(s): ${invalidOptions.join(', ')}`,
     )
   }
 

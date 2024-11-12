@@ -15,7 +15,7 @@ export let remarkHeadings: Plugin<[], Root> =
         let text = ((node as Heading).children[0] as Literal).value as string
         let id = text
           .replaceAll(/\p{P}/gu, '')
-          .replaceAll(/\s{2,}/g, ' ')
+          .replaceAll(/\s{2,}/gu, ' ')
           .replaceAll(' ', '-')
           .toLowerCase()
         let { depth } = node as Heading

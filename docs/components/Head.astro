@@ -23,10 +23,10 @@ let websiteName = 'ESLint Plugin Perfectionist'
 
 let pageTitle = title ? `${title} | ${websiteName}` : websiteName
 
-let image = `${Astro.url.pathname === '/' ? '' : Astro.url.pathname.replace(/\.html$/, '')}/open-graph.png`
+let image = `${Astro.url.pathname === '/' ? '' : Astro.url.pathname.replace(/\.html$/u, '')}/open-graph.png`
 let author = 'Azat S.'
 
-let isProd = import.meta.env.PROD
+let isProduction = import.meta.env.PROD
 ---
 
 <head>
@@ -91,7 +91,7 @@ let isProd = import.meta.env.PROD
   <meta property="og:locale" content="en" />
   <meta property="og:type" content={type} />
   <meta
-    content={Astro.url.toString().replace(/\.html/, '')}
+    content={Astro.url.toString().replace(/\.html/u, '')}
     property="og:url"
   />
   <meta property="og:title" content={pageTitle} />
@@ -145,5 +145,5 @@ let isProd = import.meta.env.PROD
 
   <ViewTransitions />
 
-  {isProd && <Analytics />}
+  {isProduction && <Analytics />}
 </head>

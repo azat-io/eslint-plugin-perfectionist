@@ -26,6 +26,7 @@ import { getSourceCode } from '../utils/get-source-code'
 import { toSingleLine } from '../utils/to-single-line'
 import { rangeToDiff } from '../utils/range-to-diff'
 import { getSettings } from '../utils/get-settings'
+import { isSortable } from '../utils/is-sortable'
 import { useGroups } from '../utils/use-groups'
 import { makeFixes } from '../utils/make-fixes'
 import { complete } from '../utils/complete'
@@ -37,7 +38,7 @@ type Group<T extends string[]> = 'unknown' | T[number]
 
 export type Options<T extends string[]> = [
   Partial<{
-    customGroups: { [key in T[number]]: string[] | string }
+    customGroups: Record<T[number], string[] | string>
     type: 'alphabetical' | 'line-length' | 'natural'
     partitionByComment: string[] | boolean | string
     specialCharacters: 'remove' | 'trim' | 'keep'
@@ -55,7 +56,7 @@ export type Options<T extends string[]> = [
 
 type SortDecoratorsSortingNode = SortingNode<TSESTree.Decorator>
 
-const defaultOptions: Required<Options<string[]>[0]> = {
+let defaultOptions: Required<Options<string[]>[0]> = {
   type: 'alphabetical',
   ignoreCase: true,
   specialCharacters: 'keep',
@@ -147,19 +148,19 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
       ClassDeclaration: Declaration =>
         options.sortOnClasses
           ? sortDecorators(context, options, Declaration.decorators)
-          : undefined,
+          : null,
       AccessorProperty: accessorDefinition =>
         options.sortOnAccessors
           ? sortDecorators(context, options, accessorDefinition.decorators)
-          : undefined,
+          : null,
       MethodDefinition: methodDefinition =>
         options.sortOnMethods
           ? sortDecorators(context, options, methodDefinition.decorators)
-          : undefined,
+          : null,
       PropertyDefinition: propertyDefinition =>
         options.sortOnProperties
           ? sortDecorators(context, options, propertyDefinition.decorators)
-          : undefined,
+          : null,
       Decorator: decorator => {
         if (!options.sortOnParameters) {
           return
@@ -184,8 +185,8 @@ let sortDecorators = (
   context: Readonly<RuleContext<MESSAGE_ID, Options<string[]>>>,
   options: Required<Options<string[]>[0]>,
   decorators: TSESTree.Decorator[],
-) => {
-  if (decorators.length < 2) {
+): void => {
+  if (!isSortable(decorators)) {
     return
   }
   let sourceCode = getSourceCode(context)
@@ -226,7 +227,9 @@ let sortDecorators = (
     [[]],
   )
 
-  let sortNodesExcludingEslintDisabled = (ignoreEslintDisabledNodes: boolean) =>
+  let sortNodesExcludingEslintDisabled = (
+    ignoreEslintDisabledNodes: boolean,
+  ): SortDecoratorsSortingNode[] =>
     formattedMembers.flatMap(nodes =>
       sortNodesByGroups(nodes, options, { ignoreEslintDisabledNodes }),
     )
@@ -246,13 +249,13 @@ let sortDecorators = (
     ) {
       return
     }
-    let leftNum = getGroupNumber(options.groups, left)
-    let rightNum = getGroupNumber(options.groups, right)
+    let leftNumber = getGroupNumber(options.groups, left)
+    let rightNumber = getGroupNumber(options.groups, right)
     context.report({
       messageId:
-        leftNum !== rightNum
-          ? 'unexpectedDecoratorsGroupOrder'
-          : 'unexpectedDecoratorsOrder',
+        leftNumber === rightNumber
+          ? 'unexpectedDecoratorsOrder'
+          : 'unexpectedDecoratorsGroupOrder',
       data: {
         left: toSingleLine(left.name),
         leftGroup: left.group,

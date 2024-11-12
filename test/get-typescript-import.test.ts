@@ -1,9 +1,12 @@
+import type { Mock } from 'vitest'
+
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import * as ts from 'typescript'
 
 import type { getTypescriptImport as testedFunction } from '../utils/get-typescript-import'
 
-const mockCreateRequire = vi.fn()
+let mockCreateRequire: Mock<() => typeof ts> = vi.fn()
+
 vi.mock('node:module', _ => ({
   createRequire: () => () => mockCreateRequire(),
 }))
@@ -19,7 +22,7 @@ describe('getTypescriptImport', () => {
 
   it('returns null when typescript is not present', () => {
     mockCreateRequire.mockImplementation(() => {
-      throw new Error()
+      throw new Error('Cannot find module')
     })
 
     let result = getTypescriptImport()
@@ -29,7 +32,7 @@ describe('getTypescriptImport', () => {
 
   it('tries loading typescript once if typescript does not exist', () => {
     mockCreateRequire.mockImplementation(() => {
-      throw new Error()
+      throw new Error('Cannot find module')
     })
 
     getTypescriptImport()

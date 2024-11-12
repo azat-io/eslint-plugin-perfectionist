@@ -6,7 +6,7 @@ import { getLinesBetween } from './get-lines-between'
 import { getGroupNumber } from './get-group-number'
 import { getNodeRange } from './get-node-range'
 
-export const makeNewlinesFixes = (
+export let makeNewlinesFixes = (
   fixer: TSESLint.RuleFixer,
   nodes: SortingNode[],
   sortedNodes: SortingNode[],
@@ -15,7 +15,7 @@ export const makeNewlinesFixes = (
     newlinesBetween: 'ignore' | 'always' | 'never'
     groups: (string[] | string)[]
   },
-) => {
+): TSESLint.RuleFix[] => {
   let fixes: TSESLint.RuleFix[] = []
 
   for (let max = sortedNodes.length, i = 0; i < max; i++) {
@@ -81,15 +81,13 @@ export const makeNewlinesFixes = (
   return fixes
 }
 
-const getStringWithoutInvalidNewlines = (value: string) =>
-  value.replaceAll(/\n+\s*\n+/g, '\n').replaceAll(/\n+/g, '\n')
+let getStringWithoutInvalidNewlines = (value: string): string =>
+  value.replaceAll(/\n\s*\n/gu, '\n').replaceAll(/\n+/gu, '\n')
 
-const addNewlineBeforeFirstNewline = (value: string) => {
+let addNewlineBeforeFirstNewline = (value: string): string => {
   let firstNewlineIndex = value.indexOf('\n')
   if (firstNewlineIndex === -1) {
-    return value + '\n'
+    return `${value}\n`
   }
-  return (
-    value.slice(0, firstNewlineIndex) + '\n' + value.slice(firstNewlineIndex)
-  )
+  return `${value.slice(0, firstNewlineIndex)}\n${value.slice(firstNewlineIndex)}`
 }

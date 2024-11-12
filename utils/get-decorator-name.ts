@@ -2,7 +2,7 @@ import type { TSESTree } from '@typescript-eslint/types'
 
 import { AST_NODE_TYPES } from '@typescript-eslint/types'
 
-export const getDecoratorName = (decorator: TSESTree.Decorator) => {
+export let getDecoratorName = (decorator: TSESTree.Decorator): string => {
   switch (decorator.expression.type) {
     case AST_NODE_TYPES.CallExpression:
       if (decorator.expression.callee.type !== AST_NODE_TYPES.Identifier) {
