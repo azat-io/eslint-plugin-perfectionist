@@ -1,6 +1,6 @@
 interface Options {
-  partitionByNewLine: string[] | boolean | string
   newlinesBetween: 'ignore' | 'always' | 'never'
+  partitionByNewLine: boolean | number
 }
 
 export let validateNewlinesAndPartitionConfiguration = ({

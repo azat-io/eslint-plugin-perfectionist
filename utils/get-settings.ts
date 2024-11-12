@@ -5,7 +5,7 @@ export type Settings = Partial<{
   partitionByComment: string[] | boolean | string
   specialCharacters: 'remove' | 'trim' | 'keep'
   locales: NonNullable<Intl.LocalesArgument>
-  partitionByNewLine: boolean
+  partitionByNewLine: boolean | number
   ignorePattern: string[]
   order: 'desc' | 'asc'
   ignoreCase: boolean
