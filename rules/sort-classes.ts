@@ -35,6 +35,7 @@ import {
   sortNodesByDependencies,
 } from '../utils/sort-nodes-by-dependencies'
 import { validateNewlinesAndPartitionConfiguration } from '../utils/validate-newlines-and-partition-configuration'
+import { matchesPartitionByNewLine } from '../utils/matches-partition-by-new-line'
 import { getEslintDisabledLines } from '../utils/get-eslint-disabled-lines'
 import { isNodeEslintDisabled } from '../utils/is-node-eslint-disabled'
 import { hasPartitionComment } from '../utils/is-partition-comment'
@@ -43,7 +44,6 @@ import { getCommentsBefore } from '../utils/get-comments-before'
 import { makeNewlinesFixes } from '../utils/make-newlines-fixes'
 import { getNewlinesErrors } from '../utils/get-newlines-errors'
 import { createEslintRule } from '../utils/create-eslint-rule'
-import { getLinesBetween } from '../utils/get-lines-between'
 import { getGroupNumber } from '../utils/get-group-number'
 import { getSourceCode } from '../utils/get-source-code'
 import { toSingleLine } from '../utils/to-single-line'
@@ -611,12 +611,16 @@ export default createEslintRule<SortClassesOptions, MESSAGE_ID>({
           }
 
           let comments = getCommentsBefore(member, sourceCode)
-          let lastMember = accumulator.at(-1)?.at(-1)
+          let lastSortingNode = accumulator.at(-1)?.at(-1)
 
           if (
-            (options.partitionByNewLine &&
-              lastMember &&
-              getLinesBetween(sourceCode, lastMember, sortingNode)) ||
+            (lastSortingNode &&
+              matchesPartitionByNewLine({
+                options,
+                sortingNode,
+                sourceCode,
+                lastSortingNode,
+              })) ||
             (options.partitionByComment &&
               hasPartitionComment(options.partitionByComment, comments))
           ) {

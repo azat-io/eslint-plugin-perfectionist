@@ -192,7 +192,7 @@ export type SortClassesOptions = [
     specialCharacters: 'remove' | 'trim' | 'keep'
     ignoreCallbackDependenciesPatterns: string[]
     locales: NonNullable<Intl.LocalesArgument>
-    partitionByNewLine: boolean
+    partitionByNewLine: boolean | number
     customGroups: CustomGroup[]
     groups: (Group[] | Group)[]
     order: 'desc' | 'asc'
