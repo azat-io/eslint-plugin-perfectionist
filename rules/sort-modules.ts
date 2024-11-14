@@ -32,6 +32,7 @@ import {
   getFirstUnorderedNodeDependentOn,
   sortNodesByDependencies,
 } from '../utils/sort-nodes-by-dependencies'
+import { validateNewlinesAndPartitionConfiguration } from '../utils/validate-newlines-and-partition-configuration'
 import { validateGeneratedGroupsConfiguration } from './validate-generated-groups-configuration'
 import { generatePredefinedGroups } from '../utils/generate-predefined-groups'
 import { customGroupMatches, getCompareOptions } from './sort-modules-utils'
@@ -181,6 +182,7 @@ export default createEslintRule<SortModulesOptions, MESSAGE_ID>({
       modifiers: allModifiers,
       selectors: allSelectors,
     })
+    validateNewlinesAndPartitionConfiguration(options)
     let sourceCode = getSourceCode(context)
     let eslintDisabledLines = getEslintDisabledLines({
       sourceCode,
