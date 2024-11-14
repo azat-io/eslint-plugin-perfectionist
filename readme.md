@@ -185,6 +185,7 @@ module.exports = {
 | [sort-intersection-types](https://perfectionist.dev/rules/sort-intersection-types)       | Enforce sorted intersection types             | 🔧  |
 | [sort-jsx-props](https://perfectionist.dev/rules/sort-jsx-props)                         | Enforce sorted JSX props                      | 🔧  |
 | [sort-maps](https://perfectionist.dev/rules/sort-maps)                                   | Enforce sorted Map elements                   | 🔧  |
+| [sort-modules](https://perfectionist.dev/rules/sort-modules)                             | Enforce sorted modules and namespaces         | 🔧  |
 | [sort-named-exports](https://perfectionist.dev/rules/sort-named-exports)                 | Enforce sorted named exports                  | 🔧  |
 | [sort-named-imports](https://perfectionist.dev/rules/sort-named-imports)                 | Enforce sorted named imports                  | 🔧  |
 | [sort-object-types](https://perfectionist.dev/rules/sort-object-types)                   | Enforce sorted object types                   | 🔧  |
