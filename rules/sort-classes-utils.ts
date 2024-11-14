@@ -3,7 +3,7 @@ import type { TSESTree } from '@typescript-eslint/utils'
 import type {
   SortClassesOptions,
   SingleCustomGroup,
-  CustomGroupBlock,
+  AnyOfCustomGroup,
   Modifier,
   Selector,
 } from './sort-classes.types'
@@ -13,7 +13,7 @@ import { isSortable } from '../utils/is-sortable'
 import { matches } from '../utils/matches'
 
 interface CustomGroupMatchesProps {
-  customGroup: SingleCustomGroup | CustomGroupBlock
+  customGroup: SingleCustomGroup | AnyOfCustomGroup
   elementValue: undefined | string
   selectors: Selector[]
   modifiers: Modifier[]
