@@ -1,6 +1,5 @@
 import type { TSESTree } from '@typescript-eslint/types'
 
-import { isSortable } from 'utils/is-sortable'
 import { builtinModules } from 'node:module'
 
 import type { SortingNode } from '../typings'
@@ -33,6 +32,7 @@ import { getGroupNumber } from '../utils/get-group-number'
 import { getSourceCode } from '../utils/get-source-code'
 import { rangeToDiff } from '../utils/range-to-diff'
 import { getSettings } from '../utils/get-settings'
+import { isSortable } from '../utils/is-sortable'
 import { useGroups } from '../utils/use-groups'
 import { makeFixes } from '../utils/make-fixes'
 import { complete } from '../utils/complete'
