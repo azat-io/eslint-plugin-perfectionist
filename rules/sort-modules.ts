@@ -14,6 +14,7 @@ import {
   partitionByCommentJsonSchema,
   partitionByNewLineJsonSchema,
   specialCharactersJsonSchema,
+  newlinesBetweenJsonSchema,
   ignoreCaseJsonSchema,
   localesJsonSchema,
   groupsJsonSchema,
@@ -114,12 +115,7 @@ export default createEslintRule<SortModulesOptions, MESSAGE_ID>({
               'Allows to use comments to separate the modules members into logical groups.',
           },
           partitionByNewLine: partitionByNewLineJsonSchema,
-          newlinesBetween: {
-            description:
-              'Specifies how new lines should be handled between modules members groups.',
-            enum: ['ignore', 'always', 'never'],
-            type: 'string',
-          },
+          newlinesBetween: newlinesBetweenJsonSchema,
           groups: groupsJsonSchema,
           customGroups: {
             description: 'Specifies custom groups.',
