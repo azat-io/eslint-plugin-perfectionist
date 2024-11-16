@@ -2713,9 +2713,9 @@ describe(ruleName, () => {
 
             declare class F {}
 
-            export class E {}
+            class E {}
 
-            class D {}
+            export class D {}
 
             declare function c()
 
