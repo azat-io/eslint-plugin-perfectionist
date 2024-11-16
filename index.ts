@@ -16,6 +16,7 @@ import sortClasses from './rules/sort-classes'
 import sortImports from './rules/sort-imports'
 import sortExports from './rules/sort-exports'
 import sortObjects from './rules/sort-objects'
+import sortModules from './rules/sort-modules'
 import sortEnums from './rules/sort-enums'
 import sortMaps from './rules/sort-maps'
 import sortSets from './rules/sort-sets'
@@ -34,6 +35,7 @@ interface PluginConfig {
     'sort-interfaces': Rule.RuleModule
     'sort-decorators': Rule.RuleModule
     'sort-jsx-props': Rule.RuleModule
+    'sort-modules': Rule.RuleModule
     'sort-classes': Rule.RuleModule
     'sort-imports': Rule.RuleModule
     'sort-exports': Rule.RuleModule
@@ -74,6 +76,7 @@ let plugin = {
     'sort-decorators': sortDecorators,
     'sort-interfaces': sortInterfaces,
     'sort-jsx-props': sortJsxProps,
+    'sort-modules': sortModules,
     'sort-classes': sortClasses,
     'sort-imports': sortImports,
     'sort-exports': sortExports,

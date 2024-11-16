@@ -8,6 +8,7 @@ import {
   partitionByCommentJsonSchema,
   partitionByNewLineJsonSchema,
   specialCharactersJsonSchema,
+  newlinesBetweenJsonSchema,
   ignoreCaseJsonSchema,
   localesJsonSchema,
   groupsJsonSchema,
@@ -129,12 +130,7 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
               'Allows you to use comments to separate the interface properties into logical groups.',
           },
           partitionByNewLine: partitionByNewLineJsonSchema,
-          newlinesBetween: {
-            description:
-              'Specifies how new lines should be handled between import groups.',
-            enum: ['ignore', 'always', 'never'],
-            type: 'string',
-          },
+          newlinesBetween: newlinesBetweenJsonSchema,
           maxLineLength: {
             description: 'Specifies the maximum line length.',
             type: 'integer',
