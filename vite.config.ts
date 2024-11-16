@@ -1,9 +1,9 @@
 import type { Plugin } from 'vite'
 
+import { resolveConfig, format } from 'prettier'
 import { defineConfig } from 'vite'
 import dts from 'vite-plugin-dts'
 import fs from 'node:fs/promises'
-import prettier from 'prettier'
 import path from 'node:path'
 
 let getAllFiles = async (directory: string): Promise<string[]> => {
@@ -43,8 +43,8 @@ let prettierPlugin = (): Plugin => {
       await Promise.all(
         files.map(async file => {
           let fileContent = await fs.readFile(file, 'utf8')
-          let prettierConfig = await prettier.resolveConfig(file)
-          let formattedContent = await prettier.format(fileContent, {
+          let prettierConfig = await resolveConfig(file)
+          let formattedContent = await format(fileContent, {
             ...prettierConfig,
             filepath: file,
           })

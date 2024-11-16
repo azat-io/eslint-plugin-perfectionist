@@ -110,9 +110,11 @@ let getFormatStringFunction =
     }
     switch (specialCharacters) {
       case 'remove':
+        // eslint-disable-next-line regexp/no-obscure-range
         valueToCompare = valueToCompare.replaceAll(/[^a-zà-öø-ÿ]+/giu, '')
         break
       case 'trim':
+        // eslint-disable-next-line regexp/no-obscure-range
         valueToCompare = valueToCompare.replaceAll(/^[^a-zà-öø-ÿ]+/giu, '')
         break
     }

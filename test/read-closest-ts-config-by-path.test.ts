@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-unsafe-member-access */
+
 import type { Diagnostic } from 'typescript'
 import type { Mock } from 'vitest'
 
@@ -267,3 +269,5 @@ describe('readClosestTsConfigByPath', () => {
     }
   })
 })
+
+/* eslint-enable @typescript-eslint/no-unsafe-member-access */

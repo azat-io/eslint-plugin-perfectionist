@@ -136,20 +136,8 @@ export default createEslintRule<Options, MESSAGE_ID>({
             nodeValue.object.name === enumName &&
             nodeValue.property.type === 'Identifier'
           ) {
-            /**
-             * Enum Enum {
-             *   A = 1,
-             *   B = Enum.A
-             * }
-             */
             dependencies.push(nodeValue.property.name)
           } else if (nodeValue.type === 'Identifier') {
-            /**
-             * Enum Enum {
-             *   A = 1,
-             *   B = A
-             * }
-             */
             dependencies.push(nodeValue.name)
           }
 

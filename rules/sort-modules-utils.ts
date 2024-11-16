@@ -20,7 +20,7 @@ interface CustomGroupMatchesProps {
 /**
  * Returns whether a custom group matches the given properties
  */
-export const customGroupMatches = (props: CustomGroupMatchesProps): boolean => {
+export let customGroupMatches = (props: CustomGroupMatchesProps): boolean => {
   if ('anyOf' in props.customGroup) {
     // At least one subgroup must match
     return props.customGroup.anyOf.some(subgroup =>
@@ -76,14 +76,16 @@ export const customGroupMatches = (props: CustomGroupMatchesProps): boolean => {
  * If the group is a custom group, its options will be favored over the default options.
  * Returns null if the group should not be sorted
  */
-export const getCompareOptions = (
+export let getCompareOptions = (
   options: Required<SortModulesOptions[0]>,
   groupNumber: number,
 ): CompareOptions | null => {
   let group = options.groups[groupNumber]
   let customGroup =
     typeof group === 'string'
-      ? options.customGroups.find(g => group === g.groupName)
+      ? options.customGroups.find(
+          currentGroup => group === currentGroup.groupName,
+        )
       : null
   if (customGroup?.type === 'unsorted') {
     return null
