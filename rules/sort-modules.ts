@@ -214,7 +214,7 @@ let analyzeModule = ({
   options: Required<SortModulesOptions[0]>
   sourceCode: TSESLint.SourceCode
   eslintDisabledLines: number[]
-}) => {
+}): void => {
   let formattedNodes: SortingNodeWithDependencies[][] = [[]]
   for (let node of program.body) {
     let selector: undefined | Selector
@@ -224,19 +224,19 @@ let analyzeModule = ({
     let decorators: string[] = []
     let addSafetySemicolonWhenInline: boolean = false
 
+    /* eslint-disable @typescript-eslint/no-loop-func */
     let parseNode = (
       nodeToParse:
         | TSESTree.DefaultExportDeclarations
         | TSESTree.NamedExportDeclarations
         | TSESTree.ProgramStatement,
-    ) => {
+    ): void => {
       if ('declare' in nodeToParse && nodeToParse.declare) {
         modifiers.push('declare')
       }
       switch (nodeToParse.type) {
         case AST_NODE_TYPES.ExportDefaultDeclaration:
-          modifiers.push('default')
-          modifiers.push('export')
+          modifiers.push('default', 'export')
           parseNode(nodeToParse.declaration)
           break
         case AST_NODE_TYPES.ExportNamedDeclaration:
@@ -316,6 +316,7 @@ let analyzeModule = ({
         default:
       }
     }
+    /* eslint-enable @typescript-eslint/no-loop-func */
     parseNode(node)
 
     if (!selector || !name) {
@@ -373,7 +374,7 @@ let analyzeModule = ({
 
   let sortNodesIgnoringEslintDisabledNodes = (
     ignoreEslintDisabledNodes: boolean,
-  ) =>
+  ): SortingNodeWithDependencies[] =>
     sortNodesByDependencies(
       formattedNodes.flatMap(nodes =>
         sortNodesByGroups(nodes, options, {
@@ -417,9 +418,9 @@ let analyzeModule = ({
         messageIds.push('unexpectedModulesDependencyOrder')
       } else {
         messageIds.push(
-          leftNumber !== rightNumber
-            ? 'unexpectedModulesGroupOrder'
-            : 'unexpectedModulesOrder',
+          leftNumber === rightNumber
+            ? 'unexpectedModulesOrder'
+            : 'unexpectedModulesGroupOrder',
         )
       }
     }
@@ -470,7 +471,7 @@ let analyzeModule = ({
   })
 }
 
-const extractDependencies = (
+let extractDependencies = (
   expression: TSESTree.TSEnumBody | TSESTree.ClassBody,
 ): string[] => {
   let dependencies: string[] = []
@@ -501,7 +502,7 @@ const extractDependencies = (
           !isArrowFunction(classElement)),
     )
 
-  let checkNode = (nodeValue: TSESTree.Node) => {
+  let checkNode = (nodeValue: TSESTree.Node): void => {
     if (
       (nodeValue.type === 'MethodDefinition' || isArrowFunction(nodeValue)) &&
       (!nodeValue.static || !searchStaticMethodsAndFunctionProperties)
@@ -601,7 +602,7 @@ const extractDependencies = (
     }
   }
 
-  let traverseNode = (nodeValue: TSESTree.Node[] | TSESTree.Node) => {
+  let traverseNode = (nodeValue: TSESTree.Node[] | TSESTree.Node): void => {
     if (Array.isArray(nodeValue)) {
       nodeValue.forEach(traverseNode)
     } else {

@@ -18,6 +18,7 @@ export let getTypescriptImport = (): typeof ts | null => {
   hasTriedLoadingTypescript = true
   try {
     cachedImport = createRequire(import.meta.url)('typescript') as typeof ts
+    // eslint-disable-next-line sonarjs/no-ignored-exceptions
   } catch (_error) {
     return null
   }

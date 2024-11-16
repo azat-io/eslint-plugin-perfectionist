@@ -1,4 +1,5 @@
 ---
+// eslint-disable-next-line import-x/namespace
 import { execa } from 'execa'
 
 import Typography from '../Typography.astro'
@@ -13,8 +14,8 @@ if (!releases) {
   let data = await fetch(
     'https://api.github.com/repos/azat-io/eslint-plugin-perfectionist/releases?per_page=1000',
   )
-  let json = await data.json()
-  releases = json.length
+  let json = (await data.json()) as unknown[]
+  releases = json.length.toString()
 }
 
 let stars = '1.9k'
