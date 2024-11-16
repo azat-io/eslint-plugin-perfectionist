@@ -12,6 +12,7 @@ import {
   partitionByCommentJsonSchema,
   partitionByNewLineJsonSchema,
   specialCharactersJsonSchema,
+  newlinesBetweenJsonSchema,
   ignoreCaseJsonSchema,
   localesJsonSchema,
   groupsJsonSchema,
@@ -19,22 +20,24 @@ import {
   typeJsonSchema,
 } from '../utils/common-json-schemas'
 import {
-  validateGroupsConfiguration,
-  getOverloadSignatureGroups,
-  generateOfficialGroups,
-  customGroupMatches,
-  getCompareOptions,
-} from './sort-classes-utils'
-import {
   singleCustomGroupJsonSchema,
   customGroupNameJsonSchema,
   customGroupSortJsonSchema,
+  allModifiers,
+  allSelectors,
 } from './sort-classes.types'
 import {
   getFirstUnorderedNodeDependentOn,
   sortNodesByDependencies,
 } from '../utils/sort-nodes-by-dependencies'
 import { validateNewlinesAndPartitionConfiguration } from '../utils/validate-newlines-and-partition-configuration'
+import {
+  getOverloadSignatureGroups,
+  customGroupMatches,
+  getCompareOptions,
+} from './sort-classes-utils'
+import { validateGeneratedGroupsConfiguration } from './validate-generated-groups-configuration'
+import { generatePredefinedGroups } from '../utils/generate-predefined-groups'
 import { getEslintDisabledLines } from '../utils/get-eslint-disabled-lines'
 import { isNodeEslintDisabled } from '../utils/is-node-eslint-disabled'
 import { hasPartitionComment } from '../utils/is-partition-comment'
@@ -55,6 +58,11 @@ import { makeFixes } from '../utils/make-fixes'
 import { complete } from '../utils/complete'
 import { pairwise } from '../utils/pairwise'
 import { matches } from '../utils/matches'
+
+/**
+ * Cache computed groups by modifiers and selectors for performance
+ */
+let cachedGroupsByModifiersAndSelectors = new Map<string, string[]>()
 
 type MESSAGE_ID =
   | 'unexpectedClassesDependencyOrder'
@@ -123,12 +131,7 @@ export default createEslintRule<SortClassesOptions, MESSAGE_ID>({
               'Allows to use comments to separate the class members into logical groups.',
           },
           partitionByNewLine: partitionByNewLineJsonSchema,
-          newlinesBetween: {
-            description:
-              'Specifies how new lines should be handled between class members groups.',
-            enum: ['ignore', 'always', 'never'],
-            type: 'string',
-          },
+          newlinesBetween: newlinesBetweenJsonSchema,
           groups: groupsJsonSchema,
           customGroups: {
             description: 'Specifies custom groups.',
@@ -201,7 +204,12 @@ export default createEslintRule<SortClassesOptions, MESSAGE_ID>({
 
       let settings = getSettings(context.settings)
       let options = complete(context.options.at(0), settings, defaultOptions)
-      validateGroupsConfiguration(options.groups, options.customGroups)
+      validateGeneratedGroupsConfiguration({
+        groups: options.groups,
+        customGroups: options.customGroups,
+        modifiers: allModifiers,
+        selectors: allSelectors,
+      })
       validateNewlinesAndPartitionConfiguration(options)
       let sourceCode = getSourceCode(context)
       let eslintDisabledLines = getEslintDisabledLines({
@@ -558,10 +566,11 @@ export default createEslintRule<SortClassesOptions, MESSAGE_ID>({
             }
           }
 
-          for (let officialGroup of generateOfficialGroups(
-            modifiers,
+          for (let officialGroup of generatePredefinedGroups({
             selectors,
-          )) {
+            modifiers,
+            cache: cachedGroupsByModifiersAndSelectors,
+          })) {
             defineGroup(officialGroup)
           }
 

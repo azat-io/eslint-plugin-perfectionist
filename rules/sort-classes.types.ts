@@ -145,7 +145,7 @@ interface AllowedModifiersPerSelector {
   'static-block': never
 }
 
-export interface CustomGroupBlock {
+export interface AnyOfCustomGroup {
   anyOf: SingleCustomGroup[]
 }
 
@@ -180,7 +180,7 @@ export type CustomGroup = (
       type?: 'unsorted'
     }
 ) &
-  (SingleCustomGroup | CustomGroupBlock) & {
+  (SingleCustomGroup | AnyOfCustomGroup) & {
     groupName: string
   }
 

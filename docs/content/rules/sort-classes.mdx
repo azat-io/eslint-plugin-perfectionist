@@ -576,7 +576,7 @@ Current API:
 </Important>
 
 <sub>
-  type: `Array<CustomGroupDefinition | CustomGroupBlockDefinition>`
+  type: `Array<CustomGroupDefinition | CustomGroupAnyOfDefinition>`
 </sub>
 <sub>default: `[]`</sub>
 
@@ -601,7 +601,7 @@ A class member will match a `CustomGroupDefinition` group if it matches all the 
 or:
 
 ```ts
-interface CustomGroupBlockDefinition {
+interface CustomGroupAnyOfDefinition {
   groupName: string
   type?: 'alphabetical' | 'natural' | 'line-length' | 'unsorted'
   order?: 'asc' | 'desc'
@@ -615,7 +615,7 @@ interface CustomGroupBlockDefinition {
 }
 ```
 
-A class member will match a `CustomGroupBlockDefinition` group if it matches all the filters of at least one of the `anyOf` items.
+A class member will match a `CustomGroupAnyOfDefinition` group if it matches all the filters of at least one of the `anyOf` items.
 
 #### Attributes
 
@@ -714,6 +714,7 @@ Example:
                   partitionByComment: false,
                   partitionByNewLine: false,
                   newlinesBetween: 'ignore',
+                  ignoreCallbackDependenciesPatterns: [],
                   groups: [
                     'index-signature',
                     ['static-property', 'static-accessor-property'],
@@ -766,6 +767,7 @@ Example:
                 partitionByComment: false,
                 partitionByNewLine: false,
                 newlinesBetween: 'ignore',
+                ignoreCallbackDependenciesPatterns: [],
                 groups: [
                   'index-signature',
                   ['static-property', 'static-accessor-property'],

@@ -98,3 +98,10 @@ export let partitionByNewLineJsonSchema: JSONSchema4 = {
     'Allows to use newlines to separate the nodes into logical groups.',
   type: 'boolean',
 }
+
+export let newlinesBetweenJsonSchema: JSONSchema4 = {
+  description:
+    'Specifies how new lines should be handled between modules members groups.',
+  enum: ['ignore', 'always', 'never'],
+  type: 'string',
+}
