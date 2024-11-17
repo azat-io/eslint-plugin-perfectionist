@@ -13,7 +13,6 @@ export default eslintConfig({
           { pattern: '^Enforce' },
         ],
         'eslint-plugin/require-meta-schema-description': 'off',
-        'astro/prefer-class-list-directive': 'off',
         'jsdoc/require-param-description': 'off',
         '@typescript-eslint/max-params': 'off',
         'unicorn/no-array-for-each': 'off',
@@ -26,7 +25,6 @@ export default eslintConfig({
     },
     {
       rules: {
-        '@typescript-eslint/method-signature-style': ['error', 'method'],
         'perfectionist/sort-objects': 'off',
       },
       files: ['**/test/**', '**/rules/**', '**/utils/**'],
