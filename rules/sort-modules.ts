@@ -99,6 +99,8 @@ export default createEslintRule<SortModulesOptions, MESSAGE_ID>({
     type: 'suggestion',
     docs: {
       description: 'Enforce sorted modules.',
+      url: 'https://perfectionist.dev/rules/sort-modules',
+      recommended: true,
     },
     fixable: 'code',
     schema: [

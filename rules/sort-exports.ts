@@ -64,6 +64,8 @@ export default createEslintRule<Options, MESSAGE_ID>({
     type: 'suggestion',
     docs: {
       description: 'Enforce sorted exports.',
+      url: 'https://perfectionist.dev/rules/sort-exports',
+      recommended: true,
     },
     fixable: 'code',
     schema: [

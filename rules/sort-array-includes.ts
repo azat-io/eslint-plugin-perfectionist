@@ -92,6 +92,8 @@ export default createEslintRule<Options, MESSAGE_ID>({
     type: 'suggestion',
     docs: {
       description: 'Enforce sorted arrays before include method.',
+      url: 'https://perfectionist.dev/rules/sort-array-includes',
+      recommended: true,
     },
     fixable: 'code',
     schema: [jsonSchema],

@@ -87,6 +87,8 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
     type: 'suggestion',
     docs: {
       description: 'Enforce sorted interface properties.',
+      url: 'https://perfectionist.dev/rules/sort-interfaces',
+      recommended: true,
     },
     fixable: 'code',
     schema: [

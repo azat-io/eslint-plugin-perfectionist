@@ -66,6 +66,8 @@ export default createEslintRule<Options, MESSAGE_ID>({
     type: 'suggestion',
     docs: {
       description: 'Enforce sorted TypeScript enums.',
+      url: 'https://perfectionist.dev/rules/sort-enums',
+      recommended: true,
     },
     fixable: 'code',
     schema: [

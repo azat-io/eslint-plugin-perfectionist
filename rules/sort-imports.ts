@@ -100,6 +100,8 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
     type: 'suggestion',
     docs: {
       description: 'Enforce sorted imports.',
+      url: 'https://perfectionist.dev/rules/sort-imports',
+      recommended: true,
     },
     fixable: 'code',
     schema: [

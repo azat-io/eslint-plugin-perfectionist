@@ -52,6 +52,8 @@ export default createEslintRule<Options, MESSAGE_ID>({
     type: 'suggestion',
     docs: {
       description: 'Enforce sorted switch cases.',
+      url: 'https://perfectionist.dev/rules/sort-switch-case',
+      recommended: true,
     },
     fixable: 'code',
     schema: [

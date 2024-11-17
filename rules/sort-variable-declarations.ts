@@ -63,6 +63,8 @@ export default createEslintRule<Options, MESSAGE_ID>({
     type: 'suggestion',
     docs: {
       description: 'Enforce sorted variable declarations.',
+      url: 'https://perfectionist.dev/rules/sort-variable-declarations',
+      recommended: true,
     },
     fixable: 'code',
     schema: [

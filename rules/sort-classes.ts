@@ -114,6 +114,8 @@ export default createEslintRule<SortClassesOptions, MESSAGE_ID>({
     type: 'suggestion',
     docs: {
       description: 'Enforce sorted classes.',
+      url: 'https://perfectionist.dev/rules/sort-classes',
+      recommended: true,
     },
     fixable: 'code',
     schema: [

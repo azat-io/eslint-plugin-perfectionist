@@ -62,6 +62,8 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
     type: 'suggestion',
     docs: {
       description: 'Enforce sorted heritage clauses.',
+      url: 'https://perfectionist.dev/rules/sort-heritage-clauses',
+      recommended: true,
     },
     fixable: 'code',
     schema: [

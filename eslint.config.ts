@@ -13,8 +13,6 @@ export default eslintConfig({
           { pattern: '^Enforce' },
         ],
         'eslint-plugin/require-meta-schema-description': 'off',
-        'eslint-plugin/require-meta-docs-recommended': 'off',
-        'eslint-plugin/require-meta-docs-url': 'off',
         'astro/prefer-class-list-directive': 'off',
         'jsdoc/require-param-description': 'off',
         '@typescript-eslint/max-params': 'off',

@@ -85,6 +85,8 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
     type: 'suggestion',
     docs: {
       description: 'Enforce sorted object types.',
+      url: 'https://perfectionist.dev/rules/sort-object-types',
+      recommended: true,
     },
     fixable: 'code',
     schema: [

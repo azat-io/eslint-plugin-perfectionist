@@ -63,6 +63,8 @@ export default createEslintRule<Options, MESSAGE_ID>({
     type: 'suggestion',
     docs: {
       description: 'Enforce sorted named exports.',
+      url: 'https://perfectionist.dev/rules/sort-named-exports',
+      recommended: true,
     },
     fixable: 'code',
     schema: [

@@ -65,6 +65,8 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
     type: 'suggestion',
     docs: {
       description: 'Enforce sorted JSX props.',
+      url: 'https://perfectionist.dev/rules/sort-jsx-props',
+      recommended: true,
     },
     fixable: 'code',
     schema: [
