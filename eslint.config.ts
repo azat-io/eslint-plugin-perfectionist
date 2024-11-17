@@ -20,7 +20,6 @@ export default eslintConfig({
         'jsdoc/check-param-names': 'off',
         'jsdoc/require-returns': 'off',
         'jsdoc/require-param': 'off',
-        'no-undefined': 'off',
       },
     },
     {

@@ -220,8 +220,6 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
       internalPattern: ['~/**'],
       sortSideEffects: false,
       newlinesBetween: 'always',
-      maxLineLength: undefined,
-      tsconfigRootDir: undefined,
       groups: [
         'type',
         ['builtin', 'external'],
