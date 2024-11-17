@@ -448,6 +448,10 @@ export default createEslintRule<SortClassesOptions, MESSAGE_ID>({
               modifiers.push('optional')
             }
 
+            if (member.value.async) {
+              modifiers.push('async')
+            }
+
             if (member.kind === 'constructor') {
               selectors.push('constructor')
             }
@@ -544,26 +548,20 @@ export default createEslintRule<SortClassesOptions, MESSAGE_ID>({
               modifiers.push('optional')
             }
 
-            let isFunctionProperty =
+            if (
               member.value?.type === 'ArrowFunctionExpression' ||
               member.value?.type === 'FunctionExpression'
-            if (isFunctionProperty) {
+            ) {
+              if (member.value.async) {
+                modifiers.push('async')
+              }
               selectors.push('function-property')
-            }
-
-            if (!isFunctionProperty && member.value) {
+            } else if (member.value) {
               memberValue = sourceCode.getText(member.value)
+              dependencies = extractDependencies(member.value, member.static)
             }
 
             selectors.push('property')
-
-            if (
-              member.type === 'PropertyDefinition' &&
-              member.value &&
-              !isFunctionProperty
-            ) {
-              dependencies = extractDependencies(member.value, member.static)
-            }
           }
 
           for (let officialGroup of generatePredefinedGroups({
