@@ -1,7 +1,9 @@
-let eslintPlugin = require('eslint-plugin-eslint-plugin/configs/all')
-let eslintConfig = require('@azat-io/eslint-config')
+import type { Linter } from 'eslint'
 
-module.exports = eslintConfig({
+import eslintPlugin from 'eslint-plugin-eslint-plugin/configs/all'
+import eslintConfig from '@azat-io/eslint-config'
+
+export default eslintConfig({
   extends: [
     eslintPlugin,
     {
@@ -38,4 +40,4 @@ module.exports = eslintConfig({
   vitest: true,
   astro: true,
   node: true,
-})
+}) satisfies Promise<Linter.Config[]>

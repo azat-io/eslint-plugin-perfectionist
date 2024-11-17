@@ -40,7 +40,7 @@
     "test:astro": "astro check",
     "test:css": "stylelint \"docs/**/*.{astro,svelte,css}\"",
     "test:format": "prettier --check \"**/*.{astro,svelte,js,ts,json,md,yml}\"",
-    "test:js": "eslint .",
+    "test:js": "eslint --flag unstable_ts_config .",
     "test:spelling": "cspell \"**/*\"",
     "test:svelte": "svelte-check",
     "test:types": "tsc --noEmit --pretty",
