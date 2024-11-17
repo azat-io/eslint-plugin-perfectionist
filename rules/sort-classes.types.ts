@@ -7,6 +7,7 @@ type PublicOrProtectedOrPrivateModifier =
   | ProtectedModifier
   | PrivateModifier
   | PublicModifier
+type AsyncModifier = 'async'
 type StaticModifier = 'static'
 type AbstractModifier = 'abstract'
 type OverrideModifier = 'override'
@@ -23,6 +24,7 @@ export type Modifier =
   | ReadonlyModifier
   | DeclareModifier
   | StaticModifier
+  | AsyncModifier
 
 type ConstructorSelector = 'constructor'
 type FunctionPropertySelector = 'function-property'
@@ -50,6 +52,7 @@ type PublicOrProtectedOrPrivateModifierPrefix = WithDashSuffixOrEmpty<
   ProtectedModifier | PrivateModifier | PublicModifier
 >
 
+type AsyncModifierPrefix = WithDashSuffixOrEmpty<AsyncModifier>
 type OverrideModifierPrefix = WithDashSuffixOrEmpty<OverrideModifier>
 type OptionalModifierPrefix = WithDashSuffixOrEmpty<OptionalModifier>
 type ReadonlyModifierPrefix = WithDashSuffixOrEmpty<ReadonlyModifier>
@@ -67,13 +70,13 @@ type GetMethodOrSetMethodSelector = GetMethodSelector | SetMethodSelector
 type ConstructorGroup =
   `${PublicOrProtectedOrPrivateModifierPrefix}${ConstructorSelector}`
 type FunctionPropertyGroup =
-  `${PublicOrProtectedOrPrivateModifierPrefix}${StaticModifierPrefix}${OverrideModifierPrefix}${ReadonlyModifierPrefix}${DecoratedModifierPrefix}${FunctionPropertySelector}`
+  `${PublicOrProtectedOrPrivateModifierPrefix}${StaticModifierPrefix}${OverrideModifierPrefix}${ReadonlyModifierPrefix}${DecoratedModifierPrefix}${AsyncModifierPrefix}${FunctionPropertySelector}`
 type DeclarePropertyGroup =
   `${DeclareModifierPrefix}${PublicOrProtectedOrPrivateModifierPrefix}${StaticOrAbstractModifierPrefix}${ReadonlyModifierPrefix}${OptionalModifierPrefix}${PropertySelector}`
 type NonDeclarePropertyGroup =
   `${PublicOrProtectedOrPrivateModifierPrefix}${StaticOrAbstractModifierPrefix}${OverrideModifierPrefix}${ReadonlyModifierPrefix}${DecoratedModifierPrefix}${OptionalModifierPrefix}${PropertySelector}`
 type MethodGroup =
-  `${PublicOrProtectedOrPrivateModifierPrefix}${StaticOrAbstractModifierPrefix}${OverrideModifierPrefix}${DecoratedModifierPrefix}${OptionalModifierPrefix}${MethodSelector}`
+  `${PublicOrProtectedOrPrivateModifierPrefix}${StaticOrAbstractModifierPrefix}${OverrideModifierPrefix}${DecoratedModifierPrefix}${AsyncModifierPrefix}${OptionalModifierPrefix}${MethodSelector}`
 type GetMethodOrSetMethodGroup =
   `${PublicOrProtectedOrPrivateModifierPrefix}${StaticOrAbstractModifierPrefix}${OverrideModifierPrefix}${DecoratedModifierPrefix}${GetMethodOrSetMethodSelector}`
 type AccessorPropertyGroup =
@@ -121,17 +124,19 @@ interface AllowedModifiersPerSelector {
     | OverrideModifier
     | OptionalModifier
     | StaticModifier
-  'accessor-property':
-    | PublicOrProtectedOrPrivateModifier
-    | DecoratedModifier
-    | AbstractModifier
-    | OverrideModifier
-    | StaticModifier
+    | AsyncModifier
   'function-property':
     | PublicOrProtectedOrPrivateModifier
     | DecoratedModifier
     | OverrideModifier
     | ReadonlyModifier
+    | StaticModifier
+    | AsyncModifier
+  'accessor-property':
+    | PublicOrProtectedOrPrivateModifier
+    | DecoratedModifier
+    | AbstractModifier
+    | OverrideModifier
     | StaticModifier
   'set-method':
     | PublicOrProtectedOrPrivateModifier
@@ -213,6 +218,7 @@ export let allSelectors: Selector[] = [
 ]
 
 export let allModifiers: Modifier[] = [
+  'async',
   'protected',
   'private',
   'public',
