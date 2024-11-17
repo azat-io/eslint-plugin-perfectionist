@@ -189,7 +189,7 @@ describe(ruleName, () => {
             code: dedent`
             abstract class Class {
 
-              p?(): void;
+              async p?(): Promise<void>;
 
               o?;
 
@@ -197,9 +197,9 @@ describe(ruleName, () => {
 
               static readonly [key: string]: string;
 
-              private n = function() {};
+              private n = async function() {};
 
-              private m = () => {};
+              private m = async () => {};
 
               declare private static readonly l;
 
@@ -257,9 +257,9 @@ describe(ruleName, () => {
 
               declare private static readonly l;
 
-              private m = () => {};
+              private m = async () => {};
 
-              private n = function() {};
+              private n = async function() {};
 
               static readonly [key: string]: string;
 
@@ -267,7 +267,7 @@ describe(ruleName, () => {
 
               o?;
 
-              p?(): void;
+              async p?(): Promise<void>;
             }
           `,
             options: [
@@ -287,11 +287,11 @@ describe(ruleName, () => {
                   'protected-property',
                   'private-property',
                   'declare-private-static-readonly-property',
-                  'function-property',
+                  'async-function-property',
                   'static-readonly-index-signature',
                   'static-block',
                   'public-optional-property',
-                  'public-optional-method',
+                  'public-optional-async-method',
                 ],
               },
             ],
@@ -300,7 +300,7 @@ describe(ruleName, () => {
                 messageId: 'unexpectedClassesGroupOrder',
                 data: {
                   left: 'p',
-                  leftGroup: 'public-optional-method',
+                  leftGroup: 'public-optional-async-method',
                   right: 'o',
                   rightGroup: 'public-optional-property',
                 },
@@ -329,7 +329,7 @@ describe(ruleName, () => {
                   left: 'static readonly [key: string]',
                   leftGroup: 'static-readonly-index-signature',
                   right: 'n',
-                  rightGroup: 'function-property',
+                  rightGroup: 'async-function-property',
                 },
               },
               {
@@ -343,7 +343,7 @@ describe(ruleName, () => {
                 messageId: 'unexpectedClassesGroupOrder',
                 data: {
                   left: 'm',
-                  leftGroup: 'function-property',
+                  leftGroup: 'async-function-property',
                   right: 'l',
                   rightGroup: 'declare-private-static-readonly-property',
                 },
@@ -926,6 +926,51 @@ describe(ruleName, () => {
           },
         )
       }
+
+      ruleTester.run(
+        `${ruleName}(${type}): prioritize optional over async`,
+        rule,
+        {
+          valid: [],
+          invalid: [
+            {
+              code: dedent`
+              export class Class {
+
+                a: string;
+
+                async z?(): Promise<string>;
+              }
+            `,
+              output: dedent`
+              export class Class {
+
+                async z?(): Promise<string>;
+
+                a: string;
+              }
+            `,
+              options: [
+                {
+                  ...options,
+                  groups: [`optional-method`, 'property', 'async-method'],
+                },
+              ],
+              errors: [
+                {
+                  messageId: 'unexpectedClassesGroupOrder',
+                  data: {
+                    left: 'a',
+                    leftGroup: 'property',
+                    right: 'z',
+                    rightGroup: `optional-method`,
+                  },
+                },
+              ],
+            },
+          ],
+        },
+      )
     })
 
     describe(`${ruleName}(${type}): accessor modifiers priority`, () => {
@@ -1596,6 +1641,51 @@ describe(ruleName, () => {
           },
         )
       }
+
+      ruleTester.run(
+        `${ruleName}(${type}): prioritize optional over async`,
+        rule,
+        {
+          valid: [],
+          invalid: [
+            {
+              code: dedent`
+              export class Class {
+
+                a(): void {}
+
+                z?: Promise<string> = async () => {};
+              }
+            `,
+              output: dedent`
+              export class Class {
+
+                z?: Promise<string> = async () => {};
+
+                a(): void {}
+              }
+            `,
+              options: [
+                {
+                  ...options,
+                  groups: ['optional-property', 'method', `async-property`],
+                },
+              ],
+              errors: [
+                {
+                  messageId: 'unexpectedClassesGroupOrder',
+                  data: {
+                    left: 'a',
+                    leftGroup: 'method',
+                    right: 'z',
+                    rightGroup: `optional-property`,
+                  },
+                },
+              ],
+            },
+          ],
+        },
+      )
     })
 
     ruleTester.run(

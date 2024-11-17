@@ -321,7 +321,7 @@ Predefined groups are characterized by a single selector and potentially multipl
 
 #### Methods
 - Selectors: `get-method`, `set-method`, `method`.
-- Modifiers: `static`, `abstract`, `decorated`, `override`, `protected`, `private`, `public`, `optional`.
+- Modifiers: `static`, `abstract`, `decorated`, `override`, `protected`, `private`, `public`, `optional`, `async`.
 - Example: `private-static-accessor-property`, `protected-abstract-override-method` or `static-get-method`.
 
 The `optional` modifier is incompatible with the `get-method` and `set-method` selectors.
@@ -339,7 +339,7 @@ The `abstract` modifier is incompatible with the `static`, `private` and `decora
 
 #### Properties
 - Selectors: `function-property`, `property`.
-- Modifiers: `static`, `declare`, `abstract`, `decorated`, `override`, `readonly`, `protected`, `private`, `public`, `optional`.
+- Modifiers: `static`, `declare`, `abstract`, `decorated`, `override`, `readonly`, `protected`, `private`, `public`, `optional`, `async`.
 - Example: `readonly-decorated-property`.
 
 The `abstract` modifier is incompatible with the `static`, `private` and `decorated` modifiers.
@@ -348,6 +348,8 @@ The `declare` modifier is incompatible with the `override` and `decorated` modif
 
 The `function-property` selector will match properties whose values are defined functions or arrow-functions.
 As such, the `declare` and `abstract` modifiers are incompatible with this selector.
+
+The `async` modifier is reserved for the `function-property` selector.
 
 #### Index-signatures
 - Selector: `index-signature`.
