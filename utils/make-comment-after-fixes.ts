@@ -11,10 +11,10 @@ interface CommentAfterFixesParameters {
 }
 
 export let makeCommentAfterFixes = ({
-  fixer,
-  node,
   sortedNode,
   sourceCode,
+  fixer,
+  node,
 }: CommentAfterFixesParameters): TSESLint.RuleFix[] => {
   let commentAfter = getCommentAfter(sortedNode, sourceCode)
   let areNodesOnSameLine = node.loc.start.line === sortedNode.loc.end.line

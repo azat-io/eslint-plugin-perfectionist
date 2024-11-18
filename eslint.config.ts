@@ -4,15 +4,7 @@ import eslintPlugin from 'eslint-plugin-eslint-plugin/configs/recommended'
 import eslintConfig from '@azat-io/eslint-config'
 
 export default eslintConfig({
-  extends: [
-    eslintPlugin,
-    {
-      rules: {
-        'perfectionist/sort-objects': 'off',
-      },
-      files: ['**/test/**', '**/rules/**', '**/utils/**'],
-    },
-  ],
+  extends: eslintPlugin,
   perfectionist: true,
   typescript: true,
   svelte: true,

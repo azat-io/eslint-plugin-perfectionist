@@ -162,12 +162,12 @@ export let getCompareOptions = (
     return null
   }
   return {
-    type: customGroup?.type ?? options.type,
     order:
       customGroup && 'order' in customGroup && customGroup.order
         ? customGroup.order
         : options.order,
     specialCharacters: options.specialCharacters,
+    type: customGroup?.type ?? options.type,
     ignoreCase: options.ignoreCase,
     locales: options.locales,
   }

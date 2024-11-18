@@ -28,6 +28,58 @@ describe(ruleName, () => {
     } as const
 
     ruleTester.run(`${ruleName}(${type}): sorts decorators`, rule, {
+      invalid: [
+        {
+          output: dedent`
+            @A @B() @C
+            class Class {
+
+              @A @B() @C
+              property
+
+              @A @B() @C
+              accessor field
+
+              @A @B() @C
+              method(
+                @A
+                @B()
+                @C
+                parameter) {}
+
+            }
+          `,
+          code: dedent`
+            @A @C @B()
+            class Class {
+
+              @A @C @B()
+              property
+
+              @A @C @B()
+              accessor field
+
+              @A @C @B()
+              method(
+                @A
+                @C
+                @B()
+                parameter) {}
+
+            }
+          `,
+          errors: duplicate5Times([
+            {
+              data: {
+                right: 'B',
+                left: 'C',
+              },
+              messageId: 'unexpectedDecoratorsOrder',
+            },
+          ]),
+          options: [options],
+        },
+      ],
       valid: [
         {
           code: dedent`
@@ -72,139 +124,14 @@ describe(ruleName, () => {
           options: [options],
         },
       ],
-      invalid: [
-        {
-          code: dedent`
-            @A @C @B()
-            class Class {
-
-              @A @C @B()
-              property
-
-              @A @C @B()
-              accessor field
-
-              @A @C @B()
-              method(
-                @A
-                @C
-                @B()
-                parameter) {}
-
-            }
-          `,
-          output: dedent`
-            @A @B() @C
-            class Class {
-
-              @A @B() @C
-              property
-
-              @A @B() @C
-              accessor field
-
-              @A @B() @C
-              method(
-                @A
-                @B()
-                @C
-                parameter) {}
-
-            }
-          `,
-          options: [options],
-          errors: duplicate5Times([
-            {
-              messageId: 'unexpectedDecoratorsOrder',
-              data: {
-                left: 'C',
-                right: 'B',
-              },
-            },
-          ]),
-        },
-      ],
     })
 
     ruleTester.run(
       `${ruleName}(${type}): does not break decorator docs`,
       rule,
       {
-        valid: [],
         invalid: [
           {
-            code: dedent`
-              /**
-               * Comment B
-               */
-              @B
-              /**
-               * Comment A
-               */
-              @A
-              // Comment D
-              @D
-              /* Comment C */
-              @C
-              class Class {
-
-                /**
-                 * Comment B
-                 */
-                @B
-                /**
-                 * Comment A
-                 */
-                @A
-                // Comment D
-                @D
-                /* Comment C */
-                @C
-                property
-
-                /**
-                 * Comment B
-                 */
-                @B
-                /**
-                 * Comment A
-                 */
-                @A
-                // Comment D
-                @D
-                /* Comment C */
-                @C
-                accessor field
-
-                /**
-                 * Comment B
-                 */
-                @B
-                /**
-                 * Comment A
-                 */
-                @A
-                // Comment D
-                @D
-                /* Comment C */
-                @C
-                method(
-                  /**
-                   * Comment B
-                   */
-                  @B
-                  /**
-                   * Comment A
-                   */
-                  @A
-                  // Comment D
-                  @D
-                  /* Comment C */
-                  @C
-                  parameter) {}
-
-              }
-            `,
             output: dedent`
               /**
                * Comment A
@@ -277,25 +204,98 @@ describe(ruleName, () => {
 
               }
             `,
-            options: [options],
+            code: dedent`
+              /**
+               * Comment B
+               */
+              @B
+              /**
+               * Comment A
+               */
+              @A
+              // Comment D
+              @D
+              /* Comment C */
+              @C
+              class Class {
+
+                /**
+                 * Comment B
+                 */
+                @B
+                /**
+                 * Comment A
+                 */
+                @A
+                // Comment D
+                @D
+                /* Comment C */
+                @C
+                property
+
+                /**
+                 * Comment B
+                 */
+                @B
+                /**
+                 * Comment A
+                 */
+                @A
+                // Comment D
+                @D
+                /* Comment C */
+                @C
+                accessor field
+
+                /**
+                 * Comment B
+                 */
+                @B
+                /**
+                 * Comment A
+                 */
+                @A
+                // Comment D
+                @D
+                /* Comment C */
+                @C
+                method(
+                  /**
+                   * Comment B
+                   */
+                  @B
+                  /**
+                   * Comment A
+                   */
+                  @A
+                  // Comment D
+                  @D
+                  /* Comment C */
+                  @C
+                  parameter) {}
+
+              }
+            `,
             errors: duplicate5Times([
               {
-                messageId: 'unexpectedDecoratorsOrder',
                 data: {
-                  left: 'B',
                   right: 'A',
+                  left: 'B',
                 },
+                messageId: 'unexpectedDecoratorsOrder',
               },
               {
-                messageId: 'unexpectedDecoratorsOrder',
                 data: {
-                  left: 'D',
                   right: 'C',
+                  left: 'D',
                 },
+                messageId: 'unexpectedDecoratorsOrder',
               },
             ]),
+            options: [options],
           },
         ],
+        valid: [],
       },
     )
 
@@ -303,31 +303,8 @@ describe(ruleName, () => {
       `${ruleName}(${type}): sorts decorators with comments on the same line`,
       rule,
       {
-        valid: [],
         invalid: [
           {
-            code: dedent`
-              @B // Comment B
-              @A // Comment A
-              class Class {
-
-                @B // Comment B
-                @A // Comment A
-                property
-
-                @B // Comment B
-                @A // Comment A
-                accessor field
-
-                @B // Comment B
-                @A // Comment A
-                method(
-                  @B // Comment B
-                  @A // Comment A
-                  parameter) {}
-
-              }
-            `,
             output: dedent`
               @A // Comment A
               @B // Comment B
@@ -350,18 +327,41 @@ describe(ruleName, () => {
 
               }
             `,
-            options: [options],
+            code: dedent`
+              @B // Comment B
+              @A // Comment A
+              class Class {
+
+                @B // Comment B
+                @A // Comment A
+                property
+
+                @B // Comment B
+                @A // Comment A
+                accessor field
+
+                @B // Comment B
+                @A // Comment A
+                method(
+                  @B // Comment B
+                  @A // Comment A
+                  parameter) {}
+
+              }
+            `,
             errors: duplicate5Times([
               {
-                messageId: 'unexpectedDecoratorsOrder',
                 data: {
-                  left: 'B',
                   right: 'A',
+                  left: 'B',
                 },
+                messageId: 'unexpectedDecoratorsOrder',
               },
             ]),
+            options: [options],
           },
         ],
+        valid: [],
       },
     )
 
@@ -369,36 +369,8 @@ describe(ruleName, () => {
       `${ruleName}(${type}): allows to set groups for sorting`,
       rule,
       {
-        valid: [],
         invalid: [
           {
-            code: dedent`
-              @NoPublicAttributeError
-              @Validated
-              @AtLeastOneAttributeError
-              class Class {
-
-                @NoPublicAttributeError
-                @Validated
-                @AtLeastOneAttributeError
-                property
-
-                @NoPublicAttributeError
-                @Validated
-                @AtLeastOneAttributeError
-                accessor field
-
-                @NoPublicAttributeError
-                @Validated
-                @AtLeastOneAttributeError
-                method(
-                  @NoPublicAttributeError
-                  @Validated
-                  @AtLeastOneAttributeError
-                  parameter) {}
-
-              }
-            `,
             output: dedent`
               @Validated
               @AtLeastOneAttributeError
@@ -426,28 +398,56 @@ describe(ruleName, () => {
 
               }
             `,
+            code: dedent`
+              @NoPublicAttributeError
+              @Validated
+              @AtLeastOneAttributeError
+              class Class {
+
+                @NoPublicAttributeError
+                @Validated
+                @AtLeastOneAttributeError
+                property
+
+                @NoPublicAttributeError
+                @Validated
+                @AtLeastOneAttributeError
+                accessor field
+
+                @NoPublicAttributeError
+                @Validated
+                @AtLeastOneAttributeError
+                method(
+                  @NoPublicAttributeError
+                  @Validated
+                  @AtLeastOneAttributeError
+                  parameter) {}
+
+              }
+            `,
+            errors: duplicate5Times([
+              {
+                data: {
+                  left: 'NoPublicAttributeError',
+                  rightGroup: 'unknown',
+                  leftGroup: 'error',
+                  right: 'Validated',
+                },
+                messageId: 'unexpectedDecoratorsGroupOrder',
+              },
+            ]),
             options: [
               {
                 ...options,
-                groups: ['unknown', 'error'],
                 customGroups: {
                   error: 'Error$',
                 },
+                groups: ['unknown', 'error'],
               },
             ],
-            errors: duplicate5Times([
-              {
-                messageId: 'unexpectedDecoratorsGroupOrder',
-                data: {
-                  left: 'NoPublicAttributeError',
-                  leftGroup: 'error',
-                  right: 'Validated',
-                  rightGroup: 'unknown',
-                },
-              },
-            ]),
           },
         ],
+        valid: [],
       },
     )
 
@@ -492,10 +492,10 @@ describe(ruleName, () => {
             options: [
               {
                 ...options,
-                groups: ['unknown', 'elementsWithoutFoo'],
                 customGroups: {
                   elementsWithoutFoo: '^(?!.*Foo).*$',
                 },
+                groups: ['unknown', 'elementsWithoutFoo'],
               },
             ],
           },
@@ -508,81 +508,8 @@ describe(ruleName, () => {
       `${ruleName}(${type}): allows to use partition comments`,
       rule,
       {
-        valid: [],
         invalid: [
           {
-            code: dedent`
-              // Part: A
-              @Cc
-              @D
-              // Not partition comment
-              @Bbb
-              // Part: B
-              @Aaaa
-              @E
-              // Part: C
-              @Gg()
-              // Not partition comment
-              @Fff
-              class Class {
-
-                // Part: A
-                @Cc
-                @D
-                // Not partition comment
-                @Bbb
-                // Part: B
-                @Aaaa
-                @E
-                // Part: C
-                @Gg()
-                // Not partition comment
-                @Fff
-                property
-
-                // Part: A
-                @Cc
-                @D
-                // Not partition comment
-                @Bbb
-                // Part: B
-                @Aaaa
-                @E
-                // Part: C
-                @Gg()
-                // Not partition comment
-                @Fff
-                accessor field
-
-                // Part: A
-                @Cc
-                @D
-                // Not partition comment
-                @Bbb
-                // Part: B
-                @Aaaa
-                @E
-                // Part: C
-                @Gg()
-                // Not partition comment
-                @Fff
-                method(
-                  // Part: A
-                  @Cc
-                  @D
-                  // Not partition comment
-                  @Bbb
-                  // Part: B
-                  @Aaaa
-                  @E
-                  // Part: C
-                  @Gg()
-                  // Not partition comment
-                  @Fff
-                  parameter) {}
-
-              }
-            `,
             output: dedent`
               // Part: A
               // Not partition comment
@@ -655,30 +582,103 @@ describe(ruleName, () => {
 
               }
             `,
+            code: dedent`
+              // Part: A
+              @Cc
+              @D
+              // Not partition comment
+              @Bbb
+              // Part: B
+              @Aaaa
+              @E
+              // Part: C
+              @Gg()
+              // Not partition comment
+              @Fff
+              class Class {
+
+                // Part: A
+                @Cc
+                @D
+                // Not partition comment
+                @Bbb
+                // Part: B
+                @Aaaa
+                @E
+                // Part: C
+                @Gg()
+                // Not partition comment
+                @Fff
+                property
+
+                // Part: A
+                @Cc
+                @D
+                // Not partition comment
+                @Bbb
+                // Part: B
+                @Aaaa
+                @E
+                // Part: C
+                @Gg()
+                // Not partition comment
+                @Fff
+                accessor field
+
+                // Part: A
+                @Cc
+                @D
+                // Not partition comment
+                @Bbb
+                // Part: B
+                @Aaaa
+                @E
+                // Part: C
+                @Gg()
+                // Not partition comment
+                @Fff
+                method(
+                  // Part: A
+                  @Cc
+                  @D
+                  // Not partition comment
+                  @Bbb
+                  // Part: B
+                  @Aaaa
+                  @E
+                  // Part: C
+                  @Gg()
+                  // Not partition comment
+                  @Fff
+                  parameter) {}
+
+              }
+            `,
+            errors: duplicate5Times([
+              {
+                data: {
+                  right: 'Bbb',
+                  left: 'D',
+                },
+                messageId: 'unexpectedDecoratorsOrder',
+              },
+              {
+                data: {
+                  right: 'Fff',
+                  left: 'Gg',
+                },
+                messageId: 'unexpectedDecoratorsOrder',
+              },
+            ]),
             options: [
               {
                 ...options,
                 partitionByComment: '^Part*',
               },
             ],
-            errors: duplicate5Times([
-              {
-                messageId: 'unexpectedDecoratorsOrder',
-                data: {
-                  left: 'D',
-                  right: 'Bbb',
-                },
-              },
-              {
-                messageId: 'unexpectedDecoratorsOrder',
-                data: {
-                  left: 'Gg',
-                  right: 'Fff',
-                },
-              },
-            ]),
           },
         ],
+        valid: [],
       },
     )
 
@@ -736,66 +736,8 @@ describe(ruleName, () => {
       `${ruleName}(${type}): allows to use multiple partition comments`,
       rule,
       {
-        valid: [],
         invalid: [
           {
-            code: dedent`
-              /* Partition Comment */
-              // Part: A
-              @D
-              // Part: B
-              @Aaa
-              @C
-              @Bb
-              /* Other */
-              @E
-              class Class {
-
-                /* Partition Comment */
-                // Part: A
-                @D
-                // Part: B
-                @Aaa
-                @C
-                @Bb
-                /* Other */
-                @E
-                property
-
-                /* Partition Comment */
-                // Part: A
-                @D
-                // Part: B
-                @Aaa
-                @C
-                @Bb
-                /* Other */
-                @E
-                accessor field
-
-                /* Partition Comment */
-                // Part: A
-                @D
-                // Part: B
-                @Aaa
-                @C
-                @Bb
-                /* Other */
-                @E
-                method(
-                  /* Partition Comment */
-                  // Part: A
-                  @D
-                  // Part: B
-                  @Aaa
-                  @C
-                  @Bb
-                  /* Other */
-                  @E
-                  parameter) {}
-
-              }
-            `,
             output: dedent`
               /* Partition Comment */
               // Part: A
@@ -853,23 +795,81 @@ describe(ruleName, () => {
 
               }
             `,
+            code: dedent`
+              /* Partition Comment */
+              // Part: A
+              @D
+              // Part: B
+              @Aaa
+              @C
+              @Bb
+              /* Other */
+              @E
+              class Class {
+
+                /* Partition Comment */
+                // Part: A
+                @D
+                // Part: B
+                @Aaa
+                @C
+                @Bb
+                /* Other */
+                @E
+                property
+
+                /* Partition Comment */
+                // Part: A
+                @D
+                // Part: B
+                @Aaa
+                @C
+                @Bb
+                /* Other */
+                @E
+                accessor field
+
+                /* Partition Comment */
+                // Part: A
+                @D
+                // Part: B
+                @Aaa
+                @C
+                @Bb
+                /* Other */
+                @E
+                method(
+                  /* Partition Comment */
+                  // Part: A
+                  @D
+                  // Part: B
+                  @Aaa
+                  @C
+                  @Bb
+                  /* Other */
+                  @E
+                  parameter) {}
+
+              }
+            `,
+            errors: duplicate5Times([
+              {
+                data: {
+                  right: 'Bb',
+                  left: 'C',
+                },
+                messageId: 'unexpectedDecoratorsOrder',
+              },
+            ]),
             options: [
               {
                 ...options,
                 partitionByComment: ['Partition Comment', 'Part: *', 'Other'],
               },
             ],
-            errors: duplicate5Times([
-              {
-                messageId: 'unexpectedDecoratorsOrder',
-                data: {
-                  left: 'C',
-                  right: 'Bb',
-                },
-              },
-            ]),
           },
         ],
+        valid: [],
       },
     )
 
@@ -1072,12 +1072,64 @@ describe(ruleName, () => {
     let type = 'natural-order'
 
     let options = {
-      type: 'natural',
       ignoreCase: true,
+      type: 'natural',
       order: 'asc',
     } as const
 
     ruleTester.run(`${ruleName}(${type}): sorts decorators`, rule, {
+      invalid: [
+        {
+          output: dedent`
+            @A @B() @C
+            class Class {
+
+              @A @B() @C
+              property
+
+              @A @B() @C
+              accessor field
+
+              @A @B() @C
+              method(
+                @A
+                @B()
+                @C
+                parameter) {}
+
+            }
+          `,
+          code: dedent`
+            @A @C @B()
+            class Class {
+
+              @A @C @B()
+              property
+
+              @A @C @B()
+              accessor field
+
+              @A @C @B()
+              method(
+                @A
+                @C
+                @B()
+                parameter) {}
+
+            }
+          `,
+          errors: duplicate5Times([
+            {
+              data: {
+                right: 'B',
+                left: 'C',
+              },
+              messageId: 'unexpectedDecoratorsOrder',
+            },
+          ]),
+          options: [options],
+        },
+      ],
       valid: [
         {
           code: dedent`
@@ -1122,139 +1174,14 @@ describe(ruleName, () => {
           options: [options],
         },
       ],
-      invalid: [
-        {
-          code: dedent`
-            @A @C @B()
-            class Class {
-
-              @A @C @B()
-              property
-
-              @A @C @B()
-              accessor field
-
-              @A @C @B()
-              method(
-                @A
-                @C
-                @B()
-                parameter) {}
-
-            }
-          `,
-          output: dedent`
-            @A @B() @C
-            class Class {
-
-              @A @B() @C
-              property
-
-              @A @B() @C
-              accessor field
-
-              @A @B() @C
-              method(
-                @A
-                @B()
-                @C
-                parameter) {}
-
-            }
-          `,
-          options: [options],
-          errors: duplicate5Times([
-            {
-              messageId: 'unexpectedDecoratorsOrder',
-              data: {
-                left: 'C',
-                right: 'B',
-              },
-            },
-          ]),
-        },
-      ],
     })
 
     ruleTester.run(
       `${ruleName}(${type}): does not break decorator docs`,
       rule,
       {
-        valid: [],
         invalid: [
           {
-            code: dedent`
-              /**
-               * Comment B
-               */
-              @B
-              /**
-               * Comment A
-               */
-              @A
-              // Comment D
-              @D
-              /* Comment C */
-              @C
-              class Class {
-
-                /**
-                 * Comment B
-                 */
-                @B
-                /**
-                 * Comment A
-                 */
-                @A
-                // Comment D
-                @D
-                /* Comment C */
-                @C
-                property
-
-                /**
-                 * Comment B
-                 */
-                @B
-                /**
-                 * Comment A
-                 */
-                @A
-                // Comment D
-                @D
-                /* Comment C */
-                @C
-                accessor field
-
-                /**
-                 * Comment B
-                 */
-                @B
-                /**
-                 * Comment A
-                 */
-                @A
-                // Comment D
-                @D
-                /* Comment C */
-                @C
-                method(
-                  /**
-                   * Comment B
-                   */
-                  @B
-                  /**
-                   * Comment A
-                   */
-                  @A
-                  // Comment D
-                  @D
-                  /* Comment C */
-                  @C
-                  parameter) {}
-
-              }
-            `,
             output: dedent`
               /**
                * Comment A
@@ -1327,25 +1254,98 @@ describe(ruleName, () => {
 
               }
             `,
-            options: [options],
+            code: dedent`
+              /**
+               * Comment B
+               */
+              @B
+              /**
+               * Comment A
+               */
+              @A
+              // Comment D
+              @D
+              /* Comment C */
+              @C
+              class Class {
+
+                /**
+                 * Comment B
+                 */
+                @B
+                /**
+                 * Comment A
+                 */
+                @A
+                // Comment D
+                @D
+                /* Comment C */
+                @C
+                property
+
+                /**
+                 * Comment B
+                 */
+                @B
+                /**
+                 * Comment A
+                 */
+                @A
+                // Comment D
+                @D
+                /* Comment C */
+                @C
+                accessor field
+
+                /**
+                 * Comment B
+                 */
+                @B
+                /**
+                 * Comment A
+                 */
+                @A
+                // Comment D
+                @D
+                /* Comment C */
+                @C
+                method(
+                  /**
+                   * Comment B
+                   */
+                  @B
+                  /**
+                   * Comment A
+                   */
+                  @A
+                  // Comment D
+                  @D
+                  /* Comment C */
+                  @C
+                  parameter) {}
+
+              }
+            `,
             errors: duplicate5Times([
               {
-                messageId: 'unexpectedDecoratorsOrder',
                 data: {
-                  left: 'B',
                   right: 'A',
+                  left: 'B',
                 },
+                messageId: 'unexpectedDecoratorsOrder',
               },
               {
-                messageId: 'unexpectedDecoratorsOrder',
                 data: {
-                  left: 'D',
                   right: 'C',
+                  left: 'D',
                 },
+                messageId: 'unexpectedDecoratorsOrder',
               },
             ]),
+            options: [options],
           },
         ],
+        valid: [],
       },
     )
 
@@ -1353,31 +1353,8 @@ describe(ruleName, () => {
       `${ruleName}(${type}): sorts decorators with comments on the same line`,
       rule,
       {
-        valid: [],
         invalid: [
           {
-            code: dedent`
-              @B // Comment B
-              @A // Comment A
-              class Class {
-
-                @B // Comment B
-                @A // Comment A
-                property
-
-                @B // Comment B
-                @A // Comment A
-                accessor field
-
-                @B // Comment B
-                @A // Comment A
-                method(
-                  @B // Comment B
-                  @A // Comment A
-                  parameter) {}
-
-              }
-            `,
             output: dedent`
               @A // Comment A
               @B // Comment B
@@ -1400,18 +1377,41 @@ describe(ruleName, () => {
 
               }
             `,
-            options: [options],
+            code: dedent`
+              @B // Comment B
+              @A // Comment A
+              class Class {
+
+                @B // Comment B
+                @A // Comment A
+                property
+
+                @B // Comment B
+                @A // Comment A
+                accessor field
+
+                @B // Comment B
+                @A // Comment A
+                method(
+                  @B // Comment B
+                  @A // Comment A
+                  parameter) {}
+
+              }
+            `,
             errors: duplicate5Times([
               {
-                messageId: 'unexpectedDecoratorsOrder',
                 data: {
-                  left: 'B',
                   right: 'A',
+                  left: 'B',
                 },
+                messageId: 'unexpectedDecoratorsOrder',
               },
             ]),
+            options: [options],
           },
         ],
+        valid: [],
       },
     )
 
@@ -1419,36 +1419,8 @@ describe(ruleName, () => {
       `${ruleName}(${type}): allows to set groups for sorting`,
       rule,
       {
-        valid: [],
         invalid: [
           {
-            code: dedent`
-              @NoPublicAttributeError
-              @Validated
-              @AtLeastOneAttributeError
-              class Class {
-
-                @NoPublicAttributeError
-                @Validated
-                @AtLeastOneAttributeError
-                property
-
-                @NoPublicAttributeError
-                @Validated
-                @AtLeastOneAttributeError
-                accessor field
-
-                @NoPublicAttributeError
-                @Validated
-                @AtLeastOneAttributeError
-                method(
-                  @NoPublicAttributeError
-                  @Validated
-                  @AtLeastOneAttributeError
-                  parameter) {}
-
-              }
-            `,
             output: dedent`
               @Validated
               @AtLeastOneAttributeError
@@ -1476,28 +1448,56 @@ describe(ruleName, () => {
 
               }
             `,
+            code: dedent`
+              @NoPublicAttributeError
+              @Validated
+              @AtLeastOneAttributeError
+              class Class {
+
+                @NoPublicAttributeError
+                @Validated
+                @AtLeastOneAttributeError
+                property
+
+                @NoPublicAttributeError
+                @Validated
+                @AtLeastOneAttributeError
+                accessor field
+
+                @NoPublicAttributeError
+                @Validated
+                @AtLeastOneAttributeError
+                method(
+                  @NoPublicAttributeError
+                  @Validated
+                  @AtLeastOneAttributeError
+                  parameter) {}
+
+              }
+            `,
+            errors: duplicate5Times([
+              {
+                data: {
+                  left: 'NoPublicAttributeError',
+                  rightGroup: 'unknown',
+                  leftGroup: 'error',
+                  right: 'Validated',
+                },
+                messageId: 'unexpectedDecoratorsGroupOrder',
+              },
+            ]),
             options: [
               {
                 ...options,
-                groups: ['unknown', 'error'],
                 customGroups: {
                   error: 'Error$',
                 },
+                groups: ['unknown', 'error'],
               },
             ],
-            errors: duplicate5Times([
-              {
-                messageId: 'unexpectedDecoratorsGroupOrder',
-                data: {
-                  left: 'NoPublicAttributeError',
-                  leftGroup: 'error',
-                  right: 'Validated',
-                  rightGroup: 'unknown',
-                },
-              },
-            ]),
           },
         ],
+        valid: [],
       },
     )
 
@@ -1542,10 +1542,10 @@ describe(ruleName, () => {
             options: [
               {
                 ...options,
-                groups: ['unknown', 'elementsWithoutFoo'],
                 customGroups: {
                   elementsWithoutFoo: '^(?!.*Foo).*$',
                 },
+                groups: ['unknown', 'elementsWithoutFoo'],
               },
             ],
           },
@@ -1558,81 +1558,8 @@ describe(ruleName, () => {
       `${ruleName}(${type}): allows to use partition comments`,
       rule,
       {
-        valid: [],
         invalid: [
           {
-            code: dedent`
-              // Part: A
-              @Cc
-              @D
-              // Not partition comment
-              @Bbb
-              // Part: B
-              @Aaaa
-              @E
-              // Part: C
-              @Gg()
-              // Not partition comment
-              @Fff
-              class Class {
-
-                // Part: A
-                @Cc
-                @D
-                // Not partition comment
-                @Bbb
-                // Part: B
-                @Aaaa
-                @E
-                // Part: C
-                @Gg()
-                // Not partition comment
-                @Fff
-                property
-
-                // Part: A
-                @Cc
-                @D
-                // Not partition comment
-                @Bbb
-                // Part: B
-                @Aaaa
-                @E
-                // Part: C
-                @Gg()
-                // Not partition comment
-                @Fff
-                accessor field
-
-                // Part: A
-                @Cc
-                @D
-                // Not partition comment
-                @Bbb
-                // Part: B
-                @Aaaa
-                @E
-                // Part: C
-                @Gg()
-                // Not partition comment
-                @Fff
-                method(
-                  // Part: A
-                  @Cc
-                  @D
-                  // Not partition comment
-                  @Bbb
-                  // Part: B
-                  @Aaaa
-                  @E
-                  // Part: C
-                  @Gg()
-                  // Not partition comment
-                  @Fff
-                  parameter) {}
-
-              }
-            `,
             output: dedent`
               // Part: A
               // Not partition comment
@@ -1705,30 +1632,103 @@ describe(ruleName, () => {
 
               }
             `,
+            code: dedent`
+              // Part: A
+              @Cc
+              @D
+              // Not partition comment
+              @Bbb
+              // Part: B
+              @Aaaa
+              @E
+              // Part: C
+              @Gg()
+              // Not partition comment
+              @Fff
+              class Class {
+
+                // Part: A
+                @Cc
+                @D
+                // Not partition comment
+                @Bbb
+                // Part: B
+                @Aaaa
+                @E
+                // Part: C
+                @Gg()
+                // Not partition comment
+                @Fff
+                property
+
+                // Part: A
+                @Cc
+                @D
+                // Not partition comment
+                @Bbb
+                // Part: B
+                @Aaaa
+                @E
+                // Part: C
+                @Gg()
+                // Not partition comment
+                @Fff
+                accessor field
+
+                // Part: A
+                @Cc
+                @D
+                // Not partition comment
+                @Bbb
+                // Part: B
+                @Aaaa
+                @E
+                // Part: C
+                @Gg()
+                // Not partition comment
+                @Fff
+                method(
+                  // Part: A
+                  @Cc
+                  @D
+                  // Not partition comment
+                  @Bbb
+                  // Part: B
+                  @Aaaa
+                  @E
+                  // Part: C
+                  @Gg()
+                  // Not partition comment
+                  @Fff
+                  parameter) {}
+
+              }
+            `,
+            errors: duplicate5Times([
+              {
+                data: {
+                  right: 'Bbb',
+                  left: 'D',
+                },
+                messageId: 'unexpectedDecoratorsOrder',
+              },
+              {
+                data: {
+                  right: 'Fff',
+                  left: 'Gg',
+                },
+                messageId: 'unexpectedDecoratorsOrder',
+              },
+            ]),
             options: [
               {
                 ...options,
                 partitionByComment: '^Part*',
               },
             ],
-            errors: duplicate5Times([
-              {
-                messageId: 'unexpectedDecoratorsOrder',
-                data: {
-                  left: 'D',
-                  right: 'Bbb',
-                },
-              },
-              {
-                messageId: 'unexpectedDecoratorsOrder',
-                data: {
-                  left: 'Gg',
-                  right: 'Fff',
-                },
-              },
-            ]),
           },
         ],
+        valid: [],
       },
     )
 
@@ -1786,66 +1786,8 @@ describe(ruleName, () => {
       `${ruleName}(${type}): allows to use multiple partition comments`,
       rule,
       {
-        valid: [],
         invalid: [
           {
-            code: dedent`
-              /* Partition Comment */
-              // Part: A
-              @D
-              // Part: B
-              @Aaa
-              @C
-              @Bb
-              /* Other */
-              @E
-              class Class {
-
-                /* Partition Comment */
-                // Part: A
-                @D
-                // Part: B
-                @Aaa
-                @C
-                @Bb
-                /* Other */
-                @E
-                property
-
-                /* Partition Comment */
-                // Part: A
-                @D
-                // Part: B
-                @Aaa
-                @C
-                @Bb
-                /* Other */
-                @E
-                accessor field
-
-                /* Partition Comment */
-                // Part: A
-                @D
-                // Part: B
-                @Aaa
-                @C
-                @Bb
-                /* Other */
-                @E
-                method(
-                  /* Partition Comment */
-                  // Part: A
-                  @D
-                  // Part: B
-                  @Aaa
-                  @C
-                  @Bb
-                  /* Other */
-                  @E
-                  parameter) {}
-
-              }
-            `,
             output: dedent`
               /* Partition Comment */
               // Part: A
@@ -1903,23 +1845,81 @@ describe(ruleName, () => {
 
               }
             `,
+            code: dedent`
+              /* Partition Comment */
+              // Part: A
+              @D
+              // Part: B
+              @Aaa
+              @C
+              @Bb
+              /* Other */
+              @E
+              class Class {
+
+                /* Partition Comment */
+                // Part: A
+                @D
+                // Part: B
+                @Aaa
+                @C
+                @Bb
+                /* Other */
+                @E
+                property
+
+                /* Partition Comment */
+                // Part: A
+                @D
+                // Part: B
+                @Aaa
+                @C
+                @Bb
+                /* Other */
+                @E
+                accessor field
+
+                /* Partition Comment */
+                // Part: A
+                @D
+                // Part: B
+                @Aaa
+                @C
+                @Bb
+                /* Other */
+                @E
+                method(
+                  /* Partition Comment */
+                  // Part: A
+                  @D
+                  // Part: B
+                  @Aaa
+                  @C
+                  @Bb
+                  /* Other */
+                  @E
+                  parameter) {}
+
+              }
+            `,
+            errors: duplicate5Times([
+              {
+                data: {
+                  right: 'Bb',
+                  left: 'C',
+                },
+                messageId: 'unexpectedDecoratorsOrder',
+              },
+            ]),
             options: [
               {
                 ...options,
                 partitionByComment: ['Partition Comment', 'Part: *', 'Other'],
               },
             ],
-            errors: duplicate5Times([
-              {
-                messageId: 'unexpectedDecoratorsOrder',
-                data: {
-                  left: 'C',
-                  right: 'Bb',
-                },
-              },
-            ]),
           },
         ],
+        valid: [],
       },
     )
 
@@ -2076,6 +2076,54 @@ describe(ruleName, () => {
     } as const
 
     ruleTester.run(`${ruleName}(${type}): sorts decorators`, rule, {
+      invalid: [
+        {
+          output: dedent`
+            @A @C @B()
+            class Class {
+
+              @A @C @B()
+              property
+
+              @A @C @B()
+              accessor field
+
+              @A @C @B()
+              method(
+                @A @C @B()
+                parameter) {}
+
+            }
+          `,
+          code: dedent`
+            @A @B() @C
+            class Class {
+
+              @A @B() @C
+              property
+
+              @A @B() @C
+              accessor field
+
+              @A @B() @C
+              method(
+                @A @B() @C
+                parameter) {}
+
+            }
+          `,
+          errors: duplicate5Times([
+            {
+              data: {
+                right: 'C',
+                left: 'B',
+              },
+              messageId: 'unexpectedDecoratorsOrder',
+            },
+          ]),
+          options: [options],
+        },
+      ],
       valid: [
         {
           code: dedent`
@@ -2118,135 +2166,14 @@ describe(ruleName, () => {
           options: [options],
         },
       ],
-      invalid: [
-        {
-          code: dedent`
-            @A @B() @C
-            class Class {
-
-              @A @B() @C
-              property
-
-              @A @B() @C
-              accessor field
-
-              @A @B() @C
-              method(
-                @A @B() @C
-                parameter) {}
-
-            }
-          `,
-          output: dedent`
-            @A @C @B()
-            class Class {
-
-              @A @C @B()
-              property
-
-              @A @C @B()
-              accessor field
-
-              @A @C @B()
-              method(
-                @A @C @B()
-                parameter) {}
-
-            }
-          `,
-          options: [options],
-          errors: duplicate5Times([
-            {
-              messageId: 'unexpectedDecoratorsOrder',
-              data: {
-                left: 'B',
-                right: 'C',
-              },
-            },
-          ]),
-        },
-      ],
     })
 
     ruleTester.run(
       `${ruleName}(${type}): does not break decorator docs`,
       rule,
       {
-        valid: [],
         invalid: [
           {
-            code: dedent`
-              /**
-               * Comment B
-               */
-              @BB
-              /**
-               * Comment A
-               */
-              @A
-              // Comment D
-              @DDDD
-              /* Comment C */
-              @CCC
-              class Class {
-
-                /**
-                 * Comment B
-                 */
-                @BB
-                /**
-                 * Comment A
-                 */
-                @A
-                // Comment D
-                @DDDD
-                /* Comment C */
-                @CCC
-                property
-
-                /**
-                 * Comment B
-                 */
-                @BB
-                /**
-                 * Comment A
-                 */
-                @A
-                // Comment D
-                @DDDD
-                /* Comment C */
-                @CCC
-                accessor field
-
-                /**
-                 * Comment B
-                 */
-                @BB
-                /**
-                 * Comment A
-                 */
-                @A
-                // Comment D
-                @DDDD
-                /* Comment C */
-                @CCC
-                method(
-                  /**
-                   * Comment B
-                   */
-                  @BB
-                  /**
-                   * Comment A
-                   */
-                  @A
-                  // Comment D
-                  @DDDD
-                  /* Comment C */
-                  @CCC
-                  parameter) {}
-
-              }
-            `,
             output: dedent`
               /**
                * Comment A
@@ -2319,25 +2246,98 @@ describe(ruleName, () => {
 
               }
             `,
-            options: [options],
+            code: dedent`
+              /**
+               * Comment B
+               */
+              @BB
+              /**
+               * Comment A
+               */
+              @A
+              // Comment D
+              @DDDD
+              /* Comment C */
+              @CCC
+              class Class {
+
+                /**
+                 * Comment B
+                 */
+                @BB
+                /**
+                 * Comment A
+                 */
+                @A
+                // Comment D
+                @DDDD
+                /* Comment C */
+                @CCC
+                property
+
+                /**
+                 * Comment B
+                 */
+                @BB
+                /**
+                 * Comment A
+                 */
+                @A
+                // Comment D
+                @DDDD
+                /* Comment C */
+                @CCC
+                accessor field
+
+                /**
+                 * Comment B
+                 */
+                @BB
+                /**
+                 * Comment A
+                 */
+                @A
+                // Comment D
+                @DDDD
+                /* Comment C */
+                @CCC
+                method(
+                  /**
+                   * Comment B
+                   */
+                  @BB
+                  /**
+                   * Comment A
+                   */
+                  @A
+                  // Comment D
+                  @DDDD
+                  /* Comment C */
+                  @CCC
+                  parameter) {}
+
+              }
+            `,
             errors: duplicate5Times([
               {
-                messageId: 'unexpectedDecoratorsOrder',
                 data: {
                   left: 'BB',
                   right: 'A',
                 },
+                messageId: 'unexpectedDecoratorsOrder',
               },
               {
-                messageId: 'unexpectedDecoratorsOrder',
                 data: {
                   left: 'DDDD',
                   right: 'CCC',
                 },
+                messageId: 'unexpectedDecoratorsOrder',
               },
             ]),
+            options: [options],
           },
         ],
+        valid: [],
       },
     )
 
@@ -2345,31 +2345,8 @@ describe(ruleName, () => {
       `${ruleName}(${type}): sorts decorators with comments on the same line`,
       rule,
       {
-        valid: [],
         invalid: [
           {
-            code: dedent`
-              @B() // Comment B
-              @A // Comment A
-              class Class {
-
-                @B() // Comment B
-                @A // Comment A
-                property
-
-                @B() // Comment B
-                @A // Comment A
-                accessor field
-
-                @B() // Comment B
-                @A // Comment A
-                method(
-                  @B() // Comment B
-                  @A // Comment A
-                  parameter) {}
-
-              }
-            `,
             output: dedent`
               @A // Comment A
               @B() // Comment B
@@ -2392,18 +2369,41 @@ describe(ruleName, () => {
 
               }
             `,
-            options: [options],
+            code: dedent`
+              @B() // Comment B
+              @A // Comment A
+              class Class {
+
+                @B() // Comment B
+                @A // Comment A
+                property
+
+                @B() // Comment B
+                @A // Comment A
+                accessor field
+
+                @B() // Comment B
+                @A // Comment A
+                method(
+                  @B() // Comment B
+                  @A // Comment A
+                  parameter) {}
+
+              }
+            `,
             errors: duplicate5Times([
               {
-                messageId: 'unexpectedDecoratorsOrder',
                 data: {
-                  left: 'B',
                   right: 'A',
+                  left: 'B',
                 },
+                messageId: 'unexpectedDecoratorsOrder',
               },
             ]),
+            options: [options],
           },
         ],
+        valid: [],
       },
     )
 
@@ -2411,36 +2411,8 @@ describe(ruleName, () => {
       `${ruleName}(${type}): allows to set groups for sorting`,
       rule,
       {
-        valid: [],
         invalid: [
           {
-            code: dedent`
-              @NoPublicAttributeError
-              @Validated
-              @AtLeastOneAttributeError
-              class Class {
-
-                @NoPublicAttributeError
-                @Validated
-                @AtLeastOneAttributeError
-                property
-
-                @NoPublicAttributeError
-                @Validated
-                @AtLeastOneAttributeError
-                accessor field
-
-                @NoPublicAttributeError
-                @Validated
-                @AtLeastOneAttributeError
-                method(
-                  @NoPublicAttributeError
-                  @Validated
-                  @AtLeastOneAttributeError
-                  parameter) {}
-
-              }
-            `,
             output: dedent`
               @Validated
               @NoPublicAttributeError
@@ -2468,28 +2440,56 @@ describe(ruleName, () => {
 
               }
             `,
+            code: dedent`
+              @NoPublicAttributeError
+              @Validated
+              @AtLeastOneAttributeError
+              class Class {
+
+                @NoPublicAttributeError
+                @Validated
+                @AtLeastOneAttributeError
+                property
+
+                @NoPublicAttributeError
+                @Validated
+                @AtLeastOneAttributeError
+                accessor field
+
+                @NoPublicAttributeError
+                @Validated
+                @AtLeastOneAttributeError
+                method(
+                  @NoPublicAttributeError
+                  @Validated
+                  @AtLeastOneAttributeError
+                  parameter) {}
+
+              }
+            `,
+            errors: duplicate5Times([
+              {
+                data: {
+                  left: 'NoPublicAttributeError',
+                  rightGroup: 'unknown',
+                  leftGroup: 'error',
+                  right: 'Validated',
+                },
+                messageId: 'unexpectedDecoratorsGroupOrder',
+              },
+            ]),
             options: [
               {
                 ...options,
-                groups: ['unknown', 'error'],
                 customGroups: {
                   error: 'Error$',
                 },
+                groups: ['unknown', 'error'],
               },
             ],
-            errors: duplicate5Times([
-              {
-                messageId: 'unexpectedDecoratorsGroupOrder',
-                data: {
-                  left: 'NoPublicAttributeError',
-                  leftGroup: 'error',
-                  right: 'Validated',
-                  rightGroup: 'unknown',
-                },
-              },
-            ]),
           },
         ],
+        valid: [],
       },
     )
 
@@ -2534,10 +2534,10 @@ describe(ruleName, () => {
             options: [
               {
                 ...options,
-                groups: ['unknown', 'elementsWithoutFoo'],
                 customGroups: {
                   elementsWithoutFoo: '^(?!.*Foo).*$',
                 },
+                groups: ['unknown', 'elementsWithoutFoo'],
               },
             ],
           },
@@ -2550,81 +2550,8 @@ describe(ruleName, () => {
       `${ruleName}(${type}): allows to use partition comments`,
       rule,
       {
-        valid: [],
         invalid: [
           {
-            code: dedent`
-              // Part: A
-              @Cc
-              @D
-              // Not partition comment
-              @Bbb
-              // Part: B
-              @Aaaa
-              @E
-              // Part: C
-              @Gg()
-              // Not partition comment
-              @Fff
-              class Class {
-
-                // Part: A
-                @Cc
-                @D
-                // Not partition comment
-                @Bbb
-                // Part: B
-                @Aaaa
-                @E
-                // Part: C
-                @Gg()
-                // Not partition comment
-                @Fff
-                property
-
-                // Part: A
-                @Cc
-                @D
-                // Not partition comment
-                @Bbb
-                // Part: B
-                @Aaaa
-                @E
-                // Part: C
-                @Gg()
-                // Not partition comment
-                @Fff
-                accessor field
-
-                // Part: A
-                @Cc
-                @D
-                // Not partition comment
-                @Bbb
-                // Part: B
-                @Aaaa
-                @E
-                // Part: C
-                @Gg()
-                // Not partition comment
-                @Fff
-                method(
-                  // Part: A
-                  @Cc
-                  @D
-                  // Not partition comment
-                  @Bbb
-                  // Part: B
-                  @Aaaa
-                  @E
-                  // Part: C
-                  @Gg()
-                  // Not partition comment
-                  @Fff
-                  parameter) {}
-
-              }
-            `,
             output: dedent`
               // Part: A
               @D
@@ -2697,37 +2624,110 @@ describe(ruleName, () => {
 
               }
             `,
+            code: dedent`
+              // Part: A
+              @Cc
+              @D
+              // Not partition comment
+              @Bbb
+              // Part: B
+              @Aaaa
+              @E
+              // Part: C
+              @Gg()
+              // Not partition comment
+              @Fff
+              class Class {
+
+                // Part: A
+                @Cc
+                @D
+                // Not partition comment
+                @Bbb
+                // Part: B
+                @Aaaa
+                @E
+                // Part: C
+                @Gg()
+                // Not partition comment
+                @Fff
+                property
+
+                // Part: A
+                @Cc
+                @D
+                // Not partition comment
+                @Bbb
+                // Part: B
+                @Aaaa
+                @E
+                // Part: C
+                @Gg()
+                // Not partition comment
+                @Fff
+                accessor field
+
+                // Part: A
+                @Cc
+                @D
+                // Not partition comment
+                @Bbb
+                // Part: B
+                @Aaaa
+                @E
+                // Part: C
+                @Gg()
+                // Not partition comment
+                @Fff
+                method(
+                  // Part: A
+                  @Cc
+                  @D
+                  // Not partition comment
+                  @Bbb
+                  // Part: B
+                  @Aaaa
+                  @E
+                  // Part: C
+                  @Gg()
+                  // Not partition comment
+                  @Fff
+                  parameter) {}
+
+              }
+            `,
+            errors: duplicate5Times([
+              {
+                data: {
+                  left: 'Cc',
+                  right: 'D',
+                },
+                messageId: 'unexpectedDecoratorsOrder',
+              },
+              {
+                data: {
+                  left: 'Aaaa',
+                  right: 'E',
+                },
+                messageId: 'unexpectedDecoratorsOrder',
+              },
+              {
+                data: {
+                  right: 'Fff',
+                  left: 'Gg',
+                },
+                messageId: 'unexpectedDecoratorsOrder',
+              },
+            ]),
             options: [
               {
                 ...options,
                 partitionByComment: '^Part*',
               },
             ],
-            errors: duplicate5Times([
-              {
-                messageId: 'unexpectedDecoratorsOrder',
-                data: {
-                  left: 'Cc',
-                  right: 'D',
-                },
-              },
-              {
-                messageId: 'unexpectedDecoratorsOrder',
-                data: {
-                  left: 'Aaaa',
-                  right: 'E',
-                },
-              },
-              {
-                messageId: 'unexpectedDecoratorsOrder',
-                data: {
-                  left: 'Gg',
-                  right: 'Fff',
-                },
-              },
-            ]),
           },
         ],
+        valid: [],
       },
     )
 
@@ -2785,66 +2785,8 @@ describe(ruleName, () => {
       `${ruleName}(${type}): allows to use multiple partition comments`,
       rule,
       {
-        valid: [],
         invalid: [
           {
-            code: dedent`
-              /* Partition Comment */
-              // Part: A
-              @D
-              // Part: B
-              @Aaa
-              @C
-              @Bb
-              /* Other */
-              @E
-              class Class {
-
-                /* Partition Comment */
-                // Part: A
-                @D
-                // Part: B
-                @Aaa
-                @C
-                @Bb
-                /* Other */
-                @E
-                property
-
-                /* Partition Comment */
-                // Part: A
-                @D
-                // Part: B
-                @Aaa
-                @C
-                @Bb
-                /* Other */
-                @E
-                accessor field
-
-                /* Partition Comment */
-                // Part: A
-                @D
-                // Part: B
-                @Aaa
-                @C
-                @Bb
-                /* Other */
-                @E
-                method(
-                  /* Partition Comment */
-                  // Part: A
-                  @D
-                  // Part: B
-                  @Aaa
-                  @C
-                  @Bb
-                  /* Other */
-                  @E
-                  parameter) {}
-
-              }
-            `,
             output: dedent`
               /* Partition Comment */
               // Part: A
@@ -2902,23 +2844,81 @@ describe(ruleName, () => {
 
               }
             `,
+            code: dedent`
+              /* Partition Comment */
+              // Part: A
+              @D
+              // Part: B
+              @Aaa
+              @C
+              @Bb
+              /* Other */
+              @E
+              class Class {
+
+                /* Partition Comment */
+                // Part: A
+                @D
+                // Part: B
+                @Aaa
+                @C
+                @Bb
+                /* Other */
+                @E
+                property
+
+                /* Partition Comment */
+                // Part: A
+                @D
+                // Part: B
+                @Aaa
+                @C
+                @Bb
+                /* Other */
+                @E
+                accessor field
+
+                /* Partition Comment */
+                // Part: A
+                @D
+                // Part: B
+                @Aaa
+                @C
+                @Bb
+                /* Other */
+                @E
+                method(
+                  /* Partition Comment */
+                  // Part: A
+                  @D
+                  // Part: B
+                  @Aaa
+                  @C
+                  @Bb
+                  /* Other */
+                  @E
+                  parameter) {}
+
+              }
+            `,
+            errors: duplicate5Times([
+              {
+                data: {
+                  left: 'Aaa',
+                  right: 'C',
+                },
+                messageId: 'unexpectedDecoratorsOrder',
+              },
+            ]),
             options: [
               {
                 ...options,
                 partitionByComment: ['Partition Comment', 'Part: *', 'Other'],
               },
             ],
-            errors: duplicate5Times([
-              {
-                messageId: 'unexpectedDecoratorsOrder',
-                data: {
-                  left: 'Aaa',
-                  right: 'C',
-                },
-              },
-            ]),
           },
         ],
+        valid: [],
       },
     )
 
@@ -3091,16 +3091,16 @@ describe(ruleName, () => {
         {
           valid: [
             {
-              code: dedent`
-                @B
-                @A
-                class Class {}
-              `,
               options: [
                 {
                   sortOnClasses: false,
                 },
               ],
+              code: dedent`
+                @B
+                @A
+                class Class {}
+              `,
             },
           ],
           invalid: [],
@@ -3215,35 +3215,8 @@ describe(ruleName, () => {
 
     let eslintDisableRuleTesterName = `${ruleName}: supports 'eslint-disable' for individual nodes`
     ruleTester.run(eslintDisableRuleTesterName, rule, {
-      valid: [],
       invalid: [
         {
-          code: dedent`
-            @C
-            @B
-            @A // eslint-disable-line
-            class Class {
-
-              @C
-              @B
-              @A // eslint-disable-line
-              property
-
-              @C
-              @B
-              @A // eslint-disable-line
-              accessor field
-
-              @C
-              @B
-              @A // eslint-disable-line
-              method(
-                @C
-                @B
-                @A // eslint-disable-line
-                parameter) {}
-            }
-          `,
           output: dedent`
             @B
             @C
@@ -3270,49 +3243,44 @@ describe(ruleName, () => {
                 parameter) {}
             }
           `,
-          options: [{}],
+          code: dedent`
+            @C
+            @B
+            @A // eslint-disable-line
+            class Class {
+
+              @C
+              @B
+              @A // eslint-disable-line
+              property
+
+              @C
+              @B
+              @A // eslint-disable-line
+              accessor field
+
+              @C
+              @B
+              @A // eslint-disable-line
+              method(
+                @C
+                @B
+                @A // eslint-disable-line
+                parameter) {}
+            }
+          `,
           errors: duplicate5Times([
             {
-              messageId: 'unexpectedDecoratorsOrder',
               data: {
-                left: 'C',
                 right: 'B',
+                left: 'C',
               },
+              messageId: 'unexpectedDecoratorsOrder',
             },
           ]),
+          options: [{}],
         },
         {
-          code: dedent`
-            @D
-            @C
-            @A // eslint-disable-line
-            @B
-            class Class {
-
-              @D
-              @C
-              @A // eslint-disable-line
-              @B
-              property
-
-              @D
-              @C
-              @A // eslint-disable-line
-              @B
-              accessor field
-
-              @D
-              @C
-              @A // eslint-disable-line
-              @B
-              method(
-                @D
-                @C
-                @A // eslint-disable-line
-                @B
-                parameter) {}
-            }
-          `,
           output: dedent`
             @B
             @C
@@ -3344,60 +3312,60 @@ describe(ruleName, () => {
                 parameter) {}
             }
           `,
+          code: dedent`
+            @D
+            @C
+            @A // eslint-disable-line
+            @B
+            class Class {
+
+              @D
+              @C
+              @A // eslint-disable-line
+              @B
+              property
+
+              @D
+              @C
+              @A // eslint-disable-line
+              @B
+              accessor field
+
+              @D
+              @C
+              @A // eslint-disable-line
+              @B
+              method(
+                @D
+                @C
+                @A // eslint-disable-line
+                @B
+                parameter) {}
+            }
+          `,
+          errors: duplicate5Times([
+            {
+              data: {
+                right: 'C',
+                left: 'D',
+              },
+              messageId: 'unexpectedDecoratorsOrder',
+            },
+            {
+              data: {
+                right: 'B',
+                left: 'A',
+              },
+              messageId: 'unexpectedDecoratorsOrder',
+            },
+          ]),
           options: [
             {
               partitionByComment: true,
             },
           ],
-          errors: duplicate5Times([
-            {
-              messageId: 'unexpectedDecoratorsOrder',
-              data: {
-                left: 'D',
-                right: 'C',
-              },
-            },
-            {
-              messageId: 'unexpectedDecoratorsOrder',
-              data: {
-                left: 'A',
-                right: 'B',
-              },
-            },
-          ]),
         },
         {
-          code: dedent`
-            @C
-            @B
-            /* eslint-disable-next-line */
-            @A
-            class Class {
-
-              @C
-              @B
-              /* eslint-disable-next-line */
-              @A
-              property
-
-              @C
-              @B
-              /* eslint-disable-next-line */
-              @A
-              accessor field
-
-              @C
-              @B
-              /* eslint-disable-next-line */
-              @A
-              method(
-                @C
-                @B
-                /* eslint-disable-next-line */
-                @A
-                parameter) {}
-            }
-          `,
           output: dedent`
             @B
             @C
@@ -3429,44 +3397,49 @@ describe(ruleName, () => {
                 parameter) {}
             }
           `,
-          options: [{}],
-          errors: duplicate5Times([
-            {
-              messageId: 'unexpectedDecoratorsOrder',
-              data: {
-                left: 'C',
-                right: 'B',
-              },
-            },
-          ]),
-        },
-        {
           code: dedent`
             @C
             @B
-            @A /* eslint-disable-line */
+            /* eslint-disable-next-line */
+            @A
             class Class {
 
               @C
               @B
-              @A /* eslint-disable-line */
+              /* eslint-disable-next-line */
+              @A
               property
 
               @C
               @B
-              @A /* eslint-disable-line */
+              /* eslint-disable-next-line */
+              @A
               accessor field
 
               @C
               @B
-              @A /* eslint-disable-line */
+              /* eslint-disable-next-line */
+              @A
               method(
                 @C
                 @B
-                @A /* eslint-disable-line */
+                /* eslint-disable-next-line */
+                @A
                 parameter) {}
             }
           `,
+          errors: duplicate5Times([
+            {
+              data: {
+                right: 'B',
+                left: 'C',
+              },
+              messageId: 'unexpectedDecoratorsOrder',
+            },
+          ]),
+          options: [{}],
+        },
+        {
           output: dedent`
             @B
             @C
@@ -3493,18 +3466,75 @@ describe(ruleName, () => {
                 parameter) {}
             }
           `,
-          options: [{}],
+          code: dedent`
+            @C
+            @B
+            @A /* eslint-disable-line */
+            class Class {
+
+              @C
+              @B
+              @A /* eslint-disable-line */
+              property
+
+              @C
+              @B
+              @A /* eslint-disable-line */
+              accessor field
+
+              @C
+              @B
+              @A /* eslint-disable-line */
+              method(
+                @C
+                @B
+                @A /* eslint-disable-line */
+                parameter) {}
+            }
+          `,
           errors: duplicate5Times([
             {
-              messageId: 'unexpectedDecoratorsOrder',
               data: {
-                left: 'C',
                 right: 'B',
+                left: 'C',
               },
+              messageId: 'unexpectedDecoratorsOrder',
             },
           ]),
+          options: [{}],
         },
         {
+          output: dedent`
+            @B
+            @C
+            // eslint-disable-next-line @rule-tester/${eslintDisableRuleTesterName}
+            @A
+            class Class {
+
+              @B
+              @C
+              // eslint-disable-next-line @rule-tester/${eslintDisableRuleTesterName}
+              @A
+              property
+
+              @B
+              @C
+              // eslint-disable-next-line @rule-tester/${eslintDisableRuleTesterName}
+              @A
+              accessor field
+
+              @B
+              @C
+              // eslint-disable-next-line @rule-tester/${eslintDisableRuleTesterName}
+              @A
+              method(
+                @B
+                @C
+                // eslint-disable-next-line @rule-tester/${eslintDisableRuleTesterName}
+                @A
+                parameter) {}
+            }
+          `,
           code: dedent`
             @C
             @B
@@ -3536,100 +3566,18 @@ describe(ruleName, () => {
                 parameter) {}
             }
           `,
-          output: dedent`
-            @B
-            @C
-            // eslint-disable-next-line @rule-tester/${eslintDisableRuleTesterName}
-            @A
-            class Class {
-
-              @B
-              @C
-              // eslint-disable-next-line @rule-tester/${eslintDisableRuleTesterName}
-              @A
-              property
-
-              @B
-              @C
-              // eslint-disable-next-line @rule-tester/${eslintDisableRuleTesterName}
-              @A
-              accessor field
-
-              @B
-              @C
-              // eslint-disable-next-line @rule-tester/${eslintDisableRuleTesterName}
-              @A
-              method(
-                @B
-                @C
-                // eslint-disable-next-line @rule-tester/${eslintDisableRuleTesterName}
-                @A
-                parameter) {}
-            }
-          `,
-          options: [{}],
           errors: duplicate5Times([
             {
-              messageId: 'unexpectedDecoratorsOrder',
               data: {
-                left: 'C',
                 right: 'B',
+                left: 'C',
               },
+              messageId: 'unexpectedDecoratorsOrder',
             },
           ]),
+          options: [{}],
         },
         {
-          code: dedent`
-            @D
-            @E
-            /* eslint-disable */
-            @C
-            @B
-            // Shouldn't move
-            /* eslint-enable */
-            @A
-            class Class {
-
-              @D
-              @E
-              /* eslint-disable */
-              @C
-              @B
-              // Shouldn't move
-              /* eslint-enable */
-              @A
-              property
-
-              @D
-              @E
-              /* eslint-disable */
-              @C
-              @B
-              // Shouldn't move
-              /* eslint-enable */
-              @A
-              accessor field
-
-              @D
-              @E
-              /* eslint-disable */
-              @C
-              @B
-              // Shouldn't move
-              /* eslint-enable */
-              @A
-              method(
-                @D
-                @E
-                /* eslint-disable */
-                @C
-                @B
-                // Shouldn't move
-                /* eslint-enable */
-                @A
-                parameter) {}
-            }
-          `,
           output: dedent`
             @A
             @D
@@ -3681,44 +3629,69 @@ describe(ruleName, () => {
                 parameter) {}
             }
           `,
-          options: [{}],
+          code: dedent`
+            @D
+            @E
+            /* eslint-disable */
+            @C
+            @B
+            // Shouldn't move
+            /* eslint-enable */
+            @A
+            class Class {
+
+              @D
+              @E
+              /* eslint-disable */
+              @C
+              @B
+              // Shouldn't move
+              /* eslint-enable */
+              @A
+              property
+
+              @D
+              @E
+              /* eslint-disable */
+              @C
+              @B
+              // Shouldn't move
+              /* eslint-enable */
+              @A
+              accessor field
+
+              @D
+              @E
+              /* eslint-disable */
+              @C
+              @B
+              // Shouldn't move
+              /* eslint-enable */
+              @A
+              method(
+                @D
+                @E
+                /* eslint-disable */
+                @C
+                @B
+                // Shouldn't move
+                /* eslint-enable */
+                @A
+                parameter) {}
+            }
+          `,
           errors: duplicate5Times([
             {
-              messageId: 'unexpectedDecoratorsOrder',
               data: {
-                left: 'B',
                 right: 'A',
+                left: 'B',
               },
+              messageId: 'unexpectedDecoratorsOrder',
             },
           ]),
+          options: [{}],
         },
         {
-          code: dedent`
-            @C
-            @B
-            @A // eslint-disable-line @rule-tester/${eslintDisableRuleTesterName}
-            class Class {
-
-              @C
-              @B
-              @A // eslint-disable-line @rule-tester/${eslintDisableRuleTesterName}
-              property
-
-              @C
-              @B
-              @A // eslint-disable-line @rule-tester/${eslintDisableRuleTesterName}
-              accessor field
-
-              @C
-              @B
-              @A // eslint-disable-line @rule-tester/${eslintDisableRuleTesterName}
-              method(
-                @C
-                @B
-                @A // eslint-disable-line @rule-tester/${eslintDisableRuleTesterName}
-                parameter) {}
-            }
-          `,
           output: dedent`
             @B
             @C
@@ -3745,49 +3718,44 @@ describe(ruleName, () => {
                 parameter) {}
             }
           `,
-          options: [{}],
-          errors: duplicate5Times([
-            {
-              messageId: 'unexpectedDecoratorsOrder',
-              data: {
-                left: 'C',
-                right: 'B',
-              },
-            },
-          ]),
-        },
-        {
           code: dedent`
             @C
             @B
-            /* eslint-disable-next-line @rule-tester/${eslintDisableRuleTesterName} */
-            @A
+            @A // eslint-disable-line @rule-tester/${eslintDisableRuleTesterName}
             class Class {
 
               @C
               @B
-              /* eslint-disable-next-line @rule-tester/${eslintDisableRuleTesterName} */
-              @A
+              @A // eslint-disable-line @rule-tester/${eslintDisableRuleTesterName}
               property
 
               @C
               @B
-              /* eslint-disable-next-line @rule-tester/${eslintDisableRuleTesterName} */
-              @A
+              @A // eslint-disable-line @rule-tester/${eslintDisableRuleTesterName}
               accessor field
 
               @C
               @B
-              /* eslint-disable-next-line @rule-tester/${eslintDisableRuleTesterName} */
-              @A
+              @A // eslint-disable-line @rule-tester/${eslintDisableRuleTesterName}
               method(
                 @C
                 @B
-                /* eslint-disable-next-line @rule-tester/${eslintDisableRuleTesterName} */
-                @A
+                @A // eslint-disable-line @rule-tester/${eslintDisableRuleTesterName}
                 parameter) {}
             }
           `,
+          errors: duplicate5Times([
+            {
+              data: {
+                right: 'B',
+                left: 'C',
+              },
+              messageId: 'unexpectedDecoratorsOrder',
+            },
+          ]),
+          options: [{}],
+        },
+        {
           output: dedent`
             @B
             @C
@@ -3819,44 +3787,49 @@ describe(ruleName, () => {
                 parameter) {}
             }
           `,
-          options: [{}],
-          errors: duplicate5Times([
-            {
-              messageId: 'unexpectedDecoratorsOrder',
-              data: {
-                left: 'C',
-                right: 'B',
-              },
-            },
-          ]),
-        },
-        {
           code: dedent`
             @C
             @B
-            @A /* eslint-disable-line @rule-tester/${eslintDisableRuleTesterName} */
+            /* eslint-disable-next-line @rule-tester/${eslintDisableRuleTesterName} */
+            @A
             class Class {
 
               @C
               @B
-              @A /* eslint-disable-line @rule-tester/${eslintDisableRuleTesterName} */
+              /* eslint-disable-next-line @rule-tester/${eslintDisableRuleTesterName} */
+              @A
               property
 
               @C
               @B
-              @A /* eslint-disable-line @rule-tester/${eslintDisableRuleTesterName} */
+              /* eslint-disable-next-line @rule-tester/${eslintDisableRuleTesterName} */
+              @A
               accessor field
 
               @C
               @B
-              @A /* eslint-disable-line @rule-tester/${eslintDisableRuleTesterName} */
+              /* eslint-disable-next-line @rule-tester/${eslintDisableRuleTesterName} */
+              @A
               method(
                 @C
                 @B
-                @A /* eslint-disable-line @rule-tester/${eslintDisableRuleTesterName} */
+                /* eslint-disable-next-line @rule-tester/${eslintDisableRuleTesterName} */
+                @A
                 parameter) {}
             }
           `,
+          errors: duplicate5Times([
+            {
+              data: {
+                right: 'B',
+                left: 'C',
+              },
+              messageId: 'unexpectedDecoratorsOrder',
+            },
+          ]),
+          options: [{}],
+        },
+        {
           output: dedent`
             @B
             @C
@@ -3883,18 +3856,95 @@ describe(ruleName, () => {
                 parameter) {}
             }
           `,
-          options: [{}],
+          code: dedent`
+            @C
+            @B
+            @A /* eslint-disable-line @rule-tester/${eslintDisableRuleTesterName} */
+            class Class {
+
+              @C
+              @B
+              @A /* eslint-disable-line @rule-tester/${eslintDisableRuleTesterName} */
+              property
+
+              @C
+              @B
+              @A /* eslint-disable-line @rule-tester/${eslintDisableRuleTesterName} */
+              accessor field
+
+              @C
+              @B
+              @A /* eslint-disable-line @rule-tester/${eslintDisableRuleTesterName} */
+              method(
+                @C
+                @B
+                @A /* eslint-disable-line @rule-tester/${eslintDisableRuleTesterName} */
+                parameter) {}
+            }
+          `,
           errors: duplicate5Times([
             {
-              messageId: 'unexpectedDecoratorsOrder',
               data: {
-                left: 'C',
                 right: 'B',
+                left: 'C',
               },
+              messageId: 'unexpectedDecoratorsOrder',
             },
           ]),
+          options: [{}],
         },
         {
+          output: dedent`
+            @A
+            @D
+            /* eslint-disable @rule-tester/${eslintDisableRuleTesterName} */
+            @C
+            @B
+            // Shouldn't move
+            /* eslint-enable */
+            @E
+            class Class {
+
+              @A
+              @D
+              /* eslint-disable @rule-tester/${eslintDisableRuleTesterName} */
+              @C
+              @B
+              // Shouldn't move
+              /* eslint-enable */
+              @E
+              property
+
+              @A
+              @D
+              /* eslint-disable @rule-tester/${eslintDisableRuleTesterName} */
+              @C
+              @B
+              // Shouldn't move
+              /* eslint-enable */
+              @E
+              accessor field
+
+              @A
+              @D
+              /* eslint-disable @rule-tester/${eslintDisableRuleTesterName} */
+              @C
+              @B
+              // Shouldn't move
+              /* eslint-enable */
+              @E
+              method(
+                @A
+                @D
+                /* eslint-disable @rule-tester/${eslintDisableRuleTesterName} */
+                @C
+                @B
+                // Shouldn't move
+                /* eslint-enable */
+                @E
+                parameter) {}
+            }
+          `,
           code: dedent`
             @D
             @E
@@ -3946,69 +3996,19 @@ describe(ruleName, () => {
                 parameter) {}
             }
           `,
-          output: dedent`
-            @A
-            @D
-            /* eslint-disable @rule-tester/${eslintDisableRuleTesterName} */
-            @C
-            @B
-            // Shouldn't move
-            /* eslint-enable */
-            @E
-            class Class {
-
-              @A
-              @D
-              /* eslint-disable @rule-tester/${eslintDisableRuleTesterName} */
-              @C
-              @B
-              // Shouldn't move
-              /* eslint-enable */
-              @E
-              property
-
-              @A
-              @D
-              /* eslint-disable @rule-tester/${eslintDisableRuleTesterName} */
-              @C
-              @B
-              // Shouldn't move
-              /* eslint-enable */
-              @E
-              accessor field
-
-              @A
-              @D
-              /* eslint-disable @rule-tester/${eslintDisableRuleTesterName} */
-              @C
-              @B
-              // Shouldn't move
-              /* eslint-enable */
-              @E
-              method(
-                @A
-                @D
-                /* eslint-disable @rule-tester/${eslintDisableRuleTesterName} */
-                @C
-                @B
-                // Shouldn't move
-                /* eslint-enable */
-                @E
-                parameter) {}
-            }
-          `,
-          options: [{}],
           errors: duplicate5Times([
             {
-              messageId: 'unexpectedDecoratorsOrder',
               data: {
-                left: 'B',
                 right: 'A',
+                left: 'B',
               },
+              messageId: 'unexpectedDecoratorsOrder',
             },
           ]),
+          options: [{}],
         },
       ],
+      valid: [],
     })
   })
 })

@@ -26,51 +26,46 @@ describe(ruleName, () => {
     } as const
 
     ruleTester.run(`${ruleName}(${type}): sorts modules`, rule, {
-      valid: [],
       invalid: [
         {
-          code: dedent`
-            export interface FindUserInput {
-              id: string
-              cache: CacheType
-            }
-
-            enum CacheType {
-              ALWAYS = 'ALWAYS',
-              NEVER = 'NEVER',
-            }
-
-            export type FindUserOutput = {
-              id: string
-              name: string
-              age: number
-            }
-
-            function assertInputIsCorrect(input: FindUserInput | FindAllUsersInput): void {
-              // Some logic
-            }
-
-            export function findUser(input: FindUserInput): FindUserOutput {
-              assertInputIsCorrect(input)
-              return _findUserByIds([input.id])[0]
-            }
-
-            export type FindAllUsersInput = {
-              ids: string[]
-              cache: CacheType
-            }
-
-            export type FindAllUsersOutput = FindUserOutput[]
-
-            export function findAllUsers(input: FindAllUsersInput): FindAllUsersOutput {
-              assertInputIsCorrect(input)
-              return _findUserByIds(input.ids)
-            }
-
-            class Cache {
-              // Some logic
-            }
-          `,
+          errors: [
+            {
+              data: {
+                leftGroup: 'export-interface',
+                left: 'FindUserInput',
+                right: 'CacheType',
+                rightGroup: 'enum',
+              },
+              messageId: 'unexpectedModulesGroupOrder',
+            },
+            {
+              data: {
+                rightGroup: 'export-function',
+                left: 'assertInputIsCorrect',
+                leftGroup: 'function',
+                right: 'findUser',
+              },
+              messageId: 'unexpectedModulesGroupOrder',
+            },
+            {
+              data: {
+                leftGroup: 'export-function',
+                right: 'FindAllUsersInput',
+                rightGroup: 'export-type',
+                left: 'findUser',
+              },
+              messageId: 'unexpectedModulesGroupOrder',
+            },
+            {
+              data: {
+                leftGroup: 'export-function',
+                left: 'findAllUsers',
+                rightGroup: 'class',
+                right: 'Cache',
+              },
+              messageId: 'unexpectedModulesGroupOrder',
+            },
+          ],
           output: dedent`
             enum CacheType {
               ALWAYS = 'ALWAYS',
@@ -113,66 +108,76 @@ describe(ruleName, () => {
               // Some logic
             }
             `,
+          code: dedent`
+            export interface FindUserInput {
+              id: string
+              cache: CacheType
+            }
+
+            enum CacheType {
+              ALWAYS = 'ALWAYS',
+              NEVER = 'NEVER',
+            }
+
+            export type FindUserOutput = {
+              id: string
+              name: string
+              age: number
+            }
+
+            function assertInputIsCorrect(input: FindUserInput | FindAllUsersInput): void {
+              // Some logic
+            }
+
+            export function findUser(input: FindUserInput): FindUserOutput {
+              assertInputIsCorrect(input)
+              return _findUserByIds([input.id])[0]
+            }
+
+            export type FindAllUsersInput = {
+              ids: string[]
+              cache: CacheType
+            }
+
+            export type FindAllUsersOutput = FindUserOutput[]
+
+            export function findAllUsers(input: FindAllUsersInput): FindAllUsersOutput {
+              assertInputIsCorrect(input)
+              return _findUserByIds(input.ids)
+            }
+
+            class Cache {
+              // Some logic
+            }
+          `,
           options: [options],
-          errors: [
-            {
-              messageId: 'unexpectedModulesGroupOrder',
-              data: {
-                left: 'FindUserInput',
-                leftGroup: 'export-interface',
-                right: 'CacheType',
-                rightGroup: 'enum',
-              },
-            },
-            {
-              messageId: 'unexpectedModulesGroupOrder',
-              data: {
-                left: 'assertInputIsCorrect',
-                leftGroup: 'function',
-                right: 'findUser',
-                rightGroup: 'export-function',
-              },
-            },
-            {
-              messageId: 'unexpectedModulesGroupOrder',
-              data: {
-                left: 'findUser',
-                leftGroup: 'export-function',
-                right: 'FindAllUsersInput',
-                rightGroup: 'export-type',
-              },
-            },
-            {
-              messageId: 'unexpectedModulesGroupOrder',
-              data: {
-                left: 'findAllUsers',
-                leftGroup: 'export-function',
-                right: 'Cache',
-                rightGroup: 'class',
-              },
-            },
-          ],
         },
       ],
+      valid: [],
     })
 
     ruleTester.run(
       `${ruleName}(${type}): sorts modules withing modules and namespaces`,
       rule,
       {
-        valid: [],
         invalid: [
           {
-            code: dedent`
-              module ModuleB {
-                interface B {}
-                interface A {}
-              }
-              module ModuleA {
-                interface B {}
-                interface A {}
-              }
-            `,
+            errors: [
+              {
+                data: {
+                  right: 'A',
+                  left: 'B',
+                },
+                messageId: 'unexpectedModulesOrder',
+              },
+              {
+                data: {
+                  right: 'A',
+                  left: 'B',
+                },
+                messageId: 'unexpectedModulesOrder',
+              },
+            ],
             output: dedent`
               module ModuleB {
                 interface A {}
@@ -183,35 +188,35 @@ describe(ruleName, () => {
                 interface B {}
               }
             `,
+            code: dedent`
+              module ModuleB {
+                interface B {}
+                interface A {}
+              }
+              module ModuleA {
+                interface B {}
+                interface A {}
+              }
+            `,
             options: [options],
-            errors: [
-              {
-                messageId: 'unexpectedModulesOrder',
-                data: {
-                  left: 'B',
-                  right: 'A',
-                },
-              },
-              {
-                messageId: 'unexpectedModulesOrder',
-                data: {
-                  left: 'B',
-                  right: 'A',
-                },
-              },
-            ],
           },
           {
-            code: dedent`
-              namespace NamespaceB {
-                interface B {}
-                interface A {}
-              }
-              namespace NamespaceA {
-                interface B {}
-                interface A {}
-              }
-            `,
+            errors: [
+              {
+                data: {
+                  right: 'A',
+                  left: 'B',
+                },
+                messageId: 'unexpectedModulesOrder',
+              },
+              {
+                data: {
+                  right: 'A',
+                  left: 'B',
+                },
+                messageId: 'unexpectedModulesOrder',
+              },
+            ],
             output: dedent`
               namespace NamespaceB {
                 interface A {}
@@ -222,25 +227,20 @@ describe(ruleName, () => {
                 interface B {}
               }
             `,
+            code: dedent`
+              namespace NamespaceB {
+                interface B {}
+                interface A {}
+              }
+              namespace NamespaceA {
+                interface B {}
+                interface A {}
+              }
+            `,
             options: [options],
-            errors: [
-              {
-                messageId: 'unexpectedModulesOrder',
-                data: {
-                  left: 'B',
-                  right: 'A',
-                },
-              },
-              {
-                messageId: 'unexpectedModulesOrder',
-                data: {
-                  left: 'B',
-                  right: 'A',
-                },
-              },
-            ],
           },
         ],
+        valid: [],
       },
     )
 
@@ -286,6 +286,23 @@ describe(ruleName, () => {
       {
         valid: [
           {
+            options: [
+              {
+                ...options,
+                groups: [
+                  'export-declare-interface',
+                  'export-default-interface',
+                  'export-declare-function',
+                  'export-default-async-function',
+                  'export-decorated-class',
+                  'export-default-decorated-class',
+                  'export-declare-type',
+                  'export-enum',
+                  'export-declare-enum',
+                  'unknown',
+                ],
+              },
+            ],
             code: dedent`
               export declare interface Interface {}
 
@@ -305,23 +322,6 @@ describe(ruleName, () => {
 
               export declare enum Enum2 {}
             `,
-            options: [
-              {
-                ...options,
-                groups: [
-                  'export-declare-interface',
-                  'export-default-interface',
-                  'export-declare-function',
-                  'export-default-async-function',
-                  'export-decorated-class',
-                  'export-default-decorated-class',
-                  'export-declare-type',
-                  'export-enum',
-                  'export-declare-enum',
-                  'unknown',
-                ],
-              },
-            ],
           },
         ],
         invalid: [],
@@ -330,27 +330,15 @@ describe(ruleName, () => {
 
     describe(`${ruleName}: custom groups`, () => {
       ruleTester.run(`${ruleName}: filters on selector and modifiers`, rule, {
-        valid: [],
         invalid: [
           {
-            code: dedent`
-              export interface A {}
-              export interface B {}
-              interface C {}
-            `,
-            output: dedent`
-              interface C {}
-              export interface A {}
-              export interface B {}
-            `,
             options: [
               {
-                groups: ['interfaceGroup', 'exportInterfaceGroup'],
                 customGroups: [
                   {
                     groupName: 'unusedCustomGroup',
-                    selector: 'type',
                     modifiers: ['export'],
+                    selector: 'type',
                   },
                   {
                     groupName: 'exportInterfaceGroup',
@@ -362,84 +350,111 @@ describe(ruleName, () => {
                     selector: 'interface',
                   },
                 ],
+                groups: ['interfaceGroup', 'exportInterfaceGroup'],
               },
             ],
             errors: [
               {
-                messageId: 'unexpectedModulesGroupOrder',
                 data: {
-                  left: 'B',
                   leftGroup: 'exportInterfaceGroup',
-                  right: 'C',
                   rightGroup: 'interfaceGroup',
+                  right: 'C',
+                  left: 'B',
                 },
+                messageId: 'unexpectedModulesGroupOrder',
               },
             ],
+            output: dedent`
+              interface C {}
+              export interface A {}
+              export interface B {}
+            `,
+            code: dedent`
+              export interface A {}
+              export interface B {}
+              interface C {}
+            `,
           },
         ],
+        valid: [],
       })
 
       ruleTester.run(`${ruleName}: filters on elementNamePattern`, rule, {
-        valid: [],
         invalid: [
           {
-            code: dedent`
-              interface A {}
-              interface B {}
-              function func() {}
-              function helloFunction() {}
-            `,
-            output: dedent`
-              function helloFunction() {}
-              interface A {}
-              interface B {}
-              function func() {}
-            `,
             options: [
               {
-                groups: ['functionsStartingWithHello', 'unknown'],
                 customGroups: [
                   {
                     groupName: 'functionsStartingWithHello',
-                    selector: 'function',
                     elementNamePattern: 'hello*',
+                    selector: 'function',
                   },
                 ],
+                groups: ['functionsStartingWithHello', 'unknown'],
               },
             ],
             errors: [
               {
-                messageId: 'unexpectedModulesGroupOrder',
                 data: {
-                  left: 'func',
-                  leftGroup: 'unknown',
-                  right: 'helloFunction',
                   rightGroup: 'functionsStartingWithHello',
+                  right: 'helloFunction',
+                  leftGroup: 'unknown',
+                  left: 'func',
                 },
+                messageId: 'unexpectedModulesGroupOrder',
               },
             ],
+            output: dedent`
+              function helloFunction() {}
+              interface A {}
+              interface B {}
+              function func() {}
+            `,
+            code: dedent`
+              interface A {}
+              interface B {}
+              function func() {}
+              function helloFunction() {}
+            `,
           },
         ],
+        valid: [],
       })
 
       ruleTester.run(`${ruleName}: filters on decoratorNamePattern`, rule, {
-        valid: [],
         invalid: [
           {
-            code: dedent`
-              @Decorator
-              class A {}
-
-              class B {}
-
-              function func() {}
-
-              @HelloDecorator
-              class C {}
-
-              @HelloDecorator()
-              class AnotherClass {}
-            `,
+            errors: [
+              {
+                data: {
+                  rightGroup: 'classesWithDecoratorStartingWithHello',
+                  leftGroup: 'unknown',
+                  left: 'func',
+                  right: 'C',
+                },
+                messageId: 'unexpectedModulesGroupOrder',
+              },
+              {
+                data: {
+                  right: 'AnotherClass',
+                  left: 'C',
+                },
+                messageId: 'unexpectedModulesOrder',
+              },
+            ],
+            options: [
+              {
+                customGroups: [
+                  {
+                    groupName: 'classesWithDecoratorStartingWithHello',
+                    decoratorNamePattern: 'Hello*',
+                    selector: 'class',
+                  },
+                ],
+                groups: ['classesWithDecoratorStartingWithHello', 'unknown'],
+              },
+            ],
             output: dedent`
               @HelloDecorator()
               class AnotherClass {}
@@ -454,94 +469,60 @@ describe(ruleName, () => {
 
               function func() {}
             `,
-            options: [
-              {
-                groups: ['classesWithDecoratorStartingWithHello', 'unknown'],
-                customGroups: [
-                  {
-                    groupName: 'classesWithDecoratorStartingWithHello',
-                    selector: 'class',
-                    decoratorNamePattern: 'Hello*',
-                  },
-                ],
-              },
-            ],
-            errors: [
-              {
-                messageId: 'unexpectedModulesGroupOrder',
-                data: {
-                  left: 'func',
-                  leftGroup: 'unknown',
-                  right: 'C',
-                  rightGroup: 'classesWithDecoratorStartingWithHello',
-                },
-              },
-              {
-                messageId: 'unexpectedModulesOrder',
-                data: {
-                  left: 'C',
-                  right: 'AnotherClass',
-                },
-              },
-            ],
+            code: dedent`
+              @Decorator
+              class A {}
+
+              class B {}
+
+              function func() {}
+
+              @HelloDecorator
+              class C {}
+
+              @HelloDecorator()
+              class AnotherClass {}
+            `,
           },
         ],
+        valid: [],
       })
 
       ruleTester.run(
         `${ruleName}: sort custom groups by overriding 'type' and 'order'`,
         rule,
         {
-          valid: [],
           invalid: [
             {
-              code: dedent`
-                interface A {}
-
-                interface BB {}
-
-                interface CCC {}
-
-                interface DDDD {}
-
-                function aFunction() {}
-
-                interface EEE {}
-
-                interface FF {}
-
-                interface G {}
-
-                function anotherFunction() {}
-
-                function yetAnotherFunction() {}
-              `,
-              output: dedent`
-                function yetAnotherFunction() {}
-
-                function anotherFunction() {}
-
-                function aFunction() {}
-
-                interface A {}
-
-                interface BB {}
-
-                interface CCC {}
-
-                interface DDDD {}
-
-                interface EEE {}
-
-                interface FF {}
-
-                interface G {}
-              `,
+              errors: [
+                {
+                  data: {
+                    rightGroup: 'reversedFunctionsByLineLength',
+                    leftGroup: 'unknown',
+                    right: 'aFunction',
+                    left: 'DDDD',
+                  },
+                  messageId: 'unexpectedModulesGroupOrder',
+                },
+                {
+                  data: {
+                    rightGroup: 'reversedFunctionsByLineLength',
+                    right: 'anotherFunction',
+                    leftGroup: 'unknown',
+                    left: 'G',
+                  },
+                  messageId: 'unexpectedModulesGroupOrder',
+                },
+                {
+                  data: {
+                    right: 'yetAnotherFunction',
+                    left: 'anotherFunction',
+                  },
+                  messageId: 'unexpectedModulesOrder',
+                },
+              ],
               options: [
                 {
-                  type: 'alphabetical',
-                  order: 'asc',
-                  groups: ['reversedFunctionsByLineLength', 'unknown'],
                   customGroups: [
                     {
                       groupName: 'reversedFunctionsByLineLength',
@@ -550,37 +531,56 @@ describe(ruleName, () => {
                       order: 'desc',
                     },
                   ],
+                  groups: ['reversedFunctionsByLineLength', 'unknown'],
+                  type: 'alphabetical',
+                  order: 'asc',
                 },
               ],
-              errors: [
-                {
-                  messageId: 'unexpectedModulesGroupOrder',
-                  data: {
-                    left: 'DDDD',
-                    leftGroup: 'unknown',
-                    right: 'aFunction',
-                    rightGroup: 'reversedFunctionsByLineLength',
-                  },
-                },
-                {
-                  messageId: 'unexpectedModulesGroupOrder',
-                  data: {
-                    left: 'G',
-                    leftGroup: 'unknown',
-                    right: 'anotherFunction',
-                    rightGroup: 'reversedFunctionsByLineLength',
-                  },
-                },
-                {
-                  messageId: 'unexpectedModulesOrder',
-                  data: {
-                    left: 'anotherFunction',
-                    right: 'yetAnotherFunction',
-                  },
-                },
-              ],
+              output: dedent`
+                function yetAnotherFunction() {}
+
+                function anotherFunction() {}
+
+                function aFunction() {}
+
+                interface A {}
+
+                interface BB {}
+
+                interface CCC {}
+
+                interface DDDD {}
+
+                interface EEE {}
+
+                interface FF {}
+
+                interface G {}
+              `,
+              code: dedent`
+                interface A {}
+
+                interface BB {}
+
+                interface CCC {}
+
+                interface DDDD {}
+
+                function aFunction() {}
+
+                interface EEE {}
+
+                interface FF {}
+
+                interface G {}
+
+                function anotherFunction() {}
+
+                function yetAnotherFunction() {}
+              `,
             },
           ],
+          valid: [],
         },
       )
 
@@ -588,9 +588,31 @@ describe(ruleName, () => {
         `${ruleName}: does not sort custom groups with 'unsorted' type`,
         rule,
         {
-          valid: [],
           invalid: [
             {
+              options: [
+                {
+                  customGroups: [
+                    {
+                      groupName: 'unsortedFunctions',
+                      selector: 'function',
+                      type: 'unsorted',
+                    },
+                  ],
+                  groups: ['unsortedFunctions', 'unknown'],
+                },
+              ],
+              errors: [
+                {
+                  data: {
+                    rightGroup: 'unsortedFunctions',
+                    leftGroup: 'unknown',
+                    left: 'Interface',
+                    right: 'c',
+                  },
+                  messageId: 'unexpectedModulesGroupOrder',
+                },
+              ],
               code: dedent`
                 function b() {}
 
@@ -617,81 +639,44 @@ describe(ruleName, () => {
 
                 interface Interface {}
             `,
-              options: [
-                {
-                  groups: ['unsortedFunctions', 'unknown'],
-                  customGroups: [
-                    {
-                      groupName: 'unsortedFunctions',
-                      selector: 'function',
-                      type: 'unsorted',
-                    },
-                  ],
-                },
-              ],
-              errors: [
-                {
-                  messageId: 'unexpectedModulesGroupOrder',
-                  data: {
-                    left: 'Interface',
-                    leftGroup: 'unknown',
-                    right: 'c',
-                    rightGroup: 'unsortedFunctions',
-                  },
-                },
-              ],
             },
           ],
+          valid: [],
         },
       )
 
       ruleTester.run(`${ruleName}: sort custom group blocks`, rule, {
-        valid: [],
         invalid: [
           {
-            code: dedent`
-              export interface A {}
-
-              class b {}
-
-              class E {}
-
-              function func() {}
-
-              class C {}
-
-              async function aFunction() {}
-
-              export interface D {}
-
-              async function anotherFunction() {}
-            `,
-            output: dedent`
-              export interface A {}
-
-              async function aFunction() {}
-
-              async function anotherFunction() {}
-
-              class b {}
-
-              class C {}
-
-              export interface D {}
-
-              class E {}
-
-              function func() {}
-            `,
+            errors: [
+              {
+                data: {
+                  leftGroup: 'unknown',
+                  rightGroup: 'class',
+                  left: 'func',
+                  right: 'C',
+                },
+                messageId: 'unexpectedModulesGroupOrder',
+              },
+              {
+                data: {
+                  right: 'aFunction',
+                  left: 'C',
+                },
+                messageId: 'unexpectedModulesOrder',
+              },
+              {
+                data: {
+                  right: 'anotherFunction',
+                  left: 'D',
+                },
+                messageId: 'unexpectedModulesOrder',
+              },
+            ],
             options: [
               {
-                groups: [
-                  ['exportInterfacesAndAsyncFunctions', 'class'],
-                  'unknown',
-                ],
                 customGroups: [
                   {
-                    groupName: 'exportInterfacesAndAsyncFunctions',
                     anyOf: [
                       {
                         selector: 'interface',
@@ -702,37 +687,52 @@ describe(ruleName, () => {
                         modifiers: ['async'],
                       },
                     ],
+                    groupName: 'exportInterfacesAndAsyncFunctions',
                   },
+                ],
+                groups: [
+                  ['exportInterfacesAndAsyncFunctions', 'class'],
+                  'unknown',
                 ],
               },
             ],
-            errors: [
-              {
-                messageId: 'unexpectedModulesGroupOrder',
-                data: {
-                  left: 'func',
-                  leftGroup: 'unknown',
-                  right: 'C',
-                  rightGroup: 'class',
-                },
-              },
-              {
-                messageId: 'unexpectedModulesOrder',
-                data: {
-                  left: 'C',
-                  right: 'aFunction',
-                },
-              },
-              {
-                messageId: 'unexpectedModulesOrder',
-                data: {
-                  left: 'D',
-                  right: 'anotherFunction',
-                },
-              },
-            ],
+            output: dedent`
+              export interface A {}
+
+              async function aFunction() {}
+
+              async function anotherFunction() {}
+
+              class b {}
+
+              class C {}
+
+              export interface D {}
+
+              class E {}
+
+              function func() {}
+            `,
+            code: dedent`
+              export interface A {}
+
+              class b {}
+
+              class E {}
+
+              function func() {}
+
+              class C {}
+
+              async function aFunction() {}
+
+              export interface D {}
+
+              async function anotherFunction() {}
+            `,
           },
         ],
+        valid: [],
       })
 
       ruleTester.run(
@@ -741,24 +741,24 @@ describe(ruleName, () => {
         {
           valid: [
             {
+              options: [
+                {
+                  customGroups: [
+                    {
+                      elementNamePattern: '^(?!.*Foo).*$',
+                      groupName: 'elementsWithoutFoo',
+                    },
+                  ],
+                  groups: ['unknown', 'elementsWithoutFoo'],
+                  type: 'alphabetical',
+                },
+              ],
               code: dedent`
                 function iHaveFooInMyName() {}
                 function meTooIHaveFoo() {}
                 function a() {}
                 function b() {}
             `,
-              options: [
-                {
-                  type: 'alphabetical',
-                  groups: ['unknown', 'elementsWithoutFoo'],
-                  customGroups: [
-                    {
-                      groupName: 'elementsWithoutFoo',
-                      elementNamePattern: '^(?!.*Foo).*$',
-                    },
-                  ],
-                },
-              ],
             },
           ],
           invalid: [],
@@ -771,6 +771,18 @@ describe(ruleName, () => {
         {
           valid: [
             {
+              options: [
+                {
+                  customGroups: [
+                    {
+                      decoratorNamePattern: '^.*Foo.*$',
+                      groupName: 'decoratorsWithFoo',
+                    },
+                  ],
+                  groups: ['decoratorsWithFoo', 'unknown'],
+                  type: 'alphabetical',
+                },
+              ],
               code: dedent`
                 @IHaveFooInMyName
                 class X {}
@@ -779,18 +791,6 @@ describe(ruleName, () => {
                 class A {}
                 class B {}
               `,
-              options: [
-                {
-                  type: 'alphabetical',
-                  groups: ['decoratorsWithFoo', 'unknown'],
-                  customGroups: [
-                    {
-                      groupName: 'decoratorsWithFoo',
-                      decoratorNamePattern: '^.*Foo.*$',
-                    },
-                  ],
-                },
-              ],
             },
           ],
           invalid: [],
@@ -803,38 +803,38 @@ describe(ruleName, () => {
         `${ruleName}(${type}): prioritize declare over export`,
         rule,
         {
-          valid: [],
           invalid: [
             {
-              code: dedent`
-                function f() {}
-
-                export declare interface Interface {}
-              `,
-              output: dedent`
-                export declare interface Interface {}
-
-                function f() {}
-              `,
+              errors: [
+                {
+                  data: {
+                    rightGroup: 'declare-interface',
+                    leftGroup: 'function',
+                    right: 'Interface',
+                    left: 'f',
+                  },
+                  messageId: 'unexpectedModulesGroupOrder',
+                },
+              ],
               options: [
                 {
                   ...options,
                   groups: ['declare-interface', 'function', 'export-interface'],
                 },
               ],
-              errors: [
-                {
-                  messageId: 'unexpectedModulesGroupOrder',
-                  data: {
-                    left: 'f',
-                    leftGroup: 'function',
-                    right: 'Interface',
-                    rightGroup: 'declare-interface',
-                  },
-                },
-              ],
+              output: dedent`
+                export declare interface Interface {}
+
+                function f() {}
+              `,
+              code: dedent`
+                function f() {}
+
+                export declare interface Interface {}
+              `,
             },
           ],
+          valid: [],
         },
       )
 
@@ -842,38 +842,38 @@ describe(ruleName, () => {
         `${ruleName}(${type}): prioritize default over export`,
         rule,
         {
-          valid: [],
           invalid: [
             {
-              code: dedent`
-                function f() {}
-
-                export default interface Interface {}
-              `,
-              output: dedent`
-                export default interface Interface {}
-
-                function f() {}
-              `,
+              errors: [
+                {
+                  data: {
+                    rightGroup: 'default-interface',
+                    leftGroup: 'function',
+                    right: 'Interface',
+                    left: 'f',
+                  },
+                  messageId: 'unexpectedModulesGroupOrder',
+                },
+              ],
               options: [
                 {
                   ...options,
                   groups: ['default-interface', 'function', 'export-interface'],
                 },
               ],
-              errors: [
-                {
-                  messageId: 'unexpectedModulesGroupOrder',
-                  data: {
-                    left: 'f',
-                    leftGroup: 'function',
-                    right: 'Interface',
-                    rightGroup: 'default-interface',
-                  },
-                },
-              ],
+              output: dedent`
+                export default interface Interface {}
+
+                function f() {}
+              `,
+              code: dedent`
+                function f() {}
+
+                export default interface Interface {}
+              `,
             },
           ],
+          valid: [],
         },
       )
     })
@@ -883,38 +883,38 @@ describe(ruleName, () => {
         `${ruleName}(${type}): prioritize declare over export`,
         rule,
         {
-          valid: [],
           invalid: [
             {
-              code: dedent`
-                function f() {}
-
-                export declare type Type = {}
-              `,
-              output: dedent`
-                export declare type Type = {}
-
-                function f() {}
-              `,
+              errors: [
+                {
+                  data: {
+                    rightGroup: 'declare-type',
+                    leftGroup: 'function',
+                    right: 'Type',
+                    left: 'f',
+                  },
+                  messageId: 'unexpectedModulesGroupOrder',
+                },
+              ],
               options: [
                 {
                   ...options,
                   groups: ['declare-type', 'function', 'export-type'],
                 },
               ],
-              errors: [
-                {
-                  messageId: 'unexpectedModulesGroupOrder',
-                  data: {
-                    left: 'f',
-                    leftGroup: 'function',
-                    right: 'Type',
-                    rightGroup: 'declare-type',
-                  },
-                },
-              ],
+              output: dedent`
+                export declare type Type = {}
+
+                function f() {}
+              `,
+              code: dedent`
+                function f() {}
+
+                export declare type Type = {}
+              `,
             },
           ],
+          valid: [],
         },
       )
     })
@@ -924,38 +924,38 @@ describe(ruleName, () => {
         `${ruleName}(${type}): prioritize declare over export`,
         rule,
         {
-          valid: [],
           invalid: [
             {
-              code: dedent`
-                function f() {}
-
-                export declare class Class {}
-              `,
-              output: dedent`
-                export declare class Class {}
-
-                function f() {}
-              `,
+              errors: [
+                {
+                  data: {
+                    rightGroup: 'declare-class',
+                    leftGroup: 'function',
+                    right: 'Class',
+                    left: 'f',
+                  },
+                  messageId: 'unexpectedModulesGroupOrder',
+                },
+              ],
               options: [
                 {
                   ...options,
                   groups: ['declare-class', 'function', 'export-class'],
                 },
               ],
-              errors: [
-                {
-                  messageId: 'unexpectedModulesGroupOrder',
-                  data: {
-                    left: 'f',
-                    leftGroup: 'function',
-                    right: 'Class',
-                    rightGroup: 'declare-class',
-                  },
-                },
-              ],
+              output: dedent`
+                export declare class Class {}
+
+                function f() {}
+              `,
+              code: dedent`
+                function f() {}
+
+                export declare class Class {}
+              `,
             },
           ],
+          valid: [],
         },
       )
 
@@ -963,38 +963,38 @@ describe(ruleName, () => {
         `${ruleName}(${type}): prioritize default over decorated`,
         rule,
         {
-          valid: [],
           invalid: [
             {
-              code: dedent`
-                function f() {}
-
-                export default @Decorator class Class {}
-              `,
-              output: dedent`
-                export default @Decorator class Class {}
-
-                function f() {}
-              `,
+              errors: [
+                {
+                  data: {
+                    rightGroup: 'default-class',
+                    leftGroup: 'function',
+                    right: 'Class',
+                    left: 'f',
+                  },
+                  messageId: 'unexpectedModulesGroupOrder',
+                },
+              ],
               options: [
                 {
                   ...options,
                   groups: ['default-class', 'function', 'decorated-class'],
                 },
               ],
-              errors: [
-                {
-                  messageId: 'unexpectedModulesGroupOrder',
-                  data: {
-                    left: 'f',
-                    leftGroup: 'function',
-                    right: 'Class',
-                    rightGroup: 'default-class',
-                  },
-                },
-              ],
+              output: dedent`
+                export default @Decorator class Class {}
+
+                function f() {}
+              `,
+              code: dedent`
+                function f() {}
+
+                export default @Decorator class Class {}
+              `,
             },
           ],
+          valid: [],
         },
       )
 
@@ -1002,38 +1002,38 @@ describe(ruleName, () => {
         `${ruleName}(${type}): prioritize decorated over export`,
         rule,
         {
-          valid: [],
           invalid: [
             {
-              code: dedent`
-                function f() {}
-
-                export @Decorator class Class {}
-              `,
-              output: dedent`
-                export @Decorator class Class {}
-
-                function f() {}
-              `,
+              errors: [
+                {
+                  data: {
+                    rightGroup: 'decorated-class',
+                    leftGroup: 'function',
+                    right: 'Class',
+                    left: 'f',
+                  },
+                  messageId: 'unexpectedModulesGroupOrder',
+                },
+              ],
               options: [
                 {
                   ...options,
                   groups: ['decorated-class', 'function', 'export-class'],
                 },
               ],
-              errors: [
-                {
-                  messageId: 'unexpectedModulesGroupOrder',
-                  data: {
-                    left: 'f',
-                    leftGroup: 'function',
-                    right: 'Class',
-                    rightGroup: 'decorated-class',
-                  },
-                },
-              ],
+              output: dedent`
+                export @Decorator class Class {}
+
+                function f() {}
+              `,
+              code: dedent`
+                function f() {}
+
+                export @Decorator class Class {}
+              `,
             },
           ],
+          valid: [],
         },
       )
     })
@@ -1043,38 +1043,38 @@ describe(ruleName, () => {
         `${ruleName}(${type}): prioritize declare over export`,
         rule,
         {
-          valid: [],
           invalid: [
             {
-              code: dedent`
-                interface Interface {}
-
-                export declare function f()
-              `,
-              output: dedent`
-                export declare function f()
-
-                interface Interface {}
-              `,
+              errors: [
+                {
+                  data: {
+                    rightGroup: 'declare-function',
+                    leftGroup: 'interface',
+                    left: 'Interface',
+                    right: 'f',
+                  },
+                  messageId: 'unexpectedModulesGroupOrder',
+                },
+              ],
               options: [
                 {
                   ...options,
                   groups: ['declare-function', 'interface', 'export-function'],
                 },
               ],
-              errors: [
-                {
-                  messageId: 'unexpectedModulesGroupOrder',
-                  data: {
-                    left: 'Interface',
-                    leftGroup: 'interface',
-                    right: 'f',
-                    rightGroup: 'declare-function',
-                  },
-                },
-              ],
+              output: dedent`
+                export declare function f()
+
+                interface Interface {}
+              `,
+              code: dedent`
+                interface Interface {}
+
+                export declare function f()
+              `,
             },
           ],
+          valid: [],
         },
       )
 
@@ -1082,38 +1082,38 @@ describe(ruleName, () => {
         `${ruleName}(${type}): prioritize default over async`,
         rule,
         {
-          valid: [],
           invalid: [
             {
-              code: dedent`
-                interface Interface {}
-
-                export default async function f() {}
-              `,
-              output: dedent`
-                export default async function f() {}
-
-                interface Interface {}
-              `,
+              errors: [
+                {
+                  data: {
+                    rightGroup: 'default-function',
+                    leftGroup: 'interface',
+                    left: 'Interface',
+                    right: 'f',
+                  },
+                  messageId: 'unexpectedModulesGroupOrder',
+                },
+              ],
               options: [
                 {
                   ...options,
                   groups: ['default-function', 'interface', 'async-function'],
                 },
               ],
-              errors: [
-                {
-                  messageId: 'unexpectedModulesGroupOrder',
-                  data: {
-                    left: 'Interface',
-                    leftGroup: 'interface',
-                    right: 'f',
-                    rightGroup: 'default-function',
-                  },
-                },
-              ],
+              output: dedent`
+                export default async function f() {}
+
+                interface Interface {}
+              `,
+              code: dedent`
+                interface Interface {}
+
+                export default async function f() {}
+              `,
             },
           ],
+          valid: [],
         },
       )
 
@@ -1121,38 +1121,38 @@ describe(ruleName, () => {
         `${ruleName}(${type}): prioritize async over export`,
         rule,
         {
-          valid: [],
           invalid: [
             {
-              code: dedent`
-                interface Interface {}
-
-                export async function f() {}
-              `,
-              output: dedent`
-                export async function f() {}
-
-                interface Interface {}
-              `,
+              errors: [
+                {
+                  data: {
+                    rightGroup: 'async-function',
+                    leftGroup: 'interface',
+                    left: 'Interface',
+                    right: 'f',
+                  },
+                  messageId: 'unexpectedModulesGroupOrder',
+                },
+              ],
               options: [
                 {
                   ...options,
                   groups: ['async-function', 'interface', 'export-function'],
                 },
               ],
-              errors: [
-                {
-                  messageId: 'unexpectedModulesGroupOrder',
-                  data: {
-                    left: 'Interface',
-                    leftGroup: 'interface',
-                    right: 'f',
-                    rightGroup: 'async-function',
-                  },
-                },
-              ],
+              output: dedent`
+                export async function f() {}
+
+                interface Interface {}
+              `,
+              code: dedent`
+                interface Interface {}
+
+                export async function f() {}
+              `,
             },
           ],
+          valid: [],
         },
       )
     })
@@ -1162,38 +1162,38 @@ describe(ruleName, () => {
         `${ruleName}(${type}): prioritize declare over export`,
         rule,
         {
-          valid: [],
           invalid: [
             {
-              code: dedent`
-                function f() {}
-
-                export declare enum Enum {}
-              `,
-              output: dedent`
-                export declare enum Enum {}
-
-                function f() {}
-              `,
+              errors: [
+                {
+                  data: {
+                    rightGroup: 'declare-enum',
+                    leftGroup: 'function',
+                    right: 'Enum',
+                    left: 'f',
+                  },
+                  messageId: 'unexpectedModulesGroupOrder',
+                },
+              ],
               options: [
                 {
                   ...options,
                   groups: ['declare-enum', 'function', 'export-enum'],
                 },
               ],
-              errors: [
-                {
-                  messageId: 'unexpectedModulesGroupOrder',
-                  data: {
-                    left: 'f',
-                    leftGroup: 'function',
-                    right: 'Enum',
-                    rightGroup: 'declare-enum',
-                  },
-                },
-              ],
+              output: dedent`
+                export declare enum Enum {}
+
+                function f() {}
+              `,
+              code: dedent`
+                function f() {}
+
+                export declare enum Enum {}
+              `,
             },
           ],
+          valid: [],
         },
       )
     })
@@ -1543,18 +1543,17 @@ describe(ruleName, () => {
       })
 
       ruleTester.run(`${ruleName}(${type}) detects nested dependencies`, rule, {
-        valid: [],
         invalid: [
           {
-            code: dedent`
-              class A {
-                static a = x > y ? new Class([...{...!!method(1 + <any>(B?.b! as any))}]) : null
-              }
-
-              class B {
-                static b = 1
-              }
-            `,
+            errors: [
+              {
+                data: {
+                  nodeDependentOnRight: 'A',
+                  right: 'B',
+                },
+                messageId: 'unexpectedModulesDependencyOrder',
+              },
+            ],
             output: dedent`
               class B {
                 static b = 1
@@ -1564,22 +1563,23 @@ describe(ruleName, () => {
                 static a = x > y ? new Class([...{...!!method(1 + <any>(B?.b! as any))}]) : null
               }
             `,
+            code: dedent`
+              class A {
+                static a = x > y ? new Class([...{...!!method(1 + <any>(B?.b! as any))}]) : null
+              }
+
+              class B {
+                static b = 1
+              }
+            `,
             options: [
               {
                 ...options,
               },
             ],
-            errors: [
-              {
-                messageId: 'unexpectedModulesDependencyOrder',
-                data: {
-                  right: 'B',
-                  nodeDependentOnRight: 'A',
-                },
-              },
-            ],
           },
         ],
+        valid: [],
       })
 
       ruleTester.run(
@@ -1615,17 +1615,17 @@ describe(ruleName, () => {
         {
           valid: [
             {
-              code: dedent`
-                class B {}
-
-                class A extends B {}
-              `,
               options: [
                 {
                   ...options,
                   groups: [],
                 },
               ],
+              code: dedent`
+                class B {}
+
+                class A extends B {}
+              `,
             },
           ],
           invalid: [],
@@ -1636,22 +1636,24 @@ describe(ruleName, () => {
         `${ruleName}(${type}) detects circular dependencies`,
         rule,
         {
-          valid: [],
           invalid: [
             {
-              code: dedent`
-                class A {
-                  static a = B.b
-                }
-
-                class B {
-                  static b = C.c
-                }
-
-                class C {
-                  static c = A.a
-                }
-              `,
+              errors: [
+                {
+                  data: {
+                    nodeDependentOnRight: 'A',
+                    right: 'B',
+                  },
+                  messageId: 'unexpectedModulesDependencyOrder',
+                },
+                {
+                  data: {
+                    nodeDependentOnRight: 'B',
+                    right: 'C',
+                  },
+                  messageId: 'unexpectedModulesDependencyOrder',
+                },
+              ],
               output: dedent`
                 class C {
                   static c = A.a
@@ -1665,29 +1667,27 @@ describe(ruleName, () => {
                   static a = B.b
                 }
               `,
+              code: dedent`
+                class A {
+                  static a = B.b
+                }
+
+                class B {
+                  static b = C.c
+                }
+
+                class C {
+                  static c = A.a
+                }
+              `,
               options: [
                 {
                   ...options,
                 },
               ],
-              errors: [
-                {
-                  messageId: 'unexpectedModulesDependencyOrder',
-                  data: {
-                    right: 'B',
-                    nodeDependentOnRight: 'A',
-                  },
-                },
-                {
-                  messageId: 'unexpectedModulesDependencyOrder',
-                  data: {
-                    right: 'C',
-                    nodeDependentOnRight: 'B',
-                  },
-                },
-              ],
             },
           ],
+          valid: [],
         },
       )
 
@@ -1697,16 +1697,16 @@ describe(ruleName, () => {
         {
           valid: [
             {
-              code: dedent`
-                class B { static b }
-                export class A { static a = B.b }
-              `,
               options: [
                 {
                   ...options,
                   groups: ['export-class', 'class'],
                 },
               ],
+              code: dedent`
+                class B { static b }
+                export class A { static a = B.b }
+              `,
             },
           ],
           invalid: [],
@@ -1717,36 +1717,36 @@ describe(ruleName, () => {
         `${ruleName}(${type}): prioritizes dependencies over partitionByComment`,
         rule,
         {
-          valid: [],
           invalid: [
             {
-              code: dedent`
-                class B { static b = A.a }
-                // Part1
-                class A { static a }
-              `,
-              output: dedent`
-                class A { static a }
-                // Part1
-                class B { static b = A.a }
-              `,
+              errors: [
+                {
+                  data: {
+                    nodeDependentOnRight: 'B',
+                    right: 'A',
+                  },
+                  messageId: 'unexpectedModulesDependencyOrder',
+                },
+              ],
               options: [
                 {
                   ...options,
                   partitionByComment: 'Part*',
                 },
               ],
-              errors: [
-                {
-                  messageId: 'unexpectedModulesDependencyOrder',
-                  data: {
-                    right: 'A',
-                    nodeDependentOnRight: 'B',
-                  },
-                },
-              ],
+              output: dedent`
+                class A { static a }
+                // Part1
+                class B { static b = A.a }
+              `,
+              code: dedent`
+                class B { static b = A.a }
+                // Part1
+                class A { static a }
+              `,
             },
           ],
+          valid: [],
         },
       )
 
@@ -1754,53 +1754,72 @@ describe(ruleName, () => {
         `${ruleName}(${type}): prioritizes dependencies over partitionByNewLine`,
         rule,
         {
-          valid: [],
           invalid: [
             {
-              code: dedent`
-                class B { static = A.a }
-
-                class A { static a }
-              `,
-              output: dedent`
-                class A { static a }
-
-                class B { static = A.a }
-              `,
+              errors: [
+                {
+                  data: {
+                    nodeDependentOnRight: 'B',
+                    right: 'A',
+                  },
+                  messageId: 'unexpectedModulesDependencyOrder',
+                },
+              ],
               options: [
                 {
                   ...options,
                   partitionByNewLine: true,
                 },
               ],
-              errors: [
-                {
-                  messageId: 'unexpectedModulesDependencyOrder',
-                  data: {
-                    right: 'A',
-                    nodeDependentOnRight: 'B',
-                  },
-                },
-              ],
+              output: dedent`
+                class A { static a }
+
+                class B { static = A.a }
+              `,
+              code: dedent`
+                class B { static = A.a }
+
+                class A { static a }
+              `,
             },
           ],
+          valid: [],
         },
       )
     })
 
     ruleTester.run(`${ruleName}(${type}): should ignore unknown group`, rule, {
-      valid: [],
       invalid: [
         {
-          code: dedent`
-              function b() {}
-              class SomeClass {}
-              function a() {}
-            `,
+          errors: [
+            {
+              data: {
+                leftGroup: 'function',
+                rightGroup: 'unknown',
+                right: 'SomeClass',
+                left: 'b',
+              },
+              messageId: 'unexpectedModulesGroupOrder',
+            },
+            {
+              data: {
+                rightGroup: 'function',
+                leftGroup: 'unknown',
+                left: 'SomeClass',
+                right: 'a',
+              },
+              messageId: 'unexpectedModulesGroupOrder',
+            },
+          ],
           output: dedent`
               function a() {}
               class SomeClass {}
               function b() {}
+            `,
+          code: dedent`
+              function b() {}
+              class SomeClass {}
+              function a() {}
             `,
           options: [
             {
@@ -1808,28 +1827,9 @@ describe(ruleName, () => {
               groups: ['function'],
             },
           ],
-          errors: [
-            {
-              messageId: 'unexpectedModulesGroupOrder',
-              data: {
-                left: 'b',
-                leftGroup: 'function',
-                right: 'SomeClass',
-                rightGroup: 'unknown',
-              },
-            },
-            {
-              messageId: 'unexpectedModulesGroupOrder',
-              data: {
-                left: 'SomeClass',
-                leftGroup: 'unknown',
-                right: 'a',
-                rightGroup: 'function',
-              },
-            },
-          ],
         },
       ],
+      valid: [],
     })
 
     ruleTester.run(
@@ -1838,17 +1838,17 @@ describe(ruleName, () => {
       {
         valid: [
           {
-            code: dedent`
-              function _a() {}
-              function b() {}
-              function _c() {}
-            `,
             options: [
               {
                 ...options,
                 specialCharacters: 'trim',
               },
             ],
+            code: dedent`
+              function _a() {}
+              function b() {}
+              function _c() {}
+            `,
           },
         ],
         invalid: [],
@@ -1861,16 +1861,16 @@ describe(ruleName, () => {
       {
         valid: [
           {
-            code: dedent`
-              function ab() {}
-              function a_c() {}
-            `,
             options: [
               {
                 ...options,
                 specialCharacters: 'remove',
               },
             ],
+            code: dedent`
+              function ab() {}
+              function a_c() {}
+            `,
           },
         ],
         invalid: [],
@@ -1899,9 +1899,47 @@ describe(ruleName, () => {
         `${ruleName}(${type}): removes newlines when never`,
         rule,
         {
-          valid: [],
           invalid: [
             {
+              errors: [
+                {
+                  data: {
+                    leftGroup: 'interface',
+                    rightGroup: 'unknown',
+                    right: 'y',
+                    left: 'A',
+                  },
+                  messageId: 'unexpectedModulesGroupOrder',
+                },
+                {
+                  data: {
+                    right: 'y',
+                    left: 'A',
+                  },
+                  messageId: 'extraSpacingBetweenModulesMembers',
+                },
+                {
+                  data: {
+                    right: 'b',
+                    left: 'z',
+                  },
+                  messageId: 'unexpectedModulesOrder',
+                },
+                {
+                  data: {
+                    right: 'b',
+                    left: 'z',
+                  },
+                  messageId: 'extraSpacingBetweenModulesMembers',
+                },
+              ],
+              options: [
+                {
+                  ...options,
+                  groups: ['unknown', 'interface'],
+                  newlinesBetween: 'never',
+                },
+              ],
               code: dedent`
                 interface A {}
 
@@ -1917,47 +1955,9 @@ describe(ruleName, () => {
               function z() {}
                   interface A {}
               `,
-              options: [
-                {
-                  ...options,
-                  newlinesBetween: 'never',
-                  groups: ['unknown', 'interface'],
-                },
-              ],
-              errors: [
-                {
-                  messageId: 'unexpectedModulesGroupOrder',
-                  data: {
-                    left: 'A',
-                    leftGroup: 'interface',
-                    right: 'y',
-                    rightGroup: 'unknown',
-                  },
-                },
-                {
-                  messageId: 'extraSpacingBetweenModulesMembers',
-                  data: {
-                    left: 'A',
-                    right: 'y',
-                  },
-                },
-                {
-                  messageId: 'unexpectedModulesOrder',
-                  data: {
-                    left: 'z',
-                    right: 'b',
-                  },
-                },
-                {
-                  messageId: 'extraSpacingBetweenModulesMembers',
-                  data: {
-                    left: 'z',
-                    right: 'b',
-                  },
-                },
-              ],
             },
           ],
+          valid: [],
         },
       )
 
@@ -1965,17 +1965,38 @@ describe(ruleName, () => {
         `${ruleName}(${type}): keeps one newline when always`,
         rule,
         {
-          valid: [],
           invalid: [
             {
-              code: dedent`
-                interface A {}
-
-
-               function z() {}
-              function y() {}
-                  class B {}
-              `,
+              errors: [
+                {
+                  data: {
+                    right: 'z',
+                    left: 'A',
+                  },
+                  messageId: 'extraSpacingBetweenModulesMembers',
+                },
+                {
+                  data: {
+                    right: 'y',
+                    left: 'z',
+                  },
+                  messageId: 'unexpectedModulesOrder',
+                },
+                {
+                  data: {
+                    right: 'B',
+                    left: 'y',
+                  },
+                  messageId: 'missedSpacingBetweenModulesMembers',
+                },
+              ],
+              options: [
+                {
+                  ...options,
+                  groups: ['interface', 'unknown', 'class'],
+                  newlinesBetween: 'always',
+                },
+              ],
               output: dedent`
                   interface A {}
 
@@ -1984,38 +2005,17 @@ describe(ruleName, () => {
 
                     class B {}
                 `,
-              options: [
-                {
-                  ...options,
-                  newlinesBetween: 'always',
-                  groups: ['interface', 'unknown', 'class'],
-                },
-              ],
-              errors: [
-                {
-                  messageId: 'extraSpacingBetweenModulesMembers',
-                  data: {
-                    left: 'A',
-                    right: 'z',
-                  },
-                },
-                {
-                  messageId: 'unexpectedModulesOrder',
-                  data: {
-                    left: 'z',
-                    right: 'y',
-                  },
-                },
-                {
-                  messageId: 'missedSpacingBetweenModulesMembers',
-                  data: {
-                    left: 'y',
-                    right: 'B',
-                  },
-                },
-              ],
+              code: dedent`
+                interface A {}
+
+
+               function z() {}
+              function y() {}
+                  class B {}
+              `,
             },
           ],
+          valid: [],
         },
       )
     })
@@ -2027,63 +2027,63 @@ describe(ruleName, () => {
             `${ruleName}(${type}): sorts inline non-declare functions correctly`,
             rule,
             {
-              valid: [],
               invalid: [
                 {
-                  code: dedent`
-                  function b() {} function a() {}
-                `,
+                  errors: [
+                    {
+                      data: {
+                        right: 'a',
+                        left: 'b',
+                      },
+                      messageId: 'unexpectedModulesOrder',
+                    },
+                  ],
                   output: dedent`
                   function a() {} function b() {}
                 `,
+                  code: dedent`
+                  function b() {} function a() {}
+                `,
                   options: [options],
-                  errors: [
-                    {
-                      messageId: 'unexpectedModulesOrder',
-                      data: {
-                        left: 'b',
-                        right: 'a',
-                      },
-                    },
-                  ],
                 },
                 {
-                  code: dedent`
-                  function b() {} function a() {};
-                `,
+                  errors: [
+                    {
+                      data: {
+                        right: 'a',
+                        left: 'b',
+                      },
+                      messageId: 'unexpectedModulesOrder',
+                    },
+                  ],
                   output: dedent`
                   function a() {} function b() {};
                 `,
+                  code: dedent`
+                  function b() {} function a() {};
+                `,
                   options: [options],
-                  errors: [
-                    {
-                      messageId: 'unexpectedModulesOrder',
-                      data: {
-                        left: 'b',
-                        right: 'a',
-                      },
-                    },
-                  ],
                 },
                 {
-                  code: dedent`
-                  function b() {}; function a() {}
-                `,
+                  errors: [
+                    {
+                      data: {
+                        right: 'a',
+                        left: 'b',
+                      },
+                      messageId: 'unexpectedModulesOrder',
+                    },
+                  ],
                   output: dedent`
                   function a() {}; function b() {}
                 `,
+                  code: dedent`
+                  function b() {}; function a() {}
+                `,
                   options: [options],
-                  errors: [
-                    {
-                      messageId: 'unexpectedModulesOrder',
-                      data: {
-                        left: 'b',
-                        right: 'a',
-                      },
-                    },
-                  ],
                 },
               ],
+              valid: [],
             },
           )
         })
@@ -2093,45 +2093,45 @@ describe(ruleName, () => {
             `${ruleName}(${type}): sorts inline declare functions correctly`,
             rule,
             {
-              valid: [],
               invalid: [
                 {
+                  errors: [
+                    {
+                      data: {
+                        right: 'a',
+                        left: 'b',
+                      },
+                      messageId: 'unexpectedModulesOrder',
+                    },
+                  ],
+                  output: dedent`
+                  declare function a(); declare function b();
+                `,
                   code: dedent`
                   declare function b(); declare function a()
                 `,
+                  options: [options],
+                },
+                {
+                  errors: [
+                    {
+                      data: {
+                        right: 'a',
+                        left: 'b',
+                      },
+                      messageId: 'unexpectedModulesOrder',
+                    },
+                  ],
                   output: dedent`
                   declare function a(); declare function b();
                 `,
-                  options: [options],
-                  errors: [
-                    {
-                      messageId: 'unexpectedModulesOrder',
-                      data: {
-                        left: 'b',
-                        right: 'a',
-                      },
-                    },
-                  ],
-                },
-                {
                   code: dedent`
                   declare function b(); declare function a();
                 `,
-                  output: dedent`
-                  declare function a(); declare function b();
-                `,
                   options: [options],
-                  errors: [
-                    {
-                      messageId: 'unexpectedModulesOrder',
-                      data: {
-                        left: 'b',
-                        right: 'a',
-                      },
-                    },
-                  ],
                 },
               ],
+              valid: [],
             },
           )
         })
@@ -2141,63 +2141,63 @@ describe(ruleName, () => {
         `${ruleName}(${type}): sorts inline interfaces correctly`,
         rule,
         {
-          valid: [],
           invalid: [
             {
-              code: dedent`
-                interface B {} interface A {}
-              `,
+              errors: [
+                {
+                  data: {
+                    right: 'A',
+                    left: 'B',
+                  },
+                  messageId: 'unexpectedModulesOrder',
+                },
+              ],
               output: dedent`
                 interface A {} interface B {}
               `,
+              code: dedent`
+                interface B {} interface A {}
+              `,
               options: [options],
-              errors: [
-                {
-                  messageId: 'unexpectedModulesOrder',
-                  data: {
-                    left: 'B',
-                    right: 'A',
-                  },
-                },
-              ],
             },
             {
-              code: dedent`
-                interface B {} interface A {};
-              `,
+              errors: [
+                {
+                  data: {
+                    right: 'A',
+                    left: 'B',
+                  },
+                  messageId: 'unexpectedModulesOrder',
+                },
+              ],
               output: dedent`
                 interface A {} interface B {};
               `,
+              code: dedent`
+                interface B {} interface A {};
+              `,
               options: [options],
-              errors: [
-                {
-                  messageId: 'unexpectedModulesOrder',
-                  data: {
-                    left: 'B',
-                    right: 'A',
-                  },
-                },
-              ],
             },
             {
-              code: dedent`
-                interface B {}; interface A {}
-              `,
+              errors: [
+                {
+                  data: {
+                    right: 'A',
+                    left: 'B',
+                  },
+                  messageId: 'unexpectedModulesOrder',
+                },
+              ],
               output: dedent`
                 interface A {}; interface B {}
               `,
+              code: dedent`
+                interface B {}; interface A {}
+              `,
               options: [options],
-              errors: [
-                {
-                  messageId: 'unexpectedModulesOrder',
-                  data: {
-                    left: 'B',
-                    right: 'A',
-                  },
-                },
-              ],
             },
           ],
+          valid: [],
         },
       )
 
@@ -2205,45 +2205,45 @@ describe(ruleName, () => {
         `${ruleName}(${type}): sorts inline types correctly`,
         rule,
         {
-          valid: [],
           invalid: [
             {
+              errors: [
+                {
+                  data: {
+                    right: 'a',
+                    left: 'b',
+                  },
+                  messageId: 'unexpectedModulesOrder',
+                },
+              ],
+              output: dedent`
+                  type a = {}; type b = {};
+                `,
               code: dedent`
                   type b = {}; type a = {}
                 `,
+              options: [options],
+            },
+            {
+              errors: [
+                {
+                  data: {
+                    right: 'a',
+                    left: 'b',
+                  },
+                  messageId: 'unexpectedModulesOrder',
+                },
+              ],
               output: dedent`
                   type a = {}; type b = {};
                 `,
-              options: [options],
-              errors: [
-                {
-                  messageId: 'unexpectedModulesOrder',
-                  data: {
-                    left: 'b',
-                    right: 'a',
-                  },
-                },
-              ],
-            },
-            {
               code: dedent`
                   type b = {}; type a = {};
                 `,
-              output: dedent`
-                  type a = {}; type b = {};
-                `,
               options: [options],
-              errors: [
-                {
-                  messageId: 'unexpectedModulesOrder',
-                  data: {
-                    left: 'b',
-                    right: 'a',
-                  },
-                },
-              ],
             },
           ],
+          valid: [],
         },
       )
 
@@ -2251,63 +2251,63 @@ describe(ruleName, () => {
         `${ruleName}(${type}): sorts inline classes correctly`,
         rule,
         {
-          valid: [],
           invalid: [
             {
-              code: dedent`
-                class B {} class A {}
-              `,
+              errors: [
+                {
+                  data: {
+                    right: 'A',
+                    left: 'B',
+                  },
+                  messageId: 'unexpectedModulesOrder',
+                },
+              ],
               output: dedent`
                 class A {} class B {}
               `,
+              code: dedent`
+                class B {} class A {}
+              `,
               options: [options],
-              errors: [
-                {
-                  messageId: 'unexpectedModulesOrder',
-                  data: {
-                    left: 'B',
-                    right: 'A',
-                  },
-                },
-              ],
             },
             {
-              code: dedent`
-                class B {} class A {};
-              `,
+              errors: [
+                {
+                  data: {
+                    right: 'A',
+                    left: 'B',
+                  },
+                  messageId: 'unexpectedModulesOrder',
+                },
+              ],
               output: dedent`
                 class A {} class B {};
               `,
+              code: dedent`
+                class B {} class A {};
+              `,
               options: [options],
-              errors: [
-                {
-                  messageId: 'unexpectedModulesOrder',
-                  data: {
-                    left: 'B',
-                    right: 'A',
-                  },
-                },
-              ],
             },
             {
-              code: dedent`
-                class B {}; class A {}
-              `,
+              errors: [
+                {
+                  data: {
+                    right: 'A',
+                    left: 'B',
+                  },
+                  messageId: 'unexpectedModulesOrder',
+                },
+              ],
               output: dedent`
                 class A {}; class B {}
               `,
+              code: dedent`
+                class B {}; class A {}
+              `,
               options: [options],
-              errors: [
-                {
-                  messageId: 'unexpectedModulesOrder',
-                  data: {
-                    left: 'B',
-                    right: 'A',
-                  },
-                },
-              ],
             },
           ],
+          valid: [],
         },
       )
 
@@ -2315,63 +2315,63 @@ describe(ruleName, () => {
         `${ruleName}(${type}): sorts inline enums correctly`,
         rule,
         {
-          valid: [],
           invalid: [
             {
-              code: dedent`
-                enum B {} enum A {}
-              `,
+              errors: [
+                {
+                  data: {
+                    right: 'A',
+                    left: 'B',
+                  },
+                  messageId: 'unexpectedModulesOrder',
+                },
+              ],
               output: dedent`
                 enum A {} enum B {}
               `,
+              code: dedent`
+                enum B {} enum A {}
+              `,
               options: [options],
-              errors: [
-                {
-                  messageId: 'unexpectedModulesOrder',
-                  data: {
-                    left: 'B',
-                    right: 'A',
-                  },
-                },
-              ],
             },
             {
-              code: dedent`
-                enum B {} enum A {};
-              `,
+              errors: [
+                {
+                  data: {
+                    right: 'A',
+                    left: 'B',
+                  },
+                  messageId: 'unexpectedModulesOrder',
+                },
+              ],
               output: dedent`
                 enum A {} enum B {};
               `,
+              code: dedent`
+                enum B {} enum A {};
+              `,
               options: [options],
-              errors: [
-                {
-                  messageId: 'unexpectedModulesOrder',
-                  data: {
-                    left: 'B',
-                    right: 'A',
-                  },
-                },
-              ],
             },
             {
-              code: dedent`
-                enum B {}; enum A {}
-              `,
+              errors: [
+                {
+                  data: {
+                    right: 'A',
+                    left: 'B',
+                  },
+                  messageId: 'unexpectedModulesOrder',
+                },
+              ],
               output: dedent`
                 enum A {}; enum B {}
               `,
+              code: dedent`
+                enum B {}; enum A {}
+              `,
               options: [options],
-              errors: [
-                {
-                  messageId: 'unexpectedModulesOrder',
-                  data: {
-                    left: 'B',
-                    right: 'A',
-                  },
-                },
-              ],
             },
           ],
+          valid: [],
         },
       )
     })
@@ -2381,57 +2381,52 @@ describe(ruleName, () => {
     let type = 'natural-order'
 
     let options = {
-      type: 'natural',
       ignoreCase: true,
+      type: 'natural',
       order: 'asc',
     } as const
 
     ruleTester.run(`${ruleName}(${type}): sorts modules`, rule, {
-      valid: [],
       invalid: [
         {
-          code: dedent`
-            export interface FindUserInput {
-              id: string
-              cache: CacheType
-            }
-
-            enum CacheType {
-              ALWAYS = 'ALWAYS',
-              NEVER = 'NEVER',
-            }
-
-            export type FindUserOutput = {
-              id: string
-              name: string
-              age: number
-            }
-
-            function assertInputIsCorrect(input: FindUserInput | FindAllUsersInput): void {
-              // Some logic
-            }
-
-            export function findUser(input: FindUserInput): FindUserOutput {
-              assertInputIsCorrect(input)
-              return _findUserByIds([input.id])[0]
-            }
-
-            export type FindAllUsersInput = {
-              ids: string[]
-              cache: CacheType
-            }
-
-            export type FindAllUsersOutput = FindUserOutput[]
-
-            export function findAllUsers(input: FindAllUsersInput): FindAllUsersOutput {
-              assertInputIsCorrect(input)
-              return _findUserByIds(input.ids)
-            }
-
-            class Cache {
-              // Some logic
-            }
-          `,
+          errors: [
+            {
+              data: {
+                leftGroup: 'export-interface',
+                left: 'FindUserInput',
+                right: 'CacheType',
+                rightGroup: 'enum',
+              },
+              messageId: 'unexpectedModulesGroupOrder',
+            },
+            {
+              data: {
+                rightGroup: 'export-function',
+                left: 'assertInputIsCorrect',
+                leftGroup: 'function',
+                right: 'findUser',
+              },
+              messageId: 'unexpectedModulesGroupOrder',
+            },
+            {
+              data: {
+                leftGroup: 'export-function',
+                right: 'FindAllUsersInput',
+                rightGroup: 'export-type',
+                left: 'findUser',
+              },
+              messageId: 'unexpectedModulesGroupOrder',
+            },
+            {
+              data: {
+                leftGroup: 'export-function',
+                left: 'findAllUsers',
+                rightGroup: 'class',
+                right: 'Cache',
+              },
+              messageId: 'unexpectedModulesGroupOrder',
+            },
+          ],
           output: dedent`
             enum CacheType {
               ALWAYS = 'ALWAYS',
@@ -2474,47 +2469,52 @@ describe(ruleName, () => {
               // Some logic
             }
             `,
+          code: dedent`
+            export interface FindUserInput {
+              id: string
+              cache: CacheType
+            }
+
+            enum CacheType {
+              ALWAYS = 'ALWAYS',
+              NEVER = 'NEVER',
+            }
+
+            export type FindUserOutput = {
+              id: string
+              name: string
+              age: number
+            }
+
+            function assertInputIsCorrect(input: FindUserInput | FindAllUsersInput): void {
+              // Some logic
+            }
+
+            export function findUser(input: FindUserInput): FindUserOutput {
+              assertInputIsCorrect(input)
+              return _findUserByIds([input.id])[0]
+            }
+
+            export type FindAllUsersInput = {
+              ids: string[]
+              cache: CacheType
+            }
+
+            export type FindAllUsersOutput = FindUserOutput[]
+
+            export function findAllUsers(input: FindAllUsersInput): FindAllUsersOutput {
+              assertInputIsCorrect(input)
+              return _findUserByIds(input.ids)
+            }
+
+            class Cache {
+              // Some logic
+            }
+          `,
           options: [options],
-          errors: [
-            {
-              messageId: 'unexpectedModulesGroupOrder',
-              data: {
-                left: 'FindUserInput',
-                leftGroup: 'export-interface',
-                right: 'CacheType',
-                rightGroup: 'enum',
-              },
-            },
-            {
-              messageId: 'unexpectedModulesGroupOrder',
-              data: {
-                left: 'assertInputIsCorrect',
-                leftGroup: 'function',
-                right: 'findUser',
-                rightGroup: 'export-function',
-              },
-            },
-            {
-              messageId: 'unexpectedModulesGroupOrder',
-              data: {
-                left: 'findUser',
-                leftGroup: 'export-function',
-                right: 'FindAllUsersInput',
-                rightGroup: 'export-type',
-              },
-            },
-            {
-              messageId: 'unexpectedModulesGroupOrder',
-              data: {
-                left: 'findAllUsers',
-                leftGroup: 'export-function',
-                right: 'Cache',
-                rightGroup: 'class',
-              },
-            },
-          ],
         },
       ],
+      valid: [],
     })
   })
 
@@ -2527,51 +2527,46 @@ describe(ruleName, () => {
     } as const
 
     ruleTester.run(`${ruleName}(${type}): sorts modules`, rule, {
-      valid: [],
       invalid: [
         {
-          code: dedent`
-            export interface FindUserInput {
-              id: string
-              cache: CacheType
-            }
-
-            enum CacheType {
-              ALWAYS = 'ALWAYS',
-              NEVER = 'NEVER',
-            }
-
-            export type FindUserOutput = {
-              id: string
-              name: string
-              age: number
-            }
-
-            function assertInputIsCorrect(input: FindUserInput | FindAllUsersInput): void {
-              // Some logic
-            }
-
-            export function findUser(input: FindUserInput): FindUserOutput {
-              assertInputIsCorrect(input)
-              return _findUserByIds([input.id])[0]
-            }
-
-            export type FindAllUsersInput = {
-              ids: string[]
-              cache: CacheType
-            }
-
-            export type FindAllUsersOutput = FindUserOutput[]
-
-            export function findAllUsers(input: FindAllUsersInput): FindAllUsersOutput {
-              assertInputIsCorrect(input)
-              return _findUserByIds(input.ids)
-            }
-
-            class Cache {
-              // Some logic
-            }
-          `,
+          errors: [
+            {
+              data: {
+                leftGroup: 'export-interface',
+                left: 'FindUserInput',
+                right: 'CacheType',
+                rightGroup: 'enum',
+              },
+              messageId: 'unexpectedModulesGroupOrder',
+            },
+            {
+              data: {
+                rightGroup: 'export-function',
+                left: 'assertInputIsCorrect',
+                leftGroup: 'function',
+                right: 'findUser',
+              },
+              messageId: 'unexpectedModulesGroupOrder',
+            },
+            {
+              data: {
+                leftGroup: 'export-function',
+                right: 'FindAllUsersInput',
+                rightGroup: 'export-type',
+                left: 'findUser',
+              },
+              messageId: 'unexpectedModulesGroupOrder',
+            },
+            {
+              data: {
+                leftGroup: 'export-function',
+                left: 'findAllUsers',
+                rightGroup: 'class',
+                right: 'Cache',
+              },
+              messageId: 'unexpectedModulesGroupOrder',
+            },
+          ],
           output: dedent`
             enum CacheType {
               ALWAYS = 'ALWAYS',
@@ -2614,47 +2609,52 @@ describe(ruleName, () => {
               // Some logic
             }
           `,
+          code: dedent`
+            export interface FindUserInput {
+              id: string
+              cache: CacheType
+            }
+
+            enum CacheType {
+              ALWAYS = 'ALWAYS',
+              NEVER = 'NEVER',
+            }
+
+            export type FindUserOutput = {
+              id: string
+              name: string
+              age: number
+            }
+
+            function assertInputIsCorrect(input: FindUserInput | FindAllUsersInput): void {
+              // Some logic
+            }
+
+            export function findUser(input: FindUserInput): FindUserOutput {
+              assertInputIsCorrect(input)
+              return _findUserByIds([input.id])[0]
+            }
+
+            export type FindAllUsersInput = {
+              ids: string[]
+              cache: CacheType
+            }
+
+            export type FindAllUsersOutput = FindUserOutput[]
+
+            export function findAllUsers(input: FindAllUsersInput): FindAllUsersOutput {
+              assertInputIsCorrect(input)
+              return _findUserByIds(input.ids)
+            }
+
+            class Cache {
+              // Some logic
+            }
+          `,
           options: [options],
-          errors: [
-            {
-              messageId: 'unexpectedModulesGroupOrder',
-              data: {
-                left: 'FindUserInput',
-                leftGroup: 'export-interface',
-                right: 'CacheType',
-                rightGroup: 'enum',
-              },
-            },
-            {
-              messageId: 'unexpectedModulesGroupOrder',
-              data: {
-                left: 'assertInputIsCorrect',
-                leftGroup: 'function',
-                right: 'findUser',
-                rightGroup: 'export-function',
-              },
-            },
-            {
-              messageId: 'unexpectedModulesGroupOrder',
-              data: {
-                left: 'findUser',
-                leftGroup: 'export-function',
-                right: 'FindAllUsersInput',
-                rightGroup: 'export-type',
-              },
-            },
-            {
-              messageId: 'unexpectedModulesGroupOrder',
-              data: {
-                left: 'findAllUsers',
-                leftGroup: 'export-function',
-                right: 'Cache',
-                rightGroup: 'class',
-              },
-            },
-          ],
         },
       ],
+      valid: [],
     })
   })
 
@@ -2663,32 +2663,32 @@ describe(ruleName, () => {
       `${ruleName}: sets alphabetical asc sorting as default`,
       rule,
       {
-        valid: [],
         invalid: [
           {
-            code: dedent`
-              function b() {}
-              function B() {}
-              function a() {}
-              function A() {}
-            `,
+            errors: [
+              {
+                data: {
+                  right: 'a',
+                  left: 'B',
+                },
+                messageId: 'unexpectedModulesOrder',
+              },
+            ],
             output: dedent`
               function a() {}
               function A() {}
               function b() {}
               function B() {}
             `,
-            errors: [
-              {
-                messageId: 'unexpectedModulesOrder',
-                data: {
-                  left: 'B',
-                  right: 'a',
-                },
-              },
-            ],
+            code: dedent`
+              function b() {}
+              function B() {}
+              function a() {}
+              function A() {}
+            `,
           },
         ],
+        valid: [],
       },
     )
 
@@ -2735,27 +2735,8 @@ describe(ruleName, () => {
 
     describe('handles complex comment cases', () => {
       ruleTester.run(`keeps comments associated to their node`, rule, {
-        valid: [],
         invalid: [
           {
-            code: dedent`
-              // Ignore this comment
-
-              // B1
-              function b() {}
-
-              /**
-               * Ignore this comment as well
-               */
-
-              // A4
-              // A3
-              /*
-               * A2
-               */
-              // A1
-              function a() {}
-            `,
             output: dedent`
               // Ignore this comment
 
@@ -2774,52 +2755,47 @@ describe(ruleName, () => {
               // B1
               function b() {}
             `,
+            code: dedent`
+              // Ignore this comment
+
+              // B1
+              function b() {}
+
+              /**
+               * Ignore this comment as well
+               */
+
+              // A4
+              // A3
+              /*
+               * A2
+               */
+              // A1
+              function a() {}
+            `,
+            errors: [
+              {
+                data: {
+                  right: 'a',
+                  left: 'b',
+                },
+                messageId: 'unexpectedModulesOrder',
+              },
+            ],
             options: [
               {
                 type: 'alphabetical',
               },
             ],
-            errors: [
-              {
-                messageId: 'unexpectedModulesOrder',
-                data: {
-                  left: 'b',
-                  right: 'a',
-                },
-              },
-            ],
           },
         ],
+        valid: [],
       })
 
       describe('partition comments', () => {
         ruleTester.run(`handles partition comments`, rule, {
-          valid: [],
           invalid: [
             {
-              code: dedent`
-              // Ignore this comment
-
-              // C2
-              // C1
-              function c() {}
-
-              // B2
-              /**
-                * B1
-                */
-              function b() {}
-
-              // Above a partition comment ignore me
-              // PartitionComment: 1
-              /**
-                * D2
-                */
-              // D1
-              function d() {}
-
-              function a() {}
-            `,
               output: dedent`
               // Ignore this comment
 
@@ -2843,30 +2819,54 @@ describe(ruleName, () => {
               // D1
               function d() {}
             `,
-              options: [
-                {
-                  type: 'alphabetical',
-                  partitionByComment: 'PartitionComment:*',
-                },
-              ],
+              code: dedent`
+              // Ignore this comment
+
+              // C2
+              // C1
+              function c() {}
+
+              // B2
+              /**
+                * B1
+                */
+              function b() {}
+
+              // Above a partition comment ignore me
+              // PartitionComment: 1
+              /**
+                * D2
+                */
+              // D1
+              function d() {}
+
+              function a() {}
+            `,
               errors: [
                 {
-                  messageId: 'unexpectedModulesOrder',
                   data: {
-                    left: 'c',
                     right: 'b',
+                    left: 'c',
                   },
+                  messageId: 'unexpectedModulesOrder',
                 },
                 {
-                  messageId: 'unexpectedModulesOrder',
                   data: {
-                    left: 'd',
                     right: 'a',
+                    left: 'd',
                   },
+                  messageId: 'unexpectedModulesOrder',
+                },
+              ],
+              options: [
+                {
+                  partitionByComment: 'PartitionComment:*',
+                  type: 'alphabetical',
                 },
               ],
             },
           ],
+          valid: [],
         })
 
         ruleTester.run(
@@ -2884,8 +2884,8 @@ describe(ruleName, () => {
                 `,
                 options: [
                   {
-                    type: 'alphabetical',
                     partitionByComment: ['^(?!.*foo).*$'],
+                    type: 'alphabetical',
                   },
                 ],
               },
@@ -2896,6 +2896,49 @@ describe(ruleName, () => {
       })
 
       ruleTester.run(`${ruleName}: allows to use new line as partition`, rule, {
+        invalid: [
+          {
+            errors: [
+              {
+                data: {
+                  right: 'd',
+                  left: 'e',
+                },
+                messageId: 'unexpectedModulesOrder',
+              },
+              {
+                data: {
+                  right: 'a',
+                  left: 'b',
+                },
+                messageId: 'unexpectedModulesOrder',
+              },
+            ],
+            output: dedent`
+              function d() {}
+              function e() {}
+
+              function c() {}
+
+              function a() {}
+              function b() {}
+            `,
+            code: dedent`
+              function e() {}
+              function d() {}
+
+              function c() {}
+
+              function b() {}
+              function a() {}
+            `,
+            options: [
+              {
+                partitionByNewLine: true,
+              },
+            ],
+          },
+        ],
         valid: [
           {
             code: dedent`
@@ -2914,210 +2957,176 @@ describe(ruleName, () => {
             ],
           },
         ],
-        invalid: [
-          {
-            code: dedent`
-              function e() {}
-              function d() {}
-
-              function c() {}
-
-              function b() {}
-              function a() {}
-            `,
-            output: dedent`
-              function d() {}
-              function e() {}
-
-              function c() {}
-
-              function a() {}
-              function b() {}
-            `,
-            options: [
-              {
-                partitionByNewLine: true,
-              },
-            ],
-            errors: [
-              {
-                messageId: 'unexpectedModulesOrder',
-                data: {
-                  left: 'e',
-                  right: 'd',
-                },
-              },
-              {
-                messageId: 'unexpectedModulesOrder',
-                data: {
-                  left: 'b',
-                  right: 'a',
-                },
-              },
-            ],
-          },
-        ],
       })
     })
 
     let eslintDisableRuleTesterName = `${ruleName}: supports 'eslint-disable' for individual nodes`
     ruleTester.run(eslintDisableRuleTesterName, rule, {
-      valid: [],
       invalid: [
         {
-          code: dedent`
-            function c() {}
-            function b() {}
-            // eslint-disable-next-line
-            function a() {}
-          `,
+          errors: [
+            {
+              data: {
+                right: 'b',
+                left: 'c',
+              },
+              messageId: 'unexpectedModulesOrder',
+            },
+          ],
           output: dedent`
             function b() {}
             function c() {}
+            // eslint-disable-next-line
+            function a() {}
+          `,
+          code: dedent`
+            function c() {}
+            function b() {}
             // eslint-disable-next-line
             function a() {}
           `,
           options: [{}],
-          errors: [
-            {
-              messageId: 'unexpectedModulesOrder',
-              data: {
-                left: 'c',
-                right: 'b',
-              },
-            },
-          ],
         },
         {
-          code: dedent`
-            function d() {}
-            function c() {}
-            // eslint-disable-next-line
-            function a() {}
-            function b() {}
-          `,
+          errors: [
+            {
+              data: {
+                right: 'c',
+                left: 'd',
+              },
+              messageId: 'unexpectedModulesOrder',
+            },
+            {
+              data: {
+                right: 'b',
+                left: 'a',
+              },
+              messageId: 'unexpectedModulesOrder',
+            },
+          ],
           output: dedent`
             function b() {}
             function c() {}
             // eslint-disable-next-line
             function a() {}
             function d() {}
+          `,
+          code: dedent`
+            function d() {}
+            function c() {}
+            // eslint-disable-next-line
+            function a() {}
+            function b() {}
           `,
           options: [
             {
               partitionByComment: true,
             },
           ],
-          errors: [
-            {
-              messageId: 'unexpectedModulesOrder',
-              data: {
-                left: 'd',
-                right: 'c',
-              },
-            },
-            {
-              messageId: 'unexpectedModulesOrder',
-              data: {
-                left: 'a',
-                right: 'b',
-              },
-            },
-          ],
         },
         {
-          code: dedent`
-            class C {}
-            class B extends A {}
-            // eslint-disable-next-line
-            class A {}
-          `,
-          output: dedent`
-            class B extends A {}
-            class C {}
-            // eslint-disable-next-line
-            class A {}
-          `,
-          options: [{}],
           errors: [
             {
-              messageId: 'unexpectedModulesOrder',
               data: {
-                left: 'C',
                 right: 'B',
+                left: 'C',
               },
+              messageId: 'unexpectedModulesOrder',
             },
           ],
+          output: dedent`
+            class B extends A {}
+            class C {}
+            // eslint-disable-next-line
+            class A {}
+          `,
+          code: dedent`
+            class C {}
+            class B extends A {}
+            // eslint-disable-next-line
+            class A {}
+          `,
+          options: [{}],
         },
         {
-          code: dedent`
-            function c() {}
-            function b() {}
-            function a() {} // eslint-disable-line
-          `,
+          errors: [
+            {
+              data: {
+                right: 'b',
+                left: 'c',
+              },
+              messageId: 'unexpectedModulesOrder',
+            },
+          ],
           output: dedent`
             function b() {}
             function c() {}
             function a() {} // eslint-disable-line
           `,
+          code: dedent`
+            function c() {}
+            function b() {}
+            function a() {} // eslint-disable-line
+          `,
           options: [{}],
-          errors: [
-            {
-              messageId: 'unexpectedModulesOrder',
-              data: {
-                left: 'c',
-                right: 'b',
-              },
-            },
-          ],
         },
         {
+          errors: [
+            {
+              data: {
+                right: 'b',
+                left: 'c',
+              },
+              messageId: 'unexpectedModulesOrder',
+            },
+          ],
+          output: dedent`
+            function b() {}
+            function c() {}
+            /* eslint-disable-next-line */
+            function a() {}
+          `,
           code: dedent`
             function c() {}
             function b() {}
             /* eslint-disable-next-line */
             function a() {}
           `,
+          options: [{}],
+        },
+        {
+          errors: [
+            {
+              data: {
+                right: 'b',
+                left: 'c',
+              },
+              messageId: 'unexpectedModulesOrder',
+            },
+          ],
           output: dedent`
             function b() {}
             function c() {}
-            /* eslint-disable-next-line */
-            function a() {}
+            function a() {} /* eslint-disable-line */
           `,
-          options: [{}],
-          errors: [
-            {
-              messageId: 'unexpectedModulesOrder',
-              data: {
-                left: 'c',
-                right: 'b',
-              },
-            },
-          ],
-        },
-        {
           code: dedent`
             function c() {}
             function b() {}
             function a() {} /* eslint-disable-line */
           `,
-          output: dedent`
-            function b() {}
-            function c() {}
-            function a() {} /* eslint-disable-line */
-          `,
           options: [{}],
-          errors: [
-            {
-              messageId: 'unexpectedModulesOrder',
-              data: {
-                left: 'c',
-                right: 'b',
-              },
-            },
-          ],
         },
         {
+          output: dedent`
+            function a() {}
+            function d() {}
+            /* eslint-disable */
+            function c() {}
+            function b() {}
+            // Shouldn't move
+            /* eslint-enable */
+            function e() {}
+          `,
           code: dedent`
             function d() {}
             function e() {}
@@ -3128,130 +3137,110 @@ describe(ruleName, () => {
             /* eslint-enable */
             function a() {}
           `,
-          output: dedent`
-            function a() {}
-            function d() {}
-            /* eslint-disable */
-            function c() {}
-            function b() {}
-            // Shouldn't move
-            /* eslint-enable */
-            function e() {}
-          `,
-          options: [{}],
           errors: [
             {
-              messageId: 'unexpectedModulesOrder',
               data: {
-                left: 'b',
                 right: 'a',
+                left: 'b',
               },
+              messageId: 'unexpectedModulesOrder',
             },
           ],
+          options: [{}],
         },
         {
-          code: dedent`
-            function c() {}
-            function b() {}
-            // eslint-disable-next-line @rule-tester/${eslintDisableRuleTesterName}
-            function a() {}
-          `,
           output: dedent`
             function b() {}
             function c() {}
             // eslint-disable-next-line @rule-tester/${eslintDisableRuleTesterName}
             function a() {}
           `,
-          options: [{}],
           errors: [
             {
-              messageId: 'unexpectedModulesOrder',
               data: {
-                left: 'c',
                 right: 'b',
+                left: 'c',
               },
+              messageId: 'unexpectedModulesOrder',
             },
           ],
-        },
-        {
           code: dedent`
             function c() {}
             function b() {}
-            function a() {} // eslint-disable-line @rule-tester/${eslintDisableRuleTesterName}
+            // eslint-disable-next-line @rule-tester/${eslintDisableRuleTesterName}
+            function a() {}
           `,
+          options: [{}],
+        },
+        {
+          errors: [
+            {
+              data: {
+                right: 'b',
+                left: 'c',
+              },
+              messageId: 'unexpectedModulesOrder',
+            },
+          ],
           output: dedent`
             function b() {}
             function c() {}
             function a() {} // eslint-disable-line @rule-tester/${eslintDisableRuleTesterName}
           `,
+          code: dedent`
+            function c() {}
+            function b() {}
+            function a() {} // eslint-disable-line @rule-tester/${eslintDisableRuleTesterName}
+          `,
           options: [{}],
-          errors: [
-            {
-              messageId: 'unexpectedModulesOrder',
-              data: {
-                left: 'c',
-                right: 'b',
-              },
-            },
-          ],
         },
         {
+          output: dedent`
+            function b() {}
+            function c() {}
+            /* eslint-disable-next-line @rule-tester/${eslintDisableRuleTesterName} */
+            function a() {}
+          `,
           code: dedent`
             function c() {}
             function b() {}
             /* eslint-disable-next-line @rule-tester/${eslintDisableRuleTesterName} */
             function a() {}
           `,
+          errors: [
+            {
+              data: {
+                right: 'b',
+                left: 'c',
+              },
+              messageId: 'unexpectedModulesOrder',
+            },
+          ],
+          options: [{}],
+        },
+        {
+          errors: [
+            {
+              data: {
+                right: 'b',
+                left: 'c',
+              },
+              messageId: 'unexpectedModulesOrder',
+            },
+          ],
           output: dedent`
             function b() {}
             function c() {}
-            /* eslint-disable-next-line @rule-tester/${eslintDisableRuleTesterName} */
-            function a() {}
+            function a() {} /* eslint-disable-line @rule-tester/${eslintDisableRuleTesterName} */
           `,
-          options: [{}],
-          errors: [
-            {
-              messageId: 'unexpectedModulesOrder',
-              data: {
-                left: 'c',
-                right: 'b',
-              },
-            },
-          ],
-        },
-        {
           code: dedent`
             function c() {}
             function b() {}
             function a() {} /* eslint-disable-line @rule-tester/${eslintDisableRuleTesterName} */
           `,
-          output: dedent`
-            function b() {}
-            function c() {}
-            function a() {} /* eslint-disable-line @rule-tester/${eslintDisableRuleTesterName} */
-          `,
           options: [{}],
-          errors: [
-            {
-              messageId: 'unexpectedModulesOrder',
-              data: {
-                left: 'c',
-                right: 'b',
-              },
-            },
-          ],
         },
         {
-          code: dedent`
-            function d() {}
-            function e() {}
-            /* eslint-disable @rule-tester/${eslintDisableRuleTesterName} */
-            function c() {}
-            function b() {}
-            // Shouldn't move
-            /* eslint-enable */
-            function a() {}
-          `,
           output: dedent`
             function a() {}
             function d() {}
@@ -3262,18 +3251,29 @@ describe(ruleName, () => {
             /* eslint-enable */
             function e() {}
           `,
-          options: [{}],
+          code: dedent`
+            function d() {}
+            function e() {}
+            /* eslint-disable @rule-tester/${eslintDisableRuleTesterName} */
+            function c() {}
+            function b() {}
+            // Shouldn't move
+            /* eslint-enable */
+            function a() {}
+          `,
           errors: [
             {
-              messageId: 'unexpectedModulesOrder',
               data: {
-                left: 'b',
                 right: 'a',
+                left: 'b',
               },
+              messageId: 'unexpectedModulesOrder',
             },
           ],
+          options: [{}],
         },
       ],
+      valid: [],
     })
   })
 })

@@ -29,6 +29,36 @@ describe(ruleName, () => {
       `${ruleName}(${type}): sorts object with identifier and literal keys`,
       rule,
       {
+        invalid: [
+          {
+            errors: [
+              {
+                data: {
+                  right: 'b',
+                  left: 'c',
+                },
+                messageId: 'unexpectedObjectsOrder',
+              },
+            ],
+            output: dedent`
+              let Obj = {
+                a: 'aaaa',
+                b: 'bbb',
+                [c]: 'cc',
+                d: 'd',
+              }
+            `,
+            code: dedent`
+              let Obj = {
+                a: 'aaaa',
+                [c]: 'cc',
+                b: 'bbb',
+                d: 'd',
+              }
+            `,
+            options: [options],
+          },
+        ],
         valid: [
           {
             code: dedent`
@@ -40,36 +70,6 @@ describe(ruleName, () => {
               }
             `,
             options: [options],
-          },
-        ],
-        invalid: [
-          {
-            code: dedent`
-              let Obj = {
-                a: 'aaaa',
-                [c]: 'cc',
-                b: 'bbb',
-                d: 'd',
-              }
-            `,
-            output: dedent`
-              let Obj = {
-                a: 'aaaa',
-                b: 'bbb',
-                [c]: 'cc',
-                d: 'd',
-              }
-            `,
-            options: [options],
-            errors: [
-              {
-                messageId: 'unexpectedObjectsOrder',
-                data: {
-                  left: 'c',
-                  right: 'b',
-                },
-              },
-            ],
           },
         ],
       },
@@ -79,6 +79,36 @@ describe(ruleName, () => {
       `${ruleName}(${type}): sorting does not break object`,
       rule,
       {
+        invalid: [
+          {
+            errors: [
+              {
+                data: {
+                  right: 'b',
+                  left: 'c',
+                },
+                messageId: 'unexpectedObjectsOrder',
+              },
+            ],
+            output: dedent`
+              let Obj = {
+                b: 'bb',
+                c: 'c',
+                ...rest,
+                a: 'aaa',
+              }
+            `,
+            code: dedent`
+              let Obj = {
+                c: 'c',
+                b: 'bb',
+                ...rest,
+                a: 'aaa',
+              }
+            `,
+            options: [options],
+          },
+        ],
         valid: [
           {
             code: dedent`
@@ -92,71 +122,12 @@ describe(ruleName, () => {
             options: [options],
           },
         ],
-        invalid: [
-          {
-            code: dedent`
-              let Obj = {
-                c: 'c',
-                b: 'bb',
-                ...rest,
-                a: 'aaa',
-              }
-            `,
-            output: dedent`
-              let Obj = {
-                b: 'bb',
-                c: 'c',
-                ...rest,
-                a: 'aaa',
-              }
-            `,
-            options: [options],
-            errors: [
-              {
-                messageId: 'unexpectedObjectsOrder',
-                data: {
-                  left: 'c',
-                  right: 'b',
-                },
-              },
-            ],
-          },
-        ],
       },
     )
 
     ruleTester.run(`${ruleName}(${type}): sorts objects in objects`, rule, {
-      valid: [
-        {
-          code: dedent`
-            let Obj = {
-              x: {
-                a: 'aa',
-                b: 'b',
-              },
-              y: {
-                a: 'aa',
-                b: 'b',
-              },
-            }
-          `,
-          options: [options],
-        },
-      ],
       invalid: [
         {
-          code: dedent`
-            let Obj = {
-              y: {
-                b: 'b',
-                a: 'aa',
-              },
-              x: {
-                b: 'b',
-                a: 'aa',
-              },
-            }
-          `,
           output: [
             dedent`
               let Obj = {
@@ -183,35 +154,99 @@ describe(ruleName, () => {
               }
             `,
           ],
-          options: [options],
           errors: [
             {
-              messageId: 'unexpectedObjectsOrder',
               data: {
-                left: 'b',
                 right: 'a',
+                left: 'b',
               },
+              messageId: 'unexpectedObjectsOrder',
             },
             {
-              messageId: 'unexpectedObjectsOrder',
               data: {
-                left: 'y',
                 right: 'x',
+                left: 'y',
               },
+              messageId: 'unexpectedObjectsOrder',
             },
             {
-              messageId: 'unexpectedObjectsOrder',
               data: {
-                left: 'b',
                 right: 'a',
+                left: 'b',
               },
+              messageId: 'unexpectedObjectsOrder',
             },
           ],
+          code: dedent`
+            let Obj = {
+              y: {
+                b: 'b',
+                a: 'aa',
+              },
+              x: {
+                b: 'b',
+                a: 'aa',
+              },
+            }
+          `,
+          options: [options],
+        },
+      ],
+      valid: [
+        {
+          code: dedent`
+            let Obj = {
+              x: {
+                a: 'aa',
+                b: 'b',
+              },
+              y: {
+                a: 'aa',
+                b: 'b',
+              },
+            }
+          `,
+          options: [options],
         },
       ],
     })
 
     ruleTester.run(`${ruleName}(${type}): sorts objects computed keys`, rule, {
+      invalid: [
+        {
+          errors: [
+            {
+              data: {
+                left: 'c[1]',
+                right: 'b()',
+              },
+              messageId: 'unexpectedObjectsOrder',
+            },
+            {
+              data: {
+                left: 'b()',
+                right: 'a',
+              },
+              messageId: 'unexpectedObjectsOrder',
+            },
+          ],
+          output: dedent`
+            let Obj = {
+              'a': 'aaa',
+              [b()]: 'bb',
+              [c[1]]: 'c',
+            }
+          `,
+          code: dedent`
+            let Obj = {
+              [c[1]]: 'c',
+              [b()]: 'bb',
+              'a': 'aaa',
+            }
+          `,
+          options: [options],
+        },
+      ],
       valid: [
         {
           code: dedent`
@@ -222,56 +257,24 @@ describe(ruleName, () => {
             }
           `,
           options: [options],
-        },
-      ],
-      invalid: [
-        {
-          code: dedent`
-            let Obj = {
-              [c[1]]: 'c',
-              [b()]: 'bb',
-              'a': 'aaa',
-            }
-          `,
-          output: dedent`
-            let Obj = {
-              'a': 'aaa',
-              [b()]: 'bb',
-              [c[1]]: 'c',
-            }
-          `,
-          options: [options],
-          errors: [
-            {
-              messageId: 'unexpectedObjectsOrder',
-              data: {
-                left: 'c[1]',
-                right: 'b()',
-              },
-            },
-            {
-              messageId: 'unexpectedObjectsOrder',
-              data: {
-                left: 'b()',
-                right: 'a',
-              },
-            },
-          ],
         },
       ],
     })
 
     ruleTester.run(`${ruleName}(${type}): allows to set priority keys`, rule, {
-      valid: [
+      invalid: [
         {
-          code: dedent`
-            let Obj = {
-              b: 'bb',
-              c: 'ccc',
-              a: 'aaaa',
-              d: 'd',
-            }
-          `,
+          errors: [
+            {
+              data: {
+                leftGroup: 'unknown',
+                rightGroup: 'top',
+                right: 'b',
+                left: 'a',
+              },
+              messageId: 'unexpectedObjectsGroupOrder',
+            },
+          ],
           options: [
             {
               ...options,
@@ -279,18 +282,6 @@ describe(ruleName, () => {
               groups: ['top', 'unknown'],
             },
           ],
-        },
-      ],
-      invalid: [
-        {
-          code: dedent`
-            let Obj = {
-              a: 'aaaa',
-              b: 'bb',
-              c: 'ccc',
-              d: 'd',
-            }
-          `,
           output: dedent`
             let Obj = {
               b: 'bb',
@@ -299,6 +290,18 @@ describe(ruleName, () => {
               d: 'd',
             }
           `,
+          code: dedent`
+            let Obj = {
+              a: 'aaaa',
+              b: 'bb',
+              c: 'ccc',
+              d: 'd',
+            }
+          `,
+        },
+      ],
+      valid: [
+        {
           options: [
             {
               ...options,
@@ -306,17 +309,14 @@ describe(ruleName, () => {
               groups: ['top', 'unknown'],
             },
           ],
-          errors: [
-            {
-              messageId: 'unexpectedObjectsGroupOrder',
-              data: {
-                left: 'a',
-                leftGroup: 'unknown',
-                right: 'b',
-                rightGroup: 'top',
-              },
-            },
-          ],
+          code: dedent`
+            let Obj = {
+              b: 'bb',
+              c: 'ccc',
+              a: 'aaaa',
+              d: 'd',
+            }
+          `,
         },
       ],
     })
@@ -327,6 +327,15 @@ describe(ruleName, () => {
       {
         valid: [
           {
+            options: [
+              {
+                ...options,
+                customGroups: {
+                  elementsWithoutFoo: '^(?!.*Foo).*$',
+                },
+                groups: ['unknown', 'elementsWithoutFoo'],
+              },
+            ],
             code: dedent`
             let Obj = {
               iHaveFooInMyName: string,
@@ -335,15 +344,6 @@ describe(ruleName, () => {
               b: "b",
             }
             `,
-            options: [
-              {
-                ...options,
-                groups: ['unknown', 'elementsWithoutFoo'],
-                customGroups: {
-                  elementsWithoutFoo: '^(?!.*Foo).*$',
-                },
-              },
-            ],
           },
         ],
         invalid: [],
@@ -354,6 +354,34 @@ describe(ruleName, () => {
       `${ruleName}(${type}): sorts with comments on the same line`,
       rule,
       {
+        invalid: [
+          {
+            errors: [
+              {
+                data: {
+                  right: 'b',
+                  left: 'c',
+                },
+                messageId: 'unexpectedObjectsOrder',
+              },
+            ],
+            output: dedent`
+              let Obj = {
+                a: 'aaa', // Comment A
+                b: 'bb', // Comment B
+                c: 'c', // Comment C
+              }
+            `,
+            code: dedent`
+              let Obj = {
+                a: 'aaa', // Comment A
+                c: 'c', // Comment C
+                b: 'bb', // Comment B
+              }
+            `,
+            options: [options],
+          },
+        ],
         valid: [
           {
             code: dedent`
@@ -366,34 +394,6 @@ describe(ruleName, () => {
             options: [options],
           },
         ],
-        invalid: [
-          {
-            code: dedent`
-              let Obj = {
-                a: 'aaa', // Comment A
-                c: 'c', // Comment C
-                b: 'bb', // Comment B
-              }
-            `,
-            output: dedent`
-              let Obj = {
-                a: 'aaa', // Comment A
-                b: 'bb', // Comment B
-                c: 'c', // Comment C
-              }
-            `,
-            options: [options],
-            errors: [
-              {
-                messageId: 'unexpectedObjectsOrder',
-                data: {
-                  left: 'c',
-                  right: 'b',
-                },
-              },
-            ],
-          },
-        ],
       },
     )
 
@@ -401,49 +401,48 @@ describe(ruleName, () => {
       `${ruleName}(${type}): do not sorts objects without a comma and with a comment in the last element`,
       rule,
       {
-        valid: [],
         invalid: [
           {
-            code: dedent`
-              let Obj = {
-                b: 'b', // Comment B
-                a: 'aa' // Comment A
-              }
-            `,
+            errors: [
+              {
+                data: {
+                  right: 'a',
+                  left: 'b',
+                },
+                messageId: 'unexpectedObjectsOrder',
+              },
+            ],
             output: dedent`
               let Obj = {
                 a: 'aa', // Comment A
                 b: 'b' // Comment B
               }
             `,
+            code: dedent`
+              let Obj = {
+                b: 'b', // Comment B
+                a: 'aa' // Comment A
+              }
+            `,
             options: [options],
-            errors: [
-              {
-                messageId: 'unexpectedObjectsOrder',
-                data: {
-                  left: 'b',
-                  right: 'a',
-                },
-              },
-            ],
           },
         ],
+        valid: [],
       },
     )
 
     ruleTester.run(`${ruleName}(${type}): sorts destructured object`, rule, {
-      valid: [],
       invalid: [
         {
-          code: dedent`
-            let Func = ({
-              c,
-              a = 'aa',
-              b
-            }) => {
-              // ...
-            }
-          `,
+          errors: [
+            {
+              data: {
+                right: 'a',
+                left: 'c',
+              },
+              messageId: 'unexpectedObjectsOrder',
+            },
+          ],
           output: dedent`
             let Func = ({
               a = 'aa',
@@ -453,37 +452,36 @@ describe(ruleName, () => {
               // ...
             }
           `,
+          code: dedent`
+            let Func = ({
+              c,
+              a = 'aa',
+              b
+            }) => {
+              // ...
+            }
+          `,
           options: [options],
-          errors: [
-            {
-              messageId: 'unexpectedObjectsOrder',
-              data: {
-                left: 'c',
-                right: 'a',
-              },
-            },
-          ],
         },
       ],
+      valid: [],
     })
 
     ruleTester.run(
       `${ruleName}(${type}): does not sort keys if the right value depends on the left value`,
       rule,
       {
-        valid: [],
         invalid: [
           {
-            code: dedent`
-              let Func = ({
-                c,
-                b = c,
-                a = 'a',
-                d,
-              }) => {
-                // ...
-              }
-            `,
+            errors: [
+              {
+                data: {
+                  right: 'a',
+                  left: 'b',
+                },
+                messageId: 'unexpectedObjectsOrder',
+              },
+            ],
             output: dedent`
               let Func = ({
                 a = 'a',
@@ -494,18 +492,20 @@ describe(ruleName, () => {
                 // ...
               }
             `,
+            code: dedent`
+              let Func = ({
+                c,
+                b = c,
+                a = 'a',
+                d,
+              }) => {
+                // ...
+              }
+            `,
             options: [options],
-            errors: [
-              {
-                messageId: 'unexpectedObjectsOrder',
-                data: {
-                  left: 'b',
-                  right: 'a',
-                },
-              },
-            ],
           },
         ],
+        valid: [],
       },
     )
 
@@ -514,89 +514,97 @@ describe(ruleName, () => {
         `${ruleName}(${type}): works with complex dependencies`,
         rule,
         {
-          valid: [],
           invalid: [
             {
-              code: dedent`
-                let Func = ({
-                  a,
-                  b = a + c + d,
-                  c,
-                  d,
-                }) => {
-                  // ...
-                }
-              `,
-              output: dedent`
-                let Func = ({
-                  a,
-                  c,
-                  d,
-                  b = a + c + d,
-                }) => {
-                  // ...
-                }
-              `,
-              options: [options],
               errors: [
                 {
-                  messageId: 'unexpectedObjectsDependencyOrder',
                   data: {
-                    right: 'c',
                     nodeDependentOnRight: 'b',
+                    right: 'c',
                   },
+                  messageId: 'unexpectedObjectsDependencyOrder',
                 },
               ],
-            },
-            {
-              code: dedent`
+              output: dedent`
                 let Func = ({
                   a,
-                  c = 1 === 1 ? 1 === 1 ? a : b : b,
-                  b,
+                  c,
                   d,
+                  b = a + c + d,
                 }) => {
                   // ...
                 }
               `,
-              output: dedent`
+              code: dedent`
                 let Func = ({
                   a,
-                  b,
-                  c = 1 === 1 ? 1 === 1 ? a : b : b,
+                  b = a + c + d,
+                  c,
                   d,
                 }) => {
                   // ...
                 }
               `,
               options: [options],
-              errors: [
-                {
-                  messageId: 'unexpectedObjectsDependencyOrder',
-                  data: {
-                    right: 'b',
-                    nodeDependentOnRight: 'c',
-                  },
-                },
-              ],
             },
             {
-              code: dedent`
+              errors: [
+                {
+                  data: {
+                    nodeDependentOnRight: 'c',
+                    right: 'b',
+                  },
+                  messageId: 'unexpectedObjectsDependencyOrder',
+                },
+              ],
+              output: dedent`
                 let Func = ({
                   a,
-                  b = ['a', 'b', 'c'].includes(d, c, a),
-                  c,
+                  b,
+                  c = 1 === 1 ? 1 === 1 ? a : b : b,
                   d,
                 }) => {
                   // ...
                 }
               `,
+              code: dedent`
+                let Func = ({
+                  a,
+                  c = 1 === 1 ? 1 === 1 ? a : b : b,
+                  b,
+                  d,
+                }) => {
+                  // ...
+                }
+              `,
+              options: [options],
+            },
+            {
+              errors: [
+                {
+                  data: {
+                    nodeDependentOnRight: 'b',
+                    right: 'c',
+                  },
+                  messageId: 'unexpectedObjectsDependencyOrder',
+                },
+              ],
               output: dedent`
                 let Func = ({
                   a,
                   c,
                   d,
                   b = ['a', 'b', 'c'].includes(d, c, a),
+                }) => {
+                  // ...
+                }
+              `,
+              code: dedent`
+                let Func = ({
+                  a,
+                  b = ['a', 'b', 'c'].includes(d, c, a),
+                  c,
+                  d,
                 }) => {
                   // ...
                 }
@@ -607,27 +615,17 @@ describe(ruleName, () => {
                   order: 'asc',
                 },
               ],
-              errors: [
-                {
-                  messageId: 'unexpectedObjectsDependencyOrder',
-                  data: {
-                    right: 'c',
-                    nodeDependentOnRight: 'b',
-                  },
-                },
-              ],
             },
             {
-              code: dedent`
-                let Func = ({
-                  a,
-                  b = c || c,
-                  c,
-                  d,
-                }) => {
-                  // ...
-                }
-              `,
+              errors: [
+                {
+                  data: {
+                    nodeDependentOnRight: 'b',
+                    right: 'c',
+                  },
+                  messageId: 'unexpectedObjectsDependencyOrder',
+                },
+              ],
               output: dedent`
                 let Func = ({
                   a,
@@ -638,28 +636,28 @@ describe(ruleName, () => {
                   // ...
                 }
               `,
-              options: [options],
-              errors: [
-                {
-                  messageId: 'unexpectedObjectsDependencyOrder',
-                  data: {
-                    right: 'c',
-                    nodeDependentOnRight: 'b',
-                  },
-                },
-              ],
-            },
-            {
               code: dedent`
                 let Func = ({
                   a,
-                  b = 1 === 1 ? a : c,
+                  b = c || c,
                   c,
                   d,
                 }) => {
                   // ...
                 }
               `,
+              options: [options],
+            },
+            {
+              errors: [
+                {
+                  data: {
+                    nodeDependentOnRight: 'b',
+                    right: 'c',
+                  },
+                  messageId: 'unexpectedObjectsDependencyOrder',
+                },
+              ],
               output: dedent`
                 let Func = ({
                   a,
@@ -670,48 +668,50 @@ describe(ruleName, () => {
                   // ...
                 }
               `,
-              options: [options],
-              errors: [
-                {
-                  messageId: 'unexpectedObjectsDependencyOrder',
-                  data: {
-                    right: 'c',
-                    nodeDependentOnRight: 'b',
-                  },
-                },
-              ],
-            },
-            {
               code: dedent`
                 let Func = ({
-                    a = c,
-                    b = 10,
-                    c = 10,
-                    }) => {
-                  // ...
-                }
-              `,
-              output: dedent`
-                let Func = ({
-                    c = 10,
-                    a = c,
-                    b = 10,
-                    }) => {
+                  a,
+                  b = 1 === 1 ? a : c,
+                  c,
+                  d,
+                }) => {
                   // ...
                 }
               `,
               options: [options],
+            },
+            {
               errors: [
                 {
-                  messageId: 'unexpectedObjectsDependencyOrder',
                   data: {
-                    right: 'c',
                     nodeDependentOnRight: 'a',
+                    right: 'c',
                   },
+                  messageId: 'unexpectedObjectsDependencyOrder',
                 },
               ],
+              output: dedent`
+                let Func = ({
+                    c = 10,
+                    a = c,
+                    b = 10,
+                    }) => {
+                  // ...
+                }
+              `,
+              code: dedent`
+                let Func = ({
+                    a = c,
+                    b = 10,
+                    c = 10,
+                    }) => {
+                  // ...
+                }
+              `,
+              options: [options],
             },
           ],
+          valid: [],
         },
       )
 
@@ -1150,21 +1150,24 @@ describe(ruleName, () => {
         `${ruleName}(${type}): detects circular dependencies`,
         rule,
         {
-          valid: [],
           invalid: [
             {
-              code: dedent`
-              let Func = ({
-                a,
-                b = f + 1,
-                c,
-                d = b + 1,
-                e,
-                f = d + 1
-              }) => {
-                // ...
-              }
-            `,
+              errors: [
+                {
+                  data: {
+                    right: 'd',
+                    left: 'c',
+                  },
+                  messageId: 'unexpectedObjectsOrder',
+                },
+                {
+                  data: {
+                    nodeDependentOnRight: 'b',
+                    right: 'f',
+                  },
+                  messageId: 'unexpectedObjectsDependencyOrder',
+                },
+              ],
               output: dedent`
               let Func = ({
                 a,
@@ -1177,25 +1180,22 @@ describe(ruleName, () => {
                 // ...
               }
             `,
+              code: dedent`
+              let Func = ({
+                a,
+                b = f + 1,
+                c,
+                d = b + 1,
+                e,
+                f = d + 1
+              }) => {
+                // ...
+              }
+            `,
               options: [options],
-              errors: [
-                {
-                  messageId: 'unexpectedObjectsOrder',
-                  data: {
-                    left: 'c',
-                    right: 'd',
-                  },
-                },
-                {
-                  messageId: 'unexpectedObjectsDependencyOrder',
-                  data: {
-                    right: 'f',
-                    nodeDependentOnRight: 'b',
-                  },
-                },
-              ],
             },
           ],
+          valid: [],
         },
       )
 
@@ -1205,6 +1205,19 @@ describe(ruleName, () => {
         {
           valid: [
             {
+              options: [
+                {
+                  ...options,
+                  customGroups: {
+                    attributesStartingWithA: 'a',
+                    attributesStartingWithB: 'b',
+                  },
+                  groups: [
+                    'attributesStartingWithA',
+                    'attributesStartingWithB',
+                  ],
+                },
+              ],
               code: dedent`
                 let Func = ({
                   b,
@@ -1213,19 +1226,6 @@ describe(ruleName, () => {
                   // ...
                 }
               `,
-              options: [
-                {
-                  ...options,
-                  groups: [
-                    'attributesStartingWithA',
-                    'attributesStartingWithB',
-                  ],
-                  customGroups: {
-                    attributesStartingWithA: 'a',
-                    attributesStartingWithB: 'b',
-                  },
-                },
-              ],
             },
           ],
           invalid: [],
@@ -1236,18 +1236,17 @@ describe(ruleName, () => {
         `${ruleName}(${type}): prioritizes dependencies over partitionByComment`,
         rule,
         {
-          valid: [],
           invalid: [
             {
-              code: dedent`
-              let Func = ({
-                b = a,
-                // Part: 1
-                a = 0,
-              }) => {
-                // ...
-              }
-            `,
+              errors: [
+                {
+                  data: {
+                    nodeDependentOnRight: 'b',
+                    right: 'a',
+                  },
+                  messageId: 'unexpectedObjectsDependencyOrder',
+                },
+              ],
               output: dedent`
                 let Func = ({
                   a = 0,
@@ -1257,23 +1256,24 @@ describe(ruleName, () => {
                   // ...
                 }
             `,
+              code: dedent`
+              let Func = ({
+                b = a,
+                // Part: 1
+                a = 0,
+              }) => {
+                // ...
+              }
+            `,
               options: [
                 {
                   ...options,
                   partitionByComment: '^Part*',
                 },
               ],
-              errors: [
-                {
-                  messageId: 'unexpectedObjectsDependencyOrder',
-                  data: {
-                    right: 'a',
-                    nodeDependentOnRight: 'b',
-                  },
-                },
-              ],
             },
           ],
+          valid: [],
         },
       )
 
@@ -1281,18 +1281,17 @@ describe(ruleName, () => {
         `${ruleName}(${type}): prioritizes dependencies over partitionByNewLine`,
         rule,
         {
-          valid: [],
           invalid: [
             {
-              code: dedent`
-              let Func = ({
-                b = a,
-
-                a = 0,
-              }) => {
-                // ...
-              }
-            `,
+              errors: [
+                {
+                  data: {
+                    nodeDependentOnRight: 'b',
+                    right: 'a',
+                  },
+                  messageId: 'unexpectedObjectsDependencyOrder',
+                },
+              ],
               output: dedent`
                 let Func = ({
                   a = 0,
@@ -1302,23 +1301,24 @@ describe(ruleName, () => {
                   // ...
                 }
             `,
+              code: dedent`
+              let Func = ({
+                b = a,
+
+                a = 0,
+              }) => {
+                // ...
+              }
+            `,
               options: [
                 {
                   ...options,
                   partitionByNewLine: true,
                 },
               ],
-              errors: [
-                {
-                  messageId: 'unexpectedObjectsDependencyOrder',
-                  data: {
-                    right: 'a',
-                    nodeDependentOnRight: 'b',
-                  },
-                },
-              ],
             },
           ],
+          valid: [],
         },
       )
     })
@@ -1327,23 +1327,24 @@ describe(ruleName, () => {
       `${ruleName}(${type}): allows to use partition comments`,
       rule,
       {
-        valid: [],
         invalid: [
           {
-            code: dedent`
-              let Obj = {
-                // Part: 1
-                e: 'ee',
-                d: 'ddd',
-                // Part: 2
-                f: 'f',
-                // Part: 3
-                a: 'aaaaaa',
-                c: 'cccc',
-                // Not partition comment
-                b: 'bbbbb',
-              }
-            `,
+            errors: [
+              {
+                data: {
+                  right: 'd',
+                  left: 'e',
+                },
+                messageId: 'unexpectedObjectsOrder',
+              },
+              {
+                data: {
+                  right: 'b',
+                  left: 'c',
+                },
+                messageId: 'unexpectedObjectsOrder',
+              },
+            ],
             output: dedent`
               let Obj = {
                 // Part: 1
@@ -1358,30 +1359,29 @@ describe(ruleName, () => {
                 c: 'cccc',
               }
             `,
+            code: dedent`
+              let Obj = {
+                // Part: 1
+                e: 'ee',
+                d: 'ddd',
+                // Part: 2
+                f: 'f',
+                // Part: 3
+                a: 'aaaaaa',
+                c: 'cccc',
+                // Not partition comment
+                b: 'bbbbb',
+              }
+            `,
             options: [
               {
                 ...options,
                 partitionByComment: '^Part*',
               },
             ],
-            errors: [
-              {
-                messageId: 'unexpectedObjectsOrder',
-                data: {
-                  left: 'e',
-                  right: 'd',
-                },
-              },
-              {
-                messageId: 'unexpectedObjectsOrder',
-                data: {
-                  left: 'c',
-                  right: 'b',
-                },
-              },
-            ],
           },
         ],
+        valid: [],
       },
     )
 
@@ -1415,22 +1415,8 @@ describe(ruleName, () => {
       `${ruleName}(${type}): allows to use multiple partition comments`,
       rule,
       {
-        valid: [],
         invalid: [
           {
-            code: dedent`
-              let Object = {
-                /* Partition Comment */
-                // Part: 1
-                c: 'cc',
-                // Part: 2
-                b: 'bbb',
-                a: 'aaaa',
-                d: 'd',
-                /* Part: 3 */
-                e: 'e',
-              }
-            `,
             output: dedent`
               let Object = {
                 /* Partition Comment */
@@ -1444,23 +1430,37 @@ describe(ruleName, () => {
                 e: 'e',
               }
             `,
+            code: dedent`
+              let Object = {
+                /* Partition Comment */
+                // Part: 1
+                c: 'cc',
+                // Part: 2
+                b: 'bbb',
+                a: 'aaaa',
+                d: 'd',
+                /* Part: 3 */
+                e: 'e',
+              }
+            `,
+            errors: [
+              {
+                data: {
+                  right: 'a',
+                  left: 'b',
+                },
+                messageId: 'unexpectedObjectsOrder',
+              },
+            ],
             options: [
               {
                 ...options,
                 partitionByComment: ['Partition Comment', 'Part: *'],
               },
             ],
-            errors: [
-              {
-                messageId: 'unexpectedObjectsOrder',
-                data: {
-                  left: 'b',
-                  right: 'a',
-                },
-              },
-            ],
           },
         ],
+        valid: [],
       },
     )
 
@@ -1495,6 +1495,54 @@ describe(ruleName, () => {
       `${ruleName}(${type}): allows to use new line as partition`,
       rule,
       {
+        invalid: [
+          {
+            errors: [
+              {
+                data: {
+                  right: 'd',
+                  left: 'e',
+                },
+                messageId: 'unexpectedObjectsOrder',
+              },
+              {
+                data: {
+                  right: 'a',
+                  left: 'b',
+                },
+                messageId: 'unexpectedObjectsOrder',
+              },
+            ],
+            output: dedent`
+              let Obj = {
+                d: 'dd',
+                e: 'e',
+
+                c: 'ccc',
+
+                a: 'aaaaa',
+                b: 'bbbb',
+              }
+            `,
+            code: dedent`
+              let Obj = {
+                e: 'e',
+                d: 'dd',
+
+                c: 'ccc',
+
+                b: 'bbbb',
+                a: 'aaaaa',
+              }
+            `,
+            options: [
+              {
+                ...options,
+                partitionByNewLine: true,
+              },
+            ],
+          },
+        ],
         valid: [
           {
             code: dedent`
@@ -1512,54 +1560,6 @@ describe(ruleName, () => {
               {
                 ...options,
                 partitionByNewLine: true,
-              },
-            ],
-          },
-        ],
-        invalid: [
-          {
-            code: dedent`
-              let Obj = {
-                e: 'e',
-                d: 'dd',
-
-                c: 'ccc',
-
-                b: 'bbbb',
-                a: 'aaaaa',
-              }
-            `,
-            output: dedent`
-              let Obj = {
-                d: 'dd',
-                e: 'e',
-
-                c: 'ccc',
-
-                a: 'aaaaa',
-                b: 'bbbb',
-              }
-            `,
-            options: [
-              {
-                ...options,
-                partitionByNewLine: true,
-              },
-            ],
-            errors: [
-              {
-                messageId: 'unexpectedObjectsOrder',
-                data: {
-                  left: 'e',
-                  right: 'd',
-                },
-              },
-              {
-                messageId: 'unexpectedObjectsOrder',
-                data: {
-                  left: 'b',
-                  right: 'a',
-                },
               },
             ],
           },
@@ -1598,18 +1598,18 @@ describe(ruleName, () => {
       {
         valid: [
           {
-            code: dedent`
-              let obj = {
-                ab = 'ab',
-                a_c = 'ac',
-              }
-            `,
             options: [
               {
                 ...options,
                 specialCharacters: 'remove',
               },
             ],
+            code: dedent`
+              let obj = {
+                ab = 'ab',
+                a_c = 'ac',
+              }
+            `,
           },
         ],
         invalid: [],
@@ -1669,9 +1669,31 @@ describe(ruleName, () => {
         `${ruleName}(${type}): removes newlines when never`,
         rule,
         {
-          valid: [],
           invalid: [
             {
+              errors: [
+                {
+                  data: {
+                    right: 'y',
+                    left: 'a',
+                  },
+                  messageId: 'extraSpacingBetweenObjectMembers',
+                },
+                {
+                  data: {
+                    right: 'b',
+                    left: 'z',
+                  },
+                  messageId: 'unexpectedObjectsOrder',
+                },
+                {
+                  data: {
+                    right: 'b',
+                    left: 'z',
+                  },
+                  messageId: 'extraSpacingBetweenObjectMembers',
+                },
+              ],
               code: dedent`
                 let Obj = {
                   a: () => null,
@@ -1694,35 +1716,13 @@ describe(ruleName, () => {
               options: [
                 {
                   ...options,
-                  newlinesBetween: 'never',
                   groups: ['method', 'unknown'],
-                },
-              ],
-              errors: [
-                {
-                  messageId: 'extraSpacingBetweenObjectMembers',
-                  data: {
-                    left: 'a',
-                    right: 'y',
-                  },
-                },
-                {
-                  messageId: 'unexpectedObjectsOrder',
-                  data: {
-                    left: 'z',
-                    right: 'b',
-                  },
-                },
-                {
-                  messageId: 'extraSpacingBetweenObjectMembers',
-                  data: {
-                    left: 'z',
-                    right: 'b',
-                  },
+                  newlinesBetween: 'never',
                 },
               ],
             },
           ],
+          valid: [],
         },
       )
 
@@ -1730,21 +1730,31 @@ describe(ruleName, () => {
         `${ruleName}(${type}): keeps one newline when always`,
         rule,
         {
-          valid: [],
           invalid: [
             {
-              code: dedent`
-                let Obj = {
-                  a: () => null,
-
-
-                 z: "z",
-                y: "y",
-                    b: {
-                      // Newline stuff
-                    },
-                }
-              `,
+              errors: [
+                {
+                  data: {
+                    right: 'z',
+                    left: 'a',
+                  },
+                  messageId: 'extraSpacingBetweenObjectMembers',
+                },
+                {
+                  data: {
+                    right: 'y',
+                    left: 'z',
+                  },
+                  messageId: 'unexpectedObjectsOrder',
+                },
+                {
+                  data: {
+                    right: 'b',
+                    left: 'y',
+                  },
+                  messageId: 'missedSpacingBetweenObjectMembers',
+                },
+              ],
               output: dedent`
                 let Obj = {
                   a: () => null,
@@ -1757,38 +1767,28 @@ describe(ruleName, () => {
                     },
                 }
                 `,
+              code: dedent`
+                let Obj = {
+                  a: () => null,
+
+
+                 z: "z",
+                y: "y",
+                    b: {
+                      // Newline stuff
+                    },
+                }
+              `,
               options: [
                 {
                   ...options,
-                  newlinesBetween: 'always',
                   groups: ['method', 'unknown', 'multiline'],
-                },
-              ],
-              errors: [
-                {
-                  messageId: 'extraSpacingBetweenObjectMembers',
-                  data: {
-                    left: 'a',
-                    right: 'z',
-                  },
-                },
-                {
-                  messageId: 'unexpectedObjectsOrder',
-                  data: {
-                    left: 'z',
-                    right: 'y',
-                  },
-                },
-                {
-                  messageId: 'missedSpacingBetweenObjectMembers',
-                  data: {
-                    left: 'y',
-                    right: 'b',
-                  },
+                  newlinesBetween: 'always',
                 },
               ],
             },
           ],
+          valid: [],
         },
       )
     })
@@ -1797,53 +1797,53 @@ describe(ruleName, () => {
       `${ruleName}(${type}): sorts inline elements correctly`,
       rule,
       {
-        valid: [],
         invalid: [
           {
-            code: dedent`
-              let obj = {
-                b: string, a: string
-              }
-            `,
+            errors: [
+              {
+                data: {
+                  right: 'a',
+                  left: 'b',
+                },
+                messageId: 'unexpectedObjectsOrder',
+              },
+            ],
             output: dedent`
               let obj = {
                 a: string, b: string
               }
             `,
-            options: [options],
-            errors: [
-              {
-                messageId: 'unexpectedObjectsOrder',
-                data: {
-                  left: 'b',
-                  right: 'a',
-                },
-              },
-            ],
-          },
-          {
             code: dedent`
               let obj = {
-                b: string, a: string,
+                b: string, a: string
               }
             `,
+            options: [options],
+          },
+          {
+            errors: [
+              {
+                data: {
+                  right: 'a',
+                  left: 'b',
+                },
+                messageId: 'unexpectedObjectsOrder',
+              },
+            ],
             output: dedent`
               let obj = {
                 a: string, b: string,
               }
             `,
+            code: dedent`
+              let obj = {
+                b: string, a: string,
+              }
+            `,
             options: [options],
-            errors: [
-              {
-                messageId: 'unexpectedObjectsOrder',
-                data: {
-                  left: 'b',
-                  right: 'a',
-                },
-              },
-            ],
           },
         ],
+        valid: [],
       },
     )
   })
@@ -1861,6 +1861,36 @@ describe(ruleName, () => {
       `${ruleName}(${type}): sorts object with identifier and literal keys`,
       rule,
       {
+        invalid: [
+          {
+            errors: [
+              {
+                data: {
+                  right: 'b',
+                  left: 'c',
+                },
+                messageId: 'unexpectedObjectsOrder',
+              },
+            ],
+            output: dedent`
+              let Obj = {
+                a: 'aaaa',
+                b: 'bbb',
+                [c]: 'cc',
+                d: 'd',
+              }
+            `,
+            code: dedent`
+              let Obj = {
+                a: 'aaaa',
+                [c]: 'cc',
+                b: 'bbb',
+                d: 'd',
+              }
+            `,
+            options: [options],
+          },
+        ],
         valid: [
           {
             code: dedent`
@@ -1872,36 +1902,6 @@ describe(ruleName, () => {
               }
             `,
             options: [options],
-          },
-        ],
-        invalid: [
-          {
-            code: dedent`
-              let Obj = {
-                a: 'aaaa',
-                [c]: 'cc',
-                b: 'bbb',
-                d: 'd',
-              }
-            `,
-            output: dedent`
-              let Obj = {
-                a: 'aaaa',
-                b: 'bbb',
-                [c]: 'cc',
-                d: 'd',
-              }
-            `,
-            options: [options],
-            errors: [
-              {
-                messageId: 'unexpectedObjectsOrder',
-                data: {
-                  left: 'c',
-                  right: 'b',
-                },
-              },
-            ],
           },
         ],
       },
@@ -1911,6 +1911,36 @@ describe(ruleName, () => {
       `${ruleName}(${type}): sorting does not break object`,
       rule,
       {
+        invalid: [
+          {
+            errors: [
+              {
+                data: {
+                  right: 'b',
+                  left: 'c',
+                },
+                messageId: 'unexpectedObjectsOrder',
+              },
+            ],
+            output: dedent`
+              let Obj = {
+                b: 'bb',
+                c: 'c',
+                ...rest,
+                a: 'aaa',
+              }
+            `,
+            code: dedent`
+              let Obj = {
+                c: 'c',
+                b: 'bb',
+                ...rest,
+                a: 'aaa',
+              }
+            `,
+            options: [options],
+          },
+        ],
         valid: [
           {
             code: dedent`
@@ -1924,71 +1954,12 @@ describe(ruleName, () => {
             options: [options],
           },
         ],
-        invalid: [
-          {
-            code: dedent`
-              let Obj = {
-                c: 'c',
-                b: 'bb',
-                ...rest,
-                a: 'aaa',
-              }
-            `,
-            output: dedent`
-              let Obj = {
-                b: 'bb',
-                c: 'c',
-                ...rest,
-                a: 'aaa',
-              }
-            `,
-            options: [options],
-            errors: [
-              {
-                messageId: 'unexpectedObjectsOrder',
-                data: {
-                  left: 'c',
-                  right: 'b',
-                },
-              },
-            ],
-          },
-        ],
       },
     )
 
     ruleTester.run(`${ruleName}(${type}): sorts objects in objects`, rule, {
-      valid: [
-        {
-          code: dedent`
-            let Obj = {
-              x: {
-                a: 'aa',
-                b: 'b',
-              },
-              y: {
-                a: 'aa',
-                b: 'b',
-              },
-            }
-          `,
-          options: [options],
-        },
-      ],
       invalid: [
         {
-          code: dedent`
-            let Obj = {
-              y: {
-                b: 'b',
-                a: 'aa',
-              },
-              x: {
-                b: 'b',
-                a: 'aa',
-              },
-            }
-          `,
           output: [
             dedent`
               let Obj = {
@@ -2015,35 +1986,99 @@ describe(ruleName, () => {
               }
             `,
           ],
-          options: [options],
           errors: [
             {
-              messageId: 'unexpectedObjectsOrder',
               data: {
-                left: 'b',
                 right: 'a',
+                left: 'b',
               },
+              messageId: 'unexpectedObjectsOrder',
             },
             {
-              messageId: 'unexpectedObjectsOrder',
               data: {
-                left: 'y',
                 right: 'x',
+                left: 'y',
               },
+              messageId: 'unexpectedObjectsOrder',
             },
             {
-              messageId: 'unexpectedObjectsOrder',
               data: {
-                left: 'b',
                 right: 'a',
+                left: 'b',
               },
+              messageId: 'unexpectedObjectsOrder',
             },
           ],
+          code: dedent`
+            let Obj = {
+              y: {
+                b: 'b',
+                a: 'aa',
+              },
+              x: {
+                b: 'b',
+                a: 'aa',
+              },
+            }
+          `,
+          options: [options],
+        },
+      ],
+      valid: [
+        {
+          code: dedent`
+            let Obj = {
+              x: {
+                a: 'aa',
+                b: 'b',
+              },
+              y: {
+                a: 'aa',
+                b: 'b',
+              },
+            }
+          `,
+          options: [options],
         },
       ],
     })
 
     ruleTester.run(`${ruleName}(${type}): sorts objects computed keys`, rule, {
+      invalid: [
+        {
+          errors: [
+            {
+              data: {
+                left: 'c[1]',
+                right: 'b()',
+              },
+              messageId: 'unexpectedObjectsOrder',
+            },
+            {
+              data: {
+                left: 'b()',
+                right: 'a',
+              },
+              messageId: 'unexpectedObjectsOrder',
+            },
+          ],
+          output: dedent`
+            let Obj = {
+              'a': 'aaa',
+              [b()]: 'bb',
+              [c[1]]: 'c',
+            }
+          `,
+          code: dedent`
+            let Obj = {
+              [c[1]]: 'c',
+              [b()]: 'bb',
+              'a': 'aaa',
+            }
+          `,
+          options: [options],
+        },
+      ],
       valid: [
         {
           code: dedent`
@@ -2054,56 +2089,24 @@ describe(ruleName, () => {
             }
           `,
           options: [options],
-        },
-      ],
-      invalid: [
-        {
-          code: dedent`
-            let Obj = {
-              [c[1]]: 'c',
-              [b()]: 'bb',
-              'a': 'aaa',
-            }
-          `,
-          output: dedent`
-            let Obj = {
-              'a': 'aaa',
-              [b()]: 'bb',
-              [c[1]]: 'c',
-            }
-          `,
-          options: [options],
-          errors: [
-            {
-              messageId: 'unexpectedObjectsOrder',
-              data: {
-                left: 'c[1]',
-                right: 'b()',
-              },
-            },
-            {
-              messageId: 'unexpectedObjectsOrder',
-              data: {
-                left: 'b()',
-                right: 'a',
-              },
-            },
-          ],
         },
       ],
     })
 
     ruleTester.run(`${ruleName}(${type}): allows to set priority keys`, rule, {
-      valid: [
+      invalid: [
         {
-          code: dedent`
-            let Obj = {
-              b: 'bb',
-              c: 'ccc',
-              a: 'aaaa',
-              d: 'd',
-            }
-          `,
+          errors: [
+            {
+              data: {
+                leftGroup: 'unknown',
+                rightGroup: 'top',
+                right: 'b',
+                left: 'a',
+              },
+              messageId: 'unexpectedObjectsGroupOrder',
+            },
+          ],
           options: [
             {
               ...options,
@@ -2111,18 +2114,6 @@ describe(ruleName, () => {
               groups: ['top', 'unknown'],
             },
           ],
-        },
-      ],
-      invalid: [
-        {
-          code: dedent`
-            let Obj = {
-              a: 'aaaa',
-              b: 'bb',
-              c: 'ccc',
-              d: 'd',
-            }
-          `,
           output: dedent`
             let Obj = {
               b: 'bb',
@@ -2131,6 +2122,18 @@ describe(ruleName, () => {
               d: 'd',
             }
           `,
+          code: dedent`
+            let Obj = {
+              a: 'aaaa',
+              b: 'bb',
+              c: 'ccc',
+              d: 'd',
+            }
+          `,
+        },
+      ],
+      valid: [
+        {
           options: [
             {
               ...options,
@@ -2138,17 +2141,14 @@ describe(ruleName, () => {
               groups: ['top', 'unknown'],
             },
           ],
-          errors: [
-            {
-              messageId: 'unexpectedObjectsGroupOrder',
-              data: {
-                left: 'a',
-                leftGroup: 'unknown',
-                right: 'b',
-                rightGroup: 'top',
-              },
-            },
-          ],
+          code: dedent`
+            let Obj = {
+              b: 'bb',
+              c: 'ccc',
+              a: 'aaaa',
+              d: 'd',
+            }
+          `,
         },
       ],
     })
@@ -2157,6 +2157,34 @@ describe(ruleName, () => {
       `${ruleName}(${type}): sorts with comments on the same line`,
       rule,
       {
+        invalid: [
+          {
+            errors: [
+              {
+                data: {
+                  right: 'b',
+                  left: 'c',
+                },
+                messageId: 'unexpectedObjectsOrder',
+              },
+            ],
+            output: dedent`
+              let Obj = {
+                a: 'aaa', // Comment A
+                b: 'bb', // Comment B
+                c: 'c', // Comment C
+              }
+            `,
+            code: dedent`
+              let Obj = {
+                a: 'aaa', // Comment A
+                c: 'c', // Comment C
+                b: 'bb', // Comment B
+              }
+            `,
+            options: [options],
+          },
+        ],
         valid: [
           {
             code: dedent`
@@ -2169,34 +2197,6 @@ describe(ruleName, () => {
             options: [options],
           },
         ],
-        invalid: [
-          {
-            code: dedent`
-              let Obj = {
-                a: 'aaa', // Comment A
-                c: 'c', // Comment C
-                b: 'bb', // Comment B
-              }
-            `,
-            output: dedent`
-              let Obj = {
-                a: 'aaa', // Comment A
-                b: 'bb', // Comment B
-                c: 'c', // Comment C
-              }
-            `,
-            options: [options],
-            errors: [
-              {
-                messageId: 'unexpectedObjectsOrder',
-                data: {
-                  left: 'c',
-                  right: 'b',
-                },
-              },
-            ],
-          },
-        ],
       },
     )
 
@@ -2204,49 +2204,48 @@ describe(ruleName, () => {
       `${ruleName}(${type}): do not sorts objects without a comma and with a comment in the last element`,
       rule,
       {
-        valid: [],
         invalid: [
           {
-            code: dedent`
-              let Obj = {
-                b: 'b', // Comment B
-                a: 'aa' // Comment A
-              }
-            `,
+            errors: [
+              {
+                data: {
+                  right: 'a',
+                  left: 'b',
+                },
+                messageId: 'unexpectedObjectsOrder',
+              },
+            ],
             output: dedent`
               let Obj = {
                 a: 'aa', // Comment A
                 b: 'b' // Comment B
               }
             `,
+            code: dedent`
+              let Obj = {
+                b: 'b', // Comment B
+                a: 'aa' // Comment A
+              }
+            `,
             options: [options],
-            errors: [
-              {
-                messageId: 'unexpectedObjectsOrder',
-                data: {
-                  left: 'b',
-                  right: 'a',
-                },
-              },
-            ],
           },
         ],
+        valid: [],
       },
     )
 
     ruleTester.run(`${ruleName}(${type}): sorts destructured object`, rule, {
-      valid: [],
       invalid: [
         {
-          code: dedent`
-            let Func = ({
-              c,
-              a = 'aa',
-              b
-            }) => {
-              // ...
-            }
-          `,
+          errors: [
+            {
+              data: {
+                right: 'a',
+                left: 'c',
+              },
+              messageId: 'unexpectedObjectsOrder',
+            },
+          ],
           output: dedent`
             let Func = ({
               a = 'aa',
@@ -2256,37 +2255,36 @@ describe(ruleName, () => {
               // ...
             }
           `,
+          code: dedent`
+            let Func = ({
+              c,
+              a = 'aa',
+              b
+            }) => {
+              // ...
+            }
+          `,
           options: [options],
-          errors: [
-            {
-              messageId: 'unexpectedObjectsOrder',
-              data: {
-                left: 'c',
-                right: 'a',
-              },
-            },
-          ],
         },
       ],
+      valid: [],
     })
 
     ruleTester.run(
       `${ruleName}(${type}): does not sort keys if the right value depends on the left value`,
       rule,
       {
-        valid: [],
         invalid: [
           {
-            code: dedent`
-              let Func = ({
-                c,
-                b = c,
-                a = 'a',
-                d,
-              }) => {
-                // ...
-              }
-            `,
+            errors: [
+              {
+                data: {
+                  right: 'a',
+                  left: 'b',
+                },
+                messageId: 'unexpectedObjectsOrder',
+              },
+            ],
             output: dedent`
               let Func = ({
                 a = 'a',
@@ -2297,18 +2295,20 @@ describe(ruleName, () => {
                 // ...
               }
             `,
+            code: dedent`
+              let Func = ({
+                c,
+                b = c,
+                a = 'a',
+                d,
+              }) => {
+                // ...
+              }
+            `,
             options: [options],
-            errors: [
-              {
-                messageId: 'unexpectedObjectsOrder',
-                data: {
-                  left: 'b',
-                  right: 'a',
-                },
-              },
-            ],
           },
         ],
+        valid: [],
       },
     )
 
@@ -2316,89 +2316,97 @@ describe(ruleName, () => {
       `${ruleName}(${type}): works with complex dependencies`,
       rule,
       {
-        valid: [],
         invalid: [
           {
-            code: dedent`
-              let Func = ({
-                a,
-                b = a + c + d,
-                c,
-                d,
-              }) => {
-                // ...
-              }
-            `,
-            output: dedent`
-              let Func = ({
-                a,
-                c,
-                d,
-                b = a + c + d,
-              }) => {
-                // ...
-              }
-            `,
-            options: [options],
             errors: [
               {
-                messageId: 'unexpectedObjectsDependencyOrder',
                 data: {
-                  right: 'c',
                   nodeDependentOnRight: 'b',
+                  right: 'c',
                 },
+                messageId: 'unexpectedObjectsDependencyOrder',
               },
             ],
-          },
-          {
-            code: dedent`
+            output: dedent`
               let Func = ({
                 a,
-                c = 1 === 1 ? 1 === 1 ? a : b : b,
-                b,
+                c,
                 d,
+                b = a + c + d,
               }) => {
                 // ...
               }
             `,
-            output: dedent`
+            code: dedent`
               let Func = ({
                 a,
-                b,
-                c = 1 === 1 ? 1 === 1 ? a : b : b,
+                b = a + c + d,
+                c,
                 d,
               }) => {
                 // ...
               }
             `,
             options: [options],
-            errors: [
-              {
-                messageId: 'unexpectedObjectsDependencyOrder',
-                data: {
-                  right: 'b',
-                  nodeDependentOnRight: 'c',
-                },
-              },
-            ],
           },
           {
-            code: dedent`
+            errors: [
+              {
+                data: {
+                  nodeDependentOnRight: 'c',
+                  right: 'b',
+                },
+                messageId: 'unexpectedObjectsDependencyOrder',
+              },
+            ],
+            output: dedent`
               let Func = ({
                 a,
-                b = ['a', 'b', 'c'].includes(d, c, a),
-                c,
+                b,
+                c = 1 === 1 ? 1 === 1 ? a : b : b,
                 d,
               }) => {
                 // ...
               }
             `,
+            code: dedent`
+              let Func = ({
+                a,
+                c = 1 === 1 ? 1 === 1 ? a : b : b,
+                b,
+                d,
+              }) => {
+                // ...
+              }
+            `,
+            options: [options],
+          },
+          {
+            errors: [
+              {
+                data: {
+                  nodeDependentOnRight: 'b',
+                  right: 'c',
+                },
+                messageId: 'unexpectedObjectsDependencyOrder',
+              },
+            ],
             output: dedent`
               let Func = ({
                 a,
                 c,
                 d,
                 b = ['a', 'b', 'c'].includes(d, c, a),
+              }) => {
+                // ...
+              }
+            `,
+            code: dedent`
+              let Func = ({
+                a,
+                b = ['a', 'b', 'c'].includes(d, c, a),
+                c,
+                d,
               }) => {
                 // ...
               }
@@ -2409,27 +2417,17 @@ describe(ruleName, () => {
                 order: 'asc',
               },
             ],
-            errors: [
-              {
-                messageId: 'unexpectedObjectsDependencyOrder',
-                data: {
-                  right: 'c',
-                  nodeDependentOnRight: 'b',
-                },
-              },
-            ],
           },
           {
-            code: dedent`
-              let Func = ({
-                a,
-                b = c || c,
-                c,
-                d,
-              }) => {
-                // ...
-              }
-            `,
+            errors: [
+              {
+                data: {
+                  nodeDependentOnRight: 'b',
+                  right: 'c',
+                },
+                messageId: 'unexpectedObjectsDependencyOrder',
+              },
+            ],
             output: dedent`
               let Func = ({
                 a,
@@ -2440,28 +2438,28 @@ describe(ruleName, () => {
                 // ...
               }
             `,
-            options: [options],
-            errors: [
-              {
-                messageId: 'unexpectedObjectsDependencyOrder',
-                data: {
-                  right: 'c',
-                  nodeDependentOnRight: 'b',
-                },
-              },
-            ],
-          },
-          {
             code: dedent`
               let Func = ({
                 a,
-                b = 1 === 1 ? a : c,
+                b = c || c,
                 c,
                 d,
               }) => {
                 // ...
               }
             `,
+            options: [options],
+          },
+          {
+            errors: [
+              {
+                data: {
+                  nodeDependentOnRight: 'b',
+                  right: 'c',
+                },
+                messageId: 'unexpectedObjectsDependencyOrder',
+              },
+            ],
             output: dedent`
               let Func = ({
                 a,
@@ -2472,18 +2470,20 @@ describe(ruleName, () => {
                 // ...
               }
             `,
+            code: dedent`
+              let Func = ({
+                a,
+                b = 1 === 1 ? a : c,
+                c,
+                d,
+              }) => {
+                // ...
+              }
+            `,
             options: [options],
-            errors: [
-              {
-                messageId: 'unexpectedObjectsDependencyOrder',
-                data: {
-                  right: 'c',
-                  nodeDependentOnRight: 'b',
-                },
-              },
-            ],
           },
         ],
+        valid: [],
       },
     )
 
@@ -2491,23 +2491,24 @@ describe(ruleName, () => {
       `${ruleName}(${type}): allows to use partition comments`,
       rule,
       {
-        valid: [],
         invalid: [
           {
-            code: dedent`
-              let Obj = {
-                // Part: 1
-                e: 'ee',
-                d: 'ddd',
-                // Part: 2
-                f: 'f',
-                // Part: 3
-                a: 'aaaaaa',
-                c: 'cccc',
-                // Not partition comment
-                b: 'bbbbb',
-              }
-            `,
+            errors: [
+              {
+                data: {
+                  right: 'd',
+                  left: 'e',
+                },
+                messageId: 'unexpectedObjectsOrder',
+              },
+              {
+                data: {
+                  right: 'b',
+                  left: 'c',
+                },
+                messageId: 'unexpectedObjectsOrder',
+              },
+            ],
             output: dedent`
               let Obj = {
                 // Part: 1
@@ -2520,6 +2521,20 @@ describe(ruleName, () => {
                 // Not partition comment
                 b: 'bbbbb',
                 c: 'cccc',
+              }
+            `,
+            code: dedent`
+              let Obj = {
+                // Part: 1
+                e: 'ee',
+                d: 'ddd',
+                // Part: 2
+                f: 'f',
+                // Part: 3
+                a: 'aaaaaa',
+                c: 'cccc',
+                // Not partition comment
+                b: 'bbbbb',
               }
             `,
             options: [
@@ -2528,24 +2543,9 @@ describe(ruleName, () => {
                 partitionByComment: '^Part*',
               },
             ],
-            errors: [
-              {
-                messageId: 'unexpectedObjectsOrder',
-                data: {
-                  left: 'e',
-                  right: 'd',
-                },
-              },
-              {
-                messageId: 'unexpectedObjectsOrder',
-                data: {
-                  left: 'c',
-                  right: 'b',
-                },
-              },
-            ],
           },
         ],
+        valid: [],
       },
     )
 
@@ -2579,22 +2579,8 @@ describe(ruleName, () => {
       `${ruleName}(${type}): allows to use multiple partition comments`,
       rule,
       {
-        valid: [],
         invalid: [
           {
-            code: dedent`
-              let Object = {
-                /* Partition Comment */
-                // Part: 1
-                c: 'cc',
-                // Part: 2
-                b: 'bbb',
-                a: 'aaaa',
-                d: 'd',
-                /* Part: 3 */
-                e: 'e',
-              }
-            `,
             output: dedent`
               let Object = {
                 /* Partition Comment */
@@ -2608,23 +2594,37 @@ describe(ruleName, () => {
                 e: 'e',
               }
             `,
+            code: dedent`
+              let Object = {
+                /* Partition Comment */
+                // Part: 1
+                c: 'cc',
+                // Part: 2
+                b: 'bbb',
+                a: 'aaaa',
+                d: 'd',
+                /* Part: 3 */
+                e: 'e',
+              }
+            `,
+            errors: [
+              {
+                data: {
+                  right: 'a',
+                  left: 'b',
+                },
+                messageId: 'unexpectedObjectsOrder',
+              },
+            ],
             options: [
               {
                 ...options,
                 partitionByComment: ['Partition Comment', 'Part: *'],
               },
             ],
-            errors: [
-              {
-                messageId: 'unexpectedObjectsOrder',
-                data: {
-                  left: 'b',
-                  right: 'a',
-                },
-              },
-            ],
           },
         ],
+        valid: [],
       },
     )
 
@@ -2632,6 +2632,54 @@ describe(ruleName, () => {
       `${ruleName}(${type}): allows to use new line as partition`,
       rule,
       {
+        invalid: [
+          {
+            errors: [
+              {
+                data: {
+                  right: 'd',
+                  left: 'e',
+                },
+                messageId: 'unexpectedObjectsOrder',
+              },
+              {
+                data: {
+                  right: 'a',
+                  left: 'b',
+                },
+                messageId: 'unexpectedObjectsOrder',
+              },
+            ],
+            output: dedent`
+              let Obj = {
+                d: 'dd',
+                e: 'e',
+
+                c: 'ccc',
+
+                a: 'aaaaa',
+                b: 'bbbb',
+              }
+            `,
+            code: dedent`
+              let Obj = {
+                e: 'e',
+                d: 'dd',
+
+                c: 'ccc',
+
+                b: 'bbbb',
+                a: 'aaaaa',
+              }
+            `,
+            options: [
+              {
+                ...options,
+                partitionByNewLine: true,
+              },
+            ],
+          },
+        ],
         valid: [
           {
             code: dedent`
@@ -2649,54 +2697,6 @@ describe(ruleName, () => {
               {
                 ...options,
                 partitionByNewLine: true,
-              },
-            ],
-          },
-        ],
-        invalid: [
-          {
-            code: dedent`
-              let Obj = {
-                e: 'e',
-                d: 'dd',
-
-                c: 'ccc',
-
-                b: 'bbbb',
-                a: 'aaaaa',
-              }
-            `,
-            output: dedent`
-              let Obj = {
-                d: 'dd',
-                e: 'e',
-
-                c: 'ccc',
-
-                a: 'aaaaa',
-                b: 'bbbb',
-              }
-            `,
-            options: [
-              {
-                ...options,
-                partitionByNewLine: true,
-              },
-            ],
-            errors: [
-              {
-                messageId: 'unexpectedObjectsOrder',
-                data: {
-                  left: 'e',
-                  right: 'd',
-                },
-              },
-              {
-                messageId: 'unexpectedObjectsOrder',
-                data: {
-                  left: 'b',
-                  right: 'a',
-                },
               },
             ],
           },
@@ -2717,6 +2717,36 @@ describe(ruleName, () => {
       `${ruleName}(${type}): sorts object with identifier and literal keys`,
       rule,
       {
+        invalid: [
+          {
+            errors: [
+              {
+                data: {
+                  right: 'c',
+                  left: 'd',
+                },
+                messageId: 'unexpectedObjectsOrder',
+              },
+            ],
+            output: dedent`
+              let Obj = {
+                a: 'aaaa',
+                [c]: 'cc',
+                b: 'bbb',
+                d: 'd',
+              }
+            `,
+            code: dedent`
+              let Obj = {
+                a: 'aaaa',
+                b: 'bbb',
+                d: 'd',
+                [c]: 'cc',
+              }
+            `,
+            options: [options],
+          },
+        ],
         valid: [
           {
             code: dedent`
@@ -2728,36 +2758,6 @@ describe(ruleName, () => {
               }
             `,
             options: [options],
-          },
-        ],
-        invalid: [
-          {
-            code: dedent`
-              let Obj = {
-                a: 'aaaa',
-                b: 'bbb',
-                d: 'd',
-                [c]: 'cc',
-              }
-            `,
-            output: dedent`
-              let Obj = {
-                a: 'aaaa',
-                [c]: 'cc',
-                b: 'bbb',
-                d: 'd',
-              }
-            `,
-            options: [options],
-            errors: [
-              {
-                messageId: 'unexpectedObjectsOrder',
-                data: {
-                  left: 'd',
-                  right: 'c',
-                },
-              },
-            ],
           },
         ],
       },
@@ -2767,6 +2767,36 @@ describe(ruleName, () => {
       `${ruleName}(${type}): sorting does not break object`,
       rule,
       {
+        invalid: [
+          {
+            errors: [
+              {
+                data: {
+                  right: 'b',
+                  left: 'c',
+                },
+                messageId: 'unexpectedObjectsOrder',
+              },
+            ],
+            output: dedent`
+              let Obj = {
+                b: 'bb',
+                c: 'c',
+                ...rest,
+                a: 'aaa',
+              }
+            `,
+            code: dedent`
+              let Obj = {
+                c: 'c',
+                b: 'bb',
+                ...rest,
+                a: 'aaa',
+              }
+            `,
+            options: [options],
+          },
+        ],
         valid: [
           {
             code: dedent`
@@ -2780,40 +2810,55 @@ describe(ruleName, () => {
             options: [options],
           },
         ],
-        invalid: [
-          {
-            code: dedent`
-              let Obj = {
-                c: 'c',
-                b: 'bb',
-                ...rest,
-                a: 'aaa',
-              }
-            `,
-            output: dedent`
-              let Obj = {
-                b: 'bb',
-                c: 'c',
-                ...rest,
-                a: 'aaa',
-              }
-            `,
-            options: [options],
-            errors: [
-              {
-                messageId: 'unexpectedObjectsOrder',
-                data: {
-                  left: 'c',
-                  right: 'b',
-                },
-              },
-            ],
-          },
-        ],
       },
     )
 
     ruleTester.run(`${ruleName}(${type}): sorts objects in objects`, rule, {
+      invalid: [
+        {
+          errors: [
+            {
+              data: {
+                right: 'a',
+                left: 'b',
+              },
+              messageId: 'unexpectedObjectsOrder',
+            },
+            {
+              data: {
+                right: 'a',
+                left: 'b',
+              },
+              messageId: 'unexpectedObjectsOrder',
+            },
+          ],
+          output: dedent`
+            let Obj = {
+              x: {
+                a: 'aa',
+                b: 'b',
+              },
+              y: {
+                a: 'aa',
+                b: 'b',
+              },
+            }
+          `,
+          code: dedent`
+            let Obj = {
+              x: {
+                b: 'b',
+                a: 'aa',
+              },
+              y: {
+                b: 'b',
+                a: 'aa',
+              },
+            }
+          `,
+          options: [options],
+        },
+      ],
       valid: [
         {
           code: dedent`
@@ -2829,56 +2874,39 @@ describe(ruleName, () => {
             }
           `,
           options: [options],
-        },
-      ],
-      invalid: [
-        {
-          code: dedent`
-            let Obj = {
-              x: {
-                b: 'b',
-                a: 'aa',
-              },
-              y: {
-                b: 'b',
-                a: 'aa',
-              },
-            }
-          `,
-          output: dedent`
-            let Obj = {
-              x: {
-                a: 'aa',
-                b: 'b',
-              },
-              y: {
-                a: 'aa',
-                b: 'b',
-              },
-            }
-          `,
-          options: [options],
-          errors: [
-            {
-              messageId: 'unexpectedObjectsOrder',
-              data: {
-                left: 'b',
-                right: 'a',
-              },
-            },
-            {
-              messageId: 'unexpectedObjectsOrder',
-              data: {
-                left: 'b',
-                right: 'a',
-              },
-            },
-          ],
         },
       ],
     })
 
     ruleTester.run(`${ruleName}(${type}): sorts objects computed keys`, rule, {
+      invalid: [
+        {
+          errors: [
+            {
+              data: {
+                right: 'b()',
+                left: 'a',
+              },
+              messageId: 'unexpectedObjectsOrder',
+            },
+          ],
+          output: dedent`
+            let Obj = {
+              [b()]: 'bb',
+              [c[1]]: 'c',
+              'a': 'aaa',
+            }
+          `,
+          code: dedent`
+            let Obj = {
+              'a': 'aaa',
+              [b()]: 'bb',
+              [c[1]]: 'c',
+            }
+          `,
+          options: [options],
+        },
+      ],
       valid: [
         {
           code: dedent`
@@ -2889,49 +2917,31 @@ describe(ruleName, () => {
             }
           `,
           options: [options],
-        },
-      ],
-      invalid: [
-        {
-          code: dedent`
-            let Obj = {
-              'a': 'aaa',
-              [b()]: 'bb',
-              [c[1]]: 'c',
-            }
-          `,
-          output: dedent`
-            let Obj = {
-              [b()]: 'bb',
-              [c[1]]: 'c',
-              'a': 'aaa',
-            }
-          `,
-          options: [options],
-          errors: [
-            {
-              messageId: 'unexpectedObjectsOrder',
-              data: {
-                left: 'a',
-                right: 'b()',
-              },
-            },
-          ],
         },
       ],
     })
 
     ruleTester.run(`${ruleName}(${type}): allows to set priority keys`, rule, {
-      valid: [
+      invalid: [
         {
-          code: dedent`
-            let Obj = {
-              c: 'ccc',
-              b: 'bb',
-              a: 'aaaa',
-              d: 'd',
-            }
-          `,
+          errors: [
+            {
+              data: {
+                leftGroup: 'unknown',
+                rightGroup: 'top',
+                right: 'b',
+                left: 'a',
+              },
+              messageId: 'unexpectedObjectsGroupOrder',
+            },
+            {
+              data: {
+                right: 'c',
+                left: 'b',
+              },
+              messageId: 'unexpectedObjectsOrder',
+            },
+          ],
           options: [
             {
               ...options,
@@ -2939,18 +2949,6 @@ describe(ruleName, () => {
               groups: ['top', 'unknown'],
             },
           ],
-        },
-      ],
-      invalid: [
-        {
-          code: dedent`
-            let Obj = {
-              a: 'aaaa',
-              b: 'bb',
-              c: 'ccc',
-              d: 'd',
-            }
-          `,
           output: dedent`
             let Obj = {
               c: 'ccc',
@@ -2959,6 +2957,18 @@ describe(ruleName, () => {
               d: 'd',
             }
           `,
+          code: dedent`
+            let Obj = {
+              a: 'aaaa',
+              b: 'bb',
+              c: 'ccc',
+              d: 'd',
+            }
+          `,
+        },
+      ],
+      valid: [
+        {
           options: [
             {
               ...options,
@@ -2966,24 +2976,14 @@ describe(ruleName, () => {
               groups: ['top', 'unknown'],
             },
           ],
-          errors: [
-            {
-              messageId: 'unexpectedObjectsGroupOrder',
-              data: {
-                left: 'a',
-                leftGroup: 'unknown',
-                right: 'b',
-                rightGroup: 'top',
-              },
-            },
-            {
-              messageId: 'unexpectedObjectsOrder',
-              data: {
-                left: 'b',
-                right: 'c',
-              },
-            },
-          ],
+          code: dedent`
+            let Obj = {
+              c: 'ccc',
+              b: 'bb',
+              a: 'aaaa',
+              d: 'd',
+            }
+          `,
         },
       ],
     })
@@ -2992,6 +2992,34 @@ describe(ruleName, () => {
       `${ruleName}(${type}): sorts with comments on the same line`,
       rule,
       {
+        invalid: [
+          {
+            errors: [
+              {
+                data: {
+                  right: 'b',
+                  left: 'c',
+                },
+                messageId: 'unexpectedObjectsOrder',
+              },
+            ],
+            output: dedent`
+              let Obj = {
+                a: 'aaa', // Comment A
+                b: 'bb', // Comment B
+                c: 'c', // Comment C
+              }
+            `,
+            code: dedent`
+              let Obj = {
+                a: 'aaa', // Comment A
+                c: 'c', // Comment C
+                b: 'bb', // Comment B
+              }
+            `,
+            options: [options],
+          },
+        ],
         valid: [
           {
             code: dedent`
@@ -3004,34 +3032,6 @@ describe(ruleName, () => {
             options: [options],
           },
         ],
-        invalid: [
-          {
-            code: dedent`
-              let Obj = {
-                a: 'aaa', // Comment A
-                c: 'c', // Comment C
-                b: 'bb', // Comment B
-              }
-            `,
-            output: dedent`
-              let Obj = {
-                a: 'aaa', // Comment A
-                b: 'bb', // Comment B
-                c: 'c', // Comment C
-              }
-            `,
-            options: [options],
-            errors: [
-              {
-                messageId: 'unexpectedObjectsOrder',
-                data: {
-                  left: 'c',
-                  right: 'b',
-                },
-              },
-            ],
-          },
-        ],
       },
     )
 
@@ -3039,49 +3039,48 @@ describe(ruleName, () => {
       `${ruleName}(${type}): do not sorts objects without a comma and with a comment in the last element`,
       rule,
       {
-        valid: [],
         invalid: [
           {
-            code: dedent`
-              let Obj = {
-                b: 'b', // Comment B
-                a: 'aa' // Comment A
-              }
-            `,
+            errors: [
+              {
+                data: {
+                  right: 'a',
+                  left: 'b',
+                },
+                messageId: 'unexpectedObjectsOrder',
+              },
+            ],
             output: dedent`
               let Obj = {
                 a: 'aa', // Comment A
                 b: 'b' // Comment B
               }
             `,
+            code: dedent`
+              let Obj = {
+                b: 'b', // Comment B
+                a: 'aa' // Comment A
+              }
+            `,
             options: [options],
-            errors: [
-              {
-                messageId: 'unexpectedObjectsOrder',
-                data: {
-                  left: 'b',
-                  right: 'a',
-                },
-              },
-            ],
           },
         ],
+        valid: [],
       },
     )
 
     ruleTester.run(`${ruleName}(${type}): sorts destructured object`, rule, {
-      valid: [],
       invalid: [
         {
-          code: dedent`
-            let Func = ({
-              c,
-              a = 'aa',
-              b
-            }) => {
-              // ...
-            }
-          `,
+          errors: [
+            {
+              data: {
+                right: 'a',
+                left: 'c',
+              },
+              messageId: 'unexpectedObjectsOrder',
+            },
+          ],
           output: dedent`
             let Func = ({
               a = 'aa',
@@ -3091,37 +3090,36 @@ describe(ruleName, () => {
               // ...
             }
           `,
+          code: dedent`
+            let Func = ({
+              c,
+              a = 'aa',
+              b
+            }) => {
+              // ...
+            }
+          `,
           options: [options],
-          errors: [
-            {
-              messageId: 'unexpectedObjectsOrder',
-              data: {
-                left: 'c',
-                right: 'a',
-              },
-            },
-          ],
         },
       ],
+      valid: [],
     })
 
     ruleTester.run(
       `${ruleName}(${type}): does not sort keys if the right value depends on the left value`,
       rule,
       {
-        valid: [],
         invalid: [
           {
-            code: dedent`
-              let Func = ({
-                c,
-                b = c,
-                a = 'a',
-                d,
-              }) => {
-                // ...
-              }
-            `,
+            errors: [
+              {
+                data: {
+                  right: 'a',
+                  left: 'b',
+                },
+                messageId: 'unexpectedObjectsOrder',
+              },
+            ],
             output: dedent`
               let Func = ({
                 a = 'a',
@@ -3132,18 +3130,20 @@ describe(ruleName, () => {
                 // ...
               }
             `,
+            code: dedent`
+              let Func = ({
+                c,
+                b = c,
+                a = 'a',
+                d,
+              }) => {
+                // ...
+              }
+            `,
             options: [options],
-            errors: [
-              {
-                messageId: 'unexpectedObjectsOrder',
-                data: {
-                  left: 'b',
-                  right: 'a',
-                },
-              },
-            ],
           },
         ],
+        valid: [],
       },
     )
 
@@ -3151,89 +3151,97 @@ describe(ruleName, () => {
       `${ruleName}(${type}): works with complex dependencies`,
       rule,
       {
-        valid: [],
         invalid: [
           {
-            code: dedent`
-              let Func = ({
-                a,
-                b = a + c + d,
-                c,
-                d,
-              }) => {
-                // ...
-              }
-            `,
-            output: dedent`
-              let Func = ({
-                a,
-                c,
-                d,
-                b = a + c + d,
-              }) => {
-                // ...
-              }
-            `,
-            options: [options],
             errors: [
               {
-                messageId: 'unexpectedObjectsDependencyOrder',
                 data: {
-                  right: 'c',
                   nodeDependentOnRight: 'b',
+                  right: 'c',
                 },
+                messageId: 'unexpectedObjectsDependencyOrder',
               },
             ],
-          },
-          {
-            code: dedent`
+            output: dedent`
               let Func = ({
                 a,
-                c = 1 === 1 ? 1 === 1 ? a : b : b,
-                b,
+                c,
                 d,
+                b = a + c + d,
               }) => {
                 // ...
               }
             `,
-            output: dedent`
+            code: dedent`
               let Func = ({
                 a,
-                b,
-                c = 1 === 1 ? 1 === 1 ? a : b : b,
+                b = a + c + d,
+                c,
                 d,
               }) => {
                 // ...
               }
             `,
             options: [options],
-            errors: [
-              {
-                messageId: 'unexpectedObjectsDependencyOrder',
-                data: {
-                  right: 'b',
-                  nodeDependentOnRight: 'c',
-                },
-              },
-            ],
           },
           {
-            code: dedent`
+            errors: [
+              {
+                data: {
+                  nodeDependentOnRight: 'c',
+                  right: 'b',
+                },
+                messageId: 'unexpectedObjectsDependencyOrder',
+              },
+            ],
+            output: dedent`
               let Func = ({
                 a,
-                b = ['a', 'b', 'c'].includes(d, c, a),
-                c,
+                b,
+                c = 1 === 1 ? 1 === 1 ? a : b : b,
                 d,
               }) => {
                 // ...
               }
             `,
+            code: dedent`
+              let Func = ({
+                a,
+                c = 1 === 1 ? 1 === 1 ? a : b : b,
+                b,
+                d,
+              }) => {
+                // ...
+              }
+            `,
+            options: [options],
+          },
+          {
+            errors: [
+              {
+                data: {
+                  nodeDependentOnRight: 'b',
+                  right: 'c',
+                },
+                messageId: 'unexpectedObjectsDependencyOrder',
+              },
+            ],
             output: dedent`
               let Func = ({
                 a,
                 c,
                 d,
                 b = ['a', 'b', 'c'].includes(d, c, a),
+              }) => {
+                // ...
+              }
+            `,
+            code: dedent`
+              let Func = ({
+                a,
+                b = ['a', 'b', 'c'].includes(d, c, a),
+                c,
+                d,
               }) => {
                 // ...
               }
@@ -3244,27 +3252,17 @@ describe(ruleName, () => {
                 order: 'asc',
               },
             ],
-            errors: [
-              {
-                messageId: 'unexpectedObjectsDependencyOrder',
-                data: {
-                  right: 'c',
-                  nodeDependentOnRight: 'b',
-                },
-              },
-            ],
           },
           {
-            code: dedent`
-              let Func = ({
-                a,
-                b = 1 === 1 ? a : c,
-                c,
-                d,
-              }) => {
-                // ...
-              }
-            `,
+            errors: [
+              {
+                data: {
+                  nodeDependentOnRight: 'b',
+                  right: 'c',
+                },
+                messageId: 'unexpectedObjectsDependencyOrder',
+              },
+            ],
             output: dedent`
               let Func = ({
                 a,
@@ -3275,18 +3273,20 @@ describe(ruleName, () => {
                 // ...
               }
             `,
+            code: dedent`
+              let Func = ({
+                a,
+                b = 1 === 1 ? a : c,
+                c,
+                d,
+              }) => {
+                // ...
+              }
+            `,
             options: [options],
-            errors: [
-              {
-                messageId: 'unexpectedObjectsDependencyOrder',
-                data: {
-                  right: 'c',
-                  nodeDependentOnRight: 'b',
-                },
-              },
-            ],
           },
         ],
+        valid: [],
       },
     )
 
@@ -3294,23 +3294,24 @@ describe(ruleName, () => {
       `${ruleName}(${type}): allows to use partition comments`,
       rule,
       {
-        valid: [],
         invalid: [
           {
-            code: dedent`
-              let Obj = {
-                // Part: 1
-                e: 'ee',
-                d: 'ddd',
-                // Part: 2
-                f: 'f',
-                // Part: 3
-                a: 'aaaaaa',
-                c: 'cccc',
-                // Not partition comment
-                b: 'bbbbb',
-              }
-            `,
+            errors: [
+              {
+                data: {
+                  right: 'd',
+                  left: 'e',
+                },
+                messageId: 'unexpectedObjectsOrder',
+              },
+              {
+                data: {
+                  right: 'b',
+                  left: 'c',
+                },
+                messageId: 'unexpectedObjectsOrder',
+              },
+            ],
             output: dedent`
               let Obj = {
                 // Part: 1
@@ -3323,6 +3324,20 @@ describe(ruleName, () => {
                 // Not partition comment
                 b: 'bbbbb',
                 c: 'cccc',
+              }
+            `,
+            code: dedent`
+              let Obj = {
+                // Part: 1
+                e: 'ee',
+                d: 'ddd',
+                // Part: 2
+                f: 'f',
+                // Part: 3
+                a: 'aaaaaa',
+                c: 'cccc',
+                // Not partition comment
+                b: 'bbbbb',
               }
             `,
             options: [
@@ -3331,24 +3346,9 @@ describe(ruleName, () => {
                 partitionByComment: '^Part*',
               },
             ],
-            errors: [
-              {
-                messageId: 'unexpectedObjectsOrder',
-                data: {
-                  left: 'e',
-                  right: 'd',
-                },
-              },
-              {
-                messageId: 'unexpectedObjectsOrder',
-                data: {
-                  left: 'c',
-                  right: 'b',
-                },
-              },
-            ],
           },
         ],
+        valid: [],
       },
     )
 
@@ -3382,22 +3382,8 @@ describe(ruleName, () => {
       `${ruleName}(${type}): allows to use multiple partition comments`,
       rule,
       {
-        valid: [],
         invalid: [
           {
-            code: dedent`
-              let Object = {
-                /* Partition Comment */
-                // Part: 1
-                c: 'cc',
-                // Part: 2
-                b: 'bbb',
-                a: 'aaaa',
-                d: 'd',
-                /* Part: 3 */
-                e: 'e',
-              }
-            `,
             output: dedent`
               let Object = {
                 /* Partition Comment */
@@ -3411,23 +3397,37 @@ describe(ruleName, () => {
                 e: 'e',
               }
             `,
+            code: dedent`
+              let Object = {
+                /* Partition Comment */
+                // Part: 1
+                c: 'cc',
+                // Part: 2
+                b: 'bbb',
+                a: 'aaaa',
+                d: 'd',
+                /* Part: 3 */
+                e: 'e',
+              }
+            `,
+            errors: [
+              {
+                data: {
+                  right: 'a',
+                  left: 'b',
+                },
+                messageId: 'unexpectedObjectsOrder',
+              },
+            ],
             options: [
               {
                 ...options,
                 partitionByComment: ['Partition Comment', 'Part: *'],
               },
             ],
-            errors: [
-              {
-                messageId: 'unexpectedObjectsOrder',
-                data: {
-                  left: 'b',
-                  right: 'a',
-                },
-              },
-            ],
           },
         ],
+        valid: [],
       },
     )
 
@@ -3435,27 +3435,24 @@ describe(ruleName, () => {
       `${ruleName}(${type}): not changes order if the same length`,
       rule,
       {
-        valid: [],
         invalid: [
           {
-            code: dedent`
-              export const test = {
-                a: 'a',
-                b: 'b',
-                c: 'c',
-                d: 'd1',
-                e: 'e12',
-              }
-            `,
-            output: dedent`
-              export const test = {
-                e: 'e12',
-                d: 'd1',
-                a: 'a',
-                b: 'b',
-                c: 'c',
-              }
-            `,
+            errors: [
+              {
+                data: {
+                  right: 'd',
+                  left: 'c',
+                },
+                messageId: 'unexpectedObjectsOrder',
+              },
+              {
+                data: {
+                  right: 'e',
+                  left: 'd',
+                },
+                messageId: 'unexpectedObjectsOrder',
+              },
+            ],
             options: [
               {
                 ...options,
@@ -3466,24 +3463,27 @@ describe(ruleName, () => {
                 ],
               },
             ],
-            errors: [
-              {
-                messageId: 'unexpectedObjectsOrder',
-                data: {
-                  left: 'c',
-                  right: 'd',
-                },
-              },
-              {
-                messageId: 'unexpectedObjectsOrder',
-                data: {
-                  left: 'd',
-                  right: 'e',
-                },
-              },
-            ],
+            output: dedent`
+              export const test = {
+                e: 'e12',
+                d: 'd1',
+                a: 'a',
+                b: 'b',
+                c: 'c',
+              }
+            `,
+            code: dedent`
+              export const test = {
+                a: 'a',
+                b: 'b',
+                c: 'c',
+                d: 'd1',
+                e: 'e12',
+              }
+            `,
           },
         ],
+        valid: [],
       },
     )
 
@@ -3491,6 +3491,54 @@ describe(ruleName, () => {
       `${ruleName}(${type}): allows to use new line as partition`,
       rule,
       {
+        invalid: [
+          {
+            errors: [
+              {
+                data: {
+                  right: 'd',
+                  left: 'e',
+                },
+                messageId: 'unexpectedObjectsOrder',
+              },
+              {
+                data: {
+                  right: 'a',
+                  left: 'b',
+                },
+                messageId: 'unexpectedObjectsOrder',
+              },
+            ],
+            output: dedent`
+              let Obj = {
+                d: 'dd',
+                e: 'e',
+
+                c: 'ccc',
+
+                a: 'aaaaa',
+                b: 'bbbb',
+              }
+            `,
+            code: dedent`
+              let Obj = {
+                e: 'e',
+                d: 'dd',
+
+                c: 'ccc',
+
+                b: 'bbbb',
+                a: 'aaaaa',
+              }
+            `,
+            options: [
+              {
+                ...options,
+                partitionByNewLine: true,
+              },
+            ],
+          },
+        ],
         valid: [
           {
             code: dedent`
@@ -3508,54 +3556,6 @@ describe(ruleName, () => {
               {
                 ...options,
                 partitionByNewLine: true,
-              },
-            ],
-          },
-        ],
-        invalid: [
-          {
-            code: dedent`
-              let Obj = {
-                e: 'e',
-                d: 'dd',
-
-                c: 'ccc',
-
-                b: 'bbbb',
-                a: 'aaaaa',
-              }
-            `,
-            output: dedent`
-              let Obj = {
-                d: 'dd',
-                e: 'e',
-
-                c: 'ccc',
-
-                a: 'aaaaa',
-                b: 'bbbb',
-              }
-            `,
-            options: [
-              {
-                ...options,
-                partitionByNewLine: true,
-              },
-            ],
-            errors: [
-              {
-                messageId: 'unexpectedObjectsOrder',
-                data: {
-                  left: 'e',
-                  right: 'd',
-                },
-              },
-              {
-                messageId: 'unexpectedObjectsOrder',
-                data: {
-                  left: 'b',
-                  right: 'a',
-                },
               },
             ],
           },
@@ -3579,6 +3579,33 @@ describe(ruleName, () => {
       `${ruleName}: sets alphabetical asc sorting as default`,
       rule,
       {
+        invalid: [
+          {
+            errors: [
+              {
+                data: {
+                  right: 'b',
+                  left: 'c',
+                },
+                messageId: 'unexpectedObjectsOrder',
+              },
+            ],
+            output: dedent`
+                let Obj = {
+                  a: 'a',
+                  b: 'b',
+                  c: 'c',
+                }
+              `,
+            code: dedent`
+                let Obj = {
+                  a: 'a',
+                  c: 'c',
+                  b: 'b',
+                }
+              `,
+          },
+        ],
         valid: [
           dedent`
               let Obj = {
@@ -3597,33 +3624,6 @@ describe(ruleName, () => {
                 }
               `,
             options: [{}],
-          },
-        ],
-        invalid: [
-          {
-            code: dedent`
-                let Obj = {
-                  a: 'a',
-                  c: 'c',
-                  b: 'b',
-                }
-              `,
-            output: dedent`
-                let Obj = {
-                  a: 'a',
-                  b: 'b',
-                  c: 'c',
-                }
-              `,
-            errors: [
-              {
-                messageId: 'unexpectedObjectsOrder',
-                data: {
-                  left: 'c',
-                  right: 'b',
-                },
-              },
-            ],
           },
         ],
       },
@@ -3699,6 +3699,60 @@ describe(ruleName, () => {
     )
 
     ruleTester.run(`${ruleName}: allow to ignore pattern`, rule, {
+      invalid: [
+        {
+          output: dedent`
+            export default {
+              data() {
+                return {
+                  background: "red",
+                  display: 'flex',
+                  flexDirection: 'column',
+                  width: "50px",
+                  height: "50px",
+                }
+              },
+              methods: {
+                foo() {},
+                bar() {},
+                baz() {},
+              },
+            }
+          `,
+          code: dedent`
+            export default {
+              methods: {
+                foo() {},
+                bar() {},
+                baz() {},
+              },
+              data() {
+                return {
+                  background: "red",
+                  display: 'flex',
+                  flexDirection: 'column',
+                  width: "50px",
+                  height: "50px",
+                }
+              },
+            }
+          `,
+          errors: [
+            {
+              data: {
+                left: 'methods',
+                right: 'data',
+              },
+              messageId: 'unexpectedObjectsOrder',
+            },
+          ],
+          options: [
+            {
+              ignorePattern: ['data', 'methods'],
+            },
+          ],
+        },
+      ],
       valid: [
         {
           code: dedent`
@@ -3717,8 +3771,29 @@ describe(ruleName, () => {
           ],
         },
       ],
+    })
+
+    ruleTester.run(`${ruleName}: allow to ignore pattern`, rule, {
       invalid: [
         {
+          output: dedent`
+            export default {
+              data() {
+                return {
+                  background: "palevioletred",
+                  display: 'flex',
+                  flexDirection: 'column',
+                  width: "50px",
+                  height: "50px",
+                }
+              },
+              methods: {
+                foo() {},
+                bar() {},
+                baz() {},
+              },
+            }
+          `,
           code: dedent`
             export default {
               methods: {
@@ -3728,7 +3803,7 @@ describe(ruleName, () => {
               },
               data() {
                 return {
-                  background: "red",
+                  background: "palevioletred",
                   display: 'flex',
                   flexDirection: 'column',
                   width: "50px",
@@ -3737,43 +3812,22 @@ describe(ruleName, () => {
               },
             }
           `,
-          output: dedent`
-            export default {
-              data() {
-                return {
-                  background: "red",
-                  display: 'flex',
-                  flexDirection: 'column',
-                  width: "50px",
-                  height: "50px",
-                }
+          errors: [
+            {
+              data: {
+                left: 'methods',
+                right: 'data',
               },
-              methods: {
-                foo() {},
-                bar() {},
-                baz() {},
-              },
-            }
-          `,
+              messageId: 'unexpectedObjectsOrder',
+            },
+          ],
           options: [
             {
               ignorePattern: ['data', 'methods'],
             },
           ],
-          errors: [
-            {
-              messageId: 'unexpectedObjectsOrder',
-              data: {
-                left: 'methods',
-                right: 'data',
-              },
-            },
-          ],
         },
       ],
-    })
-
-    ruleTester.run(`${ruleName}: allow to ignore pattern`, rule, {
       valid: [
         {
           code: dedent`
@@ -3790,63 +3844,52 @@ describe(ruleName, () => {
           ],
         },
       ],
+    })
+
+    ruleTester.run(`${ruleName}: allow to use for destructuring only`, rule, {
       invalid: [
         {
-          code: dedent`
-            export default {
-              methods: {
-                foo() {},
-                bar() {},
-                baz() {},
+          errors: [
+            {
+              data: {
+                right: 'b',
+                left: 'c',
               },
-              data() {
-                return {
-                  background: "palevioletred",
-                  display: 'flex',
-                  flexDirection: 'column',
-                  width: "50px",
-                  height: "50px",
-                }
+              messageId: 'unexpectedObjectsOrder',
+            },
+            {
+              data: {
+                right: 'a',
+                left: 'b',
               },
-            }
-          `,
+              messageId: 'unexpectedObjectsOrder',
+            },
+          ],
           output: dedent`
-            export default {
-              data() {
-                return {
-                  background: "palevioletred",
-                  display: 'flex',
-                  flexDirection: 'column',
-                  width: "50px",
-                  height: "50px",
-                }
-              },
-              methods: {
-                foo() {},
-                bar() {},
-                baz() {},
-              },
+            let obj = {
+              c: 'c',
+              b: 'b',
+              a: 'a',
             }
+
+            let { a, b, c } = obj
+          `,
+          code: dedent`
+            let obj = {
+              c: 'c',
+              b: 'b',
+              a: 'a',
+            }
+
+            let { c, b, a } = obj
           `,
           options: [
             {
-              ignorePattern: ['data', 'methods'],
-            },
-          ],
-          errors: [
-            {
-              messageId: 'unexpectedObjectsOrder',
-              data: {
-                left: 'methods',
-                right: 'data',
-              },
+              destructureOnly: true,
             },
           ],
         },
       ],
-    })
-
-    ruleTester.run(`${ruleName}: allow to use for destructuring only`, rule, {
       valid: [
         {
           code: dedent`
@@ -3861,49 +3904,6 @@ describe(ruleName, () => {
           options: [
             {
               destructureOnly: true,
-            },
-          ],
-        },
-      ],
-      invalid: [
-        {
-          code: dedent`
-            let obj = {
-              c: 'c',
-              b: 'b',
-              a: 'a',
-            }
-
-            let { c, b, a } = obj
-          `,
-          output: dedent`
-            let obj = {
-              c: 'c',
-              b: 'b',
-              a: 'a',
-            }
-
-            let { a, b, c } = obj
-          `,
-          options: [
-            {
-              destructureOnly: true,
-            },
-          ],
-          errors: [
-            {
-              messageId: 'unexpectedObjectsOrder',
-              data: {
-                left: 'c',
-                right: 'b',
-              },
-            },
-            {
-              messageId: 'unexpectedObjectsOrder',
-              data: {
-                left: 'b',
-                right: 'a',
-              },
             },
           ],
         },
@@ -3920,13 +3920,13 @@ describe(ruleName, () => {
               a: 'a',
             }
           `,
-          options: [{}],
           settings: {
             perfectionist: {
               type: 'line-length',
               order: 'desc',
             },
           },
+          options: [{}],
         },
       ],
       invalid: [],
@@ -3934,29 +3934,8 @@ describe(ruleName, () => {
 
     describe('handles complex comment cases', () => {
       ruleTester.run(`keeps comments associated to their node`, rule, {
-        valid: [],
         invalid: [
           {
-            code: dedent`
-              let obj = {
-                // Ignore this comment
-
-                // B2
-                /**
-                  * B1
-                  */
-                b,
-
-                // Ignore this comment
-
-                // A3
-                /**
-                  * A2
-                  */
-                // A1
-                a,
-              }
-            `,
             output: dedent`
               let obj = {
                 // Ignore this comment
@@ -3977,53 +3956,48 @@ describe(ruleName, () => {
                 b,
               }
             `,
+            code: dedent`
+              let obj = {
+                // Ignore this comment
+
+                // B2
+                /**
+                  * B1
+                  */
+                b,
+
+                // Ignore this comment
+
+                // A3
+                /**
+                  * A2
+                  */
+                // A1
+                a,
+              }
+            `,
+            errors: [
+              {
+                data: {
+                  right: 'a',
+                  left: 'b',
+                },
+                messageId: 'unexpectedObjectsOrder',
+              },
+            ],
             options: [
               {
                 type: 'alphabetical',
               },
             ],
-            errors: [
-              {
-                messageId: 'unexpectedObjectsOrder',
-                data: {
-                  left: 'b',
-                  right: 'a',
-                },
-              },
-            ],
           },
         ],
+        valid: [],
       })
 
       ruleTester.run(`handles partition comments`, rule, {
-        valid: [],
         invalid: [
           {
-            code: dedent`
-              let obj = {
-                // Ignore this comment
-
-                // C2
-                // C1
-                c,
-
-                // B2
-                /**
-                  * B1
-                  */
-                b,
-
-                // Above a partition comment ignore me
-                // PartitionComment: 1
-                /**
-                  * D2
-                  */
-                // D1
-                d,
-
-                a,
-              }
-            `,
             output: dedent`
               let obj = {
                 // Ignore this comment
@@ -4049,30 +4023,56 @@ describe(ruleName, () => {
                 d,
               }
             `,
-            options: [
-              {
-                type: 'alphabetical',
-                partitionByComment: 'PartitionComment:*',
-              },
-            ],
+            code: dedent`
+              let obj = {
+                // Ignore this comment
+
+                // C2
+                // C1
+                c,
+
+                // B2
+                /**
+                  * B1
+                  */
+                b,
+
+                // Above a partition comment ignore me
+                // PartitionComment: 1
+                /**
+                  * D2
+                  */
+                // D1
+                d,
+
+                a,
+              }
+            `,
             errors: [
               {
-                messageId: 'unexpectedObjectsOrder',
                 data: {
-                  left: 'c',
                   right: 'b',
+                  left: 'c',
                 },
+                messageId: 'unexpectedObjectsOrder',
               },
               {
-                messageId: 'unexpectedObjectsOrder',
                 data: {
-                  left: 'd',
                   right: 'a',
+                  left: 'd',
                 },
+                messageId: 'unexpectedObjectsOrder',
+              },
+            ],
+            options: [
+              {
+                partitionByComment: 'PartitionComment:*',
+                type: 'alphabetical',
               },
             ],
           },
         ],
+        valid: [],
       })
     })
 
@@ -4107,17 +4107,17 @@ describe(ruleName, () => {
 
     let eslintDisableRuleTesterName = `${ruleName}: supports 'eslint-disable' for individual nodes`
     ruleTester.run(eslintDisableRuleTesterName, rule, {
-      valid: [],
       invalid: [
         {
-          code: dedent`
-            let obj = {
-              c = 'c',
-              b = 'b',
-              // eslint-disable-next-line
-              a = 'a'
-            }
-          `,
+          errors: [
+            {
+              data: {
+                right: 'b',
+                left: 'c',
+              },
+              messageId: 'unexpectedObjectsOrder',
+            },
+          ],
           output: dedent`
             let obj = {
               b = 'b',
@@ -4126,27 +4126,33 @@ describe(ruleName, () => {
               a = 'a'
             }
           `,
-          options: [{}],
-          errors: [
-            {
-              messageId: 'unexpectedObjectsOrder',
-              data: {
-                left: 'c',
-                right: 'b',
-              },
-            },
-          ],
-        },
-        {
           code: dedent`
             let obj = {
-              d: 'd',
-              c: 'c',
+              c = 'c',
+              b = 'b',
               // eslint-disable-next-line
-              a: 'a',
-              b: 'b'
+              a = 'a'
             }
           `,
+          options: [{}],
+        },
+        {
+          errors: [
+            {
+              data: {
+                right: 'c',
+                left: 'd',
+              },
+              messageId: 'unexpectedObjectsOrder',
+            },
+            {
+              data: {
+                right: 'b',
+                left: 'a',
+              },
+              messageId: 'unexpectedObjectsOrder',
+            },
+          ],
           output: dedent`
             let obj = {
               b: 'b',
@@ -4156,37 +4162,31 @@ describe(ruleName, () => {
               d: 'd'
             }
           `,
+          code: dedent`
+            let obj = {
+              d: 'd',
+              c: 'c',
+              // eslint-disable-next-line
+              a: 'a',
+              b: 'b'
+            }
+          `,
           options: [
             {
               partitionByComment: true,
             },
           ],
-          errors: [
-            {
-              messageId: 'unexpectedObjectsOrder',
-              data: {
-                left: 'd',
-                right: 'c',
-              },
-            },
-            {
-              messageId: 'unexpectedObjectsOrder',
-              data: {
-                left: 'a',
-                right: 'b',
-              },
-            },
-          ],
         },
         {
-          code: dedent`
-            let obj = {
-              c = 'c',
-              b = a,
-              // eslint-disable-next-line
-              a = 'a'
-            }
-          `,
+          errors: [
+            {
+              data: {
+                right: 'b',
+                left: 'c',
+              },
+              messageId: 'unexpectedObjectsOrder',
+            },
+          ],
           output: dedent`
             let obj = {
               b = a,
@@ -4195,25 +4195,26 @@ describe(ruleName, () => {
               a = 'a'
             }
           `,
-          options: [{}],
-          errors: [
-            {
-              messageId: 'unexpectedObjectsOrder',
-              data: {
-                left: 'c',
-                right: 'b',
-              },
-            },
-          ],
-        },
-        {
           code: dedent`
             let obj = {
               c = 'c',
-              b = 'b',
-              a = 'a' // eslint-disable-line
+              b = a,
+              // eslint-disable-next-line
+              a = 'a'
             }
           `,
+          options: [{}],
+        },
+        {
+          errors: [
+            {
+              data: {
+                right: 'b',
+                left: 'c',
+              },
+              messageId: 'unexpectedObjectsOrder',
+            },
+          ],
           output: dedent`
             let obj = {
               b = 'b',
@@ -4221,18 +4222,33 @@ describe(ruleName, () => {
               a = 'a' // eslint-disable-line
             }
           `,
+          code: dedent`
+            let obj = {
+              c = 'c',
+              b = 'b',
+              a = 'a' // eslint-disable-line
+            }
+          `,
           options: [{}],
-          errors: [
-            {
-              messageId: 'unexpectedObjectsOrder',
-              data: {
-                left: 'c',
-                right: 'b',
-              },
-            },
-          ],
         },
         {
+          errors: [
+            {
+              data: {
+                right: 'b',
+                left: 'c',
+              },
+              messageId: 'unexpectedObjectsOrder',
+            },
+          ],
+          output: dedent`
+            let obj = {
+              b = 'b',
+              c = 'c',
+              /* eslint-disable-next-line */
+              a = 'a'
+            }
+          `,
           code: dedent`
             let obj = {
               c = 'c',
@@ -4241,33 +4257,18 @@ describe(ruleName, () => {
               a = 'a'
             }
           `,
-          output: dedent`
-            let obj = {
-              b = 'b',
-              c = 'c',
-              /* eslint-disable-next-line */
-              a = 'a'
-            }
-          `,
           options: [{}],
-          errors: [
-            {
-              messageId: 'unexpectedObjectsOrder',
-              data: {
-                left: 'c',
-                right: 'b',
-              },
-            },
-          ],
         },
         {
-          code: dedent`
-            let obj = {
-              c = 'c',
-              b = 'b',
-              a = 'a' /* eslint-disable-line */
-            }
-          `,
+          errors: [
+            {
+              data: {
+                right: 'b',
+                left: 'c',
+              },
+              messageId: 'unexpectedObjectsOrder',
+            },
+          ],
           output: dedent`
             let obj = {
               b = 'b',
@@ -4275,30 +4276,16 @@ describe(ruleName, () => {
               a = 'a' /* eslint-disable-line */
             }
           `,
-          options: [{}],
-          errors: [
-            {
-              messageId: 'unexpectedObjectsOrder',
-              data: {
-                left: 'c',
-                right: 'b',
-              },
-            },
-          ],
-        },
-        {
           code: dedent`
             let obj = {
-              d = 'd',
-              e = 'e',
-              /* eslint-disable */
               c = 'c',
               b = 'b',
-              // Shouldn't move
-              /* eslint-enable */
-              a = 'a'
+              a = 'a' /* eslint-disable-line */
             }
           `,
+          options: [{}],
+        },
+        {
           output: dedent`
             let obj = {
               a = 'a',
@@ -4311,131 +4298,11 @@ describe(ruleName, () => {
               e = 'e'
             }
           `,
-          options: [{}],
-          errors: [
-            {
-              messageId: 'unexpectedObjectsOrder',
-              data: {
-                left: 'b',
-                right: 'a',
-              },
-            },
-          ],
-        },
-        {
-          code: dedent`
-            let obj = {
-              c = 'c',
-              b = 'b',
-              // eslint-disable-next-line @rule-tester/${eslintDisableRuleTesterName}
-              a = 'a'
-            }
-          `,
-          output: dedent`
-            let obj = {
-              b = 'b',
-              c = 'c',
-              // eslint-disable-next-line @rule-tester/${eslintDisableRuleTesterName}
-              a = 'a'
-            }
-          `,
-          options: [{}],
-          errors: [
-            {
-              messageId: 'unexpectedObjectsOrder',
-              data: {
-                left: 'c',
-                right: 'b',
-              },
-            },
-          ],
-        },
-        {
-          code: dedent`
-            let obj = {
-              c = 'c',
-              b = 'b',
-              a = 'a' // eslint-disable-line @rule-tester/${eslintDisableRuleTesterName}
-            }
-          `,
-          output: dedent`
-            let obj = {
-              b = 'b',
-              c = 'c',
-              a = 'a' // eslint-disable-line @rule-tester/${eslintDisableRuleTesterName}
-            }
-          `,
-          options: [{}],
-          errors: [
-            {
-              messageId: 'unexpectedObjectsOrder',
-              data: {
-                left: 'c',
-                right: 'b',
-              },
-            },
-          ],
-        },
-        {
-          code: dedent`
-            let obj = {
-              c = 'c',
-              b = 'b',
-              /* eslint-disable-next-line @rule-tester/${eslintDisableRuleTesterName} */
-              a = 'a'
-            }
-          `,
-          output: dedent`
-            let obj = {
-              b = 'b',
-              c = 'c',
-              /* eslint-disable-next-line @rule-tester/${eslintDisableRuleTesterName} */
-              a = 'a'
-            }
-          `,
-          options: [{}],
-          errors: [
-            {
-              messageId: 'unexpectedObjectsOrder',
-              data: {
-                left: 'c',
-                right: 'b',
-              },
-            },
-          ],
-        },
-        {
-          code: dedent`
-            let obj = {
-              c = 'c',
-              b = 'b',
-              a = 'a' /* eslint-disable-line @rule-tester/${eslintDisableRuleTesterName} */
-            }
-          `,
-          output: dedent`
-            let obj = {
-              b = 'b',
-              c = 'c',
-              a = 'a' /* eslint-disable-line @rule-tester/${eslintDisableRuleTesterName} */
-            }
-          `,
-          options: [{}],
-          errors: [
-            {
-              messageId: 'unexpectedObjectsOrder',
-              data: {
-                left: 'c',
-                right: 'b',
-              },
-            },
-          ],
-        },
-        {
           code: dedent`
             let obj = {
               d = 'd',
               e = 'e',
-              /* eslint-disable @rule-tester/${eslintDisableRuleTesterName} */
+              /* eslint-disable */
               c = 'c',
               b = 'b',
               // Shouldn't move
@@ -4443,6 +4310,126 @@ describe(ruleName, () => {
               a = 'a'
             }
           `,
+          errors: [
+            {
+              data: {
+                right: 'a',
+                left: 'b',
+              },
+              messageId: 'unexpectedObjectsOrder',
+            },
+          ],
+          options: [{}],
+        },
+        {
+          output: dedent`
+            let obj = {
+              b = 'b',
+              c = 'c',
+              // eslint-disable-next-line @rule-tester/${eslintDisableRuleTesterName}
+              a = 'a'
+            }
+          `,
+          code: dedent`
+            let obj = {
+              c = 'c',
+              b = 'b',
+              // eslint-disable-next-line @rule-tester/${eslintDisableRuleTesterName}
+              a = 'a'
+            }
+          `,
+          errors: [
+            {
+              data: {
+                right: 'b',
+                left: 'c',
+              },
+              messageId: 'unexpectedObjectsOrder',
+            },
+          ],
+          options: [{}],
+        },
+        {
+          output: dedent`
+            let obj = {
+              b = 'b',
+              c = 'c',
+              a = 'a' // eslint-disable-line @rule-tester/${eslintDisableRuleTesterName}
+            }
+          `,
+          code: dedent`
+            let obj = {
+              c = 'c',
+              b = 'b',
+              a = 'a' // eslint-disable-line @rule-tester/${eslintDisableRuleTesterName}
+            }
+          `,
+          errors: [
+            {
+              data: {
+                right: 'b',
+                left: 'c',
+              },
+              messageId: 'unexpectedObjectsOrder',
+            },
+          ],
+          options: [{}],
+        },
+        {
+          output: dedent`
+            let obj = {
+              b = 'b',
+              c = 'c',
+              /* eslint-disable-next-line @rule-tester/${eslintDisableRuleTesterName} */
+              a = 'a'
+            }
+          `,
+          code: dedent`
+            let obj = {
+              c = 'c',
+              b = 'b',
+              /* eslint-disable-next-line @rule-tester/${eslintDisableRuleTesterName} */
+              a = 'a'
+            }
+          `,
+          errors: [
+            {
+              data: {
+                right: 'b',
+                left: 'c',
+              },
+              messageId: 'unexpectedObjectsOrder',
+            },
+          ],
+          options: [{}],
+        },
+        {
+          output: dedent`
+            let obj = {
+              b = 'b',
+              c = 'c',
+              a = 'a' /* eslint-disable-line @rule-tester/${eslintDisableRuleTesterName} */
+            }
+          `,
+          code: dedent`
+            let obj = {
+              c = 'c',
+              b = 'b',
+              a = 'a' /* eslint-disable-line @rule-tester/${eslintDisableRuleTesterName} */
+            }
+          `,
+          errors: [
+            {
+              data: {
+                right: 'b',
+                left: 'c',
+              },
+              messageId: 'unexpectedObjectsOrder',
+            },
+          ],
+          options: [{}],
+        },
+        {
           output: dedent`
             let obj = {
               a = 'a',
@@ -4455,18 +4442,31 @@ describe(ruleName, () => {
               e = 'e'
             }
           `,
-          options: [{}],
+          code: dedent`
+            let obj = {
+              d = 'd',
+              e = 'e',
+              /* eslint-disable @rule-tester/${eslintDisableRuleTesterName} */
+              c = 'c',
+              b = 'b',
+              // Shouldn't move
+              /* eslint-enable */
+              a = 'a'
+            }
+          `,
           errors: [
             {
-              messageId: 'unexpectedObjectsOrder',
               data: {
-                left: 'b',
                 right: 'a',
+                left: 'b',
               },
+              messageId: 'unexpectedObjectsOrder',
             },
           ],
+          options: [{}],
         },
       ],
+      valid: [],
     })
   })
 })

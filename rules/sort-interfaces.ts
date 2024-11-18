@@ -69,75 +69,19 @@ type Group<T extends string[]> = 'multiline' | 'unknown' | T[number] | 'method'
 let defaultOptions: Required<Options<string[]>[0]> = {
   partitionByComment: false,
   partitionByNewLine: false,
+  newlinesBetween: 'ignore',
+  specialCharacters: 'keep',
   type: 'alphabetical',
   groupKind: 'mixed',
-  newlinesBetween: 'ignore',
   ignorePattern: [],
   ignoreCase: true,
-  specialCharacters: 'keep',
   customGroups: {},
+  locales: 'en-US',
   order: 'asc',
   groups: [],
-  locales: 'en-US',
 }
 
 export default createEslintRule<Options<string[]>, MESSAGE_ID>({
-  name: 'sort-interfaces',
-  meta: {
-    type: 'suggestion',
-    docs: {
-      description: 'Enforce sorted interface properties.',
-      url: 'https://perfectionist.dev/rules/sort-interfaces',
-      recommended: true,
-    },
-    fixable: 'code',
-    schema: [
-      {
-        type: 'object',
-        properties: {
-          type: typeJsonSchema,
-          order: orderJsonSchema,
-          locales: localesJsonSchema,
-          ignoreCase: ignoreCaseJsonSchema,
-          specialCharacters: specialCharactersJsonSchema,
-          ignorePattern: {
-            description:
-              'Specifies names or patterns for nodes that should be ignored by rule.',
-            items: {
-              type: 'string',
-            },
-            type: 'array',
-          },
-          partitionByComment: {
-            ...partitionByCommentJsonSchema,
-            description:
-              'Allows you to use comments to separate the interface properties into logical groups.',
-          },
-          partitionByNewLine: partitionByNewLineJsonSchema,
-          newlinesBetween: newlinesBetweenJsonSchema,
-          groupKind: {
-            description: 'Specifies the order of optional and required nodes.',
-            enum: ['mixed', 'optional-first', 'required-first'],
-            type: 'string',
-          },
-          groups: groupsJsonSchema,
-          customGroups: customGroupsJsonSchema,
-        },
-        additionalProperties: false,
-      },
-    ],
-    messages: {
-      unexpectedInterfacePropertiesGroupOrder:
-        'Expected "{{right}}" ({{rightGroup}}) to come before "{{left}}" ({{leftGroup}}).',
-      unexpectedInterfacePropertiesOrder:
-        'Expected "{{right}}" to come before "{{left}}".',
-      missedSpacingBetweenInterfaceMembers:
-        'Missed spacing between "{{left}}" and "{{right}}" interfaces.',
-      extraSpacingBetweenInterfaceMembers:
-        'Extra spacing between "{{left}}" and "{{right}}" interfaces.',
-    },
-  },
-  defaultOptions: [defaultOptions],
   create: context => ({
     TSInterfaceDeclaration: node => {
       if (!isSortable(node.body.body)) {
@@ -161,8 +105,8 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
 
       let sourceCode = getSourceCode(context)
       let eslintDisabledLines = getEslintDisabledLines({
-        sourceCode,
         ruleName: context.id,
+        sourceCode,
       })
 
       let formattedMembers: SortInterfacesSortingNode[][] =
@@ -176,7 +120,7 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
             let lastElement = accumulator.at(-1)?.at(-1)
             let name: string
 
-            let { getGroup, defineGroup, setCustomGroups } = useGroups(options)
+            let { setCustomGroups, defineGroup, getGroup } = useGroups(options)
 
             if (element.type === 'TSPropertySignature') {
               if (element.key.type === 'Identifier') {
@@ -218,16 +162,16 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
             }
 
             let elementSortingNode: SortInterfacesSortingNode = {
-              size: rangeToDiff(element, sourceCode),
-              node: element,
-              group: getGroup(),
-              name,
               isEslintDisabled: isNodeEslintDisabled(
                 element,
                 eslintDisabledLines,
               ),
               groupKind: isMemberOptional(element) ? 'optional' : 'required',
+              size: rangeToDiff(element, sourceCode),
               addSafetySemicolonWhenInline: true,
+              group: getGroup(),
+              node: element,
+              name,
             }
 
             if (
@@ -301,47 +245,103 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
           messageIds = [
             ...messageIds,
             ...getNewlinesErrors({
-              left,
-              leftNum: leftNumber,
-              right,
-              rightNum: rightNumber,
-              sourceCode,
               missedSpacingError: 'missedSpacingBetweenInterfaceMembers',
               extraSpacingError: 'extraSpacingBetweenInterfaceMembers',
+              rightNum: rightNumber,
+              leftNum: leftNumber,
+              sourceCode,
               options,
+              right,
+              left,
             }),
           ]
 
           for (let messageId of messageIds) {
             context.report({
-              messageId,
-              data: {
-                left: left.name,
-                leftGroup: left.group,
-                right: right.name,
-                rightGroup: right.group,
-              },
-              node: right.node,
               fix: fixer => [
                 ...makeFixes({
-                  fixer,
-                  nodes,
                   sortedNodes: sortedNodesExcludingEslintDisabled,
                   sourceCode,
                   options,
+                  fixer,
+                  nodes,
                 }),
                 ...makeNewlinesFixes({
-                  fixer,
-                  nodes,
                   sortedNodes: sortedNodesExcludingEslintDisabled,
                   sourceCode,
                   options,
+                  fixer,
+                  nodes,
                 }),
               ],
+              data: {
+                rightGroup: right.group,
+                leftGroup: left.group,
+                right: right.name,
+                left: left.name,
+              },
+              node: right.node,
+              messageId,
             })
           }
         })
       }
     },
   }),
+  meta: {
+    schema: [
+      {
+        properties: {
+          ignorePattern: {
+            description:
+              'Specifies names or patterns for nodes that should be ignored by rule.',
+            items: {
+              type: 'string',
+            },
+            type: 'array',
+          },
+          partitionByComment: {
+            ...partitionByCommentJsonSchema,
+            description:
+              'Allows you to use comments to separate the interface properties into logical groups.',
+          },
+          groupKind: {
+            description: 'Specifies the order of optional and required nodes.',
+            enum: ['mixed', 'optional-first', 'required-first'],
+            type: 'string',
+          },
+          partitionByNewLine: partitionByNewLineJsonSchema,
+          specialCharacters: specialCharactersJsonSchema,
+          newlinesBetween: newlinesBetweenJsonSchema,
+          customGroups: customGroupsJsonSchema,
+          ignoreCase: ignoreCaseJsonSchema,
+          locales: localesJsonSchema,
+          groups: groupsJsonSchema,
+          order: orderJsonSchema,
+          type: typeJsonSchema,
+        },
+        additionalProperties: false,
+        type: 'object',
+      },
+    ],
+    messages: {
+      unexpectedInterfacePropertiesGroupOrder:
+        'Expected "{{right}}" ({{rightGroup}}) to come before "{{left}}" ({{leftGroup}}).',
+      missedSpacingBetweenInterfaceMembers:
+        'Missed spacing between "{{left}}" and "{{right}}" interfaces.',
+      extraSpacingBetweenInterfaceMembers:
+        'Extra spacing between "{{left}}" and "{{right}}" interfaces.',
+      unexpectedInterfacePropertiesOrder:
+        'Expected "{{right}}" to come before "{{left}}".',
+    },
+    docs: {
+      url: 'https://perfectionist.dev/rules/sort-interfaces',
+      description: 'Enforce sorted interface properties.',
+      recommended: true,
+    },
+    type: 'suggestion',
+    fixable: 'code',
+  },
+  defaultOptions: [defaultOptions],
+  name: 'sort-interfaces',
 })

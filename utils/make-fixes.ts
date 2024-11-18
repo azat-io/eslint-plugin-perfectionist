@@ -16,11 +16,11 @@ interface MakeFixesParameters {
 }
 
 export let makeFixes = ({
-  fixer,
-  nodes,
   sortedNodes,
   sourceCode,
   options,
+  fixer,
+  nodes,
 }: MakeFixesParameters): TSESLint.RuleFix[] => {
   let fixes: TSESLint.RuleFix[] = []
 
@@ -67,10 +67,10 @@ export let makeFixes = ({
     fixes = [
       ...fixes,
       ...makeCommentAfterFixes({
-        fixer,
-        node,
         sortedNode,
         sourceCode,
+        fixer,
+        node,
       }),
     ]
   }

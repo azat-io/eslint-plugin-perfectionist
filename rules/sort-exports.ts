@@ -48,55 +48,17 @@ interface SortExportsSortingNode
 type MESSAGE_ID = 'unexpectedExportsOrder'
 
 let defaultOptions: Required<Options[0]> = {
-  type: 'alphabetical',
-  ignoreCase: true,
   specialCharacters: 'keep',
-  order: 'asc',
   partitionByComment: false,
   partitionByNewLine: false,
+  type: 'alphabetical',
   groupKind: 'mixed',
+  ignoreCase: true,
   locales: 'en-US',
+  order: 'asc',
 }
 
 export default createEslintRule<Options, MESSAGE_ID>({
-  name: 'sort-exports',
-  meta: {
-    type: 'suggestion',
-    docs: {
-      description: 'Enforce sorted exports.',
-      url: 'https://perfectionist.dev/rules/sort-exports',
-      recommended: true,
-    },
-    fixable: 'code',
-    schema: [
-      {
-        type: 'object',
-        properties: {
-          type: typeJsonSchema,
-          order: orderJsonSchema,
-          locales: localesJsonSchema,
-          ignoreCase: ignoreCaseJsonSchema,
-          specialCharacters: specialCharactersJsonSchema,
-          partitionByComment: {
-            ...partitionByCommentJsonSchema,
-            description:
-              'Allows you to use comments to separate the exports into logical groups.',
-          },
-          partitionByNewLine: partitionByNewLineJsonSchema,
-          groupKind: {
-            description: 'Specifies top-level groups.',
-            type: 'string',
-            enum: ['mixed', 'values-first', 'types-first'],
-          },
-        },
-        additionalProperties: false,
-      },
-    ],
-    messages: {
-      unexpectedExportsOrder: 'Expected "{{right}}" to come before "{{left}}".',
-    },
-  },
-  defaultOptions: [defaultOptions],
   create: context => {
     let settings = getSettings(context.settings)
 
@@ -105,8 +67,8 @@ export default createEslintRule<Options, MESSAGE_ID>({
     let sourceCode = getSourceCode(context)
     let partitionComment = options.partitionByComment
     let eslintDisabledLines = getEslintDisabledLines({
-      sourceCode,
       ruleName: context.id,
+      sourceCode,
     })
 
     let parts: SortExportsSortingNode[][] = [[]]
@@ -117,12 +79,12 @@ export default createEslintRule<Options, MESSAGE_ID>({
         | TSESTree.ExportAllDeclaration,
     ): void => {
       let sortingNode: SortExportsSortingNode = {
-        size: rangeToDiff(node, sourceCode),
-        name: node.source.value,
-        node,
         isEslintDisabled: isNodeEslintDisabled(node, eslintDisabledLines),
         groupKind: node.exportKind === 'value' ? 'value' : 'type',
+        size: rangeToDiff(node, sourceCode),
         addSafetySemicolonWhenInline: true,
+        name: node.source.value,
+        node,
       }
       let lastNode = parts.at(-1)?.at(-1)
       if (
@@ -141,12 +103,6 @@ export default createEslintRule<Options, MESSAGE_ID>({
     }
 
     return {
-      ExportAllDeclaration: registerNode,
-      ExportNamedDeclaration: node => {
-        if (node.source !== null) {
-          registerNode(node)
-        }
-      },
       'Program:exit': () => {
         let groupKindOrder
         if (options.groupKind === 'values-first') {
@@ -189,24 +145,68 @@ export default createEslintRule<Options, MESSAGE_ID>({
             }
 
             context.report({
-              messageId: 'unexpectedExportsOrder',
-              data: {
-                left: left.name,
-                right: right.name,
-              },
-              node: right.node,
               fix: fixer =>
                 makeFixes({
-                  fixer,
-                  nodes,
                   sortedNodes: sortedNodesExcludingEslintDisabled,
                   sourceCode,
                   options,
+                  fixer,
+                  nodes,
                 }),
+              data: {
+                right: right.name,
+                left: left.name,
+              },
+              messageId: 'unexpectedExportsOrder',
+              node: right.node,
             })
           })
         }
       },
+      ExportNamedDeclaration: node => {
+        if (node.source !== null) {
+          registerNode(node)
+        }
+      },
+      ExportAllDeclaration: registerNode,
     }
   },
+  meta: {
+    schema: [
+      {
+        properties: {
+          partitionByComment: {
+            ...partitionByCommentJsonSchema,
+            description:
+              'Allows you to use comments to separate the exports into logical groups.',
+          },
+          groupKind: {
+            enum: ['mixed', 'values-first', 'types-first'],
+            description: 'Specifies top-level groups.',
+            type: 'string',
+          },
+          partitionByNewLine: partitionByNewLineJsonSchema,
+          specialCharacters: specialCharactersJsonSchema,
+          ignoreCase: ignoreCaseJsonSchema,
+          locales: localesJsonSchema,
+          order: orderJsonSchema,
+          type: typeJsonSchema,
+        },
+        additionalProperties: false,
+        type: 'object',
+      },
+    ],
+    docs: {
+      url: 'https://perfectionist.dev/rules/sort-exports',
+      description: 'Enforce sorted exports.',
+      recommended: true,
+    },
+    messages: {
+      unexpectedExportsOrder: 'Expected "{{right}}" to come before "{{left}}".',
+    },
+    type: 'suggestion',
+    fixable: 'code',
+  },
+  defaultOptions: [defaultOptions],
+  name: 'sort-exports',
 })

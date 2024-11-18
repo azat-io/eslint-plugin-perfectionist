@@ -42,50 +42,16 @@ type Options = [
 type MESSAGE_ID = 'unexpectedMapElementsOrder'
 
 let defaultOptions: Required<Options[0]> = {
-  type: 'alphabetical',
-  order: 'asc',
-  ignoreCase: true,
   specialCharacters: 'keep',
   partitionByComment: false,
   partitionByNewLine: false,
+  type: 'alphabetical',
+  ignoreCase: true,
   locales: 'en-US',
+  order: 'asc',
 }
 
 export default createEslintRule<Options, MESSAGE_ID>({
-  name: 'sort-maps',
-  meta: {
-    type: 'suggestion',
-    docs: {
-      description: 'Enforce sorted Map elements.',
-      url: 'https://perfectionist.dev/rules/sort-maps',
-      recommended: true,
-    },
-    fixable: 'code',
-    schema: [
-      {
-        type: 'object',
-        properties: {
-          type: typeJsonSchema,
-          order: orderJsonSchema,
-          locales: localesJsonSchema,
-          ignoreCase: ignoreCaseJsonSchema,
-          specialCharacters: specialCharactersJsonSchema,
-          partitionByComment: {
-            ...partitionByCommentJsonSchema,
-            description:
-              'Allows you to use comments to separate the maps members into logical groups.',
-          },
-          partitionByNewLine: partitionByNewLineJsonSchema,
-        },
-        additionalProperties: false,
-      },
-    ],
-    messages: {
-      unexpectedMapElementsOrder:
-        'Expected "{{right}}" to come before "{{left}}".',
-    },
-  },
-  defaultOptions: [defaultOptions],
   create: context => ({
     NewExpression: node => {
       if (
@@ -105,8 +71,8 @@ export default createEslintRule<Options, MESSAGE_ID>({
       let options = complete(context.options.at(0), settings, defaultOptions)
       let sourceCode = getSourceCode(context)
       let eslintDisabledLines = getEslintDisabledLines({
-        sourceCode,
         ruleName: context.id,
+        sourceCode,
       })
 
       let parts: TSESTree.Expression[][] = elements.reduce(
@@ -144,12 +110,12 @@ export default createEslintRule<Options, MESSAGE_ID>({
 
           let lastSortingNode = formattedMembers.at(-1)?.at(-1)
           let sortingNode: SortingNode = {
-            size: rangeToDiff(element, sourceCode),
-            node: element,
             isEslintDisabled: isNodeEslintDisabled(
               element,
               eslintDisabledLines,
             ),
+            size: rangeToDiff(element, sourceCode),
+            node: element,
             name,
           }
 
@@ -191,24 +157,58 @@ export default createEslintRule<Options, MESSAGE_ID>({
             }
 
             context.report({
-              messageId: 'unexpectedMapElementsOrder',
-              data: {
-                left: toSingleLine(left.name),
-                right: toSingleLine(right.name),
-              },
-              node: right.node,
               fix: fixer =>
                 makeFixes({
-                  fixer,
-                  nodes,
                   sortedNodes: sortedNodesExcludingEslintDisabled,
                   sourceCode,
                   options,
+                  fixer,
+                  nodes,
                 }),
+              data: {
+                right: toSingleLine(right.name),
+                left: toSingleLine(left.name),
+              },
+              messageId: 'unexpectedMapElementsOrder',
+              node: right.node,
             })
           })
         }
       }
     },
   }),
+  meta: {
+    schema: [
+      {
+        properties: {
+          partitionByComment: {
+            ...partitionByCommentJsonSchema,
+            description:
+              'Allows you to use comments to separate the maps members into logical groups.',
+          },
+          partitionByNewLine: partitionByNewLineJsonSchema,
+          specialCharacters: specialCharactersJsonSchema,
+          ignoreCase: ignoreCaseJsonSchema,
+          locales: localesJsonSchema,
+          order: orderJsonSchema,
+          type: typeJsonSchema,
+        },
+        additionalProperties: false,
+        type: 'object',
+      },
+    ],
+    docs: {
+      url: 'https://perfectionist.dev/rules/sort-maps',
+      description: 'Enforce sorted Map elements.',
+      recommended: true,
+    },
+    messages: {
+      unexpectedMapElementsOrder:
+        'Expected "{{right}}" to come before "{{left}}".',
+    },
+    type: 'suggestion',
+    fixable: 'code',
+  },
+  defaultOptions: [defaultOptions],
+  name: 'sort-maps',
 })

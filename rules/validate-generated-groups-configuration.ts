@@ -15,9 +15,9 @@ interface BaseCustomGroup {
 
 export let validateGeneratedGroupsConfiguration = ({
   customGroups,
-  groups,
   selectors,
   modifiers,
+  groups,
 }: Props): void => {
   let availableCustomGroupNames = new Set(
     customGroups.map(customGroup => customGroup.groupName),

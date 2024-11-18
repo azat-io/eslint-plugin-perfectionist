@@ -6,8 +6,8 @@ describe('generate-predefined-groups', () => {
   it('should generate official groups', () => {
     expect(
       generatePredefinedGroups({
-        selectors: ['get-method', 'method'],
         modifiers: ['protected', 'abstract', 'override'],
+        selectors: ['get-method', 'method'],
         cache: new Map(),
       }),
     ).toEqual([

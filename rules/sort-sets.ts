@@ -6,21 +6,6 @@ import { createEslintRule } from '../utils/create-eslint-rule'
 type MESSAGE_ID = 'unexpectedSetsOrder'
 
 export default createEslintRule<Options, MESSAGE_ID>({
-  name: 'sort-sets',
-  meta: {
-    type: 'suggestion',
-    docs: {
-      description: 'Enforce sorted sets.',
-      url: 'https://perfectionist.dev/rules/sort-sets',
-      recommended: true,
-    },
-    fixable: 'code',
-    schema: [jsonSchema],
-    messages: {
-      unexpectedSetsOrder: 'Expected "{{right}}" to come before "{{left}}".',
-    },
-  },
-  defaultOptions: [defaultOptions],
   create: context => ({
     NewExpression: node => {
       if (
@@ -40,4 +25,19 @@ export default createEslintRule<Options, MESSAGE_ID>({
       }
     },
   }),
+  meta: {
+    docs: {
+      url: 'https://perfectionist.dev/rules/sort-sets',
+      description: 'Enforce sorted sets.',
+      recommended: true,
+    },
+    messages: {
+      unexpectedSetsOrder: 'Expected "{{right}}" to come before "{{left}}".',
+    },
+    schema: [jsonSchema],
+    type: 'suggestion',
+    fixable: 'code',
+  },
+  defaultOptions: [defaultOptions],
+  name: 'sort-sets',
 })

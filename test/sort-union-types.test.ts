@@ -26,6 +26,26 @@ describe(ruleName, () => {
     } as const
 
     ruleTester.run(`${ruleName}(${type}: sorts union types`, rule, {
+      invalid: [
+        {
+          errors: [
+            {
+              data: {
+                right: "'bbb'",
+                left: "'cc'",
+              },
+              messageId: 'unexpectedUnionTypesOrder',
+            },
+          ],
+          output: dedent`
+            type Type = 'aaaa' | 'bbb' | 'cc' | 'd'
+          `,
+          code: dedent`
+            type Type = 'aaaa' | 'cc' | 'bbb' | 'd'
+          `,
+          options: [options],
+        },
+      ],
       valid: [
         {
           code: dedent`
@@ -34,182 +54,160 @@ describe(ruleName, () => {
           options: [options],
         },
       ],
-      invalid: [
-        {
-          code: dedent`
-            type Type = 'aaaa' | 'cc' | 'bbb' | 'd'
-          `,
-          output: dedent`
-            type Type = 'aaaa' | 'bbb' | 'cc' | 'd'
-          `,
-          options: [options],
-          errors: [
-            {
-              messageId: 'unexpectedUnionTypesOrder',
-              data: {
-                left: "'cc'",
-                right: "'bbb'",
-              },
-            },
-          ],
-        },
-      ],
     })
 
     ruleTester.run(`${ruleName}: sorts keyword union types`, rule, {
-      valid: [],
       invalid: [
         {
-          code: dedent`
-            type Value =
-              | boolean
-              | number
-              | string
-              | any
-              | unknown
-              | null
-              | undefined
-              | never
-              | void
-              | bigint
-          `,
-          output: dedent`
-            type Value =
-              | any
-              | bigint
-              | boolean
-              | never
-              | null
-              | number
-              | string
-              | undefined
-              | unknown
-              | void
-          `,
-          options: [options],
           errors: [
             {
-              messageId: 'unexpectedUnionTypesOrder',
               data: {
                 left: 'string',
                 right: 'any',
               },
+              messageId: 'unexpectedUnionTypesOrder',
             },
             {
-              messageId: 'unexpectedUnionTypesOrder',
               data: {
                 left: 'unknown',
                 right: 'null',
               },
+              messageId: 'unexpectedUnionTypesOrder',
             },
             {
-              messageId: 'unexpectedUnionTypesOrder',
               data: {
                 left: 'undefined',
                 right: 'never',
               },
+              messageId: 'unexpectedUnionTypesOrder',
             },
             {
-              messageId: 'unexpectedUnionTypesOrder',
               data: {
-                left: 'void',
                 right: 'bigint',
+                left: 'void',
               },
+              messageId: 'unexpectedUnionTypesOrder',
             },
           ],
+          output: dedent`
+            type Value =
+              | any
+              | bigint
+              | boolean
+              | never
+              | null
+              | number
+              | string
+              | undefined
+              | unknown
+              | void
+          `,
+          code: dedent`
+            type Value =
+              | boolean
+              | number
+              | string
+              | any
+              | unknown
+              | null
+              | undefined
+              | never
+              | void
+              | bigint
+          `,
+          options: [options],
         },
       ],
+      valid: [],
     })
 
     ruleTester.run(`${ruleName}: works with generics`, rule, {
-      valid: [],
       invalid: [
         {
-          code: "Omit<T, 'b' | 'aa'>",
-          output: "Omit<T, 'aa' | 'b'>",
-          options: [options],
           errors: [
             {
-              messageId: 'unexpectedUnionTypesOrder',
               data: {
-                left: "'b'",
                 right: "'aa'",
+                left: "'b'",
               },
+              messageId: 'unexpectedUnionTypesOrder',
             },
           ],
+          output: "Omit<T, 'aa' | 'b'>",
+          code: "Omit<T, 'b' | 'aa'>",
+          options: [options],
         },
       ],
+      valid: [],
     })
 
     ruleTester.run(`${ruleName}: works with type references`, rule, {
-      valid: [],
       invalid: [
         {
-          code: 'type Type = c | bb | aaa',
-          output: 'type Type = aaa | bb | c',
-          options: [options],
           errors: [
             {
-              messageId: 'unexpectedUnionTypesOrder',
               data: {
-                left: 'c',
                 right: 'bb',
+                left: 'c',
               },
+              messageId: 'unexpectedUnionTypesOrder',
             },
             {
-              messageId: 'unexpectedUnionTypesOrder',
               data: {
-                left: 'bb',
                 right: 'aaa',
+                left: 'bb',
               },
+              messageId: 'unexpectedUnionTypesOrder',
             },
           ],
+          output: 'type Type = aaa | bb | c',
+          code: 'type Type = c | bb | aaa',
+          options: [options],
         },
       ],
+      valid: [],
     })
 
     ruleTester.run(`${ruleName}: works with type references`, rule, {
-      valid: [],
       invalid: [
         {
-          code: dedent`
-            type Type =
-              | { name: 'b', status: 'success' }
-              | { name: 'aa', status: 'success' }
-          `,
+          errors: [
+            {
+              data: {
+                right: "{ name: 'aa', status: 'success' }",
+                left: "{ name: 'b', status: 'success' }",
+              },
+              messageId: 'unexpectedUnionTypesOrder',
+            },
+          ],
           output: dedent`
             type Type =
               | { name: 'aa', status: 'success' }
               | { name: 'b', status: 'success' }
           `,
+          code: dedent`
+            type Type =
+              | { name: 'b', status: 'success' }
+              | { name: 'aa', status: 'success' }
+          `,
           options: [options],
-          errors: [
-            {
-              messageId: 'unexpectedUnionTypesOrder',
-              data: {
-                left: "{ name: 'b', status: 'success' }",
-                right: "{ name: 'aa', status: 'success' }",
-              },
-            },
-          ],
         },
       ],
+      valid: [],
     })
 
     ruleTester.run(`${ruleName}: sorts unions with parentheses`, rule, {
-      valid: [],
       invalid: [
         {
-          code: dedent`
-            type Type = {
-              x:
-                | A
-                | ((
-                    value: () => void,
-                  ) => D | E)
-                | B[]
-            }
-          `,
+          errors: [
+            {
+              data: {
+                right: '( value: () => void, ) => D | E',
+                left: 'A',
+              },
+              messageId: 'unexpectedUnionTypesOrder',
+            },
+          ],
           output: dedent`
             type Type = {
               x:
@@ -220,52 +218,160 @@ describe(ruleName, () => {
                 | B[]
             }
           `,
+          code: dedent`
+            type Type = {
+              x:
+                | A
+                | ((
+                    value: () => void,
+                  ) => D | E)
+                | B[]
+            }
+          `,
           options: [options],
-          errors: [
-            {
-              messageId: 'unexpectedUnionTypesOrder',
-              data: {
-                left: 'A',
-                right: '( value: () => void, ) => D | E',
-              },
-            },
-          ],
         },
       ],
+      valid: [],
     })
 
     ruleTester.run(`${ruleName}: sorts unions with comment at the end`, rule, {
-      valid: [],
       invalid: [
         {
-          code: dedent`
-            type Step = 1 | 2 | 4 | 3 | 5 | 100; // Comment
-          `,
+          errors: [
+            {
+              data: {
+                right: '3',
+                left: '4',
+              },
+              messageId: 'unexpectedUnionTypesOrder',
+            },
+            {
+              data: {
+                right: '100',
+                left: '5',
+              },
+              messageId: 'unexpectedUnionTypesOrder',
+            },
+          ],
           output: dedent`
             type Step = 1 | 100 | 2 | 3 | 4 | 5; // Comment
           `,
+          code: dedent`
+            type Step = 1 | 2 | 4 | 3 | 5 | 100; // Comment
+          `,
           options: [options],
-          errors: [
-            {
-              messageId: 'unexpectedUnionTypesOrder',
-              data: {
-                left: '4',
-                right: '3',
-              },
-            },
-            {
-              messageId: 'unexpectedUnionTypesOrder',
-              data: {
-                left: '5',
-                right: '100',
-              },
-            },
-          ],
         },
       ],
+      valid: [],
     })
 
     ruleTester.run(`${ruleName}: sorts unions using groups`, rule, {
+      invalid: [
+        {
+          errors: [
+            {
+              data: {
+                left: "{ name: 'a' }",
+                rightGroup: 'keyword',
+                leftGroup: 'object',
+                right: 'boolean',
+              },
+              messageId: 'unexpectedUnionTypesGroupOrder',
+            },
+            {
+              data: {
+                leftGroup: 'keyword',
+                rightGroup: 'named',
+                left: 'boolean',
+                right: 'A',
+              },
+              messageId: 'unexpectedUnionTypesGroupOrder',
+            },
+            {
+              data: {
+                leftGroup: 'operator',
+                rightGroup: 'keyword',
+                left: 'keyof A',
+                right: 'bigint',
+              },
+              messageId: 'unexpectedUnionTypesGroupOrder',
+            },
+            {
+              data: {
+                rightGroup: 'literal',
+                leftGroup: 'nullish',
+                left: 'null',
+                right: '1',
+              },
+              messageId: 'unexpectedUnionTypesGroupOrder',
+            },
+            {
+              data: {
+                rightGroup: 'intersection',
+                leftGroup: 'union',
+                right: 'A & B',
+                left: 'A | B',
+              },
+              messageId: 'unexpectedUnionTypesGroupOrder',
+            },
+          ],
+          options: [
+            {
+              ...options,
+              groups: [
+                'named',
+                'keyword',
+                'operator',
+                'literal',
+                'function',
+                'import',
+                'conditional',
+                'object',
+                'tuple',
+                'intersection',
+                'union',
+                'nullish',
+              ],
+            },
+          ],
+          output: dedent`
+            type Type =
+              | A
+              | any
+              | bigint
+              | boolean
+              | keyof A
+              | typeof B
+              | 'aaa'
+              | 1
+              | (import('path'))
+              | (A extends B ? C : D)
+              | { name: 'a' }
+              | [A, B, C]
+              | (A & B)
+              | (A | B)
+              | null
+          `,
+          code: dedent`
+            type Type =
+              | any
+              | { name: 'a' }
+              | boolean
+              | A
+              | keyof A
+              | bigint
+              | typeof B
+              | 'aaa'
+              | (import('path'))
+              | null
+              | 1
+              | (A extends B ? C : D)
+              | [A, B, C]
+              | (A | B)
+              | (A & B)
+          `,
+        },
+      ],
       valid: [
         {
           code: dedent`
@@ -317,131 +423,30 @@ describe(ruleName, () => {
           ],
         },
       ],
-      invalid: [
-        {
-          code: dedent`
-            type Type =
-              | any
-              | { name: 'a' }
-              | boolean
-              | A
-              | keyof A
-              | bigint
-              | typeof B
-              | 'aaa'
-              | (import('path'))
-              | null
-              | 1
-              | (A extends B ? C : D)
-              | [A, B, C]
-              | (A | B)
-              | (A & B)
-          `,
-          output: dedent`
-            type Type =
-              | A
-              | any
-              | bigint
-              | boolean
-              | keyof A
-              | typeof B
-              | 'aaa'
-              | 1
-              | (import('path'))
-              | (A extends B ? C : D)
-              | { name: 'a' }
-              | [A, B, C]
-              | (A & B)
-              | (A | B)
-              | null
-          `,
-          options: [
-            {
-              ...options,
-              groups: [
-                'named',
-                'keyword',
-                'operator',
-                'literal',
-                'function',
-                'import',
-                'conditional',
-                'object',
-                'tuple',
-                'intersection',
-                'union',
-                'nullish',
-              ],
-            },
-          ],
-          errors: [
-            {
-              messageId: 'unexpectedUnionTypesGroupOrder',
-              data: {
-                left: "{ name: 'a' }",
-                leftGroup: 'object',
-                right: 'boolean',
-                rightGroup: 'keyword',
-              },
-            },
-            {
-              messageId: 'unexpectedUnionTypesGroupOrder',
-              data: {
-                left: 'boolean',
-                leftGroup: 'keyword',
-                right: 'A',
-                rightGroup: 'named',
-              },
-            },
-            {
-              messageId: 'unexpectedUnionTypesGroupOrder',
-              data: {
-                left: 'keyof A',
-                leftGroup: 'operator',
-                right: 'bigint',
-                rightGroup: 'keyword',
-              },
-            },
-            {
-              messageId: 'unexpectedUnionTypesGroupOrder',
-              data: {
-                left: 'null',
-                leftGroup: 'nullish',
-                right: '1',
-                rightGroup: 'literal',
-              },
-            },
-            {
-              messageId: 'unexpectedUnionTypesGroupOrder',
-              data: {
-                left: 'A | B',
-                leftGroup: 'union',
-                right: 'A & B',
-                rightGroup: 'intersection',
-              },
-            },
-          ],
-        },
-      ],
     })
 
     ruleTester.run(
       `${ruleName}(${type}): allows to use new line as partition`,
       rule,
       {
-        valid: [],
         invalid: [
           {
-            code: dedent`
-              type Type =
-                D |
-                A |
-
-                C |
-
-                E |
-                B
-            `,
+            errors: [
+              {
+                data: {
+                  right: 'A',
+                  left: 'D',
+                },
+                messageId: 'unexpectedUnionTypesOrder',
+              },
+              {
+                data: {
+                  right: 'B',
+                  left: 'E',
+                },
+                messageId: 'unexpectedUnionTypesOrder',
+              },
+            ],
             output: dedent`
               type Type =
                 A |
@@ -452,30 +457,25 @@ describe(ruleName, () => {
                 B |
                 E
             `,
+            code: dedent`
+              type Type =
+                D |
+                A |
+
+                C |
+
+                E |
+                B
+            `,
             options: [
               {
-                type: 'alphabetical',
                 partitionByNewLine: true,
-              },
-            ],
-            errors: [
-              {
-                messageId: 'unexpectedUnionTypesOrder',
-                data: {
-                  left: 'D',
-                  right: 'A',
-                },
-              },
-              {
-                messageId: 'unexpectedUnionTypesOrder',
-                data: {
-                  left: 'E',
-                  right: 'B',
-                },
+                type: 'alphabetical',
               },
             ],
           },
         ],
+        valid: [],
       },
     )
 
@@ -484,24 +484,24 @@ describe(ruleName, () => {
         `${ruleName}(${type}): allows to use partition comments`,
         rule,
         {
-          valid: [],
           invalid: [
             {
-              code: dedent`
-                type T =
-                  // Part: A
-                  CC |
-                  D |
-                  // Not partition comment
-                  BBB |
-                  // Part: B
-                  AAA |
-                  E |
-                  // Part: C
-                  GG |
-                  // Not partition comment
-                  FFF
-              `,
+              errors: [
+                {
+                  data: {
+                    right: 'BBB',
+                    left: 'D',
+                  },
+                  messageId: 'unexpectedUnionTypesOrder',
+                },
+                {
+                  data: {
+                    right: 'FFF',
+                    left: 'GG',
+                  },
+                  messageId: 'unexpectedUnionTypesOrder',
+                },
+              ],
               output: dedent`
                 type T =
                   // Part: A
@@ -517,45 +517,45 @@ describe(ruleName, () => {
                   FFF |
                   GG
               `,
+              code: dedent`
+                type T =
+                  // Part: A
+                  CC |
+                  D |
+                  // Not partition comment
+                  BBB |
+                  // Part: B
+                  AAA |
+                  E |
+                  // Part: C
+                  GG |
+                  // Not partition comment
+                  FFF
+              `,
               options: [
                 {
                   ...options,
                   partitionByComment: '^Part*',
                 },
               ],
-              errors: [
-                {
-                  messageId: 'unexpectedUnionTypesOrder',
-                  data: {
-                    left: 'D',
-                    right: 'BBB',
-                  },
-                },
-                {
-                  messageId: 'unexpectedUnionTypesOrder',
-                  data: {
-                    left: 'GG',
-                    right: 'FFF',
-                  },
-                },
-              ],
             },
             {
-              code: dedent`
-                type T =
-                  // Part: A
-                  | CC
-                  | D
-                  // Not partition comment
-                  | BBB
-                  // Part: B
-                  | AAA
-                  | E
-                  // Part: C
-                  | GG
-                  // Not partition comment
-                  | FFF
-              `,
+              errors: [
+                {
+                  data: {
+                    right: 'BBB',
+                    left: 'D',
+                  },
+                  messageId: 'unexpectedUnionTypesOrder',
+                },
+                {
+                  data: {
+                    right: 'FFF',
+                    left: 'GG',
+                  },
+                  messageId: 'unexpectedUnionTypesOrder',
+                },
+              ],
               output: dedent`
                 type T =
                   // Part: A
@@ -571,30 +571,30 @@ describe(ruleName, () => {
                   // Not partition comment
                   | GG
               `,
+              code: dedent`
+                type T =
+                  // Part: A
+                  | CC
+                  | D
+                  // Not partition comment
+                  | BBB
+                  // Part: B
+                  | AAA
+                  | E
+                  // Part: C
+                  | GG
+                  // Not partition comment
+                  | FFF
+              `,
               options: [
                 {
                   ...options,
                   partitionByComment: '^Part*',
                 },
               ],
-              errors: [
-                {
-                  messageId: 'unexpectedUnionTypesOrder',
-                  data: {
-                    left: 'D',
-                    right: 'BBB',
-                  },
-                },
-                {
-                  messageId: 'unexpectedUnionTypesOrder',
-                  data: {
-                    left: 'GG',
-                    right: 'FFF',
-                  },
-                },
-              ],
             },
           ],
+          valid: [],
         },
       )
 
@@ -627,21 +627,8 @@ describe(ruleName, () => {
         `${ruleName}(${type}): allows to use multiple partition comments`,
         rule,
         {
-          valid: [],
           invalid: [
             {
-              code: dedent`
-                  type T =
-                    /* Partition Comment */
-                    // Part: A
-                    D |
-                    // Part: B
-                    AAA |
-                    C |
-                    BB |
-                    /* Other */
-                    E
-                `,
               output: dedent`
                   type T =
                     /* Partition Comment */
@@ -654,23 +641,36 @@ describe(ruleName, () => {
                     /* Other */
                     E
                 `,
+              code: dedent`
+                  type T =
+                    /* Partition Comment */
+                    // Part: A
+                    D |
+                    // Part: B
+                    AAA |
+                    C |
+                    BB |
+                    /* Other */
+                    E
+                `,
+              errors: [
+                {
+                  data: {
+                    right: 'BB',
+                    left: 'C',
+                  },
+                  messageId: 'unexpectedUnionTypesOrder',
+                },
+              ],
               options: [
                 {
                   ...options,
                   partitionByComment: ['Partition Comment', 'Part: *', 'Other'],
                 },
               ],
-              errors: [
-                {
-                  messageId: 'unexpectedUnionTypesOrder',
-                  data: {
-                    left: 'C',
-                    right: 'BB',
-                  },
-                },
-              ],
             },
           ],
+          valid: [],
         },
       )
 
@@ -707,18 +707,18 @@ describe(ruleName, () => {
       {
         valid: [
           {
-            code: dedent`
-              type T =
-                _A |
-                B |
-                _C
-            `,
             options: [
               {
                 ...options,
                 specialCharacters: 'trim',
               },
             ],
+            code: dedent`
+              type T =
+                _A |
+                B |
+                _C
+            `,
           },
         ],
         invalid: [],
@@ -731,17 +731,17 @@ describe(ruleName, () => {
       {
         valid: [
           {
-            code: dedent`
-              type T =
-                AB |
-                A_C
-            `,
             options: [
               {
                 ...options,
                 specialCharacters: 'remove',
               },
             ],
+            code: dedent`
+              type T =
+                AB |
+                A_C
+            `,
           },
         ],
         invalid: [],
@@ -771,9 +771,38 @@ describe(ruleName, () => {
         `${ruleName}(${type}): removes newlines when never`,
         rule,
         {
-          valid: [],
           invalid: [
             {
+              errors: [
+                {
+                  data: {
+                    left: '() => null',
+                    right: 'Y',
+                  },
+                  messageId: 'extraSpacingBetweenUnionTypes',
+                },
+                {
+                  data: {
+                    right: 'B',
+                    left: 'Z',
+                  },
+                  messageId: 'unexpectedUnionTypesOrder',
+                },
+                {
+                  data: {
+                    right: 'B',
+                    left: 'Z',
+                  },
+                  messageId: 'extraSpacingBetweenUnionTypes',
+                },
+              ],
+              options: [
+                {
+                  ...options,
+                  groups: ['function', 'unknown'],
+                  newlinesBetween: 'never',
+                },
+              ],
               code: dedent`
                 type T =
                   (() => null)
@@ -791,38 +820,9 @@ describe(ruleName, () => {
                 | Y
                     | Z
               `,
-              options: [
-                {
-                  ...options,
-                  newlinesBetween: 'never',
-                  groups: ['function', 'unknown'],
-                },
-              ],
-              errors: [
-                {
-                  messageId: 'extraSpacingBetweenUnionTypes',
-                  data: {
-                    left: '() => null',
-                    right: 'Y',
-                  },
-                },
-                {
-                  messageId: 'unexpectedUnionTypesOrder',
-                  data: {
-                    left: 'Z',
-                    right: 'B',
-                  },
-                },
-                {
-                  messageId: 'extraSpacingBetweenUnionTypes',
-                  data: {
-                    left: 'Z',
-                    right: 'B',
-                  },
-                },
-              ],
             },
           ],
+          valid: [],
         },
       )
 
@@ -830,18 +830,38 @@ describe(ruleName, () => {
         `${ruleName}(${type}): keeps one newline when always`,
         rule,
         {
-          valid: [],
           invalid: [
             {
-              code: dedent`
-                type T =
-                  (() => null)
-
-
-                 | Z
-                | Y
-                    | "A"
-              `,
+              errors: [
+                {
+                  data: {
+                    left: '() => null',
+                    right: 'Z',
+                  },
+                  messageId: 'extraSpacingBetweenUnionTypes',
+                },
+                {
+                  data: {
+                    right: 'Y',
+                    left: 'Z',
+                  },
+                  messageId: 'unexpectedUnionTypesOrder',
+                },
+                {
+                  data: {
+                    right: '"A"',
+                    left: 'Y',
+                  },
+                  messageId: 'missedSpacingBetweenUnionTypes',
+                },
+              ],
+              options: [
+                {
+                  ...options,
+                  groups: ['function', 'unknown', 'literal'],
+                  newlinesBetween: 'always',
+                },
+              ],
               output: dedent`
                 type T =
                   (() => null)
@@ -851,38 +871,18 @@ describe(ruleName, () => {
 
                     | "A"
                 `,
-              options: [
-                {
-                  ...options,
-                  newlinesBetween: 'always',
-                  groups: ['function', 'unknown', 'literal'],
-                },
-              ],
-              errors: [
-                {
-                  messageId: 'extraSpacingBetweenUnionTypes',
-                  data: {
-                    left: '() => null',
-                    right: 'Z',
-                  },
-                },
-                {
-                  messageId: 'unexpectedUnionTypesOrder',
-                  data: {
-                    left: 'Z',
-                    right: 'Y',
-                  },
-                },
-                {
-                  messageId: 'missedSpacingBetweenUnionTypes',
-                  data: {
-                    left: 'Y',
-                    right: '"A"',
-                  },
-                },
-              ],
+              code: dedent`
+                type T =
+                  (() => null)
+
+
+                 | Z
+                | Y
+                    | "A"
+              `,
             },
           ],
+          valid: [],
         },
       )
     })
@@ -891,49 +891,49 @@ describe(ruleName, () => {
       `${ruleName}(${type}): sorts inline elements correctly`,
       rule,
       {
-        valid: [],
         invalid: [
           {
-            code: dedent`
-              type T =
-                | B | A
-            `,
+            errors: [
+              {
+                data: {
+                  right: 'A',
+                  left: 'B',
+                },
+                messageId: 'unexpectedUnionTypesOrder',
+              },
+            ],
             output: dedent`
               type T =
                 | A | B
             `,
-            options: [options],
-            errors: [
-              {
-                messageId: 'unexpectedUnionTypesOrder',
-                data: {
-                  left: 'B',
-                  right: 'A',
-                },
-              },
-            ],
-          },
-          {
             code: dedent`
               type T =
-                B | A
+                | B | A
             `,
+            options: [options],
+          },
+          {
+            errors: [
+              {
+                data: {
+                  right: 'A',
+                  left: 'B',
+                },
+                messageId: 'unexpectedUnionTypesOrder',
+              },
+            ],
             output: dedent`
               type T =
                 A | B
             `,
+            code: dedent`
+              type T =
+                B | A
+            `,
             options: [options],
-            errors: [
-              {
-                messageId: 'unexpectedUnionTypesOrder',
-                data: {
-                  left: 'B',
-                  right: 'A',
-                },
-              },
-            ],
           },
         ],
+        valid: [],
       },
     )
   })
@@ -948,6 +948,26 @@ describe(ruleName, () => {
     } as const
 
     ruleTester.run(`${ruleName}(${type}: sorts union types`, rule, {
+      invalid: [
+        {
+          errors: [
+            {
+              data: {
+                right: "'bbb'",
+                left: "'cc'",
+              },
+              messageId: 'unexpectedUnionTypesOrder',
+            },
+          ],
+          output: dedent`
+            type Type = 'aaaa' | 'bbb' | 'cc' | 'd'
+          `,
+          code: dedent`
+            type Type = 'aaaa' | 'cc' | 'bbb' | 'd'
+          `,
+          options: [options],
+        },
+      ],
       valid: [
         {
           code: dedent`
@@ -956,182 +976,160 @@ describe(ruleName, () => {
           options: [options],
         },
       ],
-      invalid: [
-        {
-          code: dedent`
-            type Type = 'aaaa' | 'cc' | 'bbb' | 'd'
-          `,
-          output: dedent`
-            type Type = 'aaaa' | 'bbb' | 'cc' | 'd'
-          `,
-          options: [options],
-          errors: [
-            {
-              messageId: 'unexpectedUnionTypesOrder',
-              data: {
-                left: "'cc'",
-                right: "'bbb'",
-              },
-            },
-          ],
-        },
-      ],
     })
 
     ruleTester.run(`${ruleName}: sorts keyword union types`, rule, {
-      valid: [],
       invalid: [
         {
-          code: dedent`
-            type Value =
-              | boolean
-              | number
-              | string
-              | any
-              | unknown
-              | null
-              | undefined
-              | never
-              | void
-              | bigint
-          `,
-          output: dedent`
-            type Value =
-              | any
-              | bigint
-              | boolean
-              | never
-              | null
-              | number
-              | string
-              | undefined
-              | unknown
-              | void
-          `,
-          options: [options],
           errors: [
             {
-              messageId: 'unexpectedUnionTypesOrder',
               data: {
                 left: 'string',
                 right: 'any',
               },
+              messageId: 'unexpectedUnionTypesOrder',
             },
             {
-              messageId: 'unexpectedUnionTypesOrder',
               data: {
                 left: 'unknown',
                 right: 'null',
               },
+              messageId: 'unexpectedUnionTypesOrder',
             },
             {
-              messageId: 'unexpectedUnionTypesOrder',
               data: {
                 left: 'undefined',
                 right: 'never',
               },
+              messageId: 'unexpectedUnionTypesOrder',
             },
             {
-              messageId: 'unexpectedUnionTypesOrder',
               data: {
-                left: 'void',
                 right: 'bigint',
+                left: 'void',
               },
+              messageId: 'unexpectedUnionTypesOrder',
             },
           ],
+          output: dedent`
+            type Value =
+              | any
+              | bigint
+              | boolean
+              | never
+              | null
+              | number
+              | string
+              | undefined
+              | unknown
+              | void
+          `,
+          code: dedent`
+            type Value =
+              | boolean
+              | number
+              | string
+              | any
+              | unknown
+              | null
+              | undefined
+              | never
+              | void
+              | bigint
+          `,
+          options: [options],
         },
       ],
+      valid: [],
     })
 
     ruleTester.run(`${ruleName}: works with generics`, rule, {
-      valid: [],
       invalid: [
         {
-          code: "Omit<T, 'b' | 'aa'>",
-          output: "Omit<T, 'aa' | 'b'>",
-          options: [options],
           errors: [
             {
-              messageId: 'unexpectedUnionTypesOrder',
               data: {
-                left: "'b'",
                 right: "'aa'",
+                left: "'b'",
               },
+              messageId: 'unexpectedUnionTypesOrder',
             },
           ],
+          output: "Omit<T, 'aa' | 'b'>",
+          code: "Omit<T, 'b' | 'aa'>",
+          options: [options],
         },
       ],
+      valid: [],
     })
 
     ruleTester.run(`${ruleName}: works with type references`, rule, {
-      valid: [],
       invalid: [
         {
-          code: 'type Type = c | bb | aaa',
-          output: 'type Type = aaa | bb | c',
-          options: [options],
           errors: [
             {
-              messageId: 'unexpectedUnionTypesOrder',
               data: {
-                left: 'c',
                 right: 'bb',
+                left: 'c',
               },
+              messageId: 'unexpectedUnionTypesOrder',
             },
             {
-              messageId: 'unexpectedUnionTypesOrder',
               data: {
-                left: 'bb',
                 right: 'aaa',
+                left: 'bb',
               },
+              messageId: 'unexpectedUnionTypesOrder',
             },
           ],
+          output: 'type Type = aaa | bb | c',
+          code: 'type Type = c | bb | aaa',
+          options: [options],
         },
       ],
+      valid: [],
     })
 
     ruleTester.run(`${ruleName}: works with type references`, rule, {
-      valid: [],
       invalid: [
         {
-          code: dedent`
-            type Type =
-              | { name: 'b', status: 'success' }
-              | { name: 'aa', status: 'success' }
-          `,
+          errors: [
+            {
+              data: {
+                right: "{ name: 'aa', status: 'success' }",
+                left: "{ name: 'b', status: 'success' }",
+              },
+              messageId: 'unexpectedUnionTypesOrder',
+            },
+          ],
           output: dedent`
             type Type =
               | { name: 'aa', status: 'success' }
               | { name: 'b', status: 'success' }
           `,
+          code: dedent`
+            type Type =
+              | { name: 'b', status: 'success' }
+              | { name: 'aa', status: 'success' }
+          `,
           options: [options],
-          errors: [
-            {
-              messageId: 'unexpectedUnionTypesOrder',
-              data: {
-                left: "{ name: 'b', status: 'success' }",
-                right: "{ name: 'aa', status: 'success' }",
-              },
-            },
-          ],
         },
       ],
+      valid: [],
     })
 
     ruleTester.run(`${ruleName}: sorts unions with parentheses`, rule, {
-      valid: [],
       invalid: [
         {
-          code: dedent`
-            type Type = {
-              x:
-                | A
-                | ((
-                    value: () => void,
-                  ) => D | E)
-                | B[]
-            }
-          `,
+          errors: [
+            {
+              data: {
+                right: '( value: () => void, ) => D | E',
+                left: 'A',
+              },
+              messageId: 'unexpectedUnionTypesOrder',
+            },
+          ],
           output: dedent`
             type Type = {
               x:
@@ -1142,45 +1140,153 @@ describe(ruleName, () => {
                 | B[]
             }
           `,
+          code: dedent`
+            type Type = {
+              x:
+                | A
+                | ((
+                    value: () => void,
+                  ) => D | E)
+                | B[]
+            }
+          `,
           options: [options],
-          errors: [
-            {
-              messageId: 'unexpectedUnionTypesOrder',
-              data: {
-                left: 'A',
-                right: '( value: () => void, ) => D | E',
-              },
-            },
-          ],
         },
       ],
+      valid: [],
     })
 
     ruleTester.run(`${ruleName}: sorts unions with comment at the end`, rule, {
-      valid: [],
       invalid: [
         {
-          code: dedent`
-            type Step = 1 | 2 | 4 | 3 | 5 | 100; // Comment
-          `,
+          errors: [
+            {
+              data: {
+                right: '3',
+                left: '4',
+              },
+              messageId: 'unexpectedUnionTypesOrder',
+            },
+          ],
           output: dedent`
             type Step = 1 | 2 | 3 | 4 | 5 | 100; // Comment
           `,
+          code: dedent`
+            type Step = 1 | 2 | 4 | 3 | 5 | 100; // Comment
+          `,
           options: [options],
-          errors: [
-            {
-              messageId: 'unexpectedUnionTypesOrder',
-              data: {
-                left: '4',
-                right: '3',
-              },
-            },
-          ],
         },
       ],
+      valid: [],
     })
 
     ruleTester.run(`${ruleName}: sorts unions using groups`, rule, {
+      invalid: [
+        {
+          errors: [
+            {
+              data: {
+                left: "{ name: 'a' }",
+                rightGroup: 'keyword',
+                leftGroup: 'object',
+                right: 'boolean',
+              },
+              messageId: 'unexpectedUnionTypesGroupOrder',
+            },
+            {
+              data: {
+                leftGroup: 'keyword',
+                rightGroup: 'named',
+                left: 'boolean',
+                right: 'A',
+              },
+              messageId: 'unexpectedUnionTypesGroupOrder',
+            },
+            {
+              data: {
+                leftGroup: 'operator',
+                rightGroup: 'keyword',
+                left: 'keyof A',
+                right: 'bigint',
+              },
+              messageId: 'unexpectedUnionTypesGroupOrder',
+            },
+            {
+              data: {
+                rightGroup: 'literal',
+                leftGroup: 'nullish',
+                left: 'null',
+                right: '1',
+              },
+              messageId: 'unexpectedUnionTypesGroupOrder',
+            },
+            {
+              data: {
+                rightGroup: 'intersection',
+                leftGroup: 'union',
+                right: 'A & B',
+                left: 'A | B',
+              },
+              messageId: 'unexpectedUnionTypesGroupOrder',
+            },
+          ],
+          options: [
+            {
+              ...options,
+              groups: [
+                'named',
+                'keyword',
+                'operator',
+                'literal',
+                'function',
+                'import',
+                'conditional',
+                'object',
+                'tuple',
+                'intersection',
+                'union',
+                'nullish',
+              ],
+            },
+          ],
+          output: dedent`
+            type Type =
+              | A
+              | any
+              | bigint
+              | boolean
+              | keyof A
+              | typeof B
+              | 1
+              | 'aaa'
+              | (import('path'))
+              | (A extends B ? C : D)
+              | { name: 'a' }
+              | [A, B, C]
+              | (A & B)
+              | (A | B)
+              | null
+          `,
+          code: dedent`
+            type Type =
+              | any
+              | { name: 'a' }
+              | boolean
+              | A
+              | keyof A
+              | bigint
+              | typeof B
+              | 'aaa'
+              | (import('path'))
+              | null
+              | 1
+              | (A extends B ? C : D)
+              | [A, B, C]
+              | (A | B)
+              | (A & B)
+          `,
+        },
+      ],
       valid: [
         {
           code: dedent`
@@ -1222,112 +1328,6 @@ describe(ruleName, () => {
                 'union',
                 'nullish',
               ],
-            },
-          ],
-        },
-      ],
-      invalid: [
-        {
-          code: dedent`
-            type Type =
-              | any
-              | { name: 'a' }
-              | boolean
-              | A
-              | keyof A
-              | bigint
-              | typeof B
-              | 'aaa'
-              | (import('path'))
-              | null
-              | 1
-              | (A extends B ? C : D)
-              | [A, B, C]
-              | (A | B)
-              | (A & B)
-          `,
-          output: dedent`
-            type Type =
-              | A
-              | any
-              | bigint
-              | boolean
-              | keyof A
-              | typeof B
-              | 1
-              | 'aaa'
-              | (import('path'))
-              | (A extends B ? C : D)
-              | { name: 'a' }
-              | [A, B, C]
-              | (A & B)
-              | (A | B)
-              | null
-          `,
-          options: [
-            {
-              ...options,
-              groups: [
-                'named',
-                'keyword',
-                'operator',
-                'literal',
-                'function',
-                'import',
-                'conditional',
-                'object',
-                'tuple',
-                'intersection',
-                'union',
-                'nullish',
-              ],
-            },
-          ],
-          errors: [
-            {
-              messageId: 'unexpectedUnionTypesGroupOrder',
-              data: {
-                left: "{ name: 'a' }",
-                leftGroup: 'object',
-                right: 'boolean',
-                rightGroup: 'keyword',
-              },
-            },
-            {
-              messageId: 'unexpectedUnionTypesGroupOrder',
-              data: {
-                left: 'boolean',
-                leftGroup: 'keyword',
-                right: 'A',
-                rightGroup: 'named',
-              },
-            },
-            {
-              messageId: 'unexpectedUnionTypesGroupOrder',
-              data: {
-                left: 'keyof A',
-                leftGroup: 'operator',
-                right: 'bigint',
-                rightGroup: 'keyword',
-              },
-            },
-            {
-              messageId: 'unexpectedUnionTypesGroupOrder',
-              data: {
-                left: 'null',
-                leftGroup: 'nullish',
-                right: '1',
-                rightGroup: 'literal',
-              },
-            },
-            {
-              messageId: 'unexpectedUnionTypesGroupOrder',
-              data: {
-                left: 'A | B',
-                leftGroup: 'union',
-                right: 'A & B',
-                rightGroup: 'intersection',
-              },
             },
           ],
         },
@@ -1344,6 +1344,26 @@ describe(ruleName, () => {
     } as const
 
     ruleTester.run(`${ruleName}(${type}: sorts union types`, rule, {
+      invalid: [
+        {
+          errors: [
+            {
+              data: {
+                right: "'bbb'",
+                left: "'cc'",
+              },
+              messageId: 'unexpectedUnionTypesOrder',
+            },
+          ],
+          output: dedent`
+            type Type = 'aaaa' | 'bbb' | 'cc' | 'd'
+          `,
+          code: dedent`
+            type Type = 'aaaa' | 'cc' | 'bbb' | 'd'
+          `,
+          options: [options],
+        },
+      ],
       valid: [
         {
           code: dedent`
@@ -1352,45 +1372,34 @@ describe(ruleName, () => {
           options: [options],
         },
       ],
-      invalid: [
-        {
-          code: dedent`
-            type Type = 'aaaa' | 'cc' | 'bbb' | 'd'
-          `,
-          output: dedent`
-            type Type = 'aaaa' | 'bbb' | 'cc' | 'd'
-          `,
-          options: [options],
-          errors: [
-            {
-              messageId: 'unexpectedUnionTypesOrder',
-              data: {
-                left: "'cc'",
-                right: "'bbb'",
-              },
-            },
-          ],
-        },
-      ],
     })
 
     ruleTester.run(`${ruleName}: sorts keyword union types`, rule, {
-      valid: [],
       invalid: [
         {
-          code: dedent`
-            type Value =
-              | boolean
-              | number
-              | string
-              | any
-              | unknown
-              | null
-              | undefined
-              | never
-              | void
-              | bigint
-          `,
+          errors: [
+            {
+              data: {
+                right: 'unknown',
+                left: 'any',
+              },
+              messageId: 'unexpectedUnionTypesOrder',
+            },
+            {
+              data: {
+                right: 'undefined',
+                left: 'null',
+              },
+              messageId: 'unexpectedUnionTypesOrder',
+            },
+            {
+              data: {
+                right: 'bigint',
+                left: 'void',
+              },
+              messageId: 'unexpectedUnionTypesOrder',
+            },
+          ],
           output: dedent`
             type Value =
               | undefined
@@ -1404,123 +1413,112 @@ describe(ruleName, () => {
               | void
               | any
           `,
+          code: dedent`
+            type Value =
+              | boolean
+              | number
+              | string
+              | any
+              | unknown
+              | null
+              | undefined
+              | never
+              | void
+              | bigint
+          `,
           options: [options],
-          errors: [
-            {
-              messageId: 'unexpectedUnionTypesOrder',
-              data: {
-                left: 'any',
-                right: 'unknown',
-              },
-            },
-            {
-              messageId: 'unexpectedUnionTypesOrder',
-              data: {
-                left: 'null',
-                right: 'undefined',
-              },
-            },
-            {
-              messageId: 'unexpectedUnionTypesOrder',
-              data: {
-                left: 'void',
-                right: 'bigint',
-              },
-            },
-          ],
         },
       ],
+      valid: [],
     })
 
     ruleTester.run(`${ruleName}: works with generics`, rule, {
-      valid: [],
       invalid: [
         {
-          code: "Omit<T, 'b' | 'aa'>",
-          output: "Omit<T, 'aa' | 'b'>",
-          options: [options],
           errors: [
             {
-              messageId: 'unexpectedUnionTypesOrder',
               data: {
-                left: "'b'",
                 right: "'aa'",
+                left: "'b'",
               },
+              messageId: 'unexpectedUnionTypesOrder',
             },
           ],
+          output: "Omit<T, 'aa' | 'b'>",
+          code: "Omit<T, 'b' | 'aa'>",
+          options: [options],
         },
       ],
+      valid: [],
     })
 
     ruleTester.run(`${ruleName}: works with type references`, rule, {
-      valid: [],
       invalid: [
         {
-          code: 'type Type = c | bb | aaa',
-          output: 'type Type = aaa | bb | c',
-          options: [options],
           errors: [
             {
-              messageId: 'unexpectedUnionTypesOrder',
               data: {
-                left: 'c',
                 right: 'bb',
+                left: 'c',
               },
+              messageId: 'unexpectedUnionTypesOrder',
             },
             {
-              messageId: 'unexpectedUnionTypesOrder',
               data: {
-                left: 'bb',
                 right: 'aaa',
+                left: 'bb',
               },
+              messageId: 'unexpectedUnionTypesOrder',
             },
           ],
+          output: 'type Type = aaa | bb | c',
+          code: 'type Type = c | bb | aaa',
+          options: [options],
         },
       ],
+      valid: [],
     })
 
     ruleTester.run(`${ruleName}: works with type references`, rule, {
-      valid: [],
       invalid: [
         {
-          code: dedent`
-            type Type =
-              | { name: 'b', status: 'success' }
-              | { name: 'aa', status: 'success' }
-          `,
+          errors: [
+            {
+              data: {
+                right: "{ name: 'aa', status: 'success' }",
+                left: "{ name: 'b', status: 'success' }",
+              },
+              messageId: 'unexpectedUnionTypesOrder',
+            },
+          ],
           output: dedent`
             type Type =
               | { name: 'aa', status: 'success' }
               | { name: 'b', status: 'success' }
           `,
+          code: dedent`
+            type Type =
+              | { name: 'b', status: 'success' }
+              | { name: 'aa', status: 'success' }
+          `,
           options: [options],
-          errors: [
-            {
-              messageId: 'unexpectedUnionTypesOrder',
-              data: {
-                left: "{ name: 'b', status: 'success' }",
-                right: "{ name: 'aa', status: 'success' }",
-              },
-            },
-          ],
         },
       ],
+      valid: [],
     })
 
     ruleTester.run(`${ruleName}: sorts unions with parentheses`, rule, {
-      valid: [],
       invalid: [
         {
-          code: dedent`
-            type Type = {
-              x:
-                | A
-                | ((
-                    value: () => void,
-                  ) => D | E)
-                | B[]
-            }
-          `,
+          errors: [
+            {
+              data: {
+                right: '( value: () => void, ) => D | E',
+                left: 'A',
+              },
+              messageId: 'unexpectedUnionTypesOrder',
+            },
+          ],
           output: dedent`
             type Type = {
               x:
@@ -1531,45 +1529,153 @@ describe(ruleName, () => {
                 | A
             }
           `,
+          code: dedent`
+            type Type = {
+              x:
+                | A
+                | ((
+                    value: () => void,
+                  ) => D | E)
+                | B[]
+            }
+          `,
           options: [options],
-          errors: [
-            {
-              messageId: 'unexpectedUnionTypesOrder',
-              data: {
-                left: 'A',
-                right: '( value: () => void, ) => D | E',
-              },
-            },
-          ],
         },
       ],
+      valid: [],
     })
 
     ruleTester.run(`${ruleName}: sorts unions with comment at the end`, rule, {
-      valid: [],
       invalid: [
         {
-          code: dedent`
-            type Step = 1 | 2 | 4 | 3 | 5 | 100; // Comment
-          `,
+          errors: [
+            {
+              data: {
+                right: '100',
+                left: '5',
+              },
+              messageId: 'unexpectedUnionTypesOrder',
+            },
+          ],
           output: dedent`
             type Step = 100 | 1 | 2 | 4 | 3 | 5; // Comment
           `,
+          code: dedent`
+            type Step = 1 | 2 | 4 | 3 | 5 | 100; // Comment
+          `,
           options: [options],
-          errors: [
-            {
-              messageId: 'unexpectedUnionTypesOrder',
-              data: {
-                left: '5',
-                right: '100',
-              },
-            },
-          ],
         },
       ],
+      valid: [],
     })
 
     ruleTester.run(`${ruleName}: sorts intersections using groups`, rule, {
+      invalid: [
+        {
+          errors: [
+            {
+              data: {
+                left: "{ name: 'a' }",
+                rightGroup: 'keyword',
+                leftGroup: 'object',
+                right: 'boolean',
+              },
+              messageId: 'unexpectedUnionTypesGroupOrder',
+            },
+            {
+              data: {
+                leftGroup: 'keyword',
+                rightGroup: 'named',
+                left: 'boolean',
+                right: 'A',
+              },
+              messageId: 'unexpectedUnionTypesGroupOrder',
+            },
+            {
+              data: {
+                leftGroup: 'operator',
+                rightGroup: 'keyword',
+                left: 'keyof A',
+                right: 'bigint',
+              },
+              messageId: 'unexpectedUnionTypesGroupOrder',
+            },
+            {
+              data: {
+                rightGroup: 'literal',
+                leftGroup: 'nullish',
+                left: 'null',
+                right: '1',
+              },
+              messageId: 'unexpectedUnionTypesGroupOrder',
+            },
+            {
+              data: {
+                rightGroup: 'intersection',
+                leftGroup: 'union',
+                right: 'A & B',
+                left: 'A | B',
+              },
+              messageId: 'unexpectedUnionTypesGroupOrder',
+            },
+          ],
+          options: [
+            {
+              ...options,
+              groups: [
+                'named',
+                'keyword',
+                'operator',
+                'literal',
+                'function',
+                'import',
+                'conditional',
+                'object',
+                'tuple',
+                'intersection',
+                'union',
+                'nullish',
+              ],
+            },
+          ],
+          output: dedent`
+            type Type =
+              | A
+              | boolean
+              | bigint
+              | any
+              | typeof B
+              | keyof A
+              | 'aaa'
+              | 1
+              | (import('path'))
+              | (A extends B ? C : D)
+              | { name: 'a' }
+              | [A, B, C]
+              | (A & B)
+              | (A | B)
+              | null
+          `,
+          code: dedent`
+            type Type =
+              | any
+              | { name: 'a' }
+              | boolean
+              | A
+              | keyof A
+              | bigint
+              | typeof B
+              | 'aaa'
+              | (import('path'))
+              | null
+              | 1
+              | (A extends B ? C : D)
+              | [A, B, C]
+              | (A | B)
+              | (A & B)
+          `,
+        },
+      ],
       valid: [
         {
           code: dedent`
@@ -1615,112 +1721,6 @@ describe(ruleName, () => {
           ],
         },
       ],
-      invalid: [
-        {
-          code: dedent`
-            type Type =
-              | any
-              | { name: 'a' }
-              | boolean
-              | A
-              | keyof A
-              | bigint
-              | typeof B
-              | 'aaa'
-              | (import('path'))
-              | null
-              | 1
-              | (A extends B ? C : D)
-              | [A, B, C]
-              | (A | B)
-              | (A & B)
-          `,
-          output: dedent`
-            type Type =
-              | A
-              | boolean
-              | bigint
-              | any
-              | typeof B
-              | keyof A
-              | 'aaa'
-              | 1
-              | (import('path'))
-              | (A extends B ? C : D)
-              | { name: 'a' }
-              | [A, B, C]
-              | (A & B)
-              | (A | B)
-              | null
-          `,
-          options: [
-            {
-              ...options,
-              groups: [
-                'named',
-                'keyword',
-                'operator',
-                'literal',
-                'function',
-                'import',
-                'conditional',
-                'object',
-                'tuple',
-                'intersection',
-                'union',
-                'nullish',
-              ],
-            },
-          ],
-          errors: [
-            {
-              messageId: 'unexpectedUnionTypesGroupOrder',
-              data: {
-                left: "{ name: 'a' }",
-                leftGroup: 'object',
-                right: 'boolean',
-                rightGroup: 'keyword',
-              },
-            },
-            {
-              messageId: 'unexpectedUnionTypesGroupOrder',
-              data: {
-                left: 'boolean',
-                leftGroup: 'keyword',
-                right: 'A',
-                rightGroup: 'named',
-              },
-            },
-            {
-              messageId: 'unexpectedUnionTypesGroupOrder',
-              data: {
-                left: 'keyof A',
-                leftGroup: 'operator',
-                right: 'bigint',
-                rightGroup: 'keyword',
-              },
-            },
-            {
-              messageId: 'unexpectedUnionTypesGroupOrder',
-              data: {
-                left: 'null',
-                leftGroup: 'nullish',
-                right: '1',
-                rightGroup: 'literal',
-              },
-            },
-            {
-              messageId: 'unexpectedUnionTypesGroupOrder',
-              data: {
-                left: 'A | B',
-                leftGroup: 'union',
-                right: 'A & B',
-                rightGroup: 'intersection',
-              },
-            },
-          ],
-        },
-      ],
     })
   })
 
@@ -1728,9 +1728,6 @@ describe(ruleName, () => {
     ruleTester.run(`${ruleName}: allows predefined groups`, rule, {
       valid: [
         {
-          code: dedent`
-            type Type = 'aaaa' | 'bbb' | 'cc' | 'd'
-          `,
           options: [
             {
               groups: [
@@ -1750,6 +1747,9 @@ describe(ruleName, () => {
               ],
             },
           ],
+          code: dedent`
+            type Type = 'aaaa' | 'bbb' | 'cc' | 'd'
+          `,
         },
       ],
       invalid: [],
@@ -1761,6 +1761,25 @@ describe(ruleName, () => {
       `${ruleName}: sets alphabetical asc sorting as default`,
       rule,
       {
+        invalid: [
+          {
+            errors: [
+              {
+                data: {
+                  right: 'NumberBase.BASE_10',
+                  left: 'NumberBase.BASE_2',
+                },
+                messageId: 'unexpectedUnionTypesOrder',
+              },
+            ],
+            output: dedent`
+              type SupportedNumberBase = NumberBase.BASE_10 | NumberBase.BASE_16 | NumberBase.BASE_2
+            `,
+            code: dedent`
+              type SupportedNumberBase = NumberBase.BASE_2 | NumberBase.BASE_10 | NumberBase.BASE_16
+            `,
+          },
+        ],
         valid: [
           dedent`
             type SupportedNumberBase = NumberBase.BASE_10 | NumberBase.BASE_16 | NumberBase.BASE_2
@@ -1770,25 +1789,6 @@ describe(ruleName, () => {
               type SupportedNumberBase = NumberBase.BASE_10 | NumberBase.BASE_16 | NumberBase.BASE_2
             `,
             options: [{}],
-          },
-        ],
-        invalid: [
-          {
-            code: dedent`
-              type SupportedNumberBase = NumberBase.BASE_2 | NumberBase.BASE_10 | NumberBase.BASE_16
-            `,
-            output: dedent`
-              type SupportedNumberBase = NumberBase.BASE_10 | NumberBase.BASE_16 | NumberBase.BASE_2
-            `,
-            errors: [
-              {
-                messageId: 'unexpectedUnionTypesOrder',
-                data: {
-                  left: 'NumberBase.BASE_2',
-                  right: 'NumberBase.BASE_10',
-                },
-              },
-            ],
           },
         ],
       },
@@ -1810,16 +1810,17 @@ describe(ruleName, () => {
 
     let eslintDisableRuleTesterName = `${ruleName}: supports 'eslint-disable' for individual nodes`
     ruleTester.run(eslintDisableRuleTesterName, rule, {
-      valid: [],
       invalid: [
         {
-          code: dedent`
-          type T =
-            C
-            | B
-            // eslint-disable-next-line
-            | A
-        `,
+          errors: [
+            {
+              data: {
+                right: 'B',
+                left: 'C',
+              },
+              messageId: 'unexpectedUnionTypesOrder',
+            },
+          ],
           output: dedent`
           type T =
             B
@@ -1827,26 +1828,32 @@ describe(ruleName, () => {
             // eslint-disable-next-line
             | A
           `,
+          code: dedent`
+          type T =
+            C
+            | B
+            // eslint-disable-next-line
+            | A
+        `,
           options: [{}],
-          errors: [
-            {
-              messageId: 'unexpectedUnionTypesOrder',
-              data: {
-                left: 'C',
-                right: 'B',
-              },
-            },
-          ],
         },
         {
-          code: dedent`
-            type T =
-              D
-              | C
-              // eslint-disable-next-line
-              | A
-              | B
-          `,
+          errors: [
+            {
+              data: {
+                right: 'C',
+                left: 'D',
+              },
+              messageId: 'unexpectedUnionTypesOrder',
+            },
+            {
+              data: {
+                right: 'B',
+                left: 'A',
+              },
+              messageId: 'unexpectedUnionTypesOrder',
+            },
+          ],
           output: dedent`
             type T =
               B
@@ -1855,60 +1862,54 @@ describe(ruleName, () => {
               | A
               | D
           `,
+          code: dedent`
+            type T =
+              D
+              | C
+              // eslint-disable-next-line
+              | A
+              | B
+          `,
           options: [
             {
               partitionByComment: true,
             },
           ],
-          errors: [
-            {
-              messageId: 'unexpectedUnionTypesOrder',
-              data: {
-                left: 'D',
-                right: 'C',
-              },
-            },
-            {
-              messageId: 'unexpectedUnionTypesOrder',
-              data: {
-                left: 'A',
-                right: 'B',
-              },
-            },
-          ],
         },
         {
-          code: dedent`
-          type T =
-            C
-            | B
-            | A // eslint-disable-line
-        `,
+          errors: [
+            {
+              data: {
+                right: 'B',
+                left: 'C',
+              },
+              messageId: 'unexpectedUnionTypesOrder',
+            },
+          ],
           output: dedent`
           type T =
             B
             | C
             | A // eslint-disable-line
           `,
-          options: [{}],
-          errors: [
-            {
-              messageId: 'unexpectedUnionTypesOrder',
-              data: {
-                left: 'C',
-                right: 'B',
-              },
-            },
-          ],
-        },
-        {
           code: dedent`
           type T =
             C
             | B
-            /* eslint-disable-next-line */
-            | A
+            | A // eslint-disable-line
         `,
+          options: [{}],
+        },
+        {
+          errors: [
+            {
+              data: {
+                right: 'B',
+                left: 'C',
+              },
+              messageId: 'unexpectedUnionTypesOrder',
+            },
+          ],
           output: dedent`
           type T =
             B
@@ -1916,53 +1917,40 @@ describe(ruleName, () => {
             /* eslint-disable-next-line */
             | A
           `,
-          options: [{}],
-          errors: [
-            {
-              messageId: 'unexpectedUnionTypesOrder',
-              data: {
-                left: 'C',
-                right: 'B',
-              },
-            },
-          ],
-        },
-        {
           code: dedent`
           type T =
             C
             | B
-            | A /* eslint-disable-line */
+            /* eslint-disable-next-line */
+            | A
         `,
+          options: [{}],
+        },
+        {
+          errors: [
+            {
+              data: {
+                right: 'B',
+                left: 'C',
+              },
+              messageId: 'unexpectedUnionTypesOrder',
+            },
+          ],
           output: dedent`
           type T =
             B
             | C
             | A /* eslint-disable-line */
           `,
+          code: dedent`
+          type T =
+            C
+            | B
+            | A /* eslint-disable-line */
+        `,
           options: [{}],
-          errors: [
-            {
-              messageId: 'unexpectedUnionTypesOrder',
-              data: {
-                left: 'C',
-                right: 'B',
-              },
-            },
-          ],
         },
         {
-          code: dedent`
-            type Type =
-              D
-              | E
-              /* eslint-disable */
-              | C
-              | B
-              // Shouldn't move
-              /* eslint-enable */
-              | A
-          `,
           output: dedent`
             type Type =
               A
@@ -1974,129 +1962,129 @@ describe(ruleName, () => {
               /* eslint-enable */
               | E
           `,
-          options: [{}],
-          errors: [
-            {
-              messageId: 'unexpectedUnionTypesOrder',
-              data: {
-                left: 'B',
-                right: 'A',
-              },
-            },
-          ],
-        },
-        {
-          code: dedent`
-          type T =
-            C
-            | B
-            // eslint-disable-next-line @rule-tester/${eslintDisableRuleTesterName}
-            | A
-        `,
-          output: dedent`
-          type T =
-            B
-            | C
-            // eslint-disable-next-line @rule-tester/${eslintDisableRuleTesterName}
-            | A
-          `,
-          options: [{}],
-          errors: [
-            {
-              messageId: 'unexpectedUnionTypesOrder',
-              data: {
-                left: 'C',
-                right: 'B',
-              },
-            },
-          ],
-        },
-        {
-          code: dedent`
-          type T =
-            C
-            | B
-            | A // eslint-disable-line @rule-tester/${eslintDisableRuleTesterName}
-        `,
-          output: dedent`
-          type T =
-            B
-            | C
-            | A // eslint-disable-line @rule-tester/${eslintDisableRuleTesterName}
-          `,
-          options: [{}],
-          errors: [
-            {
-              messageId: 'unexpectedUnionTypesOrder',
-              data: {
-                left: 'C',
-                right: 'B',
-              },
-            },
-          ],
-        },
-        {
-          code: dedent`
-          type T =
-            C
-            | B
-            /* eslint-disable-next-line @rule-tester/${eslintDisableRuleTesterName} */
-            | A
-        `,
-          output: dedent`
-          type T =
-            B
-            | C
-            /* eslint-disable-next-line @rule-tester/${eslintDisableRuleTesterName} */
-            | A
-          `,
-          options: [{}],
-          errors: [
-            {
-              messageId: 'unexpectedUnionTypesOrder',
-              data: {
-                left: 'C',
-                right: 'B',
-              },
-            },
-          ],
-        },
-        {
-          code: dedent`
-          type T =
-            C
-            | B
-            | A /* eslint-disable-line @rule-tester/${eslintDisableRuleTesterName} */
-        `,
-          output: dedent`
-          type T =
-            B
-            | C
-            | A /* eslint-disable-line @rule-tester/${eslintDisableRuleTesterName} */
-          `,
-          options: [{}],
-          errors: [
-            {
-              messageId: 'unexpectedUnionTypesOrder',
-              data: {
-                left: 'C',
-                right: 'B',
-              },
-            },
-          ],
-        },
-        {
           code: dedent`
             type Type =
               D
               | E
-              /* eslint-disable @rule-tester/${eslintDisableRuleTesterName} */
+              /* eslint-disable */
               | C
               | B
               // Shouldn't move
               /* eslint-enable */
               | A
           `,
+          errors: [
+            {
+              data: {
+                right: 'A',
+                left: 'B',
+              },
+              messageId: 'unexpectedUnionTypesOrder',
+            },
+          ],
+          options: [{}],
+        },
+        {
+          errors: [
+            {
+              data: {
+                right: 'B',
+                left: 'C',
+              },
+              messageId: 'unexpectedUnionTypesOrder',
+            },
+          ],
+          output: dedent`
+          type T =
+            B
+            | C
+            // eslint-disable-next-line @rule-tester/${eslintDisableRuleTesterName}
+            | A
+          `,
+          code: dedent`
+          type T =
+            C
+            | B
+            // eslint-disable-next-line @rule-tester/${eslintDisableRuleTesterName}
+            | A
+        `,
+          options: [{}],
+        },
+        {
+          errors: [
+            {
+              data: {
+                right: 'B',
+                left: 'C',
+              },
+              messageId: 'unexpectedUnionTypesOrder',
+            },
+          ],
+          output: dedent`
+          type T =
+            B
+            | C
+            | A // eslint-disable-line @rule-tester/${eslintDisableRuleTesterName}
+          `,
+          code: dedent`
+          type T =
+            C
+            | B
+            | A // eslint-disable-line @rule-tester/${eslintDisableRuleTesterName}
+        `,
+          options: [{}],
+        },
+        {
+          errors: [
+            {
+              data: {
+                right: 'B',
+                left: 'C',
+              },
+              messageId: 'unexpectedUnionTypesOrder',
+            },
+          ],
+          output: dedent`
+          type T =
+            B
+            | C
+            /* eslint-disable-next-line @rule-tester/${eslintDisableRuleTesterName} */
+            | A
+          `,
+          code: dedent`
+          type T =
+            C
+            | B
+            /* eslint-disable-next-line @rule-tester/${eslintDisableRuleTesterName} */
+            | A
+        `,
+          options: [{}],
+        },
+        {
+          errors: [
+            {
+              data: {
+                right: 'B',
+                left: 'C',
+              },
+              messageId: 'unexpectedUnionTypesOrder',
+            },
+          ],
+          output: dedent`
+          type T =
+            B
+            | C
+            | A /* eslint-disable-line @rule-tester/${eslintDisableRuleTesterName} */
+          `,
+          code: dedent`
+          type T =
+            C
+            | B
+            | A /* eslint-disable-line @rule-tester/${eslintDisableRuleTesterName} */
+        `,
+          options: [{}],
+        },
+        {
           output: dedent`
             type Type =
               A
@@ -2108,18 +2096,30 @@ describe(ruleName, () => {
               /* eslint-enable */
               | E
           `,
-          options: [{}],
+          code: dedent`
+            type Type =
+              D
+              | E
+              /* eslint-disable @rule-tester/${eslintDisableRuleTesterName} */
+              | C
+              | B
+              // Shouldn't move
+              /* eslint-enable */
+              | A
+          `,
           errors: [
             {
-              messageId: 'unexpectedUnionTypesOrder',
               data: {
-                left: 'B',
                 right: 'A',
+                left: 'B',
               },
+              messageId: 'unexpectedUnionTypesOrder',
             },
           ],
+          options: [{}],
         },
       ],
+      valid: [],
     })
   })
 })

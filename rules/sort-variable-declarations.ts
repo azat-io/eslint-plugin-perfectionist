@@ -48,52 +48,16 @@ type MESSAGE_ID =
   | 'unexpectedVariableDeclarationsOrder'
 
 let defaultOptions: Required<Options[0]> = {
-  type: 'alphabetical',
-  ignoreCase: true,
   specialCharacters: 'keep',
   partitionByNewLine: false,
   partitionByComment: false,
-  order: 'asc',
+  type: 'alphabetical',
+  ignoreCase: true,
   locales: 'en-US',
+  order: 'asc',
 }
 
 export default createEslintRule<Options, MESSAGE_ID>({
-  name: 'sort-variable-declarations',
-  meta: {
-    type: 'suggestion',
-    docs: {
-      description: 'Enforce sorted variable declarations.',
-      url: 'https://perfectionist.dev/rules/sort-variable-declarations',
-      recommended: true,
-    },
-    fixable: 'code',
-    schema: [
-      {
-        type: 'object',
-        properties: {
-          type: typeJsonSchema,
-          order: orderJsonSchema,
-          locales: localesJsonSchema,
-          ignoreCase: ignoreCaseJsonSchema,
-          specialCharacters: specialCharactersJsonSchema,
-          partitionByComment: {
-            ...partitionByCommentJsonSchema,
-            description:
-              'Allows you to use comments to separate the variable declarations into logical groups.',
-          },
-          partitionByNewLine: partitionByNewLineJsonSchema,
-        },
-        additionalProperties: false,
-      },
-    ],
-    messages: {
-      unexpectedVariableDeclarationsOrder:
-        'Expected "{{right}}" to come before "{{left}}".',
-      unexpectedVariableDeclarationsDependencyOrder:
-        'Expected dependency "{{right}}" to come before "{{nodeDependentOnRight}}".',
-    },
-  },
-  defaultOptions: [defaultOptions],
   create: context => ({
     VariableDeclaration: node => {
       if (!isSortable(node.declarations)) {
@@ -104,8 +68,8 @@ export default createEslintRule<Options, MESSAGE_ID>({
       let options = complete(context.options.at(0), settings, defaultOptions)
       let sourceCode = getSourceCode(context)
       let eslintDisabledLines = getEslintDisabledLines({
-        sourceCode,
         ruleName: context.id,
+        sourceCode,
       })
 
       let extractDependencies = (init: TSESTree.Expression): string[] => {
@@ -220,13 +184,13 @@ export default createEslintRule<Options, MESSAGE_ID>({
 
           let lastSortingNode = accumulator.at(-1)?.at(-1)
           let sortingNode: SortingNodeWithDependencies = {
-            size: rangeToDiff(declaration, sourceCode),
-            node: declaration,
-            dependencies,
             isEslintDisabled: isNodeEslintDisabled(
               declaration,
               eslintDisabledLines,
             ),
+            size: rangeToDiff(declaration, sourceCode),
+            node: declaration,
+            dependencies,
             name,
           }
           if (
@@ -282,25 +246,61 @@ export default createEslintRule<Options, MESSAGE_ID>({
         let firstUnorderedNodeDependentOnRight =
           getFirstUnorderedNodeDependentOn(right, nodes)
         context.report({
-          messageId: firstUnorderedNodeDependentOnRight
-            ? 'unexpectedVariableDeclarationsDependencyOrder'
-            : 'unexpectedVariableDeclarationsOrder',
-          data: {
-            left: toSingleLine(left.name),
-            right: toSingleLine(right.name),
-            nodeDependentOnRight: firstUnorderedNodeDependentOnRight?.name,
-          },
-          node: right.node,
           fix: fixer =>
             makeFixes({
-              fixer,
-              nodes,
               sortedNodes: sortedNodesExcludingEslintDisabled,
               sourceCode,
               options,
+              fixer,
+              nodes,
             }),
+          data: {
+            nodeDependentOnRight: firstUnorderedNodeDependentOnRight?.name,
+            right: toSingleLine(right.name),
+            left: toSingleLine(left.name),
+          },
+          messageId: firstUnorderedNodeDependentOnRight
+            ? 'unexpectedVariableDeclarationsDependencyOrder'
+            : 'unexpectedVariableDeclarationsOrder',
+          node: right.node,
         })
       })
     },
   }),
+  meta: {
+    schema: [
+      {
+        properties: {
+          partitionByComment: {
+            ...partitionByCommentJsonSchema,
+            description:
+              'Allows you to use comments to separate the variable declarations into logical groups.',
+          },
+          partitionByNewLine: partitionByNewLineJsonSchema,
+          specialCharacters: specialCharactersJsonSchema,
+          ignoreCase: ignoreCaseJsonSchema,
+          locales: localesJsonSchema,
+          order: orderJsonSchema,
+          type: typeJsonSchema,
+        },
+        additionalProperties: false,
+        type: 'object',
+      },
+    ],
+    messages: {
+      unexpectedVariableDeclarationsDependencyOrder:
+        'Expected dependency "{{right}}" to come before "{{nodeDependentOnRight}}".',
+      unexpectedVariableDeclarationsOrder:
+        'Expected "{{right}}" to come before "{{left}}".',
+    },
+    docs: {
+      url: 'https://perfectionist.dev/rules/sort-variable-declarations',
+      description: 'Enforce sorted variable declarations.',
+      recommended: true,
+    },
+    type: 'suggestion',
+    fixable: 'code',
+  },
+  name: 'sort-variable-declarations',
+  defaultOptions: [defaultOptions],
 })

@@ -18,11 +18,11 @@ interface MakeNewlinesFixesParameters {
 }
 
 export let makeNewlinesFixes = ({
-  fixer,
-  nodes,
   sortedNodes,
   sourceCode,
   options,
+  fixer,
+  nodes,
 }: MakeNewlinesFixesParameters): TSESLint.RuleFix[] => {
   let fixes: TSESLint.RuleFix[] = []
 

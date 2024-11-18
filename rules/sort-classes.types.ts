@@ -233,14 +233,14 @@ export let allModifiers: Modifier[] = [
 
 export let customGroupSortJsonSchema: Record<string, JSONSchema4> = {
   type: {
+    enum: ['alphabetical', 'line-length', 'natural', 'unsorted'],
     description: 'Custom group sort type.',
     type: 'string',
-    enum: ['alphabetical', 'line-length', 'natural', 'unsorted'],
   },
   order: {
     description: 'Custom group sort order.',
-    type: 'string',
     enum: ['desc', 'asc'],
+    type: 'string',
   },
 }
 
@@ -256,22 +256,13 @@ export let customGroupNameJsonSchema: Record<string, JSONSchema4> = {
  * that users do not enter invalid modifiers for a given selector
  */
 export let singleCustomGroupJsonSchema: Record<string, JSONSchema4> = {
-  selector: {
-    description: 'Selector filter.',
-    type: 'string',
-    enum: allSelectors,
-  },
   modifiers: {
+    items: {
+      enum: allModifiers,
+      type: 'string',
+    },
     description: 'Modifier filters.',
     type: 'array',
-    items: {
-      type: 'string',
-      enum: allModifiers,
-    },
-  },
-  elementNamePattern: {
-    description: 'Element name pattern filter.',
-    type: 'string',
   },
   elementValuePattern: {
     description: 'Element value pattern filter for properties.',
@@ -279,6 +270,15 @@ export let singleCustomGroupJsonSchema: Record<string, JSONSchema4> = {
   },
   decoratorNamePattern: {
     description: 'Decorator name pattern filter.',
+    type: 'string',
+  },
+  selector: {
+    description: 'Selector filter.',
+    enum: allSelectors,
+    type: 'string',
+  },
+  elementNamePattern: {
+    description: 'Element name pattern filter.',
     type: 'string',
   },
 }

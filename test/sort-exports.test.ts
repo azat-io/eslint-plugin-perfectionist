@@ -26,6 +26,39 @@ describe(ruleName, () => {
     } as const
 
     ruleTester.run(`${ruleName}(${type}): sorts exports`, rule, {
+      invalid: [
+        {
+          errors: [
+            {
+              data: {
+                right: 'a',
+                left: 'b',
+              },
+              messageId: 'unexpectedExportsOrder',
+            },
+            {
+              data: {
+                right: 'c',
+                left: 'd',
+              },
+              messageId: 'unexpectedExportsOrder',
+            },
+          ],
+          output: dedent`
+            export { a1 } from 'a'
+            export { b1, b2 } from 'b'
+            export { c1, c2, c3 } from 'c'
+            export { d1, d2 } from 'd'
+          `,
+          code: dedent`
+            export { b1, b2 } from 'b'
+            export { a1 } from 'a'
+            export { d1, d2 } from 'd'
+            export { c1, c2, c3 } from 'c'
+          `,
+          options: [options],
+        },
+      ],
       valid: [
         {
           code: dedent`
@@ -35,44 +68,46 @@ describe(ruleName, () => {
             export { d1, d2 } from 'd'
           `,
           options: [options],
-        },
-      ],
-      invalid: [
-        {
-          code: dedent`
-            export { b1, b2 } from 'b'
-            export { a1 } from 'a'
-            export { d1, d2 } from 'd'
-            export { c1, c2, c3 } from 'c'
-          `,
-          output: dedent`
-            export { a1 } from 'a'
-            export { b1, b2 } from 'b'
-            export { c1, c2, c3 } from 'c'
-            export { d1, d2 } from 'd'
-          `,
-          options: [options],
-          errors: [
-            {
-              messageId: 'unexpectedExportsOrder',
-              data: {
-                left: 'b',
-                right: 'a',
-              },
-            },
-            {
-              messageId: 'unexpectedExportsOrder',
-              data: {
-                left: 'd',
-                right: 'c',
-              },
-            },
-          ],
         },
       ],
     })
 
     ruleTester.run(`${ruleName}(${type}): sorts all-exports`, rule, {
+      invalid: [
+        {
+          errors: [
+            {
+              data: {
+                right: './a',
+                left: './b',
+              },
+              messageId: 'unexpectedExportsOrder',
+            },
+            {
+              data: {
+                right: './d',
+                left: 'e',
+              },
+              messageId: 'unexpectedExportsOrder',
+            },
+          ],
+          output: dedent`
+            export { a1 } from './a'
+            export * as b from './b'
+            export { c1, c2 } from './c'
+            export { d } from './d'
+            export * from 'e'
+          `,
+          code: dedent`
+            export * as b from './b'
+            export { a1 } from './a'
+            export { c1, c2 } from './c'
+            export * from 'e'
+            export { d } from './d'
+          `,
+          options: [options],
+        },
+      ],
       valid: [
         {
           code: dedent`
@@ -83,46 +118,35 @@ describe(ruleName, () => {
             export * from 'e'
           `,
           options: [options],
-        },
-      ],
-      invalid: [
-        {
-          code: dedent`
-            export * as b from './b'
-            export { a1 } from './a'
-            export { c1, c2 } from './c'
-            export * from 'e'
-            export { d } from './d'
-          `,
-          output: dedent`
-            export { a1 } from './a'
-            export * as b from './b'
-            export { c1, c2 } from './c'
-            export { d } from './d'
-            export * from 'e'
-          `,
-          options: [options],
-          errors: [
-            {
-              messageId: 'unexpectedExportsOrder',
-              data: {
-                left: './b',
-                right: './a',
-              },
-            },
-            {
-              messageId: 'unexpectedExportsOrder',
-              data: {
-                left: 'e',
-                right: './d',
-              },
-            },
-          ],
         },
       ],
     })
 
     ruleTester.run(`${ruleName}(${type}): works with export aliases`, rule, {
+      invalid: [
+        {
+          errors: [
+            {
+              data: {
+                right: './b',
+                left: './c',
+              },
+              messageId: 'unexpectedExportsOrder',
+            },
+          ],
+          output: dedent`
+            export { a1 as aX } from './a'
+            export { default as b } from './b'
+            export { c1, c2 } from './c'
+          `,
+          code: dedent`
+            export { a1 as aX } from './a'
+            export { c1, c2 } from './c'
+            export { default as b } from './b'
+          `,
+          options: [options],
+        },
+      ],
       valid: [
         {
           code: dedent`
@@ -131,30 +155,6 @@ describe(ruleName, () => {
             export { c1, c2 } from './c'
           `,
           options: [options],
-        },
-      ],
-      invalid: [
-        {
-          code: dedent`
-            export { a1 as aX } from './a'
-            export { c1, c2 } from './c'
-            export { default as b } from './b'
-          `,
-          output: dedent`
-            export { a1 as aX } from './a'
-            export { default as b } from './b'
-            export { c1, c2 } from './c'
-          `,
-          options: [options],
-          errors: [
-            {
-              messageId: 'unexpectedExportsOrder',
-              data: {
-                left: './c',
-                right: './b',
-              },
-            },
-          ],
         },
       ],
     })
@@ -163,17 +163,24 @@ describe(ruleName, () => {
       `${ruleName}(${type}): allows to use new line as partition`,
       rule,
       {
-        valid: [],
         invalid: [
           {
-            code: dedent`
-              export * from "./organisms";
-              export * from "./atoms";
-              export * from "./shared";
-
-              export { AnotherNamed } from './second-folder';
-              export { Named } from './folder';
-            `,
+            errors: [
+              {
+                data: {
+                  left: './organisms',
+                  right: './atoms',
+                },
+                messageId: 'unexpectedExportsOrder',
+              },
+              {
+                data: {
+                  left: './second-folder',
+                  right: './folder',
+                },
+                messageId: 'unexpectedExportsOrder',
+              },
+            ],
             output: dedent`
               export * from "./atoms";
               export * from "./organisms";
@@ -182,30 +189,23 @@ describe(ruleName, () => {
               export { Named } from './folder';
               export { AnotherNamed } from './second-folder';
             `,
+            code: dedent`
+              export * from "./organisms";
+              export * from "./atoms";
+              export * from "./shared";
+
+              export { AnotherNamed } from './second-folder';
+              export { Named } from './folder';
+            `,
             options: [
               {
                 ...options,
                 partitionByNewLine: true,
               },
             ],
-            errors: [
-              {
-                messageId: 'unexpectedExportsOrder',
-                data: {
-                  left: './organisms',
-                  right: './atoms',
-                },
-              },
-              {
-                messageId: 'unexpectedExportsOrder',
-                data: {
-                  left: './second-folder',
-                  right: './folder',
-                },
-              },
-            ],
           },
         ],
+        valid: [],
       },
     )
 
@@ -214,23 +214,8 @@ describe(ruleName, () => {
         `${ruleName}(${type}): allows to use partition comments`,
         rule,
         {
-          valid: [],
           invalid: [
             {
-              code: dedent`
-                // Part: A
-                export * from './cc';
-                export * from './d';
-                // Not partition comment
-                export * from './bbb';
-                // Part: B
-                export * from './aaaa';
-                export * from './e';
-                // Part: C
-                export * from './gg';
-                // Not partition comment
-                export * from './fff';
-              `,
               output: dedent`
                 // Part: A
                 // Not partition comment
@@ -245,30 +230,45 @@ describe(ruleName, () => {
                 export * from './fff';
                 export * from './gg';
               `,
+              code: dedent`
+                // Part: A
+                export * from './cc';
+                export * from './d';
+                // Not partition comment
+                export * from './bbb';
+                // Part: B
+                export * from './aaaa';
+                export * from './e';
+                // Part: C
+                export * from './gg';
+                // Not partition comment
+                export * from './fff';
+              `,
+              errors: [
+                {
+                  data: {
+                    right: './bbb',
+                    left: './d',
+                  },
+                  messageId: 'unexpectedExportsOrder',
+                },
+                {
+                  data: {
+                    right: './fff',
+                    left: './gg',
+                  },
+                  messageId: 'unexpectedExportsOrder',
+                },
+              ],
               options: [
                 {
                   ...options,
                   partitionByComment: '^Part*',
                 },
               ],
-              errors: [
-                {
-                  messageId: 'unexpectedExportsOrder',
-                  data: {
-                    left: './d',
-                    right: './bbb',
-                  },
-                },
-                {
-                  messageId: 'unexpectedExportsOrder',
-                  data: {
-                    left: './gg',
-                    right: './fff',
-                  },
-                },
-              ],
             },
           ],
+          valid: [],
         },
       )
 
@@ -300,20 +300,8 @@ describe(ruleName, () => {
         `${ruleName}(${type}): allows to use multiple partition comments`,
         rule,
         {
-          valid: [],
           invalid: [
             {
-              code: dedent`
-                /* Partition Comment */
-                // Part: A
-                export * from './d'
-                // Part: B
-                export * from './aaa'
-                export * from './c'
-                export * from './bb'
-                /* Other */
-                export * from './e'
-              `,
               output: dedent`
                 /* Partition Comment */
                 // Part: A
@@ -325,23 +313,35 @@ describe(ruleName, () => {
                 /* Other */
                 export * from './e'
               `,
+              code: dedent`
+                /* Partition Comment */
+                // Part: A
+                export * from './d'
+                // Part: B
+                export * from './aaa'
+                export * from './c'
+                export * from './bb'
+                /* Other */
+                export * from './e'
+              `,
+              errors: [
+                {
+                  data: {
+                    right: './bb',
+                    left: './c',
+                  },
+                  messageId: 'unexpectedExportsOrder',
+                },
+              ],
               options: [
                 {
                   ...options,
                   partitionByComment: ['Partition Comment', 'Part: *', 'Other'],
                 },
               ],
-              errors: [
-                {
-                  messageId: 'unexpectedExportsOrder',
-                  data: {
-                    left: './c',
-                    right: './bb',
-                  },
-                },
-              ],
             },
           ],
+          valid: [],
         },
       )
     })
@@ -372,17 +372,31 @@ describe(ruleName, () => {
     )
 
     ruleTester.run(`${ruleName}(${type}): sorts by group kind`, rule, {
-      valid: [],
       invalid: [
         {
-          code: dedent`
-            export type { F } from "./f";
-            export type { D } from "./d";
-            export type { E } from "./e";
-            export { C } from "./c";
-            export { A } from "./a";
-            export { B } from "./b";
-          `,
+          errors: [
+            {
+              data: {
+                right: './d',
+                left: './f',
+              },
+              messageId: 'unexpectedExportsOrder',
+            },
+            {
+              data: {
+                right: './c',
+                left: './e',
+              },
+              messageId: 'unexpectedExportsOrder',
+            },
+            {
+              data: {
+                right: './a',
+                left: './c',
+              },
+              messageId: 'unexpectedExportsOrder',
+            },
+          ],
           output: dedent`
             export { A } from "./a";
             export { B } from "./b";
@@ -390,6 +404,14 @@ describe(ruleName, () => {
             export type { D } from "./d";
             export type { E } from "./e";
             export type { F } from "./f";
+          `,
+          code: dedent`
+            export type { F } from "./f";
+            export type { D } from "./d";
+            export type { E } from "./e";
+            export { C } from "./c";
+            export { A } from "./a";
+            export { B } from "./b";
           `,
           options: [
             {
@@ -397,39 +419,31 @@ describe(ruleName, () => {
               groupKind: 'values-first',
             },
           ],
-          errors: [
-            {
-              messageId: 'unexpectedExportsOrder',
-              data: {
-                left: './f',
-                right: './d',
-              },
-            },
-            {
-              messageId: 'unexpectedExportsOrder',
-              data: {
-                left: './e',
-                right: './c',
-              },
-            },
-            {
-              messageId: 'unexpectedExportsOrder',
-              data: {
-                left: './c',
-                right: './a',
-              },
-            },
-          ],
         },
         {
-          code: dedent`
-            export { C } from "./c";
-            export { A } from "./a";
-            export { B } from "./b";
-            export type { F } from "./f";
-            export type { D } from "./d";
-            export type { E } from "./e";
-          `,
+          errors: [
+            {
+              data: {
+                right: './a',
+                left: './c',
+              },
+              messageId: 'unexpectedExportsOrder',
+            },
+            {
+              data: {
+                right: './f',
+                left: './b',
+              },
+              messageId: 'unexpectedExportsOrder',
+            },
+            {
+              data: {
+                right: './d',
+                left: './f',
+              },
+              messageId: 'unexpectedExportsOrder',
+            },
+          ],
           output: dedent`
             export type { D } from "./d";
             export type { E } from "./e";
@@ -438,37 +452,23 @@ describe(ruleName, () => {
             export { B } from "./b";
             export { C } from "./c";
           `,
+          code: dedent`
+            export { C } from "./c";
+            export { A } from "./a";
+            export { B } from "./b";
+            export type { F } from "./f";
+            export type { D } from "./d";
+            export type { E } from "./e";
+          `,
           options: [
             {
               ...options,
               groupKind: 'types-first',
             },
           ],
-          errors: [
-            {
-              messageId: 'unexpectedExportsOrder',
-              data: {
-                left: './c',
-                right: './a',
-              },
-            },
-            {
-              messageId: 'unexpectedExportsOrder',
-              data: {
-                left: './b',
-                right: './f',
-              },
-            },
-            {
-              messageId: 'unexpectedExportsOrder',
-              data: {
-                left: './f',
-                right: './d',
-              },
-            },
-          ],
         },
       ],
+      valid: [],
     })
 
     ruleTester.run(
@@ -500,16 +500,16 @@ describe(ruleName, () => {
       {
         valid: [
           {
-            code: dedent`
-              export { ab } from 'ab'
-              export { ac } from 'a_c'
-            `,
             options: [
               {
                 ...options,
                 specialCharacters: 'remove',
               },
             ],
+            code: dedent`
+              export { ab } from 'ab'
+              export { ac } from 'a_c'
+            `,
           },
         ],
         invalid: [],
@@ -537,45 +537,45 @@ describe(ruleName, () => {
       `${ruleName}(${type}): sorts inline elements correctly`,
       rule,
       {
-        valid: [],
         invalid: [
           {
+            errors: [
+              {
+                data: {
+                  right: 'a',
+                  left: 'b',
+                },
+                messageId: 'unexpectedExportsOrder',
+              },
+            ],
+            output: dedent`
+              export { a } from "a"; export { b } from "b";
+            `,
             code: dedent`
               export { b } from "b"; export { a } from "a"
             `,
+            options: [options],
+          },
+          {
+            errors: [
+              {
+                data: {
+                  right: 'a',
+                  left: 'b',
+                },
+                messageId: 'unexpectedExportsOrder',
+              },
+            ],
             output: dedent`
               export { a } from "a"; export { b } from "b";
             `,
-            options: [options],
-            errors: [
-              {
-                messageId: 'unexpectedExportsOrder',
-                data: {
-                  left: 'b',
-                  right: 'a',
-                },
-              },
-            ],
-          },
-          {
             code: dedent`
               export { b } from "b"; export { a } from "a";
             `,
-            output: dedent`
-              export { a } from "a"; export { b } from "b";
-            `,
             options: [options],
-            errors: [
-              {
-                messageId: 'unexpectedExportsOrder',
-                data: {
-                  left: 'b',
-                  right: 'a',
-                },
-              },
-            ],
           },
         ],
+        valid: [],
       },
     )
   })
@@ -590,6 +590,39 @@ describe(ruleName, () => {
     } as const
 
     ruleTester.run(`${ruleName}(${type}): sorts exports`, rule, {
+      invalid: [
+        {
+          errors: [
+            {
+              data: {
+                right: 'a',
+                left: 'b',
+              },
+              messageId: 'unexpectedExportsOrder',
+            },
+            {
+              data: {
+                right: 'c',
+                left: 'd',
+              },
+              messageId: 'unexpectedExportsOrder',
+            },
+          ],
+          output: dedent`
+            export { a1 } from 'a'
+            export { b1, b2 } from 'b'
+            export { c1, c2, c3 } from 'c'
+            export { d1, d2 } from 'd'
+          `,
+          code: dedent`
+            export { b1, b2 } from 'b'
+            export { a1 } from 'a'
+            export { d1, d2 } from 'd'
+            export { c1, c2, c3 } from 'c'
+          `,
+          options: [options],
+        },
+      ],
       valid: [
         {
           code: dedent`
@@ -599,44 +632,46 @@ describe(ruleName, () => {
             export { d1, d2 } from 'd'
           `,
           options: [options],
-        },
-      ],
-      invalid: [
-        {
-          code: dedent`
-            export { b1, b2 } from 'b'
-            export { a1 } from 'a'
-            export { d1, d2 } from 'd'
-            export { c1, c2, c3 } from 'c'
-          `,
-          output: dedent`
-            export { a1 } from 'a'
-            export { b1, b2 } from 'b'
-            export { c1, c2, c3 } from 'c'
-            export { d1, d2 } from 'd'
-          `,
-          options: [options],
-          errors: [
-            {
-              messageId: 'unexpectedExportsOrder',
-              data: {
-                left: 'b',
-                right: 'a',
-              },
-            },
-            {
-              messageId: 'unexpectedExportsOrder',
-              data: {
-                left: 'd',
-                right: 'c',
-              },
-            },
-          ],
         },
       ],
     })
 
     ruleTester.run(`${ruleName}(${type}): sorts all-exports`, rule, {
+      invalid: [
+        {
+          errors: [
+            {
+              data: {
+                right: './a',
+                left: './b',
+              },
+              messageId: 'unexpectedExportsOrder',
+            },
+            {
+              data: {
+                right: './d',
+                left: 'e',
+              },
+              messageId: 'unexpectedExportsOrder',
+            },
+          ],
+          output: dedent`
+            export { a1 } from './a'
+            export * as b from './b'
+            export { c1, c2 } from './c'
+            export { d } from './d'
+            export * from 'e'
+          `,
+          code: dedent`
+            export * as b from './b'
+            export { a1 } from './a'
+            export { c1, c2 } from './c'
+            export * from 'e'
+            export { d } from './d'
+          `,
+          options: [options],
+        },
+      ],
       valid: [
         {
           code: dedent`
@@ -647,46 +682,35 @@ describe(ruleName, () => {
             export * from 'e'
           `,
           options: [options],
-        },
-      ],
-      invalid: [
-        {
-          code: dedent`
-            export * as b from './b'
-            export { a1 } from './a'
-            export { c1, c2 } from './c'
-            export * from 'e'
-            export { d } from './d'
-          `,
-          output: dedent`
-            export { a1 } from './a'
-            export * as b from './b'
-            export { c1, c2 } from './c'
-            export { d } from './d'
-            export * from 'e'
-          `,
-          options: [options],
-          errors: [
-            {
-              messageId: 'unexpectedExportsOrder',
-              data: {
-                left: './b',
-                right: './a',
-              },
-            },
-            {
-              messageId: 'unexpectedExportsOrder',
-              data: {
-                left: 'e',
-                right: './d',
-              },
-            },
-          ],
         },
       ],
     })
 
     ruleTester.run(`${ruleName}(${type}): works with export aliases`, rule, {
+      invalid: [
+        {
+          errors: [
+            {
+              data: {
+                right: './b',
+                left: './c',
+              },
+              messageId: 'unexpectedExportsOrder',
+            },
+          ],
+          output: dedent`
+            export { a1 as aX } from './a'
+            export { default as b } from './b'
+            export { c1, c2 } from './c'
+          `,
+          code: dedent`
+            export { a1 as aX } from './a'
+            export { c1, c2 } from './c'
+            export { default as b } from './b'
+          `,
+          options: [options],
+        },
+      ],
       valid: [
         {
           code: dedent`
@@ -695,30 +719,6 @@ describe(ruleName, () => {
             export { c1, c2 } from './c'
           `,
           options: [options],
-        },
-      ],
-      invalid: [
-        {
-          code: dedent`
-            export { a1 as aX } from './a'
-            export { c1, c2 } from './c'
-            export { default as b } from './b'
-          `,
-          output: dedent`
-            export { a1 as aX } from './a'
-            export { default as b } from './b'
-            export { c1, c2 } from './c'
-          `,
-          options: [options],
-          errors: [
-            {
-              messageId: 'unexpectedExportsOrder',
-              data: {
-                left: './c',
-                right: './b',
-              },
-            },
-          ],
         },
       ],
     })
@@ -727,17 +727,24 @@ describe(ruleName, () => {
       `${ruleName}(${type}): allows to use new line as partition`,
       rule,
       {
-        valid: [],
         invalid: [
           {
-            code: dedent`
-              export * from "./organisms";
-              export * from "./atoms";
-              export * from "./shared";
-
-              export { AnotherNamed } from './second-folder';
-              export { Named } from './folder';
-            `,
+            errors: [
+              {
+                data: {
+                  left: './organisms',
+                  right: './atoms',
+                },
+                messageId: 'unexpectedExportsOrder',
+              },
+              {
+                data: {
+                  left: './second-folder',
+                  right: './folder',
+                },
+                messageId: 'unexpectedExportsOrder',
+              },
+            ],
             output: dedent`
               export * from "./atoms";
               export * from "./organisms";
@@ -746,45 +753,52 @@ describe(ruleName, () => {
               export { Named } from './folder';
               export { AnotherNamed } from './second-folder';
             `,
+            code: dedent`
+              export * from "./organisms";
+              export * from "./atoms";
+              export * from "./shared";
+
+              export { AnotherNamed } from './second-folder';
+              export { Named } from './folder';
+            `,
             options: [
               {
                 ...options,
                 partitionByNewLine: true,
               },
             ],
-            errors: [
-              {
-                messageId: 'unexpectedExportsOrder',
-                data: {
-                  left: './organisms',
-                  right: './atoms',
-                },
-              },
-              {
-                messageId: 'unexpectedExportsOrder',
-                data: {
-                  left: './second-folder',
-                  right: './folder',
-                },
-              },
-            ],
           },
         ],
+        valid: [],
       },
     )
 
     ruleTester.run(`${ruleName}(${type}): sorts by group kind`, rule, {
-      valid: [],
       invalid: [
         {
-          code: dedent`
-            export type { F } from "./f";
-            export type { D } from "./d";
-            export type { E } from "./e";
-            export { C } from "./c";
-            export { A } from "./a";
-            export { B } from "./b";
-          `,
+          errors: [
+            {
+              data: {
+                right: './d',
+                left: './f',
+              },
+              messageId: 'unexpectedExportsOrder',
+            },
+            {
+              data: {
+                right: './c',
+                left: './e',
+              },
+              messageId: 'unexpectedExportsOrder',
+            },
+            {
+              data: {
+                right: './a',
+                left: './c',
+              },
+              messageId: 'unexpectedExportsOrder',
+            },
+          ],
           output: dedent`
             export { A } from "./a";
             export { B } from "./b";
@@ -792,6 +806,14 @@ describe(ruleName, () => {
             export type { D } from "./d";
             export type { E } from "./e";
             export type { F } from "./f";
+          `,
+          code: dedent`
+            export type { F } from "./f";
+            export type { D } from "./d";
+            export type { E } from "./e";
+            export { C } from "./c";
+            export { A } from "./a";
+            export { B } from "./b";
           `,
           options: [
             {
@@ -799,39 +821,31 @@ describe(ruleName, () => {
               groupKind: 'values-first',
             },
           ],
-          errors: [
-            {
-              messageId: 'unexpectedExportsOrder',
-              data: {
-                left: './f',
-                right: './d',
-              },
-            },
-            {
-              messageId: 'unexpectedExportsOrder',
-              data: {
-                left: './e',
-                right: './c',
-              },
-            },
-            {
-              messageId: 'unexpectedExportsOrder',
-              data: {
-                left: './c',
-                right: './a',
-              },
-            },
-          ],
         },
         {
-          code: dedent`
-            export { C } from "./c";
-            export { A } from "./a";
-            export { B } from "./b";
-            export type { F } from "./f";
-            export type { D } from "./d";
-            export type { E } from "./e";
-          `,
+          errors: [
+            {
+              data: {
+                right: './a',
+                left: './c',
+              },
+              messageId: 'unexpectedExportsOrder',
+            },
+            {
+              data: {
+                right: './f',
+                left: './b',
+              },
+              messageId: 'unexpectedExportsOrder',
+            },
+            {
+              data: {
+                right: './d',
+                left: './f',
+              },
+              messageId: 'unexpectedExportsOrder',
+            },
+          ],
           output: dedent`
             export type { D } from "./d";
             export type { E } from "./e";
@@ -840,37 +854,23 @@ describe(ruleName, () => {
             export { B } from "./b";
             export { C } from "./c";
           `,
+          code: dedent`
+            export { C } from "./c";
+            export { A } from "./a";
+            export { B } from "./b";
+            export type { F } from "./f";
+            export type { D } from "./d";
+            export type { E } from "./e";
+          `,
           options: [
             {
               ...options,
               groupKind: 'types-first',
             },
           ],
-          errors: [
-            {
-              messageId: 'unexpectedExportsOrder',
-              data: {
-                left: './c',
-                right: './a',
-              },
-            },
-            {
-              messageId: 'unexpectedExportsOrder',
-              data: {
-                left: './b',
-                right: './f',
-              },
-            },
-            {
-              messageId: 'unexpectedExportsOrder',
-              data: {
-                left: './f',
-                right: './d',
-              },
-            },
-          ],
         },
       ],
+      valid: [],
     })
   })
 
@@ -883,6 +883,39 @@ describe(ruleName, () => {
     } as const
 
     ruleTester.run(`${ruleName}(${type}): sorts exports`, rule, {
+      invalid: [
+        {
+          errors: [
+            {
+              data: {
+                right: 'd',
+                left: 'a',
+              },
+              messageId: 'unexpectedExportsOrder',
+            },
+            {
+              data: {
+                right: 'c',
+                left: 'd',
+              },
+              messageId: 'unexpectedExportsOrder',
+            },
+          ],
+          output: dedent`
+            export { c1, c2, c3 } from 'c'
+            export { b1, b2 } from 'b'
+            export { d1, d2 } from 'd'
+            export { a1 } from 'a'
+          `,
+          code: dedent`
+            export { b1, b2 } from 'b'
+            export { a1 } from 'a'
+            export { d1, d2 } from 'd'
+            export { c1, c2, c3 } from 'c'
+          `,
+          options: [options],
+        },
+      ],
       valid: [
         {
           code: dedent`
@@ -892,44 +925,46 @@ describe(ruleName, () => {
             export { a1 } from 'a'
           `,
           options: [options],
-        },
-      ],
-      invalid: [
-        {
-          code: dedent`
-            export { b1, b2 } from 'b'
-            export { a1 } from 'a'
-            export { d1, d2 } from 'd'
-            export { c1, c2, c3 } from 'c'
-          `,
-          output: dedent`
-            export { c1, c2, c3 } from 'c'
-            export { b1, b2 } from 'b'
-            export { d1, d2 } from 'd'
-            export { a1 } from 'a'
-          `,
-          options: [options],
-          errors: [
-            {
-              messageId: 'unexpectedExportsOrder',
-              data: {
-                left: 'a',
-                right: 'd',
-              },
-            },
-            {
-              messageId: 'unexpectedExportsOrder',
-              data: {
-                left: 'd',
-                right: 'c',
-              },
-            },
-          ],
         },
       ],
     })
 
     ruleTester.run(`${ruleName}(${type}): sorts all-exports`, rule, {
+      invalid: [
+        {
+          errors: [
+            {
+              data: {
+                right: './c',
+                left: './a',
+              },
+              messageId: 'unexpectedExportsOrder',
+            },
+            {
+              data: {
+                right: './d',
+                left: 'e',
+              },
+              messageId: 'unexpectedExportsOrder',
+            },
+          ],
+          output: dedent`
+            export { c1, c2 } from './c'
+            export * as b from './b'
+            export { a1 } from './a'
+            export { d } from './d'
+            export * from 'e'
+          `,
+          code: dedent`
+            export * as b from './b'
+            export { a1 } from './a'
+            export { c1, c2 } from './c'
+            export * from 'e'
+            export { d } from './d'
+          `,
+          options: [options],
+        },
+      ],
       valid: [
         {
           code: dedent`
@@ -940,46 +975,35 @@ describe(ruleName, () => {
             export * from 'e'
           `,
           options: [options],
-        },
-      ],
-      invalid: [
-        {
-          code: dedent`
-            export * as b from './b'
-            export { a1 } from './a'
-            export { c1, c2 } from './c'
-            export * from 'e'
-            export { d } from './d'
-          `,
-          output: dedent`
-            export { c1, c2 } from './c'
-            export * as b from './b'
-            export { a1 } from './a'
-            export { d } from './d'
-            export * from 'e'
-          `,
-          options: [options],
-          errors: [
-            {
-              messageId: 'unexpectedExportsOrder',
-              data: {
-                left: './a',
-                right: './c',
-              },
-            },
-            {
-              messageId: 'unexpectedExportsOrder',
-              data: {
-                left: 'e',
-                right: './d',
-              },
-            },
-          ],
         },
       ],
     })
 
     ruleTester.run(`${ruleName}(${type}): works with export aliases`, rule, {
+      invalid: [
+        {
+          errors: [
+            {
+              data: {
+                right: './b',
+                left: './c',
+              },
+              messageId: 'unexpectedExportsOrder',
+            },
+          ],
+          output: dedent`
+            export { default as b } from './b'
+            export { a1 as aX } from './a'
+            export { c1, c2 } from './c'
+          `,
+          code: dedent`
+            export { a1 as aX } from './a'
+            export { c1, c2 } from './c'
+            export { default as b } from './b'
+          `,
+          options: [options],
+        },
+      ],
       valid: [
         {
           code: dedent`
@@ -988,30 +1012,6 @@ describe(ruleName, () => {
             export { c1, c2 } from './c'
           `,
           options: [options],
-        },
-      ],
-      invalid: [
-        {
-          code: dedent`
-            export { a1 as aX } from './a'
-            export { c1, c2 } from './c'
-            export { default as b } from './b'
-          `,
-          output: dedent`
-            export { default as b } from './b'
-            export { a1 as aX } from './a'
-            export { c1, c2 } from './c'
-          `,
-          options: [options],
-          errors: [
-            {
-              messageId: 'unexpectedExportsOrder',
-              data: {
-                left: './c',
-                right: './b',
-              },
-            },
-          ],
         },
       ],
     })
@@ -1022,6 +1022,31 @@ describe(ruleName, () => {
       `${ruleName}: sets alphabetical asc sorting as default`,
       rule,
       {
+        invalid: [
+          {
+            errors: [
+              {
+                data: {
+                  right: '~/b',
+                  left: '~/c',
+                },
+                messageId: 'unexpectedExportsOrder',
+              },
+            ],
+            output: dedent`
+              export { a } from '~/a'
+              export { b } from '~/b'
+              export { c } from '~/c'
+              export { d } from '~/d'
+            `,
+            code: dedent`
+              export { a } from '~/a'
+              export { c } from '~/c'
+              export { b } from '~/b'
+              export { d } from '~/d'
+            `,
+          },
+        ],
         valid: [
           dedent`
             export { a } from '~/a'
@@ -1037,31 +1062,6 @@ describe(ruleName, () => {
               export { log2 } from './log2'
             `,
             options: [{}],
-          },
-        ],
-        invalid: [
-          {
-            code: dedent`
-              export { a } from '~/a'
-              export { c } from '~/c'
-              export { b } from '~/b'
-              export { d } from '~/d'
-            `,
-            output: dedent`
-              export { a } from '~/a'
-              export { b } from '~/b'
-              export { c } from '~/c'
-              export { d } from '~/d'
-            `,
-            errors: [
-              {
-                messageId: 'unexpectedExportsOrder',
-                data: {
-                  left: '~/c',
-                  right: '~/b',
-                },
-              },
-            ],
           },
         ],
       },
@@ -1090,148 +1090,137 @@ describe(ruleName, () => {
 
     let eslintDisableRuleTesterName = `${ruleName}: supports 'eslint-disable' for individual nodes`
     ruleTester.run(eslintDisableRuleTesterName, rule, {
-      valid: [],
       invalid: [
         {
-          code: dedent`
-            export { c } from './c'
-            export { b } from './b'
-            // eslint-disable-next-line
-            export { a } from './a'
-          `,
+          errors: [
+            {
+              data: {
+                right: './b',
+                left: './c',
+              },
+              messageId: 'unexpectedExportsOrder',
+            },
+          ],
           output: dedent`
             export { b } from './b'
             export { c } from './c'
+            // eslint-disable-next-line
+            export { a } from './a'
+          `,
+          code: dedent`
+            export { c } from './c'
+            export { b } from './b'
             // eslint-disable-next-line
             export { a } from './a'
           `,
           options: [{}],
-          errors: [
-            {
-              messageId: 'unexpectedExportsOrder',
-              data: {
-                left: './c',
-                right: './b',
-              },
-            },
-          ],
         },
         {
-          code: dedent`
-            export { d } from './d'
-            export { c } from './c'
-            // eslint-disable-next-line
-            export { a } from './a'
-            export { b } from './b'
-          `,
+          errors: [
+            {
+              data: {
+                right: './c',
+                left: './d',
+              },
+              messageId: 'unexpectedExportsOrder',
+            },
+            {
+              data: {
+                right: './b',
+                left: './a',
+              },
+              messageId: 'unexpectedExportsOrder',
+            },
+          ],
           output: dedent`
             export { b } from './b'
             export { c } from './c'
             // eslint-disable-next-line
             export { a } from './a'
             export { d } from './d'
+          `,
+          code: dedent`
+            export { d } from './d'
+            export { c } from './c'
+            // eslint-disable-next-line
+            export { a } from './a'
+            export { b } from './b'
           `,
           options: [
             {
               partitionByComment: true,
             },
           ],
-          errors: [
-            {
-              messageId: 'unexpectedExportsOrder',
-              data: {
-                left: './d',
-                right: './c',
-              },
-            },
-            {
-              messageId: 'unexpectedExportsOrder',
-              data: {
-                left: './a',
-                right: './b',
-              },
-            },
-          ],
         },
         {
-          code: dedent`
-            export { c } from './c'
-            export { b } from './b'
-            export { a } from './a' // eslint-disable-line
-          `,
+          errors: [
+            {
+              data: {
+                right: './b',
+                left: './c',
+              },
+              messageId: 'unexpectedExportsOrder',
+            },
+          ],
           output: dedent`
             export { b } from './b'
             export { c } from './c'
             export { a } from './a' // eslint-disable-line
           `,
-          options: [{}],
-          errors: [
-            {
-              messageId: 'unexpectedExportsOrder',
-              data: {
-                left: './c',
-                right: './b',
-              },
-            },
-          ],
-        },
-        {
           code: dedent`
             export { c } from './c'
             export { b } from './b'
-            /* eslint-disable-next-line */
-            export { a } from './a'
+            export { a } from './a' // eslint-disable-line
           `,
+          options: [{}],
+        },
+        {
+          errors: [
+            {
+              data: {
+                right: './b',
+                left: './c',
+              },
+              messageId: 'unexpectedExportsOrder',
+            },
+          ],
           output: dedent`
             export { b } from './b'
             export { c } from './c'
             /* eslint-disable-next-line */
             export { a } from './a'
           `,
-          options: [{}],
-          errors: [
-            {
-              messageId: 'unexpectedExportsOrder',
-              data: {
-                left: './c',
-                right: './b',
-              },
-            },
-          ],
-        },
-        {
           code: dedent`
             export { c } from './c'
             export { b } from './b'
-            export { a } from './a' /* eslint-disable-line */
+            /* eslint-disable-next-line */
+            export { a } from './a'
           `,
+          options: [{}],
+        },
+        {
+          errors: [
+            {
+              data: {
+                right: './b',
+                left: './c',
+              },
+              messageId: 'unexpectedExportsOrder',
+            },
+          ],
           output: dedent`
             export { b } from './b'
             export { c } from './c'
             export { a } from './a' /* eslint-disable-line */
           `,
-          options: [{}],
-          errors: [
-            {
-              messageId: 'unexpectedExportsOrder',
-              data: {
-                left: './c',
-                right: './b',
-              },
-            },
-          ],
-        },
-        {
           code: dedent`
-            export { d } from './d'
-            export { e } from './e'
-            /* eslint-disable */
             export { c } from './c'
             export { b } from './b'
-            // Shouldn't move
-            /* eslint-enable */
-            export { a } from './a'
+            export { a } from './a' /* eslint-disable-line */
           `,
+          options: [{}],
+        },
+        {
           output: dedent`
             export { a } from './a'
             export { d } from './d'
@@ -1242,110 +1231,130 @@ describe(ruleName, () => {
             /* eslint-enable */
             export { e } from './e'
           `,
-          options: [{}],
+          code: dedent`
+            export { d } from './d'
+            export { e } from './e'
+            /* eslint-disable */
+            export { c } from './c'
+            export { b } from './b'
+            // Shouldn't move
+            /* eslint-enable */
+            export { a } from './a'
+          `,
           errors: [
             {
-              messageId: 'unexpectedExportsOrder',
               data: {
-                left: './b',
                 right: './a',
+                left: './b',
               },
+              messageId: 'unexpectedExportsOrder',
             },
           ],
+          options: [{}],
         },
         {
-          code: dedent`
-            export { c } from './c'
-            export { b } from './b'
-            // eslint-disable-next-line @rule-tester/${eslintDisableRuleTesterName}
-            export { a } from './a'
-          `,
           output: dedent`
             export { b } from './b'
             export { c } from './c'
             // eslint-disable-next-line @rule-tester/${eslintDisableRuleTesterName}
             export { a } from './a'
           `,
-          options: [{}],
-          errors: [
-            {
-              messageId: 'unexpectedExportsOrder',
-              data: {
-                left: './c',
-                right: './b',
-              },
-            },
-          ],
-        },
-        {
           code: dedent`
             export { c } from './c'
             export { b } from './b'
-            export { a } from './a' // eslint-disable-line @rule-tester/${eslintDisableRuleTesterName}
+            // eslint-disable-next-line @rule-tester/${eslintDisableRuleTesterName}
+            export { a } from './a'
           `,
+          errors: [
+            {
+              data: {
+                right: './b',
+                left: './c',
+              },
+              messageId: 'unexpectedExportsOrder',
+            },
+          ],
+          options: [{}],
+        },
+        {
           output: dedent`
             export { b } from './b'
             export { c } from './c'
             export { a } from './a' // eslint-disable-line @rule-tester/${eslintDisableRuleTesterName}
           `,
-          options: [{}],
+          code: dedent`
+            export { c } from './c'
+            export { b } from './b'
+            export { a } from './a' // eslint-disable-line @rule-tester/${eslintDisableRuleTesterName}
+          `,
           errors: [
             {
-              messageId: 'unexpectedExportsOrder',
               data: {
-                left: './c',
                 right: './b',
+                left: './c',
               },
+              messageId: 'unexpectedExportsOrder',
             },
           ],
+          options: [{}],
         },
         {
+          output: dedent`
+            export { b } from './b'
+            export { c } from './c'
+            /* eslint-disable-next-line @rule-tester/${eslintDisableRuleTesterName} */
+            export { a } from './a'
+          `,
           code: dedent`
             export { c } from './c'
             export { b } from './b'
             /* eslint-disable-next-line @rule-tester/${eslintDisableRuleTesterName} */
             export { a } from './a'
           `,
+          errors: [
+            {
+              data: {
+                right: './b',
+                left: './c',
+              },
+              messageId: 'unexpectedExportsOrder',
+            },
+          ],
+          options: [{}],
+        },
+        {
           output: dedent`
             export { b } from './b'
             export { c } from './c'
-            /* eslint-disable-next-line @rule-tester/${eslintDisableRuleTesterName} */
-            export { a } from './a'
+            export { a } from './a' /* eslint-disable-line @rule-tester/${eslintDisableRuleTesterName} */
           `,
-          options: [{}],
-          errors: [
-            {
-              messageId: 'unexpectedExportsOrder',
-              data: {
-                left: './c',
-                right: './b',
-              },
-            },
-          ],
-        },
-        {
           code: dedent`
             export { c } from './c'
             export { b } from './b'
             export { a } from './a' /* eslint-disable-line @rule-tester/${eslintDisableRuleTesterName} */
           `,
-          output: dedent`
-            export { b } from './b'
-            export { c } from './c'
-            export { a } from './a' /* eslint-disable-line @rule-tester/${eslintDisableRuleTesterName} */
-          `,
-          options: [{}],
           errors: [
             {
-              messageId: 'unexpectedExportsOrder',
               data: {
-                left: './c',
                 right: './b',
+                left: './c',
               },
+              messageId: 'unexpectedExportsOrder',
             },
           ],
+          options: [{}],
         },
         {
+          output: dedent`
+            export { a } from './a'
+            export { d } from './d'
+            /* eslint-disable @rule-tester/${eslintDisableRuleTesterName} */
+            export { c } from './c'
+            export { b } from './b'
+            // Shouldn't move
+            /* eslint-enable */
+            export { e } from './e'
+          `,
           code: dedent`
             export { d } from './d'
             export { e } from './e'
@@ -1356,28 +1365,19 @@ describe(ruleName, () => {
             /* eslint-enable */
             export { a } from './a'
           `,
-          output: dedent`
-            export { a } from './a'
-            export { d } from './d'
-            /* eslint-disable @rule-tester/${eslintDisableRuleTesterName} */
-            export { c } from './c'
-            export { b } from './b'
-            // Shouldn't move
-            /* eslint-enable */
-            export { e } from './e'
-          `,
-          options: [{}],
           errors: [
             {
-              messageId: 'unexpectedExportsOrder',
               data: {
-                left: './b',
                 right: './a',
+                left: './b',
               },
+              messageId: 'unexpectedExportsOrder',
             },
           ],
+          options: [{}],
         },
       ],
+      valid: [],
     })
   })
 })

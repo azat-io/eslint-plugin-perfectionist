@@ -85,131 +85,131 @@ let defaultOptions: Required<SortModulesOptions[0]> = {
   partitionByComment: false,
   partitionByNewLine: false,
   newlinesBetween: 'ignore',
+  specialCharacters: 'keep',
   type: 'alphabetical',
   ignoreCase: true,
-  specialCharacters: 'keep',
   customGroups: [],
-  order: 'asc',
   locales: 'en-US',
+  order: 'asc',
 }
 
 export default createEslintRule<SortModulesOptions, MESSAGE_ID>({
-  name: 'sort-modules',
   meta: {
-    type: 'suggestion',
-    docs: {
-      description: 'Enforce sorted modules.',
-      url: 'https://perfectionist.dev/rules/sort-modules',
-      recommended: true,
-    },
-    fixable: 'code',
     schema: [
       {
-        type: 'object',
         properties: {
-          type: typeJsonSchema,
-          order: orderJsonSchema,
-          locales: localesJsonSchema,
-          ignoreCase: ignoreCaseJsonSchema,
-          specialCharacters: specialCharactersJsonSchema,
+          customGroups: {
+            items: {
+              oneOf: [
+                {
+                  properties: {
+                    ...customGroupNameJsonSchema,
+                    ...customGroupSortJsonSchema,
+                    anyOf: {
+                      items: {
+                        properties: {
+                          ...singleCustomGroupJsonSchema,
+                        },
+                        description: 'Custom group.',
+                        additionalProperties: false,
+                        type: 'object',
+                      },
+                      type: 'array',
+                    },
+                  },
+                  description: 'Custom group block.',
+                  additionalProperties: false,
+                  type: 'object',
+                },
+                {
+                  properties: {
+                    ...customGroupNameJsonSchema,
+                    ...customGroupSortJsonSchema,
+                    ...singleCustomGroupJsonSchema,
+                  },
+                  description: 'Custom group.',
+                  additionalProperties: false,
+                  type: 'object',
+                },
+              ],
+            },
+            description: 'Specifies custom groups.',
+            type: 'array',
+          },
           partitionByComment: {
             ...partitionByCommentJsonSchema,
             description:
               'Allows to use comments to separate the modules members into logical groups.',
           },
           partitionByNewLine: partitionByNewLineJsonSchema,
+          specialCharacters: specialCharactersJsonSchema,
           newlinesBetween: newlinesBetweenJsonSchema,
+          ignoreCase: ignoreCaseJsonSchema,
+          locales: localesJsonSchema,
           groups: groupsJsonSchema,
-          customGroups: {
-            description: 'Specifies custom groups.',
-            type: 'array',
-            items: {
-              oneOf: [
-                {
-                  description: 'Custom group block.',
-                  type: 'object',
-                  additionalProperties: false,
-                  properties: {
-                    ...customGroupNameJsonSchema,
-                    ...customGroupSortJsonSchema,
-                    anyOf: {
-                      type: 'array',
-                      items: {
-                        description: 'Custom group.',
-                        type: 'object',
-                        additionalProperties: false,
-                        properties: {
-                          ...singleCustomGroupJsonSchema,
-                        },
-                      },
-                    },
-                  },
-                },
-                {
-                  description: 'Custom group.',
-                  type: 'object',
-                  additionalProperties: false,
-                  properties: {
-                    ...customGroupNameJsonSchema,
-                    ...customGroupSortJsonSchema,
-                    ...singleCustomGroupJsonSchema,
-                  },
-                },
-              ],
-            },
-          },
+          order: orderJsonSchema,
+          type: typeJsonSchema,
         },
         additionalProperties: false,
+        type: 'object',
       },
     ],
     messages: {
       unexpectedModulesGroupOrder:
         'Expected "{{right}}" ({{rightGroup}}) to come before "{{left}}" ({{leftGroup}}).',
-      unexpectedModulesOrder: 'Expected "{{right}}" to come before "{{left}}".',
       unexpectedModulesDependencyOrder:
         'Expected dependency "{{right}}" to come before "{{nodeDependentOnRight}}".',
       missedSpacingBetweenModulesMembers:
         'Missed spacing between "{{left}}" and "{{right}}" objects.',
       extraSpacingBetweenModulesMembers:
         'Extra spacing between "{{left}}" and "{{right}}" objects.',
+      unexpectedModulesOrder: 'Expected "{{right}}" to come before "{{left}}".',
     },
+    docs: {
+      url: 'https://perfectionist.dev/rules/sort-modules',
+      description: 'Enforce sorted modules.',
+      recommended: true,
+    },
+    type: 'suggestion',
+    fixable: 'code',
   },
-  defaultOptions: [defaultOptions],
   create: context => {
     let settings = getSettings(context.settings)
     let options = complete(context.options.at(0), settings, defaultOptions)
     validateGeneratedGroupsConfiguration({
-      groups: options.groups,
       customGroups: options.customGroups,
       modifiers: allModifiers,
       selectors: allSelectors,
+      groups: options.groups,
     })
     validateNewlinesAndPartitionConfiguration(options)
     let sourceCode = getSourceCode(context)
     let eslintDisabledLines = getEslintDisabledLines({
-      sourceCode,
       ruleName: context.id,
+      sourceCode,
     })
 
     return {
       Program: program =>
         analyzeModule({
+          eslintDisabledLines,
+          sourceCode,
           options,
           program,
-          sourceCode,
           context,
-          eslintDisabledLines,
         }),
     }
   },
+  defaultOptions: [defaultOptions],
+  name: 'sort-modules',
 })
 
 let analyzeModule = ({
+  eslintDisabledLines,
+  sourceCode,
   options,
   program,
-  sourceCode,
   context,
-  eslintDisabledLines,
 }: {
   context: TSESLint.RuleContext<MESSAGE_ID, SortModulesOptions>
   program: TSESTree.TSModuleBlock | TSESTree.Program
@@ -271,11 +271,11 @@ let analyzeModule = ({
           formattedNodes.push([])
           if (nodeToParse.body) {
             analyzeModule({
-              options,
               program: nodeToParse.body,
-              sourceCode,
-              context,
               eslintDisabledLines,
+              sourceCode,
+              options,
+              context,
             })
           }
           break
@@ -325,22 +325,22 @@ let analyzeModule = ({
       continue
     }
 
-    let { getGroup, defineGroup } = useGroups(options)
+    let { defineGroup, getGroup } = useGroups(options)
     for (let officialGroup of generatePredefinedGroups({
+      cache: cachedGroupsByModifiersAndSelectors,
       selectors: [selector],
       modifiers,
-      cache: cachedGroupsByModifiersAndSelectors,
     })) {
       defineGroup(officialGroup)
     }
     for (let customGroup of options.customGroups) {
       if (
         customGroupMatches({
-          customGroup,
+          selectors: [selector],
           elementName: name,
+          customGroup,
           decorators,
           modifiers,
-          selectors: [selector],
         })
       ) {
         defineGroup(customGroup.groupName, true)
@@ -351,14 +351,14 @@ let analyzeModule = ({
       }
     }
     let sortingNode: SortingNodeWithDependencies = {
-      node,
+      isEslintDisabled: isNodeEslintDisabled(node, eslintDisabledLines),
       size: rangeToDiff(node, sourceCode),
-      group: getGroup(),
-      name,
       addSafetySemicolonWhenInline,
       dependencyName: name,
-      isEslintDisabled: isNodeEslintDisabled(node, eslintDisabledLines),
+      group: getGroup(),
       dependencies,
+      node,
+      name,
     }
     let comments = getCommentsBefore(node, sourceCode)
     let lastSortingNode = formattedNodes.at(-1)?.at(-1)
@@ -380,12 +380,12 @@ let analyzeModule = ({
     sortNodesByDependencies(
       formattedNodes.flatMap(nodes =>
         sortNodesByGroups(nodes, options, {
-          getGroupCompareOptions: groupNumber =>
-            getCompareOptions(options, groupNumber),
-          ignoreEslintDisabledNodes,
           isNodeIgnored: sortingNode =>
             getGroupNumber(options.groups, sortingNode) ===
             options.groups.length,
+          getGroupCompareOptions: groupNumber =>
+            getCompareOptions(options, groupNumber),
+          ignoreEslintDisabledNodes,
         }),
       ),
       {
@@ -430,44 +430,44 @@ let analyzeModule = ({
     messageIds = [
       ...messageIds,
       ...getNewlinesErrors({
-        left,
-        leftNum: leftNumber,
-        right,
-        rightNum: rightNumber,
-        sourceCode,
         missedSpacingError: 'missedSpacingBetweenModulesMembers',
         extraSpacingError: 'extraSpacingBetweenModulesMembers',
+        rightNum: rightNumber,
+        leftNum: leftNumber,
+        sourceCode,
         options,
+        right,
+        left,
       }),
     ]
 
     for (let messageId of messageIds) {
       context.report({
-        messageId,
-        data: {
-          left: toSingleLine(left.name),
-          leftGroup: left.group,
-          right: toSingleLine(right.name),
-          rightGroup: right.group,
-          nodeDependentOnRight: firstUnorderedNodeDependentOnRight?.name,
-        },
-        node: right.node,
         fix: (fixer: TSESLint.RuleFixer) => [
           ...makeFixes({
-            fixer,
-            nodes,
             sortedNodes: sortedNodesExcludingEslintDisabled,
             sourceCode,
             options,
+            fixer,
+            nodes,
           }),
           ...makeNewlinesFixes({
-            fixer,
-            nodes,
             sortedNodes: sortedNodesExcludingEslintDisabled,
             sourceCode,
             options,
+            fixer,
+            nodes,
           }),
         ],
+        data: {
+          nodeDependentOnRight: firstUnorderedNodeDependentOnRight?.name,
+          right: toSingleLine(right.name),
+          left: toSingleLine(left.name),
+          rightGroup: right.group,
+          leftGroup: left.group,
+        },
+        node: right.node,
+        messageId,
       })
     }
   })

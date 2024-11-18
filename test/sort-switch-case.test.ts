@@ -29,6 +29,88 @@ describe(ruleName, () => {
       `${ruleName}(${type}): sorts switch cases with return statements`,
       rule,
       {
+        invalid: [
+          {
+            output: dedent`
+              function func(name) {
+                switch(<any> myFunc(a! + b?.c as any)) {
+                  case 'aaa':
+                    return 'a'
+                  case 'bb':
+                    return 'b'
+                  case 'c':
+                    return 'c'
+                  default:
+                    return 'x'
+                }
+              }
+            `,
+            code: dedent`
+              function func(name) {
+                switch(<any> myFunc(a! + b?.c as any)) {
+                  case 'bb':
+                    return 'b'
+                  case 'aaa':
+                    return 'a'
+                  case 'c':
+                    return 'c'
+                  default:
+                    return 'x'
+                }
+              }
+            `,
+            errors: [
+              {
+                data: {
+                  right: 'aaa',
+                  left: 'bb',
+                },
+                messageId: 'unexpectedSwitchCaseOrder',
+              },
+            ],
+            options: [options],
+          },
+          {
+            output: dedent`
+              function func(name) {
+                switch(name) {
+                  case 'aaa':
+                    return 'a'
+                  case 'bb':
+                    return 'b'
+                  case 'c':
+                    return 'c'
+                  default:
+                    return 'x'
+                }
+              }
+            `,
+            code: dedent`
+              function func(name) {
+                switch(name) {
+                  case 'bb':
+                    return 'b'
+                  case 'aaa':
+                    return 'a'
+                  case 'c':
+                    return 'c'
+                  default:
+                    return 'x'
+                }
+              }
+            `,
+            errors: [
+              {
+                data: {
+                  right: 'aaa',
+                  left: 'bb',
+                },
+                messageId: 'unexpectedSwitchCaseOrder',
+              },
+            ],
+            options: [options],
+          },
+        ],
         valid: [
           {
             code: dedent`
@@ -64,88 +146,6 @@ describe(ruleName, () => {
             options: [options],
           },
         ],
-        invalid: [
-          {
-            code: dedent`
-              function func(name) {
-                switch(<any> myFunc(a! + b?.c as any)) {
-                  case 'bb':
-                    return 'b'
-                  case 'aaa':
-                    return 'a'
-                  case 'c':
-                    return 'c'
-                  default:
-                    return 'x'
-                }
-              }
-            `,
-            output: dedent`
-              function func(name) {
-                switch(<any> myFunc(a! + b?.c as any)) {
-                  case 'aaa':
-                    return 'a'
-                  case 'bb':
-                    return 'b'
-                  case 'c':
-                    return 'c'
-                  default:
-                    return 'x'
-                }
-              }
-            `,
-            options: [options],
-            errors: [
-              {
-                messageId: 'unexpectedSwitchCaseOrder',
-                data: {
-                  left: 'bb',
-                  right: 'aaa',
-                },
-              },
-            ],
-          },
-          {
-            code: dedent`
-              function func(name) {
-                switch(name) {
-                  case 'bb':
-                    return 'b'
-                  case 'aaa':
-                    return 'a'
-                  case 'c':
-                    return 'c'
-                  default:
-                    return 'x'
-                }
-              }
-            `,
-            output: dedent`
-              function func(name) {
-                switch(name) {
-                  case 'aaa':
-                    return 'a'
-                  case 'bb':
-                    return 'b'
-                  case 'c':
-                    return 'c'
-                  default:
-                    return 'x'
-                }
-              }
-            `,
-            options: [options],
-            errors: [
-              {
-                messageId: 'unexpectedSwitchCaseOrder',
-                data: {
-                  left: 'bb',
-                  right: 'aaa',
-                },
-              },
-            ],
-          },
-        ],
       },
     )
 
@@ -153,6 +153,58 @@ describe(ruleName, () => {
       `${ruleName}(${type}): sorts switch cases with break statements`,
       rule,
       {
+        invalid: [
+          {
+            output: dedent`
+              function func(name) {
+                let size
+                switch(name) {
+                  case 'aaa':
+                    height = 1
+                    break
+                  case 'bb':
+                    height = 2
+                    break
+                  case 'c':
+                    height = 3
+                    break
+                  default:
+                    height = NaN
+                }
+                return size
+              }
+            `,
+            code: dedent`
+              function func(name) {
+                let size
+                switch(name) {
+                  case 'aaa':
+                    height = 1
+                    break
+                  case 'c':
+                    height = 3
+                    break
+                  case 'bb':
+                    height = 2
+                    break
+                  default:
+                    height = NaN
+                }
+                return size
+              }
+            `,
+            errors: [
+              {
+                data: {
+                  right: 'bb',
+                  left: 'c',
+                },
+                messageId: 'unexpectedSwitchCaseOrder',
+              },
+            ],
+            options: [options],
+          },
+        ],
         valid: [
           {
             code: dedent`
@@ -175,58 +227,6 @@ describe(ruleName, () => {
               }
             `,
             options: [options],
-          },
-        ],
-        invalid: [
-          {
-            code: dedent`
-              function func(name) {
-                let size
-                switch(name) {
-                  case 'aaa':
-                    height = 1
-                    break
-                  case 'c':
-                    height = 3
-                    break
-                  case 'bb':
-                    height = 2
-                    break
-                  default:
-                    height = NaN
-                }
-                return size
-              }
-            `,
-            output: dedent`
-              function func(name) {
-                let size
-                switch(name) {
-                  case 'aaa':
-                    height = 1
-                    break
-                  case 'bb':
-                    height = 2
-                    break
-                  case 'c':
-                    height = 3
-                    break
-                  default:
-                    height = NaN
-                }
-                return size
-              }
-            `,
-            options: [options],
-            errors: [
-              {
-                messageId: 'unexpectedSwitchCaseOrder',
-                data: {
-                  left: 'c',
-                  right: 'bb',
-                },
-              },
-            ],
           },
         ],
       },
@@ -236,55 +236,8 @@ describe(ruleName, () => {
       `${ruleName}(${type}): sorts switch cases with block statements`,
       rule,
       {
-        valid: [
-          {
-            code: dedent`
-              function func(name) {
-                let size
-                switch(name) {
-                  case 'aaa': {
-                    height = 1
-                  }
-                  case 'bb': {
-                    height = 2
-                  }
-                  case 'c': {
-                    height = 3
-                  }
-                  default:
-                    height = NaN
-                }
-                return size
-              }
-            `,
-            options: [options],
-          },
-        ],
         invalid: [
           {
-            code: dedent`
-              function func(name) {
-                let size
-                switch(name) {
-                  case 'aaa': {
-                    height = 1
-                    break
-                  }
-                  case 'c': {
-                    height = 3
-                    break
-                  }
-                  case 'bb': {
-                    height = 2
-                    break
-                  }
-                  default:
-                    height = NaN
-                    break
-                }
-                return size
-              }
-            `,
             output: dedent`
               function func(name) {
                 let size
@@ -308,16 +261,63 @@ describe(ruleName, () => {
                 return size
               }
             `,
-            options: [options],
+            code: dedent`
+              function func(name) {
+                let size
+                switch(name) {
+                  case 'aaa': {
+                    height = 1
+                    break
+                  }
+                  case 'c': {
+                    height = 3
+                    break
+                  }
+                  case 'bb': {
+                    height = 2
+                    break
+                  }
+                  default:
+                    height = NaN
+                    break
+                }
+                return size
+              }
+            `,
             errors: [
               {
-                messageId: 'unexpectedSwitchCaseOrder',
                 data: {
-                  left: 'c',
                   right: 'bb',
+                  left: 'c',
                 },
+                messageId: 'unexpectedSwitchCaseOrder',
               },
             ],
+            options: [options],
+          },
+        ],
+        valid: [
+          {
+            code: dedent`
+              function func(name) {
+                let size
+                switch(name) {
+                  case 'aaa': {
+                    height = 1
+                  }
+                  case 'bb': {
+                    height = 2
+                  }
+                  case 'c': {
+                    height = 3
+                  }
+                  default:
+                    height = NaN
+                }
+                return size
+              }
+            `,
+            options: [options],
           },
         ],
       },
@@ -385,19 +385,6 @@ describe(ruleName, () => {
         ],
         invalid: [
           {
-            code: dedent`
-              function func(name) {
-                switch(name) {
-                  case 'c':
-                    let c
-                    break
-                  case 'b':
-                    let b
-                    break
-                  case 'a':
-                }
-              }
-            `,
             output: dedent`
               function func(name) {
                 switch(name) {
@@ -411,61 +398,37 @@ describe(ruleName, () => {
                 }
               }
             `,
-            options: [options],
+            code: dedent`
+              function func(name) {
+                switch(name) {
+                  case 'c':
+                    let c
+                    break
+                  case 'b':
+                    let b
+                    break
+                  case 'a':
+                }
+              }
+            `,
             errors: [
               {
-                messageId: 'unexpectedSwitchCaseOrder',
                 data: {
-                  left: 'c',
                   right: 'b',
+                  left: 'c',
                 },
+                messageId: 'unexpectedSwitchCaseOrder',
               },
             ],
+            options: [options],
           },
         ],
       },
     )
 
     ruleTester.run(`${ruleName}(${type}): works with grouped cases`, rule, {
-      valid: [
-        {
-          code: dedent`
-            switch (value) {
-              case 'aaaaaa':
-                return 'primary'
-              case 'bbbbb':
-              case 'ddd':
-                return 'secondary'
-              case 'cccc':
-              case 'ee':
-              case 'f':
-                return 'tertiary'
-              case 'x':
-              default:
-                return 'unknown'
-            }
-          `,
-          options: [options],
-        },
-      ],
       invalid: [
         {
-          code: dedent`
-            switch (value) {
-              case 'aaaaaa':
-                return 'primary'
-              case 'ee':
-              case 'cccc':
-              case 'f':
-                return 'tertiary'
-              case 'bbbbb':
-              case 'ddd':
-                return 'secondary'
-              case 'x':
-              default:
-                return 'unknown'
-            }
-          `,
           output: [
             dedent`
               switch (value) {
@@ -500,23 +463,60 @@ describe(ruleName, () => {
               }
             `,
           ],
-          options: [options],
+          code: dedent`
+            switch (value) {
+              case 'aaaaaa':
+                return 'primary'
+              case 'ee':
+              case 'cccc':
+              case 'f':
+                return 'tertiary'
+              case 'bbbbb':
+              case 'ddd':
+                return 'secondary'
+              case 'x':
+              default:
+                return 'unknown'
+            }
+          `,
           errors: [
             {
-              messageId: 'unexpectedSwitchCaseOrder',
               data: {
-                left: 'ee',
                 right: 'cccc',
+                left: 'ee',
               },
+              messageId: 'unexpectedSwitchCaseOrder',
             },
             {
-              messageId: 'unexpectedSwitchCaseOrder',
               data: {
-                left: 'f',
                 right: 'bbbbb',
+                left: 'f',
               },
+              messageId: 'unexpectedSwitchCaseOrder',
             },
           ],
+          options: [options],
+        },
+      ],
+      valid: [
+        {
+          code: dedent`
+            switch (value) {
+              case 'aaaaaa':
+                return 'primary'
+              case 'bbbbb':
+              case 'ddd':
+                return 'secondary'
+              case 'cccc':
+              case 'ee':
+              case 'f':
+                return 'tertiary'
+              case 'x':
+              default:
+                return 'unknown'
+            }
+          `,
+          options: [options],
         },
       ],
     })
@@ -525,6 +525,44 @@ describe(ruleName, () => {
       `${ruleName}(${type}): works with grouped cases with default`,
       rule,
       {
+        invalid: [
+          {
+            output: dedent`
+            switch (operationMode) {
+              case wwww:
+                return null
+              case yy:
+              case z:
+                return null
+              case xxx:
+              default:
+                return null
+            }
+          `,
+            code: dedent`
+            switch (operationMode) {
+              case yy:
+              case z:
+                return null
+              case wwww:
+                return null
+              case xxx:
+              default:
+                return null
+            }
+          `,
+            errors: [
+              {
+                data: {
+                  right: 'wwww',
+                  left: 'z',
+                },
+                messageId: 'unexpectedSwitchCaseOrder',
+              },
+            ],
+            options: [options],
+          },
+        ],
         valid: [
           {
             code: dedent`
@@ -540,44 +578,6 @@ describe(ruleName, () => {
             }
           `,
             options: [options],
-          },
-        ],
-        invalid: [
-          {
-            code: dedent`
-            switch (operationMode) {
-              case yy:
-              case z:
-                return null
-              case wwww:
-                return null
-              case xxx:
-              default:
-                return null
-            }
-          `,
-            output: dedent`
-            switch (operationMode) {
-              case wwww:
-                return null
-              case yy:
-              case z:
-                return null
-              case xxx:
-              default:
-                return null
-            }
-          `,
-            options: [options],
-            errors: [
-              {
-                messageId: 'unexpectedSwitchCaseOrder',
-                data: {
-                  left: 'z',
-                  right: 'wwww',
-                },
-              },
-            ],
           },
         ],
       },
@@ -587,6 +587,36 @@ describe(ruleName, () => {
       `${ruleName}(${type}): works with single grouped case`,
       rule,
       {
+        invalid: [
+          {
+            errors: [
+              {
+                data: {
+                  right: 'AA',
+                  left: 'B',
+                },
+                messageId: 'unexpectedSwitchCaseOrder',
+              },
+            ],
+            output: dedent`
+              switch (x) {
+                case AA:
+                case B:
+                  const a = 1;
+                  break;
+              }
+            `,
+            code: dedent`
+              switch (x) {
+                case B:
+                case AA:
+                  const a = 1;
+                  break;
+              }
+            `,
+            options: [options],
+          },
+        ],
         valid: [
           {
             code: dedent`
@@ -600,83 +630,12 @@ describe(ruleName, () => {
             options: [options],
           },
         ],
-        invalid: [
-          {
-            code: dedent`
-              switch (x) {
-                case B:
-                case AA:
-                  const a = 1;
-                  break;
-              }
-            `,
-            output: dedent`
-              switch (x) {
-                case AA:
-                case B:
-                  const a = 1;
-                  break;
-              }
-            `,
-            options: [options],
-            errors: [
-              {
-                messageId: 'unexpectedSwitchCaseOrder',
-                data: {
-                  left: 'B',
-                  right: 'AA',
-                },
-              },
-            ],
-          },
-        ],
       },
     )
 
     ruleTester.run(`${ruleName}(${type}): works with complex cases`, rule, {
-      valid: [
-        {
-          code: dedent`
-            switch (x) {
-              case AAAAA:
-              case BBBB:
-                const a = 1
-                break
-              case CCC:
-                break
-              case DD:
-              case E:
-                const b = () => {
-                  return 2
-                }
-                break
-              default:
-                const c = 3
-            }
-          `,
-          options: [options],
-        },
-      ],
       invalid: [
         {
-          code: dedent`
-            switch (x) {
-              case E:
-              case DD:
-                const b = () => {
-                  return 2
-                }
-                break
-              case CCC:
-                break
-              case BBBB:
-              case AAAAA:
-                const a = 1
-                break
-              default:
-                const c = 3
-            }
-          `,
           output: [
             dedent`
               switch (x) {
@@ -715,37 +674,78 @@ describe(ruleName, () => {
               }
             `,
           ],
-          options: [options],
           errors: [
             {
-              messageId: 'unexpectedSwitchCaseOrder',
               data: {
-                left: 'E',
                 right: 'DD',
+                left: 'E',
               },
+              messageId: 'unexpectedSwitchCaseOrder',
             },
             {
-              messageId: 'unexpectedSwitchCaseOrder',
               data: {
-                left: 'DD',
                 right: 'CCC',
+                left: 'DD',
               },
+              messageId: 'unexpectedSwitchCaseOrder',
             },
             {
-              messageId: 'unexpectedSwitchCaseOrder',
               data: {
-                left: 'CCC',
                 right: 'BBBB',
+                left: 'CCC',
               },
+              messageId: 'unexpectedSwitchCaseOrder',
             },
             {
-              messageId: 'unexpectedSwitchCaseOrder',
               data: {
-                left: 'BBBB',
                 right: 'AAAAA',
+                left: 'BBBB',
               },
+              messageId: 'unexpectedSwitchCaseOrder',
             },
           ],
+          code: dedent`
+            switch (x) {
+              case E:
+              case DD:
+                const b = () => {
+                  return 2
+                }
+                break
+              case CCC:
+                break
+              case BBBB:
+              case AAAAA:
+                const a = 1
+                break
+              default:
+                const c = 3
+            }
+          `,
+          options: [options],
+        },
+      ],
+      valid: [
+        {
+          code: dedent`
+            switch (x) {
+              case AAAAA:
+              case BBBB:
+                const a = 1
+                break
+              case CCC:
+                break
+              case DD:
+              case E:
+                const b = () => {
+                  return 2
+                }
+                break
+              default:
+                const c = 3
+            }
+          `,
+          options: [options],
         },
       ],
     })
@@ -754,29 +754,17 @@ describe(ruleName, () => {
       `${ruleName}(${type}): works with groups with default`,
       rule,
       {
-        valid: [
-          {
-            code: dedent`
-            switch (x) {
-              case 'AA':
-              case 'B':
-              default:
-                const c = 3
-            }
-          `,
-            options: [options],
-          },
-        ],
         invalid: [
           {
-            code: dedent`
-            switch (x) {
-              case 'AA':
-              default:
-              case 'B':
-                break;
-            }
-          `,
+            errors: [
+              {
+                data: {
+                  left: 'default',
+                  right: 'B',
+                },
+                messageId: 'unexpectedSwitchCaseOrder',
+              },
+            ],
             output: dedent`
             switch (x) {
               case 'AA':
@@ -785,27 +773,17 @@ describe(ruleName, () => {
                 break;
             }
           `,
-            options: [options],
-            errors: [
-              {
-                messageId: 'unexpectedSwitchCaseOrder',
-                data: {
-                  left: 'default',
-                  right: 'B',
-                },
-              },
-            ],
-          },
-          {
             code: dedent`
             switch (x) {
+              case 'AA':
               default:
-              case 'default':
-                break;
-              case 'somethingElse':
+              case 'B':
                 break;
             }
           `,
+            options: [options],
+          },
+          {
             output: [
               dedent`
                 switch (x) {
@@ -826,23 +804,45 @@ describe(ruleName, () => {
                 }
               `,
             ],
-            options: [options],
             errors: [
               {
-                messageId: 'unexpectedSwitchCaseOrder',
                 data: {
-                  left: 'default',
                   right: 'default',
+                  left: 'default',
                 },
+                messageId: 'unexpectedSwitchCaseOrder',
               },
               {
-                messageId: 'unexpectedSwitchCaseOrder',
                 data: {
-                  left: 'default',
                   right: 'somethingElse',
+                  left: 'default',
                 },
+                messageId: 'unexpectedSwitchCaseOrder',
               },
             ],
+            code: dedent`
+            switch (x) {
+              default:
+              case 'default':
+                break;
+              case 'somethingElse':
+                break;
+            }
+          `,
+            options: [options],
+          },
+        ],
+        valid: [
+          {
+            code: dedent`
+            switch (x) {
+              case 'AA':
+              case 'B':
+              default:
+                const c = 3
+            }
+          `,
+            options: [options],
           },
         ],
       },
@@ -923,111 +923,103 @@ describe(ruleName, () => {
       `${ruleName}(${type}): sorts inline elements correctly`,
       rule,
       {
-        valid: [],
         invalid: [
           {
+            errors: [
+              {
+                data: {
+                  right: 'a',
+                  left: 'b',
+                },
+                messageId: 'unexpectedSwitchCaseOrder',
+              },
+            ],
+            output: dedent`
+              switch (x) {
+                case "a": break; case "b": break;
+              }
+            `,
             code: dedent`
               switch (x) {
                 case "b": break; case "a": break
               }
             `,
+            options: [options],
+          },
+          {
+            errors: [
+              {
+                data: {
+                  right: 'a',
+                  left: 'b',
+                },
+                messageId: 'unexpectedSwitchCaseOrder',
+              },
+            ],
             output: dedent`
               switch (x) {
                 case "a": break; case "b": break;
               }
             `,
-            options: [options],
-            errors: [
-              {
-                messageId: 'unexpectedSwitchCaseOrder',
-                data: {
-                  left: 'b',
-                  right: 'a',
-                },
-              },
-            ],
-          },
-          {
             code: dedent`
               switch (x) {
                 case "b": break; case "a": break;
               }
             `,
-            output: dedent`
-              switch (x) {
-                case "a": break; case "b": break;
-              }
-            `,
             options: [options],
-            errors: [
-              {
-                messageId: 'unexpectedSwitchCaseOrder',
-                data: {
-                  left: 'b',
-                  right: 'a',
-                },
-              },
-            ],
           },
           {
+            errors: [
+              {
+                data: {
+                  right: 'a',
+                  left: 'b',
+                },
+                messageId: 'unexpectedSwitchCaseOrder',
+              },
+            ],
+            output: dedent`
+              switch (x) {
+                case "a": { break }; case "b": { break }
+              }
+            `,
             code: dedent`
               switch (x) {
                 case "b": { break } case "a": { break }
               }
             `,
+            options: [options],
+          },
+          {
+            errors: [
+              {
+                data: {
+                  right: 'a',
+                  left: 'b',
+                },
+                messageId: 'unexpectedSwitchCaseOrder',
+              },
+            ],
             output: dedent`
               switch (x) {
                 case "a": { break }; case "b": { break }
               }
             `,
-            options: [options],
-            errors: [
-              {
-                messageId: 'unexpectedSwitchCaseOrder',
-                data: {
-                  left: 'b',
-                  right: 'a',
-                },
-              },
-            ],
-          },
-          {
             code: dedent`
               switch (x) {
                 case "b": { break } case "a": { break };
               }
             `,
-            output: dedent`
-              switch (x) {
-                case "a": { break }; case "b": { break }
-              }
-            `,
             options: [options],
-            errors: [
-              {
-                messageId: 'unexpectedSwitchCaseOrder',
-                data: {
-                  left: 'b',
-                  right: 'a',
-                },
-              },
-            ],
           },
         ],
+        valid: [],
       },
     )
 
     ruleTester.run(`${ruleName}: handles comments`, rule, {
-      valid: [],
       invalid: [
         {
-          code: dedent`
-            switch (value) {
-              case "b": // b
-              case "a": // a
-                break;
-            }
-            `,
           output: [
             dedent`
               switch (value) {
@@ -1037,21 +1029,21 @@ describe(ruleName, () => {
               }
               `,
           ],
-          options: [{}],
+          code: dedent`
+            switch (value) {
+              case "b": // b
+              case "a": // a
+                break;
+            }
+            `,
           errors: [
             {
               messageId: 'unexpectedSwitchCaseOrder',
             },
           ],
+          options: [{}],
         },
         {
-          code: dedent`
-            switch (value) {
-              default: // default
-              case "a": // a
-                break;
-            }
-            `,
           output: [
             dedent`
               switch (value) {
@@ -1061,14 +1053,74 @@ describe(ruleName, () => {
               }
               `,
           ],
-          options: [{}],
+          code: dedent`
+            switch (value) {
+              default: // default
+              case "a": // a
+                break;
+            }
+            `,
           errors: [
             {
               messageId: 'unexpectedSwitchCaseOrder',
             },
           ],
+          options: [{}],
         },
         {
+          output: [
+            dedent`
+              switch (value) {
+                case "z": { return; } // z
+                case      "x"
+                   : // x
+                case "y": // y
+                default    : // default
+                    let a;
+                case "b": // b
+                  return;
+                case "a": // A
+                  break;
+              }
+              `,
+            dedent`
+              switch (value) {
+                case "a": // A
+                  break;
+                case "z": { return; } // z
+                case      "x"
+                   : // x
+                case "y": // y
+                default    : // default
+                    let a;
+                case "b": // b
+                  return;
+              }
+            `,
+          ],
+          errors: [
+            {
+              data: {
+                left: 'default',
+                right: 'x',
+              },
+              messageId: 'unexpectedSwitchCaseOrder',
+            },
+            {
+              data: {
+                right: 'x',
+                left: 'y',
+              },
+              messageId: 'unexpectedSwitchCaseOrder',
+            },
+            {
+              data: {
+                right: 'a',
+                left: 'b',
+              },
+              messageId: 'unexpectedSwitchCaseOrder',
+            },
+          ],
           code: dedent`
             switch (value) {
               case "z": { return; } // z
@@ -1083,62 +1135,10 @@ describe(ruleName, () => {
                 break;
             }
             `,
-          output: [
-            dedent`
-              switch (value) {
-                case "z": { return; } // z
-                case      "x"
-                   : // x
-                case "y": // y
-                default    : // default
-                    let a;
-                case "b": // b
-                  return;
-                case "a": // A
-                  break;
-              }
-              `,
-            dedent`
-              switch (value) {
-                case "a": // A
-                  break;
-                case "z": { return; } // z
-                case      "x"
-                   : // x
-                case "y": // y
-                default    : // default
-                    let a;
-                case "b": // b
-                  return;
-              }
-            `,
-          ],
           options: [{}],
-          errors: [
-            {
-              messageId: 'unexpectedSwitchCaseOrder',
-              data: {
-                left: 'default',
-                right: 'x',
-              },
-            },
-            {
-              messageId: 'unexpectedSwitchCaseOrder',
-              data: {
-                left: 'y',
-                right: 'x',
-              },
-            },
-            {
-              messageId: 'unexpectedSwitchCaseOrder',
-              data: {
-                left: 'b',
-                right: 'a',
-              },
-            },
-          ],
         },
       ],
+      valid: [],
     })
 
     ruleTester.run(`${ruleName}: handles last case without break`, rule, {
@@ -1194,15 +1194,15 @@ describe(ruleName, () => {
       ],
       invalid: [
         {
-          code: dedent`
-            switch(x) {
-              default:
-                break;
-              case "a":
-                break;
-              case "a":
-            }
-          `,
+          errors: [
+            {
+              data: {
+                left: 'default',
+                right: 'a',
+              },
+              messageId: 'unexpectedSwitchCaseOrder',
+            },
+          ],
           output: dedent`
             switch(x) {
               case "a":
@@ -1212,16 +1212,16 @@ describe(ruleName, () => {
               case "a":
             }
           `,
+          code: dedent`
+            switch(x) {
+              default:
+                break;
+              case "a":
+                break;
+              case "a":
+            }
+          `,
           options: [{}],
-          errors: [
-            {
-              messageId: 'unexpectedSwitchCaseOrder',
-              data: {
-                left: 'default',
-                right: 'a',
-              },
-            },
-          ],
         },
       ],
     })
@@ -1240,6 +1240,48 @@ describe(ruleName, () => {
       `${ruleName}(${type}): sorts switch cases with return statements`,
       rule,
       {
+        invalid: [
+          {
+            output: dedent`
+              function func(name) {
+                switch(name) {
+                  case 'aaa':
+                    return 'a'
+                  case 'bb':
+                    return 'b'
+                  case 'c':
+                    return 'c'
+                  default:
+                    return 'x'
+                }
+              }
+            `,
+            code: dedent`
+              function func(name) {
+                switch(name) {
+                  case 'bb':
+                    return 'b'
+                  case 'aaa':
+                    return 'a'
+                  case 'c':
+                    return 'c'
+                  default:
+                    return 'x'
+                }
+              }
+            `,
+            errors: [
+              {
+                data: {
+                  right: 'aaa',
+                  left: 'bb',
+                },
+                messageId: 'unexpectedSwitchCaseOrder',
+              },
+            ],
+            options: [options],
+          },
+        ],
         valid: [
           {
             code: dedent`
@@ -1257,48 +1299,6 @@ describe(ruleName, () => {
               }
             `,
             options: [options],
-          },
-        ],
-        invalid: [
-          {
-            code: dedent`
-              function func(name) {
-                switch(name) {
-                  case 'bb':
-                    return 'b'
-                  case 'aaa':
-                    return 'a'
-                  case 'c':
-                    return 'c'
-                  default:
-                    return 'x'
-                }
-              }
-            `,
-            output: dedent`
-              function func(name) {
-                switch(name) {
-                  case 'aaa':
-                    return 'a'
-                  case 'bb':
-                    return 'b'
-                  case 'c':
-                    return 'c'
-                  default:
-                    return 'x'
-                }
-              }
-            `,
-            options: [options],
-            errors: [
-              {
-                messageId: 'unexpectedSwitchCaseOrder',
-                data: {
-                  left: 'bb',
-                  right: 'aaa',
-                },
-              },
-            ],
           },
         ],
       },
@@ -1308,6 +1308,58 @@ describe(ruleName, () => {
       `${ruleName}(${type}): sorts switch cases with break statements`,
       rule,
       {
+        invalid: [
+          {
+            output: dedent`
+              function func(name) {
+                let size
+                switch(name) {
+                  case 'aaa':
+                    height = 1
+                    break
+                  case 'bb':
+                    height = 2
+                    break
+                  case 'c':
+                    height = 3
+                    break
+                  default:
+                    height = NaN
+                }
+                return size
+              }
+            `,
+            code: dedent`
+              function func(name) {
+                let size
+                switch(name) {
+                  case 'aaa':
+                    height = 1
+                    break
+                  case 'c':
+                    height = 3
+                    break
+                  case 'bb':
+                    height = 2
+                    break
+                  default:
+                    height = NaN
+                }
+                return size
+              }
+            `,
+            errors: [
+              {
+                data: {
+                  right: 'bb',
+                  left: 'c',
+                },
+                messageId: 'unexpectedSwitchCaseOrder',
+              },
+            ],
+            options: [options],
+          },
+        ],
         valid: [
           {
             code: dedent`
@@ -1330,58 +1382,6 @@ describe(ruleName, () => {
               }
             `,
             options: [options],
-          },
-        ],
-        invalid: [
-          {
-            code: dedent`
-              function func(name) {
-                let size
-                switch(name) {
-                  case 'aaa':
-                    height = 1
-                    break
-                  case 'c':
-                    height = 3
-                    break
-                  case 'bb':
-                    height = 2
-                    break
-                  default:
-                    height = NaN
-                }
-                return size
-              }
-            `,
-            output: dedent`
-              function func(name) {
-                let size
-                switch(name) {
-                  case 'aaa':
-                    height = 1
-                    break
-                  case 'bb':
-                    height = 2
-                    break
-                  case 'c':
-                    height = 3
-                    break
-                  default:
-                    height = NaN
-                }
-                return size
-              }
-            `,
-            options: [options],
-            errors: [
-              {
-                messageId: 'unexpectedSwitchCaseOrder',
-                data: {
-                  left: 'c',
-                  right: 'bb',
-                },
-              },
-            ],
           },
         ],
       },
@@ -1391,6 +1391,66 @@ describe(ruleName, () => {
       `${ruleName}(${type}): sorts switch cases with block statements`,
       rule,
       {
+        invalid: [
+          {
+            output: dedent`
+              function func(name) {
+                let size
+                switch(name) {
+                  case 'aaa': {
+                    height = 1
+                    break
+                  }
+                  case 'bb': {
+                    height = 2
+                    break
+                  }
+                  case 'c': {
+                    height = 3
+                    break
+                  }
+                  default:
+                    height = NaN
+                    break
+                }
+                return size
+              }
+            `,
+            code: dedent`
+              function func(name) {
+                let size
+                switch(name) {
+                  case 'aaa': {
+                    height = 1
+                    break
+                  }
+                  case 'c': {
+                    height = 3
+                    break
+                  }
+                  case 'bb': {
+                    height = 2
+                    break
+                  }
+                  default:
+                    height = NaN
+                    break
+                }
+                return size
+              }
+            `,
+            errors: [
+              {
+                data: {
+                  right: 'bb',
+                  left: 'c',
+                },
+                messageId: 'unexpectedSwitchCaseOrder',
+              },
+            ],
+            options: [options],
+          },
+        ],
         valid: [
           {
             code: dedent`
@@ -1415,109 +1475,12 @@ describe(ruleName, () => {
             options: [options],
           },
         ],
-        invalid: [
-          {
-            code: dedent`
-              function func(name) {
-                let size
-                switch(name) {
-                  case 'aaa': {
-                    height = 1
-                    break
-                  }
-                  case 'c': {
-                    height = 3
-                    break
-                  }
-                  case 'bb': {
-                    height = 2
-                    break
-                  }
-                  default:
-                    height = NaN
-                    break
-                }
-                return size
-              }
-            `,
-            output: dedent`
-              function func(name) {
-                let size
-                switch(name) {
-                  case 'aaa': {
-                    height = 1
-                    break
-                  }
-                  case 'bb': {
-                    height = 2
-                    break
-                  }
-                  case 'c': {
-                    height = 3
-                    break
-                  }
-                  default:
-                    height = NaN
-                    break
-                }
-                return size
-              }
-            `,
-            options: [options],
-            errors: [
-              {
-                messageId: 'unexpectedSwitchCaseOrder',
-                data: {
-                  left: 'c',
-                  right: 'bb',
-                },
-              },
-            ],
-          },
-        ],
       },
     )
 
     ruleTester.run(`${ruleName}(${type}): works with grouped cases`, rule, {
-      valid: [
-        {
-          code: dedent`
-            switch (value) {
-              case 'aaaaaa':
-                return 'primary'
-              case 'bbbbb':
-              case 'ddd':
-                return 'secondary'
-              case 'cccc':
-              case 'ee':
-              case 'f':
-                return 'tertiary'
-              case 'x':
-              default:
-                return 'unknown'
-            }
-          `,
-          options: [options],
-        },
-      ],
       invalid: [
         {
-          code: dedent`
-            switch (value) {
-              case 'aaaaaa':
-                return 'primary'
-              case 'ee':
-              case 'cccc':
-              case 'f':
-                return 'tertiary'
-              case 'bbbbb':
-              case 'ddd':
-                return 'secondary'
-              case 'x':
-              default:
-                return 'unknown'
-            }
-          `,
           output: [
             dedent`
               switch (value) {
@@ -1552,23 +1515,60 @@ describe(ruleName, () => {
               }
             `,
           ],
-          options: [options],
+          code: dedent`
+            switch (value) {
+              case 'aaaaaa':
+                return 'primary'
+              case 'ee':
+              case 'cccc':
+              case 'f':
+                return 'tertiary'
+              case 'bbbbb':
+              case 'ddd':
+                return 'secondary'
+              case 'x':
+              default:
+                return 'unknown'
+            }
+          `,
           errors: [
             {
-              messageId: 'unexpectedSwitchCaseOrder',
               data: {
-                left: 'ee',
                 right: 'cccc',
+                left: 'ee',
               },
+              messageId: 'unexpectedSwitchCaseOrder',
             },
             {
-              messageId: 'unexpectedSwitchCaseOrder',
               data: {
-                left: 'f',
                 right: 'bbbbb',
+                left: 'f',
               },
+              messageId: 'unexpectedSwitchCaseOrder',
             },
           ],
+          options: [options],
+        },
+      ],
+      valid: [
+        {
+          code: dedent`
+            switch (value) {
+              case 'aaaaaa':
+                return 'primary'
+              case 'bbbbb':
+              case 'ddd':
+                return 'secondary'
+              case 'cccc':
+              case 'ee':
+              case 'f':
+                return 'tertiary'
+              case 'x':
+              default:
+                return 'unknown'
+            }
+          `,
+          options: [options],
         },
       ],
     })
@@ -1577,6 +1577,44 @@ describe(ruleName, () => {
       `${ruleName}(${type}): works with grouped cases with default`,
       rule,
       {
+        invalid: [
+          {
+            output: dedent`
+            switch (operationMode) {
+              case wwww:
+                return null
+              case yy:
+              case z:
+                return null
+              case xxx:
+              default:
+                return null
+            }
+          `,
+            code: dedent`
+            switch (operationMode) {
+              case yy:
+              case z:
+                return null
+              case wwww:
+                return null
+              case xxx:
+              default:
+                return null
+            }
+          `,
+            errors: [
+              {
+                data: {
+                  right: 'wwww',
+                  left: 'z',
+                },
+                messageId: 'unexpectedSwitchCaseOrder',
+              },
+            ],
+            options: [options],
+          },
+        ],
         valid: [
           {
             code: dedent`
@@ -1592,44 +1630,6 @@ describe(ruleName, () => {
             }
           `,
             options: [options],
-          },
-        ],
-        invalid: [
-          {
-            code: dedent`
-            switch (operationMode) {
-              case yy:
-              case z:
-                return null
-              case wwww:
-                return null
-              case xxx:
-              default:
-                return null
-            }
-          `,
-            output: dedent`
-            switch (operationMode) {
-              case wwww:
-                return null
-              case yy:
-              case z:
-                return null
-              case xxx:
-              default:
-                return null
-            }
-          `,
-            options: [options],
-            errors: [
-              {
-                messageId: 'unexpectedSwitchCaseOrder',
-                data: {
-                  left: 'z',
-                  right: 'wwww',
-                },
-              },
-            ],
           },
         ],
       },
@@ -1639,6 +1639,36 @@ describe(ruleName, () => {
       `${ruleName}(${type}): works with single grouped case`,
       rule,
       {
+        invalid: [
+          {
+            errors: [
+              {
+                data: {
+                  right: 'AA',
+                  left: 'B',
+                },
+                messageId: 'unexpectedSwitchCaseOrder',
+              },
+            ],
+            output: dedent`
+              switch (x) {
+                case AA:
+                case B:
+                  const a = 1;
+                  break;
+              }
+            `,
+            code: dedent`
+              switch (x) {
+                case B:
+                case AA:
+                  const a = 1;
+                  break;
+              }
+            `,
+            options: [options],
+          },
+        ],
         valid: [
           {
             code: dedent`
@@ -1652,83 +1682,12 @@ describe(ruleName, () => {
             options: [options],
           },
         ],
-        invalid: [
-          {
-            code: dedent`
-              switch (x) {
-                case B:
-                case AA:
-                  const a = 1;
-                  break;
-              }
-            `,
-            output: dedent`
-              switch (x) {
-                case AA:
-                case B:
-                  const a = 1;
-                  break;
-              }
-            `,
-            options: [options],
-            errors: [
-              {
-                messageId: 'unexpectedSwitchCaseOrder',
-                data: {
-                  left: 'B',
-                  right: 'AA',
-                },
-              },
-            ],
-          },
-        ],
       },
     )
 
     ruleTester.run(`${ruleName}(${type}): works with complex cases`, rule, {
-      valid: [
-        {
-          code: dedent`
-            switch (x) {
-              case AAAAA:
-              case BBBB:
-                const a = 1
-                break
-              case CCC:
-                break
-              case DD:
-              case E:
-                const b = () => {
-                  return 2
-                }
-                break
-              default:
-                const c = 3
-            }
-          `,
-          options: [options],
-        },
-      ],
       invalid: [
         {
-          code: dedent`
-            switch (x) {
-              case E:
-              case DD:
-                const b = () => {
-                  return 2
-                }
-                break
-              case CCC:
-                break
-              case BBBB:
-              case AAAAA:
-                const a = 1
-                break
-              default:
-                const c = 3
-            }
-          `,
           output: [
             dedent`
               switch (x) {
@@ -1767,37 +1726,78 @@ describe(ruleName, () => {
               }
             `,
           ],
-          options: [options],
           errors: [
             {
-              messageId: 'unexpectedSwitchCaseOrder',
               data: {
-                left: 'E',
                 right: 'DD',
+                left: 'E',
               },
+              messageId: 'unexpectedSwitchCaseOrder',
             },
             {
-              messageId: 'unexpectedSwitchCaseOrder',
               data: {
-                left: 'DD',
                 right: 'CCC',
+                left: 'DD',
               },
+              messageId: 'unexpectedSwitchCaseOrder',
             },
             {
-              messageId: 'unexpectedSwitchCaseOrder',
               data: {
-                left: 'CCC',
                 right: 'BBBB',
+                left: 'CCC',
               },
+              messageId: 'unexpectedSwitchCaseOrder',
             },
             {
-              messageId: 'unexpectedSwitchCaseOrder',
               data: {
-                left: 'BBBB',
                 right: 'AAAAA',
+                left: 'BBBB',
               },
+              messageId: 'unexpectedSwitchCaseOrder',
             },
           ],
+          code: dedent`
+            switch (x) {
+              case E:
+              case DD:
+                const b = () => {
+                  return 2
+                }
+                break
+              case CCC:
+                break
+              case BBBB:
+              case AAAAA:
+                const a = 1
+                break
+              default:
+                const c = 3
+            }
+          `,
+          options: [options],
+        },
+      ],
+      valid: [
+        {
+          code: dedent`
+            switch (x) {
+              case AAAAA:
+              case BBBB:
+                const a = 1
+                break
+              case CCC:
+                break
+              case DD:
+              case E:
+                const b = () => {
+                  return 2
+                }
+                break
+              default:
+                const c = 3
+            }
+          `,
+          options: [options],
         },
       ],
     })
@@ -1806,6 +1806,36 @@ describe(ruleName, () => {
       `${ruleName}(${type}): works with groups with default`,
       rule,
       {
+        invalid: [
+          {
+            errors: [
+              {
+                data: {
+                  left: 'default',
+                  right: 'B',
+                },
+                messageId: 'unexpectedSwitchCaseOrder',
+              },
+            ],
+            output: dedent`
+            switch (x) {
+              case 'AA':
+              case 'B':
+              default:
+                break;
+            }
+          `,
+            code: dedent`
+            switch (x) {
+              case 'AA':
+              default:
+              case 'B':
+                break;
+            }
+          `,
+            options: [options],
+          },
+        ],
         valid: [
           {
             code: dedent`
@@ -1817,36 +1847,6 @@ describe(ruleName, () => {
             }
           `,
             options: [options],
-          },
-        ],
-        invalid: [
-          {
-            code: dedent`
-            switch (x) {
-              case 'AA':
-              default:
-              case 'B':
-                break;
-            }
-          `,
-            output: dedent`
-            switch (x) {
-              case 'AA':
-              case 'B':
-              default:
-                break;
-            }
-          `,
-            options: [options],
-            errors: [
-              {
-                messageId: 'unexpectedSwitchCaseOrder',
-                data: {
-                  left: 'default',
-                  right: 'B',
-                },
-              },
-            ],
           },
         ],
       },
@@ -1865,6 +1865,48 @@ describe(ruleName, () => {
       `${ruleName}(${type}): sorts switch cases with return statements`,
       rule,
       {
+        invalid: [
+          {
+            output: dedent`
+              function func(name) {
+                switch(name) {
+                  case 'aaa':
+                    return 'a'
+                  case 'bb':
+                    return 'b'
+                  case 'c':
+                    return 'c'
+                  default:
+                    return 'x'
+                }
+              }
+            `,
+            code: dedent`
+              function func(name) {
+                switch(name) {
+                  case 'bb':
+                    return 'b'
+                  case 'aaa':
+                    return 'a'
+                  case 'c':
+                    return 'c'
+                  default:
+                    return 'x'
+                }
+              }
+            `,
+            errors: [
+              {
+                data: {
+                  right: 'aaa',
+                  left: 'bb',
+                },
+                messageId: 'unexpectedSwitchCaseOrder',
+              },
+            ],
+            options: [options],
+          },
+        ],
         valid: [
           {
             code: dedent`
@@ -1882,48 +1924,6 @@ describe(ruleName, () => {
               }
             `,
             options: [options],
-          },
-        ],
-        invalid: [
-          {
-            code: dedent`
-              function func(name) {
-                switch(name) {
-                  case 'bb':
-                    return 'b'
-                  case 'aaa':
-                    return 'a'
-                  case 'c':
-                    return 'c'
-                  default:
-                    return 'x'
-                }
-              }
-            `,
-            output: dedent`
-              function func(name) {
-                switch(name) {
-                  case 'aaa':
-                    return 'a'
-                  case 'bb':
-                    return 'b'
-                  case 'c':
-                    return 'c'
-                  default:
-                    return 'x'
-                }
-              }
-            `,
-            options: [options],
-            errors: [
-              {
-                messageId: 'unexpectedSwitchCaseOrder',
-                data: {
-                  left: 'bb',
-                  right: 'aaa',
-                },
-              },
-            ],
           },
         ],
       },
@@ -1933,6 +1933,58 @@ describe(ruleName, () => {
       `${ruleName}(${type}): sorts switch cases with break statements`,
       rule,
       {
+        invalid: [
+          {
+            output: dedent`
+              function func(name) {
+                let size
+                switch(name) {
+                  case 'aaa':
+                    height = 1
+                    break
+                  case 'bb':
+                    height = 2
+                    break
+                  case 'c':
+                    height = 3
+                    break
+                  default:
+                    height = NaN
+                }
+                return size
+              }
+            `,
+            code: dedent`
+              function func(name) {
+                let size
+                switch(name) {
+                  case 'aaa':
+                    height = 1
+                    break
+                  case 'c':
+                    height = 3
+                    break
+                  case 'bb':
+                    height = 2
+                    break
+                  default:
+                    height = NaN
+                }
+                return size
+              }
+            `,
+            errors: [
+              {
+                data: {
+                  right: 'bb',
+                  left: 'c',
+                },
+                messageId: 'unexpectedSwitchCaseOrder',
+              },
+            ],
+            options: [options],
+          },
+        ],
         valid: [
           {
             code: dedent`
@@ -1955,58 +2007,6 @@ describe(ruleName, () => {
               }
             `,
             options: [options],
-          },
-        ],
-        invalid: [
-          {
-            code: dedent`
-              function func(name) {
-                let size
-                switch(name) {
-                  case 'aaa':
-                    height = 1
-                    break
-                  case 'c':
-                    height = 3
-                    break
-                  case 'bb':
-                    height = 2
-                    break
-                  default:
-                    height = NaN
-                }
-                return size
-              }
-            `,
-            output: dedent`
-              function func(name) {
-                let size
-                switch(name) {
-                  case 'aaa':
-                    height = 1
-                    break
-                  case 'bb':
-                    height = 2
-                    break
-                  case 'c':
-                    height = 3
-                    break
-                  default:
-                    height = NaN
-                }
-                return size
-              }
-            `,
-            options: [options],
-            errors: [
-              {
-                messageId: 'unexpectedSwitchCaseOrder',
-                data: {
-                  left: 'c',
-                  right: 'bb',
-                },
-              },
-            ],
           },
         ],
       },
@@ -2016,6 +2016,66 @@ describe(ruleName, () => {
       `${ruleName}(${type}): sorts switch cases with block statements`,
       rule,
       {
+        invalid: [
+          {
+            output: dedent`
+              function func(name) {
+                let size
+                switch(name) {
+                  case 'aaa': {
+                    height = 1
+                    break
+                  }
+                  case 'bb': {
+                    height = 2
+                    break
+                  }
+                  case 'c': {
+                    height = 3
+                    break
+                  }
+                  default:
+                    height = NaN
+                    break
+                }
+                return size
+              }
+            `,
+            code: dedent`
+              function func(name) {
+                let size
+                switch(name) {
+                  case 'aaa': {
+                    height = 1
+                    break
+                  }
+                  case 'c': {
+                    height = 3
+                    break
+                  }
+                  case 'bb': {
+                    height = 2
+                    break
+                  }
+                  default:
+                    height = NaN
+                    break
+                }
+                return size
+              }
+            `,
+            errors: [
+              {
+                data: {
+                  right: 'bb',
+                  left: 'c',
+                },
+                messageId: 'unexpectedSwitchCaseOrder',
+              },
+            ],
+            options: [options],
+          },
+        ],
         valid: [
           {
             code: dedent`
@@ -2040,109 +2100,12 @@ describe(ruleName, () => {
             options: [options],
           },
         ],
-        invalid: [
-          {
-            code: dedent`
-              function func(name) {
-                let size
-                switch(name) {
-                  case 'aaa': {
-                    height = 1
-                    break
-                  }
-                  case 'c': {
-                    height = 3
-                    break
-                  }
-                  case 'bb': {
-                    height = 2
-                    break
-                  }
-                  default:
-                    height = NaN
-                    break
-                }
-                return size
-              }
-            `,
-            output: dedent`
-              function func(name) {
-                let size
-                switch(name) {
-                  case 'aaa': {
-                    height = 1
-                    break
-                  }
-                  case 'bb': {
-                    height = 2
-                    break
-                  }
-                  case 'c': {
-                    height = 3
-                    break
-                  }
-                  default:
-                    height = NaN
-                    break
-                }
-                return size
-              }
-            `,
-            options: [options],
-            errors: [
-              {
-                messageId: 'unexpectedSwitchCaseOrder',
-                data: {
-                  left: 'c',
-                  right: 'bb',
-                },
-              },
-            ],
-          },
-        ],
       },
     )
 
     ruleTester.run(`${ruleName}(${type}): works with grouped cases`, rule, {
-      valid: [
-        {
-          code: dedent`
-            switch (value) {
-              case 'aaaaaa':
-                return 'primary'
-              case 'bbbbb':
-              case 'ddd':
-                return 'secondary'
-              case 'cccc':
-              case 'ee':
-              case 'f':
-                return 'tertiary'
-              case 'x':
-              default:
-                return 'unknown'
-            }
-          `,
-          options: [options],
-        },
-      ],
       invalid: [
         {
-          code: dedent`
-            switch (value) {
-              case 'aaaaaa':
-                return 'primary'
-              case 'ee':
-              case 'cccc':
-              case 'f':
-                return 'tertiary'
-              case 'bbbbb':
-              case 'ddd':
-                return 'secondary'
-              case 'x':
-              default:
-                return 'unknown'
-            }
-          `,
           output: [
             dedent`
               switch (value) {
@@ -2177,23 +2140,60 @@ describe(ruleName, () => {
               }
             `,
           ],
-          options: [options],
+          code: dedent`
+            switch (value) {
+              case 'aaaaaa':
+                return 'primary'
+              case 'ee':
+              case 'cccc':
+              case 'f':
+                return 'tertiary'
+              case 'bbbbb':
+              case 'ddd':
+                return 'secondary'
+              case 'x':
+              default:
+                return 'unknown'
+            }
+          `,
           errors: [
             {
-              messageId: 'unexpectedSwitchCaseOrder',
               data: {
-                left: 'ee',
                 right: 'cccc',
+                left: 'ee',
               },
+              messageId: 'unexpectedSwitchCaseOrder',
             },
             {
-              messageId: 'unexpectedSwitchCaseOrder',
               data: {
-                left: 'f',
                 right: 'bbbbb',
+                left: 'f',
               },
+              messageId: 'unexpectedSwitchCaseOrder',
             },
           ],
+          options: [options],
+        },
+      ],
+      valid: [
+        {
+          code: dedent`
+            switch (value) {
+              case 'aaaaaa':
+                return 'primary'
+              case 'bbbbb':
+              case 'ddd':
+                return 'secondary'
+              case 'cccc':
+              case 'ee':
+              case 'f':
+                return 'tertiary'
+              case 'x':
+              default:
+                return 'unknown'
+            }
+          `,
+          options: [options],
         },
       ],
     })
@@ -2202,6 +2202,44 @@ describe(ruleName, () => {
       `${ruleName}(${type}): works with grouped cases with default`,
       rule,
       {
+        invalid: [
+          {
+            output: dedent`
+            switch (operationMode) {
+              case wwww:
+                return null
+              case yy:
+              case z:
+                return null
+              case xxx:
+              default:
+                return null
+            }
+          `,
+            code: dedent`
+            switch (operationMode) {
+              case yy:
+              case z:
+                return null
+              case wwww:
+                return null
+              case xxx:
+              default:
+                return null
+            }
+          `,
+            errors: [
+              {
+                data: {
+                  right: 'wwww',
+                  left: 'z',
+                },
+                messageId: 'unexpectedSwitchCaseOrder',
+              },
+            ],
+            options: [options],
+          },
+        ],
         valid: [
           {
             code: dedent`
@@ -2217,44 +2255,6 @@ describe(ruleName, () => {
             }
           `,
             options: [options],
-          },
-        ],
-        invalid: [
-          {
-            code: dedent`
-            switch (operationMode) {
-              case yy:
-              case z:
-                return null
-              case wwww:
-                return null
-              case xxx:
-              default:
-                return null
-            }
-          `,
-            output: dedent`
-            switch (operationMode) {
-              case wwww:
-                return null
-              case yy:
-              case z:
-                return null
-              case xxx:
-              default:
-                return null
-            }
-          `,
-            options: [options],
-            errors: [
-              {
-                messageId: 'unexpectedSwitchCaseOrder',
-                data: {
-                  left: 'z',
-                  right: 'wwww',
-                },
-              },
-            ],
           },
         ],
       },
@@ -2264,6 +2264,36 @@ describe(ruleName, () => {
       `${ruleName}(${type}): works with single grouped case`,
       rule,
       {
+        invalid: [
+          {
+            errors: [
+              {
+                data: {
+                  right: 'AA',
+                  left: 'B',
+                },
+                messageId: 'unexpectedSwitchCaseOrder',
+              },
+            ],
+            output: dedent`
+              switch (x) {
+                case AA:
+                case B:
+                  const a = 1;
+                  break;
+              }
+            `,
+            code: dedent`
+              switch (x) {
+                case B:
+                case AA:
+                  const a = 1;
+                  break;
+              }
+            `,
+            options: [options],
+          },
+        ],
         valid: [
           {
             code: dedent`
@@ -2277,83 +2307,12 @@ describe(ruleName, () => {
             options: [options],
           },
         ],
-        invalid: [
-          {
-            code: dedent`
-              switch (x) {
-                case B:
-                case AA:
-                  const a = 1;
-                  break;
-              }
-            `,
-            output: dedent`
-              switch (x) {
-                case AA:
-                case B:
-                  const a = 1;
-                  break;
-              }
-            `,
-            options: [options],
-            errors: [
-              {
-                messageId: 'unexpectedSwitchCaseOrder',
-                data: {
-                  left: 'B',
-                  right: 'AA',
-                },
-              },
-            ],
-          },
-        ],
       },
     )
 
     ruleTester.run(`${ruleName}(${type}): works with complex cases`, rule, {
-      valid: [
-        {
-          code: dedent`
-            switch (x) {
-              case AAAAA:
-              case BBBB:
-                const a = 1
-                break
-              case CCC:
-                break
-              case DD:
-              case E:
-                const b = () => {
-                  return 2
-                }
-                break
-              default:
-                const c = 3
-            }
-          `,
-          options: [options],
-        },
-      ],
       invalid: [
         {
-          code: dedent`
-            switch (x) {
-              case E:
-              case DD:
-                const b = () => {
-                  return 2
-                }
-                break
-              case CCC:
-                break
-              case BBBB:
-              case AAAAA:
-                const a = 1
-                break
-              default:
-                const c = 3
-            }
-          `,
           output: [
             dedent`
               switch (x) {
@@ -2392,37 +2351,78 @@ describe(ruleName, () => {
               }
             `,
           ],
-          options: [options],
           errors: [
             {
-              messageId: 'unexpectedSwitchCaseOrder',
               data: {
-                left: 'E',
                 right: 'DD',
+                left: 'E',
               },
+              messageId: 'unexpectedSwitchCaseOrder',
             },
             {
-              messageId: 'unexpectedSwitchCaseOrder',
               data: {
-                left: 'DD',
                 right: 'CCC',
+                left: 'DD',
               },
+              messageId: 'unexpectedSwitchCaseOrder',
             },
             {
-              messageId: 'unexpectedSwitchCaseOrder',
               data: {
-                left: 'CCC',
                 right: 'BBBB',
+                left: 'CCC',
               },
+              messageId: 'unexpectedSwitchCaseOrder',
             },
             {
-              messageId: 'unexpectedSwitchCaseOrder',
               data: {
-                left: 'BBBB',
                 right: 'AAAAA',
+                left: 'BBBB',
               },
+              messageId: 'unexpectedSwitchCaseOrder',
             },
           ],
+          code: dedent`
+            switch (x) {
+              case E:
+              case DD:
+                const b = () => {
+                  return 2
+                }
+                break
+              case CCC:
+                break
+              case BBBB:
+              case AAAAA:
+                const a = 1
+                break
+              default:
+                const c = 3
+            }
+          `,
+          options: [options],
+        },
+      ],
+      valid: [
+        {
+          code: dedent`
+            switch (x) {
+              case AAAAA:
+              case BBBB:
+                const a = 1
+                break
+              case CCC:
+                break
+              case DD:
+              case E:
+                const b = () => {
+                  return 2
+                }
+                break
+              default:
+                const c = 3
+            }
+          `,
+          options: [options],
         },
       ],
     })
@@ -2431,6 +2431,36 @@ describe(ruleName, () => {
       `${ruleName}(${type}): works with groups with default`,
       rule,
       {
+        invalid: [
+          {
+            errors: [
+              {
+                data: {
+                  left: 'default',
+                  right: 'B',
+                },
+                messageId: 'unexpectedSwitchCaseOrder',
+              },
+            ],
+            output: dedent`
+            switch (x) {
+              case 'AA':
+              case 'B':
+              default:
+                break;
+            }
+          `,
+            code: dedent`
+            switch (x) {
+              case 'AA':
+              default:
+              case 'B':
+                break;
+            }
+          `,
+            options: [options],
+          },
+        ],
         valid: [
           {
             code: dedent`
@@ -2442,36 +2472,6 @@ describe(ruleName, () => {
             }
           `,
             options: [options],
-          },
-        ],
-        invalid: [
-          {
-            code: dedent`
-            switch (x) {
-              case 'AA':
-              default:
-              case 'B':
-                break;
-            }
-          `,
-            output: dedent`
-            switch (x) {
-              case 'AA':
-              case 'B':
-              default:
-                break;
-            }
-          `,
-            options: [options],
-            errors: [
-              {
-                messageId: 'unexpectedSwitchCaseOrder',
-                data: {
-                  left: 'default',
-                  right: 'B',
-                },
-              },
-            ],
           },
         ],
       },
@@ -2499,19 +2499,8 @@ describe(ruleName, () => {
   })
 
   ruleTester.run(`${ruleName}: default should be last`, rule, {
-    valid: [],
     invalid: [
       {
-        code: dedent`
-          switch (value) {
-            case 'aa':
-              return true
-            default:
-              return false
-            case 'b':
-              return true
-          }
-        `,
         output: dedent`
           switch (value) {
             case 'aa':
@@ -2522,20 +2511,68 @@ describe(ruleName, () => {
               return false
           }
         `,
+        code: dedent`
+          switch (value) {
+            case 'aa':
+              return true
+            default:
+              return false
+            case 'b':
+              return true
+          }
+        `,
         errors: [
           {
-            messageId: 'unexpectedSwitchCaseOrder',
             data: {
               left: 'default',
               right: 'b',
             },
+            messageId: 'unexpectedSwitchCaseOrder',
           },
         ],
       },
     ],
+    valid: [],
   })
 
   ruleTester.run(`${ruleName}: handles default case and default clause`, rule, {
+    invalid: [
+      {
+        output: dedent`
+        switch (variable) {
+          case 'add':
+            break
+          case 'default':
+            break
+          case 'remove':
+            break
+          default:
+            break
+          }
+        `,
+        code: dedent`
+        switch (variable) {
+          case 'default':
+            break
+          case 'add':
+            break
+          case 'remove':
+            break
+          default:
+            break
+          }
+        `,
+        errors: [
+          {
+            data: {
+              left: 'default',
+              right: 'add',
+            },
+            messageId: 'unexpectedSwitchCaseOrder',
+          },
+        ],
+      },
+    ],
     valid: [
       dedent`
         switch (variable) {
@@ -2549,43 +2586,6 @@ describe(ruleName, () => {
             break
           }
         `,
-    ],
-    invalid: [
-      {
-        code: dedent`
-        switch (variable) {
-          case 'default':
-            break
-          case 'add':
-            break
-          case 'remove':
-            break
-          default:
-            break
-          }
-        `,
-        output: dedent`
-        switch (variable) {
-          case 'add':
-            break
-          case 'default':
-            break
-          case 'remove':
-            break
-          default:
-            break
-          }
-        `,
-        errors: [
-          {
-            messageId: 'unexpectedSwitchCaseOrder',
-            data: {
-              left: 'default',
-              right: 'add',
-            },
-          },
-        ],
-      },
     ],
   })
 })

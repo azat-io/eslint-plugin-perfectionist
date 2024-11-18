@@ -26,6 +26,34 @@ describe(ruleName, () => {
     } as const
 
     ruleTester.run(`${ruleName}(${type}): sorts named exports`, rule, {
+      invalid: [
+        {
+          errors: [
+            {
+              data: {
+                right: 'bb',
+                left: 'c',
+              },
+              messageId: 'unexpectedNamedExportsOrder',
+            },
+          ],
+          output: dedent`
+            export {
+              aaa,
+              bb,
+              c
+            }
+          `,
+          code: dedent`
+            export {
+              aaa,
+              c,
+              bb
+            }
+          `,
+          options: [options],
+        },
+      ],
       valid: [
         {
           code: 'export { a }',
@@ -36,40 +64,75 @@ describe(ruleName, () => {
           options: [options],
         },
       ],
-      invalid: [
-        {
-          code: dedent`
-            export {
-              aaa,
-              c,
-              bb
-            }
-          `,
-          output: dedent`
-            export {
-              aaa,
-              bb,
-              c
-            }
-          `,
-          options: [options],
-          errors: [
-            {
-              messageId: 'unexpectedNamedExportsOrder',
-              data: {
-                left: 'c',
-                right: 'bb',
-              },
-            },
-          ],
-        },
-      ],
     })
 
     ruleTester.run(
       `${ruleName}: sorts named exports grouping by their kind`,
       rule,
       {
+        invalid: [
+          {
+            errors: [
+              {
+                data: {
+                  right: 'BB',
+                  left: 'C',
+                },
+                messageId: 'unexpectedNamedExportsOrder',
+              },
+            ],
+            output: dedent`
+              export { AAA, type BB, BB, type C }
+            `,
+            code: dedent`
+              export { AAA, type C, type BB, BB }
+            `,
+            options: [{ ...options, groupKind: 'mixed' }],
+          },
+          {
+            errors: [
+              {
+                data: {
+                  right: 'AAA',
+                  left: 'BB',
+                },
+                messageId: 'unexpectedNamedExportsOrder',
+              },
+              {
+                data: {
+                  right: 'BB',
+                  left: 'C',
+                },
+                messageId: 'unexpectedNamedExportsOrder',
+              },
+            ],
+            output: dedent`
+              export { AAA, BB, type BB, type C }
+            `,
+            code: dedent`
+              export { type BB, AAA, type C, BB }
+            `,
+            options: [{ ...options, groupKind: 'values-first' }],
+          },
+          {
+            errors: [
+              {
+                data: {
+                  left: 'AAA',
+                  right: 'C',
+                },
+                messageId: 'unexpectedNamedExportsOrder',
+              },
+            ],
+            output: dedent`
+              export { type BB, type C, AAA, BB }
+            `,
+            code: dedent`
+              export { type BB, AAA, type C, BB }
+            `,
+            options: [{ ...options, groupKind: 'types-first' }],
+          },
+        ],
         valid: [
           {
             code: dedent`
@@ -90,69 +153,6 @@ describe(ruleName, () => {
             options: [{ ...options, groupKind: 'types-first' }],
           },
         ],
-        invalid: [
-          {
-            code: dedent`
-              export { AAA, type C, type BB, BB }
-            `,
-            output: dedent`
-              export { AAA, type BB, BB, type C }
-            `,
-            options: [{ ...options, groupKind: 'mixed' }],
-            errors: [
-              {
-                messageId: 'unexpectedNamedExportsOrder',
-                data: {
-                  left: 'C',
-                  right: 'BB',
-                },
-              },
-            ],
-          },
-          {
-            code: dedent`
-              export { type BB, AAA, type C, BB }
-            `,
-            output: dedent`
-              export { AAA, BB, type BB, type C }
-            `,
-            options: [{ ...options, groupKind: 'values-first' }],
-            errors: [
-              {
-                messageId: 'unexpectedNamedExportsOrder',
-                data: {
-                  left: 'BB',
-                  right: 'AAA',
-                },
-              },
-              {
-                messageId: 'unexpectedNamedExportsOrder',
-                data: {
-                  left: 'C',
-                  right: 'BB',
-                },
-              },
-            ],
-          },
-          {
-            code: dedent`
-              export { type BB, AAA, type C, BB }
-            `,
-            output: dedent`
-              export { type BB, type C, AAA, BB }
-            `,
-            options: [{ ...options, groupKind: 'types-first' }],
-            errors: [
-              {
-                messageId: 'unexpectedNamedExportsOrder',
-                data: {
-                  left: 'AAA',
-                  right: 'C',
-                },
-              },
-            ],
-          },
-        ],
       },
     )
 
@@ -160,20 +160,24 @@ describe(ruleName, () => {
       `${ruleName}(${type}): allows to use new line as partition`,
       rule,
       {
-        valid: [],
         invalid: [
           {
-            code: dedent`
-              export {
-                D,
-                A,
-
-                C,
-
-                E,
-                B,
-              }
-            `,
+            errors: [
+              {
+                data: {
+                  right: 'A',
+                  left: 'D',
+                },
+                messageId: 'unexpectedNamedExportsOrder',
+              },
+              {
+                data: {
+                  right: 'B',
+                  left: 'E',
+                },
+                messageId: 'unexpectedNamedExportsOrder',
+              },
+            ],
             output: dedent`
               export {
                 A,
@@ -183,6 +187,17 @@ describe(ruleName, () => {
 
                 B,
                 E,
+              }
+            `,
+            code: dedent`
+              export {
+                D,
+                A,
+
+                C,
+
+                E,
+                B,
               }
             `,
             options: [
@@ -191,24 +206,9 @@ describe(ruleName, () => {
                 partitionByNewLine: true,
               },
             ],
-            errors: [
-              {
-                messageId: 'unexpectedNamedExportsOrder',
-                data: {
-                  left: 'D',
-                  right: 'A',
-                },
-              },
-              {
-                messageId: 'unexpectedNamedExportsOrder',
-                data: {
-                  left: 'E',
-                  right: 'B',
-                },
-              },
-            ],
           },
         ],
+        valid: [],
       },
     )
 
@@ -217,25 +217,24 @@ describe(ruleName, () => {
         `${ruleName}(${type}): allows to use partition comments`,
         rule,
         {
-          valid: [],
           invalid: [
             {
-              code: dedent`
-                export {
-                  // Part: A
-                  CC,
-                  type D,
-                  // Not partition comment
-                  BBB,
-                  // Part: B
-                  AAAA,
-                  E,
-                  // Part: C
-                  GG,
-                  // Not partition comment
-                  FFF,
-                }
-              `,
+              errors: [
+                {
+                  data: {
+                    left: 'CC',
+                    right: 'D',
+                  },
+                  messageId: 'unexpectedNamedExportsOrder',
+                },
+                {
+                  data: {
+                    right: 'FFF',
+                    left: 'GG',
+                  },
+                  messageId: 'unexpectedNamedExportsOrder',
+                },
+              ],
               output: dedent`
                 export {
                   // Part: A
@@ -252,6 +251,22 @@ describe(ruleName, () => {
                   GG,
                 }
               `,
+              code: dedent`
+                export {
+                  // Part: A
+                  CC,
+                  type D,
+                  // Not partition comment
+                  BBB,
+                  // Part: B
+                  AAAA,
+                  E,
+                  // Part: C
+                  GG,
+                  // Not partition comment
+                  FFF,
+                }
+              `,
               options: [
                 {
                   ...options,
@@ -259,24 +274,9 @@ describe(ruleName, () => {
                   groupKind: 'types-first',
                 },
               ],
-              errors: [
-                {
-                  messageId: 'unexpectedNamedExportsOrder',
-                  data: {
-                    left: 'CC',
-                    right: 'D',
-                  },
-                },
-                {
-                  messageId: 'unexpectedNamedExportsOrder',
-                  data: {
-                    left: 'GG',
-                    right: 'FFF',
-                  },
-                },
-              ],
             },
           ],
+          valid: [],
         },
       )
 
@@ -310,22 +310,8 @@ describe(ruleName, () => {
         `${ruleName}(${type}): allows to use multiple partition comments`,
         rule,
         {
-          valid: [],
           invalid: [
             {
-              code: dedent`
-                export {
-                  /* Partition Comment */
-                  // Part: A
-                  D,
-                  // Part: B
-                  AAA,
-                  C,
-                  BB,
-                  /* Other */
-                  E,
-                }
-              `,
               output: dedent`
                 export {
                   /* Partition Comment */
@@ -339,23 +325,37 @@ describe(ruleName, () => {
                   E,
                 }
               `,
+              code: dedent`
+                export {
+                  /* Partition Comment */
+                  // Part: A
+                  D,
+                  // Part: B
+                  AAA,
+                  C,
+                  BB,
+                  /* Other */
+                  E,
+                }
+              `,
+              errors: [
+                {
+                  data: {
+                    right: 'BB',
+                    left: 'C',
+                  },
+                  messageId: 'unexpectedNamedExportsOrder',
+                },
+              ],
               options: [
                 {
                   ...options,
                   partitionByComment: ['Partition Comment', 'Part: *', 'Other'],
                 },
               ],
-              errors: [
-                {
-                  messageId: 'unexpectedNamedExportsOrder',
-                  data: {
-                    left: 'C',
-                    right: 'BB',
-                  },
-                },
-              ],
             },
           ],
+          valid: [],
         },
       )
 
@@ -393,15 +393,15 @@ describe(ruleName, () => {
       {
         valid: [
           {
-            code: dedent`
-              export { _a, b, _c }
-            `,
             options: [
               {
                 ...options,
                 specialCharacters: 'trim',
               },
             ],
+            code: dedent`
+              export { _a, b, _c }
+            `,
           },
         ],
         invalid: [],
@@ -414,15 +414,15 @@ describe(ruleName, () => {
       {
         valid: [
           {
-            code: dedent`
-              export { ab, a_c }
-            `,
             options: [
               {
                 ...options,
                 specialCharacters: 'remove',
               },
             ],
+            code: dedent`
+              export { ab, a_c }
+            `,
           },
         ],
         invalid: [],
@@ -442,6 +442,26 @@ describe(ruleName, () => {
     })
 
     ruleTester.run(`${ruleName}(${type}): works with arbitrary names`, rule, {
+      invalid: [
+        {
+          errors: [
+            {
+              data: {
+                right: 'A',
+                left: 'B',
+              },
+              messageId: 'unexpectedNamedExportsOrder',
+            },
+          ],
+          output: dedent`
+            export { a as "A", b as "B" };
+          `,
+          code: dedent`
+            export { b as "B", a as "A" };
+          `,
+          options: [options],
+        },
+      ],
       valid: [
         {
           code: dedent`
@@ -450,79 +470,59 @@ describe(ruleName, () => {
           options: [options],
         },
       ],
-      invalid: [
-        {
-          code: dedent`
-            export { b as "B", a as "A" };
-          `,
-          output: dedent`
-            export { a as "A", b as "B" };
-          `,
-          options: [options],
-          errors: [
-            {
-              messageId: 'unexpectedNamedExportsOrder',
-              data: {
-                left: 'B',
-                right: 'A',
-              },
-            },
-          ],
-        },
-      ],
     })
 
     ruleTester.run(
       `${ruleName}(${type}): sorts inline elements correctly`,
       rule,
       {
-        valid: [],
         invalid: [
           {
-            code: dedent`
-              export {
-                b, a
-              }
-            `,
+            errors: [
+              {
+                data: {
+                  right: 'a',
+                  left: 'b',
+                },
+                messageId: 'unexpectedNamedExportsOrder',
+              },
+            ],
             output: dedent`
               export {
                 a, b
               }
             `,
-            options: [options],
-            errors: [
-              {
-                messageId: 'unexpectedNamedExportsOrder',
-                data: {
-                  left: 'b',
-                  right: 'a',
-                },
-              },
-            ],
-          },
-          {
             code: dedent`
               export {
-                b, a,
+                b, a
               }
             `,
+            options: [options],
+          },
+          {
+            errors: [
+              {
+                data: {
+                  right: 'a',
+                  left: 'b',
+                },
+                messageId: 'unexpectedNamedExportsOrder',
+              },
+            ],
             output: dedent`
               export {
                 a, b,
               }
             `,
+            code: dedent`
+              export {
+                b, a,
+              }
+            `,
             options: [options],
-            errors: [
-              {
-                messageId: 'unexpectedNamedExportsOrder',
-                data: {
-                  left: 'b',
-                  right: 'a',
-                },
-              },
-            ],
           },
         ],
+        valid: [],
       },
     )
   })
@@ -537,21 +537,17 @@ describe(ruleName, () => {
     } as const
 
     ruleTester.run(`${ruleName}(${type}): sorts named exports`, rule, {
-      valid: [
-        {
-          code: 'export { aaa, bb, c }',
-          options: [options],
-        },
-      ],
       invalid: [
         {
-          code: dedent`
-            export {
-              aaa,
-              c,
-              bb
-            }
-          `,
+          errors: [
+            {
+              data: {
+                right: 'bb',
+                left: 'c',
+              },
+              messageId: 'unexpectedNamedExportsOrder',
+            },
+          ],
           output: dedent`
             export {
               aaa,
@@ -559,16 +555,20 @@ describe(ruleName, () => {
               c
             }
           `,
+          code: dedent`
+            export {
+              aaa,
+              c,
+              bb
+            }
+          `,
           options: [options],
-          errors: [
-            {
-              messageId: 'unexpectedNamedExportsOrder',
-              data: {
-                left: 'c',
-                right: 'bb',
-              },
-            },
-          ],
+        },
+      ],
+      valid: [
+        {
+          code: 'export { aaa, bb, c }',
+          options: [options],
         },
       ],
     })
@@ -577,6 +577,69 @@ describe(ruleName, () => {
       `${ruleName}: sorts named exports grouping by their kind`,
       rule,
       {
+        invalid: [
+          {
+            errors: [
+              {
+                data: {
+                  right: 'BB',
+                  left: 'C',
+                },
+                messageId: 'unexpectedNamedExportsOrder',
+              },
+            ],
+            output: dedent`
+              export { AAA, type BB, BB, type C }
+            `,
+            code: dedent`
+              export { AAA, type C, type BB, BB }
+            `,
+            options: [{ ...options, groupKind: 'mixed' }],
+          },
+          {
+            errors: [
+              {
+                data: {
+                  right: 'AAA',
+                  left: 'BB',
+                },
+                messageId: 'unexpectedNamedExportsOrder',
+              },
+              {
+                data: {
+                  right: 'BB',
+                  left: 'C',
+                },
+                messageId: 'unexpectedNamedExportsOrder',
+              },
+            ],
+            output: dedent`
+              export { AAA, BB, type BB, type C }
+            `,
+            code: dedent`
+              export { type BB, AAA, type C, BB }
+            `,
+            options: [{ ...options, groupKind: 'values-first' }],
+          },
+          {
+            errors: [
+              {
+                data: {
+                  left: 'AAA',
+                  right: 'C',
+                },
+                messageId: 'unexpectedNamedExportsOrder',
+              },
+            ],
+            output: dedent`
+              export { type BB, type C, AAA, BB }
+            `,
+            code: dedent`
+              export { type BB, AAA, type C, BB }
+            `,
+            options: [{ ...options, groupKind: 'types-first' }],
+          },
+        ],
         valid: [
           {
             code: dedent`
@@ -595,69 +658,6 @@ describe(ruleName, () => {
               export { type BB, type C, AAA, BB }
             `,
             options: [{ ...options, groupKind: 'types-first' }],
-          },
-        ],
-        invalid: [
-          {
-            code: dedent`
-              export { AAA, type C, type BB, BB }
-            `,
-            output: dedent`
-              export { AAA, type BB, BB, type C }
-            `,
-            options: [{ ...options, groupKind: 'mixed' }],
-            errors: [
-              {
-                messageId: 'unexpectedNamedExportsOrder',
-                data: {
-                  left: 'C',
-                  right: 'BB',
-                },
-              },
-            ],
-          },
-          {
-            code: dedent`
-              export { type BB, AAA, type C, BB }
-            `,
-            output: dedent`
-              export { AAA, BB, type BB, type C }
-            `,
-            options: [{ ...options, groupKind: 'values-first' }],
-            errors: [
-              {
-                messageId: 'unexpectedNamedExportsOrder',
-                data: {
-                  left: 'BB',
-                  right: 'AAA',
-                },
-              },
-              {
-                messageId: 'unexpectedNamedExportsOrder',
-                data: {
-                  left: 'C',
-                  right: 'BB',
-                },
-              },
-            ],
-          },
-          {
-            code: dedent`
-              export { type BB, AAA, type C, BB }
-            `,
-            output: dedent`
-              export { type BB, type C, AAA, BB }
-            `,
-            options: [{ ...options, groupKind: 'types-first' }],
-            errors: [
-              {
-                messageId: 'unexpectedNamedExportsOrder',
-                data: {
-                  left: 'AAA',
-                  right: 'C',
-                },
-              },
-            ],
           },
         ],
       },
@@ -673,21 +673,17 @@ describe(ruleName, () => {
     } as const
 
     ruleTester.run(`${ruleName}(${type}): sorts named exports`, rule, {
-      valid: [
-        {
-          code: 'export { aaa, bb, c }',
-          options: [options],
-        },
-      ],
       invalid: [
         {
-          code: dedent`
-            export {
-              aaa,
-              c,
-              bb
-            }
-          `,
+          errors: [
+            {
+              data: {
+                right: 'bb',
+                left: 'c',
+              },
+              messageId: 'unexpectedNamedExportsOrder',
+            },
+          ],
           output: dedent`
             export {
               aaa,
@@ -695,16 +691,20 @@ describe(ruleName, () => {
               c
             }
           `,
+          code: dedent`
+            export {
+              aaa,
+              c,
+              bb
+            }
+          `,
           options: [options],
-          errors: [
-            {
-              messageId: 'unexpectedNamedExportsOrder',
-              data: {
-                left: 'c',
-                right: 'bb',
-              },
-            },
-          ],
+        },
+      ],
+      valid: [
+        {
+          code: 'export { aaa, bb, c }',
+          options: [options],
         },
       ],
     })
@@ -713,6 +713,76 @@ describe(ruleName, () => {
       `${ruleName}: sorts named exports grouping by their kind`,
       rule,
       {
+        invalid: [
+          {
+            errors: [
+              {
+                data: {
+                  left: 'AAA',
+                  right: 'C',
+                },
+                messageId: 'unexpectedNamedExportsOrder',
+              },
+              {
+                data: {
+                  right: 'BB',
+                  left: 'C',
+                },
+                messageId: 'unexpectedNamedExportsOrder',
+              },
+            ],
+            output: dedent`
+              export { type BB, type C, AAA, BB }
+            `,
+            code: dedent`
+              export { AAA, type C, type BB, BB }
+            `,
+            options: [{ ...options, groupKind: 'mixed' }],
+          },
+          {
+            errors: [
+              {
+                data: {
+                  right: 'AAA',
+                  left: 'BB',
+                },
+                messageId: 'unexpectedNamedExportsOrder',
+              },
+              {
+                data: {
+                  right: 'BB',
+                  left: 'C',
+                },
+                messageId: 'unexpectedNamedExportsOrder',
+              },
+            ],
+            output: dedent`
+              export { AAA, BB, type BB, type C }
+            `,
+            code: dedent`
+              export { type BB, AAA, type C, BB }
+            `,
+            options: [{ ...options, groupKind: 'values-first' }],
+          },
+          {
+            errors: [
+              {
+                data: {
+                  left: 'AAA',
+                  right: 'C',
+                },
+                messageId: 'unexpectedNamedExportsOrder',
+              },
+            ],
+            output: dedent`
+              export { type BB, type C, AAA, BB }
+            `,
+            code: dedent`
+              export { type BB, AAA, type C, BB }
+            `,
+            options: [{ ...options, groupKind: 'types-first' }],
+          },
+        ],
         valid: [
           {
             code: dedent`
@@ -731,76 +801,6 @@ describe(ruleName, () => {
               export { type BB, type C, AAA, BB }
             `,
             options: [{ ...options, groupKind: 'types-first' }],
-          },
-        ],
-        invalid: [
-          {
-            code: dedent`
-              export { AAA, type C, type BB, BB }
-            `,
-            output: dedent`
-              export { type BB, type C, AAA, BB }
-            `,
-            options: [{ ...options, groupKind: 'mixed' }],
-            errors: [
-              {
-                messageId: 'unexpectedNamedExportsOrder',
-                data: {
-                  left: 'AAA',
-                  right: 'C',
-                },
-              },
-              {
-                messageId: 'unexpectedNamedExportsOrder',
-                data: {
-                  left: 'C',
-                  right: 'BB',
-                },
-              },
-            ],
-          },
-          {
-            code: dedent`
-              export { type BB, AAA, type C, BB }
-            `,
-            output: dedent`
-              export { AAA, BB, type BB, type C }
-            `,
-            options: [{ ...options, groupKind: 'values-first' }],
-            errors: [
-              {
-                messageId: 'unexpectedNamedExportsOrder',
-                data: {
-                  left: 'BB',
-                  right: 'AAA',
-                },
-              },
-              {
-                messageId: 'unexpectedNamedExportsOrder',
-                data: {
-                  left: 'C',
-                  right: 'BB',
-                },
-              },
-            ],
-          },
-          {
-            code: dedent`
-              export { type BB, AAA, type C, BB }
-            `,
-            output: dedent`
-              export { type BB, type C, AAA, BB }
-            `,
-            options: [{ ...options, groupKind: 'types-first' }],
-            errors: [
-              {
-                messageId: 'unexpectedNamedExportsOrder',
-                data: {
-                  left: 'AAA',
-                  right: 'C',
-                },
-              },
-            ],
           },
         ],
       },
@@ -812,6 +812,25 @@ describe(ruleName, () => {
       `${ruleName}: sets alphabetical asc sorting as default`,
       rule,
       {
+        invalid: [
+          {
+            errors: [
+              {
+                data: {
+                  right: 'A',
+                  left: 'B',
+                },
+                messageId: 'unexpectedNamedExportsOrder',
+              },
+            ],
+            output: dedent`
+              export { A, B }
+            `,
+            code: dedent`
+              export { B, A }
+            `,
+          },
+        ],
         valid: [
           'export { A, B }',
           {
@@ -819,41 +838,22 @@ describe(ruleName, () => {
             options: [{}],
           },
         ],
-        invalid: [
-          {
-            code: dedent`
-              export { B, A }
-            `,
-            output: dedent`
-              export { A, B }
-            `,
-            errors: [
-              {
-                messageId: 'unexpectedNamedExportsOrder',
-                data: {
-                  left: 'B',
-                  right: 'A',
-                },
-              },
-            ],
-          },
-        ],
       },
     )
 
     let eslintDisableRuleTesterName = `${ruleName}: supports 'eslint-disable' for individual nodes`
     ruleTester.run(eslintDisableRuleTesterName, rule, {
-      valid: [],
       invalid: [
         {
-          code: dedent`
-            export {
-              c,
-              b,
-              // eslint-disable-next-line
-              a
-            }
-          `,
+          errors: [
+            {
+              data: {
+                right: 'b',
+                left: 'c',
+              },
+              messageId: 'unexpectedNamedExportsOrder',
+            },
+          ],
           output: dedent`
             export {
               b,
@@ -862,27 +862,33 @@ describe(ruleName, () => {
               a
             }
           `,
-          options: [{}],
-          errors: [
-            {
-              messageId: 'unexpectedNamedExportsOrder',
-              data: {
-                left: 'c',
-                right: 'b',
-              },
-            },
-          ],
-        },
-        {
           code: dedent`
             export {
-              d,
               c,
+              b,
               // eslint-disable-next-line
-              a,
-              b
+              a
             }
           `,
+          options: [{}],
+        },
+        {
+          errors: [
+            {
+              data: {
+                right: 'c',
+                left: 'd',
+              },
+              messageId: 'unexpectedNamedExportsOrder',
+            },
+            {
+              data: {
+                right: 'b',
+                left: 'a',
+              },
+              messageId: 'unexpectedNamedExportsOrder',
+            },
+          ],
           output: dedent`
             export {
               b,
@@ -892,36 +898,31 @@ describe(ruleName, () => {
               d
             }
           `,
+          code: dedent`
+            export {
+              d,
+              c,
+              // eslint-disable-next-line
+              a,
+              b
+            }
+          `,
           options: [
             {
               partitionByComment: true,
             },
           ],
-          errors: [
-            {
-              messageId: 'unexpectedNamedExportsOrder',
-              data: {
-                left: 'd',
-                right: 'c',
-              },
-            },
-            {
-              messageId: 'unexpectedNamedExportsOrder',
-              data: {
-                left: 'a',
-                right: 'b',
-              },
-            },
-          ],
         },
         {
-          code: dedent`
-            export {
-              c,
-              b,
-              a // eslint-disable-line
-            }
-          `,
+          errors: [
+            {
+              data: {
+                right: 'b',
+                left: 'c',
+              },
+              messageId: 'unexpectedNamedExportsOrder',
+            },
+          ],
           output: dedent`
             export {
               b,
@@ -929,26 +930,25 @@ describe(ruleName, () => {
               a // eslint-disable-line
             }
           `,
-          options: [{}],
-          errors: [
-            {
-              messageId: 'unexpectedNamedExportsOrder',
-              data: {
-                left: 'c',
-                right: 'b',
-              },
-            },
-          ],
-        },
-        {
           code: dedent`
             export {
               c,
               b,
-              /* eslint-disable-next-line */
-              a
+              a // eslint-disable-line
             }
           `,
+          options: [{}],
+        },
+        {
+          errors: [
+            {
+              data: {
+                right: 'b',
+                left: 'c',
+              },
+              messageId: 'unexpectedNamedExportsOrder',
+            },
+          ],
           output: dedent`
             export {
               b,
@@ -957,25 +957,26 @@ describe(ruleName, () => {
               a
             }
           `,
-          options: [{}],
-          errors: [
-            {
-              messageId: 'unexpectedNamedExportsOrder',
-              data: {
-                left: 'c',
-                right: 'b',
-              },
-            },
-          ],
-        },
-        {
           code: dedent`
             export {
               c,
               b,
-              a /* eslint-disable-line */
+              /* eslint-disable-next-line */
+              a
             }
           `,
+          options: [{}],
+        },
+        {
+          errors: [
+            {
+              data: {
+                right: 'b',
+                left: 'c',
+              },
+              messageId: 'unexpectedNamedExportsOrder',
+            },
+          ],
           output: dedent`
             export {
               b,
@@ -983,30 +984,16 @@ describe(ruleName, () => {
               a /* eslint-disable-line */
             }
           `,
-          options: [{}],
-          errors: [
-            {
-              messageId: 'unexpectedNamedExportsOrder',
-              data: {
-                left: 'c',
-                right: 'b',
-              },
-            },
-          ],
-        },
-        {
           code: dedent`
             export {
-              d,
-              e,
-              /* eslint-disable */
               c,
               b,
-              // Shouldn't move
-              /* eslint-enable */
-              a,
+              a /* eslint-disable-line */
             }
           `,
+          options: [{}],
+        },
+        {
           output: dedent`
             export {
               a,
@@ -1019,26 +1006,39 @@ describe(ruleName, () => {
               e,
             }
           `,
-          options: [{}],
+          code: dedent`
+            export {
+              d,
+              e,
+              /* eslint-disable */
+              c,
+              b,
+              // Shouldn't move
+              /* eslint-enable */
+              a,
+            }
+          `,
           errors: [
             {
-              messageId: 'unexpectedNamedExportsOrder',
               data: {
-                left: 'b',
                 right: 'a',
+                left: 'b',
               },
+              messageId: 'unexpectedNamedExportsOrder',
             },
           ],
+          options: [{}],
         },
         {
-          code: dedent`
-            export {
-              c,
-              b,
-              // eslint-disable-next-line @rule-tester/${eslintDisableRuleTesterName}
-              a
-            }
-          `,
+          errors: [
+            {
+              data: {
+                right: 'b',
+                left: 'c',
+              },
+              messageId: 'unexpectedNamedExportsOrder',
+            },
+          ],
           output: dedent`
             export {
               b,
@@ -1047,25 +1047,26 @@ describe(ruleName, () => {
               a
             }
           `,
-          options: [{}],
-          errors: [
-            {
-              messageId: 'unexpectedNamedExportsOrder',
-              data: {
-                left: 'c',
-                right: 'b',
-              },
-            },
-          ],
-        },
-        {
           code: dedent`
             export {
               c,
               b,
-              a // eslint-disable-line @rule-tester/${eslintDisableRuleTesterName}
+              // eslint-disable-next-line @rule-tester/${eslintDisableRuleTesterName}
+              a
             }
           `,
+          options: [{}],
+        },
+        {
+          errors: [
+            {
+              data: {
+                right: 'b',
+                left: 'c',
+              },
+              messageId: 'unexpectedNamedExportsOrder',
+            },
+          ],
           output: dedent`
             export {
               b,
@@ -1073,26 +1074,16 @@ describe(ruleName, () => {
               a // eslint-disable-line @rule-tester/${eslintDisableRuleTesterName}
             }
           `,
-          options: [{}],
-          errors: [
-            {
-              messageId: 'unexpectedNamedExportsOrder',
-              data: {
-                left: 'c',
-                right: 'b',
-              },
-            },
-          ],
-        },
-        {
           code: dedent`
             export {
               c,
               b,
-              /* eslint-disable-next-line @rule-tester/${eslintDisableRuleTesterName} */
-              a
+              a // eslint-disable-line @rule-tester/${eslintDisableRuleTesterName}
             }
           `,
+          options: [{}],
+        },
+        {
           output: dedent`
             export {
               b,
@@ -1101,25 +1092,35 @@ describe(ruleName, () => {
               a
             }
           `,
-          options: [{}],
           errors: [
             {
-              messageId: 'unexpectedNamedExportsOrder',
               data: {
-                left: 'c',
                 right: 'b',
+                left: 'c',
               },
+              messageId: 'unexpectedNamedExportsOrder',
             },
           ],
-        },
-        {
           code: dedent`
             export {
               c,
               b,
-              a /* eslint-disable-line @rule-tester/${eslintDisableRuleTesterName} */
+              /* eslint-disable-next-line @rule-tester/${eslintDisableRuleTesterName} */
+              a
             }
           `,
+          options: [{}],
+        },
+        {
+          errors: [
+            {
+              data: {
+                right: 'b',
+                left: 'c',
+              },
+              messageId: 'unexpectedNamedExportsOrder',
+            },
+          ],
           output: dedent`
             export {
               b,
@@ -1127,18 +1128,28 @@ describe(ruleName, () => {
               a /* eslint-disable-line @rule-tester/${eslintDisableRuleTesterName} */
             }
           `,
+          code: dedent`
+            export {
+              c,
+              b,
+              a /* eslint-disable-line @rule-tester/${eslintDisableRuleTesterName} */
+            }
+          `,
           options: [{}],
-          errors: [
-            {
-              messageId: 'unexpectedNamedExportsOrder',
-              data: {
-                left: 'c',
-                right: 'b',
-              },
-            },
-          ],
         },
         {
+          output: dedent`
+            export {
+              a,
+              d,
+              /* eslint-disable @rule-tester/${eslintDisableRuleTesterName} */
+              c,
+              b,
+              // Shouldn't move
+              /* eslint-enable */
+              e,
+            }
+          `,
           code: dedent`
             export {
               d,
@@ -1151,30 +1162,19 @@ describe(ruleName, () => {
               a,
             }
           `,
-          output: dedent`
-            export {
-              a,
-              d,
-              /* eslint-disable @rule-tester/${eslintDisableRuleTesterName} */
-              c,
-              b,
-              // Shouldn't move
-              /* eslint-enable */
-              e,
-            }
-          `,
-          options: [{}],
           errors: [
             {
-              messageId: 'unexpectedNamedExportsOrder',
               data: {
-                left: 'b',
                 right: 'a',
+                left: 'b',
               },
+              messageId: 'unexpectedNamedExportsOrder',
             },
           ],
+          options: [{}],
         },
       ],
+      valid: [],
     })
   })
 })

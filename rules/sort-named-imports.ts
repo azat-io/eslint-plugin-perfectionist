@@ -48,61 +48,18 @@ interface SortNamedImportsSortingNode
 type MESSAGE_ID = 'unexpectedNamedImportsOrder'
 
 let defaultOptions: Required<Options[0]> = {
+  specialCharacters: 'keep',
+  partitionByNewLine: false,
+  partitionByComment: false,
   type: 'alphabetical',
   ignoreAlias: false,
   groupKind: 'mixed',
   ignoreCase: true,
-  specialCharacters: 'keep',
-  partitionByNewLine: false,
-  partitionByComment: false,
-  order: 'asc',
   locales: 'en-US',
+  order: 'asc',
 }
 
 export default createEslintRule<Options, MESSAGE_ID>({
-  name: 'sort-named-imports',
-  meta: {
-    type: 'suggestion',
-    docs: {
-      description: 'Enforce sorted named imports.',
-      url: 'https://perfectionist.dev/rules/sort-named-imports',
-      recommended: true,
-    },
-    fixable: 'code',
-    schema: [
-      {
-        type: 'object',
-        properties: {
-          type: typeJsonSchema,
-          order: orderJsonSchema,
-          locales: localesJsonSchema,
-          ignoreCase: ignoreCaseJsonSchema,
-          specialCharacters: specialCharactersJsonSchema,
-          ignoreAlias: {
-            description: 'Controls whether to ignore alias names.',
-            type: 'boolean',
-          },
-          groupKind: {
-            description: 'Specifies top-level groups.',
-            enum: ['mixed', 'values-first', 'types-first'],
-            type: 'string',
-          },
-          partitionByComment: {
-            ...partitionByCommentJsonSchema,
-            description:
-              'Allows you to use comments to separate the named imports members into logical groups.',
-          },
-          partitionByNewLine: partitionByNewLineJsonSchema,
-        },
-        additionalProperties: false,
-      },
-    ],
-    messages: {
-      unexpectedNamedImportsOrder:
-        'Expected "{{right}}" to come before "{{left}}".',
-    },
-  },
-  defaultOptions: [defaultOptions],
   create: context => ({
     ImportDeclaration: node => {
       let specifiers = node.specifiers.filter(
@@ -116,8 +73,8 @@ export default createEslintRule<Options, MESSAGE_ID>({
       let options = complete(context.options.at(0), settings, defaultOptions)
       let sourceCode = getSourceCode(context)
       let eslintDisabledLines = getEslintDisabledLines({
-        sourceCode,
         ruleName: context.id,
+        sourceCode,
       })
 
       let formattedMembers: SortNamedImportsSortingNode[][] = [[]]
@@ -134,17 +91,17 @@ export default createEslintRule<Options, MESSAGE_ID>({
 
         let lastSortingNode = formattedMembers.at(-1)?.at(-1)
         let sortingNode: SortNamedImportsSortingNode = {
-          size: rangeToDiff(specifier, sourceCode),
-          node: specifier,
-          isEslintDisabled: isNodeEslintDisabled(
-            specifier,
-            eslintDisabledLines,
-          ),
           groupKind:
             specifier.type === 'ImportSpecifier' &&
             specifier.importKind === 'type'
               ? 'type'
               : 'value',
+          isEslintDisabled: isNodeEslintDisabled(
+            specifier,
+            eslintDisabledLines,
+          ),
+          size: rangeToDiff(specifier, sourceCode),
+          node: specifier,
           name,
         }
 
@@ -205,23 +162,66 @@ export default createEslintRule<Options, MESSAGE_ID>({
           }
 
           context.report({
-            messageId: 'unexpectedNamedImportsOrder',
-            data: {
-              left: left.name,
-              right: right.name,
-            },
-            node: right.node,
             fix: fixer =>
               makeFixes({
-                fixer,
-                nodes,
                 sortedNodes: sortedNodesExcludingEslintDisabled,
                 sourceCode,
                 options,
+                fixer,
+                nodes,
               }),
+            data: {
+              right: right.name,
+              left: left.name,
+            },
+            messageId: 'unexpectedNamedImportsOrder',
+            node: right.node,
           })
         })
       }
     },
   }),
+  meta: {
+    schema: [
+      {
+        properties: {
+          partitionByComment: {
+            ...partitionByCommentJsonSchema,
+            description:
+              'Allows you to use comments to separate the named imports members into logical groups.',
+          },
+          groupKind: {
+            enum: ['mixed', 'values-first', 'types-first'],
+            description: 'Specifies top-level groups.',
+            type: 'string',
+          },
+          ignoreAlias: {
+            description: 'Controls whether to ignore alias names.',
+            type: 'boolean',
+          },
+          partitionByNewLine: partitionByNewLineJsonSchema,
+          specialCharacters: specialCharactersJsonSchema,
+          ignoreCase: ignoreCaseJsonSchema,
+          locales: localesJsonSchema,
+          order: orderJsonSchema,
+          type: typeJsonSchema,
+        },
+        additionalProperties: false,
+        type: 'object',
+      },
+    ],
+    docs: {
+      url: 'https://perfectionist.dev/rules/sort-named-imports',
+      description: 'Enforce sorted named imports.',
+      recommended: true,
+    },
+    messages: {
+      unexpectedNamedImportsOrder:
+        'Expected "{{right}}" to come before "{{left}}".',
+    },
+    type: 'suggestion',
+    fixable: 'code',
+  },
+  defaultOptions: [defaultOptions],
+  name: 'sort-named-imports',
 })

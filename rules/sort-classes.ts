@@ -100,104 +100,15 @@ let defaultOptions: Required<SortClassesOptions[0]> = {
   partitionByComment: false,
   partitionByNewLine: false,
   newlinesBetween: 'ignore',
+  specialCharacters: 'keep',
   type: 'alphabetical',
   ignoreCase: true,
-  specialCharacters: 'keep',
   customGroups: [],
-  order: 'asc',
   locales: 'en-US',
+  order: 'asc',
 }
 
 export default createEslintRule<SortClassesOptions, MESSAGE_ID>({
-  name: 'sort-classes',
-  meta: {
-    type: 'suggestion',
-    docs: {
-      description: 'Enforce sorted classes.',
-      url: 'https://perfectionist.dev/rules/sort-classes',
-      recommended: true,
-    },
-    fixable: 'code',
-    schema: [
-      {
-        type: 'object',
-        properties: {
-          type: typeJsonSchema,
-          order: orderJsonSchema,
-          locales: localesJsonSchema,
-          ignoreCase: ignoreCaseJsonSchema,
-          specialCharacters: specialCharactersJsonSchema,
-          partitionByComment: {
-            ...partitionByCommentJsonSchema,
-            description:
-              'Allows to use comments to separate the class members into logical groups.',
-          },
-          partitionByNewLine: partitionByNewLineJsonSchema,
-          newlinesBetween: newlinesBetweenJsonSchema,
-          groups: groupsJsonSchema,
-          customGroups: {
-            description: 'Specifies custom groups.',
-            type: 'array',
-            items: {
-              oneOf: [
-                {
-                  description: 'Custom group block.',
-                  type: 'object',
-                  additionalProperties: false,
-                  properties: {
-                    ...customGroupNameJsonSchema,
-                    ...customGroupSortJsonSchema,
-                    anyOf: {
-                      type: 'array',
-                      items: {
-                        description: 'Custom group.',
-                        type: 'object',
-                        additionalProperties: false,
-                        properties: {
-                          ...singleCustomGroupJsonSchema,
-                        },
-                      },
-                    },
-                  },
-                },
-                {
-                  description: 'Custom group.',
-                  type: 'object',
-                  additionalProperties: false,
-                  properties: {
-                    ...customGroupNameJsonSchema,
-                    ...customGroupSortJsonSchema,
-                    ...singleCustomGroupJsonSchema,
-                  },
-                },
-              ],
-            },
-          },
-          ignoreCallbackDependenciesPatterns: {
-            description:
-              'Patterns that should be ignored when detecting dependencies in method callbacks.',
-            type: 'array',
-            items: {
-              type: 'string',
-            },
-          },
-        },
-        additionalProperties: false,
-      },
-    ],
-    messages: {
-      unexpectedClassesGroupOrder:
-        'Expected "{{right}}" ({{rightGroup}}) to come before "{{left}}" ({{leftGroup}}).',
-      unexpectedClassesOrder: 'Expected "{{right}}" to come before "{{left}}".',
-      unexpectedClassesDependencyOrder:
-        'Expected dependency "{{right}}" to come before "{{nodeDependentOnRight}}".',
-      missedSpacingBetweenClassMembers:
-        'Missed spacing between "{{left}}" and "{{right}}" objects.',
-      extraSpacingBetweenClassMembers:
-        'Extra spacing between "{{left}}" and "{{right}}" objects.',
-    },
-  },
-  defaultOptions: [defaultOptions],
   create: context => ({
     ClassBody: node => {
       if (!isSortable(node.body)) {
@@ -207,16 +118,16 @@ export default createEslintRule<SortClassesOptions, MESSAGE_ID>({
       let settings = getSettings(context.settings)
       let options = complete(context.options.at(0), settings, defaultOptions)
       validateGeneratedGroupsConfiguration({
-        groups: options.groups,
         customGroups: options.customGroups,
         modifiers: allModifiers,
         selectors: allSelectors,
+        groups: options.groups,
       })
       validateNewlinesAndPartitionConfiguration(options)
       let sourceCode = getSourceCode(context)
       let eslintDisabledLines = getEslintDisabledLines({
-        sourceCode,
         ruleName: context.id,
+        sourceCode,
       })
       let className = node.parent.id?.name
       let getDependencyName = (props: {
@@ -238,9 +149,9 @@ export default createEslintRule<SortClassesOptions, MESSAGE_ID>({
               'name' in member.key
             ) {
               return getDependencyName({
+                isPrivateHash: member.key.type === 'PrivateIdentifier',
                 nodeNameWithoutStartingHash: member.key.name,
                 isStatic: member.static,
-                isPrivateHash: member.key.type === 'PrivateIdentifier',
               })
             }
             return null
@@ -265,9 +176,9 @@ export default createEslintRule<SortClassesOptions, MESSAGE_ID>({
             let isStaticDependency =
               isMemberStatic || nodeValue.object.type === 'Identifier'
             let dependencyName = getDependencyName({
+              isPrivateHash: nodeValue.property.type === 'PrivateIdentifier',
               nodeNameWithoutStartingHash: nodeValue.property.name,
               isStatic: isStaticDependency,
-              isPrivateHash: nodeValue.property.type === 'PrivateIdentifier',
             })
             if (!classMethodsDependencyNames.has(dependencyName)) {
               dependencies.push(dependencyName)
@@ -386,7 +297,7 @@ export default createEslintRule<SortClassesOptions, MESSAGE_ID>({
         (accumulator: SortingNodeWithDependencies[][], member) => {
           let name: string
           let dependencies: string[] = []
-          let { getGroup, defineGroup } = useGroups(options)
+          let { defineGroup, getGroup } = useGroups(options)
 
           if (member.type === 'StaticBlock') {
             name = 'static'
@@ -580,9 +491,9 @@ export default createEslintRule<SortClassesOptions, MESSAGE_ID>({
           }
 
           for (let officialGroup of generatePredefinedGroups({
+            cache: cachedGroupsByModifiersAndSelectors,
             selectors,
             modifiers,
-            cache: cachedGroupsByModifiersAndSelectors,
           })) {
             defineGroup(officialGroup)
           }
@@ -590,12 +501,12 @@ export default createEslintRule<SortClassesOptions, MESSAGE_ID>({
           for (let customGroup of options.customGroups) {
             if (
               customGroupMatches({
-                customGroup,
-                elementName: name,
                 elementValue: memberValue,
+                elementName: name,
+                customGroup,
+                decorators,
                 modifiers,
                 selectors,
-                decorators,
               })
             ) {
               defineGroup(customGroup.groupName, true)
@@ -613,23 +524,23 @@ export default createEslintRule<SortClassesOptions, MESSAGE_ID>({
             ?.at(-1)
 
           let sortingNode: SortingNodeWithDependencies = {
-            size: overloadSignatureGroupMember
-              ? rangeToDiff(overloadSignatureGroupMember, sourceCode)
-              : rangeToDiff(member, sourceCode),
-            group: getGroup(),
-            node: member,
-            dependencies,
-            isEslintDisabled: isNodeEslintDisabled(member, eslintDisabledLines),
-            name,
-
-            addSafetySemicolonWhenInline,
             dependencyName: getDependencyName({
               nodeNameWithoutStartingHash: name.startsWith('#')
                 ? name.slice(1)
                 : name,
-              isPrivateHash,
               isStatic: modifiers.includes('static'),
+              isPrivateHash,
             }),
+            size: overloadSignatureGroupMember
+              ? rangeToDiff(overloadSignatureGroupMember, sourceCode)
+              : rangeToDiff(member, sourceCode),
+            isEslintDisabled: isNodeEslintDisabled(member, eslintDisabledLines),
+            addSafetySemicolonWhenInline,
+            group: getGroup(),
+            node: member,
+
+            dependencies,
+            name,
           }
 
           let comments = getCommentsBefore(member, sourceCode)
@@ -658,12 +569,12 @@ export default createEslintRule<SortClassesOptions, MESSAGE_ID>({
         sortNodesByDependencies(
           formattedNodes.flatMap(nodes =>
             sortNodesByGroups(nodes, options, {
-              getGroupCompareOptions: groupNumber =>
-                getCompareOptions(options, groupNumber),
-              ignoreEslintDisabledNodes,
               isNodeIgnored: sortingNode =>
                 getGroupNumber(options.groups, sortingNode) ===
                 options.groups.length,
+              getGroupCompareOptions: groupNumber =>
+                getCompareOptions(options, groupNumber),
+              ignoreEslintDisabledNodes,
             }),
           ),
           {
@@ -706,47 +617,136 @@ export default createEslintRule<SortClassesOptions, MESSAGE_ID>({
         messageIds = [
           ...messageIds,
           ...getNewlinesErrors({
-            left,
-            leftNum: leftNumber,
-            right,
-            rightNum: rightNumber,
-            sourceCode,
             missedSpacingError: 'missedSpacingBetweenClassMembers',
             extraSpacingError: 'extraSpacingBetweenClassMembers',
+            rightNum: rightNumber,
+            leftNum: leftNumber,
+            sourceCode,
             options,
+            right,
+            left,
           }),
         ]
 
         for (let messageId of messageIds) {
           context.report({
-            messageId,
-            data: {
-              left: toSingleLine(left.name),
-              leftGroup: left.group,
-              right: toSingleLine(right.name),
-              rightGroup: right.group,
-              nodeDependentOnRight: firstUnorderedNodeDependentOnRight?.name,
-            },
-            node: right.node,
             fix: (fixer: TSESLint.RuleFixer) => [
               ...makeFixes({
-                fixer,
-                nodes,
                 sortedNodes: sortedNodesExcludingEslintDisabled,
                 sourceCode,
                 options,
+                fixer,
+                nodes,
               }),
               ...makeNewlinesFixes({
-                fixer,
-                nodes,
                 sortedNodes: sortedNodesExcludingEslintDisabled,
                 sourceCode,
                 options,
+                fixer,
+                nodes,
               }),
             ],
+            data: {
+              nodeDependentOnRight: firstUnorderedNodeDependentOnRight?.name,
+              right: toSingleLine(right.name),
+              left: toSingleLine(left.name),
+              rightGroup: right.group,
+              leftGroup: left.group,
+            },
+            node: right.node,
+            messageId,
           })
         }
       })
     },
   }),
+  meta: {
+    schema: [
+      {
+        properties: {
+          customGroups: {
+            items: {
+              oneOf: [
+                {
+                  properties: {
+                    ...customGroupNameJsonSchema,
+                    ...customGroupSortJsonSchema,
+                    anyOf: {
+                      items: {
+                        properties: {
+                          ...singleCustomGroupJsonSchema,
+                        },
+                        description: 'Custom group.',
+                        additionalProperties: false,
+                        type: 'object',
+                      },
+                      type: 'array',
+                    },
+                  },
+                  description: 'Custom group block.',
+                  additionalProperties: false,
+                  type: 'object',
+                },
+                {
+                  properties: {
+                    ...customGroupNameJsonSchema,
+                    ...customGroupSortJsonSchema,
+                    ...singleCustomGroupJsonSchema,
+                  },
+                  description: 'Custom group.',
+                  additionalProperties: false,
+                  type: 'object',
+                },
+              ],
+            },
+            description: 'Specifies custom groups.',
+            type: 'array',
+          },
+          ignoreCallbackDependenciesPatterns: {
+            description:
+              'Patterns that should be ignored when detecting dependencies in method callbacks.',
+            items: {
+              type: 'string',
+            },
+            type: 'array',
+          },
+          partitionByComment: {
+            ...partitionByCommentJsonSchema,
+            description:
+              'Allows to use comments to separate the class members into logical groups.',
+          },
+          partitionByNewLine: partitionByNewLineJsonSchema,
+          specialCharacters: specialCharactersJsonSchema,
+          newlinesBetween: newlinesBetweenJsonSchema,
+          ignoreCase: ignoreCaseJsonSchema,
+          locales: localesJsonSchema,
+          groups: groupsJsonSchema,
+          order: orderJsonSchema,
+          type: typeJsonSchema,
+        },
+        additionalProperties: false,
+        type: 'object',
+      },
+    ],
+    messages: {
+      unexpectedClassesGroupOrder:
+        'Expected "{{right}}" ({{rightGroup}}) to come before "{{left}}" ({{leftGroup}}).',
+      unexpectedClassesDependencyOrder:
+        'Expected dependency "{{right}}" to come before "{{nodeDependentOnRight}}".',
+      missedSpacingBetweenClassMembers:
+        'Missed spacing between "{{left}}" and "{{right}}" objects.',
+      extraSpacingBetweenClassMembers:
+        'Extra spacing between "{{left}}" and "{{right}}" objects.',
+      unexpectedClassesOrder: 'Expected "{{right}}" to come before "{{left}}".',
+    },
+    docs: {
+      url: 'https://perfectionist.dev/rules/sort-classes',
+      description: 'Enforce sorted classes.',
+      recommended: true,
+    },
+    type: 'suggestion',
+    fixable: 'code',
+  },
+  defaultOptions: [defaultOptions],
+  name: 'sort-classes',
 })
