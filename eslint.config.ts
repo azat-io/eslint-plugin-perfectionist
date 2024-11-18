@@ -1,6 +1,6 @@
 import type { Linter } from 'eslint'
 
-import eslintPlugin from 'eslint-plugin-eslint-plugin/configs/all'
+import eslintPlugin from 'eslint-plugin-eslint-plugin/configs/recommended'
 import eslintConfig from '@azat-io/eslint-config'
 
 export default eslintConfig({
@@ -8,11 +8,6 @@ export default eslintConfig({
     eslintPlugin,
     {
       rules: {
-        'eslint-plugin/require-meta-docs-description': [
-          'error',
-          { pattern: '^Enforce' },
-        ],
-        'eslint-plugin/require-meta-schema-description': 'off',
         'jsdoc/require-param-description': 'off',
         '@typescript-eslint/max-params': 'off',
         'unicorn/no-array-for-each': 'off',
