@@ -5,7 +5,10 @@ import * as fs from 'node:fs'
 
 import { getTypescriptImport } from './get-typescript-import'
 
-// Heavily inspired from https://github.com/typescript-eslint/typescript-eslint/blob/main/packages/typescript-estree/src/parseSettings/getProjectConfigFiles.ts
+/**
+ * Heavily inspired from:
+ * https://github.com/typescript-eslint/typescript-eslint/blob/main/packages/typescript-estree/src/parseSettings/getProjectConfigFiles.ts
+ */
 
 interface InputProps {
   tsconfigRootDir: string

@@ -18,7 +18,11 @@ interface CustomGroupMatchesProps {
 }
 
 /**
- * Returns whether a custom group matches the given properties
+ * Determines whether a custom group matches the given properties.
+ * @param {CustomGroupMatchesProps} props - The properties to compare with the
+ * custom group, including selectors, modifiers, decorators, and element name.
+ * @returns {boolean} `true` if the custom group matches the properties;
+ * otherwise, `false`.
  */
 export let customGroupMatches = (props: CustomGroupMatchesProps): boolean => {
   if ('anyOf' in props.customGroup) {
@@ -72,9 +76,15 @@ export let customGroupMatches = (props: CustomGroupMatchesProps): boolean => {
 }
 
 /**
- * Returns the compare options used to sort a given group.
- * If the group is a custom group, its options will be favored over the default options.
- * Returns null if the group should not be sorted
+ * Retrieves the compare options used to sort a given group. If the group is a
+ * custom group, its options will be favored over the default options. Returns
+ * `null` if the group should not be sorted.
+ * @param {Required<SortModulesOptions>[0]} options - The sorting options,
+ * including groups and custom groups.
+ * @param {number} groupNumber - The index of the group to retrieve compare
+ * options for.
+ * @returns {CompareOptions | null} The compare options for the group, or `null`
+ * if the group should not be sorted.
  */
 export let getCompareOptions = (
   options: Required<SortModulesOptions[0]>,

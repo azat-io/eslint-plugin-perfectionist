@@ -4,9 +4,11 @@ import type { TSESTree } from '@typescript-eslint/types'
 /**
  * Returns a list of comments before a given node, excluding ones that are
  * right after code. Includes comment blocks.
- * @param node - The node to get comments before
- * @param source - The source code
- * @param tokenValueToIgnoreBefore - Allows the following token to directly precede the node
+ * @param {TSESTree.Node} node - The node to get comments before.
+ * @param {TSESLint.SourceCode} source - The source code object.
+ * @param {string} [tokenValueToIgnoreBefore] - Allows the following token to
+ * directly precede the node.
+ * @returns {TSESTree.Comment[]} An array of comments before the given node.
  */
 export let getCommentsBefore = (
   node: TSESTree.Node,
@@ -30,7 +32,10 @@ let getCommentsBeforeNodeOrToken = (
   node: TSESTree.Token | TSESTree.Node,
 ): TSESTree.Comment[] =>
   source.getCommentsBefore(node).filter(comment => {
-    // 'getCommentsBefore' also returns comments that are right after code, filter those out
+    /**
+     * `getCommentsBefore` also returns comments that are right after code,
+     * filter those out
+     */
     let tokenBeforeComment = source.getTokenBefore(comment)
     return tokenBeforeComment?.loc.end.line !== comment.loc.end.line
   })

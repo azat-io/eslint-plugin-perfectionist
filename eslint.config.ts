@@ -8,13 +8,8 @@ export default eslintConfig({
     eslintPlugin,
     {
       rules: {
-        'jsdoc/require-param-description': 'off',
         '@typescript-eslint/max-params': 'off',
         'unicorn/no-array-for-each': 'off',
-        'jsdoc/require-param-type': 'off',
-        'jsdoc/check-param-names': 'off',
-        'jsdoc/require-returns': 'off',
-        'jsdoc/require-param': 'off',
       },
     },
     {
