@@ -26,8 +26,6 @@ import { makeFixes } from '../utils/make-fixes'
 import { complete } from '../utils/complete'
 import { pairwise } from '../utils/pairwise'
 
-type MESSAGE_ID = 'unexpectedNamedImportsOrder'
-
 type Options = [
   Partial<{
     groupKind: 'values-first' | 'types-first' | 'mixed'
@@ -46,6 +44,8 @@ interface SortNamedImportsSortingNode
   extends SortingNode<TSESTree.ImportClause> {
   groupKind: 'value' | 'type'
 }
+
+type MESSAGE_ID = 'unexpectedNamedImportsOrder'
 
 let defaultOptions: Required<Options[0]> = {
   type: 'alphabetical',

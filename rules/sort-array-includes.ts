@@ -28,8 +28,6 @@ import { makeFixes } from '../utils/make-fixes'
 import { complete } from '../utils/complete'
 import { pairwise } from '../utils/pairwise'
 
-type MESSAGE_ID = 'unexpectedArrayIncludesOrder'
-
 export type Options = [
   Partial<{
     groupKind: 'literals-first' | 'spreads-first' | 'mixed'
@@ -47,6 +45,8 @@ interface SortArrayIncludesSortingNode
   extends SortingNode<TSESTree.SpreadElement | TSESTree.Expression> {
   groupKind: 'literal' | 'spread'
 }
+
+type MESSAGE_ID = 'unexpectedArrayIncludesOrder'
 
 export let defaultOptions: Required<Options[0]> = {
   groupKind: 'literals-first',

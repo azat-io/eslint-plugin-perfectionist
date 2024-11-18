@@ -1,124 +1,5 @@
 import type { JSONSchema4 } from '@typescript-eslint/utils/json-schema'
 
-type DeclareModifier = 'declare'
-type DecoratedModifier = 'decorated'
-type DefaultModifier = 'default'
-type ExportModifier = 'export'
-type AsyncModifier = 'async'
-export type Modifier =
-  | DecoratedModifier
-  | DeclareModifier
-  | DefaultModifier
-  | ExportModifier
-  | AsyncModifier
-
-type InterfaceSelector = 'interface'
-type FunctionSelector = 'function'
-type ClassSelector = 'class'
-type TypeSelector = 'type'
-type EnumSelector = 'enum'
-export type Selector =
-  // | NamespaceSelector
-  | InterfaceSelector
-  | FunctionSelector
-  // | ModuleSelector
-  | ClassSelector
-  | TypeSelector
-  | EnumSelector
-
-type WithDashSuffixOrEmpty<T extends string> = `${T}-` | ''
-
-type DeclareModifierPrefix = WithDashSuffixOrEmpty<DeclareModifier>
-type DefaultModifierPrefix = WithDashSuffixOrEmpty<DefaultModifier>
-type DecoratedModifierPrefix = WithDashSuffixOrEmpty<DecoratedModifier>
-type ExportModifierPrefix = WithDashSuffixOrEmpty<ExportModifier>
-type AsyncModifierPrefix = WithDashSuffixOrEmpty<AsyncModifier>
-
-type NonDefaultInterfaceGroup =
-  `${ExportModifierPrefix}${DeclareModifierPrefix}${InterfaceSelector}`
-type DefaultInterfaceGroup =
-  `${ExportModifierPrefix}${DefaultModifierPrefix}${InterfaceSelector}`
-type DefaultFunctionGroup =
-  `${ExportModifierPrefix}${DefaultModifierPrefix}${AsyncModifierPrefix}${FunctionSelector}`
-type NonDefaultFunctionGroup =
-  `${ExportModifierPrefix}${DeclareModifierPrefix}${FunctionSelector}`
-type NonDefaultClassGroup =
-  `${ExportModifierPrefix}${DeclareModifierPrefix}${DecoratedModifierPrefix}${ClassSelector}`
-type DefaultClassGroup =
-  `${ExportModifierPrefix}${DefaultModifierPrefix}${DecoratedModifierPrefix}${ClassSelector}`
-type TypeGroup =
-  `${ExportModifierPrefix}${DeclareModifierPrefix}${TypeSelector}`
-type EnumGroup =
-  `${ExportModifierPrefix}${DeclareModifierPrefix}${EnumSelector}`
-
-/**
- * Only used in code, so I don't know if it's worth maintaining this.
- */
-type Group =
-  | NonDefaultInterfaceGroup
-  | NonDefaultFunctionGroup
-  | DefaultInterfaceGroup
-  | DefaultFunctionGroup
-  | NonDefaultClassGroup
-  | DefaultClassGroup
-  | EnumGroup
-  | TypeGroup
-  | 'unknown'
-  | string
-
-/**
- * Only used in code as well
- */
-interface AllowedModifiersPerSelector {
-  function: DeclareModifier | DefaultModifier | ExportModifier | AsyncModifier
-  interface: DeclareModifier | DefaultModifier | ExportModifier
-  class: DeclareModifier | DefaultModifier | ExportModifier
-  namespace: DeclareModifier | ExportModifier
-  module: DeclareModifier | ExportModifier
-  enum: DeclareModifier | ExportModifier
-  type: DeclareModifier | ExportModifier
-}
-
-export interface AnyOfCustomGroup {
-  anyOf: SingleCustomGroup[]
-}
-
-interface BaseSingleCustomGroup<T extends Selector> {
-  modifiers?: AllowedModifiersPerSelector[T][]
-  selector?: T
-}
-
-interface ElementNamePatternFilterCustomGroup {
-  elementNamePattern?: string
-}
-
-interface DecoratorNamePatternFilterCustomGroup {
-  decoratorNamePattern?: string
-}
-
-export type SingleCustomGroup = (
-  | (DecoratorNamePatternFilterCustomGroup &
-      BaseSingleCustomGroup<ClassSelector>)
-  | BaseSingleCustomGroup<InterfaceSelector>
-  | BaseSingleCustomGroup<FunctionSelector>
-  | BaseSingleCustomGroup<EnumSelector>
-  | BaseSingleCustomGroup<TypeSelector>
-) &
-  ElementNamePatternFilterCustomGroup
-
-export type CustomGroup = (
-  | {
-      order?: SortModulesOptions[0]['order']
-      type?: SortModulesOptions[0]['type']
-    }
-  | {
-      type?: 'unsorted'
-    }
-) &
-  (SingleCustomGroup | AnyOfCustomGroup) & {
-    groupName: string
-  }
-
 export type SortModulesOptions = [
   Partial<{
     type: 'alphabetical' | 'line-length' | 'natural'
@@ -133,6 +14,125 @@ export type SortModulesOptions = [
     ignoreCase: boolean
   }>,
 ]
+export type SingleCustomGroup = (
+  | (DecoratorNamePatternFilterCustomGroup &
+      BaseSingleCustomGroup<ClassSelector>)
+  | BaseSingleCustomGroup<InterfaceSelector>
+  | BaseSingleCustomGroup<FunctionSelector>
+  | BaseSingleCustomGroup<EnumSelector>
+  | BaseSingleCustomGroup<TypeSelector>
+) &
+  ElementNamePatternFilterCustomGroup
+export type CustomGroup = (
+  | {
+      order?: SortModulesOptions[0]['order']
+      type?: SortModulesOptions[0]['type']
+    }
+  | {
+      type?: 'unsorted'
+    }
+) &
+  (SingleCustomGroup | AnyOfCustomGroup) & {
+    groupName: string
+  }
+export type Selector =
+  // | NamespaceSelector
+  | InterfaceSelector
+  | FunctionSelector
+  // | ModuleSelector
+  | ClassSelector
+  | TypeSelector
+  | EnumSelector
+export type Modifier =
+  | DecoratedModifier
+  | DeclareModifier
+  | DefaultModifier
+  | ExportModifier
+  | AsyncModifier
+export interface AnyOfCustomGroup {
+  anyOf: SingleCustomGroup[]
+}
+
+/**
+ * Only used in code as well
+ */
+interface AllowedModifiersPerSelector {
+  function: DeclareModifier | DefaultModifier | ExportModifier | AsyncModifier
+  interface: DeclareModifier | DefaultModifier | ExportModifier
+  class: DeclareModifier | DefaultModifier | ExportModifier
+  namespace: DeclareModifier | ExportModifier
+  module: DeclareModifier | ExportModifier
+  enum: DeclareModifier | ExportModifier
+  type: DeclareModifier | ExportModifier
+}
+/**
+ * Only used in code, so I don't know if it's worth maintaining this.
+ */
+type Group =
+  | NonDefaultInterfaceGroup
+  | NonDefaultFunctionGroup
+  | DefaultInterfaceGroup
+  | DefaultFunctionGroup
+  | NonDefaultClassGroup
+  | DefaultClassGroup
+  | EnumGroup
+  | TypeGroup
+  | 'unknown'
+  | string
+type NonDefaultClassGroup =
+  `${ExportModifierPrefix}${DeclareModifierPrefix}${DecoratedModifierPrefix}${ClassSelector}`
+type DefaultFunctionGroup =
+  `${ExportModifierPrefix}${DefaultModifierPrefix}${AsyncModifierPrefix}${FunctionSelector}`
+type DefaultClassGroup =
+  `${ExportModifierPrefix}${DefaultModifierPrefix}${DecoratedModifierPrefix}${ClassSelector}`
+interface BaseSingleCustomGroup<T extends Selector> {
+  modifiers?: AllowedModifiersPerSelector[T][]
+  selector?: T
+}
+
+type NonDefaultInterfaceGroup =
+  `${ExportModifierPrefix}${DeclareModifierPrefix}${InterfaceSelector}`
+
+type NonDefaultFunctionGroup =
+  `${ExportModifierPrefix}${DeclareModifierPrefix}${FunctionSelector}`
+type DefaultInterfaceGroup =
+  `${ExportModifierPrefix}${DefaultModifierPrefix}${InterfaceSelector}`
+type TypeGroup =
+  `${ExportModifierPrefix}${DeclareModifierPrefix}${TypeSelector}`
+type EnumGroup =
+  `${ExportModifierPrefix}${DeclareModifierPrefix}${EnumSelector}`
+interface DecoratorNamePatternFilterCustomGroup {
+  decoratorNamePattern?: string
+}
+
+interface ElementNamePatternFilterCustomGroup {
+  elementNamePattern?: string
+}
+type DecoratedModifierPrefix = WithDashSuffixOrEmpty<DecoratedModifier>
+type DeclareModifierPrefix = WithDashSuffixOrEmpty<DeclareModifier>
+type DefaultModifierPrefix = WithDashSuffixOrEmpty<DefaultModifier>
+type ExportModifierPrefix = WithDashSuffixOrEmpty<ExportModifier>
+type AsyncModifierPrefix = WithDashSuffixOrEmpty<AsyncModifier>
+type WithDashSuffixOrEmpty<T extends string> = `${T}-` | ''
+type DecoratedModifier = 'decorated'
+
+type InterfaceSelector = 'interface'
+
+type FunctionSelector = 'function'
+
+type DeclareModifier = 'declare'
+
+type DefaultModifier = 'default'
+
+type ExportModifier = 'export'
+
+type AsyncModifier = 'async'
+
+type ClassSelector = 'class'
+
+type TypeSelector = 'type'
+
+type EnumSelector = 'enum'
 
 export let allSelectors: Selector[] = [
   'enum',

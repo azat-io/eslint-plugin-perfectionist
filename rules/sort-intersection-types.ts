@@ -32,11 +32,19 @@ import { makeFixes } from '../utils/make-fixes'
 import { complete } from '../utils/complete'
 import { pairwise } from '../utils/pairwise'
 
-type MESSAGE_ID =
-  | 'missedSpacingBetweenIntersectionTypes'
-  | 'unexpectedIntersectionTypesGroupOrder'
-  | 'extraSpacingBetweenIntersectionTypes'
-  | 'unexpectedIntersectionTypesOrder'
+type Options = [
+  Partial<{
+    type: 'alphabetical' | 'line-length' | 'natural'
+    partitionByComment: string[] | boolean | string
+    newlinesBetween: 'ignore' | 'always' | 'never'
+    specialCharacters: 'remove' | 'trim' | 'keep'
+    locales: NonNullable<Intl.LocalesArgument>
+    groups: (Group[] | Group)[]
+    partitionByNewLine: boolean
+    order: 'desc' | 'asc'
+    ignoreCase: boolean
+  }>,
+]
 
 type Group =
   | 'intersection'
@@ -53,19 +61,11 @@ type Group =
   | 'tuple'
   | 'union'
 
-type Options = [
-  Partial<{
-    type: 'alphabetical' | 'line-length' | 'natural'
-    partitionByComment: string[] | boolean | string
-    newlinesBetween: 'ignore' | 'always' | 'never'
-    specialCharacters: 'remove' | 'trim' | 'keep'
-    locales: NonNullable<Intl.LocalesArgument>
-    groups: (Group[] | Group)[]
-    partitionByNewLine: boolean
-    order: 'desc' | 'asc'
-    ignoreCase: boolean
-  }>,
-]
+type MESSAGE_ID =
+  | 'missedSpacingBetweenIntersectionTypes'
+  | 'unexpectedIntersectionTypesGroupOrder'
+  | 'extraSpacingBetweenIntersectionTypes'
+  | 'unexpectedIntersectionTypesOrder'
 
 let defaultOptions: Required<Options[0]> = {
   type: 'alphabetical',

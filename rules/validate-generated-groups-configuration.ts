@@ -2,15 +2,15 @@ import type { Modifier, Selector } from './sort-classes.types'
 
 import { validateNoDuplicatedGroups } from '../utils/validate-groups-configuration'
 
-interface BaseCustomGroup {
-  groupName: string
-}
-
 interface Props {
   customGroups: BaseCustomGroup[]
   groups: (string[] | string)[]
   selectors: string[]
   modifiers: string[]
+}
+
+interface BaseCustomGroup {
+  groupName: string
 }
 
 export let validateGeneratedGroupsConfiguration = ({

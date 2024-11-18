@@ -32,8 +32,6 @@ import { makeFixes } from '../utils/make-fixes'
 import { complete } from '../utils/complete'
 import { pairwise } from '../utils/pairwise'
 
-type MESSAGE_ID = 'unexpectedEnumsDependencyOrder' | 'unexpectedEnumsOrder'
-
 export type Options = [
   Partial<{
     type: 'alphabetical' | 'line-length' | 'natural'
@@ -47,6 +45,8 @@ export type Options = [
     ignoreCase: boolean
   }>,
 ]
+
+type MESSAGE_ID = 'unexpectedEnumsDependencyOrder' | 'unexpectedEnumsOrder'
 
 let defaultOptions: Required<Options[0]> = {
   partitionByComment: false,

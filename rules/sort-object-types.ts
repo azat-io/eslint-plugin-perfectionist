@@ -37,14 +37,6 @@ import { useGroups } from '../utils/use-groups'
 import { complete } from '../utils/complete'
 import { pairwise } from '../utils/pairwise'
 
-type MESSAGE_ID =
-  | 'missedSpacingBetweenObjectTypeMembers'
-  | 'extraSpacingBetweenObjectTypeMembers'
-  | 'unexpectedObjectTypesGroupOrder'
-  | 'unexpectedObjectTypesOrder'
-
-type Group<T extends string[]> = 'multiline' | 'unknown' | T[number] | 'method'
-
 type Options<T extends string[]> = [
   Partial<{
     groupKind: 'required-first' | 'optional-first' | 'mixed'
@@ -61,9 +53,17 @@ type Options<T extends string[]> = [
   }>,
 ]
 
+type MESSAGE_ID =
+  | 'missedSpacingBetweenObjectTypeMembers'
+  | 'extraSpacingBetweenObjectTypeMembers'
+  | 'unexpectedObjectTypesGroupOrder'
+  | 'unexpectedObjectTypesOrder'
+
 interface SortObjectTypesSortingNode extends SortingNode<TSESTree.TypeElement> {
   groupKind: 'required' | 'optional'
 }
+
+type Group<T extends string[]> = 'multiline' | 'unknown' | T[number] | 'method'
 
 let defaultOptions: Required<Options<string[]>[0]> = {
   partitionByComment: false,

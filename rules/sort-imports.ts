@@ -40,6 +40,29 @@ import { complete } from '../utils/complete'
 import { pairwise } from '../utils/pairwise'
 import { matches } from '../utils/matches'
 
+export type Options<T extends string[]> = [
+  Partial<{
+    customGroups: {
+      value?: Record<T[number], string[] | string>
+      type?: Record<T[number], string[] | string>
+    }
+    type: 'alphabetical' | 'line-length' | 'natural'
+    partitionByComment: string[] | boolean | string
+    newlinesBetween: 'ignore' | 'always' | 'never'
+    specialCharacters: 'remove' | 'trim' | 'keep'
+    locales: NonNullable<Intl.LocalesArgument>
+    groups: (Group<T>[] | Group<T>)[]
+    environment: 'node' | 'bun'
+    partitionByNewLine: boolean
+    internalPattern: string[]
+    sortSideEffects: boolean
+    tsconfigRootDir?: string
+    maxLineLength?: number
+    order: 'desc' | 'asc'
+    ignoreCase: boolean
+  }>,
+]
+
 export type MESSAGE_ID =
   | 'missedSpacingBetweenImports'
   | 'unexpectedImportsGroupOrder'
@@ -66,29 +89,6 @@ type Group<T extends string[]> =
   | 'index'
   | 'style'
   | 'type'
-
-export type Options<T extends string[]> = [
-  Partial<{
-    customGroups: {
-      value?: Record<T[number], string[] | string>
-      type?: Record<T[number], string[] | string>
-    }
-    type: 'alphabetical' | 'line-length' | 'natural'
-    partitionByComment: string[] | boolean | string
-    newlinesBetween: 'ignore' | 'always' | 'never'
-    specialCharacters: 'remove' | 'trim' | 'keep'
-    locales: NonNullable<Intl.LocalesArgument>
-    groups: (Group<T>[] | Group<T>)[]
-    environment: 'node' | 'bun'
-    partitionByNewLine: boolean
-    internalPattern: string[]
-    sortSideEffects: boolean
-    tsconfigRootDir?: string
-    maxLineLength?: number
-    order: 'desc' | 'asc'
-    ignoreCase: boolean
-  }>,
-]
 
 interface SortImportsSortingNode extends SortingNode {
   isIgnored: boolean

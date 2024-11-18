@@ -41,15 +41,6 @@ import { complete } from '../utils/complete'
 import { pairwise } from '../utils/pairwise'
 import { matches } from '../utils/matches'
 
-type MESSAGE_ID =
-  | 'missedSpacingBetweenObjectMembers'
-  | 'unexpectedObjectsDependencyOrder'
-  | 'extraSpacingBetweenObjectMembers'
-  | 'unexpectedObjectsGroupOrder'
-  | 'unexpectedObjectsOrder'
-
-type Group = 'multiline' | 'unknown' | 'method' | string
-
 type Options = [
   Partial<{
     type: 'alphabetical' | 'line-length' | 'natural'
@@ -67,6 +58,15 @@ type Options = [
     ignoreCase: boolean
   }>,
 ]
+
+type MESSAGE_ID =
+  | 'missedSpacingBetweenObjectMembers'
+  | 'unexpectedObjectsDependencyOrder'
+  | 'extraSpacingBetweenObjectMembers'
+  | 'unexpectedObjectsGroupOrder'
+  | 'unexpectedObjectsOrder'
+
+type Group = 'multiline' | 'unknown' | 'method' | string
 
 let defaultOptions: Required<Options[0]> = {
   partitionByNewLine: false,

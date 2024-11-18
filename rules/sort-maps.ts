@@ -27,8 +27,6 @@ import { makeFixes } from '../utils/make-fixes'
 import { complete } from '../utils/complete'
 import { pairwise } from '../utils/pairwise'
 
-type MESSAGE_ID = 'unexpectedMapElementsOrder'
-
 type Options = [
   Partial<{
     type: 'alphabetical' | 'line-length' | 'natural'
@@ -40,6 +38,8 @@ type Options = [
     ignoreCase: boolean
   }>,
 ]
+
+type MESSAGE_ID = 'unexpectedMapElementsOrder'
 
 let defaultOptions: Required<Options[0]> = {
   type: 'alphabetical',

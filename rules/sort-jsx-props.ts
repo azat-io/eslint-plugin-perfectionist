@@ -27,14 +27,6 @@ import { pairwise } from '../utils/pairwise'
 import { complete } from '../utils/complete'
 import { matches } from '../utils/matches'
 
-type MESSAGE_ID = 'unexpectedJSXPropsGroupOrder' | 'unexpectedJSXPropsOrder'
-
-type Group<T extends string[]> =
-  | 'multiline'
-  | 'shorthand'
-  | 'unknown'
-  | T[number]
-
 type Options<T extends string[]> = [
   Partial<{
     customGroups: Record<T[number], string[] | string>
@@ -47,6 +39,14 @@ type Options<T extends string[]> = [
     ignoreCase: boolean
   }>,
 ]
+
+type Group<T extends string[]> =
+  | 'multiline'
+  | 'shorthand'
+  | 'unknown'
+  | T[number]
+
+type MESSAGE_ID = 'unexpectedJSXPropsGroupOrder' | 'unexpectedJSXPropsOrder'
 
 let defaultOptions: Required<Options<string[]>[0]> = {
   type: 'alphabetical',

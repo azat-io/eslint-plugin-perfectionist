@@ -1,40 +1,30 @@
 import type { JSONSchema4 } from '@typescript-eslint/utils/json-schema'
 
-type ProtectedModifier = 'protected'
-type PrivateModifier = 'private'
-type PublicModifier = 'public'
-type PublicOrProtectedOrPrivateModifier =
-  | ProtectedModifier
-  | PrivateModifier
-  | PublicModifier
-type AsyncModifier = 'async'
-type StaticModifier = 'static'
-type AbstractModifier = 'abstract'
-type OverrideModifier = 'override'
-type ReadonlyModifier = 'readonly'
-type DecoratedModifier = 'decorated'
-type DeclareModifier = 'declare'
-type OptionalModifier = 'optional'
-export type Modifier =
-  | PublicOrProtectedOrPrivateModifier
-  | DecoratedModifier
-  | AbstractModifier
-  | OverrideModifier
-  | OptionalModifier
-  | ReadonlyModifier
-  | DeclareModifier
-  | StaticModifier
-  | AsyncModifier
-
-type ConstructorSelector = 'constructor'
-type FunctionPropertySelector = 'function-property'
-type PropertySelector = 'property'
-type MethodSelector = 'method'
-type GetMethodSelector = 'get-method'
-type SetMethodSelector = 'set-method'
-type IndexSignatureSelector = 'index-signature'
-type StaticBlockSelector = 'static-block'
-type AccessorPropertySelector = 'accessor-property'
+export type SortClassesOptions = [
+  Partial<{
+    type: 'alphabetical' | 'line-length' | 'natural'
+    partitionByComment: string[] | boolean | string
+    newlinesBetween: 'ignore' | 'always' | 'never'
+    specialCharacters: 'remove' | 'trim' | 'keep'
+    ignoreCallbackDependenciesPatterns: string[]
+    locales: NonNullable<Intl.LocalesArgument>
+    partitionByNewLine: boolean
+    customGroups: CustomGroup[]
+    groups: (Group[] | Group)[]
+    order: 'desc' | 'asc'
+    ignoreCase: boolean
+  }>,
+]
+export type SingleCustomGroup =
+  | AdvancedSingleCustomGroup<FunctionPropertySelector>
+  | AdvancedSingleCustomGroup<AccessorPropertySelector>
+  | BaseSingleCustomGroup<IndexSignatureSelector>
+  | AdvancedSingleCustomGroup<GetMethodSelector>
+  | AdvancedSingleCustomGroup<SetMethodSelector>
+  | AdvancedSingleCustomGroup<PropertySelector>
+  | BaseSingleCustomGroup<StaticBlockSelector>
+  | BaseSingleCustomGroup<ConstructorSelector>
+  | AdvancedSingleCustomGroup<MethodSelector>
 export type Selector =
   | AccessorPropertySelector
   | FunctionPropertySelector
@@ -45,65 +35,31 @@ export type Selector =
   | SetMethodSelector
   | PropertySelector
   | MethodSelector
-
-type WithDashSuffixOrEmpty<T extends string> = `${T}-` | ''
-
-type PublicOrProtectedOrPrivateModifierPrefix = WithDashSuffixOrEmpty<
-  ProtectedModifier | PrivateModifier | PublicModifier
->
-
-type AsyncModifierPrefix = WithDashSuffixOrEmpty<AsyncModifier>
-type OverrideModifierPrefix = WithDashSuffixOrEmpty<OverrideModifier>
-type OptionalModifierPrefix = WithDashSuffixOrEmpty<OptionalModifier>
-type ReadonlyModifierPrefix = WithDashSuffixOrEmpty<ReadonlyModifier>
-type DecoratedModifierPrefix = WithDashSuffixOrEmpty<DecoratedModifier>
-type DeclareModifierPrefix = WithDashSuffixOrEmpty<DeclareModifier>
-
-type StaticOrAbstractModifierPrefix = WithDashSuffixOrEmpty<
-  AbstractModifier | StaticModifier
->
-
-type StaticModifierPrefix = WithDashSuffixOrEmpty<StaticModifier>
-
-type GetMethodOrSetMethodSelector = GetMethodSelector | SetMethodSelector
-
-type ConstructorGroup =
-  `${PublicOrProtectedOrPrivateModifierPrefix}${ConstructorSelector}`
-type FunctionPropertyGroup =
-  `${PublicOrProtectedOrPrivateModifierPrefix}${StaticModifierPrefix}${OverrideModifierPrefix}${ReadonlyModifierPrefix}${DecoratedModifierPrefix}${AsyncModifierPrefix}${FunctionPropertySelector}`
-type DeclarePropertyGroup =
-  `${DeclareModifierPrefix}${PublicOrProtectedOrPrivateModifierPrefix}${StaticOrAbstractModifierPrefix}${ReadonlyModifierPrefix}${OptionalModifierPrefix}${PropertySelector}`
-type NonDeclarePropertyGroup =
-  `${PublicOrProtectedOrPrivateModifierPrefix}${StaticOrAbstractModifierPrefix}${OverrideModifierPrefix}${ReadonlyModifierPrefix}${DecoratedModifierPrefix}${OptionalModifierPrefix}${PropertySelector}`
-type MethodGroup =
-  `${PublicOrProtectedOrPrivateModifierPrefix}${StaticOrAbstractModifierPrefix}${OverrideModifierPrefix}${DecoratedModifierPrefix}${AsyncModifierPrefix}${OptionalModifierPrefix}${MethodSelector}`
-type GetMethodOrSetMethodGroup =
-  `${PublicOrProtectedOrPrivateModifierPrefix}${StaticOrAbstractModifierPrefix}${OverrideModifierPrefix}${DecoratedModifierPrefix}${GetMethodOrSetMethodSelector}`
-type AccessorPropertyGroup =
-  `${PublicOrProtectedOrPrivateModifierPrefix}${StaticOrAbstractModifierPrefix}${OverrideModifierPrefix}${DecoratedModifierPrefix}${AccessorPropertySelector}`
-type IndexSignatureGroup =
-  `${StaticModifierPrefix}${ReadonlyModifierPrefix}${IndexSignatureSelector}`
-type StaticBlockGroup = `${StaticBlockSelector}`
-
-/**
- * Some invalid combinations are still handled by this type, such as
- * - private abstract X
- * - abstract decorated X
- * Only used in code, so I don't know if it's worth maintaining this.
- */
-type Group =
-  | GetMethodOrSetMethodGroup
-  | NonDeclarePropertyGroup
-  | AccessorPropertyGroup
-  | FunctionPropertyGroup
-  | DeclarePropertyGroup
-  | IndexSignatureGroup
-  | ConstructorGroup
-  | StaticBlockGroup
-  | MethodGroup
-  | 'unknown'
-  | string
-
+export type CustomGroup = (
+  | {
+      order?: SortClassesOptions[0]['order']
+      type?: SortClassesOptions[0]['type']
+    }
+  | {
+      type?: 'unsorted'
+    }
+) &
+  (SingleCustomGroup | AnyOfCustomGroup) & {
+    groupName: string
+  }
+export type Modifier =
+  | PublicOrProtectedOrPrivateModifier
+  | DecoratedModifier
+  | AbstractModifier
+  | OverrideModifier
+  | OptionalModifier
+  | ReadonlyModifier
+  | DeclareModifier
+  | StaticModifier
+  | AsyncModifier
+export interface AnyOfCustomGroup {
+  anyOf: SingleCustomGroup[]
+}
 /**
  * Only used in code as well
  */
@@ -149,61 +105,105 @@ interface AllowedModifiersPerSelector {
   constructor: PublicOrProtectedOrPrivateModifier
   'static-block': never
 }
+/**
+ * Some invalid combinations are still handled by this type, such as
+ * - private abstract X
+ * - abstract decorated X
+ * Only used in code, so I don't know if it's worth maintaining this.
+ */
+type Group =
+  | GetMethodOrSetMethodGroup
+  | NonDeclarePropertyGroup
+  | AccessorPropertyGroup
+  | FunctionPropertyGroup
+  | DeclarePropertyGroup
+  | IndexSignatureGroup
+  | ConstructorGroup
+  | StaticBlockGroup
+  | MethodGroup
+  | 'unknown'
+  | string
+type NonDeclarePropertyGroup =
+  `${PublicOrProtectedOrPrivateModifierPrefix}${StaticOrAbstractModifierPrefix}${OverrideModifierPrefix}${ReadonlyModifierPrefix}${DecoratedModifierPrefix}${OptionalModifierPrefix}${PropertySelector}`
+type FunctionPropertyGroup =
+  `${PublicOrProtectedOrPrivateModifierPrefix}${StaticModifierPrefix}${OverrideModifierPrefix}${ReadonlyModifierPrefix}${DecoratedModifierPrefix}${AsyncModifierPrefix}${FunctionPropertySelector}`
+type MethodGroup =
+  `${PublicOrProtectedOrPrivateModifierPrefix}${StaticOrAbstractModifierPrefix}${OverrideModifierPrefix}${DecoratedModifierPrefix}${AsyncModifierPrefix}${OptionalModifierPrefix}${MethodSelector}`
+type DeclarePropertyGroup =
+  `${DeclareModifierPrefix}${PublicOrProtectedOrPrivateModifierPrefix}${StaticOrAbstractModifierPrefix}${ReadonlyModifierPrefix}${OptionalModifierPrefix}${PropertySelector}`
+type GetMethodOrSetMethodGroup =
+  `${PublicOrProtectedOrPrivateModifierPrefix}${StaticOrAbstractModifierPrefix}${OverrideModifierPrefix}${DecoratedModifierPrefix}${GetMethodOrSetMethodSelector}`
 
-export interface AnyOfCustomGroup {
-  anyOf: SingleCustomGroup[]
-}
-
-interface BaseSingleCustomGroup<T extends Selector> {
-  modifiers?: AllowedModifiersPerSelector[T][]
-  selector?: T
-}
-
+type AccessorPropertyGroup =
+  `${PublicOrProtectedOrPrivateModifierPrefix}${StaticOrAbstractModifierPrefix}${OverrideModifierPrefix}${DecoratedModifierPrefix}${AccessorPropertySelector}`
 type AdvancedSingleCustomGroup<T extends Selector> = {
   decoratorNamePattern?: string
   elementValuePattern?: string
   elementNamePattern?: string
 } & BaseSingleCustomGroup<T>
+type PublicOrProtectedOrPrivateModifierPrefix = WithDashSuffixOrEmpty<
+  ProtectedModifier | PrivateModifier | PublicModifier
+>
+interface BaseSingleCustomGroup<T extends Selector> {
+  modifiers?: AllowedModifiersPerSelector[T][]
+  selector?: T
+}
+type IndexSignatureGroup =
+  `${StaticModifierPrefix}${ReadonlyModifierPrefix}${IndexSignatureSelector}`
+type PublicOrProtectedOrPrivateModifier =
+  | ProtectedModifier
+  | PrivateModifier
+  | PublicModifier
+type StaticOrAbstractModifierPrefix = WithDashSuffixOrEmpty<
+  AbstractModifier | StaticModifier
+>
+type ConstructorGroup =
+  `${PublicOrProtectedOrPrivateModifierPrefix}${ConstructorSelector}`
+type GetMethodOrSetMethodSelector = GetMethodSelector | SetMethodSelector
+type DecoratedModifierPrefix = WithDashSuffixOrEmpty<DecoratedModifier>
 
-export type SingleCustomGroup =
-  | AdvancedSingleCustomGroup<FunctionPropertySelector>
-  | AdvancedSingleCustomGroup<AccessorPropertySelector>
-  | BaseSingleCustomGroup<IndexSignatureSelector>
-  | AdvancedSingleCustomGroup<GetMethodSelector>
-  | AdvancedSingleCustomGroup<SetMethodSelector>
-  | AdvancedSingleCustomGroup<PropertySelector>
-  | BaseSingleCustomGroup<StaticBlockSelector>
-  | BaseSingleCustomGroup<ConstructorSelector>
-  | AdvancedSingleCustomGroup<MethodSelector>
+type OverrideModifierPrefix = WithDashSuffixOrEmpty<OverrideModifier>
 
-export type CustomGroup = (
-  | {
-      order?: SortClassesOptions[0]['order']
-      type?: SortClassesOptions[0]['type']
-    }
-  | {
-      type?: 'unsorted'
-    }
-) &
-  (SingleCustomGroup | AnyOfCustomGroup) & {
-    groupName: string
-  }
+type OptionalModifierPrefix = WithDashSuffixOrEmpty<OptionalModifier>
 
-export type SortClassesOptions = [
-  Partial<{
-    type: 'alphabetical' | 'line-length' | 'natural'
-    partitionByComment: string[] | boolean | string
-    newlinesBetween: 'ignore' | 'always' | 'never'
-    specialCharacters: 'remove' | 'trim' | 'keep'
-    ignoreCallbackDependenciesPatterns: string[]
-    locales: NonNullable<Intl.LocalesArgument>
-    partitionByNewLine: boolean
-    customGroups: CustomGroup[]
-    groups: (Group[] | Group)[]
-    order: 'desc' | 'asc'
-    ignoreCase: boolean
-  }>,
-]
+type ReadonlyModifierPrefix = WithDashSuffixOrEmpty<ReadonlyModifier>
+type DeclareModifierPrefix = WithDashSuffixOrEmpty<DeclareModifier>
+type StaticModifierPrefix = WithDashSuffixOrEmpty<StaticModifier>
+type AsyncModifierPrefix = WithDashSuffixOrEmpty<AsyncModifier>
+type WithDashSuffixOrEmpty<T extends string> = `${T}-` | ''
+type FunctionPropertySelector = 'function-property'
+
+type AccessorPropertySelector = 'accessor-property'
+
+type StaticBlockGroup = `${StaticBlockSelector}`
+
+type IndexSignatureSelector = 'index-signature'
+
+type StaticBlockSelector = 'static-block'
+type ConstructorSelector = 'constructor'
+type GetMethodSelector = 'get-method'
+type SetMethodSelector = 'set-method'
+type ProtectedModifier = 'protected'
+type DecoratedModifier = 'decorated'
+type AbstractModifier = 'abstract'
+type OverrideModifier = 'override'
+type ReadonlyModifier = 'readonly'
+
+type OptionalModifier = 'optional'
+
+type PropertySelector = 'property'
+
+type PrivateModifier = 'private'
+
+type DeclareModifier = 'declare'
+
+type PublicModifier = 'public'
+
+type StaticModifier = 'static'
+
+type MethodSelector = 'method'
+
+type AsyncModifier = 'async'
 
 export let allSelectors: Selector[] = [
   'accessor-property',

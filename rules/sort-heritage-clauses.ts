@@ -28,12 +28,6 @@ import { makeFixes } from '../utils/make-fixes'
 import { complete } from '../utils/complete'
 import { pairwise } from '../utils/pairwise'
 
-type MESSAGE_ID =
-  | 'unexpectedHeritageClausesGroupOrder'
-  | 'unexpectedHeritageClausesOrder'
-
-type Group<T extends string[]> = 'unknown' | T[number]
-
 export type Options<T extends string[]> = [
   Partial<{
     customGroups: Record<T[number], string[] | string>
@@ -45,6 +39,12 @@ export type Options<T extends string[]> = [
     ignoreCase: boolean
   }>,
 ]
+
+type MESSAGE_ID =
+  | 'unexpectedHeritageClausesGroupOrder'
+  | 'unexpectedHeritageClausesOrder'
+
+type Group<T extends string[]> = 'unknown' | T[number]
 
 let defaultOptions: Required<Options<string[]>[0]> = {
   type: 'alphabetical',

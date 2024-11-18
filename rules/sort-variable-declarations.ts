@@ -31,10 +31,6 @@ import { makeFixes } from '../utils/make-fixes'
 import { complete } from '../utils/complete'
 import { pairwise } from '../utils/pairwise'
 
-type MESSAGE_ID =
-  | 'unexpectedVariableDeclarationsDependencyOrder'
-  | 'unexpectedVariableDeclarationsOrder'
-
 type Options = [
   Partial<{
     type: 'alphabetical' | 'line-length' | 'natural'
@@ -46,6 +42,10 @@ type Options = [
     ignoreCase: boolean
   }>,
 ]
+
+type MESSAGE_ID =
+  | 'unexpectedVariableDeclarationsDependencyOrder'
+  | 'unexpectedVariableDeclarationsOrder'
 
 let defaultOptions: Required<Options[0]> = {
   type: 'alphabetical',

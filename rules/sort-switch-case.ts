@@ -22,8 +22,6 @@ import { pairwise } from '../utils/pairwise'
 import { complete } from '../utils/complete'
 import { compare } from '../utils/compare'
 
-type MESSAGE_ID = 'unexpectedSwitchCaseOrder'
-
 type Options = [
   Partial<{
     type: 'alphabetical' | 'line-length' | 'natural'
@@ -37,6 +35,8 @@ type Options = [
 interface SortSwitchCaseSortingNode extends SortingNode<TSESTree.SwitchCase> {
   isDefaultClause: boolean
 }
+
+type MESSAGE_ID = 'unexpectedSwitchCaseOrder'
 
 let defaultOptions: Required<Options[0]> = {
   type: 'alphabetical',
