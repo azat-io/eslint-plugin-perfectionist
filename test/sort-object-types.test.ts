@@ -26,6 +26,34 @@ describe(ruleName, () => {
     } as const
 
     ruleTester.run(`${ruleName}(${type}): sorts type members`, rule, {
+      invalid: [
+        {
+          errors: [
+            {
+              data: {
+                right: 'b',
+                left: 'c',
+              },
+              messageId: 'unexpectedObjectTypesOrder',
+            },
+          ],
+          output: dedent`
+            type Type = {
+              a: 'aaa'
+              b: 'bb'
+              c: 'c'
+            }
+          `,
+          code: dedent`
+            type Type = {
+              a: 'aaa'
+              c: 'c'
+              b: 'bb'
+            }
+          `,
+          options: [options],
+        },
+      ],
       valid: [
         {
           code: dedent`
@@ -38,40 +66,44 @@ describe(ruleName, () => {
           options: [options],
         },
       ],
-      invalid: [
-        {
-          code: dedent`
-            type Type = {
-              a: 'aaa'
-              c: 'c'
-              b: 'bb'
-            }
-          `,
-          output: dedent`
-            type Type = {
-              a: 'aaa'
-              b: 'bb'
-              c: 'c'
-            }
-          `,
-          options: [options],
-          errors: [
-            {
-              messageId: 'unexpectedObjectTypesOrder',
-              data: {
-                left: 'c',
-                right: 'b',
-              },
-            },
-          ],
-        },
-      ],
     })
 
     ruleTester.run(
       `${ruleName}(${type}): sorts type members in function args`,
       rule,
       {
+        invalid: [
+          {
+            errors: [
+              {
+                data: {
+                  right: 'a',
+                  left: 'b',
+                },
+                messageId: 'unexpectedObjectTypesOrder',
+              },
+            ],
+            output: dedent`
+              let Func = (arguments: {
+                a: 'aaa'
+                b: 'bb'
+                c: 'c'
+              }) => {
+                // ...
+              }
+            `,
+            code: dedent`
+              let Func = (arguments: {
+                b: 'bb'
+                a: 'aaa'
+                c: 'c'
+              }) => {
+                // ...
+              }
+            `,
+            options: [options],
+          },
+        ],
         valid: [
           {
             code: dedent`
@@ -84,38 +116,6 @@ describe(ruleName, () => {
               }
             `,
             options: [options],
-          },
-        ],
-        invalid: [
-          {
-            code: dedent`
-              let Func = (arguments: {
-                b: 'bb'
-                a: 'aaa'
-                c: 'c'
-              }) => {
-                // ...
-              }
-            `,
-            output: dedent`
-              let Func = (arguments: {
-                a: 'aaa'
-                b: 'bb'
-                c: 'c'
-              }) => {
-                // ...
-              }
-            `,
-            options: [options],
-            errors: [
-              {
-                messageId: 'unexpectedObjectTypesOrder',
-                data: {
-                  left: 'b',
-                  right: 'a',
-                },
-              },
-            ],
           },
         ],
       },
@@ -125,6 +125,45 @@ describe(ruleName, () => {
       `${ruleName}(${type}): sorts type members with computed keys`,
       rule,
       {
+        invalid: [
+          {
+            errors: [
+              {
+                data: {
+                  right: '[key: string]',
+                  left: 'a',
+                },
+                messageId: 'unexpectedObjectTypesOrder',
+              },
+              {
+                data: {
+                  left: 'value',
+                  right: 'c',
+                },
+                messageId: 'unexpectedObjectTypesOrder',
+              },
+            ],
+            output: dedent`
+              type Type = {
+                [key: string]: string
+                a?: 'aaa'
+                b: 'bb'
+                c: 'c'
+                [value]: string
+              }
+            `,
+            code: dedent`
+              type Type = {
+                a?: 'aaa'
+                [key: string]: string
+                b: 'bb'
+                [value]: string
+                c: 'c'
+              }
+            `,
+            options: [options],
+          },
+        ],
         valid: [
           {
             code: dedent`
@@ -137,45 +176,6 @@ describe(ruleName, () => {
               }
             `,
             options: [options],
-          },
-        ],
-        invalid: [
-          {
-            code: dedent`
-              type Type = {
-                a?: 'aaa'
-                [key: string]: string
-                b: 'bb'
-                [value]: string
-                c: 'c'
-              }
-            `,
-            output: dedent`
-              type Type = {
-                [key: string]: string
-                a?: 'aaa'
-                b: 'bb'
-                c: 'c'
-                [value]: string
-              }
-            `,
-            options: [options],
-            errors: [
-              {
-                messageId: 'unexpectedObjectTypesOrder',
-                data: {
-                  left: 'a',
-                  right: '[key: string]',
-                },
-              },
-              {
-                messageId: 'unexpectedObjectTypesOrder',
-                data: {
-                  left: 'value',
-                  right: 'c',
-                },
-              },
-            ],
           },
         ],
       },
@@ -185,33 +185,8 @@ describe(ruleName, () => {
       `${ruleName}(${type}): sorts type members with any key types`,
       rule,
       {
-        valid: [
-          {
-            code: dedent`
-              type Type = {
-                [...values]
-                [[data]]: string
-                [name in v]?
-                [8]: Value
-                arrowFunc?: () => void
-                func(): void
-              }
-            `,
-            options: [options],
-          },
-        ],
         invalid: [
           {
-            code: dedent`
-              type Type = {
-                [...values]
-                [[data]]: string
-                [name in v]?
-                [8]: Value
-                func(): void
-                arrowFunc?: () => void
-              }
-            `,
             output: dedent`
               type Type = {
                 [...values]
@@ -222,22 +197,67 @@ describe(ruleName, () => {
                 func(): void
               }
             `,
-            options: [options],
+            code: dedent`
+              type Type = {
+                [...values]
+                [[data]]: string
+                [name in v]?
+                [8]: Value
+                func(): void
+                arrowFunc?: () => void
+              }
+            `,
             errors: [
               {
-                messageId: 'unexpectedObjectTypesOrder',
                 data: {
                   left: 'func(): void',
                   right: 'arrowFunc',
                 },
+                messageId: 'unexpectedObjectTypesOrder',
               },
             ],
+            options: [options],
+          },
+        ],
+        valid: [
+          {
+            code: dedent`
+              type Type = {
+                [...values]
+                [[data]]: string
+                [name in v]?
+                [8]: Value
+                arrowFunc?: () => void
+                func(): void
+              }
+            `,
+            options: [options],
           },
         ],
       },
     )
 
     ruleTester.run(`${ruleName}(${type}): sorts inline type members`, rule, {
+      invalid: [
+        {
+          errors: [
+            {
+              data: {
+                right: 'a',
+                left: 'b',
+              },
+              messageId: 'unexpectedObjectTypesOrder',
+            },
+          ],
+          output: dedent`
+            func<{ a: 'aa'; b: 'b'; }>(/* ... */)
+          `,
+          code: dedent`
+            func<{ b: 'b'; a: 'aa' }>(/* ... */)
+          `,
+          options: [options],
+        },
+      ],
       valid: [
         {
           code: dedent`
@@ -246,69 +266,32 @@ describe(ruleName, () => {
           options: [options],
         },
       ],
-      invalid: [
-        {
-          code: dedent`
-            func<{ b: 'b'; a: 'aa' }>(/* ... */)
-          `,
-          output: dedent`
-            func<{ a: 'aa'; b: 'b'; }>(/* ... */)
-          `,
-          options: [options],
-          errors: [
-            {
-              messageId: 'unexpectedObjectTypesOrder',
-              data: {
-                left: 'b',
-                right: 'a',
-              },
-            },
-          ],
-        },
-      ],
     })
 
     ruleTester.run(
       `${ruleName}(${type}): allows to set groups for sorting`,
       rule,
       {
-        valid: [
-          {
-            code: dedent`
-              type Type = {
-                b: 'bb'
-                a: 'aaa'
-                c: 'c'
-                d: {
-                  e: 'ee'
-                  f: 'f'
-                }
-              }
-            `,
-            options: [
-              {
-                ...options,
-                groups: ['b', 'unknown', 'multiline'],
-                customGroups: {
-                  b: 'b',
-                },
-              },
-            ],
-          },
-        ],
         invalid: [
           {
-            code: dedent`
-              type Type = {
-                a: 'aaa'
-                b: 'bb'
-                c: 'c'
-                d: {
-                  f: 'f'
-                  e: 'ee'
-                }
-              }
-            `,
+            errors: [
+              {
+                data: {
+                  leftGroup: 'unknown',
+                  rightGroup: 'b',
+                  right: 'b',
+                  left: 'a',
+                },
+                messageId: 'unexpectedObjectTypesGroupOrder',
+              },
+              {
+                data: {
+                  right: 'e',
+                  left: 'f',
+                },
+                messageId: 'unexpectedObjectTypesOrder',
+              },
+            ],
             output: [
               dedent`
                 type Type = {
@@ -322,31 +305,48 @@ describe(ruleName, () => {
                 }
               `,
             ],
+            code: dedent`
+              type Type = {
+                a: 'aaa'
+                b: 'bb'
+                c: 'c'
+                d: {
+                  f: 'f'
+                  e: 'ee'
+                }
+              }
+            `,
             options: [
               {
                 ...options,
-                groups: ['b', 'unknown', 'multiline'],
                 customGroups: {
                   b: 'b',
                 },
+                groups: ['b', 'unknown', 'multiline'],
               },
             ],
-            errors: [
+          },
+        ],
+        valid: [
+          {
+            code: dedent`
+              type Type = {
+                b: 'bb'
+                a: 'aaa'
+                c: 'c'
+                d: {
+                  e: 'ee'
+                  f: 'f'
+                }
+              }
+            `,
+            options: [
               {
-                messageId: 'unexpectedObjectTypesGroupOrder',
-                data: {
-                  left: 'a',
-                  leftGroup: 'unknown',
-                  right: 'b',
-                  rightGroup: 'b',
+                ...options,
+                customGroups: {
+                  b: 'b',
                 },
-              },
-              {
-                messageId: 'unexpectedObjectTypesOrder',
-                data: {
-                  left: 'f',
-                  right: 'e',
-                },
+                groups: ['b', 'unknown', 'multiline'],
               },
             ],
           },
@@ -360,6 +360,15 @@ describe(ruleName, () => {
       {
         valid: [
           {
+            options: [
+              {
+                ...options,
+                customGroups: {
+                  elementsWithoutFoo: '^(?!.*Foo).*$',
+                },
+                groups: ['unknown', 'elementsWithoutFoo'],
+              },
+            ],
             code: dedent`
               type T = {
                 iHaveFooInMyName: string
@@ -368,15 +377,6 @@ describe(ruleName, () => {
                 b: string
               }
             `,
-            options: [
-              {
-                ...options,
-                groups: ['unknown', 'elementsWithoutFoo'],
-                customGroups: {
-                  elementsWithoutFoo: '^(?!.*Foo).*$',
-                },
-              },
-            ],
           },
         ],
         invalid: [],
@@ -387,18 +387,17 @@ describe(ruleName, () => {
       `${ruleName}(${type}): allows to use in class methods`,
       rule,
       {
-        valid: [],
         invalid: [
           {
-            code: dedent`
-              class Class {
-                async method (data: {
-                  b: 'bb'
-                  a: 'aaa'
-                  c: 'c'
-                }) {}
-              }
-            `,
+            errors: [
+              {
+                data: {
+                  right: 'a',
+                  left: 'b',
+                },
+                messageId: 'unexpectedObjectTypesOrder',
+              },
+            ],
             output: dedent`
               class Class {
                 async method (data: {
@@ -408,18 +407,19 @@ describe(ruleName, () => {
                 }) {}
               }
             `,
+            code: dedent`
+              class Class {
+                async method (data: {
+                  b: 'bb'
+                  a: 'aaa'
+                  c: 'c'
+                }) {}
+              }
+            `,
             options: [options],
-            errors: [
-              {
-                messageId: 'unexpectedObjectTypesOrder',
-                data: {
-                  left: 'b',
-                  right: 'a',
-                },
-              },
-            ],
           },
         ],
+        valid: [],
       },
     )
 
@@ -427,6 +427,54 @@ describe(ruleName, () => {
       `${ruleName}(${type}): allows to use new line as partition`,
       rule,
       {
+        invalid: [
+          {
+            errors: [
+              {
+                data: {
+                  right: 'd',
+                  left: 'e',
+                },
+                messageId: 'unexpectedObjectTypesOrder',
+              },
+              {
+                data: {
+                  right: 'a',
+                  left: 'b',
+                },
+                messageId: 'unexpectedObjectTypesOrder',
+              },
+            ],
+            output: dedent`
+              type Type = {
+                d: 'dd'
+                e: 'e'
+
+                c: 'ccc'
+
+                a: 'aaaaa'
+                b: 'bbbb'
+              }
+            `,
+            code: dedent`
+              type Type = {
+                e: 'e'
+                d: 'dd'
+
+                c: 'ccc'
+
+                b: 'bbbb'
+                a: 'aaaaa'
+              }
+            `,
+            options: [
+              {
+                ...options,
+                partitionByNewLine: true,
+              },
+            ],
+          },
+        ],
         valid: [
           {
             code: dedent`
@@ -448,54 +496,6 @@ describe(ruleName, () => {
             ],
           },
         ],
-        invalid: [
-          {
-            code: dedent`
-              type Type = {
-                e: 'e'
-                d: 'dd'
-
-                c: 'ccc'
-
-                b: 'bbbb'
-                a: 'aaaaa'
-              }
-            `,
-            output: dedent`
-              type Type = {
-                d: 'dd'
-                e: 'e'
-
-                c: 'ccc'
-
-                a: 'aaaaa'
-                b: 'bbbb'
-              }
-            `,
-            options: [
-              {
-                ...options,
-                partitionByNewLine: true,
-              },
-            ],
-            errors: [
-              {
-                messageId: 'unexpectedObjectTypesOrder',
-                data: {
-                  left: 'e',
-                  right: 'd',
-                },
-              },
-              {
-                messageId: 'unexpectedObjectTypesOrder',
-                data: {
-                  left: 'b',
-                  right: 'a',
-                },
-              },
-            ],
-          },
-        ],
       },
     )
 
@@ -504,25 +504,24 @@ describe(ruleName, () => {
         `${ruleName}(${type}): allows to use partition comments`,
         rule,
         {
-          valid: [],
           invalid: [
             {
-              code: dedent`
-              type Type = {
-                // Part: A
-                cc: string
-                d: string
-                // Not partition comment
-                bbb: string
-                // Part: B
-                aaaa: string
-                e: string
-                // Part: C
-                'gg': string
-                // Not partition comment
-                fff: string
-              }
-            `,
+              errors: [
+                {
+                  data: {
+                    right: 'bbb',
+                    left: 'd',
+                  },
+                  messageId: 'unexpectedObjectTypesOrder',
+                },
+                {
+                  data: {
+                    right: 'fff',
+                    left: 'gg',
+                  },
+                  messageId: 'unexpectedObjectTypesOrder',
+                },
+              ],
               output: dedent`
               type Type = {
                 // Part: A
@@ -539,30 +538,31 @@ describe(ruleName, () => {
                 'gg': string
               }
             `,
+              code: dedent`
+              type Type = {
+                // Part: A
+                cc: string
+                d: string
+                // Not partition comment
+                bbb: string
+                // Part: B
+                aaaa: string
+                e: string
+                // Part: C
+                'gg': string
+                // Not partition comment
+                fff: string
+              }
+            `,
               options: [
                 {
                   ...options,
                   partitionByComment: '^Part*',
                 },
               ],
-              errors: [
-                {
-                  messageId: 'unexpectedObjectTypesOrder',
-                  data: {
-                    left: 'd',
-                    right: 'bbb',
-                  },
-                },
-                {
-                  messageId: 'unexpectedObjectTypesOrder',
-                  data: {
-                    left: 'gg',
-                    right: 'fff',
-                  },
-                },
-              ],
             },
           ],
+          valid: [],
         },
       )
 
@@ -596,22 +596,8 @@ describe(ruleName, () => {
         `${ruleName}(${type}): allows to use multiple partition comments`,
         rule,
         {
-          valid: [],
           invalid: [
             {
-              code: dedent`
-              type Type = {
-                /* Partition Comment */
-                // Part: A
-                d: string
-                // Part: B
-                aaa: string
-                c: string
-                bb: string
-                /* Other */
-                e: string
-              }
-            `,
               output: dedent`
               type Type = {
                 /* Partition Comment */
@@ -625,23 +611,37 @@ describe(ruleName, () => {
                 e: string
               }
             `,
+              code: dedent`
+              type Type = {
+                /* Partition Comment */
+                // Part: A
+                d: string
+                // Part: B
+                aaa: string
+                c: string
+                bb: string
+                /* Other */
+                e: string
+              }
+            `,
+              errors: [
+                {
+                  data: {
+                    right: 'bb',
+                    left: 'c',
+                  },
+                  messageId: 'unexpectedObjectTypesOrder',
+                },
+              ],
               options: [
                 {
                   ...options,
                   partitionByComment: ['Partition Comment', 'Part: *', 'Other'],
                 },
               ],
-              errors: [
-                {
-                  messageId: 'unexpectedObjectTypesOrder',
-                  data: {
-                    left: 'c',
-                    right: 'bb',
-                  },
-                },
-              ],
             },
           ],
+          valid: [],
         },
       )
 
@@ -677,6 +677,50 @@ describe(ruleName, () => {
       `${ruleName}(${type}): allows to sort required values first`,
       rule,
       {
+        invalid: [
+          {
+            errors: [
+              {
+                data: {
+                  left: 'bbbb',
+                  right: 'ccc',
+                },
+                messageId: 'unexpectedObjectTypesOrder',
+              },
+              {
+                data: {
+                  left: 'dd',
+                  right: 'e',
+                },
+                messageId: 'unexpectedObjectTypesOrder',
+              },
+            ],
+            output: dedent`
+              type Type = {
+                ccc: string
+                e: string
+                aaaaa?: string
+                bbbb?: string
+                dd?: string
+              }
+            `,
+            code: dedent`
+              type Type = {
+                aaaaa?: string
+                bbbb?: string
+                ccc: string
+                dd?: string
+                e: string
+              }
+            `,
+            options: [
+              {
+                ...options,
+                groupKind: 'required-first',
+              },
+            ],
+          },
+        ],
         valid: [
           {
             code: dedent`
@@ -692,50 +736,6 @@ describe(ruleName, () => {
               {
                 ...options,
                 groupKind: 'required-first',
-              },
-            ],
-          },
-        ],
-        invalid: [
-          {
-            code: dedent`
-              type Type = {
-                aaaaa?: string
-                bbbb?: string
-                ccc: string
-                dd?: string
-                e: string
-              }
-            `,
-            output: dedent`
-              type Type = {
-                ccc: string
-                e: string
-                aaaaa?: string
-                bbbb?: string
-                dd?: string
-              }
-            `,
-            options: [
-              {
-                ...options,
-                groupKind: 'required-first',
-              },
-            ],
-            errors: [
-              {
-                messageId: 'unexpectedObjectTypesOrder',
-                data: {
-                  left: 'bbbb',
-                  right: 'ccc',
-                },
-              },
-              {
-                messageId: 'unexpectedObjectTypesOrder',
-                data: {
-                  left: 'dd',
-                  right: 'e',
-                },
               },
             ],
           },
@@ -747,6 +747,43 @@ describe(ruleName, () => {
       `${ruleName}(${type}): allows to sort optional values first`,
       rule,
       {
+        invalid: [
+          {
+            errors: [
+              {
+                data: {
+                  left: 'ccc',
+                  right: 'dd',
+                },
+                messageId: 'unexpectedObjectTypesOrder',
+              },
+            ],
+            output: dedent`
+              type Type = {
+                aaaaa?: string
+                bbbb?: string
+                dd?: string
+                ccc: string
+                e: string
+              }
+            `,
+            code: dedent`
+              type Type = {
+                aaaaa?: string
+                bbbb?: string
+                ccc: string
+                dd?: string
+                e: string
+              }
+            `,
+            options: [
+              {
+                ...options,
+                groupKind: 'optional-first',
+              },
+            ],
+          },
+        ],
         valid: [
           {
             code: dedent`
@@ -762,43 +799,6 @@ describe(ruleName, () => {
               {
                 ...options,
                 groupKind: 'optional-first',
-              },
-            ],
-          },
-        ],
-        invalid: [
-          {
-            code: dedent`
-              type Type = {
-                aaaaa?: string
-                bbbb?: string
-                ccc: string
-                dd?: string
-                e: string
-              }
-            `,
-            output: dedent`
-              type Type = {
-                aaaaa?: string
-                bbbb?: string
-                dd?: string
-                ccc: string
-                e: string
-              }
-            `,
-            options: [
-              {
-                ...options,
-                groupKind: 'optional-first',
-              },
-            ],
-            errors: [
-              {
-                messageId: 'unexpectedObjectTypesOrder',
-                data: {
-                  left: 'ccc',
-                  right: 'dd',
-                },
               },
             ],
           },
@@ -837,18 +837,18 @@ describe(ruleName, () => {
       {
         valid: [
           {
-            code: dedent`
-              type Type = {
-                ab: string
-                a_c: string
-              }
-            `,
             options: [
               {
                 ...options,
                 specialCharacters: 'remove',
               },
             ],
+            code: dedent`
+              type Type = {
+                ab: string
+                a_c: string
+              }
+            `,
           },
         ],
         invalid: [],
@@ -901,9 +901,31 @@ describe(ruleName, () => {
         `${ruleName}(${type}): removes newlines when never`,
         rule,
         {
-          valid: [],
           invalid: [
             {
+              errors: [
+                {
+                  data: {
+                    right: 'y',
+                    left: 'a',
+                  },
+                  messageId: 'extraSpacingBetweenObjectTypeMembers',
+                },
+                {
+                  data: {
+                    right: 'b',
+                    left: 'z',
+                  },
+                  messageId: 'unexpectedObjectTypesOrder',
+                },
+                {
+                  data: {
+                    right: 'b',
+                    left: 'z',
+                  },
+                  messageId: 'extraSpacingBetweenObjectTypeMembers',
+                },
+              ],
               code: dedent`
                 type Type = {
                   a: () => null,
@@ -926,35 +948,13 @@ describe(ruleName, () => {
               options: [
                 {
                   ...options,
-                  newlinesBetween: 'never',
                   groups: ['method', 'unknown'],
-                },
-              ],
-              errors: [
-                {
-                  messageId: 'extraSpacingBetweenObjectTypeMembers',
-                  data: {
-                    left: 'a',
-                    right: 'y',
-                  },
-                },
-                {
-                  messageId: 'unexpectedObjectTypesOrder',
-                  data: {
-                    left: 'z',
-                    right: 'b',
-                  },
-                },
-                {
-                  messageId: 'extraSpacingBetweenObjectTypeMembers',
-                  data: {
-                    left: 'z',
-                    right: 'b',
-                  },
+                  newlinesBetween: 'never',
                 },
               ],
             },
           ],
+          valid: [],
         },
       )
 
@@ -962,21 +962,31 @@ describe(ruleName, () => {
         `${ruleName}(${type}): keeps one newline when always`,
         rule,
         {
-          valid: [],
           invalid: [
             {
-              code: dedent`
-                type Type = {
-                  a: () => null,
-
-
-                 z: "z",
-                y: "y",
-                    b: {
-                      // Newline stuff
-                    },
-                }
-              `,
+              errors: [
+                {
+                  data: {
+                    right: 'z',
+                    left: 'a',
+                  },
+                  messageId: 'extraSpacingBetweenObjectTypeMembers',
+                },
+                {
+                  data: {
+                    right: 'y',
+                    left: 'z',
+                  },
+                  messageId: 'unexpectedObjectTypesOrder',
+                },
+                {
+                  data: {
+                    right: 'b',
+                    left: 'y',
+                  },
+                  messageId: 'missedSpacingBetweenObjectTypeMembers',
+                },
+              ],
               output: dedent`
                 type Type = {
                   a: () => null,
@@ -989,38 +999,28 @@ describe(ruleName, () => {
                     },
                 }
                 `,
+              code: dedent`
+                type Type = {
+                  a: () => null,
+
+
+                 z: "z",
+                y: "y",
+                    b: {
+                      // Newline stuff
+                    },
+                }
+              `,
               options: [
                 {
                   ...options,
-                  newlinesBetween: 'always',
                   groups: ['method', 'unknown', 'multiline'],
-                },
-              ],
-              errors: [
-                {
-                  messageId: 'extraSpacingBetweenObjectTypeMembers',
-                  data: {
-                    left: 'a',
-                    right: 'z',
-                  },
-                },
-                {
-                  messageId: 'unexpectedObjectTypesOrder',
-                  data: {
-                    left: 'z',
-                    right: 'y',
-                  },
-                },
-                {
-                  messageId: 'missedSpacingBetweenObjectTypeMembers',
-                  data: {
-                    left: 'y',
-                    right: 'b',
-                  },
+                  newlinesBetween: 'always',
                 },
               ],
             },
           ],
+          valid: [],
         },
       )
     })
@@ -1029,75 +1029,75 @@ describe(ruleName, () => {
       `${ruleName}(${type}): sorts inline elements correctly`,
       rule,
       {
-        valid: [],
         invalid: [
           {
+            errors: [
+              {
+                data: {
+                  right: 'a',
+                  left: 'b',
+                },
+                messageId: 'unexpectedObjectTypesOrder',
+              },
+            ],
+            output: dedent`
+              type Type = {
+                a: string; b: string,
+              }
+            `,
             code: dedent`
               type Type = {
                 b: string, a: string
               }
             `,
+            options: [options],
+          },
+          {
+            errors: [
+              {
+                data: {
+                  right: 'a',
+                  left: 'b',
+                },
+                messageId: 'unexpectedObjectTypesOrder',
+              },
+            ],
             output: dedent`
               type Type = {
                 a: string; b: string,
               }
             `,
-            options: [options],
-            errors: [
-              {
-                messageId: 'unexpectedObjectTypesOrder',
-                data: {
-                  left: 'b',
-                  right: 'a',
-                },
-              },
-            ],
-          },
-          {
             code: dedent`
               type Type = {
                 b: string, a: string;
               }
             `,
-            output: dedent`
-              type Type = {
-                a: string; b: string,
-              }
-            `,
             options: [options],
-            errors: [
-              {
-                messageId: 'unexpectedObjectTypesOrder',
-                data: {
-                  left: 'b',
-                  right: 'a',
-                },
-              },
-            ],
           },
           {
-            code: dedent`
-              type Type = {
-                b: string, a: string,
-              }
-            `,
+            errors: [
+              {
+                data: {
+                  right: 'a',
+                  left: 'b',
+                },
+                messageId: 'unexpectedObjectTypesOrder',
+              },
+            ],
             output: dedent`
               type Type = {
                 a: string, b: string,
               }
             `,
+            code: dedent`
+              type Type = {
+                b: string, a: string,
+              }
+            `,
             options: [options],
-            errors: [
-              {
-                messageId: 'unexpectedObjectTypesOrder',
-                data: {
-                  left: 'b',
-                  right: 'a',
-                },
-              },
-            ],
           },
         ],
+        valid: [],
       },
     )
   })
@@ -1112,6 +1112,34 @@ describe(ruleName, () => {
     } as const
 
     ruleTester.run(`${ruleName}(${type}): sorts type members`, rule, {
+      invalid: [
+        {
+          errors: [
+            {
+              data: {
+                right: 'b',
+                left: 'c',
+              },
+              messageId: 'unexpectedObjectTypesOrder',
+            },
+          ],
+          output: dedent`
+            type Type = {
+              a: 'aaa'
+              b: 'bb'
+              c: 'c'
+            }
+          `,
+          code: dedent`
+            type Type = {
+              a: 'aaa'
+              c: 'c'
+              b: 'bb'
+            }
+          `,
+          options: [options],
+        },
+      ],
       valid: [
         {
           code: dedent`
@@ -1124,40 +1152,44 @@ describe(ruleName, () => {
           options: [options],
         },
       ],
-      invalid: [
-        {
-          code: dedent`
-            type Type = {
-              a: 'aaa'
-              c: 'c'
-              b: 'bb'
-            }
-          `,
-          output: dedent`
-            type Type = {
-              a: 'aaa'
-              b: 'bb'
-              c: 'c'
-            }
-          `,
-          options: [options],
-          errors: [
-            {
-              messageId: 'unexpectedObjectTypesOrder',
-              data: {
-                left: 'c',
-                right: 'b',
-              },
-            },
-          ],
-        },
-      ],
     })
 
     ruleTester.run(
       `${ruleName}(${type}): sorts type members in function args`,
       rule,
       {
+        invalid: [
+          {
+            errors: [
+              {
+                data: {
+                  right: 'a',
+                  left: 'b',
+                },
+                messageId: 'unexpectedObjectTypesOrder',
+              },
+            ],
+            output: dedent`
+              let Func = (arguments: {
+                a: 'aaa'
+                b: 'bb'
+                c: 'c'
+              }) => {
+                // ...
+              }
+            `,
+            code: dedent`
+              let Func = (arguments: {
+                b: 'bb'
+                a: 'aaa'
+                c: 'c'
+              }) => {
+                // ...
+              }
+            `,
+            options: [options],
+          },
+        ],
         valid: [
           {
             code: dedent`
@@ -1170,38 +1202,6 @@ describe(ruleName, () => {
               }
             `,
             options: [options],
-          },
-        ],
-        invalid: [
-          {
-            code: dedent`
-              let Func = (arguments: {
-                b: 'bb'
-                a: 'aaa'
-                c: 'c'
-              }) => {
-                // ...
-              }
-            `,
-            output: dedent`
-              let Func = (arguments: {
-                a: 'aaa'
-                b: 'bb'
-                c: 'c'
-              }) => {
-                // ...
-              }
-            `,
-            options: [options],
-            errors: [
-              {
-                messageId: 'unexpectedObjectTypesOrder',
-                data: {
-                  left: 'b',
-                  right: 'a',
-                },
-              },
-            ],
           },
         ],
       },
@@ -1211,6 +1211,45 @@ describe(ruleName, () => {
       `${ruleName}(${type}): sorts type members with computed keys`,
       rule,
       {
+        invalid: [
+          {
+            errors: [
+              {
+                data: {
+                  right: '[key: string]',
+                  left: 'a',
+                },
+                messageId: 'unexpectedObjectTypesOrder',
+              },
+              {
+                data: {
+                  left: 'value',
+                  right: 'c',
+                },
+                messageId: 'unexpectedObjectTypesOrder',
+              },
+            ],
+            output: dedent`
+              type Type = {
+                [key: string]: string
+                a?: 'aaa'
+                b: 'bb'
+                c: 'c'
+                [value]: string
+              }
+            `,
+            code: dedent`
+              type Type = {
+                a?: 'aaa'
+                [key: string]: string
+                b: 'bb'
+                [value]: string
+                c: 'c'
+              }
+            `,
+            options: [options],
+          },
+        ],
         valid: [
           {
             code: dedent`
@@ -1223,45 +1262,6 @@ describe(ruleName, () => {
               }
             `,
             options: [options],
-          },
-        ],
-        invalid: [
-          {
-            code: dedent`
-              type Type = {
-                a?: 'aaa'
-                [key: string]: string
-                b: 'bb'
-                [value]: string
-                c: 'c'
-              }
-            `,
-            output: dedent`
-              type Type = {
-                [key: string]: string
-                a?: 'aaa'
-                b: 'bb'
-                c: 'c'
-                [value]: string
-              }
-            `,
-            options: [options],
-            errors: [
-              {
-                messageId: 'unexpectedObjectTypesOrder',
-                data: {
-                  left: 'a',
-                  right: '[key: string]',
-                },
-              },
-              {
-                messageId: 'unexpectedObjectTypesOrder',
-                data: {
-                  left: 'value',
-                  right: 'c',
-                },
-              },
-            ],
           },
         ],
       },
@@ -1271,33 +1271,24 @@ describe(ruleName, () => {
       `${ruleName}(${type}): sorts type members with any key types`,
       rule,
       {
-        valid: [
-          {
-            code: dedent`
-              type Type = {
-                [8]: Value
-                [...values]
-                [[data]]: string
-                [name in v]?
-                arrowFunc?: () => void
-                func(): void
-              }
-            `,
-            options: [options],
-          },
-        ],
         invalid: [
           {
-            code: dedent`
-              type Type = {
-                [...values]
-                [[data]]: string
-                [name in v]?
-                [8]: Value
-                func(): void
-                arrowFunc?: () => void
-              }
-            `,
+            errors: [
+              {
+                data: {
+                  left: '[name in v]?',
+                  right: '8',
+                },
+                messageId: 'unexpectedObjectTypesOrder',
+              },
+              {
+                data: {
+                  left: 'func(): void',
+                  right: 'arrowFunc',
+                },
+                messageId: 'unexpectedObjectTypesOrder',
+              },
+            ],
             output: dedent`
               type Type = {
                 [8]: Value
@@ -1308,29 +1299,58 @@ describe(ruleName, () => {
                 func(): void
               }
             `,
+            code: dedent`
+              type Type = {
+                [...values]
+                [[data]]: string
+                [name in v]?
+                [8]: Value
+                func(): void
+                arrowFunc?: () => void
+              }
+            `,
             options: [options],
-            errors: [
-              {
-                messageId: 'unexpectedObjectTypesOrder',
-                data: {
-                  left: '[name in v]?',
-                  right: '8',
-                },
-              },
-              {
-                messageId: 'unexpectedObjectTypesOrder',
-                data: {
-                  left: 'func(): void',
-                  right: 'arrowFunc',
-                },
-              },
-            ],
+          },
+        ],
+        valid: [
+          {
+            code: dedent`
+              type Type = {
+                [8]: Value
+                [...values]
+                [[data]]: string
+                [name in v]?
+                arrowFunc?: () => void
+                func(): void
+              }
+            `,
+            options: [options],
           },
         ],
       },
     )
 
     ruleTester.run(`${ruleName}(${type}): sorts inline type members`, rule, {
+      invalid: [
+        {
+          errors: [
+            {
+              data: {
+                right: 'a',
+                left: 'b',
+              },
+              messageId: 'unexpectedObjectTypesOrder',
+            },
+          ],
+          output: dedent`
+            func<{ a: 'aa'; b: 'b'; }>(/* ... */)
+          `,
+          code: dedent`
+            func<{ b: 'b'; a: 'aa' }>(/* ... */)
+          `,
+          options: [options],
+        },
+      ],
       valid: [
         {
           code: dedent`
@@ -1339,69 +1359,32 @@ describe(ruleName, () => {
           options: [options],
         },
       ],
-      invalid: [
-        {
-          code: dedent`
-            func<{ b: 'b'; a: 'aa' }>(/* ... */)
-          `,
-          output: dedent`
-            func<{ a: 'aa'; b: 'b'; }>(/* ... */)
-          `,
-          options: [options],
-          errors: [
-            {
-              messageId: 'unexpectedObjectTypesOrder',
-              data: {
-                left: 'b',
-                right: 'a',
-              },
-            },
-          ],
-        },
-      ],
     })
 
     ruleTester.run(
       `${ruleName}(${type}): allows to set groups for sorting`,
       rule,
       {
-        valid: [
-          {
-            code: dedent`
-              type Type = {
-                b: 'bb'
-                a: 'aaa'
-                c: 'c'
-                d: {
-                  e: 'ee'
-                  f: 'f'
-                }
-              }
-            `,
-            options: [
-              {
-                ...options,
-                groups: ['b', 'unknown', 'multiline'],
-                customGroups: {
-                  b: 'b',
-                },
-              },
-            ],
-          },
-        ],
         invalid: [
           {
-            code: dedent`
-              type Type = {
-                a: 'aaa'
-                b: 'bb'
-                c: 'c'
-                d: {
-                  f: 'f'
-                  e: 'ee'
-                }
-              }
-            `,
+            errors: [
+              {
+                data: {
+                  leftGroup: 'unknown',
+                  rightGroup: 'b',
+                  right: 'b',
+                  left: 'a',
+                },
+                messageId: 'unexpectedObjectTypesGroupOrder',
+              },
+              {
+                data: {
+                  right: 'e',
+                  left: 'f',
+                },
+                messageId: 'unexpectedObjectTypesOrder',
+              },
+            ],
             output: [
               dedent`
                 type Type = {
@@ -1415,31 +1398,48 @@ describe(ruleName, () => {
                 }
               `,
             ],
+            code: dedent`
+              type Type = {
+                a: 'aaa'
+                b: 'bb'
+                c: 'c'
+                d: {
+                  f: 'f'
+                  e: 'ee'
+                }
+              }
+            `,
             options: [
               {
                 ...options,
-                groups: ['b', 'unknown', 'multiline'],
                 customGroups: {
                   b: 'b',
                 },
+                groups: ['b', 'unknown', 'multiline'],
               },
             ],
-            errors: [
+          },
+        ],
+        valid: [
+          {
+            code: dedent`
+              type Type = {
+                b: 'bb'
+                a: 'aaa'
+                c: 'c'
+                d: {
+                  e: 'ee'
+                  f: 'f'
+                }
+              }
+            `,
+            options: [
               {
-                messageId: 'unexpectedObjectTypesGroupOrder',
-                data: {
-                  left: 'a',
-                  leftGroup: 'unknown',
-                  right: 'b',
-                  rightGroup: 'b',
+                ...options,
+                customGroups: {
+                  b: 'b',
                 },
-              },
-              {
-                messageId: 'unexpectedObjectTypesOrder',
-                data: {
-                  left: 'f',
-                  right: 'e',
-                },
+                groups: ['b', 'unknown', 'multiline'],
               },
             ],
           },
@@ -1451,6 +1451,54 @@ describe(ruleName, () => {
       `${ruleName}(${type}): allows to use new line as partition`,
       rule,
       {
+        invalid: [
+          {
+            errors: [
+              {
+                data: {
+                  right: 'd',
+                  left: 'e',
+                },
+                messageId: 'unexpectedObjectTypesOrder',
+              },
+              {
+                data: {
+                  right: 'a',
+                  left: 'b',
+                },
+                messageId: 'unexpectedObjectTypesOrder',
+              },
+            ],
+            output: dedent`
+              type Type = {
+                d: 'dd'
+                e: 'e'
+
+                c: 'ccc'
+
+                a: 'aaaaa'
+                b: 'bbbb'
+              }
+            `,
+            code: dedent`
+              type Type = {
+                e: 'e'
+                d: 'dd'
+
+                c: 'ccc'
+
+                b: 'bbbb'
+                a: 'aaaaa'
+              }
+            `,
+            options: [
+              {
+                ...options,
+                partitionByNewLine: true,
+              },
+            ],
+          },
+        ],
         valid: [
           {
             code: dedent`
@@ -1468,54 +1516,6 @@ describe(ruleName, () => {
               {
                 ...options,
                 partitionByNewLine: true,
-              },
-            ],
-          },
-        ],
-        invalid: [
-          {
-            code: dedent`
-              type Type = {
-                e: 'e'
-                d: 'dd'
-
-                c: 'ccc'
-
-                b: 'bbbb'
-                a: 'aaaaa'
-              }
-            `,
-            output: dedent`
-              type Type = {
-                d: 'dd'
-                e: 'e'
-
-                c: 'ccc'
-
-                a: 'aaaaa'
-                b: 'bbbb'
-              }
-            `,
-            options: [
-              {
-                ...options,
-                partitionByNewLine: true,
-              },
-            ],
-            errors: [
-              {
-                messageId: 'unexpectedObjectTypesOrder',
-                data: {
-                  left: 'e',
-                  right: 'd',
-                },
-              },
-              {
-                messageId: 'unexpectedObjectTypesOrder',
-                data: {
-                  left: 'b',
-                  right: 'a',
-                },
               },
             ],
           },
@@ -1527,6 +1527,50 @@ describe(ruleName, () => {
       `${ruleName}(${type}): allows to sort required values first`,
       rule,
       {
+        invalid: [
+          {
+            errors: [
+              {
+                data: {
+                  left: 'bbbb',
+                  right: 'ccc',
+                },
+                messageId: 'unexpectedObjectTypesOrder',
+              },
+              {
+                data: {
+                  left: 'dd',
+                  right: 'e',
+                },
+                messageId: 'unexpectedObjectTypesOrder',
+              },
+            ],
+            output: dedent`
+              type Type = {
+                ccc: string
+                e: string
+                aaaaa?: string
+                bbbb?: string
+                dd?: string
+              }
+            `,
+            code: dedent`
+              type Type = {
+                aaaaa?: string
+                bbbb?: string
+                ccc: string
+                dd?: string
+                e: string
+              }
+            `,
+            options: [
+              {
+                ...options,
+                groupKind: 'required-first',
+              },
+            ],
+          },
+        ],
         valid: [
           {
             code: dedent`
@@ -1542,50 +1586,6 @@ describe(ruleName, () => {
               {
                 ...options,
                 groupKind: 'required-first',
-              },
-            ],
-          },
-        ],
-        invalid: [
-          {
-            code: dedent`
-              type Type = {
-                aaaaa?: string
-                bbbb?: string
-                ccc: string
-                dd?: string
-                e: string
-              }
-            `,
-            output: dedent`
-              type Type = {
-                ccc: string
-                e: string
-                aaaaa?: string
-                bbbb?: string
-                dd?: string
-              }
-            `,
-            options: [
-              {
-                ...options,
-                groupKind: 'required-first',
-              },
-            ],
-            errors: [
-              {
-                messageId: 'unexpectedObjectTypesOrder',
-                data: {
-                  left: 'bbbb',
-                  right: 'ccc',
-                },
-              },
-              {
-                messageId: 'unexpectedObjectTypesOrder',
-                data: {
-                  left: 'dd',
-                  right: 'e',
-                },
               },
             ],
           },
@@ -1597,6 +1597,43 @@ describe(ruleName, () => {
       `${ruleName}(${type}): allows to sort optional values first`,
       rule,
       {
+        invalid: [
+          {
+            errors: [
+              {
+                data: {
+                  left: 'ccc',
+                  right: 'dd',
+                },
+                messageId: 'unexpectedObjectTypesOrder',
+              },
+            ],
+            output: dedent`
+              type Type = {
+                aaaaa?: string
+                bbbb?: string
+                dd?: string
+                ccc: string
+                e: string
+              }
+            `,
+            code: dedent`
+              type Type = {
+                aaaaa?: string
+                bbbb?: string
+                ccc: string
+                dd?: string
+                e: string
+              }
+            `,
+            options: [
+              {
+                ...options,
+                groupKind: 'optional-first',
+              },
+            ],
+          },
+        ],
         valid: [
           {
             code: dedent`
@@ -1612,43 +1649,6 @@ describe(ruleName, () => {
               {
                 ...options,
                 groupKind: 'optional-first',
-              },
-            ],
-          },
-        ],
-        invalid: [
-          {
-            code: dedent`
-              type Type = {
-                aaaaa?: string
-                bbbb?: string
-                ccc: string
-                dd?: string
-                e: string
-              }
-            `,
-            output: dedent`
-              type Type = {
-                aaaaa?: string
-                bbbb?: string
-                dd?: string
-                ccc: string
-                e: string
-              }
-            `,
-            options: [
-              {
-                ...options,
-                groupKind: 'optional-first',
-              },
-            ],
-            errors: [
-              {
-                messageId: 'unexpectedObjectTypesOrder',
-                data: {
-                  left: 'ccc',
-                  right: 'dd',
-                },
               },
             ],
           },
@@ -1688,6 +1688,34 @@ describe(ruleName, () => {
     } as const
 
     ruleTester.run(`${ruleName}(${type}): sorts type members`, rule, {
+      invalid: [
+        {
+          errors: [
+            {
+              data: {
+                right: 'b',
+                left: 'c',
+              },
+              messageId: 'unexpectedObjectTypesOrder',
+            },
+          ],
+          output: dedent`
+            type Type = {
+              a: 'aaa'
+              b: 'bb'
+              c: 'c'
+            }
+          `,
+          code: dedent`
+            type Type = {
+              a: 'aaa'
+              c: 'c'
+              b: 'bb'
+            }
+          `,
+          options: [options],
+        },
+      ],
       valid: [
         {
           code: dedent`
@@ -1700,40 +1728,44 @@ describe(ruleName, () => {
           options: [options],
         },
       ],
-      invalid: [
-        {
-          code: dedent`
-            type Type = {
-              a: 'aaa'
-              c: 'c'
-              b: 'bb'
-            }
-          `,
-          output: dedent`
-            type Type = {
-              a: 'aaa'
-              b: 'bb'
-              c: 'c'
-            }
-          `,
-          options: [options],
-          errors: [
-            {
-              messageId: 'unexpectedObjectTypesOrder',
-              data: {
-                left: 'c',
-                right: 'b',
-              },
-            },
-          ],
-        },
-      ],
     })
 
     ruleTester.run(
       `${ruleName}(${type}): sorts type members in function args`,
       rule,
       {
+        invalid: [
+          {
+            errors: [
+              {
+                data: {
+                  right: 'a',
+                  left: 'b',
+                },
+                messageId: 'unexpectedObjectTypesOrder',
+              },
+            ],
+            output: dedent`
+              let Func = (arguments: {
+                a: 'aaa'
+                b: 'bb'
+                c: 'c'
+              }) => {
+                // ...
+              }
+            `,
+            code: dedent`
+              let Func = (arguments: {
+                b: 'bb'
+                a: 'aaa'
+                c: 'c'
+              }) => {
+                // ...
+              }
+            `,
+            options: [options],
+          },
+        ],
         valid: [
           {
             code: dedent`
@@ -1746,38 +1778,6 @@ describe(ruleName, () => {
               }
             `,
             options: [options],
-          },
-        ],
-        invalid: [
-          {
-            code: dedent`
-              let Func = (arguments: {
-                b: 'bb'
-                a: 'aaa'
-                c: 'c'
-              }) => {
-                // ...
-              }
-            `,
-            output: dedent`
-              let Func = (arguments: {
-                a: 'aaa'
-                b: 'bb'
-                c: 'c'
-              }) => {
-                // ...
-              }
-            `,
-            options: [options],
-            errors: [
-              {
-                messageId: 'unexpectedObjectTypesOrder',
-                data: {
-                  left: 'b',
-                  right: 'a',
-                },
-              },
-            ],
           },
         ],
       },
@@ -1787,6 +1787,45 @@ describe(ruleName, () => {
       `${ruleName}(${type}): sorts type members with computed keys`,
       rule,
       {
+        invalid: [
+          {
+            errors: [
+              {
+                data: {
+                  right: '[key: string]',
+                  left: 'a',
+                },
+                messageId: 'unexpectedObjectTypesOrder',
+              },
+              {
+                data: {
+                  right: 'value',
+                  left: 'b',
+                },
+                messageId: 'unexpectedObjectTypesOrder',
+              },
+            ],
+            output: dedent`
+              type Type = {
+                [key: string]: string
+                [value]: string
+                a?: 'aaa'
+                b: 'bb'
+                c: 'c'
+              }
+            `,
+            code: dedent`
+              type Type = {
+                a?: 'aaa'
+                [key: string]: string
+                b: 'bb'
+                [value]: string
+                c: 'c'
+              }
+            `,
+            options: [options],
+          },
+        ],
         valid: [
           {
             code: dedent`
@@ -1799,45 +1838,6 @@ describe(ruleName, () => {
               }
             `,
             options: [options],
-          },
-        ],
-        invalid: [
-          {
-            code: dedent`
-              type Type = {
-                a?: 'aaa'
-                [key: string]: string
-                b: 'bb'
-                [value]: string
-                c: 'c'
-              }
-            `,
-            output: dedent`
-              type Type = {
-                [key: string]: string
-                [value]: string
-                a?: 'aaa'
-                b: 'bb'
-                c: 'c'
-              }
-            `,
-            options: [options],
-            errors: [
-              {
-                messageId: 'unexpectedObjectTypesOrder',
-                data: {
-                  left: 'a',
-                  right: '[key: string]',
-                },
-              },
-              {
-                messageId: 'unexpectedObjectTypesOrder',
-                data: {
-                  left: 'b',
-                  right: 'value',
-                },
-              },
-            ],
           },
         ],
       },
@@ -1847,33 +1847,31 @@ describe(ruleName, () => {
       `${ruleName}(${type}): sorts type members with any key types`,
       rule,
       {
-        valid: [
-          {
-            code: dedent`
-              type Type = {
-                arrowFunc?: () => void
-                [[data]]: string
-                [name in v]?
-                func(): void
-                [...values]
-                [8]: Value
-              }
-            `,
-            options: [options],
-          },
-        ],
         invalid: [
           {
-            code: dedent`
-              type Type = {
-                [...values]
-                [[data]]: string
-                [name in v]?
-                [8]: Value
-                func(): void
-                arrowFunc?: () => void
-              }
-            `,
+            errors: [
+              {
+                data: {
+                  left: '[...values]',
+                  right: '[[data]]',
+                },
+                messageId: 'unexpectedObjectTypesOrder',
+              },
+              {
+                data: {
+                  right: 'func(): void',
+                  left: '8',
+                },
+                messageId: 'unexpectedObjectTypesOrder',
+              },
+              {
+                data: {
+                  left: 'func(): void',
+                  right: 'arrowFunc',
+                },
+                messageId: 'unexpectedObjectTypesOrder',
+              },
+            ],
             output: dedent`
               type Type = {
                 arrowFunc?: () => void
@@ -1884,36 +1882,58 @@ describe(ruleName, () => {
                 [8]: Value
               }
             `,
+            code: dedent`
+              type Type = {
+                [...values]
+                [[data]]: string
+                [name in v]?
+                [8]: Value
+                func(): void
+                arrowFunc?: () => void
+              }
+            `,
             options: [options],
-            errors: [
-              {
-                messageId: 'unexpectedObjectTypesOrder',
-                data: {
-                  left: '[...values]',
-                  right: '[[data]]',
-                },
-              },
-              {
-                messageId: 'unexpectedObjectTypesOrder',
-                data: {
-                  left: '8',
-                  right: 'func(): void',
-                },
-              },
-              {
-                messageId: 'unexpectedObjectTypesOrder',
-                data: {
-                  left: 'func(): void',
-                  right: 'arrowFunc',
-                },
-              },
-            ],
+          },
+        ],
+        valid: [
+          {
+            code: dedent`
+              type Type = {
+                arrowFunc?: () => void
+                [[data]]: string
+                [name in v]?
+                func(): void
+                [...values]
+                [8]: Value
+              }
+            `,
+            options: [options],
           },
         ],
       },
     )
 
     ruleTester.run(`${ruleName}(${type}): sorts inline type members`, rule, {
+      invalid: [
+        {
+          errors: [
+            {
+              data: {
+                right: 'a',
+                left: 'b',
+              },
+              messageId: 'unexpectedObjectTypesOrder',
+            },
+          ],
+          output: dedent`
+            func<{ a: 'aa'; b: 'b'; }>(/* ... */)
+          `,
+          code: dedent`
+            func<{ b: 'b'; a: 'aa' }>(/* ... */)
+          `,
+          options: [options],
+        },
+      ],
       valid: [
         {
           code: dedent`
@@ -1922,69 +1942,32 @@ describe(ruleName, () => {
           options: [options],
         },
       ],
-      invalid: [
-        {
-          code: dedent`
-            func<{ b: 'b'; a: 'aa' }>(/* ... */)
-          `,
-          output: dedent`
-            func<{ a: 'aa'; b: 'b'; }>(/* ... */)
-          `,
-          options: [options],
-          errors: [
-            {
-              messageId: 'unexpectedObjectTypesOrder',
-              data: {
-                left: 'b',
-                right: 'a',
-              },
-            },
-          ],
-        },
-      ],
     })
 
     ruleTester.run(
       `${ruleName}(${type}): allows to set groups for sorting`,
       rule,
       {
-        valid: [
-          {
-            code: dedent`
-              type Type = {
-                b: 'bb'
-                a: 'aaa'
-                c: 'c'
-                d: {
-                  e: 'ee'
-                  f: 'f'
-                }
-              }
-            `,
-            options: [
-              {
-                ...options,
-                groups: ['b', 'unknown', 'multiline'],
-                customGroups: {
-                  b: 'b',
-                },
-              },
-            ],
-          },
-        ],
         invalid: [
           {
-            code: dedent`
-              type Type = {
-                a: 'aaa'
-                b: 'bb'
-                c: 'c'
-                d: {
-                  f: 'f'
-                  e: 'ee'
-                }
-              }
-            `,
+            errors: [
+              {
+                data: {
+                  leftGroup: 'unknown',
+                  rightGroup: 'b',
+                  right: 'b',
+                  left: 'a',
+                },
+                messageId: 'unexpectedObjectTypesGroupOrder',
+              },
+              {
+                data: {
+                  right: 'e',
+                  left: 'f',
+                },
+                messageId: 'unexpectedObjectTypesOrder',
+              },
+            ],
             output: [
               dedent`
                 type Type = {
@@ -1998,31 +1981,48 @@ describe(ruleName, () => {
                 }
               `,
             ],
+            code: dedent`
+              type Type = {
+                a: 'aaa'
+                b: 'bb'
+                c: 'c'
+                d: {
+                  f: 'f'
+                  e: 'ee'
+                }
+              }
+            `,
             options: [
               {
                 ...options,
-                groups: ['b', 'unknown', 'multiline'],
                 customGroups: {
                   b: 'b',
                 },
+                groups: ['b', 'unknown', 'multiline'],
               },
             ],
-            errors: [
+          },
+        ],
+        valid: [
+          {
+            code: dedent`
+              type Type = {
+                b: 'bb'
+                a: 'aaa'
+                c: 'c'
+                d: {
+                  e: 'ee'
+                  f: 'f'
+                }
+              }
+            `,
+            options: [
               {
-                messageId: 'unexpectedObjectTypesGroupOrder',
-                data: {
-                  left: 'a',
-                  leftGroup: 'unknown',
-                  right: 'b',
-                  rightGroup: 'b',
+                ...options,
+                customGroups: {
+                  b: 'b',
                 },
-              },
-              {
-                messageId: 'unexpectedObjectTypesOrder',
-                data: {
-                  left: 'f',
-                  right: 'e',
-                },
+                groups: ['b', 'unknown', 'multiline'],
               },
             ],
           },
@@ -2034,6 +2034,54 @@ describe(ruleName, () => {
       `${ruleName}(${type}): allows to use new line as partition`,
       rule,
       {
+        invalid: [
+          {
+            errors: [
+              {
+                data: {
+                  right: 'd',
+                  left: 'e',
+                },
+                messageId: 'unexpectedObjectTypesOrder',
+              },
+              {
+                data: {
+                  right: 'a',
+                  left: 'b',
+                },
+                messageId: 'unexpectedObjectTypesOrder',
+              },
+            ],
+            output: dedent`
+              type Type = {
+                d: 'dd'
+                e: 'e'
+
+                c: 'ccc'
+
+                a: 'aaaaa'
+                b: 'bbbb'
+              }
+            `,
+            code: dedent`
+              type Type = {
+                e: 'e'
+                d: 'dd'
+
+                c: 'ccc'
+
+                b: 'bbbb'
+                a: 'aaaaa'
+              }
+            `,
+            options: [
+              {
+                ...options,
+                partitionByNewLine: true,
+              },
+            ],
+          },
+        ],
         valid: [
           {
             code: dedent`
@@ -2051,54 +2099,6 @@ describe(ruleName, () => {
               {
                 ...options,
                 partitionByNewLine: true,
-              },
-            ],
-          },
-        ],
-        invalid: [
-          {
-            code: dedent`
-              type Type = {
-                e: 'e'
-                d: 'dd'
-
-                c: 'ccc'
-
-                b: 'bbbb'
-                a: 'aaaaa'
-              }
-            `,
-            output: dedent`
-              type Type = {
-                d: 'dd'
-                e: 'e'
-
-                c: 'ccc'
-
-                a: 'aaaaa'
-                b: 'bbbb'
-              }
-            `,
-            options: [
-              {
-                ...options,
-                partitionByNewLine: true,
-              },
-            ],
-            errors: [
-              {
-                messageId: 'unexpectedObjectTypesOrder',
-                data: {
-                  left: 'e',
-                  right: 'd',
-                },
-              },
-              {
-                messageId: 'unexpectedObjectTypesOrder',
-                data: {
-                  left: 'b',
-                  right: 'a',
-                },
               },
             ],
           },
@@ -2110,6 +2110,50 @@ describe(ruleName, () => {
       `${ruleName}(${type}): allows to sort required values first`,
       rule,
       {
+        invalid: [
+          {
+            errors: [
+              {
+                data: {
+                  left: 'bbbb',
+                  right: 'ccc',
+                },
+                messageId: 'unexpectedObjectTypesOrder',
+              },
+              {
+                data: {
+                  left: 'dd',
+                  right: 'e',
+                },
+                messageId: 'unexpectedObjectTypesOrder',
+              },
+            ],
+            output: dedent`
+              type Type = {
+                ccc: string
+                e: string
+                aaaaa?: string
+                bbbb?: string
+                dd?: string
+              }
+            `,
+            code: dedent`
+              type Type = {
+                aaaaa?: string
+                bbbb?: string
+                ccc: string
+                dd?: string
+                e: string
+              }
+            `,
+            options: [
+              {
+                ...options,
+                groupKind: 'required-first',
+              },
+            ],
+          },
+        ],
         valid: [
           {
             code: dedent`
@@ -2125,50 +2169,6 @@ describe(ruleName, () => {
               {
                 ...options,
                 groupKind: 'required-first',
-              },
-            ],
-          },
-        ],
-        invalid: [
-          {
-            code: dedent`
-              type Type = {
-                aaaaa?: string
-                bbbb?: string
-                ccc: string
-                dd?: string
-                e: string
-              }
-            `,
-            output: dedent`
-              type Type = {
-                ccc: string
-                e: string
-                aaaaa?: string
-                bbbb?: string
-                dd?: string
-              }
-            `,
-            options: [
-              {
-                ...options,
-                groupKind: 'required-first',
-              },
-            ],
-            errors: [
-              {
-                messageId: 'unexpectedObjectTypesOrder',
-                data: {
-                  left: 'bbbb',
-                  right: 'ccc',
-                },
-              },
-              {
-                messageId: 'unexpectedObjectTypesOrder',
-                data: {
-                  left: 'dd',
-                  right: 'e',
-                },
               },
             ],
           },
@@ -2180,6 +2180,43 @@ describe(ruleName, () => {
       `${ruleName}(${type}): allows to sort optional values first`,
       rule,
       {
+        invalid: [
+          {
+            errors: [
+              {
+                data: {
+                  left: 'ccc',
+                  right: 'dd',
+                },
+                messageId: 'unexpectedObjectTypesOrder',
+              },
+            ],
+            output: dedent`
+              type Type = {
+                aaaaa?: string
+                bbbb?: string
+                dd?: string
+                ccc: string
+                e: string
+              }
+            `,
+            code: dedent`
+              type Type = {
+                aaaaa?: string
+                bbbb?: string
+                ccc: string
+                dd?: string
+                e: string
+              }
+            `,
+            options: [
+              {
+                ...options,
+                groupKind: 'optional-first',
+              },
+            ],
+          },
+        ],
         valid: [
           {
             code: dedent`
@@ -2195,43 +2232,6 @@ describe(ruleName, () => {
               {
                 ...options,
                 groupKind: 'optional-first',
-              },
-            ],
-          },
-        ],
-        invalid: [
-          {
-            code: dedent`
-              type Type = {
-                aaaaa?: string
-                bbbb?: string
-                ccc: string
-                dd?: string
-                e: string
-              }
-            `,
-            output: dedent`
-              type Type = {
-                aaaaa?: string
-                bbbb?: string
-                dd?: string
-                ccc: string
-                e: string
-              }
-            `,
-            options: [
-              {
-                ...options,
-                groupKind: 'optional-first',
-              },
-            ],
-            errors: [
-              {
-                messageId: 'unexpectedObjectTypesOrder',
-                data: {
-                  left: 'ccc',
-                  right: 'dd',
-                },
               },
             ],
           },
@@ -2269,6 +2269,14 @@ describe(ruleName, () => {
       {
         valid: [
           {
+            options: [
+              {
+                customGroups: {
+                  myCustomGroup: 'x',
+                },
+                groups: ['multiline', 'method', 'unknown', 'myCustomGroup'],
+              },
+            ],
             code: dedent`
             type Type = {
               a: 'aaa'
@@ -2276,14 +2284,6 @@ describe(ruleName, () => {
               c: 'c'
             }
           `,
-            options: [
-              {
-                groups: ['multiline', 'method', 'unknown', 'myCustomGroup'],
-                customGroups: {
-                  myCustomGroup: 'x',
-                },
-              },
-            ],
           },
         ],
         invalid: [],
@@ -2318,6 +2318,35 @@ describe(ruleName, () => {
       `${ruleName}: sets alphabetical asc sorting as default`,
       rule,
       {
+        invalid: [
+          {
+            output: dedent`
+              type Calculator = {
+                log: (x: number) => number,
+                log10: (x: number) => number,
+                log1p: (x: number) => number,
+                log2: (x: number) => number,
+              }
+            `,
+            code: dedent`
+              type Calculator = {
+                log: (x: number) => number,
+                log1p: (x: number) => number,
+                log2: (x: number) => number,
+                log10: (x: number) => number,
+              }
+            `,
+            errors: [
+              {
+                data: {
+                  right: 'log10',
+                  left: 'log2',
+                },
+                messageId: 'unexpectedObjectTypesOrder',
+              },
+            ],
+          },
+        ],
         valid: [
           dedent`
             type Calculator = {
@@ -2339,80 +2368,57 @@ describe(ruleName, () => {
             options: [{}],
           },
         ],
-        invalid: [
-          {
-            code: dedent`
-              type Calculator = {
-                log: (x: number) => number,
-                log1p: (x: number) => number,
-                log2: (x: number) => number,
-                log10: (x: number) => number,
-              }
-            `,
-            output: dedent`
-              type Calculator = {
-                log: (x: number) => number,
-                log10: (x: number) => number,
-                log1p: (x: number) => number,
-                log2: (x: number) => number,
-              }
-            `,
-            errors: [
-              {
-                messageId: 'unexpectedObjectTypesOrder',
-                data: {
-                  left: 'log2',
-                  right: 'log10',
-                },
-              },
-            ],
-          },
-        ],
       },
     )
 
     let eslintDisableRuleTesterName = `${ruleName}: supports 'eslint-disable' for individual nodes`
     ruleTester.run(eslintDisableRuleTesterName, rule, {
-      valid: [],
       invalid: [
         {
-          code: dedent`
-            type Type = {
-              c: string
-              b: string
-              // eslint-disable-next-line
-              a: string
-            }
-          `,
+          errors: [
+            {
+              data: {
+                right: 'b',
+                left: 'c',
+              },
+              messageId: 'unexpectedObjectTypesOrder',
+            },
+          ],
           output: dedent`
             type Type = {
               b: string
               c: string
+              // eslint-disable-next-line
+              a: string
+            }
+          `,
+          code: dedent`
+            type Type = {
+              c: string
+              b: string
               // eslint-disable-next-line
               a: string
             }
           `,
           options: [{}],
-          errors: [
-            {
-              messageId: 'unexpectedObjectTypesOrder',
-              data: {
-                left: 'c',
-                right: 'b',
-              },
-            },
-          ],
         },
         {
-          code: dedent`
-            type Type = {
-              d: string
-              c: string
-              // eslint-disable-next-line
-              a: string
-              b: string
-            }
-          `,
+          errors: [
+            {
+              data: {
+                right: 'c',
+                left: 'd',
+              },
+              messageId: 'unexpectedObjectTypesOrder',
+            },
+            {
+              data: {
+                right: 'b',
+                left: 'a',
+              },
+              messageId: 'unexpectedObjectTypesOrder',
+            },
+          ],
           output: dedent`
             type Type = {
               b: string
@@ -2420,6 +2426,15 @@ describe(ruleName, () => {
               // eslint-disable-next-line
               a: string
               d: string
+            }
+          `,
+          code: dedent`
+            type Type = {
+              d: string
+              c: string
+              // eslint-disable-next-line
+              a: string
+              b: string
             }
           `,
           options: [
@@ -2427,31 +2442,17 @@ describe(ruleName, () => {
               partitionByComment: true,
             },
           ],
-          errors: [
-            {
-              messageId: 'unexpectedObjectTypesOrder',
-              data: {
-                left: 'd',
-                right: 'c',
-              },
-            },
-            {
-              messageId: 'unexpectedObjectTypesOrder',
-              data: {
-                left: 'a',
-                right: 'b',
-              },
-            },
-          ],
         },
         {
-          code: dedent`
-            type Type = {
-              c: string
-              b: string
-              a: string // eslint-disable-line
-            }
-          `,
+          errors: [
+            {
+              data: {
+                right: 'b',
+                left: 'c',
+              },
+              messageId: 'unexpectedObjectTypesOrder',
+            },
+          ],
           output: dedent`
             type Type = {
               b: string
@@ -2459,26 +2460,25 @@ describe(ruleName, () => {
               a: string // eslint-disable-line
             }
           `,
-          options: [{}],
-          errors: [
-            {
-              messageId: 'unexpectedObjectTypesOrder',
-              data: {
-                left: 'c',
-                right: 'b',
-              },
-            },
-          ],
-        },
-        {
           code: dedent`
             type Type = {
               c: string
               b: string
-              /* eslint-disable-next-line */
-              a: string
+              a: string // eslint-disable-line
             }
           `,
+          options: [{}],
+        },
+        {
+          errors: [
+            {
+              data: {
+                right: 'b',
+                left: 'c',
+              },
+              messageId: 'unexpectedObjectTypesOrder',
+            },
+          ],
           output: dedent`
             type Type = {
               b: string
@@ -2487,25 +2487,26 @@ describe(ruleName, () => {
               a: string
             }
           `,
-          options: [{}],
-          errors: [
-            {
-              messageId: 'unexpectedObjectTypesOrder',
-              data: {
-                left: 'c',
-                right: 'b',
-              },
-            },
-          ],
-        },
-        {
           code: dedent`
             type Type = {
               c: string
               b: string
-              a: string /* eslint-disable-line */
+              /* eslint-disable-next-line */
+              a: string
             }
           `,
+          options: [{}],
+        },
+        {
+          errors: [
+            {
+              data: {
+                right: 'b',
+                left: 'c',
+              },
+              messageId: 'unexpectedObjectTypesOrder',
+            },
+          ],
           output: dedent`
             type Type = {
               b: string
@@ -2513,30 +2514,16 @@ describe(ruleName, () => {
               a: string /* eslint-disable-line */
             }
           `,
-          options: [{}],
-          errors: [
-            {
-              messageId: 'unexpectedObjectTypesOrder',
-              data: {
-                left: 'c',
-                right: 'b',
-              },
-            },
-          ],
-        },
-        {
           code: dedent`
             type Type = {
-              d: string
-              e: string
-              /* eslint-disable */
               c: string
               b: string
-              // Shouldn't move
-              /* eslint-enable */
-              a: string
+              a: string /* eslint-disable-line */
             }
           `,
+          options: [{}],
+        },
+        {
           output: dedent`
             type Type = {
               a: string
@@ -2549,26 +2536,30 @@ describe(ruleName, () => {
               e: string
             }
           `,
-          options: [{}],
+          code: dedent`
+            type Type = {
+              d: string
+              e: string
+              /* eslint-disable */
+              c: string
+              b: string
+              // Shouldn't move
+              /* eslint-enable */
+              a: string
+            }
+          `,
           errors: [
             {
-              messageId: 'unexpectedObjectTypesOrder',
               data: {
-                left: 'b',
                 right: 'a',
+                left: 'b',
               },
+              messageId: 'unexpectedObjectTypesOrder',
             },
           ],
+          options: [{}],
         },
         {
-          code: dedent`
-            type Type = {
-              c: string
-              b: string
-              // eslint-disable-next-line @rule-tester/${eslintDisableRuleTesterName}
-              a: string
-            }
-          `,
           output: dedent`
             type Type = {
               b: string
@@ -2577,25 +2568,26 @@ describe(ruleName, () => {
               a: string
             }
           `,
-          options: [{}],
-          errors: [
-            {
-              messageId: 'unexpectedObjectTypesOrder',
-              data: {
-                left: 'c',
-                right: 'b',
-              },
-            },
-          ],
-        },
-        {
           code: dedent`
             type Type = {
               c: string
               b: string
-              a: string // eslint-disable-line @rule-tester/${eslintDisableRuleTesterName}
+              // eslint-disable-next-line @rule-tester/${eslintDisableRuleTesterName}
+              a: string
             }
           `,
+          errors: [
+            {
+              data: {
+                right: 'b',
+                left: 'c',
+              },
+              messageId: 'unexpectedObjectTypesOrder',
+            },
+          ],
+          options: [{}],
+        },
+        {
           output: dedent`
             type Type = {
               b: string
@@ -2603,18 +2595,33 @@ describe(ruleName, () => {
               a: string // eslint-disable-line @rule-tester/${eslintDisableRuleTesterName}
             }
           `,
-          options: [{}],
+          code: dedent`
+            type Type = {
+              c: string
+              b: string
+              a: string // eslint-disable-line @rule-tester/${eslintDisableRuleTesterName}
+            }
+          `,
           errors: [
             {
-              messageId: 'unexpectedObjectTypesOrder',
               data: {
-                left: 'c',
                 right: 'b',
+                left: 'c',
               },
+              messageId: 'unexpectedObjectTypesOrder',
             },
           ],
+          options: [{}],
         },
         {
+          output: dedent`
+            type Type = {
+              b: string
+              c: string
+              /* eslint-disable-next-line @rule-tester/${eslintDisableRuleTesterName} */
+              a: string
+            }
+          `,
           code: dedent`
             type Type = {
               c: string
@@ -2623,26 +2630,25 @@ describe(ruleName, () => {
               a: string
             }
           `,
+          errors: [
+            {
+              data: {
+                right: 'b',
+                left: 'c',
+              },
+              messageId: 'unexpectedObjectTypesOrder',
+            },
+          ],
+          options: [{}],
+        },
+        {
           output: dedent`
             type Type = {
               b: string
               c: string
-              /* eslint-disable-next-line @rule-tester/${eslintDisableRuleTesterName} */
-              a: string
+              a: string /* eslint-disable-line @rule-tester/${eslintDisableRuleTesterName} */
             }
           `,
-          options: [{}],
-          errors: [
-            {
-              messageId: 'unexpectedObjectTypesOrder',
-              data: {
-                left: 'c',
-                right: 'b',
-              },
-            },
-          ],
-        },
-        {
           code: dedent`
             type Type = {
               c: string
@@ -2650,25 +2656,30 @@ describe(ruleName, () => {
               a: string /* eslint-disable-line @rule-tester/${eslintDisableRuleTesterName} */
             }
           `,
-          output: dedent`
-            type Type = {
-              b: string
-              c: string
-              a: string /* eslint-disable-line @rule-tester/${eslintDisableRuleTesterName} */
-            }
-          `,
-          options: [{}],
           errors: [
             {
-              messageId: 'unexpectedObjectTypesOrder',
               data: {
-                left: 'c',
                 right: 'b',
+                left: 'c',
               },
+              messageId: 'unexpectedObjectTypesOrder',
             },
           ],
+          options: [{}],
         },
         {
+          output: dedent`
+            type Type = {
+              a: string
+              d: string
+              /* eslint-disable @rule-tester/${eslintDisableRuleTesterName} */
+              c: string
+              b: string
+              // Shouldn't move
+              /* eslint-enable */
+              e: string
+            }
+          `,
           code: dedent`
             type Type = {
               d: string
@@ -2681,30 +2692,19 @@ describe(ruleName, () => {
               a: string
             }
           `,
-          output: dedent`
-            type Type = {
-              a: string
-              d: string
-              /* eslint-disable @rule-tester/${eslintDisableRuleTesterName} */
-              c: string
-              b: string
-              // Shouldn't move
-              /* eslint-enable */
-              e: string
-            }
-          `,
-          options: [{}],
           errors: [
             {
-              messageId: 'unexpectedObjectTypesOrder',
               data: {
-                left: 'b',
                 right: 'a',
+                left: 'b',
               },
+              messageId: 'unexpectedObjectTypesOrder',
             },
           ],
+          options: [{}],
         },
       ],
+      valid: [],
     })
   })
 })

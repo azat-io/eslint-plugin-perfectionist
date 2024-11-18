@@ -2,6 +2,11 @@ import { compare as createNaturalCompare } from 'natural-orderby'
 
 import type { SortingNode } from '../typings'
 
+export type CompareOptions =
+  | AlphabeticalCompareOptions
+  | LineLengthCompareOptions
+  | NaturalCompareOptions
+
 interface BaseCompareOptions {
   /**
    * Custom function to get the value of the node. By default, returns the
@@ -18,11 +23,6 @@ interface AlphabeticalCompareOptions extends BaseCompareOptions {
   ignoreCase: boolean
 }
 
-interface LineLengthCompareOptions extends BaseCompareOptions {
-  maxLineLength?: number
-  type: 'line-length'
-}
-
 interface NaturalCompareOptions extends BaseCompareOptions {
   specialCharacters: 'remove' | 'trim' | 'keep'
   locales: NonNullable<Intl.LocalesArgument>
@@ -30,10 +30,10 @@ interface NaturalCompareOptions extends BaseCompareOptions {
   type: 'natural'
 }
 
-export type CompareOptions =
-  | AlphabeticalCompareOptions
-  | LineLengthCompareOptions
-  | NaturalCompareOptions
+interface LineLengthCompareOptions extends BaseCompareOptions {
+  maxLineLength?: number
+  type: 'line-length'
+}
 
 export let compare = (
   a: SortingNode,
@@ -107,12 +107,16 @@ let getFormatStringFunction =
     }
     switch (specialCharacters) {
       case 'remove':
-        // eslint-disable-next-line regexp/no-obscure-range
-        valueToCompare = valueToCompare.replaceAll(/[^a-zà-öø-ÿ]+/giu, '')
+        valueToCompare = valueToCompare.replaceAll(
+          /[^a-z\u{C0}-\u{24F}\u{1E00}-\u{1EFF}]+/giu,
+          '',
+        )
         break
       case 'trim':
-        // eslint-disable-next-line regexp/no-obscure-range
-        valueToCompare = valueToCompare.replaceAll(/^[^a-zà-öø-ÿ]+/giu, '')
+        valueToCompare = valueToCompare.replaceAll(
+          /^[^a-z\u{C0}-\u{24F}\u{1E00}-\u{1EFF}]+/giu,
+          '',
+        )
         break
     }
     return valueToCompare.replaceAll(/\s/gu, '')

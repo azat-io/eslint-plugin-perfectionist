@@ -1,9 +1,5 @@
 import { matches } from './matches'
 
-interface UseGroupProps {
-  groups: (string[] | string)[]
-}
-
 interface UseGroupsValue {
   setCustomGroups(
     customGroups: Record<string, string[] | string> | undefined,
@@ -14,6 +10,10 @@ interface UseGroupsValue {
   ): void
   defineGroup(value: string, override?: boolean): void
   getGroup(): string
+}
+
+interface UseGroupProps {
+  groups: (string[] | string)[]
 }
 
 export let useGroups = ({ groups }: UseGroupProps): UseGroupsValue => {

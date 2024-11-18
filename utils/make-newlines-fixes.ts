@@ -6,16 +6,24 @@ import { getLinesBetween } from './get-lines-between'
 import { getGroupNumber } from './get-group-number'
 import { getNodeRange } from './get-node-range'
 
-export let makeNewlinesFixes = (
-  fixer: TSESLint.RuleFixer,
-  nodes: SortingNode[],
-  sortedNodes: SortingNode[],
-  source: TSESLint.SourceCode,
+interface MakeNewlinesFixesParameters {
   options: {
     newlinesBetween: 'ignore' | 'always' | 'never'
     groups: (string[] | string)[]
-  },
-): TSESLint.RuleFix[] => {
+  }
+  sourceCode: TSESLint.SourceCode
+  sortedNodes: SortingNode[]
+  fixer: TSESLint.RuleFixer
+  nodes: SortingNode[]
+}
+
+export let makeNewlinesFixes = ({
+  sortedNodes,
+  sourceCode,
+  options,
+  fixer,
+  nodes,
+}: MakeNewlinesFixesParameters): TSESLint.RuleFix[] => {
   let fixes: TSESLint.RuleFix[] = []
 
   for (let max = sortedNodes.length, i = 0; i < max; i++) {
@@ -28,19 +36,21 @@ export let makeNewlinesFixes = (
 
     let nodeGroupNumber = getGroupNumber(options.groups, sortingNode)
     let nextNodeGroupNumber = getGroupNumber(options.groups, nextSortingNode)
-    let currentNodeRange = getNodeRange(nodes.at(i)!.node, source)
-    let nextNodeRangeStart = getNodeRange(nodes.at(i + 1)!.node, source).at(0)!
+    let currentNodeRange = getNodeRange(nodes.at(i)!.node, sourceCode)
+    let nextNodeRangeStart = getNodeRange(nodes.at(i + 1)!.node, sourceCode).at(
+      0,
+    )!
     let rangeToReplace: [number, number] = [
       currentNodeRange.at(1)!,
       nextNodeRangeStart,
     ]
-    let textBetweenNodes = source.text.slice(
+    let textBetweenNodes = sourceCode.text.slice(
       currentNodeRange.at(1),
       nextNodeRangeStart,
     )
 
     let linesBetweenMembers = getLinesBetween(
-      source,
+      sourceCode,
       nodes.at(i)!,
       nodes.at(i + 1)!,
     )

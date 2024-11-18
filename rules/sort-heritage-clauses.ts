@@ -28,12 +28,6 @@ import { makeFixes } from '../utils/make-fixes'
 import { complete } from '../utils/complete'
 import { pairwise } from '../utils/pairwise'
 
-type MESSAGE_ID =
-  | 'unexpectedHeritageClausesGroupOrder'
-  | 'unexpectedHeritageClausesOrder'
-
-type Group<T extends string[]> = 'unknown' | T[number]
-
 export type Options<T extends string[]> = [
   Partial<{
     customGroups: Record<T[number], string[] | string>
@@ -46,37 +40,37 @@ export type Options<T extends string[]> = [
   }>,
 ]
 
+type MESSAGE_ID =
+  | 'unexpectedHeritageClausesGroupOrder'
+  | 'unexpectedHeritageClausesOrder'
+
+type Group<T extends string[]> = 'unknown' | T[number]
+
 let defaultOptions: Required<Options<string[]>[0]> = {
+  specialCharacters: 'keep',
   type: 'alphabetical',
   ignoreCase: true,
-  specialCharacters: 'keep',
   customGroups: {},
+  locales: 'en-US',
   order: 'asc',
   groups: [],
-  locales: 'en-US',
 }
 
 export default createEslintRule<Options<string[]>, MESSAGE_ID>({
-  name: 'sort-heritage-clauses',
   meta: {
-    type: 'suggestion',
-    docs: {
-      description: 'Enforce sorted heritage clauses.',
-    },
-    fixable: 'code',
     schema: [
       {
-        type: 'object',
         properties: {
-          type: typeJsonSchema,
-          order: orderJsonSchema,
-          locales: localesJsonSchema,
-          ignoreCase: ignoreCaseJsonSchema,
           specialCharacters: specialCharactersJsonSchema,
-          groups: groupsJsonSchema,
           customGroups: customGroupsJsonSchema,
+          ignoreCase: ignoreCaseJsonSchema,
+          locales: localesJsonSchema,
+          groups: groupsJsonSchema,
+          order: orderJsonSchema,
+          type: typeJsonSchema,
         },
         additionalProperties: false,
+        type: 'object',
       },
     ],
     messages: {
@@ -85,8 +79,14 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
       unexpectedHeritageClausesOrder:
         'Expected "{{right}}" to come before "{{left}}".',
     },
+    docs: {
+      url: 'https://perfectionist.dev/rules/sort-heritage-clauses',
+      description: 'Enforce sorted heritage clauses.',
+      recommended: true,
+    },
+    type: 'suggestion',
+    fixable: 'code',
   },
-  defaultOptions: [defaultOptions],
   create: context => {
     let settings = getSettings(context.settings)
 
@@ -99,12 +99,14 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
     )
 
     return {
-      ClassDeclaration: declaration =>
-        sortHeritageClauses(context, options, declaration.implements),
       TSInterfaceDeclaration: declaration =>
         sortHeritageClauses(context, options, declaration.extends),
+      ClassDeclaration: declaration =>
+        sortHeritageClauses(context, options, declaration.implements),
     }
   },
+  defaultOptions: [defaultOptions],
+  name: 'sort-heritage-clauses',
 })
 
 let sortHeritageClauses = (
@@ -119,24 +121,24 @@ let sortHeritageClauses = (
   }
   let sourceCode = getSourceCode(context)
   let eslintDisabledLines = getEslintDisabledLines({
-    sourceCode,
     ruleName: context.id,
+    sourceCode,
   })
 
   let nodes: SortingNode[] = heritageClauses.map(heritageClause => {
     let name = getHeritageClauseExpressionName(heritageClause.expression)
 
-    let { getGroup, setCustomGroups } = useGroups(options)
+    let { setCustomGroups, getGroup } = useGroups(options)
     setCustomGroups(options.customGroups, name)
 
     return {
-      size: rangeToDiff(heritageClause, sourceCode),
-      node: heritageClause,
-      group: getGroup(),
       isEslintDisabled: isNodeEslintDisabled(
         heritageClause,
         eslintDisabledLines,
       ),
+      size: rangeToDiff(heritageClause, sourceCode),
+      node: heritageClause,
+      group: getGroup(),
       name,
     }
   })
@@ -163,19 +165,24 @@ let sortHeritageClauses = (
     let leftNumber = getGroupNumber(options.groups, left)
     let rightNumber = getGroupNumber(options.groups, right)
     context.report({
+      data: {
+        right: toSingleLine(right.name),
+        left: toSingleLine(left.name),
+        rightGroup: right.group,
+        leftGroup: left.group,
+      },
+      fix: fixer =>
+        makeFixes({
+          sortedNodes: sortedNodesExcludingEslintDisabled,
+          sourceCode,
+          fixer,
+          nodes,
+        }),
       messageId:
         leftNumber === rightNumber
           ? 'unexpectedHeritageClausesOrder'
           : 'unexpectedHeritageClausesGroupOrder',
-      data: {
-        left: toSingleLine(left.name),
-        leftGroup: left.group,
-        right: toSingleLine(right.name),
-        rightGroup: right.group,
-      },
       node: right.node,
-      fix: fixer =>
-        makeFixes(fixer, nodes, sortedNodesExcludingEslintDisabled, sourceCode),
     })
   })
 }

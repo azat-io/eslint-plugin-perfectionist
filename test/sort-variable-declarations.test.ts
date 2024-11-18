@@ -26,6 +26,23 @@ describe(ruleName, () => {
     } as const
 
     ruleTester.run(`${ruleName}(${type}): sorts variables declarations`, rule, {
+      invalid: [
+        {
+          errors: [
+            {
+              messageId: 'unexpectedVariableDeclarationsOrder',
+              data: { right: 'aaa', left: 'bb' },
+            },
+          ],
+          output: dedent`
+              const aaa, bb, c
+            `,
+          code: dedent`
+              const bb, aaa, c
+            `,
+          options: [options],
+        },
+      ],
       valid: [
         {
           code: dedent`
@@ -34,62 +51,45 @@ describe(ruleName, () => {
           options: [options],
         },
       ],
-      invalid: [
-        {
-          code: dedent`
-              const bb, aaa, c
-            `,
-          output: dedent`
-              const aaa, bb, c
-            `,
-          options: [options],
-          errors: [
-            {
-              messageId: 'unexpectedVariableDeclarationsOrder',
-              data: { left: 'bb', right: 'aaa' },
-            },
-          ],
-        },
-      ],
     })
 
     ruleTester.run(
       `${ruleName}(${type}): works with array and object declarations`,
       rule,
       {
+        invalid: [
+          {
+            errors: [
+              {
+                data: {
+                  right: '{ bb }',
+                  left: 'aaa',
+                },
+                messageId: 'unexpectedVariableDeclarationsOrder',
+              },
+              {
+                data: {
+                  left: '{ bb }',
+                  right: '[c]',
+                },
+                messageId: 'unexpectedVariableDeclarationsOrder',
+              },
+            ],
+            output: dedent`
+              const [c] = C, { bb } = B, aaa
+            `,
+            code: dedent`
+              const aaa, { bb } = B, [c] = C
+            `,
+            options: [options],
+          },
+        ],
         valid: [
           {
             code: dedent`
               const [c] = C, { bb } = B, aaa
             `,
             options: [options],
-          },
-        ],
-        invalid: [
-          {
-            code: dedent`
-              const aaa, { bb } = B, [c] = C
-            `,
-            output: dedent`
-              const [c] = C, { bb } = B, aaa
-            `,
-            options: [options],
-            errors: [
-              {
-                messageId: 'unexpectedVariableDeclarationsOrder',
-                data: {
-                  left: 'aaa',
-                  right: '{ bb }',
-                },
-              },
-              {
-                messageId: 'unexpectedVariableDeclarationsOrder',
-                data: {
-                  left: '{ bb }',
-                  right: '[c]',
-                },
-              },
-            ],
           },
         ],
       },
@@ -100,6 +100,159 @@ describe(ruleName, () => {
         `${ruleName}(${type}): does not sort properties if the right value depends on the left value`,
         rule,
         {
+          invalid: [
+            {
+              errors: [
+                {
+                  messageId: 'unexpectedVariableDeclarationsOrder',
+                  data: { right: 'a', left: 'b' },
+                },
+              ],
+              output: dedent`
+                const a,
+                      b,
+                      c;
+              `,
+              code: dedent`
+                const b,
+                      a,
+                      c;
+              `,
+              options: [options],
+            },
+            {
+              errors: [
+                {
+                  data: {
+                    nodeDependentOnRight: 'aaa',
+                    right: 'bb',
+                  },
+                  messageId: 'unexpectedVariableDeclarationsDependencyOrder',
+                },
+              ],
+              output: dedent`
+                const bb = 1,
+                      aaa = bb + 2,
+                      c = aaa + 3;
+              `,
+              code: dedent`
+                const aaa = bb + 2,
+                      bb = 1,
+                      c = aaa + 3;
+              `,
+              options: [options],
+            },
+            {
+              errors: [
+                {
+                  data: {
+                    nodeDependentOnRight: 'b',
+                    right: 'a',
+                  },
+                  messageId: 'unexpectedVariableDeclarationsDependencyOrder',
+                },
+              ],
+              output: dedent`
+                let a = 1,
+                    b = a + 2,
+                    c = b + 3;
+              `,
+              code: dedent`
+                let b = a + 2,
+                    a = 1,
+                    c = b + 3;
+              `,
+              options: [options],
+            },
+            {
+              errors: [
+                {
+                  data: {
+                    nodeDependentOnRight: 'y',
+                    right: 'x',
+                  },
+                  messageId: 'unexpectedVariableDeclarationsDependencyOrder',
+                },
+              ],
+              output: dedent`
+                var x = 10,
+                    y = x * 2,
+                    z = y + 5;
+              `,
+              code: dedent`
+                var y = x * 2,
+                    x = 10,
+                    z = y + 5;
+              `,
+              options: [options],
+            },
+            {
+              errors: [
+                {
+                  data: {
+                    nodeDependentOnRight: 'sum',
+                    right: 'arr',
+                  },
+                  messageId: 'unexpectedVariableDeclarationsDependencyOrder',
+                },
+              ],
+              output: dedent`
+                const arr = [1, 2, 3],
+                      sum = arr.reduce((acc, val) => acc + val, 0),
+                      avg = sum / arr.length;
+              `,
+              code: dedent`
+                const sum = arr.reduce((acc, val) => acc + val, 0),
+                      arr = [1, 2, 3],
+                      avg = sum / arr.length;
+              `,
+              options: [options],
+            },
+            {
+              errors: [
+                {
+                  data: {
+                    nodeDependentOnRight: 'value',
+                    right: 'getValue',
+                  },
+                  messageId: 'unexpectedVariableDeclarationsDependencyOrder',
+                },
+              ],
+              output: dedent`
+                const getValue = () => 1,
+                      value = getValue(),
+                      result = value + 2;
+              `,
+              code: dedent`
+                const value = getValue(),
+                      getValue = () => 1,
+                      result = value + 2;
+              `,
+              options: [options],
+            },
+            {
+              errors: [
+                {
+                  data: {
+                    nodeDependentOnRight: 'a',
+                    right: 'c',
+                  },
+                  messageId: 'unexpectedVariableDeclarationsDependencyOrder',
+                },
+              ],
+              output: dedent`
+                const c = 10,
+                      a = c,
+                      b = 10;
+              `,
+              code: dedent`
+                const a = c,
+                      b = 10,
+                      c = 10;
+              `,
+              options: [options],
+            },
+          ],
           valid: [
             {
               code: dedent`
@@ -150,159 +303,6 @@ describe(ruleName, () => {
               options: [options],
             },
           ],
-          invalid: [
-            {
-              code: dedent`
-                const b,
-                      a,
-                      c;
-              `,
-              output: dedent`
-                const a,
-                      b,
-                      c;
-              `,
-              options: [options],
-              errors: [
-                {
-                  messageId: 'unexpectedVariableDeclarationsOrder',
-                  data: { left: 'b', right: 'a' },
-                },
-              ],
-            },
-            {
-              code: dedent`
-                const aaa = bb + 2,
-                      bb = 1,
-                      c = aaa + 3;
-              `,
-              output: dedent`
-                const bb = 1,
-                      aaa = bb + 2,
-                      c = aaa + 3;
-              `,
-              options: [options],
-              errors: [
-                {
-                  messageId: 'unexpectedVariableDeclarationsDependencyOrder',
-                  data: {
-                    right: 'bb',
-                    nodeDependentOnRight: 'aaa',
-                  },
-                },
-              ],
-            },
-            {
-              code: dedent`
-                let b = a + 2,
-                    a = 1,
-                    c = b + 3;
-              `,
-              output: dedent`
-                let a = 1,
-                    b = a + 2,
-                    c = b + 3;
-              `,
-              options: [options],
-              errors: [
-                {
-                  messageId: 'unexpectedVariableDeclarationsDependencyOrder',
-                  data: {
-                    right: 'a',
-                    nodeDependentOnRight: 'b',
-                  },
-                },
-              ],
-            },
-            {
-              code: dedent`
-                var y = x * 2,
-                    x = 10,
-                    z = y + 5;
-              `,
-              output: dedent`
-                var x = 10,
-                    y = x * 2,
-                    z = y + 5;
-              `,
-              options: [options],
-              errors: [
-                {
-                  messageId: 'unexpectedVariableDeclarationsDependencyOrder',
-                  data: {
-                    right: 'x',
-                    nodeDependentOnRight: 'y',
-                  },
-                },
-              ],
-            },
-            {
-              code: dedent`
-                const sum = arr.reduce((acc, val) => acc + val, 0),
-                      arr = [1, 2, 3],
-                      avg = sum / arr.length;
-              `,
-              output: dedent`
-                const arr = [1, 2, 3],
-                      sum = arr.reduce((acc, val) => acc + val, 0),
-                      avg = sum / arr.length;
-              `,
-              options: [options],
-              errors: [
-                {
-                  messageId: 'unexpectedVariableDeclarationsDependencyOrder',
-                  data: {
-                    right: 'arr',
-                    nodeDependentOnRight: 'sum',
-                  },
-                },
-              ],
-            },
-            {
-              code: dedent`
-                const value = getValue(),
-                      getValue = () => 1,
-                      result = value + 2;
-              `,
-              output: dedent`
-                const getValue = () => 1,
-                      value = getValue(),
-                      result = value + 2;
-              `,
-              options: [options],
-              errors: [
-                {
-                  messageId: 'unexpectedVariableDeclarationsDependencyOrder',
-                  data: {
-                    right: 'getValue',
-                    nodeDependentOnRight: 'value',
-                  },
-                },
-              ],
-            },
-            {
-              code: dedent`
-                const a = c,
-                      b = 10,
-                      c = 10;
-              `,
-              output: dedent`
-                const c = 10,
-                      a = c,
-                      b = 10;
-              `,
-              options: [options],
-              errors: [
-                {
-                  messageId: 'unexpectedVariableDeclarationsDependencyOrder',
-                  data: {
-                    right: 'c',
-                    nodeDependentOnRight: 'a',
-                  },
-                },
-              ],
-            },
-          ],
         },
       )
     })
@@ -313,15 +313,15 @@ describe(ruleName, () => {
       {
         valid: [
           {
-            code: dedent`
-              let b = () => 1,
-              a = b();
-            `,
             options: [
               {
                 ...options,
               },
             ],
+            code: dedent`
+              let b = () => 1,
+              a = b();
+            `,
           },
           {
             code: dedent`
@@ -356,26 +356,26 @@ describe(ruleName, () => {
       {
         valid: [
           {
+            options: [
+              {
+                ...options,
+              },
+            ],
             code: dedent`
               let b = 1,
               a = {x: b};
             `,
+          },
+          {
             options: [
               {
                 ...options,
               },
             ],
-          },
-          {
             code: dedent`
               let b = 1,
               a = {[b]: 0};
             `,
-            options: [
-              {
-                ...options,
-              },
-            ],
           },
         ],
         invalid: [],
@@ -416,15 +416,15 @@ describe(ruleName, () => {
       {
         valid: [
           {
-            code: dedent`
-              let b = {x: 1},
-              a = b?.x;
-            `,
             options: [
               {
                 ...options,
               },
             ],
+            code: dedent`
+              let b = {x: 1},
+              a = b?.x;
+            `,
           },
         ],
         invalid: [],
@@ -437,15 +437,15 @@ describe(ruleName, () => {
       {
         valid: [
           {
-            code: dedent`
-              let b = 1,
-              a = b!;
-            `,
             options: [
               {
                 ...options,
               },
             ],
+            code: dedent`
+              let b = 1,
+              a = b!;
+            `,
           },
         ],
         invalid: [],
@@ -475,26 +475,26 @@ describe(ruleName, () => {
       {
         valid: [
           {
+            options: [
+              {
+                ...options,
+              },
+            ],
             code: dedent`
               let b = {x: 1},
               a = {...b};
             `,
+          },
+          {
             options: [
               {
                 ...options,
               },
             ],
-          },
-          {
             code: dedent`
               let b = [1]
               a = [...b];
             `,
-            options: [
-              {
-                ...options,
-              },
-            ],
           },
         ],
         invalid: [],
@@ -507,37 +507,37 @@ describe(ruleName, () => {
       {
         valid: [
           {
+            options: [
+              {
+                ...options,
+              },
+            ],
             code: dedent`
               let b = 0,
               a = b ? 1 : 0;
             `,
+          },
+          {
             options: [
               {
                 ...options,
               },
             ],
-          },
-          {
             code: dedent`
               let b = 0,
               a = x ? b : 0;
             `,
+          },
+          {
             options: [
               {
                 ...options,
               },
             ],
-          },
-          {
             code: dedent`
               let b = 0,
               a = x ? 0 : b;
             `,
-            options: [
-              {
-                ...options,
-              },
-            ],
           },
         ],
         invalid: [],
@@ -550,15 +550,15 @@ describe(ruleName, () => {
       {
         valid: [
           {
-            code: dedent`
-              let b = a,
-              a = b as any;
-            `,
             options: [
               {
                 ...options,
               },
             ],
+            code: dedent`
+              let b = a,
+              a = b as any;
+            `,
           },
         ],
         invalid: [],
@@ -571,15 +571,15 @@ describe(ruleName, () => {
       {
         valid: [
           {
-            code: dedent`
-              let b = a,
-              a = <any>b;
-            `,
             options: [
               {
                 ...options,
               },
             ],
+            code: dedent`
+              let b = a,
+              a = <any>b;
+            `,
           },
         ],
         invalid: [],
@@ -592,15 +592,15 @@ describe(ruleName, () => {
       {
         valid: [
           {
-            code: dedent`
-              let b = a,
-              a = \`\${b}\`
-            `,
             options: [
               {
                 ...options,
               },
             ],
+            code: dedent`
+              let b = a,
+              a = \`\${b}\`
+            `,
           },
         ],
         invalid: [],
@@ -613,15 +613,15 @@ describe(ruleName, () => {
       {
         valid: [
           {
-            code: dedent`
-              let a = () => b,
-              b = 1;
-              `,
             options: [
               {
                 ...options,
               },
             ],
+            code: dedent`
+              let a = () => b,
+              b = 1;
+              `,
           },
           {
             code: dedent`
@@ -654,19 +654,24 @@ describe(ruleName, () => {
       `${ruleName}(${type}): allows to use new line as partition`,
       rule,
       {
-        valid: [],
         invalid: [
           {
-            code: dedent`
-              const
-                d = 'D',
-                a = 'A',
-
-                c = 'C',
-
-                e = 'E',
-                b = 'B'
-            `,
+            errors: [
+              {
+                data: {
+                  right: 'a',
+                  left: 'd',
+                },
+                messageId: 'unexpectedVariableDeclarationsOrder',
+              },
+              {
+                data: {
+                  right: 'b',
+                  left: 'e',
+                },
+                messageId: 'unexpectedVariableDeclarationsOrder',
+              },
+            ],
             output: dedent`
               const
                 a = 'A',
@@ -677,30 +682,25 @@ describe(ruleName, () => {
                 b = 'B',
                 e = 'E'
             `,
+            code: dedent`
+              const
+                d = 'D',
+                a = 'A',
+
+                c = 'C',
+
+                e = 'E',
+                b = 'B'
+            `,
             options: [
               {
-                type: 'alphabetical',
                 partitionByNewLine: true,
-              },
-            ],
-            errors: [
-              {
-                messageId: 'unexpectedVariableDeclarationsOrder',
-                data: {
-                  left: 'd',
-                  right: 'a',
-                },
-              },
-              {
-                messageId: 'unexpectedVariableDeclarationsOrder',
-                data: {
-                  left: 'e',
-                  right: 'b',
-                },
+                type: 'alphabetical',
               },
             ],
           },
         ],
+        valid: [],
       },
     )
 
@@ -709,24 +709,24 @@ describe(ruleName, () => {
         `${ruleName}(${type}): allows to use partition comments`,
         rule,
         {
-          valid: [],
           invalid: [
             {
-              code: dedent`
-                const
-                  // Part: A
-                  cc = 'CC',
-                  d = 'D',
-                  // Not partition comment
-                  bbb = 'BBB',
-                  // Part: B
-                  aaa = 'AAA',
-                  e = 'E',
-                  // Part: C
-                  gg = 'GG',
-                  // Not partition comment
-                  fff = 'FFF'
-              `,
+              errors: [
+                {
+                  data: {
+                    right: 'bbb',
+                    left: 'd',
+                  },
+                  messageId: 'unexpectedVariableDeclarationsOrder',
+                },
+                {
+                  data: {
+                    right: 'fff',
+                    left: 'gg',
+                  },
+                  messageId: 'unexpectedVariableDeclarationsOrder',
+                },
+              ],
               output: dedent`
                 const
                   // Part: A
@@ -742,30 +742,30 @@ describe(ruleName, () => {
                   fff = 'FFF',
                   gg = 'GG'
               `,
+              code: dedent`
+                const
+                  // Part: A
+                  cc = 'CC',
+                  d = 'D',
+                  // Not partition comment
+                  bbb = 'BBB',
+                  // Part: B
+                  aaa = 'AAA',
+                  e = 'E',
+                  // Part: C
+                  gg = 'GG',
+                  // Not partition comment
+                  fff = 'FFF'
+              `,
               options: [
                 {
                   ...options,
                   partitionByComment: '^Part*',
                 },
               ],
-              errors: [
-                {
-                  messageId: 'unexpectedVariableDeclarationsOrder',
-                  data: {
-                    left: 'd',
-                    right: 'bbb',
-                  },
-                },
-                {
-                  messageId: 'unexpectedVariableDeclarationsOrder',
-                  data: {
-                    left: 'gg',
-                    right: 'fff',
-                  },
-                },
-              ],
             },
           ],
+          valid: [],
         },
       )
 
@@ -798,21 +798,8 @@ describe(ruleName, () => {
         `${ruleName}(${type}): allows to use multiple partition comments`,
         rule,
         {
-          valid: [],
           invalid: [
             {
-              code: dedent`
-                  const
-                    /* Partition Comment */
-                    // Part: A
-                    d = 'D',
-                    // Part: B
-                    aaa = 'AAA',
-                    c = 'C',
-                    bb = 'BB',
-                    /* Other */
-                    e = 'E'
-                `,
               output: dedent`
                   const
                     /* Partition Comment */
@@ -825,23 +812,36 @@ describe(ruleName, () => {
                     /* Other */
                     e = 'E'
                 `,
+              code: dedent`
+                  const
+                    /* Partition Comment */
+                    // Part: A
+                    d = 'D',
+                    // Part: B
+                    aaa = 'AAA',
+                    c = 'C',
+                    bb = 'BB',
+                    /* Other */
+                    e = 'E'
+                `,
+              errors: [
+                {
+                  data: {
+                    right: 'bb',
+                    left: 'c',
+                  },
+                  messageId: 'unexpectedVariableDeclarationsOrder',
+                },
+              ],
               options: [
                 {
                   ...options,
                   partitionByComment: ['Partition Comment', 'Part: *', 'Other'],
                 },
               ],
-              errors: [
-                {
-                  messageId: 'unexpectedVariableDeclarationsOrder',
-                  data: {
-                    left: 'c',
-                    right: 'bb',
-                  },
-                },
-              ],
             },
           ],
+          valid: [],
         },
       )
 
@@ -874,18 +874,18 @@ describe(ruleName, () => {
       {
         valid: [
           {
-            code: dedent`
-              const
-                _a = 'a',
-                b = 'b',
-                _c = 'c'
-            `,
             options: [
               {
                 ...options,
                 specialCharacters: 'trim',
               },
             ],
+            code: dedent`
+              const
+                _a = 'a',
+                b = 'b',
+                _c = 'c'
+            `,
           },
         ],
         invalid: [],
@@ -898,17 +898,17 @@ describe(ruleName, () => {
       {
         valid: [
           {
-            code: dedent`
-              const
-                ab = 'ab',
-                a_c = 'ac'
-            `,
             options: [
               {
                 ...options,
                 specialCharacters: 'remove',
               },
             ],
+            code: dedent`
+              const
+                ab = 'ab',
+                a_c = 'ac'
+            `,
           },
         ],
         invalid: [],
@@ -937,49 +937,49 @@ describe(ruleName, () => {
       `${ruleName}(${type}): sorts inline elements correctly`,
       rule,
       {
-        valid: [],
         invalid: [
           {
-            code: dedent`
-              const
-                b = 'b', a = 'a'
-            `,
+            errors: [
+              {
+                data: {
+                  right: 'a',
+                  left: 'b',
+                },
+                messageId: 'unexpectedVariableDeclarationsOrder',
+              },
+            ],
             output: dedent`
               const
                 a = 'a', b = 'b'
             `,
-            options: [options],
-            errors: [
-              {
-                messageId: 'unexpectedVariableDeclarationsOrder',
-                data: {
-                  left: 'b',
-                  right: 'a',
-                },
-              },
-            ],
-          },
-          {
             code: dedent`
               const
-                b = 'b', a = 'a',
+                b = 'b', a = 'a'
             `,
+            options: [options],
+          },
+          {
+            errors: [
+              {
+                data: {
+                  right: 'a',
+                  left: 'b',
+                },
+                messageId: 'unexpectedVariableDeclarationsOrder',
+              },
+            ],
             output: dedent`
               const
                 a = 'a', b = 'b',
             `,
+            code: dedent`
+              const
+                b = 'b', a = 'a',
+            `,
             options: [options],
-            errors: [
-              {
-                messageId: 'unexpectedVariableDeclarationsOrder',
-                data: {
-                  left: 'b',
-                  right: 'a',
-                },
-              },
-            ],
           },
         ],
+        valid: [],
       },
     )
   })
@@ -994,6 +994,23 @@ describe(ruleName, () => {
     } as const
 
     ruleTester.run(`${ruleName}(${type}): sorts variables declarations`, rule, {
+      invalid: [
+        {
+          errors: [
+            {
+              messageId: 'unexpectedVariableDeclarationsOrder',
+              data: { right: 'aaa', left: 'bb' },
+            },
+          ],
+          output: dedent`
+              const aaa, bb, c
+            `,
+          code: dedent`
+              const bb, aaa, c
+            `,
+          options: [options],
+        },
+      ],
       valid: [
         {
           code: dedent`
@@ -1002,55 +1019,38 @@ describe(ruleName, () => {
           options: [options],
         },
       ],
-      invalid: [
-        {
-          code: dedent`
-              const bb, aaa, c
-            `,
-          output: dedent`
-              const aaa, bb, c
-            `,
-          options: [options],
-          errors: [
-            {
-              messageId: 'unexpectedVariableDeclarationsOrder',
-              data: { left: 'bb', right: 'aaa' },
-            },
-          ],
-        },
-      ],
     })
 
     ruleTester.run(
       `${ruleName}(${type}): works with array and object declarations`,
       rule,
       {
+        invalid: [
+          {
+            errors: [
+              {
+                data: {
+                  left: '{ bb }',
+                  right: '[c]',
+                },
+                messageId: 'unexpectedVariableDeclarationsOrder',
+              },
+            ],
+            output: dedent`
+              const [c] = C, aaa, { bb } = B
+            `,
+            code: dedent`
+              const aaa, { bb } = B, [c] = C
+            `,
+            options: [options],
+          },
+        ],
         valid: [
           {
             code: dedent`
               const [c] = C, aaa, { bb } = B
             `,
             options: [options],
-          },
-        ],
-        invalid: [
-          {
-            code: dedent`
-              const aaa, { bb } = B, [c] = C
-            `,
-            output: dedent`
-              const [c] = C, aaa, { bb } = B
-            `,
-            options: [options],
-            errors: [
-              {
-                messageId: 'unexpectedVariableDeclarationsOrder',
-                data: {
-                  left: '{ bb }',
-                  right: '[c]',
-                },
-              },
-            ],
           },
         ],
       },
@@ -1060,6 +1060,140 @@ describe(ruleName, () => {
       `${ruleName}(${type}): does not sort properties if the right value depends on the left value`,
       rule,
       {
+        invalid: [
+          {
+            errors: [
+              {
+                data: {
+                  right: 'a',
+                  left: 'b',
+                },
+                messageId: 'unexpectedVariableDeclarationsOrder',
+              },
+            ],
+            output: dedent`
+              const a,
+                    b,
+                    c;
+            `,
+            code: dedent`
+              const b,
+                    a,
+                    c;
+            `,
+            options: [options],
+          },
+          {
+            errors: [
+              {
+                data: {
+                  nodeDependentOnRight: 'aaa',
+                  right: 'bb',
+                },
+                messageId: 'unexpectedVariableDeclarationsDependencyOrder',
+              },
+            ],
+            output: dedent`
+              const bb = 1,
+                    aaa = bb + 2,
+                    c = aaa + 3;
+            `,
+            code: dedent`
+              const aaa = bb + 2,
+                    bb = 1,
+                    c = aaa + 3;
+            `,
+            options: [options],
+          },
+          {
+            errors: [
+              {
+                data: {
+                  nodeDependentOnRight: 'b',
+                  right: 'a',
+                },
+                messageId: 'unexpectedVariableDeclarationsDependencyOrder',
+              },
+            ],
+            output: dedent`
+              let a = 1,
+                  b = a + 2,
+                  c = b + 3;
+            `,
+            code: dedent`
+              let b = a + 2,
+                  a = 1,
+                  c = b + 3;
+            `,
+            options: [options],
+          },
+          {
+            errors: [
+              {
+                data: {
+                  nodeDependentOnRight: 'y',
+                  right: 'x',
+                },
+                messageId: 'unexpectedVariableDeclarationsDependencyOrder',
+              },
+            ],
+            output: dedent`
+              var x = 10,
+                  y = x * 2,
+                  z = y + 5;
+            `,
+            code: dedent`
+              var y = x * 2,
+                  x = 10,
+                  z = y + 5;
+            `,
+            options: [options],
+          },
+          {
+            errors: [
+              {
+                data: {
+                  nodeDependentOnRight: 'sum',
+                  right: 'arr',
+                },
+                messageId: 'unexpectedVariableDeclarationsDependencyOrder',
+              },
+            ],
+            output: dedent`
+              const arr = [1, 2, 3],
+                    sum = arr.reduce((acc, val) => acc + val, 0),
+                    avg = sum / arr.length;
+            `,
+            code: dedent`
+              const sum = arr.reduce((acc, val) => acc + val, 0),
+                    arr = [1, 2, 3],
+                    avg = sum / arr.length;
+            `,
+            options: [options],
+          },
+          {
+            errors: [
+              {
+                data: {
+                  nodeDependentOnRight: 'value',
+                  right: 'getValue',
+                },
+                messageId: 'unexpectedVariableDeclarationsDependencyOrder',
+              },
+            ],
+            output: dedent`
+              const getValue = () => 1,
+                    value = getValue(),
+                    result = value + 2;
+            `,
+            code: dedent`
+              const value = getValue(),
+                    getValue = () => 1,
+                    result = value + 2;
+            `,
+            options: [options],
+          },
+        ],
         valid: [
           {
             code: dedent`
@@ -1103,140 +1237,6 @@ describe(ruleName, () => {
             options: [options],
           },
         ],
-        invalid: [
-          {
-            code: dedent`
-              const b,
-                    a,
-                    c;
-            `,
-            output: dedent`
-              const a,
-                    b,
-                    c;
-            `,
-            options: [options],
-            errors: [
-              {
-                messageId: 'unexpectedVariableDeclarationsOrder',
-                data: {
-                  left: 'b',
-                  right: 'a',
-                },
-              },
-            ],
-          },
-          {
-            code: dedent`
-              const aaa = bb + 2,
-                    bb = 1,
-                    c = aaa + 3;
-            `,
-            output: dedent`
-              const bb = 1,
-                    aaa = bb + 2,
-                    c = aaa + 3;
-            `,
-            options: [options],
-            errors: [
-              {
-                messageId: 'unexpectedVariableDeclarationsDependencyOrder',
-                data: {
-                  right: 'bb',
-                  nodeDependentOnRight: 'aaa',
-                },
-              },
-            ],
-          },
-          {
-            code: dedent`
-              let b = a + 2,
-                  a = 1,
-                  c = b + 3;
-            `,
-            output: dedent`
-              let a = 1,
-                  b = a + 2,
-                  c = b + 3;
-            `,
-            options: [options],
-            errors: [
-              {
-                messageId: 'unexpectedVariableDeclarationsDependencyOrder',
-                data: {
-                  right: 'a',
-                  nodeDependentOnRight: 'b',
-                },
-              },
-            ],
-          },
-          {
-            code: dedent`
-              var y = x * 2,
-                  x = 10,
-                  z = y + 5;
-            `,
-            output: dedent`
-              var x = 10,
-                  y = x * 2,
-                  z = y + 5;
-            `,
-            options: [options],
-            errors: [
-              {
-                messageId: 'unexpectedVariableDeclarationsDependencyOrder',
-                data: {
-                  right: 'x',
-                  nodeDependentOnRight: 'y',
-                },
-              },
-            ],
-          },
-          {
-            code: dedent`
-              const sum = arr.reduce((acc, val) => acc + val, 0),
-                    arr = [1, 2, 3],
-                    avg = sum / arr.length;
-            `,
-            output: dedent`
-              const arr = [1, 2, 3],
-                    sum = arr.reduce((acc, val) => acc + val, 0),
-                    avg = sum / arr.length;
-            `,
-            options: [options],
-            errors: [
-              {
-                messageId: 'unexpectedVariableDeclarationsDependencyOrder',
-                data: {
-                  right: 'arr',
-                  nodeDependentOnRight: 'sum',
-                },
-              },
-            ],
-          },
-          {
-            code: dedent`
-              const value = getValue(),
-                    getValue = () => 1,
-                    result = value + 2;
-            `,
-            output: dedent`
-              const getValue = () => 1,
-                    value = getValue(),
-                    result = value + 2;
-            `,
-            options: [options],
-            errors: [
-              {
-                messageId: 'unexpectedVariableDeclarationsDependencyOrder',
-                data: {
-                  right: 'getValue',
-                  nodeDependentOnRight: 'value',
-                },
-              },
-            ],
-          },
-        ],
       },
     )
 
@@ -1244,17 +1244,21 @@ describe(ruleName, () => {
       `${ruleName}(${type}): detects circular dependencies`,
       rule,
       {
-        valid: [],
         invalid: [
           {
-            code: dedent`
-              const a,
-                    b = f + 1,
-                    c,
-                    d = b + 1,
-                    e,
-                    f = d + 1
-            `,
+            errors: [
+              {
+                messageId: 'unexpectedVariableDeclarationsOrder',
+                data: { right: 'd', left: 'c' },
+              },
+              {
+                data: {
+                  nodeDependentOnRight: 'b',
+                  right: 'f',
+                },
+                messageId: 'unexpectedVariableDeclarationsDependencyOrder',
+              },
+            ],
             output: dedent`
               const a,
                     d = b + 1,
@@ -1263,22 +1267,18 @@ describe(ruleName, () => {
                     c,
                     e
             `,
+            code: dedent`
+              const a,
+                    b = f + 1,
+                    c,
+                    d = b + 1,
+                    e,
+                    f = d + 1
+            `,
             options: [options],
-            errors: [
-              {
-                messageId: 'unexpectedVariableDeclarationsOrder',
-                data: { left: 'c', right: 'd' },
-              },
-              {
-                messageId: 'unexpectedVariableDeclarationsDependencyOrder',
-                data: {
-                  right: 'f',
-                  nodeDependentOnRight: 'b',
-                },
-              },
-            ],
           },
         ],
+        valid: [],
       },
     )
   })
@@ -1292,6 +1292,23 @@ describe(ruleName, () => {
     } as const
 
     ruleTester.run(`${ruleName}(${type}): sorts variables declarations`, rule, {
+      invalid: [
+        {
+          errors: [
+            {
+              messageId: 'unexpectedVariableDeclarationsOrder',
+              data: { right: 'aaa', left: 'bb' },
+            },
+          ],
+          output: dedent`
+              const aaa, bb, c
+            `,
+          code: dedent`
+              const bb, aaa, c
+            `,
+          options: [options],
+        },
+      ],
       valid: [
         {
           code: dedent`
@@ -1300,55 +1317,38 @@ describe(ruleName, () => {
           options: [options],
         },
       ],
-      invalid: [
-        {
-          code: dedent`
-              const bb, aaa, c
-            `,
-          output: dedent`
-              const aaa, bb, c
-            `,
-          options: [options],
-          errors: [
-            {
-              messageId: 'unexpectedVariableDeclarationsOrder',
-              data: { left: 'bb', right: 'aaa' },
-            },
-          ],
-        },
-      ],
     })
 
     ruleTester.run(
       `${ruleName}(${type}): works with array and object declarations`,
       rule,
       {
+        invalid: [
+          {
+            errors: [
+              {
+                data: {
+                  right: '{ bb }',
+                  left: 'aaa',
+                },
+                messageId: 'unexpectedVariableDeclarationsOrder',
+              },
+            ],
+            output: dedent`
+              const { bb } = B, [c] = C, aaa
+            `,
+            code: dedent`
+              const aaa, { bb } = B, [c] = C
+            `,
+            options: [options],
+          },
+        ],
         valid: [
           {
             code: dedent`
               const { bb } = B, [c] = C, aaa
             `,
             options: [options],
-          },
-        ],
-        invalid: [
-          {
-            code: dedent`
-              const aaa, { bb } = B, [c] = C
-            `,
-            output: dedent`
-              const { bb } = B, [c] = C, aaa
-            `,
-            options: [options],
-            errors: [
-              {
-                messageId: 'unexpectedVariableDeclarationsOrder',
-                data: {
-                  left: 'aaa',
-                  right: '{ bb }',
-                },
-              },
-            ],
           },
         ],
       },
@@ -1358,16 +1358,17 @@ describe(ruleName, () => {
   describe(`${ruleName}: misc`, () => {
     let eslintDisableRuleTesterName = `${ruleName}: supports 'eslint-disable' for individual nodes`
     ruleTester.run(eslintDisableRuleTesterName, rule, {
-      valid: [],
       invalid: [
         {
-          code: dedent`
-            let
-              c,
-              b,
-              // eslint-disable-next-line
-              a
-          `,
+          errors: [
+            {
+              data: {
+                right: 'b',
+                left: 'c',
+              },
+              messageId: 'unexpectedVariableDeclarationsOrder',
+            },
+          ],
           output: dedent`
             let
               b,
@@ -1375,26 +1376,32 @@ describe(ruleName, () => {
               // eslint-disable-next-line
               a
           `,
-          options: [{}],
-          errors: [
-            {
-              messageId: 'unexpectedVariableDeclarationsOrder',
-              data: {
-                left: 'c',
-                right: 'b',
-              },
-            },
-          ],
-        },
-        {
           code: dedent`
             let
-              d,
               c,
+              b,
               // eslint-disable-next-line
-              a,
-              b
+              a
           `,
+          options: [{}],
+        },
+        {
+          errors: [
+            {
+              data: {
+                right: 'c',
+                left: 'd',
+              },
+              messageId: 'unexpectedVariableDeclarationsOrder',
+            },
+            {
+              data: {
+                right: 'b',
+                left: 'a',
+              },
+              messageId: 'unexpectedVariableDeclarationsOrder',
+            },
+          ],
           output: dedent`
             let
               b,
@@ -1403,36 +1410,30 @@ describe(ruleName, () => {
               a,
               d
           `,
+          code: dedent`
+            let
+              d,
+              c,
+              // eslint-disable-next-line
+              a,
+              b
+          `,
           options: [
             {
               partitionByComment: true,
             },
           ],
-          errors: [
-            {
-              messageId: 'unexpectedVariableDeclarationsOrder',
-              data: {
-                left: 'd',
-                right: 'c',
-              },
-            },
-            {
-              messageId: 'unexpectedVariableDeclarationsOrder',
-              data: {
-                left: 'a',
-                right: 'b',
-              },
-            },
-          ],
         },
         {
-          code: dedent`
-            let
-              c,
-              b = a,
-              // eslint-disable-next-line
-              a
-          `,
+          errors: [
+            {
+              data: {
+                right: 'b',
+                left: 'c',
+              },
+              messageId: 'unexpectedVariableDeclarationsOrder',
+            },
+          ],
           output: dedent`
             let
               b = a,
@@ -1440,42 +1441,56 @@ describe(ruleName, () => {
               // eslint-disable-next-line
               a
           `,
-          options: [{}],
-          errors: [
-            {
-              messageId: 'unexpectedVariableDeclarationsOrder',
-              data: {
-                left: 'c',
-                right: 'b',
-              },
-            },
-          ],
-        },
-        {
           code: dedent`
             let
               c,
-              b,
-              a // eslint-disable-line
+              b = a,
+              // eslint-disable-next-line
+              a
           `,
+          options: [{}],
+        },
+        {
+          errors: [
+            {
+              data: {
+                right: 'b',
+                left: 'c',
+              },
+              messageId: 'unexpectedVariableDeclarationsOrder',
+            },
+          ],
           output: dedent`
             let
               b,
               c,
               a // eslint-disable-line
           `,
+          code: dedent`
+            let
+              c,
+              b,
+              a // eslint-disable-line
+          `,
           options: [{}],
-          errors: [
-            {
-              messageId: 'unexpectedVariableDeclarationsOrder',
-              data: {
-                left: 'c',
-                right: 'b',
-              },
-            },
-          ],
         },
         {
+          errors: [
+            {
+              data: {
+                right: 'b',
+                left: 'c',
+              },
+              messageId: 'unexpectedVariableDeclarationsOrder',
+            },
+          ],
+          output: dedent`
+            let
+              b,
+              c,
+              /* eslint-disable-next-line */
+              a
+          `,
           code: dedent`
             let
               c,
@@ -1483,60 +1498,33 @@ describe(ruleName, () => {
               /* eslint-disable-next-line */
               a
           `,
-          output: dedent`
-            let
-              b,
-              c,
-              /* eslint-disable-next-line */
-              a
-          `,
           options: [{}],
-          errors: [
-            {
-              messageId: 'unexpectedVariableDeclarationsOrder',
-              data: {
-                left: 'c',
-                right: 'b',
-              },
-            },
-          ],
         },
         {
-          code: dedent`
-            let
-              c,
-              b,
-              a /* eslint-disable-line */
-          `,
+          errors: [
+            {
+              data: {
+                right: 'b',
+                left: 'c',
+              },
+              messageId: 'unexpectedVariableDeclarationsOrder',
+            },
+          ],
           output: dedent`
             let
               b,
               c,
               a /* eslint-disable-line */
           `,
-          options: [{}],
-          errors: [
-            {
-              messageId: 'unexpectedVariableDeclarationsOrder',
-              data: {
-                left: 'c',
-                right: 'b',
-              },
-            },
-          ],
-        },
-        {
           code: dedent`
             let
-              d,
-              e,
-              /* eslint-disable */
               c,
               b,
-              // Shouldn't move
-              /* eslint-enable */
-              a
+              a /* eslint-disable-line */
           `,
+          options: [{}],
+        },
+        {
           output: dedent`
             let
               a,
@@ -1548,129 +1536,129 @@ describe(ruleName, () => {
               /* eslint-enable */
               e
           `,
-          options: [{}],
-          errors: [
-            {
-              messageId: 'unexpectedVariableDeclarationsOrder',
-              data: {
-                left: 'b',
-                right: 'a',
-              },
-            },
-          ],
-        },
-        {
-          code: dedent`
-            let
-              c,
-              b,
-              // eslint-disable-next-line @rule-tester/${eslintDisableRuleTesterName}
-              a
-          `,
-          output: dedent`
-            let
-              b,
-              c,
-              // eslint-disable-next-line @rule-tester/${eslintDisableRuleTesterName}
-              a
-          `,
-          options: [{}],
-          errors: [
-            {
-              messageId: 'unexpectedVariableDeclarationsOrder',
-              data: {
-                left: 'c',
-                right: 'b',
-              },
-            },
-          ],
-        },
-        {
-          code: dedent`
-            let
-              c,
-              b,
-              a // eslint-disable-line @rule-tester/${eslintDisableRuleTesterName}
-          `,
-          output: dedent`
-            let
-              b,
-              c,
-              a // eslint-disable-line @rule-tester/${eslintDisableRuleTesterName}
-          `,
-          options: [{}],
-          errors: [
-            {
-              messageId: 'unexpectedVariableDeclarationsOrder',
-              data: {
-                left: 'c',
-                right: 'b',
-              },
-            },
-          ],
-        },
-        {
-          code: dedent`
-            let
-              c,
-              b,
-              /* eslint-disable-next-line @rule-tester/${eslintDisableRuleTesterName} */
-              a
-          `,
-          output: dedent`
-            let
-              b,
-              c,
-              /* eslint-disable-next-line @rule-tester/${eslintDisableRuleTesterName} */
-              a
-          `,
-          options: [{}],
-          errors: [
-            {
-              messageId: 'unexpectedVariableDeclarationsOrder',
-              data: {
-                left: 'c',
-                right: 'b',
-              },
-            },
-          ],
-        },
-        {
-          code: dedent`
-            let
-              c,
-              b,
-              a /* eslint-disable-line @rule-tester/${eslintDisableRuleTesterName} */
-          `,
-          output: dedent`
-            let
-              b,
-              c,
-              a /* eslint-disable-line @rule-tester/${eslintDisableRuleTesterName} */
-          `,
-          options: [{}],
-          errors: [
-            {
-              messageId: 'unexpectedVariableDeclarationsOrder',
-              data: {
-                left: 'c',
-                right: 'b',
-              },
-            },
-          ],
-        },
-        {
           code: dedent`
             let
               d,
               e,
-              /* eslint-disable @rule-tester/${eslintDisableRuleTesterName} */
+              /* eslint-disable */
               c,
               b,
               // Shouldn't move
               /* eslint-enable */
               a
           `,
+          errors: [
+            {
+              data: {
+                right: 'a',
+                left: 'b',
+              },
+              messageId: 'unexpectedVariableDeclarationsOrder',
+            },
+          ],
+          options: [{}],
+        },
+        {
+          errors: [
+            {
+              data: {
+                right: 'b',
+                left: 'c',
+              },
+              messageId: 'unexpectedVariableDeclarationsOrder',
+            },
+          ],
+          output: dedent`
+            let
+              b,
+              c,
+              // eslint-disable-next-line @rule-tester/${eslintDisableRuleTesterName}
+              a
+          `,
+          code: dedent`
+            let
+              c,
+              b,
+              // eslint-disable-next-line @rule-tester/${eslintDisableRuleTesterName}
+              a
+          `,
+          options: [{}],
+        },
+        {
+          errors: [
+            {
+              data: {
+                right: 'b',
+                left: 'c',
+              },
+              messageId: 'unexpectedVariableDeclarationsOrder',
+            },
+          ],
+          output: dedent`
+            let
+              b,
+              c,
+              a // eslint-disable-line @rule-tester/${eslintDisableRuleTesterName}
+          `,
+          code: dedent`
+            let
+              c,
+              b,
+              a // eslint-disable-line @rule-tester/${eslintDisableRuleTesterName}
+          `,
+          options: [{}],
+        },
+        {
+          errors: [
+            {
+              data: {
+                right: 'b',
+                left: 'c',
+              },
+              messageId: 'unexpectedVariableDeclarationsOrder',
+            },
+          ],
+          output: dedent`
+            let
+              b,
+              c,
+              /* eslint-disable-next-line @rule-tester/${eslintDisableRuleTesterName} */
+              a
+          `,
+          code: dedent`
+            let
+              c,
+              b,
+              /* eslint-disable-next-line @rule-tester/${eslintDisableRuleTesterName} */
+              a
+          `,
+          options: [{}],
+        },
+        {
+          errors: [
+            {
+              data: {
+                right: 'b',
+                left: 'c',
+              },
+              messageId: 'unexpectedVariableDeclarationsOrder',
+            },
+          ],
+          output: dedent`
+            let
+              b,
+              c,
+              a /* eslint-disable-line @rule-tester/${eslintDisableRuleTesterName} */
+          `,
+          code: dedent`
+            let
+              c,
+              b,
+              a /* eslint-disable-line @rule-tester/${eslintDisableRuleTesterName} */
+          `,
+          options: [{}],
+        },
+        {
           output: dedent`
             let
               a,
@@ -1682,18 +1670,30 @@ describe(ruleName, () => {
               /* eslint-enable */
               e
           `,
-          options: [{}],
+          code: dedent`
+            let
+              d,
+              e,
+              /* eslint-disable @rule-tester/${eslintDisableRuleTesterName} */
+              c,
+              b,
+              // Shouldn't move
+              /* eslint-enable */
+              a
+          `,
           errors: [
             {
-              messageId: 'unexpectedVariableDeclarationsOrder',
               data: {
-                left: 'b',
                 right: 'a',
+                left: 'b',
               },
+              messageId: 'unexpectedVariableDeclarationsOrder',
             },
           ],
+          options: [{}],
         },
       ],
+      valid: [],
     })
   })
 })

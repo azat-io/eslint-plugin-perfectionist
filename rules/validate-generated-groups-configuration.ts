@@ -2,10 +2,6 @@ import type { Modifier, Selector } from './sort-classes.types'
 
 import { validateNoDuplicatedGroups } from '../utils/validate-groups-configuration'
 
-interface BaseCustomGroup {
-  groupName: string
-}
-
 interface Props {
   customGroups: BaseCustomGroup[]
   groups: (string[] | string)[]
@@ -13,11 +9,15 @@ interface Props {
   modifiers: string[]
 }
 
+interface BaseCustomGroup {
+  groupName: string
+}
+
 export let validateGeneratedGroupsConfiguration = ({
   customGroups,
-  groups,
   selectors,
   modifiers,
+  groups,
 }: Props): void => {
   let availableCustomGroupNames = new Set(
     customGroups.map(customGroup => customGroup.groupName),

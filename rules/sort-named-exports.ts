@@ -26,8 +26,6 @@ import { makeFixes } from '../utils/make-fixes'
 import { complete } from '../utils/complete'
 import { pairwise } from '../utils/pairwise'
 
-type MESSAGE_ID = 'unexpectedNamedExportsOrder'
-
 type Options = [
   Partial<{
     groupKind: 'values-first' | 'types-first' | 'mixed'
@@ -46,55 +44,20 @@ interface SortNamedExportsSortingNode
   groupKind: 'value' | 'type'
 }
 
+type MESSAGE_ID = 'unexpectedNamedExportsOrder'
+
 let defaultOptions: Required<Options[0]> = {
-  type: 'alphabetical',
-  order: 'asc',
-  ignoreCase: true,
   specialCharacters: 'keep',
   partitionByNewLine: false,
   partitionByComment: false,
+  type: 'alphabetical',
   groupKind: 'mixed',
+  ignoreCase: true,
   locales: 'en-US',
+  order: 'asc',
 }
 
 export default createEslintRule<Options, MESSAGE_ID>({
-  name: 'sort-named-exports',
-  meta: {
-    type: 'suggestion',
-    docs: {
-      description: 'Enforce sorted named exports.',
-    },
-    fixable: 'code',
-    schema: [
-      {
-        type: 'object',
-        properties: {
-          type: typeJsonSchema,
-          order: orderJsonSchema,
-          locales: localesJsonSchema,
-          ignoreCase: ignoreCaseJsonSchema,
-          specialCharacters: specialCharactersJsonSchema,
-          groupKind: {
-            description: 'Specifies top-level groups.',
-            enum: ['mixed', 'values-first', 'types-first'],
-            type: 'string',
-          },
-          partitionByComment: {
-            ...partitionByCommentJsonSchema,
-            description:
-              'Allows you to use comments to separate the named exports members into logical groups.',
-          },
-          partitionByNewLine: partitionByNewLineJsonSchema,
-        },
-        additionalProperties: false,
-      },
-    ],
-    messages: {
-      unexpectedNamedExportsOrder:
-        'Expected "{{right}}" to come before "{{left}}".',
-    },
-  },
-  defaultOptions: [defaultOptions],
   create: context => ({
     ExportNamedDeclaration: node => {
       if (!isSortable(node.specifiers)) {
@@ -105,8 +68,8 @@ export default createEslintRule<Options, MESSAGE_ID>({
       let options = complete(context.options.at(0), settings, defaultOptions)
       let sourceCode = getSourceCode(context)
       let eslintDisabledLines = getEslintDisabledLines({
-        sourceCode,
         ruleName: context.id,
+        sourceCode,
       })
 
       let formattedMembers: SortNamedExportsSortingNode[][] = [[]]
@@ -124,13 +87,13 @@ export default createEslintRule<Options, MESSAGE_ID>({
 
         let lastSortingNode = formattedMembers.at(-1)?.at(-1)
         let sortingNode: SortNamedExportsSortingNode = {
-          size: rangeToDiff(specifier, sourceCode),
-          node: specifier,
-          groupKind,
           isEslintDisabled: isNodeEslintDisabled(
             specifier,
             eslintDisabledLines,
           ),
+          size: rangeToDiff(specifier, sourceCode),
+          node: specifier,
+          groupKind,
           name,
         }
         if (
@@ -190,23 +153,62 @@ export default createEslintRule<Options, MESSAGE_ID>({
           }
 
           context.report({
-            messageId: 'unexpectedNamedExportsOrder',
-            data: {
-              left: left.name,
-              right: right.name,
-            },
-            node: right.node,
             fix: fixer =>
-              makeFixes(
-                fixer,
-                nodes,
-                sortedNodesExcludingEslintDisabled,
+              makeFixes({
+                sortedNodes: sortedNodesExcludingEslintDisabled,
                 sourceCode,
                 options,
-              ),
+                fixer,
+                nodes,
+              }),
+            data: {
+              right: right.name,
+              left: left.name,
+            },
+            messageId: 'unexpectedNamedExportsOrder',
+            node: right.node,
           })
         })
       }
     },
   }),
+  meta: {
+    schema: [
+      {
+        properties: {
+          partitionByComment: {
+            ...partitionByCommentJsonSchema,
+            description:
+              'Allows you to use comments to separate the named exports members into logical groups.',
+          },
+          groupKind: {
+            enum: ['mixed', 'values-first', 'types-first'],
+            description: 'Specifies top-level groups.',
+            type: 'string',
+          },
+          partitionByNewLine: partitionByNewLineJsonSchema,
+          specialCharacters: specialCharactersJsonSchema,
+          ignoreCase: ignoreCaseJsonSchema,
+          locales: localesJsonSchema,
+          order: orderJsonSchema,
+          type: typeJsonSchema,
+        },
+        additionalProperties: false,
+        type: 'object',
+      },
+    ],
+    docs: {
+      url: 'https://perfectionist.dev/rules/sort-named-exports',
+      description: 'Enforce sorted named exports.',
+      recommended: true,
+    },
+    messages: {
+      unexpectedNamedExportsOrder:
+        'Expected "{{right}}" to come before "{{left}}".',
+    },
+    type: 'suggestion',
+    fixable: 'code',
+  },
+  defaultOptions: [defaultOptions],
+  name: 'sort-named-exports',
 })

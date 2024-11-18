@@ -32,10 +32,6 @@ import { makeFixes } from '../utils/make-fixes'
 import { complete } from '../utils/complete'
 import { pairwise } from '../utils/pairwise'
 
-type MESSAGE_ID = 'unexpectedDecoratorsGroupOrder' | 'unexpectedDecoratorsOrder'
-
-type Group<T extends string[]> = 'unknown' | T[number]
-
 export type Options<T extends string[]> = [
   Partial<{
     customGroups: Record<T[number], string[] | string>
@@ -54,50 +50,37 @@ export type Options<T extends string[]> = [
   }>,
 ]
 
+type MESSAGE_ID = 'unexpectedDecoratorsGroupOrder' | 'unexpectedDecoratorsOrder'
+
 type SortDecoratorsSortingNode = SortingNode<TSESTree.Decorator>
 
+type Group<T extends string[]> = 'unknown' | T[number]
+
 let defaultOptions: Required<Options<string[]>[0]> = {
-  type: 'alphabetical',
-  ignoreCase: true,
   specialCharacters: 'keep',
   partitionByComment: false,
-  customGroups: {},
-  order: 'asc',
-  groups: [],
-  sortOnClasses: true,
-  sortOnMethods: true,
-  sortOnAccessors: true,
   sortOnProperties: true,
   sortOnParameters: true,
+  sortOnAccessors: true,
+  type: 'alphabetical',
+  sortOnClasses: true,
+  sortOnMethods: true,
+  ignoreCase: true,
+  customGroups: {},
   locales: 'en-US',
+  order: 'asc',
+  groups: [],
 }
 
 export default createEslintRule<Options<string[]>, MESSAGE_ID>({
-  name: 'sort-decorators',
   meta: {
-    type: 'suggestion',
-    docs: {
-      description: 'Enforce sorted decorators.',
-    },
-    fixable: 'code',
     schema: [
       {
-        type: 'object',
         properties: {
-          type: typeJsonSchema,
-          order: orderJsonSchema,
-          locales: localesJsonSchema,
-          ignoreCase: ignoreCaseJsonSchema,
-          specialCharacters: specialCharactersJsonSchema,
-          sortOnClasses: {
+          partitionByComment: {
+            ...partitionByCommentJsonSchema,
             description:
-              'Controls whether sorting should be enabled for class decorators.',
-            type: 'boolean',
-          },
-          sortOnMethods: {
-            description:
-              'Controls whether sorting should be enabled for class method decorators.',
-            type: 'boolean',
+              'Allows you to use comments to separate the decorators into logical groups.',
           },
           sortOnParameters: {
             description:
@@ -114,15 +97,26 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
               'Controls whether sorting should be enabled for class accessor decorators.',
             type: 'boolean',
           },
-          partitionByComment: {
-            ...partitionByCommentJsonSchema,
+          sortOnMethods: {
             description:
-              'Allows you to use comments to separate the decorators into logical groups.',
+              'Controls whether sorting should be enabled for class method decorators.',
+            type: 'boolean',
           },
-          groups: groupsJsonSchema,
+          sortOnClasses: {
+            description:
+              'Controls whether sorting should be enabled for class decorators.',
+            type: 'boolean',
+          },
+          specialCharacters: specialCharactersJsonSchema,
           customGroups: customGroupsJsonSchema,
+          ignoreCase: ignoreCaseJsonSchema,
+          locales: localesJsonSchema,
+          groups: groupsJsonSchema,
+          order: orderJsonSchema,
+          type: typeJsonSchema,
         },
         additionalProperties: false,
+        type: 'object',
       },
     ],
     messages: {
@@ -131,8 +125,14 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
       unexpectedDecoratorsOrder:
         'Expected "{{right}}" to come before "{{left}}".',
     },
+    docs: {
+      url: 'https://perfectionist.dev/rules/sort-decorators',
+      description: 'Enforce sorted decorators.',
+      recommended: true,
+    },
+    type: 'suggestion',
+    fixable: 'code',
   },
-  defaultOptions: [defaultOptions],
   create: context => {
     let settings = getSettings(context.settings)
 
@@ -145,22 +145,6 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
     )
 
     return {
-      ClassDeclaration: Declaration =>
-        options.sortOnClasses
-          ? sortDecorators(context, options, Declaration.decorators)
-          : null,
-      AccessorProperty: accessorDefinition =>
-        options.sortOnAccessors
-          ? sortDecorators(context, options, accessorDefinition.decorators)
-          : null,
-      MethodDefinition: methodDefinition =>
-        options.sortOnMethods
-          ? sortDecorators(context, options, methodDefinition.decorators)
-          : null,
-      PropertyDefinition: propertyDefinition =>
-        options.sortOnProperties
-          ? sortDecorators(context, options, propertyDefinition.decorators)
-          : null,
       Decorator: decorator => {
         if (!options.sortOnParameters) {
           return
@@ -177,8 +161,26 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
           sortDecorators(context, options, decorators)
         }
       },
+      PropertyDefinition: propertyDefinition =>
+        options.sortOnProperties
+          ? sortDecorators(context, options, propertyDefinition.decorators)
+          : null,
+      AccessorProperty: accessorDefinition =>
+        options.sortOnAccessors
+          ? sortDecorators(context, options, accessorDefinition.decorators)
+          : null,
+      MethodDefinition: methodDefinition =>
+        options.sortOnMethods
+          ? sortDecorators(context, options, methodDefinition.decorators)
+          : null,
+      ClassDeclaration: Declaration =>
+        options.sortOnClasses
+          ? sortDecorators(context, options, Declaration.decorators)
+          : null,
     }
   },
+  defaultOptions: [defaultOptions],
+  name: 'sort-decorators',
 })
 
 let sortDecorators = (
@@ -191,8 +193,8 @@ let sortDecorators = (
   }
   let sourceCode = getSourceCode(context)
   let eslintDisabledLines = getEslintDisabledLines({
-    sourceCode,
     ruleName: context.id,
+    sourceCode,
   })
 
   let formattedMembers: SortDecoratorsSortingNode[][] = decorators.reduce(
@@ -207,16 +209,16 @@ let sortDecorators = (
         accumulator.push([])
       }
 
-      let { getGroup, setCustomGroups } = useGroups(options)
+      let { setCustomGroups, getGroup } = useGroups(options)
       let name = getDecoratorName(decorator)
 
       setCustomGroups(options.customGroups, name)
 
       let sortingNode: SortDecoratorsSortingNode = {
-        size: rangeToDiff(decorator, sourceCode),
-        node: decorator,
-        group: getGroup(),
         isEslintDisabled: isNodeEslintDisabled(decorator, eslintDisabledLines),
+        size: rangeToDiff(decorator, sourceCode),
+        group: getGroup(),
+        node: decorator,
         name,
       }
 
@@ -252,25 +254,25 @@ let sortDecorators = (
     let leftNumber = getGroupNumber(options.groups, left)
     let rightNumber = getGroupNumber(options.groups, right)
     context.report({
+      fix: fixer =>
+        makeFixes({
+          sortedNodes: sortedNodesExcludingEslintDisabled,
+          sourceCode,
+          options,
+          fixer,
+          nodes,
+        }),
+      data: {
+        right: toSingleLine(right.name),
+        left: toSingleLine(left.name),
+        rightGroup: right.group,
+        leftGroup: left.group,
+      },
       messageId:
         leftNumber === rightNumber
           ? 'unexpectedDecoratorsOrder'
           : 'unexpectedDecoratorsGroupOrder',
-      data: {
-        left: toSingleLine(left.name),
-        leftGroup: left.group,
-        right: toSingleLine(right.name),
-        rightGroup: right.group,
-      },
       node: right.node,
-      fix: fixer =>
-        makeFixes(
-          fixer,
-          nodes,
-          sortedNodesExcludingEslintDisabled,
-          sourceCode,
-          options,
-        ),
     })
   })
 }

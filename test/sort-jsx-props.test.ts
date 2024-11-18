@@ -20,12 +20,12 @@ describe(ruleName, () => {
     languageOptions: {
       parserOptions: {
         tsconfigRootDir: path.join(__dirname, './fixtures'),
-        project: './tsconfig.json',
-        parser: typescriptParser,
         extraFileExtensions: ['.svelte', '.astro', '.vue'],
         ecmaFeatures: {
           jsx: true,
         },
+        project: './tsconfig.json',
+        parser: typescriptParser,
       },
     },
   })
@@ -40,6 +40,42 @@ describe(ruleName, () => {
     } as const
 
     ruleTester.run(`${ruleName}(${type}): sorts jsx props`, rule, {
+      invalid: [
+        {
+          output: dedent`
+            let Component = () => (
+              <Element
+                a="aaa"
+                b="bb"
+                c="c"
+              >
+                Value
+              </Element>
+            )
+          `,
+          code: dedent`
+            let Component = () => (
+              <Element
+                a="aaa"
+                c="c"
+                b="bb"
+              >
+                Value
+              </Element>
+            )
+          `,
+          errors: [
+            {
+              data: {
+                right: 'b',
+                left: 'c',
+              },
+              messageId: 'unexpectedJSXPropsOrder',
+            },
+          ],
+          options: [options],
+        },
+      ],
       valid: [
         {
           code: dedent`
@@ -56,48 +92,46 @@ describe(ruleName, () => {
           options: [options],
         },
       ],
-      invalid: [
-        {
-          code: dedent`
-            let Component = () => (
-              <Element
-                a="aaa"
-                c="c"
-                b="bb"
-              >
-                Value
-              </Element>
-            )
-          `,
-          output: dedent`
-            let Component = () => (
-              <Element
-                a="aaa"
-                b="bb"
-                c="c"
-              >
-                Value
-              </Element>
-            )
-          `,
-          options: [options],
-          errors: [
-            {
-              messageId: 'unexpectedJSXPropsOrder',
-              data: {
-                left: 'c',
-                right: 'b',
-              },
-            },
-          ],
-        },
-      ],
     })
 
     ruleTester.run(
       `${ruleName}(${type}): sorts jsx props with namespaced names`,
       rule,
       {
+        invalid: [
+          {
+            output: dedent`
+              let Component = () => (
+                <Element
+                  a="aaa"
+                  b="bb"
+                  c="c"
+                  d:e="d"
+                />
+              )
+            `,
+            code: dedent`
+              let Component = () => (
+                <Element
+                  a="aaa"
+                  d:e="d"
+                  b="bb"
+                  c="c"
+                />
+              )
+            `,
+            errors: [
+              {
+                data: {
+                  left: 'd:e',
+                  right: 'b',
+                },
+                messageId: 'unexpectedJSXPropsOrder',
+              },
+            ],
+            options: [options],
+          },
+        ],
         valid: [
           {
             code: dedent`
@@ -111,40 +145,6 @@ describe(ruleName, () => {
               )
             `,
             options: [options],
-          },
-        ],
-        invalid: [
-          {
-            code: dedent`
-              let Component = () => (
-                <Element
-                  a="aaa"
-                  d:e="d"
-                  b="bb"
-                  c="c"
-                />
-              )
-            `,
-            output: dedent`
-              let Component = () => (
-                <Element
-                  a="aaa"
-                  b="bb"
-                  c="c"
-                  d:e="d"
-                />
-              )
-            `,
-            options: [options],
-            errors: [
-              {
-                messageId: 'unexpectedJSXPropsOrder',
-                data: {
-                  left: 'd:e',
-                  right: 'b',
-                },
-              },
-            ],
           },
         ],
       },
@@ -154,6 +154,53 @@ describe(ruleName, () => {
       `${ruleName}(${type}): does not break the property list`,
       rule,
       {
+        invalid: [
+          {
+            errors: [
+              {
+                data: {
+                  right: 'd',
+                  left: 'e',
+                },
+                messageId: 'unexpectedJSXPropsOrder',
+              },
+              {
+                data: {
+                  right: 'a',
+                  left: 'b',
+                },
+                messageId: 'unexpectedJSXPropsOrder',
+              },
+            ],
+            output: dedent`
+              let Component = () => (
+                <Element
+                  d
+                  e="e"
+                  f="f"
+                  {...data}
+                  a="a"
+                  b="b"
+                  c="c"
+                />
+              )
+            `,
+            code: dedent`
+              let Component = () => (
+                <Element
+                  e="e"
+                  d
+                  f="f"
+                  {...data}
+                  b="b"
+                  a="a"
+                  c="c"
+                />
+              )
+            `,
+            options: [options],
+          },
+        ],
         valid: [
           {
             code: dedent`
@@ -170,53 +217,6 @@ describe(ruleName, () => {
               )
             `,
             options: [options],
-          },
-        ],
-        invalid: [
-          {
-            code: dedent`
-              let Component = () => (
-                <Element
-                  e="e"
-                  d
-                  f="f"
-                  {...data}
-                  b="b"
-                  a="a"
-                  c="c"
-                />
-              )
-            `,
-            output: dedent`
-              let Component = () => (
-                <Element
-                  d
-                  e="e"
-                  f="f"
-                  {...data}
-                  a="a"
-                  b="b"
-                  c="c"
-                />
-              )
-            `,
-            options: [options],
-            errors: [
-              {
-                messageId: 'unexpectedJSXPropsOrder',
-                data: {
-                  left: 'e',
-                  right: 'd',
-                },
-              },
-              {
-                messageId: 'unexpectedJSXPropsOrder',
-                data: {
-                  left: 'b',
-                  right: 'a',
-                },
-              },
-            ],
           },
         ],
       },
@@ -226,6 +226,47 @@ describe(ruleName, () => {
       `${ruleName}(${type}): allows to set shorthand props position`,
       rule,
       {
+        invalid: [
+          {
+            errors: [
+              {
+                data: {
+                  leftGroup: 'shorthand',
+                  rightGroup: 'unknown',
+                  left: 'aaaaaa',
+                  right: 'b',
+                },
+                messageId: 'unexpectedJSXPropsGroupOrder',
+              },
+            ],
+            output: dedent`
+              let Component = () => (
+                <Element
+                  b="b"
+                  c="c"
+                  d="d"
+                  aaaaaa
+                />
+              )
+            `,
+            code: dedent`
+              let Component = () => (
+                <Element
+                  aaaaaa
+                  b="b"
+                  c="c"
+                  d="d"
+                />
+              )
+            `,
+            options: [
+              {
+                ...options,
+                groups: ['unknown', 'shorthand'],
+              },
+            ],
+          },
+        ],
         valid: [
           {
             code: dedent`
@@ -242,47 +283,6 @@ describe(ruleName, () => {
               {
                 ...options,
                 groups: ['unknown', 'shorthand'],
-              },
-            ],
-          },
-        ],
-        invalid: [
-          {
-            code: dedent`
-              let Component = () => (
-                <Element
-                  aaaaaa
-                  b="b"
-                  c="c"
-                  d="d"
-                />
-              )
-            `,
-            output: dedent`
-              let Component = () => (
-                <Element
-                  b="b"
-                  c="c"
-                  d="d"
-                  aaaaaa
-                />
-              )
-            `,
-            options: [
-              {
-                ...options,
-                groups: ['unknown', 'shorthand'],
-              },
-            ],
-            errors: [
-              {
-                messageId: 'unexpectedJSXPropsGroupOrder',
-                data: {
-                  left: 'aaaaaa',
-                  leftGroup: 'shorthand',
-                  right: 'b',
-                  rightGroup: 'unknown',
-                },
               },
             ],
           },
@@ -294,15 +294,19 @@ describe(ruleName, () => {
       `${ruleName}(${type}): allows to set callback props position`,
       rule,
       {
-        valid: [
+        invalid: [
           {
-            code: dedent`
-              <Element
-                a="a"
-                b="b"
-                onChange={handleChange}
-              />
-            `,
+            errors: [
+              {
+                data: {
+                  leftGroup: 'callback',
+                  rightGroup: 'unknown',
+                  left: 'onChange',
+                  right: 'a',
+                },
+                messageId: 'unexpectedJSXPropsGroupOrder',
+              },
+            ],
             options: [
               {
                 ...options,
@@ -310,17 +314,6 @@ describe(ruleName, () => {
                 groups: ['unknown', 'callback'],
               },
             ],
-          },
-        ],
-        invalid: [
-          {
-            code: dedent`
-              <Element
-                onChange={handleChange}
-                a="a"
-                b="b"
-              />
-            `,
             output: dedent`
               <Element
                 a="a"
@@ -328,6 +321,17 @@ describe(ruleName, () => {
                 onChange={handleChange}
               />
             `,
+            code: dedent`
+              <Element
+                onChange={handleChange}
+                a="a"
+                b="b"
+              />
+            `,
+          },
+        ],
+        valid: [
+          {
             options: [
               {
                 ...options,
@@ -335,17 +339,13 @@ describe(ruleName, () => {
                 groups: ['unknown', 'callback'],
               },
             ],
-            errors: [
-              {
-                messageId: 'unexpectedJSXPropsGroupOrder',
-                data: {
-                  left: 'onChange',
-                  leftGroup: 'callback',
-                  right: 'a',
-                  rightGroup: 'unknown',
-                },
-              },
-            ],
+            code: dedent`
+              <Element
+                a="a"
+                b="b"
+                onChange={handleChange}
+              />
+            `,
           },
         ],
       },
@@ -355,6 +355,55 @@ describe(ruleName, () => {
       `${ruleName}(${type}): allows to set multiline props position`,
       rule,
       {
+        invalid: [
+          {
+            errors: [
+              {
+                data: {
+                  rightGroup: 'multiline',
+                  leftGroup: 'unknown',
+                  right: 'd',
+                  left: 'c',
+                },
+                messageId: 'unexpectedJSXPropsGroupOrder',
+              },
+            ],
+            output: dedent`
+              <Element
+                d={() => {
+                  fn()
+                }}
+                e={{
+                  f: 'f',
+                  g: 'g',
+                }}
+                a="aaa"
+                b="bb"
+                c="c"
+              />
+            `,
+            code: dedent`
+              <Element
+                a="aaa"
+                b="bb"
+                c="c"
+                d={() => {
+                  fn()
+                }}
+                e={{
+                  f: 'f',
+                  g: 'g',
+                }}
+              />
+            `,
+            options: [
+              {
+                ...options,
+                groups: ['multiline', 'unknown'],
+              },
+            ],
+          },
+        ],
         valid: [
           {
             code: dedent`
@@ -379,59 +428,50 @@ describe(ruleName, () => {
             ],
           },
         ],
-        invalid: [
-          {
-            code: dedent`
-              <Element
-                a="aaa"
-                b="bb"
-                c="c"
-                d={() => {
-                  fn()
-                }}
-                e={{
-                  f: 'f',
-                  g: 'g',
-                }}
-              />
-            `,
-            output: dedent`
-              <Element
-                d={() => {
-                  fn()
-                }}
-                e={{
-                  f: 'f',
-                  g: 'g',
-                }}
-                a="aaa"
-                b="bb"
-                c="c"
-              />
-            `,
-            options: [
-              {
-                ...options,
-                groups: ['multiline', 'unknown'],
-              },
-            ],
-            errors: [
-              {
-                messageId: 'unexpectedJSXPropsGroupOrder',
-                data: {
-                  left: 'c',
-                  leftGroup: 'unknown',
-                  right: 'd',
-                  rightGroup: 'multiline',
-                },
-              },
-            ],
-          },
-        ],
       },
     )
 
     ruleTester.run(`${ruleName}(${type}): allows to set priority props`, rule, {
+      invalid: [
+        {
+          errors: [
+            {
+              data: {
+                leftGroup: 'unknown',
+                rightGroup: 'top',
+                right: 'd',
+                left: 'c',
+              },
+              messageId: 'unexpectedJSXPropsGroupOrder',
+            },
+          ],
+          output: dedent`
+              <Element
+                d="ddd"
+                e="ee"
+                a="aaaa"
+                b="bbb"
+                c="cc"
+              />
+            `,
+          code: dedent`
+              <Element
+                a="aaaa"
+                b="bbb"
+                c="cc"
+                d="ddd"
+                e="ee"
+              />
+            `,
+          options: [
+            {
+              ...options,
+              customGroups: { top: ['d', 'e'] },
+              groups: ['top', 'unknown'],
+            },
+          ],
+        },
+      ],
       valid: [
         {
           code: dedent`
@@ -452,46 +492,6 @@ describe(ruleName, () => {
           ],
         },
       ],
-      invalid: [
-        {
-          code: dedent`
-              <Element
-                a="aaaa"
-                b="bbb"
-                c="cc"
-                d="ddd"
-                e="ee"
-              />
-            `,
-          output: dedent`
-              <Element
-                d="ddd"
-                e="ee"
-                a="aaaa"
-                b="bbb"
-                c="cc"
-              />
-            `,
-          options: [
-            {
-              ...options,
-              customGroups: { top: ['d', 'e'] },
-              groups: ['top', 'unknown'],
-            },
-          ],
-          errors: [
-            {
-              messageId: 'unexpectedJSXPropsGroupOrder',
-              data: {
-                left: 'c',
-                leftGroup: 'unknown',
-                right: 'd',
-                rightGroup: 'top',
-              },
-            },
-          ],
-        },
-      ],
     })
 
     ruleTester.run(
@@ -500,6 +500,15 @@ describe(ruleName, () => {
       {
         valid: [
           {
+            options: [
+              {
+                ...options,
+                customGroups: {
+                  elementsWithoutFoo: '^(?!.*Foo).*$',
+                },
+                groups: ['unknown', 'elementsWithoutFoo'],
+              },
+            ],
             code: dedent`
             <Element
               iHaveFooInMyName="iHaveFooInMyName"
@@ -508,15 +517,6 @@ describe(ruleName, () => {
               b="b"
             />
             `,
-            options: [
-              {
-                ...options,
-                groups: ['unknown', 'elementsWithoutFoo'],
-                customGroups: {
-                  elementsWithoutFoo: '^(?!.*Foo).*$',
-                },
-              },
-            ],
           },
         ],
         invalid: [],
@@ -529,6 +529,12 @@ describe(ruleName, () => {
       {
         valid: [
           {
+            options: [
+              {
+                ...options,
+                specialCharacters: 'trim',
+              },
+            ],
             code: dedent`
               <Element
                 $a
@@ -536,12 +542,6 @@ describe(ruleName, () => {
                 $c
               />
             `,
-            options: [
-              {
-                ...options,
-                specialCharacters: 'trim',
-              },
-            ],
           },
         ],
         invalid: [],
@@ -554,18 +554,18 @@ describe(ruleName, () => {
       {
         valid: [
           {
-            code: dedent`
-              <Component
-                ab
-                a$c
-              />
-            `,
             options: [
               {
                 ...options,
                 specialCharacters: 'remove',
               },
             ],
+            code: dedent`
+              <Component
+                ab
+                a$c
+              />
+            `,
           },
         ],
         invalid: [],
@@ -602,6 +602,42 @@ describe(ruleName, () => {
     } as const
 
     ruleTester.run(`${ruleName}(${type}): sorts jsx props`, rule, {
+      invalid: [
+        {
+          output: dedent`
+            let Component = () => (
+              <Element
+                a="aaa"
+                b="bb"
+                c="c"
+              >
+                Value
+              </Element>
+            )
+          `,
+          code: dedent`
+            let Component = () => (
+              <Element
+                a="aaa"
+                c="c"
+                b="bb"
+              >
+                Value
+              </Element>
+            )
+          `,
+          errors: [
+            {
+              data: {
+                right: 'b',
+                left: 'c',
+              },
+              messageId: 'unexpectedJSXPropsOrder',
+            },
+          ],
+          options: [options],
+        },
+      ],
       valid: [
         {
           code: dedent`
@@ -618,48 +654,46 @@ describe(ruleName, () => {
           options: [options],
         },
       ],
-      invalid: [
-        {
-          code: dedent`
-            let Component = () => (
-              <Element
-                a="aaa"
-                c="c"
-                b="bb"
-              >
-                Value
-              </Element>
-            )
-          `,
-          output: dedent`
-            let Component = () => (
-              <Element
-                a="aaa"
-                b="bb"
-                c="c"
-              >
-                Value
-              </Element>
-            )
-          `,
-          options: [options],
-          errors: [
-            {
-              messageId: 'unexpectedJSXPropsOrder',
-              data: {
-                left: 'c',
-                right: 'b',
-              },
-            },
-          ],
-        },
-      ],
     })
 
     ruleTester.run(
       `${ruleName}(${type}): sorts jsx props with namespaced names`,
       rule,
       {
+        invalid: [
+          {
+            output: dedent`
+              let Component = () => (
+                <Element
+                  a="aaa"
+                  b="bb"
+                  c="c"
+                  d:e="d"
+                />
+              )
+            `,
+            code: dedent`
+              let Component = () => (
+                <Element
+                  a="aaa"
+                  d:e="d"
+                  b="bb"
+                  c="c"
+                />
+              )
+            `,
+            errors: [
+              {
+                data: {
+                  left: 'd:e',
+                  right: 'b',
+                },
+                messageId: 'unexpectedJSXPropsOrder',
+              },
+            ],
+            options: [options],
+          },
+        ],
         valid: [
           {
             code: dedent`
@@ -673,40 +707,6 @@ describe(ruleName, () => {
               )
             `,
             options: [options],
-          },
-        ],
-        invalid: [
-          {
-            code: dedent`
-              let Component = () => (
-                <Element
-                  a="aaa"
-                  d:e="d"
-                  b="bb"
-                  c="c"
-                />
-              )
-            `,
-            output: dedent`
-              let Component = () => (
-                <Element
-                  a="aaa"
-                  b="bb"
-                  c="c"
-                  d:e="d"
-                />
-              )
-            `,
-            options: [options],
-            errors: [
-              {
-                messageId: 'unexpectedJSXPropsOrder',
-                data: {
-                  left: 'd:e',
-                  right: 'b',
-                },
-              },
-            ],
           },
         ],
       },
@@ -716,6 +716,53 @@ describe(ruleName, () => {
       `${ruleName}(${type}): does not break the property list`,
       rule,
       {
+        invalid: [
+          {
+            errors: [
+              {
+                data: {
+                  right: 'd',
+                  left: 'e',
+                },
+                messageId: 'unexpectedJSXPropsOrder',
+              },
+              {
+                data: {
+                  right: 'a',
+                  left: 'b',
+                },
+                messageId: 'unexpectedJSXPropsOrder',
+              },
+            ],
+            output: dedent`
+              let Component = () => (
+                <Element
+                  d
+                  e="e"
+                  f="f"
+                  {...data}
+                  a="a"
+                  b="b"
+                  c="c"
+                />
+              )
+            `,
+            code: dedent`
+              let Component = () => (
+                <Element
+                  e="e"
+                  d
+                  f="f"
+                  {...data}
+                  b="b"
+                  a="a"
+                  c="c"
+                />
+              )
+            `,
+            options: [options],
+          },
+        ],
         valid: [
           {
             code: dedent`
@@ -732,53 +779,6 @@ describe(ruleName, () => {
               )
             `,
             options: [options],
-          },
-        ],
-        invalid: [
-          {
-            code: dedent`
-              let Component = () => (
-                <Element
-                  e="e"
-                  d
-                  f="f"
-                  {...data}
-                  b="b"
-                  a="a"
-                  c="c"
-                />
-              )
-            `,
-            output: dedent`
-              let Component = () => (
-                <Element
-                  d
-                  e="e"
-                  f="f"
-                  {...data}
-                  a="a"
-                  b="b"
-                  c="c"
-                />
-              )
-            `,
-            options: [options],
-            errors: [
-              {
-                messageId: 'unexpectedJSXPropsOrder',
-                data: {
-                  left: 'e',
-                  right: 'd',
-                },
-              },
-              {
-                messageId: 'unexpectedJSXPropsOrder',
-                data: {
-                  left: 'b',
-                  right: 'a',
-                },
-              },
-            ],
           },
         ],
       },
@@ -788,6 +788,47 @@ describe(ruleName, () => {
       `${ruleName}(${type}): allows to set shorthand props position`,
       rule,
       {
+        invalid: [
+          {
+            errors: [
+              {
+                data: {
+                  leftGroup: 'shorthand',
+                  rightGroup: 'unknown',
+                  left: 'aaaaaa',
+                  right: 'b',
+                },
+                messageId: 'unexpectedJSXPropsGroupOrder',
+              },
+            ],
+            output: dedent`
+              let Component = () => (
+                <Element
+                  b="b"
+                  c="c"
+                  d="d"
+                  aaaaaa
+                />
+              )
+            `,
+            code: dedent`
+              let Component = () => (
+                <Element
+                  aaaaaa
+                  b="b"
+                  c="c"
+                  d="d"
+                />
+              )
+            `,
+            options: [
+              {
+                ...options,
+                groups: ['unknown', 'shorthand'],
+              },
+            ],
+          },
+        ],
         valid: [
           {
             code: dedent`
@@ -804,47 +845,6 @@ describe(ruleName, () => {
               {
                 ...options,
                 groups: ['unknown', 'shorthand'],
-              },
-            ],
-          },
-        ],
-        invalid: [
-          {
-            code: dedent`
-              let Component = () => (
-                <Element
-                  aaaaaa
-                  b="b"
-                  c="c"
-                  d="d"
-                />
-              )
-            `,
-            output: dedent`
-              let Component = () => (
-                <Element
-                  b="b"
-                  c="c"
-                  d="d"
-                  aaaaaa
-                />
-              )
-            `,
-            options: [
-              {
-                ...options,
-                groups: ['unknown', 'shorthand'],
-              },
-            ],
-            errors: [
-              {
-                messageId: 'unexpectedJSXPropsGroupOrder',
-                data: {
-                  left: 'aaaaaa',
-                  leftGroup: 'shorthand',
-                  right: 'b',
-                  rightGroup: 'unknown',
-                },
               },
             ],
           },
@@ -856,15 +856,19 @@ describe(ruleName, () => {
       `${ruleName}(${type}): allows to set callback props position`,
       rule,
       {
-        valid: [
+        invalid: [
           {
-            code: dedent`
-              <Element
-                a="a"
-                b="b"
-                onChange={handleChange}
-              />
-            `,
+            errors: [
+              {
+                data: {
+                  leftGroup: 'callback',
+                  rightGroup: 'unknown',
+                  left: 'onChange',
+                  right: 'a',
+                },
+                messageId: 'unexpectedJSXPropsGroupOrder',
+              },
+            ],
             options: [
               {
                 ...options,
@@ -872,17 +876,6 @@ describe(ruleName, () => {
                 groups: ['unknown', 'callback'],
               },
             ],
-          },
-        ],
-        invalid: [
-          {
-            code: dedent`
-              <Element
-                onChange={handleChange}
-                a="a"
-                b="b"
-              />
-            `,
             output: dedent`
               <Element
                 a="a"
@@ -890,6 +883,17 @@ describe(ruleName, () => {
                 onChange={handleChange}
               />
             `,
+            code: dedent`
+              <Element
+                onChange={handleChange}
+                a="a"
+                b="b"
+              />
+            `,
+          },
+        ],
+        valid: [
+          {
             options: [
               {
                 ...options,
@@ -897,17 +901,13 @@ describe(ruleName, () => {
                 groups: ['unknown', 'callback'],
               },
             ],
-            errors: [
-              {
-                messageId: 'unexpectedJSXPropsGroupOrder',
-                data: {
-                  left: 'onChange',
-                  leftGroup: 'callback',
-                  right: 'a',
-                  rightGroup: 'unknown',
-                },
-              },
-            ],
+            code: dedent`
+              <Element
+                a="a"
+                b="b"
+                onChange={handleChange}
+              />
+            `,
           },
         ],
       },
@@ -917,6 +917,55 @@ describe(ruleName, () => {
       `${ruleName}(${type}): allows to set multiline props position`,
       rule,
       {
+        invalid: [
+          {
+            errors: [
+              {
+                data: {
+                  rightGroup: 'multiline',
+                  leftGroup: 'unknown',
+                  right: 'd',
+                  left: 'c',
+                },
+                messageId: 'unexpectedJSXPropsGroupOrder',
+              },
+            ],
+            output: dedent`
+              <Element
+                d={() => {
+                  fn()
+                }}
+                e={{
+                  f: 'f',
+                  g: 'g',
+                }}
+                a="aaa"
+                b="bb"
+                c="c"
+              />
+            `,
+            code: dedent`
+              <Element
+                a="aaa"
+                b="bb"
+                c="c"
+                d={() => {
+                  fn()
+                }}
+                e={{
+                  f: 'f',
+                  g: 'g',
+                }}
+              />
+            `,
+            options: [
+              {
+                ...options,
+                groups: ['multiline', 'unknown'],
+              },
+            ],
+          },
+        ],
         valid: [
           {
             code: dedent`
@@ -941,59 +990,50 @@ describe(ruleName, () => {
             ],
           },
         ],
-        invalid: [
-          {
-            code: dedent`
-              <Element
-                a="aaa"
-                b="bb"
-                c="c"
-                d={() => {
-                  fn()
-                }}
-                e={{
-                  f: 'f',
-                  g: 'g',
-                }}
-              />
-            `,
-            output: dedent`
-              <Element
-                d={() => {
-                  fn()
-                }}
-                e={{
-                  f: 'f',
-                  g: 'g',
-                }}
-                a="aaa"
-                b="bb"
-                c="c"
-              />
-            `,
-            options: [
-              {
-                ...options,
-                groups: ['multiline', 'unknown'],
-              },
-            ],
-            errors: [
-              {
-                messageId: 'unexpectedJSXPropsGroupOrder',
-                data: {
-                  left: 'c',
-                  leftGroup: 'unknown',
-                  right: 'd',
-                  rightGroup: 'multiline',
-                },
-              },
-            ],
-          },
-        ],
       },
     )
 
     ruleTester.run(`${ruleName}(${type}): allows to set priority props`, rule, {
+      invalid: [
+        {
+          errors: [
+            {
+              data: {
+                leftGroup: 'unknown',
+                rightGroup: 'top',
+                right: 'd',
+                left: 'c',
+              },
+              messageId: 'unexpectedJSXPropsGroupOrder',
+            },
+          ],
+          output: dedent`
+              <Element
+                d="ddd"
+                e="ee"
+                a="aaaa"
+                b="bbb"
+                c="cc"
+              />
+            `,
+          code: dedent`
+              <Element
+                a="aaaa"
+                b="bbb"
+                c="cc"
+                d="ddd"
+                e="ee"
+              />
+            `,
+          options: [
+            {
+              ...options,
+              customGroups: { top: ['d', 'e'] },
+              groups: ['top', 'unknown'],
+            },
+          ],
+        },
+      ],
       valid: [
         {
           code: dedent`
@@ -1010,46 +1050,6 @@ describe(ruleName, () => {
               ...options,
               customGroups: { top: ['d', 'e'] },
               groups: ['top', 'unknown'],
-            },
-          ],
-        },
-      ],
-      invalid: [
-        {
-          code: dedent`
-              <Element
-                a="aaaa"
-                b="bbb"
-                c="cc"
-                d="ddd"
-                e="ee"
-              />
-            `,
-          output: dedent`
-              <Element
-                d="ddd"
-                e="ee"
-                a="aaaa"
-                b="bbb"
-                c="cc"
-              />
-            `,
-          options: [
-            {
-              ...options,
-              customGroups: { top: ['d', 'e'] },
-              groups: ['top', 'unknown'],
-            },
-          ],
-          errors: [
-            {
-              messageId: 'unexpectedJSXPropsGroupOrder',
-              data: {
-                left: 'c',
-                leftGroup: 'unknown',
-                right: 'd',
-                rightGroup: 'top',
-              },
             },
           ],
         },
@@ -1066,6 +1066,42 @@ describe(ruleName, () => {
     } as const
 
     ruleTester.run(`${ruleName}(${type}): sorts jsx props`, rule, {
+      invalid: [
+        {
+          output: dedent`
+            let Component = () => (
+              <Element
+                a="aaa"
+                b="bb"
+                c="c"
+              >
+                Value
+              </Element>
+            )
+          `,
+          code: dedent`
+            let Component = () => (
+              <Element
+                a="aaa"
+                c="c"
+                b="bb"
+              >
+                Value
+              </Element>
+            )
+          `,
+          errors: [
+            {
+              data: {
+                right: 'b',
+                left: 'c',
+              },
+              messageId: 'unexpectedJSXPropsOrder',
+            },
+          ],
+          options: [options],
+        },
+      ],
       valid: [
         {
           code: dedent`
@@ -1082,48 +1118,46 @@ describe(ruleName, () => {
           options: [options],
         },
       ],
-      invalid: [
-        {
-          code: dedent`
-            let Component = () => (
-              <Element
-                a="aaa"
-                c="c"
-                b="bb"
-              >
-                Value
-              </Element>
-            )
-          `,
-          output: dedent`
-            let Component = () => (
-              <Element
-                a="aaa"
-                b="bb"
-                c="c"
-              >
-                Value
-              </Element>
-            )
-          `,
-          options: [options],
-          errors: [
-            {
-              messageId: 'unexpectedJSXPropsOrder',
-              data: {
-                left: 'c',
-                right: 'b',
-              },
-            },
-          ],
-        },
-      ],
     })
 
     ruleTester.run(
       `${ruleName}(${type}): sorts jsx props with namespaced names`,
       rule,
       {
+        invalid: [
+          {
+            output: dedent`
+              let Component = () => (
+                <Element
+                  a="aaa"
+                  d:e="d"
+                  b="bb"
+                  c="c"
+                />
+              )
+            `,
+            code: dedent`
+              let Component = () => (
+                <Element
+                  a="aaa"
+                  b="bb"
+                  d:e="d"
+                  c="c"
+                />
+              )
+            `,
+            errors: [
+              {
+                data: {
+                  right: 'd:e',
+                  left: 'b',
+                },
+                messageId: 'unexpectedJSXPropsOrder',
+              },
+            ],
+            options: [options],
+          },
+        ],
         valid: [
           {
             code: dedent`
@@ -1137,40 +1171,6 @@ describe(ruleName, () => {
               )
             `,
             options: [options],
-          },
-        ],
-        invalid: [
-          {
-            code: dedent`
-              let Component = () => (
-                <Element
-                  a="aaa"
-                  b="bb"
-                  d:e="d"
-                  c="c"
-                />
-              )
-            `,
-            output: dedent`
-              let Component = () => (
-                <Element
-                  a="aaa"
-                  d:e="d"
-                  b="bb"
-                  c="c"
-                />
-              )
-            `,
-            options: [options],
-            errors: [
-              {
-                messageId: 'unexpectedJSXPropsOrder',
-                data: {
-                  left: 'b',
-                  right: 'd:e',
-                },
-              },
-            ],
           },
         ],
       },
@@ -1180,6 +1180,53 @@ describe(ruleName, () => {
       `${ruleName}(${type}): does not break the property list`,
       rule,
       {
+        invalid: [
+          {
+            errors: [
+              {
+                data: {
+                  right: 'f',
+                  left: 'd',
+                },
+                messageId: 'unexpectedJSXPropsOrder',
+              },
+              {
+                data: {
+                  right: 'a',
+                  left: 'b',
+                },
+                messageId: 'unexpectedJSXPropsOrder',
+              },
+            ],
+            output: dedent`
+              let Component = () => (
+                <Element
+                  e="ee"
+                  f="f"
+                  d
+                  {...data}
+                  a="aaa"
+                  b="bb"
+                  c="c"
+                />
+              )
+            `,
+            code: dedent`
+              let Component = () => (
+                <Element
+                  e="ee"
+                  d
+                  f="f"
+                  {...data}
+                  b="bb"
+                  a="aaa"
+                  c="c"
+                />
+              )
+            `,
+            options: [options],
+          },
+        ],
         valid: [
           {
             code: dedent`
@@ -1196,53 +1243,6 @@ describe(ruleName, () => {
               )
             `,
             options: [options],
-          },
-        ],
-        invalid: [
-          {
-            code: dedent`
-              let Component = () => (
-                <Element
-                  e="ee"
-                  d
-                  f="f"
-                  {...data}
-                  b="bb"
-                  a="aaa"
-                  c="c"
-                />
-              )
-            `,
-            output: dedent`
-              let Component = () => (
-                <Element
-                  e="ee"
-                  f="f"
-                  d
-                  {...data}
-                  a="aaa"
-                  b="bb"
-                  c="c"
-                />
-              )
-            `,
-            options: [options],
-            errors: [
-              {
-                messageId: 'unexpectedJSXPropsOrder',
-                data: {
-                  left: 'd',
-                  right: 'f',
-                },
-              },
-              {
-                messageId: 'unexpectedJSXPropsOrder',
-                data: {
-                  left: 'b',
-                  right: 'a',
-                },
-              },
-            ],
           },
         ],
       },
@@ -1252,6 +1252,47 @@ describe(ruleName, () => {
       `${ruleName}(${type}): allows to set shorthand props position`,
       rule,
       {
+        invalid: [
+          {
+            errors: [
+              {
+                data: {
+                  leftGroup: 'shorthand',
+                  rightGroup: 'unknown',
+                  left: 'aaaaaa',
+                  right: 'b',
+                },
+                messageId: 'unexpectedJSXPropsGroupOrder',
+              },
+            ],
+            output: dedent`
+              let Component = () => (
+                <Element
+                  b="b"
+                  c="c"
+                  d="d"
+                  aaaaaa
+                />
+              )
+            `,
+            code: dedent`
+              let Component = () => (
+                <Element
+                  aaaaaa
+                  b="b"
+                  c="c"
+                  d="d"
+                />
+              )
+            `,
+            options: [
+              {
+                ...options,
+                groups: ['unknown', 'shorthand'],
+              },
+            ],
+          },
+        ],
         valid: [
           {
             code: dedent`
@@ -1268,47 +1309,6 @@ describe(ruleName, () => {
               {
                 ...options,
                 groups: ['unknown', 'shorthand'],
-              },
-            ],
-          },
-        ],
-        invalid: [
-          {
-            code: dedent`
-              let Component = () => (
-                <Element
-                  aaaaaa
-                  b="b"
-                  c="c"
-                  d="d"
-                />
-              )
-            `,
-            output: dedent`
-              let Component = () => (
-                <Element
-                  b="b"
-                  c="c"
-                  d="d"
-                  aaaaaa
-                />
-              )
-            `,
-            options: [
-              {
-                ...options,
-                groups: ['unknown', 'shorthand'],
-              },
-            ],
-            errors: [
-              {
-                messageId: 'unexpectedJSXPropsGroupOrder',
-                data: {
-                  left: 'aaaaaa',
-                  leftGroup: 'shorthand',
-                  right: 'b',
-                  rightGroup: 'unknown',
-                },
               },
             ],
           },
@@ -1320,15 +1320,19 @@ describe(ruleName, () => {
       `${ruleName}(${type}): allows to set callback props position`,
       rule,
       {
-        valid: [
+        invalid: [
           {
-            code: dedent`
-              <Element
-                a="a"
-                b="b"
-                onChange={handleChange}
-              />
-            `,
+            errors: [
+              {
+                data: {
+                  leftGroup: 'callback',
+                  rightGroup: 'unknown',
+                  left: 'onChange',
+                  right: 'a',
+                },
+                messageId: 'unexpectedJSXPropsGroupOrder',
+              },
+            ],
             options: [
               {
                 ...options,
@@ -1336,17 +1340,6 @@ describe(ruleName, () => {
                 groups: ['unknown', 'callback'],
               },
             ],
-          },
-        ],
-        invalid: [
-          {
-            code: dedent`
-              <Element
-                onChange={handleChange}
-                a="a"
-                b="b"
-              />
-            `,
             output: dedent`
               <Element
                 a="a"
@@ -1354,6 +1347,17 @@ describe(ruleName, () => {
                 onChange={handleChange}
               />
             `,
+            code: dedent`
+              <Element
+                onChange={handleChange}
+                a="a"
+                b="b"
+              />
+            `,
+          },
+        ],
+        valid: [
+          {
             options: [
               {
                 ...options,
@@ -1361,17 +1365,13 @@ describe(ruleName, () => {
                 groups: ['unknown', 'callback'],
               },
             ],
-            errors: [
-              {
-                messageId: 'unexpectedJSXPropsGroupOrder',
-                data: {
-                  left: 'onChange',
-                  leftGroup: 'callback',
-                  right: 'a',
-                  rightGroup: 'unknown',
-                },
-              },
-            ],
+            code: dedent`
+              <Element
+                a="a"
+                b="b"
+                onChange={handleChange}
+              />
+            `,
           },
         ],
       },
@@ -1381,6 +1381,62 @@ describe(ruleName, () => {
       `${ruleName}(${type}): allows to set multiline props position`,
       rule,
       {
+        invalid: [
+          {
+            errors: [
+              {
+                data: {
+                  rightGroup: 'multiline',
+                  leftGroup: 'unknown',
+                  right: 'd',
+                  left: 'c',
+                },
+                messageId: 'unexpectedJSXPropsGroupOrder',
+              },
+              {
+                data: {
+                  right: 'e',
+                  left: 'd',
+                },
+                messageId: 'unexpectedJSXPropsOrder',
+              },
+            ],
+            output: dedent`
+              <Element
+                e={{
+                  f: 'f',
+                  g: 'g',
+                }}
+                d={() => {
+                  fn()
+                }}
+                a="aaa"
+                b="bb"
+                c="c"
+              />
+            `,
+            code: dedent`
+              <Element
+                a="aaa"
+                b="bb"
+                c="c"
+                d={() => {
+                  fn()
+                }}
+                e={{
+                  f: 'f',
+                  g: 'g',
+                }}
+              />
+            `,
+            options: [
+              {
+                ...options,
+                groups: ['multiline', 'unknown'],
+              },
+            ],
+          },
+        ],
         valid: [
           {
             code: dedent`
@@ -1405,98 +1461,23 @@ describe(ruleName, () => {
             ],
           },
         ],
-        invalid: [
-          {
-            code: dedent`
-              <Element
-                a="aaa"
-                b="bb"
-                c="c"
-                d={() => {
-                  fn()
-                }}
-                e={{
-                  f: 'f',
-                  g: 'g',
-                }}
-              />
-            `,
-            output: dedent`
-              <Element
-                e={{
-                  f: 'f',
-                  g: 'g',
-                }}
-                d={() => {
-                  fn()
-                }}
-                a="aaa"
-                b="bb"
-                c="c"
-              />
-            `,
-            options: [
-              {
-                ...options,
-                groups: ['multiline', 'unknown'],
-              },
-            ],
-            errors: [
-              {
-                messageId: 'unexpectedJSXPropsGroupOrder',
-                data: {
-                  left: 'c',
-                  leftGroup: 'unknown',
-                  right: 'd',
-                  rightGroup: 'multiline',
-                },
-              },
-              {
-                messageId: 'unexpectedJSXPropsOrder',
-                data: {
-                  left: 'd',
-                  right: 'e',
-                },
-              },
-            ],
-          },
-        ],
       },
     )
 
     ruleTester.run(`${ruleName}(${type}): allows to set priority props`, rule, {
-      valid: [
-        {
-          code: dedent`
-              <Element
-                d="ddd"
-                e="ee"
-                a="aaaa"
-                b="bbb"
-                c="cc"
-              />
-            `,
-          options: [
-            {
-              ...options,
-              customGroups: { top: ['d', 'e'] },
-              groups: ['top', 'unknown'],
-              ignoreCase: true,
-            },
-          ],
-        },
-      ],
       invalid: [
         {
-          code: dedent`
-              <Element
-                a="aaaa"
-                b="bbb"
-                c="cc"
-                d="ddd"
-                e="ee"
-              />
-            `,
+          errors: [
+            {
+              data: {
+                leftGroup: 'unknown',
+                rightGroup: 'top',
+                right: 'd',
+                left: 'c',
+              },
+              messageId: 'unexpectedJSXPropsGroupOrder',
+            },
+          ],
           output: dedent`
               <Element
                 d="ddd"
@@ -1506,6 +1487,15 @@ describe(ruleName, () => {
                 c="cc"
               />
             `,
+          code: dedent`
+              <Element
+                a="aaaa"
+                b="bbb"
+                c="cc"
+                d="ddd"
+                e="ee"
+              />
+            `,
           options: [
             {
               ...options,
@@ -1513,17 +1503,27 @@ describe(ruleName, () => {
               groups: ['top', 'unknown'],
             },
           ],
-          errors: [
+        },
+      ],
+      valid: [
+        {
+          options: [
             {
-              messageId: 'unexpectedJSXPropsGroupOrder',
-              data: {
-                left: 'c',
-                leftGroup: 'unknown',
-                right: 'd',
-                rightGroup: 'top',
-              },
+              ...options,
+              customGroups: { top: ['d', 'e'] },
+              groups: ['top', 'unknown'],
+              ignoreCase: true,
             },
           ],
+          code: dedent`
+              <Element
+                d="ddd"
+                e="ee"
+                a="aaaa"
+                b="bbb"
+                c="cc"
+              />
+            `,
         },
       ],
     })
@@ -1549,10 +1549,10 @@ describe(ruleName, () => {
           `,
             options: [
               {
-                groups: ['multiline', 'shorthand', 'unknown', 'myCustomGroup'],
                 customGroups: {
                   myCustomGroup: 'x',
                 },
+                groups: ['multiline', 'shorthand', 'unknown', 'myCustomGroup'],
               },
             ],
           },
@@ -1644,80 +1644,80 @@ describe(ruleName, () => {
 
     let eslintDisableRuleTesterName = `${ruleName}: supports 'eslint-disable' for individual nodes`
     ruleTester.run(eslintDisableRuleTesterName, rule, {
-      valid: [],
       invalid: [
         {
-          code: dedent`
-            <Element
-              c="c"
-              b="b"
-              a="a" // eslint-disable-line
-            />
-          `,
-          output: dedent`
-            <Element
-              b="b"
-              c="c"
-              a="a" // eslint-disable-line
-            />
-          `,
-          options: [{}],
           errors: [
             {
-              messageId: 'unexpectedJSXPropsOrder',
               data: {
-                left: 'c',
                 right: 'b',
+                left: 'c',
               },
+              messageId: 'unexpectedJSXPropsOrder',
             },
           ],
-        },
-        {
-          code: dedent`
-            <Element
-              d="d"
-              c="c"
-              // eslint-disable-next-line
-              a="a"
-              b="b"
-            />
-          `,
           output: dedent`
             <Element
               b="b"
               c="c"
-              // eslint-disable-next-line
-              a="a"
-              d="d"
+              a="a" // eslint-disable-line
+            />
+          `,
+          code: dedent`
+            <Element
+              c="c"
+              b="b"
+              a="a" // eslint-disable-line
             />
           `,
           options: [{}],
+        },
+        {
           errors: [
             {
-              messageId: 'unexpectedJSXPropsOrder',
               data: {
-                left: 'd',
                 right: 'c',
+                left: 'd',
               },
+              messageId: 'unexpectedJSXPropsOrder',
             },
             {
-              messageId: 'unexpectedJSXPropsOrder',
               data: {
+                right: 'b',
                 left: 'a',
-                right: 'b',
               },
+              messageId: 'unexpectedJSXPropsOrder',
             },
           ],
-        },
-        {
-          code: dedent`
+          output: dedent`
             <Element
-              c="c"
               b="b"
-              /* eslint-disable-next-line */
+              c="c"
+              // eslint-disable-next-line
               a="a"
+              d="d"
             />
           `,
+          code: dedent`
+            <Element
+              d="d"
+              c="c"
+              // eslint-disable-next-line
+              a="a"
+              b="b"
+            />
+          `,
+          options: [{}],
+        },
+        {
+          errors: [
+            {
+              data: {
+                right: 'b',
+                left: 'c',
+              },
+              messageId: 'unexpectedJSXPropsOrder',
+            },
+          ],
           output: dedent`
             <Element
               b="b"
@@ -1726,25 +1726,26 @@ describe(ruleName, () => {
               a="a"
             />
           `,
-          options: [{}],
-          errors: [
-            {
-              messageId: 'unexpectedJSXPropsOrder',
-              data: {
-                left: 'c',
-                right: 'b',
-              },
-            },
-          ],
-        },
-        {
           code: dedent`
             <Element
               c="c"
               b="b"
-              a="a" /* eslint-disable-line */
+              /* eslint-disable-next-line */
+              a="a"
             />
           `,
+          options: [{}],
+        },
+        {
+          errors: [
+            {
+              data: {
+                right: 'b',
+                left: 'c',
+              },
+              messageId: 'unexpectedJSXPropsOrder',
+            },
+          ],
           output: dedent`
             <Element
               b="b"
@@ -1752,18 +1753,28 @@ describe(ruleName, () => {
               a="a" /* eslint-disable-line */
             />
           `,
+          code: dedent`
+            <Element
+              c="c"
+              b="b"
+              a="a" /* eslint-disable-line */
+            />
+          `,
           options: [{}],
-          errors: [
-            {
-              messageId: 'unexpectedJSXPropsOrder',
-              data: {
-                left: 'c',
-                right: 'b',
-              },
-            },
-          ],
         },
         {
+          output: dedent`
+            <Element
+              a="a"
+              d="d"
+              /* eslint-disable */
+              c="c"
+              b="b"
+              // Shouldn't move
+              /* eslint-enable */
+              e="e"
+            />
+          `,
           code: dedent`
             <Element
               d="d"
@@ -1776,38 +1787,18 @@ describe(ruleName, () => {
               a="a"
             />
           `,
-          output: dedent`
-            <Element
-              a="a"
-              d="d"
-              /* eslint-disable */
-              c="c"
-              b="b"
-              // Shouldn't move
-              /* eslint-enable */
-              e="e"
-            />
-          `,
-          options: [{}],
           errors: [
             {
-              messageId: 'unexpectedJSXPropsOrder',
               data: {
-                left: 'b',
                 right: 'a',
+                left: 'b',
               },
+              messageId: 'unexpectedJSXPropsOrder',
             },
           ],
+          options: [{}],
         },
         {
-          code: dedent`
-            <Element
-              c="c"
-              b="b"
-              // eslint-disable-next-line @rule-tester/${eslintDisableRuleTesterName}
-              a="a"
-            />
-          `,
           output: dedent`
             <Element
               b="b"
@@ -1816,25 +1807,35 @@ describe(ruleName, () => {
               a="a"
             />
           `,
-          options: [{}],
-          errors: [
-            {
-              messageId: 'unexpectedJSXPropsOrder',
-              data: {
-                left: 'c',
-                right: 'b',
-              },
-            },
-          ],
-        },
-        {
           code: dedent`
             <Element
               c="c"
               b="b"
-              a="a" // eslint-disable-line @rule-tester/${eslintDisableRuleTesterName}
+              // eslint-disable-next-line @rule-tester/${eslintDisableRuleTesterName}
+              a="a"
             />
           `,
+          errors: [
+            {
+              data: {
+                right: 'b',
+                left: 'c',
+              },
+              messageId: 'unexpectedJSXPropsOrder',
+            },
+          ],
+          options: [{}],
+        },
+        {
+          errors: [
+            {
+              data: {
+                right: 'b',
+                left: 'c',
+              },
+              messageId: 'unexpectedJSXPropsOrder',
+            },
+          ],
           output: dedent`
             <Element
               b="b"
@@ -1842,18 +1843,24 @@ describe(ruleName, () => {
               a="a" // eslint-disable-line @rule-tester/${eslintDisableRuleTesterName}
             />
           `,
+          code: dedent`
+            <Element
+              c="c"
+              b="b"
+              a="a" // eslint-disable-line @rule-tester/${eslintDisableRuleTesterName}
+            />
+          `,
           options: [{}],
-          errors: [
-            {
-              messageId: 'unexpectedJSXPropsOrder',
-              data: {
-                left: 'c',
-                right: 'b',
-              },
-            },
-          ],
         },
         {
+          output: dedent`
+            <Element
+              b="b"
+              c="c"
+              /* eslint-disable-next-line @rule-tester/${eslintDisableRuleTesterName} */
+              a="a"
+            />
+          `,
           code: dedent`
             <Element
               c="c"
@@ -1862,33 +1869,27 @@ describe(ruleName, () => {
               a="a"
             />
           `,
-          output: dedent`
-            <Element
-              b="b"
-              c="c"
-              /* eslint-disable-next-line @rule-tester/${eslintDisableRuleTesterName} */
-              a="a"
-            />
-          `,
-          options: [{}],
           errors: [
             {
-              messageId: 'unexpectedJSXPropsOrder',
               data: {
-                left: 'c',
                 right: 'b',
+                left: 'c',
               },
+              messageId: 'unexpectedJSXPropsOrder',
             },
           ],
+          options: [{}],
         },
         {
-          code: dedent`
-            <Element
-              c="c"
-              b="b"
-              a="a" /* eslint-disable-line @rule-tester/${eslintDisableRuleTesterName} */
-            />
-          `,
+          errors: [
+            {
+              data: {
+                right: 'b',
+                left: 'c',
+              },
+              messageId: 'unexpectedJSXPropsOrder',
+            },
+          ],
           output: dedent`
             <Element
               b="b"
@@ -1896,30 +1897,16 @@ describe(ruleName, () => {
               a="a" /* eslint-disable-line @rule-tester/${eslintDisableRuleTesterName} */
             />
           `,
-          options: [{}],
-          errors: [
-            {
-              messageId: 'unexpectedJSXPropsOrder',
-              data: {
-                left: 'c',
-                right: 'b',
-              },
-            },
-          ],
-        },
-        {
           code: dedent`
             <Element
-              d="d"
-              e="e"
-              /* eslint-disable @rule-tester/${eslintDisableRuleTesterName} */
               c="c"
               b="b"
-              // Shouldn't move
-              /* eslint-enable */
-              a="a"
+              a="a" /* eslint-disable-line @rule-tester/${eslintDisableRuleTesterName} */
             />
           `,
+          options: [{}],
+        },
+        {
           output: dedent`
             <Element
               a="a"
@@ -1932,18 +1919,31 @@ describe(ruleName, () => {
               e="e"
             />
           `,
-          options: [{}],
+          code: dedent`
+            <Element
+              d="d"
+              e="e"
+              /* eslint-disable @rule-tester/${eslintDisableRuleTesterName} */
+              c="c"
+              b="b"
+              // Shouldn't move
+              /* eslint-enable */
+              a="a"
+            />
+          `,
           errors: [
             {
-              messageId: 'unexpectedJSXPropsOrder',
               data: {
-                left: 'b',
                 right: 'a',
+                left: 'b',
               },
+              messageId: 'unexpectedJSXPropsOrder',
             },
           ],
+          options: [{}],
         },
       ],
+      valid: [],
     })
   })
 })

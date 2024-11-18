@@ -28,8 +28,6 @@ import { makeFixes } from '../utils/make-fixes'
 import { complete } from '../utils/complete'
 import { pairwise } from '../utils/pairwise'
 
-type MESSAGE_ID = 'unexpectedArrayIncludesOrder'
-
 export type Options = [
   Partial<{
     groupKind: 'literals-first' | 'spreads-first' | 'mixed'
@@ -48,59 +46,47 @@ interface SortArrayIncludesSortingNode
   groupKind: 'literal' | 'spread'
 }
 
+type MESSAGE_ID = 'unexpectedArrayIncludesOrder'
+
 export let defaultOptions: Required<Options[0]> = {
   groupKind: 'literals-first',
-  type: 'alphabetical',
-  ignoreCase: true,
   specialCharacters: 'keep',
-  order: 'asc',
   partitionByComment: false,
   partitionByNewLine: false,
+  type: 'alphabetical',
+  ignoreCase: true,
   locales: 'en-US',
+  order: 'asc',
 }
 
 export let jsonSchema: JSONSchema4 = {
-  type: 'object',
   properties: {
-    type: typeJsonSchema,
-    order: orderJsonSchema,
-    locales: localesJsonSchema,
-    ignoreCase: ignoreCaseJsonSchema,
-    specialCharacters: specialCharactersJsonSchema,
-    groupKind: {
-      description: 'Specifies top-level groups.',
-      enum: ['mixed', 'literals-first', 'spreads-first'],
-      type: 'string',
-    },
     partitionByComment: {
       ...partitionByCommentJsonSchema,
       description:
         'Allows you to use comments to separate the array members into logical groups.',
+    },
+    groupKind: {
+      enum: ['mixed', 'literals-first', 'spreads-first'],
+      description: 'Specifies top-level groups.',
+      type: 'string',
     },
     partitionByNewLine: {
       description:
         'Allows to use spaces to separate the nodes into logical groups.',
       type: 'boolean',
     },
+    specialCharacters: specialCharactersJsonSchema,
+    ignoreCase: ignoreCaseJsonSchema,
+    locales: localesJsonSchema,
+    order: orderJsonSchema,
+    type: typeJsonSchema,
   },
   additionalProperties: false,
+  type: 'object',
 }
 
 export default createEslintRule<Options, MESSAGE_ID>({
-  name: 'sort-array-includes',
-  meta: {
-    type: 'suggestion',
-    docs: {
-      description: 'Enforce sorted arrays before include method.',
-    },
-    fixable: 'code',
-    schema: [jsonSchema],
-    messages: {
-      unexpectedArrayIncludesOrder:
-        'Expected "{{right}}" to come before "{{left}}".',
-    },
-  },
-  defaultOptions: [defaultOptions],
   create: context => ({
     MemberExpression: node => {
       if (
@@ -117,6 +103,22 @@ export default createEslintRule<Options, MESSAGE_ID>({
       }
     },
   }),
+  meta: {
+    docs: {
+      description: 'Enforce sorted arrays before include method.',
+      url: 'https://perfectionist.dev/rules/sort-array-includes',
+      recommended: true,
+    },
+    messages: {
+      unexpectedArrayIncludesOrder:
+        'Expected "{{right}}" to come before "{{left}}".',
+    },
+    schema: [jsonSchema],
+    type: 'suggestion',
+    fixable: 'code',
+  },
+  defaultOptions: [defaultOptions],
+  name: 'sort-array-includes',
 })
 
 export let sortArray = <MessageIds extends string>(
@@ -132,8 +134,8 @@ export let sortArray = <MessageIds extends string>(
   let options = complete(context.options.at(0), settings, defaultOptions)
   let sourceCode = getSourceCode(context)
   let eslintDisabledLines = getEslintDisabledLines({
-    sourceCode,
     ruleName: context.id,
+    sourceCode,
   })
   let formattedMembers: SortArrayIncludesSortingNode[][] = elements.reduce(
     (
@@ -150,10 +152,10 @@ export let sortArray = <MessageIds extends string>(
           element.type === 'Literal'
             ? `${element.value}`
             : sourceCode.getText(element),
-        size: rangeToDiff(element, sourceCode),
-        node: element,
         isEslintDisabled: isNodeEslintDisabled(element, eslintDisabledLines),
         groupKind: element.type === 'SpreadElement' ? 'spread' : 'literal',
+        size: rangeToDiff(element, sourceCode),
+        node: element,
       }
       if (
         (options.partitionByComment &&
@@ -215,20 +217,20 @@ export let sortArray = <MessageIds extends string>(
       }
 
       context.report({
-        messageId,
-        data: {
-          left: toSingleLine(left.name),
-          right: toSingleLine(right.name),
-        },
-        node: right.node,
         fix: fixer =>
-          makeFixes(
-            fixer,
-            nodes,
-            sortedNodesExcludingEslintDisabled,
+          makeFixes({
+            sortedNodes: sortedNodesExcludingEslintDisabled,
             sourceCode,
             options,
-          ),
+            fixer,
+            nodes,
+          }),
+        data: {
+          right: toSingleLine(right.name),
+          left: toSingleLine(left.name),
+        },
+        node: right.node,
+        messageId,
       })
     })
   }

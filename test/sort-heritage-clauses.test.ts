@@ -26,6 +26,60 @@ describe(ruleName, () => {
     } as const
 
     ruleTester.run(`${ruleName}(${type}): sorts heritage clauses`, rule, {
+      invalid: [
+        {
+          errors: [
+            {
+              data: {
+                right: 'b',
+                left: 'c',
+              },
+              messageId: 'unexpectedHeritageClausesOrder',
+            },
+          ],
+          output: dedent`
+            interface Interface extends
+              a,
+              b,
+              c {
+            }
+          `,
+          code: dedent`
+            interface Interface extends
+              a,
+              c,
+              b {
+            }
+          `,
+          options: [options],
+        },
+        {
+          errors: [
+            {
+              data: {
+                right: 'b',
+                left: 'c',
+              },
+              messageId: 'unexpectedHeritageClausesOrder',
+            },
+          ],
+          output: dedent`
+            interface Interface extends
+              A.a,
+              B.b,
+              C.c {
+            }
+          `,
+          code: dedent`
+            interface Interface extends
+              A.a,
+              C.c,
+              B.b {
+            }
+          `,
+          options: [options],
+        },
+      ],
       valid: [
         {
           code: dedent`
@@ -46,82 +100,27 @@ describe(ruleName, () => {
           options: [options],
         },
       ],
-      invalid: [
-        {
-          code: dedent`
-            interface Interface extends
-              a,
-              c,
-              b {
-            }
-          `,
-          output: dedent`
-            interface Interface extends
-              a,
-              b,
-              c {
-            }
-          `,
-          options: [options],
-          errors: [
-            {
-              messageId: 'unexpectedHeritageClausesOrder',
-              data: {
-                left: 'c',
-                right: 'b',
-              },
-            },
-          ],
-        },
-        {
-          code: dedent`
-            interface Interface extends
-              A.a,
-              C.c,
-              B.b {
-            }
-          `,
-          output: dedent`
-            interface Interface extends
-              A.a,
-              B.b,
-              C.c {
-            }
-          `,
-          options: [options],
-          errors: [
-            {
-              messageId: 'unexpectedHeritageClausesOrder',
-              data: {
-                left: 'c',
-                right: 'b',
-              },
-            },
-          ],
-        },
-      ],
     })
 
     ruleTester.run(`${ruleName}(${type}): does not break docs`, rule, {
-      valid: [],
       invalid: [
         {
-          code: dedent`
-              interface Interface extends
-                /**
-                 * Comment B
-                 */
-                b,
-                /**
-                 * Comment A
-                 */
-                a,
-                // Comment D
-                d,
-                /* Comment C */
-                c {
-              }
-            `,
+          errors: [
+            {
+              data: {
+                right: 'a',
+                left: 'b',
+              },
+              messageId: 'unexpectedHeritageClausesOrder',
+            },
+            {
+              data: {
+                right: 'c',
+                left: 'd',
+              },
+              messageId: 'unexpectedHeritageClausesOrder',
+            },
+          ],
           output: dedent`
               interface Interface extends
                 /**
@@ -138,41 +137,43 @@ describe(ruleName, () => {
                 d {
               }
             `,
+          code: dedent`
+              interface Interface extends
+                /**
+                 * Comment B
+                 */
+                b,
+                /**
+                 * Comment A
+                 */
+                a,
+                // Comment D
+                d,
+                /* Comment C */
+                c {
+              }
+            `,
           options: [options],
-          errors: [
-            {
-              messageId: 'unexpectedHeritageClausesOrder',
-              data: {
-                left: 'b',
-                right: 'a',
-              },
-            },
-            {
-              messageId: 'unexpectedHeritageClausesOrder',
-              data: {
-                left: 'd',
-                right: 'c',
-              },
-            },
-          ],
         },
       ],
+      valid: [],
     })
 
     ruleTester.run(
       `${ruleName}(${type}): sorts heritage clauses with comments on the same line`,
       rule,
       {
-        valid: [],
         invalid: [
           {
-            code: dedent`
-              interface Interface extends
-                b // Comment B
-                , a // Comment A
-                {
-              }
-            `,
+            errors: [
+              {
+                data: {
+                  right: 'a',
+                  left: 'b',
+                },
+                messageId: 'unexpectedHeritageClausesOrder',
+              },
+            ],
             output: dedent`
               interface Interface extends
                 a // Comment A
@@ -180,18 +181,17 @@ describe(ruleName, () => {
                 {
               }
             `,
+            code: dedent`
+              interface Interface extends
+                b // Comment B
+                , a // Comment A
+                {
+              }
+            `,
             options: [options],
-            errors: [
-              {
-                messageId: 'unexpectedHeritageClausesOrder',
-                data: {
-                  left: 'b',
-                  right: 'a',
-                },
-              },
-            ],
           },
         ],
+        valid: [],
       },
     )
 
@@ -199,59 +199,59 @@ describe(ruleName, () => {
       `${ruleName}(${type}): allows to set groups for sorting`,
       rule,
       {
-        valid: [
+        invalid: [
           {
-            code: dedent`
-              interface Interface extends
-                g,
-                a {
-              }
-            `,
+            errors: [
+              {
+                data: {
+                  leftGroup: 'unknown',
+                  rightGroup: 'g',
+                  right: 'g',
+                  left: 'a',
+                },
+                messageId: 'unexpectedHeritageClausesGroupOrder',
+              },
+            ],
             options: [
               {
                 ...options,
-                groups: ['g'],
                 customGroups: {
                   g: 'g',
                 },
+                groups: ['g'],
               },
             ],
-          },
-        ],
-        invalid: [
-          {
-            code: dedent`
-              interface Interface extends
-                a,
-                g {
-              }
-            `,
             output: dedent`
               interface Interface extends
                 g,
                 a {
               }
             `,
+            code: dedent`
+              interface Interface extends
+                a,
+                g {
+              }
+            `,
+          },
+        ],
+        valid: [
+          {
             options: [
               {
                 ...options,
-                groups: ['g'],
                 customGroups: {
                   g: 'g',
                 },
+                groups: ['g'],
               },
             ],
-            errors: [
-              {
-                messageId: 'unexpectedHeritageClausesGroupOrder',
-                data: {
-                  left: 'a',
-                  leftGroup: 'unknown',
-                  right: 'g',
-                  rightGroup: 'g',
-                },
-              },
-            ],
+            code: dedent`
+              interface Interface extends
+                g,
+                a {
+              }
+            `,
           },
         ],
       },
@@ -263,6 +263,15 @@ describe(ruleName, () => {
       {
         valid: [
           {
+            options: [
+              {
+                ...options,
+                customGroups: {
+                  elementsWithoutFoo: '^(?!.*Foo).*$',
+                },
+                groups: ['unknown', 'elementsWithoutFoo'],
+              },
+            ],
             code: dedent`
               interface Interface extends
                   iHaveFooInMyName,
@@ -271,15 +280,6 @@ describe(ruleName, () => {
                   b {
               }
             `,
-            options: [
-              {
-                ...options,
-                groups: ['unknown', 'elementsWithoutFoo'],
-                customGroups: {
-                  elementsWithoutFoo: '^(?!.*Foo).*$',
-                },
-              },
-            ],
           },
         ],
         invalid: [],
@@ -317,18 +317,18 @@ describe(ruleName, () => {
       {
         valid: [
           {
-            code: dedent`
-              interface MyInterface extends
-                ab,
-                a_c {
-              }
-            `,
             options: [
               {
                 ...options,
                 specialCharacters: 'remove',
               },
             ],
+            code: dedent`
+              interface MyInterface extends
+                ab,
+                a_c {
+              }
+            `,
           },
         ],
         invalid: [],
@@ -358,53 +358,53 @@ describe(ruleName, () => {
       `${ruleName}(${type}): sorts inline elements correctly`,
       rule,
       {
-        valid: [],
         invalid: [
           {
-            code: dedent`
-              interface Interface extends
-                B, A
-              {}
-            `,
+            errors: [
+              {
+                data: {
+                  right: 'A',
+                  left: 'B',
+                },
+                messageId: 'unexpectedHeritageClausesOrder',
+              },
+            ],
             output: dedent`
               interface Interface extends
                 A, B
               {}
             `,
+            code: dedent`
+              interface Interface extends
+                B, A
+              {}
+            `,
             options: [options],
-            errors: [
-              {
-                messageId: 'unexpectedHeritageClausesOrder',
-                data: {
-                  left: 'B',
-                  right: 'A',
-                },
-              },
-            ],
           },
           {
-            code: dedent`
-              class Class implements
-                B, A
-              {}
-            `,
+            errors: [
+              {
+                data: {
+                  right: 'A',
+                  left: 'B',
+                },
+                messageId: 'unexpectedHeritageClausesOrder',
+              },
+            ],
             output: dedent`
               class Class implements
                 A, B
               {}
             `,
+            code: dedent`
+              class Class implements
+                B, A
+              {}
+            `,
             options: [options],
-            errors: [
-              {
-                messageId: 'unexpectedHeritageClausesOrder',
-                data: {
-                  left: 'B',
-                  right: 'A',
-                },
-              },
-            ],
           },
         ],
+        valid: [],
       },
     )
   })
@@ -413,12 +413,40 @@ describe(ruleName, () => {
     let type = 'natural-order'
 
     let options = {
-      type: 'natural',
       ignoreCase: true,
+      type: 'natural',
       order: 'asc',
     } as const
 
     ruleTester.run(`${ruleName}(${type}): sorts heritage clauses`, rule, {
+      invalid: [
+        {
+          errors: [
+            {
+              data: {
+                right: 'b',
+                left: 'c',
+              },
+              messageId: 'unexpectedHeritageClausesOrder',
+            },
+          ],
+          output: dedent`
+            interface Interface extends
+              a,
+              b,
+              c {
+            }
+          `,
+          code: dedent`
+            interface Interface extends
+              a,
+              c,
+              b {
+            }
+          `,
+          options: [options],
+        },
+      ],
       valid: [
         {
           code: dedent`
@@ -431,56 +459,27 @@ describe(ruleName, () => {
           options: [options],
         },
       ],
-      invalid: [
-        {
-          code: dedent`
-            interface Interface extends
-              a,
-              c,
-              b {
-            }
-          `,
-          output: dedent`
-            interface Interface extends
-              a,
-              b,
-              c {
-            }
-          `,
-          options: [options],
-          errors: [
-            {
-              messageId: 'unexpectedHeritageClausesOrder',
-              data: {
-                left: 'c',
-                right: 'b',
-              },
-            },
-          ],
-        },
-      ],
     })
 
     ruleTester.run(`${ruleName}(${type}): does not break docs`, rule, {
-      valid: [],
       invalid: [
         {
-          code: dedent`
-              interface Interface extends
-                /**
-                 * Comment B
-                 */
-                b,
-                /**
-                 * Comment A
-                 */
-                a,
-                // Comment D
-                d,
-                /* Comment C */
-                c {
-              }
-            `,
+          errors: [
+            {
+              data: {
+                right: 'a',
+                left: 'b',
+              },
+              messageId: 'unexpectedHeritageClausesOrder',
+            },
+            {
+              data: {
+                right: 'c',
+                left: 'd',
+              },
+              messageId: 'unexpectedHeritageClausesOrder',
+            },
+          ],
           output: dedent`
               interface Interface extends
                 /**
@@ -497,41 +496,43 @@ describe(ruleName, () => {
                 d {
               }
             `,
+          code: dedent`
+              interface Interface extends
+                /**
+                 * Comment B
+                 */
+                b,
+                /**
+                 * Comment A
+                 */
+                a,
+                // Comment D
+                d,
+                /* Comment C */
+                c {
+              }
+            `,
           options: [options],
-          errors: [
-            {
-              messageId: 'unexpectedHeritageClausesOrder',
-              data: {
-                left: 'b',
-                right: 'a',
-              },
-            },
-            {
-              messageId: 'unexpectedHeritageClausesOrder',
-              data: {
-                left: 'd',
-                right: 'c',
-              },
-            },
-          ],
         },
       ],
+      valid: [],
     })
 
     ruleTester.run(
       `${ruleName}(${type}): sorts heritage clauses with comments on the same line`,
       rule,
       {
-        valid: [],
         invalid: [
           {
-            code: dedent`
-              interface Interface extends
-                b // Comment B
-                , a // Comment A
-                {
-              }
-            `,
+            errors: [
+              {
+                data: {
+                  right: 'a',
+                  left: 'b',
+                },
+                messageId: 'unexpectedHeritageClausesOrder',
+              },
+            ],
             output: dedent`
               interface Interface extends
                 a // Comment A
@@ -539,18 +540,17 @@ describe(ruleName, () => {
                 {
               }
             `,
+            code: dedent`
+              interface Interface extends
+                b // Comment B
+                , a // Comment A
+                {
+              }
+            `,
             options: [options],
-            errors: [
-              {
-                messageId: 'unexpectedHeritageClausesOrder',
-                data: {
-                  left: 'b',
-                  right: 'a',
-                },
-              },
-            ],
           },
         ],
+        valid: [],
       },
     )
 
@@ -558,59 +558,59 @@ describe(ruleName, () => {
       `${ruleName}(${type}): allows to set groups for sorting`,
       rule,
       {
-        valid: [
+        invalid: [
           {
-            code: dedent`
-              interface Interface extends
-                g,
-                a {
-              }
-            `,
+            errors: [
+              {
+                data: {
+                  leftGroup: 'unknown',
+                  rightGroup: 'g',
+                  right: 'g',
+                  left: 'a',
+                },
+                messageId: 'unexpectedHeritageClausesGroupOrder',
+              },
+            ],
             options: [
               {
                 ...options,
-                groups: ['g'],
                 customGroups: {
                   g: 'g',
                 },
+                groups: ['g'],
               },
             ],
-          },
-        ],
-        invalid: [
-          {
-            code: dedent`
-              interface Interface extends
-                a,
-                g {
-              }
-            `,
             output: dedent`
               interface Interface extends
                 g,
                 a {
               }
             `,
+            code: dedent`
+              interface Interface extends
+                a,
+                g {
+              }
+            `,
+          },
+        ],
+        valid: [
+          {
             options: [
               {
                 ...options,
-                groups: ['g'],
                 customGroups: {
                   g: 'g',
                 },
+                groups: ['g'],
               },
             ],
-            errors: [
-              {
-                messageId: 'unexpectedHeritageClausesGroupOrder',
-                data: {
-                  left: 'a',
-                  leftGroup: 'unknown',
-                  right: 'g',
-                  rightGroup: 'g',
-                },
-              },
-            ],
+            code: dedent`
+              interface Interface extends
+                g,
+                a {
+              }
+            `,
           },
         ],
       },
@@ -622,6 +622,15 @@ describe(ruleName, () => {
       {
         valid: [
           {
+            options: [
+              {
+                ...options,
+                customGroups: {
+                  elementsWithoutFoo: '^(?!.*Foo).*$',
+                },
+                groups: ['unknown', 'elementsWithoutFoo'],
+              },
+            ],
             code: dedent`
               interface Interface extends
                   iHaveFooInMyName,
@@ -630,15 +639,6 @@ describe(ruleName, () => {
                   b {
               }
             `,
-            options: [
-              {
-                ...options,
-                groups: ['unknown', 'elementsWithoutFoo'],
-                customGroups: {
-                  elementsWithoutFoo: '^(?!.*Foo).*$',
-                },
-              },
-            ],
           },
         ],
         invalid: [],
@@ -676,18 +676,18 @@ describe(ruleName, () => {
       {
         valid: [
           {
-            code: dedent`
-              interface MyInterface extends
-                ab,
-                a_c {
-              }
-            `,
             options: [
               {
                 ...options,
                 specialCharacters: 'remove',
               },
             ],
+            code: dedent`
+              interface MyInterface extends
+                ab,
+                a_c {
+              }
+            `,
           },
         ],
         invalid: [],
@@ -705,6 +705,60 @@ describe(ruleName, () => {
     } as const
 
     ruleTester.run(`${ruleName}(${type}): sorts heritage clauses`, rule, {
+      invalid: [
+        {
+          errors: [
+            {
+              data: {
+                right: 'bb',
+                left: 'c',
+              },
+              messageId: 'unexpectedHeritageClausesOrder',
+            },
+          ],
+          output: dedent`
+            interface Interface extends
+              aaa,
+              bb,
+              c {
+            }
+          `,
+          code: dedent`
+            interface Interface extends
+              aaa,
+              c,
+              bb {
+            }
+          `,
+          options: [options],
+        },
+        {
+          errors: [
+            {
+              data: {
+                right: 'bb',
+                left: 'c',
+              },
+              messageId: 'unexpectedHeritageClausesOrder',
+            },
+          ],
+          output: dedent`
+            class Class implements
+              aaa,
+              bb,
+              c {
+            }
+          `,
+          code: dedent`
+            class Class implements
+              aaa,
+              c,
+              bb {
+            }
+          `,
+          options: [options],
+        },
+      ],
       valid: [
         {
           code: dedent`
@@ -727,82 +781,27 @@ describe(ruleName, () => {
           options: [options],
         },
       ],
-      invalid: [
-        {
-          code: dedent`
-            interface Interface extends
-              aaa,
-              c,
-              bb {
-            }
-          `,
-          output: dedent`
-            interface Interface extends
-              aaa,
-              bb,
-              c {
-            }
-          `,
-          options: [options],
-          errors: [
-            {
-              messageId: 'unexpectedHeritageClausesOrder',
-              data: {
-                left: 'c',
-                right: 'bb',
-              },
-            },
-          ],
-        },
-        {
-          code: dedent`
-            class Class implements
-              aaa,
-              c,
-              bb {
-            }
-          `,
-          output: dedent`
-            class Class implements
-              aaa,
-              bb,
-              c {
-            }
-          `,
-          options: [options],
-          errors: [
-            {
-              messageId: 'unexpectedHeritageClausesOrder',
-              data: {
-                left: 'c',
-                right: 'bb',
-              },
-            },
-          ],
-        },
-      ],
     })
 
     ruleTester.run(`${ruleName}(${type}): does not break docs`, rule, {
-      valid: [],
       invalid: [
         {
-          code: dedent`
-              interface Interface extends
-                /**
-                 * Comment B
-                 */
-                bbb,
-                /**
-                 * Comment A
-                 */
-                aaaa,
-                // Comment D
-                d,
-                /* Comment C */
-                cc {
-              }
-            `,
+          errors: [
+            {
+              data: {
+                right: 'aaaa',
+                left: 'bbb',
+              },
+              messageId: 'unexpectedHeritageClausesOrder',
+            },
+            {
+              data: {
+                right: 'cc',
+                left: 'd',
+              },
+              messageId: 'unexpectedHeritageClausesOrder',
+            },
+          ],
           output: dedent`
               interface Interface extends
                 /**
@@ -819,41 +818,43 @@ describe(ruleName, () => {
                 d {
               }
             `,
+          code: dedent`
+              interface Interface extends
+                /**
+                 * Comment B
+                 */
+                bbb,
+                /**
+                 * Comment A
+                 */
+                aaaa,
+                // Comment D
+                d,
+                /* Comment C */
+                cc {
+              }
+            `,
           options: [options],
-          errors: [
-            {
-              messageId: 'unexpectedHeritageClausesOrder',
-              data: {
-                left: 'bbb',
-                right: 'aaaa',
-              },
-            },
-            {
-              messageId: 'unexpectedHeritageClausesOrder',
-              data: {
-                left: 'd',
-                right: 'cc',
-              },
-            },
-          ],
         },
       ],
+      valid: [],
     })
 
     ruleTester.run(
       `${ruleName}(${type}): sorts heritage clauses with comments on the same line`,
       rule,
       {
-        valid: [],
         invalid: [
           {
-            code: dedent`
-              interface Interface extends
-                b // Comment B
-                , aa // Comment A
-                {
-              }
-            `,
+            errors: [
+              {
+                data: {
+                  right: 'aa',
+                  left: 'b',
+                },
+                messageId: 'unexpectedHeritageClausesOrder',
+              },
+            ],
             output: dedent`
               interface Interface extends
                 aa // Comment A
@@ -861,18 +862,17 @@ describe(ruleName, () => {
                 {
               }
             `,
+            code: dedent`
+              interface Interface extends
+                b // Comment B
+                , aa // Comment A
+                {
+              }
+            `,
             options: [options],
-            errors: [
-              {
-                messageId: 'unexpectedHeritageClausesOrder',
-                data: {
-                  left: 'b',
-                  right: 'aa',
-                },
-              },
-            ],
           },
         ],
+        valid: [],
       },
     )
 
@@ -880,59 +880,59 @@ describe(ruleName, () => {
       `${ruleName}(${type}): allows to set groups for sorting`,
       rule,
       {
-        valid: [
+        invalid: [
           {
-            code: dedent`
-              interface Interface extends
-                g,
-                aa {
-              }
-            `,
+            errors: [
+              {
+                data: {
+                  leftGroup: 'unknown',
+                  rightGroup: 'g',
+                  left: 'aa',
+                  right: 'g',
+                },
+                messageId: 'unexpectedHeritageClausesGroupOrder',
+              },
+            ],
             options: [
               {
                 ...options,
-                groups: ['g'],
                 customGroups: {
                   g: 'g',
                 },
+                groups: ['g'],
               },
             ],
-          },
-        ],
-        invalid: [
-          {
-            code: dedent`
-              interface Interface extends
-                aa,
-                g {
-              }
-            `,
             output: dedent`
               interface Interface extends
                 g,
                 aa {
               }
             `,
+            code: dedent`
+              interface Interface extends
+                aa,
+                g {
+              }
+            `,
+          },
+        ],
+        valid: [
+          {
             options: [
               {
                 ...options,
-                groups: ['g'],
                 customGroups: {
                   g: 'g',
                 },
+                groups: ['g'],
               },
             ],
-            errors: [
-              {
-                messageId: 'unexpectedHeritageClausesGroupOrder',
-                data: {
-                  left: 'aa',
-                  leftGroup: 'unknown',
-                  right: 'g',
-                  rightGroup: 'g',
-                },
-              },
-            ],
+            code: dedent`
+              interface Interface extends
+                g,
+                aa {
+              }
+            `,
           },
         ],
       },
@@ -944,6 +944,15 @@ describe(ruleName, () => {
       {
         valid: [
           {
+            options: [
+              {
+                ...options,
+                customGroups: {
+                  elementsWithoutFoo: '^(?!.*Foo).*$',
+                },
+                groups: ['unknown', 'elementsWithoutFoo'],
+              },
+            ],
             code: dedent`
               interface Interface extends
                   iHaveFooInMyName,
@@ -952,15 +961,6 @@ describe(ruleName, () => {
                   b {
               }
             `,
-            options: [
-              {
-                ...options,
-                groups: ['unknown', 'elementsWithoutFoo'],
-                customGroups: {
-                  elementsWithoutFoo: '^(?!.*Foo).*$',
-                },
-              },
-            ],
           },
         ],
         invalid: [],
@@ -1022,6 +1022,31 @@ describe(ruleName, () => {
       `${ruleName}: sets alphabetical asc sorting as default`,
       rule,
       {
+        invalid: [
+          {
+            errors: [
+              {
+                data: {
+                  right: 'a',
+                  left: 'b',
+                },
+                messageId: 'unexpectedHeritageClausesOrder',
+              },
+            ],
+            output: dedent`
+              interface Interface extends
+                a,
+                b {
+              }
+            `,
+            code: dedent`
+              interface Interface extends
+                b,
+                a {
+              }
+            `,
+          },
+        ],
         valid: [
           dedent`
             interface Interface extends
@@ -1030,47 +1055,22 @@ describe(ruleName, () => {
             }
           `,
         ],
-        invalid: [
-          {
-            code: dedent`
-              interface Interface extends
-                b,
-                a {
-              }
-            `,
-            output: dedent`
-              interface Interface extends
-                a,
-                b {
-              }
-            `,
-            errors: [
-              {
-                messageId: 'unexpectedHeritageClausesOrder',
-                data: {
-                  left: 'b',
-                  right: 'a',
-                },
-              },
-            ],
-          },
-        ],
       },
     )
 
     let eslintDisableRuleTesterName = `${ruleName}: supports 'eslint-disable' for individual nodes`
     ruleTester.run(eslintDisableRuleTesterName, rule, {
-      valid: [],
       invalid: [
         {
-          code: dedent`
-            interface Interface extends
-              C,
-              B,
-              // eslint-disable-next-line
-              A
-            {}
-          `,
+          errors: [
+            {
+              data: {
+                right: 'B',
+                left: 'C',
+              },
+              messageId: 'unexpectedHeritageClausesOrder',
+            },
+          ],
           output: dedent`
             interface Interface extends
               B,
@@ -1079,27 +1079,33 @@ describe(ruleName, () => {
               A
             {}
           `,
-          options: [{}],
-          errors: [
-            {
-              messageId: 'unexpectedHeritageClausesOrder',
-              data: {
-                left: 'C',
-                right: 'B',
-              },
-            },
-          ],
-        },
-        {
           code: dedent`
             interface Interface extends
-              D,
               C,
+              B,
               // eslint-disable-next-line
-              A,
-              B
+              A
             {}
           `,
+          options: [{}],
+        },
+        {
+          errors: [
+            {
+              data: {
+                right: 'C',
+                left: 'D',
+              },
+              messageId: 'unexpectedHeritageClausesOrder',
+            },
+            {
+              data: {
+                right: 'B',
+                left: 'A',
+              },
+              messageId: 'unexpectedHeritageClausesOrder',
+            },
+          ],
           output: dedent`
             interface Interface extends
               B,
@@ -1109,293 +1115,287 @@ describe(ruleName, () => {
               D
             {}
           `,
-          options: [{}],
-          errors: [
-            {
-              messageId: 'unexpectedHeritageClausesOrder',
-              data: {
-                left: 'D',
-                right: 'C',
-              },
-            },
-            {
-              messageId: 'unexpectedHeritageClausesOrder',
-              data: {
-                left: 'A',
-                right: 'B',
-              },
-            },
-          ],
-        },
-        {
-          code: dedent`
-            interface Interface extends
-              C,
-              B,
-              A // eslint-disable-line
-            {}
-          `,
-          output: dedent`
-            interface Interface extends
-              B,
-              C,
-              A // eslint-disable-line
-            {}
-          `,
-          options: [{}],
-          errors: [
-            {
-              messageId: 'unexpectedHeritageClausesOrder',
-              data: {
-                left: 'C',
-                right: 'B',
-              },
-            },
-          ],
-        },
-        {
-          code: dedent`
-            interface Interface extends
-              C,
-              B,
-              /* eslint-disable-next-line */
-              A
-            {}
-          `,
-          output: dedent`
-            interface Interface extends
-              B,
-              C,
-              /* eslint-disable-next-line */
-              A
-            {}
-          `,
-          options: [{}],
-          errors: [
-            {
-              messageId: 'unexpectedHeritageClausesOrder',
-              data: {
-                left: 'C',
-                right: 'B',
-              },
-            },
-          ],
-        },
-        {
-          code: dedent`
-            interface Interface extends
-              C,
-              B,
-              A /* eslint-disable-line */
-            {}
-          `,
-          output: dedent`
-            interface Interface extends
-              B,
-              C,
-              A /* eslint-disable-line */
-            {}
-          `,
-          options: [{}],
-          errors: [
-            {
-              messageId: 'unexpectedHeritageClausesOrder',
-              data: {
-                left: 'C',
-                right: 'B',
-              },
-            },
-          ],
-        },
-        {
           code: dedent`
             interface Interface extends
               D,
-              E,
-              /* eslint-disable */
               C,
-              B,
-              // Shouldn't move
-              /* eslint-enable */
-              A
-            {}
-          `,
-          output: dedent`
-            interface Interface extends
-              A,
-              D,
-              /* eslint-disable */
-              C,
-              B,
-              // Shouldn't move
-              /* eslint-enable */
-              E
-            {}
-          `,
-          options: [{}],
-          errors: [
-            {
-              messageId: 'unexpectedHeritageClausesOrder',
-              data: {
-                left: 'B',
-                right: 'A',
-              },
-            },
-          ],
-        },
-        {
-          code: dedent`
-            interface Interface extends
-              C,
-              B,
-              // eslint-disable-next-line @rule-tester/${eslintDisableRuleTesterName}
-              A
-            {}
-          `,
-          output: dedent`
-            interface Interface extends
-              B,
-              C,
-              // eslint-disable-next-line @rule-tester/${eslintDisableRuleTesterName}
-              A
-            {}
-          `,
-          options: [{}],
-          errors: [
-            {
-              messageId: 'unexpectedHeritageClausesOrder',
-              data: {
-                left: 'C',
-                right: 'B',
-              },
-            },
-          ],
-        },
-        {
-          code: dedent`
-            interface Interface extends
-              C,
-              B,
-              A // eslint-disable-line @rule-tester/${eslintDisableRuleTesterName}
-            {}
-          `,
-          output: dedent`
-            interface Interface extends
-              B,
-              C,
-              A // eslint-disable-line @rule-tester/${eslintDisableRuleTesterName}
-            {}
-          `,
-          options: [{}],
-          errors: [
-            {
-              messageId: 'unexpectedHeritageClausesOrder',
-              data: {
-                left: 'C',
-                right: 'B',
-              },
-            },
-          ],
-        },
-        {
-          code: dedent`
-            interface Interface extends
-              C,
-              B,
-              /* eslint-disable-next-line @rule-tester/${eslintDisableRuleTesterName} */
-              A
-            {}
-          `,
-          output: dedent`
-            interface Interface extends
-              B,
-              C,
-              /* eslint-disable-next-line @rule-tester/${eslintDisableRuleTesterName} */
-              A
-            {}
-          `,
-          options: [{}],
-          errors: [
-            {
-              messageId: 'unexpectedHeritageClausesOrder',
-              data: {
-                left: 'C',
-                right: 'B',
-              },
-            },
-          ],
-        },
-        {
-          code: dedent`
-            interface Interface extends
-              C,
-              B,
-              A /* eslint-disable-line @rule-tester/${eslintDisableRuleTesterName} */
-            {}
-          `,
-          output: dedent`
-            interface Interface extends
-              B,
-              C,
-              A /* eslint-disable-line @rule-tester/${eslintDisableRuleTesterName} */
-            {}
-          `,
-          options: [{}],
-          errors: [
-            {
-              messageId: 'unexpectedHeritageClausesOrder',
-              data: {
-                left: 'C',
-                right: 'B',
-              },
-            },
-          ],
-        },
-        {
-          code: dedent`
-            interface Interface extends
-              D,
-              E,
-              /* eslint-disable @rule-tester/${eslintDisableRuleTesterName} */
-              C,
-              B,
-              // Shouldn't move
-              /* eslint-enable */
-              A
-            {}
-          `,
-          output: dedent`
-            interface Interface extends
-              A,
-              D,
-              /* eslint-disable @rule-tester/${eslintDisableRuleTesterName} */
-              C,
-              B,
-              // Shouldn't move
-              /* eslint-enable */
-              E
-            {}
-          `,
-          options: [{}],
-          errors: [
-            {
-              messageId: 'unexpectedHeritageClausesOrder',
-              data: {
-                left: 'B',
-                right: 'A',
-              },
-            },
-          ],
-        },
-        {
-          code: dedent`
-            class Class implements
-              C,
-              B,
               // eslint-disable-next-line
+              A,
+              B
+            {}
+          `,
+          options: [{}],
+        },
+        {
+          errors: [
+            {
+              data: {
+                right: 'B',
+                left: 'C',
+              },
+              messageId: 'unexpectedHeritageClausesOrder',
+            },
+          ],
+          output: dedent`
+            interface Interface extends
+              B,
+              C,
+              A // eslint-disable-line
+            {}
+          `,
+          code: dedent`
+            interface Interface extends
+              C,
+              B,
+              A // eslint-disable-line
+            {}
+          `,
+          options: [{}],
+        },
+        {
+          errors: [
+            {
+              data: {
+                right: 'B',
+                left: 'C',
+              },
+              messageId: 'unexpectedHeritageClausesOrder',
+            },
+          ],
+          output: dedent`
+            interface Interface extends
+              B,
+              C,
+              /* eslint-disable-next-line */
               A
             {}
           `,
+          code: dedent`
+            interface Interface extends
+              C,
+              B,
+              /* eslint-disable-next-line */
+              A
+            {}
+          `,
+          options: [{}],
+        },
+        {
+          errors: [
+            {
+              data: {
+                right: 'B',
+                left: 'C',
+              },
+              messageId: 'unexpectedHeritageClausesOrder',
+            },
+          ],
+          output: dedent`
+            interface Interface extends
+              B,
+              C,
+              A /* eslint-disable-line */
+            {}
+          `,
+          code: dedent`
+            interface Interface extends
+              C,
+              B,
+              A /* eslint-disable-line */
+            {}
+          `,
+          options: [{}],
+        },
+        {
+          output: dedent`
+            interface Interface extends
+              A,
+              D,
+              /* eslint-disable */
+              C,
+              B,
+              // Shouldn't move
+              /* eslint-enable */
+              E
+            {}
+          `,
+          code: dedent`
+            interface Interface extends
+              D,
+              E,
+              /* eslint-disable */
+              C,
+              B,
+              // Shouldn't move
+              /* eslint-enable */
+              A
+            {}
+          `,
+          errors: [
+            {
+              data: {
+                right: 'A',
+                left: 'B',
+              },
+              messageId: 'unexpectedHeritageClausesOrder',
+            },
+          ],
+          options: [{}],
+        },
+        {
+          output: dedent`
+            interface Interface extends
+              B,
+              C,
+              // eslint-disable-next-line @rule-tester/${eslintDisableRuleTesterName}
+              A
+            {}
+          `,
+          code: dedent`
+            interface Interface extends
+              C,
+              B,
+              // eslint-disable-next-line @rule-tester/${eslintDisableRuleTesterName}
+              A
+            {}
+          `,
+          errors: [
+            {
+              data: {
+                right: 'B',
+                left: 'C',
+              },
+              messageId: 'unexpectedHeritageClausesOrder',
+            },
+          ],
+          options: [{}],
+        },
+        {
+          errors: [
+            {
+              data: {
+                right: 'B',
+                left: 'C',
+              },
+              messageId: 'unexpectedHeritageClausesOrder',
+            },
+          ],
+          output: dedent`
+            interface Interface extends
+              B,
+              C,
+              A // eslint-disable-line @rule-tester/${eslintDisableRuleTesterName}
+            {}
+          `,
+          code: dedent`
+            interface Interface extends
+              C,
+              B,
+              A // eslint-disable-line @rule-tester/${eslintDisableRuleTesterName}
+            {}
+          `,
+          options: [{}],
+        },
+        {
+          output: dedent`
+            interface Interface extends
+              B,
+              C,
+              /* eslint-disable-next-line @rule-tester/${eslintDisableRuleTesterName} */
+              A
+            {}
+          `,
+          code: dedent`
+            interface Interface extends
+              C,
+              B,
+              /* eslint-disable-next-line @rule-tester/${eslintDisableRuleTesterName} */
+              A
+            {}
+          `,
+          errors: [
+            {
+              data: {
+                right: 'B',
+                left: 'C',
+              },
+              messageId: 'unexpectedHeritageClausesOrder',
+            },
+          ],
+          options: [{}],
+        },
+        {
+          errors: [
+            {
+              data: {
+                right: 'B',
+                left: 'C',
+              },
+              messageId: 'unexpectedHeritageClausesOrder',
+            },
+          ],
+          output: dedent`
+            interface Interface extends
+              B,
+              C,
+              A /* eslint-disable-line @rule-tester/${eslintDisableRuleTesterName} */
+            {}
+          `,
+          code: dedent`
+            interface Interface extends
+              C,
+              B,
+              A /* eslint-disable-line @rule-tester/${eslintDisableRuleTesterName} */
+            {}
+          `,
+          options: [{}],
+        },
+        {
+          output: dedent`
+            interface Interface extends
+              A,
+              D,
+              /* eslint-disable @rule-tester/${eslintDisableRuleTesterName} */
+              C,
+              B,
+              // Shouldn't move
+              /* eslint-enable */
+              E
+            {}
+          `,
+          code: dedent`
+            interface Interface extends
+              D,
+              E,
+              /* eslint-disable @rule-tester/${eslintDisableRuleTesterName} */
+              C,
+              B,
+              // Shouldn't move
+              /* eslint-enable */
+              A
+            {}
+          `,
+          errors: [
+            {
+              data: {
+                right: 'A',
+                left: 'B',
+              },
+              messageId: 'unexpectedHeritageClausesOrder',
+            },
+          ],
+          options: [{}],
+        },
+        {
+          errors: [
+            {
+              data: {
+                right: 'B',
+                left: 'C',
+              },
+              messageId: 'unexpectedHeritageClausesOrder',
+            },
+          ],
           output: dedent`
             class Class implements
               B,
@@ -1404,25 +1404,26 @@ describe(ruleName, () => {
               A
             {}
           `,
-          options: [{}],
-          errors: [
-            {
-              messageId: 'unexpectedHeritageClausesOrder',
-              data: {
-                left: 'C',
-                right: 'B',
-              },
-            },
-          ],
-        },
-        {
           code: dedent`
             class Class implements
               C,
               B,
-              A // eslint-disable-line
+              // eslint-disable-next-line
+              A
             {}
           `,
+          options: [{}],
+        },
+        {
+          errors: [
+            {
+              data: {
+                right: 'B',
+                left: 'C',
+              },
+              messageId: 'unexpectedHeritageClausesOrder',
+            },
+          ],
           output: dedent`
             class Class implements
               B,
@@ -1430,18 +1431,33 @@ describe(ruleName, () => {
               A // eslint-disable-line
             {}
           `,
+          code: dedent`
+            class Class implements
+              C,
+              B,
+              A // eslint-disable-line
+            {}
+          `,
           options: [{}],
-          errors: [
-            {
-              messageId: 'unexpectedHeritageClausesOrder',
-              data: {
-                left: 'C',
-                right: 'B',
-              },
-            },
-          ],
         },
         {
+          errors: [
+            {
+              data: {
+                right: 'B',
+                left: 'C',
+              },
+              messageId: 'unexpectedHeritageClausesOrder',
+            },
+          ],
+          output: dedent`
+            class Class implements
+              B,
+              C,
+              /* eslint-disable-next-line */
+              A
+            {}
+          `,
           code: dedent`
             class Class implements
               C,
@@ -1450,33 +1466,18 @@ describe(ruleName, () => {
               A
             {}
           `,
-          output: dedent`
-            class Class implements
-              B,
-              C,
-              /* eslint-disable-next-line */
-              A
-            {}
-          `,
           options: [{}],
-          errors: [
-            {
-              messageId: 'unexpectedHeritageClausesOrder',
-              data: {
-                left: 'C',
-                right: 'B',
-              },
-            },
-          ],
         },
         {
-          code: dedent`
-            class Class implements
-              C,
-              B,
-              A /* eslint-disable-line */
-            {}
-          `,
+          errors: [
+            {
+              data: {
+                right: 'B',
+                left: 'C',
+              },
+              messageId: 'unexpectedHeritageClausesOrder',
+            },
+          ],
           output: dedent`
             class Class implements
               B,
@@ -1484,30 +1485,16 @@ describe(ruleName, () => {
               A /* eslint-disable-line */
             {}
           `,
-          options: [{}],
-          errors: [
-            {
-              messageId: 'unexpectedHeritageClausesOrder',
-              data: {
-                left: 'C',
-                right: 'B',
-              },
-            },
-          ],
-        },
-        {
           code: dedent`
             class Class implements
-              D,
-              E,
-              /* eslint-disable */
               C,
               B,
-              // Shouldn't move
-              /* eslint-enable */
-              A
+              A /* eslint-disable-line */
             {}
           `,
+          options: [{}],
+        },
+        {
           output: dedent`
             class Class implements
               A,
@@ -1520,131 +1507,11 @@ describe(ruleName, () => {
               E
             {}
           `,
-          options: [{}],
-          errors: [
-            {
-              messageId: 'unexpectedHeritageClausesOrder',
-              data: {
-                left: 'B',
-                right: 'A',
-              },
-            },
-          ],
-        },
-        {
-          code: dedent`
-            class Class implements
-              C,
-              B,
-              // eslint-disable-next-line @rule-tester/${eslintDisableRuleTesterName}
-              A
-            {}
-          `,
-          output: dedent`
-            class Class implements
-              B,
-              C,
-              // eslint-disable-next-line @rule-tester/${eslintDisableRuleTesterName}
-              A
-            {}
-          `,
-          options: [{}],
-          errors: [
-            {
-              messageId: 'unexpectedHeritageClausesOrder',
-              data: {
-                left: 'C',
-                right: 'B',
-              },
-            },
-          ],
-        },
-        {
-          code: dedent`
-            class Class implements
-              C,
-              B,
-              A // eslint-disable-line @rule-tester/${eslintDisableRuleTesterName}
-            {}
-          `,
-          output: dedent`
-            class Class implements
-              B,
-              C,
-              A // eslint-disable-line @rule-tester/${eslintDisableRuleTesterName}
-            {}
-          `,
-          options: [{}],
-          errors: [
-            {
-              messageId: 'unexpectedHeritageClausesOrder',
-              data: {
-                left: 'C',
-                right: 'B',
-              },
-            },
-          ],
-        },
-        {
-          code: dedent`
-            class Class implements
-              C,
-              B,
-              /* eslint-disable-next-line @rule-tester/${eslintDisableRuleTesterName} */
-              A
-            {}
-          `,
-          output: dedent`
-            class Class implements
-              B,
-              C,
-              /* eslint-disable-next-line @rule-tester/${eslintDisableRuleTesterName} */
-              A
-            {}
-          `,
-          options: [{}],
-          errors: [
-            {
-              messageId: 'unexpectedHeritageClausesOrder',
-              data: {
-                left: 'C',
-                right: 'B',
-              },
-            },
-          ],
-        },
-        {
-          code: dedent`
-            class Class implements
-              C,
-              B,
-              A /* eslint-disable-line @rule-tester/${eslintDisableRuleTesterName} */
-            {}
-          `,
-          output: dedent`
-            class Class implements
-              B,
-              C,
-              A /* eslint-disable-line @rule-tester/${eslintDisableRuleTesterName} */
-            {}
-          `,
-          options: [{}],
-          errors: [
-            {
-              messageId: 'unexpectedHeritageClausesOrder',
-              data: {
-                left: 'C',
-                right: 'B',
-              },
-            },
-          ],
-        },
-        {
           code: dedent`
             class Class implements
               D,
               E,
-              /* eslint-disable @rule-tester/${eslintDisableRuleTesterName} */
+              /* eslint-disable */
               C,
               B,
               // Shouldn't move
@@ -1652,6 +1519,126 @@ describe(ruleName, () => {
               A
             {}
           `,
+          errors: [
+            {
+              data: {
+                right: 'A',
+                left: 'B',
+              },
+              messageId: 'unexpectedHeritageClausesOrder',
+            },
+          ],
+          options: [{}],
+        },
+        {
+          output: dedent`
+            class Class implements
+              B,
+              C,
+              // eslint-disable-next-line @rule-tester/${eslintDisableRuleTesterName}
+              A
+            {}
+          `,
+          code: dedent`
+            class Class implements
+              C,
+              B,
+              // eslint-disable-next-line @rule-tester/${eslintDisableRuleTesterName}
+              A
+            {}
+          `,
+          errors: [
+            {
+              data: {
+                right: 'B',
+                left: 'C',
+              },
+              messageId: 'unexpectedHeritageClausesOrder',
+            },
+          ],
+          options: [{}],
+        },
+        {
+          errors: [
+            {
+              data: {
+                right: 'B',
+                left: 'C',
+              },
+              messageId: 'unexpectedHeritageClausesOrder',
+            },
+          ],
+          output: dedent`
+            class Class implements
+              B,
+              C,
+              A // eslint-disable-line @rule-tester/${eslintDisableRuleTesterName}
+            {}
+          `,
+          code: dedent`
+            class Class implements
+              C,
+              B,
+              A // eslint-disable-line @rule-tester/${eslintDisableRuleTesterName}
+            {}
+          `,
+          options: [{}],
+        },
+        {
+          output: dedent`
+            class Class implements
+              B,
+              C,
+              /* eslint-disable-next-line @rule-tester/${eslintDisableRuleTesterName} */
+              A
+            {}
+          `,
+          code: dedent`
+            class Class implements
+              C,
+              B,
+              /* eslint-disable-next-line @rule-tester/${eslintDisableRuleTesterName} */
+              A
+            {}
+          `,
+          errors: [
+            {
+              data: {
+                right: 'B',
+                left: 'C',
+              },
+              messageId: 'unexpectedHeritageClausesOrder',
+            },
+          ],
+          options: [{}],
+        },
+        {
+          errors: [
+            {
+              data: {
+                right: 'B',
+                left: 'C',
+              },
+              messageId: 'unexpectedHeritageClausesOrder',
+            },
+          ],
+          output: dedent`
+            class Class implements
+              B,
+              C,
+              A /* eslint-disable-line @rule-tester/${eslintDisableRuleTesterName} */
+            {}
+          `,
+          code: dedent`
+            class Class implements
+              C,
+              B,
+              A /* eslint-disable-line @rule-tester/${eslintDisableRuleTesterName} */
+            {}
+          `,
+          options: [{}],
+        },
+        {
           output: dedent`
             class Class implements
               A,
@@ -1664,18 +1651,31 @@ describe(ruleName, () => {
               E
             {}
           `,
-          options: [{}],
+          code: dedent`
+            class Class implements
+              D,
+              E,
+              /* eslint-disable @rule-tester/${eslintDisableRuleTesterName} */
+              C,
+              B,
+              // Shouldn't move
+              /* eslint-enable */
+              A
+            {}
+          `,
           errors: [
             {
-              messageId: 'unexpectedHeritageClausesOrder',
               data: {
-                left: 'B',
                 right: 'A',
+                left: 'B',
               },
+              messageId: 'unexpectedHeritageClausesOrder',
             },
           ],
+          options: [{}],
         },
       ],
+      valid: [],
     })
   })
 })

@@ -6,9 +6,11 @@ export interface SortingNodeWithDependencies<
   Node extends TSESTree.Node = TSESTree.Node,
 > extends SortingNode<Node> {
   /**
-   * Custom name used to check if a node is a dependency of another node. If unspecified, defaults to the SortingNode's name.
+   * Custom name used to check if a node is a dependency of another node. If
+   * unspecified, defaults to the SortingNode's name.
    */
   dependencyName?: string
+  /** List of dependencies for the node */
   dependencies: string[]
 }
 
@@ -17,7 +19,11 @@ interface ExtraOptions {
 }
 
 /**
- * Returns nodes topologically sorted by their dependencies
+ * Returns nodes topologically sorted by their dependencies.
+ * @param {SortingNodeWithDependencies[]} nodes - The nodes to sort.
+ * @param {ExtraOptions} [extraOptions] - Additional sorting options.
+ * @returns {SortingNodeWithDependencies[]} The nodes sorted in topological
+ * order.
  */
 export let sortNodesByDependencies = <T extends SortingNodeWithDependencies>(
   nodes: T[],
@@ -61,8 +67,14 @@ export let sortNodesByDependencies = <T extends SortingNodeWithDependencies>(
 }
 
 /**
- * Returns the first node that is dependent on the given node, but is not
- * ordered before it
+ * Returns the first node that is dependent on the given node but is not ordered
+ * before it.
+ * @param {SortingNodeWithDependencies} node - The node to check dependencies
+ * for.
+ * @param {SortingNodeWithDependencies[]} currentlyOrderedNodes - The list of
+ * nodes currently ordered.
+ * @returns {SortingNodeWithDependencies | undefined} The first unordered
+ * dependent node, or `undefined` if none found.
  */
 export let getFirstUnorderedNodeDependentOn = <
   T extends SortingNodeWithDependencies,
