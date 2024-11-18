@@ -29,6 +29,40 @@ describe(ruleName, () => {
       `${ruleName}(${type}): does not break the property list`,
       rule,
       {
+        invalid: [
+          {
+            errors: [
+              {
+                data: {
+                  right: 'b',
+                  left: 'c',
+                },
+                messageId: 'unexpectedSetsOrder',
+              },
+            ],
+            output: dedent`
+              new Set([
+                'a',
+                'b',
+                'c',
+                'd',
+                'e',
+                ...other,
+              ])
+            `,
+            code: dedent`
+              new Set([
+                'a',
+                'c',
+                'b',
+                'd',
+                'e',
+                ...other,
+              ])
+            `,
+            options: [options],
+          },
+        ],
         valid: [
           {
             code: dedent`
@@ -44,44 +78,38 @@ describe(ruleName, () => {
             options: [options],
           },
         ],
-        invalid: [
-          {
-            code: dedent`
-              new Set([
-                'a',
-                'c',
-                'b',
-                'd',
-                'e',
-                ...other,
-              ])
-            `,
-            output: dedent`
-              new Set([
-                'a',
-                'b',
-                'c',
-                'd',
-                'e',
-                ...other,
-              ])
-            `,
-            options: [options],
-            errors: [
-              {
-                messageId: 'unexpectedSetsOrder',
-                data: {
-                  left: 'c',
-                  right: 'b',
-                },
-              },
-            ],
-          },
-        ],
       },
     )
 
     ruleTester.run(`${ruleName}(${type}): sorts spread elements`, rule, {
+      invalid: [
+        {
+          errors: [
+            {
+              data: {
+                right: '...bbbb',
+                left: '...ccc',
+              },
+              messageId: 'unexpectedSetsOrder',
+            },
+          ],
+          output: dedent`
+            new Set([
+              ...aaa,
+              ...bbbb,
+              ...ccc,
+            ])
+          `,
+          code: dedent`
+            new Set([
+              ...aaa,
+              ...ccc,
+              ...bbbb,
+            ])
+          `,
+          options: [options],
+        },
+      ],
       valid: [
         {
           code: dedent`
@@ -94,66 +122,38 @@ describe(ruleName, () => {
           options: [options],
         },
       ],
-      invalid: [
-        {
-          code: dedent`
-            new Set([
-              ...aaa,
-              ...ccc,
-              ...bbbb,
-            ])
-          `,
-          output: dedent`
-            new Set([
-              ...aaa,
-              ...bbbb,
-              ...ccc,
-            ])
-          `,
-          options: [options],
-          errors: [
-            {
-              messageId: 'unexpectedSetsOrder',
-              data: {
-                left: '...ccc',
-                right: '...bbbb',
-              },
-            },
-          ],
-        },
-      ],
     })
 
     ruleTester.run(
       `${ruleName}(${type}): ignores nullable array elements`,
       rule,
       {
+        invalid: [
+          {
+            errors: [
+              {
+                data: {
+                  right: 'a',
+                  left: 'b',
+                },
+                messageId: 'unexpectedSetsOrder',
+              },
+            ],
+            output: dedent`
+              new Set(['a', 'b', 'c',, 'd'])
+            `,
+            code: dedent`
+              new Set(['b', 'a', 'c',, 'd'])
+            `,
+            options: [options],
+          },
+        ],
         valid: [
           {
             code: dedent`
               new Set(['a', 'b', 'c',, 'd'])
             `,
             options: [options],
-          },
-        ],
-        invalid: [
-          {
-            code: dedent`
-              new Set(['b', 'a', 'c',, 'd'])
-            `,
-            output: dedent`
-              new Set(['a', 'b', 'c',, 'd'])
-            `,
-            options: [options],
-            errors: [
-              {
-                messageId: 'unexpectedSetsOrder',
-                data: {
-                  left: 'b',
-                  right: 'a',
-                },
-              },
-            ],
           },
         ],
       },
@@ -163,48 +163,78 @@ describe(ruleName, () => {
       `${ruleName}(${type}): allow to put spread elements to the end`,
       rule,
       {
-        valid: [
-          {
-            code: dedent`
-              new Set(['a', 'b', 'c', ...other])
-            `,
-            options: [
-              {
-                ...options,
-                groupKind: 'literals-first',
-              },
-            ],
-          },
-        ],
         invalid: [
           {
-            code: dedent`
-              new Set(['a', 'b', ...other, 'c'])
-            `,
-            output: dedent`
-              new Set(['a', 'b', 'c', ...other])
-            `,
-            options: [
-              {
-                ...options,
-                groupKind: 'literals-first',
-              },
-            ],
             errors: [
               {
-                messageId: 'unexpectedSetsOrder',
                 data: {
                   left: '...other',
                   right: 'c',
                 },
+                messageId: 'unexpectedSetsOrder',
               },
             ],
+            options: [
+              {
+                ...options,
+                groupKind: 'literals-first',
+              },
+            ],
+            output: dedent`
+              new Set(['a', 'b', 'c', ...other])
+            `,
+            code: dedent`
+              new Set(['a', 'b', ...other, 'c'])
+            `,
+          },
+        ],
+        valid: [
+          {
+            options: [
+              {
+                ...options,
+                groupKind: 'literals-first',
+              },
+            ],
+            code: dedent`
+              new Set(['a', 'b', 'c', ...other])
+            `,
           },
         ],
       },
     )
 
     ruleTester.run(`${ruleName}(${type}): sorts array constructor`, rule, {
+      invalid: [
+        {
+          errors: [
+            {
+              data: {
+                right: 'b',
+                left: 'c',
+              },
+              messageId: 'unexpectedSetsOrder',
+            },
+          ],
+          output: dedent`
+            new Set(new Array(
+              'a',
+              'b',
+              'c',
+              'd',
+            ))
+          `,
+          code: dedent`
+            new Set(new Array(
+              'a',
+              'c',
+              'b',
+              'd',
+            ))
+          `,
+          options: [options],
+        },
+      ],
       valid: [
         {
           code: dedent`
@@ -216,41 +246,46 @@ describe(ruleName, () => {
             ))
           `,
           options: [options],
-        },
-      ],
-      invalid: [
-        {
-          code: dedent`
-            new Set(new Array(
-              'a',
-              'c',
-              'b',
-              'd',
-            ))
-          `,
-          output: dedent`
-            new Set(new Array(
-              'a',
-              'b',
-              'c',
-              'd',
-            ))
-          `,
-          options: [options],
-          errors: [
-            {
-              messageId: 'unexpectedSetsOrder',
-              data: {
-                left: 'c',
-                right: 'b',
-              },
-            },
-          ],
         },
       ],
     })
 
     ruleTester.run(`${ruleName}(${type}): allows mixed sorting`, rule, {
+      invalid: [
+        {
+          errors: [
+            {
+              data: {
+                right: '...d',
+                left: 'bbb',
+              },
+              messageId: 'unexpectedSetsOrder',
+            },
+          ],
+          output: dedent`
+            new Set(new Array(
+              ...d,
+              'aaaa',
+              'bbb',
+              'cc',
+            ))
+          `,
+          code: dedent`
+            new Set(new Array(
+              'aaaa',
+              'bbb',
+              ...d,
+              'cc',
+            ))
+          `,
+          options: [
+            {
+              ...options,
+              groupKind: 'mixed',
+            },
+          ],
+        },
+      ],
       valid: [
         {
           code: dedent`
@@ -265,41 +300,6 @@ describe(ruleName, () => {
             {
               ...options,
               groupKind: 'mixed',
-            },
-          ],
-        },
-      ],
-      invalid: [
-        {
-          code: dedent`
-            new Set(new Array(
-              'aaaa',
-              'bbb',
-              ...d,
-              'cc',
-            ))
-          `,
-          output: dedent`
-            new Set(new Array(
-              ...d,
-              'aaaa',
-              'bbb',
-              'cc',
-            ))
-          `,
-          options: [
-            {
-              ...options,
-              groupKind: 'mixed',
-            },
-          ],
-          errors: [
-            {
-              messageId: 'unexpectedSetsOrder',
-              data: {
-                left: 'bbb',
-                right: '...d',
-              },
             },
           ],
         },
@@ -311,20 +311,24 @@ describe(ruleName, () => {
         `${ruleName}(${type}): allows to use new line as partition`,
         rule,
         {
-          valid: [],
           invalid: [
             {
-              code: dedent`
-              new Set([
-                'd',
-                'a',
-
-                'c',
-
-                'e',
-                'b',
-              ])
-            `,
+              errors: [
+                {
+                  data: {
+                    right: 'a',
+                    left: 'd',
+                  },
+                  messageId: 'unexpectedSetsOrder',
+                },
+                {
+                  data: {
+                    right: 'b',
+                    left: 'e',
+                  },
+                  messageId: 'unexpectedSetsOrder',
+                },
+              ],
               output: dedent`
               new Set([
                 'a',
@@ -336,30 +340,26 @@ describe(ruleName, () => {
                 'e',
               ])
             `,
+              code: dedent`
+              new Set([
+                'd',
+                'a',
+
+                'c',
+
+                'e',
+                'b',
+              ])
+            `,
               options: [
                 {
                   ...options,
                   partitionByNewLine: true,
                 },
               ],
-              errors: [
-                {
-                  messageId: 'unexpectedSetsOrder',
-                  data: {
-                    left: 'd',
-                    right: 'a',
-                  },
-                },
-                {
-                  messageId: 'unexpectedSetsOrder',
-                  data: {
-                    left: 'e',
-                    right: 'b',
-                  },
-                },
-              ],
             },
           ],
+          valid: [],
         },
       )
 
@@ -367,18 +367,31 @@ describe(ruleName, () => {
         `${ruleName}(${type}): prioritize partitions over group kind`,
         rule,
         {
-          valid: [],
           invalid: [
             {
-              code: dedent`
-                new Set([
-                  'c',
-                  ...d,
-
-                  'a',
-                  ...b,
-                ])
-              `,
+              errors: [
+                {
+                  data: {
+                    right: '...d',
+                    left: 'c',
+                  },
+                  messageId: 'unexpectedSetsOrder',
+                },
+                {
+                  data: {
+                    right: '...b',
+                    left: 'a',
+                  },
+                  messageId: 'unexpectedSetsOrder',
+                },
+              ],
+              options: [
+                {
+                  ...options,
+                  groupKind: 'spreads-first',
+                  partitionByNewLine: true,
+                },
+              ],
               output: dedent`
                 new Set([
                   ...d,
@@ -388,31 +401,18 @@ describe(ruleName, () => {
                   'a',
                 ])
               `,
-              options: [
-                {
-                  ...options,
-                  partitionByNewLine: true,
-                  groupKind: 'spreads-first',
-                },
-              ],
-              errors: [
-                {
-                  messageId: 'unexpectedSetsOrder',
-                  data: {
-                    left: 'c',
-                    right: '...d',
-                  },
-                },
-                {
-                  messageId: 'unexpectedSetsOrder',
-                  data: {
-                    left: 'a',
-                    right: '...b',
-                  },
-                },
-              ],
+              code: dedent`
+                new Set([
+                  'c',
+                  ...d,
+
+                  'a',
+                  ...b,
+                ])
+              `,
             },
           ],
+          valid: [],
         },
       )
     })
@@ -422,25 +422,24 @@ describe(ruleName, () => {
         `${ruleName}(${type}): allows to use partition comments`,
         rule,
         {
-          valid: [],
           invalid: [
             {
-              code: dedent`
-              new Set([
-                // Part: A
-                'cc',
-                'd',
-                // Not partition comment
-                'bbb',
-                // Part: B
-                'aaaa',
-                'e',
-                // Part: C
-                'gg',
-                // Not partition comment
-                'fff',
-              ])
-            `,
+              errors: [
+                {
+                  data: {
+                    right: 'bbb',
+                    left: 'd',
+                  },
+                  messageId: 'unexpectedSetsOrder',
+                },
+                {
+                  data: {
+                    right: 'fff',
+                    left: 'gg',
+                  },
+                  messageId: 'unexpectedSetsOrder',
+                },
+              ],
               output: dedent`
               new Set([
                 // Part: A
@@ -457,30 +456,31 @@ describe(ruleName, () => {
                 'gg',
               ])
             `,
+              code: dedent`
+              new Set([
+                // Part: A
+                'cc',
+                'd',
+                // Not partition comment
+                'bbb',
+                // Part: B
+                'aaaa',
+                'e',
+                // Part: C
+                'gg',
+                // Not partition comment
+                'fff',
+              ])
+            `,
               options: [
                 {
                   ...options,
                   partitionByComment: '^Part*',
                 },
               ],
-              errors: [
-                {
-                  messageId: 'unexpectedSetsOrder',
-                  data: {
-                    left: 'd',
-                    right: 'bbb',
-                  },
-                },
-                {
-                  messageId: 'unexpectedSetsOrder',
-                  data: {
-                    left: 'gg',
-                    right: 'fff',
-                  },
-                },
-              ],
             },
           ],
+          valid: [],
         },
       )
 
@@ -514,22 +514,8 @@ describe(ruleName, () => {
         `${ruleName}(${type}): allows to use multiple partition comments`,
         rule,
         {
-          valid: [],
           invalid: [
             {
-              code: dedent`
-              new Set([
-                /* Partition Comment */
-                // Part: A
-                'd',
-                // Part: B
-                'aaa',
-                'c',
-                'bb',
-                /* Other */
-                'e',
-              ])
-            `,
               output: dedent`
               new Set([
                 /* Partition Comment */
@@ -543,23 +529,37 @@ describe(ruleName, () => {
                 'e',
               ])
             `,
+              code: dedent`
+              new Set([
+                /* Partition Comment */
+                // Part: A
+                'd',
+                // Part: B
+                'aaa',
+                'c',
+                'bb',
+                /* Other */
+                'e',
+              ])
+            `,
+              errors: [
+                {
+                  data: {
+                    right: 'bb',
+                    left: 'c',
+                  },
+                  messageId: 'unexpectedSetsOrder',
+                },
+              ],
               options: [
                 {
                   ...options,
                   partitionByComment: ['Partition Comment', 'Part: *', 'Other'],
                 },
               ],
-              errors: [
-                {
-                  messageId: 'unexpectedSetsOrder',
-                  data: {
-                    left: 'c',
-                    right: 'bb',
-                  },
-                },
-              ],
             },
           ],
+          valid: [],
         },
       )
 
@@ -618,18 +618,18 @@ describe(ruleName, () => {
       {
         valid: [
           {
-            code: dedent`
-              new Set([
-                'ab',
-                'a$c',
-              ])
-            `,
             options: [
               {
                 ...options,
                 specialCharacters: 'remove',
               },
             ],
+            code: dedent`
+              new Set([
+                'ab',
+                'a$c',
+              ])
+            `,
           },
         ],
         invalid: [],
@@ -659,53 +659,53 @@ describe(ruleName, () => {
       `${ruleName}(${type}): sorts inline elements correctly`,
       rule,
       {
-        valid: [],
         invalid: [
           {
-            code: dedent`
-              new Set([
-                b, a
-              ])
-            `,
+            errors: [
+              {
+                data: {
+                  right: 'a',
+                  left: 'b',
+                },
+                messageId: 'unexpectedSetsOrder',
+              },
+            ],
             output: dedent`
               new Set([
                 a, b
               ])
             `,
-            options: [options],
-            errors: [
-              {
-                messageId: 'unexpectedSetsOrder',
-                data: {
-                  left: 'b',
-                  right: 'a',
-                },
-              },
-            ],
-          },
-          {
             code: dedent`
               new Set([
-                b, a,
+                b, a
               ])
             `,
+            options: [options],
+          },
+          {
+            errors: [
+              {
+                data: {
+                  right: 'a',
+                  left: 'b',
+                },
+                messageId: 'unexpectedSetsOrder',
+              },
+            ],
             output: dedent`
               new Set([
                 a, b,
               ])
             `,
+            code: dedent`
+              new Set([
+                b, a,
+              ])
+            `,
             options: [options],
-            errors: [
-              {
-                messageId: 'unexpectedSetsOrder',
-                data: {
-                  left: 'b',
-                  right: 'a',
-                },
-              },
-            ],
           },
         ],
+        valid: [],
       },
     )
   })
@@ -723,6 +723,40 @@ describe(ruleName, () => {
       `${ruleName}(${type}): does not break the property list`,
       rule,
       {
+        invalid: [
+          {
+            errors: [
+              {
+                data: {
+                  right: 'b',
+                  left: 'c',
+                },
+                messageId: 'unexpectedSetsOrder',
+              },
+            ],
+            output: dedent`
+              new Set([
+                'a',
+                'b',
+                'c',
+                'd',
+                'e',
+                ...other,
+              ])
+            `,
+            code: dedent`
+              new Set([
+                'a',
+                'c',
+                'b',
+                'd',
+                'e',
+                ...other,
+              ])
+            `,
+            options: [options],
+          },
+        ],
         valid: [
           {
             code: dedent`
@@ -738,44 +772,38 @@ describe(ruleName, () => {
             options: [options],
           },
         ],
-        invalid: [
-          {
-            code: dedent`
-              new Set([
-                'a',
-                'c',
-                'b',
-                'd',
-                'e',
-                ...other,
-              ])
-            `,
-            output: dedent`
-              new Set([
-                'a',
-                'b',
-                'c',
-                'd',
-                'e',
-                ...other,
-              ])
-            `,
-            options: [options],
-            errors: [
-              {
-                messageId: 'unexpectedSetsOrder',
-                data: {
-                  left: 'c',
-                  right: 'b',
-                },
-              },
-            ],
-          },
-        ],
       },
     )
 
     ruleTester.run(`${ruleName}(${type}): sorts spread elements`, rule, {
+      invalid: [
+        {
+          errors: [
+            {
+              data: {
+                right: '...bbbb',
+                left: '...ccc',
+              },
+              messageId: 'unexpectedSetsOrder',
+            },
+          ],
+          output: dedent`
+            new Set([
+              ...aaa,
+              ...bbbb,
+              ...ccc,
+            ])
+          `,
+          code: dedent`
+            new Set([
+              ...aaa,
+              ...ccc,
+              ...bbbb,
+            ])
+          `,
+          options: [options],
+        },
+      ],
       valid: [
         {
           code: dedent`
@@ -788,66 +816,38 @@ describe(ruleName, () => {
           options: [options],
         },
       ],
-      invalid: [
-        {
-          code: dedent`
-            new Set([
-              ...aaa,
-              ...ccc,
-              ...bbbb,
-            ])
-          `,
-          output: dedent`
-            new Set([
-              ...aaa,
-              ...bbbb,
-              ...ccc,
-            ])
-          `,
-          options: [options],
-          errors: [
-            {
-              messageId: 'unexpectedSetsOrder',
-              data: {
-                left: '...ccc',
-                right: '...bbbb',
-              },
-            },
-          ],
-        },
-      ],
     })
 
     ruleTester.run(
       `${ruleName}(${type}): ignores nullable array elements`,
       rule,
       {
+        invalid: [
+          {
+            errors: [
+              {
+                data: {
+                  right: 'a',
+                  left: 'b',
+                },
+                messageId: 'unexpectedSetsOrder',
+              },
+            ],
+            output: dedent`
+              new Set(['a', 'b', 'c',, 'd'])
+            `,
+            code: dedent`
+              new Set(['b', 'a', 'c',, 'd'])
+            `,
+            options: [options],
+          },
+        ],
         valid: [
           {
             code: dedent`
               new Set(['a', 'b', 'c',, 'd'])
             `,
             options: [options],
-          },
-        ],
-        invalid: [
-          {
-            code: dedent`
-              new Set(['b', 'a', 'c',, 'd'])
-            `,
-            output: dedent`
-              new Set(['a', 'b', 'c',, 'd'])
-            `,
-            options: [options],
-            errors: [
-              {
-                messageId: 'unexpectedSetsOrder',
-                data: {
-                  left: 'b',
-                  right: 'a',
-                },
-              },
-            ],
           },
         ],
       },
@@ -857,48 +857,78 @@ describe(ruleName, () => {
       `${ruleName}(${type}): allow to put spread elements to the end`,
       rule,
       {
-        valid: [
-          {
-            code: dedent`
-              new Set(['a', 'b', 'c', ...other])
-            `,
-            options: [
-              {
-                ...options,
-                groupKind: 'literals-first',
-              },
-            ],
-          },
-        ],
         invalid: [
           {
-            code: dedent`
-              new Set(['a', 'b', ...other, 'c'])
-            `,
-            output: dedent`
-              new Set(['a', 'b', 'c', ...other])
-            `,
-            options: [
-              {
-                ...options,
-                groupKind: 'literals-first',
-              },
-            ],
             errors: [
               {
-                messageId: 'unexpectedSetsOrder',
                 data: {
                   left: '...other',
                   right: 'c',
                 },
+                messageId: 'unexpectedSetsOrder',
               },
             ],
+            options: [
+              {
+                ...options,
+                groupKind: 'literals-first',
+              },
+            ],
+            output: dedent`
+              new Set(['a', 'b', 'c', ...other])
+            `,
+            code: dedent`
+              new Set(['a', 'b', ...other, 'c'])
+            `,
+          },
+        ],
+        valid: [
+          {
+            options: [
+              {
+                ...options,
+                groupKind: 'literals-first',
+              },
+            ],
+            code: dedent`
+              new Set(['a', 'b', 'c', ...other])
+            `,
           },
         ],
       },
     )
 
     ruleTester.run(`${ruleName}(${type}): sorts array constructor`, rule, {
+      invalid: [
+        {
+          errors: [
+            {
+              data: {
+                right: 'b',
+                left: 'c',
+              },
+              messageId: 'unexpectedSetsOrder',
+            },
+          ],
+          output: dedent`
+            new Set(new Array(
+              'a',
+              'b',
+              'c',
+              'd',
+            ))
+          `,
+          code: dedent`
+            new Set(new Array(
+              'a',
+              'c',
+              'b',
+              'd',
+            ))
+          `,
+          options: [options],
+        },
+      ],
       valid: [
         {
           code: dedent`
@@ -910,41 +940,46 @@ describe(ruleName, () => {
             ))
           `,
           options: [options],
-        },
-      ],
-      invalid: [
-        {
-          code: dedent`
-            new Set(new Array(
-              'a',
-              'c',
-              'b',
-              'd',
-            ))
-          `,
-          output: dedent`
-            new Set(new Array(
-              'a',
-              'b',
-              'c',
-              'd',
-            ))
-          `,
-          options: [options],
-          errors: [
-            {
-              messageId: 'unexpectedSetsOrder',
-              data: {
-                left: 'c',
-                right: 'b',
-              },
-            },
-          ],
         },
       ],
     })
 
     ruleTester.run(`${ruleName}(${type}): allows mixed sorting`, rule, {
+      invalid: [
+        {
+          errors: [
+            {
+              data: {
+                right: '...d',
+                left: 'bbb',
+              },
+              messageId: 'unexpectedSetsOrder',
+            },
+          ],
+          output: dedent`
+            new Set(new Array(
+              ...d,
+              'aaaa',
+              'bbb',
+              'cc',
+            ))
+          `,
+          code: dedent`
+            new Set(new Array(
+              'aaaa',
+              'bbb',
+              ...d,
+              'cc',
+            ))
+          `,
+          options: [
+            {
+              ...options,
+              groupKind: 'mixed',
+            },
+          ],
+        },
+      ],
       valid: [
         {
           code: dedent`
@@ -959,41 +994,6 @@ describe(ruleName, () => {
             {
               ...options,
               groupKind: 'mixed',
-            },
-          ],
-        },
-      ],
-      invalid: [
-        {
-          code: dedent`
-            new Set(new Array(
-              'aaaa',
-              'bbb',
-              ...d,
-              'cc',
-            ))
-          `,
-          output: dedent`
-            new Set(new Array(
-              ...d,
-              'aaaa',
-              'bbb',
-              'cc',
-            ))
-          `,
-          options: [
-            {
-              ...options,
-              groupKind: 'mixed',
-            },
-          ],
-          errors: [
-            {
-              messageId: 'unexpectedSetsOrder',
-              data: {
-                left: 'bbb',
-                right: '...d',
-              },
             },
           ],
         },
@@ -1013,6 +1013,40 @@ describe(ruleName, () => {
       `${ruleName}(${type}): does not break the property list`,
       rule,
       {
+        invalid: [
+          {
+            errors: [
+              {
+                data: {
+                  right: 'bbbb',
+                  left: 'ccc',
+                },
+                messageId: 'unexpectedSetsOrder',
+              },
+            ],
+            output: dedent`
+              new Set([
+                'aaaaa',
+                'bbbb',
+                'ccc',
+                'dd',
+                'e',
+                ...other,
+              ])
+            `,
+            code: dedent`
+              new Set([
+                'aaaaa',
+                'ccc',
+                'bbbb',
+                'dd',
+                'e',
+                ...other,
+              ])
+            `,
+            options: [options],
+          },
+        ],
         valid: [
           {
             code: dedent`
@@ -1028,44 +1062,38 @@ describe(ruleName, () => {
             options: [options],
           },
         ],
-        invalid: [
-          {
-            code: dedent`
-              new Set([
-                'aaaaa',
-                'ccc',
-                'bbbb',
-                'dd',
-                'e',
-                ...other,
-              ])
-            `,
-            output: dedent`
-              new Set([
-                'aaaaa',
-                'bbbb',
-                'ccc',
-                'dd',
-                'e',
-                ...other,
-              ])
-            `,
-            options: [options],
-            errors: [
-              {
-                messageId: 'unexpectedSetsOrder',
-                data: {
-                  left: 'ccc',
-                  right: 'bbbb',
-                },
-              },
-            ],
-          },
-        ],
       },
     )
 
     ruleTester.run(`${ruleName}(${type}): sorts spread elements`, rule, {
+      invalid: [
+        {
+          errors: [
+            {
+              data: {
+                right: '...bbbb',
+                left: '...aaa',
+              },
+              messageId: 'unexpectedSetsOrder',
+            },
+          ],
+          output: dedent`
+            new Set([
+              ...bbbb,
+              ...aaa,
+              ...ccc,
+            ])
+          `,
+          code: dedent`
+            new Set([
+              ...aaa,
+              ...bbbb,
+              ...ccc,
+            ])
+          `,
+          options: [options],
+        },
+      ],
       valid: [
         {
           code: dedent`
@@ -1076,34 +1104,6 @@ describe(ruleName, () => {
             ])
           `,
           options: [options],
-        },
-      ],
-      invalid: [
-        {
-          code: dedent`
-            new Set([
-              ...aaa,
-              ...bbbb,
-              ...ccc,
-            ])
-          `,
-          output: dedent`
-            new Set([
-              ...bbbb,
-              ...aaa,
-              ...ccc,
-            ])
-          `,
-          options: [options],
-          errors: [
-            {
-              messageId: 'unexpectedSetsOrder',
-              data: {
-                left: '...aaa',
-                right: '...bbbb',
-              },
-            },
-          ],
         },
       ],
     })
@@ -1128,48 +1128,78 @@ describe(ruleName, () => {
       `${ruleName}(${type}): allow to put spread elements to the end`,
       rule,
       {
-        valid: [
-          {
-            code: dedent`
-              new Set(['a', 'b', 'c', ...other])
-            `,
-            options: [
-              {
-                ...options,
-                groupKind: 'literals-first',
-              },
-            ],
-          },
-        ],
         invalid: [
           {
-            code: dedent`
-              new Set(['a', 'b', ...other, 'c'])
-            `,
-            output: dedent`
-              new Set(['a', 'b', 'c', ...other])
-            `,
-            options: [
-              {
-                ...options,
-                groupKind: 'literals-first',
-              },
-            ],
             errors: [
               {
-                messageId: 'unexpectedSetsOrder',
                 data: {
                   left: '...other',
                   right: 'c',
                 },
+                messageId: 'unexpectedSetsOrder',
               },
             ],
+            options: [
+              {
+                ...options,
+                groupKind: 'literals-first',
+              },
+            ],
+            output: dedent`
+              new Set(['a', 'b', 'c', ...other])
+            `,
+            code: dedent`
+              new Set(['a', 'b', ...other, 'c'])
+            `,
+          },
+        ],
+        valid: [
+          {
+            options: [
+              {
+                ...options,
+                groupKind: 'literals-first',
+              },
+            ],
+            code: dedent`
+              new Set(['a', 'b', 'c', ...other])
+            `,
           },
         ],
       },
     )
 
     ruleTester.run(`${ruleName}(${type}): sorts array constructor`, rule, {
+      invalid: [
+        {
+          errors: [
+            {
+              data: {
+                right: 'bbb',
+                left: 'cc',
+              },
+              messageId: 'unexpectedSetsOrder',
+            },
+          ],
+          output: dedent`
+            new Set(new Array(
+              'aaaa',
+              'bbb',
+              'cc',
+              'd',
+            ))
+          `,
+          code: dedent`
+            new Set(new Array(
+              'aaaa',
+              'cc',
+              'bbb',
+              'd',
+            ))
+          `,
+          options: [options],
+        },
+      ],
       valid: [
         {
           code: dedent`
@@ -1181,41 +1211,46 @@ describe(ruleName, () => {
             ))
           `,
           options: [options],
-        },
-      ],
-      invalid: [
-        {
-          code: dedent`
-            new Set(new Array(
-              'aaaa',
-              'cc',
-              'bbb',
-              'd',
-            ))
-          `,
-          output: dedent`
-            new Set(new Array(
-              'aaaa',
-              'bbb',
-              'cc',
-              'd',
-            ))
-          `,
-          options: [options],
-          errors: [
-            {
-              messageId: 'unexpectedSetsOrder',
-              data: {
-                left: 'cc',
-                right: 'bbb',
-              },
-            },
-          ],
         },
       ],
     })
 
     ruleTester.run(`${ruleName}(${type}): allows mixed sorting`, rule, {
+      invalid: [
+        {
+          errors: [
+            {
+              data: {
+                left: '...d',
+                right: 'bbb',
+              },
+              messageId: 'unexpectedSetsOrder',
+            },
+          ],
+          output: dedent`
+            new Set(new Array(
+              'aaaa',
+              'bbb',
+              ...d,
+              'cc',
+            ))
+          `,
+          code: dedent`
+            new Set(new Array(
+              'aaaa',
+              ...d,
+              'bbb',
+              'cc',
+            ))
+          `,
+          options: [
+            {
+              ...options,
+              groupKind: 'mixed',
+            },
+          ],
+        },
+      ],
       valid: [
         {
           code: dedent`
@@ -1230,41 +1265,6 @@ describe(ruleName, () => {
             {
               ...options,
               groupKind: 'mixed',
-            },
-          ],
-        },
-      ],
-      invalid: [
-        {
-          code: dedent`
-            new Set(new Array(
-              'aaaa',
-              ...d,
-              'bbb',
-              'cc',
-            ))
-          `,
-          output: dedent`
-            new Set(new Array(
-              'aaaa',
-              'bbb',
-              ...d,
-              'cc',
-            ))
-          `,
-          options: [
-            {
-              ...options,
-              groupKind: 'mixed',
-            },
-          ],
-          errors: [
-            {
-              messageId: 'unexpectedSetsOrder',
-              data: {
-                left: '...d',
-                right: 'bbb',
-              },
             },
           ],
         },
@@ -1277,6 +1277,42 @@ describe(ruleName, () => {
       `${ruleName}: sets alphabetical asc sorting as default`,
       rule,
       {
+        invalid: [
+          {
+            errors: [
+              {
+                data: {
+                  right: 'a',
+                  left: 'b',
+                },
+                messageId: 'unexpectedSetsOrder',
+              },
+              {
+                data: {
+                  right: 'c',
+                  left: 'd',
+                },
+                messageId: 'unexpectedSetsOrder',
+              },
+            ],
+            output: dedent`
+              new Set([
+                'a',
+                'b',
+                'c',
+                'd',
+              ])
+            `,
+            code: dedent`
+              new Set([
+                'b',
+                'a',
+                'd',
+                'c',
+              ])
+            `,
+          },
+        ],
         valid: [
           dedent`
             new Set([
@@ -1298,42 +1334,6 @@ describe(ruleName, () => {
             options: [
               {
                 ignoreCase: false,
-              },
-            ],
-          },
-        ],
-        invalid: [
-          {
-            code: dedent`
-              new Set([
-                'b',
-                'a',
-                'd',
-                'c',
-              ])
-            `,
-            output: dedent`
-              new Set([
-                'a',
-                'b',
-                'c',
-                'd',
-              ])
-            `,
-            errors: [
-              {
-                messageId: 'unexpectedSetsOrder',
-                data: {
-                  left: 'b',
-                  right: 'a',
-                },
-              },
-              {
-                messageId: 'unexpectedSetsOrder',
-                data: {
-                  left: 'd',
-                  right: 'c',
-                },
               },
             ],
           },
@@ -1361,17 +1361,17 @@ describe(ruleName, () => {
 
     let eslintDisableRuleTesterName = `${ruleName}: supports 'eslint-disable' for individual nodes`
     ruleTester.run(eslintDisableRuleTesterName, rule, {
-      valid: [],
       invalid: [
         {
-          code: dedent`
-            new Set([
-              'c',
-              'b',
-              // eslint-disable-next-line
-              'a',
-            ])
-          `,
+          errors: [
+            {
+              data: {
+                right: 'b',
+                left: 'c',
+              },
+              messageId: 'unexpectedSetsOrder',
+            },
+          ],
           output: dedent`
             new Set([
               'b',
@@ -1380,27 +1380,33 @@ describe(ruleName, () => {
               'a',
             ])
           `,
-          options: [{}],
-          errors: [
-            {
-              messageId: 'unexpectedSetsOrder',
-              data: {
-                left: 'c',
-                right: 'b',
-              },
-            },
-          ],
-        },
-        {
           code: dedent`
             new Set([
-              'd',
               'c',
+              'b',
               // eslint-disable-next-line
               'a',
-              'b'
             ])
           `,
+          options: [{}],
+        },
+        {
+          errors: [
+            {
+              data: {
+                right: 'c',
+                left: 'd',
+              },
+              messageId: 'unexpectedSetsOrder',
+            },
+            {
+              data: {
+                right: 'b',
+                left: 'a',
+              },
+              messageId: 'unexpectedSetsOrder',
+            },
+          ],
           output: dedent`
             new Set([
               'b',
@@ -1410,29 +1416,38 @@ describe(ruleName, () => {
               'd'
             ])
           `,
+          code: dedent`
+            new Set([
+              'd',
+              'c',
+              // eslint-disable-next-line
+              'a',
+              'b'
+            ])
+          `,
           options: [
             {
               partitionByComment: true,
             },
           ],
-          errors: [
-            {
-              messageId: 'unexpectedSetsOrder',
-              data: {
-                left: 'd',
-                right: 'c',
-              },
-            },
-            {
-              messageId: 'unexpectedSetsOrder',
-              data: {
-                left: 'a',
-                right: 'b',
-              },
-            },
-          ],
         },
         {
+          errors: [
+            {
+              data: {
+                right: 'b',
+                left: 'c',
+              },
+              messageId: 'unexpectedSetsOrder',
+            },
+            {
+              data: {
+                right: '...anotherArray',
+                left: 'a',
+              },
+              messageId: 'unexpectedSetsOrder',
+            },
+          ],
           code: dedent`
             new Set([
               'c',
@@ -1456,31 +1471,17 @@ describe(ruleName, () => {
               groupKind: 'mixed',
             },
           ],
-          errors: [
-            {
-              messageId: 'unexpectedSetsOrder',
-              data: {
-                left: 'c',
-                right: 'b',
-              },
-            },
-            {
-              messageId: 'unexpectedSetsOrder',
-              data: {
-                left: 'a',
-                right: '...anotherArray',
-              },
-            },
-          ],
         },
         {
-          code: dedent`
-            new Set([
-              'c',
-              'b',
-              'a', // eslint-disable-line
-            ])
-          `,
+          errors: [
+            {
+              data: {
+                right: 'b',
+                left: 'c',
+              },
+              messageId: 'unexpectedSetsOrder',
+            },
+          ],
           output: dedent`
             new Set([
               'b',
@@ -1488,26 +1489,25 @@ describe(ruleName, () => {
               'a', // eslint-disable-line
             ])
             `,
+          code: dedent`
+            new Set([
+              'c',
+              'b',
+              'a', // eslint-disable-line
+            ])
+          `,
           options: [{}],
-          errors: [
-            {
-              messageId: 'unexpectedSetsOrder',
-              data: {
-                left: 'c',
-                right: 'b',
-              },
-            },
-          ],
         },
         {
-          code: dedent`
-          new Set([
-            'c',
-            'b',
-            /* eslint-disable-next-line */
-            'a',
-          ])
-        `,
+          errors: [
+            {
+              data: {
+                right: 'b',
+                left: 'c',
+              },
+              messageId: 'unexpectedSetsOrder',
+            },
+          ],
           output: dedent`
             new Set([
               'b',
@@ -1516,25 +1516,26 @@ describe(ruleName, () => {
               'a',
             ])
             `,
+          code: dedent`
+          new Set([
+            'c',
+            'b',
+            /* eslint-disable-next-line */
+            'a',
+          ])
+        `,
           options: [{}],
-          errors: [
-            {
-              messageId: 'unexpectedSetsOrder',
-              data: {
-                left: 'c',
-                right: 'b',
-              },
-            },
-          ],
         },
         {
-          code: dedent`
-            new Set([
-              'c',
-              'b',
-              'a', /* eslint-disable-line */
-            ])
-          `,
+          errors: [
+            {
+              data: {
+                right: 'b',
+                left: 'c',
+              },
+              messageId: 'unexpectedSetsOrder',
+            },
+          ],
           output: dedent`
             new Set([
               'b',
@@ -1542,30 +1543,16 @@ describe(ruleName, () => {
               'a', /* eslint-disable-line */
             ])
             `,
-          options: [{}],
-          errors: [
-            {
-              messageId: 'unexpectedSetsOrder',
-              data: {
-                left: 'c',
-                right: 'b',
-              },
-            },
-          ],
-        },
-        {
           code: dedent`
             new Set([
-              'd',
-              'e',
-              /* eslint-disable */
               'c',
               'b',
-              // Shouldn't move
-              /* eslint-enable */
-              'a',
+              'a', /* eslint-disable-line */
             ])
           `,
+          options: [{}],
+        },
+        {
           output: dedent`
             new Set([
               'a',
@@ -1578,26 +1565,30 @@ describe(ruleName, () => {
               'e',
             ])
           `,
-          options: [{}],
+          code: dedent`
+            new Set([
+              'd',
+              'e',
+              /* eslint-disable */
+              'c',
+              'b',
+              // Shouldn't move
+              /* eslint-enable */
+              'a',
+            ])
+          `,
           errors: [
             {
-              messageId: 'unexpectedSetsOrder',
               data: {
-                left: 'b',
                 right: 'a',
+                left: 'b',
               },
+              messageId: 'unexpectedSetsOrder',
             },
           ],
+          options: [{}],
         },
         {
-          code: dedent`
-            new Set([
-              'c',
-              'b',
-              // eslint-disable-next-line @rule-tester/${eslintDisableRuleTesterName}
-              'a',
-            ])
-          `,
           output: dedent`
             new Set([
               'b',
@@ -1606,25 +1597,35 @@ describe(ruleName, () => {
               'a',
             ])
             `,
-          options: [{}],
-          errors: [
-            {
-              messageId: 'unexpectedSetsOrder',
-              data: {
-                left: 'c',
-                right: 'b',
-              },
-            },
-          ],
-        },
-        {
           code: dedent`
             new Set([
               'c',
               'b',
-              'a', // eslint-disable-line @rule-tester/${eslintDisableRuleTesterName}
+              // eslint-disable-next-line @rule-tester/${eslintDisableRuleTesterName}
+              'a',
             ])
           `,
+          errors: [
+            {
+              data: {
+                right: 'b',
+                left: 'c',
+              },
+              messageId: 'unexpectedSetsOrder',
+            },
+          ],
+          options: [{}],
+        },
+        {
+          errors: [
+            {
+              data: {
+                right: 'b',
+                left: 'c',
+              },
+              messageId: 'unexpectedSetsOrder',
+            },
+          ],
           output: dedent`
             new Set([
               'b',
@@ -1632,18 +1633,24 @@ describe(ruleName, () => {
               'a', // eslint-disable-line @rule-tester/${eslintDisableRuleTesterName}
             ])
             `,
+          code: dedent`
+            new Set([
+              'c',
+              'b',
+              'a', // eslint-disable-line @rule-tester/${eslintDisableRuleTesterName}
+            ])
+          `,
           options: [{}],
-          errors: [
-            {
-              messageId: 'unexpectedSetsOrder',
-              data: {
-                left: 'c',
-                right: 'b',
-              },
-            },
-          ],
         },
         {
+          output: dedent`
+            new Set([
+              'b',
+              'c',
+              /* eslint-disable-next-line @rule-tester/${eslintDisableRuleTesterName} */
+              'a',
+            ])
+            `,
           code: dedent`
             new Set([
               'c',
@@ -1652,26 +1659,34 @@ describe(ruleName, () => {
               'a',
             ])
           `,
+          errors: [
+            {
+              data: {
+                right: 'b',
+                left: 'c',
+              },
+              messageId: 'unexpectedSetsOrder',
+            },
+          ],
+          options: [{}],
+        },
+        {
           output: dedent`
             new Set([
               'b',
               'c',
-              /* eslint-disable-next-line @rule-tester/${eslintDisableRuleTesterName} */
-              'a',
+              'a', /* eslint-disable-line @rule-tester/${eslintDisableRuleTesterName} */
             ])
             `,
-          options: [{}],
           errors: [
             {
-              messageId: 'unexpectedSetsOrder',
               data: {
-                left: 'c',
                 right: 'b',
+                left: 'c',
               },
+              messageId: 'unexpectedSetsOrder',
             },
           ],
-        },
-        {
           code: dedent`
             new Set([
               'c',
@@ -1679,25 +1694,21 @@ describe(ruleName, () => {
               'a', /* eslint-disable-line @rule-tester/${eslintDisableRuleTesterName} */
             ])
           `,
-          output: dedent`
-            new Set([
-              'b',
-              'c',
-              'a', /* eslint-disable-line @rule-tester/${eslintDisableRuleTesterName} */
-            ])
-            `,
           options: [{}],
-          errors: [
-            {
-              messageId: 'unexpectedSetsOrder',
-              data: {
-                left: 'c',
-                right: 'b',
-              },
-            },
-          ],
         },
         {
+          output: dedent`
+            new Set([
+              'a',
+              'd',
+              /* eslint-disable @rule-tester/${eslintDisableRuleTesterName} */
+              'c',
+              'b',
+              // Shouldn't move
+              /* eslint-enable */
+              'e',
+            ])
+          `,
           code: dedent`
             new Set([
               'd',
@@ -1710,30 +1721,19 @@ describe(ruleName, () => {
               'a',
             ])
           `,
-          output: dedent`
-            new Set([
-              'a',
-              'd',
-              /* eslint-disable @rule-tester/${eslintDisableRuleTesterName} */
-              'c',
-              'b',
-              // Shouldn't move
-              /* eslint-enable */
-              'e',
-            ])
-          `,
-          options: [{}],
           errors: [
             {
-              messageId: 'unexpectedSetsOrder',
               data: {
-                left: 'b',
                 right: 'a',
+                left: 'b',
               },
+              messageId: 'unexpectedSetsOrder',
             },
           ],
+          options: [{}],
         },
       ],
+      valid: [],
     })
   })
 })

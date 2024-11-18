@@ -26,43 +26,8 @@ describe(ruleName, () => {
     } as const
 
     ruleTester.run(`${ruleName}(${type}): sorts class members`, rule, {
-      valid: [
+      invalid: [
         {
-          code: dedent`
-            class Class {
-              a
-            }
-          `,
-          options: [options],
-        },
-        {
-          code: dedent`
-            class Class {
-              static a = 'a'
-
-              protected b = 'b'
-
-              private c = 'c'
-
-              d = 'd'
-
-              e = 'e'
-
-              constructor() {}
-
-              static f() {}
-
-              protected static g() {}
-
-              protected h() {}
-
-              private i() {}
-
-              j() {}
-
-              k() {}
-            }
-          `,
           options: [
             {
               ...options,
@@ -81,37 +46,24 @@ describe(ruleName, () => {
               ],
             },
           ],
-        },
-      ],
-      invalid: [
-        {
-          code: dedent`
-            class Class {
-              static a = 'a'
-
-              protected b = 'b'
-
-              private c = 'c'
-
-              e = 'e'
-
-              d = 'd'
-
-              static f() {}
-
-              constructor() {}
-
-              protected static g() {}
-
-              protected h() {}
-
-              private i() {}
-
-              j() {}
-
-              k() {}
-            }
-          `,
+          errors: [
+            {
+              data: {
+                right: 'd',
+                left: 'e',
+              },
+              messageId: 'unexpectedClassesOrder',
+            },
+            {
+              data: {
+                leftGroup: 'static-method',
+                rightGroup: 'constructor',
+                right: 'constructor',
+                left: 'f',
+              },
+              messageId: 'unexpectedClassesGroupOrder',
+            },
+          ],
           output: dedent`
             class Class {
               static a = 'a'
@@ -139,6 +91,45 @@ describe(ruleName, () => {
               k() {}
             }
           `,
+          code: dedent`
+            class Class {
+              static a = 'a'
+
+              protected b = 'b'
+
+              private c = 'c'
+
+              e = 'e'
+
+              d = 'd'
+
+              static f() {}
+
+              constructor() {}
+
+              protected static g() {}
+
+              protected h() {}
+
+              private i() {}
+
+              j() {}
+
+              k() {}
+            }
+          `,
+        },
+      ],
+      valid: [
+        {
+          code: dedent`
+            class Class {
+              a
+            }
+          `,
+          options: [options],
+        },
+        {
           options: [
             {
               ...options,
@@ -157,24 +148,33 @@ describe(ruleName, () => {
               ],
             },
           ],
-          errors: [
-            {
-              messageId: 'unexpectedClassesOrder',
-              data: {
-                left: 'e',
-                right: 'd',
-              },
-            },
-            {
-              messageId: 'unexpectedClassesGroupOrder',
-              data: {
-                left: 'f',
-                leftGroup: 'static-method',
-                right: 'constructor',
-                rightGroup: 'constructor',
-              },
-            },
-          ],
+          code: dedent`
+            class Class {
+              static a = 'a'
+
+              protected b = 'b'
+
+              private c = 'c'
+
+              d = 'd'
+
+              e = 'e'
+
+              constructor() {}
+
+              static f() {}
+
+              protected static g() {}
+
+              protected h() {}
+
+              private i() {}
+
+              j() {}
+
+              k() {}
+            }
+          `,
         },
       ],
     })
@@ -183,93 +183,164 @@ describe(ruleName, () => {
       `${ruleName}(${type}): sorts complex official groups`,
       rule,
       {
-        valid: [],
         invalid: [
           {
-            code: dedent`
-            abstract class Class {
-
-              async p?(): Promise<void>;
-
-              o?;
-
-              static {}
-
-              static readonly [key: string]: string;
-
-              private n = async function() {};
-
-              private m = async () => {};
-
-              declare private static readonly l;
-
-              private k = 'k';
-
-              protected j = 'j';
-
-              public i = 'i';
-
-              private readonly h = 'h';
-
-              protected readonly g = 'g';
-
-              public readonly f = 'f';
-
-              private static override readonly e = 'e';
-
-              protected static override readonly d = 'd';
-
-              static override readonly c = 'c';
-
-              @Decorator
-              protected abstract override readonly b;
-
-              @Decorator
-              abstract override readonly a;
-            }
-          `,
-            output: dedent`
-            abstract class Class {
-
-              @Decorator
-              abstract override readonly a;
-
-              @Decorator
-              protected abstract override readonly b;
-
-              static override readonly c = 'c';
-
-              protected static override readonly d = 'd';
-
-              private static override readonly e = 'e';
-
-              public readonly f = 'f';
-
-              protected readonly g = 'g';
-
-              private readonly h = 'h';
-
-              public i = 'i';
-
-              protected j = 'j';
-
-              private k = 'k';
-
-              declare private static readonly l;
-
-              private m = async () => {};
-
-              private n = async function() {};
-
-              static readonly [key: string]: string;
-
-              static {}
-
-              o?;
-
-              async p?(): Promise<void>;
-            }
-          `,
+            errors: [
+              {
+                data: {
+                  leftGroup: 'public-optional-async-method',
+                  rightGroup: 'public-optional-property',
+                  right: 'o',
+                  left: 'p',
+                },
+                messageId: 'unexpectedClassesGroupOrder',
+              },
+              {
+                data: {
+                  leftGroup: 'public-optional-property',
+                  rightGroup: 'static-block',
+                  right: 'static',
+                  left: 'o',
+                },
+                messageId: 'unexpectedClassesGroupOrder',
+              },
+              {
+                data: {
+                  rightGroup: 'static-readonly-index-signature',
+                  right: 'static readonly [key: string]',
+                  leftGroup: 'static-block',
+                  left: 'static',
+                },
+                messageId: 'unexpectedClassesGroupOrder',
+              },
+              {
+                data: {
+                  leftGroup: 'static-readonly-index-signature',
+                  left: 'static readonly [key: string]',
+                  rightGroup: 'async-function-property',
+                  right: 'n',
+                },
+                messageId: 'unexpectedClassesGroupOrder',
+              },
+              {
+                data: {
+                  right: 'm',
+                  left: 'n',
+                },
+                messageId: 'unexpectedClassesOrder',
+              },
+              {
+                data: {
+                  rightGroup: 'declare-private-static-readonly-property',
+                  leftGroup: 'async-function-property',
+                  right: 'l',
+                  left: 'm',
+                },
+                messageId: 'unexpectedClassesGroupOrder',
+              },
+              {
+                data: {
+                  leftGroup: 'declare-private-static-readonly-property',
+                  rightGroup: 'private-property',
+                  right: 'k',
+                  left: 'l',
+                },
+                messageId: 'unexpectedClassesGroupOrder',
+              },
+              {
+                data: {
+                  rightGroup: 'protected-property',
+                  leftGroup: 'private-property',
+                  right: 'j',
+                  left: 'k',
+                },
+                messageId: 'unexpectedClassesGroupOrder',
+              },
+              {
+                data: {
+                  leftGroup: 'protected-property',
+                  rightGroup: 'public-property',
+                  right: 'i',
+                  left: 'j',
+                },
+                messageId: 'unexpectedClassesGroupOrder',
+              },
+              {
+                data: {
+                  rightGroup: 'private-readonly-property',
+                  leftGroup: 'public-property',
+                  right: 'h',
+                  left: 'i',
+                },
+                messageId: 'unexpectedClassesGroupOrder',
+              },
+              {
+                data: {
+                  rightGroup: 'protected-readonly-property',
+                  leftGroup: 'private-readonly-property',
+                  right: 'g',
+                  left: 'h',
+                },
+                messageId: 'unexpectedClassesGroupOrder',
+              },
+              {
+                data: {
+                  leftGroup: 'protected-readonly-property',
+                  rightGroup: 'public-readonly-property',
+                  right: 'f',
+                  left: 'g',
+                },
+                messageId: 'unexpectedClassesGroupOrder',
+              },
+              {
+                data: {
+                  rightGroup: 'static-private-override-readonly-property',
+                  leftGroup: 'public-readonly-property',
+                  right: 'e',
+                  left: 'f',
+                },
+                messageId: 'unexpectedClassesGroupOrder',
+              },
+              {
+                data: {
+                  rightGroup: 'static-protected-override-readonly-property',
+                  leftGroup: 'static-private-override-readonly-property',
+                  right: 'd',
+                  left: 'e',
+                },
+                messageId: 'unexpectedClassesGroupOrder',
+              },
+              {
+                data: {
+                  leftGroup: 'static-protected-override-readonly-property',
+                  rightGroup: 'static-public-override-readonly-property',
+                  right: 'c',
+                  left: 'd',
+                },
+                messageId: 'unexpectedClassesGroupOrder',
+              },
+              {
+                data: {
+                  rightGroup:
+                    'protected-abstract-override-readonly-decorated-property',
+                  leftGroup: 'static-public-override-readonly-property',
+                  right: 'b',
+                  left: 'c',
+                },
+                messageId: 'unexpectedClassesGroupOrder',
+              },
+              {
+                data: {
+                  leftGroup:
+                    'protected-abstract-override-readonly-decorated-property',
+                  rightGroup:
+                    'public-abstract-override-readonly-decorated-property',
+                  right: 'a',
+                  left: 'b',
+                },
+                messageId: 'unexpectedClassesGroupOrder',
+              },
+            ],
             options: [
               {
                 ...options,
@@ -295,164 +366,93 @@ describe(ruleName, () => {
                 ],
               },
             ],
-            errors: [
-              {
-                messageId: 'unexpectedClassesGroupOrder',
-                data: {
-                  left: 'p',
-                  leftGroup: 'public-optional-async-method',
-                  right: 'o',
-                  rightGroup: 'public-optional-property',
-                },
-              },
-              {
-                messageId: 'unexpectedClassesGroupOrder',
-                data: {
-                  left: 'o',
-                  leftGroup: 'public-optional-property',
-                  right: 'static',
-                  rightGroup: 'static-block',
-                },
-              },
-              {
-                messageId: 'unexpectedClassesGroupOrder',
-                data: {
-                  left: 'static',
-                  leftGroup: 'static-block',
-                  right: 'static readonly [key: string]',
-                  rightGroup: 'static-readonly-index-signature',
-                },
-              },
-              {
-                messageId: 'unexpectedClassesGroupOrder',
-                data: {
-                  left: 'static readonly [key: string]',
-                  leftGroup: 'static-readonly-index-signature',
-                  right: 'n',
-                  rightGroup: 'async-function-property',
-                },
-              },
-              {
-                messageId: 'unexpectedClassesOrder',
-                data: {
-                  left: 'n',
-                  right: 'm',
-                },
-              },
-              {
-                messageId: 'unexpectedClassesGroupOrder',
-                data: {
-                  left: 'm',
-                  leftGroup: 'async-function-property',
-                  right: 'l',
-                  rightGroup: 'declare-private-static-readonly-property',
-                },
-              },
-              {
-                messageId: 'unexpectedClassesGroupOrder',
-                data: {
-                  left: 'l',
-                  leftGroup: 'declare-private-static-readonly-property',
-                  right: 'k',
-                  rightGroup: 'private-property',
-                },
-              },
-              {
-                messageId: 'unexpectedClassesGroupOrder',
-                data: {
-                  left: 'k',
-                  leftGroup: 'private-property',
-                  right: 'j',
-                  rightGroup: 'protected-property',
-                },
-              },
-              {
-                messageId: 'unexpectedClassesGroupOrder',
-                data: {
-                  left: 'j',
-                  leftGroup: 'protected-property',
-                  right: 'i',
-                  rightGroup: 'public-property',
-                },
-              },
-              {
-                messageId: 'unexpectedClassesGroupOrder',
-                data: {
-                  left: 'i',
-                  leftGroup: 'public-property',
-                  right: 'h',
-                  rightGroup: 'private-readonly-property',
-                },
-              },
-              {
-                messageId: 'unexpectedClassesGroupOrder',
-                data: {
-                  left: 'h',
-                  leftGroup: 'private-readonly-property',
-                  right: 'g',
-                  rightGroup: 'protected-readonly-property',
-                },
-              },
-              {
-                messageId: 'unexpectedClassesGroupOrder',
-                data: {
-                  left: 'g',
-                  leftGroup: 'protected-readonly-property',
-                  right: 'f',
-                  rightGroup: 'public-readonly-property',
-                },
-              },
-              {
-                messageId: 'unexpectedClassesGroupOrder',
-                data: {
-                  left: 'f',
-                  leftGroup: 'public-readonly-property',
-                  right: 'e',
-                  rightGroup: 'static-private-override-readonly-property',
-                },
-              },
-              {
-                messageId: 'unexpectedClassesGroupOrder',
-                data: {
-                  left: 'e',
-                  leftGroup: 'static-private-override-readonly-property',
-                  right: 'd',
-                  rightGroup: 'static-protected-override-readonly-property',
-                },
-              },
-              {
-                messageId: 'unexpectedClassesGroupOrder',
-                data: {
-                  left: 'd',
-                  leftGroup: 'static-protected-override-readonly-property',
-                  right: 'c',
-                  rightGroup: 'static-public-override-readonly-property',
-                },
-              },
-              {
-                messageId: 'unexpectedClassesGroupOrder',
-                data: {
-                  left: 'c',
-                  leftGroup: 'static-public-override-readonly-property',
-                  right: 'b',
-                  rightGroup:
-                    'protected-abstract-override-readonly-decorated-property',
-                },
-              },
-              {
-                messageId: 'unexpectedClassesGroupOrder',
-                data: {
-                  left: 'b',
-                  leftGroup:
-                    'protected-abstract-override-readonly-decorated-property',
-                  right: 'a',
-                  rightGroup:
-                    'public-abstract-override-readonly-decorated-property',
-                },
-              },
-            ],
+            output: dedent`
+            abstract class Class {
+
+              @Decorator
+              abstract override readonly a;
+
+              @Decorator
+              protected abstract override readonly b;
+
+              static override readonly c = 'c';
+
+              protected static override readonly d = 'd';
+
+              private static override readonly e = 'e';
+
+              public readonly f = 'f';
+
+              protected readonly g = 'g';
+
+              private readonly h = 'h';
+
+              public i = 'i';
+
+              protected j = 'j';
+
+              private k = 'k';
+
+              declare private static readonly l;
+
+              private m = async () => {};
+
+              private n = async function() {};
+
+              static readonly [key: string]: string;
+
+              static {}
+
+              o?;
+
+              async p?(): Promise<void>;
+            }
+          `,
+            code: dedent`
+            abstract class Class {
+
+              async p?(): Promise<void>;
+
+              o?;
+
+              static {}
+
+              static readonly [key: string]: string;
+
+              private n = async function() {};
+
+              private m = async () => {};
+
+              declare private static readonly l;
+
+              private k = 'k';
+
+              protected j = 'j';
+
+              public i = 'i';
+
+              private readonly h = 'h';
+
+              protected readonly g = 'g';
+
+              public readonly f = 'f';
+
+              private static override readonly e = 'e';
+
+              protected static override readonly d = 'd';
+
+              static override readonly c = 'c';
+
+              @Decorator
+              protected abstract override readonly b;
+
+              @Decorator
+              abstract override readonly a;
+            }
+          `,
           },
         ],
+        valid: [],
       },
     )
 
@@ -460,17 +460,19 @@ describe(ruleName, () => {
       `${ruleName}(${type}): prioritize selectors over modifiers quantity`,
       rule,
       {
-        valid: [],
         invalid: [
           {
-            code: dedent`
-            export abstract class Class extends Class2 {
-
-              public abstract override method(): string;
-
-              public abstract override get fields(): string;
-            }
-          `,
+            errors: [
+              {
+                data: {
+                  leftGroup: 'public-abstract-override-method',
+                  rightGroup: 'get-method',
+                  right: 'fields',
+                  left: 'method',
+                },
+                messageId: 'unexpectedClassesGroupOrder',
+              },
+            ],
             output: dedent`
             export abstract class Class extends Class2 {
 
@@ -479,25 +481,23 @@ describe(ruleName, () => {
               public abstract override method(): string;
             }
           `,
+            code: dedent`
+            export abstract class Class extends Class2 {
+
+              public abstract override method(): string;
+
+              public abstract override get fields(): string;
+            }
+          `,
             options: [
               {
                 ...options,
                 groups: ['get-method', 'public-abstract-override-method'],
               },
             ],
-            errors: [
-              {
-                messageId: 'unexpectedClassesGroupOrder',
-                data: {
-                  left: 'method',
-                  leftGroup: 'public-abstract-override-method',
-                  right: 'fields',
-                  rightGroup: 'get-method',
-                },
-              },
-            ],
           },
         ],
+        valid: [],
       },
     )
 
@@ -506,25 +506,19 @@ describe(ruleName, () => {
         `${ruleName}(${type}): prioritize static over readonly`,
         rule,
         {
-          valid: [],
           invalid: [
             {
-              code: dedent`
-            export class Class {
-
-              a: string;
-
-              static readonly [key: string]: string;
-            }
-          `,
-              output: dedent`
-            export class Class {
-
-              static readonly [key: string]: string;
-
-              a: string;
-            }
-          `,
+              errors: [
+                {
+                  data: {
+                    right: 'static readonly [key: string]',
+                    rightGroup: 'static-index-signature',
+                    leftGroup: 'property',
+                    left: 'a',
+                  },
+                  messageId: 'unexpectedClassesGroupOrder',
+                },
+              ],
               options: [
                 {
                   ...options,
@@ -535,19 +529,25 @@ describe(ruleName, () => {
                   ],
                 },
               ],
-              errors: [
-                {
-                  messageId: 'unexpectedClassesGroupOrder',
-                  data: {
-                    left: 'a',
-                    leftGroup: 'property',
-                    right: 'static readonly [key: string]',
-                    rightGroup: 'static-index-signature',
-                  },
-                },
-              ],
+              output: dedent`
+            export class Class {
+
+              static readonly [key: string]: string;
+
+              a: string;
+            }
+          `,
+              code: dedent`
+            export class Class {
+
+              a: string;
+
+              static readonly [key: string]: string;
+            }
+          `,
             },
           ],
+          valid: [],
         },
       )
     })
@@ -557,17 +557,25 @@ describe(ruleName, () => {
         `${ruleName}(${type}): prioritize constructor over method`,
         rule,
         {
-          valid: [],
           invalid: [
             {
-              code: dedent`
-            export class Class {
-
-              a(): void;
-
-              constructor() {}
-            }
-          `,
+              errors: [
+                {
+                  data: {
+                    rightGroup: 'constructor',
+                    right: 'constructor',
+                    leftGroup: 'method',
+                    left: 'a',
+                  },
+                  messageId: 'unexpectedClassesGroupOrder',
+                },
+              ],
+              options: [
+                {
+                  ...options,
+                  groups: ['constructor', 'method'],
+                },
+              ],
               output: dedent`
             export class Class {
 
@@ -576,25 +584,17 @@ describe(ruleName, () => {
               a(): void;
             }
           `,
-              options: [
-                {
-                  ...options,
-                  groups: ['constructor', 'method'],
-                },
-              ],
-              errors: [
-                {
-                  messageId: 'unexpectedClassesGroupOrder',
-                  data: {
-                    left: 'a',
-                    leftGroup: 'method',
-                    right: 'constructor',
-                    rightGroup: 'constructor',
-                  },
-                },
-              ],
+              code: dedent`
+            export class Class {
+
+              a(): void;
+
+              constructor() {}
+            }
+          `,
             },
           ],
+          valid: [],
         },
       )
 
@@ -602,17 +602,25 @@ describe(ruleName, () => {
         `${ruleName}(${type}): prioritize get-method over method`,
         rule,
         {
-          valid: [],
           invalid: [
             {
-              code: dedent`
-            export class Class {
-
-              a(): void;
-
-              get z() {}
-            }
-          `,
+              errors: [
+                {
+                  data: {
+                    rightGroup: 'get-method',
+                    leftGroup: 'method',
+                    right: 'z',
+                    left: 'a',
+                  },
+                  messageId: 'unexpectedClassesGroupOrder',
+                },
+              ],
+              options: [
+                {
+                  ...options,
+                  groups: ['get-method', 'method'],
+                },
+              ],
               output: dedent`
             export class Class {
 
@@ -621,25 +629,17 @@ describe(ruleName, () => {
               a(): void;
             }
           `,
-              options: [
-                {
-                  ...options,
-                  groups: ['get-method', 'method'],
-                },
-              ],
-              errors: [
-                {
-                  messageId: 'unexpectedClassesGroupOrder',
-                  data: {
-                    left: 'a',
-                    leftGroup: 'method',
-                    right: 'z',
-                    rightGroup: 'get-method',
-                  },
-                },
-              ],
+              code: dedent`
+            export class Class {
+
+              a(): void;
+
+              get z() {}
+            }
+          `,
             },
           ],
+          valid: [],
         },
       )
 
@@ -647,17 +647,25 @@ describe(ruleName, () => {
         `${ruleName}(${type}): prioritize set-method over method`,
         rule,
         {
-          valid: [],
           invalid: [
             {
-              code: dedent`
-            export class Class {
-
-              a(): void;
-
-              set z() {}
-            }
-          `,
+              errors: [
+                {
+                  data: {
+                    rightGroup: 'set-method',
+                    leftGroup: 'method',
+                    right: 'z',
+                    left: 'a',
+                  },
+                  messageId: 'unexpectedClassesGroupOrder',
+                },
+              ],
+              options: [
+                {
+                  ...options,
+                  groups: ['set-method', 'method'],
+                },
+              ],
               output: dedent`
             export class Class {
 
@@ -666,25 +674,17 @@ describe(ruleName, () => {
               a(): void;
             }
           `,
-              options: [
-                {
-                  ...options,
-                  groups: ['set-method', 'method'],
-                },
-              ],
-              errors: [
-                {
-                  messageId: 'unexpectedClassesGroupOrder',
-                  data: {
-                    left: 'a',
-                    leftGroup: 'method',
-                    right: 'z',
-                    rightGroup: 'set-method',
-                  },
-                },
-              ],
+              code: dedent`
+            export class Class {
+
+              a(): void;
+
+              set z() {}
+            }
+          `,
             },
           ],
+          valid: [],
         },
       )
     })
@@ -694,17 +694,25 @@ describe(ruleName, () => {
         `${ruleName}(${type}): prioritize static over override`,
         rule,
         {
-          valid: [],
           invalid: [
             {
-              code: dedent`
-            export class Class extends Class2 {
-
-              a: string;
-
-              static override z(): string;
-            }
-          `,
+              errors: [
+                {
+                  data: {
+                    rightGroup: 'static-method',
+                    leftGroup: 'property',
+                    right: 'z',
+                    left: 'a',
+                  },
+                  messageId: 'unexpectedClassesGroupOrder',
+                },
+              ],
+              options: [
+                {
+                  ...options,
+                  groups: ['static-method', 'property', 'override-method'],
+                },
+              ],
               output: dedent`
             export class Class extends Class2 {
 
@@ -713,25 +721,17 @@ describe(ruleName, () => {
               a: string;
             }
           `,
-              options: [
-                {
-                  ...options,
-                  groups: ['static-method', 'property', 'override-method'],
-                },
-              ],
-              errors: [
-                {
-                  messageId: 'unexpectedClassesGroupOrder',
-                  data: {
-                    left: 'a',
-                    leftGroup: 'property',
-                    right: 'z',
-                    rightGroup: 'static-method',
-                  },
-                },
-              ],
+              code: dedent`
+            export class Class extends Class2 {
+
+              a: string;
+
+              static override z(): string;
+            }
+          `,
             },
           ],
+          valid: [],
         },
       )
 
@@ -739,17 +739,25 @@ describe(ruleName, () => {
         `${ruleName}(${type}): prioritize abstract over override`,
         rule,
         {
-          valid: [],
           invalid: [
             {
-              code: dedent`
-            export abstract class Class extends Class2 {
-
-              a: string;
-
-              abstract override z(): string;
-            }
-          `,
+              errors: [
+                {
+                  data: {
+                    rightGroup: 'abstract-method',
+                    leftGroup: 'property',
+                    right: 'z',
+                    left: 'a',
+                  },
+                  messageId: 'unexpectedClassesGroupOrder',
+                },
+              ],
+              options: [
+                {
+                  ...options,
+                  groups: ['abstract-method', 'property', 'override-method'],
+                },
+              ],
               output: dedent`
             export abstract class Class extends Class2 {
 
@@ -758,25 +766,17 @@ describe(ruleName, () => {
               a: string;
             }
           `,
-              options: [
-                {
-                  ...options,
-                  groups: ['abstract-method', 'property', 'override-method'],
-                },
-              ],
-              errors: [
-                {
-                  messageId: 'unexpectedClassesGroupOrder',
-                  data: {
-                    left: 'a',
-                    leftGroup: 'property',
-                    right: 'z',
-                    rightGroup: 'abstract-method',
-                  },
-                },
-              ],
+              code: dedent`
+            export abstract class Class extends Class2 {
+
+              a: string;
+
+              abstract override z(): string;
+            }
+          `,
             },
           ],
+          valid: [],
         },
       )
 
@@ -784,18 +784,19 @@ describe(ruleName, () => {
         `${ruleName}(${type}): prioritize decorated over override`,
         rule,
         {
-          valid: [],
           invalid: [
             {
-              code: dedent`
-            export abstract class Class extends Class2 {
-
-              a: string;
-
-              @Decorator
-              override z(): void {}
-            }
-          `,
+              errors: [
+                {
+                  data: {
+                    rightGroup: 'decorated-method',
+                    leftGroup: 'property',
+                    right: 'z',
+                    left: 'a',
+                  },
+                  messageId: 'unexpectedClassesGroupOrder',
+                },
+              ],
               output: dedent`
             export abstract class Class extends Class2 {
 
@@ -803,6 +804,15 @@ describe(ruleName, () => {
               override z(): void {}
 
               a: string;
+            }
+          `,
+              code: dedent`
+            export abstract class Class extends Class2 {
+
+              a: string;
+
+              @Decorator
+              override z(): void {}
             }
           `,
               options: [
@@ -811,19 +821,9 @@ describe(ruleName, () => {
                   groups: ['decorated-method', 'property', 'override-method'],
                 },
               ],
-              errors: [
-                {
-                  messageId: 'unexpectedClassesGroupOrder',
-                  data: {
-                    left: 'a',
-                    leftGroup: 'property',
-                    right: 'z',
-                    rightGroup: 'decorated-method',
-                  },
-                },
-              ],
             },
           ],
+          valid: [],
         },
       )
 
@@ -832,25 +832,19 @@ describe(ruleName, () => {
           `${ruleName}(${type}): prioritize override over ${accessibilityModifier} accessibility`,
           rule,
           {
-            valid: [],
             invalid: [
               {
-                code: dedent`
-              export class Class {
-
-                a: string;
-
-                ${accessibilityModifier} override z(): string;
-              }
-            `,
-                output: dedent`
-              export class Class {
-
-                ${accessibilityModifier} override z(): string;
-
-                a: string;
-              }
-            `,
+                errors: [
+                  {
+                    data: {
+                      rightGroup: 'override-method',
+                      leftGroup: 'property',
+                      right: 'z',
+                      left: 'a',
+                    },
+                    messageId: 'unexpectedClassesGroupOrder',
+                  },
+                ],
                 options: [
                   {
                     ...options,
@@ -861,19 +855,25 @@ describe(ruleName, () => {
                     ],
                   },
                 ],
-                errors: [
-                  {
-                    messageId: 'unexpectedClassesGroupOrder',
-                    data: {
-                      left: 'a',
-                      leftGroup: 'property',
-                      right: 'z',
-                      rightGroup: 'override-method',
-                    },
-                  },
-                ],
+                output: dedent`
+              export class Class {
+
+                ${accessibilityModifier} override z(): string;
+
+                a: string;
+              }
+            `,
+                code: dedent`
+              export class Class {
+
+                a: string;
+
+                ${accessibilityModifier} override z(): string;
+              }
+            `,
               },
             ],
+            valid: [],
           },
         )
 
@@ -881,25 +881,19 @@ describe(ruleName, () => {
           `${ruleName}(${type}): prioritize ${accessibilityModifier} accessibility over optional`,
           rule,
           {
-            valid: [],
             invalid: [
               {
-                code: dedent`
-              export class Class {
-
-                a: string;
-
-                ${accessibilityModifier} z?(): string;
-              }
-            `,
-                output: dedent`
-              export class Class {
-
-                ${accessibilityModifier} z?(): string;
-
-                a: string;
-              }
-            `,
+                errors: [
+                  {
+                    data: {
+                      rightGroup: `${accessibilityModifier}-method`,
+                      leftGroup: 'property',
+                      right: 'z',
+                      left: 'a',
+                    },
+                    messageId: 'unexpectedClassesGroupOrder',
+                  },
+                ],
                 options: [
                   {
                     ...options,
@@ -910,19 +904,25 @@ describe(ruleName, () => {
                     ],
                   },
                 ],
-                errors: [
-                  {
-                    messageId: 'unexpectedClassesGroupOrder',
-                    data: {
-                      left: 'a',
-                      leftGroup: 'property',
-                      right: 'z',
-                      rightGroup: `${accessibilityModifier}-method`,
-                    },
-                  },
-                ],
+                output: dedent`
+              export class Class {
+
+                ${accessibilityModifier} z?(): string;
+
+                a: string;
+              }
+            `,
+                code: dedent`
+              export class Class {
+
+                a: string;
+
+                ${accessibilityModifier} z?(): string;
+              }
+            `,
               },
             ],
+            valid: [],
           },
         )
       }
@@ -931,17 +931,25 @@ describe(ruleName, () => {
         `${ruleName}(${type}): prioritize optional over async`,
         rule,
         {
-          valid: [],
           invalid: [
             {
-              code: dedent`
-              export class Class {
-
-                a: string;
-
-                async z?(): Promise<string>;
-              }
-            `,
+              errors: [
+                {
+                  data: {
+                    rightGroup: `optional-method`,
+                    leftGroup: 'property',
+                    right: 'z',
+                    left: 'a',
+                  },
+                  messageId: 'unexpectedClassesGroupOrder',
+                },
+              ],
+              options: [
+                {
+                  ...options,
+                  groups: [`optional-method`, 'property', 'async-method'],
+                },
+              ],
               output: dedent`
               export class Class {
 
@@ -950,25 +958,17 @@ describe(ruleName, () => {
                 a: string;
               }
             `,
-              options: [
-                {
-                  ...options,
-                  groups: [`optional-method`, 'property', 'async-method'],
-                },
-              ],
-              errors: [
-                {
-                  messageId: 'unexpectedClassesGroupOrder',
-                  data: {
-                    left: 'a',
-                    leftGroup: 'property',
-                    right: 'z',
-                    rightGroup: `optional-method`,
-                  },
-                },
-              ],
+              code: dedent`
+              export class Class {
+
+                a: string;
+
+                async z?(): Promise<string>;
+              }
+            `,
             },
           ],
+          valid: [],
         },
       )
     })
@@ -978,25 +978,19 @@ describe(ruleName, () => {
         `${ruleName}(${type}): prioritize static over override`,
         rule,
         {
-          valid: [],
           invalid: [
             {
-              code: dedent`
-            export class Class extends Class2 {
-
-              a: string;
-
-              static override accessor z: string;
-            }
-          `,
-              output: dedent`
-            export class Class extends Class2 {
-
-              static override accessor z: string;
-
-              a: string;
-            }
-          `,
+              errors: [
+                {
+                  data: {
+                    rightGroup: 'static-accessor-property',
+                    leftGroup: 'property',
+                    right: 'z',
+                    left: 'a',
+                  },
+                  messageId: 'unexpectedClassesGroupOrder',
+                },
+              ],
               options: [
                 {
                   ...options,
@@ -1007,19 +1001,25 @@ describe(ruleName, () => {
                   ],
                 },
               ],
-              errors: [
-                {
-                  messageId: 'unexpectedClassesGroupOrder',
-                  data: {
-                    left: 'a',
-                    leftGroup: 'property',
-                    right: 'z',
-                    rightGroup: 'static-accessor-property',
-                  },
-                },
-              ],
+              output: dedent`
+            export class Class extends Class2 {
+
+              static override accessor z: string;
+
+              a: string;
+            }
+          `,
+              code: dedent`
+            export class Class extends Class2 {
+
+              a: string;
+
+              static override accessor z: string;
+            }
+          `,
             },
           ],
+          valid: [],
         },
       )
 
@@ -1027,25 +1027,19 @@ describe(ruleName, () => {
         `${ruleName}(${type}): prioritize abstract over override`,
         rule,
         {
-          valid: [],
           invalid: [
             {
-              code: dedent`
-            export abstract class Class extends Class2 {
-
-              a: string;
-
-              abstract override accessor z: string;
-            }
-          `,
-              output: dedent`
-            export abstract class Class extends Class2 {
-
-              abstract override accessor z: string;
-
-              a: string;
-            }
-          `,
+              errors: [
+                {
+                  data: {
+                    rightGroup: 'abstract-accessor-property',
+                    leftGroup: 'property',
+                    right: 'z',
+                    left: 'a',
+                  },
+                  messageId: 'unexpectedClassesGroupOrder',
+                },
+              ],
               options: [
                 {
                   ...options,
@@ -1056,19 +1050,25 @@ describe(ruleName, () => {
                   ],
                 },
               ],
-              errors: [
-                {
-                  messageId: 'unexpectedClassesGroupOrder',
-                  data: {
-                    left: 'a',
-                    leftGroup: 'property',
-                    right: 'z',
-                    rightGroup: 'abstract-accessor-property',
-                  },
-                },
-              ],
+              output: dedent`
+            export abstract class Class extends Class2 {
+
+              abstract override accessor z: string;
+
+              a: string;
+            }
+          `,
+              code: dedent`
+            export abstract class Class extends Class2 {
+
+              a: string;
+
+              abstract override accessor z: string;
+            }
+          `,
             },
           ],
+          valid: [],
         },
       )
 
@@ -1076,27 +1076,19 @@ describe(ruleName, () => {
         `${ruleName}(${type}): prioritize decorated over override`,
         rule,
         {
-          valid: [],
           invalid: [
             {
-              code: dedent`
-            export abstract class Class extends Class2 {
-
-              a: string;
-
-              @Decorator
-              override accessor z: string;
-            }
-          `,
-              output: dedent`
-            export abstract class Class extends Class2 {
-
-              @Decorator
-              override accessor z: string;
-
-              a: string;
-            }
-          `,
+              errors: [
+                {
+                  data: {
+                    rightGroup: 'decorated-accessor-property',
+                    leftGroup: 'property',
+                    right: 'z',
+                    left: 'a',
+                  },
+                  messageId: 'unexpectedClassesGroupOrder',
+                },
+              ],
               options: [
                 {
                   ...options,
@@ -1107,19 +1099,27 @@ describe(ruleName, () => {
                   ],
                 },
               ],
-              errors: [
-                {
-                  messageId: 'unexpectedClassesGroupOrder',
-                  data: {
-                    left: 'a',
-                    leftGroup: 'property',
-                    right: 'z',
-                    rightGroup: 'decorated-accessor-property',
-                  },
-                },
-              ],
+              output: dedent`
+            export abstract class Class extends Class2 {
+
+              @Decorator
+              override accessor z: string;
+
+              a: string;
+            }
+          `,
+              code: dedent`
+            export abstract class Class extends Class2 {
+
+              a: string;
+
+              @Decorator
+              override accessor z: string;
+            }
+          `,
             },
           ],
+          valid: [],
         },
       )
 
@@ -1128,25 +1128,19 @@ describe(ruleName, () => {
           `${ruleName}(${type}): prioritize override over ${accessibilityModifier} accessibility`,
           rule,
           {
-            valid: [],
             invalid: [
               {
-                code: dedent`
-              export class Class {
-
-                a: string;
-
-                ${accessibilityModifier} override accessor z: string;
-              }
-            `,
-                output: dedent`
-              export class Class {
-
-                ${accessibilityModifier} override accessor z: string;
-
-                a: string;
-              }
-            `,
+                errors: [
+                  {
+                    data: {
+                      rightGroup: 'override-accessor-property',
+                      leftGroup: 'property',
+                      right: 'z',
+                      left: 'a',
+                    },
+                    messageId: 'unexpectedClassesGroupOrder',
+                  },
+                ],
                 options: [
                   {
                     ...options,
@@ -1157,19 +1151,25 @@ describe(ruleName, () => {
                     ],
                   },
                 ],
-                errors: [
-                  {
-                    messageId: 'unexpectedClassesGroupOrder',
-                    data: {
-                      left: 'a',
-                      leftGroup: 'property',
-                      right: 'z',
-                      rightGroup: 'override-accessor-property',
-                    },
-                  },
-                ],
+                output: dedent`
+              export class Class {
+
+                ${accessibilityModifier} override accessor z: string;
+
+                a: string;
+              }
+            `,
+                code: dedent`
+              export class Class {
+
+                a: string;
+
+                ${accessibilityModifier} override accessor z: string;
+              }
+            `,
               },
             ],
+            valid: [],
           },
         )
       }
@@ -1180,17 +1180,25 @@ describe(ruleName, () => {
         `${ruleName}(${type}): prioritize function property over property`,
         rule,
         {
-          valid: [],
           invalid: [
             {
-              code: dedent`
-            export class Class {
-
-              a = function() {}
-
-              z: string;
-            }
-          `,
+              errors: [
+                {
+                  data: {
+                    leftGroup: 'function-property',
+                    rightGroup: 'property',
+                    right: 'z',
+                    left: 'a',
+                  },
+                  messageId: 'unexpectedClassesGroupOrder',
+                },
+              ],
+              options: [
+                {
+                  ...options,
+                  groups: ['property', 'function-property'],
+                },
+              ],
               output: dedent`
             export class Class {
 
@@ -1199,25 +1207,17 @@ describe(ruleName, () => {
               a = function() {}
             }
           `,
-              options: [
-                {
-                  ...options,
-                  groups: ['property', 'function-property'],
-                },
-              ],
-              errors: [
-                {
-                  messageId: 'unexpectedClassesGroupOrder',
-                  data: {
-                    left: 'a',
-                    leftGroup: 'function-property',
-                    right: 'z',
-                    rightGroup: 'property',
-                  },
-                },
-              ],
+              code: dedent`
+            export class Class {
+
+              a = function() {}
+
+              z: string;
+            }
+          `,
             },
           ],
+          valid: [],
         },
       )
 
@@ -1225,17 +1225,25 @@ describe(ruleName, () => {
         `${ruleName}(${type}): prioritize function property over property for arrow functions`,
         rule,
         {
-          valid: [],
           invalid: [
             {
-              code: dedent`
-            export class Class {
-
-              a = () => {}
-
-              z: string;
-            }
-          `,
+              errors: [
+                {
+                  data: {
+                    leftGroup: 'function-property',
+                    rightGroup: 'property',
+                    right: 'z',
+                    left: 'a',
+                  },
+                  messageId: 'unexpectedClassesGroupOrder',
+                },
+              ],
+              options: [
+                {
+                  ...options,
+                  groups: ['property', 'function-property'],
+                },
+              ],
               output: dedent`
             export class Class {
 
@@ -1244,25 +1252,17 @@ describe(ruleName, () => {
               a = () => {}
             }
           `,
-              options: [
-                {
-                  ...options,
-                  groups: ['property', 'function-property'],
-                },
-              ],
-              errors: [
-                {
-                  messageId: 'unexpectedClassesGroupOrder',
-                  data: {
-                    left: 'a',
-                    leftGroup: 'function-property',
-                    right: 'z',
-                    rightGroup: 'property',
-                  },
-                },
-              ],
+              code: dedent`
+            export class Class {
+
+              a = () => {}
+
+              z: string;
+            }
+          `,
             },
           ],
+          valid: [],
         },
       )
     })
@@ -1272,17 +1272,25 @@ describe(ruleName, () => {
         `${ruleName}(${type}): prioritize static over declare`,
         rule,
         {
-          valid: [],
           invalid: [
             {
-              code: dedent`
-            export class Class extends Class2 {
-
-              a(): void {}
-
-              declare static z: string;
-            }
-          `,
+              errors: [
+                {
+                  data: {
+                    rightGroup: 'static-property',
+                    leftGroup: 'method',
+                    right: 'z',
+                    left: 'a',
+                  },
+                  messageId: 'unexpectedClassesGroupOrder',
+                },
+              ],
+              options: [
+                {
+                  ...options,
+                  groups: ['static-property', 'method', 'declare-property'],
+                },
+              ],
               output: dedent`
             export class Class extends Class2 {
 
@@ -1291,25 +1299,17 @@ describe(ruleName, () => {
               a(): void {}
             }
           `,
-              options: [
-                {
-                  ...options,
-                  groups: ['static-property', 'method', 'declare-property'],
-                },
-              ],
-              errors: [
-                {
-                  messageId: 'unexpectedClassesGroupOrder',
-                  data: {
-                    left: 'a',
-                    leftGroup: 'method',
-                    right: 'z',
-                    rightGroup: 'static-property',
-                  },
-                },
-              ],
+              code: dedent`
+            export class Class extends Class2 {
+
+              a(): void {}
+
+              declare static z: string;
+            }
+          `,
             },
           ],
+          valid: [],
         },
       )
 
@@ -1317,17 +1317,25 @@ describe(ruleName, () => {
         `${ruleName}(${type}): prioritize declare over abstract`,
         rule,
         {
-          valid: [],
           invalid: [
             {
-              code: dedent`
-            export class Class extends Class2 {
-
-              a(): void {}
-
-              declare abstract z: string;
-            }
-          `,
+              errors: [
+                {
+                  data: {
+                    rightGroup: 'declare-property',
+                    leftGroup: 'method',
+                    right: 'z',
+                    left: 'a',
+                  },
+                  messageId: 'unexpectedClassesGroupOrder',
+                },
+              ],
+              options: [
+                {
+                  ...options,
+                  groups: ['declare-property', 'method', 'abstract-property'],
+                },
+              ],
               output: dedent`
             export class Class extends Class2 {
 
@@ -1336,25 +1344,17 @@ describe(ruleName, () => {
               a(): void {}
             }
           `,
-              options: [
-                {
-                  ...options,
-                  groups: ['declare-property', 'method', 'abstract-property'],
-                },
-              ],
-              errors: [
-                {
-                  messageId: 'unexpectedClassesGroupOrder',
-                  data: {
-                    left: 'a',
-                    leftGroup: 'method',
-                    right: 'z',
-                    rightGroup: 'declare-property',
-                  },
-                },
-              ],
+              code: dedent`
+            export class Class extends Class2 {
+
+              a(): void {}
+
+              declare abstract z: string;
+            }
+          `,
             },
           ],
+          valid: [],
         },
       )
 
@@ -1362,44 +1362,44 @@ describe(ruleName, () => {
         `${ruleName}(${type}): prioritize abstract over override`,
         rule,
         {
-          valid: [],
           invalid: [
             {
-              code: dedent`
-            export abstract class Class extends Class2 {
-
-              a(): void {}
-
-              abstract override z: string;
-            }
-          `,
-              output: dedent`
-            export abstract class Class extends Class2 {
-
-              abstract override z: string;
-
-              a(): void {}
-            }
-          `,
+              errors: [
+                {
+                  data: {
+                    rightGroup: 'abstract-property',
+                    leftGroup: 'method',
+                    right: 'z',
+                    left: 'a',
+                  },
+                  messageId: 'unexpectedClassesGroupOrder',
+                },
+              ],
               options: [
                 {
                   ...options,
                   groups: ['abstract-property', 'method', 'override-property'],
                 },
               ],
-              errors: [
-                {
-                  messageId: 'unexpectedClassesGroupOrder',
-                  data: {
-                    left: 'a',
-                    leftGroup: 'method',
-                    right: 'z',
-                    rightGroup: 'abstract-property',
-                  },
-                },
-              ],
+              output: dedent`
+            export abstract class Class extends Class2 {
+
+              abstract override z: string;
+
+              a(): void {}
+            }
+          `,
+              code: dedent`
+            export abstract class Class extends Class2 {
+
+              a(): void {}
+
+              abstract override z: string;
+            }
+          `,
             },
           ],
+          valid: [],
         },
       )
 
@@ -1407,18 +1407,19 @@ describe(ruleName, () => {
         `${ruleName}(${type}): prioritize decorated over override`,
         rule,
         {
-          valid: [],
           invalid: [
             {
-              code: dedent`
-            export abstract class Class extends Class2 {
-
-              a(): void {}
-
-              @Decorator
-              override z: string;
-            }
-          `,
+              errors: [
+                {
+                  data: {
+                    rightGroup: 'decorated-property',
+                    leftGroup: 'method',
+                    right: 'z',
+                    left: 'a',
+                  },
+                  messageId: 'unexpectedClassesGroupOrder',
+                },
+              ],
               output: dedent`
             export abstract class Class extends Class2 {
 
@@ -1428,35 +1429,6 @@ describe(ruleName, () => {
               a(): void {}
             }
           `,
-              options: [
-                {
-                  ...options,
-                  groups: ['decorated-property', 'method', 'override-property'],
-                },
-              ],
-              errors: [
-                {
-                  messageId: 'unexpectedClassesGroupOrder',
-                  data: {
-                    left: 'a',
-                    leftGroup: 'method',
-                    right: 'z',
-                    rightGroup: 'decorated-property',
-                  },
-                },
-              ],
-            },
-          ],
-        },
-      )
-
-      ruleTester.run(
-        `${ruleName}(${type}): prioritize decorated over override`,
-        rule,
-        {
-          valid: [],
-          invalid: [
-            {
               code: dedent`
             export abstract class Class extends Class2 {
 
@@ -1466,6 +1438,35 @@ describe(ruleName, () => {
               override z: string;
             }
           `,
+              options: [
+                {
+                  ...options,
+                  groups: ['decorated-property', 'method', 'override-property'],
+                },
+              ],
+            },
+          ],
+          valid: [],
+        },
+      )
+
+      ruleTester.run(
+        `${ruleName}(${type}): prioritize decorated over override`,
+        rule,
+        {
+          invalid: [
+            {
+              errors: [
+                {
+                  data: {
+                    rightGroup: 'decorated-property',
+                    leftGroup: 'method',
+                    right: 'z',
+                    left: 'a',
+                  },
+                  messageId: 'unexpectedClassesGroupOrder',
+                },
+              ],
               output: dedent`
             export abstract class Class extends Class2 {
 
@@ -1475,25 +1476,24 @@ describe(ruleName, () => {
               a(): void {}
             }
           `,
+              code: dedent`
+            export abstract class Class extends Class2 {
+
+              a(): void {}
+
+              @Decorator
+              override z: string;
+            }
+          `,
               options: [
                 {
                   ...options,
                   groups: ['decorated-property', 'method', 'override-property'],
                 },
               ],
-              errors: [
-                {
-                  messageId: 'unexpectedClassesGroupOrder',
-                  data: {
-                    left: 'a',
-                    leftGroup: 'method',
-                    right: 'z',
-                    rightGroup: 'decorated-property',
-                  },
-                },
-              ],
             },
           ],
+          valid: [],
         },
       )
 
@@ -1501,17 +1501,25 @@ describe(ruleName, () => {
         `${ruleName}(${type}): prioritize override over readonly`,
         rule,
         {
-          valid: [],
           invalid: [
             {
-              code: dedent`
-            export abstract class Class extends Class2 {
-
-              a(): void {}
-
-              override readonly z: string;
-            }
-          `,
+              errors: [
+                {
+                  data: {
+                    rightGroup: 'override-property',
+                    leftGroup: 'method',
+                    right: 'z',
+                    left: 'a',
+                  },
+                  messageId: 'unexpectedClassesGroupOrder',
+                },
+              ],
+              options: [
+                {
+                  ...options,
+                  groups: ['override-property', 'method', 'readonly-property'],
+                },
+              ],
               output: dedent`
             export abstract class Class extends Class2 {
 
@@ -1520,25 +1528,17 @@ describe(ruleName, () => {
               a(): void {}
             }
           `,
-              options: [
-                {
-                  ...options,
-                  groups: ['override-property', 'method', 'readonly-property'],
-                },
-              ],
-              errors: [
-                {
-                  messageId: 'unexpectedClassesGroupOrder',
-                  data: {
-                    left: 'a',
-                    leftGroup: 'method',
-                    right: 'z',
-                    rightGroup: 'override-property',
-                  },
-                },
-              ],
+              code: dedent`
+            export abstract class Class extends Class2 {
+
+              a(): void {}
+
+              override readonly z: string;
+            }
+          `,
             },
           ],
+          valid: [],
         },
       )
 
@@ -1547,25 +1547,19 @@ describe(ruleName, () => {
           `${ruleName}(${type}): prioritize readonly over ${accessibilityModifier} accessibility`,
           rule,
           {
-            valid: [],
             invalid: [
               {
-                code: dedent`
-              export class Class {
-
-                a(): void {}
-
-                ${accessibilityModifier} readonly z: string;
-              }
-            `,
-                output: dedent`
-              export class Class {
-
-                ${accessibilityModifier} readonly z: string;
-
-                a(): void {}
-              }
-            `,
+                errors: [
+                  {
+                    data: {
+                      rightGroup: 'readonly-property',
+                      leftGroup: 'method',
+                      right: 'z',
+                      left: 'a',
+                    },
+                    messageId: 'unexpectedClassesGroupOrder',
+                  },
+                ],
                 options: [
                   {
                     ...options,
@@ -1576,19 +1570,25 @@ describe(ruleName, () => {
                     ],
                   },
                 ],
-                errors: [
-                  {
-                    messageId: 'unexpectedClassesGroupOrder',
-                    data: {
-                      left: 'a',
-                      leftGroup: 'method',
-                      right: 'z',
-                      rightGroup: 'readonly-property',
-                    },
-                  },
-                ],
+                output: dedent`
+              export class Class {
+
+                ${accessibilityModifier} readonly z: string;
+
+                a(): void {}
+              }
+            `,
+                code: dedent`
+              export class Class {
+
+                a(): void {}
+
+                ${accessibilityModifier} readonly z: string;
+              }
+            `,
               },
             ],
+            valid: [],
           },
         )
 
@@ -1596,25 +1596,19 @@ describe(ruleName, () => {
           `${ruleName}(${type}): prioritize ${accessibilityModifier} accessibility over optional`,
           rule,
           {
-            valid: [],
             invalid: [
               {
-                code: dedent`
-              export class Class {
-
-                a(): void {}
-
-                ${accessibilityModifier} z?: string;
-              }
-            `,
-                output: dedent`
-              export class Class {
-
-                ${accessibilityModifier} z?: string;
-
-                a(): void {}
-              }
-            `,
+                errors: [
+                  {
+                    data: {
+                      rightGroup: `${accessibilityModifier}-property`,
+                      leftGroup: 'method',
+                      right: 'z',
+                      left: 'a',
+                    },
+                    messageId: 'unexpectedClassesGroupOrder',
+                  },
+                ],
                 options: [
                   {
                     ...options,
@@ -1625,19 +1619,25 @@ describe(ruleName, () => {
                     ],
                   },
                 ],
-                errors: [
-                  {
-                    messageId: 'unexpectedClassesGroupOrder',
-                    data: {
-                      left: 'a',
-                      leftGroup: 'method',
-                      right: 'z',
-                      rightGroup: `${accessibilityModifier}-property`,
-                    },
-                  },
-                ],
+                output: dedent`
+              export class Class {
+
+                ${accessibilityModifier} z?: string;
+
+                a(): void {}
+              }
+            `,
+                code: dedent`
+              export class Class {
+
+                a(): void {}
+
+                ${accessibilityModifier} z?: string;
+              }
+            `,
               },
             ],
+            valid: [],
           },
         )
       }
@@ -1646,17 +1646,25 @@ describe(ruleName, () => {
         `${ruleName}(${type}): prioritize optional over async`,
         rule,
         {
-          valid: [],
           invalid: [
             {
-              code: dedent`
-              export class Class {
-
-                a(): void {}
-
-                z?: Promise<string> = async () => {};
-              }
-            `,
+              errors: [
+                {
+                  data: {
+                    rightGroup: `optional-property`,
+                    leftGroup: 'method',
+                    right: 'z',
+                    left: 'a',
+                  },
+                  messageId: 'unexpectedClassesGroupOrder',
+                },
+              ],
+              options: [
+                {
+                  ...options,
+                  groups: ['optional-property', 'method', `async-property`],
+                },
+              ],
               output: dedent`
               export class Class {
 
@@ -1665,25 +1673,17 @@ describe(ruleName, () => {
                 a(): void {}
               }
             `,
-              options: [
-                {
-                  ...options,
-                  groups: ['optional-property', 'method', `async-property`],
-                },
-              ],
-              errors: [
-                {
-                  messageId: 'unexpectedClassesGroupOrder',
-                  data: {
-                    left: 'a',
-                    leftGroup: 'method',
-                    right: 'z',
-                    rightGroup: `optional-property`,
-                  },
-                },
-              ],
+              code: dedent`
+              export class Class {
+
+                a(): void {}
+
+                z?: Promise<string> = async () => {};
+              }
+            `,
             },
           ],
+          valid: [],
         },
       )
     })
@@ -1692,21 +1692,24 @@ describe(ruleName, () => {
       `${ruleName}(${type}): sorts class and group members`,
       rule,
       {
-        valid: [
+        invalid: [
           {
-            code: dedent`
-              class Class {
-                static a
-
-                static b = 'b'
-
-                [key in O]
-
-                static {
-                  this.a = 'd'
-                }
-              }
-            `,
+            errors: [
+              {
+                data: {
+                  left: 'key in O',
+                  right: 'b',
+                },
+                messageId: 'unexpectedClassesOrder',
+              },
+              {
+                data: {
+                  right: 'a',
+                  left: 'b',
+                },
+                messageId: 'unexpectedClassesOrder',
+              },
+            ],
             options: [
               {
                 ...options,
@@ -1718,23 +1721,6 @@ describe(ruleName, () => {
                 ],
               },
             ],
-          },
-        ],
-        invalid: [
-          {
-            code: dedent`
-              class Class {
-                [key in O]
-
-                static b = 'b'
-
-                static a
-
-                static {
-                  this.a = 'd'
-                }
-              }
-            `,
             output: dedent`
               class Class {
                 static a
@@ -1748,6 +1734,23 @@ describe(ruleName, () => {
                 }
               }
             `,
+            code: dedent`
+              class Class {
+                [key in O]
+
+                static b = 'b'
+
+                static a
+
+                static {
+                  this.a = 'd'
+                }
+              }
+            `,
+          },
+        ],
+        valid: [
+          {
             options: [
               {
                 ...options,
@@ -1759,22 +1762,19 @@ describe(ruleName, () => {
                 ],
               },
             ],
-            errors: [
-              {
-                messageId: 'unexpectedClassesOrder',
-                data: {
-                  left: 'key in O',
-                  right: 'b',
-                },
-              },
-              {
-                messageId: 'unexpectedClassesOrder',
-                data: {
-                  left: 'b',
-                  right: 'a',
-                },
-              },
-            ],
+            code: dedent`
+              class Class {
+                static a
+
+                static b = 'b'
+
+                [key in O]
+
+                static {
+                  this.a = 'd'
+                }
+              }
+            `,
           },
         ],
       },
@@ -1784,16 +1784,25 @@ describe(ruleName, () => {
       `${ruleName}(${type}): sorts class with attributes having the same name`,
       rule,
       {
-        valid: [],
         invalid: [
           {
-            code: dedent`
-              class Class {
-                static a;
-
-                a;
-              }
-            `,
+            errors: [
+              {
+                data: {
+                  leftGroup: 'static-property',
+                  rightGroup: 'property',
+                  right: 'a',
+                  left: 'a',
+                },
+                messageId: 'unexpectedClassesGroupOrder',
+              },
+            ],
+            options: [
+              {
+                ...options,
+                groups: ['property', 'static-property'],
+              },
+            ],
             output: dedent`
               class Class {
                 a;
@@ -1801,25 +1810,16 @@ describe(ruleName, () => {
                 static a;
               }
             `,
-            options: [
-              {
-                ...options,
-                groups: ['property', 'static-property'],
-              },
-            ],
-            errors: [
-              {
-                messageId: 'unexpectedClassesGroupOrder',
-                data: {
-                  left: 'a',
-                  leftGroup: 'static-property',
-                  right: 'a',
-                  rightGroup: 'property',
-                },
-              },
-            ],
+            code: dedent`
+              class Class {
+                static a;
+
+                a;
+              }
+            `,
           },
         ],
+        valid: [],
       },
     )
 
@@ -1827,48 +1827,19 @@ describe(ruleName, () => {
       `${ruleName}(${type}): sorts class with ts index signatures`,
       rule,
       {
-        valid: [
-          {
-            code: dedent`
-              class Class {
-                static a = 'a';
-
-                [k: string]: any;
-
-                [k: string];
-              }
-            `,
-            options: [
-              {
-                ...options,
-                groups: [
-                  ['static-property', 'private-property', 'property'],
-                  'constructor',
-                ],
-              },
-            ],
-          },
-        ],
         invalid: [
           {
-            code: dedent`
-              class Class {
-                [k: string]: any;
-
-                [k: string];
-
-                static a = 'a';
-              }
-            `,
-            output: dedent`
-              class Class {
-                static a = 'a';
-
-                [k: string]: any;
-
-                [k: string];
-              }
-            `,
+            errors: [
+              {
+                data: {
+                  rightGroup: 'static-property',
+                  leftGroup: 'index-signature',
+                  left: '[k: string];',
+                  right: 'a',
+                },
+                messageId: 'unexpectedClassesGroupOrder',
+              },
+            ],
             options: [
               {
                 ...options,
@@ -1878,17 +1849,46 @@ describe(ruleName, () => {
                 ],
               },
             ],
-            errors: [
+            output: dedent`
+              class Class {
+                static a = 'a';
+
+                [k: string]: any;
+
+                [k: string];
+              }
+            `,
+            code: dedent`
+              class Class {
+                [k: string]: any;
+
+                [k: string];
+
+                static a = 'a';
+              }
+            `,
+          },
+        ],
+        valid: [
+          {
+            options: [
               {
-                messageId: 'unexpectedClassesGroupOrder',
-                data: {
-                  left: '[k: string];',
-                  leftGroup: 'index-signature',
-                  right: 'a',
-                  rightGroup: 'static-property',
-                },
+                ...options,
+                groups: [
+                  ['static-property', 'private-property', 'property'],
+                  'constructor',
+                ],
               },
             ],
+            code: dedent`
+              class Class {
+                static a = 'a';
+
+                [k: string]: any;
+
+                [k: string];
+              }
+            `,
           },
         ],
       },
@@ -1929,34 +1929,51 @@ describe(ruleName, () => {
       `${ruleName}(${type}): sorts private methods with hash`,
       rule,
       {
-        valid: [],
         invalid: [
           {
-            code: dedent`
-              class MyUnsortedClass {
-                someOtherProperty
-
-                someProperty = 1
-
-                constructor() {}
-
-                static #aPrivateStaticMethod () {}
-
-                #somePrivateProperty
-
-                #someOtherPrivateProperty = 2
-
-                static someStaticProperty = 3
-
-                static #someStaticPrivateProperty = 4
-
-                aInstanceMethod () {}
-
-                static aStaticMethod () {}
-
-                #aPrivateInstanceMethod () {}
-              }
-            `,
+            errors: [
+              {
+                data: {
+                  rightGroup: 'private-property',
+                  left: '#aPrivateStaticMethod',
+                  right: '#somePrivateProperty',
+                  leftGroup: 'static-method',
+                },
+                messageId: 'unexpectedClassesGroupOrder',
+              },
+              {
+                data: {
+                  right: '#someOtherPrivateProperty',
+                  left: '#somePrivateProperty',
+                },
+                messageId: 'unexpectedClassesOrder',
+              },
+              {
+                data: {
+                  left: '#someOtherPrivateProperty',
+                  leftGroup: 'private-property',
+                  rightGroup: 'static-property',
+                  right: 'someStaticProperty',
+                },
+                messageId: 'unexpectedClassesGroupOrder',
+              },
+              {
+                data: {
+                  right: '#someStaticPrivateProperty',
+                  left: 'someStaticProperty',
+                },
+                messageId: 'unexpectedClassesOrder',
+              },
+              {
+                data: {
+                  right: '#aPrivateInstanceMethod',
+                  rightGroup: 'private-method',
+                  leftGroup: 'static-method',
+                  left: 'aStaticMethod',
+                },
+                messageId: 'unexpectedClassesGroupOrder',
+              },
+            ],
             output: dedent`
               class MyUnsortedClass {
                 static #someStaticPrivateProperty = 4
@@ -1980,6 +1997,31 @@ describe(ruleName, () => {
                 static #aPrivateStaticMethod () {}
 
                 static aStaticMethod () {}
+              }
+            `,
+            code: dedent`
+              class MyUnsortedClass {
+                someOtherProperty
+
+                someProperty = 1
+
+                constructor() {}
+
+                static #aPrivateStaticMethod () {}
+
+                #somePrivateProperty
+
+                #someOtherPrivateProperty = 2
+
+                static someStaticProperty = 3
+
+                static #someStaticPrivateProperty = 4
+
+                aInstanceMethod () {}
+
+                static aStaticMethod () {}
+
+                #aPrivateInstanceMethod () {}
               }
             `,
             options: [
@@ -1997,51 +2039,9 @@ describe(ruleName, () => {
                 ],
               },
             ],
-            errors: [
-              {
-                messageId: 'unexpectedClassesGroupOrder',
-                data: {
-                  left: '#aPrivateStaticMethod',
-                  leftGroup: 'static-method',
-                  right: '#somePrivateProperty',
-                  rightGroup: 'private-property',
-                },
-              },
-              {
-                messageId: 'unexpectedClassesOrder',
-                data: {
-                  left: '#somePrivateProperty',
-                  right: '#someOtherPrivateProperty',
-                },
-              },
-              {
-                messageId: 'unexpectedClassesGroupOrder',
-                data: {
-                  left: '#someOtherPrivateProperty',
-                  leftGroup: 'private-property',
-                  right: 'someStaticProperty',
-                  rightGroup: 'static-property',
-                },
-              },
-              {
-                messageId: 'unexpectedClassesOrder',
-                data: {
-                  left: 'someStaticProperty',
-                  right: '#someStaticPrivateProperty',
-                },
-              },
-              {
-                messageId: 'unexpectedClassesGroupOrder',
-                data: {
-                  left: 'aStaticMethod',
-                  leftGroup: 'static-method',
-                  right: '#aPrivateInstanceMethod',
-                  rightGroup: 'private-method',
-                },
-              },
-            ],
           },
         ],
+        valid: [],
       },
     )
 
@@ -2049,27 +2049,8 @@ describe(ruleName, () => {
       `${ruleName}(${type}): allows split methods with getters and setters`,
       rule,
       {
-        valid: [],
         invalid: [
           {
-            code: dedent`
-              class A {
-                x() {}
-                b() {}
-                get z() {}
-                get c() {}
-                set c() {}
-              }
-            `,
-            output: dedent`
-              class A {
-                b() {}
-                x() {}
-                get c() {}
-                set c() {}
-                get z() {}
-              }
-            `,
             options: [
               {
                 ...options,
@@ -2089,45 +2070,47 @@ describe(ruleName, () => {
             ],
             errors: [
               {
-                messageId: 'unexpectedClassesOrder',
                 data: {
-                  left: 'x',
                   right: 'b',
+                  left: 'x',
                 },
+                messageId: 'unexpectedClassesOrder',
               },
               {
-                messageId: 'unexpectedClassesOrder',
                 data: {
-                  left: 'z',
                   right: 'c',
+                  left: 'z',
                 },
+                messageId: 'unexpectedClassesOrder',
               },
             ],
+            output: dedent`
+              class A {
+                b() {}
+                x() {}
+                get c() {}
+                set c() {}
+                get z() {}
+              }
+            `,
+            code: dedent`
+              class A {
+                x() {}
+                b() {}
+                get z() {}
+                get c() {}
+                set c() {}
+              }
+            `,
           },
         ],
+        valid: [],
       },
     )
 
     ruleTester.run(`${ruleName}(${type}): sorts decorated properties`, rule, {
-      valid: [],
       invalid: [
         {
-          code: dedent`
-            class User {
-              firstName: string
-
-              id: number
-
-              @Index({ name: 'born_index' })
-              @Property()
-              born: string
-
-              @Property()
-              @Unique()
-              email: string
-
-              lastName: string
-            }`,
           output: dedent`
             class User {
               firstName: string
@@ -2144,26 +2127,42 @@ describe(ruleName, () => {
               @Unique()
               email: string
             }`,
+          code: dedent`
+            class User {
+              firstName: string
+
+              id: number
+
+              @Index({ name: 'born_index' })
+              @Property()
+              born: string
+
+              @Property()
+              @Unique()
+              email: string
+
+              lastName: string
+            }`,
+          errors: [
+            {
+              data: {
+                leftGroup: 'decorated-property',
+                rightGroup: 'property',
+                right: 'lastName',
+                left: 'email',
+              },
+              messageId: 'unexpectedClassesGroupOrder',
+            },
+          ],
           options: [
             {
               ...options,
               groups: ['property', 'decorated-property', 'unknown'],
             },
           ],
-          errors: [
-            {
-              messageId: 'unexpectedClassesGroupOrder',
-              data: {
-                left: 'email',
-                leftGroup: 'decorated-property',
-                right: 'lastName',
-                rightGroup: 'property',
-              },
-            },
-          ],
         },
         {
-          code: dedent`
+          output: dedent`
             class MyElement {
               @property({ attribute: false })
               data = {}
@@ -2188,13 +2187,13 @@ describe(ruleName, () => {
                 return this._message
               }
 
-              set message(message: string) {
-                this._message = message
-              }
-
               @property()
               set prop(val: number) {
                 this._prop = Math.floor(val)
+              }
+
+              set message(message: string) {
+                this._message = message
               }
 
               get prop() {
@@ -2203,7 +2202,7 @@ describe(ruleName, () => {
 
               render() {}
             }`,
-          output: dedent`
+          code: dedent`
             class MyElement {
               @property({ attribute: false })
               data = {}
@@ -2228,13 +2227,13 @@ describe(ruleName, () => {
                 return this._message
               }
 
+              set message(message: string) {
+                this._message = message
+              }
+
               @property()
               set prop(val: number) {
                 this._prop = Math.floor(val)
-              }
-
-              set message(message: string) {
-                this._message = message
               }
 
               get prop() {
@@ -2261,44 +2260,43 @@ describe(ruleName, () => {
           ],
           errors: [
             {
-              messageId: 'unexpectedClassesGroupOrder',
               data: {
-                left: 'message',
-                leftGroup: 'set-method',
-                right: 'prop',
                 rightGroup: 'decorated-set-method',
+                leftGroup: 'set-method',
+                left: 'message',
+                right: 'prop',
               },
+              messageId: 'unexpectedClassesGroupOrder',
             },
           ],
         },
       ],
+      valid: [],
     })
 
     ruleTester.run(`${ruleName}(${type}): sorts decorated accessors`, rule, {
-      valid: [],
       invalid: [
         {
-          code: dedent`
-            class Todo {
-              id = Math.random()
-
-              constructor() {}
-
-              @action
-              toggle() {}
-
-              @observable
-              accessor #active = false
-
-              @observable
-              accessor finished = false
-
-              @observable
-              accessor title = ''
-
-              @observable
-              protected accessor type = ''
-            }`,
+          errors: [
+            {
+              data: {
+                rightGroup: 'private-decorated-accessor-property',
+                leftGroup: 'decorated-method',
+                right: '#active',
+                left: 'toggle',
+              },
+              messageId: 'unexpectedClassesGroupOrder',
+            },
+            {
+              data: {
+                leftGroup: 'private-decorated-accessor-property',
+                rightGroup: 'decorated-accessor-property',
+                right: 'finished',
+                left: '#active',
+              },
+              messageId: 'unexpectedClassesGroupOrder',
+            },
+          ],
           output: dedent`
             class Todo {
               @observable
@@ -2320,6 +2318,27 @@ describe(ruleName, () => {
               @action
               toggle() {}
             }`,
+          code: dedent`
+            class Todo {
+              id = Math.random()
+
+              constructor() {}
+
+              @action
+              toggle() {}
+
+              @observable
+              accessor #active = false
+
+              @observable
+              accessor finished = false
+
+              @observable
+              accessor title = ''
+
+              @observable
+              protected accessor type = ''
+            }`,
           options: [
             {
               ...options,
@@ -2334,31 +2353,89 @@ describe(ruleName, () => {
               ],
             },
           ],
+        },
+      ],
+      valid: [],
+    })
+
+    ruleTester.run(`${ruleName}(${type}): sorts decorated accessors`, rule, {
+      invalid: [
+        {
           errors: [
             {
-              messageId: 'unexpectedClassesGroupOrder',
               data: {
-                left: 'toggle',
-                leftGroup: 'decorated-method',
-                right: '#active',
-                rightGroup: 'private-decorated-accessor-property',
+                right: 'onSortChanged',
+                left: 'updateTable',
               },
+              messageId: 'unexpectedClassesOrder',
             },
             {
-              messageId: 'unexpectedClassesGroupOrder',
               data: {
-                left: '#active',
-                leftGroup: 'private-decorated-accessor-property',
-                right: 'finished',
-                rightGroup: 'decorated-accessor-property',
+                right: 'onPaginationChanged',
+                left: 'onSortChanged',
               },
+              messageId: 'unexpectedClassesOrder',
+            },
+            {
+              data: {
+                right: 'onValueChanged',
+                left: 'setFormValue',
+              },
+              messageId: 'unexpectedClassesOrder',
+            },
+          ],
+          output: dedent`
+            class Class {
+              // Region: Table
+              protected onChangeColumns() {}
+
+              protected onPaginationChanged() {}
+
+              protected onSortChanged() {}
+
+              protected updateTable() {}
+
+              // Region: Form
+              protected clearForm() {}
+
+              protected disableForm() {}
+
+              // Regular Comment
+              protected onValueChanged() {}
+
+              protected setFormValue() {}
+            }
+          `,
+          code: dedent`
+            class Class {
+              // Region: Table
+              protected onChangeColumns() {}
+
+              protected updateTable() {}
+
+              protected onSortChanged() {}
+
+              protected onPaginationChanged() {}
+
+              // Region: Form
+              protected clearForm() {}
+
+              protected disableForm() {}
+
+              protected setFormValue() {}
+
+              // Regular Comment
+              protected onValueChanged() {}
+            }
+          `,
+          options: [
+            {
+              ...options,
+              partitionByComment: 'Region:*',
             },
           ],
         },
       ],
-    })
-
-    ruleTester.run(`${ruleName}(${type}): sorts decorated accessors`, rule, {
       valid: [
         {
           code: dedent`
@@ -2391,89 +2468,164 @@ describe(ruleName, () => {
           ],
         },
       ],
-      invalid: [
-        {
-          code: dedent`
-            class Class {
-              // Region: Table
-              protected onChangeColumns() {}
-
-              protected updateTable() {}
-
-              protected onSortChanged() {}
-
-              protected onPaginationChanged() {}
-
-              // Region: Form
-              protected clearForm() {}
-
-              protected disableForm() {}
-
-              protected setFormValue() {}
-
-              // Regular Comment
-              protected onValueChanged() {}
-            }
-          `,
-          output: dedent`
-            class Class {
-              // Region: Table
-              protected onChangeColumns() {}
-
-              protected onPaginationChanged() {}
-
-              protected onSortChanged() {}
-
-              protected updateTable() {}
-
-              // Region: Form
-              protected clearForm() {}
-
-              protected disableForm() {}
-
-              // Regular Comment
-              protected onValueChanged() {}
-
-              protected setFormValue() {}
-            }
-          `,
-          options: [
-            {
-              ...options,
-              partitionByComment: 'Region:*',
-            },
-          ],
-          errors: [
-            {
-              messageId: 'unexpectedClassesOrder',
-              data: {
-                left: 'updateTable',
-                right: 'onSortChanged',
-              },
-            },
-            {
-              messageId: 'unexpectedClassesOrder',
-              data: {
-                left: 'onSortChanged',
-                right: 'onPaginationChanged',
-              },
-            },
-            {
-              messageId: 'unexpectedClassesOrder',
-              data: {
-                left: 'setFormValue',
-                right: 'onValueChanged',
-              },
-            },
-          ],
-        },
-      ],
     })
 
     ruleTester.run(
       `${ruleName}(${type}): does not sort properties if the right value depends on the left value`,
       rule,
       {
+        invalid: [
+          {
+            errors: [
+              {
+                data: {
+                  nodeDependentOnRight: 'aaa',
+                  right: 'b',
+                },
+                messageId: 'unexpectedClassesDependencyOrder',
+              },
+            ],
+            output: dedent`
+              class Class {
+                b = 'b'
+
+                aaa = [this.b]
+              }
+            `,
+            code: dedent`
+              class Class {
+                aaa = [this.b]
+
+                b = 'b'
+              }
+            `,
+            options: [options],
+          },
+          {
+            errors: [
+              {
+                data: {
+                  rightGroup: 'property',
+                  leftGroup: 'method',
+                  left: 'getAaa',
+                  right: 'b',
+                },
+                messageId: 'unexpectedClassesGroupOrder',
+              },
+            ],
+            output: dedent`
+              class Class {
+                b = 'b'
+
+                getAaa() {
+                  return this.b;
+                }
+              }
+            `,
+            code: dedent`
+              class Class {
+                getAaa() {
+                  return this.b;
+                }
+
+                b = 'b'
+              }
+            `,
+            options: [options],
+          },
+          {
+            errors: [
+              {
+                data: {
+                  rightGroup: 'static-property',
+                  leftGroup: 'property',
+                  right: 'c',
+                  left: 'b',
+                },
+                messageId: 'unexpectedClassesGroupOrder',
+              },
+            ],
+            output: dedent`
+              class Class {
+                static c = 'c'
+
+                b = Example.c
+              }
+            `,
+            code: dedent`
+              class Class {
+                b = Example.c
+
+                static c = 'c'
+              }
+            `,
+            options: [options],
+          },
+          {
+            errors: [
+              {
+                data: {
+                  rightGroup: 'private-property',
+                  leftGroup: 'method',
+                  left: 'getAaa',
+                  right: '#b',
+                },
+                messageId: 'unexpectedClassesGroupOrder',
+              },
+            ],
+            output: dedent`
+              class Class {
+                #b = 'b'
+
+                getAaa() {
+                  return this.#b;
+                }
+              }
+            `,
+            code: dedent`
+              class Class {
+                getAaa() {
+                  return this.#b;
+                }
+
+                #b = 'b'
+              }
+            `,
+            options: [options],
+          },
+          {
+            errors: [
+              {
+                data: {
+                  rightGroup: 'static-property',
+                  leftGroup: 'static-method',
+                  left: 'getAaa',
+                  right: 'b',
+                },
+                messageId: 'unexpectedClassesGroupOrder',
+              },
+            ],
+            output: dedent`
+              class Class {
+                static b = 'b'
+
+                static getAaa() {
+                  return this.b;
+                }
+              }
+            `,
+            code: dedent`
+              class Class {
+                static getAaa() {
+                  return this.b;
+                }
+
+                static b = 'b'
+              }
+            `,
+            options: [options],
+          },
+        ],
         valid: [
           {
             code: dedent`
@@ -2530,158 +2682,6 @@ describe(ruleName, () => {
               }
             `,
             options: [options],
-          },
-        ],
-        invalid: [
-          {
-            code: dedent`
-              class Class {
-                aaa = [this.b]
-
-                b = 'b'
-              }
-            `,
-            output: dedent`
-              class Class {
-                b = 'b'
-
-                aaa = [this.b]
-              }
-            `,
-            options: [options],
-            errors: [
-              {
-                messageId: 'unexpectedClassesDependencyOrder',
-                data: {
-                  right: 'b',
-                  nodeDependentOnRight: 'aaa',
-                },
-              },
-            ],
-          },
-          {
-            code: dedent`
-              class Class {
-                getAaa() {
-                  return this.b;
-                }
-
-                b = 'b'
-              }
-            `,
-            output: dedent`
-              class Class {
-                b = 'b'
-
-                getAaa() {
-                  return this.b;
-                }
-              }
-            `,
-            options: [options],
-            errors: [
-              {
-                messageId: 'unexpectedClassesGroupOrder',
-                data: {
-                  left: 'getAaa',
-                  leftGroup: 'method',
-                  right: 'b',
-                  rightGroup: 'property',
-                },
-              },
-            ],
-          },
-          {
-            code: dedent`
-              class Class {
-                b = Example.c
-
-                static c = 'c'
-              }
-            `,
-            output: dedent`
-              class Class {
-                static c = 'c'
-
-                b = Example.c
-              }
-            `,
-            options: [options],
-            errors: [
-              {
-                messageId: 'unexpectedClassesGroupOrder',
-                data: {
-                  left: 'b',
-                  leftGroup: 'property',
-                  right: 'c',
-                  rightGroup: 'static-property',
-                },
-              },
-            ],
-          },
-          {
-            code: dedent`
-              class Class {
-                getAaa() {
-                  return this.#b;
-                }
-
-                #b = 'b'
-              }
-            `,
-            output: dedent`
-              class Class {
-                #b = 'b'
-
-                getAaa() {
-                  return this.#b;
-                }
-              }
-            `,
-            options: [options],
-            errors: [
-              {
-                messageId: 'unexpectedClassesGroupOrder',
-                data: {
-                  left: 'getAaa',
-                  leftGroup: 'method',
-                  right: '#b',
-                  rightGroup: 'private-property',
-                },
-              },
-            ],
-          },
-          {
-            code: dedent`
-              class Class {
-                static getAaa() {
-                  return this.b;
-                }
-
-                static b = 'b'
-              }
-            `,
-            output: dedent`
-              class Class {
-                static b = 'b'
-
-                static getAaa() {
-                  return this.b;
-                }
-              }
-            `,
-            options: [options],
-            errors: [
-              {
-                messageId: 'unexpectedClassesGroupOrder',
-                data: {
-                  left: 'getAaa',
-                  leftGroup: 'static-method',
-                  right: 'b',
-                  rightGroup: 'static-property',
-                },
-              },
-            ],
           },
         ],
       },
@@ -2993,24 +2993,45 @@ describe(ruleName, () => {
         `${ruleName}(${type}) detects property expression dependencies`,
         rule,
         {
-          valid: [],
           invalid: [
             {
-              code: dedent`
-                class Class {
-                  static e = 10 + this.c
-
-                  d = this.b
-
-                  static a = 10 + OtherClass.z
-
-                  b = 10 + Class.z
-
-                  static c = 10 + this.z
-
-                  static z = 1
-                }
-              `,
+              errors: [
+                {
+                  data: {
+                    right: 'd',
+                    left: 'e',
+                  },
+                  messageId: 'unexpectedClassesOrder',
+                },
+                {
+                  data: {
+                    right: 'a',
+                    left: 'd',
+                  },
+                  messageId: 'unexpectedClassesOrder',
+                },
+                {
+                  data: {
+                    nodeDependentOnRight: 'd',
+                    right: 'b',
+                  },
+                  messageId: 'unexpectedClassesDependencyOrder',
+                },
+                {
+                  data: {
+                    nodeDependentOnRight: 'e',
+                    right: 'c',
+                  },
+                  messageId: 'unexpectedClassesDependencyOrder',
+                },
+                {
+                  data: {
+                    nodeDependentOnRight: 'b',
+                    right: 'z',
+                  },
+                  messageId: 'unexpectedClassesDependencyOrder',
+                },
+              ],
               output: dedent`
                 class Class {
                   static a = 10 + OtherClass.z
@@ -3024,6 +3045,21 @@ describe(ruleName, () => {
                   d = this.b
 
                   static e = 10 + this.c
+                }
+              `,
+              code: dedent`
+                class Class {
+                  static e = 10 + this.c
+
+                  d = this.b
+
+                  static a = 10 + OtherClass.z
+
+                  b = 10 + Class.z
+
+                  static c = 10 + this.z
+
+                  static z = 1
                 }
               `,
               options: [
@@ -3032,52 +3068,17 @@ describe(ruleName, () => {
                   groups: ['property'],
                 },
               ],
-              errors: [
-                {
-                  messageId: 'unexpectedClassesOrder',
-                  data: {
-                    left: 'e',
-                    right: 'd',
-                  },
-                },
-                {
-                  messageId: 'unexpectedClassesOrder',
-                  data: {
-                    left: 'd',
-                    right: 'a',
-                  },
-                },
-                {
-                  messageId: 'unexpectedClassesDependencyOrder',
-                  data: {
-                    right: 'b',
-                    nodeDependentOnRight: 'd',
-                  },
-                },
-                {
-                  messageId: 'unexpectedClassesDependencyOrder',
-                  data: {
-                    right: 'c',
-                    nodeDependentOnRight: 'e',
-                  },
-                },
-                {
-                  messageId: 'unexpectedClassesDependencyOrder',
-                  data: {
-                    right: 'z',
-                    nodeDependentOnRight: 'b',
-                  },
-                },
-              ],
             },
             {
-              code: dedent`
-                class Class {
-                  a = this.c
-                  b = 10
-                  c = 10
-                }
-              `,
+              errors: [
+                {
+                  data: {
+                    nodeDependentOnRight: 'a',
+                    right: 'c',
+                  },
+                  messageId: 'unexpectedClassesDependencyOrder',
+                },
+              ],
               output: dedent`
                 class Class {
                   c = 10
@@ -3085,22 +3086,21 @@ describe(ruleName, () => {
                   b = 10
                 }
               `,
+              code: dedent`
+                class Class {
+                  a = this.c
+                  b = 10
+                  c = 10
+                }
+              `,
               options: [
                 {
                   ...options,
                 },
               ],
-              errors: [
-                {
-                  messageId: 'unexpectedClassesDependencyOrder',
-                  data: {
-                    right: 'c',
-                    nodeDependentOnRight: 'a',
-                  },
-                },
-              ],
             },
           ],
+          valid: [],
         },
       )
 
@@ -3762,6 +3762,50 @@ describe(ruleName, () => {
         `${ruleName}(${type}) separates static from non-static dependencies`,
         rule,
         {
+          invalid: [
+            {
+              errors: [
+                {
+                  data: {
+                    nodeDependentOnRight: 'b',
+                    right: 'c',
+                  },
+                  messageId: 'unexpectedClassesDependencyOrder',
+                },
+                {
+                  data: {
+                    nodeDependentOnRight: 'a',
+                    right: 'c',
+                  },
+                  messageId: 'unexpectedClassesDependencyOrder',
+                },
+              ],
+              output: dedent`
+                class Class {
+                  static c = 10
+                  static a = Class.c
+                  c = 10
+                  b = this.c
+                  static b = this.c
+                }
+              `,
+              code: dedent`
+                class Class {
+                  static a = Class.c
+                  b = this.c
+                  static b = this.c
+                  c = 10
+                  static c = 10
+                }
+              `,
+              options: [
+                {
+                  ...options,
+                  groups: ['property'],
+                },
+              ],
+            },
+          ],
           valid: [
             {
               code: dedent`
@@ -3779,50 +3823,6 @@ describe(ruleName, () => {
               ],
             },
           ],
-          invalid: [
-            {
-              code: dedent`
-                class Class {
-                  static a = Class.c
-                  b = this.c
-                  static b = this.c
-                  c = 10
-                  static c = 10
-                }
-              `,
-              output: dedent`
-                class Class {
-                  static c = 10
-                  static a = Class.c
-                  c = 10
-                  b = this.c
-                  static b = this.c
-                }
-              `,
-              options: [
-                {
-                  ...options,
-                  groups: ['property'],
-                },
-              ],
-              errors: [
-                {
-                  messageId: 'unexpectedClassesDependencyOrder',
-                  data: {
-                    right: 'c',
-                    nodeDependentOnRight: 'b',
-                  },
-                },
-                {
-                  messageId: 'unexpectedClassesDependencyOrder',
-                  data: {
-                    right: 'c',
-                    nodeDependentOnRight: 'a',
-                  },
-                },
-              ],
-            },
-          ],
         },
       )
 
@@ -3830,18 +3830,31 @@ describe(ruleName, () => {
         `${ruleName}(${type}) detects circular dependencies`,
         rule,
         {
-          valid: [],
           invalid: [
             {
-              code: dedent`
-                class Class {
-                  b = this.e
-                  a
-                  e = this.g
-                  f
-                  g = this.b
-                }
-              `,
+              errors: [
+                {
+                  data: {
+                    right: 'a',
+                    left: 'b',
+                  },
+                  messageId: 'unexpectedClassesOrder',
+                },
+                {
+                  data: {
+                    nodeDependentOnRight: 'b',
+                    right: 'e',
+                  },
+                  messageId: 'unexpectedClassesDependencyOrder',
+                },
+                {
+                  data: {
+                    nodeDependentOnRight: 'e',
+                    right: 'g',
+                  },
+                  messageId: 'unexpectedClassesDependencyOrder',
+                },
+              ],
               output: dedent`
                 class Class {
                   a
@@ -3851,37 +3864,24 @@ describe(ruleName, () => {
                   f
                 }
               `,
+              code: dedent`
+                class Class {
+                  b = this.e
+                  a
+                  e = this.g
+                  f
+                  g = this.b
+                }
+              `,
               options: [
                 {
                   ...options,
                   groups: ['property'],
                 },
               ],
-              errors: [
-                {
-                  messageId: 'unexpectedClassesOrder',
-                  data: {
-                    left: 'b',
-                    right: 'a',
-                  },
-                },
-                {
-                  messageId: 'unexpectedClassesDependencyOrder',
-                  data: {
-                    right: 'e',
-                    nodeDependentOnRight: 'b',
-                  },
-                },
-                {
-                  messageId: 'unexpectedClassesDependencyOrder',
-                  data: {
-                    right: 'g',
-                    nodeDependentOnRight: 'e',
-                  },
-                },
-              ],
             },
           ],
+          valid: [],
         },
       )
 
@@ -3922,18 +3922,18 @@ describe(ruleName, () => {
         {
           valid: [
             {
-              code: dedent`
-                class Class {
-                  public b = 1;
-                  private a = this.b;
-                }
-              `,
               options: [
                 {
                   ...options,
                   groups: ['private-property', 'public-property'],
                 },
               ],
+              code: dedent`
+                class Class {
+                  public b = 1;
+                  private a = this.b;
+                }
+              `,
             },
           ],
           invalid: [],
@@ -3944,21 +3944,29 @@ describe(ruleName, () => {
         `${ruleName}(${type}): prioritizes dependencies over partitionByComment`,
         rule,
         {
-          valid: [],
           invalid: [
             {
-              code: dedent`
-                class Class {
-                  b = this.a
-                  // Part1
-                  a
-                }
-              `,
+              errors: [
+                {
+                  data: {
+                    nodeDependentOnRight: 'b',
+                    right: 'a',
+                  },
+                  messageId: 'unexpectedClassesDependencyOrder',
+                },
+              ],
               output: dedent`
                 class Class {
                   a
                   // Part1
                   b = this.a
+                }
+              `,
+              code: dedent`
+                class Class {
+                  b = this.a
+                  // Part1
+                  a
                 }
               `,
               options: [
@@ -3967,17 +3975,9 @@ describe(ruleName, () => {
                   partitionByComment: 'Part*',
                 },
               ],
-              errors: [
-                {
-                  messageId: 'unexpectedClassesDependencyOrder',
-                  data: {
-                    right: 'a',
-                    nodeDependentOnRight: 'b',
-                  },
-                },
-              ],
             },
           ],
+          valid: [],
         },
       )
 
@@ -3985,16 +3985,23 @@ describe(ruleName, () => {
         `${ruleName}(${type}): prioritizes dependencies over partitionByNewLine`,
         rule,
         {
-          valid: [],
           invalid: [
             {
-              code: dedent`
-                class Class {
-                  b = this.a
-
-                  a
-                }
-              `,
+              errors: [
+                {
+                  data: {
+                    nodeDependentOnRight: 'b',
+                    right: 'a',
+                  },
+                  messageId: 'unexpectedClassesDependencyOrder',
+                },
+              ],
+              options: [
+                {
+                  ...options,
+                  partitionByNewLine: true,
+                },
+              ],
               output: dedent`
                 class Class {
                   a
@@ -4002,23 +4009,16 @@ describe(ruleName, () => {
                   b = this.a
                 }
               `,
-              options: [
-                {
-                  ...options,
-                  partitionByNewLine: true,
-                },
-              ],
-              errors: [
-                {
-                  messageId: 'unexpectedClassesDependencyOrder',
-                  data: {
-                    right: 'a',
-                    nodeDependentOnRight: 'b',
-                  },
-                },
-              ],
+              code: dedent`
+                class Class {
+                  b = this.a
+
+                  a
+                }
+              `,
             },
           ],
+          valid: [],
         },
       )
 
@@ -4026,6 +4026,45 @@ describe(ruleName, () => {
         `${ruleName}(${type}): works with left and right dependencies`,
         rule,
         {
+          invalid: [
+            {
+              errors: [
+                {
+                  data: {
+                    nodeDependentOnRight: 'aaa',
+                    right: 'left',
+                  },
+                  messageId: 'unexpectedClassesDependencyOrder',
+                },
+                {
+                  data: {
+                    nodeDependentOnRight: 'aaa',
+                    right: 'right',
+                  },
+                  messageId: 'unexpectedClassesDependencyOrder',
+                },
+              ],
+              output: dedent`
+              class Class {
+                left = 'left'
+
+                right = 'right'
+
+                aaa = this.left + this.right
+              }
+            `,
+              code: dedent`
+              class Class {
+                aaa = this.left + this.right
+
+                left = 'left'
+
+                right = 'right'
+              }
+            `,
+              options: [options],
+            },
+          ],
           valid: [
             {
               code: dedent`
@@ -4039,45 +4078,6 @@ describe(ruleName, () => {
               options: [options],
             },
           ],
-          invalid: [
-            {
-              code: dedent`
-              class Class {
-                aaa = this.left + this.right
-
-                left = 'left'
-
-                right = 'right'
-              }
-            `,
-              output: dedent`
-              class Class {
-                left = 'left'
-
-                right = 'right'
-
-                aaa = this.left + this.right
-              }
-            `,
-              options: [options],
-              errors: [
-                {
-                  messageId: 'unexpectedClassesDependencyOrder',
-                  data: {
-                    right: 'left',
-                    nodeDependentOnRight: 'aaa',
-                  },
-                },
-                {
-                  messageId: 'unexpectedClassesDependencyOrder',
-                  data: {
-                    right: 'right',
-                    nodeDependentOnRight: 'aaa',
-                  },
-                },
-              ],
-            },
-          ],
         },
       )
 
@@ -4085,7 +4085,6 @@ describe(ruleName, () => {
         `${ruleName}(${type}): should ignore callback dependencies in 'ignoreCallbackDependenciesPatterns'`,
         rule,
         {
-          invalid: [],
           valid: [
             {
               code: dedent`
@@ -4102,26 +4101,52 @@ describe(ruleName, () => {
               ],
             },
           ],
+          invalid: [],
         },
       )
     })
 
     ruleTester.run(`${ruleName}(${type}): should ignore unknown group`, rule, {
-      valid: [],
       invalid: [
         {
-          code: dedent`
-              class Class {
-
-                public i = 'i';
-                private z() {}
-                public method3() {}
-                private y() {}
-                public method4() {}
-                public method1() {}
-                private x() {}
-              }
-            `,
+          errors: [
+            {
+              data: {
+                rightGroup: 'private-method',
+                leftGroup: 'property',
+                right: 'z',
+                left: 'i',
+              },
+              messageId: 'unexpectedClassesGroupOrder',
+            },
+            {
+              data: {
+                leftGroup: 'private-method',
+                rightGroup: 'unknown',
+                right: 'method3',
+                left: 'z',
+              },
+              messageId: 'unexpectedClassesGroupOrder',
+            },
+            {
+              data: {
+                rightGroup: 'private-method',
+                leftGroup: 'unknown',
+                left: 'method3',
+                right: 'y',
+              },
+              messageId: 'unexpectedClassesGroupOrder',
+            },
+            {
+              data: {
+                rightGroup: 'private-method',
+                leftGroup: 'unknown',
+                left: 'method1',
+                right: 'x',
+              },
+              messageId: 'unexpectedClassesGroupOrder',
+            },
+          ],
           output: dedent`
               class Class {
 
@@ -4132,6 +4157,18 @@ describe(ruleName, () => {
                 public method4() {}
                 public method1() {}
                 public i = 'i';
+              }
+            `,
+          code: dedent`
+              class Class {
+
+                public i = 'i';
+                private z() {}
+                public method3() {}
+                private y() {}
+                public method4() {}
+                public method1() {}
+                private x() {}
               }
             `,
           options: [
@@ -4140,54 +4177,28 @@ describe(ruleName, () => {
               groups: ['private-method', 'property'],
             },
           ],
-          errors: [
-            {
-              messageId: 'unexpectedClassesGroupOrder',
-              data: {
-                left: 'i',
-                leftGroup: 'property',
-                right: 'z',
-                rightGroup: 'private-method',
-              },
-            },
-            {
-              messageId: 'unexpectedClassesGroupOrder',
-              data: {
-                left: 'z',
-                leftGroup: 'private-method',
-                right: 'method3',
-                rightGroup: 'unknown',
-              },
-            },
-            {
-              messageId: 'unexpectedClassesGroupOrder',
-              data: {
-                left: 'method3',
-                leftGroup: 'unknown',
-                right: 'y',
-                rightGroup: 'private-method',
-              },
-            },
-            {
-              messageId: 'unexpectedClassesGroupOrder',
-              data: {
-                left: 'method1',
-                leftGroup: 'unknown',
-                right: 'x',
-                rightGroup: 'private-method',
-              },
-            },
-          ],
         },
         {
-          code: dedent`
-              class Class {
-                b
-                someMethod() {
-                }
-                a
-              }
-            `,
+          errors: [
+            {
+              data: {
+                leftGroup: 'property',
+                rightGroup: 'unknown',
+                right: 'someMethod',
+                left: 'b',
+              },
+              messageId: 'unexpectedClassesGroupOrder',
+            },
+            {
+              data: {
+                rightGroup: 'property',
+                leftGroup: 'unknown',
+                left: 'someMethod',
+                right: 'a',
+              },
+              messageId: 'unexpectedClassesGroupOrder',
+            },
+          ],
           output: dedent`
               class Class {
                 a
@@ -4196,34 +4207,23 @@ describe(ruleName, () => {
                 b
               }
             `,
+          code: dedent`
+              class Class {
+                b
+                someMethod() {
+                }
+                a
+              }
+            `,
           options: [
             {
               ...options,
               groups: ['property'],
             },
           ],
-          errors: [
-            {
-              messageId: 'unexpectedClassesGroupOrder',
-              data: {
-                left: 'b',
-                leftGroup: 'property',
-                right: 'someMethod',
-                rightGroup: 'unknown',
-              },
-            },
-            {
-              messageId: 'unexpectedClassesGroupOrder',
-              data: {
-                left: 'someMethod',
-                leftGroup: 'unknown',
-                right: 'a',
-                rightGroup: 'property',
-              },
-            },
-          ],
         },
       ],
+      valid: [],
     })
 
     ruleTester.run(
@@ -4232,6 +4232,12 @@ describe(ruleName, () => {
       {
         valid: [
           {
+            options: [
+              {
+                ...options,
+                specialCharacters: 'trim',
+              },
+            ],
             code: dedent`
               class Class {
                 _a
@@ -4239,12 +4245,6 @@ describe(ruleName, () => {
                 _c
               }
             `,
-            options: [
-              {
-                ...options,
-                specialCharacters: 'trim',
-              },
-            ],
           },
         ],
         invalid: [],
@@ -4257,18 +4257,18 @@ describe(ruleName, () => {
       {
         valid: [
           {
-            code: dedent`
-              class Class {
-                ab
-                a_c
-              }
-            `,
             options: [
               {
                 ...options,
                 specialCharacters: 'remove',
               },
             ],
+            code: dedent`
+              class Class {
+                ab
+                a_c
+              }
+            `,
           },
         ],
         invalid: [],
@@ -4304,9 +4304,31 @@ describe(ruleName, () => {
         `${ruleName}(${type}): removes newlines when never`,
         rule,
         {
-          valid: [],
           invalid: [
             {
+              errors: [
+                {
+                  data: {
+                    right: 'y',
+                    left: 'a',
+                  },
+                  messageId: 'extraSpacingBetweenClassMembers',
+                },
+                {
+                  data: {
+                    right: 'b',
+                    left: 'z',
+                  },
+                  messageId: 'unexpectedClassesOrder',
+                },
+                {
+                  data: {
+                    right: 'b',
+                    left: 'z',
+                  },
+                  messageId: 'extraSpacingBetweenClassMembers',
+                },
+              ],
               code: dedent`
                 class Class {
                   a = () => null
@@ -4329,35 +4351,13 @@ describe(ruleName, () => {
               options: [
                 {
                   ...options,
-                  newlinesBetween: 'never',
                   groups: ['method', 'unknown'],
-                },
-              ],
-              errors: [
-                {
-                  messageId: 'extraSpacingBetweenClassMembers',
-                  data: {
-                    left: 'a',
-                    right: 'y',
-                  },
-                },
-                {
-                  messageId: 'unexpectedClassesOrder',
-                  data: {
-                    left: 'z',
-                    right: 'b',
-                  },
-                },
-                {
-                  messageId: 'extraSpacingBetweenClassMembers',
-                  data: {
-                    left: 'z',
-                    right: 'b',
-                  },
+                  newlinesBetween: 'never',
                 },
               ],
             },
           ],
+          valid: [],
         },
       )
 
@@ -4365,19 +4365,38 @@ describe(ruleName, () => {
         `${ruleName}(${type}): keeps one newline when always`,
         rule,
         {
-          valid: [],
           invalid: [
             {
-              code: dedent`
-                class Class {
-                  a = () => null
-
-
-                 z = "z"
-                y = "y"
-                    b() {}
-                }
-              `,
+              errors: [
+                {
+                  data: {
+                    right: 'z',
+                    left: 'a',
+                  },
+                  messageId: 'extraSpacingBetweenClassMembers',
+                },
+                {
+                  data: {
+                    right: 'y',
+                    left: 'z',
+                  },
+                  messageId: 'unexpectedClassesOrder',
+                },
+                {
+                  data: {
+                    right: 'b',
+                    left: 'y',
+                  },
+                  messageId: 'missedSpacingBetweenClassMembers',
+                },
+              ],
+              options: [
+                {
+                  ...options,
+                  groups: ['function-property', 'unknown', 'method'],
+                  newlinesBetween: 'always',
+                },
+              ],
               output: dedent`
                 class Class {
                   a = () => null
@@ -4388,38 +4407,19 @@ describe(ruleName, () => {
                     b() {}
                 }
                 `,
-              options: [
-                {
-                  ...options,
-                  newlinesBetween: 'always',
-                  groups: ['function-property', 'unknown', 'method'],
-                },
-              ],
-              errors: [
-                {
-                  messageId: 'extraSpacingBetweenClassMembers',
-                  data: {
-                    left: 'a',
-                    right: 'z',
-                  },
-                },
-                {
-                  messageId: 'unexpectedClassesOrder',
-                  data: {
-                    left: 'z',
-                    right: 'y',
-                  },
-                },
-                {
-                  messageId: 'missedSpacingBetweenClassMembers',
-                  data: {
-                    left: 'y',
-                    right: 'b',
-                  },
-                },
-              ],
+              code: dedent`
+                class Class {
+                  a = () => null
+
+
+                 z = "z"
+                y = "y"
+                    b() {}
+                }
+              `,
             },
           ],
+          valid: [],
         },
       )
     })
@@ -4431,75 +4431,75 @@ describe(ruleName, () => {
             `${ruleName}(${type}): sorts inline non-abstract methods correctly`,
             rule,
             {
-              valid: [],
               invalid: [
                 {
-                  code: dedent`
-                  class Class {
-                    b(){} a(){}
-                  }
-                `,
+                  errors: [
+                    {
+                      data: {
+                        right: 'a',
+                        left: 'b',
+                      },
+                      messageId: 'unexpectedClassesOrder',
+                    },
+                  ],
                   output: dedent`
                   class Class {
                     a(){} b(){}
                   }
                 `,
-                  options: [options],
-                  errors: [
-                    {
-                      messageId: 'unexpectedClassesOrder',
-                      data: {
-                        left: 'b',
-                        right: 'a',
-                      },
-                    },
-                  ],
-                },
-                {
                   code: dedent`
                   class Class {
-                    b(){} a(){};
+                    b(){} a(){}
                   }
                 `,
+                  options: [options],
+                },
+                {
+                  errors: [
+                    {
+                      data: {
+                        right: 'a',
+                        left: 'b',
+                      },
+                      messageId: 'unexpectedClassesOrder',
+                    },
+                  ],
                   output: dedent`
                   class Class {
                     a(){} b(){};
                   }
                 `,
-                  options: [options],
-                  errors: [
-                    {
-                      messageId: 'unexpectedClassesOrder',
-                      data: {
-                        left: 'b',
-                        right: 'a',
-                      },
-                    },
-                  ],
-                },
-                {
                   code: dedent`
                   class Class {
-                    b(){}; a(){}
+                    b(){} a(){};
                   }
                 `,
+                  options: [options],
+                },
+                {
+                  errors: [
+                    {
+                      data: {
+                        right: 'a',
+                        left: 'b',
+                      },
+                      messageId: 'unexpectedClassesOrder',
+                    },
+                  ],
                   output: dedent`
                   class Class {
                     a(){}; b(){}
                   }
                 `,
+                  code: dedent`
+                  class Class {
+                    b(){}; a(){}
+                  }
+                `,
                   options: [options],
-                  errors: [
-                    {
-                      messageId: 'unexpectedClassesOrder',
-                      data: {
-                        left: 'b',
-                        right: 'a',
-                      },
-                    },
-                  ],
                 },
               ],
+              valid: [],
             },
           )
         })
@@ -4509,53 +4509,53 @@ describe(ruleName, () => {
             `${ruleName}(${type}): sorts inline abstract methods correctly`,
             rule,
             {
-              valid: [],
               invalid: [
                 {
+                  errors: [
+                    {
+                      data: {
+                        right: 'a',
+                        left: 'b',
+                      },
+                      messageId: 'unexpectedClassesOrder',
+                    },
+                  ],
+                  output: dedent`
+                  abstract class Class {
+                    abstract a(); abstract b();
+                  }
+                `,
                   code: dedent`
                   abstract class Class {
                     abstract b(); abstract a()
                   }
                 `,
+                  options: [options],
+                },
+                {
+                  errors: [
+                    {
+                      data: {
+                        right: 'a',
+                        left: 'b',
+                      },
+                      messageId: 'unexpectedClassesOrder',
+                    },
+                  ],
                   output: dedent`
                   abstract class Class {
                     abstract a(); abstract b();
                   }
                 `,
-                  options: [options],
-                  errors: [
-                    {
-                      messageId: 'unexpectedClassesOrder',
-                      data: {
-                        left: 'b',
-                        right: 'a',
-                      },
-                    },
-                  ],
-                },
-                {
                   code: dedent`
                   abstract class Class {
                     abstract b(); abstract a();
                   }
                 `,
-                  output: dedent`
-                  abstract class Class {
-                    abstract a(); abstract b();
-                  }
-                `,
                   options: [options],
-                  errors: [
-                    {
-                      messageId: 'unexpectedClassesOrder',
-                      data: {
-                        left: 'b',
-                        right: 'a',
-                      },
-                    },
-                  ],
                 },
               ],
+              valid: [],
             },
           )
         })
@@ -4565,53 +4565,53 @@ describe(ruleName, () => {
         `${ruleName}(${type}): sorts inline declare class methods correctly`,
         rule,
         {
-          valid: [],
           invalid: [
             {
-              code: dedent`
-                  declare class Class {
-                    b(); a()
-                  }
-                `,
+              errors: [
+                {
+                  data: {
+                    right: 'a',
+                    left: 'b',
+                  },
+                  messageId: 'unexpectedClassesOrder',
+                },
+              ],
               output: dedent`
                   declare class Class {
                     a(); b();
                   }
                 `,
-              options: [options],
-              errors: [
-                {
-                  messageId: 'unexpectedClassesOrder',
-                  data: {
-                    left: 'b',
-                    right: 'a',
-                  },
-                },
-              ],
-            },
-            {
               code: dedent`
-                  abstract class Class {
-                    abstract b(); abstract a();
+                  declare class Class {
+                    b(); a()
                   }
                 `,
+              options: [options],
+            },
+            {
+              errors: [
+                {
+                  data: {
+                    right: 'a',
+                    left: 'b',
+                  },
+                  messageId: 'unexpectedClassesOrder',
+                },
+              ],
               output: dedent`
                   abstract class Class {
                     abstract a(); abstract b();
                   }
                 `,
+              code: dedent`
+                  abstract class Class {
+                    abstract b(); abstract a();
+                  }
+                `,
               options: [options],
-              errors: [
-                {
-                  messageId: 'unexpectedClassesOrder',
-                  data: {
-                    left: 'b',
-                    right: 'a',
-                  },
-                },
-              ],
             },
           ],
+          valid: [],
         },
       )
 
@@ -4619,53 +4619,53 @@ describe(ruleName, () => {
         `${ruleName}(${type}): sorts inline properties correctly`,
         rule,
         {
-          valid: [],
           invalid: [
             {
+              errors: [
+                {
+                  data: {
+                    right: 'a',
+                    left: 'b',
+                  },
+                  messageId: 'unexpectedClassesOrder',
+                },
+              ],
+              output: dedent`
+                  class Class {
+                    a; b;
+                  }
+                `,
               code: dedent`
                   class Class {
                     b; a
                   }
                 `,
+              options: [options],
+            },
+            {
+              errors: [
+                {
+                  data: {
+                    right: 'a',
+                    left: 'b',
+                  },
+                  messageId: 'unexpectedClassesOrder',
+                },
+              ],
               output: dedent`
                   class Class {
                     a; b;
                   }
                 `,
-              options: [options],
-              errors: [
-                {
-                  messageId: 'unexpectedClassesOrder',
-                  data: {
-                    left: 'b',
-                    right: 'a',
-                  },
-                },
-              ],
-            },
-            {
               code: dedent`
                   class Class {
                     b; a;
                   }
                 `,
-              output: dedent`
-                  class Class {
-                    a; b;
-                  }
-                `,
               options: [options],
-              errors: [
-                {
-                  messageId: 'unexpectedClassesOrder',
-                  data: {
-                    left: 'b',
-                    right: 'a',
-                  },
-                },
-              ],
             },
           ],
+          valid: [],
         },
       )
 
@@ -4673,53 +4673,53 @@ describe(ruleName, () => {
         `${ruleName}(${type}): sorts inline accessors correctly`,
         rule,
         {
-          valid: [],
           invalid: [
             {
+              errors: [
+                {
+                  data: {
+                    right: 'a',
+                    left: 'b',
+                  },
+                  messageId: 'unexpectedClassesOrder',
+                },
+              ],
+              output: dedent`
+                  class Class {
+                    accessor a; accessor b;
+                  }
+                `,
               code: dedent`
                   class Class {
                     accessor b; accessor a
                   }
                 `,
+              options: [options],
+            },
+            {
+              errors: [
+                {
+                  data: {
+                    right: 'a',
+                    left: 'b',
+                  },
+                  messageId: 'unexpectedClassesOrder',
+                },
+              ],
               output: dedent`
                   class Class {
                     accessor a; accessor b;
                   }
                 `,
-              options: [options],
-              errors: [
-                {
-                  messageId: 'unexpectedClassesOrder',
-                  data: {
-                    left: 'b',
-                    right: 'a',
-                  },
-                },
-              ],
-            },
-            {
               code: dedent`
                   class Class {
                     accessor b; accessor a;
                   }
                 `,
-              output: dedent`
-                  class Class {
-                    accessor a; accessor b;
-                  }
-                `,
               options: [options],
-              errors: [
-                {
-                  messageId: 'unexpectedClassesOrder',
-                  data: {
-                    left: 'b',
-                    right: 'a',
-                  },
-                },
-              ],
             },
           ],
+          valid: [],
         },
       )
 
@@ -4727,53 +4727,53 @@ describe(ruleName, () => {
         `${ruleName}(${type}): sorts inline index-signatures correctly`,
         rule,
         {
-          valid: [],
           invalid: [
             {
+              errors: [
+                {
+                  data: {
+                    right: '[key: number]',
+                    left: '[key: string]',
+                  },
+                  messageId: 'unexpectedClassesOrder',
+                },
+              ],
+              output: dedent`
+                  class Class {
+                    [key: number]: string; [key: string]: string;
+                  }
+                `,
               code: dedent`
                   class Class {
                     [key: string]: string; [key: number]: string
                   }
                 `,
+              options: [options],
+            },
+            {
+              errors: [
+                {
+                  data: {
+                    right: '[key: number]',
+                    left: '[key: string]',
+                  },
+                  messageId: 'unexpectedClassesOrder',
+                },
+              ],
               output: dedent`
                   class Class {
                     [key: number]: string; [key: string]: string;
                   }
                 `,
-              options: [options],
-              errors: [
-                {
-                  messageId: 'unexpectedClassesOrder',
-                  data: {
-                    left: '[key: string]',
-                    right: '[key: number]',
-                  },
-                },
-              ],
-            },
-            {
               code: dedent`
                   class Class {
                     [key: string]: string; [key: number]: string;
                   }
                 `,
-              output: dedent`
-                  class Class {
-                    [key: number]: string; [key: string]: string;
-                  }
-                `,
               options: [options],
-              errors: [
-                {
-                  messageId: 'unexpectedClassesOrder',
-                  data: {
-                    left: '[key: string]',
-                    right: '[key: number]',
-                  },
-                },
-              ],
             },
           ],
+          valid: [],
         },
       )
 
@@ -4781,33 +4781,33 @@ describe(ruleName, () => {
         `${ruleName}(${type}): sorts inline static-block correctly`,
         rule,
         {
-          valid: [],
           invalid: [
             {
-              code: dedent`
-                  class Class {
-                    a; static {}
-                  }
-                `,
+              errors: [
+                {
+                  data: {
+                    rightGroup: 'static-block',
+                    leftGroup: 'property',
+                    right: 'static',
+                    left: 'a',
+                  },
+                  messageId: 'unexpectedClassesGroupOrder',
+                },
+              ],
               output: dedent`
                   class Class {
                     static {} a;
                   }
                 `,
+              code: dedent`
+                  class Class {
+                    a; static {}
+                  }
+                `,
               options: [options],
-              errors: [
-                {
-                  messageId: 'unexpectedClassesGroupOrder',
-                  data: {
-                    left: 'a',
-                    leftGroup: 'property',
-                    right: 'static',
-                    rightGroup: 'static-block',
-                  },
-                },
-              ],
             },
           ],
+          valid: [],
         },
       )
     })
@@ -4823,33 +4823,26 @@ describe(ruleName, () => {
     } as const
 
     ruleTester.run(`${ruleName}(${type}): sorts class members`, rule, {
-      valid: [
+      invalid: [
         {
-          code: dedent`
-            class Class {
-              static a = 'a'
-
-              protected b = 'b'
-
-              private c = 'c'
-
-              d = 'd'
-
-              e = 'e'
-
-              constructor() {}
-
-              static f() {}
-
-              protected g() {}
-
-              private h() {}
-
-              i() {}
-
-              j() {}
-            }
-          `,
+          errors: [
+            {
+              data: {
+                right: 'd',
+                left: 'e',
+              },
+              messageId: 'unexpectedClassesOrder',
+            },
+            {
+              data: {
+                leftGroup: 'static-method',
+                rightGroup: 'constructor',
+                right: 'constructor',
+                left: 'f',
+              },
+              messageId: 'unexpectedClassesGroupOrder',
+            },
+          ],
           options: [
             {
               ...options,
@@ -4867,35 +4860,6 @@ describe(ruleName, () => {
               ],
             },
           ],
-        },
-      ],
-      invalid: [
-        {
-          code: dedent`
-            class Class {
-              static a = 'a'
-
-              protected b = 'b'
-
-              private c = 'c'
-
-              e = 'e'
-
-              d = 'd'
-
-              static f() {}
-
-              constructor() {}
-
-              protected g() {}
-
-              private h() {}
-
-              i() {}
-
-              j() {}
-            }
-          `,
           output: dedent`
             class Class {
               static a = 'a'
@@ -4921,6 +4885,35 @@ describe(ruleName, () => {
               j() {}
             }
           `,
+          code: dedent`
+            class Class {
+              static a = 'a'
+
+              protected b = 'b'
+
+              private c = 'c'
+
+              e = 'e'
+
+              d = 'd'
+
+              static f() {}
+
+              constructor() {}
+
+              protected g() {}
+
+              private h() {}
+
+              i() {}
+
+              j() {}
+            }
+          `,
+        },
+      ],
+      valid: [
+        {
           options: [
             {
               ...options,
@@ -4938,24 +4931,31 @@ describe(ruleName, () => {
               ],
             },
           ],
-          errors: [
-            {
-              messageId: 'unexpectedClassesOrder',
-              data: {
-                left: 'e',
-                right: 'd',
-              },
-            },
-            {
-              messageId: 'unexpectedClassesGroupOrder',
-              data: {
-                left: 'f',
-                leftGroup: 'static-method',
-                right: 'constructor',
-                rightGroup: 'constructor',
-              },
-            },
-          ],
+          code: dedent`
+            class Class {
+              static a = 'a'
+
+              protected b = 'b'
+
+              private c = 'c'
+
+              d = 'd'
+
+              e = 'e'
+
+              constructor() {}
+
+              static f() {}
+
+              protected g() {}
+
+              private h() {}
+
+              i() {}
+
+              j() {}
+            }
+          `,
         },
       ],
     })
@@ -4964,21 +4964,24 @@ describe(ruleName, () => {
       `${ruleName}(${type}): sorts class and group members`,
       rule,
       {
-        valid: [
+        invalid: [
           {
-            code: dedent`
-              class Class {
-                static a
-
-                static b = 'b'
-
-                [key in O]
-
-                static {
-                  this.a = 'd'
-                }
-              }
-            `,
+            errors: [
+              {
+                data: {
+                  left: 'key in O',
+                  right: 'b',
+                },
+                messageId: 'unexpectedClassesOrder',
+              },
+              {
+                data: {
+                  right: 'a',
+                  left: 'b',
+                },
+                messageId: 'unexpectedClassesOrder',
+              },
+            ],
             options: [
               {
                 ...options,
@@ -4990,23 +4993,6 @@ describe(ruleName, () => {
                 ],
               },
             ],
-          },
-        ],
-        invalid: [
-          {
-            code: dedent`
-              class Class {
-                [key in O]
-
-                static b = 'b'
-
-                static a
-
-                static {
-                  this.a = 'd'
-                }
-              }
-            `,
             output: dedent`
               class Class {
                 static a
@@ -5020,6 +5006,23 @@ describe(ruleName, () => {
                 }
               }
             `,
+            code: dedent`
+              class Class {
+                [key in O]
+
+                static b = 'b'
+
+                static a
+
+                static {
+                  this.a = 'd'
+                }
+              }
+            `,
+          },
+        ],
+        valid: [
+          {
             options: [
               {
                 ...options,
@@ -5031,22 +5034,19 @@ describe(ruleName, () => {
                 ],
               },
             ],
-            errors: [
-              {
-                messageId: 'unexpectedClassesOrder',
-                data: {
-                  left: 'key in O',
-                  right: 'b',
-                },
-              },
-              {
-                messageId: 'unexpectedClassesOrder',
-                data: {
-                  left: 'b',
-                  right: 'a',
-                },
-              },
-            ],
+            code: dedent`
+              class Class {
+                static a
+
+                static b = 'b'
+
+                [key in O]
+
+                static {
+                  this.a = 'd'
+                }
+              }
+            `,
           },
         ],
       },
@@ -5056,48 +5056,19 @@ describe(ruleName, () => {
       `${ruleName}(${type}): sorts class with ts index signatures`,
       rule,
       {
-        valid: [
-          {
-            code: dedent`
-              class Class {
-                static a = 'a';
-
-                [k: string]: any;
-
-                [k: string];
-              }
-            `,
-            options: [
-              {
-                ...options,
-                groups: [
-                  ['static-property', 'private-property', 'property'],
-                  'constructor',
-                ],
-              },
-            ],
-          },
-        ],
         invalid: [
           {
-            code: dedent`
-              class Class {
-                [k: string]: any;
-
-                [k: string];
-
-                static a = 'a';
-              }
-            `,
-            output: dedent`
-              class Class {
-                static a = 'a';
-
-                [k: string]: any;
-
-                [k: string];
-              }
-            `,
+            errors: [
+              {
+                data: {
+                  rightGroup: 'static-property',
+                  leftGroup: 'index-signature',
+                  left: '[k: string];',
+                  right: 'a',
+                },
+                messageId: 'unexpectedClassesGroupOrder',
+              },
+            ],
             options: [
               {
                 ...options,
@@ -5107,17 +5078,46 @@ describe(ruleName, () => {
                 ],
               },
             ],
-            errors: [
+            output: dedent`
+              class Class {
+                static a = 'a';
+
+                [k: string]: any;
+
+                [k: string];
+              }
+            `,
+            code: dedent`
+              class Class {
+                [k: string]: any;
+
+                [k: string];
+
+                static a = 'a';
+              }
+            `,
+          },
+        ],
+        valid: [
+          {
+            options: [
               {
-                messageId: 'unexpectedClassesGroupOrder',
-                data: {
-                  left: '[k: string];',
-                  leftGroup: 'index-signature',
-                  right: 'a',
-                  rightGroup: 'static-property',
-                },
+                ...options,
+                groups: [
+                  ['static-property', 'private-property', 'property'],
+                  'constructor',
+                ],
               },
             ],
+            code: dedent`
+              class Class {
+                static a = 'a';
+
+                [k: string]: any;
+
+                [k: string];
+              }
+            `,
           },
         ],
       },
@@ -5158,34 +5158,51 @@ describe(ruleName, () => {
       `${ruleName}(${type}): sorts private methods with hash`,
       rule,
       {
-        valid: [],
         invalid: [
           {
-            code: dedent`
-              class MyUnsortedClass {
-                someOtherProperty
-
-                someProperty = 1
-
-                constructor() {}
-
-                static #aPrivateStaticMethod () {}
-
-                #somePrivateProperty
-
-                #someOtherPrivateProperty = 2
-
-                static someStaticProperty = 3
-
-                static #someStaticPrivateProperty = 4
-
-                aInstanceMethod () {}
-
-                static aStaticMethod () {}
-
-                #aPrivateInstanceMethod () {}
-              }
-            `,
+            errors: [
+              {
+                data: {
+                  rightGroup: 'private-property',
+                  left: '#aPrivateStaticMethod',
+                  right: '#somePrivateProperty',
+                  leftGroup: 'static-method',
+                },
+                messageId: 'unexpectedClassesGroupOrder',
+              },
+              {
+                data: {
+                  right: '#someOtherPrivateProperty',
+                  left: '#somePrivateProperty',
+                },
+                messageId: 'unexpectedClassesOrder',
+              },
+              {
+                data: {
+                  left: '#someOtherPrivateProperty',
+                  leftGroup: 'private-property',
+                  rightGroup: 'static-property',
+                  right: 'someStaticProperty',
+                },
+                messageId: 'unexpectedClassesGroupOrder',
+              },
+              {
+                data: {
+                  right: '#someStaticPrivateProperty',
+                  left: 'someStaticProperty',
+                },
+                messageId: 'unexpectedClassesOrder',
+              },
+              {
+                data: {
+                  right: '#aPrivateInstanceMethod',
+                  rightGroup: 'private-method',
+                  leftGroup: 'static-method',
+                  left: 'aStaticMethod',
+                },
+                messageId: 'unexpectedClassesGroupOrder',
+              },
+            ],
             output: dedent`
               class MyUnsortedClass {
                 static #someStaticPrivateProperty = 4
@@ -5209,6 +5226,31 @@ describe(ruleName, () => {
                 static #aPrivateStaticMethod () {}
 
                 static aStaticMethod () {}
+              }
+            `,
+            code: dedent`
+              class MyUnsortedClass {
+                someOtherProperty
+
+                someProperty = 1
+
+                constructor() {}
+
+                static #aPrivateStaticMethod () {}
+
+                #somePrivateProperty
+
+                #someOtherPrivateProperty = 2
+
+                static someStaticProperty = 3
+
+                static #someStaticPrivateProperty = 4
+
+                aInstanceMethod () {}
+
+                static aStaticMethod () {}
+
+                #aPrivateInstanceMethod () {}
               }
             `,
             options: [
@@ -5226,51 +5268,9 @@ describe(ruleName, () => {
                 ],
               },
             ],
-            errors: [
-              {
-                messageId: 'unexpectedClassesGroupOrder',
-                data: {
-                  left: '#aPrivateStaticMethod',
-                  leftGroup: 'static-method',
-                  right: '#somePrivateProperty',
-                  rightGroup: 'private-property',
-                },
-              },
-              {
-                messageId: 'unexpectedClassesOrder',
-                data: {
-                  left: '#somePrivateProperty',
-                  right: '#someOtherPrivateProperty',
-                },
-              },
-              {
-                messageId: 'unexpectedClassesGroupOrder',
-                data: {
-                  left: '#someOtherPrivateProperty',
-                  leftGroup: 'private-property',
-                  right: 'someStaticProperty',
-                  rightGroup: 'static-property',
-                },
-              },
-              {
-                messageId: 'unexpectedClassesOrder',
-                data: {
-                  left: 'someStaticProperty',
-                  right: '#someStaticPrivateProperty',
-                },
-              },
-              {
-                messageId: 'unexpectedClassesGroupOrder',
-                data: {
-                  left: 'aStaticMethod',
-                  leftGroup: 'static-method',
-                  right: '#aPrivateInstanceMethod',
-                  rightGroup: 'private-method',
-                },
-              },
-            ],
           },
         ],
+        valid: [],
       },
     )
 
@@ -5278,27 +5278,8 @@ describe(ruleName, () => {
       `${ruleName}(${type}): allows split methods with getters and setters`,
       rule,
       {
-        valid: [],
         invalid: [
           {
-            code: dedent`
-              class A {
-                x() {}
-                b() {}
-                get z() {}
-                get c() {}
-                set c() {}
-              }
-            `,
-            output: dedent`
-              class A {
-                b() {}
-                x() {}
-                get c() {}
-                set c() {}
-                get z() {}
-              }
-            `,
             options: [
               {
                 ...options,
@@ -5318,45 +5299,47 @@ describe(ruleName, () => {
             ],
             errors: [
               {
-                messageId: 'unexpectedClassesOrder',
                 data: {
-                  left: 'x',
                   right: 'b',
+                  left: 'x',
                 },
+                messageId: 'unexpectedClassesOrder',
               },
               {
-                messageId: 'unexpectedClassesOrder',
                 data: {
-                  left: 'z',
                   right: 'c',
+                  left: 'z',
                 },
+                messageId: 'unexpectedClassesOrder',
               },
             ],
+            output: dedent`
+              class A {
+                b() {}
+                x() {}
+                get c() {}
+                set c() {}
+                get z() {}
+              }
+            `,
+            code: dedent`
+              class A {
+                x() {}
+                b() {}
+                get z() {}
+                get c() {}
+                set c() {}
+              }
+            `,
           },
         ],
+        valid: [],
       },
     )
 
     ruleTester.run(`${ruleName}(${type}): sorts decorated properties`, rule, {
-      valid: [],
       invalid: [
         {
-          code: dedent`
-            class User {
-              firstName: string
-
-              id: number
-
-              @Index({ name: 'born_index' })
-              @Property()
-              born: string
-
-              @Property()
-              @Unique()
-              email: string
-
-              lastName: string
-            }`,
           output: dedent`
             class User {
               firstName: string
@@ -5373,26 +5356,42 @@ describe(ruleName, () => {
               @Unique()
               email: string
             }`,
+          code: dedent`
+            class User {
+              firstName: string
+
+              id: number
+
+              @Index({ name: 'born_index' })
+              @Property()
+              born: string
+
+              @Property()
+              @Unique()
+              email: string
+
+              lastName: string
+            }`,
+          errors: [
+            {
+              data: {
+                leftGroup: 'decorated-property',
+                rightGroup: 'property',
+                right: 'lastName',
+                left: 'email',
+              },
+              messageId: 'unexpectedClassesGroupOrder',
+            },
+          ],
           options: [
             {
               ...options,
               groups: ['property', 'decorated-property', 'unknown'],
             },
           ],
-          errors: [
-            {
-              messageId: 'unexpectedClassesGroupOrder',
-              data: {
-                left: 'email',
-                leftGroup: 'decorated-property',
-                right: 'lastName',
-                rightGroup: 'property',
-              },
-            },
-          ],
         },
         {
-          code: dedent`
+          output: dedent`
             class MyElement {
               @property({ attribute: false })
               data = {}
@@ -5417,13 +5416,13 @@ describe(ruleName, () => {
                 return this._message
               }
 
-              set message(message: string) {
-                this._message = message
-              }
-
               @property()
               set prop(val: number) {
                 this._prop = Math.floor(val)
+              }
+
+              set message(message: string) {
+                this._message = message
               }
 
               get prop() {
@@ -5432,7 +5431,7 @@ describe(ruleName, () => {
 
               render() {}
             }`,
-          output: dedent`
+          code: dedent`
             class MyElement {
               @property({ attribute: false })
               data = {}
@@ -5457,13 +5456,13 @@ describe(ruleName, () => {
                 return this._message
               }
 
+              set message(message: string) {
+                this._message = message
+              }
+
               @property()
               set prop(val: number) {
                 this._prop = Math.floor(val)
-              }
-
-              set message(message: string) {
-                this._message = message
               }
 
               get prop() {
@@ -5490,44 +5489,43 @@ describe(ruleName, () => {
           ],
           errors: [
             {
-              messageId: 'unexpectedClassesGroupOrder',
               data: {
-                left: 'message',
-                leftGroup: 'set-method',
-                right: 'prop',
                 rightGroup: 'decorated-set-method',
+                leftGroup: 'set-method',
+                left: 'message',
+                right: 'prop',
               },
+              messageId: 'unexpectedClassesGroupOrder',
             },
           ],
         },
       ],
+      valid: [],
     })
 
     ruleTester.run(`${ruleName}(${type}): sorts decorated accessors`, rule, {
-      valid: [],
       invalid: [
         {
-          code: dedent`
-            class Todo {
-              id = Math.random()
-
-              constructor() {}
-
-              @action
-              toggle() {}
-
-              @observable
-              accessor #active = false
-
-              @observable
-              accessor finished = false
-
-              @observable
-              accessor title = ''
-
-              @observable
-              protected accessor type = ''
-            }`,
+          errors: [
+            {
+              data: {
+                rightGroup: 'private-decorated-accessor-property',
+                leftGroup: 'decorated-method',
+                right: '#active',
+                left: 'toggle',
+              },
+              messageId: 'unexpectedClassesGroupOrder',
+            },
+            {
+              data: {
+                leftGroup: 'private-decorated-accessor-property',
+                rightGroup: 'decorated-accessor-property',
+                right: 'finished',
+                left: '#active',
+              },
+              messageId: 'unexpectedClassesGroupOrder',
+            },
+          ],
           output: dedent`
             class Todo {
               @observable
@@ -5548,6 +5546,27 @@ describe(ruleName, () => {
 
               @action
               toggle() {}
+            }`,
+          code: dedent`
+            class Todo {
+              id = Math.random()
+
+              constructor() {}
+
+              @action
+              toggle() {}
+
+              @observable
+              accessor #active = false
+
+              @observable
+              accessor finished = false
+
+              @observable
+              accessor title = ''
+
+              @observable
+              protected accessor type = ''
             }`,
           options: [
             {
@@ -5563,31 +5582,89 @@ describe(ruleName, () => {
               ],
             },
           ],
+        },
+      ],
+      valid: [],
+    })
+
+    ruleTester.run(`${ruleName}(${type}): sorts decorated accessors`, rule, {
+      invalid: [
+        {
           errors: [
             {
-              messageId: 'unexpectedClassesGroupOrder',
               data: {
-                left: 'toggle',
-                leftGroup: 'decorated-method',
-                right: '#active',
-                rightGroup: 'private-decorated-accessor-property',
+                right: 'onSortChanged',
+                left: 'updateTable',
               },
+              messageId: 'unexpectedClassesOrder',
             },
             {
-              messageId: 'unexpectedClassesGroupOrder',
               data: {
-                left: '#active',
-                leftGroup: 'private-decorated-accessor-property',
-                right: 'finished',
-                rightGroup: 'decorated-accessor-property',
+                right: 'onPaginationChanged',
+                left: 'onSortChanged',
               },
+              messageId: 'unexpectedClassesOrder',
+            },
+            {
+              data: {
+                right: 'onValueChanged',
+                left: 'setFormValue',
+              },
+              messageId: 'unexpectedClassesOrder',
+            },
+          ],
+          output: dedent`
+            class Class {
+              // Region: Table
+              protected onChangeColumns() {}
+
+              protected onPaginationChanged() {}
+
+              protected onSortChanged() {}
+
+              protected updateTable() {}
+
+              // Region: Form
+              protected clearForm() {}
+
+              protected disableForm() {}
+
+              // Regular Comment
+              protected onValueChanged() {}
+
+              protected setFormValue() {}
+            }
+          `,
+          code: dedent`
+            class Class {
+              // Region: Table
+              protected onChangeColumns() {}
+
+              protected updateTable() {}
+
+              protected onSortChanged() {}
+
+              protected onPaginationChanged() {}
+
+              // Region: Form
+              protected clearForm() {}
+
+              protected disableForm() {}
+
+              protected setFormValue() {}
+
+              // Regular Comment
+              protected onValueChanged() {}
+            }
+          `,
+          options: [
+            {
+              ...options,
+              partitionByComment: 'Region:*',
             },
           ],
         },
       ],
-    })
-
-    ruleTester.run(`${ruleName}(${type}): sorts decorated accessors`, rule, {
       valid: [
         {
           code: dedent`
@@ -5620,89 +5697,164 @@ describe(ruleName, () => {
           ],
         },
       ],
-      invalid: [
-        {
-          code: dedent`
-            class Class {
-              // Region: Table
-              protected onChangeColumns() {}
-
-              protected updateTable() {}
-
-              protected onSortChanged() {}
-
-              protected onPaginationChanged() {}
-
-              // Region: Form
-              protected clearForm() {}
-
-              protected disableForm() {}
-
-              protected setFormValue() {}
-
-              // Regular Comment
-              protected onValueChanged() {}
-            }
-          `,
-          output: dedent`
-            class Class {
-              // Region: Table
-              protected onChangeColumns() {}
-
-              protected onPaginationChanged() {}
-
-              protected onSortChanged() {}
-
-              protected updateTable() {}
-
-              // Region: Form
-              protected clearForm() {}
-
-              protected disableForm() {}
-
-              // Regular Comment
-              protected onValueChanged() {}
-
-              protected setFormValue() {}
-            }
-          `,
-          options: [
-            {
-              ...options,
-              partitionByComment: 'Region:*',
-            },
-          ],
-          errors: [
-            {
-              messageId: 'unexpectedClassesOrder',
-              data: {
-                left: 'updateTable',
-                right: 'onSortChanged',
-              },
-            },
-            {
-              messageId: 'unexpectedClassesOrder',
-              data: {
-                left: 'onSortChanged',
-                right: 'onPaginationChanged',
-              },
-            },
-            {
-              messageId: 'unexpectedClassesOrder',
-              data: {
-                left: 'setFormValue',
-                right: 'onValueChanged',
-              },
-            },
-          ],
-        },
-      ],
     })
 
     ruleTester.run(
       `${ruleName}(${type}): does not sort properties if the right value depends on the left value`,
       rule,
       {
+        invalid: [
+          {
+            errors: [
+              {
+                data: {
+                  nodeDependentOnRight: 'aaa',
+                  right: 'b',
+                },
+                messageId: 'unexpectedClassesDependencyOrder',
+              },
+            ],
+            output: dedent`
+              class Class {
+                b = 'b'
+
+                aaa = [this.b]
+              }
+            `,
+            code: dedent`
+              class Class {
+                aaa = [this.b]
+
+                b = 'b'
+              }
+            `,
+            options: [options],
+          },
+          {
+            errors: [
+              {
+                data: {
+                  rightGroup: 'property',
+                  leftGroup: 'method',
+                  left: 'getAaa',
+                  right: 'b',
+                },
+                messageId: 'unexpectedClassesGroupOrder',
+              },
+            ],
+            output: dedent`
+              class Class {
+                b = 'b'
+
+                getAaa() {
+                  return this.b;
+                }
+              }
+            `,
+            code: dedent`
+              class Class {
+                getAaa() {
+                  return this.b;
+                }
+
+                b = 'b'
+              }
+            `,
+            options: [options],
+          },
+          {
+            errors: [
+              {
+                data: {
+                  rightGroup: 'static-property',
+                  leftGroup: 'property',
+                  right: 'c',
+                  left: 'b',
+                },
+                messageId: 'unexpectedClassesGroupOrder',
+              },
+            ],
+            output: dedent`
+              class Class {
+                static c = 'c'
+
+                b = Example.c
+              }
+            `,
+            code: dedent`
+              class Class {
+                b = Example.c
+
+                static c = 'c'
+              }
+            `,
+            options: [options],
+          },
+          {
+            errors: [
+              {
+                data: {
+                  rightGroup: 'private-property',
+                  leftGroup: 'method',
+                  left: 'getAaa',
+                  right: '#b',
+                },
+                messageId: 'unexpectedClassesGroupOrder',
+              },
+            ],
+            output: dedent`
+              class Class {
+                #b = 'b'
+
+                getAaa() {
+                  return this.#b;
+                }
+              }
+            `,
+            code: dedent`
+              class Class {
+                getAaa() {
+                  return this.#b;
+                }
+
+                #b = 'b'
+              }
+            `,
+            options: [options],
+          },
+          {
+            errors: [
+              {
+                data: {
+                  rightGroup: 'static-property',
+                  leftGroup: 'static-method',
+                  left: 'getAaa',
+                  right: 'b',
+                },
+                messageId: 'unexpectedClassesGroupOrder',
+              },
+            ],
+            output: dedent`
+              class Class {
+                static b = 'b'
+
+                static getAaa() {
+                  return this.b;
+                }
+              }
+            `,
+            code: dedent`
+              class Class {
+                static getAaa() {
+                  return this.b;
+                }
+
+                static b = 'b'
+              }
+            `,
+            options: [options],
+          },
+        ],
         valid: [
           {
             code: dedent`
@@ -5759,158 +5911,6 @@ describe(ruleName, () => {
               }
             `,
             options: [options],
-          },
-        ],
-        invalid: [
-          {
-            code: dedent`
-              class Class {
-                aaa = [this.b]
-
-                b = 'b'
-              }
-            `,
-            output: dedent`
-              class Class {
-                b = 'b'
-
-                aaa = [this.b]
-              }
-            `,
-            options: [options],
-            errors: [
-              {
-                messageId: 'unexpectedClassesDependencyOrder',
-                data: {
-                  right: 'b',
-                  nodeDependentOnRight: 'aaa',
-                },
-              },
-            ],
-          },
-          {
-            code: dedent`
-              class Class {
-                getAaa() {
-                  return this.b;
-                }
-
-                b = 'b'
-              }
-            `,
-            output: dedent`
-              class Class {
-                b = 'b'
-
-                getAaa() {
-                  return this.b;
-                }
-              }
-            `,
-            options: [options],
-            errors: [
-              {
-                messageId: 'unexpectedClassesGroupOrder',
-                data: {
-                  left: 'getAaa',
-                  leftGroup: 'method',
-                  right: 'b',
-                  rightGroup: 'property',
-                },
-              },
-            ],
-          },
-          {
-            code: dedent`
-              class Class {
-                b = Example.c
-
-                static c = 'c'
-              }
-            `,
-            output: dedent`
-              class Class {
-                static c = 'c'
-
-                b = Example.c
-              }
-            `,
-            options: [options],
-            errors: [
-              {
-                messageId: 'unexpectedClassesGroupOrder',
-                data: {
-                  left: 'b',
-                  leftGroup: 'property',
-                  right: 'c',
-                  rightGroup: 'static-property',
-                },
-              },
-            ],
-          },
-          {
-            code: dedent`
-              class Class {
-                getAaa() {
-                  return this.#b;
-                }
-
-                #b = 'b'
-              }
-            `,
-            output: dedent`
-              class Class {
-                #b = 'b'
-
-                getAaa() {
-                  return this.#b;
-                }
-              }
-            `,
-            options: [options],
-            errors: [
-              {
-                messageId: 'unexpectedClassesGroupOrder',
-                data: {
-                  left: 'getAaa',
-                  leftGroup: 'method',
-                  right: '#b',
-                  rightGroup: 'private-property',
-                },
-              },
-            ],
-          },
-          {
-            code: dedent`
-              class Class {
-                static getAaa() {
-                  return this.b;
-                }
-
-                static b = 'b'
-              }
-            `,
-            output: dedent`
-              class Class {
-                static b = 'b'
-
-                static getAaa() {
-                  return this.b;
-                }
-              }
-            `,
-            options: [options],
-            errors: [
-              {
-                messageId: 'unexpectedClassesGroupOrder',
-                data: {
-                  left: 'getAaa',
-                  leftGroup: 'static-method',
-                  right: 'b',
-                  rightGroup: 'static-property',
-                },
-              },
-            ],
           },
         ],
       },
@@ -5920,6 +5920,45 @@ describe(ruleName, () => {
       `${ruleName}(${type}): works with left and right dependencies`,
       rule,
       {
+        invalid: [
+          {
+            errors: [
+              {
+                data: {
+                  nodeDependentOnRight: 'aaa',
+                  right: 'left',
+                },
+                messageId: 'unexpectedClassesDependencyOrder',
+              },
+              {
+                data: {
+                  nodeDependentOnRight: 'aaa',
+                  right: 'right',
+                },
+                messageId: 'unexpectedClassesDependencyOrder',
+              },
+            ],
+            output: dedent`
+              class Class {
+                left = 'left'
+
+                right = 'right'
+
+                aaa = this.left + this.right
+              }
+            `,
+            code: dedent`
+              class Class {
+                aaa = this.left + this.right
+
+                left = 'left'
+
+                right = 'right'
+              }
+            `,
+            options: [options],
+          },
+        ],
         valid: [
           {
             code: dedent`
@@ -5933,64 +5972,50 @@ describe(ruleName, () => {
             options: [options],
           },
         ],
-        invalid: [
-          {
-            code: dedent`
-              class Class {
-                aaa = this.left + this.right
-
-                left = 'left'
-
-                right = 'right'
-              }
-            `,
-            output: dedent`
-              class Class {
-                left = 'left'
-
-                right = 'right'
-
-                aaa = this.left + this.right
-              }
-            `,
-            options: [options],
-            errors: [
-              {
-                messageId: 'unexpectedClassesDependencyOrder',
-                data: {
-                  right: 'left',
-                  nodeDependentOnRight: 'aaa',
-                },
-              },
-              {
-                messageId: 'unexpectedClassesDependencyOrder',
-                data: {
-                  right: 'right',
-                  nodeDependentOnRight: 'aaa',
-                },
-              },
-            ],
-          },
-        ],
       },
     )
 
     ruleTester.run(`${ruleName}(${type}): should ignore unknown group`, rule, {
-      valid: [],
       invalid: [
         {
-          code: dedent`
-              class Class {
-
-                public i = 'i';
-                private z() {}
-                public method3() {}
-                private y() {}
-                public method4() {}
-                public method1() {}
-                private x() {}
-              }
-            `,
+          errors: [
+            {
+              data: {
+                rightGroup: 'private-method',
+                leftGroup: 'property',
+                right: 'z',
+                left: 'i',
+              },
+              messageId: 'unexpectedClassesGroupOrder',
+            },
+            {
+              data: {
+                leftGroup: 'private-method',
+                rightGroup: 'unknown',
+                right: 'method3',
+                left: 'z',
+              },
+              messageId: 'unexpectedClassesGroupOrder',
+            },
+            {
+              data: {
+                rightGroup: 'private-method',
+                leftGroup: 'unknown',
+                left: 'method3',
+                right: 'y',
+              },
+              messageId: 'unexpectedClassesGroupOrder',
+            },
+            {
+              data: {
+                rightGroup: 'private-method',
+                leftGroup: 'unknown',
+                left: 'method1',
+                right: 'x',
+              },
+              messageId: 'unexpectedClassesGroupOrder',
+            },
+          ],
           output: dedent`
               class Class {
 
@@ -6001,6 +6026,18 @@ describe(ruleName, () => {
                 public method4() {}
                 public method1() {}
                 public i = 'i';
+              }
+            `,
+          code: dedent`
+              class Class {
+
+                public i = 'i';
+                private z() {}
+                public method3() {}
+                private y() {}
+                public method4() {}
+                public method1() {}
+                private x() {}
               }
             `,
           options: [
@@ -6009,54 +6046,28 @@ describe(ruleName, () => {
               groups: ['private-method', 'property'],
             },
           ],
-          errors: [
-            {
-              messageId: 'unexpectedClassesGroupOrder',
-              data: {
-                left: 'i',
-                leftGroup: 'property',
-                right: 'z',
-                rightGroup: 'private-method',
-              },
-            },
-            {
-              messageId: 'unexpectedClassesGroupOrder',
-              data: {
-                left: 'z',
-                leftGroup: 'private-method',
-                right: 'method3',
-                rightGroup: 'unknown',
-              },
-            },
-            {
-              messageId: 'unexpectedClassesGroupOrder',
-              data: {
-                left: 'method3',
-                leftGroup: 'unknown',
-                right: 'y',
-                rightGroup: 'private-method',
-              },
-            },
-            {
-              messageId: 'unexpectedClassesGroupOrder',
-              data: {
-                left: 'method1',
-                leftGroup: 'unknown',
-                right: 'x',
-                rightGroup: 'private-method',
-              },
-            },
-          ],
         },
         {
-          code: dedent`
-              class Class {
-                b
-                someMethod() {
-                }
-                a
-              }
-            `,
+          errors: [
+            {
+              data: {
+                leftGroup: 'property',
+                rightGroup: 'unknown',
+                right: 'someMethod',
+                left: 'b',
+              },
+              messageId: 'unexpectedClassesGroupOrder',
+            },
+            {
+              data: {
+                rightGroup: 'property',
+                leftGroup: 'unknown',
+                left: 'someMethod',
+                right: 'a',
+              },
+              messageId: 'unexpectedClassesGroupOrder',
+            },
+          ],
           output: dedent`
               class Class {
                 a
@@ -6065,34 +6076,23 @@ describe(ruleName, () => {
                 b
               }
             `,
+          code: dedent`
+              class Class {
+                b
+                someMethod() {
+                }
+                a
+              }
+            `,
           options: [
             {
               ...options,
               groups: ['property'],
             },
           ],
-          errors: [
-            {
-              messageId: 'unexpectedClassesGroupOrder',
-              data: {
-                left: 'b',
-                leftGroup: 'property',
-                right: 'someMethod',
-                rightGroup: 'unknown',
-              },
-            },
-            {
-              messageId: 'unexpectedClassesGroupOrder',
-              data: {
-                left: 'someMethod',
-                leftGroup: 'unknown',
-                right: 'a',
-                rightGroup: 'property',
-              },
-            },
-          ],
         },
       ],
+      valid: [],
     })
   })
 
@@ -6105,29 +6105,8 @@ describe(ruleName, () => {
     } as const
 
     ruleTester.run(`${ruleName}(${type}): sorts class members`, rule, {
-      valid: [
+      invalid: [
         {
-          code: dedent`
-            class Class {
-              static a = 'a'
-
-              private b = 'b'
-
-              c = 'c'
-
-              d = 'd'
-
-              constructor() {}
-
-              static e() {}
-
-              private f() {}
-
-              g() {}
-
-              h() {}
-            }
-          `,
           options: [
             {
               ...options,
@@ -6143,31 +6122,6 @@ describe(ruleName, () => {
               ],
             },
           ],
-        },
-      ],
-      invalid: [
-        {
-          code: dedent`
-            class Class {
-              static a = 'a'
-
-              private b = 'b'
-
-              d = 'd'
-
-              c = 'c'
-
-              static e() {}
-
-              constructor() {}
-
-              private f() {}
-
-              g() {}
-
-              h() {}
-            }
-          `,
           output: dedent`
             class Class {
               static a = 'a'
@@ -6189,6 +6143,42 @@ describe(ruleName, () => {
               h() {}
             }
           `,
+          code: dedent`
+            class Class {
+              static a = 'a'
+
+              private b = 'b'
+
+              d = 'd'
+
+              c = 'c'
+
+              static e() {}
+
+              constructor() {}
+
+              private f() {}
+
+              g() {}
+
+              h() {}
+            }
+          `,
+          errors: [
+            {
+              data: {
+                leftGroup: 'static-method',
+                rightGroup: 'constructor',
+                right: 'constructor',
+                left: 'e',
+              },
+              messageId: 'unexpectedClassesGroupOrder',
+            },
+          ],
+        },
+      ],
+      valid: [
+        {
           options: [
             {
               ...options,
@@ -6204,17 +6194,27 @@ describe(ruleName, () => {
               ],
             },
           ],
-          errors: [
-            {
-              messageId: 'unexpectedClassesGroupOrder',
-              data: {
-                left: 'e',
-                leftGroup: 'static-method',
-                right: 'constructor',
-                rightGroup: 'constructor',
-              },
-            },
-          ],
+          code: dedent`
+            class Class {
+              static a = 'a'
+
+              private b = 'b'
+
+              c = 'c'
+
+              d = 'd'
+
+              constructor() {}
+
+              static e() {}
+
+              private f() {}
+
+              g() {}
+
+              h() {}
+            }
+          `,
         },
       ],
     })
@@ -6223,21 +6223,8 @@ describe(ruleName, () => {
       `${ruleName}(${type}): sorts class and group members`,
       rule,
       {
-        valid: [
+        invalid: [
           {
-            code: dedent`
-              class Class {
-                static b = 'b'
-
-                [key in O]
-
-                static a
-
-                static {
-                  this.a = 'd'
-                }
-              }
-            `,
             options: [
               {
                 ...options,
@@ -6249,23 +6236,6 @@ describe(ruleName, () => {
                 ],
               },
             ],
-          },
-        ],
-        invalid: [
-          {
-            code: dedent`
-              class Class {
-                [key in O]
-
-                static b = 'b'
-
-                static a
-
-                static {
-                  this.a = 'd'
-                }
-              }
-            `,
             output: dedent`
               class Class {
                 static b = 'b'
@@ -6279,6 +6249,32 @@ describe(ruleName, () => {
                 }
               }
             `,
+            code: dedent`
+              class Class {
+                [key in O]
+
+                static b = 'b'
+
+                static a
+
+                static {
+                  this.a = 'd'
+                }
+              }
+            `,
+            errors: [
+              {
+                data: {
+                  left: 'key in O',
+                  right: 'b',
+                },
+                messageId: 'unexpectedClassesOrder',
+              },
+            ],
+          },
+        ],
+        valid: [
+          {
             options: [
               {
                 ...options,
@@ -6290,15 +6286,19 @@ describe(ruleName, () => {
                 ],
               },
             ],
-            errors: [
-              {
-                messageId: 'unexpectedClassesOrder',
-                data: {
-                  left: 'key in O',
-                  right: 'b',
-                },
-              },
-            ],
+            code: dedent`
+              class Class {
+                static b = 'b'
+
+                [key in O]
+
+                static a
+
+                static {
+                  this.a = 'd'
+                }
+              }
+            `,
           },
         ],
       },
@@ -6308,48 +6308,19 @@ describe(ruleName, () => {
       `${ruleName}(${type}): sorts class with ts index signatures`,
       rule,
       {
-        valid: [
-          {
-            code: dedent`
-              class Class {
-                static a = 'a';
-
-                [k: string]: any;
-
-                [k: string];
-              }
-            `,
-            options: [
-              {
-                ...options,
-                groups: [
-                  ['static-property', 'private-property', 'property'],
-                  'constructor',
-                ],
-              },
-            ],
-          },
-        ],
         invalid: [
           {
-            code: dedent`
-              class Class {
-                [k: string]: any;
-
-                [k: string];
-
-                static a = 'a';
-              }
-            `,
-            output: dedent`
-              class Class {
-                static a = 'a';
-
-                [k: string]: any;
-
-                [k: string];
-              }
-            `,
+            errors: [
+              {
+                data: {
+                  rightGroup: 'static-property',
+                  leftGroup: 'index-signature',
+                  left: '[k: string];',
+                  right: 'a',
+                },
+                messageId: 'unexpectedClassesGroupOrder',
+              },
+            ],
             options: [
               {
                 ...options,
@@ -6359,17 +6330,46 @@ describe(ruleName, () => {
                 ],
               },
             ],
-            errors: [
+            output: dedent`
+              class Class {
+                static a = 'a';
+
+                [k: string]: any;
+
+                [k: string];
+              }
+            `,
+            code: dedent`
+              class Class {
+                [k: string]: any;
+
+                [k: string];
+
+                static a = 'a';
+              }
+            `,
+          },
+        ],
+        valid: [
+          {
+            options: [
               {
-                messageId: 'unexpectedClassesGroupOrder',
-                data: {
-                  left: '[k: string];',
-                  leftGroup: 'index-signature',
-                  right: 'a',
-                  rightGroup: 'static-property',
-                },
+                ...options,
+                groups: [
+                  ['static-property', 'private-property', 'property'],
+                  'constructor',
+                ],
               },
             ],
+            code: dedent`
+              class Class {
+                static a = 'a';
+
+                [k: string]: any;
+
+                [k: string];
+              }
+            `,
           },
         ],
       },
@@ -6379,6 +6379,75 @@ describe(ruleName, () => {
       `${ruleName}(${type}): sorts class with ts index signatures`,
       rule,
       {
+        invalid: [
+          {
+            output: dedent`
+              class Decorations {
+
+                a
+                static setBackground(r: number, g: number, b: number, a?: number): this
+                static setBackground(color: number, hexFlag: boolean): this
+                static setBackground(color: Color | string | CSSColor): this
+
+                static setBackground(color: ColorArgument, arg1?: boolean | number, arg2?: number, arg3?: number): this {
+                  /* ... */
+                }
+                setBackground(r: number, g: number, b: number, a?: number): this
+                setBackground(color: number, hexFlag: boolean): this
+                setBackground(color: Color | string | CSSColor): this
+
+                setBackground(color: ColorArgument, arg1?: boolean | number, arg2?: number, arg3?: number): this {
+                  /* ... */
+                }
+              }
+            `,
+            code: dedent`
+              class Decorations {
+
+                setBackground(r: number, g: number, b: number, a?: number): this
+                setBackground(color: number, hexFlag: boolean): this
+                setBackground(color: Color | string | CSSColor): this
+                setBackground(color: ColorArgument, arg1?: boolean | number, arg2?: number, arg3?: number): this {
+                  /* ... */
+                }
+
+                static setBackground(r: number, g: number, b: number, a?: number): this
+                static setBackground(color: number, hexFlag: boolean): this
+                static setBackground(color: Color | string | CSSColor): this
+                static setBackground(color: ColorArgument, arg1?: boolean | number, arg2?: number, arg3?: number): this {
+                  /* ... */
+                }
+
+                a
+              }
+            `,
+            errors: [
+              {
+                data: {
+                  rightGroup: 'static-method',
+                  right: 'setBackground',
+                  left: 'setBackground',
+                  leftGroup: 'method',
+                },
+                messageId: 'unexpectedClassesGroupOrder',
+              },
+              {
+                data: {
+                  leftGroup: 'static-method',
+                  rightGroup: 'property',
+                  left: 'setBackground',
+                  right: 'a',
+                },
+                messageId: 'unexpectedClassesGroupOrder',
+              },
+            ],
+            options: [
+              {
+                ...options,
+              },
+            ],
+          },
+        ],
         valid: [
           {
             code: dedent`
@@ -6402,75 +6471,6 @@ describe(ruleName, () => {
             ],
           },
         ],
-        invalid: [
-          {
-            code: dedent`
-              class Decorations {
-
-                setBackground(r: number, g: number, b: number, a?: number): this
-                setBackground(color: number, hexFlag: boolean): this
-                setBackground(color: Color | string | CSSColor): this
-                setBackground(color: ColorArgument, arg1?: boolean | number, arg2?: number, arg3?: number): this {
-                  /* ... */
-                }
-
-                static setBackground(r: number, g: number, b: number, a?: number): this
-                static setBackground(color: number, hexFlag: boolean): this
-                static setBackground(color: Color | string | CSSColor): this
-                static setBackground(color: ColorArgument, arg1?: boolean | number, arg2?: number, arg3?: number): this {
-                  /* ... */
-                }
-
-                a
-              }
-            `,
-            output: dedent`
-              class Decorations {
-
-                a
-                static setBackground(r: number, g: number, b: number, a?: number): this
-                static setBackground(color: number, hexFlag: boolean): this
-                static setBackground(color: Color | string | CSSColor): this
-
-                static setBackground(color: ColorArgument, arg1?: boolean | number, arg2?: number, arg3?: number): this {
-                  /* ... */
-                }
-                setBackground(r: number, g: number, b: number, a?: number): this
-                setBackground(color: number, hexFlag: boolean): this
-                setBackground(color: Color | string | CSSColor): this
-
-                setBackground(color: ColorArgument, arg1?: boolean | number, arg2?: number, arg3?: number): this {
-                  /* ... */
-                }
-              }
-            `,
-            options: [
-              {
-                ...options,
-              },
-            ],
-            errors: [
-              {
-                messageId: 'unexpectedClassesGroupOrder',
-                data: {
-                  left: 'setBackground',
-                  leftGroup: 'method',
-                  right: 'setBackground',
-                  rightGroup: 'static-method',
-                },
-              },
-              {
-                messageId: 'unexpectedClassesGroupOrder',
-                data: {
-                  left: 'setBackground',
-                  leftGroup: 'static-method',
-                  right: 'a',
-                  rightGroup: 'property',
-                },
-              },
-            ],
-          },
-        ],
       },
     )
 
@@ -6478,34 +6478,51 @@ describe(ruleName, () => {
       `${ruleName}(${type}): sorts private methods with hash`,
       rule,
       {
-        valid: [],
         invalid: [
           {
-            code: dedent`
-              class MyUnsortedClass {
-                someOtherProperty
-
-                someProperty = 1
-
-                constructor() {}
-
-                static #aPrivateStaticMethod () {}
-
-                #somePrivateProperty
-
-                #someOtherPrivateProperty = 2
-
-                static someStaticProperty = 3
-
-                static #someStaticPrivateProperty = 4
-
-                aInstanceMethod () {}
-
-                static aStaticMethod () {}
-
-                #aPrivateInstanceMethod () {}
-              }
-            `,
+            errors: [
+              {
+                data: {
+                  rightGroup: 'private-property',
+                  left: '#aPrivateStaticMethod',
+                  right: '#somePrivateProperty',
+                  leftGroup: 'static-method',
+                },
+                messageId: 'unexpectedClassesGroupOrder',
+              },
+              {
+                data: {
+                  right: '#someOtherPrivateProperty',
+                  left: '#somePrivateProperty',
+                },
+                messageId: 'unexpectedClassesOrder',
+              },
+              {
+                data: {
+                  left: '#someOtherPrivateProperty',
+                  leftGroup: 'private-property',
+                  rightGroup: 'static-property',
+                  right: 'someStaticProperty',
+                },
+                messageId: 'unexpectedClassesGroupOrder',
+              },
+              {
+                data: {
+                  right: '#someStaticPrivateProperty',
+                  left: 'someStaticProperty',
+                },
+                messageId: 'unexpectedClassesOrder',
+              },
+              {
+                data: {
+                  right: '#aPrivateInstanceMethod',
+                  rightGroup: 'private-method',
+                  leftGroup: 'static-method',
+                  left: 'aStaticMethod',
+                },
+                messageId: 'unexpectedClassesGroupOrder',
+              },
+            ],
             output: dedent`
               class MyUnsortedClass {
                 static #someStaticPrivateProperty = 4
@@ -6529,6 +6546,31 @@ describe(ruleName, () => {
                 static #aPrivateStaticMethod () {}
 
                 static aStaticMethod () {}
+              }
+            `,
+            code: dedent`
+              class MyUnsortedClass {
+                someOtherProperty
+
+                someProperty = 1
+
+                constructor() {}
+
+                static #aPrivateStaticMethod () {}
+
+                #somePrivateProperty
+
+                #someOtherPrivateProperty = 2
+
+                static someStaticProperty = 3
+
+                static #someStaticPrivateProperty = 4
+
+                aInstanceMethod () {}
+
+                static aStaticMethod () {}
+
+                #aPrivateInstanceMethod () {}
               }
             `,
             options: [
@@ -6546,74 +6588,15 @@ describe(ruleName, () => {
                 ],
               },
             ],
-            errors: [
-              {
-                messageId: 'unexpectedClassesGroupOrder',
-                data: {
-                  left: '#aPrivateStaticMethod',
-                  leftGroup: 'static-method',
-                  right: '#somePrivateProperty',
-                  rightGroup: 'private-property',
-                },
-              },
-              {
-                messageId: 'unexpectedClassesOrder',
-                data: {
-                  left: '#somePrivateProperty',
-                  right: '#someOtherPrivateProperty',
-                },
-              },
-              {
-                messageId: 'unexpectedClassesGroupOrder',
-                data: {
-                  left: '#someOtherPrivateProperty',
-                  leftGroup: 'private-property',
-                  right: 'someStaticProperty',
-                  rightGroup: 'static-property',
-                },
-              },
-              {
-                messageId: 'unexpectedClassesOrder',
-                data: {
-                  left: 'someStaticProperty',
-                  right: '#someStaticPrivateProperty',
-                },
-              },
-              {
-                messageId: 'unexpectedClassesGroupOrder',
-                data: {
-                  left: 'aStaticMethod',
-                  leftGroup: 'static-method',
-                  right: '#aPrivateInstanceMethod',
-                  rightGroup: 'private-method',
-                },
-              },
-            ],
           },
         ],
+        valid: [],
       },
     )
 
     ruleTester.run(`${ruleName}(${type}): sorts decorated properties`, rule, {
-      valid: [],
       invalid: [
         {
-          code: dedent`
-            class User {
-              firstName: string
-
-              id: number
-
-              @Index({ name: 'born_index' })
-              @Property()
-              born: string
-
-              @Property()
-              @Unique()
-              email: string
-
-              lastName: string
-            }`,
           output: dedent`
             class User {
               firstName: string
@@ -6630,26 +6613,42 @@ describe(ruleName, () => {
               @Unique()
               email: string
             }`,
+          code: dedent`
+            class User {
+              firstName: string
+
+              id: number
+
+              @Index({ name: 'born_index' })
+              @Property()
+              born: string
+
+              @Property()
+              @Unique()
+              email: string
+
+              lastName: string
+            }`,
+          errors: [
+            {
+              data: {
+                leftGroup: 'decorated-property',
+                rightGroup: 'property',
+                right: 'lastName',
+                left: 'email',
+              },
+              messageId: 'unexpectedClassesGroupOrder',
+            },
+          ],
           options: [
             {
               ...options,
               groups: ['property', 'decorated-property', 'unknown'],
             },
           ],
-          errors: [
-            {
-              messageId: 'unexpectedClassesGroupOrder',
-              data: {
-                left: 'email',
-                leftGroup: 'decorated-property',
-                right: 'lastName',
-                rightGroup: 'property',
-              },
-            },
-          ],
         },
         {
-          code: dedent`
+          output: dedent`
             class MyElement {
               @property({ attribute: false })
               data = {}
@@ -6670,17 +6669,17 @@ describe(ruleName, () => {
               constructor() {}
 
               @property()
+              set prop(val: number) {
+                this._prop = Math.floor(val)
+              }
+
+              @property()
               get message(): string {
                 return this._message
               }
 
               set message(message: string) {
                 this._message = message
-              }
-
-              @property()
-              set prop(val: number) {
-                this._prop = Math.floor(val)
               }
 
               get prop() {
@@ -6689,7 +6688,7 @@ describe(ruleName, () => {
 
               render() {}
             }`,
-          output: dedent`
+          code: dedent`
             class MyElement {
               @property({ attribute: false })
               data = {}
@@ -6710,17 +6709,17 @@ describe(ruleName, () => {
               constructor() {}
 
               @property()
-              set prop(val: number) {
-                this._prop = Math.floor(val)
-              }
-
-              @property()
               get message(): string {
                 return this._message
               }
 
               set message(message: string) {
                 this._message = message
+              }
+
+              @property()
+              set prop(val: number) {
+                this._prop = Math.floor(val)
               }
 
               get prop() {
@@ -6746,92 +6745,64 @@ describe(ruleName, () => {
           ],
           errors: [
             {
-              messageId: 'unexpectedClassesGroupOrder',
               data: {
-                left: 'message',
-                leftGroup: 'set-method',
-                right: 'prop',
                 rightGroup: 'decorated-set-method',
+                leftGroup: 'set-method',
+                left: 'message',
+                right: 'prop',
               },
+              messageId: 'unexpectedClassesGroupOrder',
             },
           ],
         },
       ],
+      valid: [],
     })
 
     ruleTester.run(`${ruleName}(${type}): sorts decorated accessors`, rule, {
-      valid: [],
       invalid: [
         {
-          code: dedent`
-            class Todo {
-              @observable
-              customLastGroupProperty = 1
-
-              id = Math.random()
-
-              constructor() {}
-
-              @observable
-              customFirstGroupProperty = 1
-
-              @action
-              toggle() {}
-
-              @observable
-              accessor #active = false
-
-              @observable
-              accessor finished = false
-
-              @observable
-              accessor title = ''
-
-              @observable
-              protected accessor type = ''
-
-            }`,
-          output: dedent`
-            class Todo {
-              @observable
-              customFirstGroupProperty = 1
-
-              @observable
-              accessor finished = false
-
-              @observable
-              accessor title = ''
-
-              @observable
-              protected accessor type = ''
-
-              @observable
-              accessor #active = false
-
-              id = Math.random()
-
-              constructor() {}
-
-              @action
-              toggle() {}
-
-              @observable
-              customLastGroupProperty = 1
-
-            }`,
+          errors: [
+            {
+              data: {
+                left: 'customLastGroupProperty',
+                leftGroup: 'my-last-group',
+                rightGroup: 'property',
+                right: 'id',
+              },
+              messageId: 'unexpectedClassesGroupOrder',
+            },
+            {
+              data: {
+                right: 'customFirstGroupProperty',
+                rightGroup: 'my-first-group',
+                leftGroup: 'constructor',
+                left: 'constructor',
+              },
+              messageId: 'unexpectedClassesGroupOrder',
+            },
+            {
+              data: {
+                rightGroup: 'private-decorated-accessor-property',
+                leftGroup: 'decorated-method',
+                right: '#active',
+                left: 'toggle',
+              },
+              messageId: 'unexpectedClassesGroupOrder',
+            },
+            {
+              data: {
+                leftGroup: 'private-decorated-accessor-property',
+                rightGroup: 'decorated-accessor-property',
+                right: 'finished',
+                left: '#active',
+              },
+              messageId: 'unexpectedClassesGroupOrder',
+            },
+          ],
           options: [
             {
               ...options,
-              customGroups: [
-                {
-                  groupName: 'my-first-group',
-                  elementNamePattern: 'customFirst*',
-                },
-                {
-                  groupName: 'my-last-group',
-                  elementNamePattern: 'customLast*',
-                },
-              ],
               groups: [
                 'my-first-group',
                 'decorated-accessor-property',
@@ -6843,66 +6814,111 @@ describe(ruleName, () => {
                 'unknown',
                 'my-last-group',
               ],
+              customGroups: [
+                {
+                  elementNamePattern: 'customFirst*',
+                  groupName: 'my-first-group',
+                },
+                {
+                  elementNamePattern: 'customLast*',
+                  groupName: 'my-last-group',
+                },
+              ],
             },
           ],
-          errors: [
-            {
-              messageId: 'unexpectedClassesGroupOrder',
-              data: {
-                left: 'customLastGroupProperty',
-                leftGroup: 'my-last-group',
-                right: 'id',
-                rightGroup: 'property',
-              },
-            },
-            {
-              messageId: 'unexpectedClassesGroupOrder',
-              data: {
-                left: 'constructor',
-                leftGroup: 'constructor',
-                right: 'customFirstGroupProperty',
-                rightGroup: 'my-first-group',
-              },
-            },
-            {
-              messageId: 'unexpectedClassesGroupOrder',
-              data: {
-                left: 'toggle',
-                leftGroup: 'decorated-method',
-                right: '#active',
-                rightGroup: 'private-decorated-accessor-property',
-              },
-            },
-            {
-              messageId: 'unexpectedClassesGroupOrder',
-              data: {
-                left: '#active',
-                leftGroup: 'private-decorated-accessor-property',
-                right: 'finished',
-                rightGroup: 'decorated-accessor-property',
-              },
-            },
-          ],
+          output: dedent`
+            class Todo {
+              @observable
+              customFirstGroupProperty = 1
+
+              @observable
+              accessor finished = false
+
+              @observable
+              accessor title = ''
+
+              @observable
+              protected accessor type = ''
+
+              @observable
+              accessor #active = false
+
+              id = Math.random()
+
+              constructor() {}
+
+              @action
+              toggle() {}
+
+              @observable
+              customLastGroupProperty = 1
+
+            }`,
+          code: dedent`
+            class Todo {
+              @observable
+              customLastGroupProperty = 1
+
+              id = Math.random()
+
+              constructor() {}
+
+              @observable
+              customFirstGroupProperty = 1
+
+              @action
+              toggle() {}
+
+              @observable
+              accessor #active = false
+
+              @observable
+              accessor finished = false
+
+              @observable
+              accessor title = ''
+
+              @observable
+              protected accessor type = ''
+
+            }`,
         },
       ],
+      valid: [],
     })
 
     ruleTester.run(`${ruleName}(${type}): should ignore unknown group`, rule, {
-      valid: [],
       invalid: [
         {
-          code: dedent`
-              class Class {
-
-                public i = 'i';
-                private z() {}
-                public method3() {}
-                private y() {}
-                public method4() {}
-                public method1() {}
-                private x() {}
-              }
-            `,
+          errors: [
+            {
+              data: {
+                rightGroup: 'private-method',
+                leftGroup: 'property',
+                right: 'z',
+                left: 'i',
+              },
+              messageId: 'unexpectedClassesGroupOrder',
+            },
+            {
+              data: {
+                rightGroup: 'private-method',
+                leftGroup: 'unknown',
+                left: 'method3',
+                right: 'y',
+              },
+              messageId: 'unexpectedClassesGroupOrder',
+            },
+            {
+              data: {
+                rightGroup: 'private-method',
+                leftGroup: 'unknown',
+                left: 'method1',
+                right: 'x',
+              },
+              messageId: 'unexpectedClassesGroupOrder',
+            },
+          ],
           output: dedent`
               class Class {
 
@@ -6915,51 +6931,66 @@ describe(ruleName, () => {
                 public i = 'i';
               }
             `,
+          code: dedent`
+              class Class {
+
+                public i = 'i';
+                private z() {}
+                public method3() {}
+                private y() {}
+                public method4() {}
+                public method1() {}
+                private x() {}
+              }
+            `,
           options: [
             {
               ...options,
               groups: ['private-method', 'property'],
             },
           ],
-          errors: [
-            {
-              messageId: 'unexpectedClassesGroupOrder',
-              data: {
-                left: 'i',
-                leftGroup: 'property',
-                right: 'z',
-                rightGroup: 'private-method',
-              },
-            },
-            {
-              messageId: 'unexpectedClassesGroupOrder',
-              data: {
-                left: 'method3',
-                leftGroup: 'unknown',
-                right: 'y',
-                rightGroup: 'private-method',
-              },
-            },
-            {
-              messageId: 'unexpectedClassesGroupOrder',
-              data: {
-                left: 'method1',
-                leftGroup: 'unknown',
-                right: 'x',
-                rightGroup: 'private-method',
-              },
-            },
-          ],
         },
       ],
+      valid: [],
     })
   })
 
   describe(`${ruleName}: custom groups`, () => {
     ruleTester.run(`${ruleName}: filters on selector and modifiers`, rule, {
-      valid: [],
       invalid: [
         {
+          options: [
+            {
+              customGroups: [
+                {
+                  groupName: 'unusedCustomGroup',
+                  modifiers: ['private'],
+                  selector: 'property',
+                },
+                {
+                  groupName: 'privatePropertyGroup',
+                  modifiers: ['private'],
+                  selector: 'property',
+                },
+                {
+                  groupName: 'propertyGroup',
+                  selector: 'property',
+                },
+              ],
+              groups: ['propertyGroup', 'constructor', 'privatePropertyGroup'],
+            },
+          ],
+          errors: [
+            {
+              data: {
+                leftGroup: 'privatePropertyGroup',
+                rightGroup: 'propertyGroup',
+                right: 'c',
+                left: 'b',
+              },
+              messageId: 'unexpectedClassesGroupOrder',
+            },
+          ],
           code: dedent`
               class Class {
                 private a;
@@ -6976,121 +7007,106 @@ describe(ruleName, () => {
               private b;
             }
             `,
-          options: [
-            {
-              groups: ['propertyGroup', 'constructor', 'privatePropertyGroup'],
-              customGroups: [
-                {
-                  groupName: 'unusedCustomGroup',
-                  selector: 'property',
-                  modifiers: ['private'],
-                },
-                {
-                  groupName: 'privatePropertyGroup',
-                  selector: 'property',
-                  modifiers: ['private'],
-                },
-                {
-                  groupName: 'propertyGroup',
-                  selector: 'property',
-                },
-              ],
-            },
-          ],
-          errors: [
-            {
-              messageId: 'unexpectedClassesGroupOrder',
-              data: {
-                left: 'b',
-                leftGroup: 'privatePropertyGroup',
-                right: 'c',
-                rightGroup: 'propertyGroup',
-              },
-            },
-          ],
         },
       ],
+      valid: [],
     })
 
     ruleTester.run(`${ruleName}: filters on elementNamePattern`, rule, {
-      valid: [],
       invalid: [
         {
-          code: dedent`
-              class Class {
-                a;
-
-                b;
-
-                constructor() {}
-
-                method() {}
-
-                helloProperty;
-              }
-            `,
-          output: dedent`
-              class Class {
-                helloProperty;
-
-                constructor() {}
-
-                a;
-
-                b;
-
-                method() {}
-              }
-            `,
+          errors: [
+            {
+              data: {
+                rightGroup: 'constructor',
+                leftGroup: 'unknown',
+                right: 'constructor',
+                left: 'b',
+              },
+              messageId: 'unexpectedClassesGroupOrder',
+            },
+            {
+              data: {
+                rightGroup: 'propertiesStartingWithHello',
+                right: 'helloProperty',
+                leftGroup: 'unknown',
+                left: 'method',
+              },
+              messageId: 'unexpectedClassesGroupOrder',
+            },
+          ],
           options: [
             {
-              groups: ['propertiesStartingWithHello', 'constructor', 'unknown'],
               customGroups: [
                 {
                   groupName: 'propertiesStartingWithHello',
-                  selector: 'property',
                   elementNamePattern: 'hello*',
+                  selector: 'property',
                 },
               ],
+              groups: ['propertiesStartingWithHello', 'constructor', 'unknown'],
+            },
+          ],
+          output: dedent`
+              class Class {
+                helloProperty;
+
+                constructor() {}
+
+                a;
+
+                b;
+
+                method() {}
+              }
+            `,
+          code: dedent`
+              class Class {
+                a;
+
+                b;
+
+                constructor() {}
+
+                method() {}
+
+                helloProperty;
+              }
+            `,
+        },
+      ],
+      valid: [],
+    })
+
+    ruleTester.run(`${ruleName}: filters on elementValuePattern`, rule, {
+      invalid: [
+        {
+          options: [
+            {
+              customGroups: [
+                {
+                  elementValuePattern: 'inject*',
+                  groupName: 'inject',
+                },
+                {
+                  elementValuePattern: 'computed*',
+                  groupName: 'computed',
+                },
+              ],
+              groups: ['computed', 'inject', 'unknown'],
             },
           ],
           errors: [
             {
-              messageId: 'unexpectedClassesGroupOrder',
               data: {
-                left: 'b',
-                leftGroup: 'unknown',
-                right: 'constructor',
-                rightGroup: 'constructor',
+                rightGroup: 'computed',
+                leftGroup: 'inject',
+                right: 'z',
+                left: 'y',
               },
-            },
-            {
               messageId: 'unexpectedClassesGroupOrder',
-              data: {
-                left: 'method',
-                leftGroup: 'unknown',
-                right: 'helloProperty',
-                rightGroup: 'propertiesStartingWithHello',
-              },
             },
           ],
-        },
-      ],
-    })
-
-    ruleTester.run(`${ruleName}: filters on elementValuePattern`, rule, {
-      valid: [],
-      invalid: [
-        {
-          code: dedent`
-              class Class {
-                a = computed(A)
-                b = inject(B)
-                y = inject(Y)
-                z = computed(Z)
-                c() {}
-              }
-            `,
           output: dedent`
               class Class {
                 a = computed(A)
@@ -7100,40 +7116,66 @@ describe(ruleName, () => {
                 c() {}
               }
             `,
-          options: [
-            {
-              groups: ['computed', 'inject', 'unknown'],
-              customGroups: [
-                {
-                  groupName: 'inject',
-                  elementValuePattern: 'inject*',
-                },
-                {
-                  groupName: 'computed',
-                  elementValuePattern: 'computed*',
-                },
-              ],
-            },
-          ],
-          errors: [
-            {
-              messageId: 'unexpectedClassesGroupOrder',
-              data: {
-                left: 'y',
-                leftGroup: 'inject',
-                right: 'z',
-                rightGroup: 'computed',
-              },
-            },
-          ],
+          code: dedent`
+              class Class {
+                a = computed(A)
+                b = inject(B)
+                y = inject(Y)
+                z = computed(Z)
+                c() {}
+              }
+            `,
         },
       ],
+      valid: [],
     })
 
     ruleTester.run(`${ruleName}: filters on decoratorNamePattern`, rule, {
-      valid: [],
       invalid: [
         {
+          errors: [
+            {
+              data: {
+                rightGroup: 'constructor',
+                leftGroup: 'unknown',
+                right: 'constructor',
+                left: 'b',
+              },
+              messageId: 'unexpectedClassesGroupOrder',
+            },
+            {
+              data: {
+                rightGroup: 'propertiesWithDecoratorStartingWithHello',
+                leftGroup: 'unknown',
+                right: 'property',
+                left: 'method',
+              },
+              messageId: 'unexpectedClassesGroupOrder',
+            },
+            {
+              data: {
+                right: 'anotherProperty',
+                left: 'property',
+              },
+              messageId: 'unexpectedClassesOrder',
+            },
+          ],
+          options: [
+            {
+              customGroups: [
+                {
+                  groupName: 'propertiesWithDecoratorStartingWithHello',
+                  decoratorNamePattern: 'Hello*',
+                  selector: 'property',
+                },
+              ],
+              groups: [
+                'propertiesWithDecoratorStartingWithHello',
+                'constructor',
+                'unknown',
+              ],
+            },
+          ],
           code: dedent`
               class Class {
                 @Decorator
@@ -7170,121 +7212,51 @@ describe(ruleName, () => {
               method() {}
             }
             `,
-          options: [
-            {
-              groups: [
-                'propertiesWithDecoratorStartingWithHello',
-                'constructor',
-                'unknown',
-              ],
-              customGroups: [
-                {
-                  groupName: 'propertiesWithDecoratorStartingWithHello',
-                  selector: 'property',
-                  decoratorNamePattern: 'Hello*',
-                },
-              ],
-            },
-          ],
-          errors: [
-            {
-              messageId: 'unexpectedClassesGroupOrder',
-              data: {
-                left: 'b',
-                leftGroup: 'unknown',
-                right: 'constructor',
-                rightGroup: 'constructor',
-              },
-            },
-            {
-              messageId: 'unexpectedClassesGroupOrder',
-              data: {
-                left: 'method',
-                leftGroup: 'unknown',
-                right: 'property',
-                rightGroup: 'propertiesWithDecoratorStartingWithHello',
-              },
-            },
-            {
-              messageId: 'unexpectedClassesOrder',
-              data: {
-                left: 'property',
-                right: 'anotherProperty',
-              },
-            },
-          ],
         },
       ],
+      valid: [],
     })
 
     ruleTester.run(
       `${ruleName}: sort custom groups by overriding 'type' and 'order'`,
       rule,
       {
-        valid: [],
         invalid: [
           {
-            code: dedent`
-            class Class {
-
-              a;
-
-              bb;
-
-              ccc;
-
-              dddd;
-
-              method() {}
-
-              eee;
-
-              ff;
-
-              g;
-
-              constructor() {}
-
-              anotherMethod() {}
-
-              yetAnotherMethod() {}
-            }
-            `,
-            output: dedent`
-            class Class {
-
-              dddd;
-
-              ccc;
-
-              eee;
-
-              bb;
-
-              ff;
-
-              a;
-
-              g;
-
-              constructor() {}
-
-              anotherMethod() {}
-
-              method() {}
-
-              yetAnotherMethod() {}
-            }
-            `,
+            errors: [
+              {
+                data: {
+                  right: 'bb',
+                  left: 'a',
+                },
+                messageId: 'unexpectedClassesOrder',
+              },
+              {
+                data: {
+                  right: 'ccc',
+                  left: 'bb',
+                },
+                messageId: 'unexpectedClassesOrder',
+              },
+              {
+                data: {
+                  right: 'dddd',
+                  left: 'ccc',
+                },
+                messageId: 'unexpectedClassesOrder',
+              },
+              {
+                data: {
+                  rightGroup: 'reversedPropertiesByLineLength',
+                  leftGroup: 'unknown',
+                  left: 'method',
+                  right: 'eee',
+                },
+                messageId: 'unexpectedClassesGroupOrder',
+              },
+            ],
             options: [
               {
-                type: 'alphabetical',
-                order: 'asc',
-                groups: [
-                  'reversedPropertiesByLineLength',
-                  'constructor',
-                  'unknown',
-                ],
                 customGroups: [
                   {
                     groupName: 'reversedPropertiesByLineLength',
@@ -7293,42 +7265,70 @@ describe(ruleName, () => {
                     order: 'desc',
                   },
                 ],
+                groups: [
+                  'reversedPropertiesByLineLength',
+                  'constructor',
+                  'unknown',
+                ],
+                type: 'alphabetical',
+                order: 'asc',
               },
             ],
-            errors: [
-              {
-                messageId: 'unexpectedClassesOrder',
-                data: {
-                  left: 'a',
-                  right: 'bb',
-                },
-              },
-              {
-                messageId: 'unexpectedClassesOrder',
-                data: {
-                  left: 'bb',
-                  right: 'ccc',
-                },
-              },
-              {
-                messageId: 'unexpectedClassesOrder',
-                data: {
-                  left: 'ccc',
-                  right: 'dddd',
-                },
-              },
-              {
-                messageId: 'unexpectedClassesGroupOrder',
-                data: {
-                  left: 'method',
-                  leftGroup: 'unknown',
-                  right: 'eee',
-                  rightGroup: 'reversedPropertiesByLineLength',
-                },
-              },
-            ],
+            output: dedent`
+            class Class {
+
+              dddd;
+
+              ccc;
+
+              eee;
+
+              bb;
+
+              ff;
+
+              a;
+
+              g;
+
+              constructor() {}
+
+              anotherMethod() {}
+
+              method() {}
+
+              yetAnotherMethod() {}
+            }
+            `,
+            code: dedent`
+            class Class {
+
+              a;
+
+              bb;
+
+              ccc;
+
+              dddd;
+
+              method() {}
+
+              eee;
+
+              ff;
+
+              g;
+
+              constructor() {}
+
+              anotherMethod() {}
+
+              yetAnotherMethod() {}
+            }
+            `,
           },
         ],
+        valid: [],
       },
     )
 
@@ -7336,26 +7336,40 @@ describe(ruleName, () => {
       `${ruleName}: does not sort custom groups with 'unsorted' type`,
       rule,
       {
-        valid: [],
         invalid: [
           {
-            code: dedent`
-            class Class {
-              b;
-
-              a;
-
-              constructor() {}
-
-              d
-
-              e
-
-              method() {}
-
-              c
-            }
-            `,
+            errors: [
+              {
+                data: {
+                  rightGroup: 'unsortedProperties',
+                  leftGroup: 'constructor',
+                  left: 'constructor',
+                  right: 'd',
+                },
+                messageId: 'unexpectedClassesGroupOrder',
+              },
+              {
+                data: {
+                  rightGroup: 'unsortedProperties',
+                  leftGroup: 'unknown',
+                  left: 'method',
+                  right: 'c',
+                },
+                messageId: 'unexpectedClassesGroupOrder',
+              },
+            ],
+            options: [
+              {
+                customGroups: [
+                  {
+                    groupName: 'unsortedProperties',
+                    selector: 'property',
+                    type: 'unsorted',
+                  },
+                ],
+                groups: ['unsortedProperties', 'constructor', 'unknown'],
+              },
+            ],
             output: dedent`
             class Class {
               b;
@@ -7373,69 +7387,88 @@ describe(ruleName, () => {
               method() {}
             }
             `,
-            options: [
-              {
-                groups: ['unsortedProperties', 'constructor', 'unknown'],
-                customGroups: [
-                  {
-                    groupName: 'unsortedProperties',
-                    selector: 'property',
-                    type: 'unsorted',
-                  },
-                ],
-              },
-            ],
-            errors: [
-              {
-                messageId: 'unexpectedClassesGroupOrder',
-                data: {
-                  left: 'constructor',
-                  leftGroup: 'constructor',
-                  right: 'd',
-                  rightGroup: 'unsortedProperties',
-                },
-              },
-              {
-                messageId: 'unexpectedClassesGroupOrder',
-                data: {
-                  left: 'method',
-                  leftGroup: 'unknown',
-                  right: 'c',
-                  rightGroup: 'unsortedProperties',
-                },
-              },
-            ],
+            code: dedent`
+            class Class {
+              b;
+
+              a;
+
+              constructor() {}
+
+              d
+
+              e
+
+              method() {}
+
+              c
+            }
+            `,
           },
         ],
+        valid: [],
       },
     )
 
     ruleTester.run(`${ruleName}: sort custom group blocks`, rule, {
-      valid: [],
       invalid: [
         {
-          code: dedent`
-            class Class {
-              constructor() {}
-
-              protected a;
-
-              private b;
-
-              @Decorator
-              protected e;
-
-              method() {}
-
-              private c;
-
-              protected protectedMethod() {}
-
-              protected d;
-
-              protected anotherProtectedMethod() {}
-            }
-            `,
+          errors: [
+            {
+              data: {
+                rightGroup: 'privatePropertiesAndProtectedMethods',
+                leftGroup: 'unknown',
+                right: 'b',
+                left: 'a',
+              },
+              messageId: 'unexpectedClassesGroupOrder',
+            },
+            {
+              data: {
+                rightGroup: 'privatePropertiesAndProtectedMethods',
+                leftGroup: 'unknown',
+                left: 'method',
+                right: 'c',
+              },
+              messageId: 'unexpectedClassesGroupOrder',
+            },
+            {
+              data: {
+                rightGroup: 'privatePropertiesAndProtectedMethods',
+                right: 'anotherProtectedMethod',
+                leftGroup: 'unknown',
+                left: 'd',
+              },
+              messageId: 'unexpectedClassesGroupOrder',
+            },
+          ],
+          options: [
+            {
+              customGroups: [
+                {
+                  anyOf: [
+                    {
+                      modifiers: ['private'],
+                      selector: 'property',
+                    },
+                    {
+                      modifiers: ['protected'],
+                      selector: 'method',
+                    },
+                  ],
+                  groupName: 'privatePropertiesAndProtectedMethods',
+                },
+              ],
+              groups: [
+                [
+                  'privatePropertiesAndProtectedMethods',
+                  'decorated-protected-property',
+                ],
+                'constructor',
+                'unknown',
+              ],
+            },
+          ],
           output: dedent`
             class Class {
               protected anotherProtectedMethod() {}
@@ -7458,64 +7491,31 @@ describe(ruleName, () => {
               method() {}
             }
             `,
-          options: [
-            {
-              groups: [
-                [
-                  'privatePropertiesAndProtectedMethods',
-                  'decorated-protected-property',
-                ],
-                'constructor',
-                'unknown',
-              ],
-              customGroups: [
-                {
-                  groupName: 'privatePropertiesAndProtectedMethods',
-                  anyOf: [
-                    {
-                      selector: 'property',
-                      modifiers: ['private'],
-                    },
-                    {
-                      selector: 'method',
-                      modifiers: ['protected'],
-                    },
-                  ],
-                },
-              ],
-            },
-          ],
-          errors: [
-            {
-              messageId: 'unexpectedClassesGroupOrder',
-              data: {
-                left: 'a',
-                leftGroup: 'unknown',
-                right: 'b',
-                rightGroup: 'privatePropertiesAndProtectedMethods',
-              },
-            },
-            {
-              messageId: 'unexpectedClassesGroupOrder',
-              data: {
-                left: 'method',
-                leftGroup: 'unknown',
-                right: 'c',
-                rightGroup: 'privatePropertiesAndProtectedMethods',
-              },
-            },
-            {
-              messageId: 'unexpectedClassesGroupOrder',
-              data: {
-                left: 'd',
-                leftGroup: 'unknown',
-                right: 'anotherProtectedMethod',
-                rightGroup: 'privatePropertiesAndProtectedMethods',
-              },
-            },
-          ],
+          code: dedent`
+            class Class {
+              constructor() {}
+
+              protected a;
+
+              private b;
+
+              @Decorator
+              protected e;
+
+              method() {}
+
+              private c;
+
+              protected protectedMethod() {}
+
+              protected d;
+
+              protected anotherProtectedMethod() {}
+            }
+            `,
         },
       ],
+      valid: [],
     })
 
     ruleTester.run(
@@ -7524,6 +7524,18 @@ describe(ruleName, () => {
       {
         valid: [
           {
+            options: [
+              {
+                customGroups: [
+                  {
+                    elementNamePattern: '^(?!.*Foo).*$',
+                    groupName: 'elementsWithoutFoo',
+                  },
+                ],
+                groups: ['unknown', 'elementsWithoutFoo'],
+                type: 'alphabetical',
+              },
+            ],
             code: dedent`
               class Class {
                 iHaveFooInMyName: string
@@ -7532,18 +7544,6 @@ describe(ruleName, () => {
                 b: string
               }
             `,
-            options: [
-              {
-                type: 'alphabetical',
-                groups: ['unknown', 'elementsWithoutFoo'],
-                customGroups: [
-                  {
-                    groupName: 'elementsWithoutFoo',
-                    elementNamePattern: '^(?!.*Foo).*$',
-                  },
-                ],
-              },
-            ],
           },
         ],
         invalid: [],
@@ -7556,6 +7556,18 @@ describe(ruleName, () => {
       {
         valid: [
           {
+            options: [
+              {
+                customGroups: [
+                  {
+                    elementValuePattern: '^(?!.*Foo).*$',
+                    groupName: 'elementsWithoutFoo',
+                  },
+                ],
+                groups: ['unknown', 'elementsWithoutFoo'],
+                type: 'alphabetical',
+              },
+            ],
             code: dedent`
               class Class {
                 x = "iHaveFooInMyName"
@@ -7564,18 +7576,6 @@ describe(ruleName, () => {
                 b = "b"
               }
             `,
-            options: [
-              {
-                type: 'alphabetical',
-                groups: ['unknown', 'elementsWithoutFoo'],
-                customGroups: [
-                  {
-                    groupName: 'elementsWithoutFoo',
-                    elementValuePattern: '^(?!.*Foo).*$',
-                  },
-                ],
-              },
-            ],
           },
         ],
         invalid: [],
@@ -7588,6 +7588,18 @@ describe(ruleName, () => {
       {
         valid: [
           {
+            options: [
+              {
+                customGroups: [
+                  {
+                    decoratorNamePattern: '^.*Foo.*$',
+                    groupName: 'decoratorsWithFoo',
+                  },
+                ],
+                groups: ['decoratorsWithFoo', 'unknown'],
+                type: 'alphabetical',
+              },
+            ],
             code: dedent`
               class Class {
                 @IHaveFooInMyName
@@ -7598,18 +7610,6 @@ describe(ruleName, () => {
                 b: string
               }
             `,
-            options: [
-              {
-                type: 'alphabetical',
-                groups: ['decoratorsWithFoo', 'unknown'],
-                customGroups: [
-                  {
-                    groupName: 'decoratorsWithFoo',
-                    decoratorNamePattern: '^.*Foo.*$',
-                  },
-                ],
-              },
-            ],
           },
         ],
         invalid: [],
@@ -7622,6 +7622,57 @@ describe(ruleName, () => {
       `${ruleName}: sets alphabetical asc sorting as default`,
       rule,
       {
+        invalid: [
+          {
+            output: dedent`
+              class Calculator {
+                static log(x) {
+                  return 0;
+                }
+
+                static log10(x) {
+                  return 0;
+                }
+
+                static log1p(x) {
+                  return 0;
+                }
+
+                static log2(x) {
+                  return 0;
+                }
+              }
+            `,
+            code: dedent`
+              class Calculator {
+                static log(x) {
+                  return 0;
+                }
+
+                static log1p(x) {
+                  return 0;
+                }
+
+                static log10(x) {
+                  return 0;
+                }
+
+                static log2(x) {
+                  return 0;
+                }
+              }
+            `,
+            errors: [
+              {
+                data: {
+                  right: 'log10',
+                  left: 'log1p',
+                },
+                messageId: 'unexpectedClassesOrder',
+              },
+            ],
+          },
+        ],
         valid: [
           {
             code: dedent`
@@ -7646,107 +7697,161 @@ describe(ruleName, () => {
             options: [{}],
           },
         ],
-        invalid: [
-          {
-            code: dedent`
-              class Calculator {
-                static log(x) {
-                  return 0;
-                }
-
-                static log1p(x) {
-                  return 0;
-                }
-
-                static log10(x) {
-                  return 0;
-                }
-
-                static log2(x) {
-                  return 0;
-                }
-              }
-            `,
-            output: dedent`
-              class Calculator {
-                static log(x) {
-                  return 0;
-                }
-
-                static log10(x) {
-                  return 0;
-                }
-
-                static log1p(x) {
-                  return 0;
-                }
-
-                static log2(x) {
-                  return 0;
-                }
-              }
-            `,
-            errors: [
-              {
-                messageId: 'unexpectedClassesOrder',
-                data: {
-                  left: 'log1p',
-                  right: 'log10',
-                },
-              },
-            ],
-          },
-        ],
       },
     )
 
     ruleTester.run(`${ruleName}: sorts using default groups`, rule, {
-      valid: [],
       invalid: [
         {
-          code: dedent`
-              class Class {
-                private privateMethod() {}
-
-                protected protectedMethod() {}
-
-                public publicMethod() {}
-
-                private static privateStaticMethod() {}
-
-                protected static protectedStaticMethod() {}
-
-                public static publicStaticMethod() {}
-
-                constructor() {}
-
-                private privateProperty
-
-                private accessor privateAccessorProperty
-
-                protected protectedProperty
-
-                public publicProperty
-
-                public accessor publicAccessorProperty
-
-                public set publicSetMethod() {}
-
-                public get publicGetMethod() {}
-
-                protected accessor protectedAccessorProperty
-
-                static {}
-
-                private static privateStaticProperty
-
-                protected static protectedStaticProperty
-
-                public static publicStaticProperty
-
-                [key: string]: string
-              }
-            `,
+          errors: [
+            {
+              data: {
+                rightGroup: 'protected-method',
+                leftGroup: 'private-method',
+                right: 'protectedMethod',
+                left: 'privateMethod',
+              },
+              messageId: 'unexpectedClassesGroupOrder',
+            },
+            {
+              data: {
+                leftGroup: 'protected-method',
+                left: 'protectedMethod',
+                right: 'publicMethod',
+                rightGroup: 'method',
+              },
+              messageId: 'unexpectedClassesGroupOrder',
+            },
+            {
+              data: {
+                rightGroup: 'private-static-method',
+                right: 'privateStaticMethod',
+                left: 'publicMethod',
+                leftGroup: 'method',
+              },
+              messageId: 'unexpectedClassesGroupOrder',
+            },
+            {
+              data: {
+                rightGroup: 'protected-static-method',
+                leftGroup: 'private-static-method',
+                right: 'protectedStaticMethod',
+                left: 'privateStaticMethod',
+              },
+              messageId: 'unexpectedClassesGroupOrder',
+            },
+            {
+              data: {
+                leftGroup: 'protected-static-method',
+                left: 'protectedStaticMethod',
+                right: 'publicStaticMethod',
+                rightGroup: 'static-method',
+              },
+              messageId: 'unexpectedClassesGroupOrder',
+            },
+            {
+              data: {
+                left: 'publicStaticMethod',
+                leftGroup: 'static-method',
+                rightGroup: 'constructor',
+                right: 'constructor',
+              },
+              messageId: 'unexpectedClassesGroupOrder',
+            },
+            {
+              data: {
+                rightGroup: 'private-property',
+                leftGroup: 'constructor',
+                right: 'privateProperty',
+                left: 'constructor',
+              },
+              messageId: 'unexpectedClassesGroupOrder',
+            },
+            {
+              data: {
+                right: 'privateAccessorProperty',
+                left: 'privateProperty',
+              },
+              messageId: 'unexpectedClassesOrder',
+            },
+            {
+              data: {
+                leftGroup: 'private-accessor-property',
+                rightGroup: 'protected-property',
+                left: 'privateAccessorProperty',
+                right: 'protectedProperty',
+              },
+              messageId: 'unexpectedClassesGroupOrder',
+            },
+            {
+              data: {
+                leftGroup: 'protected-property',
+                left: 'protectedProperty',
+                right: 'publicProperty',
+                rightGroup: 'property',
+              },
+              messageId: 'unexpectedClassesGroupOrder',
+            },
+            {
+              data: {
+                right: 'publicAccessorProperty',
+                left: 'publicProperty',
+              },
+              messageId: 'unexpectedClassesOrder',
+            },
+            {
+              data: {
+                right: 'publicGetMethod',
+                left: 'publicSetMethod',
+              },
+              messageId: 'unexpectedClassesOrder',
+            },
+            {
+              data: {
+                leftGroup: 'protected-accessor-property',
+                left: 'protectedAccessorProperty',
+                rightGroup: 'static-block',
+                right: 'static',
+              },
+              messageId: 'unexpectedClassesGroupOrder',
+            },
+            {
+              data: {
+                rightGroup: 'private-static-property',
+                right: 'privateStaticProperty',
+                leftGroup: 'static-block',
+                left: 'static',
+              },
+              messageId: 'unexpectedClassesGroupOrder',
+            },
+            {
+              data: {
+                rightGroup: 'protected-static-property',
+                leftGroup: 'private-static-property',
+                right: 'protectedStaticProperty',
+                left: 'privateStaticProperty',
+              },
+              messageId: 'unexpectedClassesGroupOrder',
+            },
+            {
+              data: {
+                leftGroup: 'protected-static-property',
+                left: 'protectedStaticProperty',
+                right: 'publicStaticProperty',
+                rightGroup: 'static-property',
+              },
+              messageId: 'unexpectedClassesGroupOrder',
+            },
+            {
+              data: {
+                rightGroup: 'index-signature',
+                left: 'publicStaticProperty',
+                leftGroup: 'static-property',
+                right: '[key: string]',
+              },
+              messageId: 'unexpectedClassesGroupOrder',
+            },
+          ],
           output: dedent`
               class Class {
                 [key: string]: string
@@ -7790,184 +7895,58 @@ describe(ruleName, () => {
                 private privateMethod() {}
               }
             `,
-          errors: [
-            {
-              messageId: 'unexpectedClassesGroupOrder',
-              data: {
-                left: 'privateMethod',
-                leftGroup: 'private-method',
-                right: 'protectedMethod',
-                rightGroup: 'protected-method',
-              },
-            },
-            {
-              messageId: 'unexpectedClassesGroupOrder',
-              data: {
-                left: 'protectedMethod',
-                leftGroup: 'protected-method',
-                right: 'publicMethod',
-                rightGroup: 'method',
-              },
-            },
-            {
-              messageId: 'unexpectedClassesGroupOrder',
-              data: {
-                left: 'publicMethod',
-                leftGroup: 'method',
-                right: 'privateStaticMethod',
-                rightGroup: 'private-static-method',
-              },
-            },
-            {
-              messageId: 'unexpectedClassesGroupOrder',
-              data: {
-                left: 'privateStaticMethod',
-                leftGroup: 'private-static-method',
-                right: 'protectedStaticMethod',
-                rightGroup: 'protected-static-method',
-              },
-            },
-            {
-              messageId: 'unexpectedClassesGroupOrder',
-              data: {
-                left: 'protectedStaticMethod',
-                leftGroup: 'protected-static-method',
-                right: 'publicStaticMethod',
-                rightGroup: 'static-method',
-              },
-            },
-            {
-              messageId: 'unexpectedClassesGroupOrder',
-              data: {
-                left: 'publicStaticMethod',
-                leftGroup: 'static-method',
-                right: 'constructor',
-                rightGroup: 'constructor',
-              },
-            },
-            {
-              messageId: 'unexpectedClassesGroupOrder',
-              data: {
-                left: 'constructor',
-                leftGroup: 'constructor',
-                right: 'privateProperty',
-                rightGroup: 'private-property',
-              },
-            },
-            {
-              messageId: 'unexpectedClassesOrder',
-              data: {
-                left: 'privateProperty',
-                right: 'privateAccessorProperty',
-              },
-            },
-            {
-              messageId: 'unexpectedClassesGroupOrder',
-              data: {
-                left: 'privateAccessorProperty',
-                leftGroup: 'private-accessor-property',
-                right: 'protectedProperty',
-                rightGroup: 'protected-property',
-              },
-            },
-            {
-              messageId: 'unexpectedClassesGroupOrder',
-              data: {
-                left: 'protectedProperty',
-                leftGroup: 'protected-property',
-                right: 'publicProperty',
-                rightGroup: 'property',
-              },
-            },
-            {
-              messageId: 'unexpectedClassesOrder',
-              data: {
-                left: 'publicProperty',
-                right: 'publicAccessorProperty',
-              },
-            },
-            {
-              messageId: 'unexpectedClassesOrder',
-              data: {
-                left: 'publicSetMethod',
-                right: 'publicGetMethod',
-              },
-            },
-            {
-              messageId: 'unexpectedClassesGroupOrder',
-              data: {
-                left: 'protectedAccessorProperty',
-                leftGroup: 'protected-accessor-property',
-                right: 'static',
-                rightGroup: 'static-block',
-              },
-            },
-            {
-              messageId: 'unexpectedClassesGroupOrder',
-              data: {
-                left: 'static',
-                leftGroup: 'static-block',
-                right: 'privateStaticProperty',
-                rightGroup: 'private-static-property',
-              },
-            },
-            {
-              messageId: 'unexpectedClassesGroupOrder',
-              data: {
-                left: 'privateStaticProperty',
-                leftGroup: 'private-static-property',
-                right: 'protectedStaticProperty',
-                rightGroup: 'protected-static-property',
-              },
-            },
-            {
-              messageId: 'unexpectedClassesGroupOrder',
-              data: {
-                left: 'protectedStaticProperty',
-                leftGroup: 'protected-static-property',
-                right: 'publicStaticProperty',
-                rightGroup: 'static-property',
-              },
-            },
-            {
-              messageId: 'unexpectedClassesGroupOrder',
-              data: {
-                left: 'publicStaticProperty',
-                leftGroup: 'static-property',
-                right: '[key: string]',
-                rightGroup: 'index-signature',
-              },
-            },
-          ],
+          code: dedent`
+              class Class {
+                private privateMethod() {}
+
+                protected protectedMethod() {}
+
+                public publicMethod() {}
+
+                private static privateStaticMethod() {}
+
+                protected static protectedStaticMethod() {}
+
+                public static publicStaticMethod() {}
+
+                constructor() {}
+
+                private privateProperty
+
+                private accessor privateAccessorProperty
+
+                protected protectedProperty
+
+                public publicProperty
+
+                public accessor publicAccessorProperty
+
+                public set publicSetMethod() {}
+
+                public get publicGetMethod() {}
+
+                protected accessor protectedAccessorProperty
+
+                static {}
+
+                private static privateStaticProperty
+
+                protected static protectedStaticProperty
+
+                public static publicStaticProperty
+
+                [key: string]: string
+              }
+            `,
         },
       ],
+      valid: [],
     })
 
     describe('handles complex comment cases', () => {
       ruleTester.run(`keeps comments associated to their node`, rule, {
-        valid: [],
         invalid: [
           {
-            code: dedent`
-              class Class {
-                // Ignore this comment
-
-                // B1
-                b
-
-                /**
-                 * Ignore this comment as well
-                 */
-
-                // A4
-                // A3
-                /*
-                 * A2
-                 */
-                // A1
-                a
-              }
-            `,
             output: dedent`
               class Class {
                 // Ignore this comment
@@ -7988,54 +7967,49 @@ describe(ruleName, () => {
                 b
               }
             `,
+            code: dedent`
+              class Class {
+                // Ignore this comment
+
+                // B1
+                b
+
+                /**
+                 * Ignore this comment as well
+                 */
+
+                // A4
+                // A3
+                /*
+                 * A2
+                 */
+                // A1
+                a
+              }
+            `,
+            errors: [
+              {
+                data: {
+                  right: 'a',
+                  left: 'b',
+                },
+                messageId: 'unexpectedClassesOrder',
+              },
+            ],
             options: [
               {
                 type: 'alphabetical',
               },
             ],
-            errors: [
-              {
-                messageId: 'unexpectedClassesOrder',
-                data: {
-                  left: 'b',
-                  right: 'a',
-                },
-              },
-            ],
           },
         ],
+        valid: [],
       })
 
       describe('partition comments', () => {
         ruleTester.run(`handles partition comments`, rule, {
-          valid: [],
           invalid: [
             {
-              code: dedent`
-              class Class {
-                // Ignore this comment
-
-                // C2
-                // C1
-                c
-
-                // B2
-                /**
-                  * B1
-                  */
-                b
-
-                // Above a partition comment ignore me
-                // PartitionComment: 1
-                /**
-                  * D2
-                  */
-                // D1
-                d
-
-                a
-              }
-            `,
               output: dedent`
               class Class {
                 // Ignore this comment
@@ -8061,30 +8035,56 @@ describe(ruleName, () => {
                 d
               }
             `,
-              options: [
-                {
-                  type: 'alphabetical',
-                  partitionByComment: 'PartitionComment:*',
-                },
-              ],
+              code: dedent`
+              class Class {
+                // Ignore this comment
+
+                // C2
+                // C1
+                c
+
+                // B2
+                /**
+                  * B1
+                  */
+                b
+
+                // Above a partition comment ignore me
+                // PartitionComment: 1
+                /**
+                  * D2
+                  */
+                // D1
+                d
+
+                a
+              }
+            `,
               errors: [
                 {
-                  messageId: 'unexpectedClassesOrder',
                   data: {
-                    left: 'c',
                     right: 'b',
+                    left: 'c',
                   },
+                  messageId: 'unexpectedClassesOrder',
                 },
                 {
-                  messageId: 'unexpectedClassesOrder',
                   data: {
-                    left: 'd',
                     right: 'a',
+                    left: 'd',
                   },
+                  messageId: 'unexpectedClassesOrder',
+                },
+              ],
+              options: [
+                {
+                  partitionByComment: 'PartitionComment:*',
+                  type: 'alphabetical',
                 },
               ],
             },
           ],
+          valid: [],
         })
 
         ruleTester.run(
@@ -8104,8 +8104,8 @@ describe(ruleName, () => {
                 `,
                 options: [
                   {
-                    type: 'alphabetical',
                     partitionByComment: ['^(?!.*foo).*$'],
+                    type: 'alphabetical',
                   },
                 ],
               },
@@ -8116,6 +8116,53 @@ describe(ruleName, () => {
       })
 
       ruleTester.run(`${ruleName}: allows to use new line as partition`, rule, {
+        invalid: [
+          {
+            errors: [
+              {
+                data: {
+                  right: 'd',
+                  left: 'e',
+                },
+                messageId: 'unexpectedClassesOrder',
+              },
+              {
+                data: {
+                  right: 'a',
+                  left: 'b',
+                },
+                messageId: 'unexpectedClassesOrder',
+              },
+            ],
+            output: dedent`
+              class Class {
+                d = 'dd'
+                e = 'e'
+
+                c = 'ccc'
+
+                a = 'aaaaa'
+                b = 'bbbb'
+              }
+            `,
+            code: dedent`
+              class Class {
+                e = 'e'
+                d = 'dd'
+
+                c = 'ccc'
+
+                b = 'bbbb'
+                a = 'aaaaa'
+              }
+            `,
+            options: [
+              {
+                partitionByNewLine: true,
+              },
+            ],
+          },
+        ],
         valid: [
           {
             code: dedent`
@@ -8136,98 +8183,57 @@ describe(ruleName, () => {
             ],
           },
         ],
-        invalid: [
-          {
-            code: dedent`
-              class Class {
-                e = 'e'
-                d = 'dd'
-
-                c = 'ccc'
-
-                b = 'bbbb'
-                a = 'aaaaa'
-              }
-            `,
-            output: dedent`
-              class Class {
-                d = 'dd'
-                e = 'e'
-
-                c = 'ccc'
-
-                a = 'aaaaa'
-                b = 'bbbb'
-              }
-            `,
-            options: [
-              {
-                partitionByNewLine: true,
-              },
-            ],
-            errors: [
-              {
-                messageId: 'unexpectedClassesOrder',
-                data: {
-                  left: 'e',
-                  right: 'd',
-                },
-              },
-              {
-                messageId: 'unexpectedClassesOrder',
-                data: {
-                  left: 'b',
-                  right: 'a',
-                },
-              },
-            ],
-          },
-        ],
       })
     })
 
     let eslintDisableRuleTesterName = `${ruleName}: supports 'eslint-disable' for individual nodes`
     ruleTester.run(eslintDisableRuleTesterName, rule, {
-      valid: [],
       invalid: [
         {
-          code: dedent`
-            class Class {
-              c
-              b
-              // eslint-disable-next-line
-              a
-            }
-          `,
+          errors: [
+            {
+              data: {
+                right: 'b',
+                left: 'c',
+              },
+              messageId: 'unexpectedClassesOrder',
+            },
+          ],
           output: dedent`
             class Class {
               b
               c
+              // eslint-disable-next-line
+              a
+            }
+          `,
+          code: dedent`
+            class Class {
+              c
+              b
               // eslint-disable-next-line
               a
             }
           `,
           options: [{}],
-          errors: [
-            {
-              messageId: 'unexpectedClassesOrder',
-              data: {
-                left: 'c',
-                right: 'b',
-              },
-            },
-          ],
         },
         {
-          code: dedent`
-            class Class {
-              d
-              c
-              // eslint-disable-next-line
-              a
-              b
-            }
-          `,
+          errors: [
+            {
+              data: {
+                right: 'c',
+                left: 'd',
+              },
+              messageId: 'unexpectedClassesOrder',
+            },
+            {
+              data: {
+                right: 'b',
+                left: 'a',
+              },
+              messageId: 'unexpectedClassesOrder',
+            },
+          ],
           output: dedent`
             class Class {
               b
@@ -8235,6 +8241,15 @@ describe(ruleName, () => {
               // eslint-disable-next-line
               a
               d
+            }
+          `,
+          code: dedent`
+            class Class {
+              d
+              c
+              // eslint-disable-next-line
+              a
+              b
             }
           `,
           options: [
@@ -8242,32 +8257,17 @@ describe(ruleName, () => {
               partitionByComment: true,
             },
           ],
-          errors: [
-            {
-              messageId: 'unexpectedClassesOrder',
-              data: {
-                left: 'd',
-                right: 'c',
-              },
-            },
-            {
-              messageId: 'unexpectedClassesOrder',
-              data: {
-                left: 'a',
-                right: 'b',
-              },
-            },
-          ],
         },
         {
-          code: dedent`
-            class Class {
-              c
-              b = this.a
-              // eslint-disable-next-line
-              a
-            }
-          `,
+          errors: [
+            {
+              data: {
+                right: 'b',
+                left: 'c',
+              },
+              messageId: 'unexpectedClassesOrder',
+            },
+          ],
           output: dedent`
             class Class {
               b = this.a
@@ -8276,25 +8276,26 @@ describe(ruleName, () => {
               a
             }
           `,
-          options: [{}],
-          errors: [
-            {
-              messageId: 'unexpectedClassesOrder',
-              data: {
-                left: 'c',
-                right: 'b',
-              },
-            },
-          ],
-        },
-        {
           code: dedent`
             class Class {
               c
-              b
-              a // eslint-disable-line
+              b = this.a
+              // eslint-disable-next-line
+              a
             }
           `,
+          options: [{}],
+        },
+        {
+          errors: [
+            {
+              data: {
+                right: 'b',
+                left: 'c',
+              },
+              messageId: 'unexpectedClassesOrder',
+            },
+          ],
           output: dedent`
             class Class {
               b
@@ -8302,18 +8303,33 @@ describe(ruleName, () => {
               a // eslint-disable-line
             }
           `,
+          code: dedent`
+            class Class {
+              c
+              b
+              a // eslint-disable-line
+            }
+          `,
           options: [{}],
-          errors: [
-            {
-              messageId: 'unexpectedClassesOrder',
-              data: {
-                left: 'c',
-                right: 'b',
-              },
-            },
-          ],
         },
         {
+          errors: [
+            {
+              data: {
+                right: 'b',
+                left: 'c',
+              },
+              messageId: 'unexpectedClassesOrder',
+            },
+          ],
+          output: dedent`
+            class Class {
+              b
+              c
+              /* eslint-disable-next-line */
+              a
+            }
+          `,
           code: dedent`
             class Class {
               c
@@ -8322,33 +8338,18 @@ describe(ruleName, () => {
               a
             }
           `,
-          output: dedent`
-            class Class {
-              b
-              c
-              /* eslint-disable-next-line */
-              a
-            }
-          `,
           options: [{}],
-          errors: [
-            {
-              messageId: 'unexpectedClassesOrder',
-              data: {
-                left: 'c',
-                right: 'b',
-              },
-            },
-          ],
         },
         {
-          code: dedent`
-            class Class {
-              c
-              b
-              a /* eslint-disable-line */
-            }
-          `,
+          errors: [
+            {
+              data: {
+                right: 'b',
+                left: 'c',
+              },
+              messageId: 'unexpectedClassesOrder',
+            },
+          ],
           output: dedent`
             class Class {
               b
@@ -8356,30 +8357,16 @@ describe(ruleName, () => {
               a /* eslint-disable-line */
             }
           `,
-          options: [{}],
-          errors: [
-            {
-              messageId: 'unexpectedClassesOrder',
-              data: {
-                left: 'c',
-                right: 'b',
-              },
-            },
-          ],
-        },
-        {
           code: dedent`
             class Class {
-              d
-              e
-              /* eslint-disable */
               c
               b
-              // Shouldn't move
-              /* eslint-enable */
-              a
+              a /* eslint-disable-line */
             }
           `,
+          options: [{}],
+        },
+        {
           output: dedent`
             class Class {
               a
@@ -8392,26 +8379,30 @@ describe(ruleName, () => {
               e
             }
           `,
-          options: [{}],
+          code: dedent`
+            class Class {
+              d
+              e
+              /* eslint-disable */
+              c
+              b
+              // Shouldn't move
+              /* eslint-enable */
+              a
+            }
+          `,
           errors: [
             {
-              messageId: 'unexpectedClassesOrder',
               data: {
-                left: 'b',
                 right: 'a',
+                left: 'b',
               },
+              messageId: 'unexpectedClassesOrder',
             },
           ],
+          options: [{}],
         },
         {
-          code: dedent`
-            class Class {
-              c
-              b
-              // eslint-disable-next-line @rule-tester/${eslintDisableRuleTesterName}
-              a
-            }
-          `,
           output: dedent`
             class Class {
               b
@@ -8420,25 +8411,35 @@ describe(ruleName, () => {
               a
             }
           `,
-          options: [{}],
-          errors: [
-            {
-              messageId: 'unexpectedClassesOrder',
-              data: {
-                left: 'c',
-                right: 'b',
-              },
-            },
-          ],
-        },
-        {
           code: dedent`
             class Class {
               c
               b
-              a // eslint-disable-line @rule-tester/${eslintDisableRuleTesterName}
+              // eslint-disable-next-line @rule-tester/${eslintDisableRuleTesterName}
+              a
             }
           `,
+          errors: [
+            {
+              data: {
+                right: 'b',
+                left: 'c',
+              },
+              messageId: 'unexpectedClassesOrder',
+            },
+          ],
+          options: [{}],
+        },
+        {
+          errors: [
+            {
+              data: {
+                right: 'b',
+                left: 'c',
+              },
+              messageId: 'unexpectedClassesOrder',
+            },
+          ],
           output: dedent`
             class Class {
               b
@@ -8446,18 +8447,24 @@ describe(ruleName, () => {
               a // eslint-disable-line @rule-tester/${eslintDisableRuleTesterName}
             }
           `,
+          code: dedent`
+            class Class {
+              c
+              b
+              a // eslint-disable-line @rule-tester/${eslintDisableRuleTesterName}
+            }
+          `,
           options: [{}],
-          errors: [
-            {
-              messageId: 'unexpectedClassesOrder',
-              data: {
-                left: 'c',
-                right: 'b',
-              },
-            },
-          ],
         },
         {
+          output: dedent`
+            class Class {
+              b
+              c
+              /* eslint-disable-next-line @rule-tester/${eslintDisableRuleTesterName} */
+              a
+            }
+          `,
           code: dedent`
             class Class {
               c
@@ -8466,26 +8473,34 @@ describe(ruleName, () => {
               a
             }
           `,
+          errors: [
+            {
+              data: {
+                right: 'b',
+                left: 'c',
+              },
+              messageId: 'unexpectedClassesOrder',
+            },
+          ],
+          options: [{}],
+        },
+        {
+          errors: [
+            {
+              data: {
+                right: 'b',
+                left: 'c',
+              },
+              messageId: 'unexpectedClassesOrder',
+            },
+          ],
           output: dedent`
             class Class {
               b
               c
-              /* eslint-disable-next-line @rule-tester/${eslintDisableRuleTesterName} */
-              a
+              a /* eslint-disable-line @rule-tester/${eslintDisableRuleTesterName} */
             }
           `,
-          options: [{}],
-          errors: [
-            {
-              messageId: 'unexpectedClassesOrder',
-              data: {
-                left: 'c',
-                right: 'b',
-              },
-            },
-          ],
-        },
-        {
           code: dedent`
             class Class {
               c
@@ -8493,25 +8508,21 @@ describe(ruleName, () => {
               a /* eslint-disable-line @rule-tester/${eslintDisableRuleTesterName} */
             }
           `,
-          output: dedent`
-            class Class {
-              b
-              c
-              a /* eslint-disable-line @rule-tester/${eslintDisableRuleTesterName} */
-            }
-          `,
           options: [{}],
-          errors: [
-            {
-              messageId: 'unexpectedClassesOrder',
-              data: {
-                left: 'c',
-                right: 'b',
-              },
-            },
-          ],
         },
         {
+          output: dedent`
+            class Class {
+              a
+              d
+              /* eslint-disable @rule-tester/${eslintDisableRuleTesterName} */
+              c
+              b
+              // Shouldn't move
+              /* eslint-enable */
+              e
+            }
+          `,
           code: dedent`
             class Class {
               d
@@ -8524,30 +8535,19 @@ describe(ruleName, () => {
               a
             }
           `,
-          output: dedent`
-            class Class {
-              a
-              d
-              /* eslint-disable @rule-tester/${eslintDisableRuleTesterName} */
-              c
-              b
-              // Shouldn't move
-              /* eslint-enable */
-              e
-            }
-          `,
-          options: [{}],
           errors: [
             {
-              messageId: 'unexpectedClassesOrder',
               data: {
-                left: 'b',
                 right: 'a',
+                left: 'b',
               },
+              messageId: 'unexpectedClassesOrder',
             },
           ],
+          options: [{}],
         },
       ],
+      valid: [],
     })
   })
 })

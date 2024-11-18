@@ -2,11 +2,23 @@ import type ts from 'typescript'
 
 import { createRequire } from 'node:module'
 
+/**
+ * Cached reference to the TypeScript module.
+ * @type {typeof ts | undefined}
+ */
 let cachedImport: typeof ts | undefined
-let hasTriedLoadingTypescript = false
+
+/**
+ * Indicates whether an attempt to load the TypeScript module has already been
+ * made.
+ * @type {boolean}
+ */
+let hasTriedLoadingTypescript: boolean = false
 
 /**
  * Dynamically loads the typescript module if it's available and caches it.
+ * @returns {typeof ts | null} The TypeScript module or null if it's not
+ * available.
  */
 export let getTypescriptImport = (): typeof ts | null => {
   if (cachedImport) {

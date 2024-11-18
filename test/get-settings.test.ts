@@ -21,13 +21,13 @@ describe('get-settings', () => {
   it('accepts official settings provided', () => {
     let allowedOptions: { [key in keyof Required<Settings>]: Settings[key] } = {
       partitionByComment: 'value',
-      partitionByNewLine: true,
       specialCharacters: 'keep',
+      partitionByNewLine: true,
+      type: 'alphabetical',
       ignorePattern: [],
       ignoreCase: true,
-      order: 'asc',
-      type: 'alphabetical',
       locales: 'en-US',
+      order: 'asc',
     }
     expect(() => {
       getSettings({

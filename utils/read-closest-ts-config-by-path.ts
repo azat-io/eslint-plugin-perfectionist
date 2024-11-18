@@ -5,17 +5,20 @@ import * as fs from 'node:fs'
 
 import { getTypescriptImport } from './get-typescript-import'
 
-// Heavily inspired from https://github.com/typescript-eslint/typescript-eslint/blob/main/packages/typescript-estree/src/parseSettings/getProjectConfigFiles.ts
+/**
+ * Heavily inspired from:
+ * https://github.com/typescript-eslint/typescript-eslint/blob/main/packages/typescript-estree/src/parseSettings/getProjectConfigFiles.ts
+ */
+
+interface OutputProps {
+  compilerOptions: ts.CompilerOptions
+  cache: ts.ModuleResolutionCache
+}
 
 interface InputProps {
   tsconfigRootDir: string
   contextCwd: string
   filePath: string
-}
-
-interface OutputProps {
-  compilerOptions: ts.CompilerOptions
-  cache: ts.ModuleResolutionCache
 }
 
 export let directoryCacheByPath = new Map<string, string>()

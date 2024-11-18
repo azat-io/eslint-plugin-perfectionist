@@ -26,6 +26,26 @@ describe(ruleName, () => {
     } as const
 
     ruleTester.run(`${ruleName}(${type}: sorts intersection types`, rule, {
+      invalid: [
+        {
+          errors: [
+            {
+              data: {
+                right: "{ label: 'bb' }",
+                left: "{ label: 'c' }",
+              },
+              messageId: 'unexpectedIntersectionTypesOrder',
+            },
+          ],
+          output: dedent`
+            type Type = { label: 'aaa' } & { label: 'bb' } & { label: 'c' }
+          `,
+          code: dedent`
+            type Type = { label: 'aaa' } & { label: 'c' } & { label: 'bb' }
+          `,
+          options: [options],
+        },
+      ],
       valid: [
         {
           code: dedent`
@@ -34,175 +54,153 @@ describe(ruleName, () => {
           options: [options],
         },
       ],
-      invalid: [
-        {
-          code: dedent`
-            type Type = { label: 'aaa' } & { label: 'c' } & { label: 'bb' }
-          `,
-          output: dedent`
-            type Type = { label: 'aaa' } & { label: 'bb' } & { label: 'c' }
-          `,
-          options: [options],
-          errors: [
-            {
-              messageId: 'unexpectedIntersectionTypesOrder',
-              data: {
-                left: "{ label: 'c' }",
-                right: "{ label: 'bb' }",
-              },
-            },
-          ],
-        },
-      ],
     })
 
     ruleTester.run(`${ruleName}: sorts keyword intersection types`, rule, {
-      valid: [],
       invalid: [
         {
-          code: dedent`
-            type Value =
-              & { booleanValue: boolean }
-              & { numberValue: number }
-              & { stringValue: string }
-              & { anyValue: any }
-              & { unknownValue: unknown }
-              & { nullValue: null }
-              & { undefinedValue: undefined }
-              & { neverValue: never }
-              & { voidValue: void }
-              & { bigintValue: bigint }
-          `,
-          output: dedent`
-            type Value =
-              & { anyValue: any }
-              & { bigintValue: bigint }
-              & { booleanValue: boolean }
-              & { neverValue: never }
-              & { nullValue: null }
-              & { numberValue: number }
-              & { stringValue: string }
-              & { undefinedValue: undefined }
-              & { unknownValue: unknown }
-              & { voidValue: void }
-          `,
-          options: [options],
           errors: [
             {
-              messageId: 'unexpectedIntersectionTypesOrder',
               data: {
                 left: '{ stringValue: string }',
                 right: '{ anyValue: any }',
               },
+              messageId: 'unexpectedIntersectionTypesOrder',
             },
             {
-              messageId: 'unexpectedIntersectionTypesOrder',
               data: {
                 left: '{ unknownValue: unknown }',
                 right: '{ nullValue: null }',
               },
+              messageId: 'unexpectedIntersectionTypesOrder',
             },
             {
-              messageId: 'unexpectedIntersectionTypesOrder',
               data: {
                 left: '{ undefinedValue: undefined }',
                 right: '{ neverValue: never }',
               },
+              messageId: 'unexpectedIntersectionTypesOrder',
             },
             {
-              messageId: 'unexpectedIntersectionTypesOrder',
               data: {
-                left: '{ voidValue: void }',
                 right: '{ bigintValue: bigint }',
+                left: '{ voidValue: void }',
               },
+              messageId: 'unexpectedIntersectionTypesOrder',
             },
           ],
+          output: dedent`
+            type Value =
+              & { anyValue: any }
+              & { bigintValue: bigint }
+              & { booleanValue: boolean }
+              & { neverValue: never }
+              & { nullValue: null }
+              & { numberValue: number }
+              & { stringValue: string }
+              & { undefinedValue: undefined }
+              & { unknownValue: unknown }
+              & { voidValue: void }
+          `,
+          code: dedent`
+            type Value =
+              & { booleanValue: boolean }
+              & { numberValue: number }
+              & { stringValue: string }
+              & { anyValue: any }
+              & { unknownValue: unknown }
+              & { nullValue: null }
+              & { undefinedValue: undefined }
+              & { neverValue: never }
+              & { voidValue: void }
+              & { bigintValue: bigint }
+          `,
+          options: [options],
         },
       ],
+      valid: [],
     })
 
     ruleTester.run(`${ruleName}: works with generics`, rule, {
-      valid: [],
       invalid: [
         {
-          code: 'Omit<T, B & AA>',
-          output: 'Omit<T, AA & B>',
-          options: [options],
           errors: [
             {
-              messageId: 'unexpectedIntersectionTypesOrder',
               data: {
-                left: 'B',
                 right: 'AA',
+                left: 'B',
               },
+              messageId: 'unexpectedIntersectionTypesOrder',
             },
           ],
+          output: 'Omit<T, AA & B>',
+          code: 'Omit<T, B & AA>',
+          options: [options],
         },
       ],
+      valid: [],
     })
 
     ruleTester.run(`${ruleName}: works with type references`, rule, {
-      valid: [],
       invalid: [
         {
-          code: 'type Type = A & C & B',
-          output: 'type Type = A & B & C',
-          options: [options],
           errors: [
             {
-              messageId: 'unexpectedIntersectionTypesOrder',
               data: {
-                left: 'C',
                 right: 'B',
+                left: 'C',
               },
+              messageId: 'unexpectedIntersectionTypesOrder',
             },
           ],
+          output: 'type Type = A & B & C',
+          code: 'type Type = A & C & B',
+          options: [options],
         },
       ],
+      valid: [],
     })
 
     ruleTester.run(`${ruleName}: works with type references`, rule, {
-      valid: [],
       invalid: [
         {
-          code: dedent`
-            type Type =
-              & { name: B, status: 'b' }
-              & { name: A, status: 'aa' }
-          `,
+          errors: [
+            {
+              data: {
+                right: "{ name: A, status: 'aa' }",
+                left: "{ name: B, status: 'b' }",
+              },
+              messageId: 'unexpectedIntersectionTypesOrder',
+            },
+          ],
           output: dedent`
             type Type =
               & { name: A, status: 'aa' }
               & { name: B, status: 'b' }
           `,
+          code: dedent`
+            type Type =
+              & { name: B, status: 'b' }
+              & { name: A, status: 'aa' }
+          `,
           options: [options],
-          errors: [
-            {
-              messageId: 'unexpectedIntersectionTypesOrder',
-              data: {
-                left: "{ name: B, status: 'b' }",
-                right: "{ name: A, status: 'aa' }",
-              },
-            },
-          ],
         },
       ],
+      valid: [],
     })
 
     ruleTester.run(`${ruleName}: sorts intersections with parentheses`, rule, {
-      valid: [],
       invalid: [
         {
-          code: dedent`
-            type Type = {
-              t:
-                & B
-                & ((
-                    A: () => void,
-                  ) => B & C)
-                & C
-            }
-          `,
+          errors: [
+            {
+              data: {
+                right: '( A: () => void, ) => B & C',
+                left: 'B',
+              },
+              messageId: 'unexpectedIntersectionTypesOrder',
+            },
+          ],
           output: dedent`
             type Type = {
               t:
@@ -213,56 +211,164 @@ describe(ruleName, () => {
                 & C
             }
           `,
+          code: dedent`
+            type Type = {
+              t:
+                & B
+                & ((
+                    A: () => void,
+                  ) => B & C)
+                & C
+            }
+          `,
           options: [options],
-          errors: [
-            {
-              messageId: 'unexpectedIntersectionTypesOrder',
-              data: {
-                left: 'B',
-                right: '( A: () => void, ) => B & C',
-              },
-            },
-          ],
         },
       ],
+      valid: [],
     })
 
     ruleTester.run(
       `${ruleName}: sorts intersections with comment at the end`,
       rule,
       {
-        valid: [],
         invalid: [
           {
-            code: dedent`
-            type Step =  { value1: 1 } & { value2: 2 } & { value4: 4 } & { value3: 3 } & { value5: 5 } & { value100: 100 }; // Comment
-          `,
+            errors: [
+              {
+                data: {
+                  right: '{ value3: 3 }',
+                  left: '{ value4: 4 }',
+                },
+                messageId: 'unexpectedIntersectionTypesOrder',
+              },
+              {
+                data: {
+                  right: '{ value100: 100 }',
+                  left: '{ value5: 5 }',
+                },
+                messageId: 'unexpectedIntersectionTypesOrder',
+              },
+            ],
             output: dedent`
             type Step =  { value1: 1 } & { value100: 100 } & { value2: 2 } & { value3: 3 } & { value4: 4 } & { value5: 5 }; // Comment
           `,
+            code: dedent`
+            type Step =  { value1: 1 } & { value2: 2 } & { value4: 4 } & { value3: 3 } & { value5: 5 } & { value100: 100 }; // Comment
+          `,
             options: [options],
-            errors: [
-              {
-                messageId: 'unexpectedIntersectionTypesOrder',
-                data: {
-                  left: '{ value4: 4 }',
-                  right: '{ value3: 3 }',
-                },
-              },
-              {
-                messageId: 'unexpectedIntersectionTypesOrder',
-                data: {
-                  left: '{ value5: 5 }',
-                  right: '{ value100: 100 }',
-                },
-              },
-            ],
           },
         ],
+        valid: [],
       },
     )
 
     ruleTester.run(`${ruleName}: sorts intersections using groups`, rule, {
+      invalid: [
+        {
+          errors: [
+            {
+              data: {
+                left: "{ name: 'a' }",
+                rightGroup: 'keyword',
+                leftGroup: 'object',
+                right: 'boolean',
+              },
+              messageId: 'unexpectedIntersectionTypesGroupOrder',
+            },
+            {
+              data: {
+                leftGroup: 'keyword',
+                rightGroup: 'named',
+                left: 'boolean',
+                right: 'A',
+              },
+              messageId: 'unexpectedIntersectionTypesGroupOrder',
+            },
+            {
+              data: {
+                leftGroup: 'operator',
+                rightGroup: 'keyword',
+                left: 'keyof A',
+                right: 'bigint',
+              },
+              messageId: 'unexpectedIntersectionTypesGroupOrder',
+            },
+            {
+              data: {
+                rightGroup: 'literal',
+                leftGroup: 'nullish',
+                left: 'null',
+                right: '1',
+              },
+              messageId: 'unexpectedIntersectionTypesGroupOrder',
+            },
+            {
+              data: {
+                rightGroup: 'intersection',
+                leftGroup: 'union',
+                right: 'A & B',
+                left: 'A | B',
+              },
+              messageId: 'unexpectedIntersectionTypesGroupOrder',
+            },
+          ],
+          options: [
+            {
+              ...options,
+              groups: [
+                'named',
+                'keyword',
+                'operator',
+                'literal',
+                'function',
+                'import',
+                'conditional',
+                'object',
+                'tuple',
+                'intersection',
+                'union',
+                'nullish',
+              ],
+            },
+          ],
+          output: dedent`
+            type Type =
+              & A
+              & any
+              & bigint
+              & boolean
+              & keyof A
+              & typeof B
+              & 'aaa'
+              & 1
+              & (import('path'))
+              & (A extends B ? C : D)
+              & { name: 'a' }
+              & [A, B, C]
+              & (A & B)
+              & (A | B)
+              & null
+          `,
+          code: dedent`
+            type Type =
+              & any
+              & { name: 'a' }
+              & boolean
+              & A
+              & keyof A
+              & bigint
+              & typeof B
+              & 'aaa'
+              & (import('path'))
+              & null
+              & 1
+              & (A extends B ? C : D)
+              & [A, B, C]
+              & (A | B)
+              & (A & B)
+          `,
+        },
+      ],
       valid: [
         {
           code: dedent`
@@ -314,131 +420,30 @@ describe(ruleName, () => {
           ],
         },
       ],
-      invalid: [
-        {
-          code: dedent`
-            type Type =
-              & any
-              & { name: 'a' }
-              & boolean
-              & A
-              & keyof A
-              & bigint
-              & typeof B
-              & 'aaa'
-              & (import('path'))
-              & null
-              & 1
-              & (A extends B ? C : D)
-              & [A, B, C]
-              & (A | B)
-              & (A & B)
-          `,
-          output: dedent`
-            type Type =
-              & A
-              & any
-              & bigint
-              & boolean
-              & keyof A
-              & typeof B
-              & 'aaa'
-              & 1
-              & (import('path'))
-              & (A extends B ? C : D)
-              & { name: 'a' }
-              & [A, B, C]
-              & (A & B)
-              & (A | B)
-              & null
-          `,
-          options: [
-            {
-              ...options,
-              groups: [
-                'named',
-                'keyword',
-                'operator',
-                'literal',
-                'function',
-                'import',
-                'conditional',
-                'object',
-                'tuple',
-                'intersection',
-                'union',
-                'nullish',
-              ],
-            },
-          ],
-          errors: [
-            {
-              messageId: 'unexpectedIntersectionTypesGroupOrder',
-              data: {
-                left: "{ name: 'a' }",
-                leftGroup: 'object',
-                right: 'boolean',
-                rightGroup: 'keyword',
-              },
-            },
-            {
-              messageId: 'unexpectedIntersectionTypesGroupOrder',
-              data: {
-                left: 'boolean',
-                leftGroup: 'keyword',
-                right: 'A',
-                rightGroup: 'named',
-              },
-            },
-            {
-              messageId: 'unexpectedIntersectionTypesGroupOrder',
-              data: {
-                left: 'keyof A',
-                leftGroup: 'operator',
-                right: 'bigint',
-                rightGroup: 'keyword',
-              },
-            },
-            {
-              messageId: 'unexpectedIntersectionTypesGroupOrder',
-              data: {
-                left: 'null',
-                leftGroup: 'nullish',
-                right: '1',
-                rightGroup: 'literal',
-              },
-            },
-            {
-              messageId: 'unexpectedIntersectionTypesGroupOrder',
-              data: {
-                left: 'A | B',
-                leftGroup: 'union',
-                right: 'A & B',
-                rightGroup: 'intersection',
-              },
-            },
-          ],
-        },
-      ],
     })
 
     ruleTester.run(
       `${ruleName}(${type}): allows to use new line as partition`,
       rule,
       {
-        valid: [],
         invalid: [
           {
-            code: dedent`
-              type Type =
-                D &
-                A &
-
-                C &
-
-                E &
-                B
-            `,
+            errors: [
+              {
+                data: {
+                  right: 'A',
+                  left: 'D',
+                },
+                messageId: 'unexpectedIntersectionTypesOrder',
+              },
+              {
+                data: {
+                  right: 'B',
+                  left: 'E',
+                },
+                messageId: 'unexpectedIntersectionTypesOrder',
+              },
+            ],
             output: dedent`
               type Type =
                 A &
@@ -449,30 +454,25 @@ describe(ruleName, () => {
                 B &
                 E
             `,
+            code: dedent`
+              type Type =
+                D &
+                A &
+
+                C &
+
+                E &
+                B
+            `,
             options: [
               {
-                type: 'alphabetical',
                 partitionByNewLine: true,
-              },
-            ],
-            errors: [
-              {
-                messageId: 'unexpectedIntersectionTypesOrder',
-                data: {
-                  left: 'D',
-                  right: 'A',
-                },
-              },
-              {
-                messageId: 'unexpectedIntersectionTypesOrder',
-                data: {
-                  left: 'E',
-                  right: 'B',
-                },
+                type: 'alphabetical',
               },
             ],
           },
         ],
+        valid: [],
       },
     )
 
@@ -481,24 +481,24 @@ describe(ruleName, () => {
         `${ruleName}(${type}): allows to use partition comments`,
         rule,
         {
-          valid: [],
           invalid: [
             {
-              code: dedent`
-                type T =
-                  // Part: A
-                  CC &
-                  D &
-                  // Not partition comment
-                  BBB &
-                  // Part: B
-                  AAA &
-                  E &
-                  // Part: C
-                  GG &
-                  // Not partition comment
-                  FFF
-              `,
+              errors: [
+                {
+                  data: {
+                    right: 'BBB',
+                    left: 'D',
+                  },
+                  messageId: 'unexpectedIntersectionTypesOrder',
+                },
+                {
+                  data: {
+                    right: 'FFF',
+                    left: 'GG',
+                  },
+                  messageId: 'unexpectedIntersectionTypesOrder',
+                },
+              ],
               output: dedent`
                 type T =
                   // Part: A
@@ -514,45 +514,45 @@ describe(ruleName, () => {
                   FFF &
                   GG
               `,
+              code: dedent`
+                type T =
+                  // Part: A
+                  CC &
+                  D &
+                  // Not partition comment
+                  BBB &
+                  // Part: B
+                  AAA &
+                  E &
+                  // Part: C
+                  GG &
+                  // Not partition comment
+                  FFF
+              `,
               options: [
                 {
                   ...options,
                   partitionByComment: '^Part*',
                 },
               ],
-              errors: [
-                {
-                  messageId: 'unexpectedIntersectionTypesOrder',
-                  data: {
-                    left: 'D',
-                    right: 'BBB',
-                  },
-                },
-                {
-                  messageId: 'unexpectedIntersectionTypesOrder',
-                  data: {
-                    left: 'GG',
-                    right: 'FFF',
-                  },
-                },
-              ],
             },
             {
-              code: dedent`
-                type T =
-                  // Part: A
-                  & CC
-                  & D
-                  // Not partition comment
-                  & BBB
-                  // Part: B
-                  & AAA
-                  & E
-                  // Part: C
-                  & GG
-                  // Not partition comment
-                  & FFF
-              `,
+              errors: [
+                {
+                  data: {
+                    right: 'BBB',
+                    left: 'D',
+                  },
+                  messageId: 'unexpectedIntersectionTypesOrder',
+                },
+                {
+                  data: {
+                    right: 'FFF',
+                    left: 'GG',
+                  },
+                  messageId: 'unexpectedIntersectionTypesOrder',
+                },
+              ],
               output: dedent`
                 type T =
                   // Part: A
@@ -568,30 +568,30 @@ describe(ruleName, () => {
                   // Not partition comment
                   & GG
               `,
+              code: dedent`
+                type T =
+                  // Part: A
+                  & CC
+                  & D
+                  // Not partition comment
+                  & BBB
+                  // Part: B
+                  & AAA
+                  & E
+                  // Part: C
+                  & GG
+                  // Not partition comment
+                  & FFF
+              `,
               options: [
                 {
                   ...options,
                   partitionByComment: '^Part*',
                 },
               ],
-              errors: [
-                {
-                  messageId: 'unexpectedIntersectionTypesOrder',
-                  data: {
-                    left: 'D',
-                    right: 'BBB',
-                  },
-                },
-                {
-                  messageId: 'unexpectedIntersectionTypesOrder',
-                  data: {
-                    left: 'GG',
-                    right: 'FFF',
-                  },
-                },
-              ],
             },
           ],
+          valid: [],
         },
       )
 
@@ -624,21 +624,8 @@ describe(ruleName, () => {
         `${ruleName}(${type}): allows to use multiple partition comments`,
         rule,
         {
-          valid: [],
           invalid: [
             {
-              code: dedent`
-                  type T =
-                    /* Partition Comment */
-                    // Part: A
-                    D &
-                    // Part: B
-                    AAA &
-                    C &
-                    BB &
-                    /* Other */
-                    E
-                `,
               output: dedent`
                   type T =
                     /* Partition Comment */
@@ -651,23 +638,36 @@ describe(ruleName, () => {
                     /* Other */
                     E
                 `,
+              code: dedent`
+                  type T =
+                    /* Partition Comment */
+                    // Part: A
+                    D &
+                    // Part: B
+                    AAA &
+                    C &
+                    BB &
+                    /* Other */
+                    E
+                `,
+              errors: [
+                {
+                  data: {
+                    right: 'BB',
+                    left: 'C',
+                  },
+                  messageId: 'unexpectedIntersectionTypesOrder',
+                },
+              ],
               options: [
                 {
                   ...options,
                   partitionByComment: ['Partition Comment', 'Part: *', 'Other'],
                 },
               ],
-              errors: [
-                {
-                  messageId: 'unexpectedIntersectionTypesOrder',
-                  data: {
-                    left: 'C',
-                    right: 'BB',
-                  },
-                },
-              ],
             },
           ],
+          valid: [],
         },
       )
 
@@ -704,18 +704,18 @@ describe(ruleName, () => {
       {
         valid: [
           {
-            code: dedent`
-              type T =
-                _A &
-                B &
-                _C
-            `,
             options: [
               {
                 ...options,
                 specialCharacters: 'trim',
               },
             ],
+            code: dedent`
+              type T =
+                _A &
+                B &
+                _C
+            `,
           },
         ],
         invalid: [],
@@ -728,17 +728,17 @@ describe(ruleName, () => {
       {
         valid: [
           {
-            code: dedent`
-              type T =
-                AB &
-                A_C
-            `,
             options: [
               {
                 ...options,
                 specialCharacters: 'remove',
               },
             ],
+            code: dedent`
+              type T =
+                AB &
+                A_C
+            `,
           },
         ],
         invalid: [],
@@ -768,9 +768,38 @@ describe(ruleName, () => {
         `${ruleName}(${type}): removes newlines when never`,
         rule,
         {
-          valid: [],
           invalid: [
             {
+              errors: [
+                {
+                  data: {
+                    left: '() => null',
+                    right: 'Y',
+                  },
+                  messageId: 'extraSpacingBetweenIntersectionTypes',
+                },
+                {
+                  data: {
+                    right: 'B',
+                    left: 'Z',
+                  },
+                  messageId: 'unexpectedIntersectionTypesOrder',
+                },
+                {
+                  data: {
+                    right: 'B',
+                    left: 'Z',
+                  },
+                  messageId: 'extraSpacingBetweenIntersectionTypes',
+                },
+              ],
+              options: [
+                {
+                  ...options,
+                  groups: ['function', 'unknown'],
+                  newlinesBetween: 'never',
+                },
+              ],
               code: dedent`
                 type T =
                   (() => null)
@@ -788,38 +817,9 @@ describe(ruleName, () => {
                 & Y
                     & Z
               `,
-              options: [
-                {
-                  ...options,
-                  newlinesBetween: 'never',
-                  groups: ['function', 'unknown'],
-                },
-              ],
-              errors: [
-                {
-                  messageId: 'extraSpacingBetweenIntersectionTypes',
-                  data: {
-                    left: '() => null',
-                    right: 'Y',
-                  },
-                },
-                {
-                  messageId: 'unexpectedIntersectionTypesOrder',
-                  data: {
-                    left: 'Z',
-                    right: 'B',
-                  },
-                },
-                {
-                  messageId: 'extraSpacingBetweenIntersectionTypes',
-                  data: {
-                    left: 'Z',
-                    right: 'B',
-                  },
-                },
-              ],
             },
           ],
+          valid: [],
         },
       )
 
@@ -827,18 +827,38 @@ describe(ruleName, () => {
         `${ruleName}(${type}): keeps one newline when always`,
         rule,
         {
-          valid: [],
           invalid: [
             {
-              code: dedent`
-                type T =
-                  (() => null)
-
-
-                 & Z
-                & Y
-                    & "A"
-              `,
+              errors: [
+                {
+                  data: {
+                    left: '() => null',
+                    right: 'Z',
+                  },
+                  messageId: 'extraSpacingBetweenIntersectionTypes',
+                },
+                {
+                  data: {
+                    right: 'Y',
+                    left: 'Z',
+                  },
+                  messageId: 'unexpectedIntersectionTypesOrder',
+                },
+                {
+                  data: {
+                    right: '"A"',
+                    left: 'Y',
+                  },
+                  messageId: 'missedSpacingBetweenIntersectionTypes',
+                },
+              ],
+              options: [
+                {
+                  ...options,
+                  groups: ['function', 'unknown', 'literal'],
+                  newlinesBetween: 'always',
+                },
+              ],
               output: dedent`
                 type T =
                   (() => null)
@@ -848,38 +868,18 @@ describe(ruleName, () => {
 
                     & "A"
                 `,
-              options: [
-                {
-                  ...options,
-                  newlinesBetween: 'always',
-                  groups: ['function', 'unknown', 'literal'],
-                },
-              ],
-              errors: [
-                {
-                  messageId: 'extraSpacingBetweenIntersectionTypes',
-                  data: {
-                    left: '() => null',
-                    right: 'Z',
-                  },
-                },
-                {
-                  messageId: 'unexpectedIntersectionTypesOrder',
-                  data: {
-                    left: 'Z',
-                    right: 'Y',
-                  },
-                },
-                {
-                  messageId: 'missedSpacingBetweenIntersectionTypes',
-                  data: {
-                    left: 'Y',
-                    right: '"A"',
-                  },
-                },
-              ],
+              code: dedent`
+                type T =
+                  (() => null)
+
+
+                 & Z
+                & Y
+                    & "A"
+              `,
             },
           ],
+          valid: [],
         },
       )
     })
@@ -888,49 +888,49 @@ describe(ruleName, () => {
       `${ruleName}(${type}): sorts inline elements correctly`,
       rule,
       {
-        valid: [],
         invalid: [
           {
-            code: dedent`
-              type T =
-                & B & A
-            `,
+            errors: [
+              {
+                data: {
+                  right: 'A',
+                  left: 'B',
+                },
+                messageId: 'unexpectedIntersectionTypesOrder',
+              },
+            ],
             output: dedent`
               type T =
                 & A & B
             `,
-            options: [options],
-            errors: [
-              {
-                messageId: 'unexpectedIntersectionTypesOrder',
-                data: {
-                  left: 'B',
-                  right: 'A',
-                },
-              },
-            ],
-          },
-          {
             code: dedent`
               type T =
-                B & A
+                & B & A
             `,
+            options: [options],
+          },
+          {
+            errors: [
+              {
+                data: {
+                  right: 'A',
+                  left: 'B',
+                },
+                messageId: 'unexpectedIntersectionTypesOrder',
+              },
+            ],
             output: dedent`
               type T =
                 A & B
             `,
+            code: dedent`
+              type T =
+                B & A
+            `,
             options: [options],
-            errors: [
-              {
-                messageId: 'unexpectedIntersectionTypesOrder',
-                data: {
-                  left: 'B',
-                  right: 'A',
-                },
-              },
-            ],
           },
         ],
+        valid: [],
       },
     )
   })
@@ -945,6 +945,26 @@ describe(ruleName, () => {
     } as const
 
     ruleTester.run(`${ruleName}(${type}: sorts intersection types`, rule, {
+      invalid: [
+        {
+          errors: [
+            {
+              data: {
+                right: "{ label: 'bb' }",
+                left: "{ label: 'c' }",
+              },
+              messageId: 'unexpectedIntersectionTypesOrder',
+            },
+          ],
+          output: dedent`
+            type Type = { label: 'aaa' } & { label: 'bb' } & { label: 'c' }
+          `,
+          code: dedent`
+            type Type = { label: 'aaa' } & { label: 'c' } & { label: 'bb' }
+          `,
+          options: [options],
+        },
+      ],
       valid: [
         {
           code: dedent`
@@ -953,155 +973,133 @@ describe(ruleName, () => {
           options: [options],
         },
       ],
-      invalid: [
-        {
-          code: dedent`
-            type Type = { label: 'aaa' } & { label: 'c' } & { label: 'bb' }
-          `,
-          output: dedent`
-            type Type = { label: 'aaa' } & { label: 'bb' } & { label: 'c' }
-          `,
-          options: [options],
-          errors: [
-            {
-              messageId: 'unexpectedIntersectionTypesOrder',
-              data: {
-                left: "{ label: 'c' }",
-                right: "{ label: 'bb' }",
-              },
-            },
-          ],
-        },
-      ],
     })
 
     ruleTester.run(`${ruleName}: sorts keyword intersection types`, rule, {
-      valid: [],
       invalid: [
         {
-          code: dedent`
-            type Value =
-              & boolean
-              & number
-              & string
-              & any
-              & unknown
-              & null
-              & undefined
-              & never
-              & void
-              & bigint
-          `,
-          output: dedent`
-            type Value =
-              & any
-              & bigint
-              & boolean
-              & never
-              & null
-              & number
-              & string
-              & undefined
-              & unknown
-              & void
-          `,
-          options: [options],
           errors: [
             {
-              messageId: 'unexpectedIntersectionTypesOrder',
               data: {
                 left: 'string',
                 right: 'any',
               },
+              messageId: 'unexpectedIntersectionTypesOrder',
             },
             {
-              messageId: 'unexpectedIntersectionTypesOrder',
               data: {
                 left: 'unknown',
                 right: 'null',
               },
+              messageId: 'unexpectedIntersectionTypesOrder',
             },
             {
-              messageId: 'unexpectedIntersectionTypesOrder',
               data: {
                 left: 'undefined',
                 right: 'never',
               },
+              messageId: 'unexpectedIntersectionTypesOrder',
             },
             {
-              messageId: 'unexpectedIntersectionTypesOrder',
               data: {
-                left: 'void',
                 right: 'bigint',
+                left: 'void',
               },
+              messageId: 'unexpectedIntersectionTypesOrder',
             },
           ],
+          output: dedent`
+            type Value =
+              & any
+              & bigint
+              & boolean
+              & never
+              & null
+              & number
+              & string
+              & undefined
+              & unknown
+              & void
+          `,
+          code: dedent`
+            type Value =
+              & boolean
+              & number
+              & string
+              & any
+              & unknown
+              & null
+              & undefined
+              & never
+              & void
+              & bigint
+          `,
+          options: [options],
         },
       ],
+      valid: [],
     })
 
     ruleTester.run(`${ruleName}: works with generics`, rule, {
-      valid: [],
       invalid: [
         {
-          code: 'Omit<T, B & AA>',
-          output: 'Omit<T, AA & B>',
-          options: [options],
           errors: [
             {
-              messageId: 'unexpectedIntersectionTypesOrder',
               data: {
-                left: 'B',
                 right: 'AA',
+                left: 'B',
               },
+              messageId: 'unexpectedIntersectionTypesOrder',
             },
           ],
+          output: 'Omit<T, AA & B>',
+          code: 'Omit<T, B & AA>',
+          options: [options],
         },
       ],
+      valid: [],
     })
 
     ruleTester.run(`${ruleName}: works with type references`, rule, {
-      valid: [],
       invalid: [
         {
-          code: dedent`
-            type Type =
-              & { name: B, status: 'b' }
-              & { name: A, status: 'aa' }
-          `,
+          errors: [
+            {
+              data: {
+                right: "{ name: A, status: 'aa' }",
+                left: "{ name: B, status: 'b' }",
+              },
+              messageId: 'unexpectedIntersectionTypesOrder',
+            },
+          ],
           output: dedent`
             type Type =
               & { name: A, status: 'aa' }
               & { name: B, status: 'b' }
           `,
+          code: dedent`
+            type Type =
+              & { name: B, status: 'b' }
+              & { name: A, status: 'aa' }
+          `,
           options: [options],
-          errors: [
-            {
-              messageId: 'unexpectedIntersectionTypesOrder',
-              data: {
-                left: "{ name: B, status: 'b' }",
-                right: "{ name: A, status: 'aa' }",
-              },
-            },
-          ],
         },
       ],
+      valid: [],
     })
 
     ruleTester.run(`${ruleName}: sorts intersections with parentheses`, rule, {
-      valid: [],
       invalid: [
         {
-          code: dedent`
-            type Type = {
-              t:
-                & B
-                & ((
-                    A: () => void,
-                  ) => B & C)
-                & C
-            }
-          `,
+          errors: [
+            {
+              data: {
+                right: '( A: () => void, ) => B & C',
+                left: 'B',
+              },
+              messageId: 'unexpectedIntersectionTypesOrder',
+            },
+          ],
           output: dedent`
             type Type = {
               t:
@@ -1112,56 +1110,164 @@ describe(ruleName, () => {
                 & C
             }
           `,
+          code: dedent`
+            type Type = {
+              t:
+                & B
+                & ((
+                    A: () => void,
+                  ) => B & C)
+                & C
+            }
+          `,
           options: [options],
-          errors: [
-            {
-              messageId: 'unexpectedIntersectionTypesOrder',
-              data: {
-                left: 'B',
-                right: '( A: () => void, ) => B & C',
-              },
-            },
-          ],
         },
       ],
+      valid: [],
     })
 
     ruleTester.run(
       `${ruleName}: sorts intersections with comment at the end`,
       rule,
       {
-        valid: [],
         invalid: [
           {
-            code: dedent`
-            type Step = { value1: 1 } & { value2: 2 } & { value4: 4 } & { value3: 3 } & { value5: 5 } & { value100: 100 }; // Comment
-          `,
+            errors: [
+              {
+                data: {
+                  right: '{ value3: 3 }',
+                  left: '{ value4: 4 }',
+                },
+                messageId: 'unexpectedIntersectionTypesOrder',
+              },
+              {
+                data: {
+                  right: '{ value100: 100 }',
+                  left: '{ value5: 5 }',
+                },
+                messageId: 'unexpectedIntersectionTypesOrder',
+              },
+            ],
             output: dedent`
             type Step = { value1: 1 } & { value100: 100 } & { value2: 2 } & { value3: 3 } & { value4: 4 } & { value5: 5 }; // Comment
           `,
+            code: dedent`
+            type Step = { value1: 1 } & { value2: 2 } & { value4: 4 } & { value3: 3 } & { value5: 5 } & { value100: 100 }; // Comment
+          `,
             options: [options],
-            errors: [
-              {
-                messageId: 'unexpectedIntersectionTypesOrder',
-                data: {
-                  left: '{ value4: 4 }',
-                  right: '{ value3: 3 }',
-                },
-              },
-              {
-                messageId: 'unexpectedIntersectionTypesOrder',
-                data: {
-                  left: '{ value5: 5 }',
-                  right: '{ value100: 100 }',
-                },
-              },
-            ],
           },
         ],
+        valid: [],
       },
     )
 
     ruleTester.run(`${ruleName}: sorts intersections using groups`, rule, {
+      invalid: [
+        {
+          errors: [
+            {
+              data: {
+                left: "{ name: 'a' }",
+                rightGroup: 'keyword',
+                leftGroup: 'object',
+                right: 'boolean',
+              },
+              messageId: 'unexpectedIntersectionTypesGroupOrder',
+            },
+            {
+              data: {
+                leftGroup: 'keyword',
+                rightGroup: 'named',
+                left: 'boolean',
+                right: 'A',
+              },
+              messageId: 'unexpectedIntersectionTypesGroupOrder',
+            },
+            {
+              data: {
+                leftGroup: 'operator',
+                rightGroup: 'keyword',
+                left: 'keyof A',
+                right: 'bigint',
+              },
+              messageId: 'unexpectedIntersectionTypesGroupOrder',
+            },
+            {
+              data: {
+                rightGroup: 'literal',
+                leftGroup: 'nullish',
+                left: 'null',
+                right: '1',
+              },
+              messageId: 'unexpectedIntersectionTypesGroupOrder',
+            },
+            {
+              data: {
+                rightGroup: 'intersection',
+                leftGroup: 'union',
+                right: 'A & B',
+                left: 'A | B',
+              },
+              messageId: 'unexpectedIntersectionTypesGroupOrder',
+            },
+          ],
+          options: [
+            {
+              ...options,
+              groups: [
+                'named',
+                'keyword',
+                'operator',
+                'literal',
+                'function',
+                'import',
+                'conditional',
+                'object',
+                'tuple',
+                'intersection',
+                'union',
+                'nullish',
+              ],
+            },
+          ],
+          output: dedent`
+            type Type =
+              & A
+              & any
+              & bigint
+              & boolean
+              & keyof A
+              & typeof B
+              & 'aaa'
+              & 1
+              & (import('path'))
+              & (A extends B ? C : D)
+              & { name: 'a' }
+              & [A, B, C]
+              & (A & B)
+              & (A | B)
+              & null
+          `,
+          code: dedent`
+            type Type =
+              & any
+              & { name: 'a' }
+              & boolean
+              & A
+              & keyof A
+              & bigint
+              & typeof B
+              & 'aaa'
+              & (import('path'))
+              & null
+              & 1
+              & (A extends B ? C : D)
+              & [A, B, C]
+              & (A | B)
+              & (A & B)
+          `,
+        },
+      ],
       valid: [
         {
           code: dedent`
@@ -1203,112 +1309,6 @@ describe(ruleName, () => {
                 'union',
                 'nullish',
               ],
-            },
-          ],
-        },
-      ],
-      invalid: [
-        {
-          code: dedent`
-            type Type =
-              & any
-              & { name: 'a' }
-              & boolean
-              & A
-              & keyof A
-              & bigint
-              & typeof B
-              & 'aaa'
-              & (import('path'))
-              & null
-              & 1
-              & (A extends B ? C : D)
-              & [A, B, C]
-              & (A | B)
-              & (A & B)
-          `,
-          output: dedent`
-            type Type =
-              & A
-              & any
-              & bigint
-              & boolean
-              & keyof A
-              & typeof B
-              & 'aaa'
-              & 1
-              & (import('path'))
-              & (A extends B ? C : D)
-              & { name: 'a' }
-              & [A, B, C]
-              & (A & B)
-              & (A | B)
-              & null
-          `,
-          options: [
-            {
-              ...options,
-              groups: [
-                'named',
-                'keyword',
-                'operator',
-                'literal',
-                'function',
-                'import',
-                'conditional',
-                'object',
-                'tuple',
-                'intersection',
-                'union',
-                'nullish',
-              ],
-            },
-          ],
-          errors: [
-            {
-              messageId: 'unexpectedIntersectionTypesGroupOrder',
-              data: {
-                left: "{ name: 'a' }",
-                leftGroup: 'object',
-                right: 'boolean',
-                rightGroup: 'keyword',
-              },
-            },
-            {
-              messageId: 'unexpectedIntersectionTypesGroupOrder',
-              data: {
-                left: 'boolean',
-                leftGroup: 'keyword',
-                right: 'A',
-                rightGroup: 'named',
-              },
-            },
-            {
-              messageId: 'unexpectedIntersectionTypesGroupOrder',
-              data: {
-                left: 'keyof A',
-                leftGroup: 'operator',
-                right: 'bigint',
-                rightGroup: 'keyword',
-              },
-            },
-            {
-              messageId: 'unexpectedIntersectionTypesGroupOrder',
-              data: {
-                left: 'null',
-                leftGroup: 'nullish',
-                right: '1',
-                rightGroup: 'literal',
-              },
-            },
-            {
-              messageId: 'unexpectedIntersectionTypesGroupOrder',
-              data: {
-                left: 'A | B',
-                leftGroup: 'union',
-                right: 'A & B',
-                rightGroup: 'intersection',
-              },
             },
           ],
         },
@@ -1325,6 +1325,26 @@ describe(ruleName, () => {
     } as const
 
     ruleTester.run(`${ruleName}(${type}: sorts intersection types`, rule, {
+      invalid: [
+        {
+          errors: [
+            {
+              data: {
+                right: "{ label: 'bb' }",
+                left: "{ label: 'c' }",
+              },
+              messageId: 'unexpectedIntersectionTypesOrder',
+            },
+          ],
+          output: dedent`
+            type Type = { label: 'aaa' } & { label: 'bb' } & { label: 'c' }
+          `,
+          code: dedent`
+            type Type = { label: 'aaa' } & { label: 'c' } & { label: 'bb' }
+          `,
+          options: [options],
+        },
+      ],
       valid: [
         {
           code: dedent`
@@ -1333,45 +1353,34 @@ describe(ruleName, () => {
           options: [options],
         },
       ],
-      invalid: [
-        {
-          code: dedent`
-            type Type = { label: 'aaa' } & { label: 'c' } & { label: 'bb' }
-          `,
-          output: dedent`
-            type Type = { label: 'aaa' } & { label: 'bb' } & { label: 'c' }
-          `,
-          options: [options],
-          errors: [
-            {
-              messageId: 'unexpectedIntersectionTypesOrder',
-              data: {
-                left: "{ label: 'c' }",
-                right: "{ label: 'bb' }",
-              },
-            },
-          ],
-        },
-      ],
     })
 
     ruleTester.run(`${ruleName}: sorts keyword intersection types`, rule, {
-      valid: [],
       invalid: [
         {
-          code: dedent`
-            type Value =
-              & boolean
-              & number
-              & string
-              & any
-              & unknown
-              & null
-              & undefined
-              & never
-              & void
-              & bigint
-          `,
+          errors: [
+            {
+              data: {
+                right: 'unknown',
+                left: 'any',
+              },
+              messageId: 'unexpectedIntersectionTypesOrder',
+            },
+            {
+              data: {
+                right: 'undefined',
+                left: 'null',
+              },
+              messageId: 'unexpectedIntersectionTypesOrder',
+            },
+            {
+              data: {
+                right: 'bigint',
+                left: 'void',
+              },
+              messageId: 'unexpectedIntersectionTypesOrder',
+            },
+          ],
           output: dedent`
             type Value =
               & undefined
@@ -1385,52 +1394,43 @@ describe(ruleName, () => {
               & void
               & any
           `,
+          code: dedent`
+            type Value =
+              & boolean
+              & number
+              & string
+              & any
+              & unknown
+              & null
+              & undefined
+              & never
+              & void
+              & bigint
+          `,
           options: [options],
-          errors: [
-            {
-              messageId: 'unexpectedIntersectionTypesOrder',
-              data: {
-                left: 'any',
-                right: 'unknown',
-              },
-            },
-            {
-              messageId: 'unexpectedIntersectionTypesOrder',
-              data: {
-                left: 'null',
-                right: 'undefined',
-              },
-            },
-            {
-              messageId: 'unexpectedIntersectionTypesOrder',
-              data: {
-                left: 'void',
-                right: 'bigint',
-              },
-            },
-          ],
         },
       ],
+      valid: [],
     })
 
     ruleTester.run(`${ruleName}: works with generics`, rule, {
-      valid: [],
       invalid: [
         {
-          code: 'Omit<T, B & AA>',
-          output: 'Omit<T, AA & B>',
-          options: [options],
           errors: [
             {
-              messageId: 'unexpectedIntersectionTypesOrder',
               data: {
-                left: 'B',
                 right: 'AA',
+                left: 'B',
               },
+              messageId: 'unexpectedIntersectionTypesOrder',
             },
           ],
+          output: 'Omit<T, AA & B>',
+          code: 'Omit<T, B & AA>',
+          options: [options],
         },
       ],
+      valid: [],
     })
 
     ruleTester.run(`${ruleName}: works with type references`, rule, {
@@ -1444,47 +1444,45 @@ describe(ruleName, () => {
     })
 
     ruleTester.run(`${ruleName}: works with type references`, rule, {
-      valid: [],
       invalid: [
         {
-          code: dedent`
-            type Type =
-              & { name: B, status: 'b' }
-              & { name: A, status: 'aa' }
-          `,
+          errors: [
+            {
+              data: {
+                right: "{ name: A, status: 'aa' }",
+                left: "{ name: B, status: 'b' }",
+              },
+              messageId: 'unexpectedIntersectionTypesOrder',
+            },
+          ],
           output: dedent`
             type Type =
               & { name: A, status: 'aa' }
               & { name: B, status: 'b' }
           `,
+          code: dedent`
+            type Type =
+              & { name: B, status: 'b' }
+              & { name: A, status: 'aa' }
+          `,
           options: [options],
-          errors: [
-            {
-              messageId: 'unexpectedIntersectionTypesOrder',
-              data: {
-                left: "{ name: B, status: 'b' }",
-                right: "{ name: A, status: 'aa' }",
-              },
-            },
-          ],
         },
       ],
+      valid: [],
     })
 
     ruleTester.run(`${ruleName}: sorts intersections with parentheses`, rule, {
-      valid: [],
       invalid: [
         {
-          code: dedent`
-            type Type = {
-              t:
-                & B
-                & ((
-                    A: () => void,
-                  ) => B & C)
-                & C
-            }
-          `,
+          errors: [
+            {
+              data: {
+                right: '( A: () => void, ) => B & C',
+                left: 'B',
+              },
+              messageId: 'unexpectedIntersectionTypesOrder',
+            },
+          ],
           output: dedent`
             type Type = {
               t:
@@ -1495,49 +1493,157 @@ describe(ruleName, () => {
                 & C
             }
           `,
+          code: dedent`
+            type Type = {
+              t:
+                & B
+                & ((
+                    A: () => void,
+                  ) => B & C)
+                & C
+            }
+          `,
           options: [options],
-          errors: [
-            {
-              messageId: 'unexpectedIntersectionTypesOrder',
-              data: {
-                left: 'B',
-                right: '( A: () => void, ) => B & C',
-              },
-            },
-          ],
         },
       ],
+      valid: [],
     })
 
     ruleTester.run(
       `${ruleName}: sorts intersections with comment at the end`,
       rule,
       {
-        valid: [],
         invalid: [
           {
-            code: dedent`
-            type Step = { value1: 1 } & { value2: 2 } & { value4: 4 } & { value3: 3 } & { value5: 5 } & { value100: 100 }; // Comment
-          `,
+            errors: [
+              {
+                data: {
+                  right: '{ value100: 100 }',
+                  left: '{ value5: 5 }',
+                },
+                messageId: 'unexpectedIntersectionTypesOrder',
+              },
+            ],
             output: dedent`
             type Step = { value100: 100 } & { value1: 1 } & { value2: 2 } & { value4: 4 } & { value3: 3 } & { value5: 5 }; // Comment
           `,
+            code: dedent`
+            type Step = { value1: 1 } & { value2: 2 } & { value4: 4 } & { value3: 3 } & { value5: 5 } & { value100: 100 }; // Comment
+          `,
             options: [options],
-            errors: [
-              {
-                messageId: 'unexpectedIntersectionTypesOrder',
-                data: {
-                  left: '{ value5: 5 }',
-                  right: '{ value100: 100 }',
-                },
-              },
-            ],
           },
         ],
+        valid: [],
       },
     )
 
     ruleTester.run(`${ruleName}: sorts intersections using groups`, rule, {
+      invalid: [
+        {
+          errors: [
+            {
+              data: {
+                left: "{ name: 'a' }",
+                rightGroup: 'keyword',
+                leftGroup: 'object',
+                right: 'boolean',
+              },
+              messageId: 'unexpectedIntersectionTypesGroupOrder',
+            },
+            {
+              data: {
+                leftGroup: 'keyword',
+                rightGroup: 'named',
+                left: 'boolean',
+                right: 'A',
+              },
+              messageId: 'unexpectedIntersectionTypesGroupOrder',
+            },
+            {
+              data: {
+                leftGroup: 'operator',
+                rightGroup: 'keyword',
+                left: 'keyof A',
+                right: 'bigint',
+              },
+              messageId: 'unexpectedIntersectionTypesGroupOrder',
+            },
+            {
+              data: {
+                rightGroup: 'literal',
+                leftGroup: 'nullish',
+                left: 'null',
+                right: '1',
+              },
+              messageId: 'unexpectedIntersectionTypesGroupOrder',
+            },
+            {
+              data: {
+                rightGroup: 'intersection',
+                leftGroup: 'union',
+                right: 'A & B',
+                left: 'A | B',
+              },
+              messageId: 'unexpectedIntersectionTypesGroupOrder',
+            },
+          ],
+          options: [
+            {
+              ...options,
+              groups: [
+                'named',
+                'keyword',
+                'operator',
+                'literal',
+                'function',
+                'import',
+                'conditional',
+                'object',
+                'tuple',
+                'intersection',
+                'union',
+                'nullish',
+              ],
+            },
+          ],
+          output: dedent`
+            type Type =
+              & A
+              & boolean
+              & bigint
+              & any
+              & typeof B
+              & keyof A
+              & 'aaa'
+              & 1
+              & (import('path'))
+              & (A extends B ? C : D)
+              & { name: 'a' }
+              & [A, B, C]
+              & (A & B)
+              & (A | B)
+              & null
+          `,
+          code: dedent`
+            type Type =
+              & any
+              & { name: 'a' }
+              & boolean
+              & A
+              & keyof A
+              & bigint
+              & typeof B
+              & 'aaa'
+              & (import('path'))
+              & null
+              & 1
+              & (A extends B ? C : D)
+              & [A, B, C]
+              & (A | B)
+              & (A & B)
+          `,
+        },
+      ],
       valid: [
         {
           code: dedent`
@@ -1583,112 +1689,6 @@ describe(ruleName, () => {
           ],
         },
       ],
-      invalid: [
-        {
-          code: dedent`
-            type Type =
-              & any
-              & { name: 'a' }
-              & boolean
-              & A
-              & keyof A
-              & bigint
-              & typeof B
-              & 'aaa'
-              & (import('path'))
-              & null
-              & 1
-              & (A extends B ? C : D)
-              & [A, B, C]
-              & (A | B)
-              & (A & B)
-          `,
-          output: dedent`
-            type Type =
-              & A
-              & boolean
-              & bigint
-              & any
-              & typeof B
-              & keyof A
-              & 'aaa'
-              & 1
-              & (import('path'))
-              & (A extends B ? C : D)
-              & { name: 'a' }
-              & [A, B, C]
-              & (A & B)
-              & (A | B)
-              & null
-          `,
-          options: [
-            {
-              ...options,
-              groups: [
-                'named',
-                'keyword',
-                'operator',
-                'literal',
-                'function',
-                'import',
-                'conditional',
-                'object',
-                'tuple',
-                'intersection',
-                'union',
-                'nullish',
-              ],
-            },
-          ],
-          errors: [
-            {
-              messageId: 'unexpectedIntersectionTypesGroupOrder',
-              data: {
-                left: "{ name: 'a' }",
-                leftGroup: 'object',
-                right: 'boolean',
-                rightGroup: 'keyword',
-              },
-            },
-            {
-              messageId: 'unexpectedIntersectionTypesGroupOrder',
-              data: {
-                left: 'boolean',
-                leftGroup: 'keyword',
-                right: 'A',
-                rightGroup: 'named',
-              },
-            },
-            {
-              messageId: 'unexpectedIntersectionTypesGroupOrder',
-              data: {
-                left: 'keyof A',
-                leftGroup: 'operator',
-                right: 'bigint',
-                rightGroup: 'keyword',
-              },
-            },
-            {
-              messageId: 'unexpectedIntersectionTypesGroupOrder',
-              data: {
-                left: 'null',
-                leftGroup: 'nullish',
-                right: '1',
-                rightGroup: 'literal',
-              },
-            },
-            {
-              messageId: 'unexpectedIntersectionTypesGroupOrder',
-              data: {
-                left: 'A | B',
-                leftGroup: 'union',
-                right: 'A & B',
-                rightGroup: 'intersection',
-              },
-            },
-          ],
-        },
-      ],
     })
   })
 
@@ -1696,9 +1696,6 @@ describe(ruleName, () => {
     ruleTester.run(`${ruleName}: allows predefined groups`, rule, {
       valid: [
         {
-          code: dedent`
-            type Type = { label: 'aaa' } & { label: 'bb' } & { label: 'c' }
-          `,
           options: [
             {
               groups: [
@@ -1718,6 +1715,9 @@ describe(ruleName, () => {
               ],
             },
           ],
+          code: dedent`
+            type Type = { label: 'aaa' } & { label: 'bb' } & { label: 'c' }
+          `,
         },
       ],
       invalid: [],
@@ -1729,6 +1729,25 @@ describe(ruleName, () => {
       `${ruleName}: sets alphabetical asc sorting as default`,
       rule,
       {
+        invalid: [
+          {
+            errors: [
+              {
+                data: {
+                  right: 'NumberBase.BASE_10',
+                  left: 'NumberBase.BASE_2',
+                },
+                messageId: 'unexpectedIntersectionTypesOrder',
+              },
+            ],
+            output: dedent`
+              type SupportedNumberBase = NumberBase.BASE_10 & NumberBase.BASE_16 & NumberBase.BASE_2
+            `,
+            code: dedent`
+              type SupportedNumberBase = NumberBase.BASE_2 & NumberBase.BASE_10 & NumberBase.BASE_16
+            `,
+          },
+        ],
         valid: [
           dedent`
             type SupportedNumberBase = NumberBase.BASE_10 & NumberBase.BASE_16 & NumberBase.BASE_2
@@ -1738,25 +1757,6 @@ describe(ruleName, () => {
               type SupportedNumberBase = NumberBase.BASE_10 & NumberBase.BASE_16 & NumberBase.BASE_2
             `,
             options: [{}],
-          },
-        ],
-        invalid: [
-          {
-            code: dedent`
-              type SupportedNumberBase = NumberBase.BASE_2 & NumberBase.BASE_10 & NumberBase.BASE_16
-            `,
-            output: dedent`
-              type SupportedNumberBase = NumberBase.BASE_10 & NumberBase.BASE_16 & NumberBase.BASE_2
-            `,
-            errors: [
-              {
-                messageId: 'unexpectedIntersectionTypesOrder',
-                data: {
-                  left: 'NumberBase.BASE_2',
-                  right: 'NumberBase.BASE_10',
-                },
-              },
-            ],
           },
         ],
       },
@@ -1778,16 +1778,17 @@ describe(ruleName, () => {
 
     let eslintDisableRuleTesterName = `${ruleName}: supports 'eslint-disable' for individual nodes`
     ruleTester.run(eslintDisableRuleTesterName, rule, {
-      valid: [],
       invalid: [
         {
-          code: dedent`
-          type T =
-            C
-            & B
-            // eslint-disable-next-line
-            & A
-        `,
+          errors: [
+            {
+              data: {
+                right: 'B',
+                left: 'C',
+              },
+              messageId: 'unexpectedIntersectionTypesOrder',
+            },
+          ],
           output: dedent`
           type T =
             B
@@ -1795,26 +1796,32 @@ describe(ruleName, () => {
             // eslint-disable-next-line
             & A
           `,
+          code: dedent`
+          type T =
+            C
+            & B
+            // eslint-disable-next-line
+            & A
+        `,
           options: [{}],
-          errors: [
-            {
-              messageId: 'unexpectedIntersectionTypesOrder',
-              data: {
-                left: 'C',
-                right: 'B',
-              },
-            },
-          ],
         },
         {
-          code: dedent`
-            type T =
-              D
-              & C
-              // eslint-disable-next-line
-              & A
-              & B
-          `,
+          errors: [
+            {
+              data: {
+                right: 'C',
+                left: 'D',
+              },
+              messageId: 'unexpectedIntersectionTypesOrder',
+            },
+            {
+              data: {
+                right: 'B',
+                left: 'A',
+              },
+              messageId: 'unexpectedIntersectionTypesOrder',
+            },
+          ],
           output: dedent`
             type T =
               B
@@ -1823,60 +1830,54 @@ describe(ruleName, () => {
               & A
               & D
           `,
+          code: dedent`
+            type T =
+              D
+              & C
+              // eslint-disable-next-line
+              & A
+              & B
+          `,
           options: [
             {
               partitionByComment: true,
             },
           ],
-          errors: [
-            {
-              messageId: 'unexpectedIntersectionTypesOrder',
-              data: {
-                left: 'D',
-                right: 'C',
-              },
-            },
-            {
-              messageId: 'unexpectedIntersectionTypesOrder',
-              data: {
-                left: 'A',
-                right: 'B',
-              },
-            },
-          ],
         },
         {
-          code: dedent`
-          type T =
-            C
-            & B
-            & A // eslint-disable-line
-        `,
+          errors: [
+            {
+              data: {
+                right: 'B',
+                left: 'C',
+              },
+              messageId: 'unexpectedIntersectionTypesOrder',
+            },
+          ],
           output: dedent`
           type T =
             B
             & C
             & A // eslint-disable-line
           `,
-          options: [{}],
-          errors: [
-            {
-              messageId: 'unexpectedIntersectionTypesOrder',
-              data: {
-                left: 'C',
-                right: 'B',
-              },
-            },
-          ],
-        },
-        {
           code: dedent`
           type T =
             C
             & B
-            /* eslint-disable-next-line */
-            & A
+            & A // eslint-disable-line
         `,
+          options: [{}],
+        },
+        {
+          errors: [
+            {
+              data: {
+                right: 'B',
+                left: 'C',
+              },
+              messageId: 'unexpectedIntersectionTypesOrder',
+            },
+          ],
           output: dedent`
           type T =
             B
@@ -1884,53 +1885,40 @@ describe(ruleName, () => {
             /* eslint-disable-next-line */
             & A
           `,
-          options: [{}],
-          errors: [
-            {
-              messageId: 'unexpectedIntersectionTypesOrder',
-              data: {
-                left: 'C',
-                right: 'B',
-              },
-            },
-          ],
-        },
-        {
           code: dedent`
           type T =
             C
             & B
-            & A /* eslint-disable-line */
+            /* eslint-disable-next-line */
+            & A
         `,
+          options: [{}],
+        },
+        {
+          errors: [
+            {
+              data: {
+                right: 'B',
+                left: 'C',
+              },
+              messageId: 'unexpectedIntersectionTypesOrder',
+            },
+          ],
           output: dedent`
           type T =
             B
             & C
             & A /* eslint-disable-line */
           `,
+          code: dedent`
+          type T =
+            C
+            & B
+            & A /* eslint-disable-line */
+        `,
           options: [{}],
-          errors: [
-            {
-              messageId: 'unexpectedIntersectionTypesOrder',
-              data: {
-                left: 'C',
-                right: 'B',
-              },
-            },
-          ],
         },
         {
-          code: dedent`
-            type Type =
-              D
-              & E
-              /* eslint-disable */
-              & C
-              & B
-              // Shouldn't move
-              /* eslint-enable */
-              & A
-          `,
           output: dedent`
             type Type =
               A
@@ -1942,25 +1930,38 @@ describe(ruleName, () => {
               /* eslint-enable */
               & E
           `,
-          options: [{}],
+          code: dedent`
+            type Type =
+              D
+              & E
+              /* eslint-disable */
+              & C
+              & B
+              // Shouldn't move
+              /* eslint-enable */
+              & A
+          `,
           errors: [
             {
-              messageId: 'unexpectedIntersectionTypesOrder',
               data: {
-                left: 'B',
                 right: 'A',
+                left: 'B',
               },
+              messageId: 'unexpectedIntersectionTypesOrder',
             },
           ],
+          options: [{}],
         },
         {
-          code: dedent`
-          type T =
-            C
-            & B
-            // eslint-disable-next-line @rule-tester/${eslintDisableRuleTesterName}
-            & A
-        `,
+          errors: [
+            {
+              data: {
+                right: 'B',
+                left: 'C',
+              },
+              messageId: 'unexpectedIntersectionTypesOrder',
+            },
+          ],
           output: dedent`
           type T =
             B
@@ -1968,42 +1969,56 @@ describe(ruleName, () => {
             // eslint-disable-next-line @rule-tester/${eslintDisableRuleTesterName}
             & A
           `,
-          options: [{}],
-          errors: [
-            {
-              messageId: 'unexpectedIntersectionTypesOrder',
-              data: {
-                left: 'C',
-                right: 'B',
-              },
-            },
-          ],
-        },
-        {
           code: dedent`
           type T =
             C
             & B
-            & A // eslint-disable-line @rule-tester/${eslintDisableRuleTesterName}
+            // eslint-disable-next-line @rule-tester/${eslintDisableRuleTesterName}
+            & A
         `,
+          options: [{}],
+        },
+        {
+          errors: [
+            {
+              data: {
+                right: 'B',
+                left: 'C',
+              },
+              messageId: 'unexpectedIntersectionTypesOrder',
+            },
+          ],
           output: dedent`
           type T =
             B
             & C
             & A // eslint-disable-line @rule-tester/${eslintDisableRuleTesterName}
           `,
+          code: dedent`
+          type T =
+            C
+            & B
+            & A // eslint-disable-line @rule-tester/${eslintDisableRuleTesterName}
+        `,
           options: [{}],
-          errors: [
-            {
-              messageId: 'unexpectedIntersectionTypesOrder',
-              data: {
-                left: 'C',
-                right: 'B',
-              },
-            },
-          ],
         },
         {
+          errors: [
+            {
+              data: {
+                right: 'B',
+                left: 'C',
+              },
+              messageId: 'unexpectedIntersectionTypesOrder',
+            },
+          ],
+          output: dedent`
+          type T =
+              B
+              & C
+              /* eslint-disable-next-line @rule-tester/${eslintDisableRuleTesterName} */
+              & A
+          `,
           code: dedent`
           type T =
               C
@@ -2011,60 +2026,33 @@ describe(ruleName, () => {
               /* eslint-disable-next-line @rule-tester/${eslintDisableRuleTesterName} */
               & A
         `,
-          output: dedent`
-          type T =
-              B
-              & C
-              /* eslint-disable-next-line @rule-tester/${eslintDisableRuleTesterName} */
-              & A
-          `,
           options: [{}],
-          errors: [
-            {
-              messageId: 'unexpectedIntersectionTypesOrder',
-              data: {
-                left: 'C',
-                right: 'B',
-              },
-            },
-          ],
         },
         {
-          code: dedent`
-          type T =
-            C
-            & B
-            & A /* eslint-disable-line @rule-tester/${eslintDisableRuleTesterName} */
-        `,
+          errors: [
+            {
+              data: {
+                right: 'B',
+                left: 'C',
+              },
+              messageId: 'unexpectedIntersectionTypesOrder',
+            },
+          ],
           output: dedent`
           type T =
             B
             & C
             & A /* eslint-disable-line @rule-tester/${eslintDisableRuleTesterName} */
           `,
+          code: dedent`
+          type T =
+            C
+            & B
+            & A /* eslint-disable-line @rule-tester/${eslintDisableRuleTesterName} */
+        `,
           options: [{}],
-          errors: [
-            {
-              messageId: 'unexpectedIntersectionTypesOrder',
-              data: {
-                left: 'C',
-                right: 'B',
-              },
-            },
-          ],
         },
         {
-          code: dedent`
-            type Type =
-              D
-              & E
-              /* eslint-disable @rule-tester/${eslintDisableRuleTesterName} */
-              & C
-              & B
-              // Shouldn't move
-              /* eslint-enable */
-              & A
-          `,
           output: dedent`
             type Type =
               A
@@ -2076,18 +2064,30 @@ describe(ruleName, () => {
               /* eslint-enable */
               & E
           `,
-          options: [{}],
+          code: dedent`
+            type Type =
+              D
+              & E
+              /* eslint-disable @rule-tester/${eslintDisableRuleTesterName} */
+              & C
+              & B
+              // Shouldn't move
+              /* eslint-enable */
+              & A
+          `,
           errors: [
             {
-              messageId: 'unexpectedIntersectionTypesOrder',
               data: {
-                left: 'B',
                 right: 'A',
+                left: 'B',
               },
+              messageId: 'unexpectedIntersectionTypesOrder',
             },
           ],
+          options: [{}],
         },
       ],
+      valid: [],
     })
   })
 })

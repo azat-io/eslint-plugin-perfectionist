@@ -37,14 +37,6 @@ import { useGroups } from '../utils/use-groups'
 import { complete } from '../utils/complete'
 import { pairwise } from '../utils/pairwise'
 
-type MESSAGE_ID =
-  | 'missedSpacingBetweenObjectTypeMembers'
-  | 'extraSpacingBetweenObjectTypeMembers'
-  | 'unexpectedObjectTypesGroupOrder'
-  | 'unexpectedObjectTypesOrder'
-
-type Group<T extends string[]> = 'multiline' | 'unknown' | T[number] | 'method'
-
 type Options<T extends string[]> = [
   Partial<{
     groupKind: 'required-first' | 'optional-first' | 'mixed'
@@ -61,71 +53,33 @@ type Options<T extends string[]> = [
   }>,
 ]
 
+type MESSAGE_ID =
+  | 'missedSpacingBetweenObjectTypeMembers'
+  | 'extraSpacingBetweenObjectTypeMembers'
+  | 'unexpectedObjectTypesGroupOrder'
+  | 'unexpectedObjectTypesOrder'
+
 interface SortObjectTypesSortingNode extends SortingNode<TSESTree.TypeElement> {
   groupKind: 'required' | 'optional'
 }
 
+type Group<T extends string[]> = 'multiline' | 'unknown' | T[number] | 'method'
+
 let defaultOptions: Required<Options<string[]>[0]> = {
   partitionByComment: false,
   partitionByNewLine: false,
+  newlinesBetween: 'ignore',
+  specialCharacters: 'keep',
   type: 'alphabetical',
   groupKind: 'mixed',
-  newlinesBetween: 'ignore',
   ignoreCase: true,
-  specialCharacters: 'keep',
   customGroups: {},
+  locales: 'en-US',
   order: 'asc',
   groups: [],
-  locales: 'en-US',
 }
 
 export default createEslintRule<Options<string[]>, MESSAGE_ID>({
-  name: 'sort-object-types',
-  meta: {
-    type: 'suggestion',
-    docs: {
-      description: 'Enforce sorted object types.',
-    },
-    fixable: 'code',
-    schema: [
-      {
-        type: 'object',
-        properties: {
-          type: typeJsonSchema,
-          order: orderJsonSchema,
-          locales: localesJsonSchema,
-          ignoreCase: ignoreCaseJsonSchema,
-          specialCharacters: specialCharactersJsonSchema,
-          partitionByComment: {
-            ...partitionByCommentJsonSchema,
-            description:
-              'Allows you to use comments to separate the type members into logical groups.',
-          },
-          partitionByNewLine: partitionByNewLineJsonSchema,
-          newlinesBetween: newlinesBetweenJsonSchema,
-          groupKind: {
-            description: 'Specifies top-level groups.',
-            type: 'string',
-            enum: ['mixed', 'required-first', 'optional-first'],
-          },
-          groups: groupsJsonSchema,
-          customGroups: customGroupsJsonSchema,
-        },
-        additionalProperties: false,
-      },
-    ],
-    messages: {
-      unexpectedObjectTypesGroupOrder:
-        'Expected "{{right}}" ({{rightGroup}}) to come before "{{left}}" ({{leftGroup}}).',
-      unexpectedObjectTypesOrder:
-        'Expected "{{right}}" to come before "{{left}}".',
-      missedSpacingBetweenObjectTypeMembers:
-        'Missed spacing between "{{left}}" and "{{right}}" types.',
-      extraSpacingBetweenObjectTypeMembers:
-        'Extra spacing between "{{left}}" and "{{right}}" types.',
-    },
-  },
-  defaultOptions: [defaultOptions],
   create: context => ({
     TSTypeLiteral: node => {
       if (!isSortable(node.members)) {
@@ -143,8 +97,8 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
 
       let sourceCode = getSourceCode(context)
       let eslintDisabledLines = getEslintDisabledLines({
-        sourceCode,
         ruleName: context.id,
+        sourceCode,
       })
 
       let formattedMembers: SortObjectTypesSortingNode[][] =
@@ -153,7 +107,7 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
             let name: string
             let lastSortingNode = accumulator.at(-1)?.at(-1)
 
-            let { getGroup, defineGroup, setCustomGroups } = useGroups(options)
+            let { setCustomGroups, defineGroup, getGroup } = useGroups(options)
 
             let formatName = (value: string): string =>
               value.replace(/[,;]$/u, '')
@@ -197,16 +151,16 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
             }
 
             let sortingNode: SortObjectTypesSortingNode = {
-              size: rangeToDiff(member, sourceCode),
-              group: getGroup(),
-              groupKind: isMemberOptional(member) ? 'optional' : 'required',
-              node: member,
               isEslintDisabled: isNodeEslintDisabled(
                 member,
                 eslintDisabledLines,
               ),
-              name,
+              groupKind: isMemberOptional(member) ? 'optional' : 'required',
+              size: rangeToDiff(member, sourceCode),
               addSafetySemicolonWhenInline: true,
+              group: getGroup(),
+              node: member,
+              name,
             }
 
             if (
@@ -280,47 +234,95 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
           messageIds = [
             ...messageIds,
             ...getNewlinesErrors({
-              left,
-              leftNum: leftNumber,
-              right,
-              rightNum: rightNumber,
-              sourceCode,
               missedSpacingError: 'missedSpacingBetweenObjectTypeMembers',
               extraSpacingError: 'extraSpacingBetweenObjectTypeMembers',
+              rightNum: rightNumber,
+              leftNum: leftNumber,
+              sourceCode,
               options,
+              right,
+              left,
             }),
           ]
 
           for (let messageId of messageIds) {
             context.report({
-              messageId,
+              fix: fixer => [
+                ...makeFixes({
+                  sortedNodes: sortedNodesExcludingEslintDisabled,
+                  sourceCode,
+                  options,
+                  fixer,
+                  nodes,
+                }),
+                ...makeNewlinesFixes({
+                  sortedNodes: sortedNodesExcludingEslintDisabled,
+                  sourceCode,
+                  options,
+                  fixer,
+                  nodes,
+                }),
+              ],
               data: {
-                left: toSingleLine(left.name),
-                leftGroup: left.group,
                 right: toSingleLine(right.name),
+                left: toSingleLine(left.name),
                 rightGroup: right.group,
+                leftGroup: left.group,
               },
               node: right.node,
-              fix: fixer => [
-                ...makeFixes(
-                  fixer,
-                  nodes,
-                  sortedNodesExcludingEslintDisabled,
-                  sourceCode,
-                  options,
-                ),
-                ...makeNewlinesFixes(
-                  fixer,
-                  nodes,
-                  sortedNodesExcludingEslintDisabled,
-                  sourceCode,
-                  options,
-                ),
-              ],
+              messageId,
             })
           }
         })
       }
     },
   }),
+  meta: {
+    schema: [
+      {
+        properties: {
+          partitionByComment: {
+            ...partitionByCommentJsonSchema,
+            description:
+              'Allows you to use comments to separate the type members into logical groups.',
+          },
+          groupKind: {
+            enum: ['mixed', 'required-first', 'optional-first'],
+            description: 'Specifies top-level groups.',
+            type: 'string',
+          },
+          partitionByNewLine: partitionByNewLineJsonSchema,
+          specialCharacters: specialCharactersJsonSchema,
+          newlinesBetween: newlinesBetweenJsonSchema,
+          customGroups: customGroupsJsonSchema,
+          ignoreCase: ignoreCaseJsonSchema,
+          locales: localesJsonSchema,
+          groups: groupsJsonSchema,
+          order: orderJsonSchema,
+          type: typeJsonSchema,
+        },
+        additionalProperties: false,
+        type: 'object',
+      },
+    ],
+    messages: {
+      unexpectedObjectTypesGroupOrder:
+        'Expected "{{right}}" ({{rightGroup}}) to come before "{{left}}" ({{leftGroup}}).',
+      missedSpacingBetweenObjectTypeMembers:
+        'Missed spacing between "{{left}}" and "{{right}}" types.',
+      extraSpacingBetweenObjectTypeMembers:
+        'Extra spacing between "{{left}}" and "{{right}}" types.',
+      unexpectedObjectTypesOrder:
+        'Expected "{{right}}" to come before "{{left}}".',
+    },
+    docs: {
+      url: 'https://perfectionist.dev/rules/sort-object-types',
+      description: 'Enforce sorted object types.',
+      recommended: true,
+    },
+    type: 'suggestion',
+    fixable: 'code',
+  },
+  defaultOptions: [defaultOptions],
+  name: 'sort-object-types',
 })

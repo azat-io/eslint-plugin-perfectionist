@@ -41,15 +41,6 @@ import { complete } from '../utils/complete'
 import { pairwise } from '../utils/pairwise'
 import { matches } from '../utils/matches'
 
-type MESSAGE_ID =
-  | 'missedSpacingBetweenObjectMembers'
-  | 'unexpectedObjectsDependencyOrder'
-  | 'extraSpacingBetweenObjectMembers'
-  | 'unexpectedObjectsGroupOrder'
-  | 'unexpectedObjectsOrder'
-
-type Group = 'multiline' | 'unknown' | 'method' | string
-
 type Options = [
   Partial<{
     type: 'alphabetical' | 'line-length' | 'natural'
@@ -68,81 +59,32 @@ type Options = [
   }>,
 ]
 
+type MESSAGE_ID =
+  | 'missedSpacingBetweenObjectMembers'
+  | 'unexpectedObjectsDependencyOrder'
+  | 'extraSpacingBetweenObjectMembers'
+  | 'unexpectedObjectsGroupOrder'
+  | 'unexpectedObjectsOrder'
+
+type Group = 'multiline' | 'unknown' | 'method' | string
+
 let defaultOptions: Required<Options[0]> = {
   partitionByNewLine: false,
   partitionByComment: false,
+  newlinesBetween: 'ignore',
+  specialCharacters: 'keep',
   styledComponents: true,
   destructureOnly: false,
   type: 'alphabetical',
   ignorePattern: [],
-  newlinesBetween: 'ignore',
   ignoreCase: true,
-  specialCharacters: 'keep',
   customGroups: {},
+  locales: 'en-US',
   order: 'asc',
   groups: [],
-  locales: 'en-US',
 }
 
 export default createEslintRule<Options, MESSAGE_ID>({
-  name: 'sort-objects',
-  meta: {
-    type: 'suggestion',
-    docs: {
-      description: 'Enforce sorted objects.',
-    },
-    fixable: 'code',
-    schema: [
-      {
-        type: 'object',
-        properties: {
-          type: typeJsonSchema,
-          order: orderJsonSchema,
-          locales: localesJsonSchema,
-          ignoreCase: ignoreCaseJsonSchema,
-          specialCharacters: specialCharactersJsonSchema,
-          partitionByComment: {
-            ...partitionByCommentJsonSchema,
-            description:
-              'Allows you to use comments to separate the keys of objects into logical groups.',
-          },
-          partitionByNewLine: partitionByNewLineJsonSchema,
-          newlinesBetween: newlinesBetweenJsonSchema,
-          styledComponents: {
-            description: 'Controls whether to sort styled components.',
-            type: 'boolean',
-          },
-          destructureOnly: {
-            description: 'Controls whether to sort only destructured objects.',
-            type: 'boolean',
-          },
-          ignorePattern: {
-            description:
-              'Specifies names or patterns for nodes that should be ignored by rule.',
-            items: {
-              type: 'string',
-            },
-            type: 'array',
-          },
-          groups: groupsJsonSchema,
-          customGroups: customGroupsJsonSchema,
-        },
-        additionalProperties: false,
-      },
-    ],
-    messages: {
-      unexpectedObjectsGroupOrder:
-        'Expected "{{right}}" ({{rightGroup}}) to come before "{{left}}" ({{leftGroup}}).',
-      unexpectedObjectsOrder: 'Expected "{{right}}" to come before "{{left}}".',
-      unexpectedObjectsDependencyOrder:
-        'Expected dependency "{{right}}" to come before "{{nodeDependentOnRight}}".',
-      missedSpacingBetweenObjectMembers:
-        'Missed spacing between "{{left}}" and "{{right}}" objects.',
-      extraSpacingBetweenObjectMembers:
-        'Extra spacing between "{{left}}" and "{{right}}" objects.',
-    },
-  },
-  defaultOptions: [defaultOptions],
   create: context => {
     let sortObject = (
       node: TSESTree.ObjectExpression | TSESTree.ObjectPattern,
@@ -230,8 +172,8 @@ export default createEslintRule<Options, MESSAGE_ID>({
 
       let sourceCode = getSourceCode(context)
       let eslintDisabledLines = getEslintDisabledLines({
-        sourceCode,
         ruleName: context.id,
+        sourceCode,
       })
 
       let extractDependencies = (
@@ -289,9 +231,13 @@ export default createEslintRule<Options, MESSAGE_ID>({
           }
 
           if ('elements' in nodeValue) {
-            nodeValue.elements
-              .filter(currentNode => currentNode !== null)
-              .forEach(traverseNode)
+            let elements = nodeValue.elements.filter(
+              currentNode => currentNode !== null,
+            )
+
+            for (let element of elements) {
+              traverseNode(element)
+            }
           }
 
           if ('argument' in nodeValue && nodeValue.argument) {
@@ -299,15 +245,21 @@ export default createEslintRule<Options, MESSAGE_ID>({
           }
 
           if ('arguments' in nodeValue) {
-            nodeValue.arguments.forEach(traverseNode)
+            for (let argument of nodeValue.arguments) {
+              traverseNode(argument)
+            }
           }
 
           if ('properties' in nodeValue) {
-            nodeValue.properties.forEach(traverseNode)
+            for (let property of nodeValue.properties) {
+              traverseNode(property)
+            }
           }
 
           if ('expressions' in nodeValue) {
-            nodeValue.expressions.forEach(traverseNode)
+            for (let nodeExpression of nodeValue.expressions) {
+              traverseNode(nodeExpression)
+            }
           }
         }
 
@@ -341,7 +293,7 @@ export default createEslintRule<Options, MESSAGE_ID>({
             let name: string
             let dependencies: string[] = []
 
-            let { getGroup, defineGroup, setCustomGroups } = useGroups(options)
+            let { setCustomGroups, defineGroup, getGroup } = useGroups(options)
 
             if (property.key.type === 'Identifier') {
               ;({ name } = property.key)
@@ -369,13 +321,13 @@ export default createEslintRule<Options, MESSAGE_ID>({
             }
 
             let propertySortingNode: SortingNodeWithDependencies = {
-              size: rangeToDiff(property, sourceCode),
-              node: property,
-              group: getGroup(),
               isEslintDisabled: isNodeEslintDisabled(
                 property,
                 eslintDisabledLines,
               ),
+              size: rangeToDiff(property, sourceCode),
+              group: getGroup(),
+              node: property,
               dependencies,
               name,
             }
@@ -456,44 +408,44 @@ export default createEslintRule<Options, MESSAGE_ID>({
         messageIds = [
           ...messageIds,
           ...getNewlinesErrors({
-            left,
-            leftNum: leftNumber,
-            right,
-            rightNum: rightNumber,
-            sourceCode,
             missedSpacingError: 'missedSpacingBetweenObjectMembers',
             extraSpacingError: 'extraSpacingBetweenObjectMembers',
+            rightNum: rightNumber,
+            leftNum: leftNumber,
+            sourceCode,
             options,
+            right,
+            left,
           }),
         ]
 
         for (let messageId of messageIds) {
           context.report({
-            messageId,
+            fix: fixer => [
+              ...makeFixes({
+                sortedNodes: sortedNodesExcludingEslintDisabled,
+                sourceCode,
+                options,
+                fixer,
+                nodes,
+              }),
+              ...makeNewlinesFixes({
+                sortedNodes: sortedNodesExcludingEslintDisabled,
+                sourceCode,
+                options,
+                fixer,
+                nodes,
+              }),
+            ],
             data: {
-              left: left.name,
+              nodeDependentOnRight: firstUnorderedNodeDependentOnRight?.name,
+              rightGroup: right.group,
               leftGroup: left.group,
               right: right.name,
-              rightGroup: right.group,
-              nodeDependentOnRight: firstUnorderedNodeDependentOnRight?.name,
+              left: left.name,
             },
             node: right.node,
-            fix: fixer => [
-              ...makeFixes(
-                fixer,
-                nodes,
-                sortedNodesExcludingEslintDisabled,
-                sourceCode,
-                options,
-              ),
-              ...makeNewlinesFixes(
-                fixer,
-                nodes,
-                sortedNodesExcludingEslintDisabled,
-                sourceCode,
-                options,
-              ),
-            ],
+            messageId,
           })
         }
       })
@@ -504,4 +456,64 @@ export default createEslintRule<Options, MESSAGE_ID>({
       ObjectPattern: sortObject,
     }
   },
+  meta: {
+    schema: [
+      {
+        properties: {
+          ignorePattern: {
+            description:
+              'Specifies names or patterns for nodes that should be ignored by rule.',
+            items: {
+              type: 'string',
+            },
+            type: 'array',
+          },
+          partitionByComment: {
+            ...partitionByCommentJsonSchema,
+            description:
+              'Allows you to use comments to separate the keys of objects into logical groups.',
+          },
+          destructureOnly: {
+            description: 'Controls whether to sort only destructured objects.',
+            type: 'boolean',
+          },
+          styledComponents: {
+            description: 'Controls whether to sort styled components.',
+            type: 'boolean',
+          },
+          partitionByNewLine: partitionByNewLineJsonSchema,
+          specialCharacters: specialCharactersJsonSchema,
+          newlinesBetween: newlinesBetweenJsonSchema,
+          customGroups: customGroupsJsonSchema,
+          ignoreCase: ignoreCaseJsonSchema,
+          locales: localesJsonSchema,
+          groups: groupsJsonSchema,
+          order: orderJsonSchema,
+          type: typeJsonSchema,
+        },
+        additionalProperties: false,
+        type: 'object',
+      },
+    ],
+    messages: {
+      unexpectedObjectsGroupOrder:
+        'Expected "{{right}}" ({{rightGroup}}) to come before "{{left}}" ({{leftGroup}}).',
+      unexpectedObjectsDependencyOrder:
+        'Expected dependency "{{right}}" to come before "{{nodeDependentOnRight}}".',
+      missedSpacingBetweenObjectMembers:
+        'Missed spacing between "{{left}}" and "{{right}}" objects.',
+      extraSpacingBetweenObjectMembers:
+        'Extra spacing between "{{left}}" and "{{right}}" objects.',
+      unexpectedObjectsOrder: 'Expected "{{right}}" to come before "{{left}}".',
+    },
+    docs: {
+      url: 'https://perfectionist.dev/rules/sort-objects',
+      description: 'Enforce sorted objects.',
+      recommended: true,
+    },
+    type: 'suggestion',
+    fixable: 'code',
+  },
+  defaultOptions: [defaultOptions],
+  name: 'sort-objects',
 })

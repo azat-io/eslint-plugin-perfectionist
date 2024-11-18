@@ -29,6 +29,40 @@ describe(ruleName, () => {
       `${ruleName}(${type}): does not break the property list`,
       rule,
       {
+        invalid: [
+          {
+            errors: [
+              {
+                data: {
+                  right: 'b',
+                  left: 'c',
+                },
+                messageId: 'unexpectedArrayIncludesOrder',
+              },
+            ],
+            output: dedent`
+              [
+                'a',
+                'b',
+                'c',
+                'd',
+                'e',
+                ...other,
+              ].includes(value)
+            `,
+            code: dedent`
+              [
+                'a',
+                'c',
+                'b',
+                'd',
+                'e',
+                ...other,
+              ].includes(value)
+            `,
+            options: [options],
+          },
+        ],
         valid: [
           {
             code: dedent`
@@ -44,44 +78,38 @@ describe(ruleName, () => {
             options: [options],
           },
         ],
-        invalid: [
-          {
-            code: dedent`
-              [
-                'a',
-                'c',
-                'b',
-                'd',
-                'e',
-                ...other,
-              ].includes(value)
-            `,
-            output: dedent`
-              [
-                'a',
-                'b',
-                'c',
-                'd',
-                'e',
-                ...other,
-              ].includes(value)
-            `,
-            options: [options],
-            errors: [
-              {
-                messageId: 'unexpectedArrayIncludesOrder',
-                data: {
-                  left: 'c',
-                  right: 'b',
-                },
-              },
-            ],
-          },
-        ],
       },
     )
 
     ruleTester.run(`${ruleName}(${type}): sorts spread elements`, rule, {
+      invalid: [
+        {
+          errors: [
+            {
+              data: {
+                right: '...bbbb',
+                left: '...ccc',
+              },
+              messageId: 'unexpectedArrayIncludesOrder',
+            },
+          ],
+          output: dedent`
+            [
+              ...aaa,
+              ...bbbb,
+              ...ccc,
+            ].includes(value)
+          `,
+          code: dedent`
+            [
+              ...aaa,
+              ...ccc,
+              ...bbbb,
+            ].includes(value)
+          `,
+          options: [options],
+        },
+      ],
       valid: [
         {
           code: dedent`
@@ -94,66 +122,38 @@ describe(ruleName, () => {
           options: [options],
         },
       ],
-      invalid: [
-        {
-          code: dedent`
-            [
-              ...aaa,
-              ...ccc,
-              ...bbbb,
-            ].includes(value)
-          `,
-          output: dedent`
-            [
-              ...aaa,
-              ...bbbb,
-              ...ccc,
-            ].includes(value)
-          `,
-          options: [options],
-          errors: [
-            {
-              messageId: 'unexpectedArrayIncludesOrder',
-              data: {
-                left: '...ccc',
-                right: '...bbbb',
-              },
-            },
-          ],
-        },
-      ],
     })
 
     ruleTester.run(
       `${ruleName}(${type}): ignores nullable array elements`,
       rule,
       {
+        invalid: [
+          {
+            errors: [
+              {
+                data: {
+                  right: 'a',
+                  left: 'b',
+                },
+                messageId: 'unexpectedArrayIncludesOrder',
+              },
+            ],
+            output: dedent`
+              ['a', 'b', 'c',, 'd'].includes(value)
+            `,
+            code: dedent`
+              ['b', 'a', 'c',, 'd'].includes(value)
+            `,
+            options: [options],
+          },
+        ],
         valid: [
           {
             code: dedent`
               ['a', 'b', 'c',, 'd'].includes(value)
             `,
             options: [options],
-          },
-        ],
-        invalid: [
-          {
-            code: dedent`
-              ['b', 'a', 'c',, 'd'].includes(value)
-            `,
-            output: dedent`
-              ['a', 'b', 'c',, 'd'].includes(value)
-            `,
-            options: [options],
-            errors: [
-              {
-                messageId: 'unexpectedArrayIncludesOrder',
-                data: {
-                  left: 'b',
-                  right: 'a',
-                },
-              },
-            ],
           },
         ],
       },
@@ -163,48 +163,78 @@ describe(ruleName, () => {
       `${ruleName}(${type}): allow to put spread elements to the end`,
       rule,
       {
-        valid: [
-          {
-            code: dedent`
-              ['a', 'b', 'c', ...other].includes(value)
-            `,
-            options: [
-              {
-                ...options,
-                groupKind: 'literals-first',
-              },
-            ],
-          },
-        ],
         invalid: [
           {
-            code: dedent`
-              ['a', 'b', ...other, 'c'].includes(value)
-            `,
-            output: dedent`
-              ['a', 'b', 'c', ...other].includes(value)
-            `,
-            options: [
-              {
-                ...options,
-                groupKind: 'literals-first',
-              },
-            ],
             errors: [
               {
-                messageId: 'unexpectedArrayIncludesOrder',
                 data: {
                   left: '...other',
                   right: 'c',
                 },
+                messageId: 'unexpectedArrayIncludesOrder',
               },
             ],
+            options: [
+              {
+                ...options,
+                groupKind: 'literals-first',
+              },
+            ],
+            output: dedent`
+              ['a', 'b', 'c', ...other].includes(value)
+            `,
+            code: dedent`
+              ['a', 'b', ...other, 'c'].includes(value)
+            `,
+          },
+        ],
+        valid: [
+          {
+            options: [
+              {
+                ...options,
+                groupKind: 'literals-first',
+              },
+            ],
+            code: dedent`
+              ['a', 'b', 'c', ...other].includes(value)
+            `,
           },
         ],
       },
     )
 
     ruleTester.run(`${ruleName}(${type}): sorts array constructor`, rule, {
+      invalid: [
+        {
+          errors: [
+            {
+              data: {
+                right: 'b',
+                left: 'c',
+              },
+              messageId: 'unexpectedArrayIncludesOrder',
+            },
+          ],
+          output: dedent`
+            new Array(
+              'a',
+              'b',
+              'c',
+              'd',
+            ).includes(value)
+          `,
+          code: dedent`
+            new Array(
+              'a',
+              'c',
+              'b',
+              'd',
+            ).includes(value)
+          `,
+          options: [options],
+        },
+      ],
       valid: [
         {
           code: dedent`
@@ -216,41 +246,46 @@ describe(ruleName, () => {
             ).includes(value)
           `,
           options: [options],
-        },
-      ],
-      invalid: [
-        {
-          code: dedent`
-            new Array(
-              'a',
-              'c',
-              'b',
-              'd',
-            ).includes(value)
-          `,
-          output: dedent`
-            new Array(
-              'a',
-              'b',
-              'c',
-              'd',
-            ).includes(value)
-          `,
-          options: [options],
-          errors: [
-            {
-              messageId: 'unexpectedArrayIncludesOrder',
-              data: {
-                left: 'c',
-                right: 'b',
-              },
-            },
-          ],
         },
       ],
     })
 
     ruleTester.run(`${ruleName}(${type}): allows mixed sorting`, rule, {
+      invalid: [
+        {
+          errors: [
+            {
+              data: {
+                right: '...d',
+                left: 'bbb',
+              },
+              messageId: 'unexpectedArrayIncludesOrder',
+            },
+          ],
+          output: dedent`
+            new Array(
+              ...d,
+              'aaaa',
+              'bbb',
+              'cc',
+            ).includes(value)
+          `,
+          code: dedent`
+            new Array(
+              'aaaa',
+              'bbb',
+              ...d,
+              'cc',
+            ).includes(value)
+          `,
+          options: [
+            {
+              ...options,
+              groupKind: 'mixed',
+            },
+          ],
+        },
+      ],
       valid: [
         {
           code: dedent`
@@ -265,41 +300,6 @@ describe(ruleName, () => {
             {
               ...options,
               groupKind: 'mixed',
-            },
-          ],
-        },
-      ],
-      invalid: [
-        {
-          code: dedent`
-            new Array(
-              'aaaa',
-              'bbb',
-              ...d,
-              'cc',
-            ).includes(value)
-          `,
-          output: dedent`
-            new Array(
-              ...d,
-              'aaaa',
-              'bbb',
-              'cc',
-            ).includes(value)
-          `,
-          options: [
-            {
-              ...options,
-              groupKind: 'mixed',
-            },
-          ],
-          errors: [
-            {
-              messageId: 'unexpectedArrayIncludesOrder',
-              data: {
-                left: 'bbb',
-                right: '...d',
-              },
             },
           ],
         },
@@ -311,20 +311,24 @@ describe(ruleName, () => {
         `${ruleName}(${type}): allows to use new line as partition`,
         rule,
         {
-          valid: [],
           invalid: [
             {
-              code: dedent`
-              [
-                'd',
-                'a',
-
-                'c',
-
-                'e',
-                'b',
-              ].includes(value)
-            `,
+              errors: [
+                {
+                  data: {
+                    right: 'a',
+                    left: 'd',
+                  },
+                  messageId: 'unexpectedArrayIncludesOrder',
+                },
+                {
+                  data: {
+                    right: 'b',
+                    left: 'e',
+                  },
+                  messageId: 'unexpectedArrayIncludesOrder',
+                },
+              ],
               output: dedent`
               [
                 'a',
@@ -336,30 +340,26 @@ describe(ruleName, () => {
                 'e',
               ].includes(value)
             `,
+              code: dedent`
+              [
+                'd',
+                'a',
+
+                'c',
+
+                'e',
+                'b',
+              ].includes(value)
+            `,
               options: [
                 {
                   ...options,
                   partitionByNewLine: true,
                 },
               ],
-              errors: [
-                {
-                  messageId: 'unexpectedArrayIncludesOrder',
-                  data: {
-                    left: 'd',
-                    right: 'a',
-                  },
-                },
-                {
-                  messageId: 'unexpectedArrayIncludesOrder',
-                  data: {
-                    left: 'e',
-                    right: 'b',
-                  },
-                },
-              ],
             },
           ],
+          valid: [],
         },
       )
 
@@ -367,18 +367,31 @@ describe(ruleName, () => {
         `${ruleName}(${type}): prioritize partitions over group kind`,
         rule,
         {
-          valid: [],
           invalid: [
             {
-              code: dedent`
-                [
-                  'c',
-                  ...d,
-
-                  'a',
-                  ...b,
-                ].includes(value)
-              `,
+              errors: [
+                {
+                  data: {
+                    right: '...d',
+                    left: 'c',
+                  },
+                  messageId: 'unexpectedArrayIncludesOrder',
+                },
+                {
+                  data: {
+                    right: '...b',
+                    left: 'a',
+                  },
+                  messageId: 'unexpectedArrayIncludesOrder',
+                },
+              ],
+              options: [
+                {
+                  ...options,
+                  groupKind: 'spreads-first',
+                  partitionByNewLine: true,
+                },
+              ],
               output: dedent`
                 [
                   ...d,
@@ -388,31 +401,18 @@ describe(ruleName, () => {
                   'a',
                 ].includes(value)
               `,
-              options: [
-                {
-                  ...options,
-                  partitionByNewLine: true,
-                  groupKind: 'spreads-first',
-                },
-              ],
-              errors: [
-                {
-                  messageId: 'unexpectedArrayIncludesOrder',
-                  data: {
-                    left: 'c',
-                    right: '...d',
-                  },
-                },
-                {
-                  messageId: 'unexpectedArrayIncludesOrder',
-                  data: {
-                    left: 'a',
-                    right: '...b',
-                  },
-                },
-              ],
+              code: dedent`
+                [
+                  'c',
+                  ...d,
+
+                  'a',
+                  ...b,
+                ].includes(value)
+              `,
             },
           ],
+          valid: [],
         },
       )
     })
@@ -422,25 +422,24 @@ describe(ruleName, () => {
         `${ruleName}(${type}): allows to use partition comments`,
         rule,
         {
-          valid: [],
           invalid: [
             {
-              code: dedent`
-              [
-                // Part: A
-                'cc',
-                'd',
-                // Not partition comment
-                'bbb',
-                // Part: B
-                'aaaa',
-                'e',
-                // Part: C
-                'gg',
-                // Not partition comment
-                'fff',
-              ].includes(value)
-            `,
+              errors: [
+                {
+                  data: {
+                    right: 'bbb',
+                    left: 'd',
+                  },
+                  messageId: 'unexpectedArrayIncludesOrder',
+                },
+                {
+                  data: {
+                    right: 'fff',
+                    left: 'gg',
+                  },
+                  messageId: 'unexpectedArrayIncludesOrder',
+                },
+              ],
               output: dedent`
               [
                 // Part: A
@@ -457,30 +456,31 @@ describe(ruleName, () => {
                 'gg',
               ].includes(value)
             `,
+              code: dedent`
+              [
+                // Part: A
+                'cc',
+                'd',
+                // Not partition comment
+                'bbb',
+                // Part: B
+                'aaaa',
+                'e',
+                // Part: C
+                'gg',
+                // Not partition comment
+                'fff',
+              ].includes(value)
+            `,
               options: [
                 {
                   ...options,
                   partitionByComment: '^Part*',
                 },
               ],
-              errors: [
-                {
-                  messageId: 'unexpectedArrayIncludesOrder',
-                  data: {
-                    left: 'd',
-                    right: 'bbb',
-                  },
-                },
-                {
-                  messageId: 'unexpectedArrayIncludesOrder',
-                  data: {
-                    left: 'gg',
-                    right: 'fff',
-                  },
-                },
-              ],
             },
           ],
+          valid: [],
         },
       )
 
@@ -514,22 +514,8 @@ describe(ruleName, () => {
         `${ruleName}(${type}): allows to use multiple partition comments`,
         rule,
         {
-          valid: [],
           invalid: [
             {
-              code: dedent`
-              [
-                /* Partition Comment */
-                // Part: A
-                'd',
-                // Part: B
-                'aaa',
-                'c',
-                'bb',
-                /* Other */
-                'e',
-              ].includes(value)
-            `,
               output: dedent`
               [
                 /* Partition Comment */
@@ -543,23 +529,37 @@ describe(ruleName, () => {
                 'e',
               ].includes(value)
             `,
+              code: dedent`
+              [
+                /* Partition Comment */
+                // Part: A
+                'd',
+                // Part: B
+                'aaa',
+                'c',
+                'bb',
+                /* Other */
+                'e',
+              ].includes(value)
+            `,
+              errors: [
+                {
+                  data: {
+                    right: 'bb',
+                    left: 'c',
+                  },
+                  messageId: 'unexpectedArrayIncludesOrder',
+                },
+              ],
               options: [
                 {
                   ...options,
                   partitionByComment: ['Partition Comment', 'Part: *', 'Other'],
                 },
               ],
-              errors: [
-                {
-                  messageId: 'unexpectedArrayIncludesOrder',
-                  data: {
-                    left: 'c',
-                    right: 'bb',
-                  },
-                },
-              ],
             },
           ],
+          valid: [],
         },
       )
 
@@ -567,18 +567,24 @@ describe(ruleName, () => {
         `${ruleName}(${type}): prioritize partitions over group kind`,
         rule,
         {
-          valid: [],
           invalid: [
             {
-              code: dedent`
-                [
-                  'c',
-                  ...d,
-                  // Part: 1
-                  'a',
-                  ...b,
-                ].includes(value)
-              `,
+              errors: [
+                {
+                  data: {
+                    right: '...d',
+                    left: 'c',
+                  },
+                  messageId: 'unexpectedArrayIncludesOrder',
+                },
+                {
+                  data: {
+                    right: '...b',
+                    left: 'a',
+                  },
+                  messageId: 'unexpectedArrayIncludesOrder',
+                },
+              ],
               output: dedent`
                 [
                   ...d,
@@ -586,6 +592,15 @@ describe(ruleName, () => {
                   // Part: 1
                   ...b,
                   'a',
+                ].includes(value)
+              `,
+              code: dedent`
+                [
+                  'c',
+                  ...d,
+                  // Part: 1
+                  'a',
+                  ...b,
                 ].includes(value)
               `,
               options: [
@@ -595,24 +610,9 @@ describe(ruleName, () => {
                   groupKind: 'spreads-first',
                 },
               ],
-              errors: [
-                {
-                  messageId: 'unexpectedArrayIncludesOrder',
-                  data: {
-                    left: 'c',
-                    right: '...d',
-                  },
-                },
-                {
-                  messageId: 'unexpectedArrayIncludesOrder',
-                  data: {
-                    left: 'a',
-                    right: '...b',
-                  },
-                },
-              ],
             },
           ],
+          valid: [],
         },
       )
     })
@@ -671,18 +671,18 @@ describe(ruleName, () => {
       {
         valid: [
           {
-            code: dedent`
-              [
-                'ab',
-                'a$c',
-              ].includes(value)
-            `,
             options: [
               {
                 ...options,
                 specialCharacters: 'remove',
               },
             ],
+            code: dedent`
+              [
+                'ab',
+                'a$c',
+              ].includes(value)
+            `,
           },
         ],
         invalid: [],
@@ -712,53 +712,53 @@ describe(ruleName, () => {
       `${ruleName}(${type}): sorts inline elements correctly`,
       rule,
       {
-        valid: [],
         invalid: [
           {
-            code: dedent`
-              [
-                b, a
-              ].includes(value)
-            `,
+            errors: [
+              {
+                data: {
+                  right: 'a',
+                  left: 'b',
+                },
+                messageId: 'unexpectedArrayIncludesOrder',
+              },
+            ],
             output: dedent`
               [
                 a, b
               ].includes(value)
             `,
-            options: [options],
-            errors: [
-              {
-                messageId: 'unexpectedArrayIncludesOrder',
-                data: {
-                  left: 'b',
-                  right: 'a',
-                },
-              },
-            ],
-          },
-          {
             code: dedent`
               [
-                b, a,
+                b, a
               ].includes(value)
             `,
+            options: [options],
+          },
+          {
+            errors: [
+              {
+                data: {
+                  right: 'a',
+                  left: 'b',
+                },
+                messageId: 'unexpectedArrayIncludesOrder',
+              },
+            ],
             output: dedent`
               [
                 a, b,
               ].includes(value)
             `,
+            code: dedent`
+              [
+                b, a,
+              ].includes(value)
+            `,
             options: [options],
-            errors: [
-              {
-                messageId: 'unexpectedArrayIncludesOrder',
-                data: {
-                  left: 'b',
-                  right: 'a',
-                },
-              },
-            ],
           },
         ],
+        valid: [],
       },
     )
   })
@@ -776,6 +776,40 @@ describe(ruleName, () => {
       `${ruleName}(${type}): does not break the property list`,
       rule,
       {
+        invalid: [
+          {
+            errors: [
+              {
+                data: {
+                  right: 'b',
+                  left: 'c',
+                },
+                messageId: 'unexpectedArrayIncludesOrder',
+              },
+            ],
+            output: dedent`
+              [
+                'a',
+                'b',
+                'c',
+                'd',
+                'e',
+                ...other,
+              ].includes(value)
+            `,
+            code: dedent`
+              [
+                'a',
+                'c',
+                'b',
+                'd',
+                'e',
+                ...other,
+              ].includes(value)
+            `,
+            options: [options],
+          },
+        ],
         valid: [
           {
             code: dedent`
@@ -791,44 +825,38 @@ describe(ruleName, () => {
             options: [options],
           },
         ],
-        invalid: [
-          {
-            code: dedent`
-              [
-                'a',
-                'c',
-                'b',
-                'd',
-                'e',
-                ...other,
-              ].includes(value)
-            `,
-            output: dedent`
-              [
-                'a',
-                'b',
-                'c',
-                'd',
-                'e',
-                ...other,
-              ].includes(value)
-            `,
-            options: [options],
-            errors: [
-              {
-                messageId: 'unexpectedArrayIncludesOrder',
-                data: {
-                  left: 'c',
-                  right: 'b',
-                },
-              },
-            ],
-          },
-        ],
       },
     )
 
     ruleTester.run(`${ruleName}(${type}): sorts spread elements`, rule, {
+      invalid: [
+        {
+          errors: [
+            {
+              data: {
+                right: '...bbbb',
+                left: '...ccc',
+              },
+              messageId: 'unexpectedArrayIncludesOrder',
+            },
+          ],
+          output: dedent`
+            [
+              ...aaa,
+              ...bbbb,
+              ...ccc,
+            ].includes(value)
+          `,
+          code: dedent`
+            [
+              ...aaa,
+              ...ccc,
+              ...bbbb,
+            ].includes(value)
+          `,
+          options: [options],
+        },
+      ],
       valid: [
         {
           code: dedent`
@@ -841,66 +869,38 @@ describe(ruleName, () => {
           options: [options],
         },
       ],
-      invalid: [
-        {
-          code: dedent`
-            [
-              ...aaa,
-              ...ccc,
-              ...bbbb,
-            ].includes(value)
-          `,
-          output: dedent`
-            [
-              ...aaa,
-              ...bbbb,
-              ...ccc,
-            ].includes(value)
-          `,
-          options: [options],
-          errors: [
-            {
-              messageId: 'unexpectedArrayIncludesOrder',
-              data: {
-                left: '...ccc',
-                right: '...bbbb',
-              },
-            },
-          ],
-        },
-      ],
     })
 
     ruleTester.run(
       `${ruleName}(${type}): ignores nullable array elements`,
       rule,
       {
+        invalid: [
+          {
+            errors: [
+              {
+                data: {
+                  right: 'a',
+                  left: 'b',
+                },
+                messageId: 'unexpectedArrayIncludesOrder',
+              },
+            ],
+            output: dedent`
+              ['a', 'b', 'c',, 'd'].includes(value)
+            `,
+            code: dedent`
+              ['b', 'a', 'c',, 'd'].includes(value)
+            `,
+            options: [options],
+          },
+        ],
         valid: [
           {
             code: dedent`
               ['a', 'b', 'c',, 'd'].includes(value)
             `,
             options: [options],
-          },
-        ],
-        invalid: [
-          {
-            code: dedent`
-              ['b', 'a', 'c',, 'd'].includes(value)
-            `,
-            output: dedent`
-              ['a', 'b', 'c',, 'd'].includes(value)
-            `,
-            options: [options],
-            errors: [
-              {
-                messageId: 'unexpectedArrayIncludesOrder',
-                data: {
-                  left: 'b',
-                  right: 'a',
-                },
-              },
-            ],
           },
         ],
       },
@@ -910,48 +910,78 @@ describe(ruleName, () => {
       `${ruleName}(${type}): allow to put spread elements to the end`,
       rule,
       {
-        valid: [
-          {
-            code: dedent`
-              ['a', 'b', 'c', ...other].includes(value)
-            `,
-            options: [
-              {
-                ...options,
-                groupKind: 'literals-first',
-              },
-            ],
-          },
-        ],
         invalid: [
           {
-            code: dedent`
-              ['a', 'b', ...other, 'c'].includes(value)
-            `,
-            output: dedent`
-              ['a', 'b', 'c', ...other].includes(value)
-            `,
-            options: [
-              {
-                ...options,
-                groupKind: 'literals-first',
-              },
-            ],
             errors: [
               {
-                messageId: 'unexpectedArrayIncludesOrder',
                 data: {
                   left: '...other',
                   right: 'c',
                 },
+                messageId: 'unexpectedArrayIncludesOrder',
               },
             ],
+            options: [
+              {
+                ...options,
+                groupKind: 'literals-first',
+              },
+            ],
+            output: dedent`
+              ['a', 'b', 'c', ...other].includes(value)
+            `,
+            code: dedent`
+              ['a', 'b', ...other, 'c'].includes(value)
+            `,
+          },
+        ],
+        valid: [
+          {
+            options: [
+              {
+                ...options,
+                groupKind: 'literals-first',
+              },
+            ],
+            code: dedent`
+              ['a', 'b', 'c', ...other].includes(value)
+            `,
           },
         ],
       },
     )
 
     ruleTester.run(`${ruleName}(${type}): sorts array constructor`, rule, {
+      invalid: [
+        {
+          errors: [
+            {
+              data: {
+                right: 'b',
+                left: 'c',
+              },
+              messageId: 'unexpectedArrayIncludesOrder',
+            },
+          ],
+          output: dedent`
+            new Array(
+              'a',
+              'b',
+              'c',
+              'd',
+            ).includes(value)
+          `,
+          code: dedent`
+            new Array(
+              'a',
+              'c',
+              'b',
+              'd',
+            ).includes(value)
+          `,
+          options: [options],
+        },
+      ],
       valid: [
         {
           code: dedent`
@@ -963,41 +993,46 @@ describe(ruleName, () => {
             ).includes(value)
           `,
           options: [options],
-        },
-      ],
-      invalid: [
-        {
-          code: dedent`
-            new Array(
-              'a',
-              'c',
-              'b',
-              'd',
-            ).includes(value)
-          `,
-          output: dedent`
-            new Array(
-              'a',
-              'b',
-              'c',
-              'd',
-            ).includes(value)
-          `,
-          options: [options],
-          errors: [
-            {
-              messageId: 'unexpectedArrayIncludesOrder',
-              data: {
-                left: 'c',
-                right: 'b',
-              },
-            },
-          ],
         },
       ],
     })
 
     ruleTester.run(`${ruleName}(${type}): allows mixed sorting`, rule, {
+      invalid: [
+        {
+          errors: [
+            {
+              data: {
+                right: '...d',
+                left: 'bbb',
+              },
+              messageId: 'unexpectedArrayIncludesOrder',
+            },
+          ],
+          output: dedent`
+            new Array(
+              ...d,
+              'aaaa',
+              'bbb',
+              'cc',
+            ).includes(value)
+          `,
+          code: dedent`
+            new Array(
+              'aaaa',
+              'bbb',
+              ...d,
+              'cc',
+            ).includes(value)
+          `,
+          options: [
+            {
+              ...options,
+              groupKind: 'mixed',
+            },
+          ],
+        },
+      ],
       valid: [
         {
           code: dedent`
@@ -1012,41 +1047,6 @@ describe(ruleName, () => {
             {
               ...options,
               groupKind: 'mixed',
-            },
-          ],
-        },
-      ],
-      invalid: [
-        {
-          code: dedent`
-            new Array(
-              'aaaa',
-              'bbb',
-              ...d,
-              'cc',
-            ).includes(value)
-          `,
-          output: dedent`
-            new Array(
-              ...d,
-              'aaaa',
-              'bbb',
-              'cc',
-            ).includes(value)
-          `,
-          options: [
-            {
-              ...options,
-              groupKind: 'mixed',
-            },
-          ],
-          errors: [
-            {
-              messageId: 'unexpectedArrayIncludesOrder',
-              data: {
-                left: 'bbb',
-                right: '...d',
-              },
             },
           ],
         },
@@ -1066,6 +1066,40 @@ describe(ruleName, () => {
       `${ruleName}(${type}): does not break the property list`,
       rule,
       {
+        invalid: [
+          {
+            errors: [
+              {
+                data: {
+                  right: 'bbbb',
+                  left: 'ccc',
+                },
+                messageId: 'unexpectedArrayIncludesOrder',
+              },
+            ],
+            output: dedent`
+              [
+                'aaaaa',
+                'bbbb',
+                'ccc',
+                'dd',
+                'e',
+                ...other,
+              ].includes(value)
+            `,
+            code: dedent`
+              [
+                'aaaaa',
+                'ccc',
+                'bbbb',
+                'dd',
+                'e',
+                ...other,
+              ].includes(value)
+            `,
+            options: [options],
+          },
+        ],
         valid: [
           {
             code: dedent`
@@ -1081,44 +1115,38 @@ describe(ruleName, () => {
             options: [options],
           },
         ],
-        invalid: [
-          {
-            code: dedent`
-              [
-                'aaaaa',
-                'ccc',
-                'bbbb',
-                'dd',
-                'e',
-                ...other,
-              ].includes(value)
-            `,
-            output: dedent`
-              [
-                'aaaaa',
-                'bbbb',
-                'ccc',
-                'dd',
-                'e',
-                ...other,
-              ].includes(value)
-            `,
-            options: [options],
-            errors: [
-              {
-                messageId: 'unexpectedArrayIncludesOrder',
-                data: {
-                  left: 'ccc',
-                  right: 'bbbb',
-                },
-              },
-            ],
-          },
-        ],
       },
     )
 
     ruleTester.run(`${ruleName}(${type}): sorts spread elements`, rule, {
+      invalid: [
+        {
+          errors: [
+            {
+              data: {
+                right: '...bbbb',
+                left: '...aaa',
+              },
+              messageId: 'unexpectedArrayIncludesOrder',
+            },
+          ],
+          output: dedent`
+            [
+              ...bbbb,
+              ...aaa,
+              ...ccc,
+            ].includes(value)
+          `,
+          code: dedent`
+            [
+              ...aaa,
+              ...bbbb,
+              ...ccc,
+            ].includes(value)
+          `,
+          options: [options],
+        },
+      ],
       valid: [
         {
           code: dedent`
@@ -1129,34 +1157,6 @@ describe(ruleName, () => {
             ].includes(value)
           `,
           options: [options],
-        },
-      ],
-      invalid: [
-        {
-          code: dedent`
-            [
-              ...aaa,
-              ...bbbb,
-              ...ccc,
-            ].includes(value)
-          `,
-          output: dedent`
-            [
-              ...bbbb,
-              ...aaa,
-              ...ccc,
-            ].includes(value)
-          `,
-          options: [options],
-          errors: [
-            {
-              messageId: 'unexpectedArrayIncludesOrder',
-              data: {
-                left: '...aaa',
-                right: '...bbbb',
-              },
-            },
-          ],
         },
       ],
     })
@@ -1181,48 +1181,78 @@ describe(ruleName, () => {
       `${ruleName}(${type}): allow to put spread elements to the end`,
       rule,
       {
-        valid: [
-          {
-            code: dedent`
-              ['a', 'b', 'c', ...other].includes(value)
-            `,
-            options: [
-              {
-                ...options,
-                groupKind: 'literals-first',
-              },
-            ],
-          },
-        ],
         invalid: [
           {
-            code: dedent`
-              ['a', 'b', ...other, 'c'].includes(value)
-            `,
-            output: dedent`
-              ['a', 'b', 'c', ...other].includes(value)
-            `,
-            options: [
-              {
-                ...options,
-                groupKind: 'literals-first',
-              },
-            ],
             errors: [
               {
-                messageId: 'unexpectedArrayIncludesOrder',
                 data: {
                   left: '...other',
                   right: 'c',
                 },
+                messageId: 'unexpectedArrayIncludesOrder',
               },
             ],
+            options: [
+              {
+                ...options,
+                groupKind: 'literals-first',
+              },
+            ],
+            output: dedent`
+              ['a', 'b', 'c', ...other].includes(value)
+            `,
+            code: dedent`
+              ['a', 'b', ...other, 'c'].includes(value)
+            `,
+          },
+        ],
+        valid: [
+          {
+            options: [
+              {
+                ...options,
+                groupKind: 'literals-first',
+              },
+            ],
+            code: dedent`
+              ['a', 'b', 'c', ...other].includes(value)
+            `,
           },
         ],
       },
     )
 
     ruleTester.run(`${ruleName}(${type}): sorts array constructor`, rule, {
+      invalid: [
+        {
+          errors: [
+            {
+              data: {
+                right: 'bbb',
+                left: 'cc',
+              },
+              messageId: 'unexpectedArrayIncludesOrder',
+            },
+          ],
+          output: dedent`
+            new Array(
+              'aaaa',
+              'bbb',
+              'cc',
+              'd',
+            ).includes(value)
+          `,
+          code: dedent`
+            new Array(
+              'aaaa',
+              'cc',
+              'bbb',
+              'd',
+            ).includes(value)
+          `,
+          options: [options],
+        },
+      ],
       valid: [
         {
           code: dedent`
@@ -1234,41 +1264,46 @@ describe(ruleName, () => {
             ).includes(value)
           `,
           options: [options],
-        },
-      ],
-      invalid: [
-        {
-          code: dedent`
-            new Array(
-              'aaaa',
-              'cc',
-              'bbb',
-              'd',
-            ).includes(value)
-          `,
-          output: dedent`
-            new Array(
-              'aaaa',
-              'bbb',
-              'cc',
-              'd',
-            ).includes(value)
-          `,
-          options: [options],
-          errors: [
-            {
-              messageId: 'unexpectedArrayIncludesOrder',
-              data: {
-                left: 'cc',
-                right: 'bbb',
-              },
-            },
-          ],
         },
       ],
     })
 
     ruleTester.run(`${ruleName}(${type}): allows mixed sorting`, rule, {
+      invalid: [
+        {
+          errors: [
+            {
+              data: {
+                left: '...d',
+                right: 'bbb',
+              },
+              messageId: 'unexpectedArrayIncludesOrder',
+            },
+          ],
+          output: dedent`
+            new Array(
+              'aaaa',
+              'bbb',
+              ...d,
+              'cc',
+            ).includes(value)
+          `,
+          code: dedent`
+            new Array(
+              'aaaa',
+              ...d,
+              'bbb',
+              'cc',
+            ).includes(value)
+          `,
+          options: [
+            {
+              ...options,
+              groupKind: 'mixed',
+            },
+          ],
+        },
+      ],
       valid: [
         {
           code: dedent`
@@ -1283,41 +1318,6 @@ describe(ruleName, () => {
             {
               ...options,
               groupKind: 'mixed',
-            },
-          ],
-        },
-      ],
-      invalid: [
-        {
-          code: dedent`
-            new Array(
-              'aaaa',
-              ...d,
-              'bbb',
-              'cc',
-            ).includes(value)
-          `,
-          output: dedent`
-            new Array(
-              'aaaa',
-              'bbb',
-              ...d,
-              'cc',
-            ).includes(value)
-          `,
-          options: [
-            {
-              ...options,
-              groupKind: 'mixed',
-            },
-          ],
-          errors: [
-            {
-              messageId: 'unexpectedArrayIncludesOrder',
-              data: {
-                left: '...d',
-                right: 'bbb',
-              },
             },
           ],
         },
@@ -1330,6 +1330,42 @@ describe(ruleName, () => {
       `${ruleName}: sets alphabetical asc sorting as default`,
       rule,
       {
+        invalid: [
+          {
+            errors: [
+              {
+                data: {
+                  right: 'a',
+                  left: 'b',
+                },
+                messageId: 'unexpectedArrayIncludesOrder',
+              },
+              {
+                data: {
+                  right: 'c',
+                  left: 'd',
+                },
+                messageId: 'unexpectedArrayIncludesOrder',
+              },
+            ],
+            output: dedent`
+              [
+                'a',
+                'b',
+                'c',
+                'd',
+              ].includes(value)
+            `,
+            code: dedent`
+              [
+                'b',
+                'a',
+                'd',
+                'c',
+              ].includes(value)
+            `,
+          },
+        ],
         valid: [
           dedent`
             [
@@ -1351,42 +1387,6 @@ describe(ruleName, () => {
             options: [
               {
                 ignoreCase: false,
-              },
-            ],
-          },
-        ],
-        invalid: [
-          {
-            code: dedent`
-              [
-                'b',
-                'a',
-                'd',
-                'c',
-              ].includes(value)
-            `,
-            output: dedent`
-              [
-                'a',
-                'b',
-                'c',
-                'd',
-              ].includes(value)
-            `,
-            errors: [
-              {
-                messageId: 'unexpectedArrayIncludesOrder',
-                data: {
-                  left: 'b',
-                  right: 'a',
-                },
-              },
-              {
-                messageId: 'unexpectedArrayIncludesOrder',
-                data: {
-                  left: 'd',
-                  right: 'c',
-                },
               },
             ],
           },
@@ -1414,17 +1414,17 @@ describe(ruleName, () => {
 
     let eslintDisableRuleTesterName = `${ruleName}: supports 'eslint-disable' for individual nodes`
     ruleTester.run(eslintDisableRuleTesterName, rule, {
-      valid: [],
       invalid: [
         {
-          code: dedent`
-            [
-              'c',
-              'b',
-              // eslint-disable-next-line
-              'a',
-            ].includes(value)
-          `,
+          errors: [
+            {
+              data: {
+                right: 'b',
+                left: 'c',
+              },
+              messageId: 'unexpectedArrayIncludesOrder',
+            },
+          ],
           output: dedent`
             [
               'b',
@@ -1433,27 +1433,33 @@ describe(ruleName, () => {
               'a',
             ].includes(value)
           `,
-          options: [{}],
-          errors: [
-            {
-              messageId: 'unexpectedArrayIncludesOrder',
-              data: {
-                left: 'c',
-                right: 'b',
-              },
-            },
-          ],
-        },
-        {
           code: dedent`
             [
-              'd',
               'c',
+              'b',
               // eslint-disable-next-line
               'a',
-              'b'
             ].includes(value)
           `,
+          options: [{}],
+        },
+        {
+          errors: [
+            {
+              data: {
+                right: 'c',
+                left: 'd',
+              },
+              messageId: 'unexpectedArrayIncludesOrder',
+            },
+            {
+              data: {
+                right: 'b',
+                left: 'a',
+              },
+              messageId: 'unexpectedArrayIncludesOrder',
+            },
+          ],
           output: dedent`
             [
               'b',
@@ -1463,38 +1469,38 @@ describe(ruleName, () => {
               'd'
             ].includes(value)
           `,
+          code: dedent`
+            [
+              'd',
+              'c',
+              // eslint-disable-next-line
+              'a',
+              'b'
+            ].includes(value)
+          `,
           options: [
             {
               partitionByComment: true,
             },
           ],
-          errors: [
-            {
-              messageId: 'unexpectedArrayIncludesOrder',
-              data: {
-                left: 'd',
-                right: 'c',
-              },
-            },
-            {
-              messageId: 'unexpectedArrayIncludesOrder',
-              data: {
-                left: 'a',
-                right: 'b',
-              },
-            },
-          ],
         },
         {
-          code: dedent`
-            [
-              'c',
-              'b',
-              // eslint-disable-next-line
-              'a',
-              ...anotherArray
-            ].includes(value)
-          `,
+          errors: [
+            {
+              data: {
+                right: 'b',
+                left: 'c',
+              },
+              messageId: 'unexpectedArrayIncludesOrder',
+            },
+            {
+              data: {
+                right: '...anotherArray',
+                left: 'a',
+              },
+              messageId: 'unexpectedArrayIncludesOrder',
+            },
+          ],
           output: dedent`
             [
               ...anotherArray,
@@ -1504,36 +1510,31 @@ describe(ruleName, () => {
               'c'
             ].includes(value)
           `,
+          code: dedent`
+            [
+              'c',
+              'b',
+              // eslint-disable-next-line
+              'a',
+              ...anotherArray
+            ].includes(value)
+          `,
           options: [
             {
               groupKind: 'mixed',
             },
           ],
-          errors: [
-            {
-              messageId: 'unexpectedArrayIncludesOrder',
-              data: {
-                left: 'c',
-                right: 'b',
-              },
-            },
-            {
-              messageId: 'unexpectedArrayIncludesOrder',
-              data: {
-                left: 'a',
-                right: '...anotherArray',
-              },
-            },
-          ],
         },
         {
-          code: dedent`
-            [
-              'c',
-              'b',
-              'a', // eslint-disable-line
-            ].includes(value)
-          `,
+          errors: [
+            {
+              data: {
+                right: 'b',
+                left: 'c',
+              },
+              messageId: 'unexpectedArrayIncludesOrder',
+            },
+          ],
           output: dedent`
             [
               'b',
@@ -1541,26 +1542,25 @@ describe(ruleName, () => {
               'a', // eslint-disable-line
             ].includes(value)
           `,
-          options: [{}],
-          errors: [
-            {
-              messageId: 'unexpectedArrayIncludesOrder',
-              data: {
-                left: 'c',
-                right: 'b',
-              },
-            },
-          ],
-        },
-        {
           code: dedent`
             [
               'c',
               'b',
-              /* eslint-disable-next-line */
-              'a',
+              'a', // eslint-disable-line
             ].includes(value)
           `,
+          options: [{}],
+        },
+        {
+          errors: [
+            {
+              data: {
+                right: 'b',
+                left: 'c',
+              },
+              messageId: 'unexpectedArrayIncludesOrder',
+            },
+          ],
           output: dedent`
             [
               'b',
@@ -1569,25 +1569,26 @@ describe(ruleName, () => {
               'a',
             ].includes(value)
           `,
-          options: [{}],
-          errors: [
-            {
-              messageId: 'unexpectedArrayIncludesOrder',
-              data: {
-                left: 'c',
-                right: 'b',
-              },
-            },
-          ],
-        },
-        {
           code: dedent`
             [
               'c',
               'b',
-              'a', /* eslint-disable-line */
+              /* eslint-disable-next-line */
+              'a',
             ].includes(value)
           `,
+          options: [{}],
+        },
+        {
+          errors: [
+            {
+              data: {
+                right: 'b',
+                left: 'c',
+              },
+              messageId: 'unexpectedArrayIncludesOrder',
+            },
+          ],
           output: dedent`
             [
               'b',
@@ -1595,30 +1596,16 @@ describe(ruleName, () => {
               'a', /* eslint-disable-line */
             ].includes(value)
           `,
-          options: [{}],
-          errors: [
-            {
-              messageId: 'unexpectedArrayIncludesOrder',
-              data: {
-                left: 'c',
-                right: 'b',
-              },
-            },
-          ],
-        },
-        {
           code: dedent`
             [
-              'd',
-              'e',
-              /* eslint-disable */
               'c',
               'b',
-              // Shouldn't move
-              /* eslint-enable */
-              'a',
+              'a', /* eslint-disable-line */
             ].includes(value)
           `,
+          options: [{}],
+        },
+        {
           output: dedent`
             [
               'a',
@@ -1631,26 +1618,30 @@ describe(ruleName, () => {
               'e',
             ].includes(value)
           `,
-          options: [{}],
+          code: dedent`
+            [
+              'd',
+              'e',
+              /* eslint-disable */
+              'c',
+              'b',
+              // Shouldn't move
+              /* eslint-enable */
+              'a',
+            ].includes(value)
+          `,
           errors: [
             {
-              messageId: 'unexpectedArrayIncludesOrder',
               data: {
-                left: 'b',
                 right: 'a',
+                left: 'b',
               },
+              messageId: 'unexpectedArrayIncludesOrder',
             },
           ],
+          options: [{}],
         },
         {
-          code: dedent`
-            [
-              'c',
-              'b',
-              // eslint-disable-next-line @rule-tester/${eslintDisableRuleTesterName}
-              'a',
-            ].includes(value)
-          `,
           output: dedent`
             [
               'b',
@@ -1659,25 +1650,35 @@ describe(ruleName, () => {
               'a',
             ].includes(value)
           `,
-          options: [{}],
-          errors: [
-            {
-              messageId: 'unexpectedArrayIncludesOrder',
-              data: {
-                left: 'c',
-                right: 'b',
-              },
-            },
-          ],
-        },
-        {
           code: dedent`
             [
               'c',
               'b',
-              'a', // eslint-disable-line @rule-tester/${eslintDisableRuleTesterName}
+              // eslint-disable-next-line @rule-tester/${eslintDisableRuleTesterName}
+              'a',
             ].includes(value)
           `,
+          errors: [
+            {
+              data: {
+                right: 'b',
+                left: 'c',
+              },
+              messageId: 'unexpectedArrayIncludesOrder',
+            },
+          ],
+          options: [{}],
+        },
+        {
+          errors: [
+            {
+              data: {
+                right: 'b',
+                left: 'c',
+              },
+              messageId: 'unexpectedArrayIncludesOrder',
+            },
+          ],
           output: dedent`
             [
               'b',
@@ -1685,18 +1686,24 @@ describe(ruleName, () => {
               'a', // eslint-disable-line @rule-tester/${eslintDisableRuleTesterName}
             ].includes(value)
           `,
+          code: dedent`
+            [
+              'c',
+              'b',
+              'a', // eslint-disable-line @rule-tester/${eslintDisableRuleTesterName}
+            ].includes(value)
+          `,
           options: [{}],
-          errors: [
-            {
-              messageId: 'unexpectedArrayIncludesOrder',
-              data: {
-                left: 'c',
-                right: 'b',
-              },
-            },
-          ],
         },
         {
+          output: dedent`
+            [
+              'b',
+              'c',
+              /* eslint-disable-next-line @rule-tester/${eslintDisableRuleTesterName} */
+              'a',
+            ].includes(value)
+          `,
           code: dedent`
             [
               'c',
@@ -1705,26 +1712,34 @@ describe(ruleName, () => {
               'a',
             ].includes(value)
           `,
+          errors: [
+            {
+              data: {
+                right: 'b',
+                left: 'c',
+              },
+              messageId: 'unexpectedArrayIncludesOrder',
+            },
+          ],
+          options: [{}],
+        },
+        {
+          errors: [
+            {
+              data: {
+                right: 'b',
+                left: 'c',
+              },
+              messageId: 'unexpectedArrayIncludesOrder',
+            },
+          ],
           output: dedent`
             [
               'b',
               'c',
-              /* eslint-disable-next-line @rule-tester/${eslintDisableRuleTesterName} */
-              'a',
+              'a', /* eslint-disable-line @rule-tester/${eslintDisableRuleTesterName} */
             ].includes(value)
           `,
-          options: [{}],
-          errors: [
-            {
-              messageId: 'unexpectedArrayIncludesOrder',
-              data: {
-                left: 'c',
-                right: 'b',
-              },
-            },
-          ],
-        },
-        {
           code: dedent`
             [
               'c',
@@ -1732,25 +1747,21 @@ describe(ruleName, () => {
               'a', /* eslint-disable-line @rule-tester/${eslintDisableRuleTesterName} */
             ].includes(value)
           `,
-          output: dedent`
-            [
-              'b',
-              'c',
-              'a', /* eslint-disable-line @rule-tester/${eslintDisableRuleTesterName} */
-            ].includes(value)
-          `,
           options: [{}],
-          errors: [
-            {
-              messageId: 'unexpectedArrayIncludesOrder',
-              data: {
-                left: 'c',
-                right: 'b',
-              },
-            },
-          ],
         },
         {
+          output: dedent`
+            [
+              'a',
+              'd',
+              /* eslint-disable @rule-tester/${eslintDisableRuleTesterName} */
+              'c',
+              'b',
+              // Shouldn't move
+              /* eslint-enable */
+              'e',
+            ].includes(value)
+          `,
           code: dedent`
             [
               'd',
@@ -1763,30 +1774,19 @@ describe(ruleName, () => {
               'a',
             ].includes(value)
           `,
-          output: dedent`
-            [
-              'a',
-              'd',
-              /* eslint-disable @rule-tester/${eslintDisableRuleTesterName} */
-              'c',
-              'b',
-              // Shouldn't move
-              /* eslint-enable */
-              'e',
-            ].includes(value)
-          `,
-          options: [{}],
           errors: [
             {
-              messageId: 'unexpectedArrayIncludesOrder',
               data: {
-                left: 'b',
                 right: 'a',
+                left: 'b',
               },
+              messageId: 'unexpectedArrayIncludesOrder',
             },
           ],
+          options: [{}],
         },
       ],
+      valid: [],
     })
   })
 })

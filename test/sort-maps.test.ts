@@ -29,6 +29,38 @@ describe(ruleName, () => {
       `${ruleName}(${type}): does not break the property list`,
       rule,
       {
+        invalid: [
+          {
+            errors: [
+              {
+                data: {
+                  right: "'a'",
+                  left: "'b'",
+                },
+                messageId: 'unexpectedMapElementsOrder',
+              },
+            ],
+            output: dedent`
+              new Map([
+                ['c', 'cc'],
+                ['d', 'd'],
+                ...rest,
+                ['a', 'aa'],
+                ['b', 'b'],
+              ])
+            `,
+            code: dedent`
+              new Map([
+                ['c', 'cc'],
+                ['d', 'd'],
+                ...rest,
+                ['b', 'b'],
+                ['a', 'aa'],
+              ])
+            `,
+            options: [options],
+          },
+        ],
         valid: [
           {
             code: dedent`
@@ -49,38 +81,6 @@ describe(ruleName, () => {
               ])
             `,
             options: [options],
-          },
-        ],
-        invalid: [
-          {
-            code: dedent`
-              new Map([
-                ['c', 'cc'],
-                ['d', 'd'],
-                ...rest,
-                ['b', 'b'],
-                ['a', 'aa'],
-              ])
-            `,
-            output: dedent`
-              new Map([
-                ['c', 'cc'],
-                ['d', 'd'],
-                ...rest,
-                ['a', 'aa'],
-                ['b', 'b'],
-              ])
-            `,
-            options: [options],
-            errors: [
-              {
-                messageId: 'unexpectedMapElementsOrder',
-                data: {
-                  left: "'b'",
-                  right: "'a'",
-                },
-              },
-            ],
           },
         ],
       },
@@ -111,6 +111,32 @@ describe(ruleName, () => {
     })
 
     ruleTester.run(`${ruleName}(${type}): works with variables as keys`, rule, {
+      invalid: [
+        {
+          errors: [
+            {
+              data: {
+                right: 'aa',
+                left: 'b',
+              },
+              messageId: 'unexpectedMapElementsOrder',
+            },
+          ],
+          output: dedent`
+              new Map([
+                [aa, aa],
+                [b, b],
+              ])
+            `,
+          code: dedent`
+              new Map([
+                [b, b],
+                [aa, aa],
+              ])
+            `,
+          options: [options],
+        },
+      ],
       valid: [
         {
           code: dedent`
@@ -120,37 +146,39 @@ describe(ruleName, () => {
               ])
             `,
           options: [options],
-        },
-      ],
-      invalid: [
-        {
-          code: dedent`
-              new Map([
-                [b, b],
-                [aa, aa],
-              ])
-            `,
-          output: dedent`
-              new Map([
-                [aa, aa],
-                [b, b],
-              ])
-            `,
-          options: [options],
-          errors: [
-            {
-              messageId: 'unexpectedMapElementsOrder',
-              data: {
-                left: 'b',
-                right: 'aa',
-              },
-            },
-          ],
         },
       ],
     })
 
     ruleTester.run(`${ruleName}(${type}): works with numbers as keys`, rule, {
+      invalid: [
+        {
+          errors: [
+            {
+              data: {
+                right: '1',
+                left: '2',
+              },
+              messageId: 'unexpectedMapElementsOrder',
+            },
+          ],
+          output: dedent`
+              new Map([
+                [1, 'one'],
+                [2, 'two'],
+                [3, 'three'],
+              ])
+            `,
+          code: dedent`
+              new Map([
+                [2, 'two'],
+                [1, 'one'],
+                [3, 'three'],
+              ])
+            `,
+          options: [options],
+        },
+      ],
       valid: [
         {
           code: dedent`
@@ -161,39 +189,48 @@ describe(ruleName, () => {
               ])
             `,
           options: [options],
-        },
-      ],
-      invalid: [
-        {
-          code: dedent`
-              new Map([
-                [2, 'two'],
-                [1, 'one'],
-                [3, 'three'],
-              ])
-            `,
-          output: dedent`
-              new Map([
-                [1, 'one'],
-                [2, 'two'],
-                [3, 'three'],
-              ])
-            `,
-          options: [options],
-          errors: [
-            {
-              messageId: 'unexpectedMapElementsOrder',
-              data: {
-                left: '2',
-                right: '1',
-              },
-            },
-          ],
         },
       ],
     })
 
     ruleTester.run(`${ruleName}(${type}): sorts variable identifiers`, rule, {
+      invalid: [
+        {
+          errors: [
+            {
+              data: {
+                right: 'cc',
+                left: 'd',
+              },
+              messageId: 'unexpectedMapElementsOrder',
+            },
+            {
+              data: {
+                right: 'bbb',
+                left: 'cc',
+              },
+              messageId: 'unexpectedMapElementsOrder',
+            },
+          ],
+          output: dedent`
+            new Map([
+              aaaa,
+              bbb,
+              cc,
+              d,
+            ])
+          `,
+          code: dedent`
+            new Map([
+              aaaa,
+              d,
+              cc,
+              bbb,
+            ])
+          `,
+          options: [options],
+        },
+      ],
       valid: [
         {
           code: dedent`
@@ -205,43 +242,6 @@ describe(ruleName, () => {
             ])
           `,
           options: [options],
-        },
-      ],
-      invalid: [
-        {
-          code: dedent`
-            new Map([
-              aaaa,
-              d,
-              cc,
-              bbb,
-            ])
-          `,
-          output: dedent`
-            new Map([
-              aaaa,
-              bbb,
-              cc,
-              d,
-            ])
-          `,
-          options: [options],
-          errors: [
-            {
-              messageId: 'unexpectedMapElementsOrder',
-              data: {
-                left: 'd',
-                right: 'cc',
-              },
-            },
-            {
-              messageId: 'unexpectedMapElementsOrder',
-              data: {
-                left: 'cc',
-                right: 'bbb',
-              },
-            },
-          ],
         },
       ],
     })
@@ -250,20 +250,24 @@ describe(ruleName, () => {
       `${ruleName}(${type}): allows to use new line as partition`,
       rule,
       {
-        valid: [],
         invalid: [
           {
-            code: dedent`
-              new Map([
-                [d, 'd'],
-                [a, 'a'],
-
-                [c, 'c'],
-
-                [e, 'e'],
-                [b, 'b'],
-              ])
-            `,
+            errors: [
+              {
+                data: {
+                  right: 'a',
+                  left: 'd',
+                },
+                messageId: 'unexpectedMapElementsOrder',
+              },
+              {
+                data: {
+                  right: 'b',
+                  left: 'e',
+                },
+                messageId: 'unexpectedMapElementsOrder',
+              },
+            ],
             output: dedent`
               new Map([
                 [a, 'a'],
@@ -275,30 +279,26 @@ describe(ruleName, () => {
                 [e, 'e'],
               ])
             `,
+            code: dedent`
+              new Map([
+                [d, 'd'],
+                [a, 'a'],
+
+                [c, 'c'],
+
+                [e, 'e'],
+                [b, 'b'],
+              ])
+            `,
             options: [
               {
                 ...options,
                 partitionByNewLine: true,
               },
             ],
-            errors: [
-              {
-                messageId: 'unexpectedMapElementsOrder',
-                data: {
-                  left: 'd',
-                  right: 'a',
-                },
-              },
-              {
-                messageId: 'unexpectedMapElementsOrder',
-                data: {
-                  left: 'e',
-                  right: 'b',
-                },
-              },
-            ],
           },
         ],
+        valid: [],
       },
     )
 
@@ -307,25 +307,8 @@ describe(ruleName, () => {
         `${ruleName}(${type}): allows to use partition comments`,
         rule,
         {
-          valid: [],
           invalid: [
             {
-              code: dedent`
-                new Map([
-                  // Part: A
-                  [cc, 'cc'],
-                  [d, 'd'],
-                  // Not partition comment
-                  [bbb, 'bbb'],
-                  // Part: B
-                  [aaaa, 'aaaa'],
-                  [e, 'e'],
-                  // Part: C
-                  [gg, 'gg'],
-                  // Not partition comment
-                  [fff, 'fff'],
-                ])
-              `,
               output: dedent`
                 new Map([
                   // Part: A
@@ -342,30 +325,47 @@ describe(ruleName, () => {
                   [gg, 'gg'],
                 ])
               `,
+              code: dedent`
+                new Map([
+                  // Part: A
+                  [cc, 'cc'],
+                  [d, 'd'],
+                  // Not partition comment
+                  [bbb, 'bbb'],
+                  // Part: B
+                  [aaaa, 'aaaa'],
+                  [e, 'e'],
+                  // Part: C
+                  [gg, 'gg'],
+                  // Not partition comment
+                  [fff, 'fff'],
+                ])
+              `,
+              errors: [
+                {
+                  data: {
+                    right: 'bbb',
+                    left: 'd',
+                  },
+                  messageId: 'unexpectedMapElementsOrder',
+                },
+                {
+                  data: {
+                    right: 'fff',
+                    left: 'gg',
+                  },
+                  messageId: 'unexpectedMapElementsOrder',
+                },
+              ],
               options: [
                 {
                   ...options,
                   partitionByComment: '^Part*',
                 },
               ],
-              errors: [
-                {
-                  messageId: 'unexpectedMapElementsOrder',
-                  data: {
-                    left: 'd',
-                    right: 'bbb',
-                  },
-                },
-                {
-                  messageId: 'unexpectedMapElementsOrder',
-                  data: {
-                    left: 'gg',
-                    right: 'fff',
-                  },
-                },
-              ],
             },
           ],
+          valid: [],
         },
       )
 
@@ -399,22 +399,8 @@ describe(ruleName, () => {
         `${ruleName}(${type}): allows to use multiple partition comments`,
         rule,
         {
-          valid: [],
           invalid: [
             {
-              code: dedent`
-                new Map([
-                  /* Partition Comment */
-                  // Part: A
-                  [d, 'd'],
-                  // Part: B
-                  [aaa, 'aaa'],
-                  [c, 'c'],
-                  [bb, 'bb'],
-                  /* Other */
-                  [e, 'e'],
-                ])
-              `,
               output: dedent`
                 new Map([
                   /* Partition Comment */
@@ -428,23 +414,37 @@ describe(ruleName, () => {
                   [e, 'e'],
                 ])
               `,
+              code: dedent`
+                new Map([
+                  /* Partition Comment */
+                  // Part: A
+                  [d, 'd'],
+                  // Part: B
+                  [aaa, 'aaa'],
+                  [c, 'c'],
+                  [bb, 'bb'],
+                  /* Other */
+                  [e, 'e'],
+                ])
+              `,
+              errors: [
+                {
+                  data: {
+                    right: 'bb',
+                    left: 'c',
+                  },
+                  messageId: 'unexpectedMapElementsOrder',
+                },
+              ],
               options: [
                 {
                   ...options,
                   partitionByComment: ['Partition Comment', 'Part: *', 'Other'],
                 },
               ],
-              errors: [
-                {
-                  messageId: 'unexpectedMapElementsOrder',
-                  data: {
-                    left: 'c',
-                    right: 'bb',
-                  },
-                },
-              ],
             },
           ],
+          valid: [],
         },
       )
 
@@ -503,18 +503,18 @@ describe(ruleName, () => {
       {
         valid: [
           {
-            code: dedent`
-              new Map([
-                [ab, 'ab'],
-                [a_c, 'ac'],
-              ])
-            `,
             options: [
               {
                 ...options,
                 specialCharacters: 'remove',
               },
             ],
+            code: dedent`
+              new Map([
+                [ab, 'ab'],
+                [a_c, 'ac'],
+              ])
+            `,
           },
         ],
         invalid: [],
@@ -554,6 +554,38 @@ describe(ruleName, () => {
       `${ruleName}(${type}): does not break the property list`,
       rule,
       {
+        invalid: [
+          {
+            errors: [
+              {
+                data: {
+                  right: "'a'",
+                  left: "'b'",
+                },
+                messageId: 'unexpectedMapElementsOrder',
+              },
+            ],
+            output: dedent`
+              new Map([
+                ['c', 'cc'],
+                ['d', 'd'],
+                ...rest,
+                ['a', 'aa'],
+                ['b', 'b'],
+              ])
+            `,
+            code: dedent`
+              new Map([
+                ['c', 'cc'],
+                ['d', 'd'],
+                ...rest,
+                ['b', 'b'],
+                ['a', 'aa'],
+              ])
+            `,
+            options: [options],
+          },
+        ],
         valid: [
           {
             code: dedent`
@@ -566,38 +598,6 @@ describe(ruleName, () => {
               ])
             `,
             options: [options],
-          },
-        ],
-        invalid: [
-          {
-            code: dedent`
-              new Map([
-                ['c', 'cc'],
-                ['d', 'd'],
-                ...rest,
-                ['b', 'b'],
-                ['a', 'aa'],
-              ])
-            `,
-            output: dedent`
-              new Map([
-                ['c', 'cc'],
-                ['d', 'd'],
-                ...rest,
-                ['a', 'aa'],
-                ['b', 'b'],
-              ])
-            `,
-            options: [options],
-            errors: [
-              {
-                messageId: 'unexpectedMapElementsOrder',
-                data: {
-                  left: "'b'",
-                  right: "'a'",
-                },
-              },
-            ],
           },
         ],
       },
@@ -628,6 +628,32 @@ describe(ruleName, () => {
     })
 
     ruleTester.run(`${ruleName}(${type}): works with variables as keys`, rule, {
+      invalid: [
+        {
+          errors: [
+            {
+              data: {
+                right: 'aa',
+                left: 'b',
+              },
+              messageId: 'unexpectedMapElementsOrder',
+            },
+          ],
+          output: dedent`
+              new Map([
+                [aa, aa],
+                [b, b],
+              ])
+            `,
+          code: dedent`
+              new Map([
+                [b, b],
+                [aa, aa],
+              ])
+            `,
+          options: [options],
+        },
+      ],
       valid: [
         {
           code: dedent`
@@ -637,37 +663,39 @@ describe(ruleName, () => {
               ])
             `,
           options: [options],
-        },
-      ],
-      invalid: [
-        {
-          code: dedent`
-              new Map([
-                [b, b],
-                [aa, aa],
-              ])
-            `,
-          output: dedent`
-              new Map([
-                [aa, aa],
-                [b, b],
-              ])
-            `,
-          options: [options],
-          errors: [
-            {
-              messageId: 'unexpectedMapElementsOrder',
-              data: {
-                left: 'b',
-                right: 'aa',
-              },
-            },
-          ],
         },
       ],
     })
 
     ruleTester.run(`${ruleName}(${type}): works with numbers as keys`, rule, {
+      invalid: [
+        {
+          errors: [
+            {
+              data: {
+                right: '1',
+                left: '2',
+              },
+              messageId: 'unexpectedMapElementsOrder',
+            },
+          ],
+          output: dedent`
+            new Map([
+              [1, 'one'],
+              [2, 'two'],
+              [3, 'three'],
+            ])
+          `,
+          code: dedent`
+            new Map([
+              [2, 'two'],
+              [1, 'one'],
+              [3, 'three'],
+            ])
+          `,
+          options: [options],
+        },
+      ],
       valid: [
         {
           code: dedent`
@@ -678,39 +706,48 @@ describe(ruleName, () => {
             ])
           `,
           options: [options],
-        },
-      ],
-      invalid: [
-        {
-          code: dedent`
-            new Map([
-              [2, 'two'],
-              [1, 'one'],
-              [3, 'three'],
-            ])
-          `,
-          output: dedent`
-            new Map([
-              [1, 'one'],
-              [2, 'two'],
-              [3, 'three'],
-            ])
-          `,
-          options: [options],
-          errors: [
-            {
-              messageId: 'unexpectedMapElementsOrder',
-              data: {
-                left: '2',
-                right: '1',
-              },
-            },
-          ],
         },
       ],
     })
 
     ruleTester.run(`${ruleName}(${type}): sorts variable identifiers`, rule, {
+      invalid: [
+        {
+          errors: [
+            {
+              data: {
+                right: 'cc',
+                left: 'd',
+              },
+              messageId: 'unexpectedMapElementsOrder',
+            },
+            {
+              data: {
+                right: 'bbb',
+                left: 'cc',
+              },
+              messageId: 'unexpectedMapElementsOrder',
+            },
+          ],
+          output: dedent`
+            new Map([
+              aaaa,
+              bbb,
+              cc,
+              d,
+            ])
+          `,
+          code: dedent`
+            new Map([
+              aaaa,
+              d,
+              cc,
+              bbb,
+            ])
+          `,
+          options: [options],
+        },
+      ],
       valid: [
         {
           code: dedent`
@@ -722,43 +759,6 @@ describe(ruleName, () => {
             ])
           `,
           options: [options],
-        },
-      ],
-      invalid: [
-        {
-          code: dedent`
-            new Map([
-              aaaa,
-              d,
-              cc,
-              bbb,
-            ])
-          `,
-          output: dedent`
-            new Map([
-              aaaa,
-              bbb,
-              cc,
-              d,
-            ])
-          `,
-          options: [options],
-          errors: [
-            {
-              messageId: 'unexpectedMapElementsOrder',
-              data: {
-                left: 'd',
-                right: 'cc',
-              },
-            },
-            {
-              messageId: 'unexpectedMapElementsOrder',
-              data: {
-                left: 'cc',
-                right: 'bbb',
-              },
-            },
-          ],
         },
       ],
     })
@@ -776,6 +776,38 @@ describe(ruleName, () => {
       `${ruleName}(${type}): does not break the property list`,
       rule,
       {
+        invalid: [
+          {
+            errors: [
+              {
+                data: {
+                  right: "'a'",
+                  left: "'b'",
+                },
+                messageId: 'unexpectedMapElementsOrder',
+              },
+            ],
+            output: dedent`
+              new Map([
+                ['c', 'cc'],
+                ['d', 'd'],
+                ...rest,
+                ['a', 'aa'],
+                ['b', 'b'],
+              ])
+            `,
+            code: dedent`
+              new Map([
+                ['c', 'cc'],
+                ['d', 'd'],
+                ...rest,
+                ['b', 'b'],
+                ['a', 'aa'],
+              ])
+            `,
+            options: [options],
+          },
+        ],
         valid: [
           {
             code: dedent`
@@ -790,38 +822,6 @@ describe(ruleName, () => {
             options: [options],
           },
         ],
-        invalid: [
-          {
-            code: dedent`
-              new Map([
-                ['c', 'cc'],
-                ['d', 'd'],
-                ...rest,
-                ['b', 'b'],
-                ['a', 'aa'],
-              ])
-            `,
-            output: dedent`
-              new Map([
-                ['c', 'cc'],
-                ['d', 'd'],
-                ...rest,
-                ['a', 'aa'],
-                ['b', 'b'],
-              ])
-            `,
-            options: [options],
-            errors: [
-              {
-                messageId: 'unexpectedMapElementsOrder',
-                data: {
-                  left: "'b'",
-                  right: "'a'",
-                },
-              },
-            ],
-          },
-        ],
       },
     )
 
@@ -829,6 +829,56 @@ describe(ruleName, () => {
       `${ruleName}(${type}): both key and value affect sorting by length`,
       rule,
       {
+        invalid: [
+          {
+            errors: [
+              {
+                data: {
+                  right: "'USD'",
+                  left: "'EUR'",
+                },
+                messageId: 'unexpectedMapElementsOrder',
+              },
+            ],
+            output: dedent`
+              new Map([
+                ['USD', 'United States dollar'],
+                ['EUR', 'Euro'],
+              ])
+            `,
+            code: dedent`
+              new Map([
+                ['EUR', 'Euro'],
+                ['USD', 'United States dollar'],
+              ])
+            `,
+            options: [options],
+          },
+          {
+            errors: [
+              {
+                data: {
+                  right: "'United States'",
+                  left: "'Europe'",
+                },
+                messageId: 'unexpectedMapElementsOrder',
+              },
+            ],
+            output: dedent`
+              new Map([
+                ['United States', 'USD'],
+                ['Europe', 'EUR'],
+              ])
+            `,
+            code: dedent`
+              new Map([
+                ['Europe', 'EUR'],
+                ['United States', 'USD'],
+              ])
+            `,
+            options: [options],
+          },
+        ],
         valid: [
           {
             code: dedent`
@@ -841,56 +891,6 @@ describe(ruleName, () => {
               ])
             `,
             options: [options],
-          },
-        ],
-        invalid: [
-          {
-            code: dedent`
-              new Map([
-                ['EUR', 'Euro'],
-                ['USD', 'United States dollar'],
-              ])
-            `,
-            output: dedent`
-              new Map([
-                ['USD', 'United States dollar'],
-                ['EUR', 'Euro'],
-              ])
-            `,
-            options: [options],
-            errors: [
-              {
-                messageId: 'unexpectedMapElementsOrder',
-                data: {
-                  left: "'EUR'",
-                  right: "'USD'",
-                },
-              },
-            ],
-          },
-          {
-            code: dedent`
-              new Map([
-                ['Europe', 'EUR'],
-                ['United States', 'USD'],
-              ])
-            `,
-            output: dedent`
-              new Map([
-                ['United States', 'USD'],
-                ['Europe', 'EUR'],
-              ])
-            `,
-            options: [options],
-            errors: [
-              {
-                messageId: 'unexpectedMapElementsOrder',
-                data: {
-                  left: "'Europe'",
-                  right: "'United States'",
-                },
-              },
-            ],
           },
         ],
       },
@@ -921,6 +921,32 @@ describe(ruleName, () => {
     })
 
     ruleTester.run(`${ruleName}(${type}): works with variables as keys`, rule, {
+      invalid: [
+        {
+          errors: [
+            {
+              data: {
+                right: 'aa',
+                left: 'b',
+              },
+              messageId: 'unexpectedMapElementsOrder',
+            },
+          ],
+          output: dedent`
+              new Map([
+                [aa, aa],
+                [b, b],
+              ])
+            `,
+          code: dedent`
+              new Map([
+                [b, b],
+                [aa, aa],
+              ])
+            `,
+          options: [options],
+        },
+      ],
       valid: [
         {
           code: dedent`
@@ -930,37 +956,39 @@ describe(ruleName, () => {
               ])
             `,
           options: [options],
-        },
-      ],
-      invalid: [
-        {
-          code: dedent`
-              new Map([
-                [b, b],
-                [aa, aa],
-              ])
-            `,
-          output: dedent`
-              new Map([
-                [aa, aa],
-                [b, b],
-              ])
-            `,
-          options: [options],
-          errors: [
-            {
-              messageId: 'unexpectedMapElementsOrder',
-              data: {
-                left: 'b',
-                right: 'aa',
-              },
-            },
-          ],
         },
       ],
     })
 
     ruleTester.run(`${ruleName}(${type}): works with numbers as keys`, rule, {
+      invalid: [
+        {
+          errors: [
+            {
+              data: {
+                right: '3',
+                left: '1',
+              },
+              messageId: 'unexpectedMapElementsOrder',
+            },
+          ],
+          output: dedent`
+            new Map([
+              [3, 'three'],
+              [2, 'two'],
+              [1, 'one'],
+            ])
+          `,
+          code: dedent`
+            new Map([
+              [2, 'two'],
+              [1, 'one'],
+              [3, 'three'],
+            ])
+          `,
+          options: [options],
+        },
+      ],
       valid: [
         {
           code: dedent`
@@ -971,39 +999,48 @@ describe(ruleName, () => {
             ])
           `,
           options: [options],
-        },
-      ],
-      invalid: [
-        {
-          code: dedent`
-            new Map([
-              [2, 'two'],
-              [1, 'one'],
-              [3, 'three'],
-            ])
-          `,
-          output: dedent`
-            new Map([
-              [3, 'three'],
-              [2, 'two'],
-              [1, 'one'],
-            ])
-          `,
-          options: [options],
-          errors: [
-            {
-              messageId: 'unexpectedMapElementsOrder',
-              data: {
-                left: '1',
-                right: '3',
-              },
-            },
-          ],
         },
       ],
     })
 
     ruleTester.run(`${ruleName}(${type}): sorts variable identifiers`, rule, {
+      invalid: [
+        {
+          errors: [
+            {
+              data: {
+                right: 'cc',
+                left: 'd',
+              },
+              messageId: 'unexpectedMapElementsOrder',
+            },
+            {
+              data: {
+                right: 'bbb',
+                left: 'cc',
+              },
+              messageId: 'unexpectedMapElementsOrder',
+            },
+          ],
+          output: dedent`
+            new Map([
+              aaaa,
+              bbb,
+              cc,
+              d,
+            ])
+          `,
+          code: dedent`
+            new Map([
+              aaaa,
+              d,
+              cc,
+              bbb,
+            ])
+          `,
+          options: [options],
+        },
+      ],
       valid: [
         {
           code: dedent`
@@ -1015,43 +1052,6 @@ describe(ruleName, () => {
             ])
           `,
           options: [options],
-        },
-      ],
-      invalid: [
-        {
-          code: dedent`
-            new Map([
-              aaaa,
-              d,
-              cc,
-              bbb,
-            ])
-          `,
-          output: dedent`
-            new Map([
-              aaaa,
-              bbb,
-              cc,
-              d,
-            ])
-          `,
-          options: [options],
-          errors: [
-            {
-              messageId: 'unexpectedMapElementsOrder',
-              data: {
-                left: 'd',
-                right: 'cc',
-              },
-            },
-            {
-              messageId: 'unexpectedMapElementsOrder',
-              data: {
-                left: 'cc',
-                right: 'bbb',
-              },
-            },
-          ],
         },
       ],
     })
@@ -1062,6 +1062,37 @@ describe(ruleName, () => {
       `${ruleName}: sets alphabetical asc sorting as default`,
       rule,
       {
+        invalid: [
+          {
+            output: dedent`
+              new Map([
+                ['CNY', 'Renminbi'],
+                ['EUR', 'Euro'],
+                ['GBP', 'Sterling'],
+                ['RUB', 'Russian ruble'],
+                ['USD', 'United States dollar'],
+              ])
+            `,
+            code: dedent`
+              new Map([
+                ['CNY', 'Renminbi'],
+                ['RUB', 'Russian ruble'],
+                ['USD', 'United States dollar'],
+                ['EUR', 'Euro'],
+                ['GBP', 'Sterling'],
+              ])
+            `,
+            errors: [
+              {
+                data: {
+                  right: "'EUR'",
+                  left: "'USD'",
+                },
+                messageId: 'unexpectedMapElementsOrder',
+              },
+            ],
+          },
+        ],
         valid: [
           dedent`
             new Map([
@@ -1084,37 +1115,6 @@ describe(ruleName, () => {
             options: [{}],
           },
         ],
-        invalid: [
-          {
-            code: dedent`
-              new Map([
-                ['CNY', 'Renminbi'],
-                ['RUB', 'Russian ruble'],
-                ['USD', 'United States dollar'],
-                ['EUR', 'Euro'],
-                ['GBP', 'Sterling'],
-              ])
-            `,
-            output: dedent`
-              new Map([
-                ['CNY', 'Renminbi'],
-                ['EUR', 'Euro'],
-                ['GBP', 'Sterling'],
-                ['RUB', 'Russian ruble'],
-                ['USD', 'United States dollar'],
-              ])
-            `,
-            errors: [
-              {
-                messageId: 'unexpectedMapElementsOrder',
-                data: {
-                  left: "'USD'",
-                  right: "'EUR'",
-                },
-              },
-            ],
-          },
-        ],
       },
     )
 
@@ -1127,6 +1127,45 @@ describe(ruleName, () => {
       `${ruleName}: respect numeric separators with natural sorting`,
       rule,
       {
+        invalid: [
+          {
+            output: dedent`
+               new Map([
+                [1, "first"],
+                [2, "second"],
+                [3, "third"],
+                [100, "hundredth"],
+                [1_000, "thousandth"],
+                [1_000_000, "millionth"]
+              ])
+            `,
+            code: dedent`
+               new Map([
+                [1, "first"],
+                [2, "second"],
+                [3, "third"],
+                [1_000, "thousandth"],
+                [100, "hundredth"],
+                [1_000_000, "millionth"]
+              ])
+            `,
+            errors: [
+              {
+                data: {
+                  left: '1_000',
+                  right: '100',
+                },
+                messageId: 'unexpectedMapElementsOrder',
+              },
+            ],
+            options: [
+              {
+                type: 'natural',
+                order: 'asc',
+              },
+            ],
+          },
+        ],
         valid: [
           {
             code: dedent`
@@ -1147,61 +1186,22 @@ describe(ruleName, () => {
             ],
           },
         ],
-        invalid: [
-          {
-            code: dedent`
-               new Map([
-                [1, "first"],
-                [2, "second"],
-                [3, "third"],
-                [1_000, "thousandth"],
-                [100, "hundredth"],
-                [1_000_000, "millionth"]
-              ])
-            `,
-            output: dedent`
-               new Map([
-                [1, "first"],
-                [2, "second"],
-                [3, "third"],
-                [100, "hundredth"],
-                [1_000, "thousandth"],
-                [1_000_000, "millionth"]
-              ])
-            `,
-            options: [
-              {
-                type: 'natural',
-                order: 'asc',
-              },
-            ],
-            errors: [
-              {
-                messageId: 'unexpectedMapElementsOrder',
-                data: {
-                  left: '1_000',
-                  right: '100',
-                },
-              },
-            ],
-          },
-        ],
       },
     )
 
     let eslintDisableRuleTesterName = `${ruleName}: supports 'eslint-disable' for individual nodes`
     ruleTester.run(eslintDisableRuleTesterName, rule, {
-      valid: [],
       invalid: [
         {
-          code: dedent`
-            new Map([
-              [c, 'c'],
-              [b, 'b'],
-              // eslint-disable-next-line
-              [a, 'a']
-            ])
-          `,
+          errors: [
+            {
+              data: {
+                right: 'b',
+                left: 'c',
+              },
+              messageId: 'unexpectedMapElementsOrder',
+            },
+          ],
           output: dedent`
             new Map([
               [b, 'b'],
@@ -1210,27 +1210,33 @@ describe(ruleName, () => {
               [a, 'a']
             ])
           `,
-          options: [{}],
-          errors: [
-            {
-              messageId: 'unexpectedMapElementsOrder',
-              data: {
-                left: 'c',
-                right: 'b',
-              },
-            },
-          ],
-        },
-        {
           code: dedent`
             new Map([
-              [d, 'd'],
               [c, 'c'],
+              [b, 'b'],
               // eslint-disable-next-line
-              [a, 'a'],
-              [b, 'b']
+              [a, 'a']
             ])
           `,
+          options: [{}],
+        },
+        {
+          errors: [
+            {
+              data: {
+                right: 'c',
+                left: 'd',
+              },
+              messageId: 'unexpectedMapElementsOrder',
+            },
+            {
+              data: {
+                right: 'b',
+                left: 'a',
+              },
+              messageId: 'unexpectedMapElementsOrder',
+            },
+          ],
           output: dedent`
             new Map([
               [b, 'b'],
@@ -1240,36 +1246,31 @@ describe(ruleName, () => {
               [d, 'd']
             ])
           `,
+          code: dedent`
+            new Map([
+              [d, 'd'],
+              [c, 'c'],
+              // eslint-disable-next-line
+              [a, 'a'],
+              [b, 'b']
+            ])
+          `,
           options: [
             {
               partitionByComment: true,
             },
           ],
-          errors: [
-            {
-              messageId: 'unexpectedMapElementsOrder',
-              data: {
-                left: 'd',
-                right: 'c',
-              },
-            },
-            {
-              messageId: 'unexpectedMapElementsOrder',
-              data: {
-                left: 'a',
-                right: 'b',
-              },
-            },
-          ],
         },
         {
-          code: dedent`
-            new Map([
-              [c, 'c'],
-              [b, 'b'],
-              [a, 'a'] // eslint-disable-line
-            ])
-          `,
+          errors: [
+            {
+              data: {
+                right: 'b',
+                left: 'c',
+              },
+              messageId: 'unexpectedMapElementsOrder',
+            },
+          ],
           output: dedent`
             new Map([
               [b, 'b'],
@@ -1277,26 +1278,25 @@ describe(ruleName, () => {
               [a, 'a'] // eslint-disable-line
             ])
           `,
-          options: [{}],
-          errors: [
-            {
-              messageId: 'unexpectedMapElementsOrder',
-              data: {
-                left: 'c',
-                right: 'b',
-              },
-            },
-          ],
-        },
-        {
           code: dedent`
             new Map([
               [c, 'c'],
               [b, 'b'],
-              /* eslint-disable-next-line */
-              [a, 'a']
+              [a, 'a'] // eslint-disable-line
             ])
           `,
+          options: [{}],
+        },
+        {
+          errors: [
+            {
+              data: {
+                right: 'b',
+                left: 'c',
+              },
+              messageId: 'unexpectedMapElementsOrder',
+            },
+          ],
           output: dedent`
             new Map([
               [b, 'b'],
@@ -1305,25 +1305,26 @@ describe(ruleName, () => {
               [a, 'a']
             ])
           `,
-          options: [{}],
-          errors: [
-            {
-              messageId: 'unexpectedMapElementsOrder',
-              data: {
-                left: 'c',
-                right: 'b',
-              },
-            },
-          ],
-        },
-        {
           code: dedent`
             new Map([
               [c, 'c'],
               [b, 'b'],
-              [a, 'a'] /* eslint-disable-line */
+              /* eslint-disable-next-line */
+              [a, 'a']
             ])
           `,
+          options: [{}],
+        },
+        {
+          errors: [
+            {
+              data: {
+                right: 'b',
+                left: 'c',
+              },
+              messageId: 'unexpectedMapElementsOrder',
+            },
+          ],
           output: dedent`
             new Map([
               [b, 'b'],
@@ -1331,30 +1332,16 @@ describe(ruleName, () => {
               [a, 'a'] /* eslint-disable-line */
             ])
           `,
-          options: [{}],
-          errors: [
-            {
-              messageId: 'unexpectedMapElementsOrder',
-              data: {
-                left: 'c',
-                right: 'b',
-              },
-            },
-          ],
-        },
-        {
           code: dedent`
             new Map([
-              [d, 'd'],
-              [e, 'e'],
-              /* eslint-disable */
               [c, 'c'],
               [b, 'b'],
-              // Shouldn't move
-              /* eslint-enable */
-              [a, 'a'],
+              [a, 'a'] /* eslint-disable-line */
             ])
           `,
+          options: [{}],
+        },
+        {
           output: dedent`
             new Map([
               [a, 'a'],
@@ -1367,26 +1354,30 @@ describe(ruleName, () => {
               [e, 'e'],
             ])
           `,
-          options: [{}],
+          code: dedent`
+            new Map([
+              [d, 'd'],
+              [e, 'e'],
+              /* eslint-disable */
+              [c, 'c'],
+              [b, 'b'],
+              // Shouldn't move
+              /* eslint-enable */
+              [a, 'a'],
+            ])
+          `,
           errors: [
             {
-              messageId: 'unexpectedMapElementsOrder',
               data: {
-                left: 'b',
                 right: 'a',
+                left: 'b',
               },
+              messageId: 'unexpectedMapElementsOrder',
             },
           ],
+          options: [{}],
         },
         {
-          code: dedent`
-            new Map([
-              [c, 'c'],
-              [b, 'b'],
-              // eslint-disable-next-line @rule-tester/${eslintDisableRuleTesterName}
-              [a, 'a']
-            ])
-          `,
           output: dedent`
             new Map([
               [b, 'b'],
@@ -1395,25 +1386,26 @@ describe(ruleName, () => {
               [a, 'a']
             ])
           `,
-          options: [{}],
-          errors: [
-            {
-              messageId: 'unexpectedMapElementsOrder',
-              data: {
-                left: 'c',
-                right: 'b',
-              },
-            },
-          ],
-        },
-        {
           code: dedent`
             new Map([
               [c, 'c'],
               [b, 'b'],
-              [a, 'a'] // eslint-disable-line @rule-tester/${eslintDisableRuleTesterName}
+              // eslint-disable-next-line @rule-tester/${eslintDisableRuleTesterName}
+              [a, 'a']
             ])
           `,
+          errors: [
+            {
+              data: {
+                right: 'b',
+                left: 'c',
+              },
+              messageId: 'unexpectedMapElementsOrder',
+            },
+          ],
+          options: [{}],
+        },
+        {
           output: dedent`
             new Map([
               [b, 'b'],
@@ -1421,18 +1413,33 @@ describe(ruleName, () => {
               [a, 'a'] // eslint-disable-line @rule-tester/${eslintDisableRuleTesterName}
             ])
           `,
-          options: [{}],
+          code: dedent`
+            new Map([
+              [c, 'c'],
+              [b, 'b'],
+              [a, 'a'] // eslint-disable-line @rule-tester/${eslintDisableRuleTesterName}
+            ])
+          `,
           errors: [
             {
-              messageId: 'unexpectedMapElementsOrder',
               data: {
-                left: 'c',
                 right: 'b',
+                left: 'c',
               },
+              messageId: 'unexpectedMapElementsOrder',
             },
           ],
+          options: [{}],
         },
         {
+          output: dedent`
+            new Map([
+              [b, 'b'],
+              [c, 'c'],
+              /* eslint-disable-next-line @rule-tester/${eslintDisableRuleTesterName} */
+              [a, 'a']
+            ])
+          `,
           code: dedent`
             new Map([
               [c, 'c'],
@@ -1441,26 +1448,25 @@ describe(ruleName, () => {
               [a, 'a']
             ])
           `,
+          errors: [
+            {
+              data: {
+                right: 'b',
+                left: 'c',
+              },
+              messageId: 'unexpectedMapElementsOrder',
+            },
+          ],
+          options: [{}],
+        },
+        {
           output: dedent`
             new Map([
               [b, 'b'],
               [c, 'c'],
-              /* eslint-disable-next-line @rule-tester/${eslintDisableRuleTesterName} */
-              [a, 'a']
+              [a, 'a'] /* eslint-disable-line @rule-tester/${eslintDisableRuleTesterName} */
             ])
           `,
-          options: [{}],
-          errors: [
-            {
-              messageId: 'unexpectedMapElementsOrder',
-              data: {
-                left: 'c',
-                right: 'b',
-              },
-            },
-          ],
-        },
-        {
           code: dedent`
             new Map([
               [c, 'c'],
@@ -1468,25 +1474,30 @@ describe(ruleName, () => {
               [a, 'a'] /* eslint-disable-line @rule-tester/${eslintDisableRuleTesterName} */
             ])
           `,
-          output: dedent`
-            new Map([
-              [b, 'b'],
-              [c, 'c'],
-              [a, 'a'] /* eslint-disable-line @rule-tester/${eslintDisableRuleTesterName} */
-            ])
-          `,
-          options: [{}],
           errors: [
             {
-              messageId: 'unexpectedMapElementsOrder',
               data: {
-                left: 'c',
                 right: 'b',
+                left: 'c',
               },
+              messageId: 'unexpectedMapElementsOrder',
             },
           ],
+          options: [{}],
         },
         {
+          output: dedent`
+            new Map([
+              [a, 'a'],
+              [d, 'd'],
+              /* eslint-disable @rule-tester/${eslintDisableRuleTesterName} */
+              [c, 'c'],
+              [b, 'b'],
+              // Shouldn't move
+              /* eslint-enable */
+              [e, 'e'],
+            ])
+          `,
           code: dedent`
             new Map([
               [d, 'd'],
@@ -1499,30 +1510,19 @@ describe(ruleName, () => {
               [a, 'a'],
             ])
           `,
-          output: dedent`
-            new Map([
-              [a, 'a'],
-              [d, 'd'],
-              /* eslint-disable @rule-tester/${eslintDisableRuleTesterName} */
-              [c, 'c'],
-              [b, 'b'],
-              // Shouldn't move
-              /* eslint-enable */
-              [e, 'e'],
-            ])
-          `,
-          options: [{}],
           errors: [
             {
-              messageId: 'unexpectedMapElementsOrder',
               data: {
-                left: 'b',
                 right: 'a',
+                left: 'b',
               },
+              messageId: 'unexpectedMapElementsOrder',
             },
           ],
+          options: [{}],
         },
       ],
+      valid: [],
     })
   })
 })

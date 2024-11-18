@@ -23,6 +23,9 @@ interface CustomGroupMatchesProps {
 
 /**
  * Returns a list of groups of overload signatures.
+ * @param {TSESTree.ClassElement[]} members - The class elements to process.
+ * @returns {TSESTree.ClassElement[][]} An array of groups of overload
+ * signatures.
  */
 export let getOverloadSignatureGroups = (
   members: TSESTree.ClassElement[],
@@ -63,7 +66,11 @@ export let getOverloadSignatureGroups = (
 }
 
 /**
- * Returns whether a custom group matches the given properties
+ * Determines whether a custom group matches the given properties.
+ * @param {CustomGroupMatchesProps} props - The properties to match against the
+ * custom group, including selectors, modifiers, decorators, and element names.
+ * @returns {boolean} `true` if the custom group matches the properties;
+ * otherwise, `false`.
  */
 export let customGroupMatches = (props: CustomGroupMatchesProps): boolean => {
   if ('anyOf' in props.customGroup) {
@@ -130,9 +137,15 @@ export let customGroupMatches = (props: CustomGroupMatchesProps): boolean => {
 }
 
 /**
- * Returns the compare options used to sort a given group.
- * If the group is a custom group, its options will be favored over the default options.
- * Returns null if the group should not be sorted
+ * Retrieves the compare options used to sort a given group. If the group is a
+ * custom group, its options will be favored over the default options. Returns
+ * `null` if the group should not be sorted.
+ * @param {Required<SortClassesOptions>[0]} options - The sorting options,
+ * including groups and custom groups.
+ * @param {number} groupNumber - The index of the group to retrieve compare
+ * options for.
+ * @returns {CompareOptions | null} The compare options for the group, or `null`
+ * if the group should not be sorted.
  */
 export let getCompareOptions = (
   options: Required<SortClassesOptions[0]>,
@@ -149,12 +162,12 @@ export let getCompareOptions = (
     return null
   }
   return {
-    type: customGroup?.type ?? options.type,
     order:
       customGroup && 'order' in customGroup && customGroup.order
         ? customGroup.order
         : options.order,
     specialCharacters: options.specialCharacters,
+    type: customGroup?.type ?? options.type,
     ignoreCase: options.ignoreCase,
     locales: options.locales,
   }

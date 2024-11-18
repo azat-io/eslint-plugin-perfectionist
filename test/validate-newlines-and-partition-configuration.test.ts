@@ -16,8 +16,8 @@ describe('validate-newlines-and-partition-configuration', () => {
       for (let partitionByComment of partitionByCommentValues) {
         expect(() => {
           validateNewlinesAndPartitionConfiguration({
-            newlinesBetween,
             partitionByNewLine: partitionByComment,
+            newlinesBetween,
           })
         }).toThrow(
           "The 'partitionByNewLine' and 'newlinesBetween' options cannot be used together",
@@ -30,8 +30,8 @@ describe('validate-newlines-and-partition-configuration', () => {
     for (let partitionByComment of partitionByCommentValues) {
       expect(() => {
         validateNewlinesAndPartitionConfiguration({
-          newlinesBetween: 'ignore',
           partitionByNewLine: partitionByComment,
+          newlinesBetween: 'ignore',
         })
       }).not.toThrow()
     }
@@ -43,8 +43,8 @@ describe('validate-newlines-and-partition-configuration', () => {
     for (let newlinesBetween of newlinesBetweenValues) {
       expect(() => {
         validateNewlinesAndPartitionConfiguration({
-          newlinesBetween,
           partitionByNewLine: false,
+          newlinesBetween,
         })
       }).not.toThrow()
     }

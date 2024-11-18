@@ -4,10 +4,6 @@ import type { SortingNode } from '../typings'
 import { getGroupNumber } from './get-group-number'
 import { sortNodes } from './sort-nodes'
 
-interface GroupOptions {
-  groups: (string[] | string)[]
-}
-
 interface ExtraOptions<T extends SortingNode> {
   /**
    * If not provided, `options` will be used. If function returns null, nodes
@@ -16,6 +12,10 @@ interface ExtraOptions<T extends SortingNode> {
   getGroupCompareOptions?(groupNumber: number): CompareOptions | null
   ignoreEslintDisabledNodes?: boolean
   isNodeIgnored?(node: T): boolean
+}
+
+interface GroupOptions {
+  groups: (string[] | string)[]
 }
 
 export let sortNodesByGroups = <T extends SortingNode>(

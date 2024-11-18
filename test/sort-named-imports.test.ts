@@ -26,60 +26,48 @@ describe(ruleName, () => {
     } as const
 
     ruleTester.run(`${ruleName}(${type}): sorts named imports`, rule, {
+      invalid: [
+        {
+          errors: [
+            {
+              data: {
+                right: 'AAA',
+                left: 'BB',
+              },
+              messageId: 'unexpectedNamedImportsOrder',
+            },
+          ],
+          output: dedent`
+            import { AAA, BB, C } from 'module'
+          `,
+          code: dedent`
+            import { BB, AAA, C } from 'module'
+          `,
+          options: [options],
+        },
+      ],
       valid: [
         {
           code: dedent`
             import { AAA, BB, C } from 'module'
           `,
           options: [options],
-        },
-      ],
-      invalid: [
-        {
-          code: dedent`
-            import { BB, AAA, C } from 'module'
-          `,
-          output: dedent`
-            import { AAA, BB, C } from 'module'
-          `,
-          options: [options],
-          errors: [
-            {
-              messageId: 'unexpectedNamedImportsOrder',
-              data: {
-                left: 'BB',
-                right: 'AAA',
-              },
-            },
-          ],
         },
       ],
     })
 
     ruleTester.run(`${ruleName}: sorts named multiline imports`, rule, {
-      valid: [
-        {
-          code: dedent`
-            import {
-              AAAA,
-              BBB,
-              CC,
-              D,
-            } from 'module'
-          `,
-          options: [options],
-        },
-      ],
       invalid: [
         {
-          code: dedent`
-            import {
-              AAAA,
-              CC,
-              BBB,
-              D,
-            } from 'module'
-          `,
+          errors: [
+            {
+              data: {
+                right: 'BBB',
+                left: 'CC',
+              },
+              messageId: 'unexpectedNamedImportsOrder',
+            },
+          ],
           output: dedent`
             import {
               AAAA,
@@ -88,35 +76,58 @@ describe(ruleName, () => {
               D,
             } from 'module'
           `,
+          code: dedent`
+            import {
+              AAAA,
+              CC,
+              BBB,
+              D,
+            } from 'module'
+          `,
           options: [options],
-          errors: [
-            {
-              messageId: 'unexpectedNamedImportsOrder',
-              data: {
-                left: 'CC',
-                right: 'BBB',
-              },
-            },
-          ],
+        },
+      ],
+      valid: [
+        {
+          code: dedent`
+            import {
+              AAAA,
+              BBB,
+              CC,
+              D,
+            } from 'module'
+          `,
+          options: [options],
         },
       ],
     })
 
     ruleTester.run(`${ruleName}: sorts named imports with aliases`, rule, {
-      valid: [
+      invalid: [
         {
-          code: dedent`
+          errors: [
+            {
+              data: {
+                right: 'X0',
+                left: 'X1',
+              },
+              messageId: 'unexpectedNamedImportsOrder',
+            },
+            {
+              data: {
+                left: 'X0',
+                right: 'C',
+              },
+              messageId: 'unexpectedNamedImportsOrder',
+            },
+          ],
+          output: dedent`
             import {
               C,
               BB as X0,
               A as X1
             } from 'module'
           `,
-          options: [options],
-        },
-      ],
-      invalid: [
-        {
           code: dedent`
             import {
               A as X1,
@@ -124,7 +135,12 @@ describe(ruleName, () => {
               C
             } from 'module'
           `,
-          output: dedent`
+          options: [options],
+        },
+      ],
+      valid: [
+        {
+          code: dedent`
             import {
               C,
               BB as X0,
@@ -132,22 +148,6 @@ describe(ruleName, () => {
             } from 'module'
           `,
           options: [options],
-          errors: [
-            {
-              messageId: 'unexpectedNamedImportsOrder',
-              data: {
-                left: 'X1',
-                right: 'X0',
-              },
-            },
-            {
-              messageId: 'unexpectedNamedImportsOrder',
-              data: {
-                left: 'X0',
-                right: 'C',
-              },
-            },
-          ],
         },
       ],
     })
@@ -165,6 +165,43 @@ describe(ruleName, () => {
     })
 
     ruleTester.run(`${ruleName}: sorts with import aliases`, rule, {
+      invalid: [
+        {
+          errors: [
+            {
+              data: {
+                right: 'A',
+                left: 'B',
+              },
+              messageId: 'unexpectedNamedImportsOrder',
+            },
+            {
+              data: {
+                right: 'C',
+                left: 'D',
+              },
+              messageId: 'unexpectedNamedImportsOrder',
+            },
+          ],
+          output: dedent`
+            import U, {
+              aaa as A,
+              B,
+              cc as C,
+              d as D,
+            } from 'module'
+          `,
+          code: dedent`
+            import U, {
+              B,
+              aaa as A,
+              d as D,
+              cc as C,
+            } from 'module'
+          `,
+          options: [options],
+        },
+      ],
       valid: [
         {
           code: dedent`
@@ -178,46 +215,42 @@ describe(ruleName, () => {
           options: [options],
         },
       ],
+    })
+
+    ruleTester.run(`${ruleName}: allows to ignore import aliases`, rule, {
       invalid: [
         {
-          code: dedent`
-            import U, {
-              B,
-              aaa as A,
-              d as D,
-              cc as C,
-            } from 'module'
-          `,
-          output: dedent`
-            import U, {
-              aaa as A,
-              B,
-              cc as C,
-              d as D,
-            } from 'module'
-          `,
-          options: [options],
           errors: [
             {
-              messageId: 'unexpectedNamedImportsOrder',
               data: {
-                left: 'B',
-                right: 'A',
+                right: 'a',
+                left: 'c',
               },
+              messageId: 'unexpectedNamedImportsOrder',
             },
+          ],
+          output: dedent`
+            import {
+              x as a,
+              y as b,
+              c,
+            } from 'module'
+          `,
+          code: dedent`
+            import {
+              c,
+              x as a,
+              y as b,
+            } from 'module'
+          `,
+          options: [
             {
-              messageId: 'unexpectedNamedImportsOrder',
-              data: {
-                left: 'D',
-                right: 'C',
-              },
+              ...options,
+              ignoreAlias: false,
             },
           ],
         },
       ],
-    })
-
-    ruleTester.run(`${ruleName}: allows to ignore import aliases`, rule, {
       valid: [
         {
           code: dedent`
@@ -235,45 +268,75 @@ describe(ruleName, () => {
           ],
         },
       ],
-      invalid: [
-        {
-          code: dedent`
-            import {
-              c,
-              x as a,
-              y as b,
-            } from 'module'
-          `,
-          output: dedent`
-            import {
-              x as a,
-              y as b,
-              c,
-            } from 'module'
-          `,
-          options: [
-            {
-              ...options,
-              ignoreAlias: false,
-            },
-          ],
-          errors: [
-            {
-              messageId: 'unexpectedNamedImportsOrder',
-              data: {
-                left: 'c',
-                right: 'a',
-              },
-            },
-          ],
-        },
-      ],
     })
 
     ruleTester.run(
       `${ruleName}: sorts named imports grouping by their kind`,
       rule,
       {
+        invalid: [
+          {
+            errors: [
+              {
+                data: {
+                  right: 'BB',
+                  left: 'C',
+                },
+                messageId: 'unexpectedNamedImportsOrder',
+              },
+            ],
+            output: dedent`
+              import { AAA, type BB, BB, type C } from 'module'
+            `,
+            code: dedent`
+              import { AAA, type BB, type C, BB } from 'module'
+            `,
+            options: [{ ...options, groupKind: 'mixed' }],
+          },
+          {
+            errors: [
+              {
+                data: {
+                  right: 'BB',
+                  left: 'BB',
+                },
+                messageId: 'unexpectedNamedImportsOrder',
+              },
+            ],
+            output: dedent`
+              import { AAA, BB, type BB, type C } from 'module'
+            `,
+            code: dedent`
+              import { AAA, type BB, BB, type C } from 'module'
+            `,
+            options: [{ ...options, groupKind: 'values-first' }],
+          },
+          {
+            errors: [
+              {
+                data: {
+                  left: 'AAA',
+                  right: 'BB',
+                },
+                messageId: 'unexpectedNamedImportsOrder',
+              },
+              {
+                data: {
+                  left: 'BB',
+                  right: 'C',
+                },
+                messageId: 'unexpectedNamedImportsOrder',
+              },
+            ],
+            output: dedent`
+              import { type BB, type C, AAA, BB } from 'module'
+            `,
+            code: dedent`
+              import { AAA, type BB, BB, type C } from 'module'
+            `,
+            options: [{ ...options, groupKind: 'types-first' }],
+          },
+        ],
         valid: [
           {
             code: dedent`
@@ -294,109 +357,46 @@ describe(ruleName, () => {
             options: [{ ...options, groupKind: 'types-first' }],
           },
         ],
-        invalid: [
-          {
-            code: dedent`
-              import { AAA, type BB, type C, BB } from 'module'
-            `,
-            output: dedent`
-              import { AAA, type BB, BB, type C } from 'module'
-            `,
-            options: [{ ...options, groupKind: 'mixed' }],
-            errors: [
-              {
-                messageId: 'unexpectedNamedImportsOrder',
-                data: {
-                  left: 'C',
-                  right: 'BB',
-                },
-              },
-            ],
-          },
-          {
-            code: dedent`
-              import { AAA, type BB, BB, type C } from 'module'
-            `,
-            output: dedent`
-              import { AAA, BB, type BB, type C } from 'module'
-            `,
-            options: [{ ...options, groupKind: 'values-first' }],
-            errors: [
-              {
-                messageId: 'unexpectedNamedImportsOrder',
-                data: {
-                  left: 'BB',
-                  right: 'BB',
-                },
-              },
-            ],
-          },
-          {
-            code: dedent`
-              import { AAA, type BB, BB, type C } from 'module'
-            `,
-            output: dedent`
-              import { type BB, type C, AAA, BB } from 'module'
-            `,
-            options: [{ ...options, groupKind: 'types-first' }],
-            errors: [
-              {
-                messageId: 'unexpectedNamedImportsOrder',
-                data: {
-                  left: 'AAA',
-                  right: 'BB',
-                },
-              },
-              {
-                messageId: 'unexpectedNamedImportsOrder',
-                data: {
-                  left: 'BB',
-                  right: 'C',
-                },
-              },
-            ],
-          },
-        ],
       },
     )
 
     ruleTester.run(`${ruleName}: allows to use original import names`, rule, {
-      valid: [
+      invalid: [
         {
-          code: dedent`
-            import { A as B, B as A } from 'module'
-          `,
+          errors: [
+            {
+              data: {
+                right: 'A',
+                left: 'B',
+              },
+              messageId: 'unexpectedNamedImportsOrder',
+            },
+          ],
           options: [
             {
               ...options,
               ignoreAlias: true,
             },
           ],
-        },
-      ],
-      invalid: [
-        {
-          code: dedent`
-            import { B as A, A as B } from 'module'
-          `,
           output: dedent`
             import { A as B, B as A } from 'module'
           `,
+          code: dedent`
+            import { B as A, A as B } from 'module'
+          `,
+        },
+      ],
+      valid: [
+        {
           options: [
             {
               ...options,
               ignoreAlias: true,
             },
           ],
-          errors: [
-            {
-              messageId: 'unexpectedNamedImportsOrder',
-              data: {
-                left: 'B',
-                right: 'A',
-              },
-            },
-          ],
+          code: dedent`
+            import { A as B, B as A } from 'module'
+          `,
         },
       ],
     })
@@ -405,20 +405,24 @@ describe(ruleName, () => {
       `${ruleName}(${type}): allows to use new line as partition`,
       rule,
       {
-        valid: [],
         invalid: [
           {
-            code: dedent`
-              import {
-                D,
-                A,
-
-                C,
-
-                E,
-                B,
-              } from 'module'
-            `,
+            errors: [
+              {
+                data: {
+                  right: 'A',
+                  left: 'D',
+                },
+                messageId: 'unexpectedNamedImportsOrder',
+              },
+              {
+                data: {
+                  right: 'B',
+                  left: 'E',
+                },
+                messageId: 'unexpectedNamedImportsOrder',
+              },
+            ],
             output: dedent`
               import {
                 A,
@@ -430,30 +434,26 @@ describe(ruleName, () => {
                 E,
               } from 'module'
             `,
+            code: dedent`
+              import {
+                D,
+                A,
+
+                C,
+
+                E,
+                B,
+              } from 'module'
+            `,
             options: [
               {
                 ...options,
                 partitionByNewLine: true,
               },
             ],
-            errors: [
-              {
-                messageId: 'unexpectedNamedImportsOrder',
-                data: {
-                  left: 'D',
-                  right: 'A',
-                },
-              },
-              {
-                messageId: 'unexpectedNamedImportsOrder',
-                data: {
-                  left: 'E',
-                  right: 'B',
-                },
-              },
-            ],
           },
         ],
+        valid: [],
       },
     )
 
@@ -462,25 +462,24 @@ describe(ruleName, () => {
         `${ruleName}(${type}): allows to use partition comments`,
         rule,
         {
-          valid: [],
           invalid: [
             {
-              code: dedent`
-                import {
-                  // Part: A
-                  CC,
-                  type D,
-                  // Not partition comment
-                  BBB,
-                  // Part: B
-                  AAAA,
-                  E,
-                  // Part: C
-                  GG,
-                  // Not partition comment
-                  FFF,
-                } from 'module'
-              `,
+              errors: [
+                {
+                  data: {
+                    left: 'CC',
+                    right: 'D',
+                  },
+                  messageId: 'unexpectedNamedImportsOrder',
+                },
+                {
+                  data: {
+                    right: 'FFF',
+                    left: 'GG',
+                  },
+                  messageId: 'unexpectedNamedImportsOrder',
+                },
+              ],
               output: dedent`
                 import {
                   // Part: A
@@ -497,6 +496,22 @@ describe(ruleName, () => {
                   GG,
                 } from 'module'
               `,
+              code: dedent`
+                import {
+                  // Part: A
+                  CC,
+                  type D,
+                  // Not partition comment
+                  BBB,
+                  // Part: B
+                  AAAA,
+                  E,
+                  // Part: C
+                  GG,
+                  // Not partition comment
+                  FFF,
+                } from 'module'
+              `,
               options: [
                 {
                   ...options,
@@ -504,24 +519,9 @@ describe(ruleName, () => {
                   groupKind: 'types-first',
                 },
               ],
-              errors: [
-                {
-                  messageId: 'unexpectedNamedImportsOrder',
-                  data: {
-                    left: 'CC',
-                    right: 'D',
-                  },
-                },
-                {
-                  messageId: 'unexpectedNamedImportsOrder',
-                  data: {
-                    left: 'GG',
-                    right: 'FFF',
-                  },
-                },
-              ],
             },
           ],
+          valid: [],
         },
       )
 
@@ -555,7 +555,6 @@ describe(ruleName, () => {
         `${ruleName}(${type}): allows to use multiple partition comments`,
         rule,
         {
-          valid: [],
           invalid: [
             {
               code: dedent`
@@ -584,23 +583,24 @@ describe(ruleName, () => {
                   E,
                 } from 'module'
             `,
+              errors: [
+                {
+                  data: {
+                    right: 'BB',
+                    left: 'C',
+                  },
+                  messageId: 'unexpectedNamedImportsOrder',
+                },
+              ],
               options: [
                 {
                   ...options,
                   partitionByComment: ['Partition Comment', 'Part: *', 'Other'],
                 },
               ],
-              errors: [
-                {
-                  messageId: 'unexpectedNamedImportsOrder',
-                  data: {
-                    left: 'C',
-                    right: 'BB',
-                  },
-                },
-              ],
             },
           ],
+          valid: [],
         },
       )
     })
@@ -611,15 +611,15 @@ describe(ruleName, () => {
       {
         valid: [
           {
-            code: dedent`
-              import { _a, b, _c } from 'module'
-            `,
             options: [
               {
                 ...options,
                 specialCharacters: 'trim',
               },
             ],
+            code: dedent`
+              import { _a, b, _c } from 'module'
+            `,
           },
         ],
         invalid: [],
@@ -632,15 +632,15 @@ describe(ruleName, () => {
       {
         valid: [
           {
-            code: dedent`
-              import { ab, a_c } from 'module'
-            `,
             options: [
               {
                 ...options,
                 specialCharacters: 'remove',
               },
             ],
+            code: dedent`
+              import { ab, a_c } from 'module'
+            `,
           },
         ],
         invalid: [],
@@ -660,42 +660,42 @@ describe(ruleName, () => {
     })
 
     ruleTester.run(`${ruleName}(${type}): works with arbitrary names`, rule, {
-      valid: [
+      invalid: [
         {
-          code: dedent`
-            import { "A" as a, "B" as b } from 'module';
-          `,
+          errors: [
+            {
+              data: {
+                right: 'A',
+                left: 'B',
+              },
+              messageId: 'unexpectedNamedImportsOrder',
+            },
+          ],
           options: [
             {
               ...options,
               ignoreAlias: true,
             },
           ],
-        },
-      ],
-      invalid: [
-        {
-          code: dedent`
-            import { "B" as b, "A" as a } from 'module';
-          `,
           output: dedent`
             import { "A" as a, "B" as b } from 'module';
           `,
+          code: dedent`
+            import { "B" as b, "A" as a } from 'module';
+          `,
+        },
+      ],
+      valid: [
+        {
           options: [
             {
               ...options,
               ignoreAlias: true,
             },
           ],
-          errors: [
-            {
-              messageId: 'unexpectedNamedImportsOrder',
-              data: {
-                left: 'B',
-                right: 'A',
-              },
-            },
-          ],
+          code: dedent`
+            import { "A" as a, "B" as b } from 'module';
+          `,
         },
       ],
     })
@@ -704,53 +704,53 @@ describe(ruleName, () => {
       `${ruleName}(${type}): sorts inline elements correctly`,
       rule,
       {
-        valid: [],
         invalid: [
           {
-            code: dedent`
-              import {
-                b, a
-              } from 'module'
-            `,
+            errors: [
+              {
+                data: {
+                  right: 'a',
+                  left: 'b',
+                },
+                messageId: 'unexpectedNamedImportsOrder',
+              },
+            ],
             output: dedent`
               import {
                 a, b
               } from 'module'
             `,
-            options: [options],
-            errors: [
-              {
-                messageId: 'unexpectedNamedImportsOrder',
-                data: {
-                  left: 'b',
-                  right: 'a',
-                },
-              },
-            ],
-          },
-          {
             code: dedent`
               import {
-                b, a,
+                b, a
               } from 'module'
             `,
+            options: [options],
+          },
+          {
+            errors: [
+              {
+                data: {
+                  right: 'a',
+                  left: 'b',
+                },
+                messageId: 'unexpectedNamedImportsOrder',
+              },
+            ],
             output: dedent`
               import {
                 a, b,
               } from 'module'
             `,
+            code: dedent`
+              import {
+                b, a,
+              } from 'module'
+            `,
             options: [options],
-            errors: [
-              {
-                messageId: 'unexpectedNamedImportsOrder',
-                data: {
-                  left: 'b',
-                  right: 'a',
-                },
-              },
-            ],
           },
         ],
+        valid: [],
       },
     )
   })
@@ -765,60 +765,48 @@ describe(ruleName, () => {
     } as const
 
     ruleTester.run(`${ruleName}(${type}): sorts named imports`, rule, {
+      invalid: [
+        {
+          errors: [
+            {
+              data: {
+                right: 'AAA',
+                left: 'BB',
+              },
+              messageId: 'unexpectedNamedImportsOrder',
+            },
+          ],
+          output: dedent`
+            import { AAA, BB, C } from 'module'
+          `,
+          code: dedent`
+            import { BB, AAA, C } from 'module'
+          `,
+          options: [options],
+        },
+      ],
       valid: [
         {
           code: dedent`
             import { AAA, BB, C } from 'module'
           `,
           options: [options],
-        },
-      ],
-      invalid: [
-        {
-          code: dedent`
-            import { BB, AAA, C } from 'module'
-          `,
-          output: dedent`
-            import { AAA, BB, C } from 'module'
-          `,
-          options: [options],
-          errors: [
-            {
-              messageId: 'unexpectedNamedImportsOrder',
-              data: {
-                left: 'BB',
-                right: 'AAA',
-              },
-            },
-          ],
         },
       ],
     })
 
     ruleTester.run(`${ruleName}: sorts named multiline imports`, rule, {
-      valid: [
-        {
-          code: dedent`
-            import {
-              AAAA,
-              BBB,
-              CC,
-              D,
-            } from 'module'
-          `,
-          options: [options],
-        },
-      ],
       invalid: [
         {
-          code: dedent`
-            import {
-              AAAA,
-              CC,
-              BBB,
-              D,
-            } from 'module'
-          `,
+          errors: [
+            {
+              data: {
+                right: 'BBB',
+                left: 'CC',
+              },
+              messageId: 'unexpectedNamedImportsOrder',
+            },
+          ],
           output: dedent`
             import {
               AAAA,
@@ -827,35 +815,58 @@ describe(ruleName, () => {
               D,
             } from 'module'
           `,
+          code: dedent`
+            import {
+              AAAA,
+              CC,
+              BBB,
+              D,
+            } from 'module'
+          `,
           options: [options],
-          errors: [
-            {
-              messageId: 'unexpectedNamedImportsOrder',
-              data: {
-                left: 'CC',
-                right: 'BBB',
-              },
-            },
-          ],
+        },
+      ],
+      valid: [
+        {
+          code: dedent`
+            import {
+              AAAA,
+              BBB,
+              CC,
+              D,
+            } from 'module'
+          `,
+          options: [options],
         },
       ],
     })
 
     ruleTester.run(`${ruleName}: sorts named imports with aliases`, rule, {
-      valid: [
+      invalid: [
         {
-          code: dedent`
+          errors: [
+            {
+              data: {
+                right: 'X0',
+                left: 'X1',
+              },
+              messageId: 'unexpectedNamedImportsOrder',
+            },
+            {
+              data: {
+                left: 'X0',
+                right: 'C',
+              },
+              messageId: 'unexpectedNamedImportsOrder',
+            },
+          ],
+          output: dedent`
             import {
               C,
               BB as X0,
               A as X1
             } from 'module'
           `,
-          options: [options],
-        },
-      ],
-      invalid: [
-        {
           code: dedent`
             import {
               A as X1,
@@ -863,7 +874,12 @@ describe(ruleName, () => {
               C
             } from 'module'
           `,
-          output: dedent`
+          options: [options],
+        },
+      ],
+      valid: [
+        {
+          code: dedent`
             import {
               C,
               BB as X0,
@@ -871,22 +887,6 @@ describe(ruleName, () => {
             } from 'module'
           `,
           options: [options],
-          errors: [
-            {
-              messageId: 'unexpectedNamedImportsOrder',
-              data: {
-                left: 'X1',
-                right: 'X0',
-              },
-            },
-            {
-              messageId: 'unexpectedNamedImportsOrder',
-              data: {
-                left: 'X0',
-                right: 'C',
-              },
-            },
-          ],
         },
       ],
     })
@@ -904,6 +904,43 @@ describe(ruleName, () => {
     })
 
     ruleTester.run(`${ruleName}: sorts with import aliases`, rule, {
+      invalid: [
+        {
+          errors: [
+            {
+              data: {
+                right: 'A',
+                left: 'B',
+              },
+              messageId: 'unexpectedNamedImportsOrder',
+            },
+            {
+              data: {
+                right: 'C',
+                left: 'D',
+              },
+              messageId: 'unexpectedNamedImportsOrder',
+            },
+          ],
+          output: dedent`
+            import U, {
+              aaa as A,
+              B,
+              cc as C,
+              d as D,
+            } from 'module'
+          `,
+          code: dedent`
+            import U, {
+              B,
+              aaa as A,
+              d as D,
+              cc as C,
+            } from 'module'
+          `,
+          options: [options],
+        },
+      ],
       valid: [
         {
           code: dedent`
@@ -917,46 +954,42 @@ describe(ruleName, () => {
           options: [options],
         },
       ],
+    })
+
+    ruleTester.run(`${ruleName}: allows to ignore import aliases`, rule, {
       invalid: [
         {
-          code: dedent`
-            import U, {
-              B,
-              aaa as A,
-              d as D,
-              cc as C,
-            } from 'module'
-          `,
-          output: dedent`
-            import U, {
-              aaa as A,
-              B,
-              cc as C,
-              d as D,
-            } from 'module'
-          `,
-          options: [options],
           errors: [
             {
-              messageId: 'unexpectedNamedImportsOrder',
               data: {
-                left: 'B',
-                right: 'A',
+                right: 'a',
+                left: 'c',
               },
+              messageId: 'unexpectedNamedImportsOrder',
             },
+          ],
+          output: dedent`
+            import {
+              x as a,
+              y as b,
+              c,
+            } from 'module'
+          `,
+          code: dedent`
+            import {
+              c,
+              x as a,
+              y as b,
+            } from 'module'
+          `,
+          options: [
             {
-              messageId: 'unexpectedNamedImportsOrder',
-              data: {
-                left: 'D',
-                right: 'C',
-              },
+              ...options,
+              ignoreAlias: false,
             },
           ],
         },
       ],
-    })
-
-    ruleTester.run(`${ruleName}: allows to ignore import aliases`, rule, {
       valid: [
         {
           code: dedent`
@@ -974,45 +1007,75 @@ describe(ruleName, () => {
           ],
         },
       ],
-      invalid: [
-        {
-          code: dedent`
-            import {
-              c,
-              x as a,
-              y as b,
-            } from 'module'
-          `,
-          output: dedent`
-            import {
-              x as a,
-              y as b,
-              c,
-            } from 'module'
-          `,
-          options: [
-            {
-              ...options,
-              ignoreAlias: false,
-            },
-          ],
-          errors: [
-            {
-              messageId: 'unexpectedNamedImportsOrder',
-              data: {
-                left: 'c',
-                right: 'a',
-              },
-            },
-          ],
-        },
-      ],
     })
 
     ruleTester.run(
       `${ruleName}: sorts named imports grouping by their kind`,
       rule,
       {
+        invalid: [
+          {
+            errors: [
+              {
+                data: {
+                  right: 'BB',
+                  left: 'C',
+                },
+                messageId: 'unexpectedNamedImportsOrder',
+              },
+            ],
+            output: dedent`
+              import { AAA, type BB, BB, type C } from 'module'
+            `,
+            code: dedent`
+              import { AAA, type BB, type C, BB } from 'module'
+            `,
+            options: [{ ...options, groupKind: 'mixed' }],
+          },
+          {
+            errors: [
+              {
+                data: {
+                  right: 'BB',
+                  left: 'BB',
+                },
+                messageId: 'unexpectedNamedImportsOrder',
+              },
+            ],
+            output: dedent`
+              import { AAA, BB, type BB, type C } from 'module'
+            `,
+            code: dedent`
+              import { AAA, type BB, BB, type C } from 'module'
+            `,
+            options: [{ ...options, groupKind: 'values-first' }],
+          },
+          {
+            errors: [
+              {
+                data: {
+                  left: 'AAA',
+                  right: 'BB',
+                },
+                messageId: 'unexpectedNamedImportsOrder',
+              },
+              {
+                data: {
+                  left: 'BB',
+                  right: 'C',
+                },
+                messageId: 'unexpectedNamedImportsOrder',
+              },
+            ],
+            output: dedent`
+              import { type BB, type C, AAA, BB } from 'module'
+            `,
+            code: dedent`
+              import { AAA, type BB, BB, type C } from 'module'
+            `,
+            options: [{ ...options, groupKind: 'types-first' }],
+          },
+        ],
         valid: [
           {
             code: dedent`
@@ -1033,109 +1096,46 @@ describe(ruleName, () => {
             options: [{ ...options, groupKind: 'types-first' }],
           },
         ],
-        invalid: [
-          {
-            code: dedent`
-              import { AAA, type BB, type C, BB } from 'module'
-            `,
-            output: dedent`
-              import { AAA, type BB, BB, type C } from 'module'
-            `,
-            options: [{ ...options, groupKind: 'mixed' }],
-            errors: [
-              {
-                messageId: 'unexpectedNamedImportsOrder',
-                data: {
-                  left: 'C',
-                  right: 'BB',
-                },
-              },
-            ],
-          },
-          {
-            code: dedent`
-              import { AAA, type BB, BB, type C } from 'module'
-            `,
-            output: dedent`
-              import { AAA, BB, type BB, type C } from 'module'
-            `,
-            options: [{ ...options, groupKind: 'values-first' }],
-            errors: [
-              {
-                messageId: 'unexpectedNamedImportsOrder',
-                data: {
-                  left: 'BB',
-                  right: 'BB',
-                },
-              },
-            ],
-          },
-          {
-            code: dedent`
-              import { AAA, type BB, BB, type C } from 'module'
-            `,
-            output: dedent`
-              import { type BB, type C, AAA, BB } from 'module'
-            `,
-            options: [{ ...options, groupKind: 'types-first' }],
-            errors: [
-              {
-                messageId: 'unexpectedNamedImportsOrder',
-                data: {
-                  left: 'AAA',
-                  right: 'BB',
-                },
-              },
-              {
-                messageId: 'unexpectedNamedImportsOrder',
-                data: {
-                  left: 'BB',
-                  right: 'C',
-                },
-              },
-            ],
-          },
-        ],
       },
     )
 
     ruleTester.run(`${ruleName}: allows to use original import names`, rule, {
-      valid: [
+      invalid: [
         {
-          code: dedent`
-            import { A as B, B as A } from 'module'
-          `,
+          errors: [
+            {
+              data: {
+                right: 'A',
+                left: 'B',
+              },
+              messageId: 'unexpectedNamedImportsOrder',
+            },
+          ],
           options: [
             {
               ...options,
               ignoreAlias: true,
             },
           ],
-        },
-      ],
-      invalid: [
-        {
-          code: dedent`
-            import { B as A, A as B } from 'module'
-          `,
           output: dedent`
             import { A as B, B as A } from 'module'
           `,
+          code: dedent`
+            import { B as A, A as B } from 'module'
+          `,
+        },
+      ],
+      valid: [
+        {
           options: [
             {
               ...options,
               ignoreAlias: true,
             },
           ],
-          errors: [
-            {
-              messageId: 'unexpectedNamedImportsOrder',
-              data: {
-                left: 'B',
-                right: 'A',
-              },
-            },
-          ],
+          code: dedent`
+            import { A as B, B as A } from 'module'
+          `,
         },
       ],
     })
@@ -1150,37 +1150,67 @@ describe(ruleName, () => {
     } as const
 
     ruleTester.run(`${ruleName}(${type}): sorts named imports`, rule, {
+      invalid: [
+        {
+          errors: [
+            {
+              data: {
+                right: 'AAA',
+                left: 'BB',
+              },
+              messageId: 'unexpectedNamedImportsOrder',
+            },
+          ],
+          output: dedent`
+            import { AAA, BB, C } from 'module'
+          `,
+          code: dedent`
+            import { BB, AAA, C } from 'module'
+          `,
+          options: [options],
+        },
+      ],
       valid: [
         {
           code: dedent`
             import { AAA, BB, C } from 'module'
           `,
           options: [options],
-        },
-      ],
-      invalid: [
-        {
-          code: dedent`
-            import { BB, AAA, C } from 'module'
-          `,
-          output: dedent`
-            import { AAA, BB, C } from 'module'
-          `,
-          options: [options],
-          errors: [
-            {
-              messageId: 'unexpectedNamedImportsOrder',
-              data: {
-                left: 'BB',
-                right: 'AAA',
-              },
-            },
-          ],
         },
       ],
     })
 
     ruleTester.run(`${ruleName}: sorts named multiline imports`, rule, {
+      invalid: [
+        {
+          errors: [
+            {
+              data: {
+                right: 'BBB',
+                left: 'CC',
+              },
+              messageId: 'unexpectedNamedImportsOrder',
+            },
+          ],
+          output: dedent`
+            import {
+              AAAA,
+              BBB,
+              CC,
+              D,
+            } from 'module'
+          `,
+          code: dedent`
+            import {
+              AAAA,
+              CC,
+              BBB,
+              D,
+            } from 'module'
+          `,
+          options: [options],
+        },
+      ],
       valid: [
         {
           code: dedent`
@@ -1192,41 +1222,39 @@ describe(ruleName, () => {
             } from 'module'
           `,
           options: [options],
-        },
-      ],
-      invalid: [
-        {
-          code: dedent`
-            import {
-              AAAA,
-              CC,
-              BBB,
-              D,
-            } from 'module'
-          `,
-          output: dedent`
-            import {
-              AAAA,
-              BBB,
-              CC,
-              D,
-            } from 'module'
-          `,
-          options: [options],
-          errors: [
-            {
-              messageId: 'unexpectedNamedImportsOrder',
-              data: {
-                left: 'CC',
-                right: 'BBB',
-              },
-            },
-          ],
         },
       ],
     })
 
     ruleTester.run(`${ruleName}: sorts named imports with aliases`, rule, {
+      invalid: [
+        {
+          errors: [
+            {
+              data: {
+                right: 'X0',
+                left: 'X1',
+              },
+              messageId: 'unexpectedNamedImportsOrder',
+            },
+          ],
+          output: dedent`
+            import {
+              BB as X0,
+              A as X1,
+              C
+            } from 'module'
+          `,
+          code: dedent`
+            import {
+              A as X1,
+              BB as X0,
+              C
+            } from 'module'
+          `,
+          options: [options],
+        },
+      ],
       valid: [
         {
           code: dedent`
@@ -1237,34 +1265,6 @@ describe(ruleName, () => {
             } from 'module'
           `,
           options: [options],
-        },
-      ],
-      invalid: [
-        {
-          code: dedent`
-            import {
-              A as X1,
-              BB as X0,
-              C
-            } from 'module'
-          `,
-          output: dedent`
-            import {
-              BB as X0,
-              A as X1,
-              C
-            } from 'module'
-          `,
-          options: [options],
-          errors: [
-            {
-              messageId: 'unexpectedNamedImportsOrder',
-              data: {
-                left: 'X1',
-                right: 'X0',
-              },
-            },
-          ],
         },
       ],
     })
@@ -1282,6 +1282,43 @@ describe(ruleName, () => {
     })
 
     ruleTester.run(`${ruleName}: sorts with import aliases`, rule, {
+      invalid: [
+        {
+          errors: [
+            {
+              data: {
+                right: 'A',
+                left: 'B',
+              },
+              messageId: 'unexpectedNamedImportsOrder',
+            },
+            {
+              data: {
+                right: 'C',
+                left: 'D',
+              },
+              messageId: 'unexpectedNamedImportsOrder',
+            },
+          ],
+          output: dedent`
+            import U, {
+              aaa as A,
+              cc as C,
+              d as D,
+              B,
+            } from 'module'
+          `,
+          code: dedent`
+            import U, {
+              B,
+              aaa as A,
+              d as D,
+              cc as C,
+            } from 'module'
+          `,
+          options: [options],
+        },
+      ],
       valid: [
         {
           code: dedent`
@@ -1295,49 +1332,75 @@ describe(ruleName, () => {
           options: [options],
         },
       ],
-      invalid: [
-        {
-          code: dedent`
-            import U, {
-              B,
-              aaa as A,
-              d as D,
-              cc as C,
-            } from 'module'
-          `,
-          output: dedent`
-            import U, {
-              aaa as A,
-              cc as C,
-              d as D,
-              B,
-            } from 'module'
-          `,
-          options: [options],
-          errors: [
-            {
-              messageId: 'unexpectedNamedImportsOrder',
-              data: {
-                left: 'B',
-                right: 'A',
-              },
-            },
-            {
-              messageId: 'unexpectedNamedImportsOrder',
-              data: {
-                left: 'D',
-                right: 'C',
-              },
-            },
-          ],
-        },
-      ],
     })
 
     ruleTester.run(
       `${ruleName}: sorts named imports grouping by their kind`,
       rule,
       {
+        invalid: [
+          {
+            errors: [
+              {
+                data: {
+                  left: 'AAA',
+                  right: 'BB',
+                },
+                messageId: 'unexpectedNamedImportsOrder',
+              },
+            ],
+            output: dedent`
+              import { type BB, type C, AAA, BB } from 'module'
+            `,
+            code: dedent`
+              import { AAA, type BB, type C, BB } from 'module'
+            `,
+            options: [{ ...options, groupKind: 'mixed' }],
+          },
+          {
+            errors: [
+              {
+                data: {
+                  right: 'BB',
+                  left: 'BB',
+                },
+                messageId: 'unexpectedNamedImportsOrder',
+              },
+            ],
+            output: dedent`
+              import { AAA, BB, type BB, type C } from 'module'
+            `,
+            code: dedent`
+              import { AAA, type BB, BB, type C } from 'module'
+            `,
+            options: [{ ...options, groupKind: 'values-first' }],
+          },
+          {
+            errors: [
+              {
+                data: {
+                  left: 'AAA',
+                  right: 'BB',
+                },
+                messageId: 'unexpectedNamedImportsOrder',
+              },
+              {
+                data: {
+                  left: 'BB',
+                  right: 'C',
+                },
+                messageId: 'unexpectedNamedImportsOrder',
+              },
+            ],
+            output: dedent`
+              import { type BB, type C, AAA, BB } from 'module'
+            `,
+            code: dedent`
+              import { AAA, type BB, BB, type C } from 'module'
+            `,
+            options: [{ ...options, groupKind: 'types-first' }],
+          },
+        ],
         valid: [
           {
             code: dedent`
@@ -1356,69 +1419,6 @@ describe(ruleName, () => {
               import { type BB, type C, AAA, BB } from 'module'
             `,
             options: [{ ...options, groupKind: 'types-first' }],
-          },
-        ],
-        invalid: [
-          {
-            code: dedent`
-              import { AAA, type BB, type C, BB } from 'module'
-            `,
-            output: dedent`
-              import { type BB, type C, AAA, BB } from 'module'
-            `,
-            options: [{ ...options, groupKind: 'mixed' }],
-            errors: [
-              {
-                messageId: 'unexpectedNamedImportsOrder',
-                data: {
-                  left: 'AAA',
-                  right: 'BB',
-                },
-              },
-            ],
-          },
-          {
-            code: dedent`
-              import { AAA, type BB, BB, type C } from 'module'
-            `,
-            output: dedent`
-              import { AAA, BB, type BB, type C } from 'module'
-            `,
-            options: [{ ...options, groupKind: 'values-first' }],
-            errors: [
-              {
-                messageId: 'unexpectedNamedImportsOrder',
-                data: {
-                  left: 'BB',
-                  right: 'BB',
-                },
-              },
-            ],
-          },
-          {
-            code: dedent`
-              import { AAA, type BB, BB, type C } from 'module'
-            `,
-            output: dedent`
-              import { type BB, type C, AAA, BB } from 'module'
-            `,
-            options: [{ ...options, groupKind: 'types-first' }],
-            errors: [
-              {
-                messageId: 'unexpectedNamedImportsOrder',
-                data: {
-                  left: 'AAA',
-                  right: 'BB',
-                },
-              },
-              {
-                messageId: 'unexpectedNamedImportsOrder',
-                data: {
-                  left: 'BB',
-                  right: 'C',
-                },
-              },
-            ],
           },
         ],
       },
@@ -1430,6 +1430,25 @@ describe(ruleName, () => {
       `${ruleName}: sets alphabetical asc sorting as default`,
       rule,
       {
+        invalid: [
+          {
+            errors: [
+              {
+                data: {
+                  right: 'A',
+                  left: 'C',
+                },
+                messageId: 'unexpectedNamedImportsOrder',
+              },
+            ],
+            output: dedent`
+              import { A, B, C } from 'module'
+            `,
+            code: dedent`
+              import { B, C, A } from 'module'
+            `,
+          },
+        ],
         valid: [
           "import { A, B, C } from 'module'",
           {
@@ -1437,41 +1456,22 @@ describe(ruleName, () => {
             options: [{}],
           },
         ],
-        invalid: [
-          {
-            code: dedent`
-              import { B, C, A } from 'module'
-            `,
-            output: dedent`
-              import { A, B, C } from 'module'
-            `,
-            errors: [
-              {
-                messageId: 'unexpectedNamedImportsOrder',
-                data: {
-                  left: 'C',
-                  right: 'A',
-                },
-              },
-            ],
-          },
-        ],
       },
     )
 
     let eslintDisableRuleTesterName = `${ruleName}: supports 'eslint-disable' for individual nodes`
     ruleTester.run(eslintDisableRuleTesterName, rule, {
-      valid: [],
       invalid: [
         {
-          code: dedent`
-            import {
-              c,
-              b,
-              // eslint-disable-next-line
-              a
-            } from 'module'
-          `,
+          errors: [
+            {
+              data: {
+                right: 'b',
+                left: 'c',
+              },
+              messageId: 'unexpectedNamedImportsOrder',
+            },
+          ],
           output: dedent`
             import {
               b,
@@ -1480,27 +1480,33 @@ describe(ruleName, () => {
               a
             } from 'module'
           `,
-          options: [{}],
-          errors: [
-            {
-              messageId: 'unexpectedNamedImportsOrder',
-              data: {
-                left: 'c',
-                right: 'b',
-              },
-            },
-          ],
-        },
-        {
           code: dedent`
             import {
-              d,
               c,
+              b,
               // eslint-disable-next-line
-              a,
-              b
+              a
             } from 'module'
           `,
+          options: [{}],
+        },
+        {
+          errors: [
+            {
+              data: {
+                right: 'c',
+                left: 'd',
+              },
+              messageId: 'unexpectedNamedImportsOrder',
+            },
+            {
+              data: {
+                right: 'b',
+                left: 'a',
+              },
+              messageId: 'unexpectedNamedImportsOrder',
+            },
+          ],
           output: dedent`
             import {
               b,
@@ -1510,36 +1516,31 @@ describe(ruleName, () => {
               d
             } from 'module'
           `,
+          code: dedent`
+            import {
+              d,
+              c,
+              // eslint-disable-next-line
+              a,
+              b
+            } from 'module'
+          `,
           options: [
             {
               partitionByComment: true,
             },
           ],
-          errors: [
-            {
-              messageId: 'unexpectedNamedImportsOrder',
-              data: {
-                left: 'd',
-                right: 'c',
-              },
-            },
-            {
-              messageId: 'unexpectedNamedImportsOrder',
-              data: {
-                left: 'a',
-                right: 'b',
-              },
-            },
-          ],
         },
         {
-          code: dedent`
-            import {
-              c,
-              b,
-              a // eslint-disable-line
-            } from 'module'
-          `,
+          errors: [
+            {
+              data: {
+                right: 'b',
+                left: 'c',
+              },
+              messageId: 'unexpectedNamedImportsOrder',
+            },
+          ],
           output: dedent`
             import {
               b,
@@ -1547,26 +1548,25 @@ describe(ruleName, () => {
               a // eslint-disable-line
             } from 'module'
           `,
-          options: [{}],
-          errors: [
-            {
-              messageId: 'unexpectedNamedImportsOrder',
-              data: {
-                left: 'c',
-                right: 'b',
-              },
-            },
-          ],
-        },
-        {
           code: dedent`
             import {
               c,
               b,
-              /* eslint-disable-next-line */
-              a
+              a // eslint-disable-line
             } from 'module'
           `,
+          options: [{}],
+        },
+        {
+          errors: [
+            {
+              data: {
+                right: 'b',
+                left: 'c',
+              },
+              messageId: 'unexpectedNamedImportsOrder',
+            },
+          ],
           output: dedent`
             import {
               b,
@@ -1575,25 +1575,26 @@ describe(ruleName, () => {
               a
             } from 'module'
           `,
-          options: [{}],
-          errors: [
-            {
-              messageId: 'unexpectedNamedImportsOrder',
-              data: {
-                left: 'c',
-                right: 'b',
-              },
-            },
-          ],
-        },
-        {
           code: dedent`
             import {
               c,
               b,
-              a /* eslint-disable-line */
+              /* eslint-disable-next-line */
+              a
             } from 'module'
           `,
+          options: [{}],
+        },
+        {
+          errors: [
+            {
+              data: {
+                right: 'b',
+                left: 'c',
+              },
+              messageId: 'unexpectedNamedImportsOrder',
+            },
+          ],
           output: dedent`
             import {
               b,
@@ -1601,30 +1602,16 @@ describe(ruleName, () => {
               a /* eslint-disable-line */
             } from 'module'
           `,
-          options: [{}],
-          errors: [
-            {
-              messageId: 'unexpectedNamedImportsOrder',
-              data: {
-                left: 'c',
-                right: 'b',
-              },
-            },
-          ],
-        },
-        {
           code: dedent`
             import {
-              d,
-              e,
-              /* eslint-disable */
               c,
               b,
-              // Shouldn't move
-              /* eslint-enable */
-              a,
+              a /* eslint-disable-line */
             } from 'module'
           `,
+          options: [{}],
+        },
+        {
           output: dedent`
             import {
               a,
@@ -1637,26 +1624,30 @@ describe(ruleName, () => {
               e,
             } from 'module'
           `,
-          options: [{}],
+          code: dedent`
+            import {
+              d,
+              e,
+              /* eslint-disable */
+              c,
+              b,
+              // Shouldn't move
+              /* eslint-enable */
+              a,
+            } from 'module'
+          `,
           errors: [
             {
-              messageId: 'unexpectedNamedImportsOrder',
               data: {
-                left: 'b',
                 right: 'a',
+                left: 'b',
               },
+              messageId: 'unexpectedNamedImportsOrder',
             },
           ],
+          options: [{}],
         },
         {
-          code: dedent`
-            import {
-              c,
-              b,
-              // eslint-disable-next-line @rule-tester/${eslintDisableRuleTesterName}
-              a
-            } from 'module'
-          `,
           output: dedent`
             import {
               b,
@@ -1665,25 +1656,35 @@ describe(ruleName, () => {
               a
             } from 'module'
           `,
-          options: [{}],
-          errors: [
-            {
-              messageId: 'unexpectedNamedImportsOrder',
-              data: {
-                left: 'c',
-                right: 'b',
-              },
-            },
-          ],
-        },
-        {
           code: dedent`
             import {
               c,
               b,
-              a // eslint-disable-line @rule-tester/${eslintDisableRuleTesterName}
+              // eslint-disable-next-line @rule-tester/${eslintDisableRuleTesterName}
+              a
             } from 'module'
           `,
+          errors: [
+            {
+              data: {
+                right: 'b',
+                left: 'c',
+              },
+              messageId: 'unexpectedNamedImportsOrder',
+            },
+          ],
+          options: [{}],
+        },
+        {
+          errors: [
+            {
+              data: {
+                right: 'b',
+                left: 'c',
+              },
+              messageId: 'unexpectedNamedImportsOrder',
+            },
+          ],
           output: dedent`
             import {
               b,
@@ -1691,18 +1692,24 @@ describe(ruleName, () => {
               a // eslint-disable-line @rule-tester/${eslintDisableRuleTesterName}
             } from 'module'
           `,
+          code: dedent`
+            import {
+              c,
+              b,
+              a // eslint-disable-line @rule-tester/${eslintDisableRuleTesterName}
+            } from 'module'
+          `,
           options: [{}],
-          errors: [
-            {
-              messageId: 'unexpectedNamedImportsOrder',
-              data: {
-                left: 'c',
-                right: 'b',
-              },
-            },
-          ],
         },
         {
+          output: dedent`
+            import {
+              b,
+              c,
+              /* eslint-disable-next-line @rule-tester/${eslintDisableRuleTesterName} */
+              a
+            } from 'module'
+          `,
           code: dedent`
             import {
               c,
@@ -1711,26 +1718,34 @@ describe(ruleName, () => {
               a
             } from 'module'
           `,
+          errors: [
+            {
+              data: {
+                right: 'b',
+                left: 'c',
+              },
+              messageId: 'unexpectedNamedImportsOrder',
+            },
+          ],
+          options: [{}],
+        },
+        {
+          errors: [
+            {
+              data: {
+                right: 'b',
+                left: 'c',
+              },
+              messageId: 'unexpectedNamedImportsOrder',
+            },
+          ],
           output: dedent`
             import {
               b,
               c,
-              /* eslint-disable-next-line @rule-tester/${eslintDisableRuleTesterName} */
-              a
+              a /* eslint-disable-line @rule-tester/${eslintDisableRuleTesterName} */
             } from 'module'
           `,
-          options: [{}],
-          errors: [
-            {
-              messageId: 'unexpectedNamedImportsOrder',
-              data: {
-                left: 'c',
-                right: 'b',
-              },
-            },
-          ],
-        },
-        {
           code: dedent`
             import {
               c,
@@ -1738,25 +1753,21 @@ describe(ruleName, () => {
               a /* eslint-disable-line @rule-tester/${eslintDisableRuleTesterName} */
             } from 'module'
           `,
-          output: dedent`
-            import {
-              b,
-              c,
-              a /* eslint-disable-line @rule-tester/${eslintDisableRuleTesterName} */
-            } from 'module'
-          `,
           options: [{}],
-          errors: [
-            {
-              messageId: 'unexpectedNamedImportsOrder',
-              data: {
-                left: 'c',
-                right: 'b',
-              },
-            },
-          ],
         },
         {
+          output: dedent`
+            import {
+              a,
+              d,
+              /* eslint-disable @rule-tester/${eslintDisableRuleTesterName} */
+              c,
+              b,
+              // Shouldn't move
+              /* eslint-enable */
+              e,
+            } from 'module'
+          `,
           code: dedent`
             import {
               d,
@@ -1769,30 +1780,19 @@ describe(ruleName, () => {
               a,
             } from 'module'
           `,
-          output: dedent`
-            import {
-              a,
-              d,
-              /* eslint-disable @rule-tester/${eslintDisableRuleTesterName} */
-              c,
-              b,
-              // Shouldn't move
-              /* eslint-enable */
-              e,
-            } from 'module'
-          `,
-          options: [{}],
           errors: [
             {
-              messageId: 'unexpectedNamedImportsOrder',
               data: {
-                left: 'b',
                 right: 'a',
+                left: 'b',
               },
+              messageId: 'unexpectedNamedImportsOrder',
             },
           ],
+          options: [{}],
         },
       ],
+      valid: [],
     })
   })
 })

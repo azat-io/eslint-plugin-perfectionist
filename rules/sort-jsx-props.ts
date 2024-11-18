@@ -27,14 +27,6 @@ import { pairwise } from '../utils/pairwise'
 import { complete } from '../utils/complete'
 import { matches } from '../utils/matches'
 
-type MESSAGE_ID = 'unexpectedJSXPropsGroupOrder' | 'unexpectedJSXPropsOrder'
-
-type Group<T extends string[]> =
-  | 'multiline'
-  | 'shorthand'
-  | 'unknown'
-  | T[number]
-
 type Options<T extends string[]> = [
   Partial<{
     customGroups: Record<T[number], string[] | string>
@@ -48,56 +40,26 @@ type Options<T extends string[]> = [
   }>,
 ]
 
+type Group<T extends string[]> =
+  | 'multiline'
+  | 'shorthand'
+  | 'unknown'
+  | T[number]
+
+type MESSAGE_ID = 'unexpectedJSXPropsGroupOrder' | 'unexpectedJSXPropsOrder'
+
 let defaultOptions: Required<Options<string[]>[0]> = {
+  specialCharacters: 'keep',
   type: 'alphabetical',
   ignorePattern: [],
   ignoreCase: true,
-  specialCharacters: 'keep',
   customGroups: {},
+  locales: 'en-US',
   order: 'asc',
   groups: [],
-  locales: 'en-US',
 }
 
 export default createEslintRule<Options<string[]>, MESSAGE_ID>({
-  name: 'sort-jsx-props',
-  meta: {
-    type: 'suggestion',
-    docs: {
-      description: 'Enforce sorted JSX props.',
-    },
-    fixable: 'code',
-    schema: [
-      {
-        type: 'object',
-        properties: {
-          type: typeJsonSchema,
-          order: orderJsonSchema,
-          locales: localesJsonSchema,
-          ignoreCase: ignoreCaseJsonSchema,
-          specialCharacters: specialCharactersJsonSchema,
-          ignorePattern: {
-            description:
-              'Specifies names or patterns for nodes that should be ignored by rule.',
-            items: {
-              type: 'string',
-            },
-            type: 'array',
-          },
-          groups: groupsJsonSchema,
-          customGroups: customGroupsJsonSchema,
-        },
-        additionalProperties: false,
-      },
-    ],
-    messages: {
-      unexpectedJSXPropsGroupOrder:
-        'Expected "{{right}}" ({{rightGroup}}) to come before "{{left}}" ({{leftGroup}}).',
-      unexpectedJSXPropsOrder:
-        'Expected "{{right}}" to come before "{{left}}".',
-    },
-  },
-  defaultOptions: [defaultOptions],
   create: context => ({
     JSXElement: node => {
       if (!isSortable(node.openingElement.attributes)) {
@@ -126,8 +88,8 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
       }
 
       let eslintDisabledLines = getEslintDisabledLines({
-        sourceCode,
         ruleName: context.id,
+        sourceCode,
       })
 
       let parts: SortingNode[][] = node.openingElement.attributes.reduce(
@@ -145,7 +107,7 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
               ? `${attribute.name.namespace.name}:${attribute.name.name.name}`
               : attribute.name.name
 
-          let { getGroup, defineGroup, setCustomGroups } = useGroups(options)
+          let { setCustomGroups, defineGroup, getGroup } = useGroups(options)
 
           setCustomGroups(options.customGroups, name)
 
@@ -158,13 +120,13 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
           }
 
           let jsxNode: SortingNode = {
-            size: rangeToDiff(attribute, sourceCode),
-            group: getGroup(),
-            node: attribute,
             isEslintDisabled: isNodeEslintDisabled(
               attribute,
               eslintDisabledLines,
             ),
+            size: rangeToDiff(attribute, sourceCode),
+            group: getGroup(),
+            node: attribute,
             name,
           }
 
@@ -199,27 +161,67 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
           let leftNumber = getGroupNumber(options.groups, left)
           let rightNumber = getGroupNumber(options.groups, right)
           context.report({
+            fix: fixer =>
+              makeFixes({
+                sortedNodes: sortedNodesExcludingEslintDisabled,
+                sourceCode,
+                fixer,
+                nodes,
+              }),
+            data: {
+              rightGroup: right.group,
+              leftGroup: left.group,
+              right: right.name,
+              left: left.name,
+            },
             messageId:
               leftNumber === rightNumber
                 ? 'unexpectedJSXPropsOrder'
                 : 'unexpectedJSXPropsGroupOrder',
-            data: {
-              left: left.name,
-              leftGroup: left.group,
-              right: right.name,
-              rightGroup: right.group,
-            },
             node: right.node,
-            fix: fixer =>
-              makeFixes(
-                fixer,
-                nodes,
-                sortedNodesExcludingEslintDisabled,
-                sourceCode,
-              ),
           })
         })
       }
     },
   }),
+  meta: {
+    schema: [
+      {
+        properties: {
+          ignorePattern: {
+            description:
+              'Specifies names or patterns for nodes that should be ignored by rule.',
+            items: {
+              type: 'string',
+            },
+            type: 'array',
+          },
+          specialCharacters: specialCharactersJsonSchema,
+          customGroups: customGroupsJsonSchema,
+          ignoreCase: ignoreCaseJsonSchema,
+          locales: localesJsonSchema,
+          groups: groupsJsonSchema,
+          order: orderJsonSchema,
+          type: typeJsonSchema,
+        },
+        additionalProperties: false,
+        type: 'object',
+      },
+    ],
+    messages: {
+      unexpectedJSXPropsGroupOrder:
+        'Expected "{{right}}" ({{rightGroup}}) to come before "{{left}}" ({{leftGroup}}).',
+      unexpectedJSXPropsOrder:
+        'Expected "{{right}}" to come before "{{left}}".',
+    },
+    docs: {
+      url: 'https://perfectionist.dev/rules/sort-jsx-props',
+      description: 'Enforce sorted JSX props.',
+      recommended: true,
+    },
+    type: 'suggestion',
+    fixable: 'code',
+  },
+  defaultOptions: [defaultOptions],
+  name: 'sort-jsx-props',
 })

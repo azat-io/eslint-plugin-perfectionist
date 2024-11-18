@@ -40,6 +40,29 @@ import { complete } from '../utils/complete'
 import { pairwise } from '../utils/pairwise'
 import { matches } from '../utils/matches'
 
+export type Options<T extends string[]> = [
+  Partial<{
+    customGroups: {
+      value?: Record<T[number], string[] | string>
+      type?: Record<T[number], string[] | string>
+    }
+    type: 'alphabetical' | 'line-length' | 'natural'
+    partitionByComment: string[] | boolean | string
+    newlinesBetween: 'ignore' | 'always' | 'never'
+    specialCharacters: 'remove' | 'trim' | 'keep'
+    locales: NonNullable<Intl.LocalesArgument>
+    groups: (Group<T>[] | Group<T>)[]
+    environment: 'node' | 'bun'
+    partitionByNewLine: boolean
+    internalPattern: string[]
+    sortSideEffects: boolean
+    tsconfigRootDir?: string
+    maxLineLength?: number
+    order: 'desc' | 'asc'
+    ignoreCase: boolean
+  }>,
+]
+
 export type MESSAGE_ID =
   | 'missedSpacingBetweenImports'
   | 'unexpectedImportsGroupOrder'
@@ -67,174 +90,11 @@ type Group<T extends string[]> =
   | 'style'
   | 'type'
 
-export type Options<T extends string[]> = [
-  Partial<{
-    customGroups: {
-      value?: Record<T[number], string[] | string>
-      type?: Record<T[number], string[] | string>
-    }
-    type: 'alphabetical' | 'line-length' | 'natural'
-    partitionByComment: string[] | boolean | string
-    newlinesBetween: 'ignore' | 'always' | 'never'
-    specialCharacters: 'remove' | 'trim' | 'keep'
-    locales: NonNullable<Intl.LocalesArgument>
-    groups: (Group<T>[] | Group<T>)[]
-    environment: 'node' | 'bun'
-    partitionByNewLine: boolean
-    internalPattern: string[]
-    sortSideEffects: boolean
-    tsconfigRootDir?: string
-    maxLineLength?: number
-    order: 'desc' | 'asc'
-    ignoreCase: boolean
-  }>,
-]
-
 interface SortImportsSortingNode extends SortingNode {
   isIgnored: boolean
 }
 
 export default createEslintRule<Options<string[]>, MESSAGE_ID>({
-  name: 'sort-imports',
-  meta: {
-    type: 'suggestion',
-    docs: {
-      description: 'Enforce sorted imports.',
-    },
-    fixable: 'code',
-    schema: [
-      {
-        id: 'sort-imports',
-        type: 'object',
-        properties: {
-          type: typeJsonSchema,
-          order: orderJsonSchema,
-          locales: localesJsonSchema,
-          ignoreCase: ignoreCaseJsonSchema,
-          specialCharacters: specialCharactersJsonSchema,
-          internalPattern: {
-            description: 'Specifies the pattern for internal modules.',
-            items: {
-              type: 'string',
-            },
-            type: 'array',
-          },
-          sortSideEffects: {
-            description:
-              'Controls whether side-effect imports should be sorted.',
-            type: 'boolean',
-          },
-          partitionByComment: {
-            ...partitionByCommentJsonSchema,
-            description:
-              'Allows you to use comments to separate the interface properties into logical groups.',
-          },
-          partitionByNewLine: partitionByNewLineJsonSchema,
-          newlinesBetween: newlinesBetweenJsonSchema,
-          maxLineLength: {
-            description: 'Specifies the maximum line length.',
-            type: 'integer',
-            minimum: 0,
-            exclusiveMinimum: true,
-          },
-          tsconfigRootDir: {
-            description: 'Specifies the tsConfig root directory.',
-            type: 'string',
-          },
-          groups: groupsJsonSchema,
-          customGroups: {
-            description: 'Specifies custom groups.',
-            type: 'object',
-            properties: {
-              type: {
-                type: 'object',
-                description: 'Specifies custom groups for type imports.',
-              },
-              value: {
-                type: 'object',
-                description: 'Specifies custom groups for value imports.',
-              },
-            },
-            additionalProperties: false,
-          },
-          environment: {
-            description: 'Specifies the environment.',
-            enum: ['node', 'bun'],
-            type: 'string',
-          },
-        },
-        allOf: [
-          {
-            $ref: '#/definitions/max-line-length-requires-line-length-type',
-          },
-        ],
-        additionalProperties: false,
-        dependencies: {
-          maxLineLength: ['type'],
-        },
-        definitions: {
-          'is-line-length': {
-            properties: {
-              type: { enum: ['line-length'], type: 'string' },
-            },
-            required: ['type'],
-            type: 'object',
-          },
-          'max-line-length-requires-line-length-type': {
-            anyOf: [
-              {
-                not: {
-                  required: ['maxLineLength'],
-                  type: 'object',
-                },
-                type: 'object',
-              },
-              {
-                $ref: '#/definitions/is-line-length',
-              },
-            ],
-          },
-        },
-      },
-    ],
-    messages: {
-      unexpectedImportsGroupOrder:
-        'Expected "{{right}}" ({{rightGroup}}) to come before "{{left}}" ({{leftGroup}}).',
-      unexpectedImportsOrder: 'Expected "{{right}}" to come before "{{left}}".',
-      missedSpacingBetweenImports:
-        'Missed spacing between "{{left}}" and "{{right}}" imports.',
-      extraSpacingBetweenImports:
-        'Extra spacing between "{{left}}" and "{{right}}" imports.',
-    },
-  },
-  defaultOptions: [
-    {
-      partitionByComment: false,
-      partitionByNewLine: false,
-      type: 'alphabetical',
-      order: 'asc',
-      ignoreCase: true,
-      specialCharacters: 'keep',
-      internalPattern: ['~/**'],
-      sortSideEffects: false,
-      newlinesBetween: 'always',
-      maxLineLength: undefined,
-      tsconfigRootDir: undefined,
-      groups: [
-        'type',
-        ['builtin', 'external'],
-        'internal-type',
-        'internal',
-        ['parent-type', 'sibling-type', 'index-type'],
-        ['parent', 'sibling', 'index'],
-        'object',
-        'unknown',
-      ],
-      customGroups: { type: {}, value: {} },
-      environment: 'node',
-      locales: 'en-US',
-    },
-  ],
   create: context => {
     let settings = getSettings(context.settings)
 
@@ -251,18 +111,18 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
           'object',
           'unknown',
         ],
+        customGroups: { value: {}, type: {} },
+        internalPattern: ['^~/.*'],
         partitionByComment: false,
         partitionByNewLine: false,
-        customGroups: { type: {}, value: {} },
-        internalPattern: ['^~/.*'],
         newlinesBetween: 'always',
+        specialCharacters: 'keep',
         sortSideEffects: false,
         type: 'alphabetical',
         environment: 'node',
         ignoreCase: true,
-        specialCharacters: 'keep',
-        order: 'asc',
         locales: 'en-US',
+        order: 'asc',
       } as const),
     )
 
@@ -297,9 +157,9 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
 
     let tsConfigOutput = options.tsconfigRootDir
       ? readClosestTsConfigByPath({
+          tsconfigRootDir: options.tsconfigRootDir,
           filePath: context.physicalFilename,
           contextCwd: context.cwd,
-          tsconfigRootDir: options.tsconfigRootDir,
         })
       : null
 
@@ -338,8 +198,8 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
 
     let sourceCode = getSourceCode(context)
     let eslintDisabledLines = getEslintDisabledLines({
-      sourceCode,
       ruleName: context.id,
+      sourceCode,
     })
     let nodes: SortImportsSortingNode[] = []
 
@@ -396,7 +256,7 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
 
       let isSibling = (value: string): boolean => value.startsWith('./')
 
-      let { getGroup, defineGroup, setCustomGroups } = useGroups(options)
+      let { setCustomGroups, defineGroup, getGroup } = useGroups(options)
 
       let matchesInternalPattern = (value: string): boolean | number =>
         options.internalPattern.length &&
@@ -558,16 +418,16 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
       }
 
       nodes.push({
-        size: rangeToDiff(node, sourceCode),
-        group: getGroup(),
-        node,
-        addSafetySemicolonWhenInline: true,
-        isEslintDisabled: isNodeEslintDisabled(node, eslintDisabledLines),
         isIgnored:
           !options.sortSideEffects &&
           isSideEffect &&
           !shouldRegroupSideEffectNodes &&
           (!isStyleSideEffect || !shouldRegroupSideEffectStyleNodes),
+        isEslintDisabled: isNodeEslintDisabled(node, eslintDisabledLines),
+        size: rangeToDiff(node, sourceCode),
+        addSafetySemicolonWhenInline: true,
+        group: getGroup(),
+        node,
         name,
         ...(options.type === 'line-length' &&
           options.maxLineLength && {
@@ -579,19 +439,6 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
     }
 
     return {
-      TSImportEqualsDeclaration: registerNode,
-      ImportDeclaration: registerNode,
-      VariableDeclaration: node => {
-        if (
-          node.declarations[0].init &&
-          node.declarations[0].init.type === 'CallExpression' &&
-          node.declarations[0].init.callee.type === 'Identifier' &&
-          node.declarations[0].init.callee.name === 'require' &&
-          node.declarations[0].init.arguments[0]?.type === 'Literal'
-        ) {
-          registerNode(node)
-        }
-      },
       'Program:exit': () => {
         let hasContentBetweenNodes = (
           left: SortImportsSortingNode,
@@ -628,8 +475,6 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
             ignoreEslintDisabledNodes: boolean,
           ): SortImportsSortingNode[] =>
             sortNodesByGroups(nodeList, options, {
-              ignoreEslintDisabledNodes,
-              isNodeIgnored: node => node.isIgnored,
               getGroupCompareOptions: groupNumber => {
                 if (options.sortSideEffects) {
                   return options
@@ -637,6 +482,8 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
                 let group = options.groups[groupNumber]
                 return isSideEffectOnlyGroup(group) ? null : options
               },
+              isNodeIgnored: node => node.isIgnored,
+              ignoreEslintDisabledNodes,
             })
           let sortedNodes = sortNodesExcludingEslintDisabled(false)
           let sortedNodesExcludingEslintDisabled =
@@ -667,48 +514,201 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
             messageIds = [
               ...messageIds,
               ...getNewlinesErrors({
-                left,
-                leftNum: leftNumber,
-                right,
-                rightNum: rightNumber,
-                sourceCode,
                 missedSpacingError: 'missedSpacingBetweenImports',
                 extraSpacingError: 'extraSpacingBetweenImports',
+                rightNum: rightNumber,
+                leftNum: leftNumber,
+                sourceCode,
                 options,
+                right,
+                left,
               }),
             ]
 
             for (let messageId of messageIds) {
               context.report({
-                messageId,
+                fix: fixer => [
+                  ...makeFixes({
+                    sortedNodes: sortedNodesExcludingEslintDisabled,
+                    nodes: nodeList,
+                    sourceCode,
+                    options,
+                    fixer,
+                  }),
+                  ...makeNewlinesFixes({
+                    sortedNodes: sortedNodesExcludingEslintDisabled,
+                    nodes: nodeList,
+                    sourceCode,
+                    options,
+                    fixer,
+                  }),
+                ],
                 data: {
-                  left: left.name,
+                  rightGroup: right.group,
                   leftGroup: left.group,
                   right: right.name,
-                  rightGroup: right.group,
+                  left: left.name,
                 },
                 node: right.node,
-                fix: fixer => [
-                  ...makeFixes(
-                    fixer,
-                    nodeList,
-                    sortedNodesExcludingEslintDisabled,
-                    sourceCode,
-                    options,
-                  ),
-                  ...makeNewlinesFixes(
-                    fixer,
-                    nodeList,
-                    sortedNodesExcludingEslintDisabled,
-                    sourceCode,
-                    options,
-                  ),
-                ],
+                messageId,
               })
             }
           })
         }
       },
+      VariableDeclaration: node => {
+        if (
+          node.declarations[0].init &&
+          node.declarations[0].init.type === 'CallExpression' &&
+          node.declarations[0].init.callee.type === 'Identifier' &&
+          node.declarations[0].init.callee.name === 'require' &&
+          node.declarations[0].init.arguments[0]?.type === 'Literal'
+        ) {
+          registerNode(node)
+        }
+      },
+      TSImportEqualsDeclaration: registerNode,
+      ImportDeclaration: registerNode,
     }
   },
+  meta: {
+    schema: [
+      {
+        properties: {
+          customGroups: {
+            properties: {
+              value: {
+                description: 'Specifies custom groups for value imports.',
+                type: 'object',
+              },
+              type: {
+                description: 'Specifies custom groups for type imports.',
+                type: 'object',
+              },
+            },
+            description: 'Specifies custom groups.',
+            additionalProperties: false,
+            type: 'object',
+          },
+          partitionByComment: {
+            ...partitionByCommentJsonSchema,
+            description:
+              'Allows you to use comments to separate the interface properties into logical groups.',
+          },
+          internalPattern: {
+            description: 'Specifies the pattern for internal modules.',
+            items: {
+              type: 'string',
+            },
+            type: 'array',
+          },
+          maxLineLength: {
+            description: 'Specifies the maximum line length.',
+            exclusiveMinimum: true,
+            type: 'integer',
+            minimum: 0,
+          },
+          sortSideEffects: {
+            description:
+              'Controls whether side-effect imports should be sorted.',
+            type: 'boolean',
+          },
+          environment: {
+            description: 'Specifies the environment.',
+            enum: ['node', 'bun'],
+            type: 'string',
+          },
+          tsconfigRootDir: {
+            description: 'Specifies the tsConfig root directory.',
+            type: 'string',
+          },
+          partitionByNewLine: partitionByNewLineJsonSchema,
+          specialCharacters: specialCharactersJsonSchema,
+          newlinesBetween: newlinesBetweenJsonSchema,
+          ignoreCase: ignoreCaseJsonSchema,
+          locales: localesJsonSchema,
+          groups: groupsJsonSchema,
+          order: orderJsonSchema,
+          type: typeJsonSchema,
+        },
+        definitions: {
+          'max-line-length-requires-line-length-type': {
+            anyOf: [
+              {
+                not: {
+                  required: ['maxLineLength'],
+                  type: 'object',
+                },
+                type: 'object',
+              },
+              {
+                $ref: '#/definitions/is-line-length',
+              },
+            ],
+          },
+          'is-line-length': {
+            properties: {
+              type: { enum: ['line-length'], type: 'string' },
+            },
+            required: ['type'],
+            type: 'object',
+          },
+        },
+        allOf: [
+          {
+            $ref: '#/definitions/max-line-length-requires-line-length-type',
+          },
+        ],
+        dependencies: {
+          maxLineLength: ['type'],
+        },
+        additionalProperties: false,
+        id: 'sort-imports',
+        type: 'object',
+      },
+    ],
+    messages: {
+      unexpectedImportsGroupOrder:
+        'Expected "{{right}}" ({{rightGroup}}) to come before "{{left}}" ({{leftGroup}}).',
+      missedSpacingBetweenImports:
+        'Missed spacing between "{{left}}" and "{{right}}" imports.',
+      extraSpacingBetweenImports:
+        'Extra spacing between "{{left}}" and "{{right}}" imports.',
+      unexpectedImportsOrder: 'Expected "{{right}}" to come before "{{left}}".',
+    },
+    docs: {
+      url: 'https://perfectionist.dev/rules/sort-imports',
+      description: 'Enforce sorted imports.',
+      recommended: true,
+    },
+    type: 'suggestion',
+    fixable: 'code',
+  },
+  defaultOptions: [
+    {
+      groups: [
+        'type',
+        ['builtin', 'external'],
+        'internal-type',
+        'internal',
+        ['parent-type', 'sibling-type', 'index-type'],
+        ['parent', 'sibling', 'index'],
+        'object',
+        'unknown',
+      ],
+      customGroups: { value: {}, type: {} },
+      partitionByComment: false,
+      partitionByNewLine: false,
+      specialCharacters: 'keep',
+      internalPattern: ['~/**'],
+      newlinesBetween: 'always',
+      sortSideEffects: false,
+      type: 'alphabetical',
+      environment: 'node',
+      ignoreCase: true,
+      locales: 'en-US',
+      order: 'asc',
+    },
+  ],
+  name: 'sort-imports',
 })

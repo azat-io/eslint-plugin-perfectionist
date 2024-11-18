@@ -28,6 +28,36 @@ describe(ruleName, () => {
     } as const
 
     ruleTester.run(`${ruleName}(${type}): sorts enum members`, rule, {
+      invalid: [
+        {
+          errors: [
+            {
+              data: {
+                right: 'bbb',
+                left: 'cc',
+              },
+              messageId: 'unexpectedEnumsOrder',
+            },
+          ],
+          output: dedent`
+            enum Enum {
+              aaaa = 'a',
+              bbb = 'b',
+              cc = 'c',
+              d = 'd',
+            }
+          `,
+          code: dedent`
+            enum Enum {
+              aaaa = 'a',
+              cc = 'c',
+              bbb = 'b',
+              d = 'd',
+            }
+          `,
+          options: [options],
+        },
+      ],
       valid: [
         {
           code: dedent`
@@ -41,42 +71,42 @@ describe(ruleName, () => {
           options: [options],
         },
       ],
-      invalid: [
-        {
-          code: dedent`
-            enum Enum {
-              aaaa = 'a',
-              cc = 'c',
-              bbb = 'b',
-              d = 'd',
-            }
-          `,
-          output: dedent`
-            enum Enum {
-              aaaa = 'a',
-              bbb = 'b',
-              cc = 'c',
-              d = 'd',
-            }
-          `,
-          options: [options],
-          errors: [
-            {
-              messageId: 'unexpectedEnumsOrder',
-              data: {
-                left: 'cc',
-                right: 'bbb',
-              },
-            },
-          ],
-        },
-      ],
     })
 
     ruleTester.run(
       `${ruleName}(${type}): sorts enum members with number keys`,
       rule,
       {
+        invalid: [
+          {
+            errors: [
+              {
+                data: {
+                  right: '12',
+                  left: '8',
+                },
+                messageId: 'unexpectedEnumsOrder',
+              },
+            ],
+            output: dedent`
+              enum Enum {
+                1 = 'a',
+                12 = 'b',
+                2 = 'c',
+                8 = 'c',
+              }
+            `,
+            code: dedent`
+              enum Enum {
+                1 = 'a',
+                2 = 'c',
+                8 = 'c',
+                12 = 'b',
+              }
+            `,
+            options: [options],
+          },
+        ],
         valid: [
           {
             code: dedent`
@@ -88,36 +118,6 @@ describe(ruleName, () => {
               }
             `,
             options: [options],
-          },
-        ],
-        invalid: [
-          {
-            code: dedent`
-              enum Enum {
-                1 = 'a',
-                2 = 'c',
-                8 = 'c',
-                12 = 'b',
-              }
-            `,
-            output: dedent`
-              enum Enum {
-                1 = 'a',
-                12 = 'b',
-                2 = 'c',
-                8 = 'c',
-              }
-            `,
-            options: [options],
-            errors: [
-              {
-                messageId: 'unexpectedEnumsOrder',
-                data: {
-                  left: '8',
-                  right: '12',
-                },
-              },
-            ],
           },
         ],
       },
@@ -147,6 +147,32 @@ describe(ruleName, () => {
       `${ruleName}(${type}): sorts enum members with boolean ids`,
       rule,
       {
+        invalid: [
+          {
+            errors: [
+              {
+                data: {
+                  right: 'false',
+                  left: 'true',
+                },
+                messageId: 'unexpectedEnumsOrder',
+              },
+            ],
+            output: dedent`
+              enum Enum {
+                false = 'b',
+                true = 'a',
+              }
+            `,
+            code: dedent`
+              enum Enum {
+                true = 'a',
+                false = 'b',
+              }
+            `,
+            options: [options],
+          },
+        ],
         valid: [
           {
             code: dedent`
@@ -158,32 +184,6 @@ describe(ruleName, () => {
             options: [options],
           },
         ],
-        invalid: [
-          {
-            code: dedent`
-              enum Enum {
-                true = 'a',
-                false = 'b',
-              }
-            `,
-            output: dedent`
-              enum Enum {
-                false = 'b',
-                true = 'a',
-              }
-            `,
-            options: [options],
-            errors: [
-              {
-                messageId: 'unexpectedEnumsOrder',
-                data: {
-                  left: 'true',
-                  right: 'false',
-                },
-              },
-            ],
-          },
-        ],
       },
     )
 
@@ -191,21 +191,8 @@ describe(ruleName, () => {
       `${ruleName}(${type}): does not break interface docs`,
       rule,
       {
-        valid: [],
         invalid: [
           {
-            code: dedent`
-              enum Enum {
-                /**
-                 * Comment B
-                 */
-                b = 'b',
-                /**
-                 * Comment A
-                 */
-                'aaa' = 'a',
-              }
-            `,
             output: dedent`
               enum Enum {
                 /**
@@ -218,18 +205,31 @@ describe(ruleName, () => {
                 b = 'b',
               }
             `,
-            options: [options],
+            code: dedent`
+              enum Enum {
+                /**
+                 * Comment B
+                 */
+                b = 'b',
+                /**
+                 * Comment A
+                 */
+                'aaa' = 'a',
+              }
+            `,
             errors: [
               {
-                messageId: 'unexpectedEnumsOrder',
                 data: {
-                  left: 'b',
                   right: 'aaa',
+                  left: 'b',
                 },
+                messageId: 'unexpectedEnumsOrder',
               },
             ],
+            options: [options],
           },
         ],
+        valid: [],
       },
     )
 
@@ -258,25 +258,8 @@ describe(ruleName, () => {
       `${ruleName}(${type}): allows to use partition comments`,
       rule,
       {
-        valid: [],
         invalid: [
           {
-            code: dedent`
-              enum Enum {
-                // Part: A
-                cc = 'c',
-                d = 'd',
-                // Not partition comment
-                bbb = 'b',
-                // Part: B
-                aaaa = 'a',
-                e = 'e',
-                // Part: C
-                'gg' = 'g',
-                // Not partition comment
-                fff = 'f',
-              }
-            `,
             output: dedent`
               enum Enum {
                 // Part: A
@@ -293,30 +276,47 @@ describe(ruleName, () => {
                 'gg' = 'g',
               }
             `,
+            code: dedent`
+              enum Enum {
+                // Part: A
+                cc = 'c',
+                d = 'd',
+                // Not partition comment
+                bbb = 'b',
+                // Part: B
+                aaaa = 'a',
+                e = 'e',
+                // Part: C
+                'gg' = 'g',
+                // Not partition comment
+                fff = 'f',
+              }
+            `,
+            errors: [
+              {
+                data: {
+                  right: 'bbb',
+                  left: 'd',
+                },
+                messageId: 'unexpectedEnumsOrder',
+              },
+              {
+                data: {
+                  right: 'fff',
+                  left: 'gg',
+                },
+                messageId: 'unexpectedEnumsOrder',
+              },
+            ],
             options: [
               {
                 ...options,
                 partitionByComment: '^Part*',
               },
             ],
-            errors: [
-              {
-                messageId: 'unexpectedEnumsOrder',
-                data: {
-                  left: 'd',
-                  right: 'bbb',
-                },
-              },
-              {
-                messageId: 'unexpectedEnumsOrder',
-                data: {
-                  left: 'gg',
-                  right: 'fff',
-                },
-              },
-            ],
           },
         ],
+        valid: [],
       },
     )
 
@@ -350,22 +350,8 @@ describe(ruleName, () => {
       `${ruleName}(${type}): allows to use multiple partition comments`,
       rule,
       {
-        valid: [],
         invalid: [
           {
-            code: dedent`
-              enum Enum {
-                /* Partition Comment */
-                // Part: A
-                d = 'd',
-                // Part: B
-                aaa = 'a',
-                c = 'c',
-                bb = 'b',
-                /* Other */
-                e = 'e',
-              }
-            `,
             output: dedent`
               enum Enum {
                 /* Partition Comment */
@@ -379,23 +365,37 @@ describe(ruleName, () => {
                 e = 'e',
               }
             `,
+            code: dedent`
+              enum Enum {
+                /* Partition Comment */
+                // Part: A
+                d = 'd',
+                // Part: B
+                aaa = 'a',
+                c = 'c',
+                bb = 'b',
+                /* Other */
+                e = 'e',
+              }
+            `,
+            errors: [
+              {
+                data: {
+                  right: 'bb',
+                  left: 'c',
+                },
+                messageId: 'unexpectedEnumsOrder',
+              },
+            ],
             options: [
               {
                 ...options,
                 partitionByComment: ['Partition Comment', 'Part: *', 'Other'],
               },
             ],
-            errors: [
-              {
-                messageId: 'unexpectedEnumsOrder',
-                data: {
-                  left: 'c',
-                  right: 'bb',
-                },
-              },
-            ],
           },
         ],
+        valid: [],
       },
     )
 
@@ -427,24 +427,73 @@ describe(ruleName, () => {
     )
 
     ruleTester.run(`${ruleName}: sort enum values correctly`, rule, {
-      valid: [],
       invalid: [
         {
-          code: dedent`
-            enum Enum {
-              'a' = 'i',
-              'b' = 'h',
-              'c' = 'g',
-              'd' = 'f',
-              'e' = 'e',
-              'f' = 'd',
-              'g' = 'c',
-              'h' = 'b',
-              'i' = 'a',
-              'j' = null,
-              'k' = undefined,
-            }
-          `,
+          errors: [
+            {
+              data: {
+                right: 'b',
+                left: 'a',
+              },
+              messageId: 'unexpectedEnumsOrder',
+            },
+            {
+              data: {
+                right: 'c',
+                left: 'b',
+              },
+              messageId: 'unexpectedEnumsOrder',
+            },
+            {
+              data: {
+                right: 'd',
+                left: 'c',
+              },
+              messageId: 'unexpectedEnumsOrder',
+            },
+            {
+              data: {
+                right: 'e',
+                left: 'd',
+              },
+              messageId: 'unexpectedEnumsOrder',
+            },
+            {
+              data: {
+                right: 'f',
+                left: 'e',
+              },
+              messageId: 'unexpectedEnumsOrder',
+            },
+            {
+              data: {
+                right: 'g',
+                left: 'f',
+              },
+              messageId: 'unexpectedEnumsOrder',
+            },
+            {
+              data: {
+                right: 'h',
+                left: 'g',
+              },
+              messageId: 'unexpectedEnumsOrder',
+            },
+            {
+              data: {
+                right: 'i',
+                left: 'h',
+              },
+              messageId: 'unexpectedEnumsOrder',
+            },
+            {
+              data: {
+                right: 'j',
+                left: 'i',
+              },
+              messageId: 'unexpectedEnumsOrder',
+            },
+          ],
           output: dedent`
             enum Enum {
               'j' = null,
@@ -460,79 +509,30 @@ describe(ruleName, () => {
               'a' = 'i',
             }
           `,
+          code: dedent`
+            enum Enum {
+              'a' = 'i',
+              'b' = 'h',
+              'c' = 'g',
+              'd' = 'f',
+              'e' = 'e',
+              'f' = 'd',
+              'g' = 'c',
+              'h' = 'b',
+              'i' = 'a',
+              'j' = null,
+              'k' = undefined,
+            }
+          `,
           options: [
             {
               ...options,
               sortByValue: true,
             },
           ],
-          errors: [
-            {
-              messageId: 'unexpectedEnumsOrder',
-              data: {
-                left: 'a',
-                right: 'b',
-              },
-            },
-            {
-              messageId: 'unexpectedEnumsOrder',
-              data: {
-                left: 'b',
-                right: 'c',
-              },
-            },
-            {
-              messageId: 'unexpectedEnumsOrder',
-              data: {
-                left: 'c',
-                right: 'd',
-              },
-            },
-            {
-              messageId: 'unexpectedEnumsOrder',
-              data: {
-                left: 'd',
-                right: 'e',
-              },
-            },
-            {
-              messageId: 'unexpectedEnumsOrder',
-              data: {
-                left: 'e',
-                right: 'f',
-              },
-            },
-            {
-              messageId: 'unexpectedEnumsOrder',
-              data: {
-                left: 'f',
-                right: 'g',
-              },
-            },
-            {
-              messageId: 'unexpectedEnumsOrder',
-              data: {
-                left: 'g',
-                right: 'h',
-              },
-            },
-            {
-              messageId: 'unexpectedEnumsOrder',
-              data: {
-                left: 'h',
-                right: 'i',
-              },
-            },
-            {
-              messageId: 'unexpectedEnumsOrder',
-              data: {
-                left: 'i',
-                right: 'j',
-              },
-            },
-          ],
         },
       ],
+      valid: [],
     })
 
     ruleTester.run(
@@ -566,18 +566,18 @@ describe(ruleName, () => {
       {
         valid: [
           {
-            code: dedent`
-              enum Enum {
-                AB = 'AB',
-                A_C = 'AC',
-              }
-            `,
             options: [
               {
                 ...options,
                 specialCharacters: 'remove',
               },
             ],
+            code: dedent`
+              enum Enum {
+                AB = 'AB',
+                A_C = 'AC',
+              }
+            `,
           },
         ],
         invalid: [],
@@ -607,53 +607,53 @@ describe(ruleName, () => {
       `${ruleName}(${type}): sorts inline elements correctly`,
       rule,
       {
-        valid: [],
         invalid: [
           {
-            code: dedent`
-              enum Enum {
-                B = "B", A = "A"
-              }
-            `,
+            errors: [
+              {
+                data: {
+                  right: 'A',
+                  left: 'B',
+                },
+                messageId: 'unexpectedEnumsOrder',
+              },
+            ],
             output: dedent`
               enum Enum {
                 A = "A", B = "B"
               }
             `,
-            options: [options],
-            errors: [
-              {
-                messageId: 'unexpectedEnumsOrder',
-                data: {
-                  left: 'B',
-                  right: 'A',
-                },
-              },
-            ],
-          },
-          {
             code: dedent`
               enum Enum {
-                B = "B", A = "A",
+                B = "B", A = "A"
               }
             `,
+            options: [options],
+          },
+          {
+            errors: [
+              {
+                data: {
+                  right: 'A',
+                  left: 'B',
+                },
+                messageId: 'unexpectedEnumsOrder',
+              },
+            ],
             output: dedent`
               enum Enum {
                 A = "A", B = "B",
               }
             `,
+            code: dedent`
+              enum Enum {
+                B = "B", A = "A",
+              }
+            `,
             options: [options],
-            errors: [
-              {
-                messageId: 'unexpectedEnumsOrder',
-                data: {
-                  left: 'B',
-                  right: 'A',
-                },
-              },
-            ],
           },
         ],
+        valid: [],
       },
     )
   })
@@ -668,6 +668,36 @@ describe(ruleName, () => {
     } as const
 
     ruleTester.run(`${ruleName}(${type}): sorts enum members`, rule, {
+      invalid: [
+        {
+          errors: [
+            {
+              data: {
+                right: 'bbb',
+                left: 'cc',
+              },
+              messageId: 'unexpectedEnumsOrder',
+            },
+          ],
+          output: dedent`
+            enum Enum {
+              aaaa = 'a',
+              bbb = 'b',
+              cc = 'c',
+              d = 'd',
+            }
+          `,
+          code: dedent`
+            enum Enum {
+              aaaa = 'a',
+              cc = 'c',
+              bbb = 'b',
+              d = 'd',
+            }
+          `,
+          options: [options],
+        },
+      ],
       valid: [
         {
           code: dedent`
@@ -681,42 +711,42 @@ describe(ruleName, () => {
           options: [options],
         },
       ],
-      invalid: [
-        {
-          code: dedent`
-            enum Enum {
-              aaaa = 'a',
-              cc = 'c',
-              bbb = 'b',
-              d = 'd',
-            }
-          `,
-          output: dedent`
-            enum Enum {
-              aaaa = 'a',
-              bbb = 'b',
-              cc = 'c',
-              d = 'd',
-            }
-          `,
-          options: [options],
-          errors: [
-            {
-              messageId: 'unexpectedEnumsOrder',
-              data: {
-                left: 'cc',
-                right: 'bbb',
-              },
-            },
-          ],
-        },
-      ],
     })
 
     ruleTester.run(
       `${ruleName}(${type}): sorts enum members with number keys`,
       rule,
       {
+        invalid: [
+          {
+            errors: [
+              {
+                data: {
+                  left: '12',
+                  right: '2',
+                },
+                messageId: 'unexpectedEnumsOrder',
+              },
+            ],
+            output: dedent`
+              enum Enum {
+                1 = 'a',
+                2 = 'c',
+                8 = 'c',
+                12 = 'b',
+              }
+            `,
+            code: dedent`
+              enum Enum {
+                1 = 'a',
+                12 = 'b',
+                2 = 'c',
+                8 = 'c',
+              }
+            `,
+            options: [options],
+          },
+        ],
         valid: [
           {
             code: dedent`
@@ -728,36 +758,6 @@ describe(ruleName, () => {
               }
             `,
             options: [options],
-          },
-        ],
-        invalid: [
-          {
-            code: dedent`
-              enum Enum {
-                1 = 'a',
-                12 = 'b',
-                2 = 'c',
-                8 = 'c',
-              }
-            `,
-            output: dedent`
-              enum Enum {
-                1 = 'a',
-                2 = 'c',
-                8 = 'c',
-                12 = 'b',
-              }
-            `,
-            options: [options],
-            errors: [
-              {
-                messageId: 'unexpectedEnumsOrder',
-                data: {
-                  left: '12',
-                  right: '2',
-                },
-              },
-            ],
           },
         ],
       },
@@ -787,6 +787,32 @@ describe(ruleName, () => {
       `${ruleName}(${type}): sorts enum members with boolean ids`,
       rule,
       {
+        invalid: [
+          {
+            errors: [
+              {
+                data: {
+                  right: 'false',
+                  left: 'true',
+                },
+                messageId: 'unexpectedEnumsOrder',
+              },
+            ],
+            output: dedent`
+              enum Enum {
+                false = 'b',
+                true = 'a',
+              }
+            `,
+            code: dedent`
+              enum Enum {
+                true = 'a',
+                false = 'b',
+              }
+            `,
+            options: [options],
+          },
+        ],
         valid: [
           {
             code: dedent`
@@ -798,32 +824,6 @@ describe(ruleName, () => {
             options: [options],
           },
         ],
-        invalid: [
-          {
-            code: dedent`
-              enum Enum {
-                true = 'a',
-                false = 'b',
-              }
-            `,
-            output: dedent`
-              enum Enum {
-                false = 'b',
-                true = 'a',
-              }
-            `,
-            options: [options],
-            errors: [
-              {
-                messageId: 'unexpectedEnumsOrder',
-                data: {
-                  left: 'true',
-                  right: 'false',
-                },
-              },
-            ],
-          },
-        ],
       },
     )
 
@@ -831,21 +831,8 @@ describe(ruleName, () => {
       `${ruleName}(${type}): does not break interface docs`,
       rule,
       {
-        valid: [],
         invalid: [
           {
-            code: dedent`
-              enum Enum {
-                /**
-                 * Comment B
-                 */
-                b = 'b',
-                /**
-                 * Comment A
-                 */
-                'aaa' = 'a',
-              }
-            `,
             output: dedent`
               enum Enum {
                 /**
@@ -858,18 +845,31 @@ describe(ruleName, () => {
                 b = 'b',
               }
             `,
-            options: [options],
+            code: dedent`
+              enum Enum {
+                /**
+                 * Comment B
+                 */
+                b = 'b',
+                /**
+                 * Comment A
+                 */
+                'aaa' = 'a',
+              }
+            `,
             errors: [
               {
-                messageId: 'unexpectedEnumsOrder',
                 data: {
-                  left: 'b',
                   right: 'aaa',
+                  left: 'b',
                 },
+                messageId: 'unexpectedEnumsOrder',
               },
             ],
+            options: [options],
           },
         ],
+        valid: [],
       },
     )
 
@@ -898,25 +898,8 @@ describe(ruleName, () => {
       `${ruleName}(${type}): allows to use partition comments`,
       rule,
       {
-        valid: [],
         invalid: [
           {
-            code: dedent`
-              enum Enum {
-                // Part: A
-                cc = 'c',
-                d = 'd',
-                // Not partition comment
-                bbb = 'b',
-                // Part: B
-                aaaa = 'a',
-                e = 'e',
-                // Part: C
-                'gg' = 'g',
-                // Not partition comment
-                fff = 'f',
-              }
-            `,
             output: dedent`
               enum Enum {
                 // Part: A
@@ -933,30 +916,47 @@ describe(ruleName, () => {
                 'gg' = 'g',
               }
             `,
+            code: dedent`
+              enum Enum {
+                // Part: A
+                cc = 'c',
+                d = 'd',
+                // Not partition comment
+                bbb = 'b',
+                // Part: B
+                aaaa = 'a',
+                e = 'e',
+                // Part: C
+                'gg' = 'g',
+                // Not partition comment
+                fff = 'f',
+              }
+            `,
+            errors: [
+              {
+                data: {
+                  right: 'bbb',
+                  left: 'd',
+                },
+                messageId: 'unexpectedEnumsOrder',
+              },
+              {
+                data: {
+                  right: 'fff',
+                  left: 'gg',
+                },
+                messageId: 'unexpectedEnumsOrder',
+              },
+            ],
             options: [
               {
                 ...options,
                 partitionByComment: '^Part*',
               },
             ],
-            errors: [
-              {
-                messageId: 'unexpectedEnumsOrder',
-                data: {
-                  left: 'd',
-                  right: 'bbb',
-                },
-              },
-              {
-                messageId: 'unexpectedEnumsOrder',
-                data: {
-                  left: 'gg',
-                  right: 'fff',
-                },
-              },
-            ],
           },
         ],
+        valid: [],
       },
     )
 
@@ -990,22 +990,8 @@ describe(ruleName, () => {
       `${ruleName}(${type}): allows to use multiple partition comments`,
       rule,
       {
-        valid: [],
         invalid: [
           {
-            code: dedent`
-              enum Enum {
-                /* Partition Comment */
-                // Part: A
-                d = 'd',
-                // Part: B
-                aaa = 'a',
-                c = 'c',
-                bb = 'b',
-                /* Other */
-                e = 'e',
-              }
-            `,
             output: dedent`
               enum Enum {
                 /* Partition Comment */
@@ -1019,45 +1005,101 @@ describe(ruleName, () => {
                 e = 'e',
               }
             `,
+            code: dedent`
+              enum Enum {
+                /* Partition Comment */
+                // Part: A
+                d = 'd',
+                // Part: B
+                aaa = 'a',
+                c = 'c',
+                bb = 'b',
+                /* Other */
+                e = 'e',
+              }
+            `,
+            errors: [
+              {
+                data: {
+                  right: 'bb',
+                  left: 'c',
+                },
+                messageId: 'unexpectedEnumsOrder',
+              },
+            ],
             options: [
               {
                 ...options,
                 partitionByComment: ['Partition Comment', 'Part: *', 'Other'],
               },
             ],
-            errors: [
-              {
-                messageId: 'unexpectedEnumsOrder',
-                data: {
-                  left: 'c',
-                  right: 'bb',
-                },
-              },
-            ],
           },
         ],
+        valid: [],
       },
     )
 
     ruleTester.run(`${ruleName}: sort enum values correctly`, rule, {
-      valid: [],
       invalid: [
         {
-          code: dedent`
-            enum Enum {
-              'a' = 'ffffff',
-              'b' = 4444,
-              'c' = 6,
-              'd' = 5,
-              'e' = 4,
-              'f' = '3',
-              'g' = 2,
-              'h' = 1,
-              'i' = '',
-              'j' = null,
-              'k' = undefined,
-            }
-          `,
+          errors: [
+            {
+              data: {
+                right: 'b',
+                left: 'a',
+              },
+              messageId: 'unexpectedEnumsOrder',
+            },
+            {
+              data: {
+                right: 'c',
+                left: 'b',
+              },
+              messageId: 'unexpectedEnumsOrder',
+            },
+            {
+              data: {
+                right: 'd',
+                left: 'c',
+              },
+              messageId: 'unexpectedEnumsOrder',
+            },
+            {
+              data: {
+                right: 'e',
+                left: 'd',
+              },
+              messageId: 'unexpectedEnumsOrder',
+            },
+            {
+              data: {
+                right: 'f',
+                left: 'e',
+              },
+              messageId: 'unexpectedEnumsOrder',
+            },
+            {
+              data: {
+                right: 'g',
+                left: 'f',
+              },
+              messageId: 'unexpectedEnumsOrder',
+            },
+            {
+              data: {
+                right: 'h',
+                left: 'g',
+              },
+              messageId: 'unexpectedEnumsOrder',
+            },
+            {
+              data: {
+                right: 'i',
+                left: 'h',
+              },
+              messageId: 'unexpectedEnumsOrder',
+            },
+          ],
           output: dedent`
             enum Enum {
               'i' = '',
@@ -1073,72 +1115,30 @@ describe(ruleName, () => {
               'a' = 'ffffff',
             }
           `,
+          code: dedent`
+            enum Enum {
+              'a' = 'ffffff',
+              'b' = 4444,
+              'c' = 6,
+              'd' = 5,
+              'e' = 4,
+              'f' = '3',
+              'g' = 2,
+              'h' = 1,
+              'i' = '',
+              'j' = null,
+              'k' = undefined,
+            }
+          `,
           options: [
             {
               ...options,
               sortByValue: true,
             },
           ],
-          errors: [
-            {
-              messageId: 'unexpectedEnumsOrder',
-              data: {
-                left: 'a',
-                right: 'b',
-              },
-            },
-            {
-              messageId: 'unexpectedEnumsOrder',
-              data: {
-                left: 'b',
-                right: 'c',
-              },
-            },
-            {
-              messageId: 'unexpectedEnumsOrder',
-              data: {
-                left: 'c',
-                right: 'd',
-              },
-            },
-            {
-              messageId: 'unexpectedEnumsOrder',
-              data: {
-                left: 'd',
-                right: 'e',
-              },
-            },
-            {
-              messageId: 'unexpectedEnumsOrder',
-              data: {
-                left: 'e',
-                right: 'f',
-              },
-            },
-            {
-              messageId: 'unexpectedEnumsOrder',
-              data: {
-                left: 'f',
-                right: 'g',
-              },
-            },
-            {
-              messageId: 'unexpectedEnumsOrder',
-              data: {
-                left: 'g',
-                right: 'h',
-              },
-            },
-            {
-              messageId: 'unexpectedEnumsOrder',
-              data: {
-                left: 'h',
-                right: 'i',
-              },
-            },
-          ],
         },
       ],
+      valid: [],
     })
   })
 
@@ -1151,6 +1151,36 @@ describe(ruleName, () => {
     } as const
 
     ruleTester.run(`${ruleName}(${type}): sorts enum members`, rule, {
+      invalid: [
+        {
+          errors: [
+            {
+              data: {
+                right: 'bbb',
+                left: 'cc',
+              },
+              messageId: 'unexpectedEnumsOrder',
+            },
+          ],
+          output: dedent`
+            enum Enum {
+              aaaa = 'a',
+              bbb = 'b',
+              cc = 'c',
+              d = 'd',
+            }
+          `,
+          code: dedent`
+            enum Enum {
+              aaaa = 'a',
+              cc = 'c',
+              bbb = 'b',
+              d = 'd',
+            }
+          `,
+          options: [options],
+        },
+      ],
       valid: [
         {
           code: dedent`
@@ -1164,42 +1194,42 @@ describe(ruleName, () => {
           options: [options],
         },
       ],
-      invalid: [
-        {
-          code: dedent`
-            enum Enum {
-              aaaa = 'a',
-              cc = 'c',
-              bbb = 'b',
-              d = 'd',
-            }
-          `,
-          output: dedent`
-            enum Enum {
-              aaaa = 'a',
-              bbb = 'b',
-              cc = 'c',
-              d = 'd',
-            }
-          `,
-          options: [options],
-          errors: [
-            {
-              messageId: 'unexpectedEnumsOrder',
-              data: {
-                left: 'cc',
-                right: 'bbb',
-              },
-            },
-          ],
-        },
-      ],
     })
 
     ruleTester.run(
       `${ruleName}(${type}): sorts enum members with number keys`,
       rule,
       {
+        invalid: [
+          {
+            errors: [
+              {
+                data: {
+                  right: '12',
+                  left: '1',
+                },
+                messageId: 'unexpectedEnumsOrder',
+              },
+            ],
+            output: dedent`
+              enum Enum {
+                12 = 'b',
+                1 = 'a',
+                2 = 'c',
+                8 = 'c',
+              }
+            `,
+            code: dedent`
+              enum Enum {
+                1 = 'a',
+                12 = 'b',
+                2 = 'c',
+                8 = 'c',
+              }
+            `,
+            options: [options],
+          },
+        ],
         valid: [
           {
             code: dedent`
@@ -1211,36 +1241,6 @@ describe(ruleName, () => {
               }
             `,
             options: [options],
-          },
-        ],
-        invalid: [
-          {
-            code: dedent`
-              enum Enum {
-                1 = 'a',
-                12 = 'b',
-                2 = 'c',
-                8 = 'c',
-              }
-            `,
-            output: dedent`
-              enum Enum {
-                12 = 'b',
-                1 = 'a',
-                2 = 'c',
-                8 = 'c',
-              }
-            `,
-            options: [options],
-            errors: [
-              {
-                messageId: 'unexpectedEnumsOrder',
-                data: {
-                  left: '1',
-                  right: '12',
-                },
-              },
-            ],
           },
         ],
       },
@@ -1270,6 +1270,32 @@ describe(ruleName, () => {
       `${ruleName}(${type}): sorts enum members with boolean ids`,
       rule,
       {
+        invalid: [
+          {
+            errors: [
+              {
+                data: {
+                  right: 'false',
+                  left: 'true',
+                },
+                messageId: 'unexpectedEnumsOrder',
+              },
+            ],
+            output: dedent`
+              enum Enum {
+                false = 'b',
+                true = 'a',
+              }
+            `,
+            code: dedent`
+              enum Enum {
+                true = 'a',
+                false = 'b',
+              }
+            `,
+            options: [options],
+          },
+        ],
         valid: [
           {
             code: dedent`
@@ -1281,32 +1307,6 @@ describe(ruleName, () => {
             options: [options],
           },
         ],
-        invalid: [
-          {
-            code: dedent`
-              enum Enum {
-                true = 'a',
-                false = 'b',
-              }
-            `,
-            output: dedent`
-              enum Enum {
-                false = 'b',
-                true = 'a',
-              }
-            `,
-            options: [options],
-            errors: [
-              {
-                messageId: 'unexpectedEnumsOrder',
-                data: {
-                  left: 'true',
-                  right: 'false',
-                },
-              },
-            ],
-          },
-        ],
       },
     )
 
@@ -1314,21 +1314,8 @@ describe(ruleName, () => {
       `${ruleName}(${type}): does not break interface docs`,
       rule,
       {
-        valid: [],
         invalid: [
           {
-            code: dedent`
-              enum Enum {
-                /**
-                 * Comment B
-                 */
-                b = 'b',
-                /**
-                 * Comment A
-                 */
-                'aaa' = 'a',
-              }
-            `,
             output: dedent`
               enum Enum {
                 /**
@@ -1341,18 +1328,31 @@ describe(ruleName, () => {
                 b = 'b',
               }
             `,
-            options: [options],
+            code: dedent`
+              enum Enum {
+                /**
+                 * Comment B
+                 */
+                b = 'b',
+                /**
+                 * Comment A
+                 */
+                'aaa' = 'a',
+              }
+            `,
             errors: [
               {
-                messageId: 'unexpectedEnumsOrder',
                 data: {
-                  left: 'b',
                   right: 'aaa',
+                  left: 'b',
                 },
+                messageId: 'unexpectedEnumsOrder',
               },
             ],
+            options: [options],
           },
         ],
+        valid: [],
       },
     )
 
@@ -1381,25 +1381,8 @@ describe(ruleName, () => {
       `${ruleName}(${type}): allows to use partition comments`,
       rule,
       {
-        valid: [],
         invalid: [
           {
-            code: dedent`
-              enum Enum {
-                // Part: A
-                cc = 'c',
-                d = 'd',
-                // Not partition comment
-                bbb = 'b',
-                // Part: B
-                aaaa = 'a',
-                e = 'e',
-                // Part: C
-                'gg' = 'g',
-                // Not partition comment
-                fff = 'f',
-              }
-            `,
             output: dedent`
               enum Enum {
                 // Part: A
@@ -1416,23 +1399,40 @@ describe(ruleName, () => {
                 fff = 'f',
               }
             `,
+            code: dedent`
+              enum Enum {
+                // Part: A
+                cc = 'c',
+                d = 'd',
+                // Not partition comment
+                bbb = 'b',
+                // Part: B
+                aaaa = 'a',
+                e = 'e',
+                // Part: C
+                'gg' = 'g',
+                // Not partition comment
+                fff = 'f',
+              }
+            `,
+            errors: [
+              {
+                data: {
+                  right: 'bbb',
+                  left: 'd',
+                },
+                messageId: 'unexpectedEnumsOrder',
+              },
+            ],
             options: [
               {
                 ...options,
                 partitionByComment: '^Part*',
               },
             ],
-            errors: [
-              {
-                messageId: 'unexpectedEnumsOrder',
-                data: {
-                  left: 'd',
-                  right: 'bbb',
-                },
-              },
-            ],
           },
         ],
+        valid: [],
       },
     )
 
@@ -1466,22 +1466,8 @@ describe(ruleName, () => {
       `${ruleName}(${type}): allows to use multiple partition comments`,
       rule,
       {
-        valid: [],
         invalid: [
           {
-            code: dedent`
-              enum Enum {
-                /* Partition Comment */
-                // Part: A
-                d = 'd',
-                // Part: B
-                aaa = 'a',
-                c = 'c',
-                bb = 'b',
-                /* Other */
-                e = 'e',
-              }
-            `,
             output: dedent`
               enum Enum {
                 /* Partition Comment */
@@ -1495,44 +1481,101 @@ describe(ruleName, () => {
                 e = 'e',
               }
             `,
+            code: dedent`
+              enum Enum {
+                /* Partition Comment */
+                // Part: A
+                d = 'd',
+                // Part: B
+                aaa = 'a',
+                c = 'c',
+                bb = 'b',
+                /* Other */
+                e = 'e',
+              }
+            `,
+            errors: [
+              {
+                data: {
+                  right: 'bb',
+                  left: 'c',
+                },
+                messageId: 'unexpectedEnumsOrder',
+              },
+            ],
             options: [
               {
                 ...options,
                 partitionByComment: ['Partition Comment', 'Part: *', 'Other'],
               },
             ],
-            errors: [
-              {
-                messageId: 'unexpectedEnumsOrder',
-                data: {
-                  left: 'c',
-                  right: 'bb',
-                },
-              },
-            ],
           },
         ],
+        valid: [],
       },
     )
 
     ruleTester.run(`${ruleName}: sort enum values correctly`, rule, {
-      valid: [],
       invalid: [
         {
-          code: dedent`
-            enum Enum {
-              'a' = '',
-              'b' = 'b',
-              'c' = 'cc',
-              'd' = 'ddd',
-              'e' = 'eeee',
-              'f' = 'fffff',
-              'g' = 'gggggg',
-              'h' = 'hhhhhhh',
-              'i' = 'iiiiiiii',
-              'j' = 'jj',
-            }
-          `,
+          errors: [
+            {
+              data: {
+                right: 'b',
+                left: 'a',
+              },
+              messageId: 'unexpectedEnumsOrder',
+            },
+            {
+              data: {
+                right: 'c',
+                left: 'b',
+              },
+              messageId: 'unexpectedEnumsOrder',
+            },
+            {
+              data: {
+                right: 'd',
+                left: 'c',
+              },
+              messageId: 'unexpectedEnumsOrder',
+            },
+            {
+              data: {
+                right: 'e',
+                left: 'd',
+              },
+              messageId: 'unexpectedEnumsOrder',
+            },
+            {
+              data: {
+                right: 'f',
+                left: 'e',
+              },
+              messageId: 'unexpectedEnumsOrder',
+            },
+            {
+              data: {
+                right: 'g',
+                left: 'f',
+              },
+              messageId: 'unexpectedEnumsOrder',
+            },
+            {
+              data: {
+                right: 'h',
+                left: 'g',
+              },
+              messageId: 'unexpectedEnumsOrder',
+            },
+            {
+              data: {
+                right: 'i',
+                left: 'h',
+              },
+              messageId: 'unexpectedEnumsOrder',
+            },
+          ],
           output: dedent`
             enum Enum {
               'i' = 'iiiiiiii',
@@ -1547,72 +1590,29 @@ describe(ruleName, () => {
               'a' = '',
             }
           `,
+          code: dedent`
+            enum Enum {
+              'a' = '',
+              'b' = 'b',
+              'c' = 'cc',
+              'd' = 'ddd',
+              'e' = 'eeee',
+              'f' = 'fffff',
+              'g' = 'gggggg',
+              'h' = 'hhhhhhh',
+              'i' = 'iiiiiiii',
+              'j' = 'jj',
+            }
+          `,
           options: [
             {
               ...options,
               sortByValue: true,
             },
           ],
-          errors: [
-            {
-              messageId: 'unexpectedEnumsOrder',
-              data: {
-                left: 'a',
-                right: 'b',
-              },
-            },
-            {
-              messageId: 'unexpectedEnumsOrder',
-              data: {
-                left: 'b',
-                right: 'c',
-              },
-            },
-            {
-              messageId: 'unexpectedEnumsOrder',
-              data: {
-                left: 'c',
-                right: 'd',
-              },
-            },
-            {
-              messageId: 'unexpectedEnumsOrder',
-              data: {
-                left: 'd',
-                right: 'e',
-              },
-            },
-            {
-              messageId: 'unexpectedEnumsOrder',
-              data: {
-                left: 'e',
-                right: 'f',
-              },
-            },
-            {
-              messageId: 'unexpectedEnumsOrder',
-              data: {
-                left: 'f',
-                right: 'g',
-              },
-            },
-            {
-              messageId: 'unexpectedEnumsOrder',
-              data: {
-                left: 'g',
-                right: 'h',
-              },
-            },
-            {
-              messageId: 'unexpectedEnumsOrder',
-              data: {
-                left: 'h',
-                right: 'i',
-              },
-            },
-          ],
         },
       ],
+      valid: [],
     })
   })
 
@@ -1706,16 +1706,24 @@ describe(ruleName, () => {
         `${ruleName}: sortByValue = true => sorts numerical enums numerically for type ${type}`,
         rule,
         {
-          valid: [],
           invalid: [
             {
-              code: dedent`
-              enum Enum {
-                'b' = 2,
-                'a' = 1,
-                'c' = 0,
-              }
-            `,
+              errors: [
+                {
+                  data: {
+                    right: 'a',
+                    left: 'b',
+                  },
+                  messageId: 'unexpectedEnumsOrder',
+                },
+                {
+                  data: {
+                    right: 'c',
+                    left: 'a',
+                  },
+                  messageId: 'unexpectedEnumsOrder',
+                },
+              ],
               output: dedent`
               enum Enum {
                 'c' = 0,
@@ -1723,30 +1731,22 @@ describe(ruleName, () => {
                 'b' = 2,
               }
               `,
+              code: dedent`
+              enum Enum {
+                'b' = 2,
+                'a' = 1,
+                'c' = 0,
+              }
+            `,
               options: [
                 {
-                  type,
                   sortByValue: true,
-                },
-              ],
-              errors: [
-                {
-                  messageId: 'unexpectedEnumsOrder',
-                  data: {
-                    left: 'b',
-                    right: 'a',
-                  },
-                },
-                {
-                  messageId: 'unexpectedEnumsOrder',
-                  data: {
-                    left: 'a',
-                    right: 'c',
-                  },
+                  type,
                 },
               ],
             },
           ],
+          valid: [],
         },
       )
 
@@ -1754,16 +1754,24 @@ describe(ruleName, () => {
         `${ruleName}: forceNumericSort = true => sorts numerical enums numerically regardless for type ${type}`,
         rule,
         {
-          valid: [],
           invalid: [
             {
-              code: dedent`
-              enum Enum {
-                'b' = 2,
-                'a' = 1,
-                'c' = 0,
-              }
-            `,
+              errors: [
+                {
+                  data: {
+                    right: 'a',
+                    left: 'b',
+                  },
+                  messageId: 'unexpectedEnumsOrder',
+                },
+                {
+                  data: {
+                    right: 'c',
+                    left: 'a',
+                  },
+                  messageId: 'unexpectedEnumsOrder',
+                },
+              ],
               output: dedent`
               enum Enum {
                 'c' = 0,
@@ -1771,30 +1779,22 @@ describe(ruleName, () => {
                 'b' = 2,
               }
               `,
+              code: dedent`
+              enum Enum {
+                'b' = 2,
+                'a' = 1,
+                'c' = 0,
+              }
+            `,
               options: [
                 {
-                  type,
                   forceNumericSort: true,
-                },
-              ],
-              errors: [
-                {
-                  messageId: 'unexpectedEnumsOrder',
-                  data: {
-                    left: 'b',
-                    right: 'a',
-                  },
-                },
-                {
-                  messageId: 'unexpectedEnumsOrder',
-                  data: {
-                    left: 'a',
-                    right: 'c',
-                  },
+                  type,
                 },
               ],
             },
           ],
+          valid: [],
         },
       )
     }
@@ -1803,6 +1803,33 @@ describe(ruleName, () => {
       `${ruleName}: sets alphabetical asc sorting as default`,
       rule,
       {
+        invalid: [
+          {
+            errors: [
+              {
+                data: {
+                  right: 'a',
+                  left: 'b',
+                },
+                messageId: 'unexpectedEnumsOrder',
+              },
+            ],
+            output: dedent`
+              enum Enum {
+                'a' = 'a',
+                'b' = 'b',
+                'c' = 'c',
+              }
+            `,
+            code: dedent`
+              enum Enum {
+                'b' = 'b',
+                'a' = 'a',
+                'c' = 'c',
+              }
+            `,
+          },
+        ],
         valid: [
           dedent`
             enum Enum {
@@ -1823,41 +1850,29 @@ describe(ruleName, () => {
             options: [{}],
           },
         ],
-        invalid: [
-          {
-            code: dedent`
-              enum Enum {
-                'b' = 'b',
-                'a' = 'a',
-                'c' = 'c',
-              }
-            `,
-            output: dedent`
-              enum Enum {
-                'a' = 'a',
-                'b' = 'b',
-                'c' = 'c',
-              }
-            `,
-            errors: [
-              {
-                messageId: 'unexpectedEnumsOrder',
-                data: {
-                  left: 'b',
-                  right: 'a',
-                },
-              },
-            ],
-          },
-        ],
       },
     )
 
     describe('detects dependencies', () => {
       ruleTester.run(`${ruleName}: works with dependencies`, rule, {
-        valid: [],
         invalid: [
           {
+            errors: [
+              {
+                data: {
+                  right: 'B',
+                  left: 'C',
+                },
+                messageId: 'unexpectedEnumsOrder',
+              },
+            ],
+            output: dedent`
+              enum Enum {
+                B = 0,
+                A = B,
+                C = 'C',
+              }
+            `,
             code: dedent`
               enum Enum {
                 C = 'C',
@@ -1865,36 +1880,22 @@ describe(ruleName, () => {
                 A = B,
               }
             `,
-            output: dedent`
-              enum Enum {
-                B = 0,
-                A = B,
-                C = 'C',
-              }
-            `,
             options: [
               {
                 type: 'alphabetical',
               },
             ],
-            errors: [
-              {
-                messageId: 'unexpectedEnumsOrder',
-                data: {
-                  left: 'C',
-                  right: 'B',
-                },
-              },
-            ],
           },
           {
-            code: dedent`
-              enum Enum {
-                C = 'C',
-                B = 0,
-                A = Enum.B,
-              }
-            `,
+            errors: [
+              {
+                data: {
+                  right: 'B',
+                  left: 'C',
+                },
+                messageId: 'unexpectedEnumsOrder',
+              },
+            ],
             output: dedent`
               enum Enum {
                 B = 0,
@@ -1902,29 +1903,29 @@ describe(ruleName, () => {
                 C = 'C',
               }
             `,
+            code: dedent`
+              enum Enum {
+                C = 'C',
+                B = 0,
+                A = Enum.B,
+              }
+            `,
             options: [
               {
                 type: 'alphabetical',
               },
             ],
-            errors: [
-              {
-                messageId: 'unexpectedEnumsOrder',
-                data: {
-                  left: 'C',
-                  right: 'B',
-                },
-              },
-            ],
           },
           {
-            code: dedent`
-              enum Enum {
-                C = 3,
-                B = 0,
-                A = 1 | 2 | B | Enum.B,
-              }
-            `,
+            errors: [
+              {
+                data: {
+                  right: 'B',
+                  left: 'C',
+                },
+                messageId: 'unexpectedEnumsOrder',
+              },
+            ],
             output: dedent`
               enum Enum {
                 B = 0,
@@ -1932,64 +1933,41 @@ describe(ruleName, () => {
                 C = 3,
               }
             `,
+            code: dedent`
+              enum Enum {
+                C = 3,
+                B = 0,
+                A = 1 | 2 | B | Enum.B,
+              }
+            `,
             options: [
               {
                 type: 'alphabetical',
-              },
-            ],
-            errors: [
-              {
-                messageId: 'unexpectedEnumsOrder',
-                data: {
-                  left: 'C',
-                  right: 'B',
-                },
               },
             ],
           },
           {
-            code: dedent`
-              enum Enum {
-                B = 'B',
-                A = AnotherEnum.B,
-                C = 'C',
-              }
-            `,
-            output: dedent`
-              enum Enum {
-                A = AnotherEnum.B,
-                B = 'B',
-                C = 'C',
-              }
-            `,
-            options: [
-              {
-                type: 'alphabetical',
-              },
-            ],
             errors: [
               {
-                messageId: 'unexpectedEnumsOrder',
                 data: {
-                  left: 'B',
                   right: 'A',
+                  left: 'B',
                 },
+                messageId: 'unexpectedEnumsOrder',
               },
             ],
-          },
-          {
-            code: dedent`
-              enum Enum {
-                A = Enum.C,
-                B = 10,
-                C = 10,
-              }
-            `,
             output: dedent`
               enum Enum {
-                C = 10,
-                A = Enum.C,
-                B = 10,
+                A = AnotherEnum.B,
+                B = 'B',
+                C = 'C',
+              }
+            `,
+            code: dedent`
+              enum Enum {
+                B = 'B',
+                A = AnotherEnum.B,
+                C = 'C',
               }
             `,
             options: [
@@ -1997,17 +1975,39 @@ describe(ruleName, () => {
                 type: 'alphabetical',
               },
             ],
+          },
+          {
             errors: [
               {
-                messageId: 'unexpectedEnumsDependencyOrder',
                 data: {
-                  right: 'C',
                   nodeDependentOnRight: 'A',
+                  right: 'C',
                 },
+                messageId: 'unexpectedEnumsDependencyOrder',
+              },
+            ],
+            output: dedent`
+              enum Enum {
+                C = 10,
+                A = Enum.C,
+                B = 10,
+              }
+            `,
+            code: dedent`
+              enum Enum {
+                A = Enum.C,
+                B = 10,
+                C = 10,
+              }
+            `,
+            options: [
+              {
+                type: 'alphabetical',
               },
             ],
           },
         ],
+        valid: [],
       })
 
       ruleTester.run(
@@ -2036,19 +2036,24 @@ describe(ruleName, () => {
       )
 
       ruleTester.run(`${ruleName}: detects circular dependencies`, rule, {
-        valid: [],
         invalid: [
           {
-            code: dedent`
-              enum Enum {
-                A = 'A',
-                B = F,
-                C = 'C',
-                D = B,
-                E = 'E',
-                F = D
-              }
-            `,
+            errors: [
+              {
+                data: {
+                  right: 'D',
+                  left: 'C',
+                },
+                messageId: 'unexpectedEnumsOrder',
+              },
+              {
+                data: {
+                  nodeDependentOnRight: 'B',
+                  right: 'F',
+                },
+                messageId: 'unexpectedEnumsDependencyOrder',
+              },
+            ],
             output: dedent`
               enum Enum {
                 A = 'A',
@@ -2059,45 +2064,47 @@ describe(ruleName, () => {
                 E = 'E'
               }
             `,
+            code: dedent`
+              enum Enum {
+                A = 'A',
+                B = F,
+                C = 'C',
+                D = B,
+                E = 'E',
+                F = D
+              }
+            `,
             options: [
               {
                 type: 'alphabetical',
               },
             ],
-            errors: [
-              {
-                messageId: 'unexpectedEnumsOrder',
-                data: {
-                  left: 'C',
-                  right: 'D',
-                },
-              },
-              {
-                messageId: 'unexpectedEnumsDependencyOrder',
-                data: {
-                  right: 'F',
-                  nodeDependentOnRight: 'B',
-                },
-              },
-            ],
           },
         ],
+        valid: [],
       })
 
       ruleTester.run(
         `${ruleName}: prioritizes dependencies over partitionByComment`,
         rule,
         {
-          valid: [],
           invalid: [
             {
-              code: dedent`
-              enum Enum {
-                B = A,
-                // Part: 1
-                A = 'A',
-              }
-            `,
+              errors: [
+                {
+                  data: {
+                    nodeDependentOnRight: 'B',
+                    right: 'A',
+                  },
+                  messageId: 'unexpectedEnumsDependencyOrder',
+                },
+              ],
+              options: [
+                {
+                  partitionByComment: '^Part*',
+                  type: 'alphabetical',
+                },
+              ],
               output: dedent`
               enum Enum {
                 A = 'A',
@@ -2105,23 +2112,16 @@ describe(ruleName, () => {
                 B = A,
               }
             `,
-              options: [
-                {
-                  type: 'alphabetical',
-                  partitionByComment: '^Part*',
-                },
-              ],
-              errors: [
-                {
-                  messageId: 'unexpectedEnumsDependencyOrder',
-                  data: {
-                    right: 'A',
-                    nodeDependentOnRight: 'B',
-                  },
-                },
-              ],
+              code: dedent`
+              enum Enum {
+                B = A,
+                // Part: 1
+                A = 'A',
+              }
+            `,
             },
           ],
+          valid: [],
         },
       )
     })
@@ -2131,29 +2131,8 @@ describe(ruleName, () => {
         `${ruleName}: keeps comments associated to their node`,
         rule,
         {
-          valid: [],
           invalid: [
             {
-              code: dedent`
-              enum Enum {
-                // Ignore this comment
-
-                // B2
-                /**
-                  * B1
-                  */
-                B = 'B',
-
-                // Ignore this comment
-
-                // A3
-                /**
-                  * A2
-                  */
-                // A1
-                A = 'A',
-              }
-            `,
               output: dedent`
               enum Enum {
                 // Ignore this comment
@@ -2174,36 +2153,9 @@ describe(ruleName, () => {
                 B = 'B',
               }
             `,
-              options: [
-                {
-                  type: 'alphabetical',
-                },
-              ],
-              errors: [
-                {
-                  messageId: 'unexpectedEnumsOrder',
-                  data: {
-                    left: 'B',
-                    right: 'A',
-                  },
-                },
-              ],
-            },
-          ],
-        },
-      )
-
-      ruleTester.run(`${ruleName}: handles partition comments`, rule, {
-        valid: [],
-        invalid: [
-          {
-            code: dedent`
+              code: dedent`
               enum Enum {
                 // Ignore this comment
-
-                // C2
-                // C1
-                C = 'C',
 
                 // B2
                 /**
@@ -2211,17 +2163,39 @@ describe(ruleName, () => {
                   */
                 B = 'B',
 
-                // Above a partition comment ignore me
-                // PartitionComment: 1
-                /**
-                  * D2
-                  */
-                // D1
-                D = 'D',
+                // Ignore this comment
 
+                // A3
+                /**
+                  * A2
+                  */
+                // A1
                 A = 'A',
               }
             `,
+              errors: [
+                {
+                  data: {
+                    right: 'A',
+                    left: 'B',
+                  },
+                  messageId: 'unexpectedEnumsOrder',
+                },
+              ],
+              options: [
+                {
+                  type: 'alphabetical',
+                },
+              ],
+            },
+          ],
+          valid: [],
+        },
+      )
+
+      ruleTester.run(`${ruleName}: handles partition comments`, rule, {
+        invalid: [
+          {
             output: dedent`
               enum Enum {
                 // Ignore this comment
@@ -2247,48 +2221,78 @@ describe(ruleName, () => {
                 D = 'D',
               }
             `,
-            options: [
-              {
-                type: 'alphabetical',
-                partitionByComment: 'PartitionComment:*',
-              },
-            ],
+            code: dedent`
+              enum Enum {
+                // Ignore this comment
+
+                // C2
+                // C1
+                C = 'C',
+
+                // B2
+                /**
+                  * B1
+                  */
+                B = 'B',
+
+                // Above a partition comment ignore me
+                // PartitionComment: 1
+                /**
+                  * D2
+                  */
+                // D1
+                D = 'D',
+
+                A = 'A',
+              }
+            `,
             errors: [
               {
-                messageId: 'unexpectedEnumsOrder',
                 data: {
-                  left: 'C',
                   right: 'B',
+                  left: 'C',
                 },
+                messageId: 'unexpectedEnumsOrder',
               },
               {
-                messageId: 'unexpectedEnumsOrder',
                 data: {
-                  left: 'D',
                   right: 'A',
+                  left: 'D',
                 },
+                messageId: 'unexpectedEnumsOrder',
+              },
+            ],
+            options: [
+              {
+                partitionByComment: 'PartitionComment:*',
+                type: 'alphabetical',
               },
             ],
           },
         ],
+        valid: [],
       })
     })
 
     ruleTester.run(`${ruleName}: allows to use new line as partition`, rule, {
-      valid: [],
       invalid: [
         {
-          code: dedent`
-            enum Enum {
-              D = 'D',
-              C = 'C',
-
-              B = 'B',
-
-              E = 'E',
-              A = 'A',
-            }
-          `,
+          errors: [
+            {
+              data: {
+                right: 'C',
+                left: 'D',
+              },
+              messageId: 'unexpectedEnumsOrder',
+            },
+            {
+              data: {
+                right: 'A',
+                left: 'E',
+              },
+              messageId: 'unexpectedEnumsOrder',
+            },
+          ],
           output: dedent`
             enum Enum {
               C = 'C',
@@ -2298,76 +2302,78 @@ describe(ruleName, () => {
 
               A = 'A',
               E = 'E',
+            }
+          `,
+          code: dedent`
+            enum Enum {
+              D = 'D',
+              C = 'C',
+
+              B = 'B',
+
+              E = 'E',
+              A = 'A',
             }
           `,
           options: [
             {
-              type: 'alphabetical',
               partitionByNewLine: true,
-            },
-          ],
-          errors: [
-            {
-              messageId: 'unexpectedEnumsOrder',
-              data: {
-                left: 'D',
-                right: 'C',
-              },
-            },
-            {
-              messageId: 'unexpectedEnumsOrder',
-              data: {
-                left: 'E',
-                right: 'A',
-              },
+              type: 'alphabetical',
             },
           ],
         },
       ],
+      valid: [],
     })
 
     let eslintDisableRuleTesterName = `${ruleName}: supports 'eslint-disable' for individual nodes`
     ruleTester.run(eslintDisableRuleTesterName, rule, {
-      valid: [],
       invalid: [
         {
-          code: dedent`
-            enum Enum {
-              C = 'C',
-              B = 'B',
-              // eslint-disable-next-line
-              A = 'A'
-            }
-          `,
+          errors: [
+            {
+              data: {
+                right: 'B',
+                left: 'C',
+              },
+              messageId: 'unexpectedEnumsOrder',
+            },
+          ],
           output: dedent`
             enum Enum {
               B = 'B',
               C = 'C',
+              // eslint-disable-next-line
+              A = 'A'
+            }
+          `,
+          code: dedent`
+            enum Enum {
+              C = 'C',
+              B = 'B',
               // eslint-disable-next-line
               A = 'A'
             }
           `,
           options: [{}],
-          errors: [
-            {
-              messageId: 'unexpectedEnumsOrder',
-              data: {
-                left: 'C',
-                right: 'B',
-              },
-            },
-          ],
         },
         {
-          code: dedent`
-            enum Enum {
-              D = 'D',
-              C = 'C',
-              // eslint-disable-next-line
-              A = 'A',
-              B = 'B'
-            }
-          `,
+          errors: [
+            {
+              data: {
+                right: 'C',
+                left: 'D',
+              },
+              messageId: 'unexpectedEnumsOrder',
+            },
+            {
+              data: {
+                right: 'B',
+                left: 'A',
+              },
+              messageId: 'unexpectedEnumsOrder',
+            },
+          ],
           output: dedent`
             enum Enum {
               B = 'B',
@@ -2377,37 +2383,31 @@ describe(ruleName, () => {
               D = 'D'
             }
           `,
+          code: dedent`
+            enum Enum {
+              D = 'D',
+              C = 'C',
+              // eslint-disable-next-line
+              A = 'A',
+              B = 'B'
+            }
+          `,
           options: [
             {
               partitionByComment: true,
             },
           ],
-          errors: [
-            {
-              messageId: 'unexpectedEnumsOrder',
-              data: {
-                left: 'D',
-                right: 'C',
-              },
-            },
-            {
-              messageId: 'unexpectedEnumsOrder',
-              data: {
-                left: 'A',
-                right: 'B',
-              },
-            },
-          ],
         },
         {
-          code: dedent`
-            enum Enum {
-              C = 'C',
-              B = A,
-              // eslint-disable-next-line
-              A = 'A'
-            }
-          `,
+          errors: [
+            {
+              data: {
+                right: 'B',
+                left: 'C',
+              },
+              messageId: 'unexpectedEnumsOrder',
+            },
+          ],
           output: dedent`
             enum Enum {
               B = A,
@@ -2416,25 +2416,26 @@ describe(ruleName, () => {
               A = 'A'
             }
           `,
-          options: [{}],
-          errors: [
-            {
-              messageId: 'unexpectedEnumsOrder',
-              data: {
-                left: 'C',
-                right: 'B',
-              },
-            },
-          ],
-        },
-        {
           code: dedent`
             enum Enum {
               C = 'C',
-              B = 'B',
-              A = 'A' // eslint-disable-line
+              B = A,
+              // eslint-disable-next-line
+              A = 'A'
             }
           `,
+          options: [{}],
+        },
+        {
+          errors: [
+            {
+              data: {
+                right: 'B',
+                left: 'C',
+              },
+              messageId: 'unexpectedEnumsOrder',
+            },
+          ],
           output: dedent`
             enum Enum {
               B = 'B',
@@ -2442,18 +2443,33 @@ describe(ruleName, () => {
               A = 'A' // eslint-disable-line
             }
           `,
+          code: dedent`
+            enum Enum {
+              C = 'C',
+              B = 'B',
+              A = 'A' // eslint-disable-line
+            }
+          `,
           options: [{}],
-          errors: [
-            {
-              messageId: 'unexpectedEnumsOrder',
-              data: {
-                left: 'C',
-                right: 'B',
-              },
-            },
-          ],
         },
         {
+          errors: [
+            {
+              data: {
+                right: 'B',
+                left: 'C',
+              },
+              messageId: 'unexpectedEnumsOrder',
+            },
+          ],
+          output: dedent`
+            enum Enum {
+              B = 'B',
+              C = 'C',
+              /* eslint-disable-next-line */
+              A = 'A'
+            }
+          `,
           code: dedent`
             enum Enum {
               C = 'C',
@@ -2462,33 +2478,18 @@ describe(ruleName, () => {
               A = 'A'
             }
           `,
-          output: dedent`
-            enum Enum {
-              B = 'B',
-              C = 'C',
-              /* eslint-disable-next-line */
-              A = 'A'
-            }
-          `,
           options: [{}],
-          errors: [
-            {
-              messageId: 'unexpectedEnumsOrder',
-              data: {
-                left: 'C',
-                right: 'B',
-              },
-            },
-          ],
         },
         {
-          code: dedent`
-            enum Enum {
-              C = 'C',
-              B = 'B',
-              A = 'A' /* eslint-disable-line */
-            }
-          `,
+          errors: [
+            {
+              data: {
+                right: 'B',
+                left: 'C',
+              },
+              messageId: 'unexpectedEnumsOrder',
+            },
+          ],
           output: dedent`
             enum Enum {
               B = 'B',
@@ -2496,30 +2497,16 @@ describe(ruleName, () => {
               A = 'A' /* eslint-disable-line */
             }
           `,
-          options: [{}],
-          errors: [
-            {
-              messageId: 'unexpectedEnumsOrder',
-              data: {
-                left: 'C',
-                right: 'B',
-              },
-            },
-          ],
-        },
-        {
           code: dedent`
             enum Enum {
-              D = 'D',
-              E = 'E',
-              /* eslint-disable */
               C = 'C',
               B = 'B',
-              // Shouldn't move
-              /* eslint-enable */
-              A = 'A'
+              A = 'A' /* eslint-disable-line */
             }
           `,
+          options: [{}],
+        },
+        {
           output: dedent`
             enum Enum {
               A = 'A',
@@ -2532,131 +2519,11 @@ describe(ruleName, () => {
               E = 'E'
             }
           `,
-          options: [{}],
-          errors: [
-            {
-              messageId: 'unexpectedEnumsOrder',
-              data: {
-                left: 'B',
-                right: 'A',
-              },
-            },
-          ],
-        },
-        {
-          code: dedent`
-            enum Enum {
-              C = 'C',
-              B = 'B',
-              // eslint-disable-next-line @rule-tester/${eslintDisableRuleTesterName}
-              A = 'A'
-            }
-          `,
-          output: dedent`
-            enum Enum {
-              B = 'B',
-              C = 'C',
-              // eslint-disable-next-line @rule-tester/${eslintDisableRuleTesterName}
-              A = 'A'
-            }
-          `,
-          options: [{}],
-          errors: [
-            {
-              messageId: 'unexpectedEnumsOrder',
-              data: {
-                left: 'C',
-                right: 'B',
-              },
-            },
-          ],
-        },
-        {
-          code: dedent`
-            enum Enum {
-              C = 'C',
-              B = 'B',
-              A = 'A' // eslint-disable-line @rule-tester/${eslintDisableRuleTesterName}
-            }
-          `,
-          output: dedent`
-            enum Enum {
-              B = 'B',
-              C = 'C',
-              A = 'A' // eslint-disable-line @rule-tester/${eslintDisableRuleTesterName}
-            }
-          `,
-          options: [{}],
-          errors: [
-            {
-              messageId: 'unexpectedEnumsOrder',
-              data: {
-                left: 'C',
-                right: 'B',
-              },
-            },
-          ],
-        },
-        {
-          code: dedent`
-            enum Enum {
-              C = 'C',
-              B = 'B',
-              /* eslint-disable-next-line @rule-tester/${eslintDisableRuleTesterName} */
-              A = 'A'
-            }
-          `,
-          output: dedent`
-            enum Enum {
-              B = 'B',
-              C = 'C',
-              /* eslint-disable-next-line @rule-tester/${eslintDisableRuleTesterName} */
-              A = 'A'
-            }
-          `,
-          options: [{}],
-          errors: [
-            {
-              messageId: 'unexpectedEnumsOrder',
-              data: {
-                left: 'C',
-                right: 'B',
-              },
-            },
-          ],
-        },
-        {
-          code: dedent`
-            enum Enum {
-              C = 'C',
-              B = 'B',
-              A = 'A' /* eslint-disable-line @rule-tester/${eslintDisableRuleTesterName} */
-            }
-          `,
-          output: dedent`
-            enum Enum {
-              B = 'B',
-              C = 'C',
-              A = 'A' /* eslint-disable-line @rule-tester/${eslintDisableRuleTesterName} */
-            }
-          `,
-          options: [{}],
-          errors: [
-            {
-              messageId: 'unexpectedEnumsOrder',
-              data: {
-                left: 'C',
-                right: 'B',
-              },
-            },
-          ],
-        },
-        {
           code: dedent`
             enum Enum {
               D = 'D',
               E = 'E',
-              /* eslint-disable @rule-tester/${eslintDisableRuleTesterName} */
+              /* eslint-disable */
               C = 'C',
               B = 'B',
               // Shouldn't move
@@ -2664,6 +2531,126 @@ describe(ruleName, () => {
               A = 'A'
             }
           `,
+          errors: [
+            {
+              data: {
+                right: 'A',
+                left: 'B',
+              },
+              messageId: 'unexpectedEnumsOrder',
+            },
+          ],
+          options: [{}],
+        },
+        {
+          output: dedent`
+            enum Enum {
+              B = 'B',
+              C = 'C',
+              // eslint-disable-next-line @rule-tester/${eslintDisableRuleTesterName}
+              A = 'A'
+            }
+          `,
+          code: dedent`
+            enum Enum {
+              C = 'C',
+              B = 'B',
+              // eslint-disable-next-line @rule-tester/${eslintDisableRuleTesterName}
+              A = 'A'
+            }
+          `,
+          errors: [
+            {
+              data: {
+                right: 'B',
+                left: 'C',
+              },
+              messageId: 'unexpectedEnumsOrder',
+            },
+          ],
+          options: [{}],
+        },
+        {
+          output: dedent`
+            enum Enum {
+              B = 'B',
+              C = 'C',
+              A = 'A' // eslint-disable-line @rule-tester/${eslintDisableRuleTesterName}
+            }
+          `,
+          code: dedent`
+            enum Enum {
+              C = 'C',
+              B = 'B',
+              A = 'A' // eslint-disable-line @rule-tester/${eslintDisableRuleTesterName}
+            }
+          `,
+          errors: [
+            {
+              data: {
+                right: 'B',
+                left: 'C',
+              },
+              messageId: 'unexpectedEnumsOrder',
+            },
+          ],
+          options: [{}],
+        },
+        {
+          output: dedent`
+            enum Enum {
+              B = 'B',
+              C = 'C',
+              /* eslint-disable-next-line @rule-tester/${eslintDisableRuleTesterName} */
+              A = 'A'
+            }
+          `,
+          code: dedent`
+            enum Enum {
+              C = 'C',
+              B = 'B',
+              /* eslint-disable-next-line @rule-tester/${eslintDisableRuleTesterName} */
+              A = 'A'
+            }
+          `,
+          errors: [
+            {
+              data: {
+                right: 'B',
+                left: 'C',
+              },
+              messageId: 'unexpectedEnumsOrder',
+            },
+          ],
+          options: [{}],
+        },
+        {
+          output: dedent`
+            enum Enum {
+              B = 'B',
+              C = 'C',
+              A = 'A' /* eslint-disable-line @rule-tester/${eslintDisableRuleTesterName} */
+            }
+          `,
+          code: dedent`
+            enum Enum {
+              C = 'C',
+              B = 'B',
+              A = 'A' /* eslint-disable-line @rule-tester/${eslintDisableRuleTesterName} */
+            }
+          `,
+          errors: [
+            {
+              data: {
+                right: 'B',
+                left: 'C',
+              },
+              messageId: 'unexpectedEnumsOrder',
+            },
+          ],
+          options: [{}],
+        },
+        {
           output: dedent`
             enum Enum {
               A = 'A',
@@ -2676,18 +2663,31 @@ describe(ruleName, () => {
               E = 'E'
             }
           `,
-          options: [{}],
+          code: dedent`
+            enum Enum {
+              D = 'D',
+              E = 'E',
+              /* eslint-disable @rule-tester/${eslintDisableRuleTesterName} */
+              C = 'C',
+              B = 'B',
+              // Shouldn't move
+              /* eslint-enable */
+              A = 'A'
+            }
+          `,
           errors: [
             {
-              messageId: 'unexpectedEnumsOrder',
               data: {
-                left: 'B',
                 right: 'A',
+                left: 'B',
               },
+              messageId: 'unexpectedEnumsOrder',
             },
           ],
+          options: [{}],
         },
       ],
+      valid: [],
     })
   })
 })

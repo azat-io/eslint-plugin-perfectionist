@@ -37,6 +37,28 @@ describe(ruleName, () => {
     } as const
 
     ruleTester.run(`${ruleName}(${type}): sorts imports`, rule, {
+      invalid: [
+        {
+          errors: [
+            {
+              data: {
+                right: 'a',
+                left: 'b',
+              },
+              messageId: 'unexpectedImportsOrder',
+            },
+          ],
+          output: dedent`
+            import { a1, a2 } from 'a'
+            import { b1 } from 'b'
+          `,
+          code: dedent`
+            import { b1 } from 'b'
+            import { a1, a2 } from 'a'
+          `,
+          options: [options],
+        },
+      ],
       valid: [
         {
           code: dedent`
@@ -44,33 +66,155 @@ describe(ruleName, () => {
             import { b1 } from 'b'
           `,
           options: [options],
-        },
-      ],
-      invalid: [
-        {
-          code: dedent`
-            import { b1 } from 'b'
-            import { a1, a2 } from 'a'
-          `,
-          output: dedent`
-            import { a1, a2 } from 'a'
-            import { b1 } from 'b'
-          `,
-          options: [options],
-          errors: [
-            {
-              messageId: 'unexpectedImportsOrder',
-              data: {
-                left: 'b',
-                right: 'a',
-              },
-            },
-          ],
         },
       ],
     })
 
     ruleTester.run(`${ruleName}(${type}): sorts imports by groups`, rule, {
+      invalid: [
+        {
+          errors: [
+            {
+              data: {
+                right: 'e/a',
+                left: 'e/b',
+              },
+              messageId: 'unexpectedImportsOrder',
+            },
+            {
+              data: {
+                rightGroup: 'internal-type',
+                leftGroup: 'internal',
+                right: '~/i',
+                left: '~/b',
+              },
+              messageId: 'unexpectedImportsGroupOrder',
+            },
+            {
+              data: {
+                right: './d',
+                left: '~/i',
+              },
+              messageId: 'missedSpacingBetweenImports',
+            },
+            {
+              data: {
+                leftGroup: 'sibling-type',
+                rightGroup: 'builtin',
+                left: './d',
+                right: 'fs',
+              },
+              messageId: 'unexpectedImportsGroupOrder',
+            },
+            {
+              data: {
+                right: '~/c',
+                left: 'fs',
+              },
+              messageId: 'missedSpacingBetweenImports',
+            },
+            {
+              data: {
+                right: '../../h',
+                left: '../f',
+              },
+              messageId: 'missedSpacingBetweenImports',
+            },
+            {
+              data: {
+                rightGroup: 'index-type',
+                right: './index.d.ts',
+                leftGroup: 'parent',
+                left: '../../h',
+              },
+              messageId: 'unexpectedImportsGroupOrder',
+            },
+            {
+              data: {
+                leftGroup: 'index',
+                rightGroup: 'type',
+                right: 't',
+                left: '.',
+              },
+              messageId: 'unexpectedImportsGroupOrder',
+            },
+            {
+              data: {
+                right: './style.css',
+                left: 't',
+              },
+              messageId: 'missedSpacingBetweenImports',
+            },
+          ],
+          output: dedent`
+            import type { T } from 't'
+
+            import { c1, c2, c3, c4 } from 'c'
+            import { e1 } from 'e/a'
+            import { e2 } from 'e/b'
+            import fs from 'fs'
+            import path from 'path'
+
+            import type { I } from '~/i'
+
+            import { b1, b2 } from '~/b'
+            import { c1 } from '~/c'
+            import { i1, i2, i3 } from '~/i'
+
+            import type { A } from '.'
+            import type { F } from '../f'
+            import type { D } from './d'
+            import type { H } from './index.d.ts'
+
+            import a from '.'
+            import h from '../../h'
+            import './style.css'
+            import { j } from '../j'
+            import { K, L, M } from '../k'
+          `,
+          code: dedent`
+            import { c1, c2, c3, c4 } from 'c'
+            import { e2 } from 'e/b'
+            import { e1 } from 'e/a'
+            import path from 'path'
+
+            import { b1, b2 } from '~/b'
+            import type { I } from '~/i'
+            import type { D } from './d'
+            import fs from 'fs'
+            import { c1 } from '~/c'
+            import { i1, i2, i3 } from '~/i'
+
+            import type { A } from '.'
+            import type { F } from '../f'
+            import h from '../../h'
+            import type { H } from './index.d.ts'
+
+            import a from '.'
+            import type { T } from 't'
+            import './style.css'
+            import { j } from '../j'
+            import { K, L, M } from '../k'
+          `,
+          options: [
+            {
+              ...options,
+              groups: [
+                'type',
+                ['builtin', 'external'],
+                'internal-type',
+                'internal',
+                ['parent-type', 'sibling-type', 'index-type'],
+                ['parent', 'sibling', 'index'],
+                'object',
+                'unknown',
+              ],
+              internalPattern: ['^~/.*'],
+              newlinesBetween: 'always',
+            },
+          ],
+        },
+      ],
       valid: [
         {
           code: dedent`
@@ -102,8 +246,6 @@ describe(ruleName, () => {
           options: [
             {
               ...options,
-              newlinesBetween: 'always',
-              internalPattern: ['^~/.*'],
               groups: [
                 'type',
                 ['builtin', 'external'],
@@ -114,150 +256,8 @@ describe(ruleName, () => {
                 'object',
                 'unknown',
               ],
-            },
-          ],
-        },
-      ],
-      invalid: [
-        {
-          code: dedent`
-            import { c1, c2, c3, c4 } from 'c'
-            import { e2 } from 'e/b'
-            import { e1 } from 'e/a'
-            import path from 'path'
-
-            import { b1, b2 } from '~/b'
-            import type { I } from '~/i'
-            import type { D } from './d'
-            import fs from 'fs'
-            import { c1 } from '~/c'
-            import { i1, i2, i3 } from '~/i'
-
-            import type { A } from '.'
-            import type { F } from '../f'
-            import h from '../../h'
-            import type { H } from './index.d.ts'
-
-            import a from '.'
-            import type { T } from 't'
-            import './style.css'
-            import { j } from '../j'
-            import { K, L, M } from '../k'
-          `,
-          output: dedent`
-            import type { T } from 't'
-
-            import { c1, c2, c3, c4 } from 'c'
-            import { e1 } from 'e/a'
-            import { e2 } from 'e/b'
-            import fs from 'fs'
-            import path from 'path'
-
-            import type { I } from '~/i'
-
-            import { b1, b2 } from '~/b'
-            import { c1 } from '~/c'
-            import { i1, i2, i3 } from '~/i'
-
-            import type { A } from '.'
-            import type { F } from '../f'
-            import type { D } from './d'
-            import type { H } from './index.d.ts'
-
-            import a from '.'
-            import h from '../../h'
-            import './style.css'
-            import { j } from '../j'
-            import { K, L, M } from '../k'
-          `,
-          options: [
-            {
-              ...options,
-              newlinesBetween: 'always',
               internalPattern: ['^~/.*'],
-              groups: [
-                'type',
-                ['builtin', 'external'],
-                'internal-type',
-                'internal',
-                ['parent-type', 'sibling-type', 'index-type'],
-                ['parent', 'sibling', 'index'],
-                'object',
-                'unknown',
-              ],
-            },
-          ],
-          errors: [
-            {
-              messageId: 'unexpectedImportsOrder',
-              data: {
-                left: 'e/b',
-                right: 'e/a',
-              },
-            },
-            {
-              messageId: 'unexpectedImportsGroupOrder',
-              data: {
-                left: '~/b',
-                leftGroup: 'internal',
-                right: '~/i',
-                rightGroup: 'internal-type',
-              },
-            },
-            {
-              messageId: 'missedSpacingBetweenImports',
-              data: {
-                left: '~/i',
-                right: './d',
-              },
-            },
-            {
-              messageId: 'unexpectedImportsGroupOrder',
-              data: {
-                left: './d',
-                leftGroup: 'sibling-type',
-                right: 'fs',
-                rightGroup: 'builtin',
-              },
-            },
-            {
-              messageId: 'missedSpacingBetweenImports',
-              data: {
-                left: 'fs',
-                right: '~/c',
-              },
-            },
-            {
-              messageId: 'missedSpacingBetweenImports',
-              data: {
-                left: '../f',
-                right: '../../h',
-              },
-            },
-            {
-              messageId: 'unexpectedImportsGroupOrder',
-              data: {
-                left: '../../h',
-                leftGroup: 'parent',
-                right: './index.d.ts',
-                rightGroup: 'index-type',
-              },
-            },
-            {
-              messageId: 'unexpectedImportsGroupOrder',
-              data: {
-                left: '.',
-                leftGroup: 'index',
-                right: 't',
-                rightGroup: 'type',
-              },
-            },
-            {
-              messageId: 'missedSpacingBetweenImports',
-              data: {
-                left: 't',
-                right: './style.css',
-              },
+              newlinesBetween: 'always',
             },
           ],
         },
@@ -265,21 +265,54 @@ describe(ruleName, () => {
     })
 
     ruleTester.run(`${ruleName}(${type}): sorts imports with no spaces`, rule, {
-      valid: [
+      invalid: [
         {
-          code: dedent`
-              import type { T } from 't'
-              import { a1, a2, a3 } from 'a'
-              import { b1, b2 } from '~/b'
-              import { c1, c2, c3 } from '~/c'
-              import d from '.'
-              import { e1, e2, e3 } from '../../e'
-            `,
+          errors: [
+            {
+              data: {
+                rightGroup: 'external',
+                leftGroup: 'index',
+                right: 'a',
+                left: '.',
+              },
+              messageId: 'unexpectedImportsGroupOrder',
+            },
+            {
+              data: {
+                leftGroup: 'internal',
+                rightGroup: 'type',
+                left: '~/c',
+                right: 't',
+              },
+              messageId: 'unexpectedImportsGroupOrder',
+            },
+            {
+              data: {
+                left: '~/c',
+                right: 't',
+              },
+              messageId: 'extraSpacingBetweenImports',
+            },
+            {
+              data: {
+                rightGroup: 'internal',
+                leftGroup: 'parent',
+                left: '../../e',
+                right: '~/b',
+              },
+              messageId: 'unexpectedImportsGroupOrder',
+            },
+            {
+              data: {
+                left: '../../e',
+                right: '~/b',
+              },
+              messageId: 'extraSpacingBetweenImports',
+            },
+          ],
           options: [
             {
               ...options,
-              newlinesBetween: 'never',
-              internalPattern: ['^~/.*'],
               groups: [
                 'type',
                 ['builtin', 'external'],
@@ -290,12 +323,10 @@ describe(ruleName, () => {
                 'object',
                 'unknown',
               ],
+              internalPattern: ['^~/.*'],
+              newlinesBetween: 'never',
             },
           ],
-        },
-      ],
-      invalid: [
-        {
           code: dedent`
               import d from '.'
               import { a1, a2, a3 } from 'a'
@@ -314,11 +345,13 @@ describe(ruleName, () => {
               import d from '.'
               import { e1, e2, e3 } from '../../e'
             `,
+        },
+      ],
+      valid: [
+        {
           options: [
             {
               ...options,
-              newlinesBetween: 'never',
-              internalPattern: ['^~/.*'],
               groups: [
                 'type',
                 ['builtin', 'external'],
@@ -329,58 +362,95 @@ describe(ruleName, () => {
                 'object',
                 'unknown',
               ],
+              internalPattern: ['^~/.*'],
+              newlinesBetween: 'never',
             },
           ],
-          errors: [
-            {
-              messageId: 'unexpectedImportsGroupOrder',
-              data: {
-                left: '.',
-                leftGroup: 'index',
-                right: 'a',
-                rightGroup: 'external',
-              },
-            },
-            {
-              messageId: 'unexpectedImportsGroupOrder',
-              data: {
-                left: '~/c',
-                leftGroup: 'internal',
-                right: 't',
-                rightGroup: 'type',
-              },
-            },
-            {
-              messageId: 'extraSpacingBetweenImports',
-              data: {
-                left: '~/c',
-                right: 't',
-              },
-            },
-            {
-              messageId: 'unexpectedImportsGroupOrder',
-              data: {
-                left: '../../e',
-                leftGroup: 'parent',
-                right: '~/b',
-                rightGroup: 'internal',
-              },
-            },
-            {
-              messageId: 'extraSpacingBetweenImports',
-              data: {
-                left: '../../e',
-                right: '~/b',
-              },
-            },
-          ],
+          code: dedent`
+              import type { T } from 't'
+              import { a1, a2, a3 } from 'a'
+              import { b1, b2 } from '~/b'
+              import { c1, c2, c3 } from '~/c'
+              import d from '.'
+              import { e1, e2, e3 } from '../../e'
+            `,
         },
       ],
     })
 
     ruleTester.run(`${ruleName}(${type}): disallow extra spaces`, rule, {
+      invalid: [
+        {
+          options: [
+            {
+              ...options,
+              groups: [
+                'type',
+                ['builtin', 'external'],
+                'internal-type',
+                'internal',
+                ['parent-type', 'sibling-type', 'index-type'],
+                ['parent', 'sibling', 'index'],
+                'object',
+                'unknown',
+              ],
+              internalPattern: ['^~/.*'],
+              newlinesBetween: 'always',
+            },
+          ],
+          errors: [
+            {
+              data: {
+                right: '~/b',
+                left: 'a',
+              },
+              messageId: 'extraSpacingBetweenImports',
+            },
+            {
+              data: {
+                right: '~/d',
+                left: '~/c',
+              },
+              messageId: 'extraSpacingBetweenImports',
+            },
+          ],
+          code: dedent`
+            import { A } from 'a'
+
+
+            import b from '~/b'
+            import c from '~/c'
+
+            import d from '~/d'
+          `,
+          output: dedent`
+            import { A } from 'a'
+
+            import b from '~/b'
+            import c from '~/c'
+            import d from '~/d'
+          `,
+        },
+      ],
       valid: [
         {
+          options: [
+            {
+              ...options,
+              groups: [
+                'type',
+                ['builtin', 'external'],
+                'internal-type',
+                'internal',
+                ['parent-type', 'sibling-type', 'index-type'],
+                ['parent', 'sibling', 'index'],
+                'object',
+                'unknown',
+              ],
+              internalPattern: ['^~/.*'],
+              newlinesBetween: 'always',
+            },
+          ],
           code: dedent`
               import { A } from 'a'
 
@@ -388,76 +458,6 @@ describe(ruleName, () => {
               import c from '~/c'
               import d from '~/d'
             `,
-          options: [
-            {
-              ...options,
-              newlinesBetween: 'always',
-              internalPattern: ['^~/.*'],
-              groups: [
-                'type',
-                ['builtin', 'external'],
-                'internal-type',
-                'internal',
-                ['parent-type', 'sibling-type', 'index-type'],
-                ['parent', 'sibling', 'index'],
-                'object',
-                'unknown',
-              ],
-            },
-          ],
-        },
-      ],
-      invalid: [
-        {
-          code: dedent`
-            import { A } from 'a'
-
-
-            import b from '~/b'
-            import c from '~/c'
-
-            import d from '~/d'
-          `,
-          output: dedent`
-            import { A } from 'a'
-
-            import b from '~/b'
-            import c from '~/c'
-            import d from '~/d'
-          `,
-          options: [
-            {
-              ...options,
-              newlinesBetween: 'always',
-              internalPattern: ['^~/.*'],
-              groups: [
-                'type',
-                ['builtin', 'external'],
-                'internal-type',
-                'internal',
-                ['parent-type', 'sibling-type', 'index-type'],
-                ['parent', 'sibling', 'index'],
-                'object',
-                'unknown',
-              ],
-            },
-          ],
-          errors: [
-            {
-              messageId: 'extraSpacingBetweenImports',
-              data: {
-                left: 'a',
-                right: '~/b',
-              },
-            },
-            {
-              messageId: 'extraSpacingBetweenImports',
-              data: {
-                left: '~/c',
-                right: '~/d',
-              },
-            },
-          ],
         },
       ],
     })
@@ -466,23 +466,11 @@ describe(ruleName, () => {
       `${ruleName}(${type}): supports typescript object-imports`,
       rule,
       {
-        valid: [
+        invalid: [
           {
-            code: dedent`
-              import type T = require("T")
-
-              import { A } from 'a'
-
-              import { B } from '../b'
-
-              import c = require('c/c')
-              import log = console.log
-            `,
             options: [
               {
                 ...options,
-                newlinesBetween: 'always',
-                internalPattern: ['^~/.*'],
                 groups: [
                   'type',
                   ['builtin', 'external'],
@@ -493,21 +481,26 @@ describe(ruleName, () => {
                   'object',
                   'unknown',
                 ],
+                internalPattern: ['^~/.*'],
+                newlinesBetween: 'always',
               },
             ],
-          },
-        ],
-        invalid: [
-          {
-            code: dedent`
-              import type T = require("T")
-
-              import { A } from 'a'
-              import { B } from '../b'
-
-              import log = console.log
-              import c = require('c/c')
-            `,
+            errors: [
+              {
+                data: {
+                  right: '../b',
+                  left: 'a',
+                },
+                messageId: 'missedSpacingBetweenImports',
+              },
+              {
+                data: {
+                  left: 'console.log',
+                  right: 'c/c',
+                },
+                messageId: 'unexpectedImportsOrder',
+              },
+            ],
             output: dedent`
               import type T = require("T")
 
@@ -518,11 +511,22 @@ describe(ruleName, () => {
               import c = require('c/c')
               import log = console.log
             `,
+            code: dedent`
+              import type T = require("T")
+
+              import { A } from 'a'
+              import { B } from '../b'
+
+              import log = console.log
+              import c = require('c/c')
+            `,
+          },
+        ],
+        valid: [
+          {
             options: [
               {
                 ...options,
-                newlinesBetween: 'always',
-                internalPattern: ['^~/.*'],
                 groups: [
                   'type',
                   ['builtin', 'external'],
@@ -533,24 +537,20 @@ describe(ruleName, () => {
                   'object',
                   'unknown',
                 ],
+                internalPattern: ['^~/.*'],
+                newlinesBetween: 'always',
               },
             ],
-            errors: [
-              {
-                messageId: 'missedSpacingBetweenImports',
-                data: {
-                  left: 'a',
-                  right: '../b',
-                },
-              },
-              {
-                messageId: 'unexpectedImportsOrder',
-                data: {
-                  left: 'console.log',
-                  right: 'c/c',
-                },
-              },
-            ],
+            code: dedent`
+              import type T = require("T")
+
+              import { A } from 'a'
+
+              import { B } from '../b'
+
+              import c = require('c/c')
+              import log = console.log
+            `,
           },
         ],
       },
@@ -560,30 +560,37 @@ describe(ruleName, () => {
       `${ruleName}(${type}): use type if type of type is not defined`,
       rule,
       {
-        valid: [
+        invalid: [
           {
-            code: dedent`
-              import type { T } from '../t'
-              import type { U } from '~/u'
-              import type { V } from 'v'
-            `,
+            errors: [
+              {
+                data: {
+                  left: '../t',
+                  right: '~/u',
+                },
+                messageId: 'extraSpacingBetweenImports',
+              },
+              {
+                data: {
+                  left: '~/u',
+                  right: 'v',
+                },
+                messageId: 'extraSpacingBetweenImports',
+              },
+            ],
             options: [
               {
                 ...options,
-                newlinesBetween: 'always',
-                internalPattern: ['^~/.*'],
                 groups: [
                   'type',
                   ['builtin', 'external'],
                   'internal',
                   ['parent', 'sibling', 'index'],
                 ],
+                internalPattern: ['^~/.*'],
+                newlinesBetween: 'always',
               },
             ],
-          },
-        ],
-        invalid: [
-          {
             code: dedent`
               import type { T } from '../t'
 
@@ -596,35 +603,28 @@ describe(ruleName, () => {
               import type { U } from '~/u'
               import type { V } from 'v'
             `,
+          },
+        ],
+        valid: [
+          {
             options: [
               {
                 ...options,
-                newlinesBetween: 'always',
-                internalPattern: ['^~/.*'],
                 groups: [
                   'type',
                   ['builtin', 'external'],
                   'internal',
                   ['parent', 'sibling', 'index'],
                 ],
+                internalPattern: ['^~/.*'],
+                newlinesBetween: 'always',
               },
             ],
-            errors: [
-              {
-                messageId: 'extraSpacingBetweenImports',
-                data: {
-                  left: '../t',
-                  right: '~/u',
-                },
-              },
-              {
-                messageId: 'extraSpacingBetweenImports',
-                data: {
-                  left: '~/u',
-                  right: 'v',
-                },
-              },
-            ],
+            code: dedent`
+              import type { T } from '../t'
+              import type { U } from '~/u'
+              import type { V } from 'v'
+            `,
           },
         ],
       },
@@ -633,16 +633,9 @@ describe(ruleName, () => {
     ruleTester.run(`${ruleName}(${type}): ignores inline comments`, rule, {
       valid: [
         {
-          code: dedent`
-            import { a } from 'a'
-            import { b1, b2 } from 'b' // Comment
-            import { c } from 'c'
-          `,
           options: [
             {
               ...options,
-              newlinesBetween: 'always',
-              internalPattern: ['^~/.*'],
               groups: [
                 'type',
                 ['builtin', 'external'],
@@ -653,8 +646,15 @@ describe(ruleName, () => {
                 'object',
                 'unknown',
               ],
+              internalPattern: ['^~/.*'],
+              newlinesBetween: 'always',
             },
           ],
+          code: dedent`
+            import { a } from 'a'
+            import { b1, b2 } from 'b' // Comment
+            import { c } from 'c'
+          `,
         },
       ],
       invalid: [],
@@ -666,17 +666,9 @@ describe(ruleName, () => {
       {
         valid: [
           {
-            code: dedent`
-              import type { T } from 't'
-
-              // @ts-expect-error missing types
-              import { t } from 't'
-            `,
             options: [
               {
                 ...options,
-                newlinesBetween: 'always',
-                internalPattern: ['^~/.*'],
                 groups: [
                   'type',
                   ['builtin', 'external'],
@@ -687,8 +679,16 @@ describe(ruleName, () => {
                   'object',
                   'unknown',
                 ],
+                internalPattern: ['^~/.*'],
+                newlinesBetween: 'always',
               },
             ],
+            code: dedent`
+              import type { T } from 't'
+
+              // @ts-expect-error missing types
+              import { t } from 't'
+            `,
           },
         ],
         invalid: [],
@@ -701,18 +701,9 @@ describe(ruleName, () => {
       {
         valid: [
           {
-            code: dedent`
-              import type { V } from 'v'
-
-              export type { U } from 'u'
-
-              import type { T1, T2 } from 't'
-            `,
             options: [
               {
                 ...options,
-                newlinesBetween: 'always',
-                internalPattern: ['^~/.*'],
                 groups: [
                   'type',
                   ['builtin', 'external'],
@@ -723,8 +714,17 @@ describe(ruleName, () => {
                   'object',
                   'unknown',
                 ],
+                internalPattern: ['^~/.*'],
+                newlinesBetween: 'always',
               },
             ],
+            code: dedent`
+              import type { V } from 'v'
+
+              export type { U } from 'u'
+
+              import type { T1, T2 } from 't'
+            `,
           },
         ],
         invalid: [],
@@ -737,17 +737,9 @@ describe(ruleName, () => {
       {
         valid: [
           {
-            code: dedent`
-              import { a1, a2 } from 'a'
-
-              import styles from '../s.css'
-              import './t.css'
-            `,
             options: [
               {
                 ...options,
-                newlinesBetween: 'always',
-                internalPattern: ['^~/.*'],
                 groups: [
                   'type',
                   ['builtin', 'external'],
@@ -759,8 +751,16 @@ describe(ruleName, () => {
                   'object',
                   'unknown',
                 ],
+                internalPattern: ['^~/.*'],
+                newlinesBetween: 'always',
               },
             ],
+            code: dedent`
+              import { a1, a2 } from 'a'
+
+              import styles from '../s.css'
+              import './t.css'
+            `,
           },
         ],
         invalid: [],
@@ -773,18 +773,9 @@ describe(ruleName, () => {
       {
         valid: [
           {
-            code: dedent`
-              import { A } from '../a'
-              import { b } from './b'
-
-              import '../c.js'
-              import './d'
-            `,
             options: [
               {
                 ...options,
-                newlinesBetween: 'always',
-                internalPattern: ['^~/.*'],
                 groups: [
                   'type',
                   ['builtin', 'external'],
@@ -796,8 +787,17 @@ describe(ruleName, () => {
                   'object',
                   'unknown',
                 ],
+                internalPattern: ['^~/.*'],
+                newlinesBetween: 'always',
               },
             ],
+            code: dedent`
+              import { A } from '../a'
+              import { b } from './b'
+
+              import '../c.js'
+              import './d'
+            `,
           },
         ],
         invalid: [],
@@ -810,19 +810,19 @@ describe(ruleName, () => {
       {
         valid: [
           {
+            options: [
+              {
+                ...options,
+                groups: ['builtin-type', 'type'],
+                internalPattern: ['^~/.*'],
+                newlinesBetween: 'always',
+              },
+            ],
             code: dedent`
               import type { Server } from 'http'
 
               import a from 'a'
             `,
-            options: [
-              {
-                ...options,
-                newlinesBetween: 'always',
-                internalPattern: ['^~/.*'],
-                groups: ['builtin-type', 'type'],
-              },
-            ],
           },
         ],
         invalid: [],
@@ -833,23 +833,11 @@ describe(ruleName, () => {
       `${ruleName}(${type}): works with imports ending with a semicolon`,
       rule,
       {
-        valid: [],
         invalid: [
           {
-            code: dedent`
-              import a from 'a';
-              import b from './index';
-            `,
-            output: dedent`
-              import a from 'a';
-
-              import b from './index';
-            `,
             options: [
               {
                 ...options,
-                newlinesBetween: 'always',
-                internalPattern: ['^~/.*'],
                 groups: [
                   'type',
                   ['builtin', 'external'],
@@ -859,26 +847,77 @@ describe(ruleName, () => {
                   ['parent', 'sibling', 'index'],
                   ['object', 'unknown'],
                 ],
+                internalPattern: ['^~/.*'],
+                newlinesBetween: 'always',
               },
             ],
             errors: [
               {
-                messageId: 'missedSpacingBetweenImports',
                 data: {
-                  left: 'a',
                   right: './index',
+                  left: 'a',
                 },
+                messageId: 'missedSpacingBetweenImports',
               },
             ],
+            output: dedent`
+              import a from 'a';
+
+              import b from './index';
+            `,
+            code: dedent`
+              import a from 'a';
+              import b from './index';
+            `,
           },
         ],
+        valid: [],
       },
     )
 
     ruleTester.run(`${ruleName}(${type}): remove unnecessary spaces`, rule, {
-      valid: [],
       invalid: [
         {
+          errors: [
+            {
+              data: {
+                right: './b',
+                left: 'a',
+              },
+              messageId: 'extraSpacingBetweenImports',
+            },
+            {
+              data: {
+                rightGroup: 'external',
+                leftGroup: 'sibling',
+                left: './b',
+                right: 'c',
+              },
+              messageId: 'unexpectedImportsGroupOrder',
+            },
+            {
+              data: {
+                left: './b',
+                right: 'c',
+              },
+              messageId: 'extraSpacingBetweenImports',
+            },
+          ],
+          options: [
+            {
+              ...options,
+              groups: [
+                'type',
+                ['builtin', 'external'],
+                'internal-type',
+                'internal',
+                ['parent-type', 'sibling-type', 'index-type'],
+                ['parent', 'sibling', 'index'],
+                'object',
+                'unknown',
+              ],
+            },
+          ],
           code: dedent`
             import { a } from 'a'
 
@@ -895,90 +934,50 @@ describe(ruleName, () => {
 
             import { b } from './b'
           `,
-          options: [
-            {
-              ...options,
-              groups: [
-                'type',
-                ['builtin', 'external'],
-                'internal-type',
-                'internal',
-                ['parent-type', 'sibling-type', 'index-type'],
-                ['parent', 'sibling', 'index'],
-                'object',
-                'unknown',
-              ],
-            },
-          ],
-          errors: [
-            {
-              messageId: 'extraSpacingBetweenImports',
-              data: {
-                left: 'a',
-                right: './b',
-              },
-            },
-            {
-              messageId: 'unexpectedImportsGroupOrder',
-              data: {
-                left: './b',
-                leftGroup: 'sibling',
-                right: 'c',
-                rightGroup: 'external',
-              },
-            },
-            {
-              messageId: 'extraSpacingBetweenImports',
-              data: {
-                left: './b',
-                right: 'c',
-              },
-            },
-          ],
         },
       ],
+      valid: [],
     })
 
     ruleTester.run(
       `${ruleName}(${type}): allows to define custom groups`,
       rule,
       {
-        valid: [],
         invalid: [
           {
-            code: dedent`
-              import type { T } from 't'
-
-              import a1 from '@a/a1'
-              import a2 from '@a/a2'
-              import b1 from '@b/b1'
-              import b2 from '@b/b2'
-              import b3 from '@b/b3'
-              import { c } from 'c'
-            `,
-            output: dedent`
-              import a1 from '@a/a1'
-              import a2 from '@a/a2'
-              import type { T } from 't'
-
-              import b1 from '@b/b1'
-              import b2 from '@b/b2'
-              import b3 from '@b/b3'
-
-              import { c } from 'c'
-            `,
+            errors: [
+              {
+                data: {
+                  right: '@a/a1',
+                  left: 't',
+                },
+                messageId: 'unexpectedImportsOrder',
+              },
+              {
+                data: {
+                  right: '@a/a1',
+                  left: 't',
+                },
+                messageId: 'extraSpacingBetweenImports',
+              },
+              {
+                data: {
+                  right: '@b/b1',
+                  left: '@a/a2',
+                },
+                messageId: 'missedSpacingBetweenImports',
+              },
+              {
+                data: {
+                  left: '@b/b3',
+                  right: 'c',
+                },
+                messageId: 'missedSpacingBetweenImports',
+              },
+            ],
             options: [
               {
                 ...options,
-                customGroups: {
-                  type: {
-                    primary: ['t', '@a/.+'],
-                  },
-                  value: {
-                    primary: ['t', '@a/.+'],
-                    secondary: '@b/.+',
-                  },
-                },
                 groups: [
                   'type',
                   'primary',
@@ -991,40 +990,41 @@ describe(ruleName, () => {
                   'object',
                   'unknown',
                 ],
-              },
-            ],
-            errors: [
-              {
-                messageId: 'unexpectedImportsOrder',
-                data: {
-                  left: 't',
-                  right: '@a/a1',
-                },
-              },
-              {
-                messageId: 'extraSpacingBetweenImports',
-                data: {
-                  left: 't',
-                  right: '@a/a1',
-                },
-              },
-              {
-                messageId: 'missedSpacingBetweenImports',
-                data: {
-                  left: '@a/a2',
-                  right: '@b/b1',
-                },
-              },
-              {
-                messageId: 'missedSpacingBetweenImports',
-                data: {
-                  left: '@b/b3',
-                  right: 'c',
+                customGroups: {
+                  value: {
+                    primary: ['t', '@a/.+'],
+                    secondary: '@b/.+',
+                  },
+                  type: {
+                    primary: ['t', '@a/.+'],
+                  },
                 },
               },
             ],
+            output: dedent`
+              import a1 from '@a/a1'
+              import a2 from '@a/a2'
+              import type { T } from 't'
+
+              import b1 from '@b/b1'
+              import b2 from '@b/b2'
+              import b3 from '@b/b3'
+
+              import { c } from 'c'
+            `,
+            code: dedent`
+              import type { T } from 't'
+
+              import a1 from '@a/a1'
+              import a2 from '@a/a2'
+              import b1 from '@b/b1'
+              import b2 from '@b/b2'
+              import b3 from '@b/b3'
+              import { c } from 'c'
+            `,
           },
         ],
+        valid: [],
       },
     )
 
@@ -1032,18 +1032,8 @@ describe(ruleName, () => {
       `${ruleName}(${type}): allows to define value only custom groups`,
       rule,
       {
-        valid: [],
         invalid: [
           {
-            code: dedent`
-              import type { A } from 'a'
-              import { a } from 'a'
-            `,
-            output: dedent`
-              import type { A } from 'a'
-
-              import { a } from 'a'
-            `,
             options: [
               {
                 ...options,
@@ -1057,15 +1047,25 @@ describe(ruleName, () => {
             ],
             errors: [
               {
-                messageId: 'missedSpacingBetweenImports',
                 data: {
-                  left: 'a',
                   right: 'a',
+                  left: 'a',
                 },
+                messageId: 'missedSpacingBetweenImports',
               },
             ],
+            output: dedent`
+              import type { A } from 'a'
+
+              import { a } from 'a'
+            `,
+            code: dedent`
+              import type { A } from 'a'
+              import { a } from 'a'
+            `,
           },
         ],
+        valid: [],
       },
     )
 
@@ -1073,25 +1073,11 @@ describe(ruleName, () => {
       `${ruleName}(${type}): allows hash symbol in internal pattern`,
       rule,
       {
-        valid: [
+        invalid: [
           {
-            code: dedent`
-              import type { T } from 'a'
-
-              import { a } from 'a'
-
-              import type { S } from '#b'
-
-              import { b1, b2 } from '#b'
-              import c from '#c'
-
-              import { d } from '../d'
-            `,
             options: [
               {
                 ...options,
-                newlinesBetween: 'always',
-                internalPattern: ['#.+'],
                 groups: [
                   'type',
                   ['builtin', 'external'],
@@ -1102,23 +1088,26 @@ describe(ruleName, () => {
                   'object',
                   'unknown',
                 ],
+                newlinesBetween: 'always',
+                internalPattern: ['#.+'],
               },
             ],
-          },
-        ],
-        invalid: [
-          {
-            code: dedent`
-              import type { T } from 'a'
-
-              import { a } from 'a'
-
-              import type { S } from '#b'
-              import c from '#c'
-              import { b1, b2 } from '#b'
-
-              import { d } from '../d'
-            `,
+            errors: [
+              {
+                data: {
+                  right: '#c',
+                  left: '#b',
+                },
+                messageId: 'missedSpacingBetweenImports',
+              },
+              {
+                data: {
+                  right: '#b',
+                  left: '#c',
+                },
+                messageId: 'unexpectedImportsOrder',
+              },
+            ],
             output: dedent`
               import type { T } from 'a'
 
@@ -1131,11 +1120,24 @@ describe(ruleName, () => {
 
               import { d } from '../d'
             `,
+            code: dedent`
+              import type { T } from 'a'
+
+              import { a } from 'a'
+
+              import type { S } from '#b'
+              import c from '#c'
+              import { b1, b2 } from '#b'
+
+              import { d } from '../d'
+            `,
+          },
+        ],
+        valid: [
+          {
             options: [
               {
                 ...options,
-                newlinesBetween: 'always',
-                internalPattern: ['#.+'],
                 groups: [
                   'type',
                   ['builtin', 'external'],
@@ -1146,80 +1148,100 @@ describe(ruleName, () => {
                   'object',
                   'unknown',
                 ],
+                newlinesBetween: 'always',
+                internalPattern: ['#.+'],
               },
             ],
-            errors: [
-              {
-                messageId: 'missedSpacingBetweenImports',
-                data: {
-                  left: '#b',
-                  right: '#c',
-                },
-              },
-              {
-                messageId: 'unexpectedImportsOrder',
-                data: {
-                  left: '#c',
-                  right: '#b',
-                },
-              },
-            ],
+            code: dedent`
+              import type { T } from 'a'
+
+              import { a } from 'a'
+
+              import type { S } from '#b'
+
+              import { b1, b2 } from '#b'
+              import c from '#c'
+
+              import { d } from '../d'
+            `,
           },
         ],
       },
     )
 
     ruleTester.run(`${ruleName}(${type}): allows to use bun modules`, rule, {
-      valid: [
+      invalid: [
         {
-          code: dedent`
-            import { expect } from 'bun:test'
-            import { a } from 'a'
-          `,
+          errors: [
+            {
+              data: {
+                leftGroup: 'external',
+                rightGroup: 'builtin',
+                right: 'bun:test',
+                left: 'a',
+              },
+              messageId: 'unexpectedImportsGroupOrder',
+            },
+          ],
           options: [
             {
               ...options,
-              newlinesBetween: 'never',
               groups: ['builtin', 'external', 'unknown'],
+              newlinesBetween: 'never',
               environment: 'bun',
             },
           ],
-        },
-      ],
-      invalid: [
-        {
-          code: dedent`
-            import { a } from 'a'
-            import { expect } from 'bun:test'
-          `,
           output: dedent`
             import { expect } from 'bun:test'
             import { a } from 'a'
           `,
+          code: dedent`
+            import { a } from 'a'
+            import { expect } from 'bun:test'
+          `,
+        },
+      ],
+      valid: [
+        {
           options: [
             {
               ...options,
-              newlinesBetween: 'never',
               groups: ['builtin', 'external', 'unknown'],
+              newlinesBetween: 'never',
               environment: 'bun',
             },
           ],
-          errors: [
-            {
-              messageId: 'unexpectedImportsGroupOrder',
-              data: {
-                left: 'a',
-                leftGroup: 'external',
-                right: 'bun:test',
-                rightGroup: 'builtin',
-              },
-            },
-          ],
+          code: dedent`
+            import { expect } from 'bun:test'
+            import { a } from 'a'
+          `,
         },
       ],
     })
 
     ruleTester.run(`${ruleName}(${type}): sorts require imports`, rule, {
+      invalid: [
+        {
+          errors: [
+            {
+              data: {
+                right: 'a',
+                left: 'b',
+              },
+              messageId: 'unexpectedImportsOrder',
+            },
+          ],
+          output: dedent`
+            const { a1, a2 } = require('a')
+            const { b1 } = require('b')
+          `,
+          code: dedent`
+            const { b1 } = require('b')
+            const { a1, a2 } = require('a')
+          `,
+          options: [options],
+        },
+      ],
       valid: [
         {
           code: dedent`
@@ -1227,28 +1249,6 @@ describe(ruleName, () => {
             const { b1 } = require('b')
           `,
           options: [options],
-        },
-      ],
-      invalid: [
-        {
-          code: dedent`
-            const { b1 } = require('b')
-            const { a1, a2 } = require('a')
-          `,
-          output: dedent`
-            const { a1, a2 } = require('a')
-            const { b1 } = require('b')
-          `,
-          options: [options],
-          errors: [
-            {
-              messageId: 'unexpectedImportsOrder',
-              data: {
-                left: 'b',
-                right: 'a',
-              },
-            },
-          ],
         },
       ],
     })
@@ -1257,6 +1257,99 @@ describe(ruleName, () => {
       `${ruleName}(${type}): sorts require imports by groups`,
       rule,
       {
+        invalid: [
+          {
+            errors: [
+              {
+                data: {
+                  right: 'e/a',
+                  left: 'e/b',
+                },
+                messageId: 'unexpectedImportsOrder',
+              },
+              {
+                data: {
+                  leftGroup: 'internal',
+                  rightGroup: 'builtin',
+                  left: '~/b',
+                  right: 'fs',
+                },
+                messageId: 'unexpectedImportsGroupOrder',
+              },
+              {
+                data: {
+                  right: '~/c',
+                  left: 'fs',
+                },
+                messageId: 'missedSpacingBetweenImports',
+              },
+              {
+                data: {
+                  left: '../../h',
+                  right: '.',
+                },
+                messageId: 'unexpectedImportsOrder',
+              },
+              {
+                data: {
+                  left: '../../h',
+                  right: '.',
+                },
+                messageId: 'extraSpacingBetweenImports',
+              },
+            ],
+            output: dedent`
+              const { c1, c2, c3, c4 } = require('c')
+              const { e1 } = require('e/a')
+              const { e2 } = require('e/b')
+              const fs = require('fs')
+              const path = require('path')
+
+              const { b1, b2 } = require('~/b')
+              const { c1 } = require('~/c')
+              const { i1, i2, i3 } = require('~/i')
+
+              const a = require('.')
+              const h = require('../../h')
+              const { j } = require('../j')
+              const { K, L, M } = require('../k')
+            `,
+            code: dedent`
+              const { c1, c2, c3, c4 } = require('c')
+              const { e2 } = require('e/b')
+              const { e1 } = require('e/a')
+              const path = require('path')
+
+              const { b1, b2 } = require('~/b')
+              const fs = require('fs')
+              const { c1 } = require('~/c')
+              const { i1, i2, i3 } = require('~/i')
+
+              const h = require('../../h')
+
+              const a = require('.')
+              const { j } = require('../j')
+              const { K, L, M } = require('../k')
+            `,
+            options: [
+              {
+                ...options,
+                groups: [
+                  'type',
+                  ['builtin', 'external'],
+                  'internal-type',
+                  'internal',
+                  ['parent-type', 'sibling-type', 'index-type'],
+                  ['parent', 'sibling', 'index'],
+                  'object',
+                  'unknown',
+                ],
+                internalPattern: ['^~/.*'],
+                newlinesBetween: 'always',
+              },
+            ],
+          },
+        ],
         valid: [
           {
             code: dedent`
@@ -1278,8 +1371,6 @@ describe(ruleName, () => {
             options: [
               {
                 ...options,
-                newlinesBetween: 'always',
-                internalPattern: ['^~/.*'],
                 groups: [
                   'type',
                   ['builtin', 'external'],
@@ -1290,99 +1381,8 @@ describe(ruleName, () => {
                   'object',
                   'unknown',
                 ],
-              },
-            ],
-          },
-        ],
-        invalid: [
-          {
-            code: dedent`
-              const { c1, c2, c3, c4 } = require('c')
-              const { e2 } = require('e/b')
-              const { e1 } = require('e/a')
-              const path = require('path')
-
-              const { b1, b2 } = require('~/b')
-              const fs = require('fs')
-              const { c1 } = require('~/c')
-              const { i1, i2, i3 } = require('~/i')
-
-              const h = require('../../h')
-
-              const a = require('.')
-              const { j } = require('../j')
-              const { K, L, M } = require('../k')
-            `,
-            output: dedent`
-              const { c1, c2, c3, c4 } = require('c')
-              const { e1 } = require('e/a')
-              const { e2 } = require('e/b')
-              const fs = require('fs')
-              const path = require('path')
-
-              const { b1, b2 } = require('~/b')
-              const { c1 } = require('~/c')
-              const { i1, i2, i3 } = require('~/i')
-
-              const a = require('.')
-              const h = require('../../h')
-              const { j } = require('../j')
-              const { K, L, M } = require('../k')
-            `,
-            options: [
-              {
-                ...options,
-                newlinesBetween: 'always',
                 internalPattern: ['^~/.*'],
-                groups: [
-                  'type',
-                  ['builtin', 'external'],
-                  'internal-type',
-                  'internal',
-                  ['parent-type', 'sibling-type', 'index-type'],
-                  ['parent', 'sibling', 'index'],
-                  'object',
-                  'unknown',
-                ],
-              },
-            ],
-            errors: [
-              {
-                messageId: 'unexpectedImportsOrder',
-                data: {
-                  left: 'e/b',
-                  right: 'e/a',
-                },
-              },
-              {
-                messageId: 'unexpectedImportsGroupOrder',
-                data: {
-                  left: '~/b',
-                  leftGroup: 'internal',
-                  right: 'fs',
-                  rightGroup: 'builtin',
-                },
-              },
-              {
-                messageId: 'missedSpacingBetweenImports',
-                data: {
-                  left: 'fs',
-                  right: '~/c',
-                },
-              },
-              {
-                messageId: 'unexpectedImportsOrder',
-                data: {
-                  left: '../../h',
-                  right: '.',
-                },
-              },
-              {
-                messageId: 'extraSpacingBetweenImports',
-                data: {
-                  left: '../../h',
-                  right: '.',
-                },
+                newlinesBetween: 'always',
               },
             ],
           },
@@ -1394,51 +1394,42 @@ describe(ruleName, () => {
       `${ruleName}(${type}): can enable or disable sorting side effect imports`,
       rule,
       {
-        valid: [
-          {
-            code: dedent`
-              import a from 'aaaa'
-
-              import 'bbb'
-              import './cc'
-              import '../d'
-            `,
-            options: [
-              {
-                ...options,
-                newlinesBetween: 'always',
-                internalPattern: ['^~/.*'],
-                groups: ['external', 'side-effect', 'unknown'],
-                sortSideEffects: false,
-              },
-            ],
-          },
-          {
-            code: dedent`
-              import 'c'
-              import 'bb'
-              import 'aaa'
-            `,
-            options: [
-              {
-                ...options,
-                newlinesBetween: 'always',
-                internalPattern: ['^~/.*'],
-                groups: ['external', 'side-effect', 'unknown'],
-                sortSideEffects: false,
-              },
-            ],
-          },
-        ],
         invalid: [
           {
-            code: dedent`
-              import './cc'
-              import 'bbb'
-              import e from 'e'
-              import a from 'aaaa'
-              import '../d'
-            `,
+            errors: [
+              {
+                data: {
+                  leftGroup: 'side-effect',
+                  rightGroup: 'external',
+                  left: 'bbb',
+                  right: 'e',
+                },
+                messageId: 'unexpectedImportsGroupOrder',
+              },
+              {
+                data: {
+                  right: 'aaaa',
+                  left: 'e',
+                },
+                messageId: 'unexpectedImportsOrder',
+              },
+              {
+                data: {
+                  right: '../d',
+                  left: 'aaaa',
+                },
+                messageId: 'missedSpacingBetweenImports',
+              },
+            ],
+            options: [
+              {
+                ...options,
+                groups: ['external', 'side-effect', 'unknown'],
+                internalPattern: ['^~/.*'],
+                newlinesBetween: 'always',
+                sortSideEffects: false,
+              },
+            ],
             output: dedent`
               import a from 'aaaa'
               import e from 'e'
@@ -1447,77 +1438,86 @@ describe(ruleName, () => {
               import 'bbb'
               import '../d'
             `,
-            options: [
-              {
-                ...options,
-                newlinesBetween: 'always',
-                internalPattern: ['^~/.*'],
-                groups: ['external', 'side-effect', 'unknown'],
-                sortSideEffects: false,
-              },
-            ],
-            errors: [
-              {
-                messageId: 'unexpectedImportsGroupOrder',
-                data: {
-                  left: 'bbb',
-                  leftGroup: 'side-effect',
-                  right: 'e',
-                  rightGroup: 'external',
-                },
-              },
-              {
-                messageId: 'unexpectedImportsOrder',
-                data: {
-                  left: 'e',
-                  right: 'aaaa',
-                },
-              },
-              {
-                messageId: 'missedSpacingBetweenImports',
-                data: {
-                  left: 'aaaa',
-                  right: '../d',
-                },
-              },
-            ],
+            code: dedent`
+              import './cc'
+              import 'bbb'
+              import e from 'e'
+              import a from 'aaaa'
+              import '../d'
+            `,
           },
           {
-            code: dedent`
-              import 'c'
-              import 'bb'
-              import 'aaa'
-            `,
-            output: dedent`
-              import 'aaa'
-              import 'bb'
-              import 'c'
-            `,
+            errors: [
+              {
+                data: {
+                  right: 'bb',
+                  left: 'c',
+                },
+                messageId: 'unexpectedImportsOrder',
+              },
+              {
+                data: {
+                  right: 'aaa',
+                  left: 'bb',
+                },
+                messageId: 'unexpectedImportsOrder',
+              },
+            ],
             options: [
               {
                 ...options,
-                newlinesBetween: 'always',
-                internalPattern: ['^~/.*'],
                 groups: ['external', 'side-effect', 'unknown'],
+                internalPattern: ['^~/.*'],
+                newlinesBetween: 'always',
                 sortSideEffects: true,
               },
             ],
-            errors: [
+            output: dedent`
+              import 'aaa'
+              import 'bb'
+              import 'c'
+            `,
+            code: dedent`
+              import 'c'
+              import 'bb'
+              import 'aaa'
+            `,
+          },
+        ],
+        valid: [
+          {
+            options: [
               {
-                messageId: 'unexpectedImportsOrder',
-                data: {
-                  left: 'c',
-                  right: 'bb',
-                },
-              },
-              {
-                messageId: 'unexpectedImportsOrder',
-                data: {
-                  left: 'bb',
-                  right: 'aaa',
-                },
+                ...options,
+                groups: ['external', 'side-effect', 'unknown'],
+                internalPattern: ['^~/.*'],
+                newlinesBetween: 'always',
+                sortSideEffects: false,
               },
             ],
+            code: dedent`
+              import a from 'aaaa'
+
+              import 'bbb'
+              import './cc'
+              import '../d'
+            `,
+          },
+          {
+            options: [
+              {
+                ...options,
+                groups: ['external', 'side-effect', 'unknown'],
+                internalPattern: ['^~/.*'],
+                newlinesBetween: 'always',
+                sortSideEffects: false,
+              },
+            ],
+            code: dedent`
+              import 'c'
+              import 'bb'
+              import 'aaa'
+            `,
           },
         ],
       },
@@ -1528,17 +1528,24 @@ describe(ruleName, () => {
         `${ruleName}(${type}): allows 'side-effect' and 'side-effect-style' groups to stay in place`,
         rule,
         {
-          valid: [],
           invalid: [
             {
-              code: dedent`
-                import "./z-side-effect.scss";
-                import b from "./b";
-                import './b-side-effect'
-                import "./g-side-effect.css";
-                import './a-side-effect'
-                import a from "./a";
-              `,
+              errors: [
+                {
+                  data: {
+                    right: './b-side-effect',
+                    left: './b',
+                  },
+                  messageId: 'unexpectedImportsOrder',
+                },
+                {
+                  data: {
+                    left: './a-side-effect',
+                    right: './a',
+                  },
+                  messageId: 'unexpectedImportsOrder',
+                },
+              ],
               output: dedent`
                 import "./z-side-effect.scss";
                 import a from "./a";
@@ -1546,6 +1553,14 @@ describe(ruleName, () => {
                 import "./g-side-effect.css";
                 import './a-side-effect'
                 import b from "./b";
+              `,
+              code: dedent`
+                import "./z-side-effect.scss";
+                import b from "./b";
+                import './b-side-effect'
+                import "./g-side-effect.css";
+                import './a-side-effect'
+                import a from "./a";
               `,
               options: [
                 {
@@ -1554,24 +1569,9 @@ describe(ruleName, () => {
                   groups: ['unknown'],
                 },
               ],
-              errors: [
-                {
-                  messageId: 'unexpectedImportsOrder',
-                  data: {
-                    left: './b',
-                    right: './b-side-effect',
-                  },
-                },
-                {
-                  messageId: 'unexpectedImportsOrder',
-                  data: {
-                    left: './a-side-effect',
-                    right: './a',
-                  },
-                },
-              ],
             },
           ],
+          valid: [],
         },
       )
 
@@ -1579,17 +1579,33 @@ describe(ruleName, () => {
         `${ruleName}(${type}): allows 'side-effect' to be grouped together but not sorted`,
         rule,
         {
-          valid: [],
           invalid: [
             {
-              code: dedent`
-                import "./z-side-effect.scss";
-                import b from "./b";
-                import './b-side-effect'
-                import "./g-side-effect.css";
-                import './a-side-effect'
-                import a from "./a";
-              `,
+              errors: [
+                {
+                  data: {
+                    left: './z-side-effect.scss',
+                    right: './b',
+                  },
+                  messageId: 'missedSpacingBetweenImports',
+                },
+                {
+                  data: {
+                    rightGroup: 'side-effect',
+                    right: './b-side-effect',
+                    leftGroup: 'unknown',
+                    left: './b',
+                  },
+                  messageId: 'unexpectedImportsGroupOrder',
+                },
+                {
+                  data: {
+                    left: './a-side-effect',
+                    right: './a',
+                  },
+                  messageId: 'missedSpacingBetweenImports',
+                },
+              ],
               output: dedent`
                 import "./z-side-effect.scss";
                 import './b-side-effect'
@@ -1599,40 +1615,24 @@ describe(ruleName, () => {
                 import a from "./a";
                 import b from "./b";
               `,
+              code: dedent`
+                import "./z-side-effect.scss";
+                import b from "./b";
+                import './b-side-effect'
+                import "./g-side-effect.css";
+                import './a-side-effect'
+                import a from "./a";
+              `,
               options: [
                 {
                   ...options,
-                  newlinesBetween: 'always',
                   groups: ['side-effect', 'unknown'],
-                },
-              ],
-              errors: [
-                {
-                  messageId: 'missedSpacingBetweenImports',
-                  data: {
-                    left: './z-side-effect.scss',
-                    right: './b',
-                  },
-                },
-                {
-                  messageId: 'unexpectedImportsGroupOrder',
-                  data: {
-                    left: './b',
-                    leftGroup: 'unknown',
-                    right: './b-side-effect',
-                    rightGroup: 'side-effect',
-                  },
-                },
-                {
-                  messageId: 'missedSpacingBetweenImports',
-                  data: {
-                    left: './a-side-effect',
-                    right: './a',
-                  },
+                  newlinesBetween: 'always',
                 },
               ],
             },
           ],
+          valid: [],
         },
       )
 
@@ -1641,17 +1641,33 @@ describe(ruleName, () => {
          in the same group but not sorted`,
         rule,
         {
-          valid: [],
           invalid: [
             {
-              code: dedent`
-                import "./z-side-effect.scss";
-                import b from "./b";
-                import './b-side-effect'
-                import "./g-side-effect.css";
-                import './a-side-effect'
-                import a from "./a";
-              `,
+              errors: [
+                {
+                  data: {
+                    left: './z-side-effect.scss',
+                    right: './b',
+                  },
+                  messageId: 'missedSpacingBetweenImports',
+                },
+                {
+                  data: {
+                    rightGroup: 'side-effect',
+                    right: './b-side-effect',
+                    leftGroup: 'unknown',
+                    left: './b',
+                  },
+                  messageId: 'unexpectedImportsGroupOrder',
+                },
+                {
+                  data: {
+                    left: './a-side-effect',
+                    right: './a',
+                  },
+                  messageId: 'missedSpacingBetweenImports',
+                },
+              ],
               output: dedent`
                 import "./z-side-effect.scss";
                 import './b-side-effect'
@@ -1661,40 +1677,24 @@ describe(ruleName, () => {
                 import a from "./a";
                 import b from "./b";
               `,
+              code: dedent`
+                import "./z-side-effect.scss";
+                import b from "./b";
+                import './b-side-effect'
+                import "./g-side-effect.css";
+                import './a-side-effect'
+                import a from "./a";
+              `,
               options: [
                 {
                   ...options,
-                  newlinesBetween: 'always',
                   groups: [['side-effect', 'side-effect-style'], 'unknown'],
-                },
-              ],
-              errors: [
-                {
-                  messageId: 'missedSpacingBetweenImports',
-                  data: {
-                    left: './z-side-effect.scss',
-                    right: './b',
-                  },
-                },
-                {
-                  messageId: 'unexpectedImportsGroupOrder',
-                  data: {
-                    left: './b',
-                    leftGroup: 'unknown',
-                    right: './b-side-effect',
-                    rightGroup: 'side-effect',
-                  },
-                },
-                {
-                  messageId: 'missedSpacingBetweenImports',
-                  data: {
-                    left: './a-side-effect',
-                    right: './a',
-                  },
+                  newlinesBetween: 'always',
                 },
               ],
             },
           ],
+          valid: [],
         },
       )
 
@@ -1702,17 +1702,49 @@ describe(ruleName, () => {
         `${ruleName}(${type}): allows 'side-effect' and 'side-effect-style' to be grouped together but not sorted`,
         rule,
         {
-          valid: [],
           invalid: [
             {
-              code: dedent`
-                import "./z-side-effect.scss";
-                import b from "./b";
-                import './b-side-effect'
-                import "./g-side-effect.css";
-                import './a-side-effect'
-                import a from "./a";
-              `,
+              errors: [
+                {
+                  data: {
+                    left: './z-side-effect.scss',
+                    right: './b',
+                  },
+                  messageId: 'missedSpacingBetweenImports',
+                },
+                {
+                  data: {
+                    rightGroup: 'side-effect',
+                    right: './b-side-effect',
+                    leftGroup: 'unknown',
+                    left: './b',
+                  },
+                  messageId: 'unexpectedImportsGroupOrder',
+                },
+                {
+                  data: {
+                    right: './g-side-effect.css',
+                    left: './b-side-effect',
+                  },
+                  messageId: 'missedSpacingBetweenImports',
+                },
+                {
+                  data: {
+                    leftGroup: 'side-effect-style',
+                    left: './g-side-effect.css',
+                    rightGroup: 'side-effect',
+                    right: './a-side-effect',
+                  },
+                  messageId: 'unexpectedImportsGroupOrder',
+                },
+                {
+                  data: {
+                    left: './a-side-effect',
+                    right: './a',
+                  },
+                  messageId: 'missedSpacingBetweenImports',
+                },
+              ],
               output: dedent`
                 import './b-side-effect'
                 import './a-side-effect'
@@ -1723,56 +1755,24 @@ describe(ruleName, () => {
                 import a from "./a";
                 import b from "./b";
               `,
+              code: dedent`
+                import "./z-side-effect.scss";
+                import b from "./b";
+                import './b-side-effect'
+                import "./g-side-effect.css";
+                import './a-side-effect'
+                import a from "./a";
+              `,
               options: [
                 {
                   ...options,
-                  newlinesBetween: 'always',
                   groups: ['side-effect', 'side-effect-style', 'unknown'],
-                },
-              ],
-              errors: [
-                {
-                  messageId: 'missedSpacingBetweenImports',
-                  data: {
-                    left: './z-side-effect.scss',
-                    right: './b',
-                  },
-                },
-                {
-                  messageId: 'unexpectedImportsGroupOrder',
-                  data: {
-                    left: './b',
-                    leftGroup: 'unknown',
-                    right: './b-side-effect',
-                    rightGroup: 'side-effect',
-                  },
-                },
-                {
-                  messageId: 'missedSpacingBetweenImports',
-                  data: {
-                    left: './b-side-effect',
-                    right: './g-side-effect.css',
-                  },
-                },
-                {
-                  messageId: 'unexpectedImportsGroupOrder',
-                  data: {
-                    left: './g-side-effect.css',
-                    leftGroup: 'side-effect-style',
-                    right: './a-side-effect',
-                    rightGroup: 'side-effect',
-                  },
-                },
-                {
-                  messageId: 'missedSpacingBetweenImports',
-                  data: {
-                    left: './a-side-effect',
-                    right: './a',
-                  },
+                  newlinesBetween: 'always',
                 },
               ],
             },
           ],
+          valid: [],
         },
       )
 
@@ -1780,17 +1780,42 @@ describe(ruleName, () => {
         `${ruleName}(${type}): allows 'side-effect-style' to be grouped together but not sorted`,
         rule,
         {
-          valid: [],
           invalid: [
             {
-              code: dedent`
-                import "./z-side-effect";
-                import b from "./b";
-                import './b-side-effect.scss'
-                import "./g-side-effect";
-                import './a-side-effect.css'
-                import a from "./a";
-              `,
+              errors: [
+                {
+                  data: {
+                    rightGroup: 'side-effect-style',
+                    right: './b-side-effect.scss',
+                    leftGroup: 'unknown',
+                    left: './b',
+                  },
+                  messageId: 'unexpectedImportsGroupOrder',
+                },
+                {
+                  data: {
+                    left: './b-side-effect.scss',
+                    right: './g-side-effect',
+                  },
+                  messageId: 'missedSpacingBetweenImports',
+                },
+                {
+                  data: {
+                    rightGroup: 'side-effect-style',
+                    right: './a-side-effect.css',
+                    left: './g-side-effect',
+                    leftGroup: 'unknown',
+                  },
+                  messageId: 'unexpectedImportsGroupOrder',
+                },
+                {
+                  data: {
+                    left: './a-side-effect.css',
+                    right: './a',
+                  },
+                  messageId: 'missedSpacingBetweenImports',
+                },
+              ],
               output: dedent`
                 import "./z-side-effect";
 
@@ -1801,49 +1826,24 @@ describe(ruleName, () => {
                 import a from "./a";
                 import b from "./b";
               `,
+              code: dedent`
+                import "./z-side-effect";
+                import b from "./b";
+                import './b-side-effect.scss'
+                import "./g-side-effect";
+                import './a-side-effect.css'
+                import a from "./a";
+              `,
               options: [
                 {
                   ...options,
-                  newlinesBetween: 'always',
                   groups: ['side-effect-style', 'unknown'],
-                },
-              ],
-              errors: [
-                {
-                  messageId: 'unexpectedImportsGroupOrder',
-                  data: {
-                    left: './b',
-                    leftGroup: 'unknown',
-                    right: './b-side-effect.scss',
-                    rightGroup: 'side-effect-style',
-                  },
-                },
-                {
-                  messageId: 'missedSpacingBetweenImports',
-                  data: {
-                    left: './b-side-effect.scss',
-                    right: './g-side-effect',
-                  },
-                },
-                {
-                  messageId: 'unexpectedImportsGroupOrder',
-                  data: {
-                    left: './g-side-effect',
-                    leftGroup: 'unknown',
-                    right: './a-side-effect.css',
-                    rightGroup: 'side-effect-style',
-                  },
-                },
-                {
-                  messageId: 'missedSpacingBetweenImports',
-                  data: {
-                    left: './a-side-effect.css',
-                    right: './a',
-                  },
+                  newlinesBetween: 'always',
                 },
               ],
             },
           ],
+          valid: [],
         },
       )
     })
@@ -1854,17 +1854,17 @@ describe(ruleName, () => {
       {
         valid: [
           {
-            code: dedent`
-              import '_a'
-              import 'b'
-              import '_c'
-            `,
             options: [
               {
                 ...options,
                 specialCharacters: 'trim',
               },
             ],
+            code: dedent`
+              import '_a'
+              import 'b'
+              import '_c'
+            `,
           },
         ],
         invalid: [],
@@ -1877,16 +1877,16 @@ describe(ruleName, () => {
       {
         valid: [
           {
-            code: dedent`
-              import 'ab'
-              import 'a_c'
-            `,
             options: [
               {
                 ...options,
                 specialCharacters: 'remove',
               },
             ],
+            code: dedent`
+              import 'ab'
+              import 'a_c'
+            `,
           },
         ],
         invalid: [],
@@ -1915,9 +1915,31 @@ describe(ruleName, () => {
         `${ruleName}(${type}): removes newlines when never`,
         rule,
         {
-          valid: [],
           invalid: [
             {
+              errors: [
+                {
+                  data: {
+                    right: '~/y',
+                    left: 'a',
+                  },
+                  messageId: 'extraSpacingBetweenImports',
+                },
+                {
+                  data: {
+                    right: '~/b',
+                    left: '~/z',
+                  },
+                  messageId: 'unexpectedImportsOrder',
+                },
+                {
+                  data: {
+                    right: '~/b',
+                    left: '~/z',
+                  },
+                  messageId: 'extraSpacingBetweenImports',
+                },
+              ],
               code: dedent`
                   import { A } from 'a'
 
@@ -1939,31 +1961,9 @@ describe(ruleName, () => {
                   newlinesBetween: 'never',
                 },
               ],
-              errors: [
-                {
-                  messageId: 'extraSpacingBetweenImports',
-                  data: {
-                    left: 'a',
-                    right: '~/y',
-                  },
-                },
-                {
-                  messageId: 'unexpectedImportsOrder',
-                  data: {
-                    left: '~/z',
-                    right: '~/b',
-                  },
-                },
-                {
-                  messageId: 'extraSpacingBetweenImports',
-                  data: {
-                    left: '~/z',
-                    right: '~/b',
-                  },
-                },
-              ],
             },
           ],
+          valid: [],
         },
       )
 
@@ -1971,34 +1971,56 @@ describe(ruleName, () => {
         `${ruleName}(${type}): keeps one newline when always`,
         rule,
         {
-          valid: [],
           invalid: [
             {
-              code: dedent`
-                  import c from 'c';    import a from '~/a'
-                `,
-              output: dedent`
-                  import c from 'c';    
-
-                  import a from '~/a'
-                `,
+              errors: [
+                {
+                  data: {
+                    right: '~/a',
+                    left: 'c',
+                  },
+                  messageId: 'missedSpacingBetweenImports',
+                },
+              ],
               options: [
                 {
                   ...options,
                   newlinesBetween: 'always',
                 },
               ],
-              errors: [
-                {
-                  messageId: 'missedSpacingBetweenImports',
-                  data: {
-                    left: 'c',
-                    right: '~/a',
-                  },
-                },
-              ],
+              output: dedent`
+                  import c from 'c';    
+
+                  import a from '~/a'
+                `,
+              code: dedent`
+                  import c from 'c';    import a from '~/a'
+                `,
             },
             {
+              errors: [
+                {
+                  data: {
+                    right: '~/c',
+                    left: 'a',
+                  },
+                  messageId: 'extraSpacingBetweenImports',
+                },
+                {
+                  data: {
+                    right: '~/b',
+                    left: '~/c',
+                  },
+                  messageId: 'unexpectedImportsOrder',
+                },
+                {
+                  data: {
+                    right: '~/d',
+                    left: '~/b',
+                  },
+                  messageId: 'extraSpacingBetweenImports',
+                },
+              ],
               code: dedent`
                   import { A } from 'a'
 
@@ -2021,31 +2043,9 @@ describe(ruleName, () => {
                   newlinesBetween: 'always',
                 },
               ],
-              errors: [
-                {
-                  messageId: 'extraSpacingBetweenImports',
-                  data: {
-                    left: 'a',
-                    right: '~/c',
-                  },
-                },
-                {
-                  messageId: 'unexpectedImportsOrder',
-                  data: {
-                    left: '~/c',
-                    right: '~/b',
-                  },
-                },
-                {
-                  messageId: 'extraSpacingBetweenImports',
-                  data: {
-                    left: '~/b',
-                    right: '~/d',
-                  },
-                },
-              ],
             },
           ],
+          valid: [],
         },
       )
     })
@@ -2054,45 +2054,45 @@ describe(ruleName, () => {
       `${ruleName}(${type}): sorts inline elements correctly`,
       rule,
       {
-        valid: [],
         invalid: [
           {
+            errors: [
+              {
+                data: {
+                  right: 'a',
+                  left: 'b',
+                },
+                messageId: 'unexpectedImportsOrder',
+              },
+            ],
+            output: dedent`
+              import { a } from "a"; import { b } from "b";
+            `,
             code: dedent`
               import { b } from "b"; import { a } from "a"
             `,
+            options: [options],
+          },
+          {
+            errors: [
+              {
+                data: {
+                  right: 'a',
+                  left: 'b',
+                },
+                messageId: 'unexpectedImportsOrder',
+              },
+            ],
             output: dedent`
               import { a } from "a"; import { b } from "b";
             `,
-            options: [options],
-            errors: [
-              {
-                messageId: 'unexpectedImportsOrder',
-                data: {
-                  left: 'b',
-                  right: 'a',
-                },
-              },
-            ],
-          },
-          {
             code: dedent`
               import { b } from "b"; import { a } from "a";
             `,
-            output: dedent`
-              import { a } from "a"; import { b } from "b";
-            `,
             options: [options],
-            errors: [
-              {
-                messageId: 'unexpectedImportsOrder',
-                data: {
-                  left: 'b',
-                  right: 'a',
-                },
-              },
-            ],
           },
         ],
+        valid: [],
       },
     )
 
@@ -2100,17 +2100,24 @@ describe(ruleName, () => {
       `${ruleName}(${type}): allows to use new line as partition`,
       rule,
       {
-        valid: [],
         invalid: [
           {
-            code: dedent`
-              import * as organisms from "./organisms";
-              import * as atoms from "./atoms";
-              import * as shared from "./shared";
-
-              import { AnotherNamed } from './second-folder';
-              import { Named } from './folder';
-            `,
+            errors: [
+              {
+                data: {
+                  left: './organisms',
+                  right: './atoms',
+                },
+                messageId: 'unexpectedImportsOrder',
+              },
+              {
+                data: {
+                  left: './second-folder',
+                  right: './folder',
+                },
+                messageId: 'unexpectedImportsOrder',
+              },
+            ],
             output: dedent`
               import * as atoms from "./atoms";
               import * as organisms from "./organisms";
@@ -2119,31 +2126,24 @@ describe(ruleName, () => {
               import { Named } from './folder';
               import { AnotherNamed } from './second-folder';
             `,
+            code: dedent`
+              import * as organisms from "./organisms";
+              import * as atoms from "./atoms";
+              import * as shared from "./shared";
+
+              import { AnotherNamed } from './second-folder';
+              import { Named } from './folder';
+            `,
             options: [
               {
                 ...options,
-                partitionByNewLine: true,
                 newlinesBetween: 'ignore',
-              },
-            ],
-            errors: [
-              {
-                messageId: 'unexpectedImportsOrder',
-                data: {
-                  left: './organisms',
-                  right: './atoms',
-                },
-              },
-              {
-                messageId: 'unexpectedImportsOrder',
-                data: {
-                  left: './second-folder',
-                  right: './folder',
-                },
+                partitionByNewLine: true,
               },
             ],
           },
         ],
+        valid: [],
       },
     )
 
@@ -2152,23 +2152,8 @@ describe(ruleName, () => {
         `${ruleName}(${type}): allows to use partition comments`,
         rule,
         {
-          valid: [],
           invalid: [
             {
-              code: dedent`
-                // Part: A
-                import cc from './cc';
-                import d from './d';
-                // Not partition comment
-                import bbb from './bbb';
-                // Part: B
-                import aaaa from './aaaa';
-                import e from './e';
-                // Part: C
-                import gg from './gg';
-                // Not partition comment
-                import fff from './fff';
-              `,
               output: dedent`
                 // Part: A
                 // Not partition comment
@@ -2183,30 +2168,45 @@ describe(ruleName, () => {
                 import fff from './fff';
                 import gg from './gg';
               `,
+              code: dedent`
+                // Part: A
+                import cc from './cc';
+                import d from './d';
+                // Not partition comment
+                import bbb from './bbb';
+                // Part: B
+                import aaaa from './aaaa';
+                import e from './e';
+                // Part: C
+                import gg from './gg';
+                // Not partition comment
+                import fff from './fff';
+              `,
+              errors: [
+                {
+                  data: {
+                    right: './bbb',
+                    left: './d',
+                  },
+                  messageId: 'unexpectedImportsOrder',
+                },
+                {
+                  data: {
+                    right: './fff',
+                    left: './gg',
+                  },
+                  messageId: 'unexpectedImportsOrder',
+                },
+              ],
               options: [
                 {
                   ...options,
                   partitionByComment: '^Part*',
                 },
               ],
-              errors: [
-                {
-                  messageId: 'unexpectedImportsOrder',
-                  data: {
-                    left: './d',
-                    right: './bbb',
-                  },
-                },
-                {
-                  messageId: 'unexpectedImportsOrder',
-                  data: {
-                    left: './gg',
-                    right: './fff',
-                  },
-                },
-              ],
             },
           ],
+          valid: [],
         },
       )
 
@@ -2238,20 +2238,8 @@ describe(ruleName, () => {
         `${ruleName}(${type}): allows to use multiple partition comments`,
         rule,
         {
-          valid: [],
           invalid: [
             {
-              code: dedent`
-                /* Partition Comment */
-                // Part: A
-                import d from './d'
-                // Part: B
-                import aaa from './aaa'
-                import c from './c'
-                import bb from './bb'
-                /* Other */
-                import e from './e'
-              `,
               output: dedent`
                 /* Partition Comment */
                 // Part: A
@@ -2263,23 +2251,35 @@ describe(ruleName, () => {
                 /* Other */
                 import e from './e'
               `,
+              code: dedent`
+                /* Partition Comment */
+                // Part: A
+                import d from './d'
+                // Part: B
+                import aaa from './aaa'
+                import c from './c'
+                import bb from './bb'
+                /* Other */
+                import e from './e'
+              `,
+              errors: [
+                {
+                  data: {
+                    right: './bb',
+                    left: './c',
+                  },
+                  messageId: 'unexpectedImportsOrder',
+                },
+              ],
               options: [
                 {
                   ...options,
                   partitionByComment: ['Partition Comment', 'Part: *', 'Other'],
                 },
               ],
-              errors: [
-                {
-                  messageId: 'unexpectedImportsOrder',
-                  data: {
-                    left: './c',
-                    right: './bb',
-                  },
-                },
-              ],
             },
           ],
+          valid: [],
         },
       )
     })
@@ -2313,14 +2313,19 @@ describe(ruleName, () => {
       `${ruleName}(${type}): supports style imports with optional chaining`,
       rule,
       {
-        valid: [
+        invalid: [
           {
-            code: dedent`
-              import b from './b.css?raw'
-              import c from './c.css'
-
-              import a from './a.js'
-            `,
+            errors: [
+              {
+                data: {
+                  leftGroup: 'unknown',
+                  right: './b.css?raw',
+                  rightGroup: 'style',
+                  left: './a.js',
+                },
+                messageId: 'unexpectedImportsGroupOrder',
+              },
+            ],
             options: [
               {
                 ...options,
@@ -2328,21 +2333,21 @@ describe(ruleName, () => {
                 newlinesBetween: 'always',
               },
             ],
-          },
-        ],
-        invalid: [
-          {
-            code: dedent`
-              import a from './a.js'
-              import b from './b.css?raw'
-              import c from './c.css'
-            `,
             output: dedent`
               import b from './b.css?raw'
               import c from './c.css'
 
               import a from './a.js'
             `,
+            code: dedent`
+              import a from './a.js'
+              import b from './b.css?raw'
+              import c from './c.css'
+            `,
+          },
+        ],
+        valid: [
+          {
             options: [
               {
                 ...options,
@@ -2350,17 +2355,12 @@ describe(ruleName, () => {
                 newlinesBetween: 'always',
               },
             ],
-            errors: [
-              {
-                messageId: 'unexpectedImportsGroupOrder',
-                data: {
-                  left: './a.js',
-                  leftGroup: 'unknown',
-                  right: './b.css?raw',
-                  rightGroup: 'style',
-                },
-              },
-            ],
+            code: dedent`
+              import b from './b.css?raw'
+              import c from './c.css'
+
+              import a from './a.js'
+            `,
           },
         ],
       },
@@ -2377,6 +2377,28 @@ describe(ruleName, () => {
     } as const
 
     ruleTester.run(`${ruleName}(${type}): sorts imports`, rule, {
+      invalid: [
+        {
+          errors: [
+            {
+              data: {
+                right: 'a',
+                left: 'b',
+              },
+              messageId: 'unexpectedImportsOrder',
+            },
+          ],
+          output: dedent`
+            import { a1, a2 } from 'a'
+            import { b1 } from 'b'
+          `,
+          code: dedent`
+            import { b1 } from 'b'
+            import { a1, a2 } from 'a'
+          `,
+          options: [options],
+        },
+      ],
       valid: [
         {
           code: dedent`
@@ -2384,33 +2406,155 @@ describe(ruleName, () => {
             import { b1 } from 'b'
           `,
           options: [options],
-        },
-      ],
-      invalid: [
-        {
-          code: dedent`
-            import { b1 } from 'b'
-            import { a1, a2 } from 'a'
-          `,
-          output: dedent`
-            import { a1, a2 } from 'a'
-            import { b1 } from 'b'
-          `,
-          options: [options],
-          errors: [
-            {
-              messageId: 'unexpectedImportsOrder',
-              data: {
-                left: 'b',
-                right: 'a',
-              },
-            },
-          ],
         },
       ],
     })
 
     ruleTester.run(`${ruleName}(${type}): sorts imports by groups`, rule, {
+      invalid: [
+        {
+          errors: [
+            {
+              data: {
+                right: 'e/a',
+                left: 'e/b',
+              },
+              messageId: 'unexpectedImportsOrder',
+            },
+            {
+              data: {
+                rightGroup: 'internal-type',
+                leftGroup: 'internal',
+                right: '~/i',
+                left: '~/b',
+              },
+              messageId: 'unexpectedImportsGroupOrder',
+            },
+            {
+              data: {
+                right: './d',
+                left: '~/i',
+              },
+              messageId: 'missedSpacingBetweenImports',
+            },
+            {
+              data: {
+                leftGroup: 'sibling-type',
+                rightGroup: 'builtin',
+                left: './d',
+                right: 'fs',
+              },
+              messageId: 'unexpectedImportsGroupOrder',
+            },
+            {
+              data: {
+                right: '~/c',
+                left: 'fs',
+              },
+              messageId: 'missedSpacingBetweenImports',
+            },
+            {
+              data: {
+                right: '../../h',
+                left: '../f',
+              },
+              messageId: 'missedSpacingBetweenImports',
+            },
+            {
+              data: {
+                rightGroup: 'index-type',
+                right: './index.d.ts',
+                leftGroup: 'parent',
+                left: '../../h',
+              },
+              messageId: 'unexpectedImportsGroupOrder',
+            },
+            {
+              data: {
+                leftGroup: 'index',
+                rightGroup: 'type',
+                right: 't',
+                left: '.',
+              },
+              messageId: 'unexpectedImportsGroupOrder',
+            },
+            {
+              data: {
+                right: './style.css',
+                left: 't',
+              },
+              messageId: 'missedSpacingBetweenImports',
+            },
+          ],
+          output: dedent`
+            import type { T } from 't'
+
+            import { c1, c2, c3, c4 } from 'c'
+            import { e1 } from 'e/a'
+            import { e2 } from 'e/b'
+            import fs from 'fs'
+            import path from 'path'
+
+            import type { I } from '~/i'
+
+            import { b1, b2 } from '~/b'
+            import { c1 } from '~/c'
+            import { i1, i2, i3 } from '~/i'
+
+            import type { A } from '.'
+            import type { F } from '../f'
+            import type { D } from './d'
+            import type { H } from './index.d.ts'
+
+            import a from '.'
+            import h from '../../h'
+            import './style.css'
+            import { j } from '../j'
+            import { K, L, M } from '../k'
+          `,
+          code: dedent`
+            import { c1, c2, c3, c4 } from 'c'
+            import { e2 } from 'e/b'
+            import { e1 } from 'e/a'
+            import path from 'path'
+
+            import { b1, b2 } from '~/b'
+            import type { I } from '~/i'
+            import type { D } from './d'
+            import fs from 'fs'
+            import { c1 } from '~/c'
+            import { i1, i2, i3 } from '~/i'
+
+            import type { A } from '.'
+            import type { F } from '../f'
+            import h from '../../h'
+            import type { H } from './index.d.ts'
+
+            import a from '.'
+            import type { T } from 't'
+            import './style.css'
+            import { j } from '../j'
+            import { K, L, M } from '../k'
+          `,
+          options: [
+            {
+              ...options,
+              groups: [
+                'type',
+                ['builtin', 'external'],
+                'internal-type',
+                'internal',
+                ['parent-type', 'sibling-type', 'index-type'],
+                ['parent', 'sibling', 'index'],
+                'object',
+                'unknown',
+              ],
+              internalPattern: ['^~/.*'],
+              newlinesBetween: 'always',
+            },
+          ],
+        },
+      ],
       valid: [
         {
           code: dedent`
@@ -2442,8 +2586,6 @@ describe(ruleName, () => {
           options: [
             {
               ...options,
-              newlinesBetween: 'always',
-              internalPattern: ['^~/.*'],
               groups: [
                 'type',
                 ['builtin', 'external'],
@@ -2454,150 +2596,8 @@ describe(ruleName, () => {
                 'object',
                 'unknown',
               ],
-            },
-          ],
-        },
-      ],
-      invalid: [
-        {
-          code: dedent`
-            import { c1, c2, c3, c4 } from 'c'
-            import { e2 } from 'e/b'
-            import { e1 } from 'e/a'
-            import path from 'path'
-
-            import { b1, b2 } from '~/b'
-            import type { I } from '~/i'
-            import type { D } from './d'
-            import fs from 'fs'
-            import { c1 } from '~/c'
-            import { i1, i2, i3 } from '~/i'
-
-            import type { A } from '.'
-            import type { F } from '../f'
-            import h from '../../h'
-            import type { H } from './index.d.ts'
-
-            import a from '.'
-            import type { T } from 't'
-            import './style.css'
-            import { j } from '../j'
-            import { K, L, M } from '../k'
-          `,
-          output: dedent`
-            import type { T } from 't'
-
-            import { c1, c2, c3, c4 } from 'c'
-            import { e1 } from 'e/a'
-            import { e2 } from 'e/b'
-            import fs from 'fs'
-            import path from 'path'
-
-            import type { I } from '~/i'
-
-            import { b1, b2 } from '~/b'
-            import { c1 } from '~/c'
-            import { i1, i2, i3 } from '~/i'
-
-            import type { A } from '.'
-            import type { F } from '../f'
-            import type { D } from './d'
-            import type { H } from './index.d.ts'
-
-            import a from '.'
-            import h from '../../h'
-            import './style.css'
-            import { j } from '../j'
-            import { K, L, M } from '../k'
-          `,
-          options: [
-            {
-              ...options,
-              newlinesBetween: 'always',
               internalPattern: ['^~/.*'],
-              groups: [
-                'type',
-                ['builtin', 'external'],
-                'internal-type',
-                'internal',
-                ['parent-type', 'sibling-type', 'index-type'],
-                ['parent', 'sibling', 'index'],
-                'object',
-                'unknown',
-              ],
-            },
-          ],
-          errors: [
-            {
-              messageId: 'unexpectedImportsOrder',
-              data: {
-                left: 'e/b',
-                right: 'e/a',
-              },
-            },
-            {
-              messageId: 'unexpectedImportsGroupOrder',
-              data: {
-                left: '~/b',
-                leftGroup: 'internal',
-                right: '~/i',
-                rightGroup: 'internal-type',
-              },
-            },
-            {
-              messageId: 'missedSpacingBetweenImports',
-              data: {
-                left: '~/i',
-                right: './d',
-              },
-            },
-            {
-              messageId: 'unexpectedImportsGroupOrder',
-              data: {
-                left: './d',
-                leftGroup: 'sibling-type',
-                right: 'fs',
-                rightGroup: 'builtin',
-              },
-            },
-            {
-              messageId: 'missedSpacingBetweenImports',
-              data: {
-                left: 'fs',
-                right: '~/c',
-              },
-            },
-            {
-              messageId: 'missedSpacingBetweenImports',
-              data: {
-                left: '../f',
-                right: '../../h',
-              },
-            },
-            {
-              messageId: 'unexpectedImportsGroupOrder',
-              data: {
-                left: '../../h',
-                leftGroup: 'parent',
-                right: './index.d.ts',
-                rightGroup: 'index-type',
-              },
-            },
-            {
-              messageId: 'unexpectedImportsGroupOrder',
-              data: {
-                left: '.',
-                leftGroup: 'index',
-                right: 't',
-                rightGroup: 'type',
-              },
-            },
-            {
-              messageId: 'missedSpacingBetweenImports',
-              data: {
-                left: 't',
-                right: './style.css',
-              },
+              newlinesBetween: 'always',
             },
           ],
         },
@@ -2605,21 +2605,54 @@ describe(ruleName, () => {
     })
 
     ruleTester.run(`${ruleName}(${type}): sorts imports with no spaces`, rule, {
-      valid: [
+      invalid: [
         {
-          code: dedent`
-              import type { T } from 't'
-              import { a1, a2, a3 } from 'a'
-              import { b1, b2 } from '~/b'
-              import { c1, c2, c3 } from '~/c'
-              import d from '.'
-              import { e1, e2, e3 } from '../../e'
-            `,
+          errors: [
+            {
+              data: {
+                rightGroup: 'external',
+                leftGroup: 'index',
+                right: 'a',
+                left: '.',
+              },
+              messageId: 'unexpectedImportsGroupOrder',
+            },
+            {
+              data: {
+                leftGroup: 'internal',
+                rightGroup: 'type',
+                left: '~/c',
+                right: 't',
+              },
+              messageId: 'unexpectedImportsGroupOrder',
+            },
+            {
+              data: {
+                left: '~/c',
+                right: 't',
+              },
+              messageId: 'extraSpacingBetweenImports',
+            },
+            {
+              data: {
+                rightGroup: 'internal',
+                leftGroup: 'parent',
+                left: '../../e',
+                right: '~/b',
+              },
+              messageId: 'unexpectedImportsGroupOrder',
+            },
+            {
+              data: {
+                left: '../../e',
+                right: '~/b',
+              },
+              messageId: 'extraSpacingBetweenImports',
+            },
+          ],
           options: [
             {
               ...options,
-              newlinesBetween: 'never',
-              internalPattern: ['^~/.*'],
               groups: [
                 'type',
                 ['builtin', 'external'],
@@ -2630,12 +2663,10 @@ describe(ruleName, () => {
                 'object',
                 'unknown',
               ],
+              internalPattern: ['^~/.*'],
+              newlinesBetween: 'never',
             },
           ],
-        },
-      ],
-      invalid: [
-        {
           code: dedent`
               import d from '.'
               import { a1, a2, a3 } from 'a'
@@ -2654,11 +2685,13 @@ describe(ruleName, () => {
               import d from '.'
               import { e1, e2, e3 } from '../../e'
             `,
+        },
+      ],
+      valid: [
+        {
           options: [
             {
               ...options,
-              newlinesBetween: 'never',
-              internalPattern: ['^~/.*'],
               groups: [
                 'type',
                 ['builtin', 'external'],
@@ -2669,58 +2702,95 @@ describe(ruleName, () => {
                 'object',
                 'unknown',
               ],
+              internalPattern: ['^~/.*'],
+              newlinesBetween: 'never',
             },
           ],
-          errors: [
-            {
-              messageId: 'unexpectedImportsGroupOrder',
-              data: {
-                left: '.',
-                leftGroup: 'index',
-                right: 'a',
-                rightGroup: 'external',
-              },
-            },
-            {
-              messageId: 'unexpectedImportsGroupOrder',
-              data: {
-                left: '~/c',
-                leftGroup: 'internal',
-                right: 't',
-                rightGroup: 'type',
-              },
-            },
-            {
-              messageId: 'extraSpacingBetweenImports',
-              data: {
-                left: '~/c',
-                right: 't',
-              },
-            },
-            {
-              messageId: 'unexpectedImportsGroupOrder',
-              data: {
-                left: '../../e',
-                leftGroup: 'parent',
-                right: '~/b',
-                rightGroup: 'internal',
-              },
-            },
-            {
-              messageId: 'extraSpacingBetweenImports',
-              data: {
-                left: '../../e',
-                right: '~/b',
-              },
-            },
-          ],
+          code: dedent`
+              import type { T } from 't'
+              import { a1, a2, a3 } from 'a'
+              import { b1, b2 } from '~/b'
+              import { c1, c2, c3 } from '~/c'
+              import d from '.'
+              import { e1, e2, e3 } from '../../e'
+            `,
         },
       ],
     })
 
     ruleTester.run(`${ruleName}(${type}): disallow extra spaces`, rule, {
+      invalid: [
+        {
+          options: [
+            {
+              ...options,
+              groups: [
+                'type',
+                ['builtin', 'external'],
+                'internal-type',
+                'internal',
+                ['parent-type', 'sibling-type', 'index-type'],
+                ['parent', 'sibling', 'index'],
+                'object',
+                'unknown',
+              ],
+              internalPattern: ['^~/.*'],
+              newlinesBetween: 'always',
+            },
+          ],
+          errors: [
+            {
+              data: {
+                right: '~/b',
+                left: 'a',
+              },
+              messageId: 'extraSpacingBetweenImports',
+            },
+            {
+              data: {
+                right: '~/d',
+                left: '~/c',
+              },
+              messageId: 'extraSpacingBetweenImports',
+            },
+          ],
+          code: dedent`
+            import { A } from 'a'
+
+
+            import b from '~/b'
+            import c from '~/c'
+
+            import d from '~/d'
+          `,
+          output: dedent`
+            import { A } from 'a'
+
+            import b from '~/b'
+            import c from '~/c'
+            import d from '~/d'
+          `,
+        },
+      ],
       valid: [
         {
+          options: [
+            {
+              ...options,
+              groups: [
+                'type',
+                ['builtin', 'external'],
+                'internal-type',
+                'internal',
+                ['parent-type', 'sibling-type', 'index-type'],
+                ['parent', 'sibling', 'index'],
+                'object',
+                'unknown',
+              ],
+              internalPattern: ['^~/.*'],
+              newlinesBetween: 'always',
+            },
+          ],
           code: dedent`
               import { A } from 'a'
 
@@ -2728,76 +2798,6 @@ describe(ruleName, () => {
               import c from '~/c'
               import d from '~/d'
             `,
-          options: [
-            {
-              ...options,
-              newlinesBetween: 'always',
-              internalPattern: ['^~/.*'],
-              groups: [
-                'type',
-                ['builtin', 'external'],
-                'internal-type',
-                'internal',
-                ['parent-type', 'sibling-type', 'index-type'],
-                ['parent', 'sibling', 'index'],
-                'object',
-                'unknown',
-              ],
-            },
-          ],
-        },
-      ],
-      invalid: [
-        {
-          code: dedent`
-            import { A } from 'a'
-
-
-            import b from '~/b'
-            import c from '~/c'
-
-            import d from '~/d'
-          `,
-          output: dedent`
-            import { A } from 'a'
-
-            import b from '~/b'
-            import c from '~/c'
-            import d from '~/d'
-          `,
-          options: [
-            {
-              ...options,
-              newlinesBetween: 'always',
-              internalPattern: ['^~/.*'],
-              groups: [
-                'type',
-                ['builtin', 'external'],
-                'internal-type',
-                'internal',
-                ['parent-type', 'sibling-type', 'index-type'],
-                ['parent', 'sibling', 'index'],
-                'object',
-                'unknown',
-              ],
-            },
-          ],
-          errors: [
-            {
-              messageId: 'extraSpacingBetweenImports',
-              data: {
-                left: 'a',
-                right: '~/b',
-              },
-            },
-            {
-              messageId: 'extraSpacingBetweenImports',
-              data: {
-                left: '~/c',
-                right: '~/d',
-              },
-            },
-          ],
         },
       ],
     })
@@ -2806,23 +2806,11 @@ describe(ruleName, () => {
       `${ruleName}(${type}): supports typescript object-imports`,
       rule,
       {
-        valid: [
+        invalid: [
           {
-            code: dedent`
-              import type T = require("T")
-
-              import { A } from 'a'
-
-              import { B } from '../b'
-
-              import c = require('c/c')
-              import log = console.log
-            `,
             options: [
               {
                 ...options,
-                newlinesBetween: 'always',
-                internalPattern: ['^~/.*'],
                 groups: [
                   'type',
                   ['builtin', 'external'],
@@ -2833,21 +2821,26 @@ describe(ruleName, () => {
                   'object',
                   'unknown',
                 ],
+                internalPattern: ['^~/.*'],
+                newlinesBetween: 'always',
               },
             ],
-          },
-        ],
-        invalid: [
-          {
-            code: dedent`
-              import type T = require("T")
-
-              import { A } from 'a'
-              import { B } from '../b'
-
-              import log = console.log
-              import c = require('c/c')
-            `,
+            errors: [
+              {
+                data: {
+                  right: '../b',
+                  left: 'a',
+                },
+                messageId: 'missedSpacingBetweenImports',
+              },
+              {
+                data: {
+                  left: 'console.log',
+                  right: 'c/c',
+                },
+                messageId: 'unexpectedImportsOrder',
+              },
+            ],
             output: dedent`
               import type T = require("T")
 
@@ -2858,11 +2851,22 @@ describe(ruleName, () => {
               import c = require('c/c')
               import log = console.log
             `,
+            code: dedent`
+              import type T = require("T")
+
+              import { A } from 'a'
+              import { B } from '../b'
+
+              import log = console.log
+              import c = require('c/c')
+            `,
+          },
+        ],
+        valid: [
+          {
             options: [
               {
                 ...options,
-                newlinesBetween: 'always',
-                internalPattern: ['^~/.*'],
                 groups: [
                   'type',
                   ['builtin', 'external'],
@@ -2873,24 +2877,20 @@ describe(ruleName, () => {
                   'object',
                   'unknown',
                 ],
+                internalPattern: ['^~/.*'],
+                newlinesBetween: 'always',
               },
             ],
-            errors: [
-              {
-                messageId: 'missedSpacingBetweenImports',
-                data: {
-                  left: 'a',
-                  right: '../b',
-                },
-              },
-              {
-                messageId: 'unexpectedImportsOrder',
-                data: {
-                  left: 'console.log',
-                  right: 'c/c',
-                },
-              },
-            ],
+            code: dedent`
+              import type T = require("T")
+
+              import { A } from 'a'
+
+              import { B } from '../b'
+
+              import c = require('c/c')
+              import log = console.log
+            `,
           },
         ],
       },
@@ -2900,30 +2900,37 @@ describe(ruleName, () => {
       `${ruleName}(${type}): use type if type of type is not defined`,
       rule,
       {
-        valid: [
+        invalid: [
           {
-            code: dedent`
-              import type { T } from '../t'
-              import type { V } from 'v'
-              import type { U } from '~/u'
-            `,
+            errors: [
+              {
+                data: {
+                  left: '../t',
+                  right: 'v',
+                },
+                messageId: 'extraSpacingBetweenImports',
+              },
+              {
+                data: {
+                  right: '~/u',
+                  left: 'v',
+                },
+                messageId: 'extraSpacingBetweenImports',
+              },
+            ],
             options: [
               {
                 ...options,
-                newlinesBetween: 'always',
-                internalPattern: ['^~/.*'],
                 groups: [
                   'type',
                   ['builtin', 'external'],
                   'internal',
                   ['parent', 'sibling', 'index'],
                 ],
+                internalPattern: ['^~/.*'],
+                newlinesBetween: 'always',
               },
             ],
-          },
-        ],
-        invalid: [
-          {
             code: dedent`
               import type { T } from '../t'
 
@@ -2936,35 +2943,28 @@ describe(ruleName, () => {
               import type { V } from 'v'
               import type { U } from '~/u'
             `,
+          },
+        ],
+        valid: [
+          {
             options: [
               {
                 ...options,
-                newlinesBetween: 'always',
-                internalPattern: ['^~/.*'],
                 groups: [
                   'type',
                   ['builtin', 'external'],
                   'internal',
                   ['parent', 'sibling', 'index'],
                 ],
+                internalPattern: ['^~/.*'],
+                newlinesBetween: 'always',
               },
             ],
-            errors: [
-              {
-                messageId: 'extraSpacingBetweenImports',
-                data: {
-                  left: '../t',
-                  right: 'v',
-                },
-              },
-              {
-                messageId: 'extraSpacingBetweenImports',
-                data: {
-                  left: 'v',
-                  right: '~/u',
-                },
-              },
-            ],
+            code: dedent`
+              import type { T } from '../t'
+              import type { V } from 'v'
+              import type { U } from '~/u'
+            `,
           },
         ],
       },
@@ -2973,16 +2973,9 @@ describe(ruleName, () => {
     ruleTester.run(`${ruleName}(${type}): ignores inline comments`, rule, {
       valid: [
         {
-          code: dedent`
-            import { a } from 'a'
-            import { b1, b2 } from 'b' // Comment
-            import { c } from 'c'
-          `,
           options: [
             {
               ...options,
-              newlinesBetween: 'always',
-              internalPattern: ['^~/.*'],
               groups: [
                 'type',
                 ['builtin', 'external'],
@@ -2993,8 +2986,15 @@ describe(ruleName, () => {
                 'object',
                 'unknown',
               ],
+              internalPattern: ['^~/.*'],
+              newlinesBetween: 'always',
             },
           ],
+          code: dedent`
+            import { a } from 'a'
+            import { b1, b2 } from 'b' // Comment
+            import { c } from 'c'
+          `,
         },
       ],
       invalid: [],
@@ -3006,17 +3006,9 @@ describe(ruleName, () => {
       {
         valid: [
           {
-            code: dedent`
-              import type { T } from 't'
-
-              // @ts-expect-error missing types
-              import { t } from 't'
-            `,
             options: [
               {
                 ...options,
-                newlinesBetween: 'always',
-                internalPattern: ['^~/.*'],
                 groups: [
                   'type',
                   ['builtin', 'external'],
@@ -3027,8 +3019,16 @@ describe(ruleName, () => {
                   'object',
                   'unknown',
                 ],
+                internalPattern: ['^~/.*'],
+                newlinesBetween: 'always',
               },
             ],
+            code: dedent`
+              import type { T } from 't'
+
+              // @ts-expect-error missing types
+              import { t } from 't'
+            `,
           },
         ],
         invalid: [],
@@ -3041,18 +3041,9 @@ describe(ruleName, () => {
       {
         valid: [
           {
-            code: dedent`
-              import type { V } from 'v'
-
-              export type { U } from 'u'
-
-              import type { T1, T2 } from 't'
-            `,
             options: [
               {
                 ...options,
-                newlinesBetween: 'always',
-                internalPattern: ['^~/.*'],
                 groups: [
                   'type',
                   ['builtin', 'external'],
@@ -3063,8 +3054,17 @@ describe(ruleName, () => {
                   'object',
                   'unknown',
                 ],
+                internalPattern: ['^~/.*'],
+                newlinesBetween: 'always',
               },
             ],
+            code: dedent`
+              import type { V } from 'v'
+
+              export type { U } from 'u'
+
+              import type { T1, T2 } from 't'
+            `,
           },
         ],
         invalid: [],
@@ -3077,17 +3077,9 @@ describe(ruleName, () => {
       {
         valid: [
           {
-            code: dedent`
-              import { a1, a2 } from 'a'
-
-              import styles from '../s.css'
-              import './t.css'
-            `,
             options: [
               {
                 ...options,
-                newlinesBetween: 'always',
-                internalPattern: ['^~/.*'],
                 groups: [
                   'type',
                   ['builtin', 'external'],
@@ -3099,8 +3091,16 @@ describe(ruleName, () => {
                   'object',
                   'unknown',
                 ],
+                internalPattern: ['^~/.*'],
+                newlinesBetween: 'always',
               },
             ],
+            code: dedent`
+              import { a1, a2 } from 'a'
+
+              import styles from '../s.css'
+              import './t.css'
+            `,
           },
         ],
         invalid: [],
@@ -3113,18 +3113,9 @@ describe(ruleName, () => {
       {
         valid: [
           {
-            code: dedent`
-              import { A } from '../a'
-              import { b } from './b'
-
-              import '../c.js'
-              import './d'
-            `,
             options: [
               {
                 ...options,
-                newlinesBetween: 'always',
-                internalPattern: ['^~/.*'],
                 groups: [
                   'type',
                   ['builtin', 'external'],
@@ -3136,8 +3127,17 @@ describe(ruleName, () => {
                   'object',
                   'unknown',
                 ],
+                internalPattern: ['^~/.*'],
+                newlinesBetween: 'always',
               },
             ],
+            code: dedent`
+              import { A } from '../a'
+              import { b } from './b'
+
+              import '../c.js'
+              import './d'
+            `,
           },
         ],
         invalid: [],
@@ -3150,19 +3150,19 @@ describe(ruleName, () => {
       {
         valid: [
           {
+            options: [
+              {
+                ...options,
+                groups: ['builtin-type', 'type'],
+                internalPattern: ['^~/.*'],
+                newlinesBetween: 'always',
+              },
+            ],
             code: dedent`
               import type { Server } from 'http'
 
               import a from 'a'
             `,
-            options: [
-              {
-                ...options,
-                newlinesBetween: 'always',
-                internalPattern: ['^~/.*'],
-                groups: ['builtin-type', 'type'],
-              },
-            ],
           },
         ],
         invalid: [],
@@ -3173,23 +3173,11 @@ describe(ruleName, () => {
       `${ruleName}(${type}): works with imports ending with a semicolon`,
       rule,
       {
-        valid: [],
         invalid: [
           {
-            code: dedent`
-              import a from 'a';
-              import b from './index';
-            `,
-            output: dedent`
-              import a from 'a';
-
-              import b from './index';
-            `,
             options: [
               {
                 ...options,
-                newlinesBetween: 'always',
-                internalPattern: ['^~/.*'],
                 groups: [
                   'type',
                   ['builtin', 'external'],
@@ -3199,26 +3187,77 @@ describe(ruleName, () => {
                   ['parent', 'sibling', 'index'],
                   ['object', 'unknown'],
                 ],
+                internalPattern: ['^~/.*'],
+                newlinesBetween: 'always',
               },
             ],
             errors: [
               {
-                messageId: 'missedSpacingBetweenImports',
                 data: {
-                  left: 'a',
                   right: './index',
+                  left: 'a',
                 },
+                messageId: 'missedSpacingBetweenImports',
               },
             ],
+            output: dedent`
+              import a from 'a';
+
+              import b from './index';
+            `,
+            code: dedent`
+              import a from 'a';
+              import b from './index';
+            `,
           },
         ],
+        valid: [],
       },
     )
 
     ruleTester.run(`${ruleName}(${type}): remove unnecessary spaces`, rule, {
-      valid: [],
       invalid: [
         {
+          errors: [
+            {
+              data: {
+                right: './b',
+                left: 'a',
+              },
+              messageId: 'extraSpacingBetweenImports',
+            },
+            {
+              data: {
+                rightGroup: 'external',
+                leftGroup: 'sibling',
+                left: './b',
+                right: 'c',
+              },
+              messageId: 'unexpectedImportsGroupOrder',
+            },
+            {
+              data: {
+                left: './b',
+                right: 'c',
+              },
+              messageId: 'extraSpacingBetweenImports',
+            },
+          ],
+          options: [
+            {
+              ...options,
+              groups: [
+                'type',
+                ['builtin', 'external'],
+                'internal-type',
+                'internal',
+                ['parent-type', 'sibling-type', 'index-type'],
+                ['parent', 'sibling', 'index'],
+                'object',
+                'unknown',
+              ],
+            },
+          ],
           code: dedent`
             import { a } from 'a'
 
@@ -3235,90 +3274,50 @@ describe(ruleName, () => {
 
             import { b } from './b'
           `,
-          options: [
-            {
-              ...options,
-              groups: [
-                'type',
-                ['builtin', 'external'],
-                'internal-type',
-                'internal',
-                ['parent-type', 'sibling-type', 'index-type'],
-                ['parent', 'sibling', 'index'],
-                'object',
-                'unknown',
-              ],
-            },
-          ],
-          errors: [
-            {
-              messageId: 'extraSpacingBetweenImports',
-              data: {
-                left: 'a',
-                right: './b',
-              },
-            },
-            {
-              messageId: 'unexpectedImportsGroupOrder',
-              data: {
-                left: './b',
-                leftGroup: 'sibling',
-                right: 'c',
-                rightGroup: 'external',
-              },
-            },
-            {
-              messageId: 'extraSpacingBetweenImports',
-              data: {
-                left: './b',
-                right: 'c',
-              },
-            },
-          ],
         },
       ],
+      valid: [],
     })
 
     ruleTester.run(
       `${ruleName}(${type}): allows to define custom groups`,
       rule,
       {
-        valid: [],
         invalid: [
           {
-            code: dedent`
-              import type { T } from 't'
-
-              import a1 from '@a/a1'
-              import a2 from '@a/a2'
-              import b1 from '@b/b1'
-              import b2 from '@b/b2'
-              import b3 from '@b/b3'
-              import { c } from 'c'
-            `,
-            output: dedent`
-              import a1 from '@a/a1'
-              import a2 from '@a/a2'
-              import type { T } from 't'
-
-              import b1 from '@b/b1'
-              import b2 from '@b/b2'
-              import b3 from '@b/b3'
-
-              import { c } from 'c'
-            `,
+            errors: [
+              {
+                data: {
+                  right: '@a/a1',
+                  left: 't',
+                },
+                messageId: 'unexpectedImportsOrder',
+              },
+              {
+                data: {
+                  right: '@a/a1',
+                  left: 't',
+                },
+                messageId: 'extraSpacingBetweenImports',
+              },
+              {
+                data: {
+                  right: '@b/b1',
+                  left: '@a/a2',
+                },
+                messageId: 'missedSpacingBetweenImports',
+              },
+              {
+                data: {
+                  left: '@b/b3',
+                  right: 'c',
+                },
+                messageId: 'missedSpacingBetweenImports',
+              },
+            ],
             options: [
               {
                 ...options,
-                customGroups: {
-                  type: {
-                    primary: ['t', '@a/.+'],
-                  },
-                  value: {
-                    primary: ['t', '@a/.+'],
-                    secondary: '@b/.+',
-                  },
-                },
                 groups: [
                   'type',
                   'primary',
@@ -3331,40 +3330,41 @@ describe(ruleName, () => {
                   'object',
                   'unknown',
                 ],
-              },
-            ],
-            errors: [
-              {
-                messageId: 'unexpectedImportsOrder',
-                data: {
-                  left: 't',
-                  right: '@a/a1',
-                },
-              },
-              {
-                messageId: 'extraSpacingBetweenImports',
-                data: {
-                  left: 't',
-                  right: '@a/a1',
-                },
-              },
-              {
-                messageId: 'missedSpacingBetweenImports',
-                data: {
-                  left: '@a/a2',
-                  right: '@b/b1',
-                },
-              },
-              {
-                messageId: 'missedSpacingBetweenImports',
-                data: {
-                  left: '@b/b3',
-                  right: 'c',
+                customGroups: {
+                  value: {
+                    primary: ['t', '@a/.+'],
+                    secondary: '@b/.+',
+                  },
+                  type: {
+                    primary: ['t', '@a/.+'],
+                  },
                 },
               },
             ],
+            output: dedent`
+              import a1 from '@a/a1'
+              import a2 from '@a/a2'
+              import type { T } from 't'
+
+              import b1 from '@b/b1'
+              import b2 from '@b/b2'
+              import b3 from '@b/b3'
+
+              import { c } from 'c'
+            `,
+            code: dedent`
+              import type { T } from 't'
+
+              import a1 from '@a/a1'
+              import a2 from '@a/a2'
+              import b1 from '@b/b1'
+              import b2 from '@b/b2'
+              import b3 from '@b/b3'
+              import { c } from 'c'
+            `,
           },
         ],
+        valid: [],
       },
     )
 
@@ -3372,18 +3372,8 @@ describe(ruleName, () => {
       `${ruleName}(${type}): allows to define value only custom groups`,
       rule,
       {
-        valid: [],
         invalid: [
           {
-            code: dedent`
-              import type { A } from 'a'
-              import { a } from 'a'
-            `,
-            output: dedent`
-              import type { A } from 'a'
-
-              import { a } from 'a'
-            `,
             options: [
               {
                 ...options,
@@ -3397,15 +3387,25 @@ describe(ruleName, () => {
             ],
             errors: [
               {
-                messageId: 'missedSpacingBetweenImports',
                 data: {
-                  left: 'a',
                   right: 'a',
+                  left: 'a',
                 },
+                messageId: 'missedSpacingBetweenImports',
               },
             ],
+            output: dedent`
+              import type { A } from 'a'
+
+              import { a } from 'a'
+            `,
+            code: dedent`
+              import type { A } from 'a'
+              import { a } from 'a'
+            `,
           },
         ],
+        valid: [],
       },
     )
 
@@ -3413,25 +3413,11 @@ describe(ruleName, () => {
       `${ruleName}(${type}): allows hash symbol in internal pattern`,
       rule,
       {
-        valid: [
+        invalid: [
           {
-            code: dedent`
-              import type { T } from 'a'
-
-              import { a } from 'a'
-
-              import type { S } from '#b'
-
-              import { b1, b2 } from '#b'
-              import c from '#c'
-
-              import { d } from '../d'
-            `,
             options: [
               {
                 ...options,
-                newlinesBetween: 'always',
-                internalPattern: ['#.+'],
                 groups: [
                   'type',
                   ['builtin', 'external'],
@@ -3442,23 +3428,26 @@ describe(ruleName, () => {
                   'object',
                   'unknown',
                 ],
+                newlinesBetween: 'always',
+                internalPattern: ['#.+'],
               },
             ],
-          },
-        ],
-        invalid: [
-          {
-            code: dedent`
-              import type { T } from 'a'
-
-              import { a } from 'a'
-
-              import type { S } from '#b'
-              import c from '#c'
-              import { b1, b2 } from '#b'
-
-              import { d } from '../d'
-            `,
+            errors: [
+              {
+                data: {
+                  right: '#c',
+                  left: '#b',
+                },
+                messageId: 'missedSpacingBetweenImports',
+              },
+              {
+                data: {
+                  right: '#b',
+                  left: '#c',
+                },
+                messageId: 'unexpectedImportsOrder',
+              },
+            ],
             output: dedent`
               import type { T } from 'a'
 
@@ -3471,11 +3460,24 @@ describe(ruleName, () => {
 
               import { d } from '../d'
             `,
+            code: dedent`
+              import type { T } from 'a'
+
+              import { a } from 'a'
+
+              import type { S } from '#b'
+              import c from '#c'
+              import { b1, b2 } from '#b'
+
+              import { d } from '../d'
+            `,
+          },
+        ],
+        valid: [
+          {
             options: [
               {
                 ...options,
-                newlinesBetween: 'always',
-                internalPattern: ['#.+'],
                 groups: [
                   'type',
                   ['builtin', 'external'],
@@ -3486,80 +3488,100 @@ describe(ruleName, () => {
                   'object',
                   'unknown',
                 ],
+                newlinesBetween: 'always',
+                internalPattern: ['#.+'],
               },
             ],
-            errors: [
-              {
-                messageId: 'missedSpacingBetweenImports',
-                data: {
-                  left: '#b',
-                  right: '#c',
-                },
-              },
-              {
-                messageId: 'unexpectedImportsOrder',
-                data: {
-                  left: '#c',
-                  right: '#b',
-                },
-              },
-            ],
+            code: dedent`
+              import type { T } from 'a'
+
+              import { a } from 'a'
+
+              import type { S } from '#b'
+
+              import { b1, b2 } from '#b'
+              import c from '#c'
+
+              import { d } from '../d'
+            `,
           },
         ],
       },
     )
 
     ruleTester.run(`${ruleName}(${type}): allows to use bun modules`, rule, {
-      valid: [
+      invalid: [
         {
-          code: dedent`
-            import { expect } from 'bun:test'
-            import { a } from 'a'
-          `,
+          errors: [
+            {
+              data: {
+                leftGroup: 'external',
+                rightGroup: 'builtin',
+                right: 'bun:test',
+                left: 'a',
+              },
+              messageId: 'unexpectedImportsGroupOrder',
+            },
+          ],
           options: [
             {
               ...options,
-              newlinesBetween: 'never',
               groups: ['builtin', 'external', 'unknown'],
+              newlinesBetween: 'never',
               environment: 'bun',
             },
           ],
-        },
-      ],
-      invalid: [
-        {
-          code: dedent`
-            import { a } from 'a'
-            import { expect } from 'bun:test'
-          `,
           output: dedent`
             import { expect } from 'bun:test'
             import { a } from 'a'
           `,
+          code: dedent`
+            import { a } from 'a'
+            import { expect } from 'bun:test'
+          `,
+        },
+      ],
+      valid: [
+        {
           options: [
             {
               ...options,
-              newlinesBetween: 'never',
               groups: ['builtin', 'external', 'unknown'],
+              newlinesBetween: 'never',
               environment: 'bun',
             },
           ],
-          errors: [
-            {
-              messageId: 'unexpectedImportsGroupOrder',
-              data: {
-                left: 'a',
-                leftGroup: 'external',
-                right: 'bun:test',
-                rightGroup: 'builtin',
-              },
-            },
-          ],
+          code: dedent`
+            import { expect } from 'bun:test'
+            import { a } from 'a'
+          `,
         },
       ],
     })
 
     ruleTester.run(`${ruleName}(${type}): sorts require imports`, rule, {
+      invalid: [
+        {
+          errors: [
+            {
+              data: {
+                right: 'a',
+                left: 'b',
+              },
+              messageId: 'unexpectedImportsOrder',
+            },
+          ],
+          output: dedent`
+            const { a1, a2 } = require('a')
+            const { b1 } = require('b')
+          `,
+          code: dedent`
+            const { b1 } = require('b')
+            const { a1, a2 } = require('a')
+          `,
+          options: [options],
+        },
+      ],
       valid: [
         {
           code: dedent`
@@ -3567,28 +3589,6 @@ describe(ruleName, () => {
             const { b1 } = require('b')
           `,
           options: [options],
-        },
-      ],
-      invalid: [
-        {
-          code: dedent`
-            const { b1 } = require('b')
-            const { a1, a2 } = require('a')
-          `,
-          output: dedent`
-            const { a1, a2 } = require('a')
-            const { b1 } = require('b')
-          `,
-          options: [options],
-          errors: [
-            {
-              messageId: 'unexpectedImportsOrder',
-              data: {
-                left: 'b',
-                right: 'a',
-              },
-            },
-          ],
         },
       ],
     })
@@ -3597,6 +3597,99 @@ describe(ruleName, () => {
       `${ruleName}(${type}): sorts require imports by groups`,
       rule,
       {
+        invalid: [
+          {
+            errors: [
+              {
+                data: {
+                  right: 'e/a',
+                  left: 'e/b',
+                },
+                messageId: 'unexpectedImportsOrder',
+              },
+              {
+                data: {
+                  leftGroup: 'internal',
+                  rightGroup: 'builtin',
+                  left: '~/b',
+                  right: 'fs',
+                },
+                messageId: 'unexpectedImportsGroupOrder',
+              },
+              {
+                data: {
+                  right: '~/c',
+                  left: 'fs',
+                },
+                messageId: 'missedSpacingBetweenImports',
+              },
+              {
+                data: {
+                  left: '../../h',
+                  right: '.',
+                },
+                messageId: 'unexpectedImportsOrder',
+              },
+              {
+                data: {
+                  left: '../../h',
+                  right: '.',
+                },
+                messageId: 'extraSpacingBetweenImports',
+              },
+            ],
+            output: dedent`
+              const { c1, c2, c3, c4 } = require('c')
+              const { e1 } = require('e/a')
+              const { e2 } = require('e/b')
+              const fs = require('fs')
+              const path = require('path')
+
+              const { b1, b2 } = require('~/b')
+              const { c1 } = require('~/c')
+              const { i1, i2, i3 } = require('~/i')
+
+              const a = require('.')
+              const h = require('../../h')
+              const { j } = require('../j')
+              const { K, L, M } = require('../k')
+            `,
+            code: dedent`
+              const { c1, c2, c3, c4 } = require('c')
+              const { e2 } = require('e/b')
+              const { e1 } = require('e/a')
+              const path = require('path')
+
+              const { b1, b2 } = require('~/b')
+              const fs = require('fs')
+              const { c1 } = require('~/c')
+              const { i1, i2, i3 } = require('~/i')
+
+              const h = require('../../h')
+
+              const a = require('.')
+              const { j } = require('../j')
+              const { K, L, M } = require('../k')
+            `,
+            options: [
+              {
+                ...options,
+                groups: [
+                  'type',
+                  ['builtin', 'external'],
+                  'internal-type',
+                  'internal',
+                  ['parent-type', 'sibling-type', 'index-type'],
+                  ['parent', 'sibling', 'index'],
+                  'object',
+                  'unknown',
+                ],
+                internalPattern: ['^~/.*'],
+                newlinesBetween: 'always',
+              },
+            ],
+          },
+        ],
         valid: [
           {
             code: dedent`
@@ -3618,8 +3711,6 @@ describe(ruleName, () => {
             options: [
               {
                 ...options,
-                newlinesBetween: 'always',
-                internalPattern: ['^~/.*'],
                 groups: [
                   'type',
                   ['builtin', 'external'],
@@ -3630,99 +3721,8 @@ describe(ruleName, () => {
                   'object',
                   'unknown',
                 ],
-              },
-            ],
-          },
-        ],
-        invalid: [
-          {
-            code: dedent`
-              const { c1, c2, c3, c4 } = require('c')
-              const { e2 } = require('e/b')
-              const { e1 } = require('e/a')
-              const path = require('path')
-
-              const { b1, b2 } = require('~/b')
-              const fs = require('fs')
-              const { c1 } = require('~/c')
-              const { i1, i2, i3 } = require('~/i')
-
-              const h = require('../../h')
-
-              const a = require('.')
-              const { j } = require('../j')
-              const { K, L, M } = require('../k')
-            `,
-            output: dedent`
-              const { c1, c2, c3, c4 } = require('c')
-              const { e1 } = require('e/a')
-              const { e2 } = require('e/b')
-              const fs = require('fs')
-              const path = require('path')
-
-              const { b1, b2 } = require('~/b')
-              const { c1 } = require('~/c')
-              const { i1, i2, i3 } = require('~/i')
-
-              const a = require('.')
-              const h = require('../../h')
-              const { j } = require('../j')
-              const { K, L, M } = require('../k')
-            `,
-            options: [
-              {
-                ...options,
-                newlinesBetween: 'always',
                 internalPattern: ['^~/.*'],
-                groups: [
-                  'type',
-                  ['builtin', 'external'],
-                  'internal-type',
-                  'internal',
-                  ['parent-type', 'sibling-type', 'index-type'],
-                  ['parent', 'sibling', 'index'],
-                  'object',
-                  'unknown',
-                ],
-              },
-            ],
-            errors: [
-              {
-                messageId: 'unexpectedImportsOrder',
-                data: {
-                  left: 'e/b',
-                  right: 'e/a',
-                },
-              },
-              {
-                messageId: 'unexpectedImportsGroupOrder',
-                data: {
-                  left: '~/b',
-                  leftGroup: 'internal',
-                  right: 'fs',
-                  rightGroup: 'builtin',
-                },
-              },
-              {
-                messageId: 'missedSpacingBetweenImports',
-                data: {
-                  left: 'fs',
-                  right: '~/c',
-                },
-              },
-              {
-                messageId: 'unexpectedImportsOrder',
-                data: {
-                  left: '../../h',
-                  right: '.',
-                },
-              },
-              {
-                messageId: 'extraSpacingBetweenImports',
-                data: {
-                  left: '../../h',
-                  right: '.',
-                },
+                newlinesBetween: 'always',
               },
             ],
           },
@@ -3734,51 +3734,42 @@ describe(ruleName, () => {
       `${ruleName}(${type}): can enable or disable sorting side effect imports`,
       rule,
       {
-        valid: [
-          {
-            code: dedent`
-              import a from 'aaaa'
-
-              import 'bbb'
-              import './cc'
-              import '../d'
-            `,
-            options: [
-              {
-                ...options,
-                newlinesBetween: 'always',
-                internalPattern: ['^~/.*'],
-                groups: ['external', 'side-effect', 'unknown'],
-                sortSideEffects: false,
-              },
-            ],
-          },
-          {
-            code: dedent`
-              import 'c'
-              import 'bb'
-              import 'aaa'
-            `,
-            options: [
-              {
-                ...options,
-                newlinesBetween: 'always',
-                internalPattern: ['^~/.*'],
-                groups: ['external', 'side-effect', 'unknown'],
-                sortSideEffects: false,
-              },
-            ],
-          },
-        ],
         invalid: [
           {
-            code: dedent`
-              import './cc'
-              import 'bbb'
-              import e from 'e'
-              import a from 'aaaa'
-              import '../d'
-            `,
+            errors: [
+              {
+                data: {
+                  leftGroup: 'side-effect',
+                  rightGroup: 'external',
+                  left: 'bbb',
+                  right: 'e',
+                },
+                messageId: 'unexpectedImportsGroupOrder',
+              },
+              {
+                data: {
+                  right: 'aaaa',
+                  left: 'e',
+                },
+                messageId: 'unexpectedImportsOrder',
+              },
+              {
+                data: {
+                  right: '../d',
+                  left: 'aaaa',
+                },
+                messageId: 'missedSpacingBetweenImports',
+              },
+            ],
+            options: [
+              {
+                ...options,
+                groups: ['external', 'side-effect', 'unknown'],
+                internalPattern: ['^~/.*'],
+                newlinesBetween: 'always',
+                sortSideEffects: false,
+              },
+            ],
             output: dedent`
               import a from 'aaaa'
               import e from 'e'
@@ -3787,77 +3778,86 @@ describe(ruleName, () => {
               import 'bbb'
               import '../d'
             `,
-            options: [
-              {
-                ...options,
-                newlinesBetween: 'always',
-                internalPattern: ['^~/.*'],
-                groups: ['external', 'side-effect', 'unknown'],
-                sortSideEffects: false,
-              },
-            ],
-            errors: [
-              {
-                messageId: 'unexpectedImportsGroupOrder',
-                data: {
-                  left: 'bbb',
-                  leftGroup: 'side-effect',
-                  right: 'e',
-                  rightGroup: 'external',
-                },
-              },
-              {
-                messageId: 'unexpectedImportsOrder',
-                data: {
-                  left: 'e',
-                  right: 'aaaa',
-                },
-              },
-              {
-                messageId: 'missedSpacingBetweenImports',
-                data: {
-                  left: 'aaaa',
-                  right: '../d',
-                },
-              },
-            ],
+            code: dedent`
+              import './cc'
+              import 'bbb'
+              import e from 'e'
+              import a from 'aaaa'
+              import '../d'
+            `,
           },
           {
-            code: dedent`
-              import 'c'
-              import 'bb'
-              import 'aaa'
-            `,
-            output: dedent`
-              import 'aaa'
-              import 'bb'
-              import 'c'
-            `,
+            errors: [
+              {
+                data: {
+                  right: 'bb',
+                  left: 'c',
+                },
+                messageId: 'unexpectedImportsOrder',
+              },
+              {
+                data: {
+                  right: 'aaa',
+                  left: 'bb',
+                },
+                messageId: 'unexpectedImportsOrder',
+              },
+            ],
             options: [
               {
                 ...options,
-                newlinesBetween: 'always',
-                internalPattern: ['^~/.*'],
                 groups: ['external', 'side-effect', 'unknown'],
+                internalPattern: ['^~/.*'],
+                newlinesBetween: 'always',
                 sortSideEffects: true,
               },
             ],
-            errors: [
+            output: dedent`
+              import 'aaa'
+              import 'bb'
+              import 'c'
+            `,
+            code: dedent`
+              import 'c'
+              import 'bb'
+              import 'aaa'
+            `,
+          },
+        ],
+        valid: [
+          {
+            options: [
               {
-                messageId: 'unexpectedImportsOrder',
-                data: {
-                  left: 'c',
-                  right: 'bb',
-                },
-              },
-              {
-                messageId: 'unexpectedImportsOrder',
-                data: {
-                  left: 'bb',
-                  right: 'aaa',
-                },
+                ...options,
+                groups: ['external', 'side-effect', 'unknown'],
+                internalPattern: ['^~/.*'],
+                newlinesBetween: 'always',
+                sortSideEffects: false,
               },
             ],
+            code: dedent`
+              import a from 'aaaa'
+
+              import 'bbb'
+              import './cc'
+              import '../d'
+            `,
+          },
+          {
+            options: [
+              {
+                ...options,
+                groups: ['external', 'side-effect', 'unknown'],
+                internalPattern: ['^~/.*'],
+                newlinesBetween: 'always',
+                sortSideEffects: false,
+              },
+            ],
+            code: dedent`
+              import 'c'
+              import 'bb'
+              import 'aaa'
+            `,
           },
         ],
       },
@@ -3867,14 +3867,19 @@ describe(ruleName, () => {
       `${ruleName}(${type}): supports style imports with optional chaining`,
       rule,
       {
-        valid: [
+        invalid: [
           {
-            code: dedent`
-              import b from './b.css?raw'
-              import c from './c.css'
-
-              import a from './a.js'
-            `,
+            errors: [
+              {
+                data: {
+                  leftGroup: 'unknown',
+                  right: './b.css?raw',
+                  rightGroup: 'style',
+                  left: './a.js',
+                },
+                messageId: 'unexpectedImportsGroupOrder',
+              },
+            ],
             options: [
               {
                 ...options,
@@ -3882,21 +3887,21 @@ describe(ruleName, () => {
                 newlinesBetween: 'always',
               },
             ],
-          },
-        ],
-        invalid: [
-          {
-            code: dedent`
-              import a from './a.js'
-              import b from './b.css?raw'
-              import c from './c.css'
-            `,
             output: dedent`
               import b from './b.css?raw'
               import c from './c.css'
 
               import a from './a.js'
             `,
+            code: dedent`
+              import a from './a.js'
+              import b from './b.css?raw'
+              import c from './c.css'
+            `,
+          },
+        ],
+        valid: [
+          {
             options: [
               {
                 ...options,
@@ -3904,17 +3909,12 @@ describe(ruleName, () => {
                 newlinesBetween: 'always',
               },
             ],
-            errors: [
-              {
-                messageId: 'unexpectedImportsGroupOrder',
-                data: {
-                  left: './a.js',
-                  leftGroup: 'unknown',
-                  right: './b.css?raw',
-                  rightGroup: 'style',
-                },
-              },
-            ],
+            code: dedent`
+              import b from './b.css?raw'
+              import c from './c.css'
+
+              import a from './a.js'
+            `,
           },
         ],
       },
@@ -3930,6 +3930,28 @@ describe(ruleName, () => {
     } as const
 
     ruleTester.run(`${ruleName}(${type}): sorts imports`, rule, {
+      invalid: [
+        {
+          errors: [
+            {
+              data: {
+                right: 'a',
+                left: 'b',
+              },
+              messageId: 'unexpectedImportsOrder',
+            },
+          ],
+          output: dedent`
+            import { a1, a2 } from 'a'
+            import { b1 } from 'b'
+          `,
+          code: dedent`
+            import { b1 } from 'b'
+            import { a1, a2 } from 'a'
+          `,
+          options: [options],
+        },
+      ],
       valid: [
         {
           code: dedent`
@@ -3937,33 +3959,176 @@ describe(ruleName, () => {
             import { b1 } from 'b'
           `,
           options: [options],
-        },
-      ],
-      invalid: [
-        {
-          code: dedent`
-            import { b1 } from 'b'
-            import { a1, a2 } from 'a'
-          `,
-          output: dedent`
-            import { a1, a2 } from 'a'
-            import { b1 } from 'b'
-          `,
-          options: [options],
-          errors: [
-            {
-              messageId: 'unexpectedImportsOrder',
-              data: {
-                left: 'b',
-                right: 'a',
-              },
-            },
-          ],
         },
       ],
     })
 
     ruleTester.run(`${ruleName}(${type}): sorts imports by groups`, rule, {
+      invalid: [
+        {
+          errors: [
+            {
+              data: {
+                rightGroup: 'internal-type',
+                leftGroup: 'internal',
+                right: '~/i',
+                left: '~/b',
+              },
+              messageId: 'unexpectedImportsGroupOrder',
+            },
+            {
+              data: {
+                right: './d',
+                left: '~/i',
+              },
+              messageId: 'missedSpacingBetweenImports',
+            },
+            {
+              data: {
+                leftGroup: 'sibling-type',
+                rightGroup: 'builtin',
+                left: './d',
+                right: 'fs',
+              },
+              messageId: 'unexpectedImportsGroupOrder',
+            },
+            {
+              data: {
+                right: '~/c',
+                left: 'fs',
+              },
+              messageId: 'missedSpacingBetweenImports',
+            },
+            {
+              data: {
+                right: '~/i',
+                left: '~/c',
+              },
+              messageId: 'unexpectedImportsOrder',
+            },
+            {
+              data: {
+                right: '../f',
+                left: '.',
+              },
+              messageId: 'unexpectedImportsOrder',
+            },
+            {
+              data: {
+                right: '../../h',
+                left: '../f',
+              },
+              messageId: 'missedSpacingBetweenImports',
+            },
+            {
+              data: {
+                rightGroup: 'index-type',
+                right: './index.d.ts',
+                leftGroup: 'parent',
+                left: '../../h',
+              },
+              messageId: 'unexpectedImportsGroupOrder',
+            },
+            {
+              data: {
+                leftGroup: 'index',
+                rightGroup: 'type',
+                right: 't',
+                left: '.',
+              },
+              messageId: 'unexpectedImportsGroupOrder',
+            },
+            {
+              data: {
+                right: './style.css',
+                left: 't',
+              },
+              messageId: 'missedSpacingBetweenImports',
+            },
+            {
+              data: {
+                left: './style.css',
+                right: '../j',
+              },
+              messageId: 'unexpectedImportsOrder',
+            },
+            {
+              data: {
+                right: '../k',
+                left: '../j',
+              },
+              messageId: 'unexpectedImportsOrder',
+            },
+          ],
+          output: dedent`
+            import type { T } from 't'
+
+            import { c1, c2, c3, c4 } from 'c'
+            import { e2 } from 'e/b'
+            import { e1 } from 'e/a'
+            import path from 'path'
+            import fs from 'fs'
+
+            import type { I } from '~/i'
+
+            import { i1, i2, i3 } from '~/i'
+            import { b1, b2 } from '~/b'
+            import { c1 } from '~/c'
+
+            import type { H } from './index.d.ts'
+            import type { F } from '../f'
+            import type { D } from './d'
+            import type { A } from '.'
+
+            import { K, L, M } from '../k'
+            import { j } from '../j'
+            import './style.css'
+            import h from '../../h'
+            import a from '.'
+          `,
+          code: dedent`
+            import { c1, c2, c3, c4 } from 'c'
+            import { e2 } from 'e/b'
+            import { e1 } from 'e/a'
+            import path from 'path'
+
+            import { b1, b2 } from '~/b'
+            import type { I } from '~/i'
+            import type { D } from './d'
+            import fs from 'fs'
+            import { c1 } from '~/c'
+            import { i1, i2, i3 } from '~/i'
+
+            import type { A } from '.'
+            import type { F } from '../f'
+            import h from '../../h'
+            import type { H } from './index.d.ts'
+
+            import a from '.'
+            import type { T } from 't'
+            import './style.css'
+            import { j } from '../j'
+            import { K, L, M } from '../k'
+          `,
+          options: [
+            {
+              ...options,
+              groups: [
+                'type',
+                ['builtin', 'external'],
+                'internal-type',
+                'internal',
+                ['parent-type', 'sibling-type', 'index-type'],
+                ['parent', 'sibling', 'index'],
+                'object',
+                'unknown',
+              ],
+              internalPattern: ['^~/.*'],
+              newlinesBetween: 'always',
+            },
+          ],
+        },
+      ],
       valid: [
         {
           code: dedent`
@@ -3995,8 +4160,6 @@ describe(ruleName, () => {
           options: [
             {
               ...options,
-              newlinesBetween: 'always',
-              internalPattern: ['^~/.*'],
               groups: [
                 'type',
                 ['builtin', 'external'],
@@ -4007,171 +4170,8 @@ describe(ruleName, () => {
                 'object',
                 'unknown',
               ],
-            },
-          ],
-        },
-      ],
-      invalid: [
-        {
-          code: dedent`
-            import { c1, c2, c3, c4 } from 'c'
-            import { e2 } from 'e/b'
-            import { e1 } from 'e/a'
-            import path from 'path'
-
-            import { b1, b2 } from '~/b'
-            import type { I } from '~/i'
-            import type { D } from './d'
-            import fs from 'fs'
-            import { c1 } from '~/c'
-            import { i1, i2, i3 } from '~/i'
-
-            import type { A } from '.'
-            import type { F } from '../f'
-            import h from '../../h'
-            import type { H } from './index.d.ts'
-
-            import a from '.'
-            import type { T } from 't'
-            import './style.css'
-            import { j } from '../j'
-            import { K, L, M } from '../k'
-          `,
-          output: dedent`
-            import type { T } from 't'
-
-            import { c1, c2, c3, c4 } from 'c'
-            import { e2 } from 'e/b'
-            import { e1 } from 'e/a'
-            import path from 'path'
-            import fs from 'fs'
-
-            import type { I } from '~/i'
-
-            import { i1, i2, i3 } from '~/i'
-            import { b1, b2 } from '~/b'
-            import { c1 } from '~/c'
-
-            import type { H } from './index.d.ts'
-            import type { F } from '../f'
-            import type { D } from './d'
-            import type { A } from '.'
-
-            import { K, L, M } from '../k'
-            import { j } from '../j'
-            import './style.css'
-            import h from '../../h'
-            import a from '.'
-          `,
-          options: [
-            {
-              ...options,
-              newlinesBetween: 'always',
               internalPattern: ['^~/.*'],
-              groups: [
-                'type',
-                ['builtin', 'external'],
-                'internal-type',
-                'internal',
-                ['parent-type', 'sibling-type', 'index-type'],
-                ['parent', 'sibling', 'index'],
-                'object',
-                'unknown',
-              ],
-            },
-          ],
-          errors: [
-            {
-              messageId: 'unexpectedImportsGroupOrder',
-              data: {
-                left: '~/b',
-                leftGroup: 'internal',
-                right: '~/i',
-                rightGroup: 'internal-type',
-              },
-            },
-            {
-              messageId: 'missedSpacingBetweenImports',
-              data: {
-                left: '~/i',
-                right: './d',
-              },
-            },
-            {
-              messageId: 'unexpectedImportsGroupOrder',
-              data: {
-                left: './d',
-                leftGroup: 'sibling-type',
-                right: 'fs',
-                rightGroup: 'builtin',
-              },
-            },
-            {
-              messageId: 'missedSpacingBetweenImports',
-              data: {
-                left: 'fs',
-                right: '~/c',
-              },
-            },
-            {
-              messageId: 'unexpectedImportsOrder',
-              data: {
-                left: '~/c',
-                right: '~/i',
-              },
-            },
-            {
-              messageId: 'unexpectedImportsOrder',
-              data: {
-                left: '.',
-                right: '../f',
-              },
-            },
-            {
-              messageId: 'missedSpacingBetweenImports',
-              data: {
-                left: '../f',
-                right: '../../h',
-              },
-            },
-            {
-              messageId: 'unexpectedImportsGroupOrder',
-              data: {
-                left: '../../h',
-                leftGroup: 'parent',
-                right: './index.d.ts',
-                rightGroup: 'index-type',
-              },
-            },
-            {
-              messageId: 'unexpectedImportsGroupOrder',
-              data: {
-                left: '.',
-                leftGroup: 'index',
-                right: 't',
-                rightGroup: 'type',
-              },
-            },
-            {
-              messageId: 'missedSpacingBetweenImports',
-              data: {
-                left: 't',
-                right: './style.css',
-              },
-            },
-            {
-              messageId: 'unexpectedImportsOrder',
-              data: {
-                left: './style.css',
-                right: '../j',
-              },
-            },
-            {
-              messageId: 'unexpectedImportsOrder',
-              data: {
-                left: '../j',
-                right: '../k',
-              },
+              newlinesBetween: 'always',
             },
           ],
         },
@@ -4179,21 +4179,54 @@ describe(ruleName, () => {
     })
 
     ruleTester.run(`${ruleName}(${type}): sorts imports with no spaces`, rule, {
-      valid: [
+      invalid: [
         {
-          code: dedent`
-              import type { T } from 't'
-              import { a1, a2, a3 } from 'a'
-              import { c1, c2, c3 } from '~/c'
-              import { b1, b2 } from '~/b'
-              import { e1, e2, e3 } from '../../e'
-              import d from '.'
-            `,
+          errors: [
+            {
+              data: {
+                rightGroup: 'external',
+                leftGroup: 'index',
+                right: 'a',
+                left: '.',
+              },
+              messageId: 'unexpectedImportsGroupOrder',
+            },
+            {
+              data: {
+                leftGroup: 'internal',
+                rightGroup: 'type',
+                left: '~/c',
+                right: 't',
+              },
+              messageId: 'unexpectedImportsGroupOrder',
+            },
+            {
+              data: {
+                left: '~/c',
+                right: 't',
+              },
+              messageId: 'extraSpacingBetweenImports',
+            },
+            {
+              data: {
+                rightGroup: 'internal',
+                leftGroup: 'parent',
+                left: '../../e',
+                right: '~/b',
+              },
+              messageId: 'unexpectedImportsGroupOrder',
+            },
+            {
+              data: {
+                left: '../../e',
+                right: '~/b',
+              },
+              messageId: 'extraSpacingBetweenImports',
+            },
+          ],
           options: [
             {
               ...options,
-              newlinesBetween: 'never',
-              internalPattern: ['^~/.*'],
               groups: [
                 'type',
                 ['builtin', 'external'],
@@ -4204,12 +4237,10 @@ describe(ruleName, () => {
                 'object',
                 'unknown',
               ],
+              internalPattern: ['^~/.*'],
+              newlinesBetween: 'never',
             },
           ],
-        },
-      ],
-      invalid: [
-        {
           code: dedent`
               import d from '.'
               import { a1, a2, a3 } from 'a'
@@ -4228,11 +4259,13 @@ describe(ruleName, () => {
               import { e1, e2, e3 } from '../../e'
               import d from '.'
             `,
+        },
+      ],
+      valid: [
+        {
           options: [
             {
               ...options,
-              newlinesBetween: 'never',
-              internalPattern: ['^~/.*'],
               groups: [
                 'type',
                 ['builtin', 'external'],
@@ -4243,58 +4276,95 @@ describe(ruleName, () => {
                 'object',
                 'unknown',
               ],
+              internalPattern: ['^~/.*'],
+              newlinesBetween: 'never',
             },
           ],
-          errors: [
-            {
-              messageId: 'unexpectedImportsGroupOrder',
-              data: {
-                left: '.',
-                leftGroup: 'index',
-                right: 'a',
-                rightGroup: 'external',
-              },
-            },
-            {
-              messageId: 'unexpectedImportsGroupOrder',
-              data: {
-                left: '~/c',
-                leftGroup: 'internal',
-                right: 't',
-                rightGroup: 'type',
-              },
-            },
-            {
-              messageId: 'extraSpacingBetweenImports',
-              data: {
-                left: '~/c',
-                right: 't',
-              },
-            },
-            {
-              messageId: 'unexpectedImportsGroupOrder',
-              data: {
-                left: '../../e',
-                leftGroup: 'parent',
-                right: '~/b',
-                rightGroup: 'internal',
-              },
-            },
-            {
-              messageId: 'extraSpacingBetweenImports',
-              data: {
-                left: '../../e',
-                right: '~/b',
-              },
-            },
-          ],
+          code: dedent`
+              import type { T } from 't'
+              import { a1, a2, a3 } from 'a'
+              import { c1, c2, c3 } from '~/c'
+              import { b1, b2 } from '~/b'
+              import { e1, e2, e3 } from '../../e'
+              import d from '.'
+            `,
         },
       ],
     })
 
     ruleTester.run(`${ruleName}(${type}): disallow extra spaces`, rule, {
+      invalid: [
+        {
+          options: [
+            {
+              ...options,
+              groups: [
+                'type',
+                ['builtin', 'external'],
+                'internal-type',
+                'internal',
+                ['parent-type', 'sibling-type', 'index-type'],
+                ['parent', 'sibling', 'index'],
+                'object',
+                'unknown',
+              ],
+              internalPattern: ['^~/.*'],
+              newlinesBetween: 'always',
+            },
+          ],
+          errors: [
+            {
+              data: {
+                right: '~/b',
+                left: 'a',
+              },
+              messageId: 'extraSpacingBetweenImports',
+            },
+            {
+              data: {
+                right: '~/d',
+                left: '~/c',
+              },
+              messageId: 'extraSpacingBetweenImports',
+            },
+          ],
+          code: dedent`
+            import { A } from 'a'
+
+
+            import b from '~/b'
+            import c from '~/c'
+
+            import d from '~/d'
+          `,
+          output: dedent`
+            import { A } from 'a'
+
+            import b from '~/b'
+            import c from '~/c'
+            import d from '~/d'
+          `,
+        },
+      ],
       valid: [
         {
+          options: [
+            {
+              ...options,
+              groups: [
+                'type',
+                ['builtin', 'external'],
+                'internal-type',
+                'internal',
+                ['parent-type', 'sibling-type', 'index-type'],
+                ['parent', 'sibling', 'index'],
+                'object',
+                'unknown',
+              ],
+              internalPattern: ['^~/.*'],
+              newlinesBetween: 'always',
+            },
+          ],
           code: dedent`
               import { A } from 'a'
 
@@ -4302,76 +4372,6 @@ describe(ruleName, () => {
               import c from '~/c'
               import d from '~/d'
             `,
-          options: [
-            {
-              ...options,
-              newlinesBetween: 'always',
-              internalPattern: ['^~/.*'],
-              groups: [
-                'type',
-                ['builtin', 'external'],
-                'internal-type',
-                'internal',
-                ['parent-type', 'sibling-type', 'index-type'],
-                ['parent', 'sibling', 'index'],
-                'object',
-                'unknown',
-              ],
-            },
-          ],
-        },
-      ],
-      invalid: [
-        {
-          code: dedent`
-            import { A } from 'a'
-
-
-            import b from '~/b'
-            import c from '~/c'
-
-            import d from '~/d'
-          `,
-          output: dedent`
-            import { A } from 'a'
-
-            import b from '~/b'
-            import c from '~/c'
-            import d from '~/d'
-          `,
-          options: [
-            {
-              ...options,
-              newlinesBetween: 'always',
-              internalPattern: ['^~/.*'],
-              groups: [
-                'type',
-                ['builtin', 'external'],
-                'internal-type',
-                'internal',
-                ['parent-type', 'sibling-type', 'index-type'],
-                ['parent', 'sibling', 'index'],
-                'object',
-                'unknown',
-              ],
-            },
-          ],
-          errors: [
-            {
-              messageId: 'extraSpacingBetweenImports',
-              data: {
-                left: 'a',
-                right: '~/b',
-              },
-            },
-            {
-              messageId: 'extraSpacingBetweenImports',
-              data: {
-                left: '~/c',
-                right: '~/d',
-              },
-            },
-          ],
         },
       ],
     })
@@ -4380,23 +4380,11 @@ describe(ruleName, () => {
       `${ruleName}(${type}): supports typescript object-imports`,
       rule,
       {
-        valid: [
+        invalid: [
           {
-            code: dedent`
-              import type T = require("T")
-
-              import { A } from 'a'
-
-              import { B } from '../b'
-
-              import c = require('c/c')
-              import log = console.log
-            `,
             options: [
               {
                 ...options,
-                newlinesBetween: 'always',
-                internalPattern: ['^~/.*'],
                 groups: [
                   'type',
                   ['builtin', 'external'],
@@ -4407,21 +4395,26 @@ describe(ruleName, () => {
                   'object',
                   'unknown',
                 ],
+                internalPattern: ['^~/.*'],
+                newlinesBetween: 'always',
               },
             ],
-          },
-        ],
-        invalid: [
-          {
-            code: dedent`
-              import type T = require("T")
-
-              import { A } from 'a'
-              import { B } from '../b'
-
-              import log = console.log
-              import c = require('c/c')
-            `,
+            errors: [
+              {
+                data: {
+                  right: '../b',
+                  left: 'a',
+                },
+                messageId: 'missedSpacingBetweenImports',
+              },
+              {
+                data: {
+                  left: 'console.log',
+                  right: 'c/c',
+                },
+                messageId: 'unexpectedImportsOrder',
+              },
+            ],
             output: dedent`
               import type T = require("T")
 
@@ -4432,11 +4425,22 @@ describe(ruleName, () => {
               import c = require('c/c')
               import log = console.log
             `,
+            code: dedent`
+              import type T = require("T")
+
+              import { A } from 'a'
+              import { B } from '../b'
+
+              import log = console.log
+              import c = require('c/c')
+            `,
+          },
+        ],
+        valid: [
+          {
             options: [
               {
                 ...options,
-                newlinesBetween: 'always',
-                internalPattern: ['^~/.*'],
                 groups: [
                   'type',
                   ['builtin', 'external'],
@@ -4447,24 +4451,20 @@ describe(ruleName, () => {
                   'object',
                   'unknown',
                 ],
+                internalPattern: ['^~/.*'],
+                newlinesBetween: 'always',
               },
             ],
-            errors: [
-              {
-                messageId: 'missedSpacingBetweenImports',
-                data: {
-                  left: 'a',
-                  right: '../b',
-                },
-              },
-              {
-                messageId: 'unexpectedImportsOrder',
-                data: {
-                  left: 'console.log',
-                  right: 'c/c',
-                },
-              },
-            ],
+            code: dedent`
+              import type T = require("T")
+
+              import { A } from 'a'
+
+              import { B } from '../b'
+
+              import c = require('c/c')
+              import log = console.log
+            `,
           },
         ],
       },
@@ -4474,30 +4474,37 @@ describe(ruleName, () => {
       `${ruleName}(${type}): use type if type of type is not defined`,
       rule,
       {
-        valid: [
+        invalid: [
           {
-            code: dedent`
-              import type { T } from '../t'
-              import type { U } from '~/u'
-              import type { V } from 'v'
-            `,
+            errors: [
+              {
+                data: {
+                  left: '../t',
+                  right: '~/u',
+                },
+                messageId: 'extraSpacingBetweenImports',
+              },
+              {
+                data: {
+                  left: '~/u',
+                  right: 'v',
+                },
+                messageId: 'extraSpacingBetweenImports',
+              },
+            ],
             options: [
               {
                 ...options,
-                newlinesBetween: 'always',
-                internalPattern: ['^~/.*'],
                 groups: [
                   'type',
                   ['builtin', 'external'],
                   'internal',
                   ['parent', 'sibling', 'index'],
                 ],
+                internalPattern: ['^~/.*'],
+                newlinesBetween: 'always',
               },
             ],
-          },
-        ],
-        invalid: [
-          {
             code: dedent`
               import type { T } from '../t'
 
@@ -4510,35 +4517,28 @@ describe(ruleName, () => {
               import type { U } from '~/u'
               import type { V } from 'v'
             `,
+          },
+        ],
+        valid: [
+          {
             options: [
               {
                 ...options,
-                newlinesBetween: 'always',
-                internalPattern: ['^~/.*'],
                 groups: [
                   'type',
                   ['builtin', 'external'],
                   'internal',
                   ['parent', 'sibling', 'index'],
                 ],
+                internalPattern: ['^~/.*'],
+                newlinesBetween: 'always',
               },
             ],
-            errors: [
-              {
-                messageId: 'extraSpacingBetweenImports',
-                data: {
-                  left: '../t',
-                  right: '~/u',
-                },
-              },
-              {
-                messageId: 'extraSpacingBetweenImports',
-                data: {
-                  left: '~/u',
-                  right: 'v',
-                },
-              },
-            ],
+            code: dedent`
+              import type { T } from '../t'
+              import type { U } from '~/u'
+              import type { V } from 'v'
+            `,
           },
         ],
       },
@@ -4550,17 +4550,9 @@ describe(ruleName, () => {
       {
         valid: [
           {
-            code: dedent`
-              import type { T } from 't'
-
-              // @ts-expect-error missing types
-              import { t } from 't'
-            `,
             options: [
               {
                 ...options,
-                newlinesBetween: 'always',
-                internalPattern: ['^~/.*'],
                 groups: [
                   'type',
                   ['builtin', 'external'],
@@ -4571,8 +4563,16 @@ describe(ruleName, () => {
                   'object',
                   'unknown',
                 ],
+                internalPattern: ['^~/.*'],
+                newlinesBetween: 'always',
               },
             ],
+            code: dedent`
+              import type { T } from 't'
+
+              // @ts-expect-error missing types
+              import { t } from 't'
+            `,
           },
         ],
         invalid: [],
@@ -4585,18 +4585,9 @@ describe(ruleName, () => {
       {
         valid: [
           {
-            code: dedent`
-              import type { V } from 'v'
-
-              export type { U } from 'u'
-
-              import type { T1, T2 } from 't'
-            `,
             options: [
               {
                 ...options,
-                newlinesBetween: 'always',
-                internalPattern: ['^~/.*'],
                 groups: [
                   'type',
                   ['builtin', 'external'],
@@ -4607,8 +4598,17 @@ describe(ruleName, () => {
                   'object',
                   'unknown',
                 ],
+                internalPattern: ['^~/.*'],
+                newlinesBetween: 'always',
               },
             ],
+            code: dedent`
+              import type { V } from 'v'
+
+              export type { U } from 'u'
+
+              import type { T1, T2 } from 't'
+            `,
           },
         ],
         invalid: [],
@@ -4621,17 +4621,9 @@ describe(ruleName, () => {
       {
         valid: [
           {
-            code: dedent`
-              import { a1, a2 } from 'a'
-
-              import styles from '../s.css'
-              import './t.css'
-            `,
             options: [
               {
                 ...options,
-                newlinesBetween: 'always',
-                internalPattern: ['^~/.*'],
                 groups: [
                   'type',
                   ['builtin', 'external'],
@@ -4643,8 +4635,16 @@ describe(ruleName, () => {
                   'object',
                   'unknown',
                 ],
+                internalPattern: ['^~/.*'],
+                newlinesBetween: 'always',
               },
             ],
+            code: dedent`
+              import { a1, a2 } from 'a'
+
+              import styles from '../s.css'
+              import './t.css'
+            `,
           },
         ],
         invalid: [],
@@ -4657,18 +4657,9 @@ describe(ruleName, () => {
       {
         valid: [
           {
-            code: dedent`
-              import { A } from '../a'
-              import { b } from './b'
-
-              import '../c.js'
-              import './d'
-            `,
             options: [
               {
                 ...options,
-                newlinesBetween: 'always',
-                internalPattern: ['^~/.*'],
                 groups: [
                   'type',
                   ['builtin', 'external'],
@@ -4680,8 +4671,17 @@ describe(ruleName, () => {
                   'object',
                   'unknown',
                 ],
+                internalPattern: ['^~/.*'],
+                newlinesBetween: 'always',
               },
             ],
+            code: dedent`
+              import { A } from '../a'
+              import { b } from './b'
+
+              import '../c.js'
+              import './d'
+            `,
           },
         ],
         invalid: [],
@@ -4694,19 +4694,19 @@ describe(ruleName, () => {
       {
         valid: [
           {
+            options: [
+              {
+                ...options,
+                groups: ['builtin-type', 'type'],
+                internalPattern: ['^~/.*'],
+                newlinesBetween: 'always',
+              },
+            ],
             code: dedent`
               import type { Server } from 'http'
 
               import a from 'a'
             `,
-            options: [
-              {
-                ...options,
-                newlinesBetween: 'always',
-                internalPattern: ['^~/.*'],
-                groups: ['builtin-type', 'type'],
-              },
-            ],
           },
         ],
         invalid: [],
@@ -4717,23 +4717,11 @@ describe(ruleName, () => {
       `${ruleName}(${type}): works with imports ending with a semicolon`,
       rule,
       {
-        valid: [],
         invalid: [
           {
-            code: dedent`
-              import a from 'a';
-              import b from './index';
-            `,
-            output: dedent`
-              import a from 'a';
-
-              import b from './index';
-            `,
             options: [
               {
                 ...options,
-                newlinesBetween: 'always',
-                internalPattern: ['^~/.*'],
                 groups: [
                   'type',
                   ['builtin', 'external'],
@@ -4743,26 +4731,77 @@ describe(ruleName, () => {
                   ['parent', 'sibling', 'index'],
                   ['object', 'unknown'],
                 ],
+                internalPattern: ['^~/.*'],
+                newlinesBetween: 'always',
               },
             ],
             errors: [
               {
-                messageId: 'missedSpacingBetweenImports',
                 data: {
-                  left: 'a',
                   right: './index',
+                  left: 'a',
                 },
+                messageId: 'missedSpacingBetweenImports',
               },
             ],
+            output: dedent`
+              import a from 'a';
+
+              import b from './index';
+            `,
+            code: dedent`
+              import a from 'a';
+              import b from './index';
+            `,
           },
         ],
+        valid: [],
       },
     )
 
     ruleTester.run(`${ruleName}(${type}): remove unnecessary spaces`, rule, {
-      valid: [],
       invalid: [
         {
+          errors: [
+            {
+              data: {
+                right: './b',
+                left: 'a',
+              },
+              messageId: 'extraSpacingBetweenImports',
+            },
+            {
+              data: {
+                rightGroup: 'external',
+                leftGroup: 'sibling',
+                left: './b',
+                right: 'c',
+              },
+              messageId: 'unexpectedImportsGroupOrder',
+            },
+            {
+              data: {
+                left: './b',
+                right: 'c',
+              },
+              messageId: 'extraSpacingBetweenImports',
+            },
+          ],
+          options: [
+            {
+              ...options,
+              groups: [
+                'type',
+                ['builtin', 'external'],
+                'internal-type',
+                'internal',
+                ['parent-type', 'sibling-type', 'index-type'],
+                ['parent', 'sibling', 'index'],
+                'object',
+                'unknown',
+              ],
+            },
+          ],
           code: dedent`
             import { a } from 'a'
 
@@ -4779,90 +4818,20 @@ describe(ruleName, () => {
 
             import { b } from './b'
           `,
-          options: [
-            {
-              ...options,
-              groups: [
-                'type',
-                ['builtin', 'external'],
-                'internal-type',
-                'internal',
-                ['parent-type', 'sibling-type', 'index-type'],
-                ['parent', 'sibling', 'index'],
-                'object',
-                'unknown',
-              ],
-            },
-          ],
-          errors: [
-            {
-              messageId: 'extraSpacingBetweenImports',
-              data: {
-                left: 'a',
-                right: './b',
-              },
-            },
-            {
-              messageId: 'unexpectedImportsGroupOrder',
-              data: {
-                left: './b',
-                leftGroup: 'sibling',
-                right: 'c',
-                rightGroup: 'external',
-              },
-            },
-            {
-              messageId: 'extraSpacingBetweenImports',
-              data: {
-                left: './b',
-                right: 'c',
-              },
-            },
-          ],
         },
       ],
+      valid: [],
     })
 
     ruleTester.run(
       `${ruleName}(${type}): allows to define custom groups`,
       rule,
       {
-        valid: [],
         invalid: [
           {
-            code: dedent`
-              import type { T } from 't'
-
-              import a1 from '@a/a1'
-              import a2 from '@a/a2'
-              import b1 from '@b/b1'
-              import b2 from '@b/b2'
-              import b3 from '@b/b3'
-              import { c } from 'c'
-            `,
-            output: dedent`
-              import type { T } from 't'
-              import a1 from '@a/a1'
-              import a2 from '@a/a2'
-
-              import b1 from '@b/b1'
-              import b2 from '@b/b2'
-              import b3 from '@b/b3'
-
-              import { c } from 'c'
-            `,
             options: [
               {
                 ...options,
-                customGroups: {
-                  type: {
-                    primary: ['t', '@a/.+'],
-                  },
-                  value: {
-                    primary: ['t', '@a/.+'],
-                    secondary: '@b/.+',
-                  },
-                },
                 groups: [
                   'type',
                   'primary',
@@ -4875,33 +4844,64 @@ describe(ruleName, () => {
                   'object',
                   'unknown',
                 ],
+                customGroups: {
+                  value: {
+                    primary: ['t', '@a/.+'],
+                    secondary: '@b/.+',
+                  },
+                  type: {
+                    primary: ['t', '@a/.+'],
+                  },
+                },
               },
             ],
             errors: [
               {
-                messageId: 'extraSpacingBetweenImports',
                 data: {
-                  left: 't',
                   right: '@a/a1',
+                  left: 't',
                 },
+                messageId: 'extraSpacingBetweenImports',
               },
               {
-                messageId: 'missedSpacingBetweenImports',
                 data: {
-                  left: '@a/a2',
                   right: '@b/b1',
+                  left: '@a/a2',
                 },
+                messageId: 'missedSpacingBetweenImports',
               },
               {
-                messageId: 'missedSpacingBetweenImports',
                 data: {
                   left: '@b/b3',
                   right: 'c',
                 },
+                messageId: 'missedSpacingBetweenImports',
               },
             ],
+            output: dedent`
+              import type { T } from 't'
+              import a1 from '@a/a1'
+              import a2 from '@a/a2'
+
+              import b1 from '@b/b1'
+              import b2 from '@b/b2'
+              import b3 from '@b/b3'
+
+              import { c } from 'c'
+            `,
+            code: dedent`
+              import type { T } from 't'
+
+              import a1 from '@a/a1'
+              import a2 from '@a/a2'
+              import b1 from '@b/b1'
+              import b2 from '@b/b2'
+              import b3 from '@b/b3'
+              import { c } from 'c'
+            `,
           },
         ],
+        valid: [],
       },
     )
 
@@ -4909,18 +4909,8 @@ describe(ruleName, () => {
       `${ruleName}(${type}): allows to define value only custom groups`,
       rule,
       {
-        valid: [],
         invalid: [
           {
-            code: dedent`
-              import type { A } from 'a'
-              import { a } from 'a'
-            `,
-            output: dedent`
-              import type { A } from 'a'
-
-              import { a } from 'a'
-            `,
             options: [
               {
                 ...options,
@@ -4934,15 +4924,25 @@ describe(ruleName, () => {
             ],
             errors: [
               {
-                messageId: 'missedSpacingBetweenImports',
                 data: {
-                  left: 'a',
                   right: 'a',
+                  left: 'a',
                 },
+                messageId: 'missedSpacingBetweenImports',
               },
             ],
+            output: dedent`
+              import type { A } from 'a'
+
+              import { a } from 'a'
+            `,
+            code: dedent`
+              import type { A } from 'a'
+              import { a } from 'a'
+            `,
           },
         ],
+        valid: [],
       },
     )
 
@@ -4950,25 +4950,11 @@ describe(ruleName, () => {
       `${ruleName}(${type}): allows hash symbol in internal pattern`,
       rule,
       {
-        valid: [
+        invalid: [
           {
-            code: dedent`
-              import type { T } from 'a'
-
-              import { a } from 'a'
-
-              import type { S } from '#b'
-
-              import { b1, b2 } from '#b'
-              import c from '#c'
-
-              import { d } from '../d'
-            `,
             options: [
               {
                 ...options,
-                newlinesBetween: 'always',
-                internalPattern: ['#.+'],
                 groups: [
                   'type',
                   ['builtin', 'external'],
@@ -4979,23 +4965,26 @@ describe(ruleName, () => {
                   'object',
                   'unknown',
                 ],
+                newlinesBetween: 'always',
+                internalPattern: ['#.+'],
               },
             ],
-          },
-        ],
-        invalid: [
-          {
-            code: dedent`
-              import type { T } from 'a'
-
-              import { a } from 'a'
-
-              import type { S } from '#b'
-              import c from '#c'
-              import { b1, b2 } from '#b'
-
-              import { d } from '../d'
-            `,
+            errors: [
+              {
+                data: {
+                  right: '#c',
+                  left: '#b',
+                },
+                messageId: 'missedSpacingBetweenImports',
+              },
+              {
+                data: {
+                  right: '#b',
+                  left: '#c',
+                },
+                messageId: 'unexpectedImportsOrder',
+              },
+            ],
             output: dedent`
               import type { T } from 'a'
 
@@ -5008,11 +4997,24 @@ describe(ruleName, () => {
 
               import { d } from '../d'
             `,
+            code: dedent`
+              import type { T } from 'a'
+
+              import { a } from 'a'
+
+              import type { S } from '#b'
+              import c from '#c'
+              import { b1, b2 } from '#b'
+
+              import { d } from '../d'
+            `,
+          },
+        ],
+        valid: [
+          {
             options: [
               {
                 ...options,
-                newlinesBetween: 'always',
-                internalPattern: ['#.+'],
                 groups: [
                   'type',
                   ['builtin', 'external'],
@@ -5023,50 +5025,30 @@ describe(ruleName, () => {
                   'object',
                   'unknown',
                 ],
+                newlinesBetween: 'always',
+                internalPattern: ['#.+'],
               },
             ],
-            errors: [
-              {
-                messageId: 'missedSpacingBetweenImports',
-                data: {
-                  left: '#b',
-                  right: '#c',
-                },
-              },
-              {
-                messageId: 'unexpectedImportsOrder',
-                data: {
-                  left: '#c',
-                  right: '#b',
-                },
-              },
-            ],
+            code: dedent`
+              import type { T } from 'a'
+
+              import { a } from 'a'
+
+              import type { S } from '#b'
+
+              import { b1, b2 } from '#b'
+              import c from '#c'
+
+              import { d } from '../d'
+            `,
           },
         ],
       },
     )
 
     ruleTester.run(`${ruleName}(${type}): support`, rule, {
-      valid: [],
       invalid: [
         {
-          code: dedent`
-              import { ThisIsApprox, SeventyNine } from '~CharactersLongAndShouldNotBeSplit';
-              import { EvenThoughThisIsLongItShouldNotGetSplitUpAsItThereIsOnlyOne } from 'IWillNotBeSplitUp';
-              import Short from 'app/components/LongName';
-              import {
-                ICantBelieveHowLong,
-                ICantHandleHowLong,
-                KindaLong,
-                Long,
-                ThisIsTheLongestEver,
-                WowSoLong,
-              } from 'app/components/Short';
-              import EvenThoughThisIsLongItShouldNotBePutOntoAnyNewLinesAsThereIsOnlyOne from 'IWillNotBePutOntoNewLines';
-              import ThereIsTwoOfMe, {
-                SoWeShouldSplitUpSinceWeAreInDifferentSections
-              } from 'IWillDefinitelyBeSplitUp';
-            `,
           output: dedent`
               import {
                 ICantBelieveHowLong,
@@ -5084,11 +5066,49 @@ describe(ruleName, () => {
               import { EvenThoughThisIsLongItShouldNotGetSplitUpAsItThereIsOnlyOne } from 'IWillNotBeSplitUp';
               import EvenThoughThisIsLongItShouldNotBePutOntoAnyNewLinesAsThereIsOnlyOne from 'IWillNotBePutOntoNewLines';
             `,
+          code: dedent`
+              import { ThisIsApprox, SeventyNine } from '~CharactersLongAndShouldNotBeSplit';
+              import { EvenThoughThisIsLongItShouldNotGetSplitUpAsItThereIsOnlyOne } from 'IWillNotBeSplitUp';
+              import Short from 'app/components/LongName';
+              import {
+                ICantBelieveHowLong,
+                ICantHandleHowLong,
+                KindaLong,
+                Long,
+                ThisIsTheLongestEver,
+                WowSoLong,
+              } from 'app/components/Short';
+              import EvenThoughThisIsLongItShouldNotBePutOntoAnyNewLinesAsThereIsOnlyOne from 'IWillNotBePutOntoNewLines';
+              import ThereIsTwoOfMe, {
+                SoWeShouldSplitUpSinceWeAreInDifferentSections
+              } from 'IWillDefinitelyBeSplitUp';
+            `,
+          errors: [
+            {
+              data: {
+                right: 'app/components/LongName',
+                left: 'IWillNotBeSplitUp',
+              },
+              messageId: 'unexpectedImportsOrder',
+            },
+            {
+              data: {
+                left: 'app/components/LongName',
+                right: 'app/components/Short',
+              },
+              messageId: 'unexpectedImportsOrder',
+            },
+            {
+              data: {
+                left: 'IWillNotBePutOntoNewLines',
+                right: 'IWillDefinitelyBeSplitUp',
+              },
+              messageId: 'unexpectedImportsOrder',
+            },
+          ],
           options: [
             {
               ...options,
-              maxLineLength: 80,
-              order: 'asc',
               groups: [
                 'type',
                 ['builtin', 'external'],
@@ -5099,86 +5119,88 @@ describe(ruleName, () => {
                 'object',
                 'unknown',
               ],
-            },
-          ],
-          errors: [
-            {
-              messageId: 'unexpectedImportsOrder',
-              data: {
-                left: 'IWillNotBeSplitUp',
-                right: 'app/components/LongName',
-              },
-            },
-            {
-              messageId: 'unexpectedImportsOrder',
-              data: {
-                left: 'app/components/LongName',
-                right: 'app/components/Short',
-              },
-            },
-            {
-              messageId: 'unexpectedImportsOrder',
-              data: {
-                left: 'IWillNotBePutOntoNewLines',
-                right: 'IWillDefinitelyBeSplitUp',
-              },
+              maxLineLength: 80,
+              order: 'asc',
             },
           ],
         },
       ],
+      valid: [],
     })
 
     ruleTester.run(`${ruleName}(${type}): allows to use bun modules`, rule, {
-      valid: [
+      invalid: [
         {
-          code: dedent`
-            import { expect } from 'bun:test'
-            import { a } from 'a'
-          `,
+          errors: [
+            {
+              data: {
+                leftGroup: 'external',
+                rightGroup: 'builtin',
+                right: 'bun:test',
+                left: 'a',
+              },
+              messageId: 'unexpectedImportsGroupOrder',
+            },
+          ],
           options: [
             {
               ...options,
-              newlinesBetween: 'never',
               groups: ['builtin', 'external', 'unknown'],
+              newlinesBetween: 'never',
               environment: 'bun',
             },
           ],
-        },
-      ],
-      invalid: [
-        {
-          code: dedent`
-            import { a } from 'a'
-            import { expect } from 'bun:test'
-          `,
           output: dedent`
             import { expect } from 'bun:test'
             import { a } from 'a'
           `,
+          code: dedent`
+            import { a } from 'a'
+            import { expect } from 'bun:test'
+          `,
+        },
+      ],
+      valid: [
+        {
           options: [
             {
               ...options,
-              newlinesBetween: 'never',
               groups: ['builtin', 'external', 'unknown'],
+              newlinesBetween: 'never',
               environment: 'bun',
             },
           ],
-          errors: [
-            {
-              messageId: 'unexpectedImportsGroupOrder',
-              data: {
-                left: 'a',
-                leftGroup: 'external',
-                right: 'bun:test',
-                rightGroup: 'builtin',
-              },
-            },
-          ],
+          code: dedent`
+            import { expect } from 'bun:test'
+            import { a } from 'a'
+          `,
         },
       ],
     })
 
     ruleTester.run(`${ruleName}(${type}): sorts require imports`, rule, {
+      invalid: [
+        {
+          errors: [
+            {
+              data: {
+                right: 'a',
+                left: 'b',
+              },
+              messageId: 'unexpectedImportsOrder',
+            },
+          ],
+          output: dedent`
+            const { a1, a2 } = require('a')
+            const { b1 } = require('b')
+          `,
+          code: dedent`
+            const { b1 } = require('b')
+            const { a1, a2 } = require('a')
+          `,
+          options: [options],
+        },
+      ],
       valid: [
         {
           code: dedent`
@@ -5186,28 +5208,6 @@ describe(ruleName, () => {
             const { b1 } = require('b')
           `,
           options: [options],
-        },
-      ],
-      invalid: [
-        {
-          code: dedent`
-            const { b1 } = require('b')
-            const { a1, a2 } = require('a')
-          `,
-          output: dedent`
-            const { a1, a2 } = require('a')
-            const { b1 } = require('b')
-          `,
-          options: [options],
-          errors: [
-            {
-              messageId: 'unexpectedImportsOrder',
-              data: {
-                left: 'b',
-                right: 'a',
-              },
-            },
-          ],
         },
       ],
     })
@@ -5216,6 +5216,106 @@ describe(ruleName, () => {
       `${ruleName}(${type}): sorts require imports by groups`,
       rule,
       {
+        invalid: [
+          {
+            errors: [
+              {
+                data: {
+                  leftGroup: 'internal',
+                  rightGroup: 'builtin',
+                  left: '~/b',
+                  right: 'fs',
+                },
+                messageId: 'unexpectedImportsGroupOrder',
+              },
+              {
+                data: {
+                  right: '~/c',
+                  left: 'fs',
+                },
+                messageId: 'missedSpacingBetweenImports',
+              },
+              {
+                data: {
+                  right: '~/i',
+                  left: '~/c',
+                },
+                messageId: 'unexpectedImportsOrder',
+              },
+              {
+                data: {
+                  left: '../../h',
+                  right: '.',
+                },
+                messageId: 'extraSpacingBetweenImports',
+              },
+              {
+                data: {
+                  right: '../j',
+                  left: '.',
+                },
+                messageId: 'unexpectedImportsOrder',
+              },
+              {
+                data: {
+                  right: '../k',
+                  left: '../j',
+                },
+                messageId: 'unexpectedImportsOrder',
+              },
+            ],
+            output: dedent`
+              const { c1, c2, c3, c4 } = require('c')
+              const { e2 } = require('e/b')
+              const { e1 } = require('e/a')
+              const path = require('path')
+              const fs = require('fs')
+
+              const { i1, i2, i3 } = require('~/i')
+              const { b1, b2 } = require('~/b')
+              const { c1 } = require('~/c')
+
+              const { K, L, M } = require('../k')
+              const { j } = require('../j')
+              const h = require('../../h')
+              const a = require('.')
+            `,
+            code: dedent`
+              const { c1, c2, c3, c4 } = require('c')
+              const { e2 } = require('e/b')
+              const { e1 } = require('e/a')
+              const path = require('path')
+
+              const { b1, b2 } = require('~/b')
+              const fs = require('fs')
+              const { c1 } = require('~/c')
+              const { i1, i2, i3 } = require('~/i')
+
+              const h = require('../../h')
+
+              const a = require('.')
+              const { j } = require('../j')
+              const { K, L, M } = require('../k')
+            `,
+            options: [
+              {
+                ...options,
+                groups: [
+                  'type',
+                  ['builtin', 'external'],
+                  'internal-type',
+                  'internal',
+                  ['parent-type', 'sibling-type', 'index-type'],
+                  ['parent', 'sibling', 'index'],
+                  'object',
+                  'unknown',
+                ],
+                internalPattern: ['^~/.*'],
+                newlinesBetween: 'always',
+              },
+            ],
+          },
+        ],
         valid: [
           {
             code: dedent`
@@ -5237,8 +5337,6 @@ describe(ruleName, () => {
             options: [
               {
                 ...options,
-                newlinesBetween: 'always',
-                internalPattern: ['^~/.*'],
                 groups: [
                   'type',
                   ['builtin', 'external'],
@@ -5249,106 +5347,8 @@ describe(ruleName, () => {
                   'object',
                   'unknown',
                 ],
-              },
-            ],
-          },
-        ],
-        invalid: [
-          {
-            code: dedent`
-              const { c1, c2, c3, c4 } = require('c')
-              const { e2 } = require('e/b')
-              const { e1 } = require('e/a')
-              const path = require('path')
-
-              const { b1, b2 } = require('~/b')
-              const fs = require('fs')
-              const { c1 } = require('~/c')
-              const { i1, i2, i3 } = require('~/i')
-
-              const h = require('../../h')
-
-              const a = require('.')
-              const { j } = require('../j')
-              const { K, L, M } = require('../k')
-            `,
-            output: dedent`
-              const { c1, c2, c3, c4 } = require('c')
-              const { e2 } = require('e/b')
-              const { e1 } = require('e/a')
-              const path = require('path')
-              const fs = require('fs')
-
-              const { i1, i2, i3 } = require('~/i')
-              const { b1, b2 } = require('~/b')
-              const { c1 } = require('~/c')
-
-              const { K, L, M } = require('../k')
-              const { j } = require('../j')
-              const h = require('../../h')
-              const a = require('.')
-            `,
-            options: [
-              {
-                ...options,
-                newlinesBetween: 'always',
                 internalPattern: ['^~/.*'],
-                groups: [
-                  'type',
-                  ['builtin', 'external'],
-                  'internal-type',
-                  'internal',
-                  ['parent-type', 'sibling-type', 'index-type'],
-                  ['parent', 'sibling', 'index'],
-                  'object',
-                  'unknown',
-                ],
-              },
-            ],
-            errors: [
-              {
-                messageId: 'unexpectedImportsGroupOrder',
-                data: {
-                  left: '~/b',
-                  leftGroup: 'internal',
-                  right: 'fs',
-                  rightGroup: 'builtin',
-                },
-              },
-              {
-                messageId: 'missedSpacingBetweenImports',
-                data: {
-                  left: 'fs',
-                  right: '~/c',
-                },
-              },
-              {
-                messageId: 'unexpectedImportsOrder',
-                data: {
-                  left: '~/c',
-                  right: '~/i',
-                },
-              },
-              {
-                messageId: 'extraSpacingBetweenImports',
-                data: {
-                  left: '../../h',
-                  right: '.',
-                },
-              },
-              {
-                messageId: 'unexpectedImportsOrder',
-                data: {
-                  left: '.',
-                  right: '../j',
-                },
-              },
-              {
-                messageId: 'unexpectedImportsOrder',
-                data: {
-                  left: '../j',
-                  right: '../k',
-                },
+                newlinesBetween: 'always',
               },
             ],
           },
@@ -5360,51 +5360,42 @@ describe(ruleName, () => {
       `${ruleName}(${type}): can enable or disable sorting side effect imports`,
       rule,
       {
-        valid: [
-          {
-            code: dedent`
-              import a from 'aaaa'
-
-              import 'bbb'
-              import './cc'
-              import '../d'
-            `,
-            options: [
-              {
-                ...options,
-                newlinesBetween: 'always',
-                internalPattern: ['^~/.*'],
-                groups: ['external', 'side-effect', 'unknown'],
-                sortSideEffects: false,
-              },
-            ],
-          },
-          {
-            code: dedent`
-              import 'c'
-              import 'bb'
-              import 'aaa'
-            `,
-            options: [
-              {
-                ...options,
-                newlinesBetween: 'always',
-                internalPattern: ['^~/.*'],
-                groups: ['external', 'side-effect', 'unknown'],
-                sortSideEffects: false,
-              },
-            ],
-          },
-        ],
         invalid: [
           {
-            code: dedent`
-              import './cc'
-              import 'bbb'
-              import e from 'e'
-              import a from 'aaaa'
-              import '../d'
-            `,
+            errors: [
+              {
+                data: {
+                  leftGroup: 'side-effect',
+                  rightGroup: 'external',
+                  left: 'bbb',
+                  right: 'e',
+                },
+                messageId: 'unexpectedImportsGroupOrder',
+              },
+              {
+                data: {
+                  right: 'aaaa',
+                  left: 'e',
+                },
+                messageId: 'unexpectedImportsOrder',
+              },
+              {
+                data: {
+                  right: '../d',
+                  left: 'aaaa',
+                },
+                messageId: 'missedSpacingBetweenImports',
+              },
+            ],
+            options: [
+              {
+                ...options,
+                groups: ['external', 'side-effect', 'unknown'],
+                internalPattern: ['^~/.*'],
+                newlinesBetween: 'always',
+                sortSideEffects: false,
+              },
+            ],
             output: dedent`
               import a from 'aaaa'
               import e from 'e'
@@ -5413,77 +5404,86 @@ describe(ruleName, () => {
               import 'bbb'
               import '../d'
             `,
-            options: [
-              {
-                ...options,
-                newlinesBetween: 'always',
-                internalPattern: ['^~/.*'],
-                groups: ['external', 'side-effect', 'unknown'],
-                sortSideEffects: false,
-              },
-            ],
-            errors: [
-              {
-                messageId: 'unexpectedImportsGroupOrder',
-                data: {
-                  left: 'bbb',
-                  leftGroup: 'side-effect',
-                  right: 'e',
-                  rightGroup: 'external',
-                },
-              },
-              {
-                messageId: 'unexpectedImportsOrder',
-                data: {
-                  left: 'e',
-                  right: 'aaaa',
-                },
-              },
-              {
-                messageId: 'missedSpacingBetweenImports',
-                data: {
-                  left: 'aaaa',
-                  right: '../d',
-                },
-              },
-            ],
+            code: dedent`
+              import './cc'
+              import 'bbb'
+              import e from 'e'
+              import a from 'aaaa'
+              import '../d'
+            `,
           },
           {
-            code: dedent`
-              import 'c'
-              import 'bb'
-              import 'aaa'
-            `,
-            output: dedent`
-              import 'aaa'
-              import 'bb'
-              import 'c'
-            `,
+            errors: [
+              {
+                data: {
+                  right: 'bb',
+                  left: 'c',
+                },
+                messageId: 'unexpectedImportsOrder',
+              },
+              {
+                data: {
+                  right: 'aaa',
+                  left: 'bb',
+                },
+                messageId: 'unexpectedImportsOrder',
+              },
+            ],
             options: [
               {
                 ...options,
-                newlinesBetween: 'always',
-                internalPattern: ['^~/.*'],
                 groups: ['external', 'side-effect', 'unknown'],
+                internalPattern: ['^~/.*'],
+                newlinesBetween: 'always',
                 sortSideEffects: true,
               },
             ],
-            errors: [
+            output: dedent`
+              import 'aaa'
+              import 'bb'
+              import 'c'
+            `,
+            code: dedent`
+              import 'c'
+              import 'bb'
+              import 'aaa'
+            `,
+          },
+        ],
+        valid: [
+          {
+            options: [
               {
-                messageId: 'unexpectedImportsOrder',
-                data: {
-                  left: 'c',
-                  right: 'bb',
-                },
-              },
-              {
-                messageId: 'unexpectedImportsOrder',
-                data: {
-                  left: 'bb',
-                  right: 'aaa',
-                },
+                ...options,
+                groups: ['external', 'side-effect', 'unknown'],
+                internalPattern: ['^~/.*'],
+                newlinesBetween: 'always',
+                sortSideEffects: false,
               },
             ],
+            code: dedent`
+              import a from 'aaaa'
+
+              import 'bbb'
+              import './cc'
+              import '../d'
+            `,
+          },
+          {
+            options: [
+              {
+                ...options,
+                groups: ['external', 'side-effect', 'unknown'],
+                internalPattern: ['^~/.*'],
+                newlinesBetween: 'always',
+                sortSideEffects: false,
+              },
+            ],
+            code: dedent`
+              import 'c'
+              import 'bb'
+              import 'aaa'
+            `,
           },
         ],
       },
@@ -5493,14 +5493,19 @@ describe(ruleName, () => {
       `${ruleName}(${type}): supports style imports with optional chaining`,
       rule,
       {
-        valid: [
+        invalid: [
           {
-            code: dedent`
-              import b from './b.css?raw'
-              import c from './c.css'
-
-              import a from './a.js'
-            `,
+            errors: [
+              {
+                data: {
+                  leftGroup: 'unknown',
+                  right: './b.css?raw',
+                  rightGroup: 'style',
+                  left: './a.js',
+                },
+                messageId: 'unexpectedImportsGroupOrder',
+              },
+            ],
             options: [
               {
                 ...options,
@@ -5508,21 +5513,21 @@ describe(ruleName, () => {
                 newlinesBetween: 'always',
               },
             ],
-          },
-        ],
-        invalid: [
-          {
-            code: dedent`
-              import a from './a.js'
-              import b from './b.css?raw'
-              import c from './c.css'
-            `,
             output: dedent`
               import b from './b.css?raw'
               import c from './c.css'
 
               import a from './a.js'
             `,
+            code: dedent`
+              import a from './a.js'
+              import b from './b.css?raw'
+              import c from './c.css'
+            `,
+          },
+        ],
+        valid: [
+          {
             options: [
               {
                 ...options,
@@ -5530,17 +5535,12 @@ describe(ruleName, () => {
                 newlinesBetween: 'always',
               },
             ],
-            errors: [
-              {
-                messageId: 'unexpectedImportsGroupOrder',
-                data: {
-                  left: './a.js',
-                  leftGroup: 'unknown',
-                  right: './b.css?raw',
-                  rightGroup: 'style',
-                },
-              },
-            ],
+            code: dedent`
+              import b from './b.css?raw'
+              import c from './c.css'
+
+              import a from './a.js'
+            `,
           },
         ],
       },
@@ -5554,12 +5554,6 @@ describe(ruleName, () => {
       {
         valid: [
           {
-            code: dedent`
-            import type { T } from 't'
-
-            // @ts-expect-error missing types
-            import { t } from 't'
-          `,
             options: [
               {
                 groups: [
@@ -5590,6 +5584,12 @@ describe(ruleName, () => {
                 },
               },
             ],
+            code: dedent`
+            import type { T } from 't'
+
+            // @ts-expect-error missing types
+            import { t } from 't'
+          `,
           },
         ],
         invalid: [],
@@ -5602,6 +5602,31 @@ describe(ruleName, () => {
       `${ruleName}: sets alphabetical asc sorting as default`,
       rule,
       {
+        invalid: [
+          {
+            errors: [
+              {
+                data: {
+                  right: '~/b',
+                  left: '~/c',
+                },
+                messageId: 'unexpectedImportsOrder',
+              },
+            ],
+            output: dedent`
+              import a from '~/a'
+              import b from '~/b'
+              import c from '~/c'
+              import d from '~/d'
+            `,
+            code: dedent`
+              import a from '~/a'
+              import c from '~/c'
+              import b from '~/b'
+              import d from '~/d'
+            `,
+          },
+        ],
         valid: [
           dedent`
             import a from '~/a'
@@ -5617,31 +5642,6 @@ describe(ruleName, () => {
               import { log2 } from './log2'
             `,
             options: [{}],
-          },
-        ],
-        invalid: [
-          {
-            code: dedent`
-              import a from '~/a'
-              import c from '~/c'
-              import b from '~/b'
-              import d from '~/d'
-            `,
-            output: dedent`
-              import a from '~/a'
-              import b from '~/b'
-              import c from '~/c'
-              import d from '~/d'
-            `,
-            errors: [
-              {
-                messageId: 'unexpectedImportsOrder',
-                data: {
-                  left: '~/c',
-                  right: '~/b',
-                },
-              },
-            ],
           },
         ],
       },
@@ -5666,6 +5666,33 @@ describe(ruleName, () => {
       `${ruleName}: defines prefix-only builtin modules as core node modules`,
       rule,
       {
+        invalid: [
+          {
+            errors: [
+              {
+                data: {
+                  left: 'node:fs/promises',
+                  right: 'react',
+                },
+                messageId: 'missedSpacingBetweenImports',
+              },
+            ],
+            output: dedent`
+              import { writeFile } from 'node:fs/promises'
+
+              import { useEffect } from 'react'
+            `,
+            code: dedent`
+              import { writeFile } from 'node:fs/promises'
+              import { useEffect } from 'react'
+            `,
+            options: [
+              {
+                groups: ['builtin', 'external'],
+              },
+            ],
+          },
+        ],
         valid: [
           {
             code: dedent`
@@ -5676,33 +5703,6 @@ describe(ruleName, () => {
             options: [
               {
                 groups: ['builtin', 'external'],
-              },
-            ],
-          },
-        ],
-        invalid: [
-          {
-            code: dedent`
-              import { writeFile } from 'node:fs/promises'
-              import { useEffect } from 'react'
-            `,
-            output: dedent`
-              import { writeFile } from 'node:fs/promises'
-
-              import { useEffect } from 'react'
-            `,
-            options: [
-              {
-                groups: ['builtin', 'external'],
-              },
-            ],
-            errors: [
-              {
-                messageId: 'missedSpacingBetweenImports',
-                data: {
-                  left: 'node:fs/promises',
-                  right: 'react',
-                },
               },
             ],
           },
@@ -5714,6 +5714,45 @@ describe(ruleName, () => {
       `${ruleName}: define side-effect import with internal pattern as side-effect import`,
       rule,
       {
+        invalid: [
+          {
+            errors: [
+              {
+                data: {
+                  left: '~/hooks/useClient',
+                  right: '~/data',
+                },
+                messageId: 'missedSpacingBetweenImports',
+              },
+              {
+                data: {
+                  rightGroup: 'side-effect-style',
+                  right: '~/css/globals.css',
+                  leftGroup: 'side-effect',
+                  left: '~/data',
+                },
+                messageId: 'unexpectedImportsGroupOrder',
+              },
+            ],
+            output: dedent`
+              import { useClient } from '~/hooks/useClient'
+
+              import '~/css/globals.css'
+
+              import '~/data'
+            `,
+            code: dedent`
+              import { useClient } from '~/hooks/useClient'
+              import '~/data'
+              import '~/css/globals.css'
+            `,
+            options: [
+              {
+                groups: ['internal', 'side-effect-style', 'side-effect'],
+              },
+            ],
+          },
+        ],
         valid: [
           {
             code: dedent`
@@ -5726,45 +5765,6 @@ describe(ruleName, () => {
             options: [
               {
                 groups: ['internal', 'side-effect-style', 'side-effect'],
-              },
-            ],
-          },
-        ],
-        invalid: [
-          {
-            code: dedent`
-              import { useClient } from '~/hooks/useClient'
-              import '~/data'
-              import '~/css/globals.css'
-            `,
-            output: dedent`
-              import { useClient } from '~/hooks/useClient'
-
-              import '~/css/globals.css'
-
-              import '~/data'
-            `,
-            options: [
-              {
-                groups: ['internal', 'side-effect-style', 'side-effect'],
-              },
-            ],
-            errors: [
-              {
-                messageId: 'missedSpacingBetweenImports',
-                data: {
-                  left: '~/hooks/useClient',
-                  right: '~/data',
-                },
-              },
-              {
-                messageId: 'unexpectedImportsGroupOrder',
-                data: {
-                  left: '~/data',
-                  leftGroup: 'side-effect',
-                  right: '~/css/globals.css',
-                  rightGroup: 'side-effect-style',
-                },
               },
             ],
           },
@@ -5776,31 +5776,62 @@ describe(ruleName, () => {
       `${ruleName}: works with big amount of custom groups`,
       rule,
       {
-        valid: [
+        invalid: [
           {
-            code: dedent`
-              import { useCartStore } from '~/stores/cartStore.ts'
-              import { useUserStore } from '~/stores/userStore.ts'
-
-              import { getCart } from '~/services/cartService.ts'
-
-              import { connect } from '~/utils/ws.ts'
-              import { formattingDate } from '~/utils/dateTime.ts'
-
-              import { useFetch } from '~/composable/useFetch.ts'
-              import { useDebounce } from '~/composable/useDebounce.ts'
-              import { useMouseMove } from '~/composable/useMouseMove.ts'
-
-              import ComponentA from '~/components/ComponentA.vue'
-              import ComponentB from '~/components/ComponentB.vue'
-              import ComponentC from '~/components/ComponentC.vue'
-
-              import CartComponentA from './cart/CartComponentA.vue'
-              import CartComponentB from './cart/CartComponentB.vue'
-            `,
+            errors: [
+              {
+                data: {
+                  left: './cart/CartComponentB.vue',
+                  right: '~/utils/ws.ts',
+                  leftGroup: 'sibling',
+                  rightGroup: 'utils',
+                },
+                messageId: 'unexpectedImportsGroupOrder',
+              },
+              {
+                data: {
+                  right: '~/services/cartService.ts',
+                  rightGroup: 'services',
+                  left: '~/utils/ws.ts',
+                  leftGroup: 'utils',
+                },
+                messageId: 'unexpectedImportsGroupOrder',
+              },
+              {
+                data: {
+                  left: '~/services/cartService.ts',
+                  right: '~/stores/userStore.ts',
+                  leftGroup: 'services',
+                  rightGroup: 'stores',
+                },
+                messageId: 'unexpectedImportsGroupOrder',
+              },
+              {
+                data: {
+                  left: '~/stores/userStore.ts',
+                  right: '~/utils/dateTime.ts',
+                },
+                messageId: 'missedSpacingBetweenImports',
+              },
+              {
+                data: {
+                  left: '~/composable/useFetch.ts',
+                  right: '~/stores/cartStore.ts',
+                  leftGroup: 'composable',
+                  rightGroup: 'stores',
+                },
+                messageId: 'unexpectedImportsGroupOrder',
+              },
+              {
+                data: {
+                  right: '~/composable/useDebounce.ts',
+                  left: '~/stores/cartStore.ts',
+                },
+                messageId: 'missedSpacingBetweenImports',
+              },
+            ],
             options: [
               {
-                type: 'line-length',
                 groups: [
                   ['builtin', 'external'],
                   'internal',
@@ -5825,46 +5856,24 @@ describe(ruleName, () => {
                 ],
                 customGroups: {
                   value: {
-                    stores: ['^~/stores/.+'],
-                    services: ['^~/services/.+'],
-                    validators: ['^~/validators/.+'],
-                    utils: ['^~/utils/.+'],
-                    logics: ['^~/logics/.+'],
-                    composable: ['^~/composable/.+'],
-                    ui: ['^~/ui/.+'],
-                    components: ['^~/components/.+'],
-                    pages: ['^~/pages/.+'],
-                    widgets: ['^~/widgets/.+'],
-                    assets: ['^~/assets/.+'],
+                    validators: ['~/validators/.+'],
+                    composable: ['~/composable/.+'],
+                    components: ['~/components/.+'],
+                    services: ['~/services/.+'],
+                    widgets: ['~/widgets/.+'],
+                    stores: ['~/stores/.+'],
+                    logics: ['~/logics/.+'],
+                    assets: ['~/assets/.+'],
+                    utils: ['~/utils/.+'],
+                    pages: ['~/pages/.+'],
+                    ui: ['~/ui/.+'],
                   },
                 },
-                newlinesBetween: 'always',
                 internalPattern: ['^~/.*'],
+                newlinesBetween: 'always',
+                type: 'line-length',
               },
             ],
-          },
-        ],
-        invalid: [
-          {
-            code: dedent`
-              import CartComponentA from './cart/CartComponentA.vue'
-              import CartComponentB from './cart/CartComponentB.vue'
-
-              import { connect } from '~/utils/ws.ts'
-              import { getCart } from '~/services/cartService.ts'
-
-              import { useUserStore } from '~/stores/userStore.ts'
-              import { formattingDate } from '~/utils/dateTime.ts'
-
-              import { useFetch } from '~/composable/useFetch.ts'
-              import { useCartStore } from '~/stores/cartStore.ts'
-              import { useDebounce } from '~/composable/useDebounce.ts'
-              import { useMouseMove } from '~/composable/useMouseMove.ts'
-
-              import ComponentA from '~/components/ComponentA.vue'
-              import ComponentB from '~/components/ComponentB.vue'
-              import ComponentC from '~/components/ComponentC.vue'
-            `,
             output: dedent`
               import { useUserStore } from '~/stores/userStore.ts'
               import { useCartStore } from '~/stores/cartStore.ts'
@@ -5885,9 +5894,31 @@ describe(ruleName, () => {
               import CartComponentA from './cart/CartComponentA.vue'
               import CartComponentB from './cart/CartComponentB.vue'
             `,
+            code: dedent`
+              import CartComponentA from './cart/CartComponentA.vue'
+              import CartComponentB from './cart/CartComponentB.vue'
+
+              import { connect } from '~/utils/ws.ts'
+              import { getCart } from '~/services/cartService.ts'
+
+              import { useUserStore } from '~/stores/userStore.ts'
+              import { formattingDate } from '~/utils/dateTime.ts'
+
+              import { useFetch } from '~/composable/useFetch.ts'
+              import { useCartStore } from '~/stores/cartStore.ts'
+              import { useDebounce } from '~/composable/useDebounce.ts'
+              import { useMouseMove } from '~/composable/useMouseMove.ts'
+
+              import ComponentA from '~/components/ComponentA.vue'
+              import ComponentB from '~/components/ComponentB.vue'
+              import ComponentC from '~/components/ComponentC.vue'
+            `,
+          },
+        ],
+        valid: [
+          {
             options: [
               {
-                type: 'line-length',
                 groups: [
                   ['builtin', 'external'],
                   'internal',
@@ -5912,75 +5943,44 @@ describe(ruleName, () => {
                 ],
                 customGroups: {
                   value: {
-                    stores: ['~/stores/.+'],
-                    services: ['~/services/.+'],
-                    validators: ['~/validators/.+'],
-                    utils: ['~/utils/.+'],
-                    logics: ['~/logics/.+'],
-                    composable: ['~/composable/.+'],
-                    ui: ['~/ui/.+'],
-                    components: ['~/components/.+'],
-                    pages: ['~/pages/.+'],
-                    widgets: ['~/widgets/.+'],
-                    assets: ['~/assets/.+'],
+                    validators: ['^~/validators/.+'],
+                    composable: ['^~/composable/.+'],
+                    components: ['^~/components/.+'],
+                    services: ['^~/services/.+'],
+                    widgets: ['^~/widgets/.+'],
+                    stores: ['^~/stores/.+'],
+                    logics: ['^~/logics/.+'],
+                    assets: ['^~/assets/.+'],
+                    utils: ['^~/utils/.+'],
+                    pages: ['^~/pages/.+'],
+                    ui: ['^~/ui/.+'],
                   },
                 },
-                newlinesBetween: 'always',
                 internalPattern: ['^~/.*'],
+                newlinesBetween: 'always',
+                type: 'line-length',
               },
             ],
-            errors: [
-              {
-                messageId: 'unexpectedImportsGroupOrder',
-                data: {
-                  left: './cart/CartComponentB.vue',
-                  leftGroup: 'sibling',
-                  right: '~/utils/ws.ts',
-                  rightGroup: 'utils',
-                },
-              },
-              {
-                messageId: 'unexpectedImportsGroupOrder',
-                data: {
-                  left: '~/utils/ws.ts',
-                  leftGroup: 'utils',
-                  right: '~/services/cartService.ts',
-                  rightGroup: 'services',
-                },
-              },
-              {
-                messageId: 'unexpectedImportsGroupOrder',
-                data: {
-                  left: '~/services/cartService.ts',
-                  leftGroup: 'services',
-                  right: '~/stores/userStore.ts',
-                  rightGroup: 'stores',
-                },
-              },
-              {
-                messageId: 'missedSpacingBetweenImports',
-                data: {
-                  left: '~/stores/userStore.ts',
-                  right: '~/utils/dateTime.ts',
-                },
-              },
-              {
-                messageId: 'unexpectedImportsGroupOrder',
-                data: {
-                  left: '~/composable/useFetch.ts',
-                  leftGroup: 'composable',
-                  right: '~/stores/cartStore.ts',
-                  rightGroup: 'stores',
-                },
-              },
-              {
-                messageId: 'missedSpacingBetweenImports',
-                data: {
-                  left: '~/stores/cartStore.ts',
-                  right: '~/composable/useDebounce.ts',
-                },
-              },
-            ],
+            code: dedent`
+              import { useCartStore } from '~/stores/cartStore.ts'
+              import { useUserStore } from '~/stores/userStore.ts'
+
+              import { getCart } from '~/services/cartService.ts'
+
+              import { connect } from '~/utils/ws.ts'
+              import { formattingDate } from '~/utils/dateTime.ts'
+
+              import { useFetch } from '~/composable/useFetch.ts'
+              import { useDebounce } from '~/composable/useDebounce.ts'
+              import { useMouseMove } from '~/composable/useMouseMove.ts'
+
+              import ComponentA from '~/components/ComponentA.vue'
+              import ComponentB from '~/components/ComponentB.vue'
+              import ComponentC from '~/components/ComponentC.vue'
+
+              import CartComponentA from './cart/CartComponentA.vue'
+              import CartComponentB from './cart/CartComponentB.vue'
+            `,
           },
         ],
       },
@@ -6001,8 +6001,8 @@ describe(ruleName, () => {
             `,
             options: [
               {
-                newlinesBetween: 'never',
                 groups: ['builtin', 'external', 'side-effect'],
+                newlinesBetween: 'never',
               },
             ],
           },
@@ -6022,8 +6022,8 @@ describe(ruleName, () => {
           `,
           options: [
             {
-              newlinesBetween: 'never',
               groups: ['builtin', 'external', 'side-effect'],
+              newlinesBetween: 'never',
             },
           ],
         },
@@ -6039,8 +6039,8 @@ describe(ruleName, () => {
         rule.create({
           options: [
             {
-              groups,
               sortSideEffects,
+              groups,
             },
           ],
         } as Readonly<RuleContext<MESSAGE_ID, Options<string[]>>>)
@@ -6091,15 +6091,10 @@ describe(ruleName, () => {
         {
           valid: [
             {
-              code: dedent`
-                import { x } from 'sort-imports'
-
-                import { a } from './a';
-              `,
               options: [
                 {
-                  tsconfigRootDir: '.',
                   groups: ['internal', 'unknown'],
+                  tsconfigRootDir: '.',
                 },
               ],
               before: () => {
@@ -6107,6 +6102,11 @@ describe(ruleName, () => {
                   baseUrl: './rules/',
                 })
               },
+              code: dedent`
+                import { x } from 'sort-imports'
+
+                import { a } from './a';
+              `,
             },
           ],
           invalid: [],
@@ -6119,17 +6119,17 @@ describe(ruleName, () => {
         {
           valid: [
             {
+              options: [
+                {
+                  groups: ['external', 'unknown'],
+                  tsconfigRootDir: '.',
+                },
+              ],
               code: dedent`
                 import type { ParsedCommandLine } from 'typescript'
 
                 import { a } from './a';
               `,
-              options: [
-                {
-                  tsconfigRootDir: '.',
-                  groups: ['external', 'unknown'],
-                },
-              ],
               before: () => {
                 mockReadClosestTsConfigByPathWith({
                   baseUrl: '.',
@@ -6147,15 +6147,10 @@ describe(ruleName, () => {
         {
           valid: [
             {
-              code: dedent`
-                import { b } from 'b'
-
-                import { a } from './a';
-              `,
               options: [
                 {
-                  tsconfigRootDir: '.',
                   groups: ['external', 'unknown'],
+                  tsconfigRootDir: '.',
                 },
               ],
               before: () => {
@@ -6163,6 +6158,11 @@ describe(ruleName, () => {
                   baseUrl: '.',
                 })
               },
+              code: dedent`
+                import { b } from 'b'
+
+                import { a } from './a';
+              `,
             },
           ],
           invalid: [],
@@ -6175,17 +6175,6 @@ describe(ruleName, () => {
         {
           valid: [
             {
-              code: dedent`
-                import { b } from 'b'
-
-                import { a } from './a';
-              `,
-              options: [
-                {
-                  tsconfigRootDir: '.',
-                  groups: ['external', 'unknown'],
-                },
-              ],
               before: () => {
                 mockReadClosestTsConfigByPathWith(null)
                 vi.spyOn(
@@ -6193,6 +6182,17 @@ describe(ruleName, () => {
                   'getTypescriptImport',
                 ).mockReturnValue(null)
               },
+              options: [
+                {
+                  groups: ['external', 'unknown'],
+                  tsconfigRootDir: '.',
+                },
+              ],
+              code: dedent`
+                import { b } from 'b'
+
+                import { a } from './a';
+              `,
             },
           ],
           invalid: [],
@@ -6208,12 +6208,12 @@ describe(ruleName, () => {
         ).mockReturnValue(
           compilerOptions
             ? {
-                compilerOptions,
                 cache: createModuleResolutionCache(
                   '.',
                   filename => filename,
                   compilerOptions,
                 ),
+                compilerOptions,
               }
             : null,
         )
@@ -6222,148 +6222,137 @@ describe(ruleName, () => {
 
     let eslintDisableRuleTesterName = `${ruleName}: supports 'eslint-disable' for individual nodes`
     ruleTester.run(eslintDisableRuleTesterName, rule, {
-      valid: [],
       invalid: [
         {
-          code: dedent`
-            import { c } from './c'
-            import { b } from './b'
-            // eslint-disable-next-line
-            import { a } from './a'
-          `,
+          errors: [
+            {
+              data: {
+                right: './b',
+                left: './c',
+              },
+              messageId: 'unexpectedImportsOrder',
+            },
+          ],
           output: dedent`
             import { b } from './b'
             import { c } from './c'
+            // eslint-disable-next-line
+            import { a } from './a'
+          `,
+          code: dedent`
+            import { c } from './c'
+            import { b } from './b'
             // eslint-disable-next-line
             import { a } from './a'
           `,
           options: [{}],
-          errors: [
-            {
-              messageId: 'unexpectedImportsOrder',
-              data: {
-                left: './c',
-                right: './b',
-              },
-            },
-          ],
         },
         {
-          code: dedent`
-            import { d } from './d'
-            import { c } from './c'
-            // eslint-disable-next-line
-            import { a } from './a'
-            import { b } from './b'
-          `,
+          errors: [
+            {
+              data: {
+                right: './c',
+                left: './d',
+              },
+              messageId: 'unexpectedImportsOrder',
+            },
+            {
+              data: {
+                right: './b',
+                left: './a',
+              },
+              messageId: 'unexpectedImportsOrder',
+            },
+          ],
           output: dedent`
             import { b } from './b'
             import { c } from './c'
             // eslint-disable-next-line
             import { a } from './a'
             import { d } from './d'
+          `,
+          code: dedent`
+            import { d } from './d'
+            import { c } from './c'
+            // eslint-disable-next-line
+            import { a } from './a'
+            import { b } from './b'
           `,
           options: [
             {
               partitionByComment: true,
             },
           ],
-          errors: [
-            {
-              messageId: 'unexpectedImportsOrder',
-              data: {
-                left: './d',
-                right: './c',
-              },
-            },
-            {
-              messageId: 'unexpectedImportsOrder',
-              data: {
-                left: './a',
-                right: './b',
-              },
-            },
-          ],
         },
         {
-          code: dedent`
-            import { c } from './c'
-            import { b } from './b'
-            import { a } from './a' // eslint-disable-line
-          `,
+          errors: [
+            {
+              data: {
+                right: './b',
+                left: './c',
+              },
+              messageId: 'unexpectedImportsOrder',
+            },
+          ],
           output: dedent`
             import { b } from './b'
             import { c } from './c'
             import { a } from './a' // eslint-disable-line
           `,
-          options: [{}],
-          errors: [
-            {
-              messageId: 'unexpectedImportsOrder',
-              data: {
-                left: './c',
-                right: './b',
-              },
-            },
-          ],
-        },
-        {
           code: dedent`
             import { c } from './c'
             import { b } from './b'
-            /* eslint-disable-next-line */
-            import { a } from './a'
+            import { a } from './a' // eslint-disable-line
           `,
+          options: [{}],
+        },
+        {
+          errors: [
+            {
+              data: {
+                right: './b',
+                left: './c',
+              },
+              messageId: 'unexpectedImportsOrder',
+            },
+          ],
           output: dedent`
             import { b } from './b'
             import { c } from './c'
             /* eslint-disable-next-line */
             import { a } from './a'
           `,
-          options: [{}],
-          errors: [
-            {
-              messageId: 'unexpectedImportsOrder',
-              data: {
-                left: './c',
-                right: './b',
-              },
-            },
-          ],
-        },
-        {
           code: dedent`
             import { c } from './c'
             import { b } from './b'
-            import { a } from './a' /* eslint-disable-line */
+            /* eslint-disable-next-line */
+            import { a } from './a'
           `,
+          options: [{}],
+        },
+        {
+          errors: [
+            {
+              data: {
+                right: './b',
+                left: './c',
+              },
+              messageId: 'unexpectedImportsOrder',
+            },
+          ],
           output: dedent`
             import { b } from './b'
             import { c } from './c'
             import { a } from './a' /* eslint-disable-line */
           `,
-          options: [{}],
-          errors: [
-            {
-              messageId: 'unexpectedImportsOrder',
-              data: {
-                left: './c',
-                right: './b',
-              },
-            },
-          ],
-        },
-        {
           code: dedent`
-            import { d } from './d'
-            import { e } from './e'
-            /* eslint-disable */
             import { c } from './c'
             import { b } from './b'
-            // Shouldn't move
-            /* eslint-enable */
-            import { a } from './a'
+            import { a } from './a' /* eslint-disable-line */
           `,
+          options: [{}],
+        },
+        {
           output: dedent`
             import { a } from './a'
             import { d } from './d'
@@ -6374,110 +6363,130 @@ describe(ruleName, () => {
             /* eslint-enable */
             import { e } from './e'
           `,
-          options: [{}],
+          code: dedent`
+            import { d } from './d'
+            import { e } from './e'
+            /* eslint-disable */
+            import { c } from './c'
+            import { b } from './b'
+            // Shouldn't move
+            /* eslint-enable */
+            import { a } from './a'
+          `,
           errors: [
             {
-              messageId: 'unexpectedImportsOrder',
               data: {
-                left: './b',
                 right: './a',
+                left: './b',
               },
+              messageId: 'unexpectedImportsOrder',
             },
           ],
+          options: [{}],
         },
         {
-          code: dedent`
-            import { c } from './c'
-            import { b } from './b'
-            // eslint-disable-next-line @rule-tester/${eslintDisableRuleTesterName}
-            import { a } from './a'
-          `,
           output: dedent`
             import { b } from './b'
             import { c } from './c'
             // eslint-disable-next-line @rule-tester/${eslintDisableRuleTesterName}
             import { a } from './a'
           `,
-          options: [{}],
-          errors: [
-            {
-              messageId: 'unexpectedImportsOrder',
-              data: {
-                left: './c',
-                right: './b',
-              },
-            },
-          ],
-        },
-        {
           code: dedent`
             import { c } from './c'
             import { b } from './b'
-            import { a } from './a' // eslint-disable-line @rule-tester/${eslintDisableRuleTesterName}
+            // eslint-disable-next-line @rule-tester/${eslintDisableRuleTesterName}
+            import { a } from './a'
           `,
+          errors: [
+            {
+              data: {
+                right: './b',
+                left: './c',
+              },
+              messageId: 'unexpectedImportsOrder',
+            },
+          ],
+          options: [{}],
+        },
+        {
           output: dedent`
             import { b } from './b'
             import { c } from './c'
             import { a } from './a' // eslint-disable-line @rule-tester/${eslintDisableRuleTesterName}
           `,
-          options: [{}],
+          code: dedent`
+            import { c } from './c'
+            import { b } from './b'
+            import { a } from './a' // eslint-disable-line @rule-tester/${eslintDisableRuleTesterName}
+          `,
           errors: [
             {
-              messageId: 'unexpectedImportsOrder',
               data: {
-                left: './c',
                 right: './b',
+                left: './c',
               },
+              messageId: 'unexpectedImportsOrder',
             },
           ],
+          options: [{}],
         },
         {
+          output: dedent`
+            import { b } from './b'
+            import { c } from './c'
+            /* eslint-disable-next-line @rule-tester/${eslintDisableRuleTesterName} */
+            import { a } from './a'
+          `,
           code: dedent`
             import { c } from './c'
             import { b } from './b'
             /* eslint-disable-next-line @rule-tester/${eslintDisableRuleTesterName} */
             import { a } from './a'
           `,
+          errors: [
+            {
+              data: {
+                right: './b',
+                left: './c',
+              },
+              messageId: 'unexpectedImportsOrder',
+            },
+          ],
+          options: [{}],
+        },
+        {
           output: dedent`
             import { b } from './b'
             import { c } from './c'
-            /* eslint-disable-next-line @rule-tester/${eslintDisableRuleTesterName} */
-            import { a } from './a'
+            import { a } from './a' /* eslint-disable-line @rule-tester/${eslintDisableRuleTesterName} */
           `,
-          options: [{}],
-          errors: [
-            {
-              messageId: 'unexpectedImportsOrder',
-              data: {
-                left: './c',
-                right: './b',
-              },
-            },
-          ],
-        },
-        {
           code: dedent`
             import { c } from './c'
             import { b } from './b'
             import { a } from './a' /* eslint-disable-line @rule-tester/${eslintDisableRuleTesterName} */
           `,
-          output: dedent`
-            import { b } from './b'
-            import { c } from './c'
-            import { a } from './a' /* eslint-disable-line @rule-tester/${eslintDisableRuleTesterName} */
-          `,
-          options: [{}],
           errors: [
             {
-              messageId: 'unexpectedImportsOrder',
               data: {
-                left: './c',
                 right: './b',
+                left: './c',
               },
+              messageId: 'unexpectedImportsOrder',
             },
           ],
+          options: [{}],
         },
         {
+          output: dedent`
+            import { a } from './a'
+            import { d } from './d'
+            /* eslint-disable @rule-tester/${eslintDisableRuleTesterName} */
+            import { c } from './c'
+            import { b } from './b'
+            // Shouldn't move
+            /* eslint-enable */
+            import { e } from './e'
+          `,
           code: dedent`
             import { d } from './d'
             import { e } from './e'
@@ -6488,28 +6497,19 @@ describe(ruleName, () => {
             /* eslint-enable */
             import { a } from './a'
           `,
-          output: dedent`
-            import { a } from './a'
-            import { d } from './d'
-            /* eslint-disable @rule-tester/${eslintDisableRuleTesterName} */
-            import { c } from './c'
-            import { b } from './b'
-            // Shouldn't move
-            /* eslint-enable */
-            import { e } from './e'
-          `,
-          options: [{}],
           errors: [
             {
-              messageId: 'unexpectedImportsOrder',
               data: {
-                left: './b',
                 right: './a',
+                left: './b',
               },
+              messageId: 'unexpectedImportsOrder',
             },
           ],
+          options: [{}],
         },
       ],
+      valid: [],
     })
   })
 })

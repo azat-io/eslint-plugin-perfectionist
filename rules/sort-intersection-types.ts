@@ -32,11 +32,19 @@ import { makeFixes } from '../utils/make-fixes'
 import { complete } from '../utils/complete'
 import { pairwise } from '../utils/pairwise'
 
-type MESSAGE_ID =
-  | 'missedSpacingBetweenIntersectionTypes'
-  | 'unexpectedIntersectionTypesGroupOrder'
-  | 'extraSpacingBetweenIntersectionTypes'
-  | 'unexpectedIntersectionTypesOrder'
+type Options = [
+  Partial<{
+    type: 'alphabetical' | 'line-length' | 'natural'
+    partitionByComment: string[] | boolean | string
+    newlinesBetween: 'ignore' | 'always' | 'never'
+    specialCharacters: 'remove' | 'trim' | 'keep'
+    locales: NonNullable<Intl.LocalesArgument>
+    groups: (Group[] | Group)[]
+    partitionByNewLine: boolean
+    order: 'desc' | 'asc'
+    ignoreCase: boolean
+  }>,
+]
 
 type Group =
   | 'intersection'
@@ -53,73 +61,25 @@ type Group =
   | 'tuple'
   | 'union'
 
-type Options = [
-  Partial<{
-    type: 'alphabetical' | 'line-length' | 'natural'
-    partitionByComment: string[] | boolean | string
-    newlinesBetween: 'ignore' | 'always' | 'never'
-    specialCharacters: 'remove' | 'trim' | 'keep'
-    locales: NonNullable<Intl.LocalesArgument>
-    groups: (Group[] | Group)[]
-    partitionByNewLine: boolean
-    order: 'desc' | 'asc'
-    ignoreCase: boolean
-  }>,
-]
+type MESSAGE_ID =
+  | 'missedSpacingBetweenIntersectionTypes'
+  | 'unexpectedIntersectionTypesGroupOrder'
+  | 'extraSpacingBetweenIntersectionTypes'
+  | 'unexpectedIntersectionTypesOrder'
 
 let defaultOptions: Required<Options[0]> = {
-  type: 'alphabetical',
-  ignoreCase: true,
   specialCharacters: 'keep',
-  order: 'asc',
   newlinesBetween: 'ignore',
   partitionByComment: false,
   partitionByNewLine: false,
-  groups: [],
+  type: 'alphabetical',
+  ignoreCase: true,
   locales: 'en-US',
+  order: 'asc',
+  groups: [],
 }
 
 export default createEslintRule<Options, MESSAGE_ID>({
-  name: 'sort-intersection-types',
-  meta: {
-    type: 'suggestion',
-    docs: {
-      description: 'Enforce sorted intersection types.',
-    },
-    fixable: 'code',
-    schema: [
-      {
-        type: 'object',
-        properties: {
-          type: typeJsonSchema,
-          order: orderJsonSchema,
-          locales: localesJsonSchema,
-          ignoreCase: ignoreCaseJsonSchema,
-          specialCharacters: specialCharactersJsonSchema,
-          groups: groupsJsonSchema,
-          partitionByComment: {
-            ...partitionByCommentJsonSchema,
-            description:
-              'Allows you to use comments to separate the intersection types members into logical groups.',
-          },
-          partitionByNewLine: partitionByNewLineJsonSchema,
-          newlinesBetween: newlinesBetweenJsonSchema,
-        },
-        additionalProperties: false,
-      },
-    ],
-    messages: {
-      unexpectedIntersectionTypesGroupOrder:
-        'Expected "{{right}}" ({{rightGroup}}) to come before "{{left}}" ({{leftGroup}}).',
-      unexpectedIntersectionTypesOrder:
-        'Expected "{{right}}" to come before "{{left}}".',
-      missedSpacingBetweenIntersectionTypes:
-        'Missed spacing between "{{left}}" and "{{right}}" types.',
-      extraSpacingBetweenIntersectionTypes:
-        'Extra spacing between "{{left}}" and "{{right}}" types.',
-    },
-  },
-  defaultOptions: [defaultOptions],
   create: context => ({
     TSIntersectionType: node => {
       let settings = getSettings(context.settings)
@@ -149,13 +109,13 @@ export default createEslintRule<Options, MESSAGE_ID>({
 
       let sourceCode = getSourceCode(context)
       let eslintDisabledLines = getEslintDisabledLines({
-        sourceCode,
         ruleName: context.id,
+        sourceCode,
       })
 
       let formattedMembers: SortingNode[][] = node.types.reduce(
         (accumulator: SortingNode[][], type) => {
-          let { getGroup, defineGroup } = useGroups(options)
+          let { defineGroup, getGroup } = useGroups(options)
 
           switch (type.type) {
             case 'TSTemplateLiteralType':
@@ -217,10 +177,10 @@ export default createEslintRule<Options, MESSAGE_ID>({
 
           let lastSortingNode = accumulator.at(-1)?.at(-1)
           let sortingNode: SortingNode = {
-            name: sourceCode.getText(type),
-            size: rangeToDiff(type, sourceCode),
-            group: getGroup(),
             isEslintDisabled: isNodeEslintDisabled(type, eslintDisabledLines),
+            size: rangeToDiff(type, sourceCode),
+            name: sourceCode.getText(type),
+            group: getGroup(),
             node: type,
           }
           if (
@@ -277,47 +237,89 @@ export default createEslintRule<Options, MESSAGE_ID>({
           messageIds = [
             ...messageIds,
             ...getNewlinesErrors({
-              left,
-              leftNum: leftNumber,
-              right,
-              rightNum: rightNumber,
-              sourceCode,
               missedSpacingError: 'missedSpacingBetweenIntersectionTypes',
               extraSpacingError: 'extraSpacingBetweenIntersectionTypes',
+              rightNum: rightNumber,
+              leftNum: leftNumber,
+              sourceCode,
               options,
+              right,
+              left,
             }),
           ]
 
           for (let messageId of messageIds) {
             context.report({
-              messageId,
+              fix: fixer => [
+                ...makeFixes({
+                  sortedNodes: sortedNodesExcludingEslintDisabled,
+                  sourceCode,
+                  options,
+                  fixer,
+                  nodes,
+                }),
+                ...makeNewlinesFixes({
+                  sortedNodes: sortedNodesExcludingEslintDisabled,
+                  sourceCode,
+                  options,
+                  fixer,
+                  nodes,
+                }),
+              ],
               data: {
-                left: toSingleLine(left.name),
-                leftGroup: left.group,
                 right: toSingleLine(right.name),
+                left: toSingleLine(left.name),
                 rightGroup: right.group,
+                leftGroup: left.group,
               },
               node: right.node,
-              fix: fixer => [
-                ...makeFixes(
-                  fixer,
-                  nodes,
-                  sortedNodesExcludingEslintDisabled,
-                  sourceCode,
-                  options,
-                ),
-                ...makeNewlinesFixes(
-                  fixer,
-                  nodes,
-                  sortedNodesExcludingEslintDisabled,
-                  sourceCode,
-                  options,
-                ),
-              ],
+              messageId,
             })
           }
         })
       }
     },
   }),
+  meta: {
+    schema: [
+      {
+        properties: {
+          partitionByComment: {
+            ...partitionByCommentJsonSchema,
+            description:
+              'Allows you to use comments to separate the intersection types members into logical groups.',
+          },
+          partitionByNewLine: partitionByNewLineJsonSchema,
+          specialCharacters: specialCharactersJsonSchema,
+          newlinesBetween: newlinesBetweenJsonSchema,
+          ignoreCase: ignoreCaseJsonSchema,
+          locales: localesJsonSchema,
+          groups: groupsJsonSchema,
+          order: orderJsonSchema,
+          type: typeJsonSchema,
+        },
+        additionalProperties: false,
+        type: 'object',
+      },
+    ],
+    messages: {
+      unexpectedIntersectionTypesGroupOrder:
+        'Expected "{{right}}" ({{rightGroup}}) to come before "{{left}}" ({{leftGroup}}).',
+      missedSpacingBetweenIntersectionTypes:
+        'Missed spacing between "{{left}}" and "{{right}}" types.',
+      extraSpacingBetweenIntersectionTypes:
+        'Extra spacing between "{{left}}" and "{{right}}" types.',
+      unexpectedIntersectionTypesOrder:
+        'Expected "{{right}}" to come before "{{left}}".',
+    },
+    docs: {
+      url: 'https://perfectionist.dev/rules/sort-intersection-types',
+      description: 'Enforce sorted intersection types.',
+      recommended: true,
+    },
+    type: 'suggestion',
+    fixable: 'code',
+  },
+  defaultOptions: [defaultOptions],
+  name: 'sort-intersection-types',
 })

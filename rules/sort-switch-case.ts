@@ -22,8 +22,6 @@ import { pairwise } from '../utils/pairwise'
 import { complete } from '../utils/complete'
 import { compare } from '../utils/compare'
 
-type MESSAGE_ID = 'unexpectedSwitchCaseOrder'
-
 type Options = [
   Partial<{
     type: 'alphabetical' | 'line-length' | 'natural'
@@ -38,41 +36,17 @@ interface SortSwitchCaseSortingNode extends SortingNode<TSESTree.SwitchCase> {
   isDefaultClause: boolean
 }
 
+type MESSAGE_ID = 'unexpectedSwitchCaseOrder'
+
 let defaultOptions: Required<Options[0]> = {
+  specialCharacters: 'keep',
   type: 'alphabetical',
   ignoreCase: true,
-  specialCharacters: 'keep',
-  order: 'asc',
   locales: 'en-US',
+  order: 'asc',
 }
 
 export default createEslintRule<Options, MESSAGE_ID>({
-  name: 'sort-switch-case',
-  meta: {
-    type: 'suggestion',
-    docs: {
-      description: 'Enforce sorted switch cases.',
-    },
-    fixable: 'code',
-    schema: [
-      {
-        type: 'object',
-        properties: {
-          type: typeJsonSchema,
-          order: orderJsonSchema,
-          locales: localesJsonSchema,
-          ignoreCase: ignoreCaseJsonSchema,
-          specialCharacters: specialCharactersJsonSchema,
-        },
-        additionalProperties: false,
-      },
-    ],
-    messages: {
-      unexpectedSwitchCaseOrder:
-        'Expected "{{right}}" to come before "{{left}}".',
-    },
-  },
-  defaultOptions: [defaultOptions],
   create: context => ({
     SwitchStatement: switchNode => {
       if (!isSortable(switchNode.cases)) {
@@ -101,9 +75,9 @@ export default createEslintRule<Options, MESSAGE_ID>({
           if (caseNode.test) {
             accumulator.at(-1)!.push({
               size: rangeToDiff(caseNode.test, sourceCode),
-              node: caseNode.test,
-              isEslintDisabled: false,
               name: getCaseName(sourceCode, caseNode),
+              isEslintDisabled: false,
+              node: caseNode.test,
             })
           }
           if (
@@ -136,19 +110,19 @@ export default createEslintRule<Options, MESSAGE_ID>({
           }
 
           context.report({
-            messageId: 'unexpectedSwitchCaseOrder',
-            data: {
-              left: left.name,
-              right: right.name,
-            },
-            node: right.node,
             fix: fixer =>
-              makeFixes(
-                fixer,
-                caseNodesSortingNodeGroup,
-                sortedCaseNameSortingNodes,
+              makeFixes({
+                sortedNodes: sortedCaseNameSortingNodes,
+                nodes: caseNodesSortingNodeGroup,
                 sourceCode,
-              ),
+                fixer,
+              }),
+            data: {
+              right: right.name,
+              left: left.name,
+            },
+            messageId: 'unexpectedSwitchCaseOrder',
+            node: right.node,
           })
         })
       }
@@ -158,11 +132,11 @@ export default createEslintRule<Options, MESSAGE_ID>({
           size: caseNode.test
             ? rangeToDiff(caseNode.test, sourceCode)
             : 'default'.length,
-          node: caseNode,
-          isEslintDisabled: false,
-          isDefaultClause: !caseNode.test,
           name: getCaseName(sourceCode, caseNode),
           addSafetySemicolonWhenInline: true,
+          isDefaultClause: !caseNode.test,
+          isEslintDisabled: false,
+          node: caseNode,
         }),
       )
 
@@ -183,12 +157,6 @@ export default createEslintRule<Options, MESSAGE_ID>({
         )!
         let lastCase = sortingNodesGroupWithDefault.at(-1)!
         context.report({
-          messageId: 'unexpectedSwitchCaseOrder',
-          data: {
-            left: defaultCase.name,
-            right: lastCase.name,
-          },
-          node: defaultCase.node,
           fix: fixer => {
             let punctuatorAfterLastCase = sourceCode.getTokenAfter(
               lastCase.node.test!,
@@ -206,20 +174,26 @@ export default createEslintRule<Options, MESSAGE_ID>({
                 lastCaseRange,
                 sourceCode.getText(defaultCase.node),
               ),
-              ...makeCommentAfterFixes(
-                fixer,
-                defaultCase.node,
-                punctuatorAfterLastCase,
+              ...makeCommentAfterFixes({
+                sortedNode: punctuatorAfterLastCase,
+                node: defaultCase.node,
                 sourceCode,
-              ),
-              ...makeCommentAfterFixes(
                 fixer,
-                punctuatorAfterLastCase,
-                defaultCase.node,
+              }),
+              ...makeCommentAfterFixes({
+                node: punctuatorAfterLastCase,
+                sortedNode: defaultCase.node,
                 sourceCode,
-              ),
+                fixer,
+              }),
             ]
           },
+          data: {
+            left: defaultCase.name,
+            right: lastCase.name,
+          },
+          messageId: 'unexpectedSwitchCaseOrder',
+          node: defaultCase.node,
         })
       }
 
@@ -266,25 +240,53 @@ export default createEslintRule<Options, MESSAGE_ID>({
           return
         }
         context.report({
-          messageId: 'unexpectedSwitchCaseOrder',
-          data: {
-            left: left.name,
-            right: right.name,
-          },
-          node: right.node,
           fix: fixer =>
             hasUnsortedNodes
               ? [] // Raise errors but only sort on second iteration
-              : makeFixes(
-                  fixer,
-                  sortingNodeGroupsForBlockSortFlat,
-                  sortedSortingNodeGroupsForBlockSort,
+              : makeFixes({
+                  sortedNodes: sortedSortingNodeGroupsForBlockSort,
+                  nodes: sortingNodeGroupsForBlockSortFlat,
                   sourceCode,
-                ),
+                  fixer,
+                }),
+          data: {
+            right: right.name,
+            left: left.name,
+          },
+          messageId: 'unexpectedSwitchCaseOrder',
+          node: right.node,
         })
       })
     },
   }),
+  meta: {
+    schema: [
+      {
+        properties: {
+          specialCharacters: specialCharactersJsonSchema,
+          ignoreCase: ignoreCaseJsonSchema,
+          locales: localesJsonSchema,
+          order: orderJsonSchema,
+          type: typeJsonSchema,
+        },
+        additionalProperties: false,
+        type: 'object',
+      },
+    ],
+    docs: {
+      url: 'https://perfectionist.dev/rules/sort-switch-case',
+      description: 'Enforce sorted switch cases.',
+      recommended: true,
+    },
+    messages: {
+      unexpectedSwitchCaseOrder:
+        'Expected "{{right}}" to come before "{{left}}".',
+    },
+    type: 'suggestion',
+    fixable: 'code',
+  },
+  defaultOptions: [defaultOptions],
+  name: 'sort-switch-case',
 })
 
 let getCaseName = (

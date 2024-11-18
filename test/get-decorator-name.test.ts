@@ -11,11 +11,11 @@ describe('get-decorator-name', () => {
       expect(
         getDecoratorName({
           expression: {
-            type: AST_NODE_TYPES.CallExpression,
             callee: {
-              name: 'decoratorName',
               type: AST_NODE_TYPES.Identifier,
+              name: 'decoratorName',
             },
+            type: AST_NODE_TYPES.CallExpression,
           },
           type: AST_NODE_TYPES.Decorator,
         } as TSESTree.Decorator),
@@ -26,10 +26,10 @@ describe('get-decorator-name', () => {
       expect(() =>
         getDecoratorName({
           expression: {
-            type: AST_NODE_TYPES.CallExpression,
             callee: {
               name: 'decoratorName',
             },
+            type: AST_NODE_TYPES.CallExpression,
           },
           type: AST_NODE_TYPES.Decorator,
         } as TSESTree.Decorator),
