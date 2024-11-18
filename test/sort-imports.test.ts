@@ -2904,8 +2904,8 @@ describe(ruleName, () => {
           {
             code: dedent`
               import type { T } from '../t'
-              import type { U } from '~/u'
               import type { V } from 'v'
+              import type { U } from '~/u'
             `,
             options: [
               {
@@ -2927,14 +2927,14 @@ describe(ruleName, () => {
             code: dedent`
               import type { T } from '../t'
 
-              import type { U } from '~/u'
-
               import type { V } from 'v'
+
+              import type { U } from '~/u'
             `,
             output: dedent`
               import type { T } from '../t'
-              import type { U } from '~/u'
               import type { V } from 'v'
+              import type { U } from '~/u'
             `,
             options: [
               {
@@ -2954,14 +2954,14 @@ describe(ruleName, () => {
                 messageId: 'extraSpacingBetweenImports',
                 data: {
                   left: '../t',
-                  right: '~/u',
+                  right: 'v',
                 },
               },
               {
                 messageId: 'extraSpacingBetweenImports',
                 data: {
-                  left: '~/u',
-                  right: 'v',
+                  left: 'v',
+                  right: '~/u',
                 },
               },
             ],

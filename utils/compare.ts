@@ -1,10 +1,11 @@
-import naturalCompare from 'natural-compare-lite'
+import { compare as createNaturalCompare } from 'natural-orderby'
 
 import type { SortingNode } from '../typings'
 
 interface BaseCompareOptions {
   /**
-   * Custom function to get the value of the node. By default, returns the node's name.
+   * Custom function to get the value of the node. By default, returns the
+   * node's name.
    */
   nodeValueGetter?: ((node: SortingNode) => string) | null
   order: 'desc' | 'asc'
@@ -24,6 +25,7 @@ interface LineLengthCompareOptions extends BaseCompareOptions {
 
 interface NaturalCompareOptions extends BaseCompareOptions {
   specialCharacters: 'remove' | 'trim' | 'keep'
+  locales: NonNullable<Intl.LocalesArgument>
   ignoreCase: boolean
   type: 'natural'
 }
@@ -42,7 +44,6 @@ export let compare = (
   let sortingFunction: (a: SortingNode, b: SortingNode) => number
   let nodeValueGetter =
     options.nodeValueGetter ?? ((node: SortingNode) => node.name)
-
   if (options.type === 'alphabetical') {
     let formatString = getFormatStringFunction(
       options.ignoreCase,
@@ -54,23 +55,19 @@ export let compare = (
         options.locales,
       )
   } else if (options.type === 'natural') {
-    let prepareNumeric = (string: string): string => {
-      let formattedNumberPattern = /^[+-]?[\d ,_]+(?:\.[\d ,_]+)?$/u
-      if (formattedNumberPattern.test(string)) {
-        return string.replaceAll(/[ ,_]/gu, '')
-      }
-      return string
-    }
-    sortingFunction = (aNode, bNode) => {
-      let formatString = getFormatStringFunction(
-        options.ignoreCase,
-        options.specialCharacters,
+    let naturalCompare = createNaturalCompare({
+      locale: options.locales.toString(),
+      order: options.order,
+    })
+    let formatString = getFormatStringFunction(
+      options.ignoreCase,
+      options.specialCharacters,
+    )
+    sortingFunction = (aNode, bNode) =>
+      naturalCompare(
+        formatString(nodeValueGetter(aNode)),
+        formatString(nodeValueGetter(bNode)),
       )
-      return naturalCompare(
-        prepareNumeric(formatString(nodeValueGetter(aNode))),
-        prepareNumeric(formatString(nodeValueGetter(bNode))),
-      )
-    }
   } else {
     sortingFunction = (aNode, bNode) => {
       let aSize = aNode.size
