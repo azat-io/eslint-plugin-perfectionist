@@ -8,11 +8,6 @@ export default eslintConfig({
     eslintPlugin,
     {
       rules: {
-        'unicorn/no-array-for-each': 'off',
-      },
-    },
-    {
-      rules: {
         'perfectionist/sort-objects': 'off',
       },
       files: ['**/test/**', '**/rules/**', '**/utils/**'],

@@ -161,9 +161,13 @@ export default createEslintRule<Options, MESSAGE_ID>({
           }
 
           if ('elements' in nodeValue) {
-            nodeValue.elements
-              .filter(currentNode => currentNode !== null)
-              .forEach(traverseNode)
+            let elements = nodeValue.elements.filter(
+              currentNode => currentNode !== null,
+            )
+
+            for (let element of elements) {
+              traverseNode(element)
+            }
           }
 
           if ('argument' in nodeValue && nodeValue.argument) {
@@ -171,15 +175,21 @@ export default createEslintRule<Options, MESSAGE_ID>({
           }
 
           if ('arguments' in nodeValue) {
-            nodeValue.arguments.forEach(traverseNode)
+            for (let argument of nodeValue.arguments) {
+              traverseNode(argument)
+            }
           }
 
           if ('properties' in nodeValue) {
-            nodeValue.properties.forEach(traverseNode)
+            for (let property of nodeValue.properties) {
+              traverseNode(property)
+            }
           }
 
           if ('expressions' in nodeValue) {
-            nodeValue.expressions.forEach(traverseNode)
+            for (let nodeExpression of nodeValue.expressions) {
+              traverseNode(nodeExpression)
+            }
           }
         }
 

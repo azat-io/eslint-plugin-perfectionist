@@ -569,9 +569,13 @@ let extractDependencies = (
     }
 
     if ('elements' in nodeValue) {
-      nodeValue.elements
-        .filter(currentNode => currentNode !== null)
-        .forEach(checkNode)
+      let elements = nodeValue.elements.filter(
+        currentNode => currentNode !== null,
+      )
+
+      for (let element of elements) {
+        traverseNode(element)
+      }
     }
 
     if ('argument' in nodeValue && nodeValue.argument) {
@@ -579,15 +583,21 @@ let extractDependencies = (
     }
 
     if ('arguments' in nodeValue) {
-      nodeValue.arguments.forEach(checkNode)
+      for (let argument of nodeValue.arguments) {
+        checkNode(argument)
+      }
     }
 
     if ('declarations' in nodeValue) {
-      nodeValue.declarations.forEach(checkNode)
+      for (let declaration of nodeValue.declarations) {
+        checkNode(declaration)
+      }
     }
 
     if ('properties' in nodeValue) {
-      nodeValue.properties.forEach(checkNode)
+      for (let property of nodeValue.properties) {
+        checkNode(property)
+      }
     }
 
     if (
@@ -600,13 +610,17 @@ let extractDependencies = (
     }
 
     if ('expressions' in nodeValue) {
-      nodeValue.expressions.forEach(checkNode)
+      for (let nodeExpression of nodeValue.expressions) {
+        checkNode(nodeExpression)
+      }
     }
   }
 
   let traverseNode = (nodeValue: TSESTree.Node[] | TSESTree.Node): void => {
     if (Array.isArray(nodeValue)) {
-      nodeValue.forEach(traverseNode)
+      for (let nodeItem of nodeValue) {
+        traverseNode(nodeItem)
+      }
     } else {
       checkNode(nodeValue)
     }
