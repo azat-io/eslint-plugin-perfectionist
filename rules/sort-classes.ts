@@ -716,20 +716,20 @@ export default createEslintRule<SortClassesOptions, MESSAGE_ID>({
             },
             node: right.node,
             fix: (fixer: TSESLint.RuleFixer) => [
-              ...makeFixes(
+              ...makeFixes({
                 fixer,
                 nodes,
-                sortedNodesExcludingEslintDisabled,
+                sortedNodes: sortedNodesExcludingEslintDisabled,
                 sourceCode,
                 options,
-              ),
-              ...makeNewlinesFixes(
+              }),
+              ...makeNewlinesFixes({
                 fixer,
                 nodes,
-                sortedNodesExcludingEslintDisabled,
+                sortedNodes: sortedNodesExcludingEslintDisabled,
                 sourceCode,
                 options,
-              ),
+              }),
             ],
           })
         }

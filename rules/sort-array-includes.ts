@@ -224,13 +224,13 @@ export let sortArray = <MessageIds extends string>(
         },
         node: right.node,
         fix: fixer =>
-          makeFixes(
+          makeFixes({
             fixer,
             nodes,
-            sortedNodesExcludingEslintDisabled,
+            sortedNodes: sortedNodesExcludingEslintDisabled,
             sourceCode,
             options,
-          ),
+          }),
       })
     })
   }

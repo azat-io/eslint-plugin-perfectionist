@@ -5,15 +5,23 @@ import type { SortingNode } from '../typings'
 import { makeCommentAfterFixes } from './make-comment-after-fixes'
 import { getNodeRange } from './get-node-range'
 
-export let makeFixes = (
-  fixer: TSESLint.RuleFixer,
-  nodes: SortingNode[],
-  sortedNodes: SortingNode[],
-  sourceCode: TSESLint.SourceCode,
-  additionalOptions?: {
+interface MakeFixesParameters {
+  options?: {
     partitionByComment: string[] | boolean | string
-  },
-): TSESLint.RuleFix[] => {
+  }
+  sourceCode: TSESLint.SourceCode
+  sortedNodes: SortingNode[]
+  fixer: TSESLint.RuleFixer
+  nodes: SortingNode[]
+}
+
+export let makeFixes = ({
+  fixer,
+  nodes,
+  sortedNodes,
+  sourceCode,
+  options,
+}: MakeFixesParameters): TSESLint.RuleFix[] => {
   let fixes: TSESLint.RuleFix[] = []
 
   for (let max = nodes.length, i = 0; i < max; i++) {
@@ -27,7 +35,7 @@ export let makeFixes = (
     }
 
     let sortedNodeCode = sourceCode.text.slice(
-      ...getNodeRange(sortedNode, sourceCode, additionalOptions),
+      ...getNodeRange(sortedNode, sourceCode, options),
     )
     let sortedNodeText = sourceCode.getText(sortedNode)
     let tokensAfter = sourceCode.getTokensAfter(node, {
@@ -52,13 +60,18 @@ export let makeFixes = (
     }
     fixes.push(
       fixer.replaceTextRange(
-        getNodeRange(node, sourceCode, additionalOptions),
+        getNodeRange(node, sourceCode, options),
         sortedNodeCode,
       ),
     )
     fixes = [
       ...fixes,
-      ...makeCommentAfterFixes(fixer, node, sortedNode, sourceCode),
+      ...makeCommentAfterFixes({
+        fixer,
+        node,
+        sortedNode,
+        sourceCode,
+      }),
     ]
   }
 

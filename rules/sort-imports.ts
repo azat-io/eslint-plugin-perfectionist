@@ -689,20 +689,20 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
                 },
                 node: right.node,
                 fix: fixer => [
-                  ...makeFixes(
+                  ...makeFixes({
                     fixer,
-                    nodeList,
-                    sortedNodesExcludingEslintDisabled,
+                    nodes: nodeList,
+                    sortedNodes: sortedNodesExcludingEslintDisabled,
                     sourceCode,
                     options,
-                  ),
-                  ...makeNewlinesFixes(
+                  }),
+                  ...makeNewlinesFixes({
                     fixer,
-                    nodeList,
-                    sortedNodesExcludingEslintDisabled,
+                    nodes: nodeList,
+                    sortedNodes: sortedNodesExcludingEslintDisabled,
                     sourceCode,
                     options,
-                  ),
+                  }),
                 ],
               })
             }

@@ -177,7 +177,12 @@ let sortHeritageClauses = (
       },
       node: right.node,
       fix: fixer =>
-        makeFixes(fixer, nodes, sortedNodesExcludingEslintDisabled, sourceCode),
+        makeFixes({
+          fixer,
+          nodes,
+          sortedNodes: sortedNodesExcludingEslintDisabled,
+          sourceCode,
+        }),
     })
   })
 }

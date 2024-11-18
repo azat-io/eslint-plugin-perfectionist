@@ -145,12 +145,12 @@ export default createEslintRule<Options, MESSAGE_ID>({
             },
             node: right.node,
             fix: fixer =>
-              makeFixes(
+              makeFixes({
                 fixer,
-                caseNodesSortingNodeGroup,
-                sortedCaseNameSortingNodes,
+                nodes: caseNodesSortingNodeGroup,
+                sortedNodes: sortedCaseNameSortingNodes,
                 sourceCode,
-              ),
+              }),
           })
         })
       }
@@ -208,18 +208,18 @@ export default createEslintRule<Options, MESSAGE_ID>({
                 lastCaseRange,
                 sourceCode.getText(defaultCase.node),
               ),
-              ...makeCommentAfterFixes(
+              ...makeCommentAfterFixes({
                 fixer,
-                defaultCase.node,
-                punctuatorAfterLastCase,
+                node: defaultCase.node,
+                sortedNode: punctuatorAfterLastCase,
                 sourceCode,
-              ),
-              ...makeCommentAfterFixes(
+              }),
+              ...makeCommentAfterFixes({
                 fixer,
-                punctuatorAfterLastCase,
-                defaultCase.node,
+                node: punctuatorAfterLastCase,
+                sortedNode: defaultCase.node,
                 sourceCode,
-              ),
+              }),
             ]
           },
         })
@@ -277,12 +277,12 @@ export default createEslintRule<Options, MESSAGE_ID>({
           fix: fixer =>
             hasUnsortedNodes
               ? [] // Raise errors but only sort on second iteration
-              : makeFixes(
+              : makeFixes({
                   fixer,
-                  sortingNodeGroupsForBlockSortFlat,
-                  sortedSortingNodeGroupsForBlockSort,
+                  nodes: sortingNodeGroupsForBlockSortFlat,
+                  sortedNodes: sortedSortingNodeGroupsForBlockSort,
                   sourceCode,
-                ),
+                }),
         })
       })
     },

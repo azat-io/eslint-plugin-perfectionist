@@ -8,7 +8,6 @@ export default eslintConfig({
     eslintPlugin,
     {
       rules: {
-        '@typescript-eslint/max-params': 'off',
         'unicorn/no-array-for-each': 'off',
       },
     },
