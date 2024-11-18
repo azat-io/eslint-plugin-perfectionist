@@ -166,7 +166,7 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
               } else {
                 name = sourceCode.text.slice(
                   member.range.at(0),
-                  member.typeAnnotation?.range.at(0),
+                  member.typeAnnotation?.range.at(0) ?? member.range.at(1),
                 )
               }
             } else if (member.type === 'TSIndexSignature') {
