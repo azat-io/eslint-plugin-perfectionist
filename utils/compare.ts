@@ -107,12 +107,16 @@ let getFormatStringFunction =
     }
     switch (specialCharacters) {
       case 'remove':
-        // eslint-disable-next-line regexp/no-obscure-range
-        valueToCompare = valueToCompare.replaceAll(/[^a-zà-öø-ÿ]+/giu, '')
+        valueToCompare = valueToCompare.replaceAll(
+          /[^a-z\u{C0}-\u{24F}\u{1E00}-\u{1EFF}]+/giu,
+          '',
+        )
         break
       case 'trim':
-        // eslint-disable-next-line regexp/no-obscure-range
-        valueToCompare = valueToCompare.replaceAll(/^[^a-zà-öø-ÿ]+/giu, '')
+        valueToCompare = valueToCompare.replaceAll(
+          /^[^a-z\u{C0}-\u{24F}\u{1E00}-\u{1EFF}]+/giu,
+          '',
+        )
         break
     }
     return valueToCompare.replaceAll(/\s/gu, '')
