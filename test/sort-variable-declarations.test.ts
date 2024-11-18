@@ -1028,7 +1028,7 @@ describe(ruleName, () => {
         valid: [
           {
             code: dedent`
-              const [c] = C, { bb } = B, aaa
+              const [c] = C, aaa, { bb } = B
             `,
             options: [options],
           },
@@ -1039,17 +1039,10 @@ describe(ruleName, () => {
               const aaa, { bb } = B, [c] = C
             `,
             output: dedent`
-              const [c] = C, { bb } = B, aaa
+              const [c] = C, aaa, { bb } = B
             `,
             options: [options],
             errors: [
-              {
-                messageId: 'unexpectedVariableDeclarationsOrder',
-                data: {
-                  left: 'aaa',
-                  right: '{ bb }',
-                },
-              },
               {
                 messageId: 'unexpectedVariableDeclarationsOrder',
                 data: {

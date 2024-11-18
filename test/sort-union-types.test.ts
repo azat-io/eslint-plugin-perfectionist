@@ -1193,8 +1193,8 @@ describe(ruleName, () => {
               | boolean
               | keyof A
               | typeof B
-              | 'aaa'
               | 1
+              | 'aaa'
               | (new () => SomeClass)
               | (import('path'))
               | (A extends B ? C : D)
@@ -1254,8 +1254,8 @@ describe(ruleName, () => {
               | boolean
               | keyof A
               | typeof B
-              | 'aaa'
               | 1
+              | 'aaa'
               | (import('path'))
               | (A extends B ? C : D)
               | { name: 'a' }
