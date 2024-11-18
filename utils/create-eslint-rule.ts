@@ -1,6 +1,6 @@
 import { ESLintUtils } from '@typescript-eslint/utils'
 
-interface ESLintPluginDocumentation {
+export interface ESLintPluginDocumentation {
   recommended?: boolean
 }
 
