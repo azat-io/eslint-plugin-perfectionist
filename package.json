@@ -50,7 +50,7 @@
     "@azat-io/eslint-config": "^2.0.0",
     "@typescript-eslint/types": "^8.14.0",
     "@typescript-eslint/utils": "^8.14.0",
-    "natural-compare-lite": "^1.4.0"
+    "natural-orderby": "^5.0.0"
   },
   "devDependencies": {
     "@astrojs/check": "^0.9.4",
@@ -66,7 +66,6 @@
     "@poppanator/sveltekit-svg": "5.0.0",
     "@shikijs/transformers": "^1.22.2",
     "@types/mdast": "^4.0.4",
-    "@types/natural-compare-lite": "^1.4.2",
     "@types/node": "^22.9.0",
     "@types/unist": "^3.0.3",
     "@typescript-eslint/parser": "^8.14.0",

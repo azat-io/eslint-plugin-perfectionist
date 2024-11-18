@@ -1275,10 +1275,10 @@ describe(ruleName, () => {
           {
             code: dedent`
               type Type = {
+                [8]: Value
                 [...values]
                 [[data]]: string
                 [name in v]?
-                [8]: Value
                 arrowFunc?: () => void
                 func(): void
               }
@@ -1300,16 +1300,23 @@ describe(ruleName, () => {
             `,
             output: dedent`
               type Type = {
+                [8]: Value
                 [...values]
                 [[data]]: string
                 [name in v]?
-                [8]: Value
                 arrowFunc?: () => void
                 func(): void
               }
             `,
             options: [options],
             errors: [
+              {
+                messageId: 'unexpectedObjectTypesOrder',
+                data: {
+                  left: '[name in v]?',
+                  right: '8',
+                },
+              },
               {
                 messageId: 'unexpectedObjectTypesOrder',
                 data: {
