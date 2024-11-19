@@ -2496,96 +2496,100 @@ describe(ruleName, () => {
       ],
       invalid: [],
     })
-  })
 
-  ruleTester.run(`${ruleName}: default should be last`, rule, {
-    invalid: [
-      {
-        output: dedent`
-          switch (value) {
-            case 'aa':
-              return true
-            case 'b':
-              return true
-            default:
-              return false
-          }
-        `,
-        code: dedent`
-          switch (value) {
-            case 'aa':
-              return true
-            default:
-              return false
-            case 'b':
-              return true
-          }
-        `,
-        errors: [
-          {
-            data: {
-              left: 'default',
-              right: 'b',
+    ruleTester.run(`${ruleName}: default should be last`, rule, {
+      invalid: [
+        {
+          output: dedent`
+            switch (value) {
+              case 'aa':
+                return true
+              case 'b':
+                return true
+              default:
+                return false
+            }
+          `,
+          code: dedent`
+            switch (value) {
+              case 'aa':
+                return true
+              default:
+                return false
+              case 'b':
+                return true
+            }
+          `,
+          errors: [
+            {
+              data: {
+                left: 'default',
+                right: 'b',
+              },
+              messageId: 'unexpectedSwitchCaseOrder',
             },
-            messageId: 'unexpectedSwitchCaseOrder',
+          ],
+        },
+      ],
+      valid: [],
+    })
+
+    ruleTester.run(
+      `${ruleName}: handles default case and default clause`,
+      rule,
+      {
+        invalid: [
+          {
+            output: dedent`
+              switch (variable) {
+                case 'add':
+                  break
+                case 'default':
+                  break
+                case 'remove':
+                  break
+                default:
+                  break
+                }
+              `,
+            code: dedent`
+              switch (variable) {
+                case 'default':
+                  break
+                case 'add':
+                  break
+                case 'remove':
+                  break
+                default:
+                  break
+                }
+              `,
+            errors: [
+              {
+                data: {
+                  left: 'default',
+                  right: 'add',
+                },
+                messageId: 'unexpectedSwitchCaseOrder',
+              },
+            ],
           },
         ],
-      },
-    ],
-    valid: [],
-  })
-
-  ruleTester.run(`${ruleName}: handles default case and default clause`, rule, {
-    invalid: [
-      {
-        output: dedent`
-        switch (variable) {
-          case 'add':
-            break
-          case 'default':
-            break
-          case 'remove':
-            break
-          default:
-            break
-          }
-        `,
-        code: dedent`
-        switch (variable) {
-          case 'default':
-            break
-          case 'add':
-            break
-          case 'remove':
-            break
-          default:
-            break
-          }
-        `,
-        errors: [
-          {
-            data: {
-              left: 'default',
-              right: 'add',
-            },
-            messageId: 'unexpectedSwitchCaseOrder',
-          },
+        valid: [
+          dedent`
+            switch (variable) {
+              case 'add':
+                break
+              case 'default':
+                break
+              case 'remove':
+                break
+              default:
+                break
+              }
+            `,
         ],
       },
-    ],
-    valid: [
-      dedent`
-        switch (variable) {
-          case 'add':
-            break
-          case 'default':
-            break
-          case 'remove':
-            break
-          default:
-            break
-          }
-        `,
-    ],
+    )
   })
 })
