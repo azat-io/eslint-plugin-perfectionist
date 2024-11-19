@@ -19,6 +19,7 @@ import { isNodeEslintDisabled } from '../utils/is-node-eslint-disabled'
 import { hasPartitionComment } from '../utils/is-partition-comment'
 import { sortNodesByGroups } from '../utils/sort-nodes-by-groups'
 import { getCommentsBefore } from '../utils/get-comments-before'
+import { getNodeDecorators } from '../utils/get-node-decorators'
 import { createEslintRule } from '../utils/create-eslint-rule'
 import { getDecoratorName } from '../utils/get-decorator-name'
 import { getGroupNumber } from '../utils/get-group-number'
@@ -163,19 +164,31 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
       },
       PropertyDefinition: propertyDefinition =>
         options.sortOnProperties
-          ? sortDecorators(context, options, propertyDefinition.decorators)
+          ? sortDecorators(
+              context,
+              options,
+              getNodeDecorators(propertyDefinition),
+            )
           : null,
       AccessorProperty: accessorDefinition =>
         options.sortOnAccessors
-          ? sortDecorators(context, options, accessorDefinition.decorators)
+          ? sortDecorators(
+              context,
+              options,
+              getNodeDecorators(accessorDefinition),
+            )
           : null,
       MethodDefinition: methodDefinition =>
         options.sortOnMethods
-          ? sortDecorators(context, options, methodDefinition.decorators)
+          ? sortDecorators(
+              context,
+              options,
+              getNodeDecorators(methodDefinition),
+            )
           : null,
-      ClassDeclaration: Declaration =>
+      ClassDeclaration: declaration =>
         options.sortOnClasses
-          ? sortDecorators(context, options, Declaration.decorators)
+          ? sortDecorators(context, options, getNodeDecorators(declaration))
           : null,
     }
   },
