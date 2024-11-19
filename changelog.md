@@ -1,5 +1,57 @@
 # Changelog
 
+## v4.0.0
+
+[compare changes](https://github.com/azat-io/eslint-plugin-perfectionist/compare/v3.9.1...v4.0.0)
+
+### 🚀 Features
+
+- ⚠️ Remove sort-astro-attributes, sort-svelte-attributes and sort-vue-attributes ([0430412](https://github.com/azat-io/eslint-plugin-perfectionist/commit/0430412))
+- **sort-classes:** ⚠️ Update default grouping ([97adf51](https://github.com/azat-io/eslint-plugin-perfectionist/commit/97adf51))
+- Add sort-decorators rule ([8fd2c4e](https://github.com/azat-io/eslint-plugin-perfectionist/commit/8fd2c4e))
+- Support arbitrary module identifiers ([5557198](https://github.com/azat-io/eslint-plugin-perfectionist/commit/5557198))
+- **sort-objects:** Add multiline and method groups ([1f454d9](https://github.com/azat-io/eslint-plugin-perfectionist/commit/1f454d9))
+- Adds newlines between option ([7f44e80](https://github.com/azat-io/eslint-plugin-perfectionist/commit/7f44e80))
+- Add sort-heritage-clauses rule ([90dfb15](https://github.com/azat-io/eslint-plugin-perfectionist/commit/90dfb15))
+- **sort-classes:** ⚠️ Remove support for old custom groups api ([93e0b53](https://github.com/azat-io/eslint-plugin-perfectionist/commit/93e0b53))
+- **sort-switch-case:** Improve sorting nodes with comments ([140c2c8](https://github.com/azat-io/eslint-plugin-perfectionist/commit/140c2c8))
+- ⚠️ Remove minimatch in favor of regexp ([e240971](https://github.com/azat-io/eslint-plugin-perfectionist/commit/e240971))
+- Add locales option for all rules ([f84cb5f](https://github.com/azat-io/eslint-plugin-perfectionist/commit/f84cb5f))
+- **sort-classes:** Add partition by new line and newlines between options ([4369803](https://github.com/azat-io/eslint-plugin-perfectionist/commit/4369803))
+- **sort-imports:** Resolve aliased imports through tsconfig.json ([9ac3188](https://github.com/azat-io/eslint-plugin-perfectionist/commit/9ac3188))
+- **sort-imports:** ⚠️ Add partition by new line and partition by comment options ([6812e2b](https://github.com/azat-io/eslint-plugin-perfectionist/commit/6812e2b))
+- **sort-classes:** Adds ignore callback dependencies patterns option ([90a9132](https://github.com/azat-io/eslint-plugin-perfectionist/commit/90a9132))
+- Add eslint disable directives handling ([a485c39](https://github.com/azat-io/eslint-plugin-perfectionist/commit/a485c39))
+- Add sort-modules rule ([950db4e](https://github.com/azat-io/eslint-plugin-perfectionist/commit/950db4e))
+- **sort-classes:** Add async modifier ([be0b68f](https://github.com/azat-io/eslint-plugin-perfectionist/commit/be0b68f))
+- ⚠️ Move from natural-compare-lite to natural-orderby ([cdc0f2e](https://github.com/azat-io/eslint-plugin-perfectionist/commit/cdc0f2e))
+
+### 🐞 Bug Fixes
+
+- Respect comment boundaries with partitioning by comments ([e5279ac](https://github.com/azat-io/eslint-plugin-perfectionist/commit/e5279ac))
+- Improve ending commas and semicolon behavior ([a3804b8](https://github.com/azat-io/eslint-plugin-perfectionist/commit/a3804b8))
+- Make types compatible with eslint types ([c9a48dd](https://github.com/azat-io/eslint-plugin-perfectionist/commit/c9a48dd))
+- **sort-switch-case:** Fix ignoring breaks in case statements ([960e21c](https://github.com/azat-io/eslint-plugin-perfectionist/commit/960e21c))
+- **sort-classes:** Fix # properties not being detected as dependencies ([0cf84ae](https://github.com/azat-io/eslint-plugin-perfectionist/commit/0cf84ae))
+- Support optional chaining imports ([932c5c9](https://github.com/azat-io/eslint-plugin-perfectionist/commit/932c5c9))
+- **sort-classes:** Fix inline issue with declare class ([59ee21c](https://github.com/azat-io/eslint-plugin-perfectionist/commit/59ee21c))
+- **sort-object-types:** Fix getting key name ([eb81e69](https://github.com/azat-io/eslint-plugin-perfectionist/commit/eb81e69))
+
+#### ⚠️ Breaking Changes
+
+- ⚠️ Remove sort-astro-attributes, sort-svelte-attributes and sort-vue-attributes ([0430412](https://github.com/azat-io/eslint-plugin-perfectionist/commit/0430412))
+- **sort-classes:** ⚠️ Update default grouping ([97adf51](https://github.com/azat-io/eslint-plugin-perfectionist/commit/97adf51))
+- **sort-classes:** ⚠️ Remove support for old custom groups api ([93e0b53](https://github.com/azat-io/eslint-plugin-perfectionist/commit/93e0b53))
+- ⚠️ Remove minimatch in favor of regexp ([e240971](https://github.com/azat-io/eslint-plugin-perfectionist/commit/e240971))
+- **sort-imports:** ⚠️ Add partition by new line and partition by comment options ([6812e2b](https://github.com/azat-io/eslint-plugin-perfectionist/commit/6812e2b))
+- ⚠️ Move from natural-compare-lite to natural-orderby ([cdc0f2e](https://github.com/azat-io/eslint-plugin-perfectionist/commit/cdc0f2e))
+
+### ❤️ Contributors
+
+- Azat S. ([@azat-io](http://github.com/azat-io))
+- Hugo ([@hugop95](http://github.com/hugop95))
+- Fkworld ([@fkworld](http://github.com/fkworld))
+
 ## v3.9.1
 
 [compare changes](https://github.com/azat-io/eslint-plugin-perfectionist/compare/v3.9.0...v3.9.1)
