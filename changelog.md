@@ -1,5 +1,17 @@
 # Changelog
 
+## v4.0.2
+
+[compare changes](https://github.com/azat-io/eslint-plugin-perfectionist/compare/v4.0.1...v4.0.2)
+
+### 🐞 Bug Fixes
+
+- **sort-imports:** Sort default internal pattern ([a4bfc2b](https://github.com/azat-io/eslint-plugin-perfectionist/commit/a4bfc2b))
+
+### ❤️ Contributors
+
+- Azat S. <to@azat.io>
+
 ## v4.0.1
 
 [compare changes](https://github.com/azat-io/eslint-plugin-perfectionist/compare/v4.0.0...v4.0.1)
