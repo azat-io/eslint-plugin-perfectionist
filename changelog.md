@@ -1,5 +1,18 @@
 # Changelog
 
+## v4.0.3
+
+[compare changes](https://github.com/azat-io/eslint-plugin-perfectionist/compare/v4.0.2...v4.0.3)
+
+### 🐞 Bug Fixes
+
+- **sort-modules:** Handle deprecated eslint enum attributes ([979ece8](https://github.com/azat-io/eslint-plugin-perfectionist/commit/979ece8))
+- Fix runtime errors in non-typescript eslint projects ([84cddf7](https://github.com/azat-io/eslint-plugin-perfectionist/commit/84cddf7))
+
+### ❤️ Contributors
+
+- Hugo ([@hugop95](http://github.com/hugop95))
+
 ## v4.0.2
 
 [compare changes](https://github.com/azat-io/eslint-plugin-perfectionist/compare/v4.0.1...v4.0.2)
