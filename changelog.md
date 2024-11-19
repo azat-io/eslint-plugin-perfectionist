@@ -1,5 +1,20 @@
 # Changelog
 
+## v4.0.1
+
+[compare changes](https://github.com/azat-io/eslint-plugin-perfectionist/compare/v4.0.0...v4.0.1)
+
+### 🐞 Bug Fixes
+
+- Fix peer dependencies issues ([3eba895](https://github.com/azat-io/eslint-plugin-perfectionist/commit/3eba895))
+- Fix peer dependencies issues ([191902a](https://github.com/azat-io/eslint-plugin-perfectionist/commit/191902a))
+- **sort-modules:** Disable sorting for export decorated classes ([84de1d4](https://github.com/azat-io/eslint-plugin-perfectionist/commit/84de1d4))
+
+### ❤️ Contributors
+
+- Hugo ([@hugop95](http://github.com/hugop95))
+- Hugo.prunaux <hugo.prunaux@gmail.com>
+
 ## v4.0.0
 
 [compare changes](https://github.com/azat-io/eslint-plugin-perfectionist/compare/v3.9.1...v4.0.0)
