@@ -46,6 +46,7 @@ import { getCommentsBefore } from '../utils/get-comments-before'
 import { createEslintRule } from '../utils/create-eslint-rule'
 import { getLinesBetween } from '../utils/get-lines-between'
 import { getGroupNumber } from '../utils/get-group-number'
+import { getEnumMembers } from '../utils/get-enum-members'
 import { getSourceCode } from '../utils/get-source-code'
 import { toSingleLine } from '../utils/to-single-line'
 import { rangeToDiff } from '../utils/range-to-diff'
@@ -288,7 +289,7 @@ let analyzeModule = ({
           ;({ name } = nodeToParse.id)
           dependencies = [
             ...dependencies,
-            ...extractDependencies(nodeToParse.body),
+            ...getEnumMembers(nodeToParse).flatMap(extractDependencies),
           ]
           break
         case AST_NODE_TYPES.ClassDeclaration:
@@ -483,7 +484,7 @@ let analyzeModule = ({
 }
 
 let extractDependencies = (
-  expression: TSESTree.TSEnumBody | TSESTree.ClassBody,
+  expression: TSESTree.TSEnumMember | TSESTree.ClassBody,
 ): string[] => {
   let dependencies: string[] = []
 
@@ -567,10 +568,6 @@ let extractDependencies = (
 
     if ('right' in nodeValue) {
       checkNode(nodeValue.right)
-    }
-
-    if ('members' in nodeValue) {
-      traverseNode(nodeValue.members)
     }
 
     if ('initializer' in nodeValue && nodeValue.initializer) {
