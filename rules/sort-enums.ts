@@ -22,6 +22,7 @@ import { hasPartitionComment } from '../utils/is-partition-comment'
 import { getCommentsBefore } from '../utils/get-comments-before'
 import { createEslintRule } from '../utils/create-eslint-rule'
 import { getLinesBetween } from '../utils/get-lines-between'
+import { getEnumMembers } from '../utils/get-enum-members'
 import { getSourceCode } from '../utils/get-source-code'
 import { toSingleLine } from '../utils/to-single-line'
 import { rangeToDiff } from '../utils/range-to-diff'
@@ -65,7 +66,7 @@ export default createEslintRule<Options, MESSAGE_ID>({
     TSEnumDeclaration: node => {
       /* v8 ignore next 2 */
       // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
-      let members = node.body.members ?? node.members ?? []
+      let members = getEnumMembers(node) ?? []
       if (
         !isSortable(members) ||
         !members.every(({ initializer }) => initializer)
