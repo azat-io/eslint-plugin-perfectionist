@@ -64,9 +64,7 @@ let defaultOptions: Required<Options[0]> = {
 export default createEslintRule<Options, MESSAGE_ID>({
   create: context => ({
     TSEnumDeclaration: node => {
-      /* v8 ignore next 2 */
-      // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
-      let members = getEnumMembers(node) ?? []
+      let members = getEnumMembers(node)
       if (
         !isSortable(members) ||
         !members.every(({ initializer }) => initializer)

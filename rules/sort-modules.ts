@@ -570,10 +570,6 @@ let extractDependencies = (
       checkNode(nodeValue.right)
     }
 
-    if ('members' in nodeValue) {
-      traverseNode(nodeValue.members)
-    }
-
     if ('initializer' in nodeValue && nodeValue.initializer) {
       checkNode(nodeValue.initializer)
     }
