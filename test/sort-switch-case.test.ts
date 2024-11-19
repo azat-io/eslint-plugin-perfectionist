@@ -1,4 +1,7 @@
+import type { Rule } from 'eslint'
+
 import { RuleTester } from '@typescript-eslint/rule-tester'
+import { RuleTester as EslintRuleTester } from 'eslint'
 import { afterAll, describe, it } from 'vitest'
 import { dedent } from 'ts-dedent'
 
@@ -15,6 +18,7 @@ describe(ruleName, () => {
   RuleTester.it = it
 
   let ruleTester = new RuleTester()
+  let eslintRuleTester = new EslintRuleTester()
 
   describe(`${ruleName}: sorting by alphabetical order`, () => {
     let type = 'alphabetical-order'
@@ -2589,6 +2593,29 @@ describe(ruleName, () => {
               }
             `,
         ],
+      },
+    )
+
+    eslintRuleTester.run(
+      `${ruleName}: handles non typescript-eslint parser`,
+      rule as unknown as Rule.RuleModule,
+      {
+        valid: [
+          {
+            code: dedent`
+              switch (variable) {
+                case 'a':
+                case 'b':
+                  break
+                case 'c':
+                default:
+                  break
+                }
+            `,
+            options: [{}],
+          },
+        ],
+        invalid: [],
       },
     )
   })
