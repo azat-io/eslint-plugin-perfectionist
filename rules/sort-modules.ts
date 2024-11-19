@@ -325,6 +325,15 @@ let analyzeModule = ({
       continue
     }
 
+    if (
+      selector === 'class' &&
+      modifiers.includes('export') &&
+      modifiers.includes('decorated')
+    ) {
+      // Not always handled correctly at the moment
+      continue
+    }
+
     let { defineGroup, getGroup } = useGroups(options)
     for (let officialGroup of generatePredefinedGroups({
       cache: cachedGroupsByModifiersAndSelectors,

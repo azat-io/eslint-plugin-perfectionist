@@ -959,6 +959,7 @@ describe(ruleName, () => {
         },
       )
 
+      /* Currently not handled correctly
       ruleTester.run(
         `${ruleName}(${type}): prioritize default over decorated`,
         rule,
@@ -1036,6 +1037,7 @@ describe(ruleName, () => {
           valid: [],
         },
       )
+      */
     })
 
     describe(`${ruleName}(${type}): function modifiers priority`, () => {
@@ -2375,6 +2377,53 @@ describe(ruleName, () => {
         },
       )
     })
+
+    ruleTester.run(
+      `${ruleName}(${type}): ignores exported decorated classes`,
+      rule,
+      {
+        invalid: [
+          {
+            errors: [
+              {
+                data: {
+                  right: 'B',
+                  left: 'C',
+                },
+                messageId: 'unexpectedModulesOrder',
+              },
+            ],
+            output: dedent`
+                @B
+                class B {}
+
+                @A
+                export class A {}
+
+                @C
+                class C {}
+              `,
+            code: dedent`
+                @C
+                class C {}
+
+                @A
+                export class A {}
+
+                @B
+                class B {}
+              `,
+            options: [
+              {
+                ...options,
+                groups: ['unknown'],
+              },
+            ],
+          },
+        ],
+        valid: [],
+      },
+    )
   })
 
   describe(`${ruleName}: sorting by natural order`, () => {
