@@ -114,9 +114,10 @@ let sortHeritageClauses = (
   options: Required<Options<string[]>[0]>,
   heritageClauses:
     | TSESTree.TSInterfaceHeritage[]
-    | TSESTree.TSClassImplements[],
+    | TSESTree.TSClassImplements[]
+    | undefined,
 ): void => {
-  if (!isSortable(heritageClauses)) {
+  if (!heritageClauses || !isSortable(heritageClauses)) {
     return
   }
   let sourceCode = getSourceCode(context)

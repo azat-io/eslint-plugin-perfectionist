@@ -43,6 +43,7 @@ import { sortNodesByGroups } from '../utils/sort-nodes-by-groups'
 import { getNewlinesErrors } from '../utils/get-newlines-errors'
 import { makeNewlinesFixes } from '../utils/make-newlines-fixes'
 import { getCommentsBefore } from '../utils/get-comments-before'
+import { getNodeDecorators } from '../utils/get-node-decorators'
 import { createEslintRule } from '../utils/create-eslint-rule'
 import { getLinesBetween } from '../utils/get-lines-between'
 import { getGroupNumber } from '../utils/get-group-number'
@@ -295,10 +296,12 @@ let analyzeModule = ({
         case AST_NODE_TYPES.ClassDeclaration:
           selector = 'class'
           name = nodeToParse.id?.name
-          if (nodeToParse.decorators.length > 0) {
+          // eslint-disable-next-line no-case-declarations -- Easier to handle
+          let nodeDecorators = getNodeDecorators(nodeToParse)
+          if (nodeDecorators.length > 0) {
             modifiers.push('decorated')
           }
-          for (let decorator of nodeToParse.decorators) {
+          for (let decorator of nodeDecorators) {
             if (decorator.expression.type === 'Identifier') {
               decorators.push(decorator.expression.name)
             } else if (
