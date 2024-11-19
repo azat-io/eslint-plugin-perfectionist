@@ -3,10 +3,12 @@ import type {
   RuleContext,
 } from '@typescript-eslint/utils/ts-eslint'
 import type { CompilerOptions } from 'typescript'
+import type { Rule } from 'eslint'
 
 import { afterAll, describe, expect, it, vi } from 'vitest'
 import { RuleTester } from '@typescript-eslint/rule-tester'
 import { createModuleResolutionCache } from 'typescript'
+import { RuleTester as EslintRuleTester } from 'eslint'
 import { dedent } from 'ts-dedent'
 
 import type { MESSAGE_ID, Options } from '../rules/sort-imports'
@@ -26,6 +28,7 @@ describe(ruleName, () => {
   RuleTester.it = it
 
   let ruleTester = new RuleTester()
+  let eslintRuleTester = new EslintRuleTester()
 
   describe(`${ruleName}: sorting by alphabetical order`, () => {
     let type = 'alphabetical-order'
@@ -6511,5 +6514,24 @@ describe(ruleName, () => {
       ],
       valid: [],
     })
+
+    eslintRuleTester.run(
+      `${ruleName}: handles non typescript-eslint parser`,
+      rule as unknown as Rule.RuleModule,
+      {
+        valid: [
+          {
+            code: dedent`
+              import { d } from '~./d.scss'
+              import { a } from 'a'
+              import * as b from 'b'
+              import { c } from 'c'
+            `,
+            options: [{}],
+          },
+        ],
+        invalid: [],
+      },
+    )
   })
 })
