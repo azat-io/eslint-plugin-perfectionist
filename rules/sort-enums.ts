@@ -49,6 +49,11 @@ export type Options = [
 
 type MESSAGE_ID = 'unexpectedEnumsDependencyOrder' | 'unexpectedEnumsOrder'
 
+interface SortEnumsSortingNode
+  extends SortingNodeWithDependencies<TSESTree.TSEnumMember> {
+  numericValue: number | null
+}
+
 let defaultOptions: Required<Options[0]> = {
   partitionByComment: false,
   partitionByNewLine: false,
@@ -63,8 +68,8 @@ let defaultOptions: Required<Options[0]> = {
 
 export default createEslintRule<Options, MESSAGE_ID>({
   create: context => ({
-    TSEnumDeclaration: node => {
-      let members = getEnumMembers(node)
+    TSEnumDeclaration: enumDeclaration => {
+      let members = getEnumMembers(enumDeclaration)
       if (
         !isSortable(members) ||
         !members.every(({ initializer }) => initializer)
@@ -116,11 +121,14 @@ export default createEslintRule<Options, MESSAGE_ID>({
         checkNode(expression)
         return dependencies
       }
-      let formattedMembers: SortingNodeWithDependencies[][] = members.reduce(
-        (accumulator: SortingNodeWithDependencies[][], member) => {
+      let formattedMembers: SortEnumsSortingNode[][] = members.reduce(
+        (accumulator: SortEnumsSortingNode[][], member) => {
           let dependencies: string[] = []
           if (member.initializer) {
-            dependencies = extractDependencies(member.initializer, node.id.name)
+            dependencies = extractDependencies(
+              member.initializer,
+              enumDeclaration.id.name,
+            )
           }
           let lastSortingNode = accumulator.at(-1)?.at(-1)
           let sortingNode: SortingNodeWithDependencies = {
@@ -157,7 +165,7 @@ export default createEslintRule<Options, MESSAGE_ID>({
           member.initializer?.type === 'Literal' &&
           typeof member.initializer.value === 'number',
       )
-      let compareOptions: CompareOptions = {
+      let compareOptions: CompareOptions<SortEnumsSortingNode> = {
         // Get the enum value rather than the name if needed
         nodeValueGetter:
           options.sortByValue || (isNumericEnum && options.forceNumericSort)
@@ -184,7 +192,7 @@ export default createEslintRule<Options, MESSAGE_ID>({
 
       let sortNodesIgnoringEslintDisabledNodes = (
         ignoreEslintDisabledNodes: boolean,
-      ): SortingNodeWithDependencies[] =>
+      ): SortEnumsSortingNode[] =>
         sortNodesByDependencies(
           formattedMembers.flatMap(nodes =>
             sortNodes(nodes, compareOptions, {
@@ -198,9 +206,8 @@ export default createEslintRule<Options, MESSAGE_ID>({
       let sortedNodes = sortNodesIgnoringEslintDisabledNodes(false)
       let sortedNodesExcludingEslintDisabled =
         sortNodesIgnoringEslintDisabledNodes(true)
-      let nodes = formattedMembers.flat()
 
-      pairwise(nodes, (left, right) => {
+      pairwise(sortingNodes, (left, right) => {
         let indexOfLeft = sortedNodes.indexOf(left)
         let indexOfRight = sortedNodes.indexOf(right)
         let indexOfRightExcludingEslintDisabled =
@@ -213,15 +220,15 @@ export default createEslintRule<Options, MESSAGE_ID>({
         }
 
         let firstUnorderedNodeDependentOnRight =
-          getFirstUnorderedNodeDependentOn(right, nodes)
+          getFirstUnorderedNodeDependentOn(right, sortingNodes)
         context.report({
           fix: fixer =>
             makeFixes({
               sortedNodes: sortedNodesExcludingEslintDisabled,
+              nodes: sortingNodes,
               sourceCode,
               options,
               fixer,
-              nodes,
             }),
           data: {
             nodeDependentOnRight: firstUnorderedNodeDependentOnRight?.name,

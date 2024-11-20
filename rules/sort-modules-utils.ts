@@ -5,6 +5,7 @@ import type {
   Modifier,
   Selector,
 } from './sort-modules.types'
+import type { SortingNodeWithDependencies } from '../utils/sort-nodes-by-dependencies'
 import type { CompareOptions } from '../utils/compare'
 
 import { matches } from '../utils/matches'
@@ -89,7 +90,7 @@ export let customGroupMatches = (props: CustomGroupMatchesProps): boolean => {
 export let getCompareOptions = (
   options: Required<SortModulesOptions[0]>,
   groupNumber: number,
-): CompareOptions | null => {
+): CompareOptions<SortingNodeWithDependencies> | null => {
   let group = options.groups[groupNumber]
   let customGroup =
     typeof group === 'string'

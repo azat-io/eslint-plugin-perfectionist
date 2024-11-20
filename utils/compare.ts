@@ -2,48 +2,50 @@ import { compare as createNaturalCompare } from 'natural-orderby'
 
 import type { SortingNode } from '../typings'
 
-export type CompareOptions =
-  | AlphabeticalCompareOptions
-  | LineLengthCompareOptions
-  | NaturalCompareOptions
+export type CompareOptions<T extends SortingNode> =
+  | AlphabeticalCompareOptions<T>
+  | LineLengthCompareOptions<T>
+  | NaturalCompareOptions<T>
 
-interface BaseCompareOptions {
+interface BaseCompareOptions<T extends SortingNode> {
   /**
    * Custom function to get the value of the node. By default, returns the
    * node's name.
    */
-  nodeValueGetter?: ((node: SortingNode) => string) | null
+  nodeValueGetter?: ((node: T) => string) | null
   order: 'desc' | 'asc'
 }
 
-interface AlphabeticalCompareOptions extends BaseCompareOptions {
+interface AlphabeticalCompareOptions<T extends SortingNode>
+  extends BaseCompareOptions<T> {
   specialCharacters: 'remove' | 'trim' | 'keep'
   locales: NonNullable<Intl.LocalesArgument>
   type: 'alphabetical'
   ignoreCase: boolean
 }
 
-interface NaturalCompareOptions extends BaseCompareOptions {
+interface NaturalCompareOptions<T extends SortingNode>
+  extends BaseCompareOptions<T> {
   specialCharacters: 'remove' | 'trim' | 'keep'
   locales: NonNullable<Intl.LocalesArgument>
   ignoreCase: boolean
   type: 'natural'
 }
 
-interface LineLengthCompareOptions extends BaseCompareOptions {
+interface LineLengthCompareOptions<T extends SortingNode>
+  extends BaseCompareOptions<T> {
   maxLineLength?: number
   type: 'line-length'
 }
 
-export let compare = (
-  a: SortingNode,
-  b: SortingNode,
-  options: CompareOptions,
+export let compare = <T extends SortingNode>(
+  a: T,
+  b: T,
+  options: CompareOptions<T>,
 ): number => {
   let orderCoefficient = options.order === 'asc' ? 1 : -1
-  let sortingFunction: (a: SortingNode, b: SortingNode) => number
-  let nodeValueGetter =
-    options.nodeValueGetter ?? ((node: SortingNode) => node.name)
+  let sortingFunction: (a: T, b: T) => number
+  let nodeValueGetter = options.nodeValueGetter ?? ((node: T) => node.name)
   if (options.type === 'alphabetical') {
     let formatString = getFormatStringFunction(
       options.ignoreCase,
@@ -76,10 +78,7 @@ export let compare = (
       let { maxLineLength } = options
 
       if (maxLineLength) {
-        let isTooLong = (
-          size: number,
-          node: SortingNode,
-        ): undefined | boolean =>
+        let isTooLong = (size: number, node: T): undefined | boolean =>
           size > maxLineLength && node.hasMultipleImportDeclarations
 
         if (isTooLong(aSize, aNode)) {

@@ -9,7 +9,7 @@ interface ExtraOptions<T extends SortingNode> {
    * If not provided, `options` will be used. If function returns null, nodes
    * will not be sorted within the group.
    */
-  getGroupCompareOptions?(groupNumber: number): CompareOptions | null
+  getGroupCompareOptions?(groupNumber: number): CompareOptions<T> | null
   ignoreEslintDisabledNodes?: boolean
   isNodeIgnored?(node: T): boolean
 }
@@ -20,7 +20,7 @@ interface GroupOptions {
 
 export let sortNodesByGroups = <T extends SortingNode>(
   nodes: T[],
-  options: CompareOptions & GroupOptions,
+  options: CompareOptions<T> & GroupOptions,
   extraOptions?: ExtraOptions<T>,
 ): T[] => {
   let nodesByNonIgnoredGroupNumber: Record<number, T[]> = {}
