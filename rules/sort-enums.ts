@@ -131,7 +131,12 @@ export default createEslintRule<Options, MESSAGE_ID>({
             )
           }
           let lastSortingNode = accumulator.at(-1)?.at(-1)
-          let sortingNode: SortingNodeWithDependencies = {
+          let sortingNode: SortEnumsSortingNode = {
+            numericValue: member.initializer
+              ? getExpressionNumberValue(
+                  member.initializer,
+                ) /* v8 ignore next - Unsure how we can reach that case */
+              : null,
             name:
               member.id.type === 'Literal'
                 ? `${member.id.value}`
@@ -160,20 +165,22 @@ export default createEslintRule<Options, MESSAGE_ID>({
         },
         [[]],
       )
-      let isNumericEnum = members.every(
-        member =>
-          member.initializer?.type === 'Literal' &&
-          typeof member.initializer.value === 'number',
+
+      let sortingNodes = formattedMembers.flat()
+      let isNumericEnum = sortingNodes.every(
+        sortingNode =>
+          sortingNode.numericValue !== null &&
+          !Number.isNaN(sortingNode.numericValue),
       )
       let compareOptions: CompareOptions<SortEnumsSortingNode> = {
         // Get the enum value rather than the name if needed
         nodeValueGetter:
           options.sortByValue || (isNumericEnum && options.forceNumericSort)
             ? sortingNode => {
-                if (
-                  sortingNode.node.type === 'TSEnumMember' &&
-                  sortingNode.node.initializer?.type === 'Literal'
-                ) {
+                if (isNumericEnum) {
+                  return sortingNode.numericValue!.toString()
+                }
+                if (sortingNode.node.initializer?.type === 'Literal') {
                   return sortingNode.node.initializer.value?.toString() ?? ''
                 }
                 return ''
@@ -288,3 +295,66 @@ export default createEslintRule<Options, MESSAGE_ID>({
   defaultOptions: [defaultOptions],
   name: 'sort-enums',
 })
+
+let getExpressionNumberValue = (expression: TSESTree.Node): number => {
+  switch (expression.type) {
+    case 'BinaryExpression':
+      return getBinaryExpressionNumberValue(
+        expression.left,
+        expression.right,
+        expression.operator,
+      )
+    case 'UnaryExpression':
+      return getUnaryExpressionNumberValue(
+        expression.argument,
+        expression.operator,
+      )
+    case 'Literal':
+      return typeof expression.value === 'number'
+        ? expression.value
+        : Number.NaN
+    default:
+      return Number.NaN
+  }
+}
+
+let getUnaryExpressionNumberValue = (
+  argumentExpression: TSESTree.Expression,
+  operator: string,
+): number => {
+  let argument = getExpressionNumberValue(argumentExpression)
+  switch (operator) {
+    case '+':
+      return argument
+    case '-':
+      return -argument
+    /* v8 ignore next 2 - Unsure if we can reach it */
+    default:
+      return Number.NaN
+  }
+}
+
+let getBinaryExpressionNumberValue = (
+  leftExpression: TSESTree.PrivateIdentifier | TSESTree.Expression,
+  rightExpression: TSESTree.Expression,
+  operator: string,
+): number => {
+  let left = getExpressionNumberValue(leftExpression)
+  let right = getExpressionNumberValue(rightExpression)
+  switch (operator) {
+    case '**':
+      return left ** right
+    case '+':
+      return left + right
+    case '-':
+      return left - right
+    case '*':
+      return left * right
+    case '/':
+      return left / right
+    case '%':
+      return left % right
+    default:
+      return Number.NaN
+  }
+}
