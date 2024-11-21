@@ -47,12 +47,12 @@ export type Options = [
   }>,
 ]
 
-type MESSAGE_ID = 'unexpectedEnumsDependencyOrder' | 'unexpectedEnumsOrder'
-
 interface SortEnumsSortingNode
   extends SortingNodeWithDependencies<TSESTree.TSEnumMember> {
   numericValue: number | null
 }
+
+type MESSAGE_ID = 'unexpectedEnumsDependencyOrder' | 'unexpectedEnumsOrder'
 
 let defaultOptions: Required<Options[0]> = {
   partitionByComment: false,
