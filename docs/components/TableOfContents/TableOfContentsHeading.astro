@@ -1,16 +1,16 @@
 ---
 import Typography from '../Typography.astro'
 
-interface Heading {
-  depth: number
-  slug: string
-  text: string
-}
-
 interface Props {
   heading: {
     subheadings?: Heading[]
   } & Heading
+}
+
+interface Heading {
+  depth: number
+  slug: string
+  text: string
 }
 
 let { heading } = Astro.props

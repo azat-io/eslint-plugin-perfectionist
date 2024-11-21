@@ -2,15 +2,15 @@
 import SidebarLink from './SidebarLink.astro'
 import Typography from '../Typography.astro'
 
-interface Link {
-  title: string
-  url: string
-}
-
 interface Props {
   class?: string
   title: string
   links: Link[]
+  url: string
+}
+
+interface Link {
+  title: string
   url: string
 }
 

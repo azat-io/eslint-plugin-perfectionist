@@ -8,11 +8,11 @@ interface Heading {
   text: string
 }
 
+type HeadingWithSubheadings = { subheadings: Heading[] } & Heading
+
 interface Props {
   headings?: Heading[] | undefined
 }
-
-type HeadingWithSubheadings = { subheadings: Heading[] } & Heading
 
 let { headings } = Astro.props
 
