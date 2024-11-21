@@ -47,6 +47,11 @@ export type Options = [
   }>,
 ]
 
+interface SortEnumsSortingNode
+  extends SortingNodeWithDependencies<TSESTree.TSEnumMember> {
+  numericValue: number | null
+}
+
 type MESSAGE_ID = 'unexpectedEnumsDependencyOrder' | 'unexpectedEnumsOrder'
 
 let defaultOptions: Required<Options[0]> = {
@@ -63,8 +68,8 @@ let defaultOptions: Required<Options[0]> = {
 
 export default createEslintRule<Options, MESSAGE_ID>({
   create: context => ({
-    TSEnumDeclaration: node => {
-      let members = getEnumMembers(node)
+    TSEnumDeclaration: enumDeclaration => {
+      let members = getEnumMembers(enumDeclaration)
       if (
         !isSortable(members) ||
         !members.every(({ initializer }) => initializer)
@@ -116,14 +121,22 @@ export default createEslintRule<Options, MESSAGE_ID>({
         checkNode(expression)
         return dependencies
       }
-      let formattedMembers: SortingNodeWithDependencies[][] = members.reduce(
-        (accumulator: SortingNodeWithDependencies[][], member) => {
+      let formattedMembers: SortEnumsSortingNode[][] = members.reduce(
+        (accumulator: SortEnumsSortingNode[][], member) => {
           let dependencies: string[] = []
           if (member.initializer) {
-            dependencies = extractDependencies(member.initializer, node.id.name)
+            dependencies = extractDependencies(
+              member.initializer,
+              enumDeclaration.id.name,
+            )
           }
           let lastSortingNode = accumulator.at(-1)?.at(-1)
-          let sortingNode: SortingNodeWithDependencies = {
+          let sortingNode: SortEnumsSortingNode = {
+            numericValue: member.initializer
+              ? getExpressionNumberValue(
+                  member.initializer,
+                ) /* v8 ignore next - Unsure how we can reach that case */
+              : null,
             name:
               member.id.type === 'Literal'
                 ? `${member.id.value}`
@@ -152,20 +165,22 @@ export default createEslintRule<Options, MESSAGE_ID>({
         },
         [[]],
       )
-      let isNumericEnum = members.every(
-        member =>
-          member.initializer?.type === 'Literal' &&
-          typeof member.initializer.value === 'number',
+
+      let sortingNodes = formattedMembers.flat()
+      let isNumericEnum = sortingNodes.every(
+        sortingNode =>
+          sortingNode.numericValue !== null &&
+          !Number.isNaN(sortingNode.numericValue),
       )
-      let compareOptions: CompareOptions = {
+      let compareOptions: CompareOptions<SortEnumsSortingNode> = {
         // Get the enum value rather than the name if needed
         nodeValueGetter:
           options.sortByValue || (isNumericEnum && options.forceNumericSort)
             ? sortingNode => {
-                if (
-                  sortingNode.node.type === 'TSEnumMember' &&
-                  sortingNode.node.initializer?.type === 'Literal'
-                ) {
+                if (isNumericEnum) {
+                  return sortingNode.numericValue!.toString()
+                }
+                if (sortingNode.node.initializer?.type === 'Literal') {
                   return sortingNode.node.initializer.value?.toString() ?? ''
                 }
                 return ''
@@ -184,7 +199,7 @@ export default createEslintRule<Options, MESSAGE_ID>({
 
       let sortNodesIgnoringEslintDisabledNodes = (
         ignoreEslintDisabledNodes: boolean,
-      ): SortingNodeWithDependencies[] =>
+      ): SortEnumsSortingNode[] =>
         sortNodesByDependencies(
           formattedMembers.flatMap(nodes =>
             sortNodes(nodes, compareOptions, {
@@ -198,9 +213,8 @@ export default createEslintRule<Options, MESSAGE_ID>({
       let sortedNodes = sortNodesIgnoringEslintDisabledNodes(false)
       let sortedNodesExcludingEslintDisabled =
         sortNodesIgnoringEslintDisabledNodes(true)
-      let nodes = formattedMembers.flat()
 
-      pairwise(nodes, (left, right) => {
+      pairwise(sortingNodes, (left, right) => {
         let indexOfLeft = sortedNodes.indexOf(left)
         let indexOfRight = sortedNodes.indexOf(right)
         let indexOfRightExcludingEslintDisabled =
@@ -213,15 +227,15 @@ export default createEslintRule<Options, MESSAGE_ID>({
         }
 
         let firstUnorderedNodeDependentOnRight =
-          getFirstUnorderedNodeDependentOn(right, nodes)
+          getFirstUnorderedNodeDependentOn(right, sortingNodes)
         context.report({
           fix: fixer =>
             makeFixes({
               sortedNodes: sortedNodesExcludingEslintDisabled,
+              nodes: sortingNodes,
               sourceCode,
               options,
               fixer,
-              nodes,
             }),
           data: {
             nodeDependentOnRight: firstUnorderedNodeDependentOnRight?.name,
@@ -281,3 +295,79 @@ export default createEslintRule<Options, MESSAGE_ID>({
   defaultOptions: [defaultOptions],
   name: 'sort-enums',
 })
+
+let getExpressionNumberValue = (expression: TSESTree.Node): number => {
+  switch (expression.type) {
+    case 'BinaryExpression':
+      return getBinaryExpressionNumberValue(
+        expression.left,
+        expression.right,
+        expression.operator,
+      )
+    case 'UnaryExpression':
+      return getUnaryExpressionNumberValue(
+        expression.argument,
+        expression.operator,
+      )
+    case 'Literal':
+      return typeof expression.value === 'number'
+        ? expression.value
+        : Number.NaN
+    default:
+      return Number.NaN
+  }
+}
+
+let getUnaryExpressionNumberValue = (
+  argumentExpression: TSESTree.Expression,
+  operator: string,
+): number => {
+  let argument = getExpressionNumberValue(argumentExpression)
+  switch (operator) {
+    case '+':
+      return argument
+    case '-':
+      return -argument
+    case '~':
+      return ~argument
+    /* v8 ignore next 2 - Unsure if we can reach it */
+    default:
+      return Number.NaN
+  }
+}
+
+let getBinaryExpressionNumberValue = (
+  leftExpression: TSESTree.PrivateIdentifier | TSESTree.Expression,
+  rightExpression: TSESTree.Expression,
+  operator: string,
+): number => {
+  let left = getExpressionNumberValue(leftExpression)
+  let right = getExpressionNumberValue(rightExpression)
+  switch (operator) {
+    case '**':
+      return left ** right
+    case '>>':
+      return left >> right
+    case '<<':
+      return left << right
+    case '+':
+      return left + right
+    case '-':
+      return left - right
+    case '*':
+      return left * right
+    case '/':
+      return left / right
+    case '%':
+      return left % right
+    case '|':
+      return left | right
+    case '&':
+      return left & right
+    case '^':
+      return left ^ right
+    /* v8 ignore next 2 - Unsure if we can reach it */
+    default:
+      return Number.NaN
+  }
+}

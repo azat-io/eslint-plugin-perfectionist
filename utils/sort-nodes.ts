@@ -9,7 +9,7 @@ interface ExtraOptions {
 
 export let sortNodes = <T extends SortingNode>(
   nodes: T[],
-  options: CompareOptions,
+  options: CompareOptions<T>,
   extraOptions?: ExtraOptions,
 ): T[] => {
   let nonIgnoredNodes: T[] = []
