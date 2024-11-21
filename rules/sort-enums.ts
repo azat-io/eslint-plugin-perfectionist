@@ -328,6 +328,8 @@ let getUnaryExpressionNumberValue = (
       return argument
     case '-':
       return -argument
+    case '~':
+      return ~argument
     /* v8 ignore next 2 - Unsure if we can reach it */
     default:
       return Number.NaN
@@ -344,6 +346,10 @@ let getBinaryExpressionNumberValue = (
   switch (operator) {
     case '**':
       return left ** right
+    case '>>':
+      return left >> right
+    case '<<':
+      return left << right
     case '+':
       return left + right
     case '-':
@@ -354,6 +360,9 @@ let getBinaryExpressionNumberValue = (
       return left / right
     case '%':
       return left % right
+    case '|':
+      return left | right
+    /* v8 ignore next 2 - Unsure if we can reach it */
     default:
       return Number.NaN
   }
