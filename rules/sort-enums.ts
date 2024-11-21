@@ -363,7 +363,7 @@ let getBinaryExpressionNumberValue = (
     case '|':
       return left | right
     case '&':
-      return left | right
+      return left & right
     /* v8 ignore next 2 - Unsure if we can reach it */
     default:
       return Number.NaN
