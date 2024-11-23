@@ -37,12 +37,14 @@ import { getSettings } from '../utils/get-settings'
 import { isSortable } from '../utils/is-sortable'
 import { useGroups } from '../utils/use-groups'
 import { makeFixes } from '../utils/make-fixes'
+import { sortNodes } from '../utils/sort-nodes'
 import { complete } from '../utils/complete'
 import { pairwise } from '../utils/pairwise'
 import { matches } from '../utils/matches'
 
 type Options = [
   Partial<{
+    destructuredObjects: { groups: boolean } | boolean
     type: 'alphabetical' | 'line-length' | 'natural'
     customGroups: Record<string, string[] | string>
     partitionByComment: string[] | boolean | string
@@ -51,7 +53,11 @@ type Options = [
     locales: NonNullable<Intl.LocalesArgument>
     groups: (Group[] | Group)[]
     partitionByNewLine: boolean
+    objectDeclarations: boolean
     styledComponents: boolean
+    /**
+     * @deprecated for {@link `destructuredObjects`} and {@link `objectDeclarations`}
+     */
     destructureOnly: boolean
     ignorePattern: string[]
     order: 'desc' | 'asc'
@@ -73,6 +79,8 @@ let defaultOptions: Required<Options[0]> = {
   partitionByComment: false,
   newlinesBetween: 'ignore',
   specialCharacters: 'keep',
+  destructuredObjects: true,
+  objectDeclarations: true,
   styledComponents: true,
   destructureOnly: false,
   type: 'alphabetical',
@@ -87,8 +95,12 @@ let defaultOptions: Required<Options[0]> = {
 export default createEslintRule<Options, MESSAGE_ID>({
   create: context => {
     let sortObject = (
-      node: TSESTree.ObjectExpression | TSESTree.ObjectPattern,
+      nodeObject: TSESTree.ObjectExpression | TSESTree.ObjectPattern,
     ): void => {
+      if (!isSortable(nodeObject.properties)) {
+        return
+      }
+
       let settings = getSettings(context.settings)
 
       let options = complete(context.options.at(0), settings, defaultOptions)
@@ -100,14 +112,17 @@ export default createEslintRule<Options, MESSAGE_ID>({
       )
       validateNewlinesAndPartitionConfiguration(options)
 
-      let shouldIgnore = false
-
-      if (options.destructureOnly) {
-        shouldIgnore = node.type !== 'ObjectPattern'
+      let isDestructuredObject = nodeObject.type === 'ObjectPattern'
+      if (isDestructuredObject) {
+        if (!options.destructuredObjects) {
+          return
+        }
+      } else if (options.destructureOnly || !options.objectDeclarations) {
+        return
       }
 
-      if (!shouldIgnore && options.ignorePattern.length) {
-        let variableParent = getNodeParent(node, [
+      if (options.ignorePattern.length) {
+        let variableParent = getNodeParent(nodeObject, [
           'VariableDeclarator',
           'Property',
         ])
@@ -126,10 +141,10 @@ export default createEslintRule<Options, MESSAGE_ID>({
           typeof variableIdentifier === 'string' &&
           checkMatch(variableIdentifier)
         ) {
-          shouldIgnore = true
+          return
         }
 
-        let callParent = getNodeParent(node, ['CallExpression'])
+        let callParent = getNodeParent(nodeObject, ['CallExpression'])
         let callIdentifier =
           callParent?.type === 'CallExpression' &&
           callParent.callee.type === 'Identifier'
@@ -137,11 +152,8 @@ export default createEslintRule<Options, MESSAGE_ID>({
             : null
 
         if (callIdentifier && checkMatch(callIdentifier)) {
-          shouldIgnore = true
+          return
         }
-      }
-      if (shouldIgnore || !isSortable(node.properties)) {
-        return
       }
 
       let isStyledCallExpression = (identifier: TSESTree.Expression): boolean =>
@@ -163,9 +175,9 @@ export default createEslintRule<Options, MESSAGE_ID>({
             styledNode.parent.name.name === 'style'))
       if (
         !options.styledComponents &&
-        (isStyledComponents(node.parent) ||
-          (node.parent.type === 'ArrowFunctionExpression' &&
-            isStyledComponents(node.parent.parent)))
+        (isStyledComponents(nodeObject.parent) ||
+          (nodeObject.parent.type === 'ArrowFunctionExpression' &&
+            isStyledComponents(nodeObject.parent.parent)))
       ) {
         return
       }
@@ -352,14 +364,20 @@ export default createEslintRule<Options, MESSAGE_ID>({
           },
           [[]],
         )
-      let formattedMembers = formatProperties(node.properties)
+      let formattedMembers = formatProperties(nodeObject.properties)
 
+      let nodesSortingFunction =
+        isDestructuredObject &&
+        typeof options.destructuredObjects === 'object' &&
+        !options.destructuredObjects.groups
+          ? sortNodes
+          : sortNodesByGroups
       let sortNodesIgnoringEslintDisabledNodes = (
         ignoreEslintDisabledNodes: boolean,
       ): SortingNodeWithDependencies[] =>
         sortNodesByDependencies(
           formattedMembers.flatMap(nodes =>
-            sortNodesByGroups(nodes, options, {
+            nodesSortingFunction(nodes, options, {
               ignoreEslintDisabledNodes,
             }),
           ),
@@ -460,6 +478,25 @@ export default createEslintRule<Options, MESSAGE_ID>({
     schema: [
       {
         properties: {
+          destructuredObjects: {
+            oneOf: [
+              {
+                type: 'boolean',
+              },
+              {
+                properties: {
+                  groups: {
+                    description:
+                      'Controls whether to use groups to sort destructured objects.',
+                    type: 'boolean',
+                  },
+                },
+                additionalProperties: false,
+                type: 'object',
+              },
+            ],
+            description: 'Controls whether to sort destructured objects.',
+          },
           ignorePattern: {
             description:
               'Specifies names or patterns for nodes that should be ignored by rule.',
@@ -475,6 +512,10 @@ export default createEslintRule<Options, MESSAGE_ID>({
           },
           destructureOnly: {
             description: 'Controls whether to sort only destructured objects.',
+            type: 'boolean',
+          },
+          objectDeclarations: {
+            description: 'Controls whether to sort object declarations.',
             type: 'boolean',
           },
           styledComponents: {
