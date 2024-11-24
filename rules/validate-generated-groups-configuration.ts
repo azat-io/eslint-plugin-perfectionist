@@ -3,7 +3,7 @@ import type { Modifier, Selector } from './sort-classes.types'
 import { validateNoDuplicatedGroups } from '../utils/validate-groups-configuration'
 
 interface Props {
-  customGroups: BaseCustomGroup[]
+  customGroups: Record<string, string[] | string> | BaseCustomGroup[]
   groups: (string[] | string)[]
   selectors: string[]
   modifiers: string[]
@@ -20,7 +20,9 @@ export let validateGeneratedGroupsConfiguration = ({
   groups,
 }: Props): void => {
   let availableCustomGroupNames = new Set(
-    customGroups.map(customGroup => customGroup.groupName),
+    Array.isArray(customGroups)
+      ? customGroups.map(customGroup => customGroup.groupName)
+      : Object.keys(customGroups),
   )
   let invalidGroups = groups
     .flat()

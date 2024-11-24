@@ -1,5 +1,6 @@
 import type { TSESTree } from '@typescript-eslint/types'
 
+import type { Modifier, Selector, Options } from './sort-object-types.types'
 import type { SortingNode } from '../typings'
 
 import {
@@ -14,10 +15,17 @@ import {
   orderJsonSchema,
   typeJsonSchema,
 } from '../utils/common-json-schemas'
+import {
+  singleCustomGroupJsonSchema,
+  customGroupNameJsonSchema,
+  customGroupSortJsonSchema,
+} from './sort-object-types.types'
 import { validateNewlinesAndPartitionConfiguration } from '../utils/validate-newlines-and-partition-configuration'
-import { validateGroupsConfiguration } from '../utils/validate-groups-configuration'
+import { validateGeneratedGroupsConfiguration } from './validate-generated-groups-configuration'
+import { generatePredefinedGroups } from '../utils/generate-predefined-groups'
 import { getEslintDisabledLines } from '../utils/get-eslint-disabled-lines'
 import { isNodeEslintDisabled } from '../utils/is-node-eslint-disabled'
+import { allModifiers, allSelectors } from './sort-object-types.types'
 import { hasPartitionComment } from '../utils/is-partition-comment'
 import { sortNodesByGroups } from '../utils/sort-nodes-by-groups'
 import { getCommentsBefore } from '../utils/get-comments-before'
@@ -25,6 +33,8 @@ import { makeNewlinesFixes } from '../utils/make-newlines-fixes'
 import { getNewlinesErrors } from '../utils/get-newlines-errors'
 import { createEslintRule } from '../utils/create-eslint-rule'
 import { isMemberOptional } from '../utils/is-member-optional'
+import { customGroupMatches } from './sort-object-types-utils'
+import { getCompareOptions } from './sort-object-types-utils'
 import { getLinesBetween } from '../utils/get-lines-between'
 import { getGroupNumber } from '../utils/get-group-number'
 import { getSourceCode } from '../utils/get-source-code'
@@ -37,21 +47,10 @@ import { useGroups } from '../utils/use-groups'
 import { complete } from '../utils/complete'
 import { pairwise } from '../utils/pairwise'
 
-type Options<T extends string[]> = [
-  Partial<{
-    groupKind: 'required-first' | 'optional-first' | 'mixed'
-    customGroups: Record<T[number], string[] | string>
-    type: 'alphabetical' | 'line-length' | 'natural'
-    partitionByComment: string[] | boolean | string
-    newlinesBetween: 'ignore' | 'always' | 'never'
-    specialCharacters: 'remove' | 'trim' | 'keep'
-    locales: NonNullable<Intl.LocalesArgument>
-    groups: (Group<T>[] | Group<T>)[]
-    partitionByNewLine: boolean
-    order: 'desc' | 'asc'
-    ignoreCase: boolean
-  }>,
-]
+/**
+ * Cache computed groups by modifiers and selectors for performance
+ */
+let cachedGroupsByModifiersAndSelectors = new Map<string, string[]>()
 
 type MESSAGE_ID =
   | 'missedSpacingBetweenObjectTypeMembers'
@@ -63,9 +62,7 @@ interface SortObjectTypesSortingNode extends SortingNode<TSESTree.TypeElement> {
   groupKind: 'required' | 'optional'
 }
 
-type Group<T extends string[]> = 'multiline' | 'unknown' | T[number] | 'method'
-
-let defaultOptions: Required<Options<string[]>[0]> = {
+let defaultOptions: Required<Options[0]> = {
   partitionByComment: false,
   partitionByNewLine: false,
   newlinesBetween: 'ignore',
@@ -79,7 +76,7 @@ let defaultOptions: Required<Options<string[]>[0]> = {
   groups: [],
 }
 
-export default createEslintRule<Options<string[]>, MESSAGE_ID>({
+export default createEslintRule<Options, MESSAGE_ID>({
   create: context => ({
     TSTypeLiteral: node => {
       if (!isSortable(node.members)) {
@@ -88,11 +85,12 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
 
       let settings = getSettings(context.settings)
       let options = complete(context.options.at(0), settings, defaultOptions)
-      validateGroupsConfiguration(
-        options.groups,
-        ['multiline', 'method', 'unknown'],
-        Object.keys(options.customGroups),
-      )
+      validateGeneratedGroupsConfiguration({
+        customGroups: options.customGroups,
+        selectors: allSelectors,
+        modifiers: allModifiers,
+        groups: options.groups,
+      })
       validateNewlinesAndPartitionConfiguration(options)
 
       let sourceCode = getSourceCode(context)
@@ -136,18 +134,49 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
               )
             }
 
-            setCustomGroups(options.customGroups, name)
-
+            let selectors: Selector[] = []
+            let modifiers: Modifier[] = []
             if (
               member.type === 'TSMethodSignature' ||
               (member.type === 'TSPropertySignature' &&
                 member.typeAnnotation?.typeAnnotation.type === 'TSFunctionType')
             ) {
-              defineGroup('method')
+              selectors.push('method')
             }
 
             if (member.loc.start.line !== member.loc.end.line) {
-              defineGroup('multiline')
+              selectors.push('multiline')
+            }
+
+            for (let predefinedGroup of generatePredefinedGroups({
+              cache: cachedGroupsByModifiersAndSelectors,
+              selectors,
+              modifiers,
+            })) {
+              defineGroup(predefinedGroup)
+            }
+
+            if (Array.isArray(options.customGroups)) {
+              for (let customGroup of options.customGroups) {
+                if (
+                  customGroupMatches({
+                    elementName: name,
+                    customGroup,
+                    selectors,
+                    modifiers,
+                  })
+                ) {
+                  defineGroup(customGroup.groupName, true)
+                  // If the custom group is not referenced in the `groups` option, it will be ignored
+                  if (getGroup() === customGroup.groupName) {
+                    break
+                  }
+                }
+              }
+            } else {
+              setCustomGroups(options.customGroups, name, {
+                override: true,
+              })
             }
 
             let sortingNode: SortObjectTypesSortingNode = {
@@ -182,6 +211,7 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
           },
           [[]],
         )
+
       let groupKindOrder
       if (options.groupKind === 'required-first') {
         groupKindOrder = ['required', 'optional'] as const
@@ -202,6 +232,8 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
         ): SortObjectTypesSortingNode[] =>
           filteredGroupKindNodes.flatMap(groupedNodes =>
             sortNodesByGroups(groupedNodes, options, {
+              getGroupCompareOptions: groupNumber =>
+                getCompareOptions(options, groupNumber),
               ignoreEslintDisabledNodes,
             }),
           )
@@ -281,6 +313,48 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
     schema: [
       {
         properties: {
+          customGroups: {
+            oneOf: [
+              customGroupsJsonSchema,
+              {
+                items: {
+                  oneOf: [
+                    {
+                      properties: {
+                        ...customGroupNameJsonSchema,
+                        ...customGroupSortJsonSchema,
+                        anyOf: {
+                          items: {
+                            properties: {
+                              ...singleCustomGroupJsonSchema,
+                            },
+                            description: 'Custom group.',
+                            additionalProperties: false,
+                            type: 'object',
+                          },
+                          type: 'array',
+                        },
+                      },
+                      description: 'Custom group block.',
+                      additionalProperties: false,
+                      type: 'object',
+                    },
+                    {
+                      properties: {
+                        ...customGroupNameJsonSchema,
+                        ...customGroupSortJsonSchema,
+                        ...singleCustomGroupJsonSchema,
+                      },
+                      description: 'Custom group.',
+                      additionalProperties: false,
+                      type: 'object',
+                    },
+                  ],
+                },
+                type: 'array',
+              },
+            ],
+          },
           partitionByComment: {
             ...partitionByCommentJsonSchema,
             description:
@@ -294,7 +368,6 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
           partitionByNewLine: partitionByNewLineJsonSchema,
           specialCharacters: specialCharactersJsonSchema,
           newlinesBetween: newlinesBetweenJsonSchema,
-          customGroups: customGroupsJsonSchema,
           ignoreCase: ignoreCaseJsonSchema,
           locales: localesJsonSchema,
           groups: groupsJsonSchema,
