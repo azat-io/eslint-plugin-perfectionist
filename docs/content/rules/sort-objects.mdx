@@ -264,11 +264,29 @@ Allows you to specify names or patterns for object types that should be ignored 
 
 You can specify their names or a regexp pattern to ignore, for example: `'^User.+'` to ignore all object types whose names begin with the word “User”.
 
-### destructureOnly
+### [DEPRECATED] destructureOnly
 
 <sub>default: `false`</sub>
 
-Allows you to sort only objects that are part of a destructuring pattern. When set to `true`, the rule will apply sorting exclusively to destructured objects, leaving other object declarations unchanged.
+Use the [objectDeclarations](#objectdeclarations) and [destructuredObjects](#destructuredobjects) options instead.
+
+Allows you to only sort objects that are part of a destructuring pattern. When set to `true`, the rule will apply sorting exclusively to destructured objects, leaving other object declarations unchanged.
+
+### objectDeclarations
+
+<sub>default: `true`</sub>
+
+Allows you to choose whether to sort standard object declarations.
+
+### destructuredObjects
+
+<sub>
+  type: `boolean | { groups: boolean }`
+</sub>
+<sub>default: `true`</sub>
+
+Allows you to choose whether to sort destructured objects.
+The `groups` attribute allows you to specify whether to use groups to sort destructured objects.
 
 ### groups
 

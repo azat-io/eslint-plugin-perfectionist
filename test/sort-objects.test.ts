@@ -3850,7 +3850,7 @@ describe(ruleName, () => {
       ],
     })
 
-    ruleTester.run(`${ruleName}: allow to use for destructuring only`, rule, {
+    ruleTester.run(`${ruleName}: allow to use 'destructureOnly'`, rule, {
       invalid: [
         {
           errors: [
@@ -3912,6 +3912,202 @@ describe(ruleName, () => {
           ],
         },
       ],
+    })
+
+    ruleTester.run(`${ruleName}: allow to use 'objectDeclarations'`, rule, {
+      invalid: [
+        {
+          errors: [
+            {
+              data: {
+                right: 'b',
+                left: 'c',
+              },
+              messageId: 'unexpectedObjectsOrder',
+            },
+            {
+              data: {
+                right: 'a',
+                left: 'b',
+              },
+              messageId: 'unexpectedObjectsOrder',
+            },
+          ],
+          output: dedent`
+            let obj = {
+              c: 'c',
+              a: 'a',
+              b: 'b',
+            }
+
+            let { a, b, c } = obj
+          `,
+          code: dedent`
+            let obj = {
+              c: 'c',
+              a: 'a',
+              b: 'b',
+            }
+
+            let { c, b, a } = obj
+          `,
+          options: [
+            {
+              objectDeclarations: false,
+            },
+          ],
+        },
+      ],
+      valid: [
+        {
+          code: dedent`
+            let obj = {
+              c: 'c',
+              a: 'a',
+              b: 'b',
+            }
+
+            let { a, b, c } = obj
+          `,
+          options: [
+            {
+              objectDeclarations: false,
+            },
+          ],
+        },
+      ],
+    })
+
+    describe(`${ruleName}: allow to use 'destructuredObjects'`, () => {
+      ruleTester.run(`${ruleName}: boolean 'destructuredObjects'`, rule, {
+        invalid: [
+          {
+            errors: [
+              {
+                data: {
+                  right: 'b',
+                  left: 'c',
+                },
+                messageId: 'unexpectedObjectsOrder',
+              },
+              {
+                data: {
+                  right: 'a',
+                  left: 'b',
+                },
+                messageId: 'unexpectedObjectsOrder',
+              },
+            ],
+            output: dedent`
+              let obj = {
+                a: 'a',
+                b: 'b',
+                c: 'c',
+              }
+
+              let { c, a, b } = obj
+            `,
+            code: dedent`
+              let obj = {
+                c: 'c',
+                b: 'b',
+                a: 'a',
+              }
+
+              let { c, a, b } = obj
+            `,
+            options: [
+              {
+                destructuredObjects: false,
+              },
+            ],
+          },
+        ],
+        valid: [
+          {
+            code: dedent`
+              let obj = {
+                a: 'a',
+                b: 'b',
+                c: 'c',
+              }
+
+              let { b, c, a } = obj
+            `,
+            options: [
+              {
+                destructuredObjects: false,
+              },
+            ],
+          },
+        ],
+      })
+
+      ruleTester.run(
+        `${ruleName}: object 'destructuredObjects': 'groups' attribute`,
+        rule,
+        {
+          invalid: [
+            {
+              errors: [
+                {
+                  data: {
+                    leftGroup: 'unknown',
+                    rightGroup: 'top',
+                    right: 'c',
+                    left: 'a',
+                  },
+                  messageId: 'unexpectedObjectsGroupOrder',
+                },
+              ],
+              options: [
+                {
+                  customGroups: {
+                    top: 'c',
+                  },
+                  destructuredObjects: { groups: true },
+                  groups: ['top', 'unknown'],
+                },
+              ],
+              output: dedent`
+                let { c, a, b } = obj
+              `,
+              code: dedent`
+                let { a, c, b } = obj
+              `,
+            },
+            {
+              errors: [
+                {
+                  data: {
+                    rightGroup: 'unknown',
+                    leftGroup: 'top',
+                    right: 'b',
+                    left: 'c',
+                  },
+                  messageId: 'unexpectedObjectsGroupOrder',
+                },
+              ],
+              options: [
+                {
+                  customGroups: {
+                    top: 'c',
+                  },
+                  destructuredObjects: { groups: false },
+                  groups: ['top', 'unknown'],
+                },
+              ],
+              output: dedent`
+                let { a, b, c } = obj
+              `,
+              code: dedent`
+                let { a, c, b } = obj
+              `,
+            },
+          ],
+          valid: [],
+        },
+      )
     })
 
     ruleTester.run(`${ruleName}: works with settings`, rule, {
