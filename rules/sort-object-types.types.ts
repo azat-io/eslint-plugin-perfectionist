@@ -14,6 +14,7 @@ export type Options = [
     locales: NonNullable<Intl.LocalesArgument>
     groups: (Group[] | Group)[]
     partitionByNewLine: boolean
+    ignorePattern: string[]
     order: 'desc' | 'asc'
     ignoreCase: boolean
   }>,

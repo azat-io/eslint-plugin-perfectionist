@@ -46,6 +46,7 @@ import { makeFixes } from '../utils/make-fixes'
 import { useGroups } from '../utils/use-groups'
 import { complete } from '../utils/complete'
 import { pairwise } from '../utils/pairwise'
+import { matches } from '../utils/matches'
 
 /**
  * Cache computed groups by modifiers and selectors for performance
@@ -69,6 +70,7 @@ let defaultOptions: Required<Options[0]> = {
   specialCharacters: 'keep',
   type: 'alphabetical',
   groupKind: 'mixed',
+  ignorePattern: [],
   ignoreCase: true,
   customGroups: {},
   locales: 'en-US',
@@ -92,6 +94,16 @@ export default createEslintRule<Options, MESSAGE_ID>({
         groups: options.groups,
       })
       validateNewlinesAndPartitionConfiguration(options)
+
+      if (
+        options.ignorePattern.some(
+          pattern =>
+            node.parent.type === 'TSTypeAliasDeclaration' &&
+            matches(node.parent.id.name, pattern),
+        )
+      ) {
+        return
+      }
 
       let sourceCode = getSourceCode(context)
       let eslintDisabledLines = getEslintDisabledLines({
@@ -375,6 +387,14 @@ export default createEslintRule<Options, MESSAGE_ID>({
                 type: 'array',
               },
             ],
+          },
+          ignorePattern: {
+            description:
+              'Specifies names or patterns for nodes that should be ignored by rule.',
+            items: {
+              type: 'string',
+            },
+            type: 'array',
           },
           partitionByComment: {
             ...partitionByCommentJsonSchema,

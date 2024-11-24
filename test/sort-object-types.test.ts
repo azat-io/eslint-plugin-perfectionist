@@ -3104,6 +3104,25 @@ describe(ruleName, () => {
       },
     )
 
+    ruleTester.run(`${ruleName}: allows to ignore object types`, rule, {
+      valid: [
+        {
+          code: dedent`
+            type IgnoreType = {
+              b: 'b'
+              a: 'a'
+            }
+          `,
+          options: [
+            {
+              ignorePattern: ['Ignore'],
+            },
+          ],
+        },
+      ],
+      invalid: [],
+    })
+
     let eslintDisableRuleTesterName = `${ruleName}: supports 'eslint-disable' for individual nodes`
     ruleTester.run(eslintDisableRuleTesterName, rule, {
       invalid: [
