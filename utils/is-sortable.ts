@@ -1,1 +1,2 @@
-export let isSortable = (array: unknown[]): boolean => array.length > 1
+export let isSortable = (node: unknown): boolean =>
+  Array.isArray(node) && node.length > 1

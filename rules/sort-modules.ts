@@ -2,6 +2,7 @@ import type { TSESTree } from '@typescript-eslint/types'
 import type { TSESLint } from '@typescript-eslint/utils'
 
 import { AST_NODE_TYPES } from '@typescript-eslint/utils'
+import { isSortable } from 'utils/is-sortable'
 
 import type {
   SortModulesOptions,
@@ -192,14 +193,17 @@ export default createEslintRule<SortModulesOptions, MESSAGE_ID>({
     })
 
     return {
-      Program: program =>
-        analyzeModule({
-          eslintDisabledLines,
-          sourceCode,
-          options,
-          program,
-          context,
-        }),
+      Program: program => {
+        if (isSortable(program.body)) {
+          return analyzeModule({
+            eslintDisabledLines,
+            sourceCode,
+            options,
+            program,
+            context,
+          })
+        }
+      },
     }
   },
   defaultOptions: [defaultOptions],
