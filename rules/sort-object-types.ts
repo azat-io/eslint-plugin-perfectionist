@@ -20,6 +20,7 @@ import {
 } from '../utils/common-json-schemas'
 import { validateNewlinesAndPartitionConfiguration } from '../utils/validate-newlines-and-partition-configuration'
 import { validateGeneratedGroupsConfiguration } from './validate-generated-groups-configuration'
+import { getCustomGroupsCompareOptions } from './get-custom-groups-compare-options'
 import { generatePredefinedGroups } from '../utils/generate-predefined-groups'
 import { getEslintDisabledLines } from '../utils/get-eslint-disabled-lines'
 import { singleCustomGroupJsonSchema } from './sort-object-types.types'
@@ -33,7 +34,6 @@ import { getNewlinesErrors } from '../utils/get-newlines-errors'
 import { createEslintRule } from '../utils/create-eslint-rule'
 import { isMemberOptional } from '../utils/is-member-optional'
 import { customGroupMatches } from './sort-object-types-utils'
-import { getCompareOptions } from './sort-object-types-utils'
 import { getLinesBetween } from '../utils/get-lines-between'
 import { getGroupNumber } from '../utils/get-group-number'
 import { getSourceCode } from '../utils/get-source-code'
@@ -369,7 +369,7 @@ export let sortObjectTypeElements = <MessageIds extends string>({
       filteredGroupKindNodes.flatMap(groupedNodes =>
         sortNodesByGroups(groupedNodes, options, {
           getGroupCompareOptions: groupNumber =>
-            getCompareOptions(options, groupNumber),
+            getCustomGroupsCompareOptions(options, groupNumber),
           ignoreEslintDisabledNodes,
         }),
       )

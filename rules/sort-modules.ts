@@ -33,8 +33,8 @@ import {
   allSelectors,
 } from './sort-modules.types'
 import { validateGeneratedGroupsConfiguration } from './validate-generated-groups-configuration'
+import { getCustomGroupsCompareOptions } from './get-custom-groups-compare-options'
 import { generatePredefinedGroups } from '../utils/generate-predefined-groups'
-import { customGroupMatches, getCompareOptions } from './sort-modules-utils'
 import { getEslintDisabledLines } from '../utils/get-eslint-disabled-lines'
 import { isNodeEslintDisabled } from '../utils/is-node-eslint-disabled'
 import { hasPartitionComment } from '../utils/is-partition-comment'
@@ -47,6 +47,7 @@ import { createEslintRule } from '../utils/create-eslint-rule'
 import { getLinesBetween } from '../utils/get-lines-between'
 import { getGroupNumber } from '../utils/get-group-number'
 import { getEnumMembers } from '../utils/get-enum-members'
+import { customGroupMatches } from './sort-modules-utils'
 import { getSourceCode } from '../utils/get-source-code'
 import { toSingleLine } from '../utils/to-single-line'
 import { rangeToDiff } from '../utils/range-to-diff'
@@ -365,7 +366,7 @@ let analyzeModule = ({
             getGroupNumber(options.groups, sortingNode) ===
             options.groups.length,
           getGroupCompareOptions: groupNumber =>
-            getCompareOptions(options, groupNumber),
+            getCustomGroupsCompareOptions(options, groupNumber),
           ignoreEslintDisabledNodes,
         }),
       ),
