@@ -139,26 +139,6 @@ export let allSelectors: Selector[] = [
 
 export let allModifiers: Modifier[] = ['optional', 'required', 'multiline']
 
-export let customGroupSortJsonSchema: Record<string, JSONSchema4> = {
-  type: {
-    enum: ['alphabetical', 'line-length', 'natural', 'unsorted'],
-    description: 'Custom group sort type.',
-    type: 'string',
-  },
-  order: {
-    description: 'Custom group sort order.',
-    enum: ['desc', 'asc'],
-    type: 'string',
-  },
-}
-
-export let customGroupNameJsonSchema: Record<string, JSONSchema4> = {
-  groupName: {
-    description: 'Custom group name.',
-    type: 'string',
-  },
-}
-
 /**
  * Ideally, we should generate as many schemas as there are selectors, and ensure
  * that users do not enter invalid modifiers for a given selector

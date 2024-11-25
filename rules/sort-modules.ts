@@ -11,6 +11,7 @@ import type {
 import type { SortingNodeWithDependencies } from '../utils/sort-nodes-by-dependencies'
 
 import {
+  buildCustomGroupsArrayJsonSchema,
   partitionByCommentJsonSchema,
   partitionByNewLineJsonSchema,
   specialCharactersJsonSchema,
@@ -22,17 +23,15 @@ import {
   typeJsonSchema,
 } from '../utils/common-json-schemas'
 import {
-  singleCustomGroupJsonSchema,
-  customGroupNameJsonSchema,
-  customGroupSortJsonSchema,
-  allModifiers,
-  allSelectors,
-} from './sort-modules.types'
-import {
   getFirstUnorderedNodeDependentOn,
   sortNodesByDependencies,
 } from '../utils/sort-nodes-by-dependencies'
 import { validateNewlinesAndPartitionConfiguration } from '../utils/validate-newlines-and-partition-configuration'
+import {
+  singleCustomGroupJsonSchema,
+  allModifiers,
+  allSelectors,
+} from './sort-modules.types'
 import { validateGeneratedGroupsConfiguration } from './validate-generated-groups-configuration'
 import { generatePredefinedGroups } from '../utils/generate-predefined-groups'
 import { customGroupMatches, getCompareOptions } from './sort-modules-utils'
@@ -101,49 +100,14 @@ export default createEslintRule<SortModulesOptions, MESSAGE_ID>({
     schema: [
       {
         properties: {
-          customGroups: {
-            items: {
-              oneOf: [
-                {
-                  properties: {
-                    ...customGroupNameJsonSchema,
-                    ...customGroupSortJsonSchema,
-                    anyOf: {
-                      items: {
-                        properties: {
-                          ...singleCustomGroupJsonSchema,
-                        },
-                        description: 'Custom group.',
-                        additionalProperties: false,
-                        type: 'object',
-                      },
-                      type: 'array',
-                    },
-                  },
-                  description: 'Custom group block.',
-                  additionalProperties: false,
-                  type: 'object',
-                },
-                {
-                  properties: {
-                    ...customGroupNameJsonSchema,
-                    ...customGroupSortJsonSchema,
-                    ...singleCustomGroupJsonSchema,
-                  },
-                  description: 'Custom group.',
-                  additionalProperties: false,
-                  type: 'object',
-                },
-              ],
-            },
-            description: 'Specifies custom groups.',
-            type: 'array',
-          },
           partitionByComment: {
             ...partitionByCommentJsonSchema,
             description:
               'Allows to use comments to separate the modules members into logical groups.',
           },
+          customGroups: buildCustomGroupsArrayJsonSchema({
+            singleCustomGroupJsonSchema,
+          }),
           partitionByNewLine: partitionByNewLineJsonSchema,
           specialCharacters: specialCharactersJsonSchema,
           newlinesBetween: newlinesBetweenJsonSchema,

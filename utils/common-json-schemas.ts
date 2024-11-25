@@ -105,3 +105,66 @@ export let newlinesBetweenJsonSchema: JSONSchema4 = {
   enum: ['ignore', 'always', 'never'],
   type: 'string',
 }
+
+let customGroupSortJsonSchema: Record<string, JSONSchema4> = {
+  type: {
+    enum: ['alphabetical', 'line-length', 'natural', 'unsorted'],
+    description: 'Custom group sort type.',
+    type: 'string',
+  },
+  order: {
+    description: 'Custom group sort order.',
+    enum: ['desc', 'asc'],
+    type: 'string',
+  },
+}
+
+let customGroupNameJsonSchema: Record<string, JSONSchema4> = {
+  groupName: {
+    description: 'Custom group name.',
+    type: 'string',
+  },
+}
+
+export let buildCustomGroupsArrayJsonSchema = ({
+  singleCustomGroupJsonSchema,
+}: {
+  singleCustomGroupJsonSchema?: Record<string, JSONSchema4>
+}): JSONSchema4 => ({
+  items: {
+    oneOf: [
+      {
+        properties: {
+          ...customGroupNameJsonSchema,
+          ...customGroupSortJsonSchema,
+          anyOf: {
+            items: {
+              properties: {
+                ...singleCustomGroupJsonSchema,
+              },
+              description: 'Custom group.',
+              additionalProperties: false,
+              type: 'object',
+            },
+            type: 'array',
+          },
+        },
+        description: 'Custom group block.',
+        additionalProperties: false,
+        type: 'object',
+      },
+      {
+        properties: {
+          ...customGroupNameJsonSchema,
+          ...customGroupSortJsonSchema,
+          ...singleCustomGroupJsonSchema,
+        },
+        description: 'Custom group.',
+        additionalProperties: false,
+        type: 'object',
+      },
+    ],
+  },
+  description: 'Specifies custom groups.',
+  type: 'array',
+})

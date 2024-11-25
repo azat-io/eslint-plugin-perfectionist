@@ -6,6 +6,7 @@ import type { Modifier, Selector, Options } from './sort-object-types.types'
 import type { SortingNode } from '../typings'
 
 import {
+  buildCustomGroupsArrayJsonSchema,
   partitionByCommentJsonSchema,
   partitionByNewLineJsonSchema,
   specialCharactersJsonSchema,
@@ -17,15 +18,11 @@ import {
   orderJsonSchema,
   typeJsonSchema,
 } from '../utils/common-json-schemas'
-import {
-  singleCustomGroupJsonSchema,
-  customGroupNameJsonSchema,
-  customGroupSortJsonSchema,
-} from './sort-object-types.types'
 import { validateNewlinesAndPartitionConfiguration } from '../utils/validate-newlines-and-partition-configuration'
 import { validateGeneratedGroupsConfiguration } from './validate-generated-groups-configuration'
 import { generatePredefinedGroups } from '../utils/generate-predefined-groups'
 import { getEslintDisabledLines } from '../utils/get-eslint-disabled-lines'
+import { singleCustomGroupJsonSchema } from './sort-object-types.types'
 import { isNodeEslintDisabled } from '../utils/is-node-eslint-disabled'
 import { allModifiers, allSelectors } from './sort-object-types.types'
 import { hasPartitionComment } from '../utils/is-partition-comment'
@@ -82,48 +79,6 @@ let defaultOptions: Required<Options[0]> = {
 
 export let jsonSchema: JSONSchema4 = {
   properties: {
-    customGroups: {
-      oneOf: [
-        customGroupsJsonSchema,
-        {
-          items: {
-            oneOf: [
-              {
-                properties: {
-                  ...customGroupNameJsonSchema,
-                  ...customGroupSortJsonSchema,
-                  anyOf: {
-                    items: {
-                      properties: {
-                        ...singleCustomGroupJsonSchema,
-                      },
-                      description: 'Custom group.',
-                      additionalProperties: false,
-                      type: 'object',
-                    },
-                    type: 'array',
-                  },
-                },
-                description: 'Custom group block.',
-                additionalProperties: false,
-                type: 'object',
-              },
-              {
-                properties: {
-                  ...customGroupNameJsonSchema,
-                  ...customGroupSortJsonSchema,
-                  ...singleCustomGroupJsonSchema,
-                },
-                description: 'Custom group.',
-                additionalProperties: false,
-                type: 'object',
-              },
-            ],
-          },
-          type: 'array',
-        },
-      ],
-    },
     ignorePattern: {
       description:
         'Specifies names or patterns for nodes that should be ignored by rule.',
@@ -136,6 +91,12 @@ export let jsonSchema: JSONSchema4 = {
       ...partitionByCommentJsonSchema,
       description:
         'Allows you to use comments to separate members into logical groups.',
+    },
+    customGroups: {
+      oneOf: [
+        customGroupsJsonSchema,
+        buildCustomGroupsArrayJsonSchema({ singleCustomGroupJsonSchema }),
+      ],
     },
     groupKind: {
       enum: ['mixed', 'required-first', 'optional-first'],
@@ -308,14 +269,14 @@ export let sortObjectTypeElements = <MessageIds extends string>({
         selectors.push('multiline')
       }
 
-          if (
-            !selectors.includes('index-signature') &&
-            !selectors.includes('method')
-          ) {
-            selectors.push('property')
-          }
+      if (
+        !selectors.includes('index-signature') &&
+        !selectors.includes('method')
+      ) {
+        selectors.push('property')
+      }
 
-          selectors.push('member')
+      selectors.push('member')
 
       if (isMemberOptional(typeElement)) {
         modifiers.push('optional')

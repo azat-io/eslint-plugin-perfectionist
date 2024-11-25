@@ -9,6 +9,7 @@ import type {
 import type { SortingNodeWithDependencies } from '../utils/sort-nodes-by-dependencies'
 
 import {
+  buildCustomGroupsArrayJsonSchema,
   partitionByCommentJsonSchema,
   partitionByNewLineJsonSchema,
   specialCharactersJsonSchema,
@@ -20,13 +21,6 @@ import {
   typeJsonSchema,
 } from '../utils/common-json-schemas'
 import {
-  singleCustomGroupJsonSchema,
-  customGroupNameJsonSchema,
-  customGroupSortJsonSchema,
-  allModifiers,
-  allSelectors,
-} from './sort-classes.types'
-import {
   getFirstUnorderedNodeDependentOn,
   sortNodesByDependencies,
 } from '../utils/sort-nodes-by-dependencies'
@@ -36,6 +30,11 @@ import {
   customGroupMatches,
   getCompareOptions,
 } from './sort-classes-utils'
+import {
+  singleCustomGroupJsonSchema,
+  allModifiers,
+  allSelectors,
+} from './sort-classes.types'
 import { validateGeneratedGroupsConfiguration } from './validate-generated-groups-configuration'
 import { generatePredefinedGroups } from '../utils/generate-predefined-groups'
 import { getEslintDisabledLines } from '../utils/get-eslint-disabled-lines'
@@ -664,44 +663,6 @@ export default createEslintRule<SortClassesOptions, MESSAGE_ID>({
     schema: [
       {
         properties: {
-          customGroups: {
-            items: {
-              oneOf: [
-                {
-                  properties: {
-                    ...customGroupNameJsonSchema,
-                    ...customGroupSortJsonSchema,
-                    anyOf: {
-                      items: {
-                        properties: {
-                          ...singleCustomGroupJsonSchema,
-                        },
-                        description: 'Custom group.',
-                        additionalProperties: false,
-                        type: 'object',
-                      },
-                      type: 'array',
-                    },
-                  },
-                  description: 'Custom group block.',
-                  additionalProperties: false,
-                  type: 'object',
-                },
-                {
-                  properties: {
-                    ...customGroupNameJsonSchema,
-                    ...customGroupSortJsonSchema,
-                    ...singleCustomGroupJsonSchema,
-                  },
-                  description: 'Custom group.',
-                  additionalProperties: false,
-                  type: 'object',
-                },
-              ],
-            },
-            description: 'Specifies custom groups.',
-            type: 'array',
-          },
           ignoreCallbackDependenciesPatterns: {
             description:
               'Patterns that should be ignored when detecting dependencies in method callbacks.',
@@ -715,6 +676,9 @@ export default createEslintRule<SortClassesOptions, MESSAGE_ID>({
             description:
               'Allows to use comments to separate the class members into logical groups.',
           },
+          customGroups: buildCustomGroupsArrayJsonSchema({
+            singleCustomGroupJsonSchema,
+          }),
           partitionByNewLine: partitionByNewLineJsonSchema,
           specialCharacters: specialCharactersJsonSchema,
           newlinesBetween: newlinesBetweenJsonSchema,
