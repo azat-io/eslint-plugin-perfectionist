@@ -1,5 +1,18 @@
 # Changelog
 
+## v4.1.0
+
+[compare changes](https://github.com/azat-io/eslint-plugin-perfectionist/compare/v4.0.3...v4.1.0)
+
+### 🚀 Features
+
+- **sort-enums:** Handle numeric operations ([710cc24](https://github.com/azat-io/eslint-plugin-perfectionist/commit/710cc24))
+- **sort-objects:** Add object declarations and destructured objects options ([5606fad](https://github.com/azat-io/eslint-plugin-perfectionist/commit/5606fad))
+
+### ❤️ Contributors
+
+- Hugo ([@hugop95](http://github.com/hugop95))
+
 ## v4.0.3
 
 [compare changes](https://github.com/azat-io/eslint-plugin-perfectionist/compare/v4.0.2...v4.0.3)
