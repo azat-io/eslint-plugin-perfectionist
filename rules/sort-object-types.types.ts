@@ -19,6 +19,15 @@ export type Options = [
   }>,
 ]
 
+export type SingleCustomGroup = (
+  | BaseSingleCustomGroup<IndexSignatureSelector>
+  | BaseSingleCustomGroup<MultilineSelector>
+  | BaseSingleCustomGroup<PropertySelector>
+  | BaseSingleCustomGroup<MethodSelector>
+  | BaseSingleCustomGroup<MemberSelector>
+) &
+  ElementNamePatternFilterCustomGroup
+
 export type CustomGroup = (
   | {
       order?: Options[0]['order']
@@ -32,64 +41,102 @@ export type CustomGroup = (
     groupName: string
   }
 
-export type SingleCustomGroup = (
-  | BaseSingleCustomGroup<MultilineSelector>
-  | BaseSingleCustomGroup<MethodSelector>
-) &
-  ElementNamePatternFilterCustomGroup
+export type Selector =
+  | IndexSignatureSelector
+  | MultilineSelector
+  | PropertySelector
+  | MemberSelector
+  | MethodSelector
+
+export type Modifier = MultilineModifier | RequiredModifier | OptionalModifier
 
 export interface AnyOfCustomGroup {
   anyOf: SingleCustomGroup[]
 }
 
-export type Modifier = RequiredModifier | OptionalModifier
-
-export type Selector = MultilineSelector | MethodSelector
-
 /**
  * Only used in code as well
  */
 interface AllowedModifiersPerSelector {
+  property: MultilineModifier | OptionalModifier | RequiredModifier
+  member: MultilineModifier | OptionalModifier | RequiredModifier
+  method: MultilineModifier | OptionalModifier | RequiredModifier
   multiline: OptionalModifier | RequiredModifier
-  method: OptionalModifier | RequiredModifier
+  'index-signature': never
 }
+
+type IndexSignatureGroup =
+  `${OptionalModifierPrefix | RequiredModifierPrefix}${MultilineModifierPrefix}${IndexSignatureSelector}`
+
+/**
+ * Only used in code, so I don't know if it's worth maintaining this.
+ */
+type Group =
+  | IndexSignatureGroup
+  | MultilineGroup
+  | PropertyGroup
+  | MethodGroup
+  | MemberGroup
+  | 'unknown'
+  | string
+
+type PropertyGroup =
+  `${OptionalModifierPrefix | RequiredModifierPrefix}${MultilineModifierPrefix}${PropertySelector}`
 
 interface BaseSingleCustomGroup<T extends Selector> {
   modifiers?: AllowedModifiersPerSelector[T][]
   selector?: T
 }
 
-type MultilineGroup =
-  `${OptionalModifierPrefix | RequiredModifierPrefix}${MultilineSelector}`
+type MemberGroup =
+  `${OptionalModifierPrefix | RequiredModifierPrefix}${MultilineModifierPrefix}${MemberSelector}`
 
 type MethodGroup =
-  `${OptionalModifierPrefix | RequiredModifierPrefix}${MethodSelector}`
+  `${OptionalModifierPrefix | RequiredModifierPrefix}${MultilineModifierPrefix}${MethodSelector}`
+
+type MultilineGroup =
+  `${OptionalModifierPrefix | RequiredModifierPrefix}${MultilineSelector}`
 
 interface ElementNamePatternFilterCustomGroup {
   elementNamePattern?: string
 }
 
-type RequiredModifierPrefix = WithDashSuffixOrEmpty<RequiredModifier>
-type OptionalModifierPrefix = WithDashSuffixOrEmpty<OptionalModifier>
+type MultilineModifierPrefix = WithDashSuffixOrEmpty<MultilineModifier>
 
-/**
- * Only used in code, so I don't know if it's worth maintaining this.
- */
-type Group = MultilineGroup | MethodGroup | 'unknown' | string
+type RequiredModifierPrefix = WithDashSuffixOrEmpty<RequiredModifier>
+
+type OptionalModifierPrefix = WithDashSuffixOrEmpty<OptionalModifier>
 
 type WithDashSuffixOrEmpty<T extends string> = `${T}-` | ''
 
+type IndexSignatureSelector = 'index-signature'
+
+/**
+ * @deprecated For {@link `MultilineModifier`}
+ */
 type MultilineSelector = 'multiline'
+
+type MultilineModifier = 'multiline'
 
 type RequiredModifier = 'required'
 
 type OptionalModifier = 'optional'
 
+type PropertySelector = 'property'
+
+type MemberSelector = 'member'
+
 type MethodSelector = 'method'
 
-export let allSelectors: Selector[] = ['method', 'multiline']
+export let allSelectors: Selector[] = [
+  'index-signature',
+  'member',
+  'method',
+  'multiline',
+  'property',
+]
 
-export let allModifiers: Modifier[] = ['optional', 'required']
+export let allModifiers: Modifier[] = ['optional', 'required', 'multiline']
 
 export let customGroupSortJsonSchema: Record<string, JSONSchema4> = {
   type: {
