@@ -1,5 +1,17 @@
 # Changelog
 
+## v4.1.2
+
+[compare changes](https://github.com/azat-io/eslint-plugin-perfectionist/compare/v4.1.1...v4.1.2)
+
+### 🐞 Bug Fixes
+
+- Fix invalid import ([b9ce62e](https://github.com/azat-io/eslint-plugin-perfectionist/commit/b9ce62e))
+
+### ❤️ Contributors
+
+- Hugo ([@hugop95](http://github.com/hugop95))
+
 ## v4.1.1
 
 [compare changes](https://github.com/azat-io/eslint-plugin-perfectionist/compare/v4.1.0...v4.1.1)
