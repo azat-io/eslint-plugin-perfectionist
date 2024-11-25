@@ -2,7 +2,6 @@ import type { TSESTree } from '@typescript-eslint/types'
 import type { TSESLint } from '@typescript-eslint/utils'
 
 import { AST_NODE_TYPES } from '@typescript-eslint/utils'
-import { isSortable } from 'utils/is-sortable'
 
 import type {
   SortModulesOptions,
@@ -53,6 +52,7 @@ import { getSourceCode } from '../utils/get-source-code'
 import { toSingleLine } from '../utils/to-single-line'
 import { rangeToDiff } from '../utils/range-to-diff'
 import { getSettings } from '../utils/get-settings'
+import { isSortable } from '../utils/is-sortable'
 import { useGroups } from '../utils/use-groups'
 import { makeFixes } from '../utils/make-fixes'
 import { complete } from '../utils/complete'
