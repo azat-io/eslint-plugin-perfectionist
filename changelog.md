@@ -1,5 +1,17 @@
 # Changelog
 
+## v4.1.1
+
+[compare changes](https://github.com/azat-io/eslint-plugin-perfectionist/compare/v4.1.0...v4.1.1)
+
+### 🐞 Bug Fixes
+
+- **sort-modules:** Check if node is sortable ([26e2195](https://github.com/azat-io/eslint-plugin-perfectionist/commit/26e2195))
+
+### ❤️ Contributors
+
+- Azat S. ([@azat-io](http://github.com/azat-io))
+
 ## v4.1.0
 
 [compare changes](https://github.com/azat-io/eslint-plugin-perfectionist/compare/v4.0.3...v4.1.0)
