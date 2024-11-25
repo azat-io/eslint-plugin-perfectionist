@@ -168,3 +168,27 @@ export let buildCustomGroupsArrayJsonSchema = ({
   description: 'Specifies custom groups.',
   type: 'array',
 })
+
+export let buildCustomGroupModifiersJsonSchema = (
+  modifiers: string[],
+): JSONSchema4 => ({
+  items: {
+    enum: modifiers,
+    type: 'string',
+  },
+  description: 'Modifier filters.',
+  type: 'array',
+})
+
+export let buildCustomGroupSelectorJsonSchema = (
+  selectors: string[],
+): JSONSchema4 => ({
+  description: 'Selector filter.',
+  enum: selectors,
+  type: 'string',
+})
+
+export let elementNamePatternJsonSchema: JSONSchema4 = {
+  description: 'Element name pattern filter.',
+  type: 'string',
+}
