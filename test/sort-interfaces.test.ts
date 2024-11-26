@@ -21,7 +21,7 @@ describe(ruleName, () => {
   describe(`${ruleName}: sorting by alphabetical order`, () => {
     let type = 'alphabetical-order'
 
-    let options: Options<string[]>[0] = {
+    let options: Options[0] = {
       type: 'alphabetical',
       ignoreCase: true,
       order: 'asc',
@@ -500,6 +500,390 @@ describe(ruleName, () => {
     )
 
     ruleTester.run(
+      `${ruleName}(${type}): sorts complex predefined groups`,
+      rule,
+      {
+        invalid: [
+          {
+            errors: [
+              {
+                data: {
+                  leftGroup: 'required-property',
+                  rightGroup: 'index-signature',
+                  right: '[key: string]',
+                  left: 'a',
+                },
+                messageId: 'unexpectedInterfacePropertiesGroupOrder',
+              },
+              {
+                data: {
+                  rightGroup: 'optional-multiline',
+                  leftGroup: 'index-signature',
+                  left: '[key: string]',
+                  right: 'b',
+                },
+                messageId: 'unexpectedInterfacePropertiesGroupOrder',
+              },
+              {
+                data: {
+                  leftGroup: 'optional-multiline',
+                  rightGroup: 'required-method',
+                  right: 'c(): void',
+                  left: 'b',
+                },
+                messageId: 'unexpectedInterfacePropertiesGroupOrder',
+              },
+            ],
+            options: [
+              {
+                ...options,
+                groups: [
+                  'unknown',
+                  'required-method',
+                  'optional-multiline',
+                  'index-signature',
+                  'required-property',
+                ],
+              },
+            ],
+            output: dedent`
+              interface Interface {
+                c(): void
+                b?: {
+                  property: string;
+                }
+                [key: string]: string;
+                a: string
+              }
+            `,
+            code: dedent`
+              interface Interface {
+                a: string
+                [key: string]: string;
+                b?: {
+                  property: string;
+                }
+                c(): void
+              }
+            `,
+          },
+        ],
+        valid: [],
+      },
+    )
+
+    ruleTester.run(
+      `${ruleName}(${type}): prioritize selectors over modifiers quantity`,
+      rule,
+      {
+        invalid: [
+          {
+            errors: [
+              {
+                data: {
+                  leftGroup: 'required-property',
+                  right: 'method(): void',
+                  rightGroup: 'method',
+                  left: 'property',
+                },
+                messageId: 'unexpectedInterfacePropertiesGroupOrder',
+              },
+            ],
+            options: [
+              {
+                ...options,
+                groups: ['method', 'required-property'],
+              },
+            ],
+            output: dedent`
+            interface Interface {
+              method(): void
+              property: string
+            }
+          `,
+            code: dedent`
+            interface Interface {
+              property: string
+              method(): void
+            }
+          `,
+          },
+        ],
+        valid: [],
+      },
+    )
+
+    describe(`${ruleName}(${type}): selectors priority`, () => {
+      ruleTester.run(
+        `${ruleName}(${type}): prioritize index-signature over multiline`,
+        rule,
+        {
+          invalid: [
+            {
+              errors: [
+                {
+                  data: {
+                    rightGroup: 'index-signature',
+                    left: 'multilineProperty',
+                    right: '[key: string]',
+                    leftGroup: 'multiline',
+                  },
+                  messageId: 'unexpectedInterfacePropertiesGroupOrder',
+                },
+              ],
+              output: dedent`
+                interface Interface {
+                  [key: string]: string;
+                  multilineProperty: {
+                    a: string
+                  }
+                }
+              `,
+              code: dedent`
+                interface Interface {
+                  multilineProperty: {
+                    a: string
+                  }
+                  [key: string]: string;
+                }
+              `,
+              options: [
+                {
+                  ...options,
+                  groups: ['index-signature', 'multiline'],
+                },
+              ],
+            },
+          ],
+          valid: [],
+        },
+      )
+
+      ruleTester.run(
+        `${ruleName}(${type}): prioritize method over multiline`,
+        rule,
+        {
+          invalid: [
+            {
+              errors: [
+                {
+                  data: {
+                    right: 'method(): string',
+                    left: 'multilineProperty',
+                    leftGroup: 'multiline',
+                    rightGroup: 'method',
+                  },
+                  messageId: 'unexpectedInterfacePropertiesGroupOrder',
+                },
+              ],
+              output: dedent`
+                interface Interface {
+                  method(): string
+                  multilineProperty: {
+                    a: string
+                  }
+                }
+              `,
+              code: dedent`
+                interface Interface {
+                  multilineProperty: {
+                    a: string
+                  }
+                  method(): string
+                }
+              `,
+              options: [
+                {
+                  ...options,
+                  groups: ['method', 'multiline'],
+                },
+              ],
+            },
+          ],
+          valid: [],
+        },
+      )
+
+      ruleTester.run(
+        `${ruleName}(${type}): prioritize multiline over property`,
+        rule,
+        {
+          invalid: [
+            {
+              errors: [
+                {
+                  data: {
+                    right: 'multilineProperty',
+                    rightGroup: 'multiline',
+                    leftGroup: 'property',
+                    left: 'property',
+                  },
+                  messageId: 'unexpectedInterfacePropertiesGroupOrder',
+                },
+              ],
+              output: dedent`
+                interface Interface {
+                  multilineProperty: {
+                    a: string
+                  }
+                  property: string
+                }
+              `,
+              code: dedent`
+                interface Interface {
+                  property: string
+                  multilineProperty: {
+                    a: string
+                  }
+                }
+              `,
+              options: [
+                {
+                  ...options,
+                  groups: ['multiline', 'property'],
+                },
+              ],
+            },
+          ],
+          valid: [],
+        },
+      )
+
+      ruleTester.run(
+        `${ruleName}(${type}): prioritize property over member`,
+        rule,
+        {
+          invalid: [
+            {
+              errors: [
+                {
+                  data: {
+                    left: 'method(): string',
+                    rightGroup: 'property',
+                    leftGroup: 'member',
+                    right: 'property',
+                  },
+                  messageId: 'unexpectedInterfacePropertiesGroupOrder',
+                },
+              ],
+              output: dedent`
+                interface Interface {
+                  property: string
+                  method(): string
+                }
+              `,
+              code: dedent`
+                interface Interface {
+                  method(): string
+                  property: string
+                }
+              `,
+              options: [
+                {
+                  ...options,
+                  groups: ['property', 'member'],
+                },
+              ],
+            },
+          ],
+          valid: [],
+        },
+      )
+    })
+
+    describe(`${ruleName}(${type}): modifiers priority`, () => {
+      ruleTester.run(
+        `${ruleName}(${type}): prioritize multiline over optional`,
+        rule,
+        {
+          invalid: [
+            {
+              errors: [
+                {
+                  data: {
+                    rightGroup: 'multiline-property',
+                    leftGroup: 'optional-property',
+                    right: 'multilineProperty',
+                    left: 'optionalProperty',
+                  },
+                  messageId: 'unexpectedInterfacePropertiesGroupOrder',
+                },
+              ],
+              output: dedent`
+                interface Interface {
+                  multilineProperty: {
+                    a: string
+                  }
+                  optionalProperty?: string
+                }
+              `,
+              code: dedent`
+                interface Interface {
+                  optionalProperty?: string
+                  multilineProperty: {
+                    a: string
+                  }
+                }
+              `,
+              options: [
+                {
+                  ...options,
+                  groups: ['multiline-property', 'optional-property'],
+                },
+              ],
+            },
+          ],
+          valid: [],
+        },
+      )
+
+      ruleTester.run(
+        `${ruleName}(${type}): prioritize multiline over required`,
+        rule,
+        {
+          invalid: [
+            {
+              errors: [
+                {
+                  data: {
+                    rightGroup: 'multiline-property',
+                    leftGroup: 'required-property',
+                    right: 'multilineProperty',
+                    left: 'requiredProperty',
+                  },
+                  messageId: 'unexpectedInterfacePropertiesGroupOrder',
+                },
+              ],
+              output: dedent`
+                interface Interface {
+                  multilineProperty: {
+                    a: string
+                  }
+                  requiredProperty: string
+                }
+              `,
+              code: dedent`
+                interface Interface {
+                  requiredProperty: string
+                  multilineProperty: {
+                    a: string
+                  }
+                }
+              `,
+              options: [
+                {
+                  ...options,
+                  groups: ['multiline-property', 'required-property'],
+                },
+              ],
+            },
+          ],
+          valid: [],
+        },
+      )
+    })
+
+    ruleTester.run(
       `${ruleName}(${type}): allows to set groups for sorting`,
       rule,
       {
@@ -587,6 +971,352 @@ describe(ruleName, () => {
         ],
       },
     )
+
+    describe(`${ruleName}: custom groups`, () => {
+      ruleTester.run(`${ruleName}: filters on selector and modifiers`, rule, {
+        invalid: [
+          {
+            options: [
+              {
+                customGroups: [
+                  {
+                    groupName: 'unusedCustomGroup',
+                    modifiers: ['optional'],
+                    selector: 'method',
+                  },
+                  {
+                    groupName: 'optionalPropertyGroup',
+                    modifiers: ['optional'],
+                    selector: 'property',
+                  },
+                  {
+                    groupName: 'propertyGroup',
+                    selector: 'property',
+                  },
+                ],
+                groups: ['propertyGroup', 'optionalPropertyGroup'],
+              },
+            ],
+            errors: [
+              {
+                data: {
+                  leftGroup: 'optionalPropertyGroup',
+                  rightGroup: 'propertyGroup',
+                  right: 'c',
+                  left: 'b',
+                },
+                messageId: 'unexpectedInterfacePropertiesGroupOrder',
+              },
+            ],
+            output: dedent`
+              interface Interface {
+                c: string
+                a?: string
+                b?: string
+              }
+            `,
+            code: dedent`
+              interface Interface {
+                a?: string
+                b?: string
+                c: string
+              }
+            `,
+          },
+        ],
+        valid: [],
+      })
+
+      ruleTester.run(`${ruleName}: filters on elementNamePattern`, rule, {
+        invalid: [
+          {
+            options: [
+              {
+                customGroups: [
+                  {
+                    groupName: 'propertiesStartingWithHello',
+                    elementNamePattern: 'hello*',
+                    selector: 'property',
+                  },
+                ],
+                groups: ['propertiesStartingWithHello', 'unknown'],
+              },
+            ],
+            errors: [
+              {
+                data: {
+                  rightGroup: 'propertiesStartingWithHello',
+                  right: 'helloProperty',
+                  left: 'method(): void',
+                  leftGroup: 'unknown',
+                },
+                messageId: 'unexpectedInterfacePropertiesGroupOrder',
+              },
+            ],
+            output: dedent`
+              interface Interface {
+                helloProperty: string
+                a: string
+                b: string
+                method(): void
+              }
+            `,
+            code: dedent`
+              interface Interface {
+                a: string
+                b: string
+                method(): void
+                helloProperty: string
+              }
+            `,
+          },
+        ],
+        valid: [],
+      })
+
+      ruleTester.run(
+        `${ruleName}: sort custom groups by overriding 'type' and 'order'`,
+        rule,
+        {
+          invalid: [
+            {
+              errors: [
+                {
+                  data: {
+                    right: 'bb',
+                    left: 'a',
+                  },
+                  messageId: 'unexpectedInterfacePropertiesOrder',
+                },
+                {
+                  data: {
+                    right: 'ccc',
+                    left: 'bb',
+                  },
+                  messageId: 'unexpectedInterfacePropertiesOrder',
+                },
+                {
+                  data: {
+                    right: 'dddd',
+                    left: 'ccc',
+                  },
+                  messageId: 'unexpectedInterfacePropertiesOrder',
+                },
+                {
+                  data: {
+                    rightGroup: 'reversedPropertiesByLineLength',
+                    left: 'method(): void',
+                    leftGroup: 'unknown',
+                    right: 'eee',
+                  },
+                  messageId: 'unexpectedInterfacePropertiesGroupOrder',
+                },
+              ],
+              options: [
+                {
+                  customGroups: [
+                    {
+                      groupName: 'reversedPropertiesByLineLength',
+                      selector: 'property',
+                      type: 'line-length',
+                      order: 'desc',
+                    },
+                  ],
+                  groups: ['reversedPropertiesByLineLength', 'unknown'],
+                  type: 'alphabetical',
+                  order: 'asc',
+                },
+              ],
+              output: dedent`
+                interface Interface {
+                  dddd: string
+                  ccc: string
+                  eee: string
+                  bb: string
+                  ff: string
+                  a: string
+                  g: string
+                  anotherMethod(): void
+                  method(): void
+                  yetAnotherMethod(): void
+                }
+              `,
+              code: dedent`
+                interface Interface {
+                  a: string
+                  bb: string
+                  ccc: string
+                  dddd: string
+                  method(): void
+                  eee: string
+                  ff: string
+                  g: string
+                  anotherMethod(): void
+                  yetAnotherMethod(): void
+                }
+            `,
+            },
+          ],
+          valid: [],
+        },
+      )
+
+      ruleTester.run(
+        `${ruleName}: does not sort custom groups with 'unsorted' type`,
+        rule,
+        {
+          invalid: [
+            {
+              options: [
+                {
+                  customGroups: [
+                    {
+                      groupName: 'unsortedProperties',
+                      selector: 'property',
+                      type: 'unsorted',
+                    },
+                  ],
+                  groups: ['unsortedProperties', 'unknown'],
+                },
+              ],
+              errors: [
+                {
+                  data: {
+                    rightGroup: 'unsortedProperties',
+                    left: 'method(): void',
+                    leftGroup: 'unknown',
+                    right: 'c',
+                  },
+                  messageId: 'unexpectedInterfacePropertiesGroupOrder',
+                },
+              ],
+              output: dedent`
+                interface Interface {
+                  b
+                  a
+                  d
+                  e
+                  c
+                  method(): void
+                }
+              `,
+              code: dedent`
+                interface Interface {
+                  b
+                  a
+                  d
+                  e
+                  method(): void
+                  c
+                }
+            `,
+            },
+          ],
+          valid: [],
+        },
+      )
+
+      ruleTester.run(`${ruleName}: sort custom group blocks`, rule, {
+        invalid: [
+          {
+            options: [
+              {
+                customGroups: [
+                  {
+                    anyOf: [
+                      {
+                        modifiers: ['required'],
+                        selector: 'property',
+                      },
+                      {
+                        modifiers: ['optional'],
+                        selector: 'method',
+                      },
+                    ],
+                    groupName: 'requiredPropertiesAndOptionalMethods',
+                  },
+                ],
+                groups: [
+                  ['requiredPropertiesAndOptionalMethods', 'index-signature'],
+                  'unknown',
+                ],
+              },
+            ],
+            errors: [
+              {
+                data: {
+                  rightGroup: 'requiredPropertiesAndOptionalMethods',
+                  leftGroup: 'unknown',
+                  right: 'd',
+                  left: 'c',
+                },
+                messageId: 'unexpectedInterfacePropertiesGroupOrder',
+              },
+              {
+                data: {
+                  right: '[key: string]',
+                  left: 'e',
+                },
+                messageId: 'unexpectedInterfacePropertiesOrder',
+              },
+            ],
+            output: dedent`
+              interface Interface {
+                [key: string]: string
+                a: string
+                d?: () => void
+                e: string
+                b(): void
+                c?: string
+              }
+            `,
+            code: dedent`
+              interface Interface {
+                a: string
+                b(): void
+                c?: string
+                d?: () => void
+                e: string
+                [key: string]: string
+              }
+            `,
+          },
+        ],
+        valid: [],
+      })
+
+      ruleTester.run(
+        `${ruleName}: allows to use regex for element names in custom groups`,
+        rule,
+        {
+          valid: [
+            {
+              options: [
+                {
+                  customGroups: [
+                    {
+                      elementNamePattern: '^(?!.*Foo).*$',
+                      groupName: 'elementsWithoutFoo',
+                    },
+                  ],
+                  groups: ['unknown', 'elementsWithoutFoo'],
+                  type: 'alphabetical',
+                },
+              ],
+              code: dedent`
+              interface Interface {
+                iHaveFooInMyName: string
+                meTooIHaveFoo: string
+                a: string
+                b: string
+              }
+            `,
+            },
+          ],
+          invalid: [],
+        },
+      )
+    })
 
     ruleTester.run(
       `${ruleName}(${type}): allows to use regex for custom groups`,
