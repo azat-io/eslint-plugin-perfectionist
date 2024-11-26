@@ -210,8 +210,8 @@ describe(ruleName, () => {
             errors: [
               {
                 data: {
-                  left: 'func(): void',
                   right: 'arrowFunc',
+                  left: 'func',
                 },
                 messageId: 'unexpectedObjectTypesOrder',
               },
@@ -297,7 +297,7 @@ describe(ruleName, () => {
                 data: {
                   leftGroup: 'optional-multiline',
                   rightGroup: 'required-method',
-                  right: 'c(): void',
+                  right: 'c',
                   left: 'b',
                 },
                 messageId: 'unexpectedObjectTypesGroupOrder',
@@ -351,9 +351,9 @@ describe(ruleName, () => {
               {
                 data: {
                   leftGroup: 'required-property',
-                  right: 'method(): void',
                   rightGroup: 'method',
                   left: 'property',
+                  right: 'method',
                 },
                 messageId: 'unexpectedObjectTypesGroupOrder',
               },
@@ -437,10 +437,10 @@ describe(ruleName, () => {
               errors: [
                 {
                   data: {
-                    right: 'method(): string',
                     left: 'multilineProperty',
                     leftGroup: 'multiline',
                     rightGroup: 'method',
+                    right: 'method',
                   },
                   messageId: 'unexpectedObjectTypesGroupOrder',
                 },
@@ -527,10 +527,10 @@ describe(ruleName, () => {
               errors: [
                 {
                   data: {
-                    left: 'method(): string',
                     rightGroup: 'property',
                     leftGroup: 'member',
                     right: 'property',
+                    left: 'method',
                   },
                   messageId: 'unexpectedObjectTypesGroupOrder',
                 },
@@ -816,8 +816,8 @@ describe(ruleName, () => {
                 data: {
                   rightGroup: 'propertiesStartingWithHello',
                   right: 'helloProperty',
-                  left: 'method(): void',
                   leftGroup: 'unknown',
+                  left: 'method',
                 },
                 messageId: 'unexpectedObjectTypesGroupOrder',
               },
@@ -874,8 +874,8 @@ describe(ruleName, () => {
                 {
                   data: {
                     rightGroup: 'reversedPropertiesByLineLength',
-                    left: 'method(): void',
                     leftGroup: 'unknown',
+                    left: 'method',
                     right: 'eee',
                   },
                   messageId: 'unexpectedObjectTypesGroupOrder',
@@ -952,8 +952,8 @@ describe(ruleName, () => {
                 {
                   data: {
                     rightGroup: 'unsortedProperties',
-                    left: 'method(): void',
                     leftGroup: 'unknown',
+                    left: 'method',
                     right: 'c',
                   },
                   messageId: 'unexpectedObjectTypesGroupOrder',
@@ -2009,15 +2009,15 @@ describe(ruleName, () => {
             errors: [
               {
                 data: {
-                  left: '[name in v]?',
+                  left: '[name in v]',
                   right: '8',
                 },
                 messageId: 'unexpectedObjectTypesOrder',
               },
               {
                 data: {
-                  left: 'func(): void',
                   right: 'arrowFunc',
+                  left: 'func',
                 },
                 messageId: 'unexpectedObjectTypesOrder',
               },
@@ -2592,15 +2592,15 @@ describe(ruleName, () => {
               },
               {
                 data: {
-                  right: 'func(): void',
+                  right: 'func',
                   left: '8',
                 },
                 messageId: 'unexpectedObjectTypesOrder',
               },
               {
                 data: {
-                  left: 'func(): void',
                   right: 'arrowFunc',
+                  left: 'func',
                 },
                 messageId: 'unexpectedObjectTypesOrder',
               },

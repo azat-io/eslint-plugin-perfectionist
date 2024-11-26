@@ -235,15 +235,15 @@ describe(ruleName, () => {
             errors: [
               {
                 data: {
-                  left: 'c()',
                   right: 'a',
+                  left: 'c',
                 },
                 messageId: 'unexpectedInterfacePropertiesOrder',
               },
               {
                 data: {
-                  left: 'e()',
                   right: 'd',
+                  left: 'e',
                 },
                 messageId: 'unexpectedInterfacePropertiesOrder',
               },
@@ -528,7 +528,7 @@ describe(ruleName, () => {
                 data: {
                   leftGroup: 'optional-multiline',
                   rightGroup: 'required-method',
-                  right: 'c(): void',
+                  right: 'c',
                   left: 'b',
                 },
                 messageId: 'unexpectedInterfacePropertiesGroupOrder',
@@ -582,9 +582,9 @@ describe(ruleName, () => {
               {
                 data: {
                   leftGroup: 'required-property',
-                  right: 'method(): void',
                   rightGroup: 'method',
                   left: 'property',
+                  right: 'method',
                 },
                 messageId: 'unexpectedInterfacePropertiesGroupOrder',
               },
@@ -668,10 +668,10 @@ describe(ruleName, () => {
               errors: [
                 {
                   data: {
-                    right: 'method(): string',
                     left: 'multilineProperty',
                     leftGroup: 'multiline',
                     rightGroup: 'method',
+                    right: 'method',
                   },
                   messageId: 'unexpectedInterfacePropertiesGroupOrder',
                 },
@@ -758,10 +758,10 @@ describe(ruleName, () => {
               errors: [
                 {
                   data: {
-                    left: 'method(): string',
                     rightGroup: 'property',
                     leftGroup: 'member',
                     right: 'property',
+                    left: 'method',
                   },
                   messageId: 'unexpectedInterfacePropertiesGroupOrder',
                 },
@@ -1047,8 +1047,8 @@ describe(ruleName, () => {
                 data: {
                   rightGroup: 'propertiesStartingWithHello',
                   right: 'helloProperty',
-                  left: 'method(): void',
                   leftGroup: 'unknown',
+                  left: 'method',
                 },
                 messageId: 'unexpectedInterfacePropertiesGroupOrder',
               },
@@ -1105,8 +1105,8 @@ describe(ruleName, () => {
                 {
                   data: {
                     rightGroup: 'reversedPropertiesByLineLength',
-                    left: 'method(): void',
                     leftGroup: 'unknown',
+                    left: 'method',
                     right: 'eee',
                   },
                   messageId: 'unexpectedInterfacePropertiesGroupOrder',
@@ -1183,8 +1183,8 @@ describe(ruleName, () => {
                 {
                   data: {
                     rightGroup: 'unsortedProperties',
-                    left: 'method(): void',
                     leftGroup: 'unknown',
+                    left: 'method',
                     right: 'c',
                   },
                   messageId: 'unexpectedInterfacePropertiesGroupOrder',
@@ -2220,15 +2220,15 @@ describe(ruleName, () => {
             errors: [
               {
                 data: {
-                  left: 'c()',
                   right: 'a',
+                  left: 'c',
                 },
                 messageId: 'unexpectedInterfacePropertiesOrder',
               },
               {
                 data: {
-                  left: 'e()',
                   right: 'd',
+                  left: 'e',
                 },
                 messageId: 'unexpectedInterfacePropertiesOrder',
               },
@@ -2947,7 +2947,7 @@ describe(ruleName, () => {
             errors: [
               {
                 data: {
-                  right: 'c()',
+                  right: 'c',
                   left: 'a',
                 },
                 messageId: 'unexpectedInterfacePropertiesOrder',
