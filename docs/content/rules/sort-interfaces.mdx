@@ -235,9 +235,11 @@ Specifies how new lines should be handled between interface groups.
 
 This options is only applicable when `partitionByNewLine` is `false`.
 
-### groupKind
+### [DEPRECATED] groupKind
 
 <sub>default: `'mixed'`</sub>
+
+Use the [groups](#groups) option with the `optional` and `required` modifiers instead.
 
 Specifies how optional and required members should be ordered in TypeScript interfaces.
 
@@ -254,14 +256,6 @@ Specifies how optional and required members should be ordered in TypeScript inte
 
 Allows you to specify a list of interface member groups for sorting. Groups help organize members into categories, making your interfaces more readable and maintainable.
 
-Predefined groups:
-
-- `'multiline'` — Members with multiline definitions, such as methods or properties with complex types.
-- `'method'` - Members that are methods.
-- `'unknown'` — Interface members that don’t fit into any group specified in the `groups` option.
-
-If the `unknown` group is not specified in the `groups` option, it will automatically be added to the end of the list.
-
 Each interface member will be assigned a single group specified in the `groups` option (or the `unknown` group if no match is found).
 The order of items in the `groups` option determines how groups are ordered.
 
@@ -269,6 +263,8 @@ Within a given group, members will be sorted according to the `type`, `order`, `
 
 Individual groups can be combined together by placing them in an array. The order of groups in that array does not matter.
 All members of the groups in the array will be sorted together as if they were part of a single group.
+
+Predefined groups are characterized by a single selector and potentially multiple modifiers. You may enter modifiers in any order, but the selector must always come at the end.
 
 #### Example
 
@@ -298,10 +294,106 @@ interface User {
 }
 ```
 
+#### Index-signatures
+
+- Selectors: `index-signature`, `member`.
+- Modifiers: `required`, `optional`, `multiline`.
+- Example: `optional-index-signature`, `index-signature`, `member`.
+
+#### Methods
+
+- Selectors: `method`, `member`.
+- Modifiers: `required`, `optional`, `multiline`.
+- Example: `optional-multiline-method`, `method`, `member`.
+
+#### Properties
+
+- Selectors: `property`, `member`.
+- Modifiers: `required`, `optional`, `multiline`.
+- Example: `optional-property`, `property`, `member`.
+
+##### Scope of the `required` modifier
+
+Elements that are not `optional` will be matched with the `required` modifier, even if the keyword is not present.
+
+##### The `unknown` group
+
+Members that don’t fit into any group specified in the `groups` option will be placed in the `unknown` group. If the `unknown` group is not specified in the `groups` option,
+it will automatically be added to the end of the list.
+
+##### Behavior when multiple groups match an element
+
+The lists of modifiers above are sorted by importance, from most to least important.
+In case of multiple groups matching an element, the following rules will be applied:
+
+1. The group with the most modifiers matching will be selected.
+2. If modifiers quantity is the same, order will be chosen based on modifier importance as listed above.
+
+Example :
+
+```ts
+interface Test {
+  optionalMethod?: () => {
+      property: string;
+    }
+}
+```
+
+`optionalMethod` can be matched by the following groups, from most to least important:
+- `multiline-optional-method` or `optional-multiline-method`.
+- `multiline-method`.
+- `optional-method`.
+- `method`.
+- `multiline-optional-member` or `optional-multiline-member`.
+- `multiline-member`.
+- `optional-member`.
+- `member`.
+- `unknown`.
+
+Example 2 (The most important group is written in the comments):
+
+```ts
+interface Interface {
+  // 'index-signature'
+  [key: string]: any;
+  // 'optional-property'
+  description?: string;
+  // 'required-method'
+  method(): string
+```
+
 ### customGroups
 
+<Important title="Migrating from the old API">
+Support for the object-based `customGroups` option is deprecated.
+
+Migrating from the old to the current API is easy:
+
+Old API:
+```ts
+{
+  "key1": "value1",
+  "key2": "value2"
+}
+```
+
+Current API:
+```ts
+[
+  {
+    "groupName": "key1",
+    "elementNamePattern": "value1"
+  },
+  {
+    "groupName": "key2",
+    "elementNamePattern": "value2"
+  }
+]
+```
+</Important>
+
 <sub>
-  type: `{ [groupName: string]: string | string[] }`
+  type: `Array<CustomGroupDefinition | CustomGroupAnyOfDefinition>`
 </sub>
 <sub>default: `{}`</sub>
 
@@ -316,7 +408,7 @@ Custom group matching takes precedence over predefined group matching.
 
 #### Example
 
-Put all properties starting with `id` and `name` at the top, combine and sort metadata and multiline properties at the bottom.
+Put all properties starting with `id` and `name` at the top, combine and sort metadata and optional multiline properties at the bottom.
 Anything else is put in the middle.
 
 ```ts
@@ -326,7 +418,7 @@ interface User {
   age: number                // unknown
   isAdmin: boolean           // unknown
   lastUpdated_metadata: Date // bottom
-  localization: {            // multiline
+  localization?: {            // multiline
     // Stuff about localization
   }
   version_metadata: string   // bottom
@@ -338,14 +430,22 @@ interface User {
 ```js
  {
    groups: [
-+    'top',                  // [!code ++]
++    'top',                           // [!code ++]
      'unknown',
-     ['multiline', 'bottom'] // [!code ++]
++    ['optional-multiline', 'bottom'] // [!code ++]
    ],
-+  customGroups: {           // [!code ++]
-+    top: ['^id$', '^name$'] // [!code ++]
-+    bottom: '.+_metadata$'  // [!code ++]
-+  }                         // [!code ++]
++  customGroups: [                              // [!code ++]
++    {                                          // [!code ++]
++       groupName: 'top',                       // [!code ++]
++       selector: 'property',                   // [!code ++]
++       elementNamePattern: '^(?:id|name)$',    // [!code ++]
++    },                                         // [!code ++]
++    {                                          // [!code ++]
++       groupName: 'bottom',                    // [!code ++]
++       selector: 'property',                   // [!code ++]
++       elementNamePattern: '.+_metadata$',     // [!code ++]
++    }                                          // [!code ++]
++  ]                                            // [!code ++]
  }
 ```
 
