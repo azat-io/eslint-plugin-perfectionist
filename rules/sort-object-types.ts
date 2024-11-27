@@ -278,6 +278,7 @@ export let sortObjectTypeElements = <MessageIds extends string>({
         'name' in typeElement.key
       ) {
         ;({ name } = typeElement.key)
+        /* v8 ignore next 8 - Unsure if we can reach it */
       } else {
         name = formatName(
           sourceCode.text.slice(
@@ -302,10 +303,10 @@ export let sortObjectTypeElements = <MessageIds extends string>({
         selectors.push('method')
       }
 
-            if (typeElement.loc.start.line !== typeElement.loc.end.line) {
-              modifiers.push('multiline')
-              selectors.push('multiline')
-            }
+      if (typeElement.loc.start.line !== typeElement.loc.end.line) {
+        modifiers.push('multiline')
+        selectors.push('multiline')
+      }
 
           if (
             !selectors.includes('index-signature') &&
@@ -316,11 +317,11 @@ export let sortObjectTypeElements = <MessageIds extends string>({
 
           selectors.push('member')
 
-          if (isMemberOptional(typeElement)) {
-            modifiers.push('optional')
-          } else {
-            modifiers.push('required')
-          }
+      if (isMemberOptional(typeElement)) {
+        modifiers.push('optional')
+      } else {
+        modifiers.push('required')
+      }
 
       for (let predefinedGroup of generatePredefinedGroups({
         cache: cachedGroupsByModifiersAndSelectors,
