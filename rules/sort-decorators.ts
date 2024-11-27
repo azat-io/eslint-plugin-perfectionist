@@ -216,7 +216,10 @@ let sortDecorators = (
         options.partitionByComment &&
         hasPartitionComment(
           options.partitionByComment,
-          getCommentsBefore(decorator, sourceCode),
+          getCommentsBefore({
+            node: decorator,
+            sourceCode,
+          }),
         )
       ) {
         accumulator.push([])

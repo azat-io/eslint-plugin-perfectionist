@@ -36,10 +36,14 @@ export let makeNewlinesFixes = ({
 
     let nodeGroupNumber = getGroupNumber(options.groups, sortingNode)
     let nextNodeGroupNumber = getGroupNumber(options.groups, nextSortingNode)
-    let currentNodeRange = getNodeRange(nodes.at(i)!.node, sourceCode)
-    let nextNodeRangeStart = getNodeRange(nodes.at(i + 1)!.node, sourceCode).at(
-      0,
-    )!
+    let currentNodeRange = getNodeRange({
+      node: nodes.at(i)!.node,
+      sourceCode,
+    })
+    let nextNodeRangeStart = getNodeRange({
+      node: nodes.at(i + 1)!.node,
+      sourceCode,
+    }).at(0)!
     let rangeToReplace: [number, number] = [
       currentNodeRange.at(1)!,
       nextNodeRangeStart,

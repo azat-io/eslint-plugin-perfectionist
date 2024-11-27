@@ -7,13 +7,19 @@ import { getEslintDisabledRules } from './get-eslint-disabled-rules'
 import { isPartitionComment } from './is-partition-comment'
 import { getCommentsBefore } from './get-comments-before'
 
-export let getNodeRange = (
-  node: TSESTree.Node,
-  sourceCode: TSESLint.SourceCode,
-  additionalOptions?: {
-    partitionByComment?: string[] | boolean | string
-  },
-): TSESTree.Range => {
+interface GetNodeRangeParameters {
+  options?: {
+    partitionByComment: string[] | boolean | string
+  }
+  sourceCode: TSESLint.SourceCode
+  node: TSESTree.Node
+}
+
+export let getNodeRange = ({
+  sourceCode,
+  options,
+  node,
+}: GetNodeRangeParameters): TSESTree.Range => {
   let start = node.range.at(0)!
   let end = node.range.at(1)!
 
@@ -32,8 +38,11 @@ export let getNodeRange = (
     end = bodyClosingParen.range.at(1)!
   }
 
-  let comments = getCommentsBefore(node, sourceCode)
-  let partitionComment = additionalOptions?.partitionByComment ?? false
+  let comments = getCommentsBefore({
+    sourceCode,
+    node,
+  })
+  let partitionComment = options?.partitionByComment ?? false
 
   /**
    * Iterate on all comments starting from the bottom until we reach the last

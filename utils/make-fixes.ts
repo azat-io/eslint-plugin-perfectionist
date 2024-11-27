@@ -35,7 +35,11 @@ export let makeFixes = ({
     }
 
     let sortedNodeCode = sourceCode.text.slice(
-      ...getNodeRange(sortedNode, sourceCode, options),
+      ...getNodeRange({
+        node: sortedNode,
+        sourceCode,
+        options,
+      }),
     )
     let sortedNodeText = sourceCode.getText(sortedNode)
     let tokensAfter = sourceCode.getTokensAfter(node, {
@@ -60,7 +64,7 @@ export let makeFixes = ({
     }
     fixes.push(
       fixer.replaceTextRange(
-        getNodeRange(node, sourceCode, options),
+        getNodeRange({ sourceCode, options, node }),
         sortedNodeCode,
       ),
     )
