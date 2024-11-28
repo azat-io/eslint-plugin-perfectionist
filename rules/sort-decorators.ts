@@ -273,7 +273,7 @@ let sortDecorators = (
       fix: fixer =>
         makeFixes({
           sortedNodes: sortedNodesExcludingEslintDisabled,
-          ignoreFirstNodeJsDocBlock: true,
+          ignoreFirstNodeHighestBlockComment: true,
           sourceCode,
           options,
           fixer,

@@ -11,13 +11,13 @@ interface GetNodeRangeParameters {
   options?: {
     partitionByComment: string[] | boolean | string
   }
-  ignoreFirstCommentIfBlock?: boolean
+  ignoreHighestBlockComment?: boolean
   sourceCode: TSESLint.SourceCode
   node: TSESTree.Node
 }
 
 export let getNodeRange = ({
-  ignoreFirstCommentIfBlock,
+  ignoreHighestBlockComment,
   sourceCode,
   options,
   node,
@@ -74,7 +74,7 @@ export let getNodeRange = ({
       break
     }
 
-    if (ignoreFirstCommentIfBlock && comment === highestBlockComment) {
+    if (ignoreHighestBlockComment && comment === highestBlockComment) {
       break
     }
 
