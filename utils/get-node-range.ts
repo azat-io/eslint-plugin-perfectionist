@@ -11,11 +11,13 @@ interface GetNodeRangeParameters {
   options?: {
     partitionByComment: string[] | boolean | string
   }
+  ignoreFirstCommentIfBlock?: boolean
   sourceCode: TSESLint.SourceCode
   node: TSESTree.Node
 }
 
 export let getNodeRange = ({
+  ignoreFirstCommentIfBlock,
   sourceCode,
   options,
   node,
@@ -42,7 +44,7 @@ export let getNodeRange = ({
     sourceCode,
     node,
   })
-  let partitionComment = options?.partitionByComment ?? false
+  let highestBlockComment = comments.find(comment => comment.type === 'Block')
 
   /**
    * Iterate on all comments starting from the bottom until we reach the last
@@ -52,14 +54,16 @@ export let getNodeRange = ({
   let relevantTopComment: TSESTree.Comment | undefined
   for (let i = comments.length - 1; i >= 0; i--) {
     let comment = comments[i]
+
     let eslintDisabledRules = getEslintDisabledRules(comment.value)
     if (
-      isPartitionComment(partitionComment, comment.value) ||
+      isPartitionComment(options?.partitionByComment ?? false, comment.value) ||
       eslintDisabledRules?.eslintDisableDirective === 'eslint-disable' ||
       eslintDisabledRules?.eslintDisableDirective === 'eslint-enable'
     ) {
       break
     }
+
     // Check for newlines between comments or between the first comment and
     // The node.
     let previousCommentOrNodeStartLine =
@@ -69,6 +73,11 @@ export let getNodeRange = ({
     if (comment.loc.end.line !== previousCommentOrNodeStartLine - 1) {
       break
     }
+
+    if (ignoreFirstCommentIfBlock && comment === highestBlockComment) {
+      break
+    }
+
     relevantTopComment = comment
   }
 

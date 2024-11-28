@@ -369,6 +369,134 @@ describe(ruleName, () => {
     )
 
     ruleTester.run(
+      `${ruleName}(${type}): ignores first comment if it's a block`,
+      rule,
+      {
+        invalid: [
+          {
+            output: dedent`
+                class Class {
+                  // Should not move
+                  /**
+                   * JSDoc comment
+                   */
+                  // A
+                  @A()
+                  @B()
+                  foo: number;
+              }
+           `,
+            code: dedent`
+                class Class {
+                  // Should not move
+                  /**
+                   * JSDoc comment
+                   */
+                  @B()
+                  // A
+                  @A()
+                  foo: number;
+              }
+           `,
+            errors: [
+              {
+                messageId: 'unexpectedDecoratorsOrder',
+              },
+            ],
+            options: [options],
+          },
+          {
+            output: dedent`
+                class Class {
+                  // Should not move
+                  /**
+                   * JSDoc comment
+                   */
+                  /**
+                   * A
+                   */
+                  @A()
+                  @B()
+                  foo: number;
+              }
+           `,
+            code: dedent`
+                class Class {
+                  // Should not move
+                  /**
+                   * JSDoc comment
+                   */
+                  @B()
+                  /**
+                   * A
+                   */
+                  @A()
+                  foo: number;
+              }
+           `,
+            errors: [
+              {
+                messageId: 'unexpectedDecoratorsOrder',
+              },
+            ],
+            options: [options],
+          },
+          {
+            output: dedent`
+                class Class {
+                  // Shouldn't move
+                  /** JSDoc comment */
+                  @A()
+                  @B()
+                  foo: number;
+              }
+           `,
+            code: dedent`
+                class Class {
+                  // Shouldn't move
+                  /** JSDoc comment */
+                  @B()
+                  @A()
+                  foo: number;
+              }
+           `,
+            errors: [
+              {
+                messageId: 'unexpectedDecoratorsOrder',
+              },
+            ],
+            options: [options],
+          },
+          {
+            output: dedent`
+                class Class {
+                  // Not aJSDoc comment
+                  @A()
+                  @B()
+                  foo: number;
+              }
+           `,
+            code: dedent`
+                class Class {
+                  @B()
+                  // Not aJSDoc comment
+                  @A()
+                  foo: number;
+              }
+           `,
+            errors: [
+              {
+                messageId: 'unexpectedDecoratorsOrder',
+              },
+            ],
+            options: [options],
+          },
+        ],
+        valid: [],
+      },
+    )
+
+    ruleTester.run(
       `${ruleName}(${type}): allows to set groups for sorting`,
       rule,
       {
