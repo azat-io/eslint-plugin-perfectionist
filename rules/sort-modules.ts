@@ -342,14 +342,19 @@ let analyzeModule = ({
       node,
       name,
     }
-    let comments = getCommentsBefore(node, sourceCode)
     let lastSortingNode = formattedNodes.at(-1)?.at(-1)
     if (
       (options.partitionByNewLine &&
         lastSortingNode &&
         getLinesBetween(sourceCode, lastSortingNode, sortingNode)) ||
       (options.partitionByComment &&
-        hasPartitionComment(options.partitionByComment, comments))
+        hasPartitionComment(
+          options.partitionByComment,
+          getCommentsBefore({
+            sourceCode,
+            node,
+          }),
+        ))
     ) {
       formattedNodes.push([])
     }

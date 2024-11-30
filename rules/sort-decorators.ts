@@ -216,7 +216,10 @@ let sortDecorators = (
         options.partitionByComment &&
         hasPartitionComment(
           options.partitionByComment,
-          getCommentsBefore(decorator, sourceCode),
+          getCommentsBefore({
+            node: decorator,
+            sourceCode,
+          }),
         )
       ) {
         accumulator.push([])
@@ -270,6 +273,7 @@ let sortDecorators = (
       fix: fixer =>
         makeFixes({
           sortedNodes: sortedNodesExcludingEslintDisabled,
+          ignoreFirstNodeHighestBlockComment: true,
           sourceCode,
           options,
           fixer,

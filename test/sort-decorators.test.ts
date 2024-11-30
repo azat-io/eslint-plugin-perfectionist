@@ -137,12 +137,12 @@ describe(ruleName, () => {
           {
             output: dedent`
               /**
+               * JSDoc comment that shouldn't move
+               */
+              /**
                * Comment A
                */
               @A
-              /**
-               * Comment B
-               */
               @B
               /* Comment C */
               @C
@@ -151,12 +151,12 @@ describe(ruleName, () => {
               class Class {
 
                 /**
+                 * JSDoc comment that shouldn't move
+                 */
+                /**
                  * Comment A
                  */
                 @A
-                /**
-                 * Comment B
-                 */
                 @B
                 /* Comment C */
                 @C
@@ -165,12 +165,12 @@ describe(ruleName, () => {
                 property
 
                 /**
+                 * JSDoc comment that shouldn't move
+                 */
+                /**
                  * Comment A
                  */
                 @A
-                /**
-                 * Comment B
-                 */
                 @B
                 /* Comment C */
                 @C
@@ -179,12 +179,12 @@ describe(ruleName, () => {
                 accessor field
 
                 /**
+                 * JSDoc comment that shouldn't move
+                 */
+                /**
                  * Comment A
                  */
                 @A
-                /**
-                 * Comment B
-                 */
                 @B
                 /* Comment C */
                 @C
@@ -192,12 +192,12 @@ describe(ruleName, () => {
                 @D
                 method(
                   /**
+                   * JSDoc comment that shouldn't move
+                   */
+                  /**
                    * Comment A
                    */
                   @A
-                  /**
-                   * Comment B
-                   */
                   @B
                   /* Comment C */
                   @C
@@ -209,7 +209,7 @@ describe(ruleName, () => {
             `,
             code: dedent`
               /**
-               * Comment B
+               * JSDoc comment that shouldn't move
                */
               @B
               /**
@@ -223,7 +223,7 @@ describe(ruleName, () => {
               class Class {
 
                 /**
-                 * Comment B
+                 * JSDoc comment that shouldn't move
                  */
                 @B
                 /**
@@ -237,7 +237,7 @@ describe(ruleName, () => {
                 property
 
                 /**
-                 * Comment B
+                 * JSDoc comment that shouldn't move
                  */
                 @B
                 /**
@@ -251,7 +251,7 @@ describe(ruleName, () => {
                 accessor field
 
                 /**
-                 * Comment B
+                 * JSDoc comment that shouldn't move
                  */
                 @B
                 /**
@@ -264,7 +264,7 @@ describe(ruleName, () => {
                 @C
                 method(
                   /**
-                   * Comment B
+                   * JSDoc comment that shouldn't move
                    */
                   @B
                   /**
@@ -361,6 +361,134 @@ describe(ruleName, () => {
                 messageId: 'unexpectedDecoratorsOrder',
               },
             ]),
+            options: [options],
+          },
+        ],
+        valid: [],
+      },
+    )
+
+    ruleTester.run(
+      `${ruleName}(${type}): ignores first comment if it's a block`,
+      rule,
+      {
+        invalid: [
+          {
+            output: dedent`
+                class Class {
+                  // Should not move
+                  /**
+                   * JSDoc comment
+                   */
+                  // A
+                  @A()
+                  @B()
+                  foo: number;
+              }
+           `,
+            code: dedent`
+                class Class {
+                  // Should not move
+                  /**
+                   * JSDoc comment
+                   */
+                  @B()
+                  // A
+                  @A()
+                  foo: number;
+              }
+           `,
+            errors: [
+              {
+                messageId: 'unexpectedDecoratorsOrder',
+              },
+            ],
+            options: [options],
+          },
+          {
+            output: dedent`
+                class Class {
+                  // Should not move
+                  /**
+                   * JSDoc comment
+                   */
+                  /**
+                   * A
+                   */
+                  @A()
+                  @B()
+                  foo: number;
+              }
+           `,
+            code: dedent`
+                class Class {
+                  // Should not move
+                  /**
+                   * JSDoc comment
+                   */
+                  @B()
+                  /**
+                   * A
+                   */
+                  @A()
+                  foo: number;
+              }
+           `,
+            errors: [
+              {
+                messageId: 'unexpectedDecoratorsOrder',
+              },
+            ],
+            options: [options],
+          },
+          {
+            output: dedent`
+                class Class {
+                  // Shouldn't move
+                  /** JSDoc comment */
+                  @A()
+                  @B()
+                  foo: number;
+              }
+           `,
+            code: dedent`
+                class Class {
+                  // Shouldn't move
+                  /** JSDoc comment */
+                  @B()
+                  @A()
+                  foo: number;
+              }
+           `,
+            errors: [
+              {
+                messageId: 'unexpectedDecoratorsOrder',
+              },
+            ],
+            options: [options],
+          },
+          {
+            output: dedent`
+                class Class {
+                  // Not aJSDoc comment
+                  @A()
+                  @B()
+                  foo: number;
+              }
+           `,
+            code: dedent`
+                class Class {
+                  @B()
+                  // Not aJSDoc comment
+                  @A()
+                  foo: number;
+              }
+           `,
+            errors: [
+              {
+                messageId: 'unexpectedDecoratorsOrder',
+              },
+            ],
             options: [options],
           },
         ],
@@ -1187,12 +1315,12 @@ describe(ruleName, () => {
           {
             output: dedent`
               /**
+               * JSDoc comment that shouldn't move
+               */
+              /**
                * Comment A
                */
               @A
-              /**
-               * Comment B
-               */
               @B
               /* Comment C */
               @C
@@ -1201,12 +1329,12 @@ describe(ruleName, () => {
               class Class {
 
                 /**
+                 * JSDoc comment that shouldn't move
+                 */
+                /**
                  * Comment A
                  */
                 @A
-                /**
-                 * Comment B
-                 */
                 @B
                 /* Comment C */
                 @C
@@ -1215,12 +1343,12 @@ describe(ruleName, () => {
                 property
 
                 /**
+                 * JSDoc comment that shouldn't move
+                 */
+                /**
                  * Comment A
                  */
                 @A
-                /**
-                 * Comment B
-                 */
                 @B
                 /* Comment C */
                 @C
@@ -1229,12 +1357,12 @@ describe(ruleName, () => {
                 accessor field
 
                 /**
+                 * JSDoc comment that shouldn't move
+                 */
+                /**
                  * Comment A
                  */
                 @A
-                /**
-                 * Comment B
-                 */
                 @B
                 /* Comment C */
                 @C
@@ -1242,12 +1370,12 @@ describe(ruleName, () => {
                 @D
                 method(
                   /**
+                   * JSDoc comment that shouldn't move
+                   */
+                  /**
                    * Comment A
                    */
                   @A
-                  /**
-                   * Comment B
-                   */
                   @B
                   /* Comment C */
                   @C
@@ -1259,7 +1387,7 @@ describe(ruleName, () => {
             `,
             code: dedent`
               /**
-               * Comment B
+               * JSDoc comment that shouldn't move
                */
               @B
               /**
@@ -1273,7 +1401,7 @@ describe(ruleName, () => {
               class Class {
 
                 /**
-                 * Comment B
+                 * JSDoc comment that shouldn't move
                  */
                 @B
                 /**
@@ -1287,7 +1415,7 @@ describe(ruleName, () => {
                 property
 
                 /**
-                 * Comment B
+                 * JSDoc comment that shouldn't move
                  */
                 @B
                 /**
@@ -1301,7 +1429,7 @@ describe(ruleName, () => {
                 accessor field
 
                 /**
-                 * Comment B
+                 * JSDoc comment that shouldn't move
                  */
                 @B
                 /**
@@ -1314,7 +1442,7 @@ describe(ruleName, () => {
                 @C
                 method(
                   /**
-                   * Comment B
+                   * JSDoc comment that shouldn't move
                    */
                   @B
                   /**
@@ -2179,12 +2307,12 @@ describe(ruleName, () => {
           {
             output: dedent`
               /**
+               * JSDoc comment that shouldn't move
+               */
+              /**
                * Comment A
                */
               @A
-              /**
-               * Comment B
-               */
               @BB
               /* Comment C */
               @CCC
@@ -2193,12 +2321,12 @@ describe(ruleName, () => {
               class Class {
 
                 /**
+                 * JSDoc comment that shouldn't move
+                 */
+                /**
                  * Comment A
                  */
                 @A
-                /**
-                 * Comment B
-                 */
                 @BB
                 /* Comment C */
                 @CCC
@@ -2207,12 +2335,12 @@ describe(ruleName, () => {
                 property
 
                 /**
+                 * JSDoc comment that shouldn't move
+                 */
+                /**
                  * Comment A
                  */
                 @A
-                /**
-                 * Comment B
-                 */
                 @BB
                 /* Comment C */
                 @CCC
@@ -2221,12 +2349,12 @@ describe(ruleName, () => {
                 accessor field
 
                 /**
+                 * JSDoc comment that shouldn't move
+                 */
+                /**
                  * Comment A
                  */
                 @A
-                /**
-                 * Comment B
-                 */
                 @BB
                 /* Comment C */
                 @CCC
@@ -2234,12 +2362,12 @@ describe(ruleName, () => {
                 @DDDD
                 method(
                   /**
+                   * JSDoc comment that shouldn't move
+                   */
+                  /**
                    * Comment A
                    */
                   @A
-                  /**
-                   * Comment B
-                   */
                   @BB
                   /* Comment C */
                   @CCC
@@ -2251,7 +2379,7 @@ describe(ruleName, () => {
             `,
             code: dedent`
               /**
-               * Comment B
+               * JSDoc comment that shouldn't move
                */
               @BB
               /**
@@ -2265,7 +2393,7 @@ describe(ruleName, () => {
               class Class {
 
                 /**
-                 * Comment B
+                 * JSDoc comment that shouldn't move
                  */
                 @BB
                 /**
@@ -2279,7 +2407,7 @@ describe(ruleName, () => {
                 property
 
                 /**
-                 * Comment B
+                 * JSDoc comment that shouldn't move
                  */
                 @BB
                 /**
@@ -2293,7 +2421,7 @@ describe(ruleName, () => {
                 accessor field
 
                 /**
-                 * Comment B
+                 * JSDoc comment that shouldn't move
                  */
                 @BB
                 /**
@@ -2306,7 +2434,7 @@ describe(ruleName, () => {
                 @CCC
                 method(
                   /**
-                   * Comment B
+                   * JSDoc comment that shouldn't move
                    */
                   @BB
                   /**

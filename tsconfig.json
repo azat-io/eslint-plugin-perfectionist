@@ -12,7 +12,6 @@
     "target": "esnext",
     "types": ["node"],
     "allowJs": true,
-    "baseUrl": ".",
     "strict": true,
     "noEmit": true
   }
