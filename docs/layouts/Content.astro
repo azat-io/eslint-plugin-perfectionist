@@ -22,12 +22,14 @@ interface Props {
     name: string
   }[]
   keywords?: undefined | string[]
+  showFooter?: boolean
   description: string
   editLink?: string
   title: string
 }
 
 let {
+  showFooter = true,
   keywords = [],
   description,
   path = [],
@@ -48,10 +50,14 @@ let {
         <main class="main">
           <slot />
         </main>
-        <ContentFooter>
-          <ContentEditLink url={editLink} />
-          <ContentAdditionalPages />
-        </ContentFooter>
+        {
+          showFooter && (
+            <ContentFooter>
+              <ContentEditLink url={editLink} />
+              <ContentAdditionalPages />
+            </ContentFooter>
+          )
+        }
       </Container>
       <TableOfContents {headings} />
     </div>
