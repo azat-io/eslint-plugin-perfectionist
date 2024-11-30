@@ -1,22 +1,29 @@
 import type { TSESLint } from '@typescript-eslint/utils'
 import type { TSESTree } from '@typescript-eslint/types'
 
+interface GetCommentsBeforeParameters {
+  tokenValueToIgnoreBefore?: string
+  sourceCode: TSESLint.SourceCode
+  node: TSESTree.Node
+}
+
 /**
  * Returns a list of comments before a given node, excluding ones that are
  * right after code. Includes comment blocks.
- * @param {TSESTree.Node} node - The node to get comments before.
- * @param {TSESLint.SourceCode} source - The source code object.
- * @param {string} [tokenValueToIgnoreBefore] - Allows the following token to
+ * @param {object} params - Parameters object.
+ * @param {TSESTree.Node} params.node - The node to get comments before.
+ * @param {TSESLint.SourceCode} params.sourceCode - The source code object.
+ * @param {string} [params.tokenValueToIgnoreBefore] - Allows the following token to
  * directly precede the node.
  * @returns {TSESTree.Comment[]} An array of comments before the given node.
  */
-export let getCommentsBefore = (
-  node: TSESTree.Node,
-  source: TSESLint.SourceCode,
-  tokenValueToIgnoreBefore?: string,
-): TSESTree.Comment[] => {
-  let commentsBefore = getCommentsBeforeNodeOrToken(source, node)
-  let tokenBeforeNode = source.getTokenBefore(node)
+export let getCommentsBefore = ({
+  tokenValueToIgnoreBefore,
+  sourceCode,
+  node,
+}: GetCommentsBeforeParameters): TSESTree.Comment[] => {
+  let commentsBefore = getCommentsBeforeNodeOrToken(sourceCode, node)
+  let tokenBeforeNode = sourceCode.getTokenBefore(node)
   if (
     commentsBefore.length ||
     !tokenValueToIgnoreBefore ||
@@ -24,7 +31,7 @@ export let getCommentsBefore = (
   ) {
     return commentsBefore
   }
-  return getCommentsBeforeNodeOrToken(source, tokenBeforeNode)
+  return getCommentsBeforeNodeOrToken(sourceCode, tokenBeforeNode)
 }
 
 let getCommentsBeforeNodeOrToken = (

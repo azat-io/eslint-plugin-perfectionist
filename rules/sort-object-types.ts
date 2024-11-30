@@ -167,7 +167,10 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
               (options.partitionByComment &&
                 hasPartitionComment(
                   options.partitionByComment,
-                  getCommentsBefore(member, sourceCode),
+                  getCommentsBefore({
+                    node: member,
+                    sourceCode,
+                  }),
                 )) ||
               (options.partitionByNewLine &&
                 lastSortingNode &&

@@ -7,13 +7,21 @@ import { getEslintDisabledRules } from './get-eslint-disabled-rules'
 import { isPartitionComment } from './is-partition-comment'
 import { getCommentsBefore } from './get-comments-before'
 
-export let getNodeRange = (
-  node: TSESTree.Node,
-  sourceCode: TSESLint.SourceCode,
-  additionalOptions?: {
-    partitionByComment?: string[] | boolean | string
-  },
-): TSESTree.Range => {
+interface GetNodeRangeParameters {
+  options?: {
+    partitionByComment: string[] | boolean | string
+  }
+  ignoreHighestBlockComment?: boolean
+  sourceCode: TSESLint.SourceCode
+  node: TSESTree.Node
+}
+
+export let getNodeRange = ({
+  ignoreHighestBlockComment,
+  sourceCode,
+  options,
+  node,
+}: GetNodeRangeParameters): TSESTree.Range => {
   let start = node.range.at(0)!
   let end = node.range.at(1)!
 
@@ -32,8 +40,11 @@ export let getNodeRange = (
     end = bodyClosingParen.range.at(1)!
   }
 
-  let comments = getCommentsBefore(node, sourceCode)
-  let partitionComment = additionalOptions?.partitionByComment ?? false
+  let comments = getCommentsBefore({
+    sourceCode,
+    node,
+  })
+  let highestBlockComment = comments.find(comment => comment.type === 'Block')
 
   /**
    * Iterate on all comments starting from the bottom until we reach the last
@@ -43,14 +54,16 @@ export let getNodeRange = (
   let relevantTopComment: TSESTree.Comment | undefined
   for (let i = comments.length - 1; i >= 0; i--) {
     let comment = comments[i]
+
     let eslintDisabledRules = getEslintDisabledRules(comment.value)
     if (
-      isPartitionComment(partitionComment, comment.value) ||
+      isPartitionComment(options?.partitionByComment ?? false, comment.value) ||
       eslintDisabledRules?.eslintDisableDirective === 'eslint-disable' ||
       eslintDisabledRules?.eslintDisableDirective === 'eslint-enable'
     ) {
       break
     }
+
     // Check for newlines between comments or between the first comment and
     // The node.
     let previousCommentOrNodeStartLine =
@@ -60,6 +73,11 @@ export let getNodeRange = (
     if (comment.loc.end.line !== previousCommentOrNodeStartLine - 1) {
       break
     }
+
+    if (ignoreHighestBlockComment && comment === highestBlockComment) {
+      break
+    }
+
     relevantTopComment = comment
   }
 

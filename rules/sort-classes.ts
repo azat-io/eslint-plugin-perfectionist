@@ -543,7 +543,6 @@ export default createEslintRule<SortClassesOptions, MESSAGE_ID>({
             name,
           }
 
-          let comments = getCommentsBefore(member, sourceCode)
           let lastMember = accumulator.at(-1)?.at(-1)
 
           if (
@@ -551,7 +550,13 @@ export default createEslintRule<SortClassesOptions, MESSAGE_ID>({
               lastMember &&
               getLinesBetween(sourceCode, lastMember, sortingNode)) ||
             (options.partitionByComment &&
-              hasPartitionComment(options.partitionByComment, comments))
+              hasPartitionComment(
+                options.partitionByComment,
+                getCommentsBefore({
+                  node: member,
+                  sourceCode,
+                }),
+              ))
           ) {
             accumulator.push([])
           }

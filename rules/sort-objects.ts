@@ -299,7 +299,6 @@ export default createEslintRule<Options, MESSAGE_ID>({
               return accumulator
             }
 
-            let comments = getCommentsBefore(property, sourceCode)
             let lastProperty = accumulator.at(-1)?.at(-1)
 
             let name: string
@@ -353,7 +352,13 @@ export default createEslintRule<Options, MESSAGE_ID>({
                   propertySortingNode,
                 )) ||
               (options.partitionByComment &&
-                hasPartitionComment(options.partitionByComment, comments))
+                hasPartitionComment(
+                  options.partitionByComment,
+                  getCommentsBefore({
+                    node: property,
+                    sourceCode,
+                  }),
+                ))
             ) {
               accumulator.push([])
             }

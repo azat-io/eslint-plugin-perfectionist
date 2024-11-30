@@ -161,7 +161,10 @@ export let sortArray = <MessageIds extends string>(
         (options.partitionByComment &&
           hasPartitionComment(
             options.partitionByComment,
-            getCommentsBefore(element, sourceCode),
+            getCommentsBefore({
+              node: element,
+              sourceCode,
+            }),
           )) ||
         (options.partitionByNewLine &&
           lastSortingNode &&

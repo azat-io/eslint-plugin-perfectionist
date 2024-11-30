@@ -9,6 +9,7 @@ interface MakeFixesParameters {
   options?: {
     partitionByComment: string[] | boolean | string
   }
+  ignoreFirstNodeHighestBlockComment?: boolean
   sourceCode: TSESLint.SourceCode
   sortedNodes: SortingNode[]
   fixer: TSESLint.RuleFixer
@@ -16,6 +17,7 @@ interface MakeFixesParameters {
 }
 
 export let makeFixes = ({
+  ignoreFirstNodeHighestBlockComment,
   sortedNodes,
   sourceCode,
   options,
@@ -29,13 +31,21 @@ export let makeFixes = ({
     let sortedSortingNode = sortedNodes.at(i)!
     let { node } = sortingNode
     let { addSafetySemicolonWhenInline, node: sortedNode } = sortedSortingNode
+    let isNodeFirstNode = node === nodes.at(0)!.node
+    let isSortedNodeFirstNode = sortedNode === nodes.at(0)!.node
 
     if (node === sortedNode) {
       continue
     }
 
     let sortedNodeCode = sourceCode.text.slice(
-      ...getNodeRange(sortedNode, sourceCode, options),
+      ...getNodeRange({
+        ignoreHighestBlockComment:
+          ignoreFirstNodeHighestBlockComment && isSortedNodeFirstNode,
+        node: sortedNode,
+        sourceCode,
+        options,
+      }),
     )
     let sortedNodeText = sourceCode.getText(sortedNode)
     let tokensAfter = sourceCode.getTokensAfter(node, {
@@ -60,7 +70,13 @@ export let makeFixes = ({
     }
     fixes.push(
       fixer.replaceTextRange(
-        getNodeRange(node, sourceCode, options),
+        getNodeRange({
+          ignoreHighestBlockComment:
+            ignoreFirstNodeHighestBlockComment && isNodeFirstNode,
+          sourceCode,
+          options,
+          node,
+        }),
         sortedNodeCode,
       ),
     )
