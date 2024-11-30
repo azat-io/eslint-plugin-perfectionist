@@ -105,6 +105,9 @@ importers:
       eslint:
         specifier: ^9.16.0
         version: 9.16.0(jiti@2.4.0)
+      eslint-linter-browserify:
+        specifier: ^9.16.0
+        version: 9.16.0
       eslint-plugin-eslint-plugin:
         specifier: ^6.3.2
         version: 6.3.2(eslint@9.16.0(jiti@2.4.0))
@@ -3108,6 +3111,9 @@ packages:
         optional: true
       eslint-plugin-import-x:
         optional: true
+
+  eslint-linter-browserify@9.16.0:
+    resolution: {integrity: sha512-0239dEGTm0rDPAE2IiI69HYlUQNU4ZcuH2L8Y/GZsjCZXOO48gcyYMEvSvtChECsdWFGweAHwGRw56LYVlg2eg==}
 
   eslint-module-utils@2.12.0:
     resolution: {integrity: sha512-wALZ0HFoytlyh/1+4wuZ9FJCD/leWHQzzrxJ8+rebyReSLk7LApMyd3WJaLVoN+D5+WIdJyDK1c6JnE65V4Zyg==}
@@ -9841,6 +9847,8 @@ snapshots:
       - eslint-import-resolver-node
       - eslint-import-resolver-webpack
       - supports-color
+
+  eslint-linter-browserify@9.16.0: {}
 
   eslint-module-utils@2.12.0(@typescript-eslint/parser@8.17.0(eslint@9.16.0(jiti@2.4.0))(typescript@5.7.2))(eslint-import-resolver-node@0.3.9)(eslint@9.16.0(jiti@2.4.0)):
     dependencies:
