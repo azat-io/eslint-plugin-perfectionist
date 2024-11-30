@@ -17,6 +17,7 @@ import sortImports from './rules/sort-imports'
 import sortExports from './rules/sort-exports'
 import sortObjects from './rules/sort-objects'
 import sortModules from './rules/sort-modules'
+import { Alphabet } from './utils/alphabet'
 import sortEnums from './rules/sort-enums'
 import sortMaps from './rules/sort-maps'
 import sortSets from './rules/sort-sets'
@@ -136,4 +137,5 @@ export default {
       order: 'asc',
     }),
   },
-} as PluginConfig
+  Alphabet,
+} as { Alphabet: typeof Alphabet } & PluginConfig
