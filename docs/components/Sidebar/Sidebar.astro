@@ -54,6 +54,26 @@ let { isMobileOnly = false } = Astro.props
   initMenu()
 </script>
 
+<script is:inline>
+  const SIDEBAR_SCROLL_POSITION = 'SIDEBAR_SCROLL_POSITION'
+
+  let initSidebarScroll = () => {
+    let savedScrollPosition = sessionStorage.getItem(SIDEBAR_SCROLL_POSITION)
+    if (savedScrollPosition) {
+      let menu = document.getElementById('menu')
+      menu.scrollTop = Number(savedScrollPosition)
+    }
+    let menu = document.getElementById('menu')
+    menu.addEventListener('scrollend', event => {
+      let scrollPosition = event.target.scrollTop
+      sessionStorage.setItem(SIDEBAR_SCROLL_POSITION, scrollPosition)
+    })
+  }
+
+  document.addEventListener('astro:after-swap', initSidebarScroll)
+  initSidebarScroll()
+</script>
+
 <style>
   .sidebar {
     position: fixed;
