@@ -1,8 +1,8 @@
 import type { HandlerResponse, HandlerEvent, Handler } from '@netlify/functions'
 import type { Linter } from 'eslint'
 
-import typescriptParser from '@typescript-eslint/parser'
 import { ESLint } from 'eslint'
+import path from 'node:path'
 
 import type { Settings } from '../../utils/get-settings'
 
@@ -61,21 +61,24 @@ export let handler: Handler = async (
       statusCode: 400,
     }
   }
+
+  let typescriptParser = await import('@typescript-eslint/parser')
+
   let config: Linter.Config[] = [
     {
       languageOptions: {
         parserOptions: {
+          tsconfigRootDir: path.join(process.cwd(), 'docs/fixtures'),
           ecmaFeatures: {
             jsx: true,
           },
-          project: '../../tsconfig.json',
-          tsconfigRootDir: process.cwd(),
+          project: './tsconfig.json',
           ecmaVersion: 'latest',
           sourceType: 'module',
         },
         parser: typescriptParser as Linter.Parser,
       },
-      files: ['**/*.ts', '**/*.tsx'],
+      files: ['**/*.ts', '**/*.tsx', '*.tsx', '*.ts'],
     },
     {
       plugins: {
@@ -104,8 +107,9 @@ export let handler: Handler = async (
     })
 
     let lintResult = await eslint.lintText(requestBody.code, {
-      filePath: 'test.tsx',
+      filePath: path.join(process.cwd(), 'docs/fixtures/index.tsx'),
     })
+
     let result = lintResult.at(0)?.messages ?? []
 
     return {

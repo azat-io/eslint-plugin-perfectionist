@@ -1,0 +1,12 @@
+{
+  "compilerOptions": {
+    "lib": ["es2015", "es2017", "esnext"],
+    "experimentalDecorators": true,
+    "esModuleInterop": true,
+    "module": "commonjs",
+    "jsx": "preserve",
+    "target": "es5",
+    "strict": true
+  },
+  "include": ["index.tsx"]
+}

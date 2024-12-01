@@ -38,7 +38,7 @@
       title: string
     }
 
-    export const Auth: FC<Props> => (props) => (
+    export const Auth: FC<Props> = (props) => (
       <Form {...props}>
         <Input
           placeholder="Enter your email"
