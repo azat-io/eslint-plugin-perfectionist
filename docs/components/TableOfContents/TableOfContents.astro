@@ -60,7 +60,7 @@ let toc = buildToc(headings)
   let initToc = () => {
     let observer = new IntersectionObserver(
       entries => {
-        if (window.scrollY === 0) {
+        if (globalThis.scrollY === 0) {
           let firstTocItem = document.querySelector('.table-of-content a')
           let previouslyActivatedItem = document.querySelector('.active')
           previouslyActivatedItem?.classList.remove('active')

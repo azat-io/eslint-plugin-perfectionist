@@ -130,7 +130,7 @@ let isProduction = import.meta.env.PROD
       } else if (localStorage.getItem('theme') === 'dark') {
         theme = 'dark'
       } else {
-        let systemTheme = window.matchMedia('(prefers-color-scheme: dark)')
+        let systemTheme = globalThis.matchMedia('(prefers-color-scheme: dark)')
           .matches
           ? 'dark'
           : 'light'

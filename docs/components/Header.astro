@@ -48,7 +48,7 @@ let { border = false } = Astro.props
     let header = document.querySelector('.header')!
 
     document.addEventListener('scroll', () => {
-      let scrollY = window.scrollY
+      let { scrollY } = globalThis
 
       if (!header.classList.contains('border')) {
         if (scrollY > 24) {
