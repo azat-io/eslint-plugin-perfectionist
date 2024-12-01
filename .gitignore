@@ -2,6 +2,9 @@
 node_modules/
 .nvmrc
 
+# Netlify
+.netlify/
+
 # Build
 dist/
 

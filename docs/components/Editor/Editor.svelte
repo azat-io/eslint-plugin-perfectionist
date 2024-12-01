@@ -1,15 +1,13 @@
 <script lang="ts">
-  import type { Linter } from 'eslint'
-
   import EditorMonaco from './EditorMonaco.svelte'
   import Button from '../Button.svelte'
 
-  let config: Linter.Config[] = []
+  let settings: Record<string, unknown> = {}
 </script>
 
 <div class="wrapper">
   <Button color="primary" content="Fix ESLint problems" />
-  <EditorMonaco {config} />
+  <EditorMonaco {settings} />
 </div>
 
 <style>

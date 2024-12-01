@@ -1,5 +1,4 @@
 <script lang="ts">
-  import type { Linter as BrowserLinter } from 'eslint-linter-browserify'
   import type { Linter } from 'eslint'
 
   import * as monaco from 'monaco-editor'
@@ -7,13 +6,12 @@
   import { dedent } from 'ts-dedent'
   import { onMount } from 'svelte'
 
-  import ESLintWorker from '../../utils/eslint-worker?worker'
   import { colorTheme } from '../../utils/shiki-theme'
+  import { eslint } from '../../api'
 
-  export let config: Linter.Config[] = []
+  export let settings: Record<string, unknown> = {}
 
   let editor: monaco.editor.IStandaloneCodeEditor | null = null
-  let eslintWorker = new ESLintWorker()
 
   let baseValue = dedent`
     import Button from '~/components/Button'
@@ -82,20 +80,10 @@
     return styles.getPropertyValue(cleanVariable).trim()
   }
 
-  let lintCode = (
-    code: string,
-    eslintConfig: Linter.Config[],
-  ): Promise<BrowserLinter.LintMessage[] | undefined> =>
-    new Promise(resolve => {
-      eslintWorker.addEventListener('message', (event: MessageEvent) => {
-        resolve(event.data as BrowserLinter.LintMessage[] | undefined)
-      })
-
-      eslintWorker.postMessage({
-        config: eslintConfig,
-        code,
-      })
-    })
+  let lintCode = async (
+    codeValue: string,
+    settingsValue: Record<string, unknown>,
+  ): Promise<Linter.LintMessage[]> => await eslint(codeValue, settingsValue)
 
   let defineMonacoTheme = (themeName: string): void => {
     monaco.editor.defineTheme(themeName, {
@@ -163,7 +151,7 @@
       let validateCode = async (): Promise<void> => {
         let code = editor?.getValue() ?? ''
 
-        let lintResults = (await lintCode(code, config)) ?? []
+        let lintResults: Linter.LintMessage[] = await lintCode(code, settings)
 
         let markers = lintResults.map(result => ({
           severity:
