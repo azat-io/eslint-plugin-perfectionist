@@ -59,7 +59,6 @@ export let compare = <T extends SortingNode>(
   } else if (options.type === 'natural') {
     let naturalCompare = createNaturalCompare({
       locale: options.locales.toString(),
-      order: 'asc',
     })
     let formatString = getFormatStringFunction(
       options.ignoreCase,
