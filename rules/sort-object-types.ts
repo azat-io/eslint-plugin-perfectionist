@@ -21,6 +21,7 @@ import {
 } from '../utils/common-json-schemas'
 import { validateNewlinesAndPartitionConfiguration } from '../utils/validate-newlines-and-partition-configuration'
 import { validateGeneratedGroupsConfiguration } from './validate-generated-groups-configuration'
+import { validateCustomSortConfiguration } from '../utils/validate-custom-sort-configuration'
 import { getCustomGroupsCompareOptions } from './get-custom-groups-compare-options'
 import { generatePredefinedGroups } from '../utils/generate-predefined-groups'
 import { getEslintDisabledLines } from '../utils/get-eslint-disabled-lines'
@@ -183,6 +184,7 @@ export let sortObjectTypeElements = <MessageIds extends string>({
 
   let settings = getSettings(context.settings)
   let options = complete(context.options.at(0), settings, defaultOptions)
+  validateCustomSortConfiguration(options)
   validateGeneratedGroupsConfiguration({
     customGroups: options.customGroups,
     selectors: allSelectors,

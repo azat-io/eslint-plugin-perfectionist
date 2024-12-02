@@ -11,6 +11,7 @@ import {
   orderJsonSchema,
   typeJsonSchema,
 } from '../utils/common-json-schemas'
+import { validateCustomSortConfiguration } from '../utils/validate-custom-sort-configuration'
 import { makeCommentAfterFixes } from '../utils/make-comment-after-fixes'
 import { createEslintRule } from '../utils/create-eslint-rule'
 import { getSourceCode } from '../utils/get-source-code'
@@ -59,9 +60,9 @@ export default createEslintRule<Options, MESSAGE_ID>({
       let settings = getSettings(context.settings)
 
       let options = complete(context.options.at(0), settings, defaultOptions)
+      validateCustomSortConfiguration(options)
 
       let sourceCode = getSourceCode(context)
-
       let isDiscriminantTrue =
         switchNode.discriminant.type === 'Literal' &&
         switchNode.discriminant.value === true

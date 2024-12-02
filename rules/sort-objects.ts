@@ -20,6 +20,7 @@ import {
   sortNodesByDependencies,
 } from '../utils/sort-nodes-by-dependencies'
 import { validateNewlinesAndPartitionConfiguration } from '../utils/validate-newlines-and-partition-configuration'
+import { validateCustomSortConfiguration } from '../utils/validate-custom-sort-configuration'
 import { validateGroupsConfiguration } from '../utils/validate-groups-configuration'
 import { getEslintDisabledLines } from '../utils/get-eslint-disabled-lines'
 import { isNodeEslintDisabled } from '../utils/is-node-eslint-disabled'
@@ -107,7 +108,7 @@ export default createEslintRule<Options, MESSAGE_ID>({
       let settings = getSettings(context.settings)
 
       let options = complete(context.options.at(0), settings, defaultOptions)
-
+      validateCustomSortConfiguration(options)
       validateGroupsConfiguration(
         options.groups,
         ['multiline', 'method', 'unknown'],

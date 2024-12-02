@@ -34,6 +34,7 @@ import {
   allSelectors,
 } from './sort-modules.types'
 import { validateGeneratedGroupsConfiguration } from './validate-generated-groups-configuration'
+import { validateCustomSortConfiguration } from '../utils/validate-custom-sort-configuration'
 import { getCustomGroupsCompareOptions } from './get-custom-groups-compare-options'
 import { generatePredefinedGroups } from '../utils/generate-predefined-groups'
 import { getEslintDisabledLines } from '../utils/get-eslint-disabled-lines'
@@ -147,6 +148,7 @@ export default createEslintRule<SortModulesOptions, MESSAGE_ID>({
   create: context => {
     let settings = getSettings(context.settings)
     let options = complete(context.options.at(0), settings, defaultOptions)
+    validateCustomSortConfiguration(options)
     validateGeneratedGroupsConfiguration({
       customGroups: options.customGroups,
       modifiers: allModifiers,
@@ -154,6 +156,7 @@ export default createEslintRule<SortModulesOptions, MESSAGE_ID>({
       groups: options.groups,
     })
     validateNewlinesAndPartitionConfiguration(options)
+
     let sourceCode = getSourceCode(context)
     let eslintDisabledLines = getEslintDisabledLines({
       ruleName: context.id,

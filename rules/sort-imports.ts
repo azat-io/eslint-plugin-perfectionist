@@ -17,6 +17,7 @@ import {
   typeJsonSchema,
 } from '../utils/common-json-schemas'
 import { validateNewlinesAndPartitionConfiguration } from '../utils/validate-newlines-and-partition-configuration'
+import { validateCustomSortConfiguration } from '../utils/validate-custom-sort-configuration'
 import { validateGroupsConfiguration } from '../utils/validate-groups-configuration'
 import { readClosestTsConfigByPath } from '../utils/read-closest-ts-config-by-path'
 import { getOptionsWithCleanGroups } from '../utils/get-options-with-clean-groups'
@@ -156,6 +157,7 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
         ...Object.keys(options.customGroups.value ?? {}),
       ],
     )
+    validateCustomSortConfiguration(options)
     validateNewlinesAndPartitionConfiguration(options)
 
     let tsConfigOutput = options.tsconfigRootDir
