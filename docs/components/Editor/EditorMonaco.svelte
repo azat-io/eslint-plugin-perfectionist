@@ -121,14 +121,9 @@
       defineMonacoTheme('css-variables')
 
       monaco.languages.typescript.typescriptDefaults.setDiagnosticsOptions({
+        diagnosticCodesToIgnore: [6192],
         noSemanticValidation: true,
         noSyntaxValidation: true,
-      })
-
-      monaco.languages.typescript.typescriptDefaults.setCompilerOptions({
-        target: monaco.languages.typescript.ScriptTarget.ESNext,
-        jsx: monaco.languages.typescript.JsxEmit.React,
-        allowNonTsExtensions: true,
       })
 
       editor = monaco.editor.create(container, {
