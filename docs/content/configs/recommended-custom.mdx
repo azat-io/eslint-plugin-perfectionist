@@ -1,0 +1,98 @@
+---
+title: recommended-custom
+description: Learn more about the recommended custom ESLint Plugin Perfectionist configuration for sorting and organizing your code. Take customization to new levels while maintaining a consistent coding style with this setup
+shortDescription: All plugin rules with your own custom sorting
+keywords:
+  - eslint
+  - recommended custom config
+  - eslint configuration
+  - coding standards
+  - code quality
+  - javascript linting
+  - custom sorting
+  - eslint-plugin-perfectionist
+---
+
+import CodeTabs from '../../components/CodeTabs.svelte'
+import { dedent } from 'ts-dedent'
+
+Configuration for the `eslint-plugin-perfectionist` plugin, which provides all plugin rules with your predefined custom ordered alphabet.
+
+This configuration allows you to define your own custom order for sorting elements in your codebase as you truly desire.
+
+## When to Use
+
+Each rule in `eslint-plugin-perfectionist` offers a lot of options that should suit most use cases.
+
+If this is not enough, you may define your own alphabet and use the `recommended-custom` configuration to enforce a consistent custom order across various data structures in your codebase.
+
+Use this configuration to precisely tune how elements should be sorted while keeping readability and maintainability to their highest levels.
+
+## Usage
+
+You must provide an `alphabet` option in the `perfectionist` settings object or for each rule individually.
+This option should be a string that represents an ordered alphabet.
+
+Example: `01234564789abcdef...`
+
+You may use the `perfectionist.Alphabet` utility class to quickly generate a custom alphabet.
+
+<CodeTabs
+  code={[
+    {
+      source: dedent`
+        // eslint.config.js
+        import perfectionist from 'eslint-plugin-perfectionist'
+        import naturalCompare from 'natural-compare-lite';
+
+        const myCustomAlphabet = perfectionist
+          .generateRecommendedAlphabet()
+          .sortingBy((a, b) => naturalCompare(a, b))
+          .getCharacters();
+
+        export default [
+          {
+            ...perfectionist.configs['recommended-custom'],
+            settings: {
+              perfectionist: {
+                  alphabet: myCustomAlphabet
+              }
+            }
+          }
+        ]
+      `,
+      name: 'Flat Config',
+      value: 'flat',
+    },
+    {
+      source: dedent`
+        // .eslintrc.js
+        import perfectionist from 'eslint-plugin-perfectionist'
+        import naturalCompare from 'natural-compare-lite';
+
+        const myCustomAlphabet = perfectionist
+          .generateRecommendedAlphabet()
+          .sortingBy((a, b) => naturalCompare(a, b))
+          .getCharacters();
+
+        module.exports = {
+          extends: [
+            'plugin:perfectionist/recommended-custom-legacy',
+          ],
+          settings: {
+            perfectionist: {
+                alphabet: myCustomAlphabet
+            }
+          }
+        }
+      `,
+      name: 'Legacy Config',
+      value: 'legacy',
+    },
+
+]}
+type="config-type"
+client:load
+lang="tsx"
+/>
+

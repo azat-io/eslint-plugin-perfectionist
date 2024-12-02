@@ -165,6 +165,7 @@ module.exports = {
 | [recommended-alphabetical](https://perfectionist.dev/configs/recommended-alphabetical) | All plugin rules with alphabetical sorting in ascending order    |
 | [recommended-natural](https://perfectionist.dev/configs/recommended-natural)           | All plugin rules with natural sorting in ascending order         |
 | [recommended-line-length](https://perfectionist.dev/configs/recommended-line-length)   | All plugin rules with sorting by line length in descending order |
+| [recommended-custom](https://perfectionist.dev/configs/recommended-custom)             | All plugin rules with sorting by your own custom order           |
 
 ## Rules
 
