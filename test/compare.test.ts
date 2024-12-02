@@ -16,9 +16,11 @@ describe('compare', () => {
 
     it('sorts by order asc', () => {
       expect(
-        compare(createTestNode({ name: 'b' }), createTestNode({ name: 'a' }), {
-          ...compareOptions,
-        }),
+        compare(
+          createTestNode({ name: 'b' }),
+          createTestNode({ name: 'a' }),
+          compareOptions,
+        ),
       ).toBe(1)
     })
 
