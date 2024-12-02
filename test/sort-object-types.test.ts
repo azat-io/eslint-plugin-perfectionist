@@ -210,8 +210,8 @@ describe(ruleName, () => {
             errors: [
               {
                 data: {
-                  left: 'func(): void',
                   right: 'arrowFunc',
+                  left: 'func',
                 },
                 messageId: 'unexpectedObjectTypesOrder',
               },
@@ -269,6 +269,390 @@ describe(ruleName, () => {
     })
 
     ruleTester.run(
+      `${ruleName}(${type}): sorts complex predefined groups`,
+      rule,
+      {
+        invalid: [
+          {
+            errors: [
+              {
+                data: {
+                  leftGroup: 'required-property',
+                  rightGroup: 'index-signature',
+                  right: '[key: string]',
+                  left: 'a',
+                },
+                messageId: 'unexpectedObjectTypesGroupOrder',
+              },
+              {
+                data: {
+                  rightGroup: 'optional-multiline',
+                  leftGroup: 'index-signature',
+                  left: '[key: string]',
+                  right: 'b',
+                },
+                messageId: 'unexpectedObjectTypesGroupOrder',
+              },
+              {
+                data: {
+                  leftGroup: 'optional-multiline',
+                  rightGroup: 'required-method',
+                  right: 'c',
+                  left: 'b',
+                },
+                messageId: 'unexpectedObjectTypesGroupOrder',
+              },
+            ],
+            options: [
+              {
+                ...options,
+                groups: [
+                  'unknown',
+                  'required-method',
+                  'optional-multiline',
+                  'index-signature',
+                  'required-property',
+                ],
+              },
+            ],
+            output: dedent`
+              type Type = {
+                c(): void
+                b?: {
+                  property: string;
+                }
+                [key: string]: string;
+                a: string
+              }
+            `,
+            code: dedent`
+              type Type = {
+                a: string
+                [key: string]: string;
+                b?: {
+                  property: string;
+                }
+                c(): void
+              }
+            `,
+          },
+        ],
+        valid: [],
+      },
+    )
+
+    ruleTester.run(
+      `${ruleName}(${type}): prioritize selectors over modifiers quantity`,
+      rule,
+      {
+        invalid: [
+          {
+            errors: [
+              {
+                data: {
+                  leftGroup: 'required-property',
+                  rightGroup: 'method',
+                  left: 'property',
+                  right: 'method',
+                },
+                messageId: 'unexpectedObjectTypesGroupOrder',
+              },
+            ],
+            options: [
+              {
+                ...options,
+                groups: ['method', 'required-property'],
+              },
+            ],
+            output: dedent`
+            type Type = {
+              method(): void
+              property: string
+            }
+          `,
+            code: dedent`
+            type Type = {
+              property: string
+              method(): void
+            }
+          `,
+          },
+        ],
+        valid: [],
+      },
+    )
+
+    describe(`${ruleName}(${type}): selectors priority`, () => {
+      ruleTester.run(
+        `${ruleName}(${type}): prioritize index-signature over multiline`,
+        rule,
+        {
+          invalid: [
+            {
+              errors: [
+                {
+                  data: {
+                    rightGroup: 'index-signature',
+                    left: 'multilineProperty',
+                    right: '[key: string]',
+                    leftGroup: 'multiline',
+                  },
+                  messageId: 'unexpectedObjectTypesGroupOrder',
+                },
+              ],
+              output: dedent`
+                type Type = {
+                  [key: string]: string;
+                  multilineProperty: {
+                    a: string
+                  }
+                }
+              `,
+              code: dedent`
+                type Type = {
+                  multilineProperty: {
+                    a: string
+                  }
+                  [key: string]: string;
+                }
+              `,
+              options: [
+                {
+                  ...options,
+                  groups: ['index-signature', 'multiline'],
+                },
+              ],
+            },
+          ],
+          valid: [],
+        },
+      )
+
+      ruleTester.run(
+        `${ruleName}(${type}): prioritize method over multiline`,
+        rule,
+        {
+          invalid: [
+            {
+              errors: [
+                {
+                  data: {
+                    left: 'multilineProperty',
+                    leftGroup: 'multiline',
+                    rightGroup: 'method',
+                    right: 'method',
+                  },
+                  messageId: 'unexpectedObjectTypesGroupOrder',
+                },
+              ],
+              output: dedent`
+                type Type = {
+                  method(): string
+                  multilineProperty: {
+                    a: string
+                  }
+                }
+              `,
+              code: dedent`
+                type Type = {
+                  multilineProperty: {
+                    a: string
+                  }
+                  method(): string
+                }
+              `,
+              options: [
+                {
+                  ...options,
+                  groups: ['method', 'multiline'],
+                },
+              ],
+            },
+          ],
+          valid: [],
+        },
+      )
+
+      ruleTester.run(
+        `${ruleName}(${type}): prioritize multiline over property`,
+        rule,
+        {
+          invalid: [
+            {
+              errors: [
+                {
+                  data: {
+                    right: 'multilineProperty',
+                    rightGroup: 'multiline',
+                    leftGroup: 'property',
+                    left: 'property',
+                  },
+                  messageId: 'unexpectedObjectTypesGroupOrder',
+                },
+              ],
+              output: dedent`
+                type Type = {
+                  multilineProperty: {
+                    a: string
+                  }
+                  property: string
+                }
+              `,
+              code: dedent`
+                type Type = {
+                  property: string
+                  multilineProperty: {
+                    a: string
+                  }
+                }
+              `,
+              options: [
+                {
+                  ...options,
+                  groups: ['multiline', 'property'],
+                },
+              ],
+            },
+          ],
+          valid: [],
+        },
+      )
+
+      ruleTester.run(
+        `${ruleName}(${type}): prioritize property over member`,
+        rule,
+        {
+          invalid: [
+            {
+              errors: [
+                {
+                  data: {
+                    rightGroup: 'property',
+                    leftGroup: 'member',
+                    right: 'property',
+                    left: 'method',
+                  },
+                  messageId: 'unexpectedObjectTypesGroupOrder',
+                },
+              ],
+              output: dedent`
+                type Type = {
+                  property: string
+                  method(): string
+                }
+              `,
+              code: dedent`
+                type Type = {
+                  method(): string
+                  property: string
+                }
+              `,
+              options: [
+                {
+                  ...options,
+                  groups: ['property', 'member'],
+                },
+              ],
+            },
+          ],
+          valid: [],
+        },
+      )
+    })
+
+    describe(`${ruleName}(${type}): modifiers priority`, () => {
+      ruleTester.run(
+        `${ruleName}(${type}): prioritize multiline over optional`,
+        rule,
+        {
+          invalid: [
+            {
+              errors: [
+                {
+                  data: {
+                    rightGroup: 'multiline-property',
+                    leftGroup: 'optional-property',
+                    right: 'multilineProperty',
+                    left: 'optionalProperty',
+                  },
+                  messageId: 'unexpectedObjectTypesGroupOrder',
+                },
+              ],
+              output: dedent`
+                type Type = {
+                  multilineProperty: {
+                    a: string
+                  }
+                  optionalProperty?: string
+                }
+              `,
+              code: dedent`
+                type Type = {
+                  optionalProperty?: string
+                  multilineProperty: {
+                    a: string
+                  }
+                }
+              `,
+              options: [
+                {
+                  ...options,
+                  groups: ['multiline-property', 'optional-property'],
+                },
+              ],
+            },
+          ],
+          valid: [],
+        },
+      )
+
+      ruleTester.run(
+        `${ruleName}(${type}): prioritize multiline over required`,
+        rule,
+        {
+          invalid: [
+            {
+              errors: [
+                {
+                  data: {
+                    rightGroup: 'multiline-property',
+                    leftGroup: 'required-property',
+                    right: 'multilineProperty',
+                    left: 'requiredProperty',
+                  },
+                  messageId: 'unexpectedObjectTypesGroupOrder',
+                },
+              ],
+              output: dedent`
+                type Type = {
+                  multilineProperty: {
+                    a: string
+                  }
+                  requiredProperty: string
+                }
+              `,
+              code: dedent`
+                type Type = {
+                  requiredProperty: string
+                  multilineProperty: {
+                    a: string
+                  }
+                }
+              `,
+              options: [
+                {
+                  ...options,
+                  groups: ['multiline-property', 'required-property'],
+                },
+              ],
+            },
+          ],
+          valid: [],
+        },
+      )
+    })
+
+    ruleTester.run(
       `${ruleName}(${type}): allows to set groups for sorting`,
       rule,
       {
@@ -277,52 +661,54 @@ describe(ruleName, () => {
             errors: [
               {
                 data: {
+                  rightGroup: 'multiline',
                   leftGroup: 'unknown',
-                  rightGroup: 'b',
-                  right: 'b',
-                  left: 'a',
+                  right: 'd',
+                  left: 'c',
                 },
                 messageId: 'unexpectedObjectTypesGroupOrder',
               },
               {
                 data: {
-                  right: 'e',
-                  left: 'f',
+                  leftGroup: 'multiline',
+                  rightGroup: 'g',
+                  right: 'g',
+                  left: 'd',
                 },
-                messageId: 'unexpectedObjectTypesOrder',
+                messageId: 'unexpectedObjectTypesGroupOrder',
               },
             ],
-            output: [
-              dedent`
-                type Type = {
-                  b: 'bb'
-                  a: 'aaa'
-                  c: 'c'
-                  d: {
-                    e: 'ee'
-                    f: 'f'
-                  }
+            output: dedent`
+              type Type = {
+                g: 'g'
+                d: {
+                  e: 'e'
+                  f: 'f'
                 }
-              `,
-            ],
+                a: 'aaa'
+                b: 'bb'
+                c: 'c'
+              }
+            `,
             code: dedent`
               type Type = {
                 a: 'aaa'
                 b: 'bb'
                 c: 'c'
                 d: {
+                  e: 'e'
                   f: 'f'
-                  e: 'ee'
                 }
+                g: 'g'
               }
             `,
             options: [
               {
                 ...options,
                 customGroups: {
-                  b: 'b',
+                  g: 'g',
                 },
-                groups: ['b', 'unknown', 'multiline'],
+                groups: ['g', 'multiline', 'unknown'],
               },
             ],
           },
@@ -331,28 +717,375 @@ describe(ruleName, () => {
           {
             code: dedent`
               type Type = {
-                b: 'bb'
-                a: 'aaa'
-                c: 'c'
+                g: 'g'
                 d: {
-                  e: 'ee'
+                  e: 'e'
                   f: 'f'
                 }
+                a: 'aaa'
+                b: 'bb'
+                c: 'c'
               }
             `,
             options: [
               {
                 ...options,
                 customGroups: {
-                  b: 'b',
+                  g: 'g',
                 },
-                groups: ['b', 'unknown', 'multiline'],
+                groups: ['g', 'multiline', 'unknown'],
               },
             ],
           },
         ],
       },
     )
+
+    describe(`${ruleName}: custom groups`, () => {
+      ruleTester.run(`${ruleName}: filters on selector and modifiers`, rule, {
+        invalid: [
+          {
+            options: [
+              {
+                customGroups: [
+                  {
+                    groupName: 'unusedCustomGroup',
+                    modifiers: ['optional'],
+                    selector: 'method',
+                  },
+                  {
+                    groupName: 'optionalPropertyGroup',
+                    modifiers: ['optional'],
+                    selector: 'property',
+                  },
+                  {
+                    groupName: 'propertyGroup',
+                    selector: 'property',
+                  },
+                ],
+                groups: ['propertyGroup', 'optionalPropertyGroup'],
+              },
+            ],
+            errors: [
+              {
+                data: {
+                  leftGroup: 'optionalPropertyGroup',
+                  rightGroup: 'propertyGroup',
+                  right: 'c',
+                  left: 'b',
+                },
+                messageId: 'unexpectedObjectTypesGroupOrder',
+              },
+            ],
+            output: dedent`
+              type Type = {
+                c: string
+                a?: string
+                b?: string
+              }
+            `,
+            code: dedent`
+              type Type = {
+                a?: string
+                b?: string
+                c: string
+              }
+            `,
+          },
+        ],
+        valid: [],
+      })
+
+      ruleTester.run(`${ruleName}: filters on elementNamePattern`, rule, {
+        invalid: [
+          {
+            options: [
+              {
+                customGroups: [
+                  {
+                    groupName: 'propertiesStartingWithHello',
+                    elementNamePattern: 'hello*',
+                    selector: 'property',
+                  },
+                ],
+                groups: ['propertiesStartingWithHello', 'unknown'],
+              },
+            ],
+            errors: [
+              {
+                data: {
+                  rightGroup: 'propertiesStartingWithHello',
+                  right: 'helloProperty',
+                  leftGroup: 'unknown',
+                  left: 'method',
+                },
+                messageId: 'unexpectedObjectTypesGroupOrder',
+              },
+            ],
+            output: dedent`
+              type Type = {
+                helloProperty: string
+                a: string
+                b: string
+                method(): void
+              }
+            `,
+            code: dedent`
+              type Type = {
+                a: string
+                b: string
+                method(): void
+                helloProperty: string
+              }
+            `,
+          },
+        ],
+        valid: [],
+      })
+
+      ruleTester.run(
+        `${ruleName}: sort custom groups by overriding 'type' and 'order'`,
+        rule,
+        {
+          invalid: [
+            {
+              errors: [
+                {
+                  data: {
+                    right: 'bb',
+                    left: 'a',
+                  },
+                  messageId: 'unexpectedObjectTypesOrder',
+                },
+                {
+                  data: {
+                    right: 'ccc',
+                    left: 'bb',
+                  },
+                  messageId: 'unexpectedObjectTypesOrder',
+                },
+                {
+                  data: {
+                    right: 'dddd',
+                    left: 'ccc',
+                  },
+                  messageId: 'unexpectedObjectTypesOrder',
+                },
+                {
+                  data: {
+                    rightGroup: 'reversedPropertiesByLineLength',
+                    leftGroup: 'unknown',
+                    left: 'method',
+                    right: 'eee',
+                  },
+                  messageId: 'unexpectedObjectTypesGroupOrder',
+                },
+              ],
+              options: [
+                {
+                  customGroups: [
+                    {
+                      groupName: 'reversedPropertiesByLineLength',
+                      selector: 'property',
+                      type: 'line-length',
+                      order: 'desc',
+                    },
+                  ],
+                  groups: ['reversedPropertiesByLineLength', 'unknown'],
+                  type: 'alphabetical',
+                  order: 'asc',
+                },
+              ],
+              output: dedent`
+                type Type = {
+                  dddd: string
+                  ccc: string
+                  eee: string
+                  bb: string
+                  ff: string
+                  a: string
+                  g: string
+                  anotherMethod(): void
+                  method(): void
+                  yetAnotherMethod(): void
+                }
+              `,
+              code: dedent`
+                type Type = {
+                  a: string
+                  bb: string
+                  ccc: string
+                  dddd: string
+                  method(): void
+                  eee: string
+                  ff: string
+                  g: string
+                  anotherMethod(): void
+                  yetAnotherMethod(): void
+                }
+            `,
+            },
+          ],
+          valid: [],
+        },
+      )
+
+      ruleTester.run(
+        `${ruleName}: does not sort custom groups with 'unsorted' type`,
+        rule,
+        {
+          invalid: [
+            {
+              options: [
+                {
+                  customGroups: [
+                    {
+                      groupName: 'unsortedProperties',
+                      selector: 'property',
+                      type: 'unsorted',
+                    },
+                  ],
+                  groups: ['unsortedProperties', 'unknown'],
+                },
+              ],
+              errors: [
+                {
+                  data: {
+                    rightGroup: 'unsortedProperties',
+                    leftGroup: 'unknown',
+                    left: 'method',
+                    right: 'c',
+                  },
+                  messageId: 'unexpectedObjectTypesGroupOrder',
+                },
+              ],
+              output: dedent`
+                type Type = {
+                  b
+                  a
+                  d
+                  e
+                  c
+                  method(): void
+                }
+              `,
+              code: dedent`
+                type Type = {
+                  b
+                  a
+                  d
+                  e
+                  method(): void
+                  c
+                }
+            `,
+            },
+          ],
+          valid: [],
+        },
+      )
+
+      ruleTester.run(`${ruleName}: sort custom group blocks`, rule, {
+        invalid: [
+          {
+            options: [
+              {
+                customGroups: [
+                  {
+                    anyOf: [
+                      {
+                        modifiers: ['required'],
+                        selector: 'property',
+                      },
+                      {
+                        modifiers: ['optional'],
+                        selector: 'method',
+                      },
+                    ],
+                    groupName: 'requiredPropertiesAndOptionalMethods',
+                  },
+                ],
+                groups: [
+                  ['requiredPropertiesAndOptionalMethods', 'index-signature'],
+                  'unknown',
+                ],
+              },
+            ],
+            errors: [
+              {
+                data: {
+                  rightGroup: 'requiredPropertiesAndOptionalMethods',
+                  leftGroup: 'unknown',
+                  right: 'd',
+                  left: 'c',
+                },
+                messageId: 'unexpectedObjectTypesGroupOrder',
+              },
+              {
+                data: {
+                  right: '[key: string]',
+                  left: 'e',
+                },
+                messageId: 'unexpectedObjectTypesOrder',
+              },
+            ],
+            output: dedent`
+              type Type = {
+                [key: string]: string
+                a: string
+                d?: () => void
+                e: string
+                b(): void
+                c?: string
+              }
+            `,
+            code: dedent`
+              type Type = {
+                a: string
+                b(): void
+                c?: string
+                d?: () => void
+                e: string
+                [key: string]: string
+              }
+            `,
+          },
+        ],
+        valid: [],
+      })
+
+      ruleTester.run(
+        `${ruleName}: allows to use regex for element names in custom groups`,
+        rule,
+        {
+          valid: [
+            {
+              options: [
+                {
+                  customGroups: [
+                    {
+                      elementNamePattern: '^(?!.*Foo).*$',
+                      groupName: 'elementsWithoutFoo',
+                    },
+                  ],
+                  groups: ['unknown', 'elementsWithoutFoo'],
+                  type: 'alphabetical',
+                },
+              ],
+              code: dedent`
+              type Type = {
+                iHaveFooInMyName: string
+                meTooIHaveFoo: string
+                a: string
+                b: string
+              }
+            `,
+            },
+          ],
+          invalid: [],
+        },
+      )
+    })
 
     ruleTester.run(
       `${ruleName}(${type}): allows to use regex for custom groups`,
@@ -1276,15 +2009,15 @@ describe(ruleName, () => {
             errors: [
               {
                 data: {
-                  left: '[name in v]?',
+                  left: '[name in v]',
                   right: '8',
                 },
                 messageId: 'unexpectedObjectTypesOrder',
               },
               {
                 data: {
-                  left: 'func(): void',
                   right: 'arrowFunc',
+                  left: 'func',
                 },
                 messageId: 'unexpectedObjectTypesOrder',
               },
@@ -1859,15 +2592,15 @@ describe(ruleName, () => {
               },
               {
                 data: {
-                  right: 'func(): void',
+                  right: 'func',
                   left: '8',
                 },
                 messageId: 'unexpectedObjectTypesOrder',
               },
               {
                 data: {
-                  left: 'func(): void',
                   right: 'arrowFunc',
+                  left: 'func',
                 },
                 messageId: 'unexpectedObjectTypesOrder',
               },
@@ -2370,6 +3103,25 @@ describe(ruleName, () => {
         ],
       },
     )
+
+    ruleTester.run(`${ruleName}: allows to ignore object types`, rule, {
+      valid: [
+        {
+          code: dedent`
+            type IgnoreType = {
+              b: 'b'
+              a: 'a'
+            }
+          `,
+          options: [
+            {
+              ignorePattern: ['Ignore'],
+            },
+          ],
+        },
+      ],
+      invalid: [],
+    })
 
     let eslintDisableRuleTesterName = `${ruleName}: supports 'eslint-disable' for individual nodes`
     ruleTester.run(eslintDisableRuleTesterName, rule, {

@@ -1,5 +1,11 @@
 import type { JSONSchema4 } from '@typescript-eslint/utils/json-schema'
 
+import {
+  buildCustomGroupModifiersJsonSchema,
+  buildCustomGroupSelectorJsonSchema,
+  elementNamePatternJsonSchema,
+} from '../utils/common-json-schemas'
+
 export type SortModulesOptions = [
   Partial<{
     type: 'alphabetical' | 'line-length' | 'natural'
@@ -152,54 +158,16 @@ export let allModifiers: Modifier[] = [
   'export',
 ]
 
-export let customGroupSortJsonSchema: Record<string, JSONSchema4> = {
-  type: {
-    enum: ['alphabetical', 'line-length', 'natural', 'unsorted'],
-    description: 'Custom group sort type.',
-    type: 'string',
-  },
-  order: {
-    description: 'Custom group sort order.',
-    enum: ['desc', 'asc'],
-    type: 'string',
-  },
-}
-
-export let customGroupNameJsonSchema: Record<string, JSONSchema4> = {
-  groupName: {
-    description: 'Custom group name.',
-    type: 'string',
-  },
-}
-
 /**
  * Ideally, we should generate as many schemas as there are selectors, and ensure
  * that users do not enter invalid modifiers for a given selector
  */
 export let singleCustomGroupJsonSchema: Record<string, JSONSchema4> = {
-  modifiers: {
-    items: {
-      enum: allModifiers,
-      type: 'string',
-    },
-    description: 'Modifier filters.',
-    type: 'array',
-  },
-  elementValuePattern: {
-    description: 'Element value pattern filter for properties.',
-    type: 'string',
-  },
   decoratorNamePattern: {
     description: 'Decorator name pattern filter.',
     type: 'string',
   },
-  selector: {
-    description: 'Selector filter.',
-    enum: allSelectors,
-    type: 'string',
-  },
-  elementNamePattern: {
-    description: 'Element name pattern filter.',
-    type: 'string',
-  },
+  modifiers: buildCustomGroupModifiersJsonSchema(allModifiers),
+  selector: buildCustomGroupSelectorJsonSchema(allSelectors),
+  elementNamePattern: elementNamePatternJsonSchema,
 }

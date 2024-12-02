@@ -11,6 +11,7 @@ import type {
 import type { SortingNodeWithDependencies } from '../utils/sort-nodes-by-dependencies'
 
 import {
+  buildCustomGroupsArrayJsonSchema,
   partitionByCommentJsonSchema,
   partitionByNewLineJsonSchema,
   specialCharactersJsonSchema,
@@ -22,20 +23,18 @@ import {
   typeJsonSchema,
 } from '../utils/common-json-schemas'
 import {
-  singleCustomGroupJsonSchema,
-  customGroupNameJsonSchema,
-  customGroupSortJsonSchema,
-  allModifiers,
-  allSelectors,
-} from './sort-modules.types'
-import {
   getFirstUnorderedNodeDependentOn,
   sortNodesByDependencies,
 } from '../utils/sort-nodes-by-dependencies'
 import { validateNewlinesAndPartitionConfiguration } from '../utils/validate-newlines-and-partition-configuration'
+import {
+  singleCustomGroupJsonSchema,
+  allModifiers,
+  allSelectors,
+} from './sort-modules.types'
 import { validateGeneratedGroupsConfiguration } from './validate-generated-groups-configuration'
+import { getCustomGroupsCompareOptions } from './get-custom-groups-compare-options'
 import { generatePredefinedGroups } from '../utils/generate-predefined-groups'
-import { customGroupMatches, getCompareOptions } from './sort-modules-utils'
 import { getEslintDisabledLines } from '../utils/get-eslint-disabled-lines'
 import { isNodeEslintDisabled } from '../utils/is-node-eslint-disabled'
 import { hasPartitionComment } from '../utils/is-partition-comment'
@@ -48,6 +47,7 @@ import { createEslintRule } from '../utils/create-eslint-rule'
 import { getLinesBetween } from '../utils/get-lines-between'
 import { getGroupNumber } from '../utils/get-group-number'
 import { getEnumMembers } from '../utils/get-enum-members'
+import { customGroupMatches } from './sort-modules-utils'
 import { getSourceCode } from '../utils/get-source-code'
 import { toSingleLine } from '../utils/to-single-line'
 import { rangeToDiff } from '../utils/range-to-diff'
@@ -101,49 +101,14 @@ export default createEslintRule<SortModulesOptions, MESSAGE_ID>({
     schema: [
       {
         properties: {
-          customGroups: {
-            items: {
-              oneOf: [
-                {
-                  properties: {
-                    ...customGroupNameJsonSchema,
-                    ...customGroupSortJsonSchema,
-                    anyOf: {
-                      items: {
-                        properties: {
-                          ...singleCustomGroupJsonSchema,
-                        },
-                        description: 'Custom group.',
-                        additionalProperties: false,
-                        type: 'object',
-                      },
-                      type: 'array',
-                    },
-                  },
-                  description: 'Custom group block.',
-                  additionalProperties: false,
-                  type: 'object',
-                },
-                {
-                  properties: {
-                    ...customGroupNameJsonSchema,
-                    ...customGroupSortJsonSchema,
-                    ...singleCustomGroupJsonSchema,
-                  },
-                  description: 'Custom group.',
-                  additionalProperties: false,
-                  type: 'object',
-                },
-              ],
-            },
-            description: 'Specifies custom groups.',
-            type: 'array',
-          },
           partitionByComment: {
             ...partitionByCommentJsonSchema,
             description:
               'Allows to use comments to separate the modules members into logical groups.',
           },
+          customGroups: buildCustomGroupsArrayJsonSchema({
+            singleCustomGroupJsonSchema,
+          }),
           partitionByNewLine: partitionByNewLineJsonSchema,
           specialCharacters: specialCharactersJsonSchema,
           newlinesBetween: newlinesBetweenJsonSchema,
@@ -406,7 +371,7 @@ let analyzeModule = ({
             getGroupNumber(options.groups, sortingNode) ===
             options.groups.length,
           getGroupCompareOptions: groupNumber =>
-            getCompareOptions(options, groupNumber),
+            getCustomGroupsCompareOptions(options, groupNumber),
           ignoreEslintDisabledNodes,
         }),
       ),

@@ -3,7 +3,7 @@ import type {
   AnyOfCustomGroup,
   Modifier,
   Selector,
-} from './sort-modules.types'
+} from './sort-object-types.types'
 
 import { matches } from '../utils/matches'
 
@@ -11,14 +11,13 @@ interface CustomGroupMatchesProps {
   customGroup: SingleCustomGroup | AnyOfCustomGroup
   selectors: Selector[]
   modifiers: Modifier[]
-  decorators: string[]
   elementName: string
 }
 
 /**
  * Determines whether a custom group matches the given properties.
  * @param {CustomGroupMatchesProps} props - The properties to compare with the
- * custom group, including selectors, modifiers, decorators, and element name.
+ * custom group, including selectors, modifiers, and element name.
  * @returns {boolean} `true` if the custom group matches the properties;
  * otherwise, `false`.
  */
@@ -53,19 +52,6 @@ export let customGroupMatches = (props: CustomGroupMatchesProps): boolean => {
       props.customGroup.elementNamePattern,
     )
     if (!matchesElementNamePattern) {
-      return false
-    }
-  }
-
-  if (
-    'decoratorNamePattern' in props.customGroup &&
-    props.customGroup.decoratorNamePattern
-  ) {
-    let decoratorPattern = props.customGroup.decoratorNamePattern
-    let matchesDecoratorNamePattern: boolean = props.decorators.some(
-      decorator => matches(decorator, decoratorPattern),
-    )
-    if (!matchesDecoratorNamePattern) {
       return false
     }
   }
