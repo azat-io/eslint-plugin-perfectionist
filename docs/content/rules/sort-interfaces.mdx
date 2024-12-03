@@ -258,6 +258,42 @@ Specifies how optional and required members should be ordered in TypeScript inte
 - `'required-first'` — Put all required members before optional members.
 - `'mixed'` — Do not enforce any specific order based on optionality.
 
+### useConfigurationIf
+
+<sub>
+  type: `{ allNamesMatchPattern?: string }`
+</sub>
+<sub>default: `{}`</sub>
+
+Allows you to specify filters to match a particular options configuration for a given interface.
+
+The first matching options configuration will be used. If no configuration matches, the default options configuration will be used.
+
+- `allNamesMatchPattern` — A regexp pattern that all keys must match.
+
+Example configuration:
+```ts
+{
+  'perfectionist/sort-interfaces': [
+    'error',
+    {
+      groups: ['r', 'g', 'b'], // Sort colors types by RGB
+      customGroups: {
+        r: '^r$',
+        g: '^g$',
+        b: '^b$',
+      },
+      useConfigurationIf: {
+        allNamesMatchPattern: '^r|g|b$',
+      },
+    },
+    {
+      type: 'alphabetical' // Fallback configuration
+    }
+  ],
+}
+```
+
 ### groups
 
 <sub>

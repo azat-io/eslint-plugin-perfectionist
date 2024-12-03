@@ -223,6 +223,42 @@ Allows you to group type object keys by their kind, determining whether required
 - `required-first` — Group all required values before optional.
 - `optional-first` — Group all optional values before required.
 
+### useConfigurationIf
+
+<sub>
+  type: `{ allNamesMatchPattern?: string }`
+</sub>
+<sub>default: `{}`</sub>
+
+Allows you to specify filters to match a particular options configuration for a given object type.
+
+The first matching options configuration will be used. If no configuration matches, the default options configuration will be used.
+
+- `allNamesMatchPattern` — A regexp pattern that all keys must match.
+
+Example configuration:
+```ts
+{
+  'perfectionist/sort-object-types': [
+    'error',
+    {
+      groups: ['r', 'g', 'b'], // Sort colors types by RGB
+      customGroups: {
+        r: '^r$',
+        g: '^g$',
+        b: '^b$',
+      },
+      useConfigurationIf: {
+        allNamesMatchPattern: '^r|g|b$',
+      },
+    },
+    {
+      type: 'alphabetical' // Fallback configuration
+    }
+  ],
+}
+```
+
 ### groups
 
 <sub>

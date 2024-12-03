@@ -2038,6 +2038,74 @@ describe(ruleName, () => {
         valid: [],
       },
     )
+
+    describe(`${ruleName}(${type}): allows to use 'useConfigurationIf'`, () => {
+      ruleTester.run(
+        `${ruleName}(${type}): allows to use 'allNamesMatchPattern'`,
+        rule,
+        {
+          invalid: [
+            {
+              errors: [
+                {
+                  data: {
+                    rightGroup: 'g',
+                    leftGroup: 'b',
+                    right: 'g',
+                    left: 'b',
+                  },
+                  messageId: 'unexpectedInterfacePropertiesGroupOrder',
+                },
+                {
+                  data: {
+                    rightGroup: 'r',
+                    leftGroup: 'g',
+                    right: 'r',
+                    left: 'g',
+                  },
+                  messageId: 'unexpectedInterfacePropertiesGroupOrder',
+                },
+              ],
+              options: [
+                {
+                  ...options,
+                  useConfigurationIf: {
+                    allNamesMatchPattern: 'foo',
+                  },
+                },
+                {
+                  ...options,
+                  customGroups: {
+                    r: 'r',
+                    g: 'g',
+                    b: 'b',
+                  },
+                  useConfigurationIf: {
+                    allNamesMatchPattern: '^r|g|b$',
+                  },
+                  groups: ['r', 'g', 'b'],
+                },
+              ],
+              output: dedent`
+                interface Interface {
+                  r: string
+                  g: string
+                  b: string
+                }
+              `,
+              code: dedent`
+                interface Interface {
+                  b: string
+                  g: string
+                  r: string
+                }
+              `,
+            },
+          ],
+          valid: [],
+        },
+      )
+    })
   })
 
   describe(`${ruleName}: sorting by natural order`, () => {

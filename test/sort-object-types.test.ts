@@ -1885,6 +1885,74 @@ describe(ruleName, () => {
         invalid: [],
       },
     )
+
+    describe(`${ruleName}(${type}): allows to use 'useConfigurationIf'`, () => {
+      ruleTester.run(
+        `${ruleName}(${type}): allows to use 'allNamesMatchPattern'`,
+        rule,
+        {
+          invalid: [
+            {
+              errors: [
+                {
+                  data: {
+                    rightGroup: 'g',
+                    leftGroup: 'b',
+                    right: 'g',
+                    left: 'b',
+                  },
+                  messageId: 'unexpectedObjectTypesGroupOrder',
+                },
+                {
+                  data: {
+                    rightGroup: 'r',
+                    leftGroup: 'g',
+                    right: 'r',
+                    left: 'g',
+                  },
+                  messageId: 'unexpectedObjectTypesGroupOrder',
+                },
+              ],
+              options: [
+                {
+                  ...options,
+                  useConfigurationIf: {
+                    allNamesMatchPattern: 'foo',
+                  },
+                },
+                {
+                  ...options,
+                  customGroups: {
+                    r: 'r',
+                    g: 'g',
+                    b: 'b',
+                  },
+                  useConfigurationIf: {
+                    allNamesMatchPattern: '^r|g|b$',
+                  },
+                  groups: ['r', 'g', 'b'],
+                },
+              ],
+              output: dedent`
+                type Type = {
+                  r: string
+                  g: string
+                  b: string
+                }
+              `,
+              code: dedent`
+                type Type = {
+                  b: string
+                  g: string
+                  r: string
+                }
+              `,
+            },
+          ],
+          valid: [],
+        },
+      )
+    })
   })
 
   describe(`${ruleName}: sorting by natural order`, () => {
