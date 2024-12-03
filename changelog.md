@@ -1,5 +1,22 @@
 # Changelog
 
+## v4.2.0
+
+[compare changes](https://github.com/azat-io/eslint-plugin-perfectionist/compare/v4.1.2...v4.2.0)
+
+### 🚀 Features
+
+- Improve groups and custom groups in sort-interfaces and sort-object-types ([8407bae](https://github.com/azat-io/eslint-plugin-perfectionist/commit/8407bae))
+
+### 🐞 Bug Fixes
+
+- **sort-decorators:** Keep jsdoc blocks in place ([54dfdd9](https://github.com/azat-io/eslint-plugin-perfectionist/commit/54dfdd9))
+- Fix ignoring order in natural sorting ([82cb68a](https://github.com/azat-io/eslint-plugin-perfectionist/commit/82cb68a))
+
+### ❤️ Contributors
+
+- Hugo ([@hugop95](http://github.com/hugop95))
+
 ## v4.1.2
 
 [compare changes](https://github.com/azat-io/eslint-plugin-perfectionist/compare/v4.1.1...v4.1.2)
