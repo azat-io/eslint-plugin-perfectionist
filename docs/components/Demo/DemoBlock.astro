@@ -1,143 +1,148 @@
 ---
+import { dedent } from 'ts-dedent'
+
 import CodeExample from '../CodeExample.svelte'
 import Typography from '../Typography.astro'
 import Container from '../Container.astro'
 import Title from '../Title.astro'
 
-let initial = `import Button from '~/components/Button'
-import type { FC } from 'react'
+let initial = dedent`
+  import Button from '~/components/Button'
+  import type { FC } from 'react'
 
-import {
-  useId,
-  useCallback,
-  useState,
-  useEffect,
-} from 'react'
+  import {
+    useId,
+    useCallback,
+    useState,
+    useEffect,
+  } from 'react'
 
-import Form from '~/component/Form'
+  import Form from '~/component/Form'
 
-import './style.css'
-import Input from '~/components/Input'
-import { FormValues } from '~/stores/auth'
+  import './style.css'
+  import Input from '~/components/Input'
+  import { FormValues } from '~/stores/auth'
 
-interface Props {
-  className?: string
-  onSubmit: (values: FormValues) => void
-  id: string
-  resetFormValues: () => void
-  title: string
-}
+  interface Props {
+    className?: string
+    onSubmit: (values: FormValues) => void
+    id: string
+    resetFormValues: () => void
+    title: string
+  }
 
-const Auth: FC<Props> => (props) => (
-  <Form {...props}>
-    <Input
-      placeholder="Enter your email"
-      full
-      name="user-email"
-      validation={/^[^s@]+@[^s@]+.[^s@]+$/i}
-      type="email"
-      label="Email address"
-    />
-    <Button
-      type="submit"
-      className="submit-button"
-      size="l"
-      color="secondary"
-    >
-      Submit
-    </Button>
-  </Form>
-)`
+  const Auth: FC<Props> = (props) => (
+    <Form {...props}>
+      <Input
+        placeholder="Enter your email"
+        full
+        name="user-email"
+        validation={/^[^s@]+@[^s@]+.[^s@]+$/i}
+        type="email"
+        label="Email address"
+      />
+      <Button
+        type="submit"
+        className="submit-button"
+        size="l"
+        color="secondary"
+      >
+        Submit
+      </Button>
+    </Form>
+  )`
 
-let alphabetical = `import type { FC } from 'react'
+let alphabetical = dedent`
+  import type { FC } from 'react'
 
-import {
-  useCallback,
-  useEffect,
-  useId,
-  useState,
-} from 'react'
+  import {
+    useCallback,
+    useEffect,
+    useId,
+    useState,
+  } from 'react'
 
-import Button from '~/components/Button'
-import Form from '~/component/Form'
-import Input from '~/components/Input'
-import { FormValues } from '~/stores/auth'
+  import Button from '~/components/Button'
+  import Form from '~/component/Form'
+  import Input from '~/components/Input'
+  import { FormValues } from '~/stores/auth'
 
-import './style.css'
+  import './style.css'
 
-interface Props {
-  className?: string
-  id: string
-  onSubmit: (values: FormValues) => void
-  resetFormValues: () => void
-  title: string
-}
+  interface Props {
+    className?: string
+    id: string
+    onSubmit: (values: FormValues) => void
+    resetFormValues: () => void
+    title: string
+  }
 
-const Auth: FC<Props> => (props) => (
-  <Form {...props}>
-    <Input
-      full
-      label="Email address"
-      name="user-email"
-      placeholder="Enter your email"
-      type="email"
-      validation={/^[^s@]+@[^s@]+.[^s@]+$/i}
-    />
-    <Button
-      className="submit-button"
-      color="secondary"
-      size="l"
-      type="submit"
-    >
-      Submit
-    </Button>
-  </Form>
-)`
+  const Auth: FC<Props> = (props) => (
+    <Form {...props}>
+      <Input
+        full
+        label="Email address"
+        name="user-email"
+        placeholder="Enter your email"
+        type="email"
+        validation={/^[^s@]+@[^s@]+.[^s@]+$/i}
+      />
+      <Button
+        className="submit-button"
+        color="secondary"
+        size="l"
+        type="submit"
+      >
+        Submit
+      </Button>
+    </Form>
+  )`
 
-let lineLength = `import type { FC } from 'react'
+let lineLength = dedent`
+  import type { FC } from 'react'
 
-import {
-  useCallback,
-  useEffect,
-  useState,
-  useId,
-} from 'react'
+  import {
+    useCallback,
+    useEffect,
+    useState,
+    useId,
+  } from 'react'
 
-import { FormValues } from '~/stores/auth'
-import Button from '~/components/Button'
-import Input from '~/components/Input'
-import Form from '~/component/Form'
+  import { FormValues } from '~/stores/auth'
+  import Button from '~/components/Button'
+  import Input from '~/components/Input'
+  import Form from '~/component/Form'
 
-import './style.css'
+  import './style.css'
 
-interface Props {
-  onSubmit: (values: FormValues) => void
-  resetFormValues: () => void
-  className?: string
-  title: string
-  id: string
-}
+  interface Props {
+    onSubmit: (values: FormValues) => void
+    resetFormValues: () => void
+    className?: string
+    title: string
+    id: string
+  }
 
-const Auth: FC<Props> => (props) => (
-  <Form {...props}>
-    <Input
-      validation={/^[^s@]+@[^s@]+.[^s@]+$/i}
-      placeholder="Enter your email"
-      label="Email address"
-      name="user-email"
-      type="email"
-      full
-    />
-    <Button
-      className="submit-button"
-      color="secondary"
-      type="submit"
-      size="l"
-    >
-      Submit
-    </Button>
-  </Form>
-)`
+  const Auth: FC<Props> = (props) => (
+    <Form {...props}>
+      <Input
+        validation={/^[^s@]+@[^s@]+.[^s@]+$/i}
+        placeholder="Enter your email"
+        label="Email address"
+        name="user-email"
+        type="email"
+        full
+      />
+      <Button
+        className="submit-button"
+        color="secondary"
+        type="submit"
+        size="l"
+      >
+        Submit
+      </Button>
+    </Form>
+  )`
 ---
 
 <section class="demo">
