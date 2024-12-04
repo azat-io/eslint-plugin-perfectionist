@@ -1,7 +1,7 @@
 ---
 import SidebarLinkBlock from './SidebarLinkBlock.astro'
+import IconCross from '../../icons/cross.svg'
 import { pages } from '../../utils/pages'
-import Icon from '../Icon.astro'
 
 interface Props {
   isMobileOnly?: boolean
@@ -18,7 +18,7 @@ let { isMobileOnly = false } = Astro.props
       class="menu-button"
       type="button"
     >
-      <Icon name="cross" size="m" />
+      <IconCross class="icon" />
     </button>
   </header>
   {
@@ -101,6 +101,11 @@ let { isMobileOnly = false } = Astro.props
         display: none;
       }
     }
+  }
+
+  .icon {
+    inline-size: var(--size-icon-m);
+    block-size: var(--size-icon-m);
   }
 
   .menu-open {

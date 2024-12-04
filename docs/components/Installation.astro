@@ -1,9 +1,9 @@
 ---
+import IconSparkle from '../icons/sparkle.svg'
 import Typography from './Typography.astro'
 import Container from './Container.astro'
 import CodeTabs from './CodeTabs.svelte'
 import Title from './Title.astro'
-import Icon from './Icon.astro'
 ---
 
 <section class="section">
@@ -40,7 +40,7 @@ import Icon from './Icon.astro'
     </div>
     <div>
       <Title class="title" align="start">
-        Effortless Setup <Icon name="sparkle" size="l" />
+        Effortless Setup <IconSparkle class="icon" />
       </Title>
       <Typography class="description">
         Getting started is a breeze. With straightforward installation and
@@ -84,5 +84,10 @@ import Icon from './Icon.astro'
   .description {
     max-inline-size: 760px;
     margin-block-start: var(--space-2xs);
+  }
+
+  .icon {
+    inline-size: var(--size-icon-l);
+    block-size: var(--size-icon-l);
   }
 </style>

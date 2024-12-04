@@ -1,7 +1,7 @@
 ---
 import SkipToContent from './SkipToContent.astro'
 import Navigation from './Navigation.astro'
-import Icon from './Icon.astro'
+import IconMenu from '../icons/menu.svg'
 import Logo from './Logo.astro'
 
 interface Props {
@@ -20,7 +20,7 @@ let { border = false } = Astro.props
       id="menu-button"
       type="button"
     >
-      <Icon name="menu" size="m" />
+      <IconMenu class="icon" />
     </button>
     <a aria-label="Perfectionist home page" class="home-link" href="/">
       <Logo class="logo" />
@@ -120,6 +120,11 @@ let { border = false } = Astro.props
       box-shadow: 0 0 0 3px var(--color-border-brand);
       transition: box-shadow 200ms;
     }
+  }
+
+  .icon {
+    inline-size: var(--size-icon-m);
+    block-size: var(--size-icon-m);
   }
 
   .home-link {

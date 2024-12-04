@@ -1,8 +1,8 @@
 import { getCollection } from 'astro:content'
 
 let rules = await getCollection('rules')
-let rulesLinks = rules.map(({ data: { title }, slug }) => ({
-  url: `/rules/${slug}`,
+let rulesLinks = rules.map(({ data: { title }, id }) => ({
+  url: `/rules/${id}`,
   title,
 }))
 

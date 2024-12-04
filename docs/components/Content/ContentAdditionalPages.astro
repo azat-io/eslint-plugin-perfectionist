@@ -1,5 +1,7 @@
 ---
 import ContentFooterLink from './ContentFooterLink.astro'
+import IconArrowRight from '../../icons/arrow-right.svg'
+import IconArrowLeft from '../../icons/arrow-left.svg'
 import { pages } from '../../utils/pages'
 
 interface Page {
@@ -39,11 +41,8 @@ let nextPage =
   {
     previousPage ? (
       <div class="previous-wrapper">
-        <ContentFooterLink
-          url={previousPage.url}
-          title="Previous page"
-          icon="arrow-left"
-        >
+        <ContentFooterLink url={previousPage.url} title="Previous page">
+          <IconArrowLeft class="icon" slot="icon" />
           {previousPage.title}
         </ContentFooterLink>
       </div>
@@ -54,12 +53,8 @@ let nextPage =
   {
     nextPage && (
       <div class="next-wrapper">
-        <ContentFooterLink
-          url={nextPage.url}
-          icon="arrow-right"
-          title="Next page"
-          class="next"
-        >
+        <ContentFooterLink url={nextPage.url} title="Next page" class="next">
+          <IconArrowRight class="icon" slot="icon" />
           {nextPage.title}
         </ContentFooterLink>
       </div>
@@ -106,5 +101,10 @@ let nextPage =
     @container (inline-size >= 600px) {
       flex-direction: row-reverse;
     }
+  }
+
+  .icon {
+    inline-size: var(--size-icon-s);
+    block-size: var(--size-icon-s);
   }
 </style>

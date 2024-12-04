@@ -1,18 +1,15 @@
 ---
-import Icon from '../Icon.astro'
-
 interface Props {
   title?: string
   class?: string
-  icon: string
   url: string
 }
 
-let { class: className, title, icon, url, ...props } = Astro.props
+let { class: className, title, url, ...props } = Astro.props
 ---
 
 <a class:list={['link', className]} href={url} {...props}>
-  <Icon name={icon} size="s" />
+  <slot name="icon" />
   <div class="content">
     {title && <span class="title">{title}</span>}
     <span class="text">

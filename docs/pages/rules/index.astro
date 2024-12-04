@@ -3,7 +3,8 @@ import { getCollection } from 'astro:content'
 
 import Typography from '../../components/Typography.astro'
 import ContentLayout from '../../layouts/Content.astro'
-import Icon from '../../components/Icon.astro'
+import IconTool from '../../icons/tool.svg'
+import IconStar from '../../icons/star.svg'
 
 let rules = await getCollection('rules')
 ---
@@ -39,7 +40,7 @@ let rules = await getCollection('rules')
     >.
   </p>
   <div class="definition">
-    <Icon name="tool" size="s" />
+    <IconTool class="icon" />
     <Typography
       >Automatically fixable by the
       <a href="https://eslint.org/docs/latest/use/command-line-interface#--fix">
@@ -48,7 +49,7 @@ let rules = await getCollection('rules')
     >
   </div>
   <div class="definition">
-    <Icon name="star" size="s" />
+    <IconStar class="icon" />
     <Typography>
       Used in all <a href="/configs">recommended configurations</a>.
     </Typography>
@@ -68,13 +69,13 @@ let rules = await getCollection('rules')
         rules.map(rule => (
           <tr>
             <td>
-              <a href={`/rules/${rule.slug}`}>{rule.data.title}</a>
+              <a href={`/rules/${rule.id}`}>{rule.data.title}</a>
             </td>
             <td>{rule.data.shortDescription}</td>
             <td>
-              <Icon name="tool" size="s" />
+              <IconTool class="icon" />
             </td>
-            <td>{!rule.data.deprecated && <Icon name="star" size="s" />}</td>
+            <td>{!rule.data.deprecated && <IconStar class="icon" />}</td>
           </tr>
         ))
       }
@@ -92,5 +93,10 @@ let rules = await getCollection('rules')
 
   .table {
     margin-block-start: var(--space-xl);
+  }
+
+  .icon {
+    inline-size: var(--size-icon-s);
+    block-size: var(--size-icon-s);
   }
 </style>

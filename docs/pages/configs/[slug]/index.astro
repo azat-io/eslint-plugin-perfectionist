@@ -1,7 +1,7 @@
 ---
 import type { CollectionEntry } from 'astro:content'
 
-import { getCollection } from 'astro:content'
+import { getCollection, render } from 'astro:content'
 
 import ContentLayout from '../../../layouts/Content.astro'
 
@@ -9,13 +9,13 @@ type Props = CollectionEntry<'rules'>
 
 let rule = Astro.props
 
-let { headings, Content } = await rule.render()
+let { headings, Content } = await render(rule)
 
 export let getStaticPaths = async () => {
   let configs = await getCollection('configs')
   return configs.map(currentConfig => ({
     params: {
-      slug: currentConfig.slug,
+      slug: currentConfig.id,
     },
     props: currentConfig,
   }))
@@ -29,11 +29,11 @@ export let getStaticPaths = async () => {
       name: 'Configs',
     },
     {
-      href: `/configs/${rule.slug}`,
+      href: `/configs/${rule.id}`,
       name: rule.data.title,
     },
   ]}
-  editLink={`https://github.com/azat-io/eslint-plugin-perfectionist/tree/main/docs/content/configs/${rule.slug}.mdx`}
+  editLink={`https://github.com/azat-io/eslint-plugin-perfectionist/tree/main/docs/content/configs/${rule.id}.mdx`}
   {headings}
   {...rule.data}
 >

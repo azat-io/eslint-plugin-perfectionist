@@ -1,4 +1,6 @@
 ---
+import { fade } from 'astro:transitions'
+
 interface Props {
   class?: string
 }
@@ -6,6 +8,11 @@ interface Props {
 let { props } = Astro
 ---
 
-<body {...props}>
+<body
+  transition:animate={fade({
+    duration: '100ms',
+  })}
+  {...props}
+>
   <slot />
 </body>

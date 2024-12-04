@@ -1,5 +1,5 @@
 ---
-import { ViewTransitions } from 'astro:transitions'
+import { ClientRouter } from 'astro:transitions'
 
 import Analytics from './Analytics.astro'
 import '../styles/base.css'
@@ -143,7 +143,7 @@ let isProduction = import.meta.env.PROD
     document.addEventListener('astro:after-swap', initialize)
   </script>
 
-  <ViewTransitions />
+  <ClientRouter />
 
   {isProduction && <Analytics />}
 </head>
