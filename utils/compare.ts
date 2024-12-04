@@ -6,6 +6,7 @@ export type CompareOptions<T extends SortingNode> =
   | AlphabeticalCompareOptions<T>
   | LineLengthCompareOptions<T>
   | NaturalCompareOptions<T>
+  | CustomCompareOptions<T>
 
 interface BaseCompareOptions<T extends SortingNode> {
   /**
@@ -32,11 +33,22 @@ interface NaturalCompareOptions<T extends SortingNode>
   type: 'natural'
 }
 
+interface CustomCompareOptions<T extends SortingNode>
+  extends BaseCompareOptions<T> {
+  specialCharacters: 'remove' | 'trim' | 'keep'
+  ignoreCase: boolean
+  alphabet: string
+  type: 'custom'
+}
+
 interface LineLengthCompareOptions<T extends SortingNode>
   extends BaseCompareOptions<T> {
   maxLineLength?: number
   type: 'line-length'
 }
+
+type IndexByCharacters = Map<string, number>
+let alphabetCache = new Map<string, IndexByCharacters>()
 
 export let compare = <T extends SortingNode>(
   a: T,
@@ -69,6 +81,43 @@ export let compare = <T extends SortingNode>(
         formatString(nodeValueGetter(aNode)),
         formatString(nodeValueGetter(bNode)),
       )
+  } else if (options.type === 'custom') {
+    let formatString = getFormatStringFunction(
+      options.ignoreCase,
+      options.specialCharacters,
+    )
+    let indexByCharacters = alphabetCache.get(options.alphabet)
+    if (!indexByCharacters) {
+      indexByCharacters = new Map()
+      for (let [index, character] of [...options.alphabet].entries()) {
+        indexByCharacters.set(character, index)
+      }
+      alphabetCache.set(options.alphabet, indexByCharacters)
+    }
+    sortingFunction = (aNode, bNode) => {
+      let aValue = formatString(nodeValueGetter(aNode))
+      let bValue = formatString(nodeValueGetter(bNode))
+      // Iterate character by character
+      // eslint-disable-next-line unicorn/no-for-loop
+      for (let i = 0; i < aValue.length; i++) {
+        let aCharacter = aValue[i]
+        let bCharacter = bValue[i]
+        let indexOfA = indexByCharacters.get(aCharacter)
+        let indexOfB = indexByCharacters.get(bCharacter)
+        // eslint-disable-next-line no-undefined
+        if (indexOfA === undefined) {
+          indexOfA = Infinity
+        }
+        // eslint-disable-next-line no-undefined
+        if (indexOfB === undefined) {
+          indexOfB = Infinity
+        }
+        if (indexOfA !== indexOfB) {
+          return indexOfA - indexOfB
+        }
+      }
+      return 0
+    }
   } else {
     sortingFunction = (aNode, bNode) => {
       let aSize = aNode.size

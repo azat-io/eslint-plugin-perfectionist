@@ -9,6 +9,7 @@ import {
   newlinesBetweenJsonSchema,
   customGroupsJsonSchema,
   ignoreCaseJsonSchema,
+  alphabetJsonSchema,
   localesJsonSchema,
   groupsJsonSchema,
   orderJsonSchema,
@@ -44,8 +45,8 @@ import { matches } from '../utils/matches'
 
 type Options = [
   Partial<{
+    type: 'alphabetical' | 'line-length' | 'natural' | 'custom'
     destructuredObjects: { groups: boolean } | boolean
-    type: 'alphabetical' | 'line-length' | 'natural'
     customGroups: Record<string, string[] | string>
     partitionByComment: string[] | boolean | string
     newlinesBetween: 'ignore' | 'always' | 'never'
@@ -62,6 +63,7 @@ type Options = [
     ignorePattern: string[]
     order: 'desc' | 'asc'
     ignoreCase: boolean
+    alphabet: string
   }>,
 ]
 
@@ -88,6 +90,7 @@ let defaultOptions: Required<Options[0]> = {
   ignoreCase: true,
   customGroups: {},
   locales: 'en-US',
+  alphabet: '',
   order: 'asc',
   groups: [],
 }
@@ -532,6 +535,7 @@ export default createEslintRule<Options, MESSAGE_ID>({
           newlinesBetween: newlinesBetweenJsonSchema,
           customGroups: customGroupsJsonSchema,
           ignoreCase: ignoreCaseJsonSchema,
+          alphabet: alphabetJsonSchema,
           locales: localesJsonSchema,
           groups: groupsJsonSchema,
           order: orderJsonSchema,

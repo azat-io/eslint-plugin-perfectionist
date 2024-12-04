@@ -6,6 +6,7 @@ import type { SortingNode } from '../typings'
 import {
   specialCharactersJsonSchema,
   ignoreCaseJsonSchema,
+  alphabetJsonSchema,
   localesJsonSchema,
   orderJsonSchema,
   typeJsonSchema,
@@ -24,11 +25,12 @@ import { compare } from '../utils/compare'
 
 type Options = [
   Partial<{
-    type: 'alphabetical' | 'line-length' | 'natural'
+    type: 'alphabetical' | 'line-length' | 'natural' | 'custom'
     specialCharacters: 'remove' | 'trim' | 'keep'
     locales: NonNullable<Intl.LocalesArgument>
     order: 'desc' | 'asc'
     ignoreCase: boolean
+    alphabet: string
   }>,
 ]
 
@@ -43,6 +45,7 @@ let defaultOptions: Required<Options[0]> = {
   type: 'alphabetical',
   ignoreCase: true,
   locales: 'en-US',
+  alphabet: '',
   order: 'asc',
 }
 
@@ -265,6 +268,7 @@ export default createEslintRule<Options, MESSAGE_ID>({
         properties: {
           specialCharacters: specialCharactersJsonSchema,
           ignoreCase: ignoreCaseJsonSchema,
+          alphabet: alphabetJsonSchema,
           locales: localesJsonSchema,
           order: orderJsonSchema,
           type: typeJsonSchema,

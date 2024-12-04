@@ -8,7 +8,7 @@ import {
 
 export type SortModulesOptions = [
   Partial<{
-    type: 'alphabetical' | 'line-length' | 'natural'
+    type: 'alphabetical' | 'line-length' | 'natural' | 'custom'
     partitionByComment: string[] | boolean | string
     newlinesBetween: 'ignore' | 'always' | 'never'
     specialCharacters: 'remove' | 'trim' | 'keep'
@@ -18,6 +18,7 @@ export type SortModulesOptions = [
     partitionByNewLine: boolean
     order: 'desc' | 'asc'
     ignoreCase: boolean
+    alphabet: string
   }>,
 ]
 export type SingleCustomGroup = (

@@ -9,11 +9,11 @@ import {
 export type Options = [
   Partial<{
     customGroups: Record<string, string[] | string> | CustomGroup[]
+    type: 'alphabetical' | 'line-length' | 'natural' | 'custom'
     /**
      * @deprecated for {@link `groups`}
      */
     groupKind: 'required-first' | 'optional-first' | 'mixed'
-    type: 'alphabetical' | 'line-length' | 'natural'
     partitionByComment: string[] | boolean | string
     newlinesBetween: 'ignore' | 'always' | 'never'
     specialCharacters: 'remove' | 'trim' | 'keep'
@@ -23,6 +23,7 @@ export type Options = [
     ignorePattern: string[]
     order: 'desc' | 'asc'
     ignoreCase: boolean
+    alphabet: string
   }>,
 ]
 

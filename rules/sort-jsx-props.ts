@@ -6,6 +6,7 @@ import {
   specialCharactersJsonSchema,
   customGroupsJsonSchema,
   ignoreCaseJsonSchema,
+  alphabetJsonSchema,
   localesJsonSchema,
   groupsJsonSchema,
   orderJsonSchema,
@@ -29,14 +30,15 @@ import { matches } from '../utils/matches'
 
 type Options<T extends string[]> = [
   Partial<{
+    type: 'alphabetical' | 'line-length' | 'natural' | 'custom'
     customGroups: Record<T[number], string[] | string>
-    type: 'alphabetical' | 'line-length' | 'natural'
     specialCharacters: 'remove' | 'trim' | 'keep'
     locales: NonNullable<Intl.LocalesArgument>
     groups: (Group<T>[] | Group<T>)[]
     ignorePattern: string[]
     order: 'desc' | 'asc'
     ignoreCase: boolean
+    alphabet: string
   }>,
 ]
 
@@ -55,6 +57,7 @@ let defaultOptions: Required<Options<string[]>[0]> = {
   ignoreCase: true,
   customGroups: {},
   locales: 'en-US',
+  alphabet: '',
   order: 'asc',
   groups: [],
 }
@@ -199,6 +202,7 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
           specialCharacters: specialCharactersJsonSchema,
           customGroups: customGroupsJsonSchema,
           ignoreCase: ignoreCaseJsonSchema,
+          alphabet: alphabetJsonSchema,
           locales: localesJsonSchema,
           groups: groupsJsonSchema,
           order: orderJsonSchema,

@@ -8,6 +8,7 @@ import {
   partitionByNewLineJsonSchema,
   specialCharactersJsonSchema,
   ignoreCaseJsonSchema,
+  alphabetJsonSchema,
   localesJsonSchema,
   orderJsonSchema,
   typeJsonSchema,
@@ -35,7 +36,7 @@ import { pairwise } from '../utils/pairwise'
 
 export type Options = [
   Partial<{
-    type: 'alphabetical' | 'line-length' | 'natural'
+    type: 'alphabetical' | 'line-length' | 'natural' | 'custom'
     partitionByComment: string[] | boolean | string
     specialCharacters: 'remove' | 'trim' | 'keep'
     locales: NonNullable<Intl.LocalesArgument>
@@ -44,6 +45,7 @@ export type Options = [
     order: 'desc' | 'asc'
     sortByValue: boolean
     ignoreCase: boolean
+    alphabet: string
   }>,
 ]
 
@@ -63,6 +65,7 @@ let defaultOptions: Required<Options[0]> = {
   sortByValue: false,
   ignoreCase: true,
   locales: 'en-US',
+  alphabet: '',
   order: 'asc',
 }
 
@@ -196,6 +199,7 @@ export default createEslintRule<Options, MESSAGE_ID>({
             : options.type,
         specialCharacters: options.specialCharacters,
         ignoreCase: options.ignoreCase,
+        alphabet: options.alphabet,
         locales: options.locales,
         order: options.order,
       }
@@ -274,6 +278,7 @@ export default createEslintRule<Options, MESSAGE_ID>({
           partitionByNewLine: partitionByNewLineJsonSchema,
           specialCharacters: specialCharactersJsonSchema,
           ignoreCase: ignoreCaseJsonSchema,
+          alphabet: alphabetJsonSchema,
           locales: localesJsonSchema,
           order: orderJsonSchema,
           type: typeJsonSchema,

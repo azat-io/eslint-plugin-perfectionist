@@ -10,6 +10,7 @@ import {
   specialCharactersJsonSchema,
   newlinesBetweenJsonSchema,
   ignoreCaseJsonSchema,
+  alphabetJsonSchema,
   localesJsonSchema,
   groupsJsonSchema,
   orderJsonSchema,
@@ -46,7 +47,7 @@ export type Options<T extends string[]> = [
       value?: Record<T[number], string[] | string>
       type?: Record<T[number], string[] | string>
     }
-    type: 'alphabetical' | 'line-length' | 'natural'
+    type: 'alphabetical' | 'line-length' | 'natural' | 'custom'
     partitionByComment: string[] | boolean | string
     newlinesBetween: 'ignore' | 'always' | 'never'
     specialCharacters: 'remove' | 'trim' | 'keep'
@@ -60,6 +61,7 @@ export type Options<T extends string[]> = [
     maxLineLength?: number
     order: 'desc' | 'asc'
     ignoreCase: boolean
+    alphabet: string
   }>,
 ]
 
@@ -122,6 +124,7 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
         environment: 'node',
         ignoreCase: true,
         locales: 'en-US',
+        alphabet: '',
         order: 'asc',
       } as const),
     )
@@ -629,6 +632,7 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
           specialCharacters: specialCharactersJsonSchema,
           newlinesBetween: newlinesBetweenJsonSchema,
           ignoreCase: ignoreCaseJsonSchema,
+          alphabet: alphabetJsonSchema,
           locales: localesJsonSchema,
           groups: groupsJsonSchema,
           order: orderJsonSchema,
@@ -710,6 +714,7 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
       environment: 'node',
       ignoreCase: true,
       locales: 'en-US',
+      alphabet: '',
       order: 'asc',
     },
   ],

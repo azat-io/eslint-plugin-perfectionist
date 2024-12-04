@@ -13,6 +13,7 @@ import {
   newlinesBetweenJsonSchema,
   customGroupsJsonSchema,
   ignoreCaseJsonSchema,
+  alphabetJsonSchema,
   localesJsonSchema,
   groupsJsonSchema,
   orderJsonSchema,
@@ -73,6 +74,7 @@ let defaultOptions: Required<Options[0]> = {
   ignoreCase: true,
   customGroups: {},
   locales: 'en-US',
+  alphabet: '',
   order: 'asc',
   groups: [],
 }
@@ -107,6 +109,7 @@ export let jsonSchema: JSONSchema4 = {
     specialCharacters: specialCharactersJsonSchema,
     newlinesBetween: newlinesBetweenJsonSchema,
     ignoreCase: ignoreCaseJsonSchema,
+    alphabet: alphabetJsonSchema,
     locales: localesJsonSchema,
     groups: groupsJsonSchema,
     order: orderJsonSchema,

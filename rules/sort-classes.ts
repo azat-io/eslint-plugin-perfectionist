@@ -15,6 +15,7 @@ import {
   specialCharactersJsonSchema,
   newlinesBetweenJsonSchema,
   ignoreCaseJsonSchema,
+  alphabetJsonSchema,
   localesJsonSchema,
   groupsJsonSchema,
   orderJsonSchema,
@@ -104,6 +105,7 @@ let defaultOptions: Required<SortClassesOptions[0]> = {
   ignoreCase: true,
   customGroups: [],
   locales: 'en-US',
+  alphabet: '',
   order: 'asc',
 }
 
@@ -688,6 +690,7 @@ export default createEslintRule<SortClassesOptions, MESSAGE_ID>({
           specialCharacters: specialCharactersJsonSchema,
           newlinesBetween: newlinesBetweenJsonSchema,
           ignoreCase: ignoreCaseJsonSchema,
+          alphabet: alphabetJsonSchema,
           locales: localesJsonSchema,
           groups: groupsJsonSchema,
           order: orderJsonSchema,
