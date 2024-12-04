@@ -1789,7 +1789,7 @@ describe(ruleName, () => {
           code: dedent`
               interface Interface {
                 b(): void
-                c: () => void
+                c: (((v: false) => 'false') | ((v: true) => 'true')) & ((v: any) => any)
                 a: string
                 d: string
               }
@@ -2773,7 +2773,7 @@ describe(ruleName, () => {
           code: dedent`
               interface Interface {
                 b(): void
-                c: () => void
+                c: (((v: false) => 'false') | ((v: true) => 'true')) & ((v: any) => any)
                 a: string
                 d: string
               }
@@ -3758,7 +3758,7 @@ describe(ruleName, () => {
         {
           code: dedent`
               interface Interface {
-                c: () => void
+                c: (((v: false) => 'false') | ((v: true) => 'true')) & ((v: any) => any)
                 b(): void
                 a: string
                 d: string
