@@ -1613,7 +1613,7 @@ describe(ruleName, () => {
           code: dedent`
               type Type = {
                 b(): void
-                c: () => void
+                c: (((v: false) => 'false') | ((v: true) => 'true')) & ((v: any) => any)
                 a: string
                 d: string
               }
@@ -2395,7 +2395,7 @@ describe(ruleName, () => {
           code: dedent`
               type Type = {
                 b(): void
-                c: () => void
+                c: (((v: false) => 'false') | ((v: true) => 'true')) & ((v: any) => any)
                 a: string
                 d: string
               }
@@ -2977,7 +2977,7 @@ describe(ruleName, () => {
         {
           code: dedent`
               type Type = {
-                c: () => void
+                c: (((v: false) => 'false') | ((v: true) => 'true')) & ((v: any) => any)
                 b(): void
                 a: string
                 d: string
