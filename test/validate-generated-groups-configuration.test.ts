@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 
-import { validateGeneratedGroupsConfiguration } from '../rules/validate-generated-groups-configuration'
+import { validateGeneratedGroupsConfiguration } from '../utils/validate-generated-groups-configuration'
 import { allModifiers, allSelectors } from '../rules/sort-classes.types'
 import { getArrayCombinations } from '../utils/get-array-combinations'
 

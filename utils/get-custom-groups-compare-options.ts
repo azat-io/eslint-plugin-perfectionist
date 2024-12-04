@@ -1,4 +1,4 @@
-import type { CompareOptions } from '../utils/compare'
+import type { CompareOptions } from './compare'
 import type { SortingNode } from '../typings'
 
 interface Options {
