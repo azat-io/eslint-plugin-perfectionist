@@ -5,6 +5,7 @@ import { RuleTester as EslintRuleTester } from 'eslint'
 import { afterAll, describe, it } from 'vitest'
 import { dedent } from 'ts-dedent'
 
+import { Alphabet } from '../utils/alphabet'
 import rule from '../rules/sort-sets'
 
 let ruleName = 'sort-sets'
@@ -1000,6 +1001,65 @@ describe(ruleName, () => {
               groupKind: 'mixed',
             },
           ],
+        },
+      ],
+    })
+  })
+
+  describe(`${ruleName}: sorts by custom alphabet`, () => {
+    let type = 'custom'
+
+    let alphabet = Alphabet.generateRecommendedAlphabet()
+      .sortByLocaleCompare('en-US')
+      .getCharacters()
+    let options = {
+      type: 'custom',
+      order: 'asc',
+      alphabet,
+    } as const
+
+    ruleTester.run(`${ruleName}(${type}): sorts sets`, rule, {
+      invalid: [
+        {
+          errors: [
+            {
+              data: {
+                right: 'b',
+                left: 'c',
+              },
+              messageId: 'unexpectedSetsOrder',
+            },
+          ],
+          output: dedent`
+            new Set([
+              'a',
+              'b',
+              'c',
+              'd',
+            ])
+          `,
+          code: dedent`
+            new Set([
+              'a',
+              'c',
+              'b',
+              'd',
+            ])
+          `,
+          options: [options],
+        },
+      ],
+      valid: [
+        {
+          code: dedent`
+            new Set(
+              'a',
+              'b',
+              'c',
+              'd',
+            ).includes(value)
+          `,
+          options: [options],
         },
       ],
     })

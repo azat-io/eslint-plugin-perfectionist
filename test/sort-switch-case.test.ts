@@ -6,6 +6,7 @@ import { afterAll, describe, it } from 'vitest'
 import { dedent } from 'ts-dedent'
 
 import rule from '../rules/sort-switch-case'
+import { Alphabet } from '../utils/alphabet'
 
 let ruleName = 'sort-switch-case'
 
@@ -1855,6 +1856,114 @@ describe(ruleName, () => {
         ],
       },
     )
+  })
+
+  describe(`${ruleName}: sorts by custom alphabet`, () => {
+    let type = 'custom'
+
+    let alphabet = Alphabet.generateRecommendedAlphabet()
+      .sortByLocaleCompare('en-US')
+      .getCharacters()
+    let options = {
+      type: 'custom',
+      order: 'asc',
+      alphabet,
+    } as const
+
+    ruleTester.run(`${ruleName}(${type}): works with grouped cases`, rule, {
+      invalid: [
+        {
+          output: [
+            dedent`
+              switch (value) {
+                case 'aaaaaa':
+                  return 'primary'
+                case 'cccc':
+                case 'ee':
+                case 'f':
+                  return 'tertiary'
+                case 'bbbbb':
+                case 'ddd':
+                  return 'secondary'
+                case 'x':
+                default:
+                  return 'unknown'
+              }
+            `,
+            dedent`
+              switch (value) {
+                case 'aaaaaa':
+                  return 'primary'
+                case 'bbbbb':
+                case 'ddd':
+                  return 'secondary'
+                case 'cccc':
+                case 'ee':
+                case 'f':
+                  return 'tertiary'
+                case 'x':
+                default:
+                  return 'unknown'
+              }
+            `,
+          ],
+          code: dedent`
+            switch (value) {
+              case 'aaaaaa':
+                return 'primary'
+              case 'ee':
+              case 'cccc':
+              case 'f':
+                return 'tertiary'
+              case 'bbbbb':
+              case 'ddd':
+                return 'secondary'
+              case 'x':
+              default:
+                return 'unknown'
+            }
+          `,
+          errors: [
+            {
+              data: {
+                right: 'cccc',
+                left: 'ee',
+              },
+              messageId: 'unexpectedSwitchCaseOrder',
+            },
+            {
+              data: {
+                right: 'bbbbb',
+                left: 'f',
+              },
+              messageId: 'unexpectedSwitchCaseOrder',
+            },
+          ],
+          options: [options],
+        },
+      ],
+      valid: [
+        {
+          code: dedent`
+            switch (value) {
+              case 'aaaaaa':
+                return 'primary'
+              case 'bbbbb':
+              case 'ddd':
+                return 'secondary'
+              case 'cccc':
+              case 'ee':
+              case 'f':
+                return 'tertiary'
+              case 'x':
+              default:
+                return 'unknown'
+            }
+          `,
+          options: [options],
+        },
+      ],
+    })
   })
 
   describe(`${ruleName}: sorting by line length`, () => {

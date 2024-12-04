@@ -4,6 +4,7 @@ import { dedent } from 'ts-dedent'
 
 import type { Options } from '../rules/sort-interfaces'
 
+import { Alphabet } from '../utils/alphabet'
 import rule from '../rules/sort-interfaces'
 
 let ruleName = 'sort-interfaces'
@@ -2787,6 +2788,70 @@ describe(ruleName, () => {
         },
       ],
       invalid: [],
+    })
+  })
+
+  describe(`${ruleName}: sorts by custom alphabet`, () => {
+    let type = 'custom'
+
+    let alphabet = Alphabet.generateRecommendedAlphabet()
+      .sortByLocaleCompare('en-US')
+      .getCharacters()
+    let options = {
+      type: 'custom',
+      order: 'asc',
+      alphabet,
+    } as const
+
+    ruleTester.run(`${ruleName}(${type}): sorts interface properties`, rule, {
+      invalid: [
+        {
+          errors: [
+            {
+              data: {
+                right: 'b',
+                left: 'c',
+              },
+              messageId: 'unexpectedInterfacePropertiesOrder',
+            },
+          ],
+          output: dedent`
+            interface Interface {
+              a: string
+              b: 'b1' | 'b2',
+              c: string
+            }
+          `,
+          code: dedent`
+            interface Interface {
+              a: string
+              c: string
+              b: 'b1' | 'b2',
+            }
+          `,
+          options: [options],
+        },
+      ],
+      valid: [
+        {
+          code: dedent`
+            interface Interface {
+              a: string
+            }
+          `,
+          options: [options],
+        },
+        {
+          code: dedent`
+            interface Interface {
+              a: string
+              b: 'b1' | 'b2',
+              c: string
+            }
+          `,
+          options: [options],
+        },
+      ],
     })
   })
 
