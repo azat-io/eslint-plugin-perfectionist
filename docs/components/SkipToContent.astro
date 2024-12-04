@@ -1,5 +1,5 @@
 ---
-import Icon from './Icon.astro'
+import IconArrowTurnRightDown from '../icons/arrow-turn-right-down.svg'
 ---
 
 <script is:inline>
@@ -19,7 +19,7 @@ import Icon from './Icon.astro'
 
 <a class="skip-link" id="skip-link" href="#main">
   Skip to main content
-  <Icon name="arrow-turn-right-down" size="s" />
+  <IconArrowTurnRightDown class="icon" />
 </a>
 
 <style>
@@ -65,5 +65,12 @@ import Icon from './Icon.astro'
       overflow: hidden;
       transition: none;
     }
+  }
+
+  .icon {
+    display: flex;
+    flex-shrink: 0;
+    inline-size: var(--size-icon-s);
+    block-size: var(--size-icon-s);
   }
 </style>

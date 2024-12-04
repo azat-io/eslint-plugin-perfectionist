@@ -13,7 +13,7 @@ interface Props {
 }
 
 export let GET = async ({ props }: Props): Promise<ImageResponse> =>
-  await openGraph(props.slug)
+  await openGraph(props.id)
 
 export let getStaticPaths = async (): Promise<
   {
@@ -26,7 +26,7 @@ export let getStaticPaths = async (): Promise<
   let rules = await getCollection('rules')
   return rules.map(currentRule => ({
     params: {
-      slug: currentRule.slug,
+      slug: currentRule.id,
     },
     props: currentRule,
   }))

@@ -1,5 +1,6 @@
 ---
-import Icon from './Icon.astro'
+import IconChevronRight from '../icons/chevron-right.svg'
+import IconHome from '../icons/home.svg'
 
 interface Props {
   path: {
@@ -15,11 +16,11 @@ let { path } = Astro.props
   path.length ? (
     <div class="breadcrumbs">
       <a aria-label="Homepage" class="link" href="/">
-        <Icon name="home" size="xs" />
+        <IconHome class="home" />
       </a>
       {path.map(({ href, name }) => (
         <>
-          <Icon name="chevron-right" size="s" />
+          <IconChevronRight class="chevron" />
           <a class="link" href={href}>
             {name}
           </a>
@@ -51,5 +52,16 @@ let { path } = Astro.props
         background: var(--color-background-primary-hover);
       }
     }
+  }
+
+  .home {
+    inline-size: var(--size-icon-xs);
+    block-size: var(--size-icon-xs);
+  }
+
+  .chevron {
+    display: flex;
+    inline-size: var(--size-icon-s);
+    block-size: var(--size-icon-s);
   }
 </style>

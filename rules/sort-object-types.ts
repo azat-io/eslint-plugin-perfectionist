@@ -29,6 +29,7 @@ import { singleCustomGroupJsonSchema } from './sort-object-types.types'
 import { isNodeEslintDisabled } from '../utils/is-node-eslint-disabled'
 import { allModifiers, allSelectors } from './sort-object-types.types'
 import { hasPartitionComment } from '../utils/is-partition-comment'
+import { isNodeFunctionType } from '../utils/is-node-function-type'
 import { sortNodesByGroups } from '../utils/sort-nodes-by-groups'
 import { getCommentsBefore } from '../utils/get-comments-before'
 import { makeNewlinesFixes } from '../utils/make-newlines-fixes'
@@ -261,11 +262,7 @@ export let sortObjectTypeElements = <MessageIds extends string>({
         selectors.push('index-signature')
       }
 
-      if (
-        typeElement.type === 'TSMethodSignature' ||
-        (typeElement.type === 'TSPropertySignature' &&
-          typeElement.typeAnnotation?.typeAnnotation.type === 'TSFunctionType')
-      ) {
+      if (isNodeFunctionType(typeElement)) {
         selectors.push('method')
       }
 

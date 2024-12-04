@@ -1,5 +1,6 @@
 ---
 import ContentFooterLink from './ContentFooterLink.astro'
+import PencilIcon from '../../icons/pencil.svg'
 
 interface Props {
   url: undefined | string
@@ -10,8 +11,16 @@ let { url } = Astro.props
 
 {
   url && (
-    <ContentFooterLink icon="pencil" url={url}>
+    <ContentFooterLink url={url}>
+      <PencilIcon class="icon" slot="icon" />
       Edit this page
     </ContentFooterLink>
   )
 }
+
+<style>
+  .icon {
+    inline-size: var(--size-icon-s);
+    block-size: var(--size-icon-s);
+  }
+</style>

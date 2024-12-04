@@ -1,6 +1,9 @@
 ---
+import IconColorPalette from '../../icons/color-palette.svg'
+import IconRocketShip from '../../icons/rocket-ship.svg'
 import Typography from '../Typography.astro'
-import Icon from '../Icon.astro'
+import IconTool from '../../icons/tool.svg'
+import IconCode from '../../icons/code.svg'
 
 interface Props {
   description: string
@@ -9,10 +12,19 @@ interface Props {
 }
 
 let { description, title, icon } = Astro.props
+
+let icons = {
+  'color-palette': IconColorPalette,
+  'rocket-ship': IconRocketShip,
+  tool: IconTool,
+  code: IconCode,
+}
+
+let Icon = icons[icon as keyof typeof icons]
 ---
 
 <section class="element">
-  <Icon class="icon" name={icon} size="l" />
+  <Icon class="icon" />
   <Typography size="xl" tag="h3">{title}</Typography>
   <Typography size="s">{description}</Typography>
 </section>
@@ -29,6 +41,8 @@ let { description, title, icon } = Astro.props
   }
 
   .icon {
+    inline-size: var(--size-icon-l);
+    block-size: var(--size-icon-l);
     margin-block-end: var(--space-xs);
   }
 </style>

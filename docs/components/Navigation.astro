@@ -1,6 +1,8 @@
 ---
 import { repository } from '../../package.json'
-import Icon from './Icon.astro'
+import IconGithub from '../icons/github.svg'
+import IconMoon from '../icons/moon.svg'
+import IconSun from '../icons/sun.svg'
 ---
 
 <nav class="navigation">
@@ -24,8 +26,8 @@ import Icon from './Icon.astro'
         type="button"
         class="link"
       >
-        <Icon class="icon icon-dark" name="sun" />
-        <Icon class="icon icon-light" name="moon" />
+        <IconSun class="icon icon-dark" />
+        <IconMoon class="icon icon-light" />
       </button>
     </li>
     <li>
@@ -38,7 +40,7 @@ import Icon from './Icon.astro'
         target="_blank"
         class="link"
       >
-        <Icon name="github" class="icon" />
+        <IconGithub class="icon" />
       </a>
     </li>
   </ul>
@@ -94,6 +96,13 @@ import Icon from './Icon.astro'
       box-shadow: 0 0 0 3px var(--color-border-brand);
       transition: box-shadow 200ms;
     }
+  }
+
+  .icon {
+    display: flex;
+    flex-shrink: 0;
+    inline-size: var(--size-icon-m);
+    block-size: var(--size-icon-m);
   }
 
   .hr,
