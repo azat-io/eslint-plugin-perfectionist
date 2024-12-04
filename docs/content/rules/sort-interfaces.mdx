@@ -284,10 +284,10 @@ interface User {
   firstName: string // unknown
   lastName: string  // unknown
   username: string  // unknown
-  job: {            // multiline
+  job: {            // multiline-member
     // Stuff about job
   }
-  localization: {   // multiline
+  localization: {   // multiline-member
     // Stuff about localization
   }
 }
@@ -300,7 +300,7 @@ interface User {
   groups: [
     'unknown',
     'method',
-    'multiline',
+    'multiline-member',
   ]
 }
 ```
@@ -429,7 +429,7 @@ interface User {
   age: number                // unknown
   isAdmin: boolean           // unknown
   lastUpdated_metadata: Date // bottom
-  localization?: {            // multiline
+  localization?: {            // optional-multiline-member
     // Stuff about localization
   }
   version_metadata: string   // bottom
@@ -443,7 +443,7 @@ interface User {
    groups: [
 +    'top',                           // [!code ++]
      'unknown',
-+    ['optional-multiline', 'bottom'] // [!code ++]
++    ['optional-multiline-member', 'bottom'] // [!code ++]
    ],
 +  customGroups: [                              // [!code ++]
 +    {                                          // [!code ++]
