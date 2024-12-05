@@ -11,7 +11,7 @@
 
   export let settings: Record<string, unknown> = {}
 
-  let editor: monaco.editor.IStandaloneCodeEditor | null = null
+  let container: HTMLElement
 
   let baseValue = dedent`
     import Button from '~/components/Button'
@@ -116,66 +116,63 @@
   }
 
   onMount(() => {
-    let container: HTMLElement | null = document.querySelector('.monaco')
-    if (container) {
-      defineMonacoTheme('css-variables')
+    defineMonacoTheme('css-variables')
 
-      monaco.languages.typescript.typescriptDefaults.setDiagnosticsOptions({
-        diagnosticCodesToIgnore: [6192],
-        noSemanticValidation: true,
-        noSyntaxValidation: true,
-      })
+    monaco.languages.typescript.typescriptDefaults.setDiagnosticsOptions({
+      diagnosticCodesToIgnore: [6192],
+      noSemanticValidation: true,
+      noSyntaxValidation: true,
+    })
 
-      editor = monaco.editor.create(container, {
-        minimap: {
-          enabled: false,
-        },
-        // @ts-ignore
-        'bracketPairColorization.enabled': false,
-        fontFamily: 'var(--font-family-code)',
-        language: 'typescript',
-        matchBrackets: 'never',
-        automaticLayout: true,
-        value: baseValue,
-        lineHeight: 1.7,
-        fontSize: 15,
-      })
+    let editor = monaco.editor.create(container, {
+      minimap: {
+        enabled: false,
+      },
+      // @ts-ignore
+      'bracketPairColorization.enabled': false,
+      fontFamily: 'var(--font-family-code)',
+      language: 'typescript',
+      matchBrackets: 'never',
+      automaticLayout: true,
+      value: baseValue,
+      lineHeight: 1.7,
+      fontSize: 15,
+    })
 
-      monaco.editor.setTheme('css-variables')
+    monaco.editor.setTheme('css-variables')
 
-      let validateCode = async (): Promise<void> => {
-        let code = editor?.getValue() ?? ''
+    let validateCode = async (): Promise<void> => {
+      let code = editor.getValue()
 
-        let lintResults: Linter.LintMessage[] = await lintCode(code, settings)
+      let lintResults: Linter.LintMessage[] = await lintCode(code, settings)
 
-        let markers = lintResults.map(result => ({
-          severity:
-            result.severity === 2
-              ? monaco.MarkerSeverity.Error
-              : monaco.MarkerSeverity.Warning,
-          endColumn: result.endColumn ?? result.column + 1,
-          endLineNumber: result.endLine ?? result.line,
-          startLineNumber: result.line,
-          startColumn: result.column,
-          message: result.message,
-        }))
+      let markers = lintResults.map(result => ({
+        severity:
+          result.severity === 2
+            ? monaco.MarkerSeverity.Error
+            : monaco.MarkerSeverity.Warning,
+        endColumn: result.endColumn ?? result.column + 1,
+        endLineNumber: result.endLine ?? result.line,
+        startLineNumber: result.line,
+        startColumn: result.column,
+        message: result.message,
+      }))
 
-        let model = editor?.getModel()
+      let model = editor.getModel()
 
-        if (model) {
-          monaco.editor.setModelMarkers(model, 'eslint', markers)
-        }
+      if (model) {
+        monaco.editor.setModelMarkers(model, 'eslint', markers)
       }
-
-      // eslint-disable-next-line @typescript-eslint/no-floating-promises
-      validateCode()
-
-      editor.onDidChangeModelContent(validateCode)
     }
+
+    // eslint-disable-next-line @typescript-eslint/no-floating-promises
+    validateCode()
+
+    editor.onDidChangeModelContent(validateCode)
   })
 </script>
 
-<div class="monaco" />
+<div bind:this={container} class="monaco" />
 
 <style>
   .monaco {
