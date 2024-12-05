@@ -1,5 +1,4 @@
 import { transformerNotationDiff } from '@shikijs/transformers'
-import { monaco } from '@bithero/monaco-editor-vite-plugin'
 import rehypeExternalLinks from 'rehype-external-links'
 import { browserslistToTargets } from 'lightningcss'
 import svelteSvg from '@poppanator/sveltekit-svg'
@@ -20,29 +19,6 @@ let dirname = fileURLToPath(path.dirname(import.meta.url))
 let site = 'https://perfectionist.dev'
 
 export default defineConfig({
-  vite: {
-    css: {
-      lightningcss: {
-        targets: browserslistToTargets(
-          browserslist(null, {
-            config: path.join(dirname, './.browserslistrc'),
-          }),
-        ),
-      },
-      transformer: 'lightningcss',
-    },
-    plugins: [
-      // @ts-ignore
-      svelteSvg(),
-      // @ts-ignore
-      monaco({
-        languages: ['typescript'],
-      }),
-    ],
-    ssr: {
-      noExternal: ['monaco-editor'],
-    },
-  },
   integrations: [
     compress({
       JavaScript: true,
@@ -62,6 +38,25 @@ export default defineConfig({
     }),
     mdx(),
   ],
+  vite: {
+    css: {
+      lightningcss: {
+        targets: browserslistToTargets(
+          browserslist(null, {
+            config: path.join(dirname, './.browserslistrc'),
+          }),
+        ),
+      },
+      transformer: 'lightningcss',
+    },
+    plugins: [
+      // @ts-ignore
+      svelteSvg(),
+    ],
+    ssr: {
+      noExternal: ['monaco-editor'],
+    },
+  },
   markdown: {
     rehypePlugins: [
       [

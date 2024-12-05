@@ -63,7 +63,6 @@
     "@astrojs/svelte": "^7.0.1",
     "@azat-io/eslint-config": "^2.4.0",
     "@azat-io/stylelint-config": "^0.1.1",
-    "@bithero/monaco-editor-vite-plugin": "^1.0.2",
     "@commitlint/cli": "^19.6.0",
     "@commitlint/config-conventional": "^19.6.0",
     "@nanostores/persistent": "^0.10.2",
