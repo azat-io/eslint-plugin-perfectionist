@@ -108,7 +108,7 @@ export let newlinesBetweenJsonSchema: JSONSchema4 = {
 
 export let useConfigurationIfJsonSchema: JSONSchema4 = {
   properties: {
-    allElementNamesMatchPattern: {
+    allNamesMatchPattern: {
       type: 'string',
     },
   },

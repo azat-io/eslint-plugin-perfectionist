@@ -46,7 +46,7 @@ import { matches } from '../utils/matches'
 
 type Options = Partial<{
   useConfigurationIf: {
-    allElementNamesMatchPattern?: string
+    allNamesMatchPattern?: string
   }
   destructuredObjects: { groups: boolean } | boolean
   type: 'alphabetical' | 'line-length' | 'natural'

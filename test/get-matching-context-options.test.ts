@@ -3,8 +3,8 @@ import { describe, expect, it } from 'vitest'
 import { getMatchingContextOptions } from '../utils/get-matching-context-options'
 
 describe('get-matching-context-options', () => {
-  describe('`allElementNamesMatchPattern`', () => {
-    it('matches the appropriate context options with `allElementNamesMatchPattern`', () => {
+  describe('`allNamesMatchPattern`', () => {
+    it('matches the appropriate context options with `allNamesMatchPattern`', () => {
       let barContextOptions = buildContextOptions('bar')
       let contextOptions = [buildContextOptions('foo'), barContextOptions]
       let nodeNames = ['bar1', 'bar2']
@@ -35,10 +35,10 @@ describe('get-matching-context-options', () => {
   })
 
   let buildContextOptions = (
-    allElementNamesMatchPattern?: string,
-  ): { useConfigurationIf: { allElementNamesMatchPattern?: string } } => ({
+    allNamesMatchPattern?: string,
+  ): { useConfigurationIf: { allNamesMatchPattern?: string } } => ({
     useConfigurationIf: {
-      ...(allElementNamesMatchPattern ? { allElementNamesMatchPattern } : {}),
+      ...(allNamesMatchPattern ? { allNamesMatchPattern } : {}),
     },
   })
 })

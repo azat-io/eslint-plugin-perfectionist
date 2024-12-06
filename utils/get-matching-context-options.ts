@@ -2,7 +2,7 @@ import { matches } from './matches'
 
 interface Options {
   useConfigurationIf?: {
-    allElementNamesMatchPattern?: string
+    allNamesMatchPattern?: string
   }
 }
 
@@ -14,12 +14,9 @@ export let getMatchingContextOptions = ({
   nodeNames: string[]
 }): undefined | Options =>
   contextOptions.find(options => {
-    let allElementNamesMatchPattern =
-      options.useConfigurationIf?.allElementNamesMatchPattern
+    let allNamesMatchPattern = options.useConfigurationIf?.allNamesMatchPattern
     return (
-      !allElementNamesMatchPattern ||
-      nodeNames.every(nodeName =>
-        matches(nodeName, allElementNamesMatchPattern),
-      )
+      !allNamesMatchPattern ||
+      nodeNames.every(nodeName => matches(nodeName, allNamesMatchPattern))
     )
   })

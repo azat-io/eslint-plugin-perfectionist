@@ -291,7 +291,7 @@ The `groups` attribute allows you to specify whether to use groups to sort destr
 ### useConfigurationIf
 
 <sub>
-  type: `{ allElementNamesMatchPattern?: string }`
+  type: `{ allNamesMatchPattern?: string }`
 </sub>
 <sub>default: `{}`</sub>
 
@@ -299,7 +299,7 @@ Allows you to specify filters to match a particular options configuration for a 
 
 The first matching options configuration will be used. If no configuration matches, the default options configuration will be used.
 
-- `allElementNamesMatchPattern` — A regexp pattern that all object keys must match.
+- `allNamesMatchPattern` — A regexp pattern that all object keys must match.
 
 Example configuration:
 ```ts
@@ -314,7 +314,7 @@ Example configuration:
         b: 'b',
       },
       useConfigurationIf: {
-        allElementNamesMatchPattern: '^r|g|b$',
+        allNamesMatchPattern: '^r|g|b$',
       },
     },
     {

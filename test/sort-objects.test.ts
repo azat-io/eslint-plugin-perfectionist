@@ -1853,7 +1853,7 @@ describe(ruleName, () => {
 
     describe(`${ruleName}(${type}): allows to use 'useConfigurationIf'`, () => {
       ruleTester.run(
-        `${ruleName}(${type}): allows to use 'allElementNamesMatchPattern'`,
+        `${ruleName}(${type}): allows to use 'allNamesMatchPattern'`,
         rule,
         {
           invalid: [
@@ -1882,7 +1882,7 @@ describe(ruleName, () => {
                 {
                   ...options,
                   useConfigurationIf: {
-                    allElementNamesMatchPattern: 'foo',
+                    allNamesMatchPattern: 'foo',
                   },
                 },
                 {
@@ -1893,7 +1893,7 @@ describe(ruleName, () => {
                     b: 'b',
                   },
                   useConfigurationIf: {
-                    allElementNamesMatchPattern: '^r|g|b$',
+                    allNamesMatchPattern: '^r|g|b$',
                   },
                   groups: ['r', 'g', 'b'],
                 },
