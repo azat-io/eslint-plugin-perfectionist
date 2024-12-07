@@ -50,8 +50,8 @@ type Options = Partial<{
   useConfigurationIf: {
     allNamesMatchPattern?: string
   }
+  type: 'alphabetical' | 'line-length' | 'natural' | 'custom'
   destructuredObjects: { groups: boolean } | boolean
-  type: 'alphabetical' | 'line-length' | 'natural'
   customGroups: Record<string, string[] | string>
   partitionByComment: string[] | boolean | string
   newlinesBetween: 'ignore' | 'always' | 'never'
