@@ -1,5 +1,7 @@
 import { compare as createNaturalCompare } from 'natural-orderby'
 
+import { convertBooleanToSign } from './convert-boolean-to-sign'
+
 interface Character {
   uppercaseCharacterCodePoint?: number
   lowercaseCharacterCodePoint?: number
@@ -367,6 +369,17 @@ export class Alphabet {
   }
 
   /**
+   * Sorts the alphabet by the character code point
+   * @returns {Alphabet} - The same alphabet instance sorted by the character
+   * code point
+   */
+  public sortByCharCodeAt(): this {
+    return this.sortBy((a, b) =>
+      convertBooleanToSign(a.charCodeAt(0) > b.charCodeAt(0)),
+    )
+  }
+
+  /**
    * Sorts the alphabet by the locale order of the characters
    * @param {Intl.LocalesArgument} locales - The locales to use for sorting
    * @returns {Alphabet} - The same alphabet instance sorted by the locale
@@ -374,15 +387,6 @@ export class Alphabet {
    */
   public sortByLocaleCompare(locales?: Intl.LocalesArgument): this {
     return this.sortBy((a, b) => a.localeCompare(b, locales))
-  }
-
-  /**
-   * Sorts the alphabet by the character code point
-   * @returns {Alphabet} - The same alphabet instance sorted by the character
-   * code point
-   */
-  public sortByCharCodeAt(): this {
-    return this.sortBy((a, b) => (a.charCodeAt(0) < b.charCodeAt(0) ? -1 : 1))
   }
 
   /**

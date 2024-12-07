@@ -2,6 +2,8 @@ import { compare as createNaturalCompare } from 'natural-orderby'
 
 import type { SortingNode } from '../typings'
 
+import { convertBooleanToSign } from './convert-boolean-to-sign'
+
 export type CompareOptions<T extends SortingNode> =
   | AlphabeticalCompareOptions<T>
   | LineLengthCompareOptions<T>
@@ -74,8 +76,7 @@ export let compare = <T extends SortingNode>(
       sortingFunction = getLineLengthSortingFunction(options, nodeValueGetter)
   }
 
-  let orderCoefficient = options.order === 'asc' ? 1 : -1
-  return orderCoefficient * sortingFunction(a, b)
+  return convertBooleanToSign(options.order === 'asc') * sortingFunction(a, b)
 }
 
 let getAlphabeticalSortingFunction = <T extends SortingNode>(
@@ -131,7 +132,7 @@ let getCustomSortingFunction = <T extends SortingNode>(
       indexOfA ??= Infinity
       indexOfB ??= Infinity
       if (indexOfA !== indexOfB) {
-        return indexOfA - indexOfB > 0 ? 1 : -1
+        return convertBooleanToSign(indexOfA - indexOfB > 0)
       }
     }
     return 0
