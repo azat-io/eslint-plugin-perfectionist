@@ -6,6 +6,7 @@ import { afterAll, describe, it } from 'vitest'
 import { dedent } from 'ts-dedent'
 
 import rule from '../rules/sort-named-exports'
+import { Alphabet } from '../utils/alphabet'
 
 let ruleName = 'sort-named-exports'
 
@@ -666,6 +667,60 @@ describe(ruleName, () => {
         ],
       },
     )
+  })
+
+  describe(`${ruleName}: sorts by custom alphabet`, () => {
+    let type = 'custom'
+
+    let alphabet = Alphabet.generateRecommendedAlphabet()
+      .sortByLocaleCompare('en-US')
+      .getCharacters()
+    let options = {
+      type: 'custom',
+      order: 'asc',
+      alphabet,
+    } as const
+
+    ruleTester.run(`${ruleName}(${type}): sorts named exports`, rule, {
+      invalid: [
+        {
+          errors: [
+            {
+              data: {
+                right: 'bb',
+                left: 'c',
+              },
+              messageId: 'unexpectedNamedExportsOrder',
+            },
+          ],
+          output: dedent`
+            export {
+              aaa,
+              bb,
+              c
+            }
+          `,
+          code: dedent`
+            export {
+              aaa,
+              c,
+              bb
+            }
+          `,
+          options: [options],
+        },
+      ],
+      valid: [
+        {
+          code: 'export { a }',
+          options: [options],
+        },
+        {
+          code: 'export { aaa, bb, c }',
+          options: [options],
+        },
+      ],
+    })
   })
 
   describe(`${ruleName}: sorting by line length`, () => {

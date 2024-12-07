@@ -7,10 +7,12 @@ import {
   partitionByNewLineJsonSchema,
   specialCharactersJsonSchema,
   ignoreCaseJsonSchema,
+  alphabetJsonSchema,
   localesJsonSchema,
   orderJsonSchema,
   typeJsonSchema,
 } from '../utils/common-json-schemas'
+import { validateCustomSortConfiguration } from '../utils/validate-custom-sort-configuration'
 import { getEslintDisabledLines } from '../utils/get-eslint-disabled-lines'
 import { isNodeEslintDisabled } from '../utils/is-node-eslint-disabled'
 import { hasPartitionComment } from '../utils/is-partition-comment'
@@ -28,14 +30,15 @@ import { pairwise } from '../utils/pairwise'
 
 type Options = [
   Partial<{
+    type: 'alphabetical' | 'line-length' | 'natural' | 'custom'
     groupKind: 'values-first' | 'types-first' | 'mixed'
-    type: 'alphabetical' | 'line-length' | 'natural'
     partitionByComment: string[] | boolean | string
     specialCharacters: 'remove' | 'trim' | 'keep'
     locales: NonNullable<Intl.LocalesArgument>
     partitionByNewLine: boolean
     order: 'desc' | 'asc'
     ignoreCase: boolean
+    alphabet: string
   }>,
 ]
 
@@ -54,6 +57,7 @@ let defaultOptions: Required<Options[0]> = {
   groupKind: 'mixed',
   ignoreCase: true,
   locales: 'en-US',
+  alphabet: '',
   order: 'asc',
 }
 
@@ -66,6 +70,8 @@ export default createEslintRule<Options, MESSAGE_ID>({
 
       let settings = getSettings(context.settings)
       let options = complete(context.options.at(0), settings, defaultOptions)
+      validateCustomSortConfiguration(options)
+
       let sourceCode = getSourceCode(context)
       let eslintDisabledLines = getEslintDisabledLines({
         ruleName: context.id,
@@ -192,6 +198,7 @@ export default createEslintRule<Options, MESSAGE_ID>({
           partitionByNewLine: partitionByNewLineJsonSchema,
           specialCharacters: specialCharactersJsonSchema,
           ignoreCase: ignoreCaseJsonSchema,
+          alphabet: alphabetJsonSchema,
           locales: localesJsonSchema,
           order: orderJsonSchema,
           type: typeJsonSchema,

@@ -46,6 +46,10 @@ export let pages: ({ links: Page[] } & Page)[] = [
         url: '/configs/recommended-line-length',
         title: 'recommended-line-length',
       },
+      {
+        url: '/configs/recommended-custom',
+        title: 'recommended-custom',
+      },
     ],
     title: 'Configs',
     url: '/configs',

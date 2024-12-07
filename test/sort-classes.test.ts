@@ -5,6 +5,7 @@ import { RuleTester as EslintRuleTester } from 'eslint'
 import { afterAll, describe, it } from 'vitest'
 import { dedent } from 'ts-dedent'
 
+import { Alphabet } from '../utils/alphabet'
 import rule from '../rules/sort-classes'
 
 let ruleName = 'sort-classes'
@@ -6097,6 +6098,173 @@ describe(ruleName, () => {
         },
       ],
       valid: [],
+    })
+  })
+
+  describe(`${ruleName}: sorts by custom alphabet`, () => {
+    let type = 'custom'
+
+    let alphabet = Alphabet.generateRecommendedAlphabet()
+      .sortByLocaleCompare('en-US')
+      .getCharacters()
+    let options = {
+      type: 'custom',
+      order: 'asc',
+      alphabet,
+    } as const
+
+    ruleTester.run(`${ruleName}(${type}): sorts class members`, rule, {
+      invalid: [
+        {
+          options: [
+            {
+              ...options,
+              groups: [
+                'static-property',
+                'protected-property',
+                'private-property',
+                'property',
+                'constructor',
+                'static-method',
+                'static-protected-method',
+                'protected-method',
+                'private-method',
+                'method',
+                'unknown',
+              ],
+            },
+          ],
+          errors: [
+            {
+              data: {
+                right: 'd',
+                left: 'e',
+              },
+              messageId: 'unexpectedClassesOrder',
+            },
+            {
+              data: {
+                leftGroup: 'static-method',
+                rightGroup: 'constructor',
+                right: 'constructor',
+                left: 'f',
+              },
+              messageId: 'unexpectedClassesGroupOrder',
+            },
+          ],
+          output: dedent`
+            class Class {
+              static a = 'a'
+
+              protected b = 'b'
+
+              private c = 'c'
+
+              d = 'd'
+
+              e = 'e'
+
+              constructor() {}
+
+              static f() {}
+
+              protected static g() {}
+
+              protected h() {}
+
+              private i() {}
+
+              j() {}
+
+              k() {}
+            }
+          `,
+          code: dedent`
+            class Class {
+              static a = 'a'
+
+              protected b = 'b'
+
+              private c = 'c'
+
+              e = 'e'
+
+              d = 'd'
+
+              static f() {}
+
+              constructor() {}
+
+              protected static g() {}
+
+              protected h() {}
+
+              private i() {}
+
+              j() {}
+
+              k() {}
+            }
+          `,
+        },
+      ],
+      valid: [
+        {
+          code: dedent`
+            class Class {
+              a
+            }
+          `,
+          options: [options],
+        },
+        {
+          options: [
+            {
+              ...options,
+              groups: [
+                'static-property',
+                'protected-property',
+                'private-property',
+                'property',
+                'constructor',
+                'static-method',
+                'static-protected-method',
+                'protected-method',
+                'private-method',
+                'method',
+                'unknown',
+              ],
+            },
+          ],
+          code: dedent`
+            class Class {
+              static a = 'a'
+
+              protected b = 'b'
+
+              private c = 'c'
+
+              d = 'd'
+
+              e = 'e'
+
+              constructor() {}
+
+              static f() {}
+
+              protected static g() {}
+
+              protected h() {}
+
+              private i() {}
+
+              j() {}
+
+              k() {}
+            }
+          `,
+        },
+      ],
     })
   })
 

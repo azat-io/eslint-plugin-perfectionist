@@ -6,10 +6,12 @@ import type { SortingNode } from '../typings'
 import {
   specialCharactersJsonSchema,
   ignoreCaseJsonSchema,
+  alphabetJsonSchema,
   localesJsonSchema,
   orderJsonSchema,
   typeJsonSchema,
 } from '../utils/common-json-schemas'
+import { validateCustomSortConfiguration } from '../utils/validate-custom-sort-configuration'
 import { makeCommentAfterFixes } from '../utils/make-comment-after-fixes'
 import { createEslintRule } from '../utils/create-eslint-rule'
 import { getSourceCode } from '../utils/get-source-code'
@@ -24,11 +26,12 @@ import { compare } from '../utils/compare'
 
 type Options = [
   Partial<{
-    type: 'alphabetical' | 'line-length' | 'natural'
+    type: 'alphabetical' | 'line-length' | 'natural' | 'custom'
     specialCharacters: 'remove' | 'trim' | 'keep'
     locales: NonNullable<Intl.LocalesArgument>
     order: 'desc' | 'asc'
     ignoreCase: boolean
+    alphabet: string
   }>,
 ]
 
@@ -43,6 +46,7 @@ let defaultOptions: Required<Options[0]> = {
   type: 'alphabetical',
   ignoreCase: true,
   locales: 'en-US',
+  alphabet: '',
   order: 'asc',
 }
 
@@ -56,9 +60,9 @@ export default createEslintRule<Options, MESSAGE_ID>({
       let settings = getSettings(context.settings)
 
       let options = complete(context.options.at(0), settings, defaultOptions)
+      validateCustomSortConfiguration(options)
 
       let sourceCode = getSourceCode(context)
-
       let isDiscriminantTrue =
         switchNode.discriminant.type === 'Literal' &&
         switchNode.discriminant.value === true
@@ -265,6 +269,7 @@ export default createEslintRule<Options, MESSAGE_ID>({
         properties: {
           specialCharacters: specialCharactersJsonSchema,
           ignoreCase: ignoreCaseJsonSchema,
+          alphabet: alphabetJsonSchema,
           locales: localesJsonSchema,
           order: orderJsonSchema,
           type: typeJsonSchema,

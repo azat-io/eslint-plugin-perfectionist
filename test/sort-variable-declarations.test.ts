@@ -6,6 +6,7 @@ import { afterAll, describe, it } from 'vitest'
 import { dedent } from 'ts-dedent'
 
 import rule from '../rules/sort-variable-declarations'
+import { Alphabet } from '../utils/alphabet'
 
 let ruleName = 'sort-variable-declarations'
 
@@ -1285,6 +1286,47 @@ describe(ruleName, () => {
         valid: [],
       },
     )
+  })
+
+  describe(`${ruleName}: sorts by custom alphabet`, () => {
+    let type = 'custom'
+
+    let alphabet = Alphabet.generateRecommendedAlphabet()
+      .sortByLocaleCompare('en-US')
+      .getCharacters()
+    let options = {
+      type: 'custom',
+      order: 'asc',
+      alphabet,
+    } as const
+
+    ruleTester.run(`${ruleName}(${type}): sorts variables declarations`, rule, {
+      invalid: [
+        {
+          errors: [
+            {
+              messageId: 'unexpectedVariableDeclarationsOrder',
+              data: { right: 'aaa', left: 'bb' },
+            },
+          ],
+          output: dedent`
+              const aaa, bb, c
+            `,
+          code: dedent`
+              const bb, aaa, c
+            `,
+          options: [options],
+        },
+      ],
+      valid: [
+        {
+          code: dedent`
+              const aaa, bb, c
+            `,
+          options: [options],
+        },
+      ],
+    })
   })
 
   describe(`${ruleName}: sorting by line length`, () => {

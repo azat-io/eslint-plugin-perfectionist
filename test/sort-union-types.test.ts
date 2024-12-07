@@ -3,6 +3,7 @@ import { afterAll, describe, it } from 'vitest'
 import { dedent } from 'ts-dedent'
 
 import rule from '../rules/sort-union-types'
+import { Alphabet } from '../utils/alphabet'
 
 let ruleName = 'sort-union-types'
 
@@ -1330,6 +1331,50 @@ describe(ruleName, () => {
               ],
             },
           ],
+        },
+      ],
+    })
+  })
+
+  describe(`${ruleName}: sorts by custom alphabet`, () => {
+    let type = 'custom'
+
+    let alphabet = Alphabet.generateRecommendedAlphabet()
+      .sortByLocaleCompare('en-US')
+      .getCharacters()
+    let options = {
+      type: 'custom',
+      order: 'asc',
+      alphabet,
+    } as const
+
+    ruleTester.run(`${ruleName}(${type}: sorts union types`, rule, {
+      invalid: [
+        {
+          errors: [
+            {
+              data: {
+                right: "'bbb'",
+                left: "'cc'",
+              },
+              messageId: 'unexpectedUnionTypesOrder',
+            },
+          ],
+          output: dedent`
+            type Type = 'aaaa' | 'bbb' | 'cc' | 'd'
+          `,
+          code: dedent`
+            type Type = 'aaaa' | 'cc' | 'bbb' | 'd'
+          `,
+          options: [options],
+        },
+      ],
+      valid: [
+        {
+          code: dedent`
+            type Type = 'aaaa' | 'bbb' | 'cc' | 'd'
+          `,
+          options: [options],
         },
       ],
     })

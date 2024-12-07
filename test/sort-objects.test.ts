@@ -5,6 +5,7 @@ import { RuleTester as EslintRuleTester } from 'eslint'
 import { afterAll, describe, it } from 'vitest'
 import { dedent } from 'ts-dedent'
 
+import { Alphabet } from '../utils/alphabet'
 import rule from '../rules/sort-objects'
 
 let ruleName = 'sort-objects'
@@ -2771,6 +2772,69 @@ describe(ruleName, () => {
                 partitionByNewLine: true,
               },
             ],
+          },
+        ],
+      },
+    )
+  })
+
+  describe(`${ruleName}: sorts by custom alphabet`, () => {
+    let type = 'custom'
+
+    let alphabet = Alphabet.generateRecommendedAlphabet()
+      .sortByLocaleCompare('en-US')
+      .getCharacters()
+    let options = {
+      type: 'custom',
+      order: 'asc',
+      alphabet,
+    } as const
+
+    ruleTester.run(
+      `${ruleName}(${type}): sorts object with identifier and literal keys`,
+      rule,
+      {
+        invalid: [
+          {
+            errors: [
+              {
+                data: {
+                  right: 'b',
+                  left: 'c',
+                },
+                messageId: 'unexpectedObjectsOrder',
+              },
+            ],
+            output: dedent`
+              let Obj = {
+                a: 'aaaa',
+                b: 'bbb',
+                [c]: 'cc',
+                d: 'd',
+              }
+            `,
+            code: dedent`
+              let Obj = {
+                a: 'aaaa',
+                [c]: 'cc',
+                b: 'bbb',
+                d: 'd',
+              }
+            `,
+            options: [options],
+          },
+        ],
+        valid: [
+          {
+            code: dedent`
+              let Obj = {
+                a: 'aaaa',
+                b: 'bbb',
+                [c]: 'cc',
+                d: 'd',
+              }
+            `,
+            options: [options],
           },
         ],
       },

@@ -15,6 +15,7 @@ import type { MESSAGE_ID, Options } from '../rules/sort-imports'
 
 import * as readClosestTsConfigUtils from '../utils/read-closest-ts-config-by-path'
 import * as getTypescriptImportUtils from '../utils/get-typescript-import'
+import { Alphabet } from '../utils/alphabet'
 import rule from '../rules/sort-imports'
 
 let ruleName = 'sort-imports'
@@ -3922,6 +3923,53 @@ describe(ruleName, () => {
         ],
       },
     )
+  })
+
+  describe(`${ruleName}: sorts by custom alphabet`, () => {
+    let type = 'custom'
+
+    let alphabet = Alphabet.generateRecommendedAlphabet()
+      .sortByLocaleCompare('en-US')
+      .getCharacters()
+    let options = {
+      type: 'custom',
+      order: 'asc',
+      alphabet,
+    } as const
+
+    ruleTester.run(`${ruleName}(${type}): sorts imports`, rule, {
+      invalid: [
+        {
+          errors: [
+            {
+              data: {
+                right: 'a',
+                left: 'b',
+              },
+              messageId: 'unexpectedImportsOrder',
+            },
+          ],
+          output: dedent`
+            import { a1, a2 } from 'a'
+            import { b1 } from 'b'
+          `,
+          code: dedent`
+            import { b1 } from 'b'
+            import { a1, a2 } from 'a'
+          `,
+          options: [options],
+        },
+      ],
+      valid: [
+        {
+          code: dedent`
+            import { a1, a2 } from 'a'
+            import { b1 } from 'b'
+          `,
+          options: [options],
+        },
+      ],
+    })
   })
 
   describe(`${ruleName}: sorting by line length`, () => {

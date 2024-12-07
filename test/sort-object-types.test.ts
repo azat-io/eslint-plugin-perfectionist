@@ -3,6 +3,7 @@ import { afterAll, describe, it } from 'vitest'
 import { dedent } from 'ts-dedent'
 
 import rule from '../rules/sort-object-types'
+import { Alphabet } from '../utils/alphabet'
 
 let ruleName = 'sort-object-types'
 
@@ -2409,6 +2410,62 @@ describe(ruleName, () => {
         },
       ],
       invalid: [],
+    })
+  })
+
+  describe(`${ruleName}: sorts by custom alphabet`, () => {
+    let type = 'custom'
+
+    let alphabet = Alphabet.generateRecommendedAlphabet()
+      .sortByLocaleCompare('en-US')
+      .getCharacters()
+    let options = {
+      type: 'custom',
+      order: 'asc',
+      alphabet,
+    } as const
+
+    ruleTester.run(`${ruleName}(${type}): sorts type members`, rule, {
+      invalid: [
+        {
+          errors: [
+            {
+              data: {
+                right: 'b',
+                left: 'c',
+              },
+              messageId: 'unexpectedObjectTypesOrder',
+            },
+          ],
+          output: dedent`
+            type Type = {
+              a: 'aaa'
+              b: 'bb'
+              c: 'c'
+            }
+          `,
+          code: dedent`
+            type Type = {
+              a: 'aaa'
+              c: 'c'
+              b: 'bb'
+            }
+          `,
+          options: [options],
+        },
+      ],
+      valid: [
+        {
+          code: dedent`
+            type Type = {
+              a: 'aaa'
+              b: 'bb'
+              c: 'c'
+            }
+          `,
+          options: [options],
+        },
+      ],
     })
   })
 

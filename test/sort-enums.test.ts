@@ -4,6 +4,7 @@ import { dedent } from 'ts-dedent'
 
 import type { Options } from '../rules/sort-enums'
 
+import { Alphabet } from '../utils/alphabet'
 import rule from '../rules/sort-enums'
 
 let ruleName = 'sort-enums'
@@ -1139,6 +1140,65 @@ describe(ruleName, () => {
         },
       ],
       valid: [],
+    })
+  })
+
+  describe(`${ruleName}: sorts by custom alphabet`, () => {
+    let type = 'custom'
+
+    let alphabet = Alphabet.generateRecommendedAlphabet()
+      .sortByLocaleCompare('en-US')
+      .getCharacters()
+    let options = {
+      type: 'custom',
+      order: 'asc',
+      alphabet,
+    } as const
+
+    ruleTester.run(`${ruleName}(${type}): sorts enum members`, rule, {
+      invalid: [
+        {
+          errors: [
+            {
+              data: {
+                right: 'bbb',
+                left: 'cc',
+              },
+              messageId: 'unexpectedEnumsOrder',
+            },
+          ],
+          output: dedent`
+            enum Enum {
+              aaaa = 'a',
+              bbb = 'b',
+              cc = 'c',
+              d = 'd',
+            }
+          `,
+          code: dedent`
+            enum Enum {
+              aaaa = 'a',
+              cc = 'c',
+              bbb = 'b',
+              d = 'd',
+            }
+          `,
+          options: [options],
+        },
+      ],
+      valid: [
+        {
+          code: dedent`
+            enum Enum {
+              aaaa = 'a',
+              bbb = 'b',
+              cc = 'c',
+              d = 'd',
+            }
+          `,
+          options: [options],
+        },
+      ],
     })
   })
 

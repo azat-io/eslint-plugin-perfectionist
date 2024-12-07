@@ -17,6 +17,7 @@ import {
   specialCharactersJsonSchema,
   newlinesBetweenJsonSchema,
   ignoreCaseJsonSchema,
+  alphabetJsonSchema,
   localesJsonSchema,
   groupsJsonSchema,
   orderJsonSchema,
@@ -27,13 +28,14 @@ import {
   sortNodesByDependencies,
 } from '../utils/sort-nodes-by-dependencies'
 import { validateNewlinesAndPartitionConfiguration } from '../utils/validate-newlines-and-partition-configuration'
+import { validateGeneratedGroupsConfiguration } from '../utils/validate-generated-groups-configuration'
 import {
   singleCustomGroupJsonSchema,
   allModifiers,
   allSelectors,
 } from './sort-modules.types'
-import { validateGeneratedGroupsConfiguration } from './validate-generated-groups-configuration'
-import { getCustomGroupsCompareOptions } from './get-custom-groups-compare-options'
+import { validateCustomSortConfiguration } from '../utils/validate-custom-sort-configuration'
+import { getCustomGroupsCompareOptions } from '../utils/get-custom-groups-compare-options'
 import { generatePredefinedGroups } from '../utils/generate-predefined-groups'
 import { getEslintDisabledLines } from '../utils/get-eslint-disabled-lines'
 import { isNodeEslintDisabled } from '../utils/is-node-eslint-disabled'
@@ -93,6 +95,7 @@ let defaultOptions: Required<SortModulesOptions[0]> = {
   ignoreCase: true,
   customGroups: [],
   locales: 'en-US',
+  alphabet: '',
   order: 'asc',
 }
 
@@ -113,6 +116,7 @@ export default createEslintRule<SortModulesOptions, MESSAGE_ID>({
           specialCharacters: specialCharactersJsonSchema,
           newlinesBetween: newlinesBetweenJsonSchema,
           ignoreCase: ignoreCaseJsonSchema,
+          alphabet: alphabetJsonSchema,
           locales: localesJsonSchema,
           groups: groupsJsonSchema,
           order: orderJsonSchema,
@@ -144,6 +148,7 @@ export default createEslintRule<SortModulesOptions, MESSAGE_ID>({
   create: context => {
     let settings = getSettings(context.settings)
     let options = complete(context.options.at(0), settings, defaultOptions)
+    validateCustomSortConfiguration(options)
     validateGeneratedGroupsConfiguration({
       customGroups: options.customGroups,
       modifiers: allModifiers,
@@ -151,6 +156,7 @@ export default createEslintRule<SortModulesOptions, MESSAGE_ID>({
       groups: options.groups,
     })
     validateNewlinesAndPartitionConfiguration(options)
+
     let sourceCode = getSourceCode(context)
     let eslintDisabledLines = getEslintDisabledLines({
       ruleName: context.id,

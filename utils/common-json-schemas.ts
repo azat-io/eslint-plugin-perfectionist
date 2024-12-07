@@ -1,7 +1,7 @@
 import type { JSONSchema4 } from '@typescript-eslint/utils/json-schema'
 
 export let typeJsonSchema: JSONSchema4 = {
-  enum: ['alphabetical', 'natural', 'line-length'],
+  enum: ['alphabetical', 'natural', 'line-length', 'custom'],
   description: 'Specifies the sorting method.',
   type: 'string',
 }
@@ -10,6 +10,11 @@ export let orderJsonSchema: JSONSchema4 = {
   description:
     'Determines whether the sorted items should be in ascending or descending order.',
   enum: ['asc', 'desc'],
+  type: 'string',
+}
+
+export let alphabetJsonSchema: JSONSchema4 = {
+  description: 'Alphabet to use for the `custom` sort type.',
   type: 'string',
 }
 
