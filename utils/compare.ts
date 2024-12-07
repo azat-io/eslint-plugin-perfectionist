@@ -128,11 +128,7 @@ let getCustomSortingFunction = <T extends SortingNode>(
       let bCharacter = bValue[i]
       let indexOfA = indexByCharacters.get(aCharacter)
       let indexOfB = indexByCharacters.get(bCharacter)
-      // eslint-disable-next-line no-undefined
-      if (indexOfA === undefined) {
-        indexOfA = Infinity
-      }
-      // eslint-disable-next-line no-undefined
+      indexOfA ??= Infinity
       indexOfB ??= Infinity
       if (indexOfA !== indexOfB) {
         return indexOfA - indexOfB > 0 ? 1 : -1
