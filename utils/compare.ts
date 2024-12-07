@@ -133,9 +133,7 @@ let getCustomSortingFunction = <T extends SortingNode>(
         indexOfA = Infinity
       }
       // eslint-disable-next-line no-undefined
-      if (indexOfB === undefined) {
-        indexOfB = Infinity
-      }
+      indexOfB ??= Infinity
       if (indexOfA !== indexOfB) {
         return indexOfA - indexOfB > 0 ? 1 : -1
       }
