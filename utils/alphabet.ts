@@ -26,10 +26,14 @@ export class Alphabet {
    * https://en.wikipedia.org/wiki/Plane_(Unicode)
    */
   private static readonly _PLANES: Record<UnicodePlaneName, UnicodePlane> = {
-    supplementaryMultilingual: { start: 0x10000, end: 0x1ffff }, // Supplementary Multilingual Plane (SMP)
-    supplementaryIdeographic: { start: 0x20000, end: 0x2ffff }, // Supplementary Ideographic Plane (SIP)
-    tertiaryIdeographic: { start: 0x30000, end: 0x3ffff }, // Tertiary Ideographic Plane
-    basicMultilingual: { start: 0x0000, end: 0xffff }, // Basic Multilingual Plane (BMP)
+    // Supplementary Multilingual Plane (SMP)
+    supplementaryMultilingual: { start: 0x10000, end: 0x1ffff },
+    // Supplementary Ideographic Plane (SIP)
+    supplementaryIdeographic: { start: 0x20000, end: 0x2ffff },
+    // Tertiary Ideographic Plane
+    tertiaryIdeographic: { start: 0x30000, end: 0x3ffff },
+    // Basic Multilingual Plane (BMP)
+    basicMultilingual: { start: 0x0000, end: 0xffff },
   }
 
   private _characters: Character[] = []
@@ -59,8 +63,8 @@ export class Alphabet {
   }
 
   /**
-   * Generates an alphabet containing relevant characters from the Unicode standard
-   * Contains the Unicode planes 0 and 1.
+   * Generates an alphabet containing relevant characters from the Unicode
+   * standard. Contains the Unicode planes 0 and 1.
    * @returns {Alphabet} - The generated alphabet
    */
   public static generateRecommendedAlphabet(): Alphabet {
@@ -98,8 +102,10 @@ export class Alphabet {
   }
 
   /**
-   * Generates an alphabet containing relevant characters from the Unicode standard
-   * @param {number} maxCodePoint - The maximum code point to generate the alphabet to
+   * Generates an alphabet containing relevant characters from the Unicode
+   * standard.
+   * @param {number} maxCodePoint - The maximum code point to generate the
+   * alphabet to
    * @returns {Alphabet} - The generated alphabet
    */
   private static _generateAlphabetToRange(maxCodePoint: number): Alphabet {
@@ -170,7 +176,8 @@ export class Alphabet {
   /**
    * Adds specific characters to the end of the alphabet
    * @param {string|string[]} values - The characters to push to the alphabet
-   * @returns {Alphabet} - The same alphabet instance without the specified characters
+   * @returns {Alphabet} - The same alphabet instance without the specified
+   * characters
    * @example
    * Alphabet.generateFrom('ab')
    * .pushCharacters('cd')
@@ -202,9 +209,12 @@ export class Alphabet {
   }
 
   /**
-   * Permutes characters with cases so that all characters with the entered case are put before the other characters
-   * @param {string} caseToComeFirst - The case to put before the other characters
-   * @returns {Alphabet} - The same alphabet instance with all characters with case before all the characters with the other case
+   * Permutes characters with cases so that all characters with the entered case
+   * are put before the other characters
+   * @param {string} caseToComeFirst - The case to put before the other
+   * characters
+   * @returns {Alphabet} - The same alphabet instance with all characters with
+   * case before all the characters with the other case
    */
   public placeAllWithCaseBeforeAllWithOtherCase(
     caseToComeFirst: 'uppercase' | 'lowercase',
@@ -231,9 +241,11 @@ export class Alphabet {
   /**
    * Places a specific character right before another character in the alphabet
    * @param {object} params - The parameters for the operation
-   * @param {string} params.characterBefore - The character to come before characterAfter
+   * @param {string} params.characterBefore - The character to come before
+   * characterAfter
    * @param {string} params.characterAfter - The target character
-   * @returns {Alphabet} - The same alphabet instance with the specific character prioritized
+   * @returns {Alphabet} - The same alphabet instance with the specific
+   * character prioritized
    * @example
    * Alphabet.generateFrom('ab-cd/')
    * .placeCharacterBefore({ characterBefore: '/', characterAfter: '-' })
@@ -257,8 +269,10 @@ export class Alphabet {
    * Places a specific character right after another character in the alphabet
    * @param {object} params - The parameters for the operation
    * @param {string} params.characterBefore - The target character
-   * @param {string} params.characterAfter - The character to come after characterBefore
-   * @returns {Alphabet} - The same alphabet instance with the specific character prioritized
+   * @param {string} params.characterAfter - The character to come after
+   * characterBefore
+   * @returns {Alphabet} - The same alphabet instance with the specific
+   * character prioritized
    * @example
    * Alphabet.generateFrom('ab-cd/')
    * .placeCharacterAfter({ characterBefore: '/', characterAfter: '-' })
@@ -281,7 +295,8 @@ export class Alphabet {
   /**
    * Removes specific characters from the alphabet by their Unicode plane
    * @param {string} planeName - The Unicode plane to remove characters from
-   * @returns {Alphabet} - The same alphabet instance without the characters from the specified Unicode plane
+   * @returns {Alphabet} - The same alphabet instance without the characters
+   * from the specified Unicode plane
    */
   public removeUnicodePlane(
     planeName: Exclude<
@@ -297,7 +312,8 @@ export class Alphabet {
   /**
    * Removes specific characters from the alphabet by their range
    * @param {string} planeName - The Unicode plane to remove characters from
-   * @returns {Alphabet} - The same alphabet instance without the characters from the specified Unicode plane
+   * @returns {Alphabet} - The same alphabet instance without the characters
+   * from the specified Unicode plane
    */
   public removeUnicodeRange({ start, end }: UnicodePlane): this {
     this._characters = this._characters.filter(
@@ -320,8 +336,10 @@ export class Alphabet {
 
   /**
    * Removes specific characters from the alphabet
-   * @param {string|string[]} values - The characters to remove from the alphabet
-   * @returns {Alphabet} - The same alphabet instance without the specified characters
+   * @param {string|string[]} values - The characters to remove from the
+   * alphabet
+   * @returns {Alphabet} - The same alphabet instance without the specified
+   * characters
    * @example
    * Alphabet.generateFrom('abcd')
    * .removeCharacters('dcc')
@@ -335,9 +353,11 @@ export class Alphabet {
   }
 
   /**
-   * Sorts the alphabet by the natural order of the characters using `natural-orderby`
+   * Sorts the alphabet by the natural order of the characters using
+   * `natural-orderby`
    * @param {string} locale - The locale to use for sorting
-   * @returns {Alphabet} - The same alphabet instance sorted by the natural order of the characters
+   * @returns {Alphabet} - The same alphabet instance sorted by the natural
+   * order of the characters
    */
   public sortByNaturalSort(locale?: string): this {
     let naturalCompare = createNaturalCompare({
@@ -349,7 +369,8 @@ export class Alphabet {
   /**
    * Sorts the alphabet by the locale order of the characters
    * @param {Intl.LocalesArgument} locales - The locales to use for sorting
-   * @returns {Alphabet} - The same alphabet instance sorted by the locale order of the characters
+   * @returns {Alphabet} - The same alphabet instance sorted by the locale
+   * order of the characters
    */
   public sortByLocaleCompare(locales?: Intl.LocalesArgument): this {
     return this.sortBy((a, b) => a.localeCompare(b, locales))
@@ -357,7 +378,8 @@ export class Alphabet {
 
   /**
    * Sorts the alphabet by the character code point
-   * @returns {Alphabet} - The same alphabet instance sorted by the character code point
+   * @returns {Alphabet} - The same alphabet instance sorted by the character
+   * code point
    */
   public sortByCharCodeAt(): this {
     return this.sortBy((a, b) => (a.charCodeAt(0) < b.charCodeAt(0) ? -1 : 1))
