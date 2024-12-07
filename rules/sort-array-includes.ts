@@ -1,17 +1,21 @@
 import type { JSONSchema4 } from '@typescript-eslint/utils/json-schema'
 import type { RuleContext } from '@typescript-eslint/utils/ts-eslint'
 import type { TSESTree } from '@typescript-eslint/types'
+import type { TSESLint } from '@typescript-eslint/utils'
 
 import type { SortingNode } from '../typings'
 
 import {
   partitionByCommentJsonSchema,
+  useConfigurationIfJsonSchema,
+  partitionByNewLineJsonSchema,
   specialCharactersJsonSchema,
   ignoreCaseJsonSchema,
   localesJsonSchema,
   orderJsonSchema,
   typeJsonSchema,
 } from '../utils/common-json-schemas'
+import { getMatchingContextOptions } from '../utils/get-matching-context-options'
 import { getEslintDisabledLines } from '../utils/get-eslint-disabled-lines'
 import { isNodeEslintDisabled } from '../utils/is-node-eslint-disabled'
 import { hasPartitionComment } from '../utils/is-partition-comment'
@@ -28,18 +32,19 @@ import { makeFixes } from '../utils/make-fixes'
 import { complete } from '../utils/complete'
 import { pairwise } from '../utils/pairwise'
 
-export type Options = [
-  Partial<{
-    groupKind: 'literals-first' | 'spreads-first' | 'mixed'
-    type: 'alphabetical' | 'line-length' | 'natural'
-    partitionByComment: string[] | boolean | string
-    specialCharacters: 'remove' | 'trim' | 'keep'
-    locales: NonNullable<Intl.LocalesArgument>
-    partitionByNewLine: boolean
-    order: 'desc' | 'asc'
-    ignoreCase: boolean
-  }>,
-]
+export type Options = Partial<{
+  useConfigurationIf: {
+    allNamesMatchPattern?: string
+  }
+  groupKind: 'literals-first' | 'spreads-first' | 'mixed'
+  type: 'alphabetical' | 'line-length' | 'natural'
+  partitionByComment: string[] | boolean | string
+  specialCharacters: 'remove' | 'trim' | 'keep'
+  locales: NonNullable<Intl.LocalesArgument>
+  partitionByNewLine: boolean
+  order: 'desc' | 'asc'
+  ignoreCase: boolean
+}>[]
 
 interface SortArrayIncludesSortingNode
   extends SortingNode<TSESTree.SpreadElement | TSESTree.Expression> {
@@ -53,6 +58,7 @@ export let defaultOptions: Required<Options[0]> = {
   specialCharacters: 'keep',
   partitionByComment: false,
   partitionByNewLine: false,
+  useConfigurationIf: {},
   type: 'alphabetical',
   ignoreCase: true,
   locales: 'en-US',
@@ -71,11 +77,8 @@ export let jsonSchema: JSONSchema4 = {
       description: 'Specifies top-level groups.',
       type: 'string',
     },
-    partitionByNewLine: {
-      description:
-        'Allows to use spaces to separate the nodes into logical groups.',
-      type: 'boolean',
-    },
+    partitionByNewLine: partitionByNewLineJsonSchema,
+    useConfigurationIf: useConfigurationIfJsonSchema,
     specialCharacters: specialCharactersJsonSchema,
     ignoreCase: ignoreCaseJsonSchema,
     locales: localesJsonSchema,
@@ -130,9 +133,15 @@ export let sortArray = <MessageIds extends string>(
     return
   }
 
-  let settings = getSettings(context.settings)
-  let options = complete(context.options.at(0), settings, defaultOptions)
   let sourceCode = getSourceCode(context)
+  let settings = getSettings(context.settings)
+  let matchedContextOptions = getMatchingContextOptions({
+    nodeNames: elements
+      .filter(element => element !== null)
+      .map(element => getNodeName({ sourceCode, element })),
+    contextOptions: context.options,
+  })
+  let options = complete(matchedContextOptions, settings, defaultOptions)
   let eslintDisabledLines = getEslintDisabledLines({
     ruleName: context.id,
     sourceCode,
@@ -238,3 +247,12 @@ export let sortArray = <MessageIds extends string>(
     })
   }
 }
+
+let getNodeName = ({
+  sourceCode,
+  element,
+}: {
+  element: TSESTree.SpreadElement | TSESTree.Expression
+  sourceCode: TSESLint.SourceCode
+}): string =>
+  element.type === 'Literal' ? `${element.value}` : sourceCode.getText(element)
