@@ -45,7 +45,7 @@ You may use the `perfectionist.Alphabet` utility class to quickly generate a cus
         import perfectionist from 'eslint-plugin-perfectionist'
         import naturalCompare from 'natural-compare-lite';
 
-        const myCustomAlphabet = perfectionist
+        const myCustomAlphabet = perfectionist.Alphabet
           .generateRecommendedAlphabet()
           .sortingBy((a, b) => naturalCompare(a, b))
           .getCharacters();
@@ -70,7 +70,7 @@ You may use the `perfectionist.Alphabet` utility class to quickly generate a cus
         import perfectionist from 'eslint-plugin-perfectionist'
         import naturalCompare from 'natural-compare-lite';
 
-        const myCustomAlphabet = perfectionist
+        const myCustomAlphabet = perfectionist.Alphabet
           .generateRecommendedAlphabet()
           .sortingBy((a, b) => naturalCompare(a, b))
           .getCharacters();
