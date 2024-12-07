@@ -111,6 +111,16 @@ export let newlinesBetweenJsonSchema: JSONSchema4 = {
   type: 'string',
 }
 
+export let useConfigurationIfJsonSchema: JSONSchema4 = {
+  properties: {
+    allNamesMatchPattern: {
+      type: 'string',
+    },
+  },
+  additionalProperties: false,
+  type: 'object',
+}
+
 let customGroupSortJsonSchema: Record<string, JSONSchema4> = {
   type: {
     enum: ['alphabetical', 'line-length', 'natural', 'unsorted'],

@@ -5,6 +5,7 @@ import type { SortingNodeWithDependencies } from '../utils/sort-nodes-by-depende
 import {
   partitionByCommentJsonSchema,
   partitionByNewLineJsonSchema,
+  useConfigurationIfJsonSchema,
   specialCharactersJsonSchema,
   newlinesBetweenJsonSchema,
   customGroupsJsonSchema,
@@ -22,6 +23,7 @@ import {
 import { validateNewlinesAndPartitionConfiguration } from '../utils/validate-newlines-and-partition-configuration'
 import { validateCustomSortConfiguration } from '../utils/validate-custom-sort-configuration'
 import { validateGroupsConfiguration } from '../utils/validate-groups-configuration'
+import { getMatchingContextOptions } from '../utils/get-matching-context-options'
 import { getEslintDisabledLines } from '../utils/get-eslint-disabled-lines'
 import { isNodeEslintDisabled } from '../utils/is-node-eslint-disabled'
 import { hasPartitionComment } from '../utils/is-partition-comment'
@@ -44,29 +46,30 @@ import { complete } from '../utils/complete'
 import { pairwise } from '../utils/pairwise'
 import { matches } from '../utils/matches'
 
-type Options = [
-  Partial<{
-    type: 'alphabetical' | 'line-length' | 'natural' | 'custom'
-    destructuredObjects: { groups: boolean } | boolean
-    customGroups: Record<string, string[] | string>
-    partitionByComment: string[] | boolean | string
-    newlinesBetween: 'ignore' | 'always' | 'never'
-    specialCharacters: 'remove' | 'trim' | 'keep'
-    locales: NonNullable<Intl.LocalesArgument>
-    groups: (Group[] | Group)[]
-    partitionByNewLine: boolean
-    objectDeclarations: boolean
-    styledComponents: boolean
-    /**
-     * @deprecated for {@link `destructuredObjects`} and {@link `objectDeclarations`}
-     */
-    destructureOnly: boolean
-    ignorePattern: string[]
-    order: 'desc' | 'asc'
-    ignoreCase: boolean
-    alphabet: string
-  }>,
-]
+type Options = Partial<{
+  useConfigurationIf: {
+    allNamesMatchPattern?: string
+  }
+  destructuredObjects: { groups: boolean } | boolean
+  type: 'alphabetical' | 'line-length' | 'natural'
+  customGroups: Record<string, string[] | string>
+  partitionByComment: string[] | boolean | string
+  newlinesBetween: 'ignore' | 'always' | 'never'
+  specialCharacters: 'remove' | 'trim' | 'keep'
+  locales: NonNullable<Intl.LocalesArgument>
+  groups: (Group[] | Group)[]
+  partitionByNewLine: boolean
+  objectDeclarations: boolean
+  styledComponents: boolean
+  /**
+   * @deprecated for {@link `destructuredObjects`} and {@link `objectDeclarations`}
+   */
+  destructureOnly: boolean
+  ignorePattern: string[]
+  order: 'desc' | 'asc'
+  ignoreCase: boolean
+  alphabet: string
+}>[]
 
 type MESSAGE_ID =
   | 'missedSpacingBetweenObjectMembers'
@@ -86,6 +89,7 @@ let defaultOptions: Required<Options[0]> = {
   objectDeclarations: true,
   styledComponents: true,
   destructureOnly: false,
+  useConfigurationIf: {},
   type: 'alphabetical',
   ignorePattern: [],
   ignoreCase: true,
@@ -106,8 +110,14 @@ export default createEslintRule<Options, MESSAGE_ID>({
       }
 
       let settings = getSettings(context.settings)
-
-      let options = complete(context.options.at(0), settings, defaultOptions)
+      let sourceCode = getSourceCode(context)
+      let matchedContextOptions = getMatchingContextOptions({
+        nodeNames: nodeObject.properties
+          .map(property => getNodeName({ sourceCode, property }))
+          .filter(nodeName => nodeName !== null),
+        contextOptions: context.options,
+      })
+      let options = complete(matchedContextOptions, settings, defaultOptions)
       validateCustomSortConfiguration(options)
       validateGroupsConfiguration(
         options.groups,
@@ -186,7 +196,6 @@ export default createEslintRule<Options, MESSAGE_ID>({
         return
       }
 
-      let sourceCode = getSourceCode(context)
       let eslintDisabledLines = getEslintDisabledLines({
         ruleName: context.id,
         sourceCode,
@@ -484,8 +493,8 @@ export default createEslintRule<Options, MESSAGE_ID>({
     }
   },
   meta: {
-    schema: [
-      {
+    schema: {
+      items: {
         properties: {
           destructuredObjects: {
             oneOf: [
@@ -532,6 +541,7 @@ export default createEslintRule<Options, MESSAGE_ID>({
             type: 'boolean',
           },
           partitionByNewLine: partitionByNewLineJsonSchema,
+          useConfigurationIf: useConfigurationIfJsonSchema,
           specialCharacters: specialCharactersJsonSchema,
           newlinesBetween: newlinesBetweenJsonSchema,
           customGroups: customGroupsJsonSchema,
@@ -545,7 +555,9 @@ export default createEslintRule<Options, MESSAGE_ID>({
         additionalProperties: false,
         type: 'object',
       },
-    ],
+      uniqueItems: true,
+      type: 'array',
+    },
     messages: {
       unexpectedObjectsGroupOrder:
         'Expected "{{right}}" ({{rightGroup}}) to come before "{{left}}" ({{leftGroup}}).',
@@ -568,3 +580,24 @@ export default createEslintRule<Options, MESSAGE_ID>({
   defaultOptions: [defaultOptions],
   name: 'sort-objects',
 })
+
+let getNodeName = ({
+  sourceCode,
+  property,
+}: {
+  property:
+    | TSESTree.ObjectLiteralElement
+    | TSESTree.RestElement
+    | TSESTree.Property
+  sourceCode: ReturnType<typeof getSourceCode>
+}): string | null => {
+  if (property.type === 'SpreadElement' || property.type === 'RestElement') {
+    return null
+  }
+  if (property.key.type === 'Identifier') {
+    return property.key.name
+  } else if (property.key.type === 'Literal') {
+    return `${property.key.value}`
+  }
+  return sourceCode.getText(property.key)
+}

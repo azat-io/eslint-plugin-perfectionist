@@ -299,6 +299,42 @@ Allows you to choose whether to sort standard object declarations.
 Allows you to choose whether to sort destructured objects.
 The `groups` attribute allows you to specify whether to use groups to sort destructured objects.
 
+### useConfigurationIf
+
+<sub>
+  type: `{ allNamesMatchPattern?: string }`
+</sub>
+<sub>default: `{}`</sub>
+
+Allows you to specify filters to match a particular options configuration for a given object.
+
+The first matching options configuration will be used. If no configuration matches, the default options configuration will be used.
+
+- `allNamesMatchPattern` — A regexp pattern that all object keys must match.
+
+Example configuration:
+```ts
+{
+  'perfectionist/sort-objects': [
+    'error',
+    {
+      groups: ['r', 'g', 'b'], // Sort colors by RGB
+      customGroups: {
+        r: 'r',
+        g: 'g',
+        b: 'b',
+      },
+      useConfigurationIf: {
+        allNamesMatchPattern: '^r|g|b$',
+      },
+    },
+    {
+      type: 'alphabetical' // Fallback configuration
+    }
+  ],
+}
+```
+
 ### groups
 
 <sub>
@@ -402,8 +438,11 @@ const user = {
                   partitionByComment: false,
                   partitionByNewLine: false,
                   newlinesBetween: 'ignore',
+                  objectDeclarations: true,
+                  destructuredObjects: true,
                   styledComponents: true,
                   ignorePattern: [],
+                  useConfigurationIf: {},
                   groups: [],
                   customGroups: {},
                 },
@@ -433,8 +472,11 @@ const user = {
                 partitionByComment: false,
                 partitionByNewLine: false,
                 newlinesBetween: 'ignore',
+                objectDeclarations: true,
+                destructuredObjects: true,
                 styledComponents: true,
                 ignorePattern: [],
+                useConfigurationIf: {},
                 groups: [],
                 customGroups: {},
               },
