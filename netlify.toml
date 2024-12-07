@@ -1,0 +1,12 @@
+[build]
+  included_files = ["node_modules/**/*"]
+  command = "pnpm run docs:build:client"
+  functions = "docs/functions"
+  node_bundler = "esbuild"
+  publish = "dist"
+
+[dev]
+  command = "pnpm run docs:dev:client"
+  targetPort = 3000
+  publish = "dist"
+  port = 8888

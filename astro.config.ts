@@ -38,22 +38,6 @@ export default defineConfig({
     }),
     mdx(),
   ],
-  markdown: {
-    rehypePlugins: [
-      [
-        rehypeExternalLinks,
-        {
-          rel: ['noopener', 'noreferrer'],
-          target: '_blank',
-        },
-      ],
-    ],
-    shikiConfig: {
-      transformers: [transformerNotationDiff()],
-      theme: colorTheme,
-    },
-    remarkPlugins: [remarkSectionize, remarkHeadings],
-  },
   vite: {
     css: {
       lightningcss: {
@@ -69,6 +53,25 @@ export default defineConfig({
       // @ts-ignore
       svelteSvg(),
     ],
+    ssr: {
+      noExternal: ['monaco-editor'],
+    },
+  },
+  markdown: {
+    rehypePlugins: [
+      [
+        rehypeExternalLinks,
+        {
+          rel: ['noopener', 'noreferrer'],
+          target: '_blank',
+        },
+      ],
+    ],
+    shikiConfig: {
+      transformers: [transformerNotationDiff()],
+      theme: colorTheme,
+    },
+    remarkPlugins: [remarkSectionize, remarkHeadings],
   },
   prefetch: {
     defaultStrategy: 'viewport',

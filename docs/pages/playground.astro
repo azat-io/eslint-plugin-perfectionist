@@ -1,0 +1,31 @@
+---
+import Editor from '../components/Editor/Editor.svelte'
+import ContentLayout from '../layouts/Content.astro'
+---
+
+<ContentLayout
+  keywords={[
+    'eslint',
+    'eslint rules',
+    'eslint plugin',
+    'coding standards',
+    'code quality',
+    'linting rules',
+    'javascript linting',
+    'code consistency',
+    'eslint setup',
+    'codebase maintenance',
+  ]}
+  description="Explore our extensive list of ESLint Plugin Perfectionist rules to enforce coding standards and improve code quality. Learn how each rule can help you maintain a consistent and error-free codebase."
+  path={[
+    {
+      href: '/playground',
+      name: 'Playground',
+    },
+  ]}
+  title="Playground"
+  showFooter={false}
+>
+  <h1>Playground</h1>
+  <Editor client:only="svelte" />
+</ContentLayout>
