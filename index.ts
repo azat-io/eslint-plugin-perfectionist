@@ -138,12 +138,12 @@ export default {
       type: 'line-length',
       order: 'desc',
     }),
-    'recommended-custom': createLegacyConfig({
-      type: 'custom',
-      order: 'asc',
-    }),
     'recommended-natural': createConfig({
       type: 'natural',
+      order: 'asc',
+    }),
+    'recommended-custom': createConfig({
+      type: 'custom',
       order: 'asc',
     }),
   },
