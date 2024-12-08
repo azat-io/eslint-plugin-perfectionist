@@ -100,14 +100,6 @@ describe('alphabet', () => {
         ).toBe('b')
       })
 
-      it('allows removing a Unicode plane', () => {
-        expect(
-          Alphabet.generateCompleteAlphabet()
-            .removeUnicodePlane('basicMultilingual')
-            .getCharacters(),
-        ).toHaveLength(393216)
-      })
-
       it('allows removing a Unicode range', () => {
         expect(
           Alphabet.generateCompleteAlphabet()

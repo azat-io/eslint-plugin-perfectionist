@@ -89,10 +89,109 @@ You may use the `perfectionist.Alphabet` utility class to quickly generate a cus
       name: 'Legacy Config',
       value: 'legacy',
     },
-
 ]}
 type="config-type"
 client:load
 lang="tsx"
 />
 
+## Alphabet class
+
+The `perfectionist.Alphabet` class provides a set of methods to generate and manipulate alphabets.
+
+### Static generators
+
+#### - `static generateCompleteAlphabet(): Alphabet`
+
+Generates an alphabet containing all characters from the Unicode standard except for irrelevant [Unicode planes](https://en.wikipedia.org/wiki/Plane_(Unicode)).
+Contains the Unicode planes 0, 1, 2 and 3.
+
+#### - `static generateRecommendedAlphabet(): Alphabet`
+
+Generates an alphabet containing relevant characters from the Unicode standard. Contains the [Unicode planes](https://en.wikipedia.org/wiki/Plane_(Unicode)) 0 and 1.
+
+#### - `static generateFrom(values: string[] | string): Alphabet`
+
+Generates an alphabet from the given characters.
+
+### Adding/Removing characters
+
+#### - `pushCharacters(values: string[] | string): this`
+
+Adds specific characters to the end of the alphabet.
+
+#### - `removeCharacters(values: string[] | string): this`
+
+Removes specific characters from the alphabet.
+
+#### - `removeUnicodeRange({ start: number; end: number }): this`
+
+Removes specific characters from the alphabet by their range
+
+### Sorters
+
+#### - `sortByLocaleCompare(locales?: Intl.LocalesArgument): this`
+
+Sorts the alphabet by the locale order of the characters.
+
+#### - `sortByNaturalSort(locale?: string): this`
+
+Sorts the alphabet by the natural order of the characters using [natural-orderby](https://github.com/yobacca/natural-orderby).
+
+#### - `sortByCharCodeAt(): this`
+
+Sorts the alphabet by the character code point.
+
+#### - `sortBy(sortingFunction: (characterA: string, characterB: string) => number): this`
+
+Sorts the alphabet by the sorting function provided
+
+#### - `reverse(): this`
+
+Reverses the alphabet.
+
+### Other methods
+
+#### - `prioritizeCase(casePriority: 'lowercase' | 'uppercase'): this`
+
+For each character with a lower and upper case, permutes the two cases so that the alphabet is ordered by the case priority entered.
+
+```ts
+Alphabet.generateFrom('aAbBcdCD')
+.prioritizeCase('uppercase')
+// Returns 'AaBbCDcd'
+````
+
+#### - `placeAllWithCaseBeforeAllWithOtherCase(caseToComeFirst: 'uppercase' | 'lowercase'): this`
+
+Permutes characters with cases so that all characters with the entered case are put before the other characters.
+
+```ts
+Alphabet.generateFrom('aAbBcCdD')
+.placeAllWithCaseBeforeAllWithOtherCase('lowercase')
+// Returns 'abcdABCD'
+````
+
+#### - `placeCharacterBefore({ characterBefore: string; characterAfter: string }): this`
+
+Places a specific character right before another character in the alphabet.
+
+```ts
+Alphabet.generateFrom('ab-cd/')
+.placeCharacterBefore({ characterBefore: '/', characterAfter: '-' })
+// Returns 'ab/-cd'
+```
+
+#### - `placeCharacterAfter({ characterBefore: string; characterAfter: string }): this`
+
+Places a specific character right after another character in the alphabet.
+
+```ts
+Alphabet.generateFrom('ab-cd/')
+.placeCharacterAfter({ characterBefore: '/', characterAfter: '-' })
+// Returns 'abcd/-'
+```
+
+#### - `getCharacters(): string`
+
+Retrieves the characters from the alphabet.

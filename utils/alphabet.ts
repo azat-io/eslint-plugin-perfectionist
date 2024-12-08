@@ -9,35 +9,10 @@ interface Character {
   value: string
 }
 
-type UnicodePlaneName =
-  | 'supplementaryMultilingual'
-  | 'supplementaryIdeographic'
-  | 'tertiaryIdeographic'
-  | 'basicMultilingual'
-
-interface UnicodePlane {
-  start: number
-  end: number
-}
-
 /**
  * Utility class to build alphabets
  */
 export class Alphabet {
-  /**
-   * https://en.wikipedia.org/wiki/Plane_(Unicode)
-   */
-  private static readonly _PLANES: Record<UnicodePlaneName, UnicodePlane> = {
-    // Supplementary Multilingual Plane (SMP)
-    supplementaryMultilingual: { start: 0x10000, end: 0x1ffff },
-    // Supplementary Ideographic Plane (SIP)
-    supplementaryIdeographic: { start: 0x20000, end: 0x2ffff },
-    // Tertiary Ideographic Plane
-    tertiaryIdeographic: { start: 0x30000, end: 0x3ffff },
-    // Basic Multilingual Plane (BMP)
-    basicMultilingual: { start: 0x0000, end: 0xffff },
-  }
-
   private _characters: Character[] = []
 
   private constructor(characters: Character[]) {
@@ -45,7 +20,7 @@ export class Alphabet {
   }
 
   /**
-   * Generates an alphabet from the given characters
+   * Generates an alphabet from the given characters.
    * @param {string|string[]} values - The characters to generate the alphabet from
    * @returns {Alphabet} - The wrapped alphabet
    */
@@ -75,7 +50,7 @@ export class Alphabet {
 
   /**
    * Generates an alphabet containing all characters from the Unicode standard
-   * except for irrelevant Unicode planes
+   * except for irrelevant Unicode planes.
    * Contains the Unicode planes 0, 1, 2 and 3.
    * @returns {Alphabet} - The generated alphabet
    */
@@ -120,7 +95,7 @@ export class Alphabet {
 
   /**
    * For each character with a lower and upper case, permutes the two cases
-   * so that the alphabet is ordered by the case priority entered
+   * so that the alphabet is ordered by the case priority entered.
    * @param {string} casePriority - The case to prioritize
    * @returns {Alphabet} - The same alphabet instance with the cases prioritized
    * @example
@@ -176,7 +151,7 @@ export class Alphabet {
   }
 
   /**
-   * Adds specific characters to the end of the alphabet
+   * Adds specific characters to the end of the alphabet.
    * @param {string|string[]} values - The characters to push to the alphabet
    * @returns {Alphabet} - The same alphabet instance without the specified
    * characters
@@ -212,7 +187,7 @@ export class Alphabet {
 
   /**
    * Permutes characters with cases so that all characters with the entered case
-   * are put before the other characters
+   * are put before the other characters.
    * @param {string} caseToComeFirst - The case to put before the other
    * characters
    * @returns {Alphabet} - The same alphabet instance with all characters with
@@ -241,7 +216,7 @@ export class Alphabet {
   }
 
   /**
-   * Places a specific character right before another character in the alphabet
+   * Places a specific character right before another character in the alphabet.
    * @param {object} params - The parameters for the operation
    * @param {string} params.characterBefore - The character to come before
    * characterAfter
@@ -268,7 +243,7 @@ export class Alphabet {
   }
 
   /**
-   * Places a specific character right after another character in the alphabet
+   * Places a specific character right after another character in the alphabet.
    * @param {object} params - The parameters for the operation
    * @param {string} params.characterBefore - The target character
    * @param {string} params.characterAfter - The character to come after
@@ -295,29 +270,20 @@ export class Alphabet {
   }
 
   /**
-   * Removes specific characters from the alphabet by their Unicode plane
-   * @param {string} planeName - The Unicode plane to remove characters from
+   * Removes specific characters from the alphabet by their range.
+   * @param {object} range - The Unicode range to remove characters from
+   * @param {number} range.start - The starting Unicode codepoint
+   * @param {number} range.end - The ending Unicode codepoint
    * @returns {Alphabet} - The same alphabet instance without the characters
-   * from the specified Unicode plane
+   * from the specified range
    */
-  public removeUnicodePlane(
-    planeName: Exclude<
-      UnicodePlaneName,
-      | 'supplementaryPrivateUseArea'
-      | 'supplementarySpecialPurpose'
-      | 'unassigned'
-    >,
-  ): this {
-    return this._removeUnicodePlane(planeName)
-  }
-
-  /**
-   * Removes specific characters from the alphabet by their range
-   * @param {string} planeName - The Unicode plane to remove characters from
-   * @returns {Alphabet} - The same alphabet instance without the characters
-   * from the specified Unicode plane
-   */
-  public removeUnicodeRange({ start, end }: UnicodePlane): this {
+  public removeUnicodeRange({
+    start,
+    end,
+  }: {
+    start: number
+    end: number
+  }): this {
     this._characters = this._characters.filter(
       ({ codePoint }) => codePoint < start || codePoint > end,
     )
@@ -325,7 +291,7 @@ export class Alphabet {
   }
 
   /**
-   * Sorts the alphabet by the sorting function provided
+   * Sorts the alphabet by the sorting function provided.
    * @param {Function} sortingFunction - The sorting function to use
    * @returns {Alphabet} - The same alphabet instance sorted by the sorting function provided
    */
@@ -337,7 +303,7 @@ export class Alphabet {
   }
 
   /**
-   * Removes specific characters from the alphabet
+   * Removes specific characters from the alphabet.
    * @param {string|string[]} values - The characters to remove from the
    * alphabet
    * @returns {Alphabet} - The same alphabet instance without the specified
@@ -356,7 +322,7 @@ export class Alphabet {
 
   /**
    * Sorts the alphabet by the natural order of the characters using
-   * `natural-orderby`
+   * `natural-orderby`.
    * @param {string} locale - The locale to use for sorting
    * @returns {Alphabet} - The same alphabet instance sorted by the natural
    * order of the characters
@@ -369,7 +335,7 @@ export class Alphabet {
   }
 
   /**
-   * Sorts the alphabet by the character code point
+   * Sorts the alphabet by the character code point.
    * @returns {Alphabet} - The same alphabet instance sorted by the character
    * code point
    */
@@ -380,7 +346,7 @@ export class Alphabet {
   }
 
   /**
-   * Sorts the alphabet by the locale order of the characters
+   * Sorts the alphabet by the locale order of the characters.
    * @param {Intl.LocalesArgument} locales - The locales to use for sorting
    * @returns {Alphabet} - The same alphabet instance sorted by the locale
    * order of the characters
@@ -390,7 +356,7 @@ export class Alphabet {
   }
 
   /**
-   * Retrieves the characters from the alphabet
+   * Retrieves the characters from the alphabet.
    * @returns {string} The characters from the alphabet
    */
   public getCharacters(): string {
@@ -398,7 +364,7 @@ export class Alphabet {
   }
 
   /**
-   * Reverses the alphabet
+   * Reverses the alphabet.
    * @returns {Alphabet} - The same alphabet instance reversed
    * @example
    * Alphabet.generateFrom('ab')
@@ -464,9 +430,5 @@ export class Alphabet {
         }
       })
       .filter(element => element !== null)
-  }
-
-  private _removeUnicodePlane(planeName: UnicodePlaneName): this {
-    return this.removeUnicodeRange(Alphabet._PLANES[planeName])
   }
 }
