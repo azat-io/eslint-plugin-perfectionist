@@ -1,5 +1,3 @@
-import type { Modifier, Selector } from './sort-classes.types'
-
 import { validateNoDuplicatedGroups } from '../utils/validate-groups-configuration'
 
 interface Props {
@@ -50,18 +48,13 @@ let isPredefinedGroup = (
     return false
   }
   let twoWordsSelector = input.split('-').slice(-2).join('-')
-  let isTwoWordSelectorValid = allSelectors.includes(
-    twoWordsSelector as Selector,
-  )
-  if (
-    !allSelectors.includes(singleWordSelector as Selector) &&
-    !isTwoWordSelectorValid
-  ) {
+  let isTwoWordSelectorValid = allSelectors.includes(twoWordsSelector)
+  if (!allSelectors.includes(singleWordSelector) && !isTwoWordSelectorValid) {
     return false
   }
   let modifiers = input.split('-').slice(0, isTwoWordSelectorValid ? -2 : -1)
   return (
     new Set(modifiers).size === modifiers.length &&
-    modifiers.every(modifier => allModifiers.includes(modifier as Modifier))
+    modifiers.every(modifier => allModifiers.includes(modifier))
   )
 }

@@ -21,6 +21,7 @@ export type SortClassesOptions = [
     ignoreCase: boolean
   }>,
 ]
+
 export type SingleCustomGroup =
   | AdvancedSingleCustomGroup<FunctionPropertySelector>
   | AdvancedSingleCustomGroup<AccessorPropertySelector>
@@ -31,6 +32,7 @@ export type SingleCustomGroup =
   | BaseSingleCustomGroup<StaticBlockSelector>
   | BaseSingleCustomGroup<ConstructorSelector>
   | AdvancedSingleCustomGroup<MethodSelector>
+
 export type Selector =
   | AccessorPropertySelector
   | FunctionPropertySelector
@@ -41,18 +43,7 @@ export type Selector =
   | SetMethodSelector
   | PropertySelector
   | MethodSelector
-export type CustomGroup = (
-  | {
-      order?: SortClassesOptions[0]['order']
-      type?: SortClassesOptions[0]['type']
-    }
-  | {
-      type?: 'unsorted'
-    }
-) &
-  (SingleCustomGroup | AnyOfCustomGroup) & {
-    groupName: string
-  }
+
 export type Modifier =
   | PublicOrProtectedOrPrivateModifier
   | DecoratedModifier
@@ -63,9 +54,11 @@ export type Modifier =
   | DeclareModifier
   | StaticModifier
   | AsyncModifier
+
 export interface AnyOfCustomGroup {
   anyOf: SingleCustomGroup[]
 }
+
 /**
  * Only used in code as well
  */
@@ -111,6 +104,7 @@ interface AllowedModifiersPerSelector {
   constructor: PublicOrProtectedOrPrivateModifier
   'static-block': never
 }
+
 /**
  * Some invalid combinations are still handled by this type, such as
  * - private abstract X
@@ -129,43 +123,69 @@ type Group =
   | MethodGroup
   | 'unknown'
   | string
+
+type CustomGroup = (
+  | {
+      order?: SortClassesOptions[0]['order']
+      type?: SortClassesOptions[0]['type']
+    }
+  | {
+      type?: 'unsorted'
+    }
+) &
+  (SingleCustomGroup | AnyOfCustomGroup) & {
+    groupName: string
+  }
+
 type NonDeclarePropertyGroup =
   `${PublicOrProtectedOrPrivateModifierPrefix}${StaticOrAbstractModifierPrefix}${OverrideModifierPrefix}${ReadonlyModifierPrefix}${DecoratedModifierPrefix}${OptionalModifierPrefix}${PropertySelector}`
+
 type FunctionPropertyGroup =
   `${PublicOrProtectedOrPrivateModifierPrefix}${StaticModifierPrefix}${OverrideModifierPrefix}${ReadonlyModifierPrefix}${DecoratedModifierPrefix}${AsyncModifierPrefix}${FunctionPropertySelector}`
+
 type MethodGroup =
   `${PublicOrProtectedOrPrivateModifierPrefix}${StaticOrAbstractModifierPrefix}${OverrideModifierPrefix}${DecoratedModifierPrefix}${AsyncModifierPrefix}${OptionalModifierPrefix}${MethodSelector}`
+
 type DeclarePropertyGroup =
   `${DeclareModifierPrefix}${PublicOrProtectedOrPrivateModifierPrefix}${StaticOrAbstractModifierPrefix}${ReadonlyModifierPrefix}${OptionalModifierPrefix}${PropertySelector}`
+
 type GetMethodOrSetMethodGroup =
   `${PublicOrProtectedOrPrivateModifierPrefix}${StaticOrAbstractModifierPrefix}${OverrideModifierPrefix}${DecoratedModifierPrefix}${GetMethodOrSetMethodSelector}`
 
 type AccessorPropertyGroup =
   `${PublicOrProtectedOrPrivateModifierPrefix}${StaticOrAbstractModifierPrefix}${OverrideModifierPrefix}${DecoratedModifierPrefix}${AccessorPropertySelector}`
+
 type AdvancedSingleCustomGroup<T extends Selector> = {
   decoratorNamePattern?: string
   elementValuePattern?: string
   elementNamePattern?: string
 } & BaseSingleCustomGroup<T>
+
 type PublicOrProtectedOrPrivateModifierPrefix = WithDashSuffixOrEmpty<
   ProtectedModifier | PrivateModifier | PublicModifier
 >
+
 interface BaseSingleCustomGroup<T extends Selector> {
   modifiers?: AllowedModifiersPerSelector[T][]
   selector?: T
 }
 type IndexSignatureGroup =
   `${StaticModifierPrefix}${ReadonlyModifierPrefix}${IndexSignatureSelector}`
+
 type PublicOrProtectedOrPrivateModifier =
   | ProtectedModifier
   | PrivateModifier
   | PublicModifier
+
 type StaticOrAbstractModifierPrefix = WithDashSuffixOrEmpty<
   AbstractModifier | StaticModifier
 >
+
 type ConstructorGroup =
   `${PublicOrProtectedOrPrivateModifierPrefix}${ConstructorSelector}`
+
 type GetMethodOrSetMethodSelector = GetMethodSelector | SetMethodSelector
+
 type DecoratedModifierPrefix = WithDashSuffixOrEmpty<DecoratedModifier>
 
 type OverrideModifierPrefix = WithDashSuffixOrEmpty<OverrideModifier>
@@ -173,10 +193,15 @@ type OverrideModifierPrefix = WithDashSuffixOrEmpty<OverrideModifier>
 type OptionalModifierPrefix = WithDashSuffixOrEmpty<OptionalModifier>
 
 type ReadonlyModifierPrefix = WithDashSuffixOrEmpty<ReadonlyModifier>
+
 type DeclareModifierPrefix = WithDashSuffixOrEmpty<DeclareModifier>
+
 type StaticModifierPrefix = WithDashSuffixOrEmpty<StaticModifier>
+
 type AsyncModifierPrefix = WithDashSuffixOrEmpty<AsyncModifier>
+
 type WithDashSuffixOrEmpty<T extends string> = `${T}-` | ''
+
 type FunctionPropertySelector = 'function-property'
 
 type AccessorPropertySelector = 'accessor-property'
@@ -186,13 +211,21 @@ type StaticBlockGroup = `${StaticBlockSelector}`
 type IndexSignatureSelector = 'index-signature'
 
 type StaticBlockSelector = 'static-block'
+
 type ConstructorSelector = 'constructor'
+
 type GetMethodSelector = 'get-method'
+
 type SetMethodSelector = 'set-method'
+
 type ProtectedModifier = 'protected'
+
 type DecoratedModifier = 'decorated'
+
 type AbstractModifier = 'abstract'
+
 type OverrideModifier = 'override'
+
 type ReadonlyModifier = 'readonly'
 
 type OptionalModifier = 'optional'

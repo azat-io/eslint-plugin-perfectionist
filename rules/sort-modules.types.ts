@@ -20,6 +20,7 @@ export type SortModulesOptions = [
     ignoreCase: boolean
   }>,
 ]
+
 export type SingleCustomGroup = (
   | (DecoratorNamePatternFilterCustomGroup &
       BaseSingleCustomGroup<ClassSelector>)
@@ -29,18 +30,7 @@ export type SingleCustomGroup = (
   | BaseSingleCustomGroup<TypeSelector>
 ) &
   ElementNamePatternFilterCustomGroup
-export type CustomGroup = (
-  | {
-      order?: SortModulesOptions[0]['order']
-      type?: SortModulesOptions[0]['type']
-    }
-  | {
-      type?: 'unsorted'
-    }
-) &
-  (SingleCustomGroup | AnyOfCustomGroup) & {
-    groupName: string
-  }
+
 export type Selector =
   // | NamespaceSelector
   | InterfaceSelector
@@ -49,12 +39,14 @@ export type Selector =
   | ClassSelector
   | TypeSelector
   | EnumSelector
+
 export type Modifier =
   | DecoratedModifier
   | DeclareModifier
   | DefaultModifier
   | ExportModifier
   | AsyncModifier
+
 export interface AnyOfCustomGroup {
   anyOf: SingleCustomGroup[]
 }
@@ -71,6 +63,19 @@ interface AllowedModifiersPerSelector {
   enum: DeclareModifier | ExportModifier
   type: DeclareModifier | ExportModifier
 }
+
+type CustomGroup = (
+  | {
+      order?: SortModulesOptions[0]['order']
+      type?: SortModulesOptions[0]['type']
+    }
+  | {
+      type?: 'unsorted'
+    }
+) &
+  (SingleCustomGroup | AnyOfCustomGroup) & {
+    groupName: string
+  }
 /**
  * Only used in code, so I don't know if it's worth maintaining this.
  */
@@ -85,12 +90,16 @@ type Group =
   | TypeGroup
   | 'unknown'
   | string
+
 type NonDefaultClassGroup =
   `${ExportModifierPrefix}${DeclareModifierPrefix}${DecoratedModifierPrefix}${ClassSelector}`
+
 type DefaultFunctionGroup =
   `${ExportModifierPrefix}${DefaultModifierPrefix}${AsyncModifierPrefix}${FunctionSelector}`
+
 type DefaultClassGroup =
   `${ExportModifierPrefix}${DefaultModifierPrefix}${DecoratedModifierPrefix}${ClassSelector}`
+
 interface BaseSingleCustomGroup<T extends Selector> {
   modifiers?: AllowedModifiersPerSelector[T][]
   selector?: T
@@ -101,12 +110,16 @@ type NonDefaultInterfaceGroup =
 
 type NonDefaultFunctionGroup =
   `${ExportModifierPrefix}${DeclareModifierPrefix}${FunctionSelector}`
+
 type DefaultInterfaceGroup =
   `${ExportModifierPrefix}${DefaultModifierPrefix}${InterfaceSelector}`
+
 type TypeGroup =
   `${ExportModifierPrefix}${DeclareModifierPrefix}${TypeSelector}`
+
 type EnumGroup =
   `${ExportModifierPrefix}${DeclareModifierPrefix}${EnumSelector}`
+
 interface DecoratorNamePatternFilterCustomGroup {
   decoratorNamePattern?: string
 }
@@ -114,12 +127,19 @@ interface DecoratorNamePatternFilterCustomGroup {
 interface ElementNamePatternFilterCustomGroup {
   elementNamePattern?: string
 }
+
 type DecoratedModifierPrefix = WithDashSuffixOrEmpty<DecoratedModifier>
+
 type DeclareModifierPrefix = WithDashSuffixOrEmpty<DeclareModifier>
+
 type DefaultModifierPrefix = WithDashSuffixOrEmpty<DefaultModifier>
+
 type ExportModifierPrefix = WithDashSuffixOrEmpty<ExportModifier>
+
 type AsyncModifierPrefix = WithDashSuffixOrEmpty<AsyncModifier>
+
 type WithDashSuffixOrEmpty<T extends string> = `${T}-` | ''
+
 type DecoratedModifier = 'decorated'
 
 type InterfaceSelector = 'interface'
