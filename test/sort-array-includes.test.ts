@@ -6,6 +6,7 @@ import { afterAll, describe, it } from 'vitest'
 import { dedent } from 'ts-dedent'
 
 import rule from '../rules/sort-array-includes'
+import { Alphabet } from '../utils/alphabet'
 
 let ruleName = 'sort-array-includes'
 
@@ -1324,6 +1325,65 @@ describe(ruleName, () => {
               groupKind: 'mixed',
             },
           ],
+        },
+      ],
+    })
+  })
+
+  describe(`${ruleName}: sorts by custom alphabet`, () => {
+    let type = 'custom'
+
+    let alphabet = Alphabet.generateRecommendedAlphabet()
+      .sortByLocaleCompare('en-US')
+      .getCharacters()
+    let options = {
+      type: 'custom',
+      order: 'asc',
+      alphabet,
+    } as const
+
+    ruleTester.run(`${ruleName}(${type}): sorts arrays`, rule, {
+      invalid: [
+        {
+          errors: [
+            {
+              data: {
+                right: 'b',
+                left: 'c',
+              },
+              messageId: 'unexpectedArrayIncludesOrder',
+            },
+          ],
+          output: dedent`
+            [
+              'a',
+              'b',
+              'c',
+              'd',
+            ].includes(value)
+          `,
+          code: dedent`
+            [
+              'a',
+              'c',
+              'b',
+              'd',
+            ].includes(value)
+          `,
+          options: [options],
+        },
+      ],
+      valid: [
+        {
+          code: dedent`
+            [
+              'a',
+              'b',
+              'c',
+              'd',
+            ].includes(value)
+          `,
+          options: [options],
         },
       ],
     })

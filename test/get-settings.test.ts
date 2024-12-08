@@ -27,6 +27,7 @@ describe('get-settings', () => {
       ignorePattern: [],
       ignoreCase: true,
       locales: 'en-US',
+      alphabet: '',
       order: 'asc',
     }
     expect(() => {

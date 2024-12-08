@@ -165,6 +165,7 @@ module.exports = {
 | [recommended-alphabetical](https://perfectionist.dev/configs/recommended-alphabetical) | All plugin rules with alphabetical sorting in ascending order    |
 | [recommended-natural](https://perfectionist.dev/configs/recommended-natural)           | All plugin rules with natural sorting in ascending order         |
 | [recommended-line-length](https://perfectionist.dev/configs/recommended-line-length)   | All plugin rules with sorting by line length in descending order |
+| [recommended-custom](https://perfectionist.dev/configs/recommended-custom)             | All plugin rules with sorting by your own custom order           |
 
 ## Rules
 
@@ -201,15 +202,15 @@ module.exports = {
 
 ### Can I automatically fix problems in the editor?
 
-Yes. To do this, you need to enable autofix in ESLint when you save the file in your editor. Instructions for your editor can be found [here](https://perfectionist.dev/guide/integrations).
+Yes. To do this, you need to enable autofix in ESLint when you save the file in your editor. You may find instructions for your editor can be found [here](https://perfectionist.dev/guide/integrations).
 
 ### Is it safe?
 
-On the whole, yes. We are very careful to make sure that the work of the plugin does not negatively affect the work of the code. For example, the plugin takes into account spread operators in JSX and objects, comments to the code. Safety is our priority. If you encounter any problem, you can create an [issue](https://github.com/azat-io/eslint-plugin-perfectionist/issues/new/choose).
+Overall, yes. We want to make sure that the work of the plugin does not negatively affect the behavior of the code. For example, the plugin takes into account spread operators in JSX and objects, comments to the code. Safety is our priority. If you encounter any problem, you can create an [issue](https://github.com/azat-io/eslint-plugin-perfectionist/issues/new/choose).
 
 ### Why not Prettier?
 
-I love Prettier. However, this is not his area of responsibility. Prettier is used for formatting, and ESLint is also used for styling. For example, changing the order of imports can affect how the code works (console.log calls, fetch, style loading). Prettier should not change the AST. There is a cool article about this: ["The Blurry Line Between Formatting and Style"](https://blog.joshuakgoldberg.com/the-blurry-line-between-formatting-and-style) by **@joshuakgoldberg**.
+I love Prettier. However, this is not its area of responsibility. Prettier is used for formatting, and ESLint is also used for styling. For example, changing the order of imports can affect how the code works (console.log calls, fetch, style loading). Prettier should not change the AST. There is a cool article about this: ["The Blurry Line Between Formatting and Style"](https://blog.joshuakgoldberg.com/the-blurry-line-between-formatting-and-style) by **@joshuakgoldberg**.
 
 ## Versioning Policy
 

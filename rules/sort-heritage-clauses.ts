@@ -7,11 +7,13 @@ import {
   specialCharactersJsonSchema,
   customGroupsJsonSchema,
   ignoreCaseJsonSchema,
+  alphabetJsonSchema,
   localesJsonSchema,
   groupsJsonSchema,
   orderJsonSchema,
   typeJsonSchema,
 } from '../utils/common-json-schemas'
+import { validateCustomSortConfiguration } from '../utils/validate-custom-sort-configuration'
 import { validateGroupsConfiguration } from '../utils/validate-groups-configuration'
 import { getEslintDisabledLines } from '../utils/get-eslint-disabled-lines'
 import { isNodeEslintDisabled } from '../utils/is-node-eslint-disabled'
@@ -30,13 +32,14 @@ import { pairwise } from '../utils/pairwise'
 
 export type Options<T extends string[]> = [
   Partial<{
+    type: 'alphabetical' | 'line-length' | 'natural' | 'custom'
     customGroups: Record<T[number], string[] | string>
-    type: 'alphabetical' | 'line-length' | 'natural'
     specialCharacters: 'remove' | 'trim' | 'keep'
     locales: NonNullable<Intl.LocalesArgument>
     groups: (Group<T>[] | Group<T>)[]
     order: 'desc' | 'asc'
     ignoreCase: boolean
+    alphabet: string
   }>,
 ]
 
@@ -52,6 +55,7 @@ let defaultOptions: Required<Options<string[]>[0]> = {
   ignoreCase: true,
   customGroups: {},
   locales: 'en-US',
+  alphabet: '',
   order: 'asc',
   groups: [],
 }
@@ -64,6 +68,7 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
           specialCharacters: specialCharactersJsonSchema,
           customGroups: customGroupsJsonSchema,
           ignoreCase: ignoreCaseJsonSchema,
+          alphabet: alphabetJsonSchema,
           locales: localesJsonSchema,
           groups: groupsJsonSchema,
           order: orderJsonSchema,
@@ -91,7 +96,7 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
     let settings = getSettings(context.settings)
 
     let options = complete(context.options.at(0), settings, defaultOptions)
-
+    validateCustomSortConfiguration(options)
     validateGroupsConfiguration(
       options.groups,
       ['unknown'],

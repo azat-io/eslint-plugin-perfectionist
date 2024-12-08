@@ -8,6 +8,7 @@ import {
   partitionByCommentJsonSchema,
   specialCharactersJsonSchema,
   ignoreCaseJsonSchema,
+  alphabetJsonSchema,
   localesJsonSchema,
   orderJsonSchema,
   typeJsonSchema,
@@ -30,14 +31,15 @@ import { pairwise } from '../utils/pairwise'
 
 export type Options = [
   Partial<{
+    type: 'alphabetical' | 'line-length' | 'natural' | 'custom'
     groupKind: 'literals-first' | 'spreads-first' | 'mixed'
-    type: 'alphabetical' | 'line-length' | 'natural'
     partitionByComment: string[] | boolean | string
     specialCharacters: 'remove' | 'trim' | 'keep'
     locales: NonNullable<Intl.LocalesArgument>
     partitionByNewLine: boolean
     order: 'desc' | 'asc'
     ignoreCase: boolean
+    alphabet: string
   }>,
 ]
 
@@ -56,6 +58,7 @@ export let defaultOptions: Required<Options[0]> = {
   type: 'alphabetical',
   ignoreCase: true,
   locales: 'en-US',
+  alphabet: '',
   order: 'asc',
 }
 
@@ -78,6 +81,7 @@ export let jsonSchema: JSONSchema4 = {
     },
     specialCharacters: specialCharactersJsonSchema,
     ignoreCase: ignoreCaseJsonSchema,
+    alphabet: alphabetJsonSchema,
     locales: localesJsonSchema,
     order: orderJsonSchema,
     type: typeJsonSchema,

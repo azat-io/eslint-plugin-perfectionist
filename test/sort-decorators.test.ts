@@ -6,6 +6,7 @@ import { RuleTester as EslintRuleTester } from 'eslint'
 import { afterAll, describe, it } from 'vitest'
 import { dedent } from 'ts-dedent'
 
+import { Alphabet } from '../utils/alphabet'
 import rule from '../rules/sort-decorators'
 
 let ruleName = 'sort-decorators'
@@ -2195,6 +2196,118 @@ describe(ruleName, () => {
         invalid: [],
       },
     )
+  })
+
+  describe(`${ruleName}: sorts by custom alphabet`, () => {
+    let type = 'custom'
+
+    let alphabet = Alphabet.generateRecommendedAlphabet()
+      .sortByLocaleCompare('en-US')
+      .getCharacters()
+    let options = {
+      type: 'custom',
+      order: 'asc',
+      alphabet,
+    } as const
+
+    ruleTester.run(`${ruleName}(${type}): sorts decorators`, rule, {
+      invalid: [
+        {
+          output: dedent`
+            @A @B() @C
+            class Class {
+
+              @A @B() @C
+              property
+
+              @A @B() @C
+              accessor field
+
+              @A @B() @C
+              method(
+                @A
+                @B()
+                @C
+                parameter) {}
+
+            }
+          `,
+          code: dedent`
+            @A @C @B()
+            class Class {
+
+              @A @C @B()
+              property
+
+              @A @C @B()
+              accessor field
+
+              @A @C @B()
+              method(
+                @A
+                @C
+                @B()
+                parameter) {}
+
+            }
+          `,
+          errors: duplicate5Times([
+            {
+              data: {
+                right: 'B',
+                left: 'C',
+              },
+              messageId: 'unexpectedDecoratorsOrder',
+            },
+          ]),
+          options: [options],
+        },
+      ],
+      valid: [
+        {
+          code: dedent`
+            @A
+            class Class {
+
+              @A
+              property
+
+              @A
+              accessor field
+
+              @A
+              method(
+                @A
+                parameter) {}
+
+            }
+          `,
+          options: [options],
+        },
+        {
+          code: dedent`
+            @A
+            @B()
+            @C
+            class Class {
+
+              @A @B() C
+              property
+
+              @A @B() C
+              accessor field
+
+              @A @B() C
+              method(
+                @A @B() @C
+                parameter) {}
+
+            }
+          `,
+          options: [options],
+        },
+      ],
+    })
   })
 
   describe(`${ruleName}: sorting by line length`, () => {

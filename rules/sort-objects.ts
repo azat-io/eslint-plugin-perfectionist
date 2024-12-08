@@ -10,6 +10,7 @@ import {
   newlinesBetweenJsonSchema,
   customGroupsJsonSchema,
   ignoreCaseJsonSchema,
+  alphabetJsonSchema,
   localesJsonSchema,
   groupsJsonSchema,
   orderJsonSchema,
@@ -20,6 +21,7 @@ import {
   sortNodesByDependencies,
 } from '../utils/sort-nodes-by-dependencies'
 import { validateNewlinesAndPartitionConfiguration } from '../utils/validate-newlines-and-partition-configuration'
+import { validateCustomSortConfiguration } from '../utils/validate-custom-sort-configuration'
 import { validateGroupsConfiguration } from '../utils/validate-groups-configuration'
 import { getMatchingContextOptions } from '../utils/get-matching-context-options'
 import { getEslintDisabledLines } from '../utils/get-eslint-disabled-lines'
@@ -48,8 +50,8 @@ type Options = Partial<{
   useConfigurationIf: {
     allNamesMatchPattern?: string
   }
+  type: 'alphabetical' | 'line-length' | 'natural' | 'custom'
   destructuredObjects: { groups: boolean } | boolean
-  type: 'alphabetical' | 'line-length' | 'natural'
   customGroups: Record<string, string[] | string>
   partitionByComment: string[] | boolean | string
   newlinesBetween: 'ignore' | 'always' | 'never'
@@ -66,6 +68,7 @@ type Options = Partial<{
   ignorePattern: string[]
   order: 'desc' | 'asc'
   ignoreCase: boolean
+  alphabet: string
 }>[]
 
 type MESSAGE_ID =
@@ -92,6 +95,7 @@ let defaultOptions: Required<Options[0]> = {
   ignoreCase: true,
   customGroups: {},
   locales: 'en-US',
+  alphabet: '',
   order: 'asc',
   groups: [],
 }
@@ -114,6 +118,7 @@ export default createEslintRule<Options, MESSAGE_ID>({
         contextOptions: context.options,
       })
       let options = complete(matchedContextOptions, settings, defaultOptions)
+      validateCustomSortConfiguration(options)
       validateGroupsConfiguration(
         options.groups,
         ['multiline', 'method', 'unknown'],
@@ -541,6 +546,7 @@ export default createEslintRule<Options, MESSAGE_ID>({
           newlinesBetween: newlinesBetweenJsonSchema,
           customGroups: customGroupsJsonSchema,
           ignoreCase: ignoreCaseJsonSchema,
+          alphabet: alphabetJsonSchema,
           locales: localesJsonSchema,
           groups: groupsJsonSchema,
           order: orderJsonSchema,
