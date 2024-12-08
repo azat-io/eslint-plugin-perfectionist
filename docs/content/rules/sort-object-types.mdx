@@ -375,12 +375,52 @@ Current API:
 
 You can define your own groups and use regexp pattern to match specific object type members.
 
-Each key of `customGroups` represents a group name which you can then use in the `groups` option. The value for each key can either be of type:
-- `string` — A type member's name matching the value will be marked as part of the group referenced by the key.
-- `string[]` — A type member's name matching any of the values of the array will be marked as part of the group referenced by the key.
-The order of values in the array does not matter.
+A custom group definition may follow one of the two following interfaces:
 
-Custom group matching takes precedence over predefined group matching.
+```ts
+interface CustomGroupDefinition {
+  groupName: string
+  type?: 'alphabetical' | 'natural' | 'line-length' | 'unsorted'
+  order?: 'asc' | 'desc'
+  selector?: string
+  modifiers?: string[]
+  elementNamePattern?: string
+}
+```
+An object type will match a `CustomGroupDefinition` group if it matches all the filters of the custom group's definition.
+
+or:
+
+```ts
+interface CustomGroupAnyOfDefinition {
+  groupName: string
+  type?: 'alphabetical' | 'natural' | 'line-length' | 'unsorted'
+  order?: 'asc' | 'desc'
+  anyOf: Array<{
+      selector?: string
+      modifiers?: string[]
+      elementNamePattern?: string
+  }>
+}
+```
+
+An object type will match a `CustomGroupAnyOfDefinition` group if it matches all the filters of at least one of the `anyOf` items.
+
+#### Attributes
+
+- `groupName`: The group's name, which needs to be put in the `groups` option.
+- `selector`: Filter on the `selector` of the element.
+- `modifiers`: Filter on the `modifiers` of the element. (All the modifiers of the element must be present in that list)
+- `elementNamePattern`: If entered, will check that the name of the element matches the pattern entered.
+- `type`: Overrides the sort type for that custom group. `unsorted` will not sort the group.
+- `order`: Overrides the sort order for that custom group
+
+#### Match importance
+
+The `customGroups` list is ordered:
+The first custom group definition that matches an element will be used.
+
+Custom groups have a higher priority than any predefined group.
 
 #### Example
 
