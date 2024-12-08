@@ -35,19 +35,6 @@ export type SingleCustomGroup = (
 ) &
   ElementNamePatternFilterCustomGroup
 
-export type CustomGroup = (
-  | {
-      order?: Options[0]['order']
-      type?: Options[0]['type']
-    }
-  | {
-      type?: 'unsorted'
-    }
-) &
-  (SingleCustomGroup | AnyOfCustomGroup) & {
-    groupName: string
-  }
-
 export type Selector =
   | IndexSignatureSelector
   | MultilineSelector
@@ -71,6 +58,19 @@ interface AllowedModifiersPerSelector {
   multiline: OptionalModifier | RequiredModifier
   'index-signature': never
 }
+
+type CustomGroup = (
+  | {
+      order?: Options[0]['order']
+      type?: Options[0]['type']
+    }
+  | {
+      type?: 'unsorted'
+    }
+) &
+  (SingleCustomGroup | AnyOfCustomGroup) & {
+    groupName: string
+  }
 
 type IndexSignatureGroup =
   `${OptionalModifierPrefix | RequiredModifierPrefix}${MultilineModifierPrefix}${IndexSignatureSelector}`
