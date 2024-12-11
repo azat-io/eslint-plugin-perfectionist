@@ -17,6 +17,10 @@
       "types": "./dist/index.d.ts",
       "default": "./dist/index.js"
     },
+    "./alphabet": {
+      "types": "./dist/alphabet.d.ts",
+      "default": "./dist/utils/alphabet.js"
+    },
     "./package.json": "./package.json"
   },
   "files": [
