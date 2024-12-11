@@ -35,17 +35,18 @@ This option should be a string that represents an ordered alphabet.
 
 Example: `01234564789abcdef...`
 
-You may use the `perfectionist.Alphabet` utility class to quickly generate a custom alphabet.
+Use the `Alphabet` utility class from `eslint-plugin-perfectionist/alphabet` to quickly generate a custom alphabet.
 
 <CodeTabs
   code={[
     {
       source: dedent`
         // eslint.config.js
+        import { Alphabet } from 'eslint-plugin-perfectionist/alphabet'
         import perfectionist from 'eslint-plugin-perfectionist'
         import naturalCompare from 'natural-compare-lite';
 
-        const myCustomAlphabet = perfectionist.Alphabet
+        const myCustomAlphabet = Alphabet
           .generateRecommendedAlphabet()
           .sortingBy((a, b) => naturalCompare(a, b))
           .getCharacters();
@@ -67,10 +68,11 @@ You may use the `perfectionist.Alphabet` utility class to quickly generate a cus
     {
       source: dedent`
         // .eslintrc.js
+        import { Alphabet } from 'eslint-plugin-perfectionist/alphabet'
         import perfectionist from 'eslint-plugin-perfectionist'
         import naturalCompare from 'natural-compare-lite';
 
-        const myCustomAlphabet = perfectionist.Alphabet
+        const myCustomAlphabet = Alphabet
           .generateRecommendedAlphabet()
           .sortingBy((a, b) => naturalCompare(a, b))
           .getCharacters();
@@ -97,7 +99,7 @@ lang="tsx"
 
 ## Alphabet class
 
-The `perfectionist.Alphabet` class provides a set of methods to generate and manipulate alphabets.
+The `Alphabet` class from `eslint-plugin-perfectionist/alphabet` provides a set of methods to generate and manipulate alphabets.
 
 ### Static generators
 
