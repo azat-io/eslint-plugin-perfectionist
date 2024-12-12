@@ -102,6 +102,9 @@ let defaultOptions: Required<Options[0]> = {
 
 export default createEslintRule<Options, MESSAGE_ID>({
   create: context => {
+    let settings = getSettings(context.settings)
+    let sourceCode = getSourceCode(context)
+
     let sortObject = (
       nodeObject: TSESTree.ObjectExpression | TSESTree.ObjectPattern,
     ): void => {
@@ -109,8 +112,6 @@ export default createEslintRule<Options, MESSAGE_ID>({
         return
       }
 
-      let settings = getSettings(context.settings)
-      let sourceCode = getSourceCode(context)
       let matchedContextOptions = getMatchingContextOptions({
         nodeNames: nodeObject.properties
           .map(property => getNodeName({ sourceCode, property }))
