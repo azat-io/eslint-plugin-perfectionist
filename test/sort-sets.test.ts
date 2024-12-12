@@ -713,6 +713,447 @@ describe(ruleName, () => {
         valid: [],
       },
     )
+
+    ruleTester.run(
+      `${ruleName}(${type}): allows to use predefined groups`,
+      rule,
+      {
+        invalid: [
+          {
+            errors: [
+              {
+                data: {
+                  rightGroup: 'spread',
+                  leftGroup: 'literal',
+                  right: '...b',
+                  left: 'c',
+                },
+                messageId: 'unexpectedSetsGroupOrder',
+              },
+            ],
+            options: [
+              {
+                ...options,
+                groups: ['spread', 'literal'],
+                groupKind: 'mixed',
+              },
+            ],
+            output: dedent`
+              new Set([
+                ...b,
+                'a',
+                'c'
+              ])
+            `,
+            code: dedent`
+              new Set([
+                'c',
+                ...b,
+                'a'
+              ])
+            `,
+          },
+        ],
+        valid: [],
+      },
+    )
+
+    describe(`${ruleName}: custom groups`, () => {
+      ruleTester.run(`${ruleName}: filters on selector`, rule, {
+        invalid: [
+          {
+            options: [
+              {
+                customGroups: [
+                  {
+                    groupName: 'literalElements',
+                    selector: 'literal',
+                  },
+                ],
+                groups: ['literalElements', 'unknown'],
+                groupKind: 'mixed',
+              },
+            ],
+            errors: [
+              {
+                data: {
+                  rightGroup: 'literalElements',
+                  leftGroup: 'unknown',
+                  left: '...b',
+                  right: 'a',
+                },
+                messageId: 'unexpectedSetsGroupOrder',
+              },
+            ],
+            output: dedent`
+              new Set([
+                'a',
+                ...b,
+              ])
+            `,
+            code: dedent`
+              new Set([
+                ...b,
+                'a',
+              ])
+            `,
+          },
+        ],
+        valid: [],
+      })
+
+      ruleTester.run(`${ruleName}: filters on elementNamePattern`, rule, {
+        invalid: [
+          {
+            options: [
+              {
+                customGroups: [
+                  {
+                    groupName: 'literalsStartingWithHello',
+                    elementNamePattern: 'hello*',
+                    selector: 'literal',
+                  },
+                ],
+                groups: ['literalsStartingWithHello', 'unknown'],
+                groupKind: 'mixed',
+              },
+            ],
+            errors: [
+              {
+                data: {
+                  rightGroup: 'literalsStartingWithHello',
+                  right: 'helloLiteral',
+                  leftGroup: 'unknown',
+                  left: 'b',
+                },
+                messageId: 'unexpectedSetsGroupOrder',
+              },
+            ],
+            output: dedent`
+              new Set([
+                'helloLiteral',
+                'a',
+                'b',
+              ])
+            `,
+            code: dedent`
+              new Set([
+                'a',
+                'b',
+                'helloLiteral',
+              ])
+            `,
+          },
+        ],
+        valid: [],
+      })
+
+      ruleTester.run(
+        `${ruleName}: sort custom groups by overriding 'type' and 'order'`,
+        rule,
+        {
+          invalid: [
+            {
+              errors: [
+                {
+                  data: {
+                    right: 'bb',
+                    left: 'a',
+                  },
+                  messageId: 'unexpectedSetsOrder',
+                },
+                {
+                  data: {
+                    right: 'ccc',
+                    left: 'bb',
+                  },
+                  messageId: 'unexpectedSetsOrder',
+                },
+                {
+                  data: {
+                    right: 'dddd',
+                    left: 'ccc',
+                  },
+                  messageId: 'unexpectedSetsOrder',
+                },
+                {
+                  data: {
+                    rightGroup: 'reversedLiteralsByLineLength',
+                    leftGroup: 'unknown',
+                    left: '...m',
+                    right: 'eee',
+                  },
+                  messageId: 'unexpectedSetsGroupOrder',
+                },
+              ],
+              options: [
+                {
+                  customGroups: [
+                    {
+                      groupName: 'reversedLiteralsByLineLength',
+                      selector: 'literal',
+                      type: 'line-length',
+                      order: 'desc',
+                    },
+                  ],
+                  groups: ['reversedLiteralsByLineLength', 'unknown'],
+                  type: 'alphabetical',
+                  groupKind: 'mixed',
+                  order: 'asc',
+                },
+              ],
+              output: dedent`
+                new Set([
+                  'dddd',
+                  'ccc',
+                  'eee',
+                  'bb',
+                  'ff',
+                  'a',
+                  'g',
+                  ...m,
+                  ...o,
+                  ...p,
+                ])
+              `,
+              code: dedent`
+                new Set([
+                  'a',
+                  'bb',
+                  'ccc',
+                  'dddd',
+                  ...m,
+                  'eee',
+                  'ff',
+                  'g',
+                  ...o,
+                  ...p,
+                ])
+            `,
+            },
+          ],
+          valid: [],
+        },
+      )
+
+      ruleTester.run(
+        `${ruleName}: does not sort custom groups with 'unsorted' type`,
+        rule,
+        {
+          invalid: [
+            {
+              options: [
+                {
+                  customGroups: [
+                    {
+                      groupName: 'unsortedLiterals',
+                      selector: 'literal',
+                      type: 'unsorted',
+                    },
+                  ],
+                  groups: ['unsortedLiterals', 'unknown'],
+                  groupKind: 'mixed',
+                },
+              ],
+              errors: [
+                {
+                  data: {
+                    rightGroup: 'unsortedLiterals',
+                    leftGroup: 'unknown',
+                    left: '...m',
+                    right: 'c',
+                  },
+                  messageId: 'unexpectedSetsGroupOrder',
+                },
+              ],
+              output: dedent`
+                new Set([
+                  'b',
+                  'a',
+                  'd',
+                  'e',
+                  'c',
+                  ...m,
+                ])
+              `,
+              code: dedent`
+                new Set([
+                  'b',
+                  'a',
+                  'd',
+                  'e',
+                  ...m,
+                  'c',
+                ])
+            `,
+            },
+          ],
+          valid: [],
+        },
+      )
+
+      ruleTester.run(`${ruleName}: sort custom group blocks`, rule, {
+        invalid: [
+          {
+            options: [
+              {
+                customGroups: [
+                  {
+                    anyOf: [
+                      {
+                        elementNamePattern: 'foo|Foo',
+                        selector: 'literal',
+                      },
+                      {
+                        elementNamePattern: 'foo|Foo',
+                        selector: 'spread',
+                      },
+                    ],
+                    groupName: 'elementsIncludingFoo',
+                  },
+                ],
+                groups: ['elementsIncludingFoo', 'unknown'],
+              },
+            ],
+            errors: [
+              {
+                data: {
+                  rightGroup: 'elementsIncludingFoo',
+                  leftGroup: 'unknown',
+                  right: '...foo',
+                  left: 'a',
+                },
+                messageId: 'unexpectedSetsGroupOrder',
+              },
+            ],
+            output: dedent`
+              new Set([
+                '...foo',
+                'cFoo',
+                'a',
+              ])
+            `,
+            code: dedent`
+              new Set([
+                'a',
+                '...foo',
+                'cFoo',
+              ])
+            `,
+          },
+        ],
+        valid: [],
+      })
+
+      ruleTester.run(
+        `${ruleName}: allows to use regex for element names in custom groups`,
+        rule,
+        {
+          valid: [
+            {
+              options: [
+                {
+                  customGroups: [
+                    {
+                      elementNamePattern: '^(?!.*Foo).*$',
+                      groupName: 'elementsWithoutFoo',
+                    },
+                  ],
+                  groups: ['unknown', 'elementsWithoutFoo'],
+                  type: 'alphabetical',
+                },
+              ],
+              code: dedent`
+              new Set([
+                'iHaveFooInMyName',
+                'meTooIHaveFoo',
+                'a',
+                'b',
+              ])
+            `,
+            },
+          ],
+          invalid: [],
+        },
+      )
+    })
+
+    describe(`${ruleName}(${type}): allows to use 'useConfigurationIf'`, () => {
+      ruleTester.run(
+        `${ruleName}(${type}): allows to use 'allNamesMatchPattern'`,
+        rule,
+        {
+          invalid: [
+            {
+              options: [
+                {
+                  ...options,
+                  useConfigurationIf: {
+                    allNamesMatchPattern: 'foo',
+                  },
+                },
+                {
+                  ...options,
+                  customGroups: [
+                    {
+                      elementNamePattern: '^r$',
+                      groupName: 'r',
+                    },
+                    {
+                      elementNamePattern: '^g$',
+                      groupName: 'g',
+                    },
+                    {
+                      elementNamePattern: '^b$',
+                      groupName: 'b',
+                    },
+                  ],
+                  useConfigurationIf: {
+                    allNamesMatchPattern: '^r|g|b$',
+                  },
+                  groups: ['r', 'g', 'b'],
+                },
+              ],
+              errors: [
+                {
+                  data: {
+                    rightGroup: 'g',
+                    leftGroup: 'b',
+                    right: 'g',
+                    left: 'b',
+                  },
+                  messageId: 'unexpectedSetsGroupOrder',
+                },
+                {
+                  data: {
+                    rightGroup: 'r',
+                    leftGroup: 'g',
+                    right: 'r',
+                    left: 'g',
+                  },
+                  messageId: 'unexpectedSetsGroupOrder',
+                },
+              ],
+              output: dedent`
+                new Set([
+                  'r',
+                  'g',
+                  'b',
+                ])
+              `,
+              code: dedent`
+                new Set([
+                  'b',
+                  'g',
+                  'r',
+                ])
+              `,
+            },
+          ],
+          valid: [],
+        },
+      )
+    })
   })
 
   describe(`${ruleName}: sorting by natural order`, () => {

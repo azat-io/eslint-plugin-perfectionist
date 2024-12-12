@@ -1,9 +1,9 @@
-import type { Options } from './sort-array-includes'
+import type { Options } from './sort-array-includes.types'
 
 import { defaultOptions, jsonSchema, sortArray } from './sort-array-includes'
 import { createEslintRule } from '../utils/create-eslint-rule'
 
-type MESSAGE_ID = 'unexpectedSetsOrder'
+type MESSAGE_ID = 'unexpectedSetsGroupOrder' | 'unexpectedSetsOrder'
 
 export default createEslintRule<Options, MESSAGE_ID>({
   create: context => ({
@@ -21,20 +21,29 @@ export default createEslintRule<Options, MESSAGE_ID>({
           node.arguments[0].type === 'ArrayExpression'
             ? node.arguments[0].elements
             : node.arguments[0].arguments
-        sortArray<MESSAGE_ID>(context, 'unexpectedSetsOrder', elements)
+        sortArray<MESSAGE_ID>({
+          availableMessageIds: {
+            unexpectedGroupOrder: 'unexpectedSetsGroupOrder',
+            unexpectedOrder: 'unexpectedSetsOrder',
+          },
+          elements,
+          context,
+        })
       }
     },
   }),
   meta: {
+    messages: {
+      unexpectedSetsGroupOrder:
+        'Expected "{{right}}" ({{rightGroup}}) to come before "{{left}}" ({{leftGroup}}).',
+      unexpectedSetsOrder: 'Expected "{{right}}" to come before "{{left}}".',
+    },
     docs: {
       url: 'https://perfectionist.dev/rules/sort-sets',
       description: 'Enforce sorted sets.',
       recommended: true,
     },
-    messages: {
-      unexpectedSetsOrder: 'Expected "{{right}}" to come before "{{left}}".',
-    },
-    schema: [jsonSchema],
+    schema: jsonSchema,
     type: 'suggestion',
     fixable: 'code',
   },

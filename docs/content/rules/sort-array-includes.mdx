@@ -177,9 +177,11 @@ Specifies the sorting locales. See [String.prototype.localeCompare() - locales](
 - `string` — A BCP 47 language tag (e.g. `'en'`, `'en-US'`, `'zh-CN'`).
 - `string[]` — An array of BCP 47 language tags.
 
-### groupKind
+### [DEPRECATED] groupKind
 
 <sub>default: `'literals-first'`</sub>
+
+Use the [groups](#groups) option with the `literal` and `spread` selectors instead. Make sure to set this option to `mixed`.
 
 Allows you to group array elements by their kind, determining whether spread values should come before or after literal values.
 
@@ -228,6 +230,129 @@ if ([
 
 Each group of elements (separated by empty lines) is treated independently, and the order within each group is preserved.
 
+### useConfigurationIf
+
+<sub>
+  type: `{ allNamesMatchPattern?: string }`
+</sub>
+<sub>default: `{}`</sub>
+
+Allows you to specify filters to match a particular options configuration for a given object.
+
+The first matching options configuration will be used. If no configuration matches, the default options configuration will be used.
+
+- `allNamesMatchPattern` — A regexp pattern that all object keys must match.
+
+Example configuration:
+```ts
+{
+  'perfectionist/sort-array-includes': [
+    'error',
+    {
+      groups: ['r', 'g', 'b'], // Sort colors by RGB
+      customGroups: [
+        {
+          elementNamePattern: '^r$',
+          groupName: 'r',
+        },
+        {
+          elementNamePattern: '^g$',
+          groupName: 'g',
+        },
+        {
+          elementNamePattern: '^b$',
+          groupName: 'b',
+        },
+      ],
+      useConfigurationIf: {
+        allNamesMatchPattern: '^r|g|b$',
+      },
+    },
+    {
+      type: 'alphabetical' // Fallback configuration
+    }
+  ],
+}
+```
+
+### groups
+
+<sub>
+  type: `Array<string | string[]>`
+</sub>
+<sub>default: `[]`</sub>
+
+Allows you to specify a list of groups for sorting. Groups help organize elements into categories.
+
+Each element will be assigned a single group specified in the `groups` option (or the `unknown` group if no match is found).
+The order of items in the `groups` option determines how groups are ordered.
+
+Within a given group, members will be sorted according to the `type`, `order`, `ignoreCase`, etc. options.
+
+Individual groups can be combined together by placing them in an array. The order of groups in that array does not matter.
+All members of the groups in the array will be sorted together as if they were part of a single group.
+
+Predefined groups are characterized by a selector.
+
+##### List of selectors
+
+- `literal`: Array elements that are not spread values.
+- `spread`: Array elements that are spread values.
+
+### customGroups
+
+<sub>
+  type: `Array<CustomGroupDefinition | CustomGroupAnyOfDefinition>`
+</sub>
+<sub>default: `{}`</sub>
+
+You can define your own groups and use regexp pattern to match specific object type members.
+
+A custom group definition may follow one of the two following interfaces:
+
+```ts
+interface CustomGroupDefinition {
+  groupName: string
+  type?: 'alphabetical' | 'natural' | 'line-length' | 'unsorted'
+  order?: 'asc' | 'desc'
+  selector?: string
+  elementNamePattern?: string
+}
+
+```
+An array element will match a `CustomGroupDefinition` group if it matches all the filters of the custom group's definition.
+
+or:
+
+```ts
+interface CustomGroupAnyOfDefinition {
+  groupName: string
+  type?: 'alphabetical' | 'natural' | 'line-length' | 'unsorted'
+  order?: 'asc' | 'desc'
+  anyOf: Array<{
+      selector?: string
+      elementNamePattern?: string
+  }>
+}
+```
+
+An array element will match a `CustomGroupAnyOfDefinition` group if it matches all the filters of at least one of the `anyOf` items.
+
+#### Attributes
+
+- `groupName`: The group's name, which needs to be put in the `groups` option.
+- `selector`: Filter on the `selector` of the element.
+- `elementNamePattern`: If entered, will check that the name of the element matches the pattern entered.
+- `type`: Overrides the sort type for that custom group. `unsorted` will not sort the group.
+- `order`: Overrides the sort order for that custom group
+
+#### Match importance
+
+The `customGroups` list is ordered:
+The first custom group definition that matches an element will be used.
+
+Custom groups have a higher priority than any predefined group.
+
 ## Usage
 
 <CodeTabs
@@ -252,6 +377,9 @@ Each group of elements (separated by empty lines) is treated independently, and 
                   specialCharacters: 'keep',
                   groupKind: 'literals-first',
                   partitionByNewLine: false,
+                  useConfigurationIf: {},
+                  groups: [],
+                  customGroups: [],
                 },
               ],
             },
@@ -278,6 +406,9 @@ Each group of elements (separated by empty lines) is treated independently, and 
                 specialCharacters: 'keep',
                 groupKind: 'literals-first',
                 partitionByNewLine: false,
+                useConfigurationIf: {},
+                groups: [],
+                customGroups: [],
               },
             ],
           },
