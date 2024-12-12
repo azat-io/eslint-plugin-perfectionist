@@ -175,7 +175,7 @@ export let sortArray = <MessageIds extends string>({
     contextOptions: context.options,
   })
   let completeOptions = complete(
-    matchedContextOptions,
+    matchedContextOptions[0],
     settings,
     defaultOptions,
   )

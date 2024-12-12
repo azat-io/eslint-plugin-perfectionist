@@ -9,28 +9,30 @@ describe('get-matching-context-options', () => {
       let contextOptions = [buildContextOptions('foo'), barContextOptions]
       let nodeNames = ['bar1', 'bar2']
 
-      expect(getMatchingContextOptions({ contextOptions, nodeNames })).toEqual(
+      expect(getMatchingContextOptions({ contextOptions, nodeNames })).toEqual([
         barContextOptions,
-      )
+      ])
     })
 
-    it('returns `undefined` if no configuration matches', () => {
+    it('returns [] if no configuration matches', () => {
       let contextOptions = [buildContextOptions('foo')]
       let nodeNames = ['bar1', 'bar2']
 
-      expect(
-        getMatchingContextOptions({ contextOptions, nodeNames }),
-      ).toBeUndefined()
+      expect(getMatchingContextOptions({ contextOptions, nodeNames })).toEqual(
+        [],
+      )
     })
 
-    it('returns the first context options if no filters are entered', () => {
+    it('returns all context options if no filters are entered', () => {
       let emptyContextOptions = buildContextOptions()
+      let secondContextOptions = buildContextOptions()
       let contextOptions = [emptyContextOptions, buildContextOptions()]
       let nodeNames = ['bar1', 'bar2']
 
-      expect(getMatchingContextOptions({ contextOptions, nodeNames })).toEqual(
+      expect(getMatchingContextOptions({ contextOptions, nodeNames })).toEqual([
         emptyContextOptions,
-      )
+        secondContextOptions,
+      ])
     })
   })
 

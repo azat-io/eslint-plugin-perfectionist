@@ -119,7 +119,7 @@ export default createEslintRule<Options, MESSAGE_ID>({
         contextOptions: context.options,
       })
       let completeOptions = complete(
-        matchedContextOptions,
+        matchedContextOptions[0],
         settings,
         defaultOptions,
       )
