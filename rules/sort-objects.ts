@@ -10,11 +10,11 @@ import {
   newlinesBetweenJsonSchema,
   customGroupsJsonSchema,
   ignoreCaseJsonSchema,
+  builtTypeJsonSchema,
   alphabetJsonSchema,
   localesJsonSchema,
   groupsJsonSchema,
   orderJsonSchema,
-  typeJsonSchema,
 } from '../utils/common-json-schemas'
 import {
   getFirstUnorderedNodeDependentOn,
@@ -47,10 +47,10 @@ import { pairwise } from '../utils/pairwise'
 import { matches } from '../utils/matches'
 
 type Options = Partial<{
+  type: 'alphabetical' | 'line-length' | 'unsorted' | 'natural' | 'custom'
   useConfigurationIf: {
     allNamesMatchPattern?: string
   }
-  type: 'alphabetical' | 'line-length' | 'natural' | 'custom'
   destructuredObjects: { groups: boolean } | boolean
   customGroups: Record<string, string[] | string>
   partitionByComment: string[] | boolean | string
@@ -118,7 +118,19 @@ export default createEslintRule<Options, MESSAGE_ID>({
           .filter(nodeName => nodeName !== null),
         contextOptions: context.options,
       })
-      let options = complete(matchedContextOptions, settings, defaultOptions)
+      let completeOptions = complete(
+        matchedContextOptions,
+        settings,
+        defaultOptions,
+      )
+      let { type } = completeOptions
+      if (type === 'unsorted') {
+        return
+      }
+      let options = {
+        ...completeOptions,
+        type,
+      }
       validateCustomSortConfiguration(options)
       validateGroupsConfiguration(
         options.groups,
@@ -541,6 +553,7 @@ export default createEslintRule<Options, MESSAGE_ID>({
             description: 'Controls whether to sort styled components.',
             type: 'boolean',
           },
+          type: builtTypeJsonSchema({ withUnsorted: true }),
           partitionByNewLine: partitionByNewLineJsonSchema,
           useConfigurationIf: useConfigurationIfJsonSchema,
           specialCharacters: specialCharactersJsonSchema,
@@ -551,7 +564,6 @@ export default createEslintRule<Options, MESSAGE_ID>({
           locales: localesJsonSchema,
           groups: groupsJsonSchema,
           order: orderJsonSchema,
-          type: typeJsonSchema,
         },
         additionalProperties: false,
         type: 'object',

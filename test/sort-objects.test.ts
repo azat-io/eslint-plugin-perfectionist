@@ -3701,14 +3701,24 @@ describe(ruleName, () => {
   })
 
   describe(`${ruleName}: misc`, () => {
-    let ruleTesterJSX = new RuleTester({
-      languageOptions: {
-        parserOptions: {
-          ecmaFeatures: {
-            jsx: true,
-          },
+    ruleTester.run(`${ruleName}: allows to use "unsorted" as type`, rule, {
+      valid: [
+        {
+          code: dedent`
+            let obj = {
+              b: 'b',
+              c: 'c',
+              a: 'a'
+            }
+          `,
+          options: [
+            {
+              type: 'unsorted',
+            },
+          ],
         },
-      },
+      ],
+      invalid: [],
     })
 
     ruleTester.run(
@@ -4408,6 +4418,15 @@ describe(ruleName, () => {
       })
     })
 
+    let ruleTesterJSX = new RuleTester({
+      languageOptions: {
+        parserOptions: {
+          ecmaFeatures: {
+            jsx: true,
+          },
+        },
+      },
+    })
     ruleTesterJSX.run(
       'allows to disable sorting object is style prop in jsx',
       rule,
