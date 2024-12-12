@@ -477,7 +477,7 @@ describe(ruleName, () => {
     )
 
     ruleTester.run(
-      `${ruleName}(${type}): not sorts call signature declarations`,
+      `${ruleName}(${type}): does not sort call signature declarations`,
       rule,
       {
         valid: [
@@ -491,6 +491,34 @@ describe(ruleName, () => {
                   [number],
                   A[keyof A]
                 >
+              }
+            `,
+            options: [options],
+          },
+        ],
+        invalid: [],
+      },
+    )
+
+    ruleTester.run(
+      `${ruleName}(${type}): does not sort constructor declarations`,
+      rule,
+      {
+        valid: [
+          {
+            code: dedent`
+              interface Interface {
+                new (value: number | string): number;
+                new (value: number): unknown;
+              }
+            `,
+            options: [options],
+          },
+          {
+            code: dedent`
+              interface Interface {
+                new (value: number): unknown;
+                new (value: number | string): number;
               }
             `,
             options: [options],
@@ -2462,7 +2490,7 @@ describe(ruleName, () => {
     )
 
     ruleTester.run(
-      `${ruleName}(${type}): not sorts call signature declarations`,
+      `${ruleName}(${type}): does not sort call signature declarations`,
       rule,
       {
         valid: [
@@ -3239,7 +3267,7 @@ describe(ruleName, () => {
     )
 
     ruleTester.run(
-      `${ruleName}(${type}): not sorts call signature declarations`,
+      `${ruleName}(${type}): does not sort call signature declarations`,
       rule,
       {
         valid: [

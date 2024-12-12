@@ -210,7 +210,10 @@ export let sortObjectTypeElements = <MessageIds extends string>({
 
   let formattedMembers: SortObjectTypesSortingNode[][] = elements.reduce(
     (accumulator: SortObjectTypesSortingNode[][], typeElement) => {
-      if (typeElement.type === 'TSCallSignatureDeclaration') {
+      if (
+        typeElement.type === 'TSCallSignatureDeclaration' ||
+        typeElement.type === 'TSConstructSignatureDeclaration'
+      ) {
         accumulator.push([])
         return accumulator
       }
@@ -240,10 +243,8 @@ export let sortObjectTypeElements = <MessageIds extends string>({
         name = formatName(
           sourceCode.text.slice(typeElement.range.at(0), endIndex),
         )
-      } else if (
-        typeElement.type === 'TSMethodSignature' &&
-        'name' in typeElement.key
-      ) {
+      } else if ('name' in typeElement.key) {
+        // TSMethodSignature
         ;({ name } = typeElement.key)
         /* v8 ignore next 8 - Unsure if we can reach it */
       } else {
