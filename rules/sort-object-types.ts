@@ -210,7 +210,10 @@ export let sortObjectTypeElements = <MessageIds extends string>({
 
   let formattedMembers: SortObjectTypesSortingNode[][] = elements.reduce(
     (accumulator: SortObjectTypesSortingNode[][], typeElement) => {
-      if (typeElement.type === 'TSCallSignatureDeclaration') {
+      if (
+        typeElement.type === 'TSCallSignatureDeclaration' ||
+        typeElement.type === 'TSConstructSignatureDeclaration'
+      ) {
         accumulator.push([])
         return accumulator
       }

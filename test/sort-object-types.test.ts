@@ -1834,6 +1834,57 @@ describe(ruleName, () => {
         valid: [],
       },
     )
+    ruleTester.run(
+      `${ruleName}(${type}): does not sort call signature declarations`,
+      rule,
+      {
+        valid: [
+          {
+            code: dedent`
+              type Type = {
+                <Parameters extends Record<string, number | string>>(
+                  input: AFunction<[Parameters], string>
+                ): Alternatives<Parameters>
+                <A extends CountA>(input: Input): AFunction<
+                  [number],
+                  A[keyof A]
+                >
+              }
+            `,
+            options: [options],
+          },
+        ],
+        invalid: [],
+      },
+    )
+
+    ruleTester.run(
+      `${ruleName}(${type}): does not sort constructor declarations`,
+      rule,
+      {
+        valid: [
+          {
+            code: dedent`
+              type Type = {
+                new (value: number | string): number;
+                new (value: number): unknown;
+              }
+            `,
+            options: [options],
+          },
+          {
+            code: dedent`
+              type Type = {
+                new (value: number): unknown;
+                new (value: number | string): number;
+              }
+            `,
+            options: [options],
+          },
+        ],
+        invalid: [],
+      },
+    )
   })
 
   describe(`${ruleName}: sorting by natural order`, () => {
