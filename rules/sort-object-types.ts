@@ -13,11 +13,11 @@ import {
   newlinesBetweenJsonSchema,
   customGroupsJsonSchema,
   ignoreCaseJsonSchema,
+  builtTypeJsonSchema,
   alphabetJsonSchema,
   localesJsonSchema,
   groupsJsonSchema,
   orderJsonSchema,
-  typeJsonSchema,
 } from '../utils/common-json-schemas'
 import { validateNewlinesAndPartitionConfiguration } from '../utils/validate-newlines-and-partition-configuration'
 import { validateGeneratedGroupsConfiguration } from '../utils/validate-generated-groups-configuration'
@@ -112,10 +112,10 @@ export let jsonSchema: JSONSchema4 = {
     newlinesBetween: newlinesBetweenJsonSchema,
     ignoreCase: ignoreCaseJsonSchema,
     alphabet: alphabetJsonSchema,
+    type: builtTypeJsonSchema(),
     locales: localesJsonSchema,
     groups: groupsJsonSchema,
     order: orderJsonSchema,
-    type: typeJsonSchema,
   },
   additionalProperties: false,
   type: 'object',

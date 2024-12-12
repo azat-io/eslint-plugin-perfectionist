@@ -10,11 +10,11 @@ import {
   specialCharactersJsonSchema,
   newlinesBetweenJsonSchema,
   ignoreCaseJsonSchema,
+  builtTypeJsonSchema,
   alphabetJsonSchema,
   localesJsonSchema,
   groupsJsonSchema,
   orderJsonSchema,
-  typeJsonSchema,
 } from '../utils/common-json-schemas'
 import { validateNewlinesAndPartitionConfiguration } from '../utils/validate-newlines-and-partition-configuration'
 import { validateCustomSortConfiguration } from '../utils/validate-custom-sort-configuration'
@@ -635,10 +635,10 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
           newlinesBetween: newlinesBetweenJsonSchema,
           ignoreCase: ignoreCaseJsonSchema,
           alphabet: alphabetJsonSchema,
+          type: builtTypeJsonSchema(),
           locales: localesJsonSchema,
           groups: groupsJsonSchema,
           order: orderJsonSchema,
-          type: typeJsonSchema,
         },
         definitions: {
           'max-line-length-requires-line-length-type': {

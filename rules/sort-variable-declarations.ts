@@ -7,10 +7,10 @@ import {
   partitionByNewLineJsonSchema,
   specialCharactersJsonSchema,
   ignoreCaseJsonSchema,
+  builtTypeJsonSchema,
   alphabetJsonSchema,
   localesJsonSchema,
   orderJsonSchema,
-  typeJsonSchema,
 } from '../utils/common-json-schemas'
 import {
   getFirstUnorderedNodeDependentOn,
@@ -289,9 +289,9 @@ export default createEslintRule<Options, MESSAGE_ID>({
           specialCharacters: specialCharactersJsonSchema,
           ignoreCase: ignoreCaseJsonSchema,
           alphabet: alphabetJsonSchema,
+          type: builtTypeJsonSchema(),
           locales: localesJsonSchema,
           order: orderJsonSchema,
-          type: typeJsonSchema,
         },
         additionalProperties: false,
         type: 'object',

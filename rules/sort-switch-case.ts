@@ -6,10 +6,10 @@ import type { SortingNode } from '../typings'
 import {
   specialCharactersJsonSchema,
   ignoreCaseJsonSchema,
+  builtTypeJsonSchema,
   alphabetJsonSchema,
   localesJsonSchema,
   orderJsonSchema,
-  typeJsonSchema,
 } from '../utils/common-json-schemas'
 import { validateCustomSortConfiguration } from '../utils/validate-custom-sort-configuration'
 import { makeCommentAfterFixes } from '../utils/make-comment-after-fixes'
@@ -270,9 +270,9 @@ export default createEslintRule<Options, MESSAGE_ID>({
           specialCharacters: specialCharactersJsonSchema,
           ignoreCase: ignoreCaseJsonSchema,
           alphabet: alphabetJsonSchema,
+          type: builtTypeJsonSchema(),
           locales: localesJsonSchema,
           order: orderJsonSchema,
-          type: typeJsonSchema,
         },
         additionalProperties: false,
         type: 'object',
