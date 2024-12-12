@@ -1,5 +1,19 @@
 # Changelog
 
+## v4.3.0
+
+[compare changes](https://github.com/azat-io/eslint-plugin-perfectionist/compare/v4.2.0...v4.3.0)
+
+### 🚀 Features
+
+- Improve function detection ([ac1e7c4](https://github.com/azat-io/eslint-plugin-perfectionist/commit/ac1e7c4))
+- **sort-objects:** Handle context-based configurations ([a3ee3ff](https://github.com/azat-io/eslint-plugin-perfectionist/commit/a3ee3ff))
+- Add custom sort type through custom alphabet ([ac7d709](https://github.com/azat-io/eslint-plugin-perfectionist/commit/ac7d709))
+
+### ❤️ Contributors
+
+- Hugo ([@hugop95](http://github.com/hugop95))
+
 ## v4.2.0
 
 [compare changes](https://github.com/azat-io/eslint-plugin-perfectionist/compare/v4.1.2...v4.2.0)
