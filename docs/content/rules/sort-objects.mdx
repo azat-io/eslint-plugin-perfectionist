@@ -336,6 +336,25 @@ Example configuration:
 }
 ```
 
+- `callingFunctionNamePattern` — A regexp pattern for matching objects that are passed as arguments to a function with a specific name.
+
+```ts
+{
+  'perfectionist/sort-objects': [
+    'error',
+    {
+      type: 'unsorted', // Don't sort objects passed to createSlice
+      useConfigurationIf: {
+        callingFunctionNamePattern: '^createSlice$',
+      },
+    },
+    {
+      type: 'alphabetical' // Fallback configuration
+    }
+  ],
+}
+```
+
 ### groups
 
 <sub>

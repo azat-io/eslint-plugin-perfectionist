@@ -47,10 +47,11 @@ import { pairwise } from '../utils/pairwise'
 import { matches } from '../utils/matches'
 
 type Options = Partial<{
-  type: 'alphabetical' | 'line-length' | 'unsorted' | 'natural' | 'custom'
   useConfigurationIf: {
+    callingFunctionNamePattern?: string
     allNamesMatchPattern?: string
   }
+  type: 'alphabetical' | 'line-length' | 'unsorted' | 'natural' | 'custom'
   destructuredObjects: { groups: boolean } | boolean
   customGroups: Record<string, string[] | string>
   partitionByComment: string[] | boolean | string
@@ -119,9 +120,24 @@ export default createEslintRule<Options, MESSAGE_ID>({
           .map(property => getNodeName({ sourceCode, property }))
           .filter(nodeName => nodeName !== null),
         contextOptions: context.options,
+      }).find(options => {
+        if (!options.useConfigurationIf?.callingFunctionNamePattern) {
+          return true
+        }
+        if (
+          objectParent?.type === 'VariableDeclarator' ||
+          !objectParent?.name
+        ) {
+          return false
+        }
+        return matches(
+          objectParent.name,
+          options.useConfigurationIf.callingFunctionNamePattern,
+        )
       })
+
       let completeOptions = complete(
-        matchedContextOptions[0],
+        matchedContextOptions,
         settings,
         defaultOptions,
       )
@@ -512,6 +528,13 @@ export default createEslintRule<Options, MESSAGE_ID>({
             },
             type: 'array',
           },
+          useConfigurationIf: buildUseConfigurationIfJsonSchema({
+            additionalProperties: {
+              callingFunctionNamePattern: {
+                type: 'string',
+              },
+            },
+          }),
           partitionByComment: {
             ...partitionByCommentJsonSchema,
             description:
@@ -529,7 +552,6 @@ export default createEslintRule<Options, MESSAGE_ID>({
             description: 'Controls whether to sort styled components.',
             type: 'boolean',
           },
-          useConfigurationIf: buildUseConfigurationIfJsonSchema(),
           type: builtTypeJsonSchema({ withUnsorted: true }),
           partitionByNewLine: partitionByNewLineJsonSchema,
           specialCharacters: specialCharactersJsonSchema,
