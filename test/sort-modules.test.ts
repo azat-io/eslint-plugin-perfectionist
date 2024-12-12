@@ -5,6 +5,7 @@ import { RuleTester as EslintRuleTester } from 'eslint'
 import { afterAll, describe, it } from 'vitest'
 import { dedent } from 'ts-dedent'
 
+import { Alphabet } from '../utils/alphabet'
 import rule from '../rules/sort-modules'
 
 let ruleName = 'sort-modules'
@@ -2437,6 +2438,150 @@ describe(ruleName, () => {
       ignoreCase: true,
       type: 'natural',
       order: 'asc',
+    } as const
+
+    ruleTester.run(`${ruleName}(${type}): sorts modules`, rule, {
+      invalid: [
+        {
+          errors: [
+            {
+              data: {
+                leftGroup: 'export-interface',
+                left: 'FindUserInput',
+                right: 'CacheType',
+                rightGroup: 'enum',
+              },
+              messageId: 'unexpectedModulesGroupOrder',
+            },
+            {
+              data: {
+                rightGroup: 'export-function',
+                left: 'assertInputIsCorrect',
+                leftGroup: 'function',
+                right: 'findUser',
+              },
+              messageId: 'unexpectedModulesGroupOrder',
+            },
+            {
+              data: {
+                leftGroup: 'export-function',
+                right: 'FindAllUsersInput',
+                rightGroup: 'export-type',
+                left: 'findUser',
+              },
+              messageId: 'unexpectedModulesGroupOrder',
+            },
+            {
+              data: {
+                leftGroup: 'export-function',
+                left: 'findAllUsers',
+                rightGroup: 'class',
+                right: 'Cache',
+              },
+              messageId: 'unexpectedModulesGroupOrder',
+            },
+          ],
+          output: dedent`
+            enum CacheType {
+              ALWAYS = 'ALWAYS',
+              NEVER = 'NEVER',
+            }
+
+            export type FindAllUsersInput = {
+              ids: string[]
+              cache: CacheType
+            }
+
+            export type FindAllUsersOutput = FindUserOutput[]
+
+            export interface FindUserInput {
+              id: string
+              cache: CacheType
+            }
+
+            export type FindUserOutput = {
+              id: string
+              name: string
+              age: number
+            }
+
+            class Cache {
+              // Some logic
+            }
+
+            export function findAllUsers(input: FindAllUsersInput): FindAllUsersOutput {
+              assertInputIsCorrect(input)
+              return _findUserByIds(input.ids)
+            }
+
+            export function findUser(input: FindUserInput): FindUserOutput {
+              assertInputIsCorrect(input)
+              return _findUserByIds([input.id])[0]
+            }
+
+            function assertInputIsCorrect(input: FindUserInput | FindAllUsersInput): void {
+              // Some logic
+            }
+            `,
+          code: dedent`
+            export interface FindUserInput {
+              id: string
+              cache: CacheType
+            }
+
+            enum CacheType {
+              ALWAYS = 'ALWAYS',
+              NEVER = 'NEVER',
+            }
+
+            export type FindUserOutput = {
+              id: string
+              name: string
+              age: number
+            }
+
+            function assertInputIsCorrect(input: FindUserInput | FindAllUsersInput): void {
+              // Some logic
+            }
+
+            export function findUser(input: FindUserInput): FindUserOutput {
+              assertInputIsCorrect(input)
+              return _findUserByIds([input.id])[0]
+            }
+
+            export type FindAllUsersInput = {
+              ids: string[]
+              cache: CacheType
+            }
+
+            export type FindAllUsersOutput = FindUserOutput[]
+
+            export function findAllUsers(input: FindAllUsersInput): FindAllUsersOutput {
+              assertInputIsCorrect(input)
+              return _findUserByIds(input.ids)
+            }
+
+            class Cache {
+              // Some logic
+            }
+          `,
+          options: [options],
+        },
+      ],
+      valid: [],
+    })
+  })
+
+  describe(`${ruleName}: sorts by custom alphabet`, () => {
+    let type = 'custom'
+
+    let alphabet = Alphabet.generateRecommendedAlphabet()
+      .sortByLocaleCompare('en-US')
+      .getCharacters()
+    let options = {
+      type: 'custom',
+      order: 'asc',
+      alphabet,
     } as const
 
     ruleTester.run(`${ruleName}(${type}): sorts modules`, rule, {

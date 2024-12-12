@@ -48,15 +48,17 @@ interface PluginConfig {
     'recommended-alphabetical-legacy': Linter.LegacyConfig
     'recommended-line-length-legacy': Linter.LegacyConfig
     'recommended-natural-legacy': Linter.LegacyConfig
+    'recommended-custom-legacy': Linter.LegacyConfig
     'recommended-alphabetical': Linter.Config
     'recommended-line-length': Linter.Config
     'recommended-natural': Linter.Config
+    'recommended-custom': Linter.Config
   }
   name: string
 }
 
 interface BaseOptions {
-  type: 'alphabetical' | 'line-length' | 'natural'
+  type: 'alphabetical' | 'line-length' | 'natural' | 'custom'
   order: 'desc' | 'asc'
 }
 
@@ -123,6 +125,10 @@ export default {
       type: 'natural',
       order: 'asc',
     }),
+    'recommended-custom-legacy': createLegacyConfig({
+      type: 'custom',
+      order: 'asc',
+    }),
     'recommended-alphabetical': createConfig({
       type: 'alphabetical',
       order: 'asc',
@@ -133,6 +139,10 @@ export default {
     }),
     'recommended-natural': createConfig({
       type: 'natural',
+      order: 'asc',
+    }),
+    'recommended-custom': createConfig({
+      type: 'custom',
       order: 'asc',
     }),
   },

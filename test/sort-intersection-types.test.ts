@@ -3,6 +3,7 @@ import { afterAll, describe, it } from 'vitest'
 import { dedent } from 'ts-dedent'
 
 import rule from '../rules/sort-intersection-types'
+import { Alphabet } from '../utils/alphabet'
 
 let ruleName = 'sort-intersection-types'
 
@@ -1311,6 +1312,50 @@ describe(ruleName, () => {
               ],
             },
           ],
+        },
+      ],
+    })
+  })
+
+  describe(`${ruleName}: sorts by custom alphabet`, () => {
+    let type = 'custom'
+
+    let alphabet = Alphabet.generateRecommendedAlphabet()
+      .sortByLocaleCompare('en-US')
+      .getCharacters()
+    let options = {
+      type: 'custom',
+      order: 'asc',
+      alphabet,
+    } as const
+
+    ruleTester.run(`${ruleName}(${type}: sorts intersection types`, rule, {
+      invalid: [
+        {
+          errors: [
+            {
+              data: {
+                right: "{ label: 'bb' }",
+                left: "{ label: 'c' }",
+              },
+              messageId: 'unexpectedIntersectionTypesOrder',
+            },
+          ],
+          output: dedent`
+            type Type = { label: 'aaa' } & { label: 'bb' } & { label: 'c' }
+          `,
+          code: dedent`
+            type Type = { label: 'aaa' } & { label: 'c' } & { label: 'bb' }
+          `,
+          options: [options],
+        },
+      ],
+      valid: [
+        {
+          code: dedent`
+            type Type = { label: 'aaa' } & { label: 'bb' } & { label: 'c' }
+          `,
+          options: [options],
         },
       ],
     })

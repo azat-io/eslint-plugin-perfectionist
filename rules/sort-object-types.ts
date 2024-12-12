@@ -13,14 +13,16 @@ import {
   newlinesBetweenJsonSchema,
   customGroupsJsonSchema,
   ignoreCaseJsonSchema,
+  alphabetJsonSchema,
   localesJsonSchema,
   groupsJsonSchema,
   orderJsonSchema,
   typeJsonSchema,
 } from '../utils/common-json-schemas'
 import { validateNewlinesAndPartitionConfiguration } from '../utils/validate-newlines-and-partition-configuration'
-import { validateGeneratedGroupsConfiguration } from './validate-generated-groups-configuration'
-import { getCustomGroupsCompareOptions } from './get-custom-groups-compare-options'
+import { validateGeneratedGroupsConfiguration } from '../utils/validate-generated-groups-configuration'
+import { validateCustomSortConfiguration } from '../utils/validate-custom-sort-configuration'
+import { getCustomGroupsCompareOptions } from '../utils/get-custom-groups-compare-options'
 import { generatePredefinedGroups } from '../utils/generate-predefined-groups'
 import { getEslintDisabledLines } from '../utils/get-eslint-disabled-lines'
 import { singleCustomGroupJsonSchema } from './sort-object-types.types'
@@ -74,6 +76,7 @@ let defaultOptions: Required<Options[0]> = {
   ignoreCase: true,
   customGroups: {},
   locales: 'en-US',
+  alphabet: '',
   order: 'asc',
   groups: [],
 }
@@ -108,6 +111,7 @@ export let jsonSchema: JSONSchema4 = {
     specialCharacters: specialCharactersJsonSchema,
     newlinesBetween: newlinesBetweenJsonSchema,
     ignoreCase: ignoreCaseJsonSchema,
+    alphabet: alphabetJsonSchema,
     locales: localesJsonSchema,
     groups: groupsJsonSchema,
     order: orderJsonSchema,
@@ -181,6 +185,7 @@ export let sortObjectTypeElements = <MessageIds extends string>({
 
   let settings = getSettings(context.settings)
   let options = complete(context.options.at(0), settings, defaultOptions)
+  validateCustomSortConfiguration(options)
   validateGeneratedGroupsConfiguration({
     customGroups: options.customGroups,
     selectors: allSelectors,

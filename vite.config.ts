@@ -76,8 +76,11 @@ export default defineConfig({
       external: (id: string) => !id.startsWith('.') && !path.isAbsolute(id),
     },
     lib: {
+      entry: [
+        path.resolve(__dirname, 'index.ts'),
+        path.resolve(__dirname, 'utils', 'alphabet.ts'),
+      ],
       fileName: (_format, entryName) => `${entryName}.js`,
-      entry: path.resolve(__dirname, 'index.ts'),
       name: 'eslint-plugin-perfectionist',
       formats: ['cjs'],
     },

@@ -5,6 +5,7 @@ import { RuleTester as EslintRuleTester } from 'eslint'
 import { afterAll, describe, it } from 'vitest'
 import { dedent } from 'ts-dedent'
 
+import { Alphabet } from '../utils/alphabet'
 import rule from '../rules/sort-exports'
 
 let ruleName = 'sort-exports'
@@ -875,6 +876,66 @@ describe(ruleName, () => {
         },
       ],
       valid: [],
+    })
+  })
+
+  describe(`${ruleName}: sorts by custom alphabet`, () => {
+    let type = 'custom'
+
+    let alphabet = Alphabet.generateRecommendedAlphabet()
+      .sortByLocaleCompare('en-US')
+      .getCharacters()
+    let options = {
+      type: 'custom',
+      order: 'asc',
+      alphabet,
+    } as const
+
+    ruleTester.run(`${ruleName}(${type}): sorts exports`, rule, {
+      invalid: [
+        {
+          errors: [
+            {
+              data: {
+                right: 'a',
+                left: 'b',
+              },
+              messageId: 'unexpectedExportsOrder',
+            },
+            {
+              data: {
+                right: 'c',
+                left: 'd',
+              },
+              messageId: 'unexpectedExportsOrder',
+            },
+          ],
+          output: dedent`
+            export { a1 } from 'a'
+            export { b1, b2 } from 'b'
+            export { c1, c2, c3 } from 'c'
+            export { d1, d2 } from 'd'
+          `,
+          code: dedent`
+            export { b1, b2 } from 'b'
+            export { a1 } from 'a'
+            export { d1, d2 } from 'd'
+            export { c1, c2, c3 } from 'c'
+          `,
+          options: [options],
+        },
+      ],
+      valid: [
+        {
+          code: dedent`
+            export { a1 } from 'a'
+            export { b1, b2 } from 'b'
+            export { c1, c2, c3 } from 'c'
+            export { d1, d2 } from 'd'
+          `,
+          options: [options],
+        },
+      ],
     })
   })
 

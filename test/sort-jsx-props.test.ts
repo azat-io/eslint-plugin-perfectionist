@@ -4,6 +4,7 @@ import { afterAll, describe, it } from 'vitest'
 import { dedent } from 'ts-dedent'
 import path from 'node:path'
 
+import { Alphabet } from '../utils/alphabet'
 import rule from '../rules/sort-jsx-props'
 
 let ruleName = 'sort-jsx-props'
@@ -1052,6 +1053,74 @@ describe(ruleName, () => {
               groups: ['top', 'unknown'],
             },
           ],
+        },
+      ],
+    })
+  })
+
+  describe(`${ruleName}: sorts by custom alphabet`, () => {
+    let type = 'custom'
+
+    let alphabet = Alphabet.generateRecommendedAlphabet()
+      .sortByLocaleCompare('en-US')
+      .getCharacters()
+    let options = {
+      type: 'custom',
+      order: 'asc',
+      alphabet,
+    } as const
+
+    ruleTester.run(`${ruleName}(${type}): sorts jsx props`, rule, {
+      invalid: [
+        {
+          output: dedent`
+            let Component = () => (
+              <Element
+                a="aaa"
+                b="bb"
+                c="c"
+              >
+                Value
+              </Element>
+            )
+          `,
+          code: dedent`
+            let Component = () => (
+              <Element
+                a="aaa"
+                c="c"
+                b="bb"
+              >
+                Value
+              </Element>
+            )
+          `,
+          errors: [
+            {
+              data: {
+                right: 'b',
+                left: 'c',
+              },
+              messageId: 'unexpectedJSXPropsOrder',
+            },
+          ],
+          options: [options],
+        },
+      ],
+      valid: [
+        {
+          code: dedent`
+            let Component = () => (
+              <Element
+                a="aaa"
+                b="bb"
+                c="c"
+              >
+                Value
+              </Element>
+            )
+          `,
+          options: [options],
         },
       ],
     })

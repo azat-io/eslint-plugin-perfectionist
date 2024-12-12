@@ -1,7 +1,7 @@
 import type { TSESLint } from '@typescript-eslint/utils'
 
 export type Settings = Partial<{
-  type: 'alphabetical' | 'line-length' | 'natural'
+  type: 'alphabetical' | 'line-length' | 'natural' | 'custom'
   partitionByComment: string[] | boolean | string
   specialCharacters: 'remove' | 'trim' | 'keep'
   locales: NonNullable<Intl.LocalesArgument>
@@ -9,6 +9,7 @@ export type Settings = Partial<{
   ignorePattern: string[]
   order: 'desc' | 'asc'
   ignoreCase: boolean
+  alphabet: string
 }>
 
 export let getSettings = (
@@ -25,6 +26,7 @@ export let getSettings = (
       'specialCharacters',
       'ignorePattern',
       'ignoreCase',
+      'alphabet',
       'locales',
       'order',
       'type',

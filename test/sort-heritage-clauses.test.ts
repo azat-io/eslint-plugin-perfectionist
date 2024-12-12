@@ -6,6 +6,7 @@ import { afterAll, describe, it } from 'vitest'
 import { dedent } from 'ts-dedent'
 
 import rule from '../rules/sort-heritage-clauses'
+import { Alphabet } from '../utils/alphabet'
 
 let ruleName = 'sort-heritage-clauses'
 
@@ -697,6 +698,96 @@ describe(ruleName, () => {
         invalid: [],
       },
     )
+  })
+
+  describe(`${ruleName}: sorts by custom alphabet`, () => {
+    let type = 'custom'
+
+    let alphabet = Alphabet.generateRecommendedAlphabet()
+      .sortByLocaleCompare('en-US')
+      .getCharacters()
+    let options = {
+      type: 'custom',
+      order: 'asc',
+      alphabet,
+    } as const
+
+    ruleTester.run(`${ruleName}(${type}): sorts heritage clauses`, rule, {
+      invalid: [
+        {
+          errors: [
+            {
+              data: {
+                right: 'b',
+                left: 'c',
+              },
+              messageId: 'unexpectedHeritageClausesOrder',
+            },
+          ],
+          output: dedent`
+            interface Interface extends
+              a,
+              b,
+              c {
+            }
+          `,
+          code: dedent`
+            interface Interface extends
+              a,
+              c,
+              b {
+            }
+          `,
+          options: [options],
+        },
+        {
+          errors: [
+            {
+              data: {
+                right: 'b',
+                left: 'c',
+              },
+              messageId: 'unexpectedHeritageClausesOrder',
+            },
+          ],
+          output: dedent`
+            interface Interface extends
+              A.a,
+              B.b,
+              C.c {
+            }
+          `,
+          code: dedent`
+            interface Interface extends
+              A.a,
+              C.c,
+              B.b {
+            }
+          `,
+          options: [options],
+        },
+      ],
+      valid: [
+        {
+          code: dedent`
+            interface Interface extends
+              a,
+              b,
+              c {
+            }
+          `,
+          options: [options],
+        },
+        {
+          code: dedent`
+            interface Interface extends
+              a {
+            }
+          `,
+          options: [options],
+        },
+      ],
+    })
   })
 
   describe(`${ruleName}: sorting by line length`, () => {

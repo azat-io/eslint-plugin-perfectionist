@@ -5,6 +5,7 @@ import { RuleTester as EslintRuleTester } from 'eslint'
 import { afterAll, describe, it } from 'vitest'
 import { dedent } from 'ts-dedent'
 
+import { Alphabet } from '../utils/alphabet'
 import rule from '../rules/sort-maps'
 
 let ruleName = 'sort-maps'
@@ -762,6 +763,59 @@ describe(ruleName, () => {
               d,
             ])
           `,
+          options: [options],
+        },
+      ],
+    })
+  })
+
+  describe(`${ruleName}: sorts by custom alphabet`, () => {
+    let type = 'custom'
+
+    let alphabet = Alphabet.generateRecommendedAlphabet()
+      .sortByLocaleCompare('en-US')
+      .getCharacters()
+    let options = {
+      type: 'custom',
+      order: 'asc',
+      alphabet,
+    } as const
+
+    ruleTester.run(`${ruleName}(${type}): works with variables as keys`, rule, {
+      invalid: [
+        {
+          errors: [
+            {
+              data: {
+                right: 'aa',
+                left: 'b',
+              },
+              messageId: 'unexpectedMapElementsOrder',
+            },
+          ],
+          output: dedent`
+              new Map([
+                [aa, aa],
+                [b, b],
+              ])
+            `,
+          code: dedent`
+              new Map([
+                [b, b],
+                [aa, aa],
+              ])
+            `,
+          options: [options],
+        },
+      ],
+      valid: [
+        {
+          code: dedent`
+              new Map([
+                [aa, aa],
+                [b, b],
+              ])
+            `,
           options: [options],
         },
       ],

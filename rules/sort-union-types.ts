@@ -6,12 +6,14 @@ import {
   specialCharactersJsonSchema,
   newlinesBetweenJsonSchema,
   ignoreCaseJsonSchema,
+  alphabetJsonSchema,
   localesJsonSchema,
   groupsJsonSchema,
   orderJsonSchema,
   typeJsonSchema,
 } from '../utils/common-json-schemas'
 import { validateNewlinesAndPartitionConfiguration } from '../utils/validate-newlines-and-partition-configuration'
+import { validateCustomSortConfiguration } from '../utils/validate-custom-sort-configuration'
 import { validateGroupsConfiguration } from '../utils/validate-groups-configuration'
 import { getEslintDisabledLines } from '../utils/get-eslint-disabled-lines'
 import { isNodeEslintDisabled } from '../utils/is-node-eslint-disabled'
@@ -34,7 +36,7 @@ import { pairwise } from '../utils/pairwise'
 
 type Options = [
   Partial<{
-    type: 'alphabetical' | 'line-length' | 'natural'
+    type: 'alphabetical' | 'line-length' | 'natural' | 'custom'
     partitionByComment: string[] | boolean | string
     newlinesBetween: 'ignore' | 'always' | 'never'
     specialCharacters: 'remove' | 'trim' | 'keep'
@@ -43,6 +45,7 @@ type Options = [
     partitionByNewLine: boolean
     order: 'desc' | 'asc'
     ignoreCase: boolean
+    alphabet: string
   }>,
 ]
 
@@ -75,6 +78,7 @@ let defaultOptions: Required<Options[0]> = {
   type: 'alphabetical',
   ignoreCase: true,
   locales: 'en-US',
+  alphabet: '',
   order: 'asc',
   groups: [],
 }
@@ -85,7 +89,7 @@ export default createEslintRule<Options, MESSAGE_ID>({
       let settings = getSettings(context.settings)
 
       let options = complete(context.options.at(0), settings, defaultOptions)
-
+      validateCustomSortConfiguration(options)
       validateGroupsConfiguration(
         options.groups,
         [
@@ -296,6 +300,7 @@ export default createEslintRule<Options, MESSAGE_ID>({
           specialCharacters: specialCharactersJsonSchema,
           newlinesBetween: newlinesBetweenJsonSchema,
           ignoreCase: ignoreCaseJsonSchema,
+          alphabet: alphabetJsonSchema,
           locales: localesJsonSchema,
           groups: groupsJsonSchema,
           order: orderJsonSchema,
