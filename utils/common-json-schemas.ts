@@ -119,15 +119,20 @@ export let newlinesBetweenJsonSchema: JSONSchema4 = {
   type: 'string',
 }
 
-export let useConfigurationIfJsonSchema: JSONSchema4 = {
+export let buildUseConfigurationIfJsonSchema = ({
+  additionalProperties,
+}: {
+  additionalProperties?: Record<string, JSONSchema4>
+} = {}): JSONSchema4 => ({
   properties: {
     allNamesMatchPattern: {
       type: 'string',
     },
+    ...additionalProperties,
   },
   additionalProperties: false,
   type: 'object',
-}
+})
 
 let customGroupSortJsonSchema: Record<string, JSONSchema4> = {
   type: {

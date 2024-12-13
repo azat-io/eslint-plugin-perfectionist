@@ -3,9 +3,9 @@ import { TSESTree } from '@typescript-eslint/types'
 import type { SortingNodeWithDependencies } from '../utils/sort-nodes-by-dependencies'
 
 import {
+  buildUseConfigurationIfJsonSchema,
   partitionByCommentJsonSchema,
   partitionByNewLineJsonSchema,
-  useConfigurationIfJsonSchema,
   specialCharactersJsonSchema,
   newlinesBetweenJsonSchema,
   customGroupsJsonSchema,
@@ -529,9 +529,9 @@ export default createEslintRule<Options, MESSAGE_ID>({
             description: 'Controls whether to sort styled components.',
             type: 'boolean',
           },
+          useConfigurationIf: buildUseConfigurationIfJsonSchema(),
           type: builtTypeJsonSchema({ withUnsorted: true }),
           partitionByNewLine: partitionByNewLineJsonSchema,
-          useConfigurationIf: useConfigurationIfJsonSchema,
           specialCharacters: specialCharactersJsonSchema,
           newlinesBetween: newlinesBetweenJsonSchema,
           customGroups: customGroupsJsonSchema,

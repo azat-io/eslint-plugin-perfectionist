@@ -7,9 +7,9 @@ import type { Selector, Options } from './sort-array-includes.types'
 import type { SortingNode } from '../typings'
 
 import {
+  buildUseConfigurationIfJsonSchema,
   buildCustomGroupsArrayJsonSchema,
   partitionByCommentJsonSchema,
-  useConfigurationIfJsonSchema,
   partitionByNewLineJsonSchema,
   specialCharactersJsonSchema,
   ignoreCaseJsonSchema,
@@ -89,9 +89,9 @@ export let jsonSchema: JSONSchema4 = {
       customGroups: buildCustomGroupsArrayJsonSchema({
         singleCustomGroupJsonSchema,
       }),
+      useConfigurationIf: buildUseConfigurationIfJsonSchema(),
       type: builtTypeJsonSchema({ withUnsorted: true }),
       partitionByNewLine: partitionByNewLineJsonSchema,
-      useConfigurationIf: useConfigurationIfJsonSchema,
       specialCharacters: specialCharactersJsonSchema,
       ignoreCase: ignoreCaseJsonSchema,
       alphabet: alphabetJsonSchema,
