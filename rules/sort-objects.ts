@@ -22,6 +22,7 @@ import {
 } from '../utils/sort-nodes-by-dependencies'
 import { validateNewlinesAndPartitionConfiguration } from '../utils/validate-newlines-and-partition-configuration'
 import { validateCustomSortConfiguration } from '../utils/validate-custom-sort-configuration'
+import { getFirstNodeParentWithType } from '../utils/get-first-node-parent-with-type'
 import { validateGroupsConfiguration } from '../utils/validate-groups-configuration'
 import { getMatchingContextOptions } from '../utils/get-matching-context-options'
 import { getEslintDisabledLines } from '../utils/get-eslint-disabled-lines'
@@ -35,7 +36,6 @@ import { createEslintRule } from '../utils/create-eslint-rule'
 import { getLinesBetween } from '../utils/get-lines-between'
 import { getGroupNumber } from '../utils/get-group-number'
 import { getSourceCode } from '../utils/get-source-code'
-import { getNodeParent } from '../utils/get-node-parent'
 import { rangeToDiff } from '../utils/range-to-diff'
 import { getSettings } from '../utils/get-settings'
 import { isSortable } from '../utils/is-sortable'
@@ -621,7 +621,7 @@ let getVariableParentName = ({
 }: {
   node: TSESTree.ObjectExpression | TSESTree.ObjectPattern
 }): string | null => {
-  let variableParent = getNodeParent({
+  let variableParent = getFirstNodeParentWithType({
     allowedTypes: [
       TSESTree.AST_NODE_TYPES.VariableDeclarator,
       TSESTree.AST_NODE_TYPES.Property,
@@ -649,7 +649,7 @@ let getCallExpressionParentName = ({
 }: {
   node: TSESTree.ObjectExpression | TSESTree.ObjectPattern
 }): string | null => {
-  let callParent = getNodeParent({
+  let callParent = getFirstNodeParentWithType({
     allowedTypes: [TSESTree.AST_NODE_TYPES.CallExpression],
     node,
   })

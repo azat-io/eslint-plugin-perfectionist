@@ -2,7 +2,9 @@ import type { TSESTree } from '@typescript-eslint/types'
 
 type NodeOfType<Type> = { type: Type } & TSESTree.Node
 
-export let getNodeParent = <NodeType extends TSESTree.AST_NODE_TYPES>({
+export let getFirstNodeParentWithType = <
+  NodeType extends TSESTree.AST_NODE_TYPES,
+>({
   allowedTypes,
   node,
 }: {
