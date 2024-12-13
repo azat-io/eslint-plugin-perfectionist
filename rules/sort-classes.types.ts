@@ -34,6 +34,42 @@ export type SingleCustomGroup =
   | BaseSingleCustomGroup<ConstructorSelector>
   | AdvancedSingleCustomGroup<MethodSelector>
 
+export type NonDeclarePropertyGroup = Join<
+  [
+    PublicOrProtectedOrPrivateModifierPrefix,
+    StaticOrAbstractModifierPrefix,
+    OverrideModifierPrefix,
+    ReadonlyModifierPrefix,
+    DecoratedModifierPrefix,
+    OptionalModifierPrefix,
+    PropertySelector,
+  ]
+>
+
+export type FunctionPropertyGroup = Join<
+  [
+    PublicOrProtectedOrPrivateModifierPrefix,
+    StaticModifierPrefix,
+    OverrideModifierPrefix,
+    ReadonlyModifierPrefix,
+    DecoratedModifierPrefix,
+    AsyncModifierPrefix,
+    FunctionPropertySelector,
+  ]
+>
+
+export type MethodGroup = Join<
+  [
+    PublicOrProtectedOrPrivateModifierPrefix,
+    StaticOrAbstractModifierPrefix,
+    OverrideModifierPrefix,
+    DecoratedModifierPrefix,
+    AsyncModifierPrefix,
+    OptionalModifierPrefix,
+    MethodSelector,
+  ]
+>
+
 export type Selector =
   | AccessorPropertySelector
   | FunctionPropertySelector
@@ -45,6 +81,27 @@ export type Selector =
   | PropertySelector
   | MethodSelector
 
+export type DeclarePropertyGroup = Join<
+  [
+    DeclareModifierPrefix,
+    PublicOrProtectedOrPrivateModifierPrefix,
+    StaticOrAbstractModifierPrefix,
+    ReadonlyModifierPrefix,
+    OptionalModifierPrefix,
+    PropertySelector,
+  ]
+>
+
+export type GetMethodOrSetMethodGroup = Join<
+  [
+    PublicOrProtectedOrPrivateModifierPrefix,
+    StaticOrAbstractModifierPrefix,
+    OverrideModifierPrefix,
+    DecoratedModifierPrefix,
+    GetMethodOrSetMethodSelector,
+  ]
+>
+
 export type Modifier =
   | PublicOrProtectedOrPrivateModifier
   | DecoratedModifier
@@ -55,6 +112,24 @@ export type Modifier =
   | DeclareModifier
   | StaticModifier
   | AsyncModifier
+
+export type AccessorPropertyGroup = Join<
+  [
+    PublicOrProtectedOrPrivateModifierPrefix,
+    StaticOrAbstractModifierPrefix,
+    OverrideModifierPrefix,
+    DecoratedModifierPrefix,
+    AccessorPropertySelector,
+  ]
+>
+
+export type IndexSignatureGroup = Join<
+  [StaticModifierPrefix, ReadonlyModifierPrefix, IndexSignatureSelector]
+>
+
+export type ConstructorGroup = Join<
+  [PublicOrProtectedOrPrivateModifierPrefix, ConstructorSelector]
+>
 
 export interface AnyOfCustomGroup {
   anyOf: SingleCustomGroup[]
@@ -138,29 +213,18 @@ type CustomGroup = (
     groupName: string
   }
 
-type NonDeclarePropertyGroup =
-  `${PublicOrProtectedOrPrivateModifierPrefix}${StaticOrAbstractModifierPrefix}${OverrideModifierPrefix}${ReadonlyModifierPrefix}${DecoratedModifierPrefix}${OptionalModifierPrefix}${PropertySelector}`
-
-type FunctionPropertyGroup =
-  `${PublicOrProtectedOrPrivateModifierPrefix}${StaticModifierPrefix}${OverrideModifierPrefix}${ReadonlyModifierPrefix}${DecoratedModifierPrefix}${AsyncModifierPrefix}${FunctionPropertySelector}`
-
-type MethodGroup =
-  `${PublicOrProtectedOrPrivateModifierPrefix}${StaticOrAbstractModifierPrefix}${OverrideModifierPrefix}${DecoratedModifierPrefix}${AsyncModifierPrefix}${OptionalModifierPrefix}${MethodSelector}`
-
-type DeclarePropertyGroup =
-  `${DeclareModifierPrefix}${PublicOrProtectedOrPrivateModifierPrefix}${StaticOrAbstractModifierPrefix}${ReadonlyModifierPrefix}${OptionalModifierPrefix}${PropertySelector}`
-
-type GetMethodOrSetMethodGroup =
-  `${PublicOrProtectedOrPrivateModifierPrefix}${StaticOrAbstractModifierPrefix}${OverrideModifierPrefix}${DecoratedModifierPrefix}${GetMethodOrSetMethodSelector}`
-
-type AccessorPropertyGroup =
-  `${PublicOrProtectedOrPrivateModifierPrefix}${StaticOrAbstractModifierPrefix}${OverrideModifierPrefix}${DecoratedModifierPrefix}${AccessorPropertySelector}`
-
 type AdvancedSingleCustomGroup<T extends Selector> = {
   decoratorNamePattern?: string
   elementValuePattern?: string
   elementNamePattern?: string
 } & BaseSingleCustomGroup<T>
+
+type Join<T extends string[]> = T extends [
+  infer First extends string,
+  ...infer Rest extends string[],
+]
+  ? `${First}${Join<Rest>}`
+  : ''
 
 type PublicOrProtectedOrPrivateModifierPrefix = WithDashSuffixOrEmpty<
   ProtectedModifier | PrivateModifier | PublicModifier
@@ -170,8 +234,6 @@ interface BaseSingleCustomGroup<T extends Selector> {
   modifiers?: AllowedModifiersPerSelector[T][]
   selector?: T
 }
-type IndexSignatureGroup =
-  `${StaticModifierPrefix}${ReadonlyModifierPrefix}${IndexSignatureSelector}`
 
 type PublicOrProtectedOrPrivateModifier =
   | ProtectedModifier
@@ -181,9 +243,6 @@ type PublicOrProtectedOrPrivateModifier =
 type StaticOrAbstractModifierPrefix = WithDashSuffixOrEmpty<
   AbstractModifier | StaticModifier
 >
-
-type ConstructorGroup =
-  `${PublicOrProtectedOrPrivateModifierPrefix}${ConstructorSelector}`
 
 type GetMethodOrSetMethodSelector = GetMethodSelector | SetMethodSelector
 
