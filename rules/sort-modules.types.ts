@@ -1,6 +1,6 @@
 import type { JSONSchema4 } from '@typescript-eslint/utils/json-schema'
 
-import type { WithDashSuffixOrEmpty } from '../typings'
+import type { WithDashSuffixOrEmpty, Join } from '../typings'
 
 import {
   buildCustomGroupModifiersJsonSchema,
@@ -94,34 +94,57 @@ type Group =
   | 'unknown'
   | string
 
-type NonDefaultClassGroup =
-  `${ExportModifierPrefix}${DeclareModifierPrefix}${DecoratedModifierPrefix}${ClassSelector}`
+type NonDefaultClassGroup = Join<
+  [
+    ExportModifierPrefix,
+    DeclareModifierPrefix,
+    DecoratedModifierPrefix,
+    ClassSelector,
+  ]
+>
 
-type DefaultFunctionGroup =
-  `${ExportModifierPrefix}${DefaultModifierPrefix}${AsyncModifierPrefix}${FunctionSelector}`
+type DefaultFunctionGroup = Join<
+  [
+    ExportModifierPrefix,
+    DefaultModifierPrefix,
+    AsyncModifierPrefix,
+    FunctionSelector,
+  ]
+>
 
-type DefaultClassGroup =
-  `${ExportModifierPrefix}${DefaultModifierPrefix}${DecoratedModifierPrefix}${ClassSelector}`
+type DefaultClassGroup = Join<
+  [
+    ExportModifierPrefix,
+    DefaultModifierPrefix,
+    DecoratedModifierPrefix,
+    ClassSelector,
+  ]
+>
 
 interface BaseSingleCustomGroup<T extends Selector> {
   modifiers?: AllowedModifiersPerSelector[T][]
   selector?: T
 }
 
-type NonDefaultInterfaceGroup =
-  `${ExportModifierPrefix}${DeclareModifierPrefix}${InterfaceSelector}`
+type NonDefaultInterfaceGroup = Join<
+  [ExportModifierPrefix, DeclareModifierPrefix, InterfaceSelector]
+>
 
-type NonDefaultFunctionGroup =
-  `${ExportModifierPrefix}${DeclareModifierPrefix}${FunctionSelector}`
+type NonDefaultFunctionGroup = Join<
+  [ExportModifierPrefix, DeclareModifierPrefix, FunctionSelector]
+>
 
-type DefaultInterfaceGroup =
-  `${ExportModifierPrefix}${DefaultModifierPrefix}${InterfaceSelector}`
+type DefaultInterfaceGroup = Join<
+  [ExportModifierPrefix, DefaultModifierPrefix, InterfaceSelector]
+>
 
-type TypeGroup =
-  `${ExportModifierPrefix}${DeclareModifierPrefix}${TypeSelector}`
+type TypeGroup = Join<
+  [ExportModifierPrefix, DeclareModifierPrefix, TypeSelector]
+>
 
-type EnumGroup =
-  `${ExportModifierPrefix}${DeclareModifierPrefix}${EnumSelector}`
+type EnumGroup = Join<
+  [ExportModifierPrefix, DeclareModifierPrefix, EnumSelector]
+>
 
 interface DecoratorNamePatternFilterCustomGroup {
   decoratorNamePattern?: string

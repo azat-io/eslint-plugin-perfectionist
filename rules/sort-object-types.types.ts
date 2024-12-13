@@ -75,6 +75,24 @@ type CustomGroup = (
     groupName: string
   }
 
+type MemberGroup = Join<
+  [
+    OptionalModifierPrefix,
+    RequiredModifierPrefix,
+    MultilineModifierPrefix,
+    MemberSelector,
+  ]
+>
+
+type MethodGroup = Join<
+  [
+    OptionalModifierPrefix,
+    RequiredModifierPrefix,
+    MultilineModifierPrefix,
+    MethodSelector,
+  ]
+>
+
 type IndexSignatureGroup =
   `${OptionalModifierPrefix | RequiredModifierPrefix}${MultilineModifierPrefix}${IndexSignatureSelector}`
 
@@ -98,14 +116,12 @@ interface BaseSingleCustomGroup<T extends Selector> {
   selector?: T
 }
 
-type MemberGroup =
-  `${OptionalModifierPrefix | RequiredModifierPrefix}${MultilineModifierPrefix}${MemberSelector}`
-
-type MethodGroup =
-  `${OptionalModifierPrefix | RequiredModifierPrefix}${MultilineModifierPrefix}${MethodSelector}`
-
-type MultilineGroup =
-  `${OptionalModifierPrefix | RequiredModifierPrefix}${MultilineSelector}`
+/**
+ * @deprecated For {@link `MultilineModifier`}
+ */
+type MultilineGroup = Join<
+  [OptionalModifierPrefix, RequiredModifierPrefix, MultilineSelector]
+>
 
 interface ElementNamePatternFilterCustomGroup {
   elementNamePattern?: string
