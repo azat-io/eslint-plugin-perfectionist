@@ -1,6 +1,6 @@
 import type { JSONSchema4 } from '@typescript-eslint/utils/json-schema'
 
-import type { Join } from '../typings'
+import type { JoinWithDash } from '../typings'
 
 import {
   buildCustomGroupModifiersJsonSchema,
@@ -99,27 +99,27 @@ interface BaseSingleCustomGroup<T extends Selector> {
   selector?: T
 }
 
-type NonDefaultClassGroup = Join<
+type NonDefaultClassGroup = JoinWithDash<
   [ExportModifier, DeclareModifier, DecoratedModifier, ClassSelector]
 >
 
-type DefaultFunctionGroup = Join<
+type DefaultFunctionGroup = JoinWithDash<
   [ExportModifier, DefaultModifier, AsyncModifier, FunctionSelector]
 >
 
-type DefaultClassGroup = Join<
+type DefaultClassGroup = JoinWithDash<
   [ExportModifier, DefaultModifier, DecoratedModifier, ClassSelector]
 >
 
-type NonDefaultInterfaceGroup = Join<
+type NonDefaultInterfaceGroup = JoinWithDash<
   [ExportModifier, DeclareModifier, InterfaceSelector]
 >
 
-type NonDefaultFunctionGroup = Join<
+type NonDefaultFunctionGroup = JoinWithDash<
   [ExportModifier, DeclareModifier, FunctionSelector]
 >
 
-type DefaultInterfaceGroup = Join<
+type DefaultInterfaceGroup = JoinWithDash<
   [ExportModifier, DefaultModifier, InterfaceSelector]
 >
 
@@ -131,9 +131,9 @@ interface ElementNamePatternFilterCustomGroup {
   elementNamePattern?: string
 }
 
-type TypeGroup = Join<[ExportModifier, DeclareModifier, TypeSelector]>
+type TypeGroup = JoinWithDash<[ExportModifier, DeclareModifier, TypeSelector]>
 
-type EnumGroup = Join<[ExportModifier, DeclareModifier, EnumSelector]>
+type EnumGroup = JoinWithDash<[ExportModifier, DeclareModifier, EnumSelector]>
 
 type DecoratedModifier = 'decorated'
 

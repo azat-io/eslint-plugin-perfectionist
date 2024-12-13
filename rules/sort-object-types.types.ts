@@ -1,6 +1,6 @@
 import type { JSONSchema4 } from '@typescript-eslint/utils/json-schema'
 
-import type { Join } from '../typings'
+import type { JoinWithDash } from '../typings'
 
 import {
   buildCustomGroupModifiersJsonSchema,
@@ -75,7 +75,7 @@ type CustomGroup = (
     groupName: string
   }
 
-type IndexSignatureGroup = Join<
+type IndexSignatureGroup = JoinWithDash<
   [
     OptionalModifier,
     RequiredModifier,
@@ -101,22 +101,22 @@ interface BaseSingleCustomGroup<T extends Selector> {
   selector?: T
 }
 
-type PropertyGroup = Join<
+type PropertyGroup = JoinWithDash<
   [OptionalModifier, RequiredModifier, MultilineModifier, PropertySelector]
 >
 
-type MemberGroup = Join<
+type MemberGroup = JoinWithDash<
   [OptionalModifier, RequiredModifier, MultilineModifier, MemberSelector]
 >
 
-type MethodGroup = Join<
+type MethodGroup = JoinWithDash<
   [OptionalModifier, RequiredModifier, MultilineModifier, MethodSelector]
 >
 
 /**
  * @deprecated For {@link `MultilineModifier`}
  */
-type MultilineGroup = Join<
+type MultilineGroup = JoinWithDash<
   [OptionalModifier, RequiredModifier, MultilineSelector]
 >
 

@@ -1,6 +1,6 @@
 import type { JSONSchema4 } from '@typescript-eslint/utils/json-schema'
 
-import type { Join } from '../typings'
+import type { JoinWithDash } from '../typings'
 
 import {
   buildCustomGroupModifiersJsonSchema,
@@ -36,18 +36,7 @@ export type SingleCustomGroup =
   | BaseSingleCustomGroup<ConstructorSelector>
   | AdvancedSingleCustomGroup<MethodSelector>
 
-export type Selector =
-  | AccessorPropertySelector
-  | FunctionPropertySelector
-  | IndexSignatureSelector
-  | ConstructorSelector
-  | StaticBlockSelector
-  | GetMethodSelector
-  | SetMethodSelector
-  | PropertySelector
-  | MethodSelector
-
-export type NonDeclarePropertyGroup = Join<
+export type NonDeclarePropertyGroup = JoinWithDash<
   [
     PublicOrProtectedOrPrivateModifier,
     StaticOrAbstractModifier,
@@ -59,7 +48,18 @@ export type NonDeclarePropertyGroup = Join<
   ]
 >
 
-export type FunctionPropertyGroup = Join<
+export type Selector =
+  | AccessorPropertySelector
+  | FunctionPropertySelector
+  | IndexSignatureSelector
+  | ConstructorSelector
+  | StaticBlockSelector
+  | GetMethodSelector
+  | SetMethodSelector
+  | PropertySelector
+  | MethodSelector
+
+export type FunctionPropertyGroup = JoinWithDash<
   [
     PublicOrProtectedOrPrivateModifier,
     StaticModifier,
@@ -68,6 +68,18 @@ export type FunctionPropertyGroup = Join<
     DecoratedModifier,
     AsyncModifier,
     FunctionPropertySelector,
+  ]
+>
+
+export type MethodGroup = JoinWithDash<
+  [
+    PublicOrProtectedOrPrivateModifier,
+    StaticOrAbstractModifier,
+    OverrideModifier,
+    DecoratedModifier,
+    AsyncModifier,
+    OptionalModifier,
+    MethodSelector,
   ]
 >
 
@@ -82,19 +94,7 @@ export type Modifier =
   | StaticModifier
   | AsyncModifier
 
-export type MethodGroup = Join<
-  [
-    PublicOrProtectedOrPrivateModifier,
-    StaticOrAbstractModifier,
-    OverrideModifier,
-    DecoratedModifier,
-    AsyncModifier,
-    OptionalModifier,
-    MethodSelector,
-  ]
->
-
-export type DeclarePropertyGroup = Join<
+export type DeclarePropertyGroup = JoinWithDash<
   [
     DeclareModifier,
     PublicOrProtectedOrPrivateModifier,
@@ -105,7 +105,7 @@ export type DeclarePropertyGroup = Join<
   ]
 >
 
-export type GetMethodOrSetMethodGroup = Join<
+export type GetMethodOrSetMethodGroup = JoinWithDash<
   [
     PublicOrProtectedOrPrivateModifier,
     StaticOrAbstractModifier,
@@ -115,7 +115,7 @@ export type GetMethodOrSetMethodGroup = Join<
   ]
 >
 
-export type AccessorPropertyGroup = Join<
+export type AccessorPropertyGroup = JoinWithDash<
   [
     PublicOrProtectedOrPrivateModifier,
     StaticOrAbstractModifier,
@@ -125,11 +125,11 @@ export type AccessorPropertyGroup = Join<
   ]
 >
 
-export type IndexSignatureGroup = Join<
+export type IndexSignatureGroup = JoinWithDash<
   [StaticModifier, ReadonlyModifier, IndexSignatureSelector]
 >
 
-export type ConstructorGroup = Join<
+export type ConstructorGroup = JoinWithDash<
   [PublicOrProtectedOrPrivateModifier, ConstructorSelector]
 >
 
