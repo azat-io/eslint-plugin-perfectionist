@@ -1,6 +1,6 @@
 import type { JSONSchema4 } from '@typescript-eslint/utils/json-schema'
 
-import type { WithDashSuffixOrEmpty, Join } from '../typings'
+import type { Join } from '../typings'
 
 import {
   buildCustomGroupModifiersJsonSchema,
@@ -94,56 +94,33 @@ type Group =
   | 'unknown'
   | string
 
-type NonDefaultClassGroup = Join<
-  [
-    ExportModifierPrefix,
-    DeclareModifierPrefix,
-    DecoratedModifierPrefix,
-    ClassSelector,
-  ]
->
-
-type DefaultFunctionGroup = Join<
-  [
-    ExportModifierPrefix,
-    DefaultModifierPrefix,
-    AsyncModifierPrefix,
-    FunctionSelector,
-  ]
->
-
-type DefaultClassGroup = Join<
-  [
-    ExportModifierPrefix,
-    DefaultModifierPrefix,
-    DecoratedModifierPrefix,
-    ClassSelector,
-  ]
->
-
 interface BaseSingleCustomGroup<T extends Selector> {
   modifiers?: AllowedModifiersPerSelector[T][]
   selector?: T
 }
 
+type NonDefaultClassGroup = Join<
+  [ExportModifier, DeclareModifier, DecoratedModifier, ClassSelector]
+>
+
+type DefaultFunctionGroup = Join<
+  [ExportModifier, DefaultModifier, AsyncModifier, FunctionSelector]
+>
+
+type DefaultClassGroup = Join<
+  [ExportModifier, DefaultModifier, DecoratedModifier, ClassSelector]
+>
+
 type NonDefaultInterfaceGroup = Join<
-  [ExportModifierPrefix, DeclareModifierPrefix, InterfaceSelector]
+  [ExportModifier, DeclareModifier, InterfaceSelector]
 >
 
 type NonDefaultFunctionGroup = Join<
-  [ExportModifierPrefix, DeclareModifierPrefix, FunctionSelector]
+  [ExportModifier, DeclareModifier, FunctionSelector]
 >
 
 type DefaultInterfaceGroup = Join<
-  [ExportModifierPrefix, DefaultModifierPrefix, InterfaceSelector]
->
-
-type TypeGroup = Join<
-  [ExportModifierPrefix, DeclareModifierPrefix, TypeSelector]
->
-
-type EnumGroup = Join<
-  [ExportModifierPrefix, DeclareModifierPrefix, EnumSelector]
+  [ExportModifier, DefaultModifier, InterfaceSelector]
 >
 
 interface DecoratorNamePatternFilterCustomGroup {
@@ -154,15 +131,9 @@ interface ElementNamePatternFilterCustomGroup {
   elementNamePattern?: string
 }
 
-type DecoratedModifierPrefix = WithDashSuffixOrEmpty<DecoratedModifier>
+type TypeGroup = Join<[ExportModifier, DeclareModifier, TypeSelector]>
 
-type DeclareModifierPrefix = WithDashSuffixOrEmpty<DeclareModifier>
-
-type DefaultModifierPrefix = WithDashSuffixOrEmpty<DefaultModifier>
-
-type ExportModifierPrefix = WithDashSuffixOrEmpty<ExportModifier>
-
-type AsyncModifierPrefix = WithDashSuffixOrEmpty<AsyncModifier>
+type EnumGroup = Join<[ExportModifier, DeclareModifier, EnumSelector]>
 
 type DecoratedModifier = 'decorated'
 
