@@ -1,5 +1,7 @@
 import type { JSONSchema4 } from '@typescript-eslint/utils/json-schema'
 
+import type { WithDashSuffixOrEmpty } from '../typings'
+
 import {
   buildCustomGroupModifiersJsonSchema,
   buildCustomGroupSelectorJsonSchema,
@@ -138,8 +140,6 @@ type DefaultModifierPrefix = WithDashSuffixOrEmpty<DefaultModifier>
 type ExportModifierPrefix = WithDashSuffixOrEmpty<ExportModifier>
 
 type AsyncModifierPrefix = WithDashSuffixOrEmpty<AsyncModifier>
-
-type WithDashSuffixOrEmpty<T extends string> = `${T}-` | ''
 
 type DecoratedModifier = 'decorated'
 

@@ -1,5 +1,7 @@
 import type { JSONSchema4 } from '@typescript-eslint/utils/json-schema'
 
+import type { WithDashSuffixOrEmpty, Join } from '../typings'
+
 import {
   buildCustomGroupModifiersJsonSchema,
   buildCustomGroupSelectorJsonSchema,
@@ -114,8 +116,6 @@ type MultilineModifierPrefix = WithDashSuffixOrEmpty<MultilineModifier>
 type RequiredModifierPrefix = WithDashSuffixOrEmpty<RequiredModifier>
 
 type OptionalModifierPrefix = WithDashSuffixOrEmpty<OptionalModifier>
-
-type WithDashSuffixOrEmpty<T extends string> = `${T}-` | ''
 
 type IndexSignatureSelector = 'index-signature'
 

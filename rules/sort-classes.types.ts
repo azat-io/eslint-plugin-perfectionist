@@ -1,5 +1,7 @@
 import type { JSONSchema4 } from '@typescript-eslint/utils/json-schema'
 
+import type { WithDashSuffixOrEmpty, Join } from '../typings'
+
 import {
   buildCustomGroupModifiersJsonSchema,
   buildCustomGroupSelectorJsonSchema,
@@ -259,8 +261,6 @@ type DeclareModifierPrefix = WithDashSuffixOrEmpty<DeclareModifier>
 type StaticModifierPrefix = WithDashSuffixOrEmpty<StaticModifier>
 
 type AsyncModifierPrefix = WithDashSuffixOrEmpty<AsyncModifier>
-
-type WithDashSuffixOrEmpty<T extends string> = `${T}-` | ''
 
 type FunctionPropertySelector = 'function-property'
 
