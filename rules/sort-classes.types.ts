@@ -221,13 +221,6 @@ type AdvancedSingleCustomGroup<T extends Selector> = {
   elementNamePattern?: string
 } & BaseSingleCustomGroup<T>
 
-type Join<T extends string[]> = T extends [
-  infer First extends string,
-  ...infer Rest extends string[],
-]
-  ? `${First}${Join<Rest>}`
-  : ''
-
 type PublicOrProtectedOrPrivateModifierPrefix = WithDashSuffixOrEmpty<
   ProtectedModifier | PrivateModifier | PublicModifier
 >
