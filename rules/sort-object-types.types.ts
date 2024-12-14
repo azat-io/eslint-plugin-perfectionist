@@ -1,5 +1,7 @@
 import type { JSONSchema4 } from '@typescript-eslint/utils/json-schema'
 
+import type { JoinWithDash } from '../typings'
+
 import {
   buildCustomGroupModifiersJsonSchema,
   buildCustomGroupSelectorJsonSchema,
@@ -73,8 +75,14 @@ type CustomGroup = (
     groupName: string
   }
 
-type IndexSignatureGroup =
-  `${OptionalModifierPrefix | RequiredModifierPrefix}${MultilineModifierPrefix}${IndexSignatureSelector}`
+type IndexSignatureGroup = JoinWithDash<
+  [
+    OptionalModifier,
+    RequiredModifier,
+    MultilineModifier,
+    IndexSignatureSelector,
+  ]
+>
 
 /**
  * Only used in code, so I don't know if it's worth maintaining this.
@@ -88,34 +96,33 @@ type Group =
   | 'unknown'
   | string
 
-type PropertyGroup =
-  `${OptionalModifierPrefix | RequiredModifierPrefix}${MultilineModifierPrefix}${PropertySelector}`
-
 interface BaseSingleCustomGroup<T extends Selector> {
   modifiers?: AllowedModifiersPerSelector[T][]
   selector?: T
 }
 
-type MemberGroup =
-  `${OptionalModifierPrefix | RequiredModifierPrefix}${MultilineModifierPrefix}${MemberSelector}`
+type PropertyGroup = JoinWithDash<
+  [OptionalModifier, RequiredModifier, MultilineModifier, PropertySelector]
+>
 
-type MethodGroup =
-  `${OptionalModifierPrefix | RequiredModifierPrefix}${MultilineModifierPrefix}${MethodSelector}`
+type MemberGroup = JoinWithDash<
+  [OptionalModifier, RequiredModifier, MultilineModifier, MemberSelector]
+>
 
-type MultilineGroup =
-  `${OptionalModifierPrefix | RequiredModifierPrefix}${MultilineSelector}`
+type MethodGroup = JoinWithDash<
+  [OptionalModifier, RequiredModifier, MultilineModifier, MethodSelector]
+>
+
+/**
+ * @deprecated For {@link `MultilineModifier`}
+ */
+type MultilineGroup = JoinWithDash<
+  [OptionalModifier, RequiredModifier, MultilineSelector]
+>
 
 interface ElementNamePatternFilterCustomGroup {
   elementNamePattern?: string
 }
-
-type MultilineModifierPrefix = WithDashSuffixOrEmpty<MultilineModifier>
-
-type RequiredModifierPrefix = WithDashSuffixOrEmpty<RequiredModifier>
-
-type OptionalModifierPrefix = WithDashSuffixOrEmpty<OptionalModifier>
-
-type WithDashSuffixOrEmpty<T extends string> = `${T}-` | ''
 
 type IndexSignatureSelector = 'index-signature'
 
