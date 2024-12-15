@@ -19,6 +19,7 @@ import { validateGroupsConfiguration } from '../utils/validate-groups-configurat
 import { getEslintDisabledLines } from '../utils/get-eslint-disabled-lines'
 import { isNodeEslintDisabled } from '../utils/is-node-eslint-disabled'
 import { hasPartitionComment } from '../utils/is-partition-comment'
+import { createNodeIndexMap } from '../utils/create-node-index-map'
 import { sortNodesByGroups } from '../utils/sort-nodes-by-groups'
 import { getCommentsBefore } from '../utils/get-comments-before'
 import { getNodeDecorators } from '../utils/get-node-decorators'
@@ -259,16 +260,19 @@ let sortDecorators = (
   let sortedNodes = sortNodesExcludingEslintDisabled(false)
   let sortedNodesExcludingEslintDisabled =
     sortNodesExcludingEslintDisabled(true)
+
   let nodes = formattedMembers.flat()
 
+  let nodeIndexMap = createNodeIndexMap(sortedNodes)
+
   pairwise(nodes, (left, right) => {
-    let indexOfLeft = sortedNodes.indexOf(left)
-    let indexOfRight = sortedNodes.indexOf(right)
+    let leftIndex = nodeIndexMap.get(left)!
+    let rightIndex = nodeIndexMap.get(right)!
     let indexOfRightExcludingEslintDisabled =
       sortedNodesExcludingEslintDisabled.indexOf(right)
     if (
-      indexOfLeft < indexOfRight &&
-      indexOfLeft < indexOfRightExcludingEslintDisabled
+      leftIndex < rightIndex &&
+      leftIndex < indexOfRightExcludingEslintDisabled
     ) {
       return
     }
