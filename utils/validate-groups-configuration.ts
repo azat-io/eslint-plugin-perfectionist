@@ -37,10 +37,18 @@ export let validateNoDuplicatedGroups = (
   groups: (string[] | string)[],
 ): void => {
   let flattenGroups = groups.flat()
-  let duplicatedGroups = flattenGroups.filter(
-    (group, index) => flattenGroups.indexOf(group) !== index,
-  )
-  if (duplicatedGroups.length) {
-    throw new Error(`Duplicated group(s): ${duplicatedGroups.join(', ')}`)
+  let seenGroups = new Set<string>()
+  let duplicatedGroups = new Set<string>()
+
+  for (let group of flattenGroups) {
+    if (seenGroups.has(group)) {
+      duplicatedGroups.add(group)
+    } else {
+      seenGroups.add(group)
+    }
+  }
+
+  if (duplicatedGroups.size > 0) {
+    throw new Error(`Duplicated group(s): ${[...duplicatedGroups].join(', ')}`)
   }
 }
