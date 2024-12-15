@@ -39,6 +39,7 @@ import { getCustomGroupsCompareOptions } from '../utils/get-custom-groups-compar
 import { generatePredefinedGroups } from '../utils/generate-predefined-groups'
 import { getEslintDisabledLines } from '../utils/get-eslint-disabled-lines'
 import { isNodeEslintDisabled } from '../utils/is-node-eslint-disabled'
+import { createNodeIndexMap } from '../utils/create-node-index-map'
 import { hasPartitionComment } from '../utils/is-partition-comment'
 import { sortNodesByGroups } from '../utils/sort-nodes-by-groups'
 import { getNewlinesErrors } from '../utils/get-newlines-errors'
@@ -209,7 +210,7 @@ let analyzeModule = ({
         | TSESTree.DefaultExportDeclarations
         | TSESTree.NamedExportDeclarations
         | TSESTree.ProgramStatement,
-    ): void => {
+    ): boolean => {
       if ('declare' in nodeToParse && nodeToParse.declare) {
         modifiers.push('declare')
       }
@@ -296,11 +297,12 @@ let analyzeModule = ({
           break
         default:
       }
+
+      return !!selector && !!name
     }
     /* eslint-enable @typescript-eslint/no-loop-func */
-    parseNode(node)
 
-    if (!selector || !name) {
+    if (!parseNode(node)) {
       continue
     }
 
@@ -316,7 +318,7 @@ let analyzeModule = ({
     let { defineGroup, getGroup } = useGroups(options)
     for (let officialGroup of generatePredefinedGroups({
       cache: cachedGroupsByModifiersAndSelectors,
-      selectors: [selector],
+      selectors: [selector!],
       modifiers,
     })) {
       defineGroup(officialGroup)
@@ -324,8 +326,8 @@ let analyzeModule = ({
     for (let customGroup of options.customGroups) {
       if (
         customGroupMatches({
-          selectors: [selector],
-          elementName: name,
+          selectors: [selector!],
+          elementName: name!,
           customGroup,
           decorators,
           modifiers,
@@ -345,8 +347,8 @@ let analyzeModule = ({
       dependencyName: name,
       group: getGroup(),
       dependencies,
+      name: name!,
       node,
-      name,
     }
     let lastSortingNode = formattedNodes.at(-1)?.at(-1)
     if (
@@ -389,12 +391,15 @@ let analyzeModule = ({
     sortNodesIgnoringEslintDisabledNodes(true)
   let nodes = formattedNodes.flat()
 
+  let nodeIndexMap = createNodeIndexMap(sortedNodes)
+
   pairwise(nodes, (left, right) => {
     let leftNumber = getGroupNumber(options.groups, left)
     let rightNumber = getGroupNumber(options.groups, right)
 
-    let indexOfLeft = sortedNodes.indexOf(left)
-    let indexOfRight = sortedNodes.indexOf(right)
+    let leftIndex = nodeIndexMap.get(left)!
+    let rightIndex = nodeIndexMap.get(right)!
+
     let indexOfRightExcludingEslintDisabled =
       sortedNodesExcludingEslintDisabled.indexOf(right)
 
@@ -405,8 +410,8 @@ let analyzeModule = ({
     )
     if (
       firstUnorderedNodeDependentOnRight ||
-      indexOfLeft > indexOfRight ||
-      indexOfLeft >= indexOfRightExcludingEslintDisabled
+      leftIndex > rightIndex ||
+      leftIndex >= indexOfRightExcludingEslintDisabled
     ) {
       if (firstUnorderedNodeDependentOnRight) {
         messageIds.push('unexpectedModulesDependencyOrder')
