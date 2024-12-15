@@ -168,12 +168,14 @@ export let sortArray = <MessageIds extends string>({
 
   let sourceCode = getSourceCode(context)
   let settings = getSettings(context.settings)
+
   let matchedContextOptions = getMatchingContextOptions({
     nodeNames: elements
       .filter(element => element !== null)
       .map(element => getNodeName({ sourceCode, element })),
     contextOptions: context.options,
   })
+
   let completeOptions = complete(
     matchedContextOptions[0],
     settings,
@@ -198,6 +200,7 @@ export let sortArray = <MessageIds extends string>({
     ruleName: context.id,
     sourceCode,
   })
+
   let formattedMembers: SortArrayIncludesSortingNode[][] = elements.reduce(
     (
       accumulator: SortArrayIncludesSortingNode[][],
@@ -218,11 +221,13 @@ export let sortArray = <MessageIds extends string>({
         selector = 'literal'
       }
 
-      for (let predefinedGroup of generatePredefinedGroups({
+      let predefinedGroups = generatePredefinedGroups({
         cache: cachedGroupsByModifiersAndSelectors,
         selectors: [selector],
         modifiers: [],
-      })) {
+      })
+
+      for (let predefinedGroup of predefinedGroups) {
         defineGroup(predefinedGroup)
       }
 
@@ -236,7 +241,10 @@ export let sortArray = <MessageIds extends string>({
           })
         ) {
           defineGroup(customGroup.groupName, true)
-          // If the custom group is not referenced in the `groups` option, it will be ignored
+          /**
+           * If the custom group is not referenced in the `groups` option, it
+           * will be ignored
+           */
           if (getGroup() === customGroup.groupName) {
             break
           }
@@ -245,11 +253,11 @@ export let sortArray = <MessageIds extends string>({
 
       let sortingNode: SortArrayIncludesSortingNode = {
         isEslintDisabled: isNodeEslintDisabled(element, eslintDisabledLines),
-        name: getNodeName({ sourceCode, element }),
         size: rangeToDiff(element, sourceCode),
         group: getGroup(),
         node: element,
         groupKind,
+        name,
       }
 
       let lastSortingNode = accumulator.at(-1)?.at(-1)
@@ -286,38 +294,51 @@ export let sortArray = <MessageIds extends string>({
   }
 
   for (let nodes of formattedMembers) {
-    let filteredGroupKindNodes = groupKindOrder.map(groupKind =>
-      nodes.filter(
-        currentNode =>
-          groupKind === 'any' || currentNode.groupKind === groupKind,
-      ),
+    let groupedNodesByKind = groupKindOrder.reduce<
+      Record<'literal' | 'spread' | 'any', SortArrayIncludesSortingNode[]>
+    >(
+      (accumulator, groupKind) => {
+        accumulator[groupKind] = nodes.filter(
+          currentNode =>
+            groupKind === 'any' || currentNode.groupKind === groupKind,
+        )
+        return accumulator
+      },
+      { literal: [], spread: [], any: [] },
     )
 
     let sortNodesIgnoringEslintDisabledNodes = (
       ignoreEslintDisabledNodes: boolean,
     ): SortArrayIncludesSortingNode[] =>
-      filteredGroupKindNodes.flatMap(groupedNodes =>
-        sortNodesByGroups(groupedNodes, options, {
+      groupKindOrder.flatMap(groupKind =>
+        sortNodesByGroups(groupedNodesByKind[groupKind], options, {
           getGroupCompareOptions: groupNumber =>
             getCustomGroupsCompareOptions(options, groupNumber),
           ignoreEslintDisabledNodes,
         }),
       )
+
     let sortedNodes = sortNodesIgnoringEslintDisabledNodes(false)
     let sortedNodesExcludingEslintDisabled =
       sortNodesIgnoringEslintDisabledNodes(true)
 
+    let nodeIndexMap = new Map<SortArrayIncludesSortingNode, number>()
+    for (let [index, node] of sortedNodes.entries()) {
+      nodeIndexMap.set(node, index)
+    }
+
     pairwise(nodes, (left, right) => {
-      let indexOfLeft = sortedNodes.indexOf(left)
-      let indexOfRight = sortedNodes.indexOf(right)
+      let leftIndex = nodeIndexMap.get(left)!
+      let rightIndex = nodeIndexMap.get(right)!
+
       let leftNumber = getGroupNumber(options.groups, left)
       let rightNumber = getGroupNumber(options.groups, right)
 
       let indexOfRightExcludingEslintDisabled =
         sortedNodesExcludingEslintDisabled.indexOf(right)
       if (
-        indexOfLeft < indexOfRight &&
-        indexOfLeft < indexOfRightExcludingEslintDisabled
+        leftIndex < rightIndex &&
+        leftIndex < indexOfRightExcludingEslintDisabled
       ) {
         return
       }
