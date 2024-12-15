@@ -263,14 +263,13 @@ export let sortArray = <MessageIds extends string>({
 
       let lastSortingNode = accumulator.at(-1)?.at(-1)
       if (
-        (options.partitionByComment &&
-          hasPartitionComment(
-            options.partitionByComment,
-            getCommentsBefore({
-              node: element,
-              sourceCode,
-            }),
-          )) ||
+        hasPartitionComment(
+          options.partitionByComment,
+          getCommentsBefore({
+            node: element,
+            sourceCode,
+          }),
+        ) ||
         (options.partitionByNewLine &&
           lastSortingNode &&
           getLinesBetween(sourceCode, lastSortingNode, sortingNode))

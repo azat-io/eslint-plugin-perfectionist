@@ -369,14 +369,13 @@ export default createEslintRule<Options, MESSAGE_ID>({
                   lastProperty,
                   propertySortingNode,
                 )) ||
-              (options.partitionByComment &&
-                hasPartitionComment(
-                  options.partitionByComment,
-                  getCommentsBefore({
-                    node: property,
-                    sourceCode,
-                  }),
-                ))
+              hasPartitionComment(
+                options.partitionByComment,
+                getCommentsBefore({
+                  node: property,
+                  sourceCode,
+                }),
+              )
             ) {
               accumulator.push([])
             }

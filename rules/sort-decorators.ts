@@ -219,7 +219,6 @@ let sortDecorators = (
   let formattedMembers: SortDecoratorsSortingNode[][] = decorators.reduce(
     (accumulator: SortDecoratorsSortingNode[][], decorator) => {
       if (
-        options.partitionByComment &&
         hasPartitionComment(
           options.partitionByComment,
           getCommentsBefore({

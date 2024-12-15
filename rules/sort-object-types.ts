@@ -332,14 +332,13 @@ export let sortObjectTypeElements = <MessageIds extends string>({
       }
 
       if (
-        (options.partitionByComment &&
-          hasPartitionComment(
-            options.partitionByComment,
-            getCommentsBefore({
-              node: typeElement,
-              sourceCode,
-            }),
-          )) ||
+        hasPartitionComment(
+          options.partitionByComment,
+          getCommentsBefore({
+            node: typeElement,
+            sourceCode,
+          }),
+        ) ||
         (options.partitionByNewLine &&
           lastSortingNode &&
           getLinesBetween(sourceCode, lastSortingNode, sortingNode))
