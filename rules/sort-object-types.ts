@@ -113,12 +113,12 @@ export let jsonSchema: JSONSchema4 = {
         type: 'string',
       },
       useConfigurationIf: buildUseConfigurationIfJsonSchema(),
+      type: buildTypeJsonSchema({ withUnsorted: true }),
       partitionByNewLine: partitionByNewLineJsonSchema,
       specialCharacters: specialCharactersJsonSchema,
       newlinesBetween: newlinesBetweenJsonSchema,
       ignoreCase: ignoreCaseJsonSchema,
       alphabet: alphabetJsonSchema,
-      type: buildTypeJsonSchema(),
       locales: localesJsonSchema,
       groups: groupsJsonSchema,
       order: orderJsonSchema,
@@ -200,7 +200,19 @@ export let sortObjectTypeElements = <MessageIds extends string>({
     ),
     contextOptions: context.options,
   })
-  let options = complete(matchedContextOptions[0], settings, defaultOptions)
+  let completeOptions = complete(
+    matchedContextOptions[0],
+    settings,
+    defaultOptions,
+  )
+  let { type } = completeOptions
+  if (type === 'unsorted') {
+    return
+  }
+  let options = {
+    ...completeOptions,
+    type,
+  }
   validateCustomSortConfiguration(options)
   validateGeneratedGroupsConfiguration({
     customGroups: options.customGroups,

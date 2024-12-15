@@ -3201,6 +3201,26 @@ describe(ruleName, () => {
   })
 
   describe('misc', () => {
+    ruleTester.run(`${ruleName}: allows to use "unsorted" as type`, rule, {
+      valid: [
+        {
+          code: dedent`
+            type Type = {
+              b: string;
+              c: string;
+              a: string;
+            }
+          `,
+          options: [
+            {
+              type: 'unsorted',
+            },
+          ],
+        },
+      ],
+      invalid: [],
+    })
+
     ruleTester.run(`${ruleName}: ignores semi at the end of value`, rule, {
       valid: [
         dedent`

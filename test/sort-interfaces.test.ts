@@ -3967,6 +3967,26 @@ describe(ruleName, () => {
   })
 
   describe(`${ruleName}: misc`, () => {
+    ruleTester.run(`${ruleName}: allows to use "unsorted" as type`, rule, {
+      valid: [
+        {
+          code: dedent`
+            interface Interface {
+              b: string;
+              c: string;
+              a: string;
+            }
+          `,
+          options: [
+            {
+              type: 'unsorted',
+            },
+          ],
+        },
+      ],
+      invalid: [],
+    })
+
     ruleTester.run(
       `${ruleName}: sets alphabetical asc sorting as default`,
       rule,
