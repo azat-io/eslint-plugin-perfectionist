@@ -1,6 +1,6 @@
 import type { JSONSchema4 } from '@typescript-eslint/utils/json-schema'
 
-export let builtTypeJsonSchema = ({
+export let buildTypeJsonSchema = ({
   withUnsorted,
 }: { withUnsorted?: boolean } = {}): JSONSchema4 => {
   let enumValues = ['alphabetical', 'natural', 'line-length', 'custom']

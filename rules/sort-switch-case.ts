@@ -6,7 +6,7 @@ import type { SortingNode } from '../typings'
 import {
   specialCharactersJsonSchema,
   ignoreCaseJsonSchema,
-  builtTypeJsonSchema,
+  buildTypeJsonSchema,
   alphabetJsonSchema,
   localesJsonSchema,
   orderJsonSchema,
@@ -270,7 +270,7 @@ export default createEslintRule<Options, MESSAGE_ID>({
           specialCharacters: specialCharactersJsonSchema,
           ignoreCase: ignoreCaseJsonSchema,
           alphabet: alphabetJsonSchema,
-          type: builtTypeJsonSchema(),
+          type: buildTypeJsonSchema(),
           locales: localesJsonSchema,
           order: orderJsonSchema,
         },
