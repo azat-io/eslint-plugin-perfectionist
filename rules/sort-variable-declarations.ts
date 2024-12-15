@@ -19,6 +19,7 @@ import {
 import { validateCustomSortConfiguration } from '../utils/validate-custom-sort-configuration'
 import { getEslintDisabledLines } from '../utils/get-eslint-disabled-lines'
 import { isNodeEslintDisabled } from '../utils/is-node-eslint-disabled'
+import { createNodeIndexMap } from '../utils/create-node-index-map'
 import { hasPartitionComment } from '../utils/is-partition-comment'
 import { getCommentsBefore } from '../utils/get-comments-before'
 import { createEslintRule } from '../utils/create-eslint-rule'
@@ -237,16 +238,20 @@ export default createEslintRule<Options, MESSAGE_ID>({
       let sortedNodes = sortNodesIgnoringEslintDisabledNodes(false)
       let sortedNodesExcludingEslintDisabled =
         sortNodesIgnoringEslintDisabledNodes(true)
+
       let nodes = formattedMembers.flat()
 
+      let nodeIndexMap = createNodeIndexMap(sortedNodes)
+
       pairwise(nodes, (left, right) => {
-        let indexOfLeft = sortedNodes.indexOf(left)
-        let indexOfRight = sortedNodes.indexOf(right)
+        let leftIndex = nodeIndexMap.get(left)!
+        let rightIndex = nodeIndexMap.get(right)!
+
         let indexOfRightExcludingEslintDisabled =
           sortedNodesExcludingEslintDisabled.indexOf(right)
         if (
-          indexOfLeft < indexOfRight &&
-          indexOfLeft < indexOfRightExcludingEslintDisabled
+          leftIndex < rightIndex &&
+          leftIndex < indexOfRightExcludingEslintDisabled
         ) {
           return
         }
