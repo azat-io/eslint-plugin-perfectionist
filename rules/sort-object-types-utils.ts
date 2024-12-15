@@ -51,9 +51,7 @@ export let customGroupMatches = (props: CustomGroupMatchesProps): boolean => {
       props.elementName,
       props.customGroup.elementNamePattern,
     )
-    if (!matchesElementNamePattern) {
-      return false
-    }
+    return matchesElementNamePattern
   }
 
   return true

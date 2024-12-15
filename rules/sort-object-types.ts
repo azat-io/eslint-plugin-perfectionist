@@ -28,6 +28,7 @@ import { getEslintDisabledLines } from '../utils/get-eslint-disabled-lines'
 import { singleCustomGroupJsonSchema } from './sort-object-types.types'
 import { isNodeEslintDisabled } from '../utils/is-node-eslint-disabled'
 import { allModifiers, allSelectors } from './sort-object-types.types'
+import { createNodeIndexMap } from '../utils/create-node-index-map'
 import { hasPartitionComment } from '../utils/is-partition-comment'
 import { isNodeFunctionType } from '../utils/is-node-function-type'
 import { sortNodesByGroups } from '../utils/sort-nodes-by-groups'
@@ -208,6 +209,8 @@ export let sortObjectTypeElements = <MessageIds extends string>({
     sourceCode,
   })
 
+  let formatName = (value: string): string => value.replace(/[,;]$/u, '')
+
   let formattedMembers: SortObjectTypesSortingNode[][] = elements.reduce(
     (accumulator: SortObjectTypesSortingNode[][], typeElement) => {
       if (
@@ -219,11 +222,10 @@ export let sortObjectTypeElements = <MessageIds extends string>({
       }
 
       let name: string
-      let lastSortingNode = accumulator.at(-1)?.at(-1)
+      let lastGroup = accumulator.at(-1)
+      let lastSortingNode = lastGroup?.at(-1)
 
       let { setCustomGroups, defineGroup, getGroup } = useGroups(options)
-
-      let formatName = (value: string): string => value.replace(/[,;]$/u, '')
 
       if (typeElement.type === 'TSPropertySignature') {
         if (typeElement.key.type === 'Identifier') {
@@ -273,8 +275,9 @@ export let sortObjectTypeElements = <MessageIds extends string>({
       }
 
       if (
-        !selectors.includes('index-signature') &&
-        !selectors.includes('method')
+        !(['index-signature', 'method'] as Selector[]).some(selector =>
+          selectors.includes(selector),
+        )
       ) {
         selectors.push('property')
       }
@@ -287,11 +290,13 @@ export let sortObjectTypeElements = <MessageIds extends string>({
         modifiers.push('required')
       }
 
-      for (let predefinedGroup of generatePredefinedGroups({
+      let predefinedGroups = generatePredefinedGroups({
         cache: cachedGroupsByModifiersAndSelectors,
         selectors,
         modifiers,
-      })) {
+      })
+
+      for (let predefinedGroup of predefinedGroups) {
         defineGroup(predefinedGroup)
       }
 
@@ -306,7 +311,10 @@ export let sortObjectTypeElements = <MessageIds extends string>({
             })
           ) {
             defineGroup(customGroup.groupName, true)
-            // If the custom group is not referenced in the `groups` option, it will be ignored
+            /**
+             * If the custom group is not referenced in the `groups` option, it
+             * will be ignored
+             */
             if (getGroup() === customGroup.groupName) {
               break
             }
@@ -343,10 +351,11 @@ export let sortObjectTypeElements = <MessageIds extends string>({
           lastSortingNode &&
           getLinesBetween(sourceCode, lastSortingNode, sortingNode))
       ) {
-        accumulator.push([])
+        lastGroup = []
+        accumulator.push(lastGroup)
       }
 
-      accumulator.at(-1)?.push(sortingNode)
+      lastGroup?.push(sortingNode)
 
       return accumulator
     },
@@ -382,20 +391,23 @@ export let sortObjectTypeElements = <MessageIds extends string>({
     let sortedNodesExcludingEslintDisabled =
       sortNodesExcludingEslintDisabled(true)
 
+    let nodeIndexMap = createNodeIndexMap(sortedNodes)
+
     pairwise(nodes, (left, right) => {
       let leftNumber = getGroupNumber(options.groups, left)
       let rightNumber = getGroupNumber(options.groups, right)
 
-      let indexOfLeft = sortedNodes.indexOf(left)
-      let indexOfRight = sortedNodes.indexOf(right)
+      let leftIndex = nodeIndexMap.get(left)!
+      let rightIndex = nodeIndexMap.get(right)!
+
       let indexOfRightExcludingEslintDisabled =
         sortedNodesExcludingEslintDisabled.indexOf(right)
 
       let messageIds: MessageIds[] = []
 
       if (
-        indexOfLeft > indexOfRight ||
-        indexOfLeft >= indexOfRightExcludingEslintDisabled
+        leftIndex > rightIndex ||
+        leftIndex >= indexOfRightExcludingEslintDisabled
       ) {
         messageIds.push(
           leftNumber === rightNumber
