@@ -1918,6 +1918,84 @@ describe(ruleName, () => {
           valid: [],
         },
       )
+
+      ruleTester.run(
+        `${ruleName}(${type}): allows to use 'callingFunctionNamePattern'`,
+        rule,
+        {
+          invalid: [
+            {
+              errors: [
+                {
+                  data: {
+                    rightGroup: 'g',
+                    leftGroup: 'b',
+                    right: 'g',
+                    left: 'b',
+                  },
+                  messageId: 'unexpectedObjectsGroupOrder',
+                },
+                {
+                  data: {
+                    rightGroup: 'r',
+                    leftGroup: 'g',
+                    right: 'r',
+                    left: 'g',
+                  },
+                  messageId: 'unexpectedObjectsGroupOrder',
+                },
+              ],
+              options: [
+                {
+                  ...options,
+                  useConfigurationIf: {
+                    callingFunctionNamePattern: 'foo',
+                  },
+                },
+                {
+                  ...options,
+                  customGroups: {
+                    r: 'r',
+                    g: 'g',
+                    b: 'b',
+                  },
+                  useConfigurationIf: {
+                    callingFunctionNamePattern: '^someFunction$',
+                  },
+                  groups: ['r', 'g', 'b'],
+                },
+              ],
+              output: dedent`
+                let obj = {
+                  b,
+                  g,
+                  r
+                }
+
+                someFunction(true, {
+                  r: string,
+                  g: string,
+                  b: string
+                })
+              `,
+              code: dedent`
+                let obj = {
+                  b,
+                  g,
+                  r
+                }
+
+                someFunction(true, {
+                  b: string,
+                  g: string,
+                  r: string
+                })
+              `,
+            },
+          ],
+          valid: [],
+        },
+      )
     })
   })
 
@@ -3701,14 +3779,24 @@ describe(ruleName, () => {
   })
 
   describe(`${ruleName}: misc`, () => {
-    let ruleTesterJSX = new RuleTester({
-      languageOptions: {
-        parserOptions: {
-          ecmaFeatures: {
-            jsx: true,
-          },
+    ruleTester.run(`${ruleName}: allows to use "unsorted" as type`, rule, {
+      valid: [
+        {
+          code: dedent`
+            let obj = {
+              b: 'b',
+              c: 'c',
+              a: 'a'
+            }
+          `,
+          options: [
+            {
+              type: 'unsorted',
+            },
+          ],
         },
-      },
+      ],
+      invalid: [],
     })
 
     ruleTester.run(
@@ -4408,6 +4496,15 @@ describe(ruleName, () => {
       })
     })
 
+    let ruleTesterJSX = new RuleTester({
+      languageOptions: {
+        parserOptions: {
+          ecmaFeatures: {
+            jsx: true,
+          },
+        },
+      },
+    })
     ruleTesterJSX.run(
       'allows to disable sorting object is style prop in jsx',
       rule,

@@ -1831,6 +1831,26 @@ describe(ruleName, () => {
   })
 
   describe(`${ruleName}: misc`, () => {
+    ruleTester.run(`${ruleName}: allows to use "unsorted" as type`, rule, {
+      valid: [
+        {
+          code: dedent`
+            [
+              'b',
+              'c',
+              'a'
+            ].includes(value)
+          `,
+          options: [
+            {
+              type: 'unsorted',
+            },
+          ],
+        },
+      ],
+      invalid: [],
+    })
+
     ruleTester.run(
       `${ruleName}: sets alphabetical asc sorting as default`,
       rule,

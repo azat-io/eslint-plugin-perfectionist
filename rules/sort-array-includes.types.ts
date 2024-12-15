@@ -6,10 +6,10 @@ import {
 } from '../utils/common-json-schemas'
 
 export type Options = Partial<{
+  type: 'alphabetical' | 'line-length' | 'unsorted' | 'natural' | 'custom'
   useConfigurationIf: {
     allNamesMatchPattern?: string
   }
-  type: 'alphabetical' | 'line-length' | 'natural' | 'custom'
   /**
    * @deprecated for {@link `groups`}
    */

@@ -1,9 +1,17 @@
 import type { JSONSchema4 } from '@typescript-eslint/utils/json-schema'
 
-export let typeJsonSchema: JSONSchema4 = {
-  enum: ['alphabetical', 'natural', 'line-length', 'custom'],
-  description: 'Specifies the sorting method.',
-  type: 'string',
+export let buildTypeJsonSchema = ({
+  withUnsorted,
+}: { withUnsorted?: boolean } = {}): JSONSchema4 => {
+  let enumValues = ['alphabetical', 'natural', 'line-length', 'custom']
+  if (withUnsorted) {
+    enumValues.push('unsorted')
+  }
+  return {
+    description: 'Specifies the sorting method.',
+    enum: enumValues,
+    type: 'string',
+  }
 }
 
 export let orderJsonSchema: JSONSchema4 = {
@@ -111,15 +119,20 @@ export let newlinesBetweenJsonSchema: JSONSchema4 = {
   type: 'string',
 }
 
-export let useConfigurationIfJsonSchema: JSONSchema4 = {
+export let buildUseConfigurationIfJsonSchema = ({
+  additionalProperties,
+}: {
+  additionalProperties?: Record<string, JSONSchema4>
+} = {}): JSONSchema4 => ({
   properties: {
     allNamesMatchPattern: {
       type: 'string',
     },
+    ...additionalProperties,
   },
   additionalProperties: false,
   type: 'object',
-}
+})
 
 let customGroupSortJsonSchema: Record<string, JSONSchema4> = {
   type: {

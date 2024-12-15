@@ -7,17 +7,17 @@ import type { Selector, Options } from './sort-array-includes.types'
 import type { SortingNode } from '../typings'
 
 import {
+  buildUseConfigurationIfJsonSchema,
   buildCustomGroupsArrayJsonSchema,
   partitionByCommentJsonSchema,
-  useConfigurationIfJsonSchema,
   partitionByNewLineJsonSchema,
   specialCharactersJsonSchema,
   ignoreCaseJsonSchema,
+  buildTypeJsonSchema,
   alphabetJsonSchema,
   localesJsonSchema,
   groupsJsonSchema,
   orderJsonSchema,
-  typeJsonSchema,
 } from '../utils/common-json-schemas'
 import { validateGeneratedGroupsConfiguration } from '../utils/validate-generated-groups-configuration'
 import { getCustomGroupsCompareOptions } from '../utils/get-custom-groups-compare-options'
@@ -89,15 +89,15 @@ export let jsonSchema: JSONSchema4 = {
       customGroups: buildCustomGroupsArrayJsonSchema({
         singleCustomGroupJsonSchema,
       }),
+      useConfigurationIf: buildUseConfigurationIfJsonSchema(),
+      type: buildTypeJsonSchema({ withUnsorted: true }),
       partitionByNewLine: partitionByNewLineJsonSchema,
-      useConfigurationIf: useConfigurationIfJsonSchema,
       specialCharacters: specialCharactersJsonSchema,
       ignoreCase: ignoreCaseJsonSchema,
       alphabet: alphabetJsonSchema,
       locales: localesJsonSchema,
       groups: groupsJsonSchema,
       order: orderJsonSchema,
-      type: typeJsonSchema,
     },
     additionalProperties: false,
     type: 'object',
@@ -174,7 +174,19 @@ export let sortArray = <MessageIds extends string>({
       .map(element => getNodeName({ sourceCode, element })),
     contextOptions: context.options,
   })
-  let options = complete(matchedContextOptions, settings, defaultOptions)
+  let completeOptions = complete(
+    matchedContextOptions[0],
+    settings,
+    defaultOptions,
+  )
+  let { type } = completeOptions
+  if (type === 'unsorted') {
+    return
+  }
+  let options = {
+    ...completeOptions,
+    type,
+  }
   validateGeneratedGroupsConfiguration({
     customGroups: options.customGroups,
     selectors: allSelectors,

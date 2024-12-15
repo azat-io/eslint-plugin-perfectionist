@@ -7,10 +7,10 @@ import {
   partitionByNewLineJsonSchema,
   specialCharactersJsonSchema,
   ignoreCaseJsonSchema,
+  buildTypeJsonSchema,
   alphabetJsonSchema,
   localesJsonSchema,
   orderJsonSchema,
-  typeJsonSchema,
 } from '../utils/common-json-schemas'
 import { validateCustomSortConfiguration } from '../utils/validate-custom-sort-configuration'
 import { getEslintDisabledLines } from '../utils/get-eslint-disabled-lines'
@@ -199,9 +199,9 @@ export default createEslintRule<Options, MESSAGE_ID>({
           specialCharacters: specialCharactersJsonSchema,
           ignoreCase: ignoreCaseJsonSchema,
           alphabet: alphabetJsonSchema,
+          type: buildTypeJsonSchema(),
           locales: localesJsonSchema,
           order: orderJsonSchema,
-          type: typeJsonSchema,
         },
         additionalProperties: false,
         type: 'object',

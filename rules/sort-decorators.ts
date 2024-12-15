@@ -8,11 +8,11 @@ import {
   specialCharactersJsonSchema,
   customGroupsJsonSchema,
   ignoreCaseJsonSchema,
+  buildTypeJsonSchema,
   alphabetJsonSchema,
   localesJsonSchema,
   groupsJsonSchema,
   orderJsonSchema,
-  typeJsonSchema,
 } from '../utils/common-json-schemas'
 import { validateCustomSortConfiguration } from '../utils/validate-custom-sort-configuration'
 import { validateGroupsConfiguration } from '../utils/validate-groups-configuration'
@@ -116,10 +116,10 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
           customGroups: customGroupsJsonSchema,
           ignoreCase: ignoreCaseJsonSchema,
           alphabet: alphabetJsonSchema,
+          type: buildTypeJsonSchema(),
           locales: localesJsonSchema,
           groups: groupsJsonSchema,
           order: orderJsonSchema,
-          type: typeJsonSchema,
         },
         additionalProperties: false,
         type: 'object',

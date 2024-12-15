@@ -1,20 +1,20 @@
-import type { TSESTree } from '@typescript-eslint/types'
+import { TSESTree } from '@typescript-eslint/types'
 
 import type { SortingNodeWithDependencies } from '../utils/sort-nodes-by-dependencies'
 
 import {
+  buildUseConfigurationIfJsonSchema,
   partitionByCommentJsonSchema,
   partitionByNewLineJsonSchema,
-  useConfigurationIfJsonSchema,
   specialCharactersJsonSchema,
   newlinesBetweenJsonSchema,
   customGroupsJsonSchema,
   ignoreCaseJsonSchema,
+  buildTypeJsonSchema,
   alphabetJsonSchema,
   localesJsonSchema,
   groupsJsonSchema,
   orderJsonSchema,
-  typeJsonSchema,
 } from '../utils/common-json-schemas'
 import {
   getFirstUnorderedNodeDependentOn,
@@ -22,6 +22,7 @@ import {
 } from '../utils/sort-nodes-by-dependencies'
 import { validateNewlinesAndPartitionConfiguration } from '../utils/validate-newlines-and-partition-configuration'
 import { validateCustomSortConfiguration } from '../utils/validate-custom-sort-configuration'
+import { getFirstNodeParentWithType } from '../utils/get-first-node-parent-with-type'
 import { validateGroupsConfiguration } from '../utils/validate-groups-configuration'
 import { getMatchingContextOptions } from '../utils/get-matching-context-options'
 import { getEslintDisabledLines } from '../utils/get-eslint-disabled-lines'
@@ -35,7 +36,6 @@ import { createEslintRule } from '../utils/create-eslint-rule'
 import { getLinesBetween } from '../utils/get-lines-between'
 import { getGroupNumber } from '../utils/get-group-number'
 import { getSourceCode } from '../utils/get-source-code'
-import { getNodeParent } from '../utils/get-node-parent'
 import { rangeToDiff } from '../utils/range-to-diff'
 import { getSettings } from '../utils/get-settings'
 import { isSortable } from '../utils/is-sortable'
@@ -48,9 +48,10 @@ import { matches } from '../utils/matches'
 
 type Options = Partial<{
   useConfigurationIf: {
+    callingFunctionNamePattern?: string
     allNamesMatchPattern?: string
   }
-  type: 'alphabetical' | 'line-length' | 'natural' | 'custom'
+  type: 'alphabetical' | 'line-length' | 'unsorted' | 'natural' | 'custom'
   destructuredObjects: { groups: boolean } | boolean
   customGroups: Record<string, string[] | string>
   partitionByComment: string[] | boolean | string
@@ -102,6 +103,9 @@ let defaultOptions: Required<Options[0]> = {
 
 export default createEslintRule<Options, MESSAGE_ID>({
   create: context => {
+    let settings = getSettings(context.settings)
+    let sourceCode = getSourceCode(context)
+
     let sortObject = (
       nodeObject: TSESTree.ObjectExpression | TSESTree.ObjectPattern,
     ): void => {
@@ -109,15 +113,42 @@ export default createEslintRule<Options, MESSAGE_ID>({
         return
       }
 
-      let settings = getSettings(context.settings)
-      let sourceCode = getSourceCode(context)
+      let objectParent = getObjectParent({ node: nodeObject })
+
       let matchedContextOptions = getMatchingContextOptions({
         nodeNames: nodeObject.properties
           .map(property => getNodeName({ sourceCode, property }))
           .filter(nodeName => nodeName !== null),
         contextOptions: context.options,
+      }).find(options => {
+        if (!options.useConfigurationIf?.callingFunctionNamePattern) {
+          return true
+        }
+        if (
+          objectParent?.type === 'VariableDeclarator' ||
+          !objectParent?.name
+        ) {
+          return false
+        }
+        return matches(
+          objectParent.name,
+          options.useConfigurationIf.callingFunctionNamePattern,
+        )
       })
-      let options = complete(matchedContextOptions, settings, defaultOptions)
+
+      let completeOptions = complete(
+        matchedContextOptions,
+        settings,
+        defaultOptions,
+      )
+      let { type } = completeOptions
+      if (type === 'unsorted') {
+        return
+      }
+      let options = {
+        ...completeOptions,
+        type,
+      }
       validateCustomSortConfiguration(options)
       validateGroupsConfiguration(
         options.groups,
@@ -135,39 +166,13 @@ export default createEslintRule<Options, MESSAGE_ID>({
         return
       }
 
-      if (options.ignorePattern.length) {
-        let variableParent = getNodeParent(nodeObject, [
-          'VariableDeclarator',
-          'Property',
-        ])
-        let parentId =
-          variableParent?.type === 'VariableDeclarator'
-            ? variableParent.id
-            : (variableParent as TSESTree.Property | null)?.key
-
-        let variableIdentifier =
-          parentId?.type === 'Identifier' ? parentId.name : null
-
-        let checkMatch = (identifier: string): boolean =>
-          options.ignorePattern.some(pattern => matches(identifier, pattern))
-
-        if (
-          typeof variableIdentifier === 'string' &&
-          checkMatch(variableIdentifier)
-        ) {
-          return
-        }
-
-        let callParent = getNodeParent(nodeObject, ['CallExpression'])
-        let callIdentifier =
-          callParent?.type === 'CallExpression' &&
-          callParent.callee.type === 'Identifier'
-            ? callParent.callee.name
-            : null
-
-        if (callIdentifier && checkMatch(callIdentifier)) {
-          return
-        }
+      if (
+        objectParent?.name &&
+        options.ignorePattern.some(pattern =>
+          matches(objectParent.name, pattern),
+        )
+      ) {
+        return
       }
 
       let isStyledCallExpression = (identifier: TSESTree.Expression): boolean =>
@@ -523,6 +528,13 @@ export default createEslintRule<Options, MESSAGE_ID>({
             },
             type: 'array',
           },
+          useConfigurationIf: buildUseConfigurationIfJsonSchema({
+            additionalProperties: {
+              callingFunctionNamePattern: {
+                type: 'string',
+              },
+            },
+          }),
           partitionByComment: {
             ...partitionByCommentJsonSchema,
             description:
@@ -540,8 +552,8 @@ export default createEslintRule<Options, MESSAGE_ID>({
             description: 'Controls whether to sort styled components.',
             type: 'boolean',
           },
+          type: buildTypeJsonSchema({ withUnsorted: true }),
           partitionByNewLine: partitionByNewLineJsonSchema,
-          useConfigurationIf: useConfigurationIfJsonSchema,
           specialCharacters: specialCharactersJsonSchema,
           newlinesBetween: newlinesBetweenJsonSchema,
           customGroups: customGroupsJsonSchema,
@@ -550,7 +562,6 @@ export default createEslintRule<Options, MESSAGE_ID>({
           locales: localesJsonSchema,
           groups: groupsJsonSchema,
           order: orderJsonSchema,
-          type: typeJsonSchema,
         },
         additionalProperties: false,
         type: 'object',
@@ -600,4 +611,73 @@ let getNodeName = ({
     return `${property.key.value}`
   }
   return sourceCode.getText(property.key)
+}
+
+let getObjectParent = ({
+  node,
+}: {
+  node: TSESTree.ObjectExpression | TSESTree.ObjectPattern
+}): {
+  type: 'VariableDeclarator' | 'CallExpression'
+  name: string
+} | null => {
+  let variableParentName = getVariableParentName({ node })
+  if (variableParentName) {
+    return {
+      type: 'VariableDeclarator',
+      name: variableParentName,
+    }
+  }
+  let callParentName = getCallExpressionParentName({ node })
+  if (callParentName) {
+    return {
+      type: 'CallExpression',
+      name: callParentName,
+    }
+  }
+  return null
+}
+
+let getVariableParentName = ({
+  node,
+}: {
+  node: TSESTree.ObjectExpression | TSESTree.ObjectPattern
+}): string | null => {
+  let variableParent = getFirstNodeParentWithType({
+    allowedTypes: [
+      TSESTree.AST_NODE_TYPES.VariableDeclarator,
+      TSESTree.AST_NODE_TYPES.Property,
+    ],
+    node,
+  })
+  if (!variableParent) {
+    return null
+  }
+  let parentId
+  if (variableParent.type === 'VariableDeclarator') {
+    parentId = variableParent.id
+  } else if ('key' in variableParent) {
+    parentId = variableParent.key
+    /* v8 ignore next 3 - Unsure if we can reach it */
+  } else {
+    return null
+  }
+
+  return parentId.type === 'Identifier' ? parentId.name : null
+}
+
+let getCallExpressionParentName = ({
+  node,
+}: {
+  node: TSESTree.ObjectExpression | TSESTree.ObjectPattern
+}): string | null => {
+  let callParent = getFirstNodeParentWithType({
+    allowedTypes: [TSESTree.AST_NODE_TYPES.CallExpression],
+    node,
+  })
+  if (!callParent) {
+    return null
+  }
+
+  return callParent.callee.type === 'Identifier' ? callParent.callee.name : null
 }

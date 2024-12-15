@@ -6,14 +6,14 @@ interface Options {
   }
 }
 
-export let getMatchingContextOptions = ({
+export let getMatchingContextOptions = <T extends Options>({
   contextOptions,
   nodeNames,
 }: {
-  contextOptions: Options[]
+  contextOptions: T[]
   nodeNames: string[]
-}): undefined | Options =>
-  contextOptions.find(options => {
+}): T[] =>
+  contextOptions.filter(options => {
     let allNamesMatchPattern = options.useConfigurationIf?.allNamesMatchPattern
     return (
       !allNamesMatchPattern ||
