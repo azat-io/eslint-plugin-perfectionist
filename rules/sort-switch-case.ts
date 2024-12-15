@@ -13,6 +13,7 @@ import {
 } from '../utils/common-json-schemas'
 import { validateCustomSortConfiguration } from '../utils/validate-custom-sort-configuration'
 import { makeCommentAfterFixes } from '../utils/make-comment-after-fixes'
+import { createNodeIndexMap } from '../utils/create-node-index-map'
 import { createEslintRule } from '../utils/create-eslint-rule'
 import { getSourceCode } from '../utils/get-source-code'
 import { rangeToDiff } from '../utils/range-to-diff'
@@ -106,10 +107,13 @@ export default createEslintRule<Options, MESSAGE_ID>({
           (node, index) => node !== caseNodesSortingNodeGroup[index],
         )
 
+        let nodeIndexMap = createNodeIndexMap(sortedCaseNameSortingNodes)
+
         pairwise(caseNodesSortingNodeGroup, (left, right) => {
-          let indexOfLeft = sortedCaseNameSortingNodes.indexOf(left)
-          let indexOfRight = sortedCaseNameSortingNodes.indexOf(right)
-          if (indexOfLeft < indexOfRight) {
+          let leftIndex = nodeIndexMap.get(left)!
+          let rightIndex = nodeIndexMap.get(right)!
+
+          if (leftIndex < rightIndex) {
             return
           }
 
@@ -326,15 +330,12 @@ let reduceCaseSortingNodes = (
   )
 
 let caseHasBreakOrReturn = (caseNode: TSESTree.SwitchCase): boolean => {
-  if (caseNode.consequent.length === 0) {
-    return false
-  }
-  if (caseNode.consequent[0]?.type === 'BlockStatement') {
-    return caseNode.consequent[0].body.some(statementIsBreakOrReturn)
-  }
-  return caseNode.consequent.some(currentConsequent =>
-    statementIsBreakOrReturn(currentConsequent),
-  )
+  let statements =
+    caseNode.consequent[0]?.type === 'BlockStatement'
+      ? caseNode.consequent[0].body
+      : caseNode.consequent
+
+  return statements.some(statementIsBreakOrReturn)
 }
 
 let statementIsBreakOrReturn = (
