@@ -27,6 +27,7 @@ import { getEslintDisabledLines } from '../utils/get-eslint-disabled-lines'
 import { singleCustomGroupJsonSchema } from './sort-array-includes.types'
 import { isNodeEslintDisabled } from '../utils/is-node-eslint-disabled'
 import { hasPartitionComment } from '../utils/is-partition-comment'
+import { createNodeIndexMap } from '../utils/create-node-index-map'
 import { sortNodesByGroups } from '../utils/sort-nodes-by-groups'
 import { getCommentsBefore } from '../utils/get-comments-before'
 import { customGroupMatches } from './sort-array-includes-utils'
@@ -322,10 +323,7 @@ export let sortArray = <MessageIds extends string>({
     let sortedNodesExcludingEslintDisabled =
       sortNodesIgnoringEslintDisabledNodes(true)
 
-    let nodeIndexMap = new Map<SortArrayIncludesSortingNode, number>()
-    for (let [index, node] of sortedNodes.entries()) {
-      nodeIndexMap.set(node, index)
-    }
+    let nodeIndexMap = createNodeIndexMap(sortedNodes)
 
     pairwise(nodes, (left, right) => {
       let leftIndex = nodeIndexMap.get(left)!
