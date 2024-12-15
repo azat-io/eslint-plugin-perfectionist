@@ -494,11 +494,13 @@ export default createEslintRule<SortClassesOptions, MESSAGE_ID>({
             selectors.push('property')
           }
 
-          for (let officialGroup of generatePredefinedGroups({
+          let predefinedGroups = generatePredefinedGroups({
             cache: cachedGroupsByModifiersAndSelectors,
             selectors,
             modifiers,
-          })) {
+          })
+
+          for (let officialGroup of predefinedGroups) {
             defineGroup(officialGroup)
           }
 
