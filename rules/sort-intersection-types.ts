@@ -188,15 +188,14 @@ export default createEslintRule<Options, MESSAGE_ID>({
             node: type,
           }
           if (
-            (options.partitionByComment &&
-              hasPartitionComment(
-                options.partitionByComment,
-                getCommentsBefore({
-                  tokenValueToIgnoreBefore: '&',
-                  node: type,
-                  sourceCode,
-                }),
-              )) ||
+            hasPartitionComment(
+              options.partitionByComment,
+              getCommentsBefore({
+                tokenValueToIgnoreBefore: '&',
+                node: type,
+                sourceCode,
+              }),
+            ) ||
             (options.partitionByNewLine &&
               lastSortingNode &&
               getLinesBetween(sourceCode, lastSortingNode, sortingNode))

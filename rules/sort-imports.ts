@@ -458,14 +458,13 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
           let lastSortingNode = formattedMembers.at(-1)?.at(-1)
 
           if (
-            (options.partitionByComment &&
-              hasPartitionComment(
-                options.partitionByComment,
-                getCommentsBefore({
-                  node: sortingNode.node,
-                  sourceCode,
-                }),
-              )) ||
+            hasPartitionComment(
+              options.partitionByComment,
+              getCommentsBefore({
+                node: sortingNode.node,
+                sourceCode,
+              }),
+            ) ||
             (options.partitionByNewLine &&
               lastSortingNode &&
               getLinesBetween(sourceCode, lastSortingNode, sortingNode)) ||

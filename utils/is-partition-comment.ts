@@ -7,7 +7,7 @@ export let isPartitionComment = (
   partitionComment: string[] | boolean | string,
   comment: string,
 ): boolean => {
-  if (getEslintDisabledRules(comment)) {
+  if (getEslintDisabledRules(comment) || !partitionComment) {
     return false
   }
   return (

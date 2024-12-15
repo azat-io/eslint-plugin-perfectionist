@@ -555,14 +555,13 @@ export default createEslintRule<SortClassesOptions, MESSAGE_ID>({
             (options.partitionByNewLine &&
               lastMember &&
               getLinesBetween(sourceCode, lastMember, sortingNode)) ||
-            (options.partitionByComment &&
-              hasPartitionComment(
-                options.partitionByComment,
-                getCommentsBefore({
-                  node: member,
-                  sourceCode,
-                }),
-              ))
+            hasPartitionComment(
+              options.partitionByComment,
+              getCommentsBefore({
+                node: member,
+                sourceCode,
+              }),
+            )
           ) {
             accumulator.push([])
           }
