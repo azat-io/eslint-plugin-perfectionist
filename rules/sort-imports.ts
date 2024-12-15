@@ -24,6 +24,7 @@ import { getOptionsWithCleanGroups } from '../utils/get-options-with-clean-group
 import { getEslintDisabledLines } from '../utils/get-eslint-disabled-lines'
 import { isNodeEslintDisabled } from '../utils/is-node-eslint-disabled'
 import { getTypescriptImport } from '../utils/get-typescript-import'
+import { createNodeIndexMap } from '../utils/create-node-index-map'
 import { hasPartitionComment } from '../utils/is-partition-comment'
 import { sortNodesByGroups } from '../utils/sort-nodes-by-groups'
 import { getCommentsBefore } from '../utils/get-comments-before'
@@ -181,8 +182,10 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
       return group.every(isSideEffectOnlyGroup)
     }
 
-    // Ensure that if `sortSideEffects: false`, no side effect group is in a
-    // Nested group with non-side-effect groups.
+    /**
+     * Ensure that if `sortSideEffects: false`, no side effect group is in a
+     * nested group with non-side-effect groups.
+     */
     if (!options.sortSideEffects) {
       let hasInvalidGroup = options.groups
         .filter(group => Array.isArray(group))
@@ -214,10 +217,19 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
       /* Avoid matching on named imports without specifiers */
       !/\}\s*from\s+/u.test(sourceCode.getText(node))
 
+    let styleExtensions = new Set([
+      '.less',
+      '.scss',
+      '.sass',
+      '.styl',
+      '.pcss',
+      '.css',
+      '.sss',
+    ])
     let isStyle = (value: string): boolean => {
       let [cleanedValue] = value.split('?')
-      return ['.less', '.scss', '.sass', '.styl', '.pcss', '.css', '.sss'].some(
-        extension => cleanedValue.endsWith(extension),
+      return [...styleExtensions].some(extension =>
+        cleanedValue.endsWith(extension),
       )
     }
 
@@ -455,7 +467,8 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
 
         let formattedMembers: SortImportsSortingNode[][] = [[]]
         for (let sortingNode of nodes) {
-          let lastSortingNode = formattedMembers.at(-1)?.at(-1)
+          let lastGroup = formattedMembers.at(-1)
+          let lastSortingNode = lastGroup?.at(-1)
 
           if (
             hasPartitionComment(
@@ -471,10 +484,11 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
             (lastSortingNode &&
               hasContentBetweenNodes(lastSortingNode, sortingNode))
           ) {
-            formattedMembers.push([])
+            lastGroup = []
+            formattedMembers.push(lastGroup)
           }
 
-          formattedMembers.at(-1)!.push(sortingNode)
+          lastGroup!.push(sortingNode)
         }
 
         for (let nodeList of formattedMembers) {
@@ -492,24 +506,28 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
               isNodeIgnored: node => node.isIgnored,
               ignoreEslintDisabledNodes,
             })
+
           let sortedNodes = sortNodesExcludingEslintDisabled(false)
           let sortedNodesExcludingEslintDisabled =
             sortNodesExcludingEslintDisabled(true)
+
+          let nodeIndexMap = createNodeIndexMap(sortedNodes)
 
           pairwise(nodeList, (left, right) => {
             let leftNumber = getGroupNumber(options.groups, left)
             let rightNumber = getGroupNumber(options.groups, right)
 
-            let indexOfLeft = sortedNodes.indexOf(left)
-            let indexOfRight = sortedNodes.indexOf(right)
+            let leftIndex = nodeIndexMap.get(left)!
+            let rightIndex = nodeIndexMap.get(right)!
+
             let indexOfRightExcludingEslintDisabled =
               sortedNodesExcludingEslintDisabled.indexOf(right)
 
             let messageIds: MESSAGE_ID[] = []
 
             if (
-              indexOfLeft > indexOfRight ||
-              indexOfLeft >= indexOfRightExcludingEslintDisabled
+              leftIndex > rightIndex ||
+              leftIndex >= indexOfRightExcludingEslintDisabled
             ) {
               messageIds.push(
                 leftNumber === rightNumber
