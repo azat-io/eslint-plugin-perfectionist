@@ -2105,6 +2105,69 @@ describe(ruleName, () => {
           valid: [],
         },
       )
+
+      describe(`${ruleName}(${type}): allows to use 'declarationMatchesPattern'`, () => {
+        ruleTester.run(
+          `${ruleName}(${type}): detects declaration name by pattern`,
+          rule,
+          {
+            invalid: [
+              {
+                options: [
+                  {
+                    useConfigurationIf: {
+                      declarationMatchesPattern: '^Interface$',
+                    },
+                    type: 'unsorted',
+                  },
+                  options,
+                ],
+                errors: [
+                  {
+                    data: {
+                      right: 'a',
+                      left: 'b',
+                    },
+                    messageId: 'unexpectedInterfacePropertiesOrder',
+                  },
+                ],
+                output: dedent`
+                  interface OtherInterface {
+                    a: string
+                    b: string
+                  }
+                `,
+                code: dedent`
+                  interface OtherInterface {
+                    b: string
+                    a: string
+                  }
+                `,
+              },
+            ],
+            valid: [
+              {
+                options: [
+                  {
+                    useConfigurationIf: {
+                      declarationMatchesPattern: '^Interface$',
+                    },
+                    type: 'unsorted',
+                  },
+                  options,
+                ],
+                code: dedent`
+                  interface Interface {
+                    b: string
+                    c: string
+                    a: string
+                  }
+                `,
+              },
+            ],
+          },
+        )
+      })
     })
   })
 

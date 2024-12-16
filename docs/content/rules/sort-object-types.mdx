@@ -154,9 +154,11 @@ Specifies the sorting locales. See [String.prototype.localeCompare() - locales](
 - `string` — A BCP 47 language tag (e.g. `'en'`, `'en-US'`, `'zh-CN'`).
 - `string[]` — An array of BCP 47 language tags.
 
-### ignorePattern
+### [DEPRECATED] ignorePattern
 
 <sub>default: `[]`</sub>
+
+Use the [useConfigurationIf.declarationMatchesPattern](#useconfigurationif) option alongside [type: unsorted](#type) instead.
 
 Allows you to specify names or patterns for object types that should be ignored by this rule. This can be useful if you have specific object types that you do not want to sort.
 
@@ -227,7 +229,7 @@ Allows you to group type object keys by their kind, determining whether required
 ### useConfigurationIf
 
 <sub>
-  type: `{ allNamesMatchPattern?: string }`
+  type: `{ allNamesMatchPattern?: string; declarationMatchesPattern?: string }`
 </sub>
 <sub>default: `{}`</sub>
 
@@ -251,6 +253,26 @@ Example configuration:
       },
       useConfigurationIf: {
         allNamesMatchPattern: '^r|g|b$',
+      },
+    },
+    {
+      type: 'alphabetical' // Fallback configuration
+    }
+  ],
+}
+```
+
+- `declarationMatchesPattern` — A regexp pattern that the object type declaration must match.
+
+Example configuration:
+```ts
+{
+  'perfectionist/sort-object-types': [
+    'error',
+    {
+      type: 'unsorted', // Do not sort Metadata types
+      useConfigurationIf: {
+        declarationMatchesPattern: '*Metadata$',
       },
     },
     {

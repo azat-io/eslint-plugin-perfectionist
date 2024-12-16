@@ -9,11 +9,12 @@ import {
 } from '../utils/common-json-schemas'
 
 export type Options = Partial<{
-  type: 'alphabetical' | 'line-length' | 'unsorted' | 'natural' | 'custom'
-  customGroups: Record<string, string[] | string> | CustomGroup[]
   useConfigurationIf: {
+    declarationMatchesPattern?: string
     allNamesMatchPattern?: string
   }
+  type: 'alphabetical' | 'line-length' | 'unsorted' | 'natural' | 'custom'
+  customGroups: Record<string, string[] | string> | CustomGroup[]
   /**
    * @deprecated for {@link `groups`}
    */
@@ -24,6 +25,9 @@ export type Options = Partial<{
   locales: NonNullable<Intl.LocalesArgument>
   groups: (Group[] | Group)[]
   partitionByNewLine: boolean
+  /**
+   * @deprecated for {@link `useConfigurationIf.declarationMatchesPattern`}
+   */
   ignorePattern: string[]
   order: 'desc' | 'asc'
   ignoreCase: boolean

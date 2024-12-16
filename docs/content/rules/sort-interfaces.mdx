@@ -192,9 +192,11 @@ Specifies the sorting locales. See [String.prototype.localeCompare() - locales](
 - `string` — A BCP 47 language tag (e.g. `'en'`, `'en-US'`, `'zh-CN'`).
 - `string[]` — An array of BCP 47 language tags.
 
-### ignorePattern
+### [DEPRECATED] ignorePattern
 
 <sub>default: `[]`</sub>
+
+Use the [useConfigurationIf.declarationMatchesPattern](#useconfigurationif) option alongside [type: unsorted](#type) instead.
 
 Allows you to specify names or patterns for interfaces that should be ignored by this rule. This can be useful if you have specific interfaces that you do not want to sort.
 
@@ -262,7 +264,7 @@ Specifies how optional and required members should be ordered in TypeScript inte
 ### useConfigurationIf
 
 <sub>
-  type: `{ allNamesMatchPattern?: string }`
+  type: `{ allNamesMatchPattern?: string; declarationMatchesPattern?: string }`
 </sub>
 <sub>default: `{}`</sub>
 
@@ -286,6 +288,26 @@ Example configuration:
       },
       useConfigurationIf: {
         allNamesMatchPattern: '^r|g|b$',
+      },
+    },
+    {
+      type: 'alphabetical' // Fallback configuration
+    }
+  ],
+}
+```
+
+- `declarationMatchesPattern` — A regexp pattern that the interface declaration must match.
+
+Example configuration:
+```ts
+{
+  'perfectionist/sort-interfaces': [
+    'error',
+    {
+      type: 'unsorted', // Do not sort Metadata interfaces
+      useConfigurationIf: {
+        declarationMatchesPattern: '*Metadata$',
       },
     },
     {

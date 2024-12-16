@@ -96,6 +96,13 @@ export let jsonSchema: JSONSchema4 = {
         },
         type: 'array',
       },
+      useConfigurationIf: buildUseConfigurationIfJsonSchema({
+        additionalProperties: {
+          declarationMatchesPattern: {
+            type: 'string',
+          },
+        },
+      }),
       partitionByComment: {
         ...partitionByCommentJsonSchema,
         description:
@@ -112,7 +119,6 @@ export let jsonSchema: JSONSchema4 = {
         description: 'Specifies top-level groups.',
         type: 'string',
       },
-      useConfigurationIf: buildUseConfigurationIfJsonSchema(),
       type: buildTypeJsonSchema({ withUnsorted: true }),
       partitionByNewLine: partitionByNewLineJsonSchema,
       specialCharacters: specialCharactersJsonSchema,
@@ -199,9 +205,20 @@ export let sortObjectTypeElements = <MessageIds extends string>({
       getNodeName({ typeElement: node, sourceCode }),
     ),
     contextOptions: context.options,
+  }).find(options => {
+    if (!options.useConfigurationIf?.declarationMatchesPattern) {
+      return true
+    }
+    if (!parentNodeName) {
+      return false
+    }
+    return matches(
+      parentNodeName,
+      options.useConfigurationIf.declarationMatchesPattern,
+    )
   })
   let completeOptions = complete(
-    matchedContextOptions[0],
+    matchedContextOptions,
     settings,
     defaultOptions,
   )

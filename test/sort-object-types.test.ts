@@ -1952,6 +1952,115 @@ describe(ruleName, () => {
           valid: [],
         },
       )
+
+      describe(`${ruleName}(${type}): allows to use 'declarationMatchesPattern'`, () => {
+        ruleTester.run(
+          `${ruleName}(${type}): detects declaration name by pattern`,
+          rule,
+          {
+            invalid: [
+              {
+                options: [
+                  {
+                    useConfigurationIf: {
+                      declarationMatchesPattern: '^Type$',
+                    },
+                    type: 'unsorted',
+                  },
+                  options,
+                ],
+                errors: [
+                  {
+                    data: {
+                      right: 'a',
+                      left: 'b',
+                    },
+                    messageId: 'unexpectedObjectTypesOrder',
+                  },
+                ],
+                output: dedent`
+                  type OtherType = {
+                    a: string
+                    b: string
+                  }
+                `,
+                code: dedent`
+                  type OtherType = {
+                    b: string
+                    a: string
+                  }
+                `,
+              },
+            ],
+            valid: [
+              {
+                options: [
+                  {
+                    useConfigurationIf: {
+                      declarationMatchesPattern: '^Type$',
+                    },
+                    type: 'unsorted',
+                  },
+                  options,
+                ],
+                code: dedent`
+                  type Type = {
+                    b: string
+                    c: string
+                    a: string
+                  }
+                `,
+              },
+            ],
+          },
+        )
+
+        ruleTester.run(
+          `${ruleName}(${type}): does not match configuration if no declaration name`,
+          rule,
+          {
+            invalid: [
+              {
+                options: [
+                  {
+                    useConfigurationIf: {
+                      declarationMatchesPattern: '^Type$',
+                    },
+                    type: 'unsorted',
+                  },
+                  options,
+                ],
+                errors: [
+                  {
+                    data: {
+                      right: 'b',
+                      left: 'c',
+                    },
+                    messageId: 'unexpectedObjectTypesOrder',
+                  },
+                ],
+                output: dedent`
+                  type Type = {
+                    a: {
+                      b: string
+                      c: string
+                    }
+                  }
+                `,
+                code: dedent`
+                  type Type = {
+                    a: {
+                      c: string
+                      b: string
+                    }
+                  }
+                `,
+              },
+            ],
+            valid: [],
+          },
+        )
+      })
     })
   })
 
