@@ -2038,6 +2038,137 @@ describe(ruleName, () => {
         valid: [],
       },
     )
+
+    describe(`${ruleName}(${type}): allows to use 'useConfigurationIf'`, () => {
+      ruleTester.run(
+        `${ruleName}(${type}): allows to use 'allNamesMatchPattern'`,
+        rule,
+        {
+          invalid: [
+            {
+              errors: [
+                {
+                  data: {
+                    rightGroup: 'g',
+                    leftGroup: 'b',
+                    right: 'g',
+                    left: 'b',
+                  },
+                  messageId: 'unexpectedInterfacePropertiesGroupOrder',
+                },
+                {
+                  data: {
+                    rightGroup: 'r',
+                    leftGroup: 'g',
+                    right: 'r',
+                    left: 'g',
+                  },
+                  messageId: 'unexpectedInterfacePropertiesGroupOrder',
+                },
+              ],
+              options: [
+                {
+                  ...options,
+                  useConfigurationIf: {
+                    allNamesMatchPattern: 'foo',
+                  },
+                },
+                {
+                  ...options,
+                  customGroups: {
+                    r: 'r',
+                    g: 'g',
+                    b: 'b',
+                  },
+                  useConfigurationIf: {
+                    allNamesMatchPattern: '^r|g|b$',
+                  },
+                  groups: ['r', 'g', 'b'],
+                },
+              ],
+              output: dedent`
+                interface Interface {
+                  r: string
+                  g: string
+                  b: string
+                }
+              `,
+              code: dedent`
+                interface Interface {
+                  b: string
+                  g: string
+                  r: string
+                }
+              `,
+            },
+          ],
+          valid: [],
+        },
+      )
+
+      describe(`${ruleName}(${type}): allows to use 'declarationMatchesPattern'`, () => {
+        ruleTester.run(
+          `${ruleName}(${type}): detects declaration name by pattern`,
+          rule,
+          {
+            invalid: [
+              {
+                options: [
+                  {
+                    useConfigurationIf: {
+                      declarationMatchesPattern: '^Interface$',
+                    },
+                    type: 'unsorted',
+                  },
+                  options,
+                ],
+                errors: [
+                  {
+                    data: {
+                      right: 'a',
+                      left: 'b',
+                    },
+                    messageId: 'unexpectedInterfacePropertiesOrder',
+                  },
+                ],
+                output: dedent`
+                  interface OtherInterface {
+                    a: string
+                    b: string
+                  }
+                `,
+                code: dedent`
+                  interface OtherInterface {
+                    b: string
+                    a: string
+                  }
+                `,
+              },
+            ],
+            valid: [
+              {
+                options: [
+                  {
+                    useConfigurationIf: {
+                      declarationMatchesPattern: '^Interface$',
+                    },
+                    type: 'unsorted',
+                  },
+                  options,
+                ],
+                code: dedent`
+                  interface Interface {
+                    b: string
+                    c: string
+                    a: string
+                  }
+                `,
+              },
+            ],
+          },
+        )
+      })
+    })
   })
 
   describe(`${ruleName}: sorting by natural order`, () => {
@@ -3899,6 +4030,26 @@ describe(ruleName, () => {
   })
 
   describe(`${ruleName}: misc`, () => {
+    ruleTester.run(`${ruleName}: allows to use "unsorted" as type`, rule, {
+      valid: [
+        {
+          code: dedent`
+            interface Interface {
+              b: string;
+              c: string;
+              a: string;
+            }
+          `,
+          options: [
+            {
+              type: 'unsorted',
+            },
+          ],
+        },
+      ],
+      invalid: [],
+    })
+
     ruleTester.run(
       `${ruleName}: sets alphabetical asc sorting as default`,
       rule,

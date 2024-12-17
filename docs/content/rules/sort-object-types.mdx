@@ -105,6 +105,7 @@ Specifies the sorting method.
 - `'natural'` — Sort items in a [natural](https://github.com/yobacca/natural-orderby) order (e.g., “item2” < “item10”).
 - `'line-length'` — Sort items by the length of the code line (shorter lines first).
 - `'custom'` — Sort items using the alphabet entered in the [`alphabet`](#alphabet) option.
+- `'unsorted'` — Do not sort items. To be used with the [`useConfigurationIf`](#useconfigurationif) option.
 
 ### order
 
@@ -153,9 +154,11 @@ Specifies the sorting locales. See [String.prototype.localeCompare() - locales](
 - `string` — A BCP 47 language tag (e.g. `'en'`, `'en-US'`, `'zh-CN'`).
 - `string[]` — An array of BCP 47 language tags.
 
-### ignorePattern
+### [DEPRECATED] ignorePattern
 
 <sub>default: `[]`</sub>
+
+Use the [useConfigurationIf.declarationMatchesPattern](#useconfigurationif) option alongside [type: unsorted](#type) instead.
 
 Allows you to specify names or patterns for object types that should be ignored by this rule. This can be useful if you have specific object types that you do not want to sort.
 
@@ -222,6 +225,62 @@ Allows you to group type object keys by their kind, determining whether required
 - `mixed` — Do not group object keys by their kind; required values are sorted together optional values.
 - `required-first` — Group all required values before optional.
 - `optional-first` — Group all optional values before required.
+
+### useConfigurationIf
+
+<sub>
+  type: `{ allNamesMatchPattern?: string; declarationMatchesPattern?: string }`
+</sub>
+<sub>default: `{}`</sub>
+
+Allows you to specify filters to match a particular options configuration for a given object type.
+
+The first matching options configuration will be used. If no configuration matches, the default options configuration will be used.
+
+- `allNamesMatchPattern` — A regexp pattern that all keys must match.
+
+Example configuration:
+```ts
+{
+  'perfectionist/sort-object-types': [
+    'error',
+    {
+      groups: ['r', 'g', 'b'], // Sort colors types by RGB
+      customGroups: {
+        r: '^r$',
+        g: '^g$',
+        b: '^b$',
+      },
+      useConfigurationIf: {
+        allNamesMatchPattern: '^r|g|b$',
+      },
+    },
+    {
+      type: 'alphabetical' // Fallback configuration
+    }
+  ],
+}
+```
+
+- `declarationMatchesPattern` — A regexp pattern that the object type declaration must match.
+
+Example configuration:
+```ts
+{
+  'perfectionist/sort-object-types': [
+    'error',
+    {
+      type: 'unsorted', // Do not sort Metadata types
+      useConfigurationIf: {
+        declarationMatchesPattern: '*Metadata$',
+      },
+    },
+    {
+      type: 'alphabetical' // Fallback configuration
+    }
+  ],
+}
+```
 
 ### groups
 

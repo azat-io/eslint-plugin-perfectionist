@@ -143,6 +143,7 @@ Specifies the sorting method.
 - `'natural'` — Sort items in a [natural](https://github.com/yobacca/natural-orderby) order (e.g., “item2” < “item10”).
 - `'line-length'` — Sort items by the length of the code line (shorter lines first).
 - `'custom'` — Sort items using the alphabet entered in the [`alphabet`](#alphabet) option.
+- `'unsorted'` — Do not sort items. To be used with the [`useConfigurationIf`](#useconfigurationif) option.
 
 ### order
 
@@ -191,9 +192,11 @@ Specifies the sorting locales. See [String.prototype.localeCompare() - locales](
 - `string` — A BCP 47 language tag (e.g. `'en'`, `'en-US'`, `'zh-CN'`).
 - `string[]` — An array of BCP 47 language tags.
 
-### ignorePattern
+### [DEPRECATED] ignorePattern
 
 <sub>default: `[]`</sub>
+
+Use the [useConfigurationIf.declarationMatchesPattern](#useconfigurationif) option alongside [type: unsorted](#type) instead.
 
 Allows you to specify names or patterns for interfaces that should be ignored by this rule. This can be useful if you have specific interfaces that you do not want to sort.
 
@@ -257,6 +260,62 @@ Specifies how optional and required members should be ordered in TypeScript inte
 - `'optional-first'` — Put all optional members before required members.
 - `'required-first'` — Put all required members before optional members.
 - `'mixed'` — Do not enforce any specific order based on optionality.
+
+### useConfigurationIf
+
+<sub>
+  type: `{ allNamesMatchPattern?: string; declarationMatchesPattern?: string }`
+</sub>
+<sub>default: `{}`</sub>
+
+Allows you to specify filters to match a particular options configuration for a given interface.
+
+The first matching options configuration will be used. If no configuration matches, the default options configuration will be used.
+
+- `allNamesMatchPattern` — A regexp pattern that all keys must match.
+
+Example configuration:
+```ts
+{
+  'perfectionist/sort-interfaces': [
+    'error',
+    {
+      groups: ['r', 'g', 'b'], // Sort colors types by RGB
+      customGroups: {
+        r: '^r$',
+        g: '^g$',
+        b: '^b$',
+      },
+      useConfigurationIf: {
+        allNamesMatchPattern: '^r|g|b$',
+      },
+    },
+    {
+      type: 'alphabetical' // Fallback configuration
+    }
+  ],
+}
+```
+
+- `declarationMatchesPattern` — A regexp pattern that the interface declaration must match.
+
+Example configuration:
+```ts
+{
+  'perfectionist/sort-interfaces': [
+    'error',
+    {
+      type: 'unsorted', // Do not sort Metadata interfaces
+      useConfigurationIf: {
+        declarationMatchesPattern: '*Metadata$',
+      },
+    },
+    {
+      type: 'alphabetical' // Fallback configuration
+    }
+  ],
+}
+```
 
 ### groups
 

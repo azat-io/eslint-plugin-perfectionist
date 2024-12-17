@@ -1,11 +1,13 @@
 import type { JSONSchema4 } from '@typescript-eslint/utils/json-schema'
 import type { RuleContext } from '@typescript-eslint/utils/ts-eslint'
 import type { TSESTree } from '@typescript-eslint/types'
+import type { TSESLint } from '@typescript-eslint/utils'
 
 import type { Modifier, Selector, Options } from './sort-object-types.types'
 import type { SortingNode } from '../typings'
 
 import {
+  buildUseConfigurationIfJsonSchema,
   buildCustomGroupsArrayJsonSchema,
   partitionByCommentJsonSchema,
   partitionByNewLineJsonSchema,
@@ -23,6 +25,7 @@ import { validateNewlinesAndPartitionConfiguration } from '../utils/validate-new
 import { validateGeneratedGroupsConfiguration } from '../utils/validate-generated-groups-configuration'
 import { validateCustomSortConfiguration } from '../utils/validate-custom-sort-configuration'
 import { getCustomGroupsCompareOptions } from '../utils/get-custom-groups-compare-options'
+import { getMatchingContextOptions } from '../utils/get-matching-context-options'
 import { generatePredefinedGroups } from '../utils/generate-predefined-groups'
 import { getEslintDisabledLines } from '../utils/get-eslint-disabled-lines'
 import { singleCustomGroupJsonSchema } from './sort-object-types.types'
@@ -70,6 +73,7 @@ let defaultOptions: Required<Options[0]> = {
   partitionByNewLine: false,
   newlinesBetween: 'ignore',
   specialCharacters: 'keep',
+  useConfigurationIf: {},
   type: 'alphabetical',
   groupKind: 'mixed',
   ignorePattern: [],
@@ -82,43 +86,54 @@ let defaultOptions: Required<Options[0]> = {
 }
 
 export let jsonSchema: JSONSchema4 = {
-  properties: {
-    ignorePattern: {
-      description:
-        'Specifies names or patterns for nodes that should be ignored by rule.',
-      items: {
+  items: {
+    properties: {
+      ignorePattern: {
+        description:
+          'Specifies names or patterns for nodes that should be ignored by rule.',
+        items: {
+          type: 'string',
+        },
+        type: 'array',
+      },
+      useConfigurationIf: buildUseConfigurationIfJsonSchema({
+        additionalProperties: {
+          declarationMatchesPattern: {
+            type: 'string',
+          },
+        },
+      }),
+      partitionByComment: {
+        ...partitionByCommentJsonSchema,
+        description:
+          'Allows you to use comments to separate members into logical groups.',
+      },
+      customGroups: {
+        oneOf: [
+          customGroupsJsonSchema,
+          buildCustomGroupsArrayJsonSchema({ singleCustomGroupJsonSchema }),
+        ],
+      },
+      groupKind: {
+        enum: ['mixed', 'required-first', 'optional-first'],
+        description: 'Specifies top-level groups.',
         type: 'string',
       },
-      type: 'array',
+      type: buildTypeJsonSchema({ withUnsorted: true }),
+      partitionByNewLine: partitionByNewLineJsonSchema,
+      specialCharacters: specialCharactersJsonSchema,
+      newlinesBetween: newlinesBetweenJsonSchema,
+      ignoreCase: ignoreCaseJsonSchema,
+      alphabet: alphabetJsonSchema,
+      locales: localesJsonSchema,
+      groups: groupsJsonSchema,
+      order: orderJsonSchema,
     },
-    partitionByComment: {
-      ...partitionByCommentJsonSchema,
-      description:
-        'Allows you to use comments to separate members into logical groups.',
-    },
-    customGroups: {
-      oneOf: [
-        customGroupsJsonSchema,
-        buildCustomGroupsArrayJsonSchema({ singleCustomGroupJsonSchema }),
-      ],
-    },
-    groupKind: {
-      enum: ['mixed', 'required-first', 'optional-first'],
-      description: 'Specifies top-level groups.',
-      type: 'string',
-    },
-    partitionByNewLine: partitionByNewLineJsonSchema,
-    specialCharacters: specialCharactersJsonSchema,
-    newlinesBetween: newlinesBetweenJsonSchema,
-    ignoreCase: ignoreCaseJsonSchema,
-    alphabet: alphabetJsonSchema,
-    type: buildTypeJsonSchema(),
-    locales: localesJsonSchema,
-    groups: groupsJsonSchema,
-    order: orderJsonSchema,
+    additionalProperties: false,
+    type: 'object',
   },
-  additionalProperties: false,
-  type: 'object',
+  uniqueItems: true,
+  type: 'array',
 }
 
 export default createEslintRule<Options, MESSAGE_ID>({
@@ -138,7 +153,7 @@ export default createEslintRule<Options, MESSAGE_ID>({
       description: 'Enforce sorted object types.',
       recommended: true,
     },
-    schema: [jsonSchema],
+    schema: jsonSchema,
     type: 'suggestion',
     fixable: 'code',
   },
@@ -184,7 +199,37 @@ export let sortObjectTypeElements = <MessageIds extends string>({
   }
 
   let settings = getSettings(context.settings)
-  let options = complete(context.options.at(0), settings, defaultOptions)
+  let sourceCode = getSourceCode(context)
+  let matchedContextOptions = getMatchingContextOptions({
+    nodeNames: elements.map(node =>
+      getNodeName({ typeElement: node, sourceCode }),
+    ),
+    contextOptions: context.options,
+  }).find(options => {
+    if (!options.useConfigurationIf?.declarationMatchesPattern) {
+      return true
+    }
+    if (!parentNodeName) {
+      return false
+    }
+    return matches(
+      parentNodeName,
+      options.useConfigurationIf.declarationMatchesPattern,
+    )
+  })
+  let completeOptions = complete(
+    matchedContextOptions,
+    settings,
+    defaultOptions,
+  )
+  let { type } = completeOptions
+  if (type === 'unsorted') {
+    return
+  }
+  let options = {
+    ...completeOptions,
+    type,
+  }
   validateCustomSortConfiguration(options)
   validateGeneratedGroupsConfiguration({
     customGroups: options.customGroups,
@@ -202,7 +247,6 @@ export let sortObjectTypeElements = <MessageIds extends string>({
     return
   }
 
-  let sourceCode = getSourceCode(context)
   let eslintDisabledLines = getEslintDisabledLines({
     ruleName: context.id,
     sourceCode,
@@ -218,43 +262,9 @@ export let sortObjectTypeElements = <MessageIds extends string>({
         return accumulator
       }
 
-      let name: string
       let lastSortingNode = accumulator.at(-1)?.at(-1)
 
       let { setCustomGroups, defineGroup, getGroup } = useGroups(options)
-
-      let formatName = (value: string): string => value.replace(/[,;]$/u, '')
-
-      if (typeElement.type === 'TSPropertySignature') {
-        if (typeElement.key.type === 'Identifier') {
-          ;({ name } = typeElement.key)
-        } else if (typeElement.key.type === 'Literal') {
-          name = `${typeElement.key.value}`
-        } else {
-          let end: number =
-            typeElement.typeAnnotation?.range.at(0) ??
-            typeElement.range.at(1)! - (typeElement.optional ? '?'.length : 0)
-          name = sourceCode.text.slice(typeElement.range.at(0), end)
-        }
-      } else if (typeElement.type === 'TSIndexSignature') {
-        let endIndex: number =
-          typeElement.typeAnnotation?.range.at(0) ?? typeElement.range.at(1)!
-
-        name = formatName(
-          sourceCode.text.slice(typeElement.range.at(0), endIndex),
-        )
-      } else if ('name' in typeElement.key) {
-        // TSMethodSignature
-        ;({ name } = typeElement.key)
-        /* v8 ignore next 8 - Unsure if we can reach it */
-      } else {
-        name = formatName(
-          sourceCode.text.slice(
-            typeElement.range.at(0),
-            typeElement.range.at(1),
-          ),
-        )
-      }
 
       let selectors: Selector[] = []
       let modifiers: Modifier[] = []
@@ -295,6 +305,7 @@ export let sortObjectTypeElements = <MessageIds extends string>({
         defineGroup(predefinedGroup)
       }
 
+      let name = getNodeName({ typeElement, sourceCode })
       if (Array.isArray(options.customGroups)) {
         for (let customGroup of options.customGroups) {
           if (
@@ -449,4 +460,45 @@ export let sortObjectTypeElements = <MessageIds extends string>({
       }
     })
   }
+}
+
+let getNodeName = ({
+  typeElement,
+  sourceCode,
+}: {
+  typeElement: TSESTree.TypeElement
+  sourceCode: TSESLint.SourceCode
+}): string => {
+  let name: string
+
+  let formatName = (value: string): string => value.replace(/[,;]$/u, '')
+
+  if (typeElement.type === 'TSPropertySignature') {
+    if (typeElement.key.type === 'Identifier') {
+      ;({ name } = typeElement.key)
+    } else if (typeElement.key.type === 'Literal') {
+      name = `${typeElement.key.value}`
+    } else {
+      let end: number =
+        typeElement.typeAnnotation?.range.at(0) ??
+        typeElement.range.at(1)! - (typeElement.optional ? '?'.length : 0)
+      name = sourceCode.text.slice(typeElement.range.at(0), end)
+    }
+  } else if (typeElement.type === 'TSIndexSignature') {
+    let endIndex: number =
+      typeElement.typeAnnotation?.range.at(0) ?? typeElement.range.at(1)!
+
+    name = formatName(sourceCode.text.slice(typeElement.range.at(0), endIndex))
+  } else if (
+    typeElement.type === 'TSMethodSignature' &&
+    'name' in typeElement.key
+  ) {
+    ;({ name } = typeElement.key)
+    /* v8 ignore next 8 - Unsure if we can reach it */
+  } else {
+    name = formatName(
+      sourceCode.text.slice(typeElement.range.at(0), typeElement.range.at(1)),
+    )
+  }
+  return name
 }

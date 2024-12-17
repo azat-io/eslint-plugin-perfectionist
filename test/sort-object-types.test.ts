@@ -1885,6 +1885,183 @@ describe(ruleName, () => {
         invalid: [],
       },
     )
+
+    describe(`${ruleName}(${type}): allows to use 'useConfigurationIf'`, () => {
+      ruleTester.run(
+        `${ruleName}(${type}): allows to use 'allNamesMatchPattern'`,
+        rule,
+        {
+          invalid: [
+            {
+              errors: [
+                {
+                  data: {
+                    rightGroup: 'g',
+                    leftGroup: 'b',
+                    right: 'g',
+                    left: 'b',
+                  },
+                  messageId: 'unexpectedObjectTypesGroupOrder',
+                },
+                {
+                  data: {
+                    rightGroup: 'r',
+                    leftGroup: 'g',
+                    right: 'r',
+                    left: 'g',
+                  },
+                  messageId: 'unexpectedObjectTypesGroupOrder',
+                },
+              ],
+              options: [
+                {
+                  ...options,
+                  useConfigurationIf: {
+                    allNamesMatchPattern: 'foo',
+                  },
+                },
+                {
+                  ...options,
+                  customGroups: {
+                    r: 'r',
+                    g: 'g',
+                    b: 'b',
+                  },
+                  useConfigurationIf: {
+                    allNamesMatchPattern: '^r|g|b$',
+                  },
+                  groups: ['r', 'g', 'b'],
+                },
+              ],
+              output: dedent`
+                type Type = {
+                  r: string
+                  g: string
+                  b: string
+                }
+              `,
+              code: dedent`
+                type Type = {
+                  b: string
+                  g: string
+                  r: string
+                }
+              `,
+            },
+          ],
+          valid: [],
+        },
+      )
+
+      describe(`${ruleName}(${type}): allows to use 'declarationMatchesPattern'`, () => {
+        ruleTester.run(
+          `${ruleName}(${type}): detects declaration name by pattern`,
+          rule,
+          {
+            invalid: [
+              {
+                options: [
+                  {
+                    useConfigurationIf: {
+                      declarationMatchesPattern: '^Type$',
+                    },
+                    type: 'unsorted',
+                  },
+                  options,
+                ],
+                errors: [
+                  {
+                    data: {
+                      right: 'a',
+                      left: 'b',
+                    },
+                    messageId: 'unexpectedObjectTypesOrder',
+                  },
+                ],
+                output: dedent`
+                  type OtherType = {
+                    a: string
+                    b: string
+                  }
+                `,
+                code: dedent`
+                  type OtherType = {
+                    b: string
+                    a: string
+                  }
+                `,
+              },
+            ],
+            valid: [
+              {
+                options: [
+                  {
+                    useConfigurationIf: {
+                      declarationMatchesPattern: '^Type$',
+                    },
+                    type: 'unsorted',
+                  },
+                  options,
+                ],
+                code: dedent`
+                  type Type = {
+                    b: string
+                    c: string
+                    a: string
+                  }
+                `,
+              },
+            ],
+          },
+        )
+
+        ruleTester.run(
+          `${ruleName}(${type}): does not match configuration if no declaration name`,
+          rule,
+          {
+            invalid: [
+              {
+                options: [
+                  {
+                    useConfigurationIf: {
+                      declarationMatchesPattern: '^Type$',
+                    },
+                    type: 'unsorted',
+                  },
+                  options,
+                ],
+                errors: [
+                  {
+                    data: {
+                      right: 'b',
+                      left: 'c',
+                    },
+                    messageId: 'unexpectedObjectTypesOrder',
+                  },
+                ],
+                output: dedent`
+                  type Type = {
+                    a: {
+                      b: string
+                      c: string
+                    }
+                  }
+                `,
+                code: dedent`
+                  type Type = {
+                    a: {
+                      c: string
+                      b: string
+                    }
+                  }
+                `,
+              },
+            ],
+            valid: [],
+          },
+        )
+      })
+    })
   })
 
   describe(`${ruleName}: sorting by natural order`, () => {
@@ -3133,6 +3310,26 @@ describe(ruleName, () => {
   })
 
   describe('misc', () => {
+    ruleTester.run(`${ruleName}: allows to use "unsorted" as type`, rule, {
+      valid: [
+        {
+          code: dedent`
+            type Type = {
+              b: string;
+              c: string;
+              a: string;
+            }
+          `,
+          options: [
+            {
+              type: 'unsorted',
+            },
+          ],
+        },
+      ],
+      invalid: [],
+    })
+
     ruleTester.run(`${ruleName}: ignores semi at the end of value`, rule, {
       valid: [
         dedent`
