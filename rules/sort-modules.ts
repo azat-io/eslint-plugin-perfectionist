@@ -39,6 +39,7 @@ import { getCustomGroupsCompareOptions } from '../utils/get-custom-groups-compar
 import { generatePredefinedGroups } from '../utils/generate-predefined-groups'
 import { getEslintDisabledLines } from '../utils/get-eslint-disabled-lines'
 import { isNodeEslintDisabled } from '../utils/is-node-eslint-disabled'
+import { createNodeIndexMap } from '../utils/create-node-index-map'
 import { hasPartitionComment } from '../utils/is-partition-comment'
 import { sortNodesByGroups } from '../utils/sort-nodes-by-groups'
 import { getNewlinesErrors } from '../utils/get-newlines-errors'
@@ -314,12 +315,12 @@ let analyzeModule = ({
     }
 
     let { defineGroup, getGroup } = useGroups(options)
-    for (let officialGroup of generatePredefinedGroups({
+    for (let predefinedGroup of generatePredefinedGroups({
       cache: cachedGroupsByModifiersAndSelectors,
       selectors: [selector],
       modifiers,
     })) {
-      defineGroup(officialGroup)
+      defineGroup(predefinedGroup)
     }
     for (let customGroup of options.customGroups) {
       if (
@@ -345,22 +346,21 @@ let analyzeModule = ({
       dependencyName: name,
       group: getGroup(),
       dependencies,
-      node,
       name,
+      node,
     }
     let lastSortingNode = formattedNodes.at(-1)?.at(-1)
     if (
       (options.partitionByNewLine &&
         lastSortingNode &&
         getLinesBetween(sourceCode, lastSortingNode, sortingNode)) ||
-      (options.partitionByComment &&
-        hasPartitionComment(
-          options.partitionByComment,
-          getCommentsBefore({
-            sourceCode,
-            node,
-          }),
-        ))
+      hasPartitionComment(
+        options.partitionByComment,
+        getCommentsBefore({
+          sourceCode,
+          node,
+        }),
+      )
     ) {
       formattedNodes.push([])
     }
@@ -390,12 +390,15 @@ let analyzeModule = ({
     sortNodesIgnoringEslintDisabledNodes(true)
   let nodes = formattedNodes.flat()
 
+  let nodeIndexMap = createNodeIndexMap(sortedNodes)
+
   pairwise(nodes, (left, right) => {
     let leftNumber = getGroupNumber(options.groups, left)
     let rightNumber = getGroupNumber(options.groups, right)
 
-    let indexOfLeft = sortedNodes.indexOf(left)
-    let indexOfRight = sortedNodes.indexOf(right)
+    let leftIndex = nodeIndexMap.get(left)!
+    let rightIndex = nodeIndexMap.get(right)!
+
     let indexOfRightExcludingEslintDisabled =
       sortedNodesExcludingEslintDisabled.indexOf(right)
 
@@ -406,8 +409,8 @@ let analyzeModule = ({
     )
     if (
       firstUnorderedNodeDependentOnRight ||
-      indexOfLeft > indexOfRight ||
-      indexOfLeft >= indexOfRightExcludingEslintDisabled
+      leftIndex > rightIndex ||
+      leftIndex >= indexOfRightExcludingEslintDisabled
     ) {
       if (firstUnorderedNodeDependentOnRight) {
         messageIds.push('unexpectedModulesDependencyOrder')

@@ -494,12 +494,14 @@ export default createEslintRule<SortClassesOptions, MESSAGE_ID>({
             selectors.push('property')
           }
 
-          for (let officialGroup of generatePredefinedGroups({
+          let predefinedGroups = generatePredefinedGroups({
             cache: cachedGroupsByModifiersAndSelectors,
             selectors,
             modifiers,
-          })) {
-            defineGroup(officialGroup)
+          })
+
+          for (let predefinedGroup of predefinedGroups) {
+            defineGroup(predefinedGroup)
           }
 
           for (let customGroup of options.customGroups) {
@@ -553,14 +555,13 @@ export default createEslintRule<SortClassesOptions, MESSAGE_ID>({
             (options.partitionByNewLine &&
               lastMember &&
               getLinesBetween(sourceCode, lastMember, sortingNode)) ||
-            (options.partitionByComment &&
-              hasPartitionComment(
-                options.partitionByComment,
-                getCommentsBefore({
-                  node: member,
-                  sourceCode,
-                }),
-              ))
+            hasPartitionComment(
+              options.partitionByComment,
+              getCommentsBefore({
+                node: member,
+                sourceCode,
+              }),
+            )
           ) {
             accumulator.push([])
           }

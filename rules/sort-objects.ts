@@ -27,6 +27,7 @@ import { validateGroupsConfiguration } from '../utils/validate-groups-configurat
 import { getMatchingContextOptions } from '../utils/get-matching-context-options'
 import { getEslintDisabledLines } from '../utils/get-eslint-disabled-lines'
 import { isNodeEslintDisabled } from '../utils/is-node-eslint-disabled'
+import { createNodeIndexMap } from '../utils/create-node-index-map'
 import { hasPartitionComment } from '../utils/is-partition-comment'
 import { sortNodesByGroups } from '../utils/sort-nodes-by-groups'
 import { getCommentsBefore } from '../utils/get-comments-before'
@@ -369,14 +370,13 @@ export default createEslintRule<Options, MESSAGE_ID>({
                   lastProperty,
                   propertySortingNode,
                 )) ||
-              (options.partitionByComment &&
-                hasPartitionComment(
-                  options.partitionByComment,
-                  getCommentsBefore({
-                    node: property,
-                    sourceCode,
-                  }),
-                ))
+              hasPartitionComment(
+                options.partitionByComment,
+                getCommentsBefore({
+                  node: property,
+                  sourceCode,
+                }),
+              )
             ) {
               accumulator.push([])
             }
@@ -411,14 +411,18 @@ export default createEslintRule<Options, MESSAGE_ID>({
       let sortedNodes = sortNodesIgnoringEslintDisabledNodes(false)
       let sortedNodesExcludingEslintDisabled =
         sortNodesIgnoringEslintDisabledNodes(true)
+
       let nodes = formattedMembers.flat()
+
+      let nodeIndexMap = createNodeIndexMap(sortedNodes)
 
       pairwise(nodes, (left, right) => {
         let leftNumber = getGroupNumber(options.groups, left)
         let rightNumber = getGroupNumber(options.groups, right)
 
-        let indexOfLeft = sortedNodes.indexOf(left)
-        let indexOfRight = sortedNodes.indexOf(right)
+        let leftIndex = nodeIndexMap.get(left)!
+        let rightIndex = nodeIndexMap.get(right)!
+
         let indexOfRightExcludingEslintDisabled =
           sortedNodesExcludingEslintDisabled.indexOf(right)
 
@@ -428,8 +432,8 @@ export default createEslintRule<Options, MESSAGE_ID>({
           | undefined
 
         if (
-          indexOfLeft > indexOfRight ||
-          indexOfLeft >= indexOfRightExcludingEslintDisabled
+          leftIndex > rightIndex ||
+          leftIndex >= indexOfRightExcludingEslintDisabled
         ) {
           firstUnorderedNodeDependentOnRight = getFirstUnorderedNodeDependentOn(
             right,

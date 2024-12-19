@@ -27,6 +27,7 @@ import { getEslintDisabledLines } from '../utils/get-eslint-disabled-lines'
 import { singleCustomGroupJsonSchema } from './sort-array-includes.types'
 import { isNodeEslintDisabled } from '../utils/is-node-eslint-disabled'
 import { hasPartitionComment } from '../utils/is-partition-comment'
+import { createNodeIndexMap } from '../utils/create-node-index-map'
 import { sortNodesByGroups } from '../utils/sort-nodes-by-groups'
 import { getCommentsBefore } from '../utils/get-comments-before'
 import { customGroupMatches } from './sort-array-includes-utils'
@@ -168,12 +169,14 @@ export let sortArray = <MessageIds extends string>({
 
   let sourceCode = getSourceCode(context)
   let settings = getSettings(context.settings)
+
   let matchedContextOptions = getMatchingContextOptions({
     nodeNames: elements
       .filter(element => element !== null)
       .map(element => getNodeName({ sourceCode, element })),
     contextOptions: context.options,
   })
+
   let completeOptions = complete(
     matchedContextOptions[0],
     settings,
@@ -198,6 +201,7 @@ export let sortArray = <MessageIds extends string>({
     ruleName: context.id,
     sourceCode,
   })
+
   let formattedMembers: SortArrayIncludesSortingNode[][] = elements.reduce(
     (
       accumulator: SortArrayIncludesSortingNode[][],
@@ -218,11 +222,13 @@ export let sortArray = <MessageIds extends string>({
         selector = 'literal'
       }
 
-      for (let predefinedGroup of generatePredefinedGroups({
+      let predefinedGroups = generatePredefinedGroups({
         cache: cachedGroupsByModifiersAndSelectors,
         selectors: [selector],
         modifiers: [],
-      })) {
+      })
+
+      for (let predefinedGroup of predefinedGroups) {
         defineGroup(predefinedGroup)
       }
 
@@ -236,7 +242,10 @@ export let sortArray = <MessageIds extends string>({
           })
         ) {
           defineGroup(customGroup.groupName, true)
-          // If the custom group is not referenced in the `groups` option, it will be ignored
+          /**
+           * If the custom group is not referenced in the `groups` option, it
+           * will be ignored
+           */
           if (getGroup() === customGroup.groupName) {
             break
           }
@@ -245,23 +254,22 @@ export let sortArray = <MessageIds extends string>({
 
       let sortingNode: SortArrayIncludesSortingNode = {
         isEslintDisabled: isNodeEslintDisabled(element, eslintDisabledLines),
-        name: getNodeName({ sourceCode, element }),
         size: rangeToDiff(element, sourceCode),
         group: getGroup(),
         node: element,
         groupKind,
+        name,
       }
 
       let lastSortingNode = accumulator.at(-1)?.at(-1)
       if (
-        (options.partitionByComment &&
-          hasPartitionComment(
-            options.partitionByComment,
-            getCommentsBefore({
-              node: element,
-              sourceCode,
-            }),
-          )) ||
+        hasPartitionComment(
+          options.partitionByComment,
+          getCommentsBefore({
+            node: element,
+            sourceCode,
+          }),
+        ) ||
         (options.partitionByNewLine &&
           lastSortingNode &&
           getLinesBetween(sourceCode, lastSortingNode, sortingNode))
@@ -303,21 +311,25 @@ export let sortArray = <MessageIds extends string>({
           ignoreEslintDisabledNodes,
         }),
       )
+
     let sortedNodes = sortNodesIgnoringEslintDisabledNodes(false)
     let sortedNodesExcludingEslintDisabled =
       sortNodesIgnoringEslintDisabledNodes(true)
 
+    let nodeIndexMap = createNodeIndexMap(sortedNodes)
+
     pairwise(nodes, (left, right) => {
-      let indexOfLeft = sortedNodes.indexOf(left)
-      let indexOfRight = sortedNodes.indexOf(right)
+      let leftIndex = nodeIndexMap.get(left)!
+      let rightIndex = nodeIndexMap.get(right)!
+
       let leftNumber = getGroupNumber(options.groups, left)
       let rightNumber = getGroupNumber(options.groups, right)
 
       let indexOfRightExcludingEslintDisabled =
         sortedNodesExcludingEslintDisabled.indexOf(right)
       if (
-        indexOfLeft < indexOfRight &&
-        indexOfLeft < indexOfRightExcludingEslintDisabled
+        leftIndex < rightIndex &&
+        leftIndex < indexOfRightExcludingEslintDisabled
       ) {
         return
       }

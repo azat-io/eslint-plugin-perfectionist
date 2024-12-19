@@ -17,6 +17,7 @@ import { validateCustomSortConfiguration } from '../utils/validate-custom-sort-c
 import { validateGroupsConfiguration } from '../utils/validate-groups-configuration'
 import { getEslintDisabledLines } from '../utils/get-eslint-disabled-lines'
 import { isNodeEslintDisabled } from '../utils/is-node-eslint-disabled'
+import { createNodeIndexMap } from '../utils/create-node-index-map'
 import { hasPartitionComment } from '../utils/is-partition-comment'
 import { sortNodesByGroups } from '../utils/sort-nodes-by-groups'
 import { getCommentsBefore } from '../utils/get-comments-before'
@@ -179,7 +180,8 @@ export default createEslintRule<Options, MESSAGE_ID>({
               break
           }
 
-          let lastSortingNode = accumulator.at(-1)?.at(-1)
+          let lastGroup = accumulator.at(-1)
+          let lastSortingNode = lastGroup?.at(-1)
           let sortingNode: SortingNode = {
             isEslintDisabled: isNodeEslintDisabled(type, eslintDisabledLines),
             size: rangeToDiff(type, sourceCode),
@@ -188,23 +190,23 @@ export default createEslintRule<Options, MESSAGE_ID>({
             node: type,
           }
           if (
-            (options.partitionByComment &&
-              hasPartitionComment(
-                options.partitionByComment,
-                getCommentsBefore({
-                  tokenValueToIgnoreBefore: '&',
-                  node: type,
-                  sourceCode,
-                }),
-              )) ||
+            hasPartitionComment(
+              options.partitionByComment,
+              getCommentsBefore({
+                tokenValueToIgnoreBefore: '&',
+                node: type,
+                sourceCode,
+              }),
+            ) ||
             (options.partitionByNewLine &&
               lastSortingNode &&
               getLinesBetween(sourceCode, lastSortingNode, sortingNode))
           ) {
-            accumulator.push([])
+            lastGroup = []
+            accumulator.push(lastGroup)
           }
 
-          accumulator.at(-1)?.push(sortingNode)
+          lastGroup?.push(sortingNode)
 
           return accumulator
         },
@@ -216,24 +218,28 @@ export default createEslintRule<Options, MESSAGE_ID>({
           ignoreEslintDisabledNodes: boolean,
         ): SortingNode[] =>
           sortNodesByGroups(nodes, options, { ignoreEslintDisabledNodes })
+
         let sortedNodes = sortNodesExcludingEslintDisabled(false)
         let sortedNodesExcludingEslintDisabled =
           sortNodesExcludingEslintDisabled(true)
+
+        let nodeIndexMap = createNodeIndexMap(sortedNodes)
 
         pairwise(nodes, (left, right) => {
           let leftNumber = getGroupNumber(options.groups, left)
           let rightNumber = getGroupNumber(options.groups, right)
 
-          let indexOfLeft = sortedNodes.indexOf(left)
-          let indexOfRight = sortedNodes.indexOf(right)
+          let leftIndex = nodeIndexMap.get(left)!
+          let rightIndex = nodeIndexMap.get(right)!
+
           let indexOfRightExcludingEslintDisabled =
             sortedNodesExcludingEslintDisabled.indexOf(right)
 
           let messageIds: MESSAGE_ID[] = []
 
           if (
-            indexOfLeft > indexOfRight ||
-            indexOfLeft >= indexOfRightExcludingEslintDisabled
+            leftIndex > rightIndex ||
+            leftIndex >= indexOfRightExcludingEslintDisabled
           ) {
             messageIds.push(
               leftNumber === rightNumber

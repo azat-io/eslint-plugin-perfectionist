@@ -16,6 +16,7 @@ import { validateCustomSortConfiguration } from '../utils/validate-custom-sort-c
 import { validateGroupsConfiguration } from '../utils/validate-groups-configuration'
 import { getEslintDisabledLines } from '../utils/get-eslint-disabled-lines'
 import { isNodeEslintDisabled } from '../utils/is-node-eslint-disabled'
+import { createNodeIndexMap } from '../utils/create-node-index-map'
 import { sortNodesByGroups } from '../utils/sort-nodes-by-groups'
 import { createEslintRule } from '../utils/create-eslint-rule'
 import { getGroupNumber } from '../utils/get-group-number'
@@ -118,9 +119,7 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
 
           if (attribute.value === null) {
             defineGroup('shorthand')
-          }
-
-          if (attribute.loc.start.line !== attribute.loc.end.line) {
+          } else if (attribute.loc.start.line !== attribute.loc.end.line) {
             defineGroup('multiline')
           }
 
@@ -151,14 +150,17 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
         let sortedNodesExcludingEslintDisabled =
           sortNodesExcludingEslintDisabled(true)
 
+        let nodeIndexMap = createNodeIndexMap(sortedNodes)
+
         pairwise(nodes, (left, right) => {
-          let indexOfLeft = sortedNodes.indexOf(left)
-          let indexOfRight = sortedNodes.indexOf(right)
+          let leftIndex = nodeIndexMap.get(left)!
+          let rightIndex = nodeIndexMap.get(right)!
+
           let indexOfRightExcludingEslintDisabled =
             sortedNodesExcludingEslintDisabled.indexOf(right)
           if (
-            indexOfLeft < indexOfRight &&
-            indexOfLeft < indexOfRightExcludingEslintDisabled
+            leftIndex < rightIndex &&
+            leftIndex < indexOfRightExcludingEslintDisabled
           ) {
             return
           }

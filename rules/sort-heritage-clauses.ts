@@ -17,6 +17,7 @@ import { validateCustomSortConfiguration } from '../utils/validate-custom-sort-c
 import { validateGroupsConfiguration } from '../utils/validate-groups-configuration'
 import { getEslintDisabledLines } from '../utils/get-eslint-disabled-lines'
 import { isNodeEslintDisabled } from '../utils/is-node-eslint-disabled'
+import { createNodeIndexMap } from '../utils/create-node-index-map'
 import { sortNodesByGroups } from '../utils/sort-nodes-by-groups'
 import { createEslintRule } from '../utils/create-eslint-rule'
 import { getGroupNumber } from '../utils/get-group-number'
@@ -122,7 +123,7 @@ let sortHeritageClauses = (
     | TSESTree.TSClassImplements[]
     | undefined,
 ): void => {
-  if (!heritageClauses || !isSortable(heritageClauses)) {
+  if (!isSortable(heritageClauses)) {
     return
   }
   let sourceCode = getSourceCode(context)
@@ -131,7 +132,7 @@ let sortHeritageClauses = (
     sourceCode,
   })
 
-  let nodes: SortingNode[] = heritageClauses.map(heritageClause => {
+  let nodes: SortingNode[] = heritageClauses!.map(heritageClause => {
     let name = getHeritageClauseExpressionName(heritageClause.expression)
 
     let { setCustomGroups, getGroup } = useGroups(options)
@@ -153,18 +154,22 @@ let sortHeritageClauses = (
     ignoreEslintDisabledNodes: boolean,
   ): SortingNode[] =>
     sortNodesByGroups(nodes, options, { ignoreEslintDisabledNodes })
+
   let sortedNodes = sortNodesExcludingEslintDisabled(false)
   let sortedNodesExcludingEslintDisabled =
     sortNodesExcludingEslintDisabled(true)
 
+  let nodeIndexMap = createNodeIndexMap(sortedNodes)
+
   pairwise(nodes, (left, right) => {
-    let indexOfLeft = sortedNodes.indexOf(left)
-    let indexOfRight = sortedNodes.indexOf(right)
+    let leftIndex = nodeIndexMap.get(left)!
+    let rightIndex = nodeIndexMap.get(right)!
+
     let indexOfRightExcludingEslintDisabled =
       sortedNodesExcludingEslintDisabled.indexOf(right)
     if (
-      indexOfLeft < indexOfRight &&
-      indexOfLeft < indexOfRightExcludingEslintDisabled
+      leftIndex < rightIndex &&
+      leftIndex < indexOfRightExcludingEslintDisabled
     ) {
       return
     }

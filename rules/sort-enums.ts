@@ -21,6 +21,7 @@ import { validateCustomSortConfiguration } from '../utils/validate-custom-sort-c
 import { getEslintDisabledLines } from '../utils/get-eslint-disabled-lines'
 import { isNodeEslintDisabled } from '../utils/is-node-eslint-disabled'
 import { hasPartitionComment } from '../utils/is-partition-comment'
+import { createNodeIndexMap } from '../utils/create-node-index-map'
 import { getCommentsBefore } from '../utils/get-comments-before'
 import { createEslintRule } from '../utils/create-eslint-rule'
 import { getLinesBetween } from '../utils/get-lines-between'
@@ -96,37 +97,35 @@ export default createEslintRule<Options, MESSAGE_ID>({
         enumName: string,
       ): string[] => {
         let dependencies: string[] = []
+        let stack: TSESTree.Node[] = [expression]
 
-        let checkNode = (nodeValue: TSESTree.Node): void => {
+        while (stack.length) {
+          let node = stack.pop()!
           if (
-            nodeValue.type === 'MemberExpression' &&
-            nodeValue.object.type === 'Identifier' &&
-            nodeValue.object.name === enumName &&
-            nodeValue.property.type === 'Identifier'
+            node.type === 'MemberExpression' &&
+            node.object.type === 'Identifier' &&
+            node.object.name === enumName &&
+            node.property.type === 'Identifier'
           ) {
-            dependencies.push(nodeValue.property.name)
-          } else if (nodeValue.type === 'Identifier') {
-            dependencies.push(nodeValue.name)
+            dependencies.push(node.property.name)
+          } else if (node.type === 'Identifier') {
+            dependencies.push(node.name)
           }
 
-          if ('left' in nodeValue) {
-            checkNode(nodeValue.left)
+          if ('left' in node) {
+            stack.push(node.left)
           }
-
-          if ('right' in nodeValue) {
-            checkNode(nodeValue.right)
+          if ('right' in node) {
+            stack.push(node.right)
           }
-
-          if ('expressions' in nodeValue) {
-            for (let currentExpression of nodeValue.expressions) {
-              checkNode(currentExpression)
-            }
+          if ('expressions' in node) {
+            stack.push(...node.expressions)
           }
         }
 
-        checkNode(expression)
         return dependencies
       }
+
       let formattedMembers: SortEnumsSortingNode[][] = members.reduce(
         (accumulator: SortEnumsSortingNode[][], member) => {
           let dependencies: string[] = []
@@ -154,14 +153,13 @@ export default createEslintRule<Options, MESSAGE_ID>({
           }
 
           if (
-            (options.partitionByComment &&
-              hasPartitionComment(
-                options.partitionByComment,
-                getCommentsBefore({
-                  node: member,
-                  sourceCode,
-                }),
-              )) ||
+            hasPartitionComment(
+              options.partitionByComment,
+              getCommentsBefore({
+                node: member,
+                sourceCode,
+              }),
+            ) ||
             (options.partitionByNewLine &&
               lastSortingNode &&
               getLinesBetween(sourceCode, lastSortingNode, sortingNode))
@@ -176,11 +174,13 @@ export default createEslintRule<Options, MESSAGE_ID>({
       )
 
       let sortingNodes = formattedMembers.flat()
+
       let isNumericEnum = sortingNodes.every(
         sortingNode =>
           sortingNode.numericValue !== null &&
           !Number.isNaN(sortingNode.numericValue),
       )
+
       let compareOptions: CompareOptions<SortEnumsSortingNode> = {
         // Get the enum value rather than the name if needed
         nodeValueGetter:
@@ -195,7 +195,10 @@ export default createEslintRule<Options, MESSAGE_ID>({
                 return ''
               }
             : null,
-        // If the enum is numeric, and we sort by value, always use the `natural` sort type, which will correctly sort them.
+        /**
+         * If the enum is numeric, and we sort by value, always use the
+         * `natural` sort type, which will correctly sort them.
+         */
         type:
           isNumericEnum && (options.forceNumericSort || options.sortByValue)
             ? 'natural'
@@ -220,18 +223,22 @@ export default createEslintRule<Options, MESSAGE_ID>({
             ignoreEslintDisabledNodes,
           },
         )
+
       let sortedNodes = sortNodesIgnoringEslintDisabledNodes(false)
       let sortedNodesExcludingEslintDisabled =
         sortNodesIgnoringEslintDisabledNodes(true)
 
+      let nodeIndexMap = createNodeIndexMap(sortedNodes)
+
       pairwise(sortingNodes, (left, right) => {
-        let indexOfLeft = sortedNodes.indexOf(left)
-        let indexOfRight = sortedNodes.indexOf(right)
+        let leftIndex = nodeIndexMap.get(left)!
+        let rightIndex = nodeIndexMap.get(right)!
+
         let indexOfRightExcludingEslintDisabled =
           sortedNodesExcludingEslintDisabled.indexOf(right)
         if (
-          indexOfLeft < indexOfRight &&
-          indexOfLeft < indexOfRightExcludingEslintDisabled
+          leftIndex < rightIndex &&
+          leftIndex < indexOfRightExcludingEslintDisabled
         ) {
           return
         }

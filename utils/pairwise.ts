@@ -11,8 +11,6 @@ export let pairwise = <T>(
     let left = nodes.at(i - 1)
     let right = nodes.at(i)
 
-    if (left && right) {
-      callback(left, right, i - 1)
-    }
+    callback(left!, right!, i - 1)
   }
 }
