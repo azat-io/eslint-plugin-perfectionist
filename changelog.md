@@ -1,5 +1,28 @@
 # Changelog
 
+## v4.4.0
+
+[compare changes](https://github.com/azat-io/eslint-plugin-perfectionist/compare/v4.3.0...v4.4.0)
+
+### 🚀 Features
+
+- **sort-array-includes:** Add use configuration if and groups ([a06ce5c](https://github.com/azat-io/eslint-plugin-perfectionist/commit/a06ce5c))
+- Add ignore rule for objects passed as arguments to function calls ([41c9f4f](https://github.com/azat-io/eslint-plugin-perfectionist/commit/41c9f4f))
+- Add use configuration if option to sort-object-types and sort-interfaces ([aa18f1a](https://github.com/azat-io/eslint-plugin-perfectionist/commit/aa18f1a))
+
+### 🏎 Performance Improvements
+
+- Improve rules performance ([42ac82d](https://github.com/azat-io/eslint-plugin-perfectionist/commit/42ac82d))
+
+### 🐞 Bug Fixes
+
+- **sort-interfaces:** Prevent constructor declarations from being sorted ([b4ee1cc](https://github.com/azat-io/eslint-plugin-perfectionist/commit/b4ee1cc))
+
+### ❤️ Contributors
+
+- Azat S. ([@azat-io](http://github.com/azat-io))
+- Hugo ([@hugop95](http://github.com/hugop95))
+
 ## v4.3.0
 
 [compare changes](https://github.com/azat-io/eslint-plugin-perfectionist/compare/v4.2.0...v4.3.0)
