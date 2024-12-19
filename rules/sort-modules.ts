@@ -210,7 +210,7 @@ let analyzeModule = ({
         | TSESTree.DefaultExportDeclarations
         | TSESTree.NamedExportDeclarations
         | TSESTree.ProgramStatement,
-    ): boolean => {
+    ): void => {
       if ('declare' in nodeToParse && nodeToParse.declare) {
         modifiers.push('declare')
       }
@@ -297,12 +297,11 @@ let analyzeModule = ({
           break
         default:
       }
-
-      return !!selector && !!name
     }
     /* eslint-enable @typescript-eslint/no-loop-func */
+    parseNode(node)
 
-    if (!parseNode(node)) {
+    if (!selector || !name) {
       continue
     }
 
@@ -316,18 +315,18 @@ let analyzeModule = ({
     }
 
     let { defineGroup, getGroup } = useGroups(options)
-    for (let officialGroup of generatePredefinedGroups({
+    for (let predefinedGroup of generatePredefinedGroups({
       cache: cachedGroupsByModifiersAndSelectors,
-      selectors: [selector!],
+      selectors: [selector],
       modifiers,
     })) {
-      defineGroup(officialGroup)
+      defineGroup(predefinedGroup)
     }
     for (let customGroup of options.customGroups) {
       if (
         customGroupMatches({
-          selectors: [selector!],
-          elementName: name!,
+          selectors: [selector],
+          elementName: name,
           customGroup,
           decorators,
           modifiers,
@@ -347,7 +346,7 @@ let analyzeModule = ({
       dependencyName: name,
       group: getGroup(),
       dependencies,
-      name: name!,
+      name,
       node,
     }
     let lastSortingNode = formattedNodes.at(-1)?.at(-1)

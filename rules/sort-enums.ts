@@ -175,16 +175,11 @@ export default createEslintRule<Options, MESSAGE_ID>({
 
       let sortingNodes = formattedMembers.flat()
 
-      let isNumericEnum = true
-      for (let sortingNode of sortingNodes) {
-        if (
-          sortingNode.numericValue === null ||
-          Number.isNaN(sortingNode.numericValue)
-        ) {
-          isNumericEnum = false
-          break
-        }
-      }
+      let isNumericEnum = sortingNodes.every(
+        sortingNode =>
+          sortingNode.numericValue !== null &&
+          !Number.isNaN(sortingNode.numericValue),
+      )
 
       let compareOptions: CompareOptions<SortEnumsSortingNode> = {
         // Get the enum value rather than the name if needed

@@ -217,7 +217,7 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
       /* Avoid matching on named imports without specifiers */
       !/\}\s*from\s+/u.test(sourceCode.getText(node))
 
-    let styleExtensions = new Set([
+    let styleExtensions = [
       '.less',
       '.scss',
       '.sass',
@@ -225,12 +225,10 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
       '.pcss',
       '.css',
       '.sss',
-    ])
+    ]
     let isStyle = (value: string): boolean => {
       let [cleanedValue] = value.split('?')
-      return [...styleExtensions].some(extension =>
-        cleanedValue.endsWith(extension),
-      )
+      return styleExtensions.some(extension => cleanedValue.endsWith(extension))
     }
 
     let flatGroups = new Set(options.groups.flat())

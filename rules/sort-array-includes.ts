@@ -294,24 +294,18 @@ export let sortArray = <MessageIds extends string>({
   }
 
   for (let nodes of formattedMembers) {
-    let groupedNodesByKind = groupKindOrder.reduce<
-      Record<'literal' | 'spread' | 'any', SortArrayIncludesSortingNode[]>
-    >(
-      (accumulator, groupKind) => {
-        accumulator[groupKind] = nodes.filter(
-          currentNode =>
-            groupKind === 'any' || currentNode.groupKind === groupKind,
-        )
-        return accumulator
-      },
-      { literal: [], spread: [], any: [] },
+    let filteredGroupKindNodes = groupKindOrder.map(groupKind =>
+      nodes.filter(
+        currentNode =>
+          groupKind === 'any' || currentNode.groupKind === groupKind,
+      ),
     )
 
     let sortNodesIgnoringEslintDisabledNodes = (
       ignoreEslintDisabledNodes: boolean,
     ): SortArrayIncludesSortingNode[] =>
-      groupKindOrder.flatMap(groupKind =>
-        sortNodesByGroups(groupedNodesByKind[groupKind], options, {
+      filteredGroupKindNodes.flatMap(groupedNodes =>
+        sortNodesByGroups(groupedNodes, options, {
           getGroupCompareOptions: groupNumber =>
             getCustomGroupsCompareOptions(options, groupNumber),
           ignoreEslintDisabledNodes,

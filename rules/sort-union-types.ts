@@ -118,45 +118,67 @@ export default createEslintRule<Options, MESSAGE_ID>({
         sourceCode,
       })
 
-      let typeToGroupMap: Record<string, Group> = {
-        TSIntersectionType: 'intersection',
-        TSTemplateLiteralType: 'literal',
-        TSConditionalType: 'conditional',
-        TSUndefinedKeyword: 'nullish',
-        TSConstructorType: 'function',
-        TSIndexedAccessType: 'named',
-        TSBooleanKeyword: 'keyword',
-        TSUnknownKeyword: 'keyword',
-        TSFunctionType: 'function',
-        TSBigIntKeyword: 'keyword',
-        TSNumberKeyword: 'keyword',
-        TSObjectKeyword: 'keyword',
-        TSStringKeyword: 'keyword',
-        TSSymbolKeyword: 'keyword',
-        TSTypeOperator: 'operator',
-        TSNeverKeyword: 'keyword',
-        TSLiteralType: 'literal',
-        TSTypeReference: 'named',
-        TSQualifiedName: 'named',
-        TSNullKeyword: 'nullish',
-        TSVoidKeyword: 'nullish',
-        TSAnyKeyword: 'keyword',
-        TSTypeQuery: 'operator',
-        TSTypeLiteral: 'object',
-        TSMappedType: 'object',
-        TSImportType: 'import',
-        TSThisType: 'keyword',
-        TSArrayType: 'named',
-        TSInferType: 'named',
-        TSTupleType: 'tuple',
-        TSUnionType: 'union',
-      }
-
       let formattedMembers: SortingNode[][] = node.types.reduce(
         (accumulator: SortingNode[][], type) => {
           let { defineGroup, getGroup } = useGroups(options)
 
-          defineGroup(typeToGroupMap[type.type])
+          switch (type.type) {
+            case 'TSTemplateLiteralType':
+            case 'TSLiteralType':
+              defineGroup('literal')
+              break
+            case 'TSIndexedAccessType':
+            case 'TSTypeReference':
+            case 'TSQualifiedName':
+            case 'TSArrayType':
+            case 'TSInferType':
+              defineGroup('named')
+              break
+            case 'TSIntersectionType':
+              defineGroup('intersection')
+              break
+            case 'TSUndefinedKeyword':
+            case 'TSNullKeyword':
+            case 'TSVoidKeyword':
+              defineGroup('nullish')
+              break
+            case 'TSConditionalType':
+              defineGroup('conditional')
+              break
+            case 'TSConstructorType':
+            case 'TSFunctionType':
+              defineGroup('function')
+              break
+            case 'TSBooleanKeyword':
+            case 'TSUnknownKeyword':
+            case 'TSBigIntKeyword':
+            case 'TSNumberKeyword':
+            case 'TSObjectKeyword':
+            case 'TSStringKeyword':
+            case 'TSSymbolKeyword':
+            case 'TSNeverKeyword':
+            case 'TSAnyKeyword':
+            case 'TSThisType':
+              defineGroup('keyword')
+              break
+            case 'TSTypeOperator':
+            case 'TSTypeQuery':
+              defineGroup('operator')
+              break
+            case 'TSTypeLiteral':
+            case 'TSMappedType':
+              defineGroup('object')
+              break
+            case 'TSImportType':
+              defineGroup('import')
+              break
+            case 'TSTupleType':
+              defineGroup('tuple')
+              break
+            case 'TSUnionType':
+              defineGroup('union')
+              break
+          }
 
           let lastGroup = accumulator.at(-1)
           let lastSortingNode = lastGroup?.at(-1)

@@ -500,8 +500,8 @@ export default createEslintRule<SortClassesOptions, MESSAGE_ID>({
             modifiers,
           })
 
-          for (let officialGroup of predefinedGroups) {
-            defineGroup(officialGroup)
+          for (let predefinedGroup of predefinedGroups) {
+            defineGroup(predefinedGroup)
           }
 
           for (let customGroup of options.customGroups) {
