@@ -40,7 +40,7 @@ vi.mock('node:module', _ => ({
 
 let mockGetTypescriptImport: Mock<() => null> = vi.fn()
 
-vi.mock('../../utils/get-typescript-import', () => ({
+vi.mock('../../../rules/sort-imports/get-typescript-import', () => ({
   getTypescriptImport: () => mockGetTypescriptImport(),
 }))
 
