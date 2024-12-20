@@ -1,4 +1,4 @@
-import type { Options } from './sort-array-includes.types'
+import type { Options } from './sort-array-includes/types'
 
 import { defaultOptions, jsonSchema, sortArray } from './sort-array-includes'
 import { createEslintRule } from '../utils/create-eslint-rule'

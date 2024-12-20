@@ -1,4 +1,4 @@
-import type { SortingNode } from '../typings'
+import type { SortingNode } from '../types'
 
 export let getGroupNumber = (
   groups: (string[] | string)[],

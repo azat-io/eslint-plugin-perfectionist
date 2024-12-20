@@ -1,5 +1,5 @@
 import type { CompareOptions } from './compare'
-import type { SortingNode } from '../typings'
+import type { SortingNode } from '../types'
 
 interface Options {
   customGroups: Record<string, string[] | string> | CustomGroup[]
