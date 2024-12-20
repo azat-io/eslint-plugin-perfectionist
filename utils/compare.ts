@@ -122,9 +122,9 @@ let getCustomSortingFunction = <T extends SortingNode>(
   return (aNode: T, bNode: T) => {
     let aValue = formatString(nodeValueGetter(aNode))
     let bValue = formatString(nodeValueGetter(bNode))
+    let minLength = Math.min(aValue.length, bValue.length)
     // Iterate character by character
-    // eslint-disable-next-line unicorn/no-for-loop
-    for (let i = 0; i < aValue.length; i++) {
+    for (let i = 0; i < minLength; i++) {
       let aCharacter = aValue[i]
       let bCharacter = bValue[i]
       let indexOfA = indexByCharacters.get(aCharacter)
@@ -135,7 +135,10 @@ let getCustomSortingFunction = <T extends SortingNode>(
         return convertBooleanToSign(indexOfA - indexOfB > 0)
       }
     }
-    return 0
+    if (aValue.length === bValue.length) {
+      return 0
+    }
+    return convertBooleanToSign(aValue.length - bValue.length > 0)
   }
 }
 
