@@ -2,7 +2,7 @@ import type { TSESTree } from '@typescript-eslint/types'
 
 import { builtinModules } from 'node:module'
 
-import type { SortingNode } from '../typings'
+import type { SortingNode } from '../types'
 
 import {
   partitionByCommentJsonSchema,
@@ -18,12 +18,12 @@ import {
 } from '../utils/common-json-schemas'
 import { validateNewlinesAndPartitionConfiguration } from '../utils/validate-newlines-and-partition-configuration'
 import { validateCustomSortConfiguration } from '../utils/validate-custom-sort-configuration'
+import { readClosestTsConfigByPath } from './sort-imports/read-closest-ts-config-by-path'
 import { validateGroupsConfiguration } from '../utils/validate-groups-configuration'
-import { readClosestTsConfigByPath } from '../utils/read-closest-ts-config-by-path'
 import { getOptionsWithCleanGroups } from '../utils/get-options-with-clean-groups'
 import { getEslintDisabledLines } from '../utils/get-eslint-disabled-lines'
+import { getTypescriptImport } from './sort-imports/get-typescript-import'
 import { isNodeEslintDisabled } from '../utils/is-node-eslint-disabled'
-import { getTypescriptImport } from '../utils/get-typescript-import'
 import { createNodeIndexMap } from '../utils/create-node-index-map'
 import { hasPartitionComment } from '../utils/is-partition-comment'
 import { sortNodesByGroups } from '../utils/sort-nodes-by-groups'

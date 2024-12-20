@@ -1,4 +1,4 @@
-import type { Options as SortObjectTypesOptions } from './sort-object-types.types'
+import type { Options as SortObjectTypesOptions } from './sort-object-types/types'
 
 import { sortObjectTypeElements, jsonSchema } from './sort-object-types'
 import { createEslintRule } from '../utils/create-eslint-rule'

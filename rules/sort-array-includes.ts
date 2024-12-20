@@ -3,8 +3,8 @@ import type { RuleContext } from '@typescript-eslint/utils/ts-eslint'
 import type { TSESTree } from '@typescript-eslint/types'
 import type { TSESLint } from '@typescript-eslint/utils'
 
-import type { Selector, Options } from './sort-array-includes.types'
-import type { SortingNode } from '../typings'
+import type { Selector, Options } from './sort-array-includes/types'
+import type { SortingNode } from '../types'
 
 import {
   buildUseConfigurationIfJsonSchema,
@@ -20,20 +20,22 @@ import {
   orderJsonSchema,
 } from '../utils/common-json-schemas'
 import { validateGeneratedGroupsConfiguration } from '../utils/validate-generated-groups-configuration'
+import {
+  singleCustomGroupJsonSchema,
+  allSelectors,
+} from './sort-array-includes/types'
 import { getCustomGroupsCompareOptions } from '../utils/get-custom-groups-compare-options'
+import { doesCustomGroupMatch } from './sort-array-includes/does-custom-group-match'
 import { getMatchingContextOptions } from '../utils/get-matching-context-options'
 import { generatePredefinedGroups } from '../utils/generate-predefined-groups'
 import { getEslintDisabledLines } from '../utils/get-eslint-disabled-lines'
-import { singleCustomGroupJsonSchema } from './sort-array-includes.types'
 import { isNodeEslintDisabled } from '../utils/is-node-eslint-disabled'
 import { hasPartitionComment } from '../utils/is-partition-comment'
 import { createNodeIndexMap } from '../utils/create-node-index-map'
 import { sortNodesByGroups } from '../utils/sort-nodes-by-groups'
 import { getCommentsBefore } from '../utils/get-comments-before'
-import { customGroupMatches } from './sort-array-includes-utils'
 import { createEslintRule } from '../utils/create-eslint-rule'
 import { getLinesBetween } from '../utils/get-lines-between'
-import { allSelectors } from './sort-array-includes.types'
 import { getGroupNumber } from '../utils/get-group-number'
 import { getSourceCode } from '../utils/get-source-code'
 import { toSingleLine } from '../utils/to-single-line'
@@ -235,7 +237,7 @@ export let sortArray = <MessageIds extends string>({
       let name = getNodeName({ sourceCode, element })
       for (let customGroup of options.customGroups) {
         if (
-          customGroupMatches({
+          doesCustomGroupMatch({
             selectors: [selector],
             elementName: name,
             customGroup,
