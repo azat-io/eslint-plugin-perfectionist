@@ -292,26 +292,12 @@ describe(ruleName, () => {
             },
             {
               data: {
-                left: '~/c',
-                right: 't',
-              },
-              messageId: 'extraSpacingBetweenImports',
-            },
-            {
-              data: {
                 rightGroup: 'internal',
                 leftGroup: 'parent',
                 left: '../../e',
                 right: '~/b',
               },
               messageId: 'unexpectedImportsGroupOrder',
-            },
-            {
-              data: {
-                left: '../../e',
-                right: '~/b',
-              },
-              messageId: 'extraSpacingBetweenImports',
             },
           ],
           options: [
@@ -2625,26 +2611,12 @@ describe(ruleName, () => {
             },
             {
               data: {
-                left: '~/c',
-                right: 't',
-              },
-              messageId: 'extraSpacingBetweenImports',
-            },
-            {
-              data: {
                 rightGroup: 'internal',
                 leftGroup: 'parent',
                 left: '../../e',
                 right: '~/b',
               },
               messageId: 'unexpectedImportsGroupOrder',
-            },
-            {
-              data: {
-                left: '../../e',
-                right: '~/b',
-              },
-              messageId: 'extraSpacingBetweenImports',
             },
           ],
           options: [
@@ -4239,26 +4211,12 @@ describe(ruleName, () => {
             },
             {
               data: {
-                left: '~/c',
-                right: 't',
-              },
-              messageId: 'extraSpacingBetweenImports',
-            },
-            {
-              data: {
                 rightGroup: 'internal',
                 leftGroup: 'parent',
                 left: '../../e',
                 right: '~/b',
               },
               messageId: 'unexpectedImportsGroupOrder',
-            },
-            {
-              data: {
-                left: '../../e',
-                right: '~/b',
-              },
-              messageId: 'extraSpacingBetweenImports',
             },
           ],
           options: [

@@ -42,6 +42,9 @@ export let getNewlinesErrors = <T extends string>({
     sortingNode: left,
     options,
   })
+  if (leftNum > rightNum) {
+    return []
+  }
   let numberOfEmptyLinesBetween = getLinesBetween(sourceCode, left, right)
   switch (newlinesBetween) {
     case 'ignore':
@@ -49,9 +52,6 @@ export let getNewlinesErrors = <T extends string>({
     case 'never':
       return numberOfEmptyLinesBetween > 0 ? [extraSpacingError] : []
     case 'always':
-      if (leftNum > rightNum) {
-        return []
-      }
       if (numberOfEmptyLinesBetween === 0) {
         return [missedSpacingError]
       } else if (numberOfEmptyLinesBetween > 1) {
