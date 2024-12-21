@@ -58,7 +58,7 @@ export let sortNodesByGroups = <T extends SortingNode>(
     )
   }
 
-  // Add ignored nodes at the same position as they were before linting
+  // Add ignored nodes at the same position as they were before linting.
   for (let ignoredIndex of ignoredNodeIndices) {
     sortedNodes.splice(ignoredIndex, 0, nodes[ignoredIndex])
   }

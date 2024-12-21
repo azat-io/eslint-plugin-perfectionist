@@ -342,11 +342,14 @@ export default createEslintRule<SortClassesOptions, MESSAGE_ID>({
             member.type === 'MethodDefinition' ||
             member.type === 'TSAbstractMethodDefinition'
           ) {
-            // By putting the static modifier before accessibility modifiers,
-            // We prioritize 'static' over those in cases like:
-            // Config: ['static-method', 'public-method']
-            // Element: public static method();
-            // Element will be classified as 'static-method' before 'public-method'
+            /**
+             * By putting the static modifier before accessibility modifiers, we
+             * prioritize 'static' over those in cases like:
+             * config: ['static-method', 'public-method']
+             * element: public static method();
+             * Element will be classified as 'static-method' before
+             * 'public-method'.
+             */
             if (member.static) {
               modifiers.push('static')
             }
@@ -437,9 +440,11 @@ export default createEslintRule<SortClassesOptions, MESSAGE_ID>({
             }
             selectors.push('accessor-property')
           } else {
-            // Member is necessarily a Property
-            // Similarly to above for methods, prioritize 'static', 'declare', 'decorated', 'abstract', 'override' and 'readonly'
-            // Over accessibility modifiers
+            /**
+             * Member is necessarily a property similarly to above for methods,
+             * prioritize 'static', 'declare', 'decorated', 'abstract',
+             * 'override' and 'readonly' over accessibility modifiers.
+             */
             if (member.static) {
               modifiers.push('static')
             }
@@ -514,15 +519,24 @@ export default createEslintRule<SortClassesOptions, MESSAGE_ID>({
               })
             ) {
               defineGroup(customGroup.groupName, true)
-              // If the custom group is not referenced in the `groups` option, it will be ignored
+              /**
+               * If the custom group is not referenced in the `groups` option,
+               * it will be ignored.
+               */
               if (getGroup() === customGroup.groupName) {
                 break
               }
             }
           }
 
-          // Members belonging to the same overload signature group should have the same size in order to keep line-length sorting between them consistent.
-          // It is unclear what should be considered the size of an overload signature group. Take the size of the implementation by default.
+          /**
+           * Members belonging to the same overload signature group should have
+           * the same size in order to keep line-length sorting between them
+           * consistent.
+           *
+           * It is unclear what should be considered the size of an overload
+           * signature group. Take the size of the implementation by default.
+           */
           let overloadSignatureGroupMember = overloadSignatureGroups
             .find(overloadSignatures => overloadSignatures.includes(member))
             ?.at(-1)

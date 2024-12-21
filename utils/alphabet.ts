@@ -100,12 +100,11 @@ export class Alphabet {
    * @returns {Alphabet} - The same alphabet instance with the cases prioritized
    * @example
    * Alphabet.generateFrom('aAbBcdCD')
-   * .prioritizeCase('uppercase')
-   * // Returns 'AaBbCDcd'
+   * .prioritizeCase('uppercase') // Returns 'AaBbCDcd'.
    */
   public prioritizeCase(casePriority: 'lowercase' | 'uppercase'): this {
     let charactersWithCase = this._getCharactersWithCase()
-    // Permutes each uppercase character with its lowercase one
+    // Permutes each uppercase character with its lowercase one.
     let parsedIndexes = new Set<number>()
     let indexByCodePoints = this._characters.reduce<
       Record<number, undefined | number>

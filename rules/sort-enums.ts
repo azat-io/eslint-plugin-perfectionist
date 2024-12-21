@@ -182,7 +182,7 @@ export default createEslintRule<Options, MESSAGE_ID>({
       )
 
       let compareOptions: CompareOptions<SortEnumsSortingNode> = {
-        // Get the enum value rather than the name if needed
+        // Get the enum value rather than the name if needed.
         nodeValueGetter:
           options.sortByValue || (isNumericEnum && options.forceNumericSort)
             ? sortingNode => {

@@ -506,22 +506,22 @@ type User = {
 ```js
  {
    groups: [
-+    'top',                           // [!code ++]
++    'top',                                  // [!code ++]
      'unknown',
 +    ['optional-multiline-member', 'bottom'] // [!code ++]
    ],
-+  customGroups: [                              // [!code ++]
-+    {                                          // [!code ++]
-+       groupName: 'top',                       // [!code ++]
-+       selector: 'property',                   // [!code ++]
-+       elementNamePattern: '^(?:id|name)$',    // [!code ++]
-+    },                                         // [!code ++]
-+    {                                          // [!code ++]
-+       groupName: 'bottom',                    // [!code ++]
-+       selector: 'property',                   // [!code ++]
-+       elementNamePattern: '.+_metadata$',     // [!code ++]
-+    }                                          // [!code ++]
-+  ]                                            // [!code ++]
++  customGroups: [                           // [!code ++]
++    {                                       // [!code ++]
++       groupName: 'top',                    // [!code ++]
++       selector: 'property',                // [!code ++]
++       elementNamePattern: '^(?:id|name)$', // [!code ++]
++    },                                      // [!code ++]
++    {                                       // [!code ++]
++       groupName: 'bottom',                 // [!code ++]
++       selector: 'property',                // [!code ++]
++       elementNamePattern: '.+_metadata$',  // [!code ++]
++    }                                       // [!code ++]
++  ]                                         // [!code ++]
  }
 ```
 

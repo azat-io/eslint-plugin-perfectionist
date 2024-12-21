@@ -18,7 +18,7 @@ interface UseGroupProps {
 
 export let useGroups = ({ groups }: UseGroupProps): UseGroupsValue => {
   let group: undefined | string
-  // For lookup performance
+  // For lookup performance.
   let groupsSet = new Set(groups.flat())
 
   let defineGroup = (value: string, override = false): void => {

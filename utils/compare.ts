@@ -123,7 +123,7 @@ let getCustomSortingFunction = <T extends SortingNode>(
     let aValue = formatString(nodeValueGetter(aNode))
     let bValue = formatString(nodeValueGetter(bNode))
     let minLength = Math.min(aValue.length, bValue.length)
-    // Iterate character by character
+    // Iterate character by character.
     for (let i = 0; i < minLength; i++) {
       let aCharacter = aValue[i]
       let bCharacter = bValue[i]

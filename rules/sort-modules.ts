@@ -310,7 +310,7 @@ let analyzeModule = ({
       modifiers.includes('export') &&
       modifiers.includes('decorated')
     ) {
-      // Not always handled correctly at the moment
+      // Not always handled correctly at the moment.
       continue
     }
 
@@ -333,7 +333,10 @@ let analyzeModule = ({
         })
       ) {
         defineGroup(customGroup.groupName, true)
-        // If the custom group is not referenced in the `groups` option, it will be ignored
+        /**
+         * If the custom group is not referenced in the `groups` option, it will
+         * be ignored
+         */
         if (getGroup() === customGroup.groupName) {
           break
         }

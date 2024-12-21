@@ -325,7 +325,7 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
           typescriptImport.sys,
           tsConfigOutput.cache,
         )
-        // If the module can't be resolved, assume it is external
+        // If the module can't be resolved, assume it is external.
         if (
           typeof resolution.resolvedModule?.isExternalLibraryImport !==
           'boolean'

@@ -25,7 +25,7 @@ export let doesCustomGroupMatch = (
   props: DoesCustomGroupMatchProps,
 ): boolean => {
   if ('anyOf' in props.customGroup) {
-    // At least one subgroup must match
+    // At least one subgroup must match.
     return props.customGroup.anyOf.some(subgroup =>
       doesCustomGroupMatch({ ...props, customGroup: subgroup }),
     )

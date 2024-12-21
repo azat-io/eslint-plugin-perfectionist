@@ -64,8 +64,10 @@ export let getNodeRange = ({
       break
     }
 
-    // Check for newlines between comments or between the first comment and
-    // The node.
+    /**
+     * Check for newlines between comments or between the first comment and the
+     * node.
+     */
     let previousCommentOrNodeStartLine =
       i === comments.length - 1
         ? node.loc.start.line

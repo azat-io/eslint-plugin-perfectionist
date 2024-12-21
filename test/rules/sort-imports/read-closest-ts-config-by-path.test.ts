@@ -144,7 +144,7 @@ describe('readClosestTsConfigByPath', () => {
         mockParseJsonConfigFileContentReturnValue()
         mockConvertCompilerOptionsFromJsonReturnValue()
 
-        // This should call to fs.existsSync three times: c, b, a
+        // This should call to fs.existsSync three times: c, b, a.
         readClosestTsConfigByPath({
           filePath: './a/b/c/d.ts',
           tsconfigRootDir: './a',
@@ -152,8 +152,8 @@ describe('readClosestTsConfigByPath', () => {
         })
 
         /**
-         * This should call to fs.existsSync once: e
-         * Then it should retrieve c from cache, pointing to a
+         * This should call to fs.existsSync once: e, then it should retrieve c
+         * from cache, pointing to a.
          */
         let actual = readClosestTsConfigByPath({
           filePath: './a/b/c/e/f.ts',

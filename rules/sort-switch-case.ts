@@ -96,7 +96,7 @@ export default createEslintRule<Options, MESSAGE_ID>({
         [[]],
       )
 
-      // For each case group, ensure the nodes are in the correct order
+      // For each case group, ensure the nodes are in the correct order.
       let hasUnsortedNodes = false
       for (let caseNodesSortingNodeGroup of caseNameSortingNodeGroups) {
         let sortedCaseNameSortingNodes = sortNodes(
@@ -148,7 +148,7 @@ export default createEslintRule<Options, MESSAGE_ID>({
         }),
       )
 
-      // Ensure default is at the end
+      // Ensure default is at the end.
       let sortingNodeGroupsForDefaultSort = reduceCaseSortingNodes(
         sortingNodes,
         caseNode => !!caseNode.node.consequent.length,
@@ -205,12 +205,15 @@ export default createEslintRule<Options, MESSAGE_ID>({
         })
       }
 
-      // Ensure case blocks are in the correct order
+      // Ensure case blocks are in the correct order.
       let sortingNodeGroupsForBlockSort = reduceCaseSortingNodes(
         sortingNodes,
         caseNode => caseHasBreakOrReturn(caseNode.node),
       )
-      // If the last case does not have a return/break, leave its group at its place
+      /**
+       * If the last case does not have a return/break, leave its group at its
+       * place.
+       */
       let lastNodeGroup = sortingNodeGroupsForBlockSort.at(-1)
       let lastBlockCaseShouldStayInPlace = !caseHasBreakOrReturn(
         lastNodeGroup!.at(-1)!.node,
