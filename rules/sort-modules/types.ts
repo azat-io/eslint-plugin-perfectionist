@@ -75,10 +75,10 @@ type CustomGroup = (
   | {
       type?: 'unsorted'
     }
-) &
-  (SingleCustomGroup | AnyOfCustomGroup) & {
-    groupName: string
-  }
+) & {
+  newlinesInside?: 'always' | 'never'
+  groupName: string
+} & (SingleCustomGroup | AnyOfCustomGroup)
 /**
  * Only used in code, so I don't know if it's worth maintaining this.
  */
