@@ -56,6 +56,22 @@ export interface AnyOfCustomGroup {
   anyOf: SingleCustomGroup[]
 }
 
+type CustomGroup = {
+  newlinesAbove?: 'ignore' | 'always' | 'never'
+  newlinesBelow?: 'ignore' | 'always' | 'never'
+  newlinesInside?: 'always' | 'never'
+  groupName: string
+} & (
+  | {
+      order?: Options[0]['order']
+      type?: Options[0]['type']
+    }
+  | {
+      type?: 'unsorted'
+    }
+) &
+  (SingleCustomGroup | AnyOfCustomGroup)
+
 /**
  * Only used in code as well
  */
@@ -66,19 +82,6 @@ interface AllowedModifiersPerSelector {
   multiline: OptionalModifier | RequiredModifier
   'index-signature': never
 }
-
-type CustomGroup = (
-  | {
-      order?: Options[0]['order']
-      type?: Options[0]['type']
-    }
-  | {
-      type?: 'unsorted'
-    }
-) &
-  (SingleCustomGroup | AnyOfCustomGroup) & {
-    groupName: string
-  }
 
 type IndexSignatureGroup = JoinWithDash<
   [
