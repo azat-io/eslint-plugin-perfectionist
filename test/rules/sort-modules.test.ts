@@ -1920,13 +1920,6 @@ describe(ruleName, () => {
                 },
                 {
                   data: {
-                    right: 'y',
-                    left: 'A',
-                  },
-                  messageId: 'extraSpacingBetweenModulesMembers',
-                },
-                {
-                  data: {
                     right: 'b',
                     left: 'z',
                   },
