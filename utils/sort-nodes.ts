@@ -1,5 +1,5 @@
+import type { SortingNode } from '../types/sorting-node'
 import type { CompareOptions } from './compare'
-import type { SortingNode } from '../typings'
 
 import { compare } from './compare'
 

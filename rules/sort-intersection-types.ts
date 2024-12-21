@@ -1,4 +1,4 @@
-import type { SortingNode } from '../typings'
+import type { SortingNode } from '../types/sorting-node'
 
 import {
   partitionByCommentJsonSchema,

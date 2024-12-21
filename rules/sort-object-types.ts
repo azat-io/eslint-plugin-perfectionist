@@ -3,8 +3,8 @@ import type { RuleContext } from '@typescript-eslint/utils/ts-eslint'
 import type { TSESTree } from '@typescript-eslint/types'
 import type { TSESLint } from '@typescript-eslint/utils'
 
-import type { Modifier, Selector, Options } from './sort-object-types.types'
-import type { SortingNode } from '../typings'
+import type { Modifier, Selector, Options } from './sort-object-types/types'
+import type { SortingNode } from '../types/sorting-node'
 
 import {
   buildUseConfigurationIfJsonSchema,
@@ -22,15 +22,20 @@ import {
   orderJsonSchema,
 } from '../utils/common-json-schemas'
 import { validateNewlinesAndPartitionConfiguration } from '../utils/validate-newlines-and-partition-configuration'
+import {
+  singleCustomGroupJsonSchema,
+  allModifiers,
+  allSelectors,
+} from './sort-object-types/types'
 import { validateGeneratedGroupsConfiguration } from '../utils/validate-generated-groups-configuration'
 import { validateCustomSortConfiguration } from '../utils/validate-custom-sort-configuration'
 import { getCustomGroupsCompareOptions } from '../utils/get-custom-groups-compare-options'
+import { doesCustomGroupMatch } from './sort-object-types/does-custom-group-match'
 import { getMatchingContextOptions } from '../utils/get-matching-context-options'
 import { generatePredefinedGroups } from '../utils/generate-predefined-groups'
 import { getEslintDisabledLines } from '../utils/get-eslint-disabled-lines'
-import { singleCustomGroupJsonSchema } from './sort-object-types.types'
+import { isMemberOptional } from './sort-object-types/is-member-optional'
 import { isNodeEslintDisabled } from '../utils/is-node-eslint-disabled'
-import { allModifiers, allSelectors } from './sort-object-types.types'
 import { hasPartitionComment } from '../utils/is-partition-comment'
 import { isNodeFunctionType } from '../utils/is-node-function-type'
 import { createNodeIndexMap } from '../utils/create-node-index-map'
@@ -39,8 +44,6 @@ import { getCommentsBefore } from '../utils/get-comments-before'
 import { makeNewlinesFixes } from '../utils/make-newlines-fixes'
 import { getNewlinesErrors } from '../utils/get-newlines-errors'
 import { createEslintRule } from '../utils/create-eslint-rule'
-import { isMemberOptional } from '../utils/is-member-optional'
-import { customGroupMatches } from './sort-object-types-utils'
 import { getLinesBetween } from '../utils/get-lines-between'
 import { getGroupNumber } from '../utils/get-group-number'
 import { getSourceCode } from '../utils/get-source-code'
@@ -314,7 +317,7 @@ export let sortObjectTypeElements = <MessageIds extends string>({
       if (Array.isArray(options.customGroups)) {
         for (let customGroup of options.customGroups) {
           if (
-            customGroupMatches({
+            doesCustomGroupMatch({
               elementName: name,
               customGroup,
               selectors,

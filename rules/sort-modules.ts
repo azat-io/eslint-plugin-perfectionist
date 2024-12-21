@@ -7,7 +7,7 @@ import type {
   SortModulesOptions,
   Modifier,
   Selector,
-} from './sort-modules.types'
+} from './sort-modules/types'
 import type { SortingNodeWithDependencies } from '../utils/sort-nodes-by-dependencies'
 
 import {
@@ -33,10 +33,11 @@ import {
   singleCustomGroupJsonSchema,
   allModifiers,
   allSelectors,
-} from './sort-modules.types'
+} from './sort-modules/types'
 import { validateCustomSortConfiguration } from '../utils/validate-custom-sort-configuration'
 import { getCustomGroupsCompareOptions } from '../utils/get-custom-groups-compare-options'
 import { generatePredefinedGroups } from '../utils/generate-predefined-groups'
+import { doesCustomGroupMatch } from './sort-modules/does-custom-group-match'
 import { getEslintDisabledLines } from '../utils/get-eslint-disabled-lines'
 import { isNodeEslintDisabled } from '../utils/is-node-eslint-disabled'
 import { createNodeIndexMap } from '../utils/create-node-index-map'
@@ -50,7 +51,6 @@ import { createEslintRule } from '../utils/create-eslint-rule'
 import { getLinesBetween } from '../utils/get-lines-between'
 import { getGroupNumber } from '../utils/get-group-number'
 import { getEnumMembers } from '../utils/get-enum-members'
-import { customGroupMatches } from './sort-modules-utils'
 import { getSourceCode } from '../utils/get-source-code'
 import { toSingleLine } from '../utils/to-single-line'
 import { rangeToDiff } from '../utils/range-to-diff'
@@ -324,7 +324,7 @@ let analyzeModule = ({
     }
     for (let customGroup of options.customGroups) {
       if (
-        customGroupMatches({
+        doesCustomGroupMatch({
           selectors: [selector],
           elementName: name,
           customGroup,

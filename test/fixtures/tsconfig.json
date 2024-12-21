@@ -8,5 +8,11 @@
     "target": "es5",
     "strict": true
   },
-  "include": ["file.svelte", "file.astro", "react.tsx", "file.vue", "file.ts"]
+  "include": [
+    "../fixtures/file.svelte",
+    "../fixtures/file.astro",
+    "../fixtures/react.tsx",
+    "../fixtures/file.vue",
+    "../fixtures/file.ts"
+  ]
 }

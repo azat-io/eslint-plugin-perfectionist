@@ -1,5 +1,5 @@
+import type { SortingNode } from '../types/sorting-node'
 import type { CompareOptions } from './compare'
-import type { SortingNode } from '../typings'
 
 import { getGroupNumber } from './get-group-number'
 import { sortNodes } from './sort-nodes'

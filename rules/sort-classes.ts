@@ -5,7 +5,7 @@ import type {
   SortClassesOptions,
   Modifier,
   Selector,
-} from './sort-classes.types'
+} from './sort-classes/types'
 import type { SortingNodeWithDependencies } from '../utils/sort-nodes-by-dependencies'
 
 import {
@@ -31,14 +31,12 @@ import {
   singleCustomGroupJsonSchema,
   allModifiers,
   allSelectors,
-} from './sort-classes.types'
+} from './sort-classes/types'
 import { validateCustomSortConfiguration } from '../utils/validate-custom-sort-configuration'
-import {
-  getOverloadSignatureGroups,
-  customGroupMatches,
-} from './sort-classes-utils'
 import { getCustomGroupsCompareOptions } from '../utils/get-custom-groups-compare-options'
+import { getOverloadSignatureGroups } from './sort-classes/get-overload-signature-groups'
 import { generatePredefinedGroups } from '../utils/generate-predefined-groups'
+import { doesCustomGroupMatch } from './sort-classes/does-custom-group-match'
 import { getEslintDisabledLines } from '../utils/get-eslint-disabled-lines'
 import { isNodeEslintDisabled } from '../utils/is-node-eslint-disabled'
 import { hasPartitionComment } from '../utils/is-partition-comment'
@@ -506,7 +504,7 @@ export default createEslintRule<SortClassesOptions, MESSAGE_ID>({
 
           for (let customGroup of options.customGroups) {
             if (
-              customGroupMatches({
+              doesCustomGroupMatch({
                 elementValue: memberValue,
                 elementName: name,
                 customGroup,

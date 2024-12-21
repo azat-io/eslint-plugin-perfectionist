@@ -98,7 +98,7 @@ export default defineConfig({
       },
       include: [
         path.join(__dirname, 'index.ts'),
-        path.join(__dirname, 'typings'),
+        path.join(__dirname, 'types'),
         path.join(__dirname, 'rules'),
         path.join(__dirname, 'utils'),
       ],

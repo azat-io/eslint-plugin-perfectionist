@@ -1,6 +1,6 @@
 import type { TSESTree } from '@typescript-eslint/types'
 
-import type { SortingNode } from '../typings'
+import type { SortingNode } from '../types/sorting-node'
 
 import {
   specialCharactersJsonSchema,

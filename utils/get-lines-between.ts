@@ -1,6 +1,6 @@
 import type { TSESLint } from '@typescript-eslint/utils'
 
-import type { SortingNode } from '../typings'
+import type { SortingNode } from '../types/sorting-node'
 
 export let getLinesBetween = (
   source: TSESLint.SourceCode,

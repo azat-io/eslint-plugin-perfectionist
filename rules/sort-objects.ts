@@ -22,7 +22,7 @@ import {
 } from '../utils/sort-nodes-by-dependencies'
 import { validateNewlinesAndPartitionConfiguration } from '../utils/validate-newlines-and-partition-configuration'
 import { validateCustomSortConfiguration } from '../utils/validate-custom-sort-configuration'
-import { getFirstNodeParentWithType } from '../utils/get-first-node-parent-with-type'
+import { getFirstNodeParentWithType } from './sort-objects/get-first-node-parent-with-type'
 import { validateGroupsConfiguration } from '../utils/validate-groups-configuration'
 import { getMatchingContextOptions } from '../utils/get-matching-context-options'
 import { getEslintDisabledLines } from '../utils/get-eslint-disabled-lines'
