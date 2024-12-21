@@ -36,6 +36,19 @@ export type SingleCustomGroup =
   | BaseSingleCustomGroup<ConstructorSelector>
   | AdvancedSingleCustomGroup<MethodSelector>
 
+export type CustomGroup = (
+  | {
+      order?: SortClassesOptions[0]['order']
+      type?: SortClassesOptions[0]['type']
+    }
+  | {
+      type?: 'unsorted'
+    }
+) & {
+  newlinesInside?: 'always' | 'never'
+  groupName: string
+} & (SingleCustomGroup | AnyOfCustomGroup)
+
 export type NonDeclarePropertyGroup = JoinWithDash<
   [
     PublicOrProtectedOrPrivateModifier,
@@ -201,19 +214,6 @@ type Group =
   | MethodGroup
   | 'unknown'
   | string
-
-type CustomGroup = (
-  | {
-      order?: SortClassesOptions[0]['order']
-      type?: SortClassesOptions[0]['type']
-    }
-  | {
-      type?: 'unsorted'
-    }
-) &
-  (SingleCustomGroup | AnyOfCustomGroup) & {
-    groupName: string
-  }
 
 type AdvancedSingleCustomGroup<T extends Selector> = {
   decoratorNamePattern?: string
