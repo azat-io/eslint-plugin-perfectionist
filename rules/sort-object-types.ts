@@ -4,7 +4,7 @@ import type { TSESTree } from '@typescript-eslint/types'
 import type { TSESLint } from '@typescript-eslint/utils'
 
 import type { Modifier, Selector, Options } from './sort-object-types/types'
-import type { SortingNode } from '../types'
+import type { SortingNode } from '../types/sorting-node'
 
 import {
   buildUseConfigurationIfJsonSchema,

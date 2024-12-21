@@ -1,6 +1,6 @@
 import { compare as createNaturalCompare } from 'natural-orderby'
 
-import type { SortingNode } from '../types'
+import type { SortingNode } from '../types/sorting-node'
 
 import { convertBooleanToSign } from './convert-boolean-to-sign'
 

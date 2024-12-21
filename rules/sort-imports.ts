@@ -2,7 +2,7 @@ import type { TSESTree } from '@typescript-eslint/types'
 
 import { builtinModules } from 'node:module'
 
-import type { SortingNode } from '../types'
+import type { SortingNode } from '../types/sorting-node'
 
 import {
   partitionByCommentJsonSchema,

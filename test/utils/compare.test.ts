@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 
-import type { SortingNode } from '../../types'
+import type { SortingNode } from '../../types/sorting-node'
 
 import { Alphabet } from '../../utils/alphabet'
 import { compare } from '../../utils/compare'

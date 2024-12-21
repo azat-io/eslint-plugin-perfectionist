@@ -1,6 +1,6 @@
 import type { TSESLint } from '@typescript-eslint/utils'
 
-import type { SortingNode } from '../types'
+import type { SortingNode } from '../types/sorting-node'
 
 import { getLinesBetween } from './get-lines-between'
 import { getGroupNumber } from './get-group-number'

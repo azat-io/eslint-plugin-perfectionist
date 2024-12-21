@@ -1,6 +1,6 @@
 import type { JSONSchema4 } from '@typescript-eslint/utils/json-schema'
 
-import type { JoinWithDash } from '../../types'
+import type { JoinWithDash } from '../../types/join-with-dash'
 
 import {
   buildCustomGroupModifiersJsonSchema,

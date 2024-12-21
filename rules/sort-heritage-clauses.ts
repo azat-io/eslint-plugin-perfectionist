@@ -1,7 +1,7 @@
 import type { RuleContext } from '@typescript-eslint/utils/ts-eslint'
 import type { TSESTree } from '@typescript-eslint/types'
 
-import type { SortingNode } from '../types'
+import type { SortingNode } from '../types/sorting-node'
 
 import {
   specialCharactersJsonSchema,
