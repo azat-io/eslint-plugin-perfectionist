@@ -24,18 +24,21 @@ export let makeNewlinesFixes = ({
   fixer,
   nodes,
 }: MakeNewlinesFixesParameters): TSESLint.RuleFix[] => {
+  if (options.newlinesBetween === 'ignore') {
+    return []
+  }
+
   let fixes: TSESLint.RuleFix[] = []
 
-  for (let max = sortedNodes.length, i = 0; i < max; i++) {
-    let sortingNode = sortedNodes.at(i)!
-    let nextSortingNode = sortedNodes.at(i + 1)
+  for (let i = 0; i < sortedNodes.length - 1; i++) {
+    let sortedSortingNode = sortedNodes.at(i)!
+    let nextSortedSortingNode = sortedNodes.at(i + 1)!
 
-    if (options.newlinesBetween === 'ignore' || !nextSortingNode) {
-      continue
-    }
-
-    let nodeGroupNumber = getGroupNumber(options.groups, sortingNode)
-    let nextNodeGroupNumber = getGroupNumber(options.groups, nextSortingNode)
+    let nodeGroupNumber = getGroupNumber(options.groups, sortedSortingNode)
+    let nextNodeGroupNumber = getGroupNumber(
+      options.groups,
+      nextSortedSortingNode,
+    )
     let currentNodeRange = getNodeRange({
       node: nodes.at(i)!.node,
       sourceCode,
