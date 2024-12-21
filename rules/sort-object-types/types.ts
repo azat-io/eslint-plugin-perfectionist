@@ -75,10 +75,10 @@ type CustomGroup = (
   | {
       type?: 'unsorted'
     }
-) &
-  (SingleCustomGroup | AnyOfCustomGroup) & {
-    groupName: string
-  }
+) & {
+  newlinesInside?: 'always' | 'never'
+  groupName: string
+} & (SingleCustomGroup | AnyOfCustomGroup)
 
 type IndexSignatureGroup = JoinWithDash<
   [

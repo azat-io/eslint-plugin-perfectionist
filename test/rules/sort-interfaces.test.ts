@@ -1345,6 +1345,101 @@ describe(ruleName, () => {
           invalid: [],
         },
       )
+
+      describe('newlinesInside', () => {
+        ruleTester.run(
+          `${ruleName}: allows to use newlinesInside: always`,
+          rule,
+          {
+            invalid: [
+              {
+                options: [
+                  {
+                    customGroups: [
+                      {
+                        newlinesInside: 'always',
+                        selector: 'property',
+                        groupName: 'group1',
+                      },
+                    ],
+                    groups: ['group1'],
+                  },
+                ],
+                errors: [
+                  {
+                    data: {
+                      right: 'b',
+                      left: 'a',
+                    },
+                    messageId: 'missedSpacingBetweenInterfaceMembers',
+                  },
+                ],
+                output: dedent`
+                  interface Interface {
+                    a
+
+                    b
+                  }
+                `,
+                code: dedent`
+                  interface Interface {
+                    a
+                    b
+                  }
+                `,
+              },
+            ],
+            valid: [],
+          },
+        )
+
+        ruleTester.run(
+          `${ruleName}: allows to use newlinesInside: never`,
+          rule,
+          {
+            invalid: [
+              {
+                options: [
+                  {
+                    customGroups: [
+                      {
+                        newlinesInside: 'never',
+                        selector: 'property',
+                        groupName: 'group1',
+                      },
+                    ],
+                    type: 'alphabetical',
+                    groups: ['group1'],
+                  },
+                ],
+                errors: [
+                  {
+                    data: {
+                      right: 'b',
+                      left: 'a',
+                    },
+                    messageId: 'extraSpacingBetweenInterfaceMembers',
+                  },
+                ],
+                output: dedent`
+                  interface Interface {
+                    a
+                    b
+                  }
+                `,
+                code: dedent`
+                  interface Interface {
+                    a
+
+                    b
+                  }
+                `,
+              },
+            ],
+            valid: [],
+          },
+        )
+      })
     })
 
     ruleTester.run(
