@@ -31,6 +31,8 @@ export let makeNewlinesFixes = ({
   let fixes: TSESLint.RuleFix[] = []
 
   for (let i = 0; i < sortedNodes.length - 1; i++) {
+    let sortingNode = nodes.at(i)!
+    let nextSortingNode = nodes.at(i + 1)!
     let sortedSortingNode = sortedNodes.at(i)!
     let nextSortedSortingNode = sortedNodes.at(i + 1)!
 
@@ -40,11 +42,11 @@ export let makeNewlinesFixes = ({
       nextSortedSortingNode,
     )
     let currentNodeRange = getNodeRange({
-      node: nodes.at(i)!.node,
+      node: sortingNode.node,
       sourceCode,
     })
     let nextNodeRangeStart = getNodeRange({
-      node: nodes.at(i + 1)!.node,
+      node: nextSortingNode.node,
       sourceCode,
     }).at(0)!
     let rangeToReplace: [number, number] = [
@@ -58,8 +60,8 @@ export let makeNewlinesFixes = ({
 
     let linesBetweenMembers = getLinesBetween(
       sourceCode,
-      nodes.at(i)!,
-      nodes.at(i + 1)!,
+      sortingNode,
+      nextSortingNode,
     )
 
     let rangeReplacement: undefined | string
@@ -84,7 +86,7 @@ export let makeNewlinesFixes = ({
       )
       let isOnSameLine =
         linesBetweenMembers === 0 &&
-        nodes.at(i)!.node.loc.end.line === nodes.at(i + 1)!.node.loc.start.line
+        sortingNode.node.loc.end.line === nextSortingNode.node.loc.start.line
       if (isOnSameLine) {
         rangeReplacement = addNewlineBeforeFirstNewline(rangeReplacement)
       }
