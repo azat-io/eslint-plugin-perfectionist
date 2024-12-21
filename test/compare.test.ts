@@ -249,6 +249,21 @@ describe('compare', () => {
         }),
       ).toBe(0)
     })
+
+    it('gives maximum priority to void', () => {
+      expect(
+        compare(createTestNode({ name: 'a' }), createTestNode({ name: '' }), {
+          ...compareOptions,
+          alphabet: 'a',
+        }),
+      ).toBe(1)
+      expect(
+        compare(createTestNode({ name: '' }), createTestNode({ name: 'a' }), {
+          ...compareOptions,
+          alphabet: 'a',
+        }),
+      ).toBe(-1)
+    })
   })
 
   let createTestNode = ({ name }: { name: string }): SortingNode =>
