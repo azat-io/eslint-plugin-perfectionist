@@ -4,19 +4,17 @@ import type { SortingNode } from '../types/sorting-node'
 
 import { getLinesBetween } from './get-lines-between'
 
-interface Props<T extends string> {
+interface GetNewlinesErrorsParameters<T extends string> {
   sourceCode: TSESLint.SourceCode
   missedSpacingError: T
   extraSpacingError: T
   right: SortingNode
   left: SortingNode
   rightNum: number
-  options: Options
+  options: {
+    newlinesBetween: 'ignore' | 'always' | 'never'
+  }
   leftNum: number
-}
-
-interface Options {
-  newlinesBetween: 'ignore' | 'always' | 'never'
 }
 
 export let getNewlinesErrors = <T extends string>({
@@ -28,7 +26,7 @@ export let getNewlinesErrors = <T extends string>({
   options,
   right,
   left,
-}: Props<T>): T[] => {
+}: GetNewlinesErrorsParameters<T>): T[] => {
   let errors: T[] = []
 
   let numberOfEmptyLinesBetween = getLinesBetween(sourceCode, left, right)
