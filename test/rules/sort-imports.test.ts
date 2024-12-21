@@ -899,13 +899,6 @@ describe(ruleName, () => {
               },
               messageId: 'unexpectedImportsGroupOrder',
             },
-            {
-              data: {
-                left: './b',
-                right: 'c',
-              },
-              messageId: 'extraSpacingBetweenImports',
-            },
           ],
           options: [
             {
@@ -3239,13 +3232,6 @@ describe(ruleName, () => {
               },
               messageId: 'unexpectedImportsGroupOrder',
             },
-            {
-              data: {
-                left: './b',
-                right: 'c',
-              },
-              messageId: 'extraSpacingBetweenImports',
-            },
           ],
           options: [
             {
@@ -4829,13 +4815,6 @@ describe(ruleName, () => {
                 right: 'c',
               },
               messageId: 'unexpectedImportsGroupOrder',
-            },
-            {
-              data: {
-                left: './b',
-                right: 'c',
-              },
-              messageId: 'extraSpacingBetweenImports',
             },
           ],
           options: [
