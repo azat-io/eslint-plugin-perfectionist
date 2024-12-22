@@ -1,9 +1,9 @@
 import { describe, expect, it } from 'vitest'
 
-import type { GetNewlinesBetweenOptionParameters } from '../utils/get-newlines-between-option'
-import type { SortingNode } from '../types/sorting-node'
+import type { GetNewlinesBetweenOptionParameters } from '../../utils/get-newlines-between-option'
+import type { SortingNode } from '../../types/sorting-node'
 
-import { getNewlinesBetweenOption } from '../utils/get-newlines-between-option'
+import { getNewlinesBetweenOption } from '../../utils/get-newlines-between-option'
 
 describe('get-newlines-between-option', () => {
   describe('global "newlinesBetween" option', () => {
