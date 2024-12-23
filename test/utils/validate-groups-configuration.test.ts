@@ -31,4 +31,19 @@ describe('validate-groups-configuration', () => {
       )
     }).toThrow('Duplicated group(s): predefinedGroup')
   })
+
+  it('throws an error with consecutive newlines objects', () => {
+    expect(() => {
+      validateGroupsConfiguration(
+        [
+          'a',
+          { newlinesBetween: 'always' },
+          { newlinesBetween: 'always' },
+          'b',
+        ],
+        ['a', 'b'],
+        [],
+      )
+    }).toThrow("Consecutive 'newlinesBetween' objects are not allowed")
+  })
 })

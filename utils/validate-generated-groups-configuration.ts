@@ -2,10 +2,15 @@ import { validateNoDuplicatedGroups } from './validate-groups-configuration'
 
 interface ValidateGenerateGroupsConfigurationParameters {
   customGroups: Record<string, string[] | string> | BaseCustomGroup[]
-  groups: (string[] | string)[]
   selectors: string[]
   modifiers: string[]
+  groups: Group[]
 }
+
+type Group =
+  | { newlinesBetween: 'ignore' | 'always' | 'never' }
+  | string[]
+  | string
 
 interface BaseCustomGroup {
   groupName: string
@@ -24,6 +29,7 @@ export let validateGeneratedGroupsConfiguration = ({
   )
   let invalidGroups = groups
     .flat()
+    .filter(group => typeof group === 'string')
     .filter(
       group =>
         !isPredefinedGroup(selectors, modifiers, group) &&

@@ -11,9 +11,26 @@ describe('validate-newlines-and-partition-configuration', () => {
         validateNewlinesAndPartitionConfiguration({
           partitionByNewLine: true,
           newlinesBetween,
+          groups: [],
         })
       }).toThrow(
         "The 'partitionByNewLine' and 'newlinesBetween' options cannot be used together",
+      )
+    }
+  })
+
+  it("throws an error when 'partitionByNewline' is enabled and 'newlinesBetween' objects exist in 'groups'", () => {
+    let newlinesBetweenValues = ['always', 'never', 'ignore'] as const
+
+    for (let newlinesBetween of newlinesBetweenValues) {
+      expect(() => {
+        validateNewlinesAndPartitionConfiguration({
+          groups: [{ newlinesBetween }],
+          newlinesBetween: 'ignore',
+          partitionByNewLine: true,
+        })
+      }).toThrow(
+        "'newlinesBetween' objects can not be used in 'groups' alongside 'partitionByNewLine'",
       )
     }
   })
@@ -23,6 +40,7 @@ describe('validate-newlines-and-partition-configuration', () => {
       validateNewlinesAndPartitionConfiguration({
         newlinesBetween: 'ignore',
         partitionByNewLine: true,
+        groups: [],
       })
     }).not.toThrow()
   })
@@ -35,6 +53,7 @@ describe('validate-newlines-and-partition-configuration', () => {
         validateNewlinesAndPartitionConfiguration({
           partitionByNewLine: false,
           newlinesBetween,
+          groups: [],
         })
       }).not.toThrow()
     }
