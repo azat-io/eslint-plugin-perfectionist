@@ -113,8 +113,7 @@ export let partitionByNewLineJsonSchema: JSONSchema4 = {
 }
 
 export let newlinesBetweenJsonSchema: JSONSchema4 = {
-  description:
-    'Specifies how new lines should be handled between modules members groups.',
+  description: 'Specifies how new lines should be handled between groups.',
   enum: ['ignore', 'always', 'never'],
   type: 'string',
 }
@@ -154,6 +153,15 @@ let customGroupNameJsonSchema: Record<string, JSONSchema4> = {
   },
 }
 
+let customGroupNewlinesInsideJsonSchema: Record<string, JSONSchema4> = {
+  newlinesInside: {
+    description:
+      'Specifies how new lines should be handled between members of the custom group.',
+    enum: ['always', 'never'],
+    type: 'string',
+  },
+}
+
 export let buildCustomGroupsArrayJsonSchema = ({
   singleCustomGroupJsonSchema,
 }: {
@@ -165,6 +173,7 @@ export let buildCustomGroupsArrayJsonSchema = ({
         properties: {
           ...customGroupNameJsonSchema,
           ...customGroupSortJsonSchema,
+          ...customGroupNewlinesInsideJsonSchema,
           anyOf: {
             items: {
               properties: {
@@ -185,6 +194,7 @@ export let buildCustomGroupsArrayJsonSchema = ({
         properties: {
           ...customGroupNameJsonSchema,
           ...customGroupSortJsonSchema,
+          ...customGroupNewlinesInsideJsonSchema,
           ...singleCustomGroupJsonSchema,
         },
         description: 'Custom group.',

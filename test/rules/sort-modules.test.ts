@@ -801,6 +801,93 @@ describe(ruleName, () => {
           invalid: [],
         },
       )
+
+      describe('newlinesInside', () => {
+        ruleTester.run(
+          `${ruleName}: allows to use newlinesInside: always`,
+          rule,
+          {
+            invalid: [
+              {
+                options: [
+                  {
+                    customGroups: [
+                      {
+                        newlinesInside: 'always',
+                        groupName: 'group1',
+                        selector: 'type',
+                      },
+                    ],
+                    groups: ['group1'],
+                  },
+                ],
+                errors: [
+                  {
+                    data: {
+                      right: 'B',
+                      left: 'A',
+                    },
+                    messageId: 'missedSpacingBetweenModulesMembers',
+                  },
+                ],
+                output: dedent`
+                  type A = {}
+
+                  type B = {}
+              `,
+                code: dedent`
+                  type A = {}
+                  type B = {}
+                `,
+              },
+            ],
+            valid: [],
+          },
+        )
+
+        ruleTester.run(
+          `${ruleName}: allows to use newlinesInside: never`,
+          rule,
+          {
+            invalid: [
+              {
+                options: [
+                  {
+                    customGroups: [
+                      {
+                        newlinesInside: 'never',
+                        groupName: 'group1',
+                        selector: 'type',
+                      },
+                    ],
+                    type: 'alphabetical',
+                    groups: ['group1'],
+                  },
+                ],
+                errors: [
+                  {
+                    data: {
+                      right: 'B',
+                      left: 'A',
+                    },
+                    messageId: 'extraSpacingBetweenModulesMembers',
+                  },
+                ],
+                output: dedent`
+                  type A = {}
+                  type B = {}
+                `,
+                code: dedent`
+                  type A = {}
+
+                  type B = {}
+                `,
+              },
+            ],
+            valid: [],
+          },
+        )
+      })
     })
 
     describe(`${ruleName}(${type}): interface modifiers priority`, () => {
@@ -1917,13 +2004,6 @@ describe(ruleName, () => {
                     left: 'A',
                   },
                   messageId: 'unexpectedModulesGroupOrder',
-                },
-                {
-                  data: {
-                    right: 'y',
-                    left: 'A',
-                  },
-                  messageId: 'extraSpacingBetweenModulesMembers',
                 },
                 {
                   data: {

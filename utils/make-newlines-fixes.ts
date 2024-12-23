@@ -2,19 +2,27 @@ import type { TSESLint } from '@typescript-eslint/utils'
 
 import type { SortingNode } from '../types/sorting-node'
 
+import { getNewlinesBetweenOption } from './get-newlines-between-option'
 import { getLinesBetween } from './get-lines-between'
-import { getGroupNumber } from './get-group-number'
 import { getNodeRange } from './get-node-range'
 
 interface MakeNewlinesFixesParameters {
-  options: {
-    newlinesBetween: 'ignore' | 'always' | 'never'
-    groups: (string[] | string)[]
-  }
   sourceCode: TSESLint.SourceCode
   sortedNodes: SortingNode[]
   fixer: TSESLint.RuleFixer
   nodes: SortingNode[]
+  options: Options
+}
+
+interface Options {
+  customGroups?: Record<string, string[] | string> | CustomGroup[]
+  newlinesBetween: 'ignore' | 'always' | 'never'
+  groups: (string[] | string)[]
+}
+
+interface CustomGroup {
+  newlinesInside?: 'always' | 'never'
+  groupName: string
 }
 
 export let makeNewlinesFixes = ({
@@ -26,22 +34,28 @@ export let makeNewlinesFixes = ({
 }: MakeNewlinesFixesParameters): TSESLint.RuleFix[] => {
   let fixes: TSESLint.RuleFix[] = []
 
-  for (let max = sortedNodes.length, i = 0; i < max; i++) {
-    let sortingNode = sortedNodes.at(i)!
-    let nextSortingNode = sortedNodes.at(i + 1)
+  for (let i = 0; i < sortedNodes.length - 1; i++) {
+    let sortingNode = nodes.at(i)!
+    let nextSortingNode = nodes.at(i + 1)!
+    let sortedSortingNode = sortedNodes.at(i)!
+    let nextSortedSortingNode = sortedNodes.at(i + 1)!
 
-    if (options.newlinesBetween === 'ignore' || !nextSortingNode) {
+    let newlinesBetween = getNewlinesBetweenOption({
+      nextSortingNode: nextSortedSortingNode,
+      sortingNode: sortedSortingNode,
+      options,
+    })
+
+    if (newlinesBetween === 'ignore') {
       continue
     }
 
-    let nodeGroupNumber = getGroupNumber(options.groups, sortingNode)
-    let nextNodeGroupNumber = getGroupNumber(options.groups, nextSortingNode)
     let currentNodeRange = getNodeRange({
-      node: nodes.at(i)!.node,
+      node: sortingNode.node,
       sourceCode,
     })
     let nextNodeRangeStart = getNodeRange({
-      node: nodes.at(i + 1)!.node,
+      node: nextSortingNode.node,
       sourceCode,
     }).at(0)!
     let rangeToReplace: [number, number] = [
@@ -55,25 +69,16 @@ export let makeNewlinesFixes = ({
 
     let linesBetweenMembers = getLinesBetween(
       sourceCode,
-      nodes.at(i)!,
-      nodes.at(i + 1)!,
+      sortingNode,
+      nextSortingNode,
     )
 
     let rangeReplacement: undefined | string
-    if (
-      (options.newlinesBetween === 'always' &&
-        nodeGroupNumber === nextNodeGroupNumber &&
-        linesBetweenMembers !== 0) ||
-      (options.newlinesBetween === 'never' && linesBetweenMembers > 0)
-    ) {
+    if (newlinesBetween === 'never' && linesBetweenMembers !== 0) {
       rangeReplacement = getStringWithoutInvalidNewlines(textBetweenNodes)
     }
 
-    if (
-      options.newlinesBetween === 'always' &&
-      nodeGroupNumber !== nextNodeGroupNumber &&
-      linesBetweenMembers !== 1
-    ) {
+    if (newlinesBetween === 'always' && linesBetweenMembers !== 1) {
       rangeReplacement = addNewlineBeforeFirstNewline(
         linesBetweenMembers > 1
           ? getStringWithoutInvalidNewlines(textBetweenNodes)
@@ -81,7 +86,7 @@ export let makeNewlinesFixes = ({
       )
       let isOnSameLine =
         linesBetweenMembers === 0 &&
-        nodes.at(i)!.node.loc.end.line === nodes.at(i + 1)!.node.loc.start.line
+        sortingNode.node.loc.end.line === nextSortingNode.node.loc.start.line
       if (isOnSameLine) {
         rangeReplacement = addNewlineBeforeFirstNewline(rangeReplacement)
       }

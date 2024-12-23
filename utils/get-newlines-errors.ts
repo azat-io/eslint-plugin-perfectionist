@@ -2,21 +2,27 @@ import type { TSESLint } from '@typescript-eslint/utils'
 
 import type { SortingNode } from '../types/sorting-node'
 
+import { getNewlinesBetweenOption } from './get-newlines-between-option'
 import { getLinesBetween } from './get-lines-between'
 
-interface Props<T extends string> {
+interface GetNewlinesErrorsParameters<T extends string> {
+  options: {
+    customGroups?: Record<string, string[] | string> | CustomGroup[]
+    newlinesBetween: 'ignore' | 'always' | 'never'
+    groups: (string[] | string)[]
+  }
   sourceCode: TSESLint.SourceCode
   missedSpacingError: T
   extraSpacingError: T
   right: SortingNode
   left: SortingNode
   rightNum: number
-  options: Options
   leftNum: number
 }
 
-interface Options {
-  newlinesBetween: 'ignore' | 'always' | 'never'
+interface CustomGroup {
+  newlinesInside?: 'always' | 'never'
+  groupName: string
 }
 
 export let getNewlinesErrors = <T extends string>({
@@ -28,24 +34,27 @@ export let getNewlinesErrors = <T extends string>({
   options,
   right,
   left,
-}: Props<T>): T[] => {
-  let errors: T[] = []
-
+}: GetNewlinesErrorsParameters<T>): T[] => {
+  let newlinesBetween = getNewlinesBetweenOption({
+    nextSortingNode: right,
+    sortingNode: left,
+    options,
+  })
+  if (leftNum > rightNum) {
+    return []
+  }
   let numberOfEmptyLinesBetween = getLinesBetween(sourceCode, left, right)
-  if (options.newlinesBetween === 'never' && numberOfEmptyLinesBetween > 0) {
-    errors.push(extraSpacingError)
+  switch (newlinesBetween) {
+    case 'ignore':
+      return []
+    case 'never':
+      return numberOfEmptyLinesBetween > 0 ? [extraSpacingError] : []
+    case 'always':
+      if (numberOfEmptyLinesBetween === 0) {
+        return [missedSpacingError]
+      } else if (numberOfEmptyLinesBetween > 1) {
+        return [extraSpacingError]
+      }
   }
-
-  if (options.newlinesBetween === 'always') {
-    if (leftNum < rightNum && numberOfEmptyLinesBetween === 0) {
-      errors.push(missedSpacingError)
-    } else if (
-      numberOfEmptyLinesBetween > 1 ||
-      (leftNum === rightNum && numberOfEmptyLinesBetween > 0)
-    ) {
-      errors.push(extraSpacingError)
-    }
-  }
-
-  return errors
+  return []
 }
