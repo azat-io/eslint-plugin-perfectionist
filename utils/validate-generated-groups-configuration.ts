@@ -1,6 +1,6 @@
 import { validateNoDuplicatedGroups } from './validate-groups-configuration'
 
-interface Props {
+interface ValidateGenerateGroupsConfigurationParameters {
   customGroups: Record<string, string[] | string> | BaseCustomGroup[]
   groups: (string[] | string)[]
   selectors: string[]
@@ -16,7 +16,7 @@ export let validateGeneratedGroupsConfiguration = ({
   selectors,
   modifiers,
   groups,
-}: Props): void => {
+}: ValidateGenerateGroupsConfigurationParameters): void => {
   let availableCustomGroupNames = new Set(
     Array.isArray(customGroups)
       ? customGroups.map(customGroup => customGroup.groupName)
