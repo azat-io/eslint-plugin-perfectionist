@@ -39,7 +39,7 @@ import { generatePredefinedGroups } from '../utils/generate-predefined-groups'
 import { doesCustomGroupMatch } from './sort-classes/does-custom-group-match'
 import { getEslintDisabledLines } from '../utils/get-eslint-disabled-lines'
 import { isNodeEslintDisabled } from '../utils/is-node-eslint-disabled'
-import { hasPartitionComment } from '../utils/is-partition-comment'
+import { hasPartitionComment } from '../utils/has-partition-comment'
 import { sortNodesByGroups } from '../utils/sort-nodes-by-groups'
 import { getCommentsBefore } from '../utils/get-comments-before'
 import { makeNewlinesFixes } from '../utils/make-newlines-fixes'
@@ -567,13 +567,13 @@ export default createEslintRule<SortClassesOptions, MESSAGE_ID>({
             (options.partitionByNewLine &&
               lastMember &&
               getLinesBetween(sourceCode, lastMember, sortingNode)) ||
-            hasPartitionComment(
-              options.partitionByComment,
-              getCommentsBefore({
+            hasPartitionComment({
+              comments: getCommentsBefore({
                 node: member,
                 sourceCode,
               }),
-            )
+              partitionByComment: options.partitionByComment,
+            })
           ) {
             accumulator.push([])
           }
