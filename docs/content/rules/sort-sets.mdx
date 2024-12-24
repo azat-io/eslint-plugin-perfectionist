@@ -197,6 +197,11 @@ Allows you to group set elements by their kind, determining whether spread value
 
 ### partitionByComment
 
+<sub>
+  - type:
+    - `boolean | string | string[]` (`BaseType`)
+    - `{ block: BaseType; line: BaseType }`
+</sub>
 <sub>default: `false`</sub>
 
 Allows you to use comments to separate the members of sets into logical groups. This can help in organizing and maintaining large sets by creating partitions based on comments.
@@ -205,6 +210,7 @@ Allows you to use comments to separate the members of sets into logical groups. 
 -	`false` — Comments will not be used as delimiters.
 - `string` — A regexp pattern to specify which comments should act as delimiters.
 - `string[]` — A list of regexp patterns to specify which comments should act as delimiters.
+- `{ block: BaseType; line: BaseType }` — Specify which block and line comments should act as delimiters.
 
 ### partitionByNewLine
 
