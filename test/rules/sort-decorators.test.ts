@@ -1060,6 +1060,460 @@ describe(ruleName, () => {
       },
     )
 
+    describe(`${ruleName}(${type}): allows to use "partitionByComment.line"`, () => {
+      ruleTester.run(`${ruleName}(${type}): ignores block comments`, rule, {
+        invalid: [
+          {
+            output: dedent`
+              /* Comment */
+              @A
+              @B
+              class Class {
+
+                /* Comment */
+                @A
+                @B
+                property
+
+                /* Comment */
+                @A
+                @B
+                accessor field
+
+                /* Comment */
+                @A
+                @B
+                method(
+                  /* Comment */
+                  @A
+                  @B
+                  parameter) {}
+              }
+            `,
+            code: dedent`
+              @B
+              /* Comment */
+              @A
+              class Class {
+
+                @B
+                /* Comment */
+                @A
+                property
+
+                @B
+                /* Comment */
+                @A
+                accessor field
+
+                @B
+                /* Comment */
+                @A
+                method(
+                  @B
+                  /* Comment */
+                  @A
+                  parameter) {}
+              }
+            `,
+            errors: duplicate5Times([
+              {
+                data: {
+                  right: 'A',
+                  left: 'B',
+                },
+                messageId: 'unexpectedDecoratorsOrder',
+              },
+            ]),
+            options: [
+              {
+                ...options,
+                partitionByComment: {
+                  line: true,
+                },
+              },
+            ],
+          },
+        ],
+        valid: [],
+      })
+
+      ruleTester.run(
+        `${ruleName}(${type}): allows to use all comments as parts`,
+        rule,
+        {
+          valid: [
+            {
+              code: dedent`
+                @B
+                // Comment
+                @A
+                class Class {
+
+                  @B
+                  // Comment
+                  @A
+                  property
+
+                  @B
+                  // Comment
+                  @A
+                  accessor field
+
+                  @B
+                  // Comment
+                  @A
+                  method(
+                    @B
+                    // Comment
+                    @A
+                    parameter) {}
+                }
+              `,
+              options: [
+                {
+                  ...options,
+                  partitionByComment: {
+                    line: true,
+                  },
+                },
+              ],
+            },
+          ],
+          invalid: [],
+        },
+      )
+
+      ruleTester.run(
+        `${ruleName}(${type}): allows to use multiple partition comments`,
+        rule,
+        {
+          valid: [
+            {
+              code: dedent`
+                @C
+                // B
+                @B
+                // A
+                @A
+                class Class {
+
+                  @C
+                  // B
+                  @B
+                  // A
+                  @A
+                  property
+
+                  @C
+                  // B
+                  @B
+                  // A
+                  @A
+                  accessor field
+
+                  @C
+                  // B
+                  @B
+                  // A
+                  @A
+                  method(
+                    @C
+                    // B
+                    @B
+                    // A
+                    @A
+                    parameter) {}
+                }
+              `,
+              options: [
+                {
+                  ...options,
+                  partitionByComment: {
+                    line: ['A', 'B'],
+                  },
+                },
+              ],
+            },
+          ],
+          invalid: [],
+        },
+      )
+
+      ruleTester.run(
+        `${ruleName}(${type}): allows to use regex for partition comments`,
+        rule,
+        {
+          valid: [
+            {
+              code: dedent`
+                @B
+                // I am a partition comment because I don't have f o o
+                @A
+                class Class {
+
+                  @B
+                  // I am a partition comment because I don't have f o o
+                  @A
+                  property
+
+                  @B
+                  // I am a partition comment because I don't have f o o
+                  @A
+                  accessor field
+
+                  @B
+                  // I am a partition comment because I don't have f o o
+                  @A
+                  method(
+                    @B
+                    // I am a partition comment because I don't have f o o
+                    @A
+                    parameter) {}
+                }
+              `,
+              options: [
+                {
+                  ...options,
+                  partitionByComment: {
+                    line: ['^(?!.*foo).*$'],
+                  },
+                },
+              ],
+            },
+          ],
+          invalid: [],
+        },
+      )
+    })
+
+    describe(`${ruleName}(${type}): allows to use "partitionByComment.block"`, () => {
+      ruleTester.run(`${ruleName}(${type}): ignores line comments`, rule, {
+        invalid: [
+          {
+            output: dedent`
+              // Comment
+              @A
+              @B
+              class Class {
+
+                // Comment
+                @A
+                @B
+                property
+
+                // Comment
+                @A
+                @B
+                accessor field
+
+                // Comment
+                @A
+                @B
+                method(
+                  // Comment
+                  @A
+                  @B
+                  parameter) {}
+              }
+            `,
+            code: dedent`
+              @B
+              // Comment
+              @A
+              class Class {
+
+                @B
+                // Comment
+                @A
+                property
+
+                @B
+                // Comment
+                @A
+                accessor field
+
+                @B
+                // Comment
+                @A
+                method(
+                  @B
+                  // Comment
+                  @A
+                  parameter) {}
+              }
+            `,
+            errors: duplicate5Times([
+              {
+                data: {
+                  right: 'A',
+                  left: 'B',
+                },
+                messageId: 'unexpectedDecoratorsOrder',
+              },
+            ]),
+            options: [
+              {
+                ...options,
+                partitionByComment: {
+                  block: true,
+                },
+              },
+            ],
+          },
+        ],
+        valid: [],
+      })
+
+      ruleTester.run(
+        `${ruleName}(${type}): allows to use all comments as parts`,
+        rule,
+        {
+          valid: [
+            {
+              code: dedent`
+                @B
+                /* Comment */
+                @A
+                class Class {
+
+                  @B
+                  /* Comment */
+                  @A
+                  property
+
+                  @B
+                  /* Comment */
+                  @A
+                  accessor field
+
+                  @B
+                  /* Comment */
+                  @A
+                  method(
+                    @B
+                    /* Comment */
+                    @A
+                    parameter) {}
+                }
+              `,
+              options: [
+                {
+                  ...options,
+                  partitionByComment: {
+                    block: true,
+                  },
+                },
+              ],
+            },
+          ],
+          invalid: [],
+        },
+      )
+
+      ruleTester.run(
+        `${ruleName}(${type}): allows to use multiple partition comments`,
+        rule,
+        {
+          valid: [
+            {
+              code: dedent`
+                @C
+                /* B */
+                @B
+                /* A */
+                @A
+                class Class {
+
+                  @C
+                  /* B */
+                  @B
+                  /* A */
+                  @A
+                  property
+
+                  @C
+                  /* B */
+                  @B
+                  /* A */
+                  @A
+                  accessor field
+
+                  @C
+                  /* B */
+                  @B
+                  /* A */
+                  @A
+                  method(
+                    @C
+                    /* B */
+                    @B
+                    /* A */
+                    @A
+                    parameter) {}
+                }
+              `,
+              options: [
+                {
+                  ...options,
+                  partitionByComment: {
+                    block: ['A', 'B'],
+                  },
+                },
+              ],
+            },
+          ],
+          invalid: [],
+        },
+      )
+
+      ruleTester.run(
+        `${ruleName}(${type}): allows to use regex for partition comments`,
+        rule,
+        {
+          valid: [
+            {
+              code: dedent`
+                @B
+                /* I am a partition comment because I don't have f o o */
+                @A
+                class Class {
+
+                  @B
+                  /* I am a partition comment because I don't have f o o */
+                  @A
+                  property
+
+                  @B
+                  /* I am a partition comment because I don't have f o o */
+                  @A
+                  accessor field
+
+                  @B
+                  /* I am a partition comment because I don't have f o o */
+                  @A
+                  method(
+                    @B
+                    /* I am a partition comment because I don't have f o o */
+                    @A
+                    parameter) {}
+                }
+              `,
+              options: [
+                {
+                  ...options,
+                  partitionByComment: {
+                    block: ['^(?!.*foo).*$'],
+                  },
+                },
+              ],
+            },
+          ],
+          invalid: [],
+        },
+      )
+    })
+
     ruleTester.run(
       `${ruleName}(${type}): allows to trim special characters`,
       rule,
