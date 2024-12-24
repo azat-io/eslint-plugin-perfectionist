@@ -45,12 +45,19 @@ import { matches } from '../utils/matches'
 
 export type Options<T extends string[]> = [
   Partial<{
+    partitionByComment:
+      | {
+          block?: string[] | boolean | string
+          line?: string[] | boolean | string
+        }
+      | string[]
+      | boolean
+      | string
     customGroups: {
       value?: Record<T[number], string[] | string>
       type?: Record<T[number], string[] | string>
     }
     type: 'alphabetical' | 'line-length' | 'natural' | 'custom'
-    partitionByComment: string[] | boolean | string
     newlinesBetween: 'ignore' | 'always' | 'never'
     specialCharacters: 'remove' | 'trim' | 'keep'
     locales: NonNullable<Intl.LocalesArgument>

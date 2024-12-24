@@ -7,7 +7,14 @@ import { getNodeRange } from './get-node-range'
 
 interface MakeFixesParameters {
   options?: {
-    partitionByComment: string[] | boolean | string
+    partitionByComment:
+      | {
+          block?: string[] | boolean | string
+          line?: string[] | boolean | string
+        }
+      | string[]
+      | boolean
+      | string
   }
   ignoreFirstNodeHighestBlockComment?: boolean
   sourceCode: TSESLint.SourceCode

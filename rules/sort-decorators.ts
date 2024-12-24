@@ -38,9 +38,16 @@ import { pairwise } from '../utils/pairwise'
 
 export type Options<T extends string[]> = [
   Partial<{
+    partitionByComment:
+      | {
+          block?: string[] | boolean | string
+          line?: string[] | boolean | string
+        }
+      | string[]
+      | boolean
+      | string
     type: 'alphabetical' | 'line-length' | 'natural' | 'custom'
     customGroups: Record<T[number], string[] | string>
-    partitionByComment: string[] | boolean | string
     specialCharacters: 'remove' | 'trim' | 'keep'
     locales: NonNullable<Intl.LocalesArgument>
     groups: (Group<T>[] | Group<T>)[]

@@ -37,8 +37,15 @@ import { pairwise } from '../utils/pairwise'
 
 type Options = [
   Partial<{
+    partitionByComment:
+      | {
+          block?: string[] | boolean | string
+          line?: string[] | boolean | string
+        }
+      | string[]
+      | boolean
+      | string
     type: 'alphabetical' | 'line-length' | 'natural' | 'custom'
-    partitionByComment: string[] | boolean | string
     newlinesBetween: 'ignore' | 'always' | 'never'
     specialCharacters: 'remove' | 'trim' | 'keep'
     locales: NonNullable<Intl.LocalesArgument>

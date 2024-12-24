@@ -9,7 +9,14 @@ import { getCommentsBefore } from './get-comments-before'
 
 interface GetNodeRangeParameters {
   options?: {
-    partitionByComment: string[] | boolean | string
+    partitionByComment:
+      | {
+          block?: string[] | boolean | string
+          line?: string[] | boolean | string
+        }
+      | string[]
+      | boolean
+      | string
   }
   ignoreHighestBlockComment?: boolean
   sourceCode: TSESLint.SourceCode

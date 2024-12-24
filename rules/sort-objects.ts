@@ -48,6 +48,14 @@ import { pairwise } from '../utils/pairwise'
 import { matches } from '../utils/matches'
 
 type Options = Partial<{
+  partitionByComment:
+    | {
+        block?: string[] | boolean | string
+        line?: string[] | boolean | string
+      }
+    | string[]
+    | boolean
+    | string
   useConfigurationIf: {
     callingFunctionNamePattern?: string
     allNamesMatchPattern?: string
@@ -55,7 +63,6 @@ type Options = Partial<{
   type: 'alphabetical' | 'line-length' | 'unsorted' | 'natural' | 'custom'
   destructuredObjects: { groups: boolean } | boolean
   customGroups: Record<string, string[] | string>
-  partitionByComment: string[] | boolean | string
   newlinesBetween: 'ignore' | 'always' | 'never'
   specialCharacters: 'remove' | 'trim' | 'keep'
   locales: NonNullable<Intl.LocalesArgument>

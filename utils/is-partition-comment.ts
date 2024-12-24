@@ -4,7 +4,14 @@ import { getEslintDisabledRules } from './get-eslint-disabled-rules'
 import { matches } from './matches'
 
 export let isPartitionComment = (
-  partitionComment: string[] | boolean | string,
+  partitionComment:
+    | {
+        block?: string[] | boolean | string
+        line?: string[] | boolean | string
+      }
+    | string[]
+    | boolean
+    | string,
   comment: string,
 ): boolean => {
   if (getEslintDisabledRules(comment) || !partitionComment) {
@@ -20,7 +27,14 @@ export let isPartitionComment = (
 }
 
 export let hasPartitionComment = (
-  partitionComment: string[] | boolean | string,
+  partitionComment:
+    | {
+        block?: string[] | boolean | string
+        line?: string[] | boolean | string
+      }
+    | string[]
+    | boolean
+    | string,
   comments: TSESTree.Comment[],
 ): boolean =>
   comments.some(comment => isPartitionComment(partitionComment, comment.value))
