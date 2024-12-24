@@ -53,7 +53,7 @@ export let getNodeRange = ({
    */
   let relevantTopComment: TSESTree.Comment | undefined
   for (let i = comments.length - 1; i >= 0; i--) {
-    let comment = comments[i]
+    let comment = comments[i]!
 
     let eslintDisabledRules = getEslintDisabledRules(comment.value)
     if (
@@ -71,7 +71,7 @@ export let getNodeRange = ({
     let previousCommentOrNodeStartLine =
       i === comments.length - 1
         ? node.loc.start.line
-        : comments[i + 1].loc.start.line
+        : comments[i + 1]!.loc.start.line
     if (comment.loc.end.line !== previousCommentOrNodeStartLine - 1) {
       break
     }

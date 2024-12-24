@@ -38,10 +38,11 @@ let getEslintDisabledRulesByType = (
   }
   let regexp = new RegExp(`^${eslintDisableDirective} ((?:.|\\s)*)$`)
   let disabledRulesMatch = trimmedCommentValue.match(regexp)
-  if (!disabledRulesMatch) {
+  let disableRulesMatchValue = disabledRulesMatch?.[1]
+  if (!disableRulesMatchValue) {
     return null
   }
-  return disabledRulesMatch[1]
+  return disableRulesMatchValue
     .split(',')
     .map(rule => rule.trim())
     .filter(rule => !!rule)

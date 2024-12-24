@@ -3,6 +3,7 @@
   "exclude": ["node_modules", "coverage"],
   "compilerOptions": {
     "forceConsistentCasingInFileNames": true,
+    "noUncheckedIndexedAccess": true,
     "moduleResolution": "bundler",
     "verbatimModuleSyntax": true,
     "strictNullChecks": true,
