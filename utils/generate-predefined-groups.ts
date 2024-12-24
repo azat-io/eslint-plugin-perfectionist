@@ -75,9 +75,9 @@ let getPermutations = (elements: string[]): string[][] => {
       return
     }
     for (let i = first; i < elements.length; i++) {
-      ;[elements[first], elements[i]] = [elements[i], elements[first]]
+      ;[elements[first], elements[i]] = [elements[i]!, elements[first]!]
       backtrack(first + 1)
-      ;[elements[first], elements[i]] = [elements[i], elements[first]]
+      ;[elements[first], elements[i]] = [elements[i]!, elements[first]]
     }
   }
   backtrack(0)

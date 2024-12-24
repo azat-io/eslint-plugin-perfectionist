@@ -46,21 +46,17 @@ export let sortNodesByGroups = <T extends SortingNode>(
     let compareOptions = extraOptions?.getGroupCompareOptions
       ? extraOptions.getGroupCompareOptions(Number(groupNumber))
       : options
+    let nodesToPush = nodesByNonIgnoredGroupNumber[Number(groupNumber)]!
     if (!compareOptions) {
-      sortedNodes.push(...nodesByNonIgnoredGroupNumber[Number(groupNumber)])
+      sortedNodes.push(...nodesToPush)
       continue
     }
-    sortedNodes.push(
-      ...sortNodes(
-        nodesByNonIgnoredGroupNumber[Number(groupNumber)],
-        compareOptions,
-      ),
-    )
+    sortedNodes.push(...sortNodes(nodesToPush, compareOptions))
   }
 
   // Add ignored nodes at the same position as they were before linting.
   for (let ignoredIndex of ignoredNodeIndices) {
-    sortedNodes.splice(ignoredIndex, 0, nodes[ignoredIndex])
+    sortedNodes.splice(ignoredIndex, 0, nodes[ignoredIndex]!)
   }
 
   return sortedNodes

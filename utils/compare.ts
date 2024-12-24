@@ -125,8 +125,8 @@ let getCustomSortingFunction = <T extends SortingNode>(
     let minLength = Math.min(aValue.length, bValue.length)
     // Iterate character by character.
     for (let i = 0; i < minLength; i++) {
-      let aCharacter = aValue[i]
-      let bCharacter = bValue[i]
+      let aCharacter = aValue[i]!
+      let bCharacter = bValue[i]!
       let indexOfA = indexByCharacters.get(aCharacter)
       let indexOfB = indexByCharacters.get(bCharacter)
       indexOfA ??= Infinity

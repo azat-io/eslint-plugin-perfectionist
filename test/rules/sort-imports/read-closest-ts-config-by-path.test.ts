@@ -86,7 +86,7 @@ describe('readClosestTsConfigByPath', () => {
         '../../../rules/sort-imports/get-typescript-import',
       )
       mockGetTypescriptImport.mockImplementation(
-        actualGetTypescriptImport.getTypescriptImport as never,
+        actualGetTypescriptImport['getTypescriptImport'] as never,
       )
     })
 

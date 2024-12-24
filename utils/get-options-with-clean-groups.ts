@@ -14,4 +14,4 @@ export let getOptionsWithCleanGroups = <T extends GroupOptions>(
 })
 
 let getCleanedNestedGroups = (nestedGroup: string[]): string[] | string =>
-  nestedGroup.length === 1 ? nestedGroup[0] : nestedGroup
+  nestedGroup.length === 1 && nestedGroup[0] ? nestedGroup[0] : nestedGroup

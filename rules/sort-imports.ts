@@ -228,7 +228,9 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
     ]
     let isStyle = (value: string): boolean => {
       let [cleanedValue] = value.split('?')
-      return styleExtensions.some(extension => cleanedValue.endsWith(extension))
+      return styleExtensions.some(extension =>
+        cleanedValue?.endsWith(extension),
+      )
     }
 
     let flatGroups = new Set(options.groups.flat())
@@ -290,10 +292,11 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
           'ws',
         ]
         let builtinPrefixOnlyModules = ['sea', 'sqlite', 'test']
+        let valueToCheck = value.startsWith('node:')
+          ? value.split('node:')[1]
+          : value
         return (
-          builtinModules.includes(
-            value.startsWith('node:') ? value.split('node:')[1] : value,
-          ) ||
+          (!!valueToCheck && builtinModules.includes(valueToCheck)) ||
           builtinPrefixOnlyModules.some(module => `node:${module}` === value) ||
           (options.environment === 'bun' ? bunModules.includes(value) : false)
         )

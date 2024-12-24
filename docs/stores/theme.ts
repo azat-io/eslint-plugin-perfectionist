@@ -15,6 +15,6 @@ export let toggleTheme = (): void => {
 }
 
 onSet(theme, ({ newValue }) => {
-  document.documentElement.dataset.theme =
+  document.documentElement.dataset['theme'] =
     newValue === 'dark' ? 'dark' : 'light'
 })

@@ -16,7 +16,7 @@ export let getArrayCombinations = (
       return
     }
     for (let i = start; i < array.length; i++) {
-      comb.push(array[i])
+      comb.push(array[i]!)
       backtrack(i + 1, comb)
       comb.pop()
     }

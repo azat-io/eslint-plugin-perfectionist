@@ -143,7 +143,7 @@ export class Alphabet {
           continue
         }
       }
-      this._characters[index] = this._characters[otherCharacterIndex]
+      this._characters[index] = this._characters[otherCharacterIndex]!
       this._characters[otherCharacterIndex] = character
     }
     return this
@@ -209,7 +209,7 @@ export class Alphabet {
       ),
     ]
     for (let [i, element] of charactersWithCase.entries()) {
-      this._characters[element.index] = orderedCharacters[i].character
+      this._characters[element.index] = orderedCharacters[i]!.character
     }
     return this
   }
@@ -405,7 +405,7 @@ export class Alphabet {
       0,
       this._characters[
         type === 'before' ? indexOfCharacterBefore : indexOfCharacterAfter
-      ],
+      ]!,
     )
     this._characters.splice(
       type === 'before' ? indexOfCharacterBefore + 1 : indexOfCharacterAfter,
