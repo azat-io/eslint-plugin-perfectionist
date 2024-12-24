@@ -2,6 +2,7 @@
   "include": ["**/*.svelte", "**/*.astro", "**/*.ts"],
   "exclude": ["node_modules", "coverage"],
   "compilerOptions": {
+    "noPropertyAccessFromIndexSignature": true,
     "forceConsistentCasingInFileNames": true,
     "noUncheckedIndexedAccess": true,
     "moduleResolution": "bundler",

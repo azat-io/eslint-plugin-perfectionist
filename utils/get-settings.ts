@@ -15,7 +15,7 @@ export type Settings = Partial<{
 export let getSettings = (
   settings: TSESLint.SharedConfigurationSettings = {},
 ): Settings => {
-  if (!settings.perfectionist) {
+  if (!settings['perfectionist']) {
     return {}
   }
 
@@ -37,7 +37,10 @@ export let getSettings = (
     )
   }
 
-  let perfectionistSettings = settings.perfectionist as Record<string, unknown>
+  let perfectionistSettings = settings['perfectionist'] as Record<
+    string,
+    unknown
+  >
 
   let invalidOptions = getInvalidOptions(perfectionistSettings)
   if (invalidOptions.length) {
@@ -46,5 +49,5 @@ export let getSettings = (
     )
   }
 
-  return settings.perfectionist as Settings
+  return settings['perfectionist'] as Settings
 }
