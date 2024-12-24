@@ -89,19 +89,33 @@ export let customGroupsJsonSchema: JSONSchema4 = {
   type: 'object',
 }
 
-export let partitionByCommentJsonSchema: JSONSchema4 = {
-  anyOf: [
-    {
-      items: {
-        type: 'string',
-      },
-      type: 'array',
-    },
-    {
-      type: 'boolean',
-    },
-    {
+let allowedPartitionByCommentJsonSchemas: JSONSchema4[] = [
+  {
+    items: {
       type: 'string',
+    },
+    type: 'array',
+  },
+  {
+    type: 'boolean',
+  },
+  {
+    type: 'string',
+  },
+]
+export let partitionByCommentJsonSchema: JSONSchema4 = {
+  oneOf: [
+    ...allowedPartitionByCommentJsonSchemas,
+    {
+      properties: {
+        block: {
+          oneOf: allowedPartitionByCommentJsonSchemas,
+        },
+        line: {
+          oneOf: allowedPartitionByCommentJsonSchemas,
+        },
+      },
+      type: 'object',
     },
   ],
 }

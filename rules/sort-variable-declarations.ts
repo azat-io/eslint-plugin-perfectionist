@@ -19,8 +19,8 @@ import {
 import { validateCustomSortConfiguration } from '../utils/validate-custom-sort-configuration'
 import { getEslintDisabledLines } from '../utils/get-eslint-disabled-lines'
 import { isNodeEslintDisabled } from '../utils/is-node-eslint-disabled'
+import { hasPartitionComment } from '../utils/has-partition-comment'
 import { createNodeIndexMap } from '../utils/create-node-index-map'
-import { hasPartitionComment } from '../utils/is-partition-comment'
 import { getCommentsBefore } from '../utils/get-comments-before'
 import { createEslintRule } from '../utils/create-eslint-rule'
 import { getLinesBetween } from '../utils/get-lines-between'
@@ -36,8 +36,15 @@ import { pairwise } from '../utils/pairwise'
 
 type Options = [
   Partial<{
+    partitionByComment:
+      | {
+          block?: string[] | boolean | string
+          line?: string[] | boolean | string
+        }
+      | string[]
+      | boolean
+      | string
     type: 'alphabetical' | 'line-length' | 'natural' | 'custom'
-    partitionByComment: string[] | boolean | string
     specialCharacters: 'remove' | 'trim' | 'keep'
     locales: NonNullable<Intl.LocalesArgument>
     partitionByNewLine: boolean
@@ -201,13 +208,13 @@ export default createEslintRule<Options, MESSAGE_ID>({
             name,
           }
           if (
-            hasPartitionComment(
-              options.partitionByComment,
-              getCommentsBefore({
+            hasPartitionComment({
+              comments: getCommentsBefore({
                 node: declaration,
                 sourceCode,
               }),
-            ) ||
+              partitionByComment: options.partitionByComment,
+            }) ||
             (options.partitionByNewLine &&
               lastSortingNode &&
               getLinesBetween(sourceCode, lastSortingNode, sortingNode))

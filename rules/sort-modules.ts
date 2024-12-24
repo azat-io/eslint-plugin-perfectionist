@@ -40,8 +40,8 @@ import { generatePredefinedGroups } from '../utils/generate-predefined-groups'
 import { doesCustomGroupMatch } from './sort-modules/does-custom-group-match'
 import { getEslintDisabledLines } from '../utils/get-eslint-disabled-lines'
 import { isNodeEslintDisabled } from '../utils/is-node-eslint-disabled'
+import { hasPartitionComment } from '../utils/has-partition-comment'
 import { createNodeIndexMap } from '../utils/create-node-index-map'
-import { hasPartitionComment } from '../utils/is-partition-comment'
 import { sortNodesByGroups } from '../utils/sort-nodes-by-groups'
 import { getNewlinesErrors } from '../utils/get-newlines-errors'
 import { makeNewlinesFixes } from '../utils/make-newlines-fixes'
@@ -357,13 +357,13 @@ let analyzeModule = ({
       (options.partitionByNewLine &&
         lastSortingNode &&
         getLinesBetween(sourceCode, lastSortingNode, sortingNode)) ||
-      hasPartitionComment(
-        options.partitionByComment,
-        getCommentsBefore({
+      hasPartitionComment({
+        comments: getCommentsBefore({
           sourceCode,
           node,
         }),
-      )
+        partitionByComment: options.partitionByComment,
+      })
     ) {
       formattedNodes.push([])
     }

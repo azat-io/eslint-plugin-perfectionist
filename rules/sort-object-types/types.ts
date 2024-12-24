@@ -9,6 +9,14 @@ import {
 } from '../../utils/common-json-schemas'
 
 export type Options = Partial<{
+  partitionByComment:
+    | {
+        block?: string[] | boolean | string
+        line?: string[] | boolean | string
+      }
+    | string[]
+    | boolean
+    | string
   useConfigurationIf: {
     declarationMatchesPattern?: string
     allNamesMatchPattern?: string
@@ -19,7 +27,6 @@ export type Options = Partial<{
    * @deprecated for {@link `groups`}
    */
   groupKind: 'required-first' | 'optional-first' | 'mixed'
-  partitionByComment: string[] | boolean | string
   newlinesBetween: 'ignore' | 'always' | 'never'
   specialCharacters: 'remove' | 'trim' | 'keep'
   locales: NonNullable<Intl.LocalesArgument>

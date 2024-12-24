@@ -427,6 +427,254 @@ describe(ruleName, () => {
       },
     )
 
+    describe(`${ruleName}(${type}): allows to use "partitionByComment.line"`, () => {
+      ruleTester.run(`${ruleName}(${type}): ignores block comments`, rule, {
+        invalid: [
+          {
+            errors: [
+              {
+                data: {
+                  right: 'A',
+                  left: 'B',
+                },
+                messageId: 'unexpectedEnumsOrder',
+              },
+            ],
+            options: [
+              {
+                ...options,
+                partitionByComment: {
+                  line: true,
+                },
+              },
+            ],
+            output: dedent`
+              enum Enum {
+                /* Comment */
+                A = "A",
+                B = "B",
+              }
+            `,
+            code: dedent`
+              enum Enum {
+                B = "B",
+                /* Comment */
+                A = "A",
+              }
+            `,
+          },
+        ],
+        valid: [],
+      })
+
+      ruleTester.run(
+        `${ruleName}(${type}): allows to use all comments as parts`,
+        rule,
+        {
+          valid: [
+            {
+              options: [
+                {
+                  ...options,
+                  partitionByComment: {
+                    line: true,
+                  },
+                },
+              ],
+              code: dedent`
+                enum Enum {
+                  B = "B",
+                  // Comment
+                  A = "A",
+                }
+              `,
+            },
+          ],
+          invalid: [],
+        },
+      )
+
+      ruleTester.run(
+        `${ruleName}(${type}): allows to use multiple partition comments`,
+        rule,
+        {
+          valid: [
+            {
+              code: dedent`
+               enum Enum {
+                  C = "C",
+                  // B
+                  B = "B",
+                  // A
+                  A = "A",
+                }
+              `,
+              options: [
+                {
+                  ...options,
+                  partitionByComment: {
+                    line: ['A', 'B'],
+                  },
+                },
+              ],
+            },
+          ],
+          invalid: [],
+        },
+      )
+
+      ruleTester.run(
+        `${ruleName}(${type}): allows to use regex for partition comments`,
+        rule,
+        {
+          valid: [
+            {
+              options: [
+                {
+                  ...options,
+                  partitionByComment: {
+                    line: ['^(?!.*foo).*$'],
+                  },
+                },
+              ],
+              code: dedent`
+              enum Enum {
+                B = 'B',
+                // I am a partition comment because I don't have f o o
+                A = 'A',
+              }
+            `,
+            },
+          ],
+          invalid: [],
+        },
+      )
+    })
+
+    describe(`${ruleName}(${type}): allows to use "partitionByComment.block"`, () => {
+      ruleTester.run(`${ruleName}(${type}): ignores line comments`, rule, {
+        invalid: [
+          {
+            errors: [
+              {
+                data: {
+                  right: 'A',
+                  left: 'B',
+                },
+                messageId: 'unexpectedEnumsOrder',
+              },
+            ],
+            options: [
+              {
+                ...options,
+                partitionByComment: {
+                  block: true,
+                },
+              },
+            ],
+            output: dedent`
+              enum Enum {
+                // Comment
+                A = "A",
+                B = "B",
+              }
+            `,
+            code: dedent`
+              enum Enum {
+                B = "B",
+                // Comment
+                A = "A",
+              }
+            `,
+          },
+        ],
+        valid: [],
+      })
+
+      ruleTester.run(
+        `${ruleName}(${type}): allows to use all comments as parts`,
+        rule,
+        {
+          valid: [
+            {
+              options: [
+                {
+                  ...options,
+                  partitionByComment: {
+                    block: true,
+                  },
+                },
+              ],
+              code: dedent`
+                enum Enum {
+                  B = "B",
+                  /* Comment */
+                  A = "A",
+                }
+              `,
+            },
+          ],
+          invalid: [],
+        },
+      )
+
+      ruleTester.run(
+        `${ruleName}(${type}): allows to use multiple partition comments`,
+        rule,
+        {
+          valid: [
+            {
+              code: dedent`
+               enum Enum {
+                  C = "C",
+                  /* B */
+                  B = "B",
+                  /* A */
+                  A = "A",
+                }
+              `,
+              options: [
+                {
+                  ...options,
+                  partitionByComment: {
+                    block: ['A', 'B'],
+                  },
+                },
+              ],
+            },
+          ],
+          invalid: [],
+        },
+      )
+
+      ruleTester.run(
+        `${ruleName}(${type}): allows to use regex for partition comments`,
+        rule,
+        {
+          valid: [
+            {
+              code: dedent`
+                enum Enum {
+                  B = 'B',
+                  /* I am a partition comment because I don't have f o o */
+                  A = 'A',
+                }
+              `,
+              options: [
+                {
+                  ...options,
+                  partitionByComment: {
+                    block: ['^(?!.*foo).*$'],
+                  },
+                },
+              ],
+            },
+          ],
+          invalid: [],
+        },
+      )
+    })
+
     ruleTester.run(`${ruleName}: sort enum values correctly`, rule, {
       invalid: [
         {

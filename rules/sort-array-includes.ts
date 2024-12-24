@@ -30,7 +30,7 @@ import { getMatchingContextOptions } from '../utils/get-matching-context-options
 import { generatePredefinedGroups } from '../utils/generate-predefined-groups'
 import { getEslintDisabledLines } from '../utils/get-eslint-disabled-lines'
 import { isNodeEslintDisabled } from '../utils/is-node-eslint-disabled'
-import { hasPartitionComment } from '../utils/is-partition-comment'
+import { hasPartitionComment } from '../utils/has-partition-comment'
 import { createNodeIndexMap } from '../utils/create-node-index-map'
 import { sortNodesByGroups } from '../utils/sort-nodes-by-groups'
 import { getCommentsBefore } from '../utils/get-comments-before'
@@ -265,13 +265,13 @@ export let sortArray = <MessageIds extends string>({
 
       let lastSortingNode = accumulator.at(-1)?.at(-1)
       if (
-        hasPartitionComment(
-          options.partitionByComment,
-          getCommentsBefore({
+        hasPartitionComment({
+          comments: getCommentsBefore({
             node: element,
             sourceCode,
           }),
-        ) ||
+          partitionByComment: options.partitionByComment,
+        }) ||
         (options.partitionByNewLine &&
           lastSortingNode &&
           getLinesBetween(sourceCode, lastSortingNode, sortingNode))

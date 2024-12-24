@@ -9,7 +9,14 @@ import { getCommentsBefore } from './get-comments-before'
 
 interface GetNodeRangeParameters {
   options?: {
-    partitionByComment: string[] | boolean | string
+    partitionByComment:
+      | {
+          block?: string[] | boolean | string
+          line?: string[] | boolean | string
+        }
+      | string[]
+      | boolean
+      | string
   }
   ignoreHighestBlockComment?: boolean
   sourceCode: TSESLint.SourceCode
@@ -57,7 +64,10 @@ export let getNodeRange = ({
 
     let eslintDisabledRules = getEslintDisabledRules(comment.value)
     if (
-      isPartitionComment(options?.partitionByComment ?? false, comment.value) ||
+      isPartitionComment({
+        partitionByComment: options?.partitionByComment ?? false,
+        comment,
+      }) ||
       eslintDisabledRules?.eslintDisableDirective === 'eslint-disable' ||
       eslintDisabledRules?.eslintDisableDirective === 'eslint-enable'
     ) {
