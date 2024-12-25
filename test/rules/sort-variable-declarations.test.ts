@@ -871,6 +871,244 @@ describe(ruleName, () => {
         ],
         invalid: [],
       })
+
+      describe(`${ruleName}(${type}): allows to use "partitionByComment.line"`, () => {
+        ruleTester.run(`${ruleName}(${type}): ignores block comments`, rule, {
+          invalid: [
+            {
+              errors: [
+                {
+                  data: {
+                    right: 'a',
+                    left: 'b',
+                  },
+                  messageId: 'unexpectedVariableDeclarationsOrder',
+                },
+              ],
+              options: [
+                {
+                  ...options,
+                  partitionByComment: {
+                    line: true,
+                  },
+                },
+              ],
+              output: dedent`
+                const
+                  /* Comment */
+                  a: 'a',
+                  b: 'b',
+              `,
+              code: dedent`
+                const
+                  b: 'b',
+                  /* Comment */
+                  a: 'a',
+              `,
+            },
+          ],
+          valid: [],
+        })
+
+        ruleTester.run(
+          `${ruleName}(${type}): allows to use all comments as parts`,
+          rule,
+          {
+            valid: [
+              {
+                options: [
+                  {
+                    ...options,
+                    partitionByComment: {
+                      line: true,
+                    },
+                  },
+                ],
+                code: dedent`
+                  const
+                    b: 'b',
+                    // Comment
+                    a: 'a',
+                `,
+              },
+            ],
+            invalid: [],
+          },
+        )
+
+        ruleTester.run(
+          `${ruleName}(${type}): allows to use multiple partition comments`,
+          rule,
+          {
+            valid: [
+              {
+                options: [
+                  {
+                    ...options,
+                    partitionByComment: {
+                      line: ['a', 'b'],
+                    },
+                  },
+                ],
+                code: dedent`
+                  const
+                    c: 'c',
+                    // b
+                    b: 'b',
+                    // a
+                    a: 'a',
+                `,
+              },
+            ],
+            invalid: [],
+          },
+        )
+
+        ruleTester.run(
+          `${ruleName}(${type}): allows to use regex for partition comments`,
+          rule,
+          {
+            valid: [
+              {
+                options: [
+                  {
+                    ...options,
+                    partitionByComment: {
+                      line: ['^(?!.*foo).*$'],
+                    },
+                  },
+                ],
+                code: dedent`
+                  const
+                    b: 'b',
+                    // I am a partition comment because I don't have f o o
+                    a: 'a',
+                `,
+              },
+            ],
+            invalid: [],
+          },
+        )
+      })
+
+      describe(`${ruleName}(${type}): allows to use "partitionByComment.block"`, () => {
+        ruleTester.run(`${ruleName}(${type}): ignores line comments`, rule, {
+          invalid: [
+            {
+              errors: [
+                {
+                  data: {
+                    right: 'a',
+                    left: 'b',
+                  },
+                  messageId: 'unexpectedVariableDeclarationsOrder',
+                },
+              ],
+              options: [
+                {
+                  ...options,
+                  partitionByComment: {
+                    block: true,
+                  },
+                },
+              ],
+              output: dedent`
+                const
+                  // Comment
+                  a: 'a',
+                  b: 'b',
+              `,
+              code: dedent`
+                const
+                  b: 'b',
+                  // Comment
+                  a: 'a',
+              `,
+            },
+          ],
+          valid: [],
+        })
+
+        ruleTester.run(
+          `${ruleName}(${type}): allows to use all comments as parts`,
+          rule,
+          {
+            valid: [
+              {
+                options: [
+                  {
+                    ...options,
+                    partitionByComment: {
+                      block: true,
+                    },
+                  },
+                ],
+                code: dedent`
+                  const
+                    b: 'b',
+                    /* Comment */
+                    a: 'a',
+                `,
+              },
+            ],
+            invalid: [],
+          },
+        )
+
+        ruleTester.run(
+          `${ruleName}(${type}): allows to use multiple partition comments`,
+          rule,
+          {
+            valid: [
+              {
+                options: [
+                  {
+                    ...options,
+                    partitionByComment: {
+                      block: ['a', 'b'],
+                    },
+                  },
+                ],
+                code: dedent`
+                  const
+                    c: 'c',
+                    /* b */
+                    b: 'b',
+                    /* a */
+                    a: 'a',
+                `,
+              },
+            ],
+            invalid: [],
+          },
+        )
+
+        ruleTester.run(
+          `${ruleName}(${type}): allows to use regex for partition comments`,
+          rule,
+          {
+            valid: [
+              {
+                options: [
+                  {
+                    ...options,
+                    partitionByComment: {
+                      block: ['^(?!.*foo).*$'],
+                    },
+                  },
+                ],
+                code: dedent`
+                  const
+                    b: 'b',
+                    /* I am a partition comment because I don't have f o o */
+                    a: 'a',
+                `,
+              },
+            ],
+            invalid: [],
+          },
+        )
+      })
     })
 
     ruleTester.run(
