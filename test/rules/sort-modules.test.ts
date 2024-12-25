@@ -2105,6 +2105,88 @@ describe(ruleName, () => {
           valid: [],
         },
       )
+
+      ruleTester.run(
+        `${ruleName}(${type}): allows to use "newlinesBetween" inside groups`,
+        rule,
+        {
+          invalid: [
+            {
+              options: [
+                {
+                  ...options,
+                  customGroups: [
+                    { elementNamePattern: 'a', groupName: 'a' },
+                    { elementNamePattern: 'b', groupName: 'b' },
+                    { elementNamePattern: 'c', groupName: 'c' },
+                    { elementNamePattern: 'd', groupName: 'd' },
+                    { elementNamePattern: 'e', groupName: 'e' },
+                  ],
+                  groups: [
+                    'a',
+                    { newlinesBetween: 'always' },
+                    'b',
+                    { newlinesBetween: 'always' },
+                    'c',
+                    { newlinesBetween: 'never' },
+                    'd',
+                    { newlinesBetween: 'ignore' },
+                    'e',
+                  ],
+                  newlinesBetween: 'always',
+                },
+              ],
+              errors: [
+                {
+                  data: {
+                    right: 'b',
+                    left: 'a',
+                  },
+                  messageId: 'missedSpacingBetweenModulesMembers',
+                },
+                {
+                  data: {
+                    right: 'c',
+                    left: 'b',
+                  },
+                  messageId: 'extraSpacingBetweenModulesMembers',
+                },
+                {
+                  data: {
+                    right: 'd',
+                    left: 'c',
+                  },
+                  messageId: 'extraSpacingBetweenModulesMembers',
+                },
+              ],
+              output: dedent`
+                function a() {}
+
+                function b() {}
+
+                function c() {}
+                function d() {}
+
+
+                function e() {}
+              `,
+              code: dedent`
+                function a() {}
+                function b() {}
+
+
+                function c() {}
+
+                function d() {}
+
+
+                function e() {}
+              `,
+            },
+          ],
+          valid: [],
+        },
+      )
     })
 
     describe(`${ruleName}(${type}): sorts inline elements correctly`, () => {
