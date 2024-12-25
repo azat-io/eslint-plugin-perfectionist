@@ -1864,6 +1864,254 @@ describe(ruleName, () => {
       },
     )
 
+    describe(`${ruleName}(${type}): allows to use "partitionByComment.line"`, () => {
+      ruleTester.run(`${ruleName}(${type}): ignores block comments`, rule, {
+        invalid: [
+          {
+            errors: [
+              {
+                data: {
+                  right: 'a',
+                  left: 'b',
+                },
+                messageId: 'unexpectedInterfacePropertiesOrder',
+              },
+            ],
+            output: dedent`
+                interface Interface {
+                  /* Comment */
+                  a: string
+                  b: string
+                }
+              `,
+            code: dedent`
+                interface Interface {
+                  b: string
+                  /* Comment */
+                  a: string
+                }
+              `,
+            options: [
+              {
+                ...options,
+                partitionByComment: {
+                  line: true,
+                },
+              },
+            ],
+          },
+        ],
+        valid: [],
+      })
+
+      ruleTester.run(
+        `${ruleName}(${type}): allows to use all comments as parts`,
+        rule,
+        {
+          valid: [
+            {
+              options: [
+                {
+                  ...options,
+                  partitionByComment: {
+                    line: true,
+                  },
+                },
+              ],
+              code: dedent`
+                  interface Interface {
+                    b: string
+                    // Comment
+                    a: string
+                  }
+                `,
+            },
+          ],
+          invalid: [],
+        },
+      )
+
+      ruleTester.run(
+        `${ruleName}(${type}): allows to use multiple partition comments`,
+        rule,
+        {
+          valid: [
+            {
+              code: dedent`
+                  interface Interface {
+                    c: string
+                    // b
+                    b: string
+                    // a
+                    a: string
+                  }
+                  `,
+              options: [
+                {
+                  ...options,
+                  partitionByComment: {
+                    line: ['a', 'b'],
+                  },
+                },
+              ],
+            },
+          ],
+          invalid: [],
+        },
+      )
+
+      ruleTester.run(
+        `${ruleName}(${type}): allows to use regex for partition comments`,
+        rule,
+        {
+          valid: [
+            {
+              code: dedent`
+                  interface Interface {
+                    b: string
+                    // I am a partition comment because I don't have f o o
+                    a: string
+                  }
+                `,
+              options: [
+                {
+                  ...options,
+                  partitionByComment: {
+                    line: ['^(?!.*foo).*$'],
+                  },
+                },
+              ],
+            },
+          ],
+          invalid: [],
+        },
+      )
+    })
+
+    describe(`${ruleName}(${type}): allows to use "partitionByComment.block"`, () => {
+      ruleTester.run(`${ruleName}(${type}): ignores line comments`, rule, {
+        invalid: [
+          {
+            errors: [
+              {
+                data: {
+                  right: 'a',
+                  left: 'b',
+                },
+                messageId: 'unexpectedInterfacePropertiesOrder',
+              },
+            ],
+            options: [
+              {
+                ...options,
+                partitionByComment: {
+                  block: true,
+                },
+              },
+            ],
+            output: dedent`
+                interface Interface {
+                  // Comment
+                  a: string
+                  b: string
+                }
+            `,
+            code: dedent`
+                interface Interface {
+                  b: string
+                  // Comment
+                  a: string
+                }
+            `,
+          },
+        ],
+        valid: [],
+      })
+
+      ruleTester.run(
+        `${ruleName}(${type}): allows to use all comments as parts`,
+        rule,
+        {
+          valid: [
+            {
+              options: [
+                {
+                  ...options,
+                  partitionByComment: {
+                    block: true,
+                  },
+                },
+              ],
+              code: dedent`
+                  interface Interface {
+                    b: string
+                    /* Comment */
+                    a: string
+                  }
+                `,
+            },
+          ],
+          invalid: [],
+        },
+      )
+
+      ruleTester.run(
+        `${ruleName}(${type}): allows to use multiple partition comments`,
+        rule,
+        {
+          valid: [
+            {
+              code: dedent`
+                  interface Interface {
+                    c: string
+                    /* b */
+                    b: string
+                    /* a */
+                    a: string
+                  }
+                `,
+              options: [
+                {
+                  ...options,
+                  partitionByComment: {
+                    block: ['a', 'b'],
+                  },
+                },
+              ],
+            },
+          ],
+          invalid: [],
+        },
+      )
+
+      ruleTester.run(
+        `${ruleName}(${type}): allows to use regex for partition comments`,
+        rule,
+        {
+          valid: [
+            {
+              code: dedent`
+                  interface Interface {
+                    b: string
+                    /* I am a partition comment because I don't have f o o */
+                    a: string
+                  }
+                `,
+              options: [
+                {
+                  ...options,
+                  partitionByComment: {
+                    block: ['^(?!.*foo).*$'],
+                  },
+                },
+              ],
+            },
+          ],
+          invalid: [],
+        },
+      )
+    })
+
     ruleTester.run(
       `${ruleName}(${type}): allows to remove special characters`,
       rule,
