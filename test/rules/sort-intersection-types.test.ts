@@ -1121,6 +1121,83 @@ describe(ruleName, () => {
           valid: [],
         },
       )
+
+      ruleTester.run(
+        `${ruleName}(${type}): allows to use "newlinesBetween" inside groups`,
+        rule,
+        {
+          invalid: [
+            {
+              errors: [
+                {
+                  data: {
+                    right: '{ a: string }',
+                    left: '() => void',
+                  },
+                  messageId: 'missedSpacingBetweenIntersectionTypes',
+                },
+                {
+                  data: {
+                    left: '{ a: string }',
+                    right: 'A',
+                  },
+                  messageId: 'extraSpacingBetweenIntersectionTypes',
+                },
+                {
+                  data: {
+                    right: '[A]',
+                    left: 'A',
+                  },
+                  messageId: 'extraSpacingBetweenIntersectionTypes',
+                },
+              ],
+              options: [
+                {
+                  ...options,
+                  groups: [
+                    'function',
+                    { newlinesBetween: 'always' },
+                    'object',
+                    { newlinesBetween: 'always' },
+                    'named',
+                    { newlinesBetween: 'never' },
+                    'tuple',
+                    { newlinesBetween: 'ignore' },
+                    'nullish',
+                  ],
+                  newlinesBetween: 'always',
+                },
+              ],
+              output: dedent`
+                type Type =
+                  (() => void) &
+
+                  { a: string } &
+
+                  A &
+                  [A] &
+
+
+                  null
+              `,
+              code: dedent`
+                type Type =
+                  (() => void) &
+                  { a: string } &
+
+
+                  A &
+
+                  [A] &
+
+
+                  null
+              `,
+            },
+          ],
+          valid: [],
+        },
+      )
     })
 
     ruleTester.run(
