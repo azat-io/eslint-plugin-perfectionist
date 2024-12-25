@@ -2292,6 +2292,234 @@ describe(ruleName, () => {
       },
     )
 
+    describe(`${ruleName}(${type}): allows to use "partitionByComment.line"`, () => {
+      ruleTester.run(`${ruleName}(${type}): ignores block comments`, rule, {
+        invalid: [
+          {
+            errors: [
+              {
+                data: {
+                  right: './a',
+                  left: './b',
+                },
+                messageId: 'unexpectedImportsOrder',
+              },
+            ],
+            options: [
+              {
+                ...options,
+                partitionByComment: {
+                  line: true,
+                },
+              },
+            ],
+            output: dedent`
+              /* Comment */
+              import a from './a'
+              import b from './b'
+              `,
+            code: dedent`
+              import b from './b'
+              /* Comment */
+              import a from './a'
+            `,
+          },
+        ],
+        valid: [],
+      })
+
+      ruleTester.run(
+        `${ruleName}(${type}): allows to use all comments as parts`,
+        rule,
+        {
+          valid: [
+            {
+              options: [
+                {
+                  ...options,
+                  partitionByComment: {
+                    line: true,
+                  },
+                },
+              ],
+              code: dedent`
+                import b from './b'
+                // Comment
+                import a from './a'
+            `,
+            },
+          ],
+          invalid: [],
+        },
+      )
+
+      ruleTester.run(
+        `${ruleName}(${type}): allows to use multiple partition comments`,
+        rule,
+        {
+          valid: [
+            {
+              options: [
+                {
+                  ...options,
+                  partitionByComment: {
+                    line: ['a', 'b'],
+                  },
+                },
+              ],
+              code: dedent`
+                import c from './c'
+                // b
+                import b from './b'
+                // a
+                import a from './a'
+              `,
+            },
+          ],
+          invalid: [],
+        },
+      )
+
+      ruleTester.run(
+        `${ruleName}(${type}): allows to use regex for partition comments`,
+        rule,
+        {
+          valid: [
+            {
+              options: [
+                {
+                  ...options,
+                  partitionByComment: {
+                    line: ['^(?!.*foo).*$'],
+                  },
+                },
+              ],
+              code: dedent`
+                import b from './b'
+                // I am a partition comment because I don't have f o o
+                import a from './a'
+              `,
+            },
+          ],
+          invalid: [],
+        },
+      )
+    })
+
+    describe(`${ruleName}(${type}): allows to use "partitionByComment.block"`, () => {
+      ruleTester.run(`${ruleName}(${type}): ignores line comments`, rule, {
+        invalid: [
+          {
+            errors: [
+              {
+                data: {
+                  right: './a',
+                  left: './b',
+                },
+                messageId: 'unexpectedImportsOrder',
+              },
+            ],
+            options: [
+              {
+                ...options,
+                partitionByComment: {
+                  block: true,
+                },
+              },
+            ],
+            output: dedent`
+              // Comment
+              import a from './a'
+              import b from './b'
+            `,
+            code: dedent`
+              import b from './b'
+              // Comment
+              import a from './a'
+            `,
+          },
+        ],
+        valid: [],
+      })
+
+      ruleTester.run(
+        `${ruleName}(${type}): allows to use all comments as parts`,
+        rule,
+        {
+          valid: [
+            {
+              options: [
+                {
+                  ...options,
+                  partitionByComment: {
+                    block: true,
+                  },
+                },
+              ],
+              code: dedent`
+                import b from './b'
+                /* Comment */
+                import a from './a'
+              `,
+            },
+          ],
+          invalid: [],
+        },
+      )
+
+      ruleTester.run(
+        `${ruleName}(${type}): allows to use multiple partition comments`,
+        rule,
+        {
+          valid: [
+            {
+              options: [
+                {
+                  ...options,
+                  partitionByComment: {
+                    block: ['a', 'b'],
+                  },
+                },
+              ],
+              code: dedent`
+                import c from './c'
+                /* b */
+                import b from './b'
+                /* a */
+                import a from './a'
+              `,
+            },
+          ],
+          invalid: [],
+        },
+      )
+
+      ruleTester.run(
+        `${ruleName}(${type}): allows to use regex for partition comments`,
+        rule,
+        {
+          valid: [
+            {
+              options: [
+                {
+                  ...options,
+                  partitionByComment: {
+                    block: ['^(?!.*foo).*$'],
+                  },
+                },
+              ],
+              code: dedent`
+                import b from './b'
+                /* I am a partition comment because I don't have f o o */
+                import a from './a'
+              `,
+            },
+          ],
+          invalid: [],
+        },
+      )
+    })
+
     ruleTester.run(
       `${ruleName}(${type}): supports style imports with optional chaining`,
       rule,

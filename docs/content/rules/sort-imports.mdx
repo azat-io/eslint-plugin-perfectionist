@@ -194,6 +194,11 @@ Specifies whether side effect imports should be sorted. By default, sorting side
 
 ### partitionByComment
 
+<sub>
+  - type:
+    - `boolean | string | string[]` (`BaseType`)
+    - `{ block: BaseType; line: BaseType }`
+</sub>
 <sub>default: `false`</sub>
 
 Allows you to use comments to separate imports into logical groups.
@@ -202,6 +207,7 @@ Allows you to use comments to separate imports into logical groups.
 - `false` — Comments will not be used as delimiters.
 - `string` — A regexp pattern to specify which comments should act as delimiters.
 - `string[]` — An array of regexp patterns to specify which comments should act as delimiters.
+- `{ block: BaseType; line: BaseType }` — Specify which block and line comments should act as delimiters.
 
 ### partitionByNewLine
 
