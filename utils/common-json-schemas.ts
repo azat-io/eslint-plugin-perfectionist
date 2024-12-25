@@ -53,6 +53,12 @@ export let specialCharactersJsonSchema: JSONSchema4 = {
   type: 'string',
 }
 
+export let newlinesBetweenJsonSchema: JSONSchema4 = {
+  description: 'Specifies how new lines should be handled between groups.',
+  enum: ['ignore', 'always', 'never'],
+  type: 'string',
+}
+
 export let groupsJsonSchema: JSONSchema4 = {
   items: {
     oneOf: [
@@ -64,6 +70,12 @@ export let groupsJsonSchema: JSONSchema4 = {
           type: 'string',
         },
         type: 'array',
+      },
+      {
+        properties: {
+          newlinesBetween: newlinesBetweenJsonSchema,
+        },
+        type: 'object',
       },
     ],
   },
@@ -124,12 +136,6 @@ export let partitionByNewLineJsonSchema: JSONSchema4 = {
   description:
     'Allows to use newlines to separate the nodes into logical groups.',
   type: 'boolean',
-}
-
-export let newlinesBetweenJsonSchema: JSONSchema4 = {
-  description: 'Specifies how new lines should be handled between groups.',
-  enum: ['ignore', 'always', 'never'],
-  type: 'string',
 }
 
 export let buildUseConfigurationIfJsonSchema = ({
