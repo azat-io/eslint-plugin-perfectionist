@@ -139,6 +139,11 @@ Specifies the sorting locales. See [String.prototype.localeCompare() - locales](
 
 ### partitionByComment
 
+<sub>
+  - type:
+    - `boolean | string | string[]` (`BaseType`)
+    - `{ block: BaseType; line: BaseType }`
+</sub>
 <sub>default: `false`</sub>
 
 Allows you to use comments to separate the members of maps into logical groups. This can help in organizing and maintaining large maps by creating partitions based on comments.
@@ -147,6 +152,7 @@ Allows you to use comments to separate the members of maps into logical groups. 
 -	`false` — Comments will not be used as delimiters.
 - `string` — A regexp pattern to specify which comments should act as delimiters.
 - `string[]` — A list of regexp patterns to specify which comments should act as delimiters.
+- `{ block: BaseType; line: BaseType }` — Specify which block and line comments should act as delimiters.
 
 ### partitionByNewLine
 
