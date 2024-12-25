@@ -20,7 +20,7 @@ import {
 import { validateCustomSortConfiguration } from '../utils/validate-custom-sort-configuration'
 import { getEslintDisabledLines } from '../utils/get-eslint-disabled-lines'
 import { isNodeEslintDisabled } from '../utils/is-node-eslint-disabled'
-import { hasPartitionComment } from '../utils/is-partition-comment'
+import { hasPartitionComment } from '../utils/has-partition-comment'
 import { createNodeIndexMap } from '../utils/create-node-index-map'
 import { getCommentsBefore } from '../utils/get-comments-before'
 import { createEslintRule } from '../utils/create-eslint-rule'
@@ -153,13 +153,13 @@ export default createEslintRule<Options, MESSAGE_ID>({
           }
 
           if (
-            hasPartitionComment(
-              options.partitionByComment,
-              getCommentsBefore({
+            hasPartitionComment({
+              comments: getCommentsBefore({
                 node: member,
                 sourceCode,
               }),
-            ) ||
+              partitionByComment: options.partitionByComment,
+            }) ||
             (options.partitionByNewLine &&
               lastSortingNode &&
               getLinesBetween(sourceCode, lastSortingNode, sortingNode))

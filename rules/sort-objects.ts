@@ -27,8 +27,8 @@ import { validateGroupsConfiguration } from '../utils/validate-groups-configurat
 import { getMatchingContextOptions } from '../utils/get-matching-context-options'
 import { getEslintDisabledLines } from '../utils/get-eslint-disabled-lines'
 import { isNodeEslintDisabled } from '../utils/is-node-eslint-disabled'
+import { hasPartitionComment } from '../utils/has-partition-comment'
 import { createNodeIndexMap } from '../utils/create-node-index-map'
-import { hasPartitionComment } from '../utils/is-partition-comment'
 import { sortNodesByGroups } from '../utils/sort-nodes-by-groups'
 import { getCommentsBefore } from '../utils/get-comments-before'
 import { makeNewlinesFixes } from '../utils/make-newlines-fixes'
@@ -370,13 +370,13 @@ export default createEslintRule<Options, MESSAGE_ID>({
                   lastProperty,
                   propertySortingNode,
                 )) ||
-              hasPartitionComment(
-                options.partitionByComment,
-                getCommentsBefore({
+              hasPartitionComment({
+                comments: getCommentsBefore({
                   node: property,
                   sourceCode,
                 }),
-              )
+                partitionByComment: options.partitionByComment,
+              })
             ) {
               accumulator.push([])
             }

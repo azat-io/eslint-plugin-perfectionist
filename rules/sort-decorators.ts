@@ -19,7 +19,7 @@ import { validateGroupsConfiguration } from '../utils/validate-groups-configurat
 import { getEslintDisabledLines } from '../utils/get-eslint-disabled-lines'
 import { isNodeEslintDisabled } from '../utils/is-node-eslint-disabled'
 import { getDecoratorName } from './sort-decorators/get-decorator-name'
-import { hasPartitionComment } from '../utils/is-partition-comment'
+import { hasPartitionComment } from '../utils/has-partition-comment'
 import { createNodeIndexMap } from '../utils/create-node-index-map'
 import { sortNodesByGroups } from '../utils/sort-nodes-by-groups'
 import { getCommentsBefore } from '../utils/get-comments-before'
@@ -219,13 +219,13 @@ let sortDecorators = (
   let formattedMembers: SortDecoratorsSortingNode[][] = decorators.reduce(
     (accumulator: SortDecoratorsSortingNode[][], decorator) => {
       if (
-        hasPartitionComment(
-          options.partitionByComment,
-          getCommentsBefore({
+        hasPartitionComment({
+          comments: getCommentsBefore({
             node: decorator,
             sourceCode,
           }),
-        )
+          partitionByComment: options.partitionByComment,
+        })
       ) {
         accumulator.push([])
       }

@@ -36,7 +36,7 @@ import { generatePredefinedGroups } from '../utils/generate-predefined-groups'
 import { getEslintDisabledLines } from '../utils/get-eslint-disabled-lines'
 import { isMemberOptional } from './sort-object-types/is-member-optional'
 import { isNodeEslintDisabled } from '../utils/is-node-eslint-disabled'
-import { hasPartitionComment } from '../utils/is-partition-comment'
+import { hasPartitionComment } from '../utils/has-partition-comment'
 import { isNodeFunctionType } from '../utils/is-node-function-type'
 import { createNodeIndexMap } from '../utils/create-node-index-map'
 import { sortNodesByGroups } from '../utils/sort-nodes-by-groups'
@@ -355,13 +355,13 @@ export let sortObjectTypeElements = <MessageIds extends string>({
 
       if (
         (options.partitionByComment &&
-          hasPartitionComment(
-            options.partitionByComment,
-            getCommentsBefore({
+          hasPartitionComment({
+            comments: getCommentsBefore({
               node: typeElement,
               sourceCode,
             }),
-          )) ||
+            partitionByComment: options.partitionByComment,
+          })) ||
         (options.partitionByNewLine &&
           lastSortingNode &&
           getLinesBetween(sourceCode, lastSortingNode, sortingNode))

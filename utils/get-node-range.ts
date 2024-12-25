@@ -57,7 +57,10 @@ export let getNodeRange = ({
 
     let eslintDisabledRules = getEslintDisabledRules(comment.value)
     if (
-      isPartitionComment(options?.partitionByComment ?? false, comment.value) ||
+      isPartitionComment({
+        partitionByComment: options?.partitionByComment ?? false,
+        comment,
+      }) ||
       eslintDisabledRules?.eslintDisableDirective === 'eslint-disable' ||
       eslintDisabledRules?.eslintDisableDirective === 'eslint-enable'
     ) {
