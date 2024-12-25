@@ -2031,6 +2031,90 @@ describe(ruleName, () => {
           valid: [],
         },
       )
+
+      ruleTester.run(
+        `${ruleName}(${type}): allows to use "newlinesBetween" inside groups`,
+        rule,
+        {
+          invalid: [
+            {
+              options: [
+                {
+                  ...options,
+                  groups: [
+                    'a',
+                    { newlinesBetween: 'always' },
+                    'b',
+                    { newlinesBetween: 'always' },
+                    'c',
+                    { newlinesBetween: 'never' },
+                    'd',
+                    { newlinesBetween: 'ignore' },
+                    'e',
+                  ],
+                  customGroups: {
+                    value: {
+                      a: 'a',
+                      b: 'b',
+                      c: 'c',
+                      d: 'd',
+                      e: 'e',
+                    },
+                  },
+                  newlinesBetween: 'always',
+                },
+              ],
+              errors: [
+                {
+                  data: {
+                    right: 'b',
+                    left: 'a',
+                  },
+                  messageId: 'missedSpacingBetweenImports',
+                },
+                {
+                  data: {
+                    right: 'c',
+                    left: 'b',
+                  },
+                  messageId: 'extraSpacingBetweenImports',
+                },
+                {
+                  data: {
+                    right: 'd',
+                    left: 'c',
+                  },
+                  messageId: 'extraSpacingBetweenImports',
+                },
+              ],
+              output: dedent`
+                import { A } from 'a'
+
+                import { B } from 'b'
+
+                import { C } from 'c'
+                import { D } from 'd'
+
+
+                import { E } from 'e'
+              `,
+              code: dedent`
+                import { A } from 'a'
+                import { B } from 'b'
+
+
+                import { C } from 'c'
+
+                import { D } from 'd'
+
+
+                import { E } from 'e'
+              `,
+            },
+          ],
+          valid: [],
+        },
+      )
     })
 
     ruleTester.run(
