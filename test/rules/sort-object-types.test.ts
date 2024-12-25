@@ -2100,6 +2100,92 @@ describe(ruleName, () => {
           valid: [],
         },
       )
+
+      ruleTester.run(
+        `${ruleName}(${type}): allows to use "newlinesBetween" inside groups`,
+        rule,
+        {
+          invalid: [
+            {
+              options: [
+                {
+                  ...options,
+                  customGroups: [
+                    { elementNamePattern: 'a', groupName: 'a' },
+                    { elementNamePattern: 'b', groupName: 'b' },
+                    { elementNamePattern: 'c', groupName: 'c' },
+                    { elementNamePattern: 'd', groupName: 'd' },
+                    { elementNamePattern: 'e', groupName: 'e' },
+                  ],
+                  groups: [
+                    'a',
+                    { newlinesBetween: 'always' },
+                    'b',
+                    { newlinesBetween: 'always' },
+                    'c',
+                    { newlinesBetween: 'never' },
+                    'd',
+                    { newlinesBetween: 'ignore' },
+                    'e',
+                  ],
+                  newlinesBetween: 'always',
+                },
+              ],
+              errors: [
+                {
+                  data: {
+                    right: 'b',
+                    left: 'a',
+                  },
+                  messageId: 'missedSpacingBetweenObjectTypeMembers',
+                },
+                {
+                  data: {
+                    right: 'c',
+                    left: 'b',
+                  },
+                  messageId: 'extraSpacingBetweenObjectTypeMembers',
+                },
+                {
+                  data: {
+                    right: 'd',
+                    left: 'c',
+                  },
+                  messageId: 'extraSpacingBetweenObjectTypeMembers',
+                },
+              ],
+              output: dedent`
+                type Type = {
+                  a: string
+
+                  b: string
+
+                  c: string
+                  d: string
+
+
+                  e: string
+                }
+              `,
+              code: dedent`
+                type Type = {
+                  a: string
+                  b: string
+
+
+                  c: string
+
+                  d: string
+
+
+                  e: string
+                }
+              `,
+            },
+          ],
+          valid: [],
+        },
+      )
     })
 
     ruleTester.run(
