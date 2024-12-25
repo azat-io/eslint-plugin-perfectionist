@@ -9,9 +9,13 @@ export interface GetNewlinesBetweenOptionParameters {
 }
 
 interface Options {
+  groups: (
+    | { newlinesBetween: 'ignore' | 'always' | 'never' }
+    | string[]
+    | string
+  )[]
   customGroups?: Record<string, string[] | string> | CustomGroup[]
   newlinesBetween: 'ignore' | 'always' | 'never'
-  groups: (string[] | string)[]
 }
 
 interface CustomGroup {
@@ -45,30 +49,38 @@ export let getNewlinesBetweenOption = ({
     nodeGroupNumber,
   })
 
-  if (!options.customGroups || !Array.isArray(options.customGroups)) {
-    return globalNewlinesBetweenOption
-  }
-
   let nodeGroup = options.groups[nodeGroupNumber]
   let nextNodeGroup = options.groups[nextNodeGroupNumber]
 
-  if (Array.isArray(nodeGroup) || Array.isArray(nextNodeGroup)) {
-    return globalNewlinesBetweenOption
+  // NewlinesInside check
+  if (
+    Array.isArray(options.customGroups) &&
+    typeof nodeGroup === 'string' &&
+    typeof nextNodeGroup === 'string' &&
+    nodeGroup === nextNodeGroup
+  ) {
+    let nodeCustomGroup = options.customGroups.find(
+      customGroup => customGroup.groupName === nodeGroup,
+    )
+    let nextNodeCustomGroup = options.customGroups.find(
+      customGroup => customGroup.groupName === nextNodeGroup,
+    )
+
+    if (
+      nodeCustomGroup &&
+      nextNodeCustomGroup &&
+      nodeCustomGroup.groupName === nextNodeCustomGroup.groupName
+    ) {
+      return nodeCustomGroup.newlinesInside ?? globalNewlinesBetweenOption
+    }
   }
 
-  let nodeCustomGroup = options.customGroups.find(
-    customGroup => customGroup.groupName === nodeGroup,
-  )
-  let nextNodeCustomGroup = options.customGroups.find(
-    customGroup => customGroup.groupName === nextNodeGroup,
-  )
-
-  if (
-    nodeCustomGroup &&
-    nextNodeCustomGroup &&
-    nodeCustomGroup.groupName === nextNodeCustomGroup.groupName
-  ) {
-    return nodeCustomGroup.newlinesInside ?? globalNewlinesBetweenOption
+  // Check if a specific newlinesBetween is defined between the two groups
+  if (nextNodeGroupNumber === nodeGroupNumber + 2) {
+    let groupBetween = options.groups[nodeGroupNumber + 1]
+    if (typeof groupBetween === 'object' && 'newlinesBetween' in groupBetween) {
+      return groupBetween.newlinesBetween
+    }
   }
 
   return globalNewlinesBetweenOption

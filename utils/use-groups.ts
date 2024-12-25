@@ -13,7 +13,11 @@ interface UseGroupsValue {
 }
 
 interface UseGroupProps {
-  groups: (string[] | string)[]
+  groups: (
+    | { newlinesBetween: 'ignore' | 'always' | 'never' }
+    | string[]
+    | string
+  )[]
 }
 
 export let useGroups = ({ groups }: UseGroupProps): UseGroupsValue => {

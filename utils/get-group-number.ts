@@ -1,9 +1,11 @@
 import type { SortingNode } from '../types/sorting-node'
 
-export let getGroupNumber = (
-  groups: (string[] | string)[],
-  node: SortingNode,
-): number => {
+type Group =
+  | { newlinesBetween: 'ignore' | 'always' | 'never' }
+  | string[]
+  | string
+
+export let getGroupNumber = (groups: Group[], node: SortingNode): number => {
   for (let max = groups.length, i = 0; i < max; i++) {
     let currentGroup = groups[i]
 
