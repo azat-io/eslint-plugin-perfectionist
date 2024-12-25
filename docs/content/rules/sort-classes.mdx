@@ -214,6 +214,11 @@ Specifies the sorting locales. See [String.prototype.localeCompare() - locales](
 
 ### partitionByComment
 
+<sub>
+  - type:
+    - `boolean | string | string[]` (`BaseType`)
+    - `{ block: BaseType; line: BaseType }`
+</sub>
 <sub>default: `false`</sub>
 
 Allows you to use comments to separate the class members into logical groups. This can help in organizing and maintaining large classes by creating partitions within the class based on comments.
@@ -221,6 +226,7 @@ Allows you to use comments to separate the class members into logical groups. Th
 - `true` — All comments will be treated as delimiters, creating partitions.
 -	`false` — Comments will not be used as delimiters.
 - string — A regexp pattern to specify which comments should act as delimiters.
+- `{ block: BaseType; line: BaseType }` — Specify which block and line comments should act as delimiters.
 
 ### partitionByNewLine
 
