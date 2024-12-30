@@ -24,8 +24,8 @@ import { getOptionsWithCleanGroups } from '../utils/get-options-with-clean-group
 import { getEslintDisabledLines } from '../utils/get-eslint-disabled-lines'
 import { getTypescriptImport } from './sort-imports/get-typescript-import'
 import { isNodeEslintDisabled } from '../utils/is-node-eslint-disabled'
+import { hasPartitionComment } from '../utils/has-partition-comment'
 import { createNodeIndexMap } from '../utils/create-node-index-map'
-import { hasPartitionComment } from '../utils/is-partition-comment'
 import { sortNodesByGroups } from '../utils/sort-nodes-by-groups'
 import { getCommentsBefore } from '../utils/get-comments-before'
 import { makeNewlinesFixes } from '../utils/make-newlines-fixes'
@@ -45,12 +45,19 @@ import { matches } from '../utils/matches'
 
 export type Options<T extends string[]> = [
   Partial<{
+    partitionByComment:
+      | {
+          block?: string[] | boolean | string
+          line?: string[] | boolean | string
+        }
+      | string[]
+      | boolean
+      | string
     customGroups: {
       value?: Record<T[number], string[] | string>
       type?: Record<T[number], string[] | string>
     }
     type: 'alphabetical' | 'line-length' | 'natural' | 'custom'
-    partitionByComment: string[] | boolean | string
     newlinesBetween: 'ignore' | 'always' | 'never'
     specialCharacters: 'remove' | 'trim' | 'keep'
     locales: NonNullable<Intl.LocalesArgument>
@@ -472,13 +479,13 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
           let lastSortingNode = lastGroup?.at(-1)
 
           if (
-            hasPartitionComment(
-              options.partitionByComment,
-              getCommentsBefore({
+            hasPartitionComment({
+              comments: getCommentsBefore({
                 node: sortingNode.node,
                 sourceCode,
               }),
-            ) ||
+              partitionByComment: options.partitionByComment,
+            }) ||
             (options.partitionByNewLine &&
               lastSortingNode &&
               getLinesBetween(sourceCode, lastSortingNode, sortingNode)) ||

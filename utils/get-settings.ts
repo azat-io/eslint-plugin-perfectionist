@@ -1,8 +1,15 @@
 import type { TSESLint } from '@typescript-eslint/utils'
 
 export type Settings = Partial<{
+  partitionByComment:
+    | {
+        block?: string[] | boolean | string
+        line?: string[] | boolean | string
+      }
+    | string[]
+    | boolean
+    | string
   type: 'alphabetical' | 'line-length' | 'natural' | 'custom'
-  partitionByComment: string[] | boolean | string
   specialCharacters: 'remove' | 'trim' | 'keep'
   locales: NonNullable<Intl.LocalesArgument>
   partitionByNewLine: boolean

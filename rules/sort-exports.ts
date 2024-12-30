@@ -15,8 +15,8 @@ import {
 import { validateCustomSortConfiguration } from '../utils/validate-custom-sort-configuration'
 import { getEslintDisabledLines } from '../utils/get-eslint-disabled-lines'
 import { isNodeEslintDisabled } from '../utils/is-node-eslint-disabled'
+import { hasPartitionComment } from '../utils/has-partition-comment'
 import { createNodeIndexMap } from '../utils/create-node-index-map'
-import { hasPartitionComment } from '../utils/is-partition-comment'
 import { getCommentsBefore } from '../utils/get-comments-before'
 import { createEslintRule } from '../utils/create-eslint-rule'
 import { getLinesBetween } from '../utils/get-lines-between'
@@ -30,9 +30,16 @@ import { pairwise } from '../utils/pairwise'
 
 type Options = [
   Partial<{
+    partitionByComment:
+      | {
+          block?: string[] | boolean | string
+          line?: string[] | boolean | string
+        }
+      | string[]
+      | boolean
+      | string
     type: 'alphabetical' | 'line-length' | 'natural' | 'custom'
     groupKind: 'values-first' | 'types-first' | 'mixed'
-    partitionByComment: string[] | boolean | string
     specialCharacters: 'remove' | 'trim' | 'keep'
     locales: NonNullable<Intl.LocalesArgument>
     partitionByNewLine: boolean
@@ -95,13 +102,13 @@ export default createEslintRule<Options, MESSAGE_ID>({
       let lastNode = parts.at(-1)?.at(-1)
       if (
         (partitionComment &&
-          hasPartitionComment(
-            partitionComment,
-            getCommentsBefore({
+          hasPartitionComment({
+            comments: getCommentsBefore({
               sourceCode,
               node,
             }),
-          )) ||
+            partitionByComment: options.partitionByComment,
+          })) ||
         (options.partitionByNewLine &&
           lastNode &&
           getLinesBetween(sourceCode, lastNode, sortingNode))

@@ -8393,6 +8393,246 @@ describe(ruleName, () => {
             invalid: [],
           },
         )
+
+        describe(`${ruleName}: allows to use "partitionByComment.line"`, () => {
+          ruleTester.run(`${ruleName}: ignores block comments`, rule, {
+            invalid: [
+              {
+                errors: [
+                  {
+                    data: {
+                      right: 'a',
+                      left: 'b',
+                    },
+                    messageId: 'unexpectedClassesOrder',
+                  },
+                ],
+                output: dedent`
+                  class Class {
+                    /* Comment */
+                    a() {}
+                    b() {}
+                  }
+                `,
+                code: dedent`
+                  class Class {
+                    b() {}
+                    /* Comment */
+                    a() {}
+                  }
+                `,
+                options: [
+                  {
+                    partitionByComment: {
+                      line: true,
+                    },
+                  },
+                ],
+              },
+            ],
+            valid: [],
+          })
+
+          ruleTester.run(
+            `${ruleName}: allows to use all comments as parts`,
+            rule,
+            {
+              valid: [
+                {
+                  options: [
+                    {
+                      partitionByComment: {
+                        line: true,
+                      },
+                    },
+                  ],
+                  code: dedent`
+                    class Class {
+                      b() {}
+                      // Comment
+                      a() {}
+                    }
+                  `,
+                },
+              ],
+              invalid: [],
+            },
+          )
+
+          ruleTester.run(
+            `${ruleName}: allows to use multiple partition comments`,
+            rule,
+            {
+              valid: [
+                {
+                  code: dedent`
+                    class Class {
+                      c() {}
+                      // b
+                      b() {}
+                      // a
+                      a() {}
+                    }
+                  `,
+                  options: [
+                    {
+                      partitionByComment: {
+                        line: ['a', 'b'],
+                      },
+                    },
+                  ],
+                },
+              ],
+              invalid: [],
+            },
+          )
+
+          ruleTester.run(
+            `${ruleName}: allows to use regex for partition comments`,
+            rule,
+            {
+              valid: [
+                {
+                  code: dedent`
+                    class Class {
+                      b() {}
+                      // I am a partition comment because I don't have f o o
+                      a() {}
+                    }
+                  `,
+                  options: [
+                    {
+                      partitionByComment: {
+                        line: ['^(?!.*foo).*$'],
+                      },
+                    },
+                  ],
+                },
+              ],
+              invalid: [],
+            },
+          )
+        })
+
+        describe(`${ruleName}: allows to use "partitionByComment.block"`, () => {
+          ruleTester.run(`${ruleName}: ignores line comments`, rule, {
+            invalid: [
+              {
+                errors: [
+                  {
+                    data: {
+                      right: 'a',
+                      left: 'b',
+                    },
+                    messageId: 'unexpectedClassesOrder',
+                  },
+                ],
+                output: dedent`
+                  class Class {
+                    // Comment
+                    a() {}
+                    b() {}
+                  }
+                `,
+                options: [
+                  {
+                    partitionByComment: {
+                      block: true,
+                    },
+                  },
+                ],
+                code: dedent`
+                  class Class {
+                    b() {}
+                    // Comment
+                    a() {}
+                  }
+                `,
+              },
+            ],
+            valid: [],
+          })
+
+          ruleTester.run(
+            `${ruleName}: allows to use all comments as parts`,
+            rule,
+            {
+              valid: [
+                {
+                  code: dedent`
+                    class Class {
+                      b() {}
+                      /* Comment */
+                      a() {}
+                    }
+                  `,
+                  options: [
+                    {
+                      partitionByComment: {
+                        block: true,
+                      },
+                    },
+                  ],
+                },
+              ],
+              invalid: [],
+            },
+          )
+
+          ruleTester.run(
+            `${ruleName}: allows to use multiple partition comments`,
+            rule,
+            {
+              valid: [
+                {
+                  code: dedent`
+                    class Class {
+                      c() {}
+                      /* b */
+                      b() {}
+                      /* a */
+                      a() {}
+                    }
+                  `,
+                  options: [
+                    {
+                      partitionByComment: {
+                        block: ['a', 'b'],
+                      },
+                    },
+                  ],
+                },
+              ],
+              invalid: [],
+            },
+          )
+
+          ruleTester.run(
+            `${ruleName}: allows to use regex for partition comments`,
+            rule,
+            {
+              valid: [
+                {
+                  code: dedent`
+                    class Class {
+                      b() {}
+                      /* I am a partition comment because I don't have f o o */
+                      a() {}
+                    }
+                  `,
+                  options: [
+                    {
+                      partitionByComment: {
+                        block: ['^(?!.*foo).*$'],
+                      },
+                    },
+                  ],
+                },
+              ],
+              invalid: [],
+            },
+          )
+        })
       })
 
       ruleTester.run(`${ruleName}: allows to use new line as partition`, rule, {
