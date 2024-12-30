@@ -204,11 +204,6 @@ You can specify their names or a regexp pattern to ignore, for example: `'^Compo
 
 ### partitionByComment
 
-<sub>
-  - type:
-    - `boolean | string | string[]` (`BaseType`)
-    - `{ block: BaseType; line: BaseType }`
-</sub>
 <sub>default: `false`</sub>
 
 Allows you to use comments to separate the properties of interfaces into logical groups. This can help in organizing and maintaining large interfaces by creating partitions within the interface based on comments.
@@ -217,7 +212,7 @@ Allows you to use comments to separate the properties of interfaces into logical
 - `false` — Comments will not be used as delimiters.
 - `string` — A regexp pattern to specify which comments should act as delimiters.
 - `string[]` — An array of regexp patterns to specify which comments should act as delimiters.
-- `{ block: BaseType; line: BaseType }` — Specify which block and line comments should act as delimiters.
+- `{ block: boolean | string | string[]; line: boolean | string | string[] }` — Specify which block and line comments should act as delimiters.
 
 ### partitionByNewLine
 
