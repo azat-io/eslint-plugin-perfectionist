@@ -1,5 +1,22 @@
 # Changelog
 
+## v4.5.0
+
+[compare changes](https://github.com/azat-io/eslint-plugin-perfectionist/compare/v4.4.0...v4.5.0)
+
+### 🚀 Features
+
+- Add custom group newlines inside option ([3b3d2d5](https://github.com/azat-io/eslint-plugin-perfectionist/commit/3b3d2d5))
+- Make partition by comment support line and block ([dd71f11](https://github.com/azat-io/eslint-plugin-perfectionist/commit/dd71f11))
+
+### 🐞 Bug Fixes
+
+- Gives maximum priority to the void character in custom sort type ([1649bea](https://github.com/azat-io/eslint-plugin-perfectionist/commit/1649bea))
+
+### ❤️ Contributors
+
+- Hugo ([@hugop95](http://github.com/hugop95))
+
 ## v4.4.0
 
 [compare changes](https://github.com/azat-io/eslint-plugin-perfectionist/compare/v4.3.0...v4.4.0)
