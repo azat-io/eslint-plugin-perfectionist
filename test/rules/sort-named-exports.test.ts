@@ -3,7 +3,7 @@ import type { Rule } from 'eslint'
 import { RuleTester } from '@typescript-eslint/rule-tester'
 import { RuleTester as EslintRuleTester } from 'eslint'
 import { afterAll, describe, it } from 'vitest'
-import { dedent } from 'ts-dedent'
+import dedent from 'dedent'
 
 import rule from '../../rules/sort-named-exports'
 import { Alphabet } from '../../utils/alphabet'

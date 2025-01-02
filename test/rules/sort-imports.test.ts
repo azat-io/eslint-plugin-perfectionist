@@ -9,7 +9,7 @@ import { afterAll, describe, expect, it, vi } from 'vitest'
 import { RuleTester } from '@typescript-eslint/rule-tester'
 import { createModuleResolutionCache } from 'typescript'
 import { RuleTester as EslintRuleTester } from 'eslint'
-import { dedent } from 'ts-dedent'
+import dedent from 'dedent'
 
 import type { MESSAGE_ID, Options } from '../../rules/sort-imports'
 

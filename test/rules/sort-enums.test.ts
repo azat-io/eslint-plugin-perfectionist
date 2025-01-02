@@ -1,6 +1,6 @@
 import { RuleTester } from '@typescript-eslint/rule-tester'
 import { afterAll, describe, it } from 'vitest'
-import { dedent } from 'ts-dedent'
+import dedent from 'dedent'
 
 import type { Options } from '../../rules/sort-enums'
 

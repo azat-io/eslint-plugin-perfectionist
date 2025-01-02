@@ -1,8 +1,8 @@
 import { RuleTester } from '@typescript-eslint/rule-tester'
 import typescriptParser from '@typescript-eslint/parser'
 import { afterAll, describe, it } from 'vitest'
-import { dedent } from 'ts-dedent'
 import path from 'node:path'
+import dedent from 'dedent'
 
 import { Alphabet } from '../../utils/alphabet'
 import rule from '../../rules/sort-jsx-props'
