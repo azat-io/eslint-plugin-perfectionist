@@ -2192,6 +2192,24 @@ describe(ruleName, () => {
                   },
                   messageId: 'unexpectedObjectsGroupOrder',
                 },
+                {
+                  data: {
+                    rightGroup: 'g',
+                    leftGroup: 'b',
+                    right: 'g',
+                    left: 'b',
+                  },
+                  messageId: 'unexpectedObjectsGroupOrder',
+                },
+                {
+                  data: {
+                    rightGroup: 'r',
+                    leftGroup: 'g',
+                    right: 'r',
+                    left: 'g',
+                  },
+                  messageId: 'unexpectedObjectsGroupOrder',
+                },
               ],
               options: [
                 {
@@ -2225,6 +2243,12 @@ describe(ruleName, () => {
                   g: string,
                   b: string
                 })
+
+                let a = someFunction(true, {
+                  r: string,
+                  g: string,
+                  b: string
+                })
               `,
               code: dedent`
                 let obj = {
@@ -2234,6 +2258,12 @@ describe(ruleName, () => {
                 }
 
                 someFunction(true, {
+                  b: string,
+                  g: string,
+                  r: string
+                })
+
+                let a = someFunction(true, {
                   b: string,
                   g: string,
                   r: string

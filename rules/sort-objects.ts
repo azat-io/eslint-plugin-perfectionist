@@ -121,8 +121,10 @@ export default createEslintRule<Options, MESSAGE_ID>({
         return
       }
 
-      let objectParent = getObjectParent({ node: nodeObject })
-
+      let objectParent = getObjectParent({
+        onlyFirstParent: true,
+        node: nodeObject,
+      })
       let matchedContextOptions = getMatchingContextOptions({
         nodeNames: nodeObject.properties
           .map(property => getNodeName({ sourceCode, property }))
@@ -174,10 +176,14 @@ export default createEslintRule<Options, MESSAGE_ID>({
         return
       }
 
+      let objectParentForIgnorePattern = getObjectParent({
+        onlyFirstParent: false,
+        node: nodeObject,
+      })
       if (
-        objectParent?.name &&
+        objectParentForIgnorePattern?.name &&
         options.ignorePattern.some(pattern =>
-          matches(objectParent.name, pattern),
+          matches(objectParentForIgnorePattern.name, pattern),
         )
       ) {
         return
@@ -625,21 +631,26 @@ let getNodeName = ({
 }
 
 let getObjectParent = ({
+  onlyFirstParent,
   node,
 }: {
   node: TSESTree.ObjectExpression | TSESTree.ObjectPattern
+  onlyFirstParent: boolean
 }): {
   type: 'VariableDeclarator' | 'CallExpression'
   name: string
 } | null => {
-  let variableParentName = getVariableParentName({ node })
+  let variableParentName = getVariableParentName({ onlyFirstParent, node })
   if (variableParentName) {
     return {
       type: 'VariableDeclarator',
       name: variableParentName,
     }
   }
-  let callParentName = getCallExpressionParentName({ node })
+  let callParentName = getCallExpressionParentName({
+    onlyFirstParent,
+    node,
+  })
   if (callParentName) {
     return {
       type: 'CallExpression',
@@ -650,15 +661,18 @@ let getObjectParent = ({
 }
 
 let getVariableParentName = ({
+  onlyFirstParent,
   node,
 }: {
   node: TSESTree.ObjectExpression | TSESTree.ObjectPattern
+  onlyFirstParent: boolean
 }): string | null => {
   let variableParent = getFirstNodeParentWithType({
     allowedTypes: [
       TSESTree.AST_NODE_TYPES.VariableDeclarator,
       TSESTree.AST_NODE_TYPES.Property,
     ],
+    onlyFirstParent,
     node,
   })
   if (!variableParent) {
@@ -678,12 +692,15 @@ let getVariableParentName = ({
 }
 
 let getCallExpressionParentName = ({
+  onlyFirstParent,
   node,
 }: {
   node: TSESTree.ObjectExpression | TSESTree.ObjectPattern
+  onlyFirstParent: boolean
 }): string | null => {
   let callParent = getFirstNodeParentWithType({
     allowedTypes: [TSESTree.AST_NODE_TYPES.CallExpression],
+    onlyFirstParent,
     node,
   })
   if (!callParent) {
