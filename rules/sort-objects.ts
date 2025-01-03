@@ -1,6 +1,7 @@
 import { TSESTree } from '@typescript-eslint/types'
 
 import type { SortingNodeWithDependencies } from '../utils/sort-nodes-by-dependencies'
+import type { Options } from './sort-objects/types'
 
 import {
   buildUseConfigurationIfJsonSchema,
@@ -47,51 +48,12 @@ import { complete } from '../utils/complete'
 import { pairwise } from '../utils/pairwise'
 import { matches } from '../utils/matches'
 
-type Options = Partial<{
-  partitionByComment:
-    | {
-        block?: string[] | boolean | string
-        line?: string[] | boolean | string
-      }
-    | string[]
-    | boolean
-    | string
-  useConfigurationIf: {
-    callingFunctionNamePattern?: string
-    allNamesMatchPattern?: string
-  }
-  groups: (
-    | { newlinesBetween: 'ignore' | 'always' | 'never' }
-    | Group[]
-    | Group
-  )[]
-  type: 'alphabetical' | 'line-length' | 'unsorted' | 'natural' | 'custom'
-  destructuredObjects: { groups: boolean } | boolean
-  customGroups: Record<string, string[] | string>
-  newlinesBetween: 'ignore' | 'always' | 'never'
-  specialCharacters: 'remove' | 'trim' | 'keep'
-  locales: NonNullable<Intl.LocalesArgument>
-  partitionByNewLine: boolean
-  objectDeclarations: boolean
-  styledComponents: boolean
-  /**
-   * @deprecated for {@link `destructuredObjects`} and {@link `objectDeclarations`}
-   */
-  destructureOnly: boolean
-  ignorePattern: string[]
-  order: 'desc' | 'asc'
-  ignoreCase: boolean
-  alphabet: string
-}>[]
-
 type MESSAGE_ID =
   | 'missedSpacingBetweenObjectMembers'
   | 'unexpectedObjectsDependencyOrder'
   | 'extraSpacingBetweenObjectMembers'
   | 'unexpectedObjectsGroupOrder'
   | 'unexpectedObjectsOrder'
-
-type Group = 'multiline' | 'unknown' | 'method' | string
 
 let defaultOptions: Required<Options[0]> = {
   partitionByNewLine: false,
