@@ -442,6 +442,7 @@ interface CustomGroupDefinition {
   groupName: string
   type?: 'alphabetical' | 'natural' | 'line-length' | 'unsorted'
   order?: 'asc' | 'desc'
+  newlinesInside?: 'always' | 'never'
   selector?: string
   modifiers?: string[]
   elementNamePattern?: string
@@ -457,6 +458,7 @@ interface CustomGroupAnyOfDefinition {
   groupName: string
   type?: 'alphabetical' | 'natural' | 'line-length' | 'unsorted'
   order?: 'asc' | 'desc'
+  newlinesInside?: 'always' | 'never'
   anyOf: Array<{
       selector?: string
       modifiers?: string[]
