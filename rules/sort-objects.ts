@@ -105,8 +105,12 @@ export default createEslintRule<Options, MESSAGE_ID>({
       })
       let matchedContextOptions = getMatchingContextOptions({
         nodeNames: nodeObject.properties
-          .map(property => getNodeName({ sourceCode, property }))
-          .filter(nodeName => nodeName !== null),
+          .filter(
+            property =>
+              property.type !== 'SpreadElement' &&
+              property.type !== 'RestElement',
+          )
+          .map(property => getNodeName({ sourceCode, property })),
         contextOptions: context.options,
       }).find(options => {
         if (!options.useConfigurationIf?.callingFunctionNamePattern) {
@@ -312,21 +316,12 @@ export default createEslintRule<Options, MESSAGE_ID>({
 
             let lastProperty = accumulator.at(-1)?.at(-1)
 
-            let name: string
             let dependencies: string[] = []
 
             let { setCustomGroups, defineGroup, getGroup } = useGroups(options)
 
             let selectors: Selector[] = []
             let modifiers: Modifier[] = []
-
-            if (property.key.type === 'Identifier') {
-              ;({ name } = property.key)
-            } else if (property.key.type === 'Literal') {
-              name = `${property.key.value}`
-            } else {
-              name = sourceCode.getText(property.key)
-            }
 
             if (property.value.type === 'AssignmentPattern') {
               dependencies = extractDependencies(property.value)
@@ -358,6 +353,7 @@ export default createEslintRule<Options, MESSAGE_ID>({
               defineGroup(predefinedGroup)
             }
 
+            let name = getNodeName({ sourceCode, property })
             if (Array.isArray(options.customGroups)) {
               for (let customGroup of options.customGroups) {
                 if (
@@ -645,15 +641,9 @@ let getNodeName = ({
   sourceCode,
   property,
 }: {
-  property:
-    | TSESTree.ObjectLiteralElement
-    | TSESTree.RestElement
-    | TSESTree.Property
   sourceCode: ReturnType<typeof getSourceCode>
-}): string | null => {
-  if (property.type === 'SpreadElement' || property.type === 'RestElement') {
-    return null
-  }
+  property: TSESTree.Property
+}): string => {
   if (property.key.type === 'Identifier') {
     return property.key.name
   } else if (property.key.type === 'Literal') {
