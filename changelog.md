@@ -1,5 +1,21 @@
 # Changelog
 
+## v4.6.0
+
+[compare changes](https://github.com/azat-io/eslint-plugin-perfectionist/compare/v4.5.0...v4.6.0)
+
+### 🚀 Features
+
+- Allow to enter new lines between in groups ([4045595](https://github.com/azat-io/eslint-plugin-perfectionist/commit/4045595))
+
+### 🐞 Bug Fixes
+
+- **sort-objects:** Fix function name pattern usage with variable assignment ([8d15b98](https://github.com/azat-io/eslint-plugin-perfectionist/commit/8d15b98))
+
+### ❤️ Contributors
+
+- Hugo ([@hugop95](http://github.com/hugop95))
+
 ## v4.5.0
 
 [compare changes](https://github.com/azat-io/eslint-plugin-perfectionist/compare/v4.4.0...v4.5.0)
