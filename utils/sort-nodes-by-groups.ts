@@ -15,7 +15,11 @@ interface ExtraOptions<T extends SortingNode> {
 }
 
 interface GroupOptions {
-  groups: (string[] | string)[]
+  groups: (
+    | { newlinesBetween: 'ignore' | 'always' | 'never' }
+    | string[]
+    | string
+  )[]
 }
 
 export let sortNodesByGroups = <T extends SortingNode>(

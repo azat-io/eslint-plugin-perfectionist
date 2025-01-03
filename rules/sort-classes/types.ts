@@ -18,6 +18,11 @@ export type SortClassesOptions = [
       | string[]
       | boolean
       | string
+    groups: (
+      | { newlinesBetween: 'ignore' | 'always' | 'never' }
+      | Group[]
+      | Group
+    )[]
     type: 'alphabetical' | 'line-length' | 'natural' | 'custom'
     newlinesBetween: 'ignore' | 'always' | 'never'
     specialCharacters: 'remove' | 'trim' | 'keep'
@@ -25,7 +30,6 @@ export type SortClassesOptions = [
     locales: NonNullable<Intl.LocalesArgument>
     partitionByNewLine: boolean
     customGroups: CustomGroup[]
-    groups: (Group[] | Group)[]
     order: 'desc' | 'asc'
     ignoreCase: boolean
     alphabet: string

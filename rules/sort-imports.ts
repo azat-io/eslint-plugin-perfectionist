@@ -57,11 +57,15 @@ export type Options<T extends string[]> = [
       value?: Record<T[number], string[] | string>
       type?: Record<T[number], string[] | string>
     }
+    groups: (
+      | { newlinesBetween: 'ignore' | 'always' | 'never' }
+      | Group<T>[]
+      | Group<T>
+    )[]
     type: 'alphabetical' | 'line-length' | 'natural' | 'custom'
     newlinesBetween: 'ignore' | 'always' | 'never'
     specialCharacters: 'remove' | 'trim' | 'keep'
     locales: NonNullable<Intl.LocalesArgument>
-    groups: (Group<T>[] | Group<T>)[]
     environment: 'node' | 'bun'
     partitionByNewLine: boolean
     internalPattern: string[]
@@ -177,9 +181,13 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
       : null
 
     let isSideEffectOnlyGroup = (
-      group: undefined | string[] | string,
+      group:
+        | { newlinesBetween: 'ignore' | 'always' | 'never' }
+        | undefined
+        | string[]
+        | string,
     ): boolean => {
-      if (!group) {
+      if (!group || (typeof group === 'object' && 'newlinesBetween' in group)) {
         return false
       }
       if (typeof group === 'string') {

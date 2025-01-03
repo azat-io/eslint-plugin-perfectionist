@@ -2,11 +2,15 @@ import type { SortingNode } from '../types/sorting-node'
 import type { CompareOptions } from './compare'
 
 interface Options {
+  groups: (
+    | { newlinesBetween: 'ignore' | 'always' | 'never' }
+    | string[]
+    | string
+  )[]
   customGroups: Record<string, string[] | string> | CustomGroup[]
   type: 'alphabetical' | 'line-length' | 'natural' | 'custom'
   specialCharacters: 'remove' | 'trim' | 'keep'
   locales: NonNullable<Intl.LocalesArgument>
-  groups: (string[] | string)[]
   order: 'desc' | 'asc'
   ignoreCase: boolean
   alphabet: string

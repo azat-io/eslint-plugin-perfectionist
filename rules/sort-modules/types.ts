@@ -18,12 +18,16 @@ export type SortModulesOptions = [
       | string[]
       | boolean
       | string
+    groups: (
+      | { newlinesBetween: 'ignore' | 'always' | 'never' }
+      | Group[]
+      | Group
+    )[]
     type: 'alphabetical' | 'line-length' | 'natural' | 'custom'
     newlinesBetween: 'ignore' | 'always' | 'never'
     specialCharacters: 'remove' | 'trim' | 'keep'
     locales: NonNullable<Intl.LocalesArgument>
     customGroups: CustomGroup[]
-    groups: (Group[] | Group)[]
     partitionByNewLine: boolean
     order: 'desc' | 'asc'
     ignoreCase: boolean
