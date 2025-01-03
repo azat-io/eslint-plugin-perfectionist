@@ -365,15 +365,7 @@ Example configuration:
 
 Allows you to specify a list of object keys groups for sorting. Groups help organize object keys into categories, making your objects more readable and maintainable.
 
-Predefined groups:
-
-- `'multiline'` — Properties with multiline definitions, such as methods or complex type declarations.
-- `'method'` - Members that are methods.
-- `'unknown'` — Properties that don’t fit into any group specified in the `groups` option.
-
-If the `unknown` group is not specified in the `groups` option, it will automatically be added to the end of the list.
-
-Each object member will be assigned a single group specified in the `groups` option (or the `unknown` group if no match is found).
+Each property will be assigned a single group specified in the `groups` option (or the `unknown` group if no match is found).
 The order of items in the `groups` option determines how groups are ordered.
 
 Within a given group, members will be sorted according to the `type`, `order`, `ignoreCase`, etc. options.
@@ -381,39 +373,184 @@ Within a given group, members will be sorted according to the `type`, `order`, `
 Individual groups can be combined together by placing them in an array. The order of groups in that array does not matter.
 All members of the groups in the array will be sorted together as if they were part of a single group.
 
+Predefined groups are characterized by a single selector and potentially multiple modifiers. You may enter modifiers in any order, but the selector must always come at the end.
+
+#### Example
+
+```ts
+let user = {
+  firstName: "John", // unknown
+  lastName: "Doe",  // unknown
+  username: "john_doe",  // unknown
+  job: {            // multiline-member
+    // Stuff about job
+  },
+  localization: {   // multiline-member
+    // Stuff about localization
+  }
+}
+```
+
+`groups` option configuration:
+
+```js
+{
+  groups: [
+    'unknown',
+    'method',
+    'multiline-member',
+  ]
+}
+
+```
+
+#### Methods
+
+- Selectors: `method`, `member`.
+- Modifiers: `multiline`.
+- Example: `multiline-method`, `method`, `member`.
+
+#### Properties
+
+- Selectors: `property`, `member`.
+- Modifiers: `multiline`.
+- Example: `multiline-property`, `property`, `member`.
+
+##### The `unknown` group
+
+Members that don’t fit into any group specified in the `groups` option will be placed in the `unknown` group. If the `unknown` group is not specified in the `groups` option,
+it will automatically be added to the end of the list.
+
+##### Behavior when multiple groups match an element
+
+The lists of modifiers above are sorted by importance, from most to least important.
+In case of multiple groups matching an element, the following rules will be applied:
+
+1. The group with the most modifiers matching will be selected.
+2. If modifiers quantity is the same, order will be chosen based on modifier importance as listed above.
+
+Example :
+
+```ts
+interface Test {
+  multilineMethod: () => {
+      property: string;
+    }
+}
+```
+
+`multilineMethod` can be matched by the following groups, from most to least important:
+- `multiline-method`.
+- `method`.
+- `multiline-member`.
+- `member`.
+- `unknown`.
+
 ### customGroups
+
+<Important title="Migrating from the old API">
+Support for the object-based `customGroups` option is deprecated.
+
+Migrating from the old to the current API is easy:
+
+Old API:
+```ts
+{
+  "key1": "value1",
+  "key2": "value2"
+}
+```
+
+Current API:
+```ts
+[
+  {
+    "groupName": "key1",
+    "elementNamePattern": "value1"
+  },
+  {
+    "groupName": "key2",
+    "elementNamePattern": "value2"
+  }
+]
+```
+</Important>
 
 <sub>
   type: `{ [groupName: string]: string | string[] }`
 </sub>
-<sub>default: `{}`</sub>
+<sub>default: `[]`</sub>
 
 You can define your own groups and use regexp pattern to match specific object keys.
 
-Each key of `customGroups` represents a group name which you can then use in the `groups` option. The value for each key can either be of type:
-- `string` — An object attribute's name matching the value will be marked as part of the group referenced by the key.
-- `string[]` — An object attribute's name matching any of the values of the array will be marked as part of the group referenced by the key.
-The order of values in the array does not matter.
+A custom group definition may follow one of the two following interfaces:
 
-Custom group matching takes precedence over predefined group matching.
+```ts
+interface CustomGroupDefinition {
+  groupName: string
+  type?: 'alphabetical' | 'natural' | 'line-length' | 'unsorted'
+  order?: 'asc' | 'desc'
+  selector?: string
+  modifiers?: string[]
+  elementNamePattern?: string
+  elementValuePattern?: string
+}
+
+```
+An object will match a `CustomGroupDefinition` group if it matches all the filters of the custom group's definition.
+
+or:
+
+```ts
+interface CustomGroupAnyOfDefinition {
+  groupName: string
+  type?: 'alphabetical' | 'natural' | 'line-length' | 'unsorted'
+  order?: 'asc' | 'desc'
+  anyOf: Array<{
+      selector?: string
+      modifiers?: string[]
+      elementNamePattern?: string
+      elementValuePattern?: string
+  }>
+}
+```
+
+An object will match a `CustomGroupAnyOfDefinition` group if it matches all the filters of at least one of the `anyOf` items.
+
+#### Attributes
+
+- `groupName`: The group's name, which needs to be put in the `groups` option.
+- `selector`: Filter on the `selector` of the element.
+- `modifiers`: Filter on the `modifiers` of the element. (All the modifiers of the element must be present in that list)
+- `elementNamePattern`: If entered, will check that the name of the element matches the pattern entered.
+- `elementValuePattern`: Only for non-function properties. If entered, will check that the value of the property matches the pattern entered.
+- `type`: Overrides the sort type for that custom group. `unsorted` will not sort the group.
+- `order`: Overrides the sort order for that custom group
+- `newlinesInside`: Enforces a specific newline behavior between elements of the group.
+
+#### Match importance
+
+The `customGroups` list is ordered:
+The first custom group definition that matches an element will be used.
+
+Custom groups have a higher priority than any predefined group.
 
 #### Example
 
-Put all properties starting with `id` and `name` at the top, put metadata at the bottom.
-Regroup multiline and in the middle, above unknown-matched properties.
+Put all properties starting with `id` and `name` at the top, combine and sort metadata and multiline properties at the bottom.
+Anything else is put in the middle.
 
 ```ts
-const user = {
-  id: 'id',                   // top
-  name: 'John',               // top
-  getEmail: () => null,       // method
-  localization: {             // multiline
+let user = {
+  id: "id",                 // top
+  name: "John",               // top
+  age: 42,                // unknown
+  isAdmin: true,           // unknown
+  lastUpdated_metadata: null, // bottom
+  localization: {            // multiline-member
     // Stuff about localization
   },
-  age: 40,                    // unknown
-  isAdmin: false,             // unknown
-  lastUpdated_metadata: null, // bottom
-  version_metadata: '1'       // bottom
+  version_metadata: "1"   // bottom
 }
 ```
 
@@ -422,15 +559,22 @@ const user = {
 ```js
  {
    groups: [
-+    'top',                   // [!code ++]
-     ['multiline', 'method'], // [!code ++]
-     ['unknown'],             // [!code ++]
-     'bottom'                 // [!code ++]
++    'top',                                  // [!code ++]
+     'unknown',
++    ['multiline-member', 'bottom'] // [!code ++]
    ],
-+  customGroups: {            // [!code ++]
-+    top: ['^id$', '^name$']  // [!code ++]
-+    bottom: '.+_metadata$'   // [!code ++]
-+  }                          // [!code ++]
++  customGroups: [                           // [!code ++]
++    {                                       // [!code ++]
++       groupName: 'top',                    // [!code ++]
++       selector: 'property',                // [!code ++]
++       elementNamePattern: '^(?:id|name)$', // [!code ++]
++    },                                      // [!code ++]
++    {                                       // [!code ++]
++       groupName: 'bottom',                 // [!code ++]
++       selector: 'property',                // [!code ++]
++       elementNamePattern: '.+_metadata$',  // [!code ++]
++    }                                       // [!code ++]
++  ]                                         // [!code ++]
  }
 ```
 
@@ -465,7 +609,7 @@ const user = {
                   ignorePattern: [],
                   useConfigurationIf: {},
                   groups: [],
-                  customGroups: {},
+                  customGroups: [],
                 },
               ],
             },
@@ -499,7 +643,7 @@ const user = {
                 ignorePattern: [],
                 useConfigurationIf: {},
                 groups: [],
-                customGroups: {},
+                customGroups: [],
               },
             ],
           },
