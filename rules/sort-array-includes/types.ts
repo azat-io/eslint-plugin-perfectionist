@@ -14,6 +14,11 @@ export type Options = Partial<{
     | string[]
     | boolean
     | string
+  groups: (
+    | { newlinesBetween: 'ignore' | 'always' | 'never' }
+    | Group[]
+    | Group
+  )[]
   type: 'alphabetical' | 'line-length' | 'unsorted' | 'natural' | 'custom'
   useConfigurationIf: {
     allNamesMatchPattern?: string
@@ -22,11 +27,11 @@ export type Options = Partial<{
    * @deprecated for {@link `groups`}
    */
   groupKind: 'literals-first' | 'spreads-first' | 'mixed'
+  newlinesBetween: 'ignore' | 'always' | 'never'
   specialCharacters: 'remove' | 'trim' | 'keep'
   locales: NonNullable<Intl.LocalesArgument>
   customGroups: CustomGroup[]
   partitionByNewLine: boolean
-  groups: (Group[] | Group)[]
   order: 'desc' | 'asc'
   ignoreCase: boolean
   alphabet: string
