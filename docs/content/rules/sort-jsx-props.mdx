@@ -225,6 +225,25 @@ Within a given group, members will be sorted according to the `type`, `order`, `
 Individual groups can be combined together by placing them in an array. The order of groups in that array does not matter.
 All members of the groups in the array will be sorted together as if they were part of a single group.
 
+#### Newlines between groups
+
+You may place `newlinesBetween` objects between your groups to enforce the newline behavior between two specific groups.
+
+See the [`newlinesBetween`](#newlinesbetween) option.
+
+This feature is only applicable when `partitionByNewLine` is false.
+
+```ts
+{
+  newlinesBetween: 'always',
+  groups: [
+    'a',
+    { newlinesBetween: 'never' }, // Overrides the global newlinesBetween option
+    'b',
+  ]
+}
+```
+
 ### customGroups
 
 <sub>
@@ -280,6 +299,7 @@ Custom group matching takes precedence over predefined group matching.
                   ignoreCase: true,
                   specialCharacters: 'keep',
                   ignorePattern: [],
+                  newlinesBetween: 'ignore',
                   groups: [],
                   customGroups: {},
                 },
@@ -307,6 +327,7 @@ Custom group matching takes precedence over predefined group matching.
                 ignoreCase: true,
                 specialCharacters: 'keep',
                 ignorePattern: [],
+                newlinesBetween: 'ignore',
                 groups: [],
                 customGroups: {},
               },

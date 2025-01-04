@@ -4,6 +4,7 @@ import type { SortingNode } from '../types/sorting-node'
 
 import {
   specialCharactersJsonSchema,
+  newlinesBetweenJsonSchema,
   customGroupsJsonSchema,
   ignoreCaseJsonSchema,
   buildTypeJsonSchema,
@@ -18,6 +19,7 @@ import { getEslintDisabledLines } from '../utils/get-eslint-disabled-lines'
 import { isNodeEslintDisabled } from '../utils/is-node-eslint-disabled'
 import { createNodeIndexMap } from '../utils/create-node-index-map'
 import { sortNodesByGroups } from '../utils/sort-nodes-by-groups'
+import { getNewlinesErrors } from '../utils/get-newlines-errors'
 import { createEslintRule } from '../utils/create-eslint-rule'
 import { getGroupNumber } from '../utils/get-group-number'
 import { getSourceCode } from '../utils/get-source-code'
@@ -32,11 +34,16 @@ import { matches } from '../utils/matches'
 
 type Options<T extends string[]> = [
   Partial<{
+    groups: (
+      | { newlinesBetween: 'ignore' | 'always' | 'never' }
+      | Group<T>[]
+      | Group<T>
+    )[]
     type: 'alphabetical' | 'line-length' | 'natural' | 'custom'
     customGroups: Record<T[number], string[] | string>
+    newlinesBetween: 'ignore' | 'always' | 'never'
     specialCharacters: 'remove' | 'trim' | 'keep'
     locales: NonNullable<Intl.LocalesArgument>
-    groups: (Group<T>[] | Group<T>)[]
     ignorePattern: string[]
     order: 'desc' | 'asc'
     ignoreCase: boolean
@@ -44,16 +51,21 @@ type Options<T extends string[]> = [
   }>,
 ]
 
+type MESSAGE_ID =
+  | 'missedSpacingBetweenJSXPropsMembers'
+  | 'extraSpacingBetweenJSXPropsMembers'
+  | 'unexpectedJSXPropsGroupOrder'
+  | 'unexpectedJSXPropsOrder'
+
 type Group<T extends string[]> =
   | 'multiline'
   | 'shorthand'
   | 'unknown'
   | T[number]
 
-type MESSAGE_ID = 'unexpectedJSXPropsGroupOrder' | 'unexpectedJSXPropsOrder'
-
 let defaultOptions: Required<Options<string[]>[0]> = {
   specialCharacters: 'keep',
+  newlinesBetween: 'ignore',
   type: 'alphabetical',
   ignorePattern: [],
   ignoreCase: true,
@@ -158,35 +170,57 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
 
           let indexOfRightExcludingEslintDisabled =
             sortedNodesExcludingEslintDisabled.indexOf(right)
-          if (
-            leftIndex < rightIndex &&
-            leftIndex < indexOfRightExcludingEslintDisabled
-          ) {
-            return
-          }
 
           let leftNumber = getGroupNumber(options.groups, left)
           let rightNumber = getGroupNumber(options.groups, right)
-          context.report({
-            fix: fixer =>
-              makeFixes({
-                sortedNodes: sortedNodesExcludingEslintDisabled,
-                sourceCode,
-                fixer,
-                nodes,
-              }),
-            data: {
-              rightGroup: right.group,
-              leftGroup: left.group,
-              right: right.name,
-              left: left.name,
-            },
-            messageId:
+
+          let messageIds: MESSAGE_ID[] = []
+
+          if (
+            leftIndex > rightIndex ||
+            leftIndex >= indexOfRightExcludingEslintDisabled
+          ) {
+            messageIds.push(
               leftNumber === rightNumber
                 ? 'unexpectedJSXPropsOrder'
                 : 'unexpectedJSXPropsGroupOrder',
-            node: right.node,
-          })
+            )
+          }
+
+          messageIds = [
+            ...messageIds,
+            ...getNewlinesErrors({
+              missedSpacingError: 'missedSpacingBetweenJSXPropsMembers',
+              extraSpacingError: 'extraSpacingBetweenJSXPropsMembers',
+              rightNum: rightNumber,
+              leftNum: leftNumber,
+              sourceCode,
+              options,
+              right,
+              left,
+            }),
+          ]
+
+          for (let messageId of messageIds) {
+            context.report({
+              fix: fixer =>
+                makeFixes({
+                  sortedNodes: sortedNodesExcludingEslintDisabled,
+                  sourceCode,
+                  options,
+                  fixer,
+                  nodes,
+                }),
+              data: {
+                rightGroup: right.group,
+                leftGroup: left.group,
+                right: right.name,
+                left: left.name,
+              },
+              node: right.node,
+              messageId,
+            })
+          }
         })
       }
     },
@@ -204,6 +238,7 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
             type: 'array',
           },
           specialCharacters: specialCharactersJsonSchema,
+          newlinesBetween: newlinesBetweenJsonSchema,
           customGroups: customGroupsJsonSchema,
           ignoreCase: ignoreCaseJsonSchema,
           alphabet: alphabetJsonSchema,
@@ -219,6 +254,10 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
     messages: {
       unexpectedJSXPropsGroupOrder:
         'Expected "{{right}}" ({{rightGroup}}) to come before "{{left}}" ({{leftGroup}}).',
+      missedSpacingBetweenJSXPropsMembers:
+        'Missed spacing between "{{left}}" and "{{right}}" props.',
+      extraSpacingBetweenJSXPropsMembers:
+        'Extra spacing between "{{left}}" and "{{right}}" props.',
       unexpectedJSXPropsOrder:
         'Expected "{{right}}" to come before "{{left}}".',
     },
