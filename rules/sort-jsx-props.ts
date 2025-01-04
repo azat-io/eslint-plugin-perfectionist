@@ -3,6 +3,7 @@ import type { TSESTree } from '@typescript-eslint/types'
 import type { SortingNode } from '../types/sorting-node'
 
 import {
+  partitionByNewLineJsonSchema,
   specialCharactersJsonSchema,
   newlinesBetweenJsonSchema,
   customGroupsJsonSchema,
@@ -13,6 +14,7 @@ import {
   groupsJsonSchema,
   orderJsonSchema,
 } from '../utils/common-json-schemas'
+import { validateNewlinesAndPartitionConfiguration } from '../utils/validate-newlines-and-partition-configuration'
 import { validateCustomSortConfiguration } from '../utils/validate-custom-sort-configuration'
 import { validateGroupsConfiguration } from '../utils/validate-groups-configuration'
 import { getEslintDisabledLines } from '../utils/get-eslint-disabled-lines'
@@ -21,6 +23,7 @@ import { createNodeIndexMap } from '../utils/create-node-index-map'
 import { sortNodesByGroups } from '../utils/sort-nodes-by-groups'
 import { getNewlinesErrors } from '../utils/get-newlines-errors'
 import { createEslintRule } from '../utils/create-eslint-rule'
+import { getLinesBetween } from '../utils/get-lines-between'
 import { getGroupNumber } from '../utils/get-group-number'
 import { getSourceCode } from '../utils/get-source-code'
 import { rangeToDiff } from '../utils/range-to-diff'
@@ -44,6 +47,7 @@ type Options<T extends string[]> = [
     newlinesBetween: 'ignore' | 'always' | 'never'
     specialCharacters: 'remove' | 'trim' | 'keep'
     locales: NonNullable<Intl.LocalesArgument>
+    partitionByNewLine: boolean
     ignorePattern: string[]
     order: 'desc' | 'asc'
     ignoreCase: boolean
@@ -66,6 +70,7 @@ type Group<T extends string[]> =
 let defaultOptions: Required<Options<string[]>[0]> = {
   specialCharacters: 'keep',
   newlinesBetween: 'ignore',
+  partitionByNewLine: false,
   type: 'alphabetical',
   ignorePattern: [],
   ignoreCase: true,
@@ -91,6 +96,7 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
         ['multiline', 'shorthand', 'unknown'],
         Object.keys(options.customGroups),
       )
+      validateNewlinesAndPartitionConfiguration(options)
 
       let sourceCode = getSourceCode(context)
 
@@ -110,50 +116,60 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
         sourceCode,
       })
 
-      let parts: SortingNode[][] = node.openingElement.attributes.reduce(
-        (
-          accumulator: SortingNode[][],
-          attribute: TSESTree.JSXSpreadAttribute | TSESTree.JSXAttribute,
-        ) => {
-          if (attribute.type === 'JSXSpreadAttribute') {
-            accumulator.push([])
+      let formattedMembers: SortingNode[][] =
+        node.openingElement.attributes.reduce(
+          (
+            accumulator: SortingNode[][],
+            attribute: TSESTree.JSXSpreadAttribute | TSESTree.JSXAttribute,
+          ) => {
+            if (attribute.type === 'JSXSpreadAttribute') {
+              accumulator.push([])
+              return accumulator
+            }
+
+            let name =
+              attribute.name.type === 'JSXNamespacedName'
+                ? `${attribute.name.namespace.name}:${attribute.name.name.name}`
+                : attribute.name.name
+
+            let { setCustomGroups, defineGroup, getGroup } = useGroups(options)
+
+            setCustomGroups(options.customGroups, name)
+
+            if (attribute.value === null) {
+              defineGroup('shorthand')
+            } else if (attribute.loc.start.line !== attribute.loc.end.line) {
+              defineGroup('multiline')
+            }
+
+            let sortingNode: SortingNode = {
+              isEslintDisabled: isNodeEslintDisabled(
+                attribute,
+                eslintDisabledLines,
+              ),
+              size: rangeToDiff(attribute, sourceCode),
+              group: getGroup(),
+              node: attribute,
+              name,
+            }
+
+            let lastSortingNode = accumulator.at(-1)?.at(-1)
+            if (
+              options.partitionByNewLine &&
+              lastSortingNode &&
+              getLinesBetween(sourceCode, lastSortingNode, sortingNode)
+            ) {
+              accumulator.push([])
+            }
+
+            accumulator.at(-1)!.push(sortingNode)
+
             return accumulator
-          }
+          },
+          [[]],
+        )
 
-          let name =
-            attribute.name.type === 'JSXNamespacedName'
-              ? `${attribute.name.namespace.name}:${attribute.name.name.name}`
-              : attribute.name.name
-
-          let { setCustomGroups, defineGroup, getGroup } = useGroups(options)
-
-          setCustomGroups(options.customGroups, name)
-
-          if (attribute.value === null) {
-            defineGroup('shorthand')
-          } else if (attribute.loc.start.line !== attribute.loc.end.line) {
-            defineGroup('multiline')
-          }
-
-          let jsxNode: SortingNode = {
-            isEslintDisabled: isNodeEslintDisabled(
-              attribute,
-              eslintDisabledLines,
-            ),
-            size: rangeToDiff(attribute, sourceCode),
-            group: getGroup(),
-            node: attribute,
-            name,
-          }
-
-          accumulator.at(-1)!.push(jsxNode)
-
-          return accumulator
-        },
-        [[]],
-      )
-
-      for (let nodes of parts) {
+      for (let nodes of formattedMembers) {
         let sortNodesExcludingEslintDisabled = (
           ignoreEslintDisabledNodes: boolean,
         ): SortingNode[] =>
@@ -237,6 +253,7 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
             },
             type: 'array',
           },
+          partitionByNewLine: partitionByNewLineJsonSchema,
           specialCharacters: specialCharactersJsonSchema,
           newlinesBetween: newlinesBetweenJsonSchema,
           customGroups: customGroupsJsonSchema,

@@ -592,6 +592,62 @@ describe(ruleName, () => {
       invalid: [],
     })
 
+    ruleTester.run(
+      `${ruleName}(${type}): allows to use new line as partition`,
+      rule,
+      {
+        invalid: [
+          {
+            errors: [
+              {
+                data: {
+                  right: 'a',
+                  left: 'd',
+                },
+                messageId: 'unexpectedJSXPropsOrder',
+              },
+              {
+                data: {
+                  right: 'b',
+                  left: 'e',
+                },
+                messageId: 'unexpectedJSXPropsOrder',
+              },
+            ],
+            output: dedent`
+                <Component
+                  a
+                  d
+
+                  c
+
+                  b
+                  e
+                />
+              `,
+            code: dedent`
+                <Component
+                  d
+                  a
+
+                  c
+
+                  e
+                  b
+                />
+              `,
+            options: [
+              {
+                ...options,
+                partitionByNewLine: true,
+              },
+            ],
+          },
+        ],
+        valid: [],
+      },
+    )
+
     describe(`${ruleName}: newlinesBetween`, () => {
       ruleTester.run(
         `${ruleName}(${type}): removes newlines when never`,

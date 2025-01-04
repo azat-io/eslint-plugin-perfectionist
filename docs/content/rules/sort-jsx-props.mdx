@@ -200,6 +200,12 @@ Allows you to specify names or patterns for JSX elements that should be ignored 
 
 You can specify their names or a regexp pattern to ignore, for example: `'^Table.+'` to ignore all object types whose names begin with the word Table.
 
+### partitionByNewLine
+
+<sub>default: `false`</sub>
+
+When `true`, the rule will not sort members if there is an empty line between them. This can be useful for keeping logically separated groups of members in their defined order.
+
 ### groups
 
 <sub>
@@ -299,6 +305,7 @@ Custom group matching takes precedence over predefined group matching.
                   ignoreCase: true,
                   specialCharacters: 'keep',
                   ignorePattern: [],
+                  partitionByNewLine: false,
                   newlinesBetween: 'ignore',
                   groups: [],
                   customGroups: {},
@@ -327,6 +334,7 @@ Custom group matching takes precedence over predefined group matching.
                 ignoreCase: true,
                 specialCharacters: 'keep',
                 ignorePattern: [],
+                partitionByNewLine: false,
                 newlinesBetween: 'ignore',
                 groups: [],
                 customGroups: {},
