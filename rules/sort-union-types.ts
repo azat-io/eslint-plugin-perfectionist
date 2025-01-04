@@ -1,3 +1,4 @@
+import type { JSONSchema4 } from '@typescript-eslint/utils/json-schema'
 import type { RuleContext } from '@typescript-eslint/utils/ts-eslint'
 import type { TSESTree } from '@typescript-eslint/types'
 
@@ -98,30 +99,29 @@ let defaultOptions: Required<Options[0]> = {
   groups: [],
 }
 
+export let jsonSchema: JSONSchema4 = {
+  properties: {
+    partitionByComment: {
+      ...partitionByCommentJsonSchema,
+      description:
+        'Allows you to use comments to separate the union types into logical groups.',
+    },
+    partitionByNewLine: partitionByNewLineJsonSchema,
+    specialCharacters: specialCharactersJsonSchema,
+    newlinesBetween: newlinesBetweenJsonSchema,
+    ignoreCase: ignoreCaseJsonSchema,
+    alphabet: alphabetJsonSchema,
+    type: buildTypeJsonSchema(),
+    locales: localesJsonSchema,
+    groups: groupsJsonSchema,
+    order: orderJsonSchema,
+  },
+  additionalProperties: false,
+  type: 'object',
+}
+
 export default createEslintRule<Options, MESSAGE_ID>({
   meta: {
-    schema: [
-      {
-        properties: {
-          partitionByComment: {
-            ...partitionByCommentJsonSchema,
-            description:
-              'Allows you to use comments to separate the union types into logical groups.',
-          },
-          partitionByNewLine: partitionByNewLineJsonSchema,
-          specialCharacters: specialCharactersJsonSchema,
-          newlinesBetween: newlinesBetweenJsonSchema,
-          ignoreCase: ignoreCaseJsonSchema,
-          alphabet: alphabetJsonSchema,
-          type: buildTypeJsonSchema(),
-          locales: localesJsonSchema,
-          groups: groupsJsonSchema,
-          order: orderJsonSchema,
-        },
-        additionalProperties: false,
-        type: 'object',
-      },
-    ],
     messages: {
       unexpectedUnionTypesGroupOrder:
         'Expected "{{right}}" ({{rightGroup}}) to come before "{{left}}" ({{leftGroup}}).',
@@ -137,6 +137,7 @@ export default createEslintRule<Options, MESSAGE_ID>({
       description: 'Enforce sorted union types.',
       recommended: true,
     },
+    schema: [jsonSchema],
     type: 'suggestion',
     fixable: 'code',
   },

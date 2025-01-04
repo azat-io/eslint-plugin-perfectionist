@@ -1,19 +1,8 @@
 import type { Options as SortUnionTypesOptions } from './sort-union-types'
 
-import {
-  partitionByCommentJsonSchema,
-  partitionByNewLineJsonSchema,
-  specialCharactersJsonSchema,
-  newlinesBetweenJsonSchema,
-  ignoreCaseJsonSchema,
-  buildTypeJsonSchema,
-  alphabetJsonSchema,
-  localesJsonSchema,
-  groupsJsonSchema,
-  orderJsonSchema,
-} from '../utils/common-json-schemas'
 import { sortUnionOrIntersectionTypes } from './sort-union-types'
 import { createEslintRule } from '../utils/create-eslint-rule'
+import { jsonSchema } from './sort-union-types'
 
 type MESSAGE_ID =
   | 'missedSpacingBetweenIntersectionTypes'
@@ -38,28 +27,6 @@ let defaultOptions: Required<Options[0]> = {
 
 export default createEslintRule<Options, MESSAGE_ID>({
   meta: {
-    schema: [
-      {
-        properties: {
-          partitionByComment: {
-            ...partitionByCommentJsonSchema,
-            description:
-              'Allows you to use comments to separate the intersection types members into logical groups.',
-          },
-          partitionByNewLine: partitionByNewLineJsonSchema,
-          specialCharacters: specialCharactersJsonSchema,
-          newlinesBetween: newlinesBetweenJsonSchema,
-          ignoreCase: ignoreCaseJsonSchema,
-          alphabet: alphabetJsonSchema,
-          type: buildTypeJsonSchema(),
-          locales: localesJsonSchema,
-          groups: groupsJsonSchema,
-          order: orderJsonSchema,
-        },
-        additionalProperties: false,
-        type: 'object',
-      },
-    ],
     messages: {
       unexpectedIntersectionTypesGroupOrder:
         'Expected "{{right}}" ({{rightGroup}}) to come before "{{left}}" ({{leftGroup}}).',
@@ -75,6 +42,7 @@ export default createEslintRule<Options, MESSAGE_ID>({
       description: 'Enforce sorted intersection types.',
       recommended: true,
     },
+    schema: [jsonSchema],
     type: 'suggestion',
     fixable: 'code',
   },
