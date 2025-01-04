@@ -145,9 +145,9 @@ export default createEslintRule<Options, MESSAGE_ID>({
       unexpectedObjectTypesGroupOrder:
         'Expected "{{right}}" ({{rightGroup}}) to come before "{{left}}" ({{leftGroup}}).',
       missedSpacingBetweenObjectTypeMembers:
-        'Missed spacing between "{{left}}" and "{{right}}" types.',
+        'Missed spacing between "{{left}}" and "{{right}}" properties.',
       extraSpacingBetweenObjectTypeMembers:
-        'Extra spacing between "{{left}}" and "{{right}}" types.',
+        'Extra spacing between "{{left}}" and "{{right}}" properties.',
       unexpectedObjectTypesOrder:
         'Expected "{{right}}" to come before "{{left}}".',
     },
