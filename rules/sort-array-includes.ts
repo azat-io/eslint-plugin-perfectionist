@@ -20,6 +20,7 @@ import {
   orderJsonSchema,
 } from '../utils/common-json-schemas'
 import { validateGeneratedGroupsConfiguration } from '../utils/validate-generated-groups-configuration'
+import { validateCustomSortConfiguration } from '../utils/validate-custom-sort-configuration'
 import {
   singleCustomGroupJsonSchema,
   allSelectors,
@@ -192,6 +193,7 @@ export let sortArray = <MessageIds extends string>({
     ...completeOptions,
     type,
   }
+  validateCustomSortConfiguration(options)
   validateGeneratedGroupsConfiguration({
     customGroups: options.customGroups,
     selectors: allSelectors,
