@@ -4,44 +4,61 @@ import type { SortingNode } from '../types/sorting-node'
 import type { Options } from './sort-maps/types'
 
 import {
+  buildCustomGroupsArrayJsonSchema,
   partitionByCommentJsonSchema,
   partitionByNewLineJsonSchema,
   specialCharactersJsonSchema,
+  newlinesBetweenJsonSchema,
   ignoreCaseJsonSchema,
   buildTypeJsonSchema,
   alphabetJsonSchema,
   localesJsonSchema,
+  groupsJsonSchema,
   orderJsonSchema,
 } from '../utils/common-json-schemas'
+import { validateGeneratedGroupsConfiguration } from '../utils/validate-generated-groups-configuration'
 import { validateCustomSortConfiguration } from '../utils/validate-custom-sort-configuration'
+import { getCustomGroupsCompareOptions } from '../utils/get-custom-groups-compare-options'
 import { getEslintDisabledLines } from '../utils/get-eslint-disabled-lines'
+import { doesCustomGroupMatch } from './sort-maps/does-custom-group-match'
 import { isNodeEslintDisabled } from '../utils/is-node-eslint-disabled'
 import { hasPartitionComment } from '../utils/has-partition-comment'
 import { createNodeIndexMap } from '../utils/create-node-index-map'
+import { sortNodesByGroups } from '../utils/sort-nodes-by-groups'
 import { getCommentsBefore } from '../utils/get-comments-before'
+import { getNewlinesErrors } from '../utils/get-newlines-errors'
+import { singleCustomGroupJsonSchema } from './sort-maps/types'
 import { createEslintRule } from '../utils/create-eslint-rule'
 import { getLinesBetween } from '../utils/get-lines-between'
+import { getGroupNumber } from '../utils/get-group-number'
 import { getSourceCode } from '../utils/get-source-code'
 import { toSingleLine } from '../utils/to-single-line'
 import { rangeToDiff } from '../utils/range-to-diff'
 import { getSettings } from '../utils/get-settings'
 import { isSortable } from '../utils/is-sortable'
 import { makeFixes } from '../utils/make-fixes'
-import { sortNodes } from '../utils/sort-nodes'
+import { useGroups } from '../utils/use-groups'
 import { complete } from '../utils/complete'
 import { pairwise } from '../utils/pairwise'
 
-type MESSAGE_ID = 'unexpectedMapElementsOrder'
+type MESSAGE_ID =
+  | 'missedSpacingBetweenMapElementsMembers'
+  | 'extraSpacingBetweenMapElementsMembers'
+  | 'unexpectedMapElementsGroupOrder'
+  | 'unexpectedMapElementsOrder'
 
 let defaultOptions: Required<Options[0]> = {
   specialCharacters: 'keep',
   partitionByComment: false,
   partitionByNewLine: false,
+  newlinesBetween: 'ignore',
   type: 'alphabetical',
   ignoreCase: true,
+  customGroups: [],
   locales: 'en-US',
   alphabet: '',
   order: 'asc',
+  groups: [],
 }
 
 export default createEslintRule<Options, MESSAGE_ID>({
@@ -63,6 +80,12 @@ export default createEslintRule<Options, MESSAGE_ID>({
       let settings = getSettings(context.settings)
       let options = complete(context.options.at(0), settings, defaultOptions)
       validateCustomSortConfiguration(options)
+      validateGeneratedGroupsConfiguration({
+        customGroups: options.customGroups,
+        groups: options.groups,
+        selectors: [],
+        modifiers: [],
+      })
 
       let sourceCode = getSourceCode(context)
       let eslintDisabledLines = getEslintDisabledLines({
@@ -104,12 +127,33 @@ export default createEslintRule<Options, MESSAGE_ID>({
           }
 
           let lastSortingNode = formattedMembers.at(-1)?.at(-1)
+
+          let { defineGroup, getGroup } = useGroups(options)
+          for (let customGroup of options.customGroups) {
+            if (
+              doesCustomGroupMatch({
+                elementName: name,
+                customGroup,
+              })
+            ) {
+              defineGroup(customGroup.groupName, true)
+              /**
+               * If the custom group is not referenced in the `groups` option, it
+               * will be ignored
+               */
+              if (getGroup() === customGroup.groupName) {
+                break
+              }
+            }
+          }
+
           let sortingNode: SortingNode = {
             isEslintDisabled: isNodeEslintDisabled(
               element,
               eslintDisabledLines,
             ),
             size: rangeToDiff(element, sourceCode),
+            group: getGroup(),
             node: element,
             name,
           }
@@ -136,7 +180,11 @@ export default createEslintRule<Options, MESSAGE_ID>({
           let sortNodesExcludingEslintDisabled = (
             ignoreEslintDisabledNodes: boolean,
           ): SortingNode[] =>
-            sortNodes(nodes, options, { ignoreEslintDisabledNodes })
+            sortNodesByGroups(nodes, options, {
+              getGroupCompareOptions: groupNumber =>
+                getCustomGroupsCompareOptions(options, groupNumber),
+              ignoreEslintDisabledNodes,
+            })
           let sortedNodes = sortNodesExcludingEslintDisabled(false)
           let sortedNodesExcludingEslintDisabled =
             sortNodesExcludingEslintDisabled(true)
@@ -147,31 +195,59 @@ export default createEslintRule<Options, MESSAGE_ID>({
             let leftIndex = nodeIndexMap.get(left)!
             let rightIndex = nodeIndexMap.get(right)!
 
+            let leftNumber = getGroupNumber(options.groups, left)
+            let rightNumber = getGroupNumber(options.groups, right)
+
             let indexOfRightExcludingEslintDisabled =
               sortedNodesExcludingEslintDisabled.indexOf(right)
+
+            let messageIds: MESSAGE_ID[] = []
+
             if (
-              leftIndex < rightIndex &&
-              leftIndex < indexOfRightExcludingEslintDisabled
+              leftIndex > rightIndex ||
+              leftIndex >= indexOfRightExcludingEslintDisabled
             ) {
-              return
+              messageIds.push(
+                leftNumber === rightNumber
+                  ? 'unexpectedMapElementsOrder'
+                  : 'unexpectedMapElementsGroupOrder',
+              )
             }
 
-            context.report({
-              fix: fixer =>
-                makeFixes({
-                  sortedNodes: sortedNodesExcludingEslintDisabled,
-                  sourceCode,
-                  options,
-                  fixer,
-                  nodes,
-                }),
-              data: {
-                right: toSingleLine(right.name),
-                left: toSingleLine(left.name),
-              },
-              messageId: 'unexpectedMapElementsOrder',
-              node: right.node,
-            })
+            messageIds = [
+              ...messageIds,
+              ...getNewlinesErrors({
+                missedSpacingError: 'missedSpacingBetweenMapElementsMembers',
+                extraSpacingError: 'extraSpacingBetweenMapElementsMembers',
+                rightNum: rightNumber,
+                leftNum: leftNumber,
+                sourceCode,
+                options,
+                right,
+                left,
+              }),
+            ]
+
+            for (let messageId of messageIds) {
+              context.report({
+                fix: fixer =>
+                  makeFixes({
+                    sortedNodes: sortedNodesExcludingEslintDisabled,
+                    sourceCode,
+                    options,
+                    fixer,
+                    nodes,
+                  }),
+                data: {
+                  right: toSingleLine(right.name),
+                  left: toSingleLine(left.name),
+                  rightGroup: right.group,
+                  leftGroup: left.group,
+                },
+                node: right.node,
+                messageId,
+              })
+            }
           })
         }
       }
@@ -186,26 +262,37 @@ export default createEslintRule<Options, MESSAGE_ID>({
             description:
               'Allows you to use comments to separate the maps members into logical groups.',
           },
+          customGroups: buildCustomGroupsArrayJsonSchema({
+            singleCustomGroupJsonSchema,
+          }),
           partitionByNewLine: partitionByNewLineJsonSchema,
           specialCharacters: specialCharactersJsonSchema,
+          newlinesBetween: newlinesBetweenJsonSchema,
           ignoreCase: ignoreCaseJsonSchema,
           alphabet: alphabetJsonSchema,
           type: buildTypeJsonSchema(),
           locales: localesJsonSchema,
+          groups: groupsJsonSchema,
           order: orderJsonSchema,
         },
         additionalProperties: false,
         type: 'object',
       },
     ],
+    messages: {
+      unexpectedMapElementsGroupOrder:
+        'Expected "{{right}}" ({{rightGroup}}) to come before "{{left}}" ({{leftGroup}}).',
+      missedSpacingBetweenMapElementsMembers:
+        'Missed spacing between "{{left}}" and "{{right}}" members.',
+      extraSpacingBetweenMapElementsMembers:
+        'Extra spacing between "{{left}}" and "{{right}}" members.',
+      unexpectedMapElementsOrder:
+        'Expected "{{right}}" to come before "{{left}}".',
+    },
     docs: {
       url: 'https://perfectionist.dev/rules/sort-maps',
       description: 'Enforce sorted Map elements.',
       recommended: true,
-    },
-    messages: {
-      unexpectedMapElementsOrder:
-        'Expected "{{right}}" to come before "{{left}}".',
     },
     type: 'suggestion',
     fixable: 'code',
