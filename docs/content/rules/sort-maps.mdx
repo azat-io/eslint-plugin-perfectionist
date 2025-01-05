@@ -89,6 +89,7 @@ Specifies the sorting method.
 - `'natural'` — Sort items in a [natural](https://github.com/yobacca/natural-orderby) order (e.g., “item2” < “item10”).
 - `'line-length'` — Sort items by the length of the code line (shorter lines first).
 - `'custom'` — Sort items using the alphabet entered in the [`alphabet`](#alphabet) option.
+- `'unsorted'` — Do not sort items. To be used with the [`useConfigurationIf`](#useconfigurationif) option.
 
 ### order
 
@@ -189,6 +190,51 @@ Specifies how new lines should be handled between map members.
 
 This option is only applicable when `partitionByNewLine` is `false`.
 
+### useConfigurationIf
+
+<sub>
+  type: `{ allNamesMatchPattern?: string }`
+</sub>
+<sub>default: `{}`</sub>
+
+Allows you to specify filters to match a particular options configuration for a given map.
+
+The first matching options configuration will be used. If no configuration matches, the default options configuration will be used.
+
+- `allNamesMatchPattern` — A regexp pattern that all map keys must match.
+
+Example configuration:
+```ts
+{
+  'perfectionist/sort-maps': [
+    'error',
+    {
+      groups: ['r', 'g', 'b'], // Sort colors by RGB
+      customGroups: [
+        {
+          elementNamePattern: '^r$',
+          groupName: 'r',
+        },
+        {
+          elementNamePattern: '^g$',
+          groupName: 'g',
+        },
+        {
+          elementNamePattern: '^b$',
+          groupName: 'b',
+        },
+      ],
+      useConfigurationIf: {
+        allNamesMatchPattern: '^r|g|b$',
+      },
+    },
+    {
+      type: 'alphabetical' // Fallback configuration
+    }
+  ],
+}
+```
+
 ### groups
 
 <sub>
@@ -282,6 +328,7 @@ Custom groups have a higher priority than any predefined group.
                   partitionByNewLine: false,
                   partitionByComment: false,
                   newlinesBetween: false,
+                  useConfigurationIf: {},
                   groups: [],
                   customGroups: [],
                 },
@@ -311,6 +358,7 @@ Custom groups have a higher priority than any predefined group.
                 partitionByNewLine: false,
                 partitionByComment: false,
                 newlinesBetween: false,
+                useConfigurationIf: {},
                 groups: [],
                 customGroups: [],
               },

@@ -1,9 +1,12 @@
-import type { TSESTree } from '@typescript-eslint/types'
+import type { TSESLint } from '@typescript-eslint/utils'
+
+import { TSESTree } from '@typescript-eslint/types'
 
 import type { SortingNode } from '../types/sorting-node'
 import type { Options } from './sort-maps/types'
 
 import {
+  buildUseConfigurationIfJsonSchema,
   buildCustomGroupsArrayJsonSchema,
   partitionByCommentJsonSchema,
   partitionByNewLineJsonSchema,
@@ -19,6 +22,7 @@ import {
 import { validateGeneratedGroupsConfiguration } from '../utils/validate-generated-groups-configuration'
 import { validateCustomSortConfiguration } from '../utils/validate-custom-sort-configuration'
 import { getCustomGroupsCompareOptions } from '../utils/get-custom-groups-compare-options'
+import { getMatchingContextOptions } from '../utils/get-matching-context-options'
 import { getEslintDisabledLines } from '../utils/get-eslint-disabled-lines'
 import { doesCustomGroupMatch } from './sort-maps/does-custom-group-match'
 import { isNodeEslintDisabled } from '../utils/is-node-eslint-disabled'
@@ -52,6 +56,7 @@ let defaultOptions: Required<Options[0]> = {
   partitionByComment: false,
   partitionByNewLine: false,
   newlinesBetween: 'ignore',
+  useConfigurationIf: {},
   type: 'alphabetical',
   ignoreCase: true,
   customGroups: [],
@@ -77,8 +82,21 @@ export default createEslintRule<Options, MESSAGE_ID>({
         return
       }
 
+      let sourceCode = getSourceCode(context)
       let settings = getSettings(context.settings)
-      let options = complete(context.options.at(0), settings, defaultOptions)
+
+      let matchedContextOptions = getMatchingContextOptions({
+        nodeNames: elements
+          .filter(
+            element =>
+              element !== null &&
+              element.type !== TSESTree.AST_NODE_TYPES.SpreadElement,
+          )
+          .map(element => getNodeName({ sourceCode, element })),
+        contextOptions: context.options,
+      })
+
+      let options = complete(matchedContextOptions[0], settings, defaultOptions)
       validateCustomSortConfiguration(options)
       validateGeneratedGroupsConfiguration({
         customGroups: options.customGroups,
@@ -87,7 +105,6 @@ export default createEslintRule<Options, MESSAGE_ID>({
         modifiers: [],
       })
 
-      let sourceCode = getSourceCode(context)
       let eslintDisabledLines = getEslintDisabledLines({
         ruleName: context.id,
         sourceCode,
@@ -110,21 +127,10 @@ export default createEslintRule<Options, MESSAGE_ID>({
       for (let part of parts) {
         let formattedMembers: SortingNode[][] = [[]]
         for (let element of part) {
-          let name: string
-
-          if (element.type === 'ArrayExpression') {
-            let [left] = element.elements
-
-            if (!left) {
-              name = `${left}`
-            } else if (left.type === 'Literal') {
-              name = left.raw
-            } else {
-              name = sourceCode.getText(left)
-            }
-          } else {
-            name = sourceCode.getText(element)
-          }
+          let name: string = getNodeName({
+            sourceCode,
+            element,
+          })
 
           let lastSortingNode = formattedMembers.at(-1)?.at(-1)
 
@@ -254,8 +260,8 @@ export default createEslintRule<Options, MESSAGE_ID>({
     },
   }),
   meta: {
-    schema: [
-      {
+    schema: {
+      items: {
         properties: {
           partitionByComment: {
             ...partitionByCommentJsonSchema,
@@ -265,6 +271,7 @@ export default createEslintRule<Options, MESSAGE_ID>({
           customGroups: buildCustomGroupsArrayJsonSchema({
             singleCustomGroupJsonSchema,
           }),
+          useConfigurationIf: buildUseConfigurationIfJsonSchema(),
           partitionByNewLine: partitionByNewLineJsonSchema,
           specialCharacters: specialCharactersJsonSchema,
           newlinesBetween: newlinesBetweenJsonSchema,
@@ -278,7 +285,9 @@ export default createEslintRule<Options, MESSAGE_ID>({
         additionalProperties: false,
         type: 'object',
       },
-    ],
+      uniqueItems: true,
+      type: 'array',
+    },
     messages: {
       unexpectedMapElementsGroupOrder:
         'Expected "{{right}}" ({{rightGroup}}) to come before "{{left}}" ({{leftGroup}}).',
@@ -300,3 +309,23 @@ export default createEslintRule<Options, MESSAGE_ID>({
   defaultOptions: [defaultOptions],
   name: 'sort-maps',
 })
+
+let getNodeName = ({
+  sourceCode,
+  element,
+}: {
+  sourceCode: TSESLint.SourceCode
+  element: TSESTree.Expression
+}): string => {
+  if (element.type === 'ArrayExpression') {
+    let [left] = element.elements
+
+    if (!left) {
+      return `${left}`
+    } else if (left.type === 'Literal') {
+      return left.raw
+    }
+    return sourceCode.getText(left)
+  }
+  return sourceCode.getText(element)
+}

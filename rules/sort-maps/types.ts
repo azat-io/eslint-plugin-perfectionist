@@ -16,6 +16,9 @@ export type Options = Partial<{
     | Group[]
     | Group
   )[]
+  useConfigurationIf: {
+    allNamesMatchPattern?: string
+  }
   type: 'alphabetical' | 'line-length' | 'natural' | 'custom'
   newlinesBetween: 'ignore' | 'always' | 'never'
   specialCharacters: 'remove' | 'trim' | 'keep'
