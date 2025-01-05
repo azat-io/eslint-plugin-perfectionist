@@ -1,6 +1,7 @@
 import type { TSESTree } from '@typescript-eslint/types'
 
 import type { SortingNode } from '../types/sorting-node'
+import type { Options } from './sort-maps/types'
 
 import {
   partitionByCommentJsonSchema,
@@ -29,26 +30,6 @@ import { makeFixes } from '../utils/make-fixes'
 import { sortNodes } from '../utils/sort-nodes'
 import { complete } from '../utils/complete'
 import { pairwise } from '../utils/pairwise'
-
-type Options = [
-  Partial<{
-    partitionByComment:
-      | {
-          block?: string[] | boolean | string
-          line?: string[] | boolean | string
-        }
-      | string[]
-      | boolean
-      | string
-    type: 'alphabetical' | 'line-length' | 'natural' | 'custom'
-    specialCharacters: 'remove' | 'trim' | 'keep'
-    locales: NonNullable<Intl.LocalesArgument>
-    partitionByNewLine: boolean
-    order: 'desc' | 'asc'
-    ignoreCase: boolean
-    alphabet: string
-  }>,
-]
 
 type MESSAGE_ID = 'unexpectedMapElementsOrder'
 
