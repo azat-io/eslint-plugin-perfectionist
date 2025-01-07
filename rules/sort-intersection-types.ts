@@ -1,86 +1,16 @@
-import type { SortingNode } from '../types/sorting-node'
+import type { Options as SortUnionTypesOptions } from './sort-union-types'
 
-import {
-  partitionByCommentJsonSchema,
-  partitionByNewLineJsonSchema,
-  specialCharactersJsonSchema,
-  newlinesBetweenJsonSchema,
-  ignoreCaseJsonSchema,
-  buildTypeJsonSchema,
-  alphabetJsonSchema,
-  localesJsonSchema,
-  groupsJsonSchema,
-  orderJsonSchema,
-} from '../utils/common-json-schemas'
-import { validateNewlinesAndPartitionConfiguration } from '../utils/validate-newlines-and-partition-configuration'
-import { validateCustomSortConfiguration } from '../utils/validate-custom-sort-configuration'
-import { validateGroupsConfiguration } from '../utils/validate-groups-configuration'
-import { getEslintDisabledLines } from '../utils/get-eslint-disabled-lines'
-import { isNodeEslintDisabled } from '../utils/is-node-eslint-disabled'
-import { hasPartitionComment } from '../utils/has-partition-comment'
-import { createNodeIndexMap } from '../utils/create-node-index-map'
-import { sortNodesByGroups } from '../utils/sort-nodes-by-groups'
-import { getCommentsBefore } from '../utils/get-comments-before'
-import { makeNewlinesFixes } from '../utils/make-newlines-fixes'
-import { getNewlinesErrors } from '../utils/get-newlines-errors'
+import { sortUnionOrIntersectionTypes } from './sort-union-types'
 import { createEslintRule } from '../utils/create-eslint-rule'
-import { getLinesBetween } from '../utils/get-lines-between'
-import { getGroupNumber } from '../utils/get-group-number'
-import { getSourceCode } from '../utils/get-source-code'
-import { toSingleLine } from '../utils/to-single-line'
-import { rangeToDiff } from '../utils/range-to-diff'
-import { getSettings } from '../utils/get-settings'
-import { useGroups } from '../utils/use-groups'
-import { makeFixes } from '../utils/make-fixes'
-import { complete } from '../utils/complete'
-import { pairwise } from '../utils/pairwise'
-
-type Options = [
-  Partial<{
-    partitionByComment:
-      | {
-          block?: string[] | boolean | string
-          line?: string[] | boolean | string
-        }
-      | string[]
-      | boolean
-      | string
-    groups: (
-      | { newlinesBetween: 'ignore' | 'always' | 'never' }
-      | Group[]
-      | Group
-    )[]
-    type: 'alphabetical' | 'line-length' | 'natural' | 'custom'
-    newlinesBetween: 'ignore' | 'always' | 'never'
-    specialCharacters: 'remove' | 'trim' | 'keep'
-    locales: NonNullable<Intl.LocalesArgument>
-    partitionByNewLine: boolean
-    order: 'desc' | 'asc'
-    ignoreCase: boolean
-    alphabet: string
-  }>,
-]
-
-type Group =
-  | 'intersection'
-  | 'conditional'
-  | 'function'
-  | 'operator'
-  | 'keyword'
-  | 'literal'
-  | 'nullish'
-  | 'unknown'
-  | 'import'
-  | 'object'
-  | 'named'
-  | 'tuple'
-  | 'union'
+import { jsonSchema } from './sort-union-types'
 
 type MESSAGE_ID =
   | 'missedSpacingBetweenIntersectionTypes'
   | 'unexpectedIntersectionTypesGroupOrder'
   | 'extraSpacingBetweenIntersectionTypes'
   | 'unexpectedIntersectionTypesOrder'
+
+type Options = SortUnionTypesOptions
 
 let defaultOptions: Required<Options[0]> = {
   specialCharacters: 'keep',
@@ -96,238 +26,7 @@ let defaultOptions: Required<Options[0]> = {
 }
 
 export default createEslintRule<Options, MESSAGE_ID>({
-  create: context => ({
-    TSIntersectionType: node => {
-      let settings = getSettings(context.settings)
-
-      let options = complete(context.options.at(0), settings, defaultOptions)
-      validateCustomSortConfiguration(options)
-      validateGroupsConfiguration(
-        options.groups,
-        [
-          'intersection',
-          'conditional',
-          'function',
-          'operator',
-          'keyword',
-          'literal',
-          'nullish',
-          'unknown',
-          'import',
-          'object',
-          'named',
-          'tuple',
-          'union',
-        ],
-        [],
-      )
-      validateNewlinesAndPartitionConfiguration(options)
-
-      let sourceCode = getSourceCode(context)
-      let eslintDisabledLines = getEslintDisabledLines({
-        ruleName: context.id,
-        sourceCode,
-      })
-
-      let formattedMembers: SortingNode[][] = node.types.reduce(
-        (accumulator: SortingNode[][], type) => {
-          let { defineGroup, getGroup } = useGroups(options)
-
-          switch (type.type) {
-            case 'TSTemplateLiteralType':
-            case 'TSLiteralType':
-              defineGroup('literal')
-              break
-            case 'TSIndexedAccessType':
-            case 'TSTypeReference':
-            case 'TSQualifiedName':
-            case 'TSArrayType':
-            case 'TSInferType':
-              defineGroup('named')
-              break
-            case 'TSIntersectionType':
-              defineGroup('intersection')
-              break
-            case 'TSUndefinedKeyword':
-            case 'TSNullKeyword':
-            case 'TSVoidKeyword':
-              defineGroup('nullish')
-              break
-            case 'TSConditionalType':
-              defineGroup('conditional')
-              break
-            case 'TSConstructorType':
-            case 'TSFunctionType':
-              defineGroup('function')
-              break
-            case 'TSBooleanKeyword':
-            case 'TSUnknownKeyword':
-            case 'TSBigIntKeyword':
-            case 'TSNumberKeyword':
-            case 'TSObjectKeyword':
-            case 'TSStringKeyword':
-            case 'TSSymbolKeyword':
-            case 'TSNeverKeyword':
-            case 'TSAnyKeyword':
-            case 'TSThisType':
-              defineGroup('keyword')
-              break
-            case 'TSTypeOperator':
-            case 'TSTypeQuery':
-              defineGroup('operator')
-              break
-            case 'TSTypeLiteral':
-            case 'TSMappedType':
-              defineGroup('object')
-              break
-            case 'TSImportType':
-              defineGroup('import')
-              break
-            case 'TSTupleType':
-              defineGroup('tuple')
-              break
-            case 'TSUnionType':
-              defineGroup('union')
-              break
-          }
-
-          let lastGroup = accumulator.at(-1)
-          let lastSortingNode = lastGroup?.at(-1)
-          let sortingNode: SortingNode = {
-            isEslintDisabled: isNodeEslintDisabled(type, eslintDisabledLines),
-            size: rangeToDiff(type, sourceCode),
-            name: sourceCode.getText(type),
-            group: getGroup(),
-            node: type,
-          }
-          if (
-            hasPartitionComment({
-              comments: getCommentsBefore({
-                tokenValueToIgnoreBefore: '&',
-                node: type,
-                sourceCode,
-              }),
-              partitionByComment: options.partitionByComment,
-            }) ||
-            (options.partitionByNewLine &&
-              lastSortingNode &&
-              getLinesBetween(sourceCode, lastSortingNode, sortingNode))
-          ) {
-            lastGroup = []
-            accumulator.push(lastGroup)
-          }
-
-          lastGroup?.push(sortingNode)
-
-          return accumulator
-        },
-        [[]],
-      )
-
-      for (let nodes of formattedMembers) {
-        let sortNodesExcludingEslintDisabled = (
-          ignoreEslintDisabledNodes: boolean,
-        ): SortingNode[] =>
-          sortNodesByGroups(nodes, options, { ignoreEslintDisabledNodes })
-
-        let sortedNodes = sortNodesExcludingEslintDisabled(false)
-        let sortedNodesExcludingEslintDisabled =
-          sortNodesExcludingEslintDisabled(true)
-
-        let nodeIndexMap = createNodeIndexMap(sortedNodes)
-
-        pairwise(nodes, (left, right) => {
-          let leftNumber = getGroupNumber(options.groups, left)
-          let rightNumber = getGroupNumber(options.groups, right)
-
-          let leftIndex = nodeIndexMap.get(left)!
-          let rightIndex = nodeIndexMap.get(right)!
-
-          let indexOfRightExcludingEslintDisabled =
-            sortedNodesExcludingEslintDisabled.indexOf(right)
-
-          let messageIds: MESSAGE_ID[] = []
-
-          if (
-            leftIndex > rightIndex ||
-            leftIndex >= indexOfRightExcludingEslintDisabled
-          ) {
-            messageIds.push(
-              leftNumber === rightNumber
-                ? 'unexpectedIntersectionTypesOrder'
-                : 'unexpectedIntersectionTypesGroupOrder',
-            )
-          }
-
-          messageIds = [
-            ...messageIds,
-            ...getNewlinesErrors({
-              missedSpacingError: 'missedSpacingBetweenIntersectionTypes',
-              extraSpacingError: 'extraSpacingBetweenIntersectionTypes',
-              rightNum: rightNumber,
-              leftNum: leftNumber,
-              sourceCode,
-              options,
-              right,
-              left,
-            }),
-          ]
-
-          for (let messageId of messageIds) {
-            context.report({
-              fix: fixer => [
-                ...makeFixes({
-                  sortedNodes: sortedNodesExcludingEslintDisabled,
-                  sourceCode,
-                  options,
-                  fixer,
-                  nodes,
-                }),
-                ...makeNewlinesFixes({
-                  sortedNodes: sortedNodesExcludingEslintDisabled,
-                  sourceCode,
-                  options,
-                  fixer,
-                  nodes,
-                }),
-              ],
-              data: {
-                right: toSingleLine(right.name),
-                left: toSingleLine(left.name),
-                rightGroup: right.group,
-                leftGroup: left.group,
-              },
-              node: right.node,
-              messageId,
-            })
-          }
-        })
-      }
-    },
-  }),
   meta: {
-    schema: [
-      {
-        properties: {
-          partitionByComment: {
-            ...partitionByCommentJsonSchema,
-            description:
-              'Allows you to use comments to separate the intersection types members into logical groups.',
-          },
-          partitionByNewLine: partitionByNewLineJsonSchema,
-          specialCharacters: specialCharactersJsonSchema,
-          newlinesBetween: newlinesBetweenJsonSchema,
-          ignoreCase: ignoreCaseJsonSchema,
-          alphabet: alphabetJsonSchema,
-          type: buildTypeJsonSchema(),
-          locales: localesJsonSchema,
-          groups: groupsJsonSchema,
-          order: orderJsonSchema,
-        },
-        additionalProperties: false,
-        type: 'object',
-      },
-    ],
     messages: {
       unexpectedIntersectionTypesGroupOrder:
         'Expected "{{right}}" ({{rightGroup}}) to come before "{{left}}" ({{leftGroup}}).',
@@ -343,9 +42,25 @@ export default createEslintRule<Options, MESSAGE_ID>({
       description: 'Enforce sorted intersection types.',
       recommended: true,
     },
+    schema: [jsonSchema],
     type: 'suggestion',
     fixable: 'code',
   },
+  create: context => ({
+    TSIntersectionType: node => {
+      sortUnionOrIntersectionTypes({
+        availableMessageIds: {
+          missedSpacingBetweenMembers: 'missedSpacingBetweenIntersectionTypes',
+          extraSpacingBetweenMembers: 'extraSpacingBetweenIntersectionTypes',
+          unexpectedGroupOrder: 'unexpectedIntersectionTypesGroupOrder',
+          unexpectedOrder: 'unexpectedIntersectionTypesOrder',
+        },
+        tokenValueToIgnoreBefore: '&',
+        context,
+        node,
+      })
+    },
+  }),
   defaultOptions: [defaultOptions],
   name: 'sort-intersection-types',
 })
