@@ -7,22 +7,20 @@ import fs from 'node:fs/promises'
 import path from 'node:path'
 
 let getAllFiles = async (directory: string): Promise<string[]> => {
-  let files = await fs.readdir(directory)
-  files = (await Promise.all(
-    files.map(async file => {
-      let filePath = path.join(directory, file)
-      let stats = await fs.stat(filePath)
-      if (stats.isDirectory()) {
-        return getAllFiles(filePath)
-      } else if (stats.isFile()) {
-        return filePath
-      }
-      return null
-    }),
-  )) as string[]
-  return files
-    .reduce((all: string[], folderContents) => [...all, folderContents], [])
-    .flat()
+  let entries = await fs.readdir(directory, { withFileTypes: true })
+
+  let childPathsPromises = entries.map(async entry => {
+    let filePath = path.join(directory, entry.name)
+    if (entry.isDirectory()) {
+      return getAllFiles(filePath)
+    } else if (entry.isFile()) {
+      return [filePath]
+    }
+    return []
+  })
+
+  let nestedPaths = await Promise.all(childPathsPromises)
+  return nestedPaths.flat()
 }
 
 let prettierPlugin = (): Plugin => {
