@@ -14,6 +14,7 @@ import {
   orderJsonSchema,
 } from '../utils/common-json-schemas'
 import { validateCustomSortConfiguration } from '../utils/validate-custom-sort-configuration'
+import { makeOrderAndCommentsAfterFixes } from '../utils/make-order-and-comments-after-fixes'
 import { validateGroupsConfiguration } from '../utils/validate-groups-configuration'
 import { getEslintDisabledLines } from '../utils/get-eslint-disabled-lines'
 import { isNodeEslintDisabled } from '../utils/is-node-eslint-disabled'
@@ -27,7 +28,6 @@ import { rangeToDiff } from '../utils/range-to-diff'
 import { getSettings } from '../utils/get-settings'
 import { isSortable } from '../utils/is-sortable'
 import { useGroups } from '../utils/use-groups'
-import { makeFixes } from '../utils/make-fixes'
 import { complete } from '../utils/complete'
 import { pairwise } from '../utils/pairwise'
 
@@ -176,19 +176,19 @@ let sortHeritageClauses = (
     let leftNumber = getGroupNumber(options.groups, left)
     let rightNumber = getGroupNumber(options.groups, right)
     context.report({
+      fix: fixer =>
+        makeOrderAndCommentsAfterFixes({
+          sortedNodes: sortedNodesExcludingEslintDisabled,
+          sourceCode,
+          fixer,
+          nodes,
+        }),
       data: {
         right: toSingleLine(right.name),
         left: toSingleLine(left.name),
         rightGroup: right.group,
         leftGroup: left.group,
       },
-      fix: fixer =>
-        makeFixes({
-          sortedNodes: sortedNodesExcludingEslintDisabled,
-          sourceCode,
-          fixer,
-          nodes,
-        }),
       messageId:
         leftNumber === rightNumber
           ? 'unexpectedHeritageClausesOrder'

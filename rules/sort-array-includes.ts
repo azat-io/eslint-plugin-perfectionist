@@ -20,6 +20,7 @@ import {
   orderJsonSchema,
 } from '../utils/common-json-schemas'
 import { validateGeneratedGroupsConfiguration } from '../utils/validate-generated-groups-configuration'
+import { makeOrderAndCommentsAfterFixes } from '../utils/make-order-and-comments-after-fixes'
 import {
   singleCustomGroupJsonSchema,
   allSelectors,
@@ -42,7 +43,6 @@ import { toSingleLine } from '../utils/to-single-line'
 import { rangeToDiff } from '../utils/range-to-diff'
 import { getSettings } from '../utils/get-settings'
 import { isSortable } from '../utils/is-sortable'
-import { makeFixes } from '../utils/make-fixes'
 import { useGroups } from '../utils/use-groups'
 import { complete } from '../utils/complete'
 import { pairwise } from '../utils/pairwise'
@@ -338,7 +338,7 @@ export let sortArray = <MessageIds extends string>({
 
       context.report({
         fix: fixer =>
-          makeFixes({
+          makeOrderAndCommentsAfterFixes({
             sortedNodes: sortedNodesExcludingEslintDisabled,
             sourceCode,
             options,

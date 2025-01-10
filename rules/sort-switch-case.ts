@@ -12,6 +12,7 @@ import {
   orderJsonSchema,
 } from '../utils/common-json-schemas'
 import { validateCustomSortConfiguration } from '../utils/validate-custom-sort-configuration'
+import { makeOrderAndCommentsAfterFixes } from '../utils/make-order-and-comments-after-fixes'
 import { makeCommentAfterFixes } from '../utils/make-comment-after-fixes'
 import { createNodeIndexMap } from '../utils/create-node-index-map'
 import { createEslintRule } from '../utils/create-eslint-rule'
@@ -19,7 +20,6 @@ import { getSourceCode } from '../utils/get-source-code'
 import { rangeToDiff } from '../utils/range-to-diff'
 import { getSettings } from '../utils/get-settings'
 import { isSortable } from '../utils/is-sortable'
-import { makeFixes } from '../utils/make-fixes'
 import { sortNodes } from '../utils/sort-nodes'
 import { pairwise } from '../utils/pairwise'
 import { complete } from '../utils/complete'
@@ -119,7 +119,7 @@ export default createEslintRule<Options, MESSAGE_ID>({
 
           context.report({
             fix: fixer =>
-              makeFixes({
+              makeOrderAndCommentsAfterFixes({
                 sortedNodes: sortedCaseNameSortingNodes,
                 nodes: caseNodesSortingNodeGroup,
                 sourceCode,
@@ -254,7 +254,7 @@ export default createEslintRule<Options, MESSAGE_ID>({
           fix: fixer =>
             hasUnsortedNodes
               ? [] // Raise errors but only sort on second iteration
-              : makeFixes({
+              : makeOrderAndCommentsAfterFixes({
                   sortedNodes: sortedSortingNodeGroupsForBlockSort,
                   nodes: sortingNodeGroupsForBlockSortFlat,
                   sourceCode,

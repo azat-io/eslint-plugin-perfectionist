@@ -13,6 +13,7 @@ import {
   orderJsonSchema,
 } from '../utils/common-json-schemas'
 import { validateCustomSortConfiguration } from '../utils/validate-custom-sort-configuration'
+import { makeOrderAndCommentsAfterFixes } from '../utils/make-order-and-comments-after-fixes'
 import { validateGroupsConfiguration } from '../utils/validate-groups-configuration'
 import { getEslintDisabledLines } from '../utils/get-eslint-disabled-lines'
 import { isNodeEslintDisabled } from '../utils/is-node-eslint-disabled'
@@ -25,7 +26,6 @@ import { rangeToDiff } from '../utils/range-to-diff'
 import { getSettings } from '../utils/get-settings'
 import { isSortable } from '../utils/is-sortable'
 import { useGroups } from '../utils/use-groups'
-import { makeFixes } from '../utils/make-fixes'
 import { pairwise } from '../utils/pairwise'
 import { complete } from '../utils/complete'
 import { matches } from '../utils/matches'
@@ -169,7 +169,7 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
           let rightNumber = getGroupNumber(options.groups, right)
           context.report({
             fix: fixer =>
-              makeFixes({
+              makeOrderAndCommentsAfterFixes({
                 sortedNodes: sortedNodesExcludingEslintDisabled,
                 sourceCode,
                 fixer,

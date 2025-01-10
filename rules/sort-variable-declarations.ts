@@ -17,6 +17,7 @@ import {
   sortNodesByDependencies,
 } from '../utils/sort-nodes-by-dependencies'
 import { validateCustomSortConfiguration } from '../utils/validate-custom-sort-configuration'
+import { makeOrderAndCommentsAfterFixes } from '../utils/make-order-and-comments-after-fixes'
 import { getEslintDisabledLines } from '../utils/get-eslint-disabled-lines'
 import { isNodeEslintDisabled } from '../utils/is-node-eslint-disabled'
 import { hasPartitionComment } from '../utils/has-partition-comment'
@@ -30,7 +31,6 @@ import { rangeToDiff } from '../utils/range-to-diff'
 import { getSettings } from '../utils/get-settings'
 import { isSortable } from '../utils/is-sortable'
 import { sortNodes } from '../utils/sort-nodes'
-import { makeFixes } from '../utils/make-fixes'
 import { complete } from '../utils/complete'
 import { pairwise } from '../utils/pairwise'
 
@@ -267,7 +267,7 @@ export default createEslintRule<Options, MESSAGE_ID>({
           getFirstUnorderedNodeDependentOn(right, nodes)
         context.report({
           fix: fixer =>
-            makeFixes({
+            makeOrderAndCommentsAfterFixes({
               sortedNodes: sortedNodesExcludingEslintDisabled,
               sourceCode,
               options,

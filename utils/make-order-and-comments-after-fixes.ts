@@ -5,7 +5,7 @@ import type { SortingNode } from '../types/sorting-node'
 import { makeCommentAfterFixes } from './make-comment-after-fixes'
 import { getNodeRange } from './get-node-range'
 
-interface MakeFixesParameters {
+interface MakeOrderAndCommentsAfterFixesParameters {
   options?: {
     partitionByComment:
       | {
@@ -23,14 +23,14 @@ interface MakeFixesParameters {
   nodes: SortingNode[]
 }
 
-export let makeFixes = ({
+export let makeOrderAndCommentsAfterFixes = ({
   ignoreFirstNodeHighestBlockComment,
   sortedNodes,
   sourceCode,
   options,
   fixer,
   nodes,
-}: MakeFixesParameters): TSESLint.RuleFix[] => {
+}: MakeOrderAndCommentsAfterFixesParameters): TSESLint.RuleFix[] => {
   let fixes: TSESLint.RuleFix[] = []
 
   for (let max = nodes.length, i = 0; i < max; i++) {
