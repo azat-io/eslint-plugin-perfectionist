@@ -17,6 +17,7 @@ import {
   orderJsonSchema,
 } from '../utils/common-json-schemas'
 import { validateNewlinesAndPartitionConfiguration } from '../utils/validate-newlines-and-partition-configuration'
+import { makeOrderCommentsAfterAndNewlinesFixes } from '../utils/make-order-comments-after-and-newlines-fixes'
 import { validateCustomSortConfiguration } from '../utils/validate-custom-sort-configuration'
 import { readClosestTsConfigByPath } from './sort-imports/read-closest-ts-config-by-path'
 import { validateGroupsConfiguration } from '../utils/validate-groups-configuration'
@@ -28,12 +29,10 @@ import { hasPartitionComment } from '../utils/has-partition-comment'
 import { createNodeIndexMap } from '../utils/create-node-index-map'
 import { sortNodesByGroups } from '../utils/sort-nodes-by-groups'
 import { getCommentsBefore } from '../utils/get-comments-before'
-import { makeNewlinesFixes } from '../utils/make-newlines-fixes'
 import { getNewlinesErrors } from '../utils/get-newlines-errors'
 import { createEslintRule } from '../utils/create-eslint-rule'
 import { getLinesBetween } from '../utils/get-lines-between'
 import { getGroupNumber } from '../utils/get-group-number'
-import { makeOrderFixes } from '../utils/make-order-fixes'
 import { getSourceCode } from '../utils/get-source-code'
 import { rangeToDiff } from '../utils/range-to-diff'
 import { getSettings } from '../utils/get-settings'
@@ -571,15 +570,8 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
 
             for (let messageId of messageIds) {
               context.report({
-                fix: fixer => [
-                  ...makeOrderFixes({
-                    sortedNodes: sortedNodesExcludingEslintDisabled,
-                    nodes: nodeList,
-                    sourceCode,
-                    options,
-                    fixer,
-                  }),
-                  ...makeNewlinesFixes({
+                fix: fixer =>
+                  makeOrderCommentsAfterAndNewlinesFixes({
                     options: {
                       ...options,
                       customGroups: [],
@@ -589,7 +581,6 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
                     sourceCode,
                     fixer,
                   }),
-                ],
                 data: {
                   rightGroup: right.group,
                   leftGroup: left.group,

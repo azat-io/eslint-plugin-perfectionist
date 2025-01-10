@@ -26,6 +26,7 @@ import {
   sortNodesByDependencies,
 } from '../utils/sort-nodes-by-dependencies'
 import { validateNewlinesAndPartitionConfiguration } from '../utils/validate-newlines-and-partition-configuration'
+import { makeOrderCommentsAfterAndNewlinesFixes } from '../utils/make-order-comments-after-and-newlines-fixes'
 import { validateGeneratedGroupsConfiguration } from '../utils/validate-generated-groups-configuration'
 import {
   singleCustomGroupJsonSchema,
@@ -42,12 +43,10 @@ import { isNodeEslintDisabled } from '../utils/is-node-eslint-disabled'
 import { hasPartitionComment } from '../utils/has-partition-comment'
 import { sortNodesByGroups } from '../utils/sort-nodes-by-groups'
 import { getCommentsBefore } from '../utils/get-comments-before'
-import { makeNewlinesFixes } from '../utils/make-newlines-fixes'
 import { getNewlinesErrors } from '../utils/get-newlines-errors'
 import { createEslintRule } from '../utils/create-eslint-rule'
 import { getLinesBetween } from '../utils/get-lines-between'
 import { getGroupNumber } from '../utils/get-group-number'
-import { makeOrderFixes } from '../utils/make-order-fixes'
 import { getSourceCode } from '../utils/get-source-code'
 import { toSingleLine } from '../utils/to-single-line'
 import { rangeToDiff } from '../utils/range-to-diff'
@@ -652,22 +651,14 @@ export default createEslintRule<SortClassesOptions, MESSAGE_ID>({
 
         for (let messageId of messageIds) {
           context.report({
-            fix: (fixer: TSESLint.RuleFixer) => [
-              ...makeOrderFixes({
+            fix: (fixer: TSESLint.RuleFixer) =>
+              makeOrderCommentsAfterAndNewlinesFixes({
                 sortedNodes: sortedNodesExcludingEslintDisabled,
                 sourceCode,
                 options,
                 fixer,
                 nodes,
               }),
-              ...makeNewlinesFixes({
-                sortedNodes: sortedNodesExcludingEslintDisabled,
-                sourceCode,
-                options,
-                fixer,
-                nodes,
-              }),
-            ],
             data: {
               nodeDependentOnRight: firstUnorderedNodeDependentOnRight?.name,
               right: toSingleLine(right.name),

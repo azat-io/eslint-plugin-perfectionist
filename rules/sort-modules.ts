@@ -28,6 +28,7 @@ import {
   sortNodesByDependencies,
 } from '../utils/sort-nodes-by-dependencies'
 import { validateNewlinesAndPartitionConfiguration } from '../utils/validate-newlines-and-partition-configuration'
+import { makeOrderCommentsAfterAndNewlinesFixes } from '../utils/make-order-comments-after-and-newlines-fixes'
 import { validateGeneratedGroupsConfiguration } from '../utils/validate-generated-groups-configuration'
 import {
   singleCustomGroupJsonSchema,
@@ -44,14 +45,12 @@ import { hasPartitionComment } from '../utils/has-partition-comment'
 import { createNodeIndexMap } from '../utils/create-node-index-map'
 import { sortNodesByGroups } from '../utils/sort-nodes-by-groups'
 import { getNewlinesErrors } from '../utils/get-newlines-errors'
-import { makeNewlinesFixes } from '../utils/make-newlines-fixes'
 import { getCommentsBefore } from '../utils/get-comments-before'
 import { getNodeDecorators } from '../utils/get-node-decorators'
 import { createEslintRule } from '../utils/create-eslint-rule'
 import { getLinesBetween } from '../utils/get-lines-between'
 import { getGroupNumber } from '../utils/get-group-number'
 import { getEnumMembers } from '../utils/get-enum-members'
-import { makeOrderFixes } from '../utils/make-order-fixes'
 import { getSourceCode } from '../utils/get-source-code'
 import { toSingleLine } from '../utils/to-single-line'
 import { rangeToDiff } from '../utils/range-to-diff'
@@ -442,22 +441,6 @@ let analyzeModule = ({
 
     for (let messageId of messageIds) {
       context.report({
-        fix: (fixer: TSESLint.RuleFixer) => [
-          ...makeOrderFixes({
-            sortedNodes: sortedNodesExcludingEslintDisabled,
-            sourceCode,
-            options,
-            fixer,
-            nodes,
-          }),
-          ...makeNewlinesFixes({
-            sortedNodes: sortedNodesExcludingEslintDisabled,
-            sourceCode,
-            options,
-            fixer,
-            nodes,
-          }),
-        ],
         data: {
           nodeDependentOnRight: firstUnorderedNodeDependentOnRight?.name,
           right: toSingleLine(right.name),
@@ -465,6 +448,14 @@ let analyzeModule = ({
           rightGroup: right.group,
           leftGroup: left.group,
         },
+        fix: (fixer: TSESLint.RuleFixer) =>
+          makeOrderCommentsAfterAndNewlinesFixes({
+            sortedNodes: sortedNodesExcludingEslintDisabled,
+            sourceCode,
+            options,
+            fixer,
+            nodes,
+          }),
         node: right.node,
         messageId,
       })
