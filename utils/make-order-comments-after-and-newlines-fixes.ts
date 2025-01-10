@@ -2,8 +2,9 @@ import type { TSESLint } from '@typescript-eslint/utils'
 
 import type { SortingNode } from '../types/sorting-node'
 
-import { makeOrderAndCommentsAfterFixes } from './make-order-and-comments-after-fixes'
+import { makeCommentAfterFixes } from './make-comment-after-fixes'
 import { makeNewlinesFixes } from './make-newlines-fixes'
+import { makeOrderFixes } from './make-order-fixes'
 
 interface MakeOrderCommentsAfterAndNewlinesFixesParameters {
   options: {
@@ -42,20 +43,32 @@ export let makeOrderCommentsAfterAndNewlinesFixes = ({
   options,
   fixer,
   nodes,
-}: MakeOrderCommentsAfterAndNewlinesFixesParameters): TSESLint.RuleFix[] => [
-  ...makeOrderAndCommentsAfterFixes({
+}: MakeOrderCommentsAfterAndNewlinesFixesParameters): TSESLint.RuleFix[] => {
+  let orderFixes = makeOrderFixes({
     ignoreFirstNodeHighestBlockComment,
     sortedNodes,
     sourceCode,
     options,
-    fixer,
     nodes,
-  }),
-  ...makeNewlinesFixes({
+    fixer,
+  })
+
+  let commentAfterFixes = makeCommentAfterFixes({
+    sortedNodes,
+    sourceCode,
+    nodes,
+    fixer,
+  })
+  if (commentAfterFixes.length) {
+    return [...orderFixes, ...commentAfterFixes]
+  }
+
+  let newlinesFixes = makeNewlinesFixes({
     sortedNodes,
     sourceCode,
     options,
     fixer,
     nodes,
-  }),
-]
+  })
+  return [...orderFixes, ...newlinesFixes]
+}

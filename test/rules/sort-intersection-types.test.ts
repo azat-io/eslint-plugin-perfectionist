@@ -1198,6 +1198,58 @@ describe(ruleName, () => {
           valid: [],
         },
       )
+
+      ruleTester.run(
+        `${ruleName}(${type}): handles newlines and comment after fixes`,
+        rule,
+        {
+          invalid: [
+            {
+              output: [
+                dedent`
+                  type T =
+                    & 'a' // Comment after
+                    & B
+
+                    & C
+                `,
+                dedent`
+                  type T =
+                    & 'a' // Comment after
+
+                    & B
+                    & C
+                `,
+              ],
+              errors: [
+                {
+                  data: {
+                    rightGroup: 'literal',
+                    leftGroup: 'named',
+                    right: "'a'",
+                    left: 'B',
+                  },
+                  messageId: 'unexpectedIntersectionTypesGroupOrder',
+                },
+              ],
+              options: [
+                {
+                  groups: ['literal', 'named'],
+                  newlinesBetween: 'always',
+                },
+              ],
+              code: dedent`
+                type T =
+                  & B
+                  & 'a' // Comment after
+
+                  & C
+              `,
+            },
+          ],
+          valid: [],
+        },
+      )
     })
 
     ruleTester.run(

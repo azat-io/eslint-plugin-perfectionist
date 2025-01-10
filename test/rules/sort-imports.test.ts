@@ -2115,6 +2115,55 @@ describe(ruleName, () => {
           valid: [],
         },
       )
+
+      ruleTester.run(
+        `${ruleName}(${type}): handles newlines and comment after fixes`,
+        rule,
+        {
+          invalid: [
+            {
+              output: [
+                dedent`
+                  import { a } from './a' // Comment after
+                  import { b } from 'b'
+
+                  import { c } from 'c'
+                `,
+                dedent`
+                  import { a } from './a' // Comment after
+
+                  import { b } from 'b'
+                  import { c } from 'c'
+                `,
+              ],
+              errors: [
+                {
+                  data: {
+                    rightGroup: 'unknown',
+                    leftGroup: 'external',
+                    right: './a',
+                    left: 'b',
+                  },
+                  messageId: 'unexpectedImportsGroupOrder',
+                },
+              ],
+              code: dedent`
+                  import { b } from 'b'
+                  import { a } from './a' // Comment after
+
+                  import { c } from 'c'
+              `,
+              options: [
+                {
+                  groups: ['unknown', 'external'],
+                  newlinesBetween: 'always',
+                },
+              ],
+            },
+          ],
+          valid: [],
+        },
+      )
     })
 
     ruleTester.run(
