@@ -2,7 +2,7 @@ import type { TSESLint } from '@typescript-eslint/utils'
 
 import type { SortingNode } from '../types/sorting-node'
 
-import { makeCommentAfterFixes } from './make-comment-after-fixes'
+import { makeSingleNodeCommentAfterFixes } from './make-single-node-comment-after-fixes'
 import { makeOrderFixes } from './make-order-fixes'
 
 interface MakeOrderAndCommentsAfterFixesParameters {
@@ -52,7 +52,7 @@ export let makeOrderAndCommentsAfterFixes = ({
 
     fixes = [
       ...fixes,
-      ...makeCommentAfterFixes({
+      ...makeSingleNodeCommentAfterFixes({
         sortedNode,
         sourceCode,
         fixer,

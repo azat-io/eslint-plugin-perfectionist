@@ -3,19 +3,19 @@ import type { TSESTree } from '@typescript-eslint/types'
 
 import { getCommentAfter } from './get-comment-after'
 
-interface CommentAfterFixesParameters {
+interface MakeSingleNodeCommentAfterFixesParameters {
   sortedNode: TSESTree.Token | TSESTree.Node
   node: TSESTree.Token | TSESTree.Node
   sourceCode: TSESLint.SourceCode
   fixer: TSESLint.RuleFixer
 }
 
-export let makeCommentAfterFixes = ({
+export let makeSingleNodeCommentAfterFixes = ({
   sortedNode,
   sourceCode,
   fixer,
   node,
-}: CommentAfterFixesParameters): TSESLint.RuleFix[] => {
+}: MakeSingleNodeCommentAfterFixesParameters): TSESLint.RuleFix[] => {
   let commentAfter = getCommentAfter(sortedNode, sourceCode)
   let areNodesOnSameLine = node.loc.start.line === sortedNode.loc.end.line
   if (!commentAfter || areNodesOnSameLine) {
