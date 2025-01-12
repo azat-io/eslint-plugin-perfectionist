@@ -27,11 +27,11 @@ import { createEslintRule } from '../utils/create-eslint-rule'
 import { getLinesBetween } from '../utils/get-lines-between'
 import { getEnumMembers } from '../utils/get-enum-members'
 import { getSourceCode } from '../utils/get-source-code'
-import { makeAllFixes } from '../utils/make-all-fixes'
 import { toSingleLine } from '../utils/to-single-line'
 import { rangeToDiff } from '../utils/range-to-diff'
 import { getSettings } from '../utils/get-settings'
 import { isSortable } from '../utils/is-sortable'
+import { makeFixes } from '../utils/make-fixes'
 import { sortNodes } from '../utils/sort-nodes'
 import { complete } from '../utils/complete'
 import { pairwise } from '../utils/pairwise'
@@ -254,7 +254,7 @@ export default createEslintRule<Options, MESSAGE_ID>({
           getFirstUnorderedNodeDependentOn(right, sortingNodes)
         context.report({
           fix: fixer =>
-            makeAllFixes({
+            makeFixes({
               sortedNodes: sortedNodesExcludingEslintDisabled,
               nodes: sortingNodes,
               sourceCode,

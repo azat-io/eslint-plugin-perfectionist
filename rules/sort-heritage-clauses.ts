@@ -22,11 +22,11 @@ import { sortNodesByGroups } from '../utils/sort-nodes-by-groups'
 import { createEslintRule } from '../utils/create-eslint-rule'
 import { getGroupNumber } from '../utils/get-group-number'
 import { getSourceCode } from '../utils/get-source-code'
-import { makeAllFixes } from '../utils/make-all-fixes'
 import { toSingleLine } from '../utils/to-single-line'
 import { rangeToDiff } from '../utils/range-to-diff'
 import { getSettings } from '../utils/get-settings'
 import { isSortable } from '../utils/is-sortable'
+import { makeFixes } from '../utils/make-fixes'
 import { useGroups } from '../utils/use-groups'
 import { complete } from '../utils/complete'
 import { pairwise } from '../utils/pairwise'
@@ -177,7 +177,7 @@ let sortHeritageClauses = (
     let rightNumber = getGroupNumber(options.groups, right)
     context.report({
       fix: fixer =>
-        makeAllFixes({
+        makeFixes({
           sortedNodes: sortedNodesExcludingEslintDisabled,
           sourceCode,
           fixer,

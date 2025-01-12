@@ -6,7 +6,7 @@ import { makeCommentAfterFixes } from './make-comment-after-fixes'
 import { makeNewlinesFixes } from './make-newlines-fixes'
 import { makeOrderFixes } from './make-order-fixes'
 
-interface MakeAllFixesParameters {
+interface MakeFixesParameters {
   options?: {
     partitionByComment?:
       | {
@@ -36,14 +36,14 @@ interface CustomGroup {
   groupName: string
 }
 
-export let makeAllFixes = ({
+export let makeFixes = ({
   ignoreFirstNodeHighestBlockComment,
   sortedNodes,
   sourceCode,
   options,
   fixer,
   nodes,
-}: MakeAllFixesParameters): TSESLint.RuleFix[] => {
+}: MakeFixesParameters): TSESLint.RuleFix[] => {
   let orderFixes = makeOrderFixes({
     ignoreFirstNodeHighestBlockComment,
     sortedNodes,
