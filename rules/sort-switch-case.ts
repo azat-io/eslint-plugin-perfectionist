@@ -11,9 +11,9 @@ import {
   localesJsonSchema,
   orderJsonSchema,
 } from '../utils/common-json-schemas'
+import { makeOrderCommentsAfterAndNewlinesFixes } from '../utils/make-order-comments-after-and-newlines-fixes'
 import { makeSingleNodeCommentAfterFixes } from '../utils/make-single-node-comment-after-fixes'
 import { validateCustomSortConfiguration } from '../utils/validate-custom-sort-configuration'
-import { makeOrderAndCommentsAfterFixes } from '../utils/make-order-and-comments-after-fixes'
 import { createNodeIndexMap } from '../utils/create-node-index-map'
 import { createEslintRule } from '../utils/create-eslint-rule'
 import { getSourceCode } from '../utils/get-source-code'
@@ -119,7 +119,7 @@ export default createEslintRule<Options, MESSAGE_ID>({
 
           context.report({
             fix: fixer =>
-              makeOrderAndCommentsAfterFixes({
+              makeOrderCommentsAfterAndNewlinesFixes({
                 sortedNodes: sortedCaseNameSortingNodes,
                 nodes: caseNodesSortingNodeGroup,
                 sourceCode,
@@ -254,7 +254,7 @@ export default createEslintRule<Options, MESSAGE_ID>({
           fix: fixer =>
             hasUnsortedNodes
               ? [] // Raise errors but only sort on second iteration
-              : makeOrderAndCommentsAfterFixes({
+              : makeOrderCommentsAfterAndNewlinesFixes({
                   sortedNodes: sortedSortingNodeGroupsForBlockSort,
                   nodes: sortingNodeGroupsForBlockSortFlat,
                   sourceCode,

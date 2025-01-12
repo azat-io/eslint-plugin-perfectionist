@@ -6,7 +6,7 @@ import { getNodeRange } from './get-node-range'
 
 interface MakeOrderFixesParameters {
   options?: {
-    partitionByComment:
+    partitionByComment?:
       | {
           block?: string[] | boolean | string
           line?: string[] | boolean | string

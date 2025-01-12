@@ -19,8 +19,8 @@ import {
   groupsJsonSchema,
   orderJsonSchema,
 } from '../utils/common-json-schemas'
+import { makeOrderCommentsAfterAndNewlinesFixes } from '../utils/make-order-comments-after-and-newlines-fixes'
 import { validateGeneratedGroupsConfiguration } from '../utils/validate-generated-groups-configuration'
-import { makeOrderAndCommentsAfterFixes } from '../utils/make-order-and-comments-after-fixes'
 import {
   singleCustomGroupJsonSchema,
   allSelectors,
@@ -338,7 +338,7 @@ export let sortArray = <MessageIds extends string>({
 
       context.report({
         fix: fixer =>
-          makeOrderAndCommentsAfterFixes({
+          makeOrderCommentsAfterAndNewlinesFixes({
             sortedNodes: sortedNodesExcludingEslintDisabled,
             sourceCode,
             options,

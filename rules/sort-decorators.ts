@@ -14,8 +14,8 @@ import {
   groupsJsonSchema,
   orderJsonSchema,
 } from '../utils/common-json-schemas'
+import { makeOrderCommentsAfterAndNewlinesFixes } from '../utils/make-order-comments-after-and-newlines-fixes'
 import { validateCustomSortConfiguration } from '../utils/validate-custom-sort-configuration'
-import { makeOrderAndCommentsAfterFixes } from '../utils/make-order-and-comments-after-fixes'
 import { validateGroupsConfiguration } from '../utils/validate-groups-configuration'
 import { getEslintDisabledLines } from '../utils/get-eslint-disabled-lines'
 import { isNodeEslintDisabled } from '../utils/is-node-eslint-disabled'
@@ -286,7 +286,7 @@ let sortDecorators = (
     let rightNumber = getGroupNumber(options.groups, right)
     context.report({
       fix: fixer =>
-        makeOrderAndCommentsAfterFixes({
+        makeOrderCommentsAfterAndNewlinesFixes({
           sortedNodes: sortedNodesExcludingEslintDisabled,
           ignoreFirstNodeHighestBlockComment: true,
           sourceCode,

@@ -7,8 +7,8 @@ import { makeNewlinesFixes } from './make-newlines-fixes'
 import { makeOrderFixes } from './make-order-fixes'
 
 interface MakeOrderCommentsAfterAndNewlinesFixesParameters {
-  options: {
-    partitionByComment:
+  options?: {
+    partitionByComment?:
       | {
           block?: string[] | boolean | string
           line?: string[] | boolean | string
@@ -16,13 +16,13 @@ interface MakeOrderCommentsAfterAndNewlinesFixesParameters {
       | string[]
       | boolean
       | string
-    groups: (
+    groups?: (
       | { newlinesBetween: 'ignore' | 'always' | 'never' }
       | string[]
       | string
     )[]
     customGroups?: Record<string, string[] | string> | CustomGroup[]
-    newlinesBetween: 'ignore' | 'always' | 'never'
+    newlinesBetween?: 'ignore' | 'always' | 'never'
   }
   ignoreFirstNodeHighestBlockComment?: boolean
   sourceCode: TSESLint.SourceCode
@@ -63,12 +63,21 @@ export let makeOrderCommentsAfterAndNewlinesFixes = ({
     return [...orderFixes, ...commentAfterFixes]
   }
 
+  if (!options?.groups || !options.newlinesBetween) {
+    return [...orderFixes]
+  }
+
   let newlinesFixes = makeNewlinesFixes({
+    options: {
+      ...options,
+      newlinesBetween: options.newlinesBetween,
+      groups: options.groups,
+    },
     sortedNodes,
     sourceCode,
-    options,
     fixer,
     nodes,
   })
+
   return [...orderFixes, ...newlinesFixes]
 }

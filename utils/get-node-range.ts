@@ -9,7 +9,7 @@ import { getCommentsBefore } from './get-comments-before'
 
 interface GetNodeRangeParameters {
   options?: {
-    partitionByComment:
+    partitionByComment?:
       | {
           block?: string[] | boolean | string
           line?: string[] | boolean | string

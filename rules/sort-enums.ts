@@ -17,8 +17,8 @@ import {
   getFirstUnorderedNodeDependentOn,
   sortNodesByDependencies,
 } from '../utils/sort-nodes-by-dependencies'
+import { makeOrderCommentsAfterAndNewlinesFixes } from '../utils/make-order-comments-after-and-newlines-fixes'
 import { validateCustomSortConfiguration } from '../utils/validate-custom-sort-configuration'
-import { makeOrderAndCommentsAfterFixes } from '../utils/make-order-and-comments-after-fixes'
 import { getEslintDisabledLines } from '../utils/get-eslint-disabled-lines'
 import { isNodeEslintDisabled } from '../utils/is-node-eslint-disabled'
 import { hasPartitionComment } from '../utils/has-partition-comment'
@@ -254,7 +254,7 @@ export default createEslintRule<Options, MESSAGE_ID>({
           getFirstUnorderedNodeDependentOn(right, sortingNodes)
         context.report({
           fix: fixer =>
-            makeOrderAndCommentsAfterFixes({
+            makeOrderCommentsAfterAndNewlinesFixes({
               sortedNodes: sortedNodesExcludingEslintDisabled,
               nodes: sortingNodes,
               sourceCode,
