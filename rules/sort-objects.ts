@@ -21,7 +21,6 @@ import {
   sortNodesByDependencies,
 } from '../utils/sort-nodes-by-dependencies'
 import { validateNewlinesAndPartitionConfiguration } from '../utils/validate-newlines-and-partition-configuration'
-import { makeOrderCommentsAfterAndNewlinesFixes } from '../utils/make-order-comments-after-and-newlines-fixes'
 import { validateCustomSortConfiguration } from '../utils/validate-custom-sort-configuration'
 import { getFirstNodeParentWithType } from './sort-objects/get-first-node-parent-with-type'
 import { validateGroupsConfiguration } from '../utils/validate-groups-configuration'
@@ -37,6 +36,7 @@ import { createEslintRule } from '../utils/create-eslint-rule'
 import { getLinesBetween } from '../utils/get-lines-between'
 import { getGroupNumber } from '../utils/get-group-number'
 import { getSourceCode } from '../utils/get-source-code'
+import { makeAllFixes } from '../utils/make-all-fixes'
 import { rangeToDiff } from '../utils/range-to-diff'
 import { getSettings } from '../utils/get-settings'
 import { isSortable } from '../utils/is-sortable'
@@ -482,14 +482,6 @@ export default createEslintRule<Options, MESSAGE_ID>({
 
         for (let messageId of messageIds) {
           context.report({
-            fix: fixer =>
-              makeOrderCommentsAfterAndNewlinesFixes({
-                sortedNodes: sortedNodesExcludingEslintDisabled,
-                sourceCode,
-                options,
-                fixer,
-                nodes,
-              }),
             data: {
               nodeDependentOnRight: firstUnorderedNodeDependentOnRight?.name,
               rightGroup: right.group,
@@ -497,6 +489,14 @@ export default createEslintRule<Options, MESSAGE_ID>({
               right: right.name,
               left: left.name,
             },
+            fix: fixer =>
+              makeAllFixes({
+                sortedNodes: sortedNodesExcludingEslintDisabled,
+                sourceCode,
+                options,
+                fixer,
+                nodes,
+              }),
             node: right.node,
             messageId,
           })

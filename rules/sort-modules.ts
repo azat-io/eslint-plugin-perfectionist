@@ -28,7 +28,6 @@ import {
   sortNodesByDependencies,
 } from '../utils/sort-nodes-by-dependencies'
 import { validateNewlinesAndPartitionConfiguration } from '../utils/validate-newlines-and-partition-configuration'
-import { makeOrderCommentsAfterAndNewlinesFixes } from '../utils/make-order-comments-after-and-newlines-fixes'
 import { validateGeneratedGroupsConfiguration } from '../utils/validate-generated-groups-configuration'
 import {
   singleCustomGroupJsonSchema,
@@ -52,6 +51,7 @@ import { getLinesBetween } from '../utils/get-lines-between'
 import { getGroupNumber } from '../utils/get-group-number'
 import { getEnumMembers } from '../utils/get-enum-members'
 import { getSourceCode } from '../utils/get-source-code'
+import { makeAllFixes } from '../utils/make-all-fixes'
 import { toSingleLine } from '../utils/to-single-line'
 import { rangeToDiff } from '../utils/range-to-diff'
 import { getSettings } from '../utils/get-settings'
@@ -449,7 +449,7 @@ let analyzeModule = ({
           leftGroup: left.group,
         },
         fix: (fixer: TSESLint.RuleFixer) =>
-          makeOrderCommentsAfterAndNewlinesFixes({
+          makeAllFixes({
             sortedNodes: sortedNodesExcludingEslintDisabled,
             sourceCode,
             options,

@@ -17,7 +17,6 @@ import {
   orderJsonSchema,
 } from '../utils/common-json-schemas'
 import { validateNewlinesAndPartitionConfiguration } from '../utils/validate-newlines-and-partition-configuration'
-import { makeOrderCommentsAfterAndNewlinesFixes } from '../utils/make-order-comments-after-and-newlines-fixes'
 import { validateCustomSortConfiguration } from '../utils/validate-custom-sort-configuration'
 import { readClosestTsConfigByPath } from './sort-imports/read-closest-ts-config-by-path'
 import { validateGroupsConfiguration } from '../utils/validate-groups-configuration'
@@ -34,6 +33,7 @@ import { createEslintRule } from '../utils/create-eslint-rule'
 import { getLinesBetween } from '../utils/get-lines-between'
 import { getGroupNumber } from '../utils/get-group-number'
 import { getSourceCode } from '../utils/get-source-code'
+import { makeAllFixes } from '../utils/make-all-fixes'
 import { rangeToDiff } from '../utils/range-to-diff'
 import { getSettings } from '../utils/get-settings'
 import { isSortable } from '../utils/is-sortable'
@@ -571,7 +571,7 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
             for (let messageId of messageIds) {
               context.report({
                 fix: fixer =>
-                  makeOrderCommentsAfterAndNewlinesFixes({
+                  makeAllFixes({
                     options: {
                       ...options,
                       customGroups: [],

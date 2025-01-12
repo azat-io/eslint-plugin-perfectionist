@@ -26,7 +26,6 @@ import {
   sortNodesByDependencies,
 } from '../utils/sort-nodes-by-dependencies'
 import { validateNewlinesAndPartitionConfiguration } from '../utils/validate-newlines-and-partition-configuration'
-import { makeOrderCommentsAfterAndNewlinesFixes } from '../utils/make-order-comments-after-and-newlines-fixes'
 import { validateGeneratedGroupsConfiguration } from '../utils/validate-generated-groups-configuration'
 import {
   singleCustomGroupJsonSchema,
@@ -48,6 +47,7 @@ import { createEslintRule } from '../utils/create-eslint-rule'
 import { getLinesBetween } from '../utils/get-lines-between'
 import { getGroupNumber } from '../utils/get-group-number'
 import { getSourceCode } from '../utils/get-source-code'
+import { makeAllFixes } from '../utils/make-all-fixes'
 import { toSingleLine } from '../utils/to-single-line'
 import { rangeToDiff } from '../utils/range-to-diff'
 import { getSettings } from '../utils/get-settings'
@@ -651,14 +651,6 @@ export default createEslintRule<SortClassesOptions, MESSAGE_ID>({
 
         for (let messageId of messageIds) {
           context.report({
-            fix: (fixer: TSESLint.RuleFixer) =>
-              makeOrderCommentsAfterAndNewlinesFixes({
-                sortedNodes: sortedNodesExcludingEslintDisabled,
-                sourceCode,
-                options,
-                fixer,
-                nodes,
-              }),
             data: {
               nodeDependentOnRight: firstUnorderedNodeDependentOnRight?.name,
               right: toSingleLine(right.name),
@@ -666,6 +658,14 @@ export default createEslintRule<SortClassesOptions, MESSAGE_ID>({
               rightGroup: right.group,
               leftGroup: left.group,
             },
+            fix: (fixer: TSESLint.RuleFixer) =>
+              makeAllFixes({
+                sortedNodes: sortedNodesExcludingEslintDisabled,
+                sourceCode,
+                options,
+                fixer,
+                nodes,
+              }),
             node: right.node,
             messageId,
           })

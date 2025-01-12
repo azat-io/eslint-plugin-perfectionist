@@ -19,7 +19,6 @@ import {
   groupsJsonSchema,
   orderJsonSchema,
 } from '../utils/common-json-schemas'
-import { makeOrderCommentsAfterAndNewlinesFixes } from '../utils/make-order-comments-after-and-newlines-fixes'
 import { validateGeneratedGroupsConfiguration } from '../utils/validate-generated-groups-configuration'
 import {
   singleCustomGroupJsonSchema,
@@ -39,6 +38,7 @@ import { createEslintRule } from '../utils/create-eslint-rule'
 import { getLinesBetween } from '../utils/get-lines-between'
 import { getGroupNumber } from '../utils/get-group-number'
 import { getSourceCode } from '../utils/get-source-code'
+import { makeAllFixes } from '../utils/make-all-fixes'
 import { toSingleLine } from '../utils/to-single-line'
 import { rangeToDiff } from '../utils/range-to-diff'
 import { getSettings } from '../utils/get-settings'
@@ -338,7 +338,7 @@ export let sortArray = <MessageIds extends string>({
 
       context.report({
         fix: fixer =>
-          makeOrderCommentsAfterAndNewlinesFixes({
+          makeAllFixes({
             sortedNodes: sortedNodesExcludingEslintDisabled,
             sourceCode,
             options,
