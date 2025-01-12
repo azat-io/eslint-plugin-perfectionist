@@ -250,3 +250,8 @@ export let elementNamePatternJsonSchema: JSONSchema4 = {
   description: 'Element name pattern filter.',
   type: 'string',
 }
+
+export let elementValuePatternJsonSchema: JSONSchema4 = {
+  description: 'Element value pattern filter.',
+  type: 'string',
+}

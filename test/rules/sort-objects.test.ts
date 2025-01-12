@@ -1888,6 +1888,139 @@ describe(ruleName, () => {
       invalid: [],
     })
 
+    describe(`${ruleName}(${type}): selectors priority`, () => {
+      ruleTester.run(
+        `${ruleName}(${type}): prioritize method over multiline`,
+        rule,
+        {
+          invalid: [
+            {
+              errors: [
+                {
+                  data: {
+                    left: 'multilineProperty',
+                    leftGroup: 'multiline',
+                    rightGroup: 'method',
+                    right: 'method',
+                  },
+                  messageId: 'unexpectedObjectsGroupOrder',
+                },
+              ],
+              output: dedent`
+                let obj = {
+                  method() {},
+                  multilineProperty: {
+                    // Some multiline stuff
+                  },
+                }
+              `,
+              code: dedent`
+                let obj = {
+                  multilineProperty: {
+                    // Some multiline stuff
+                  },
+                  method() {},
+                }
+              `,
+              options: [
+                {
+                  ...options,
+                  groups: ['method', 'multiline'],
+                },
+              ],
+            },
+          ],
+          valid: [],
+        },
+      )
+
+      ruleTester.run(
+        `${ruleName}(${type}): prioritize property over multiline`,
+        rule,
+        {
+          invalid: [
+            {
+              errors: [
+                {
+                  data: {
+                    left: 'multilineFunction',
+                    leftGroup: 'multiline',
+                    rightGroup: 'property',
+                    right: 'property',
+                  },
+                  messageId: 'unexpectedObjectsGroupOrder',
+                },
+              ],
+              output: dedent`
+                let obj = {
+                  property,
+                  multilineFunction() {
+                    // Some multiline stuff
+                  },
+                }
+              `,
+              code: dedent`
+                let obj = {
+                  multilineFunction() {
+                    // Some multiline stuff
+                  },
+                  property,
+                }
+              `,
+              options: [
+                {
+                  ...options,
+                  groups: ['property', 'multiline'],
+                },
+              ],
+            },
+          ],
+          valid: [],
+        },
+      )
+
+      ruleTester.run(
+        `${ruleName}(${type}): prioritize property over member`,
+        rule,
+        {
+          invalid: [
+            {
+              errors: [
+                {
+                  data: {
+                    rightGroup: 'property',
+                    leftGroup: 'member',
+                    right: 'property',
+                    left: 'method',
+                  },
+                  messageId: 'unexpectedObjectsGroupOrder',
+                },
+              ],
+              options: [
+                {
+                  ...options,
+                  groups: ['property', 'member'],
+                },
+              ],
+              output: dedent`
+                let obj = {
+                  property,
+                  method() {},
+                }
+              `,
+              code: dedent`
+                let obj = {
+                  method() {},
+                  property,
+                }
+              `,
+            },
+          ],
+          valid: [],
+        },
+      )
+    })
+
     ruleTester.run(
       `${ruleName}(${type}): allows to set groups for sorting`,
       rule,
@@ -2358,6 +2491,532 @@ describe(ruleName, () => {
             },
           ],
           valid: [],
+        },
+      )
+    })
+
+    describe(`${ruleName}: custom groups`, () => {
+      ruleTester.run(`${ruleName}: filters on selector and modifiers`, rule, {
+        invalid: [
+          {
+            options: [
+              {
+                customGroups: [
+                  {
+                    groupName: 'unusedCustomGroup',
+                    modifiers: ['multiline'],
+                    selector: 'method',
+                  },
+                  {
+                    groupName: 'multilinePropertyGroup',
+                    modifiers: ['multiline'],
+                    selector: 'property',
+                  },
+                  {
+                    groupName: 'propertyGroup',
+                    selector: 'property',
+                  },
+                ],
+                groups: ['propertyGroup', 'multilinePropertyGroup'],
+              },
+            ],
+            errors: [
+              {
+                data: {
+                  leftGroup: 'multilinePropertyGroup',
+                  rightGroup: 'propertyGroup',
+                  right: 'c',
+                  left: 'b',
+                },
+                messageId: 'unexpectedObjectsGroupOrder',
+              },
+            ],
+            output: dedent`
+              let obj = {
+                c,
+                a: {
+                  // Multiline
+                },
+                b: {
+                  // Multiline
+                },
+              }
+            `,
+            code: dedent`
+              let obj = {
+                a: {
+                  // Multiline
+                },
+                b: {
+                  // Multiline
+                },
+                c,
+              }
+            `,
+          },
+        ],
+        valid: [],
+      })
+
+      ruleTester.run(`${ruleName}: filters on elementNamePattern`, rule, {
+        invalid: [
+          {
+            options: [
+              {
+                customGroups: [
+                  {
+                    groupName: 'propertiesStartingWithHello',
+                    elementNamePattern: 'hello*',
+                    selector: 'property',
+                  },
+                ],
+                groups: ['propertiesStartingWithHello', 'unknown'],
+              },
+            ],
+            errors: [
+              {
+                data: {
+                  rightGroup: 'propertiesStartingWithHello',
+                  right: 'helloProperty',
+                  leftGroup: 'unknown',
+                  left: 'method',
+                },
+                messageId: 'unexpectedObjectsGroupOrder',
+              },
+            ],
+            output: dedent`
+              let obj = {
+                helloProperty,
+                a,
+                b,
+                method() {},
+              }
+            `,
+            code: dedent`
+              let obj = {
+                a,
+                b,
+                method() {},
+                helloProperty,
+              }
+            `,
+          },
+        ],
+        valid: [],
+      })
+
+      ruleTester.run(`${ruleName}: filters on elementValuePattern`, rule, {
+        invalid: [
+          {
+            options: [
+              {
+                customGroups: [
+                  {
+                    elementValuePattern: 'inject*',
+                    groupName: 'inject',
+                  },
+                  {
+                    elementValuePattern: 'computed*',
+                    groupName: 'computed',
+                  },
+                ],
+                groups: ['computed', 'inject', 'unknown'],
+              },
+            ],
+            errors: [
+              {
+                data: {
+                  rightGroup: 'computed',
+                  leftGroup: 'inject',
+                  right: 'z',
+                  left: 'y',
+                },
+                messageId: 'unexpectedObjectsGroupOrder',
+              },
+            ],
+            output: dedent`
+              let obj = {
+                a: computed(A),
+                z: computed(Z),
+                b: inject(B),
+                y: inject(Y),
+                c() {},
+              }
+            `,
+            code: dedent`
+              let obj = {
+                a: computed(A),
+                b: inject(B),
+                y: inject(Y),
+                z: computed(Z),
+                c() {},
+              }
+            `,
+          },
+        ],
+        valid: [],
+      })
+
+      ruleTester.run(
+        `${ruleName}: sort custom groups by overriding 'type' and 'order'`,
+        rule,
+        {
+          invalid: [
+            {
+              errors: [
+                {
+                  data: {
+                    right: 'bb',
+                    left: 'a',
+                  },
+                  messageId: 'unexpectedObjectsOrder',
+                },
+                {
+                  data: {
+                    right: 'ccc',
+                    left: 'bb',
+                  },
+                  messageId: 'unexpectedObjectsOrder',
+                },
+                {
+                  data: {
+                    right: 'dddd',
+                    left: 'ccc',
+                  },
+                  messageId: 'unexpectedObjectsOrder',
+                },
+                {
+                  data: {
+                    rightGroup: 'reversedPropertiesByLineLength',
+                    leftGroup: 'unknown',
+                    left: 'method',
+                    right: 'eee',
+                  },
+                  messageId: 'unexpectedObjectsGroupOrder',
+                },
+              ],
+              options: [
+                {
+                  customGroups: [
+                    {
+                      groupName: 'reversedPropertiesByLineLength',
+                      selector: 'property',
+                      type: 'line-length',
+                      order: 'desc',
+                    },
+                  ],
+                  groups: ['reversedPropertiesByLineLength', 'unknown'],
+                  type: 'alphabetical',
+                  order: 'asc',
+                },
+              ],
+              output: dedent`
+                let obj = {
+                  dddd,
+                  ccc,
+                  eee,
+                  bb,
+                  ff,
+                  a,
+                  g,
+                  anotherMethod() {},
+                  method() {},
+                  yetAnotherMethod() {},
+                }
+              `,
+              code: dedent`
+                let obj = {
+                  a,
+                  bb,
+                  ccc,
+                  dddd,
+                  method() {},
+                  eee,
+                  ff,
+                  g,
+                  anotherMethod() {},
+                  yetAnotherMethod() {},
+                }
+            `,
+            },
+          ],
+          valid: [],
+        },
+      )
+
+      ruleTester.run(
+        `${ruleName}: does not sort custom groups with 'unsorted' type`,
+        rule,
+        {
+          invalid: [
+            {
+              options: [
+                {
+                  customGroups: [
+                    {
+                      groupName: 'unsortedProperties',
+                      selector: 'property',
+                      type: 'unsorted',
+                    },
+                  ],
+                  groups: ['unsortedProperties', 'unknown'],
+                },
+              ],
+              errors: [
+                {
+                  data: {
+                    rightGroup: 'unsortedProperties',
+                    leftGroup: 'unknown',
+                    left: 'method',
+                    right: 'c',
+                  },
+                  messageId: 'unexpectedObjectsGroupOrder',
+                },
+              ],
+              output: dedent`
+                let obj = {
+                  b,
+                  a,
+                  d,
+                  e,
+                  c,
+                  method() {},
+                }
+              `,
+              code: dedent`
+                let obj = {
+                  b,
+                  a,
+                  d,
+                  e,
+                  method() {},
+                  c,
+                }
+            `,
+            },
+          ],
+          valid: [],
+        },
+      )
+
+      ruleTester.run(`${ruleName}: sort custom group blocks`, rule, {
+        invalid: [
+          {
+            options: [
+              {
+                customGroups: [
+                  {
+                    anyOf: [
+                      {
+                        modifiers: ['multiline'],
+                        selector: 'property',
+                      },
+                      {
+                        modifiers: ['multiline'],
+                        selector: 'method',
+                      },
+                    ],
+                    groupName: 'multilinePropertiesAndMultilineMethods',
+                  },
+                ],
+                groups: ['multilinePropertiesAndMultilineMethods', 'unknown'],
+              },
+            ],
+            errors: [
+              {
+                data: {
+                  rightGroup: 'multilinePropertiesAndMultilineMethods',
+                  leftGroup: 'unknown',
+                  right: 'b',
+                  left: 'a',
+                },
+                messageId: 'unexpectedObjectsGroupOrder',
+              },
+            ],
+            output: dedent`
+              let obj = {
+                b() {
+                  // Multiline
+                },
+                c: {
+                  // Multiline
+                },
+                a,
+                d() {},
+                e,
+              }
+            `,
+            code: dedent`
+              let obj = {
+                a,
+                b() {
+                  // Multiline
+                },
+                c: {
+                  // Multiline
+                },
+                d() {},
+                e,
+              }
+            `,
+          },
+        ],
+        valid: [],
+      })
+
+      ruleTester.run(
+        `${ruleName}: allows to use regex for element names in custom groups`,
+        rule,
+        {
+          valid: [
+            {
+              options: [
+                {
+                  customGroups: [
+                    {
+                      elementNamePattern: '^(?!.*Foo).*$',
+                      groupName: 'elementsWithoutFoo',
+                    },
+                  ],
+                  groups: ['unknown', 'elementsWithoutFoo'],
+                  type: 'alphabetical',
+                },
+              ],
+              code: dedent`
+              let obj = {
+                iHaveFooInMyName,
+                meTooIHaveFoo,
+                a,
+                b,
+              }
+            `,
+            },
+          ],
+          invalid: [],
+        },
+      )
+
+      describe('newlinesInside', () => {
+        ruleTester.run(
+          `${ruleName}: allows to use newlinesInside: always`,
+          rule,
+          {
+            invalid: [
+              {
+                options: [
+                  {
+                    customGroups: [
+                      {
+                        newlinesInside: 'always',
+                        selector: 'property',
+                        groupName: 'group1',
+                      },
+                    ],
+                    groups: ['group1'],
+                  },
+                ],
+                errors: [
+                  {
+                    data: {
+                      right: 'b',
+                      left: 'a',
+                    },
+                    messageId: 'missedSpacingBetweenObjectMembers',
+                  },
+                ],
+                output: dedent`
+                  let obj = {
+                    a,
+
+                    b,
+                  }
+                `,
+                code: dedent`
+                  let obj = {
+                    a,
+                    b,
+                  }
+                `,
+              },
+            ],
+            valid: [],
+          },
+        )
+
+        ruleTester.run(
+          `${ruleName}: allows to use newlinesInside: never`,
+          rule,
+          {
+            invalid: [
+              {
+                options: [
+                  {
+                    customGroups: [
+                      {
+                        newlinesInside: 'never',
+                        selector: 'property',
+                        groupName: 'group1',
+                      },
+                    ],
+                    type: 'alphabetical',
+                    groups: ['group1'],
+                  },
+                ],
+                errors: [
+                  {
+                    data: {
+                      right: 'b',
+                      left: 'a',
+                    },
+                    messageId: 'extraSpacingBetweenObjectMembers',
+                  },
+                ],
+                output: dedent`
+                  let obj = {
+                    a,
+                    b,
+                  }
+                `,
+                code: dedent`
+                  let obj = {
+                    a,
+
+                    b,
+                  }
+                `,
+              },
+            ],
+            valid: [],
+          },
+        )
+      })
+
+      ruleTester.run(
+        `${ruleName}(${type}): allows to use regex for custom groups`,
+        rule,
+        {
+          valid: [
+            {
+              options: [
+                {
+                  ...options,
+                  customGroups: {
+                    elementsWithoutFoo: '^(?!.*Foo).*$',
+                  },
+                  groups: ['unknown', 'elementsWithoutFoo'],
+                },
+              ],
+              code: dedent`
+                let obj = {
+                  iHaveFooInMyName,
+                  meTooIHaveFoo,
+                  a,
+                  b,
+                }
+              `,
+            },
+          ],
+          invalid: [],
         },
       )
     })
