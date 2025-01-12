@@ -5,6 +5,7 @@ import type { JoinWithDash } from '../../types/join-with-dash'
 import {
   buildCustomGroupModifiersJsonSchema,
   buildCustomGroupSelectorJsonSchema,
+  elementValuePatternJsonSchema,
   elementNamePatternJsonSchema,
 } from '../../utils/common-json-schemas'
 
@@ -319,15 +320,12 @@ export let allModifiers: Modifier[] = [
  * that users do not enter invalid modifiers for a given selector
  */
 export let singleCustomGroupJsonSchema: Record<string, JSONSchema4> = {
-  elementValuePattern: {
-    description: 'Element value pattern filter for properties.',
-    type: 'string',
-  },
   decoratorNamePattern: {
     description: 'Decorator name pattern filter.',
     type: 'string',
   },
   modifiers: buildCustomGroupModifiersJsonSchema(allModifiers),
   selector: buildCustomGroupSelectorJsonSchema(allSelectors),
+  elementValuePattern: elementValuePatternJsonSchema,
   elementNamePattern: elementNamePatternJsonSchema,
 }

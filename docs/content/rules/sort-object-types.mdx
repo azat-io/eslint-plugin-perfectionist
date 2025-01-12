@@ -433,7 +433,7 @@ Current API:
 </sub>
 <sub>default: `[]`</sub>
 
-You can define your own groups and use regexp pattern to match specific object type members.
+You can define your own groups and use regexp patterns to match specific object type members.
 
 A custom group definition may follow one of the two following interfaces:
 
@@ -442,6 +442,7 @@ interface CustomGroupDefinition {
   groupName: string
   type?: 'alphabetical' | 'natural' | 'line-length' | 'unsorted'
   order?: 'asc' | 'desc'
+  newlinesInside?: 'always' | 'never'
   selector?: string
   modifiers?: string[]
   elementNamePattern?: string
@@ -457,6 +458,7 @@ interface CustomGroupAnyOfDefinition {
   groupName: string
   type?: 'alphabetical' | 'natural' | 'line-length' | 'unsorted'
   order?: 'asc' | 'desc'
+  newlinesInside?: 'always' | 'never'
   anyOf: Array<{
       selector?: string
       modifiers?: string[]
