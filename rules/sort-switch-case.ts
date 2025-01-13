@@ -11,8 +11,8 @@ import {
   localesJsonSchema,
   orderJsonSchema,
 } from '../utils/common-json-schemas'
+import { makeSingleNodeCommentAfterFixes } from '../utils/make-single-node-comment-after-fixes'
 import { validateCustomSortConfiguration } from '../utils/validate-custom-sort-configuration'
-import { makeCommentAfterFixes } from '../utils/make-comment-after-fixes'
 import { createNodeIndexMap } from '../utils/create-node-index-map'
 import { createEslintRule } from '../utils/create-eslint-rule'
 import { getSourceCode } from '../utils/get-source-code'
@@ -182,13 +182,13 @@ export default createEslintRule<Options, MESSAGE_ID>({
                 lastCaseRange,
                 sourceCode.getText(defaultCase.node),
               ),
-              ...makeCommentAfterFixes({
+              ...makeSingleNodeCommentAfterFixes({
                 sortedNode: punctuatorAfterLastCase,
                 node: defaultCase.node,
                 sourceCode,
                 fixer,
               }),
-              ...makeCommentAfterFixes({
+              ...makeSingleNodeCommentAfterFixes({
                 node: punctuatorAfterLastCase,
                 sortedNode: defaultCase.node,
                 sourceCode,

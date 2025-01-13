@@ -2186,6 +2186,61 @@ describe(ruleName, () => {
           valid: [],
         },
       )
+
+      ruleTester.run(
+        `${ruleName}(${type}): handles newlines and comment after fixes`,
+        rule,
+        {
+          invalid: [
+            {
+              output: [
+                dedent`
+                  type Test = {
+                    a: string // Comment after
+                    b: () => void
+
+                    c: () => void
+                  };
+                `,
+                dedent`
+                  type Test = {
+                    a: string // Comment after
+
+                    b: () => void
+                    c: () => void
+                  };
+                `,
+              ],
+              errors: [
+                {
+                  data: {
+                    rightGroup: 'property',
+                    leftGroup: 'method',
+                    right: 'a',
+                    left: 'b',
+                  },
+                  messageId: 'unexpectedObjectTypesGroupOrder',
+                },
+              ],
+              code: dedent`
+                type Test = {
+                  b: () => void
+                  a: string // Comment after
+
+                  c: () => void
+                };
+              `,
+              options: [
+                {
+                  groups: ['property', 'method'],
+                  newlinesBetween: 'always',
+                },
+              ],
+            },
+          ],
+          valid: [],
+        },
+      )
     })
 
     ruleTester.run(

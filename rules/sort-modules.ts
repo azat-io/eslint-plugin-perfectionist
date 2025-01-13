@@ -44,7 +44,6 @@ import { hasPartitionComment } from '../utils/has-partition-comment'
 import { createNodeIndexMap } from '../utils/create-node-index-map'
 import { sortNodesByGroups } from '../utils/sort-nodes-by-groups'
 import { getNewlinesErrors } from '../utils/get-newlines-errors'
-import { makeNewlinesFixes } from '../utils/make-newlines-fixes'
 import { getCommentsBefore } from '../utils/get-comments-before'
 import { getNodeDecorators } from '../utils/get-node-decorators'
 import { createEslintRule } from '../utils/create-eslint-rule'
@@ -56,8 +55,8 @@ import { toSingleLine } from '../utils/to-single-line'
 import { rangeToDiff } from '../utils/range-to-diff'
 import { getSettings } from '../utils/get-settings'
 import { isSortable } from '../utils/is-sortable'
-import { useGroups } from '../utils/use-groups'
 import { makeFixes } from '../utils/make-fixes'
+import { useGroups } from '../utils/use-groups'
 import { complete } from '../utils/complete'
 import { pairwise } from '../utils/pairwise'
 
@@ -442,22 +441,6 @@ let analyzeModule = ({
 
     for (let messageId of messageIds) {
       context.report({
-        fix: (fixer: TSESLint.RuleFixer) => [
-          ...makeFixes({
-            sortedNodes: sortedNodesExcludingEslintDisabled,
-            sourceCode,
-            options,
-            fixer,
-            nodes,
-          }),
-          ...makeNewlinesFixes({
-            sortedNodes: sortedNodesExcludingEslintDisabled,
-            sourceCode,
-            options,
-            fixer,
-            nodes,
-          }),
-        ],
         data: {
           nodeDependentOnRight: firstUnorderedNodeDependentOnRight?.name,
           right: toSingleLine(right.name),
@@ -465,6 +448,14 @@ let analyzeModule = ({
           rightGroup: right.group,
           leftGroup: left.group,
         },
+        fix: (fixer: TSESLint.RuleFixer) =>
+          makeFixes({
+            sortedNodes: sortedNodesExcludingEslintDisabled,
+            sourceCode,
+            options,
+            fixer,
+            nodes,
+          }),
         node: right.node,
         messageId,
       })

@@ -39,7 +39,6 @@ import { singleCustomGroupJsonSchema } from './sort-objects/types'
 import { sortNodesByGroups } from '../utils/sort-nodes-by-groups'
 import { allModifiers, allSelectors } from './sort-objects/types'
 import { getCommentsBefore } from '../utils/get-comments-before'
-import { makeNewlinesFixes } from '../utils/make-newlines-fixes'
 import { getNewlinesErrors } from '../utils/get-newlines-errors'
 import { createEslintRule } from '../utils/create-eslint-rule'
 import { getLinesBetween } from '../utils/get-lines-between'
@@ -48,8 +47,8 @@ import { getSourceCode } from '../utils/get-source-code'
 import { rangeToDiff } from '../utils/range-to-diff'
 import { getSettings } from '../utils/get-settings'
 import { isSortable } from '../utils/is-sortable'
-import { useGroups } from '../utils/use-groups'
 import { makeFixes } from '../utils/make-fixes'
+import { useGroups } from '../utils/use-groups'
 import { sortNodes } from '../utils/sort-nodes'
 import { complete } from '../utils/complete'
 import { pairwise } from '../utils/pairwise'
@@ -502,22 +501,6 @@ export default createEslintRule<Options, MESSAGE_ID>({
 
         for (let messageId of messageIds) {
           context.report({
-            fix: fixer => [
-              ...makeFixes({
-                sortedNodes: sortedNodesExcludingEslintDisabled,
-                sourceCode,
-                options,
-                fixer,
-                nodes,
-              }),
-              ...makeNewlinesFixes({
-                sortedNodes: sortedNodesExcludingEslintDisabled,
-                sourceCode,
-                options,
-                fixer,
-                nodes,
-              }),
-            ],
             data: {
               nodeDependentOnRight: firstUnorderedNodeDependentOnRight?.name,
               rightGroup: right.group,
@@ -525,6 +508,14 @@ export default createEslintRule<Options, MESSAGE_ID>({
               right: right.name,
               left: left.name,
             },
+            fix: fixer =>
+              makeFixes({
+                sortedNodes: sortedNodesExcludingEslintDisabled,
+                sourceCode,
+                options,
+                fixer,
+                nodes,
+              }),
             node: right.node,
             messageId,
           })

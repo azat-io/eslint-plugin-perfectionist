@@ -26,8 +26,8 @@ import { toSingleLine } from '../utils/to-single-line'
 import { rangeToDiff } from '../utils/range-to-diff'
 import { getSettings } from '../utils/get-settings'
 import { isSortable } from '../utils/is-sortable'
-import { useGroups } from '../utils/use-groups'
 import { makeFixes } from '../utils/make-fixes'
+import { useGroups } from '../utils/use-groups'
 import { complete } from '../utils/complete'
 import { pairwise } from '../utils/pairwise'
 
@@ -176,12 +176,6 @@ let sortHeritageClauses = (
     let leftNumber = getGroupNumber(options.groups, left)
     let rightNumber = getGroupNumber(options.groups, right)
     context.report({
-      data: {
-        right: toSingleLine(right.name),
-        left: toSingleLine(left.name),
-        rightGroup: right.group,
-        leftGroup: left.group,
-      },
       fix: fixer =>
         makeFixes({
           sortedNodes: sortedNodesExcludingEslintDisabled,
@@ -189,6 +183,12 @@ let sortHeritageClauses = (
           fixer,
           nodes,
         }),
+      data: {
+        right: toSingleLine(right.name),
+        left: toSingleLine(left.name),
+        rightGroup: right.group,
+        leftGroup: left.group,
+      },
       messageId:
         leftNumber === rightNumber
           ? 'unexpectedHeritageClausesOrder'

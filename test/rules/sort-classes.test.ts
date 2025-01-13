@@ -4513,6 +4513,61 @@ describe(ruleName, () => {
           valid: [],
         },
       )
+
+      ruleTester.run(
+        `${ruleName}(${type}): handles newlines and comment after fixes`,
+        rule,
+        {
+          invalid: [
+            {
+              output: [
+                dedent`
+                  class Class {
+                    a // Comment after
+                    b() {}
+
+                    c() {}
+                  }
+                `,
+                dedent`
+                  class Class {
+                    a // Comment after
+
+                    b() {}
+                    c() {}
+                  }
+                `,
+              ],
+              errors: [
+                {
+                  data: {
+                    rightGroup: 'property',
+                    leftGroup: 'method',
+                    right: 'a',
+                    left: 'b',
+                  },
+                  messageId: 'unexpectedClassesGroupOrder',
+                },
+              ],
+              code: dedent`
+                class Class {
+                  b() {}
+                  a // Comment after
+
+                  c() {}
+                }
+              `,
+              options: [
+                {
+                  groups: ['property', 'method'],
+                  newlinesBetween: 'always',
+                },
+              ],
+            },
+          ],
+          valid: [],
+        },
+      )
     })
 
     describe(`${ruleName}(${type}): sorts inline elements correctly`, () => {

@@ -2187,6 +2187,55 @@ describe(ruleName, () => {
           valid: [],
         },
       )
+
+      ruleTester.run(
+        `${ruleName}(${type}): handles newlines and comment after fixes`,
+        rule,
+        {
+          invalid: [
+            {
+              output: [
+                dedent`
+                  function a() {} // Comment after
+                  type B = string
+
+                  type C = string
+                `,
+                dedent`
+                  function a() {} // Comment after
+
+                  type B = string
+                  type C = string
+                `,
+              ],
+              errors: [
+                {
+                  data: {
+                    rightGroup: 'function',
+                    leftGroup: 'type',
+                    right: 'a',
+                    left: 'B',
+                  },
+                  messageId: 'unexpectedModulesGroupOrder',
+                },
+              ],
+              options: [
+                {
+                  groups: ['function', 'type'],
+                  newlinesBetween: 'always',
+                },
+              ],
+              code: dedent`
+                type B = string
+                function a() {} // Comment after
+
+                type C = string
+              `,
+            },
+          ],
+          valid: [],
+        },
+      )
     })
 
     describe(`${ruleName}(${type}): sorts inline elements correctly`, () => {

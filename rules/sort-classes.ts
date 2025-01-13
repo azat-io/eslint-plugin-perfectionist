@@ -42,7 +42,6 @@ import { isNodeEslintDisabled } from '../utils/is-node-eslint-disabled'
 import { hasPartitionComment } from '../utils/has-partition-comment'
 import { sortNodesByGroups } from '../utils/sort-nodes-by-groups'
 import { getCommentsBefore } from '../utils/get-comments-before'
-import { makeNewlinesFixes } from '../utils/make-newlines-fixes'
 import { getNewlinesErrors } from '../utils/get-newlines-errors'
 import { createEslintRule } from '../utils/create-eslint-rule'
 import { getLinesBetween } from '../utils/get-lines-between'
@@ -52,8 +51,8 @@ import { toSingleLine } from '../utils/to-single-line'
 import { rangeToDiff } from '../utils/range-to-diff'
 import { getSettings } from '../utils/get-settings'
 import { isSortable } from '../utils/is-sortable'
-import { useGroups } from '../utils/use-groups'
 import { makeFixes } from '../utils/make-fixes'
+import { useGroups } from '../utils/use-groups'
 import { complete } from '../utils/complete'
 import { pairwise } from '../utils/pairwise'
 import { matches } from '../utils/matches'
@@ -652,22 +651,6 @@ export default createEslintRule<SortClassesOptions, MESSAGE_ID>({
 
         for (let messageId of messageIds) {
           context.report({
-            fix: (fixer: TSESLint.RuleFixer) => [
-              ...makeFixes({
-                sortedNodes: sortedNodesExcludingEslintDisabled,
-                sourceCode,
-                options,
-                fixer,
-                nodes,
-              }),
-              ...makeNewlinesFixes({
-                sortedNodes: sortedNodesExcludingEslintDisabled,
-                sourceCode,
-                options,
-                fixer,
-                nodes,
-              }),
-            ],
             data: {
               nodeDependentOnRight: firstUnorderedNodeDependentOnRight?.name,
               right: toSingleLine(right.name),
@@ -675,6 +658,14 @@ export default createEslintRule<SortClassesOptions, MESSAGE_ID>({
               rightGroup: right.group,
               leftGroup: left.group,
             },
+            fix: (fixer: TSESLint.RuleFixer) =>
+              makeFixes({
+                sortedNodes: sortedNodesExcludingEslintDisabled,
+                sourceCode,
+                options,
+                fixer,
+                nodes,
+              }),
             node: right.node,
             messageId,
           })

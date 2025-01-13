@@ -2263,6 +2263,61 @@ describe(ruleName, () => {
           valid: [],
         },
       )
+
+      ruleTester.run(
+        `${ruleName}(${type}): handles newlines and comment after fixes`,
+        rule,
+        {
+          invalid: [
+            {
+              output: [
+                dedent`
+                  let obj = {
+                    a, // Comment after
+                    b() {},
+
+                    c() {},
+                  };
+                `,
+                dedent`
+                  let obj = {
+                    a, // Comment after
+
+                    b() {},
+                    c() {},
+                  };
+                `,
+              ],
+              errors: [
+                {
+                  data: {
+                    rightGroup: 'unknown',
+                    leftGroup: 'method',
+                    right: 'a',
+                    left: 'b',
+                  },
+                  messageId: 'unexpectedObjectsGroupOrder',
+                },
+              ],
+              code: dedent`
+                let obj = {
+                  b() {},
+                  a, // Comment after
+
+                  c() {},
+                };
+              `,
+              options: [
+                {
+                  groups: ['unknown', 'method'],
+                  newlinesBetween: 'always',
+                },
+              ],
+            },
+          ],
+          valid: [],
+        },
+      )
     })
 
     ruleTester.run(

@@ -3,11 +3,12 @@ import type { TSESLint } from '@typescript-eslint/utils'
 import type { SortingNode } from '../types/sorting-node'
 
 import { makeCommentAfterFixes } from './make-comment-after-fixes'
-import { getNodeRange } from './get-node-range'
+import { makeNewlinesFixes } from './make-newlines-fixes'
+import { makeOrderFixes } from './make-order-fixes'
 
 interface MakeFixesParameters {
   options?: {
-    partitionByComment:
+    partitionByComment?:
       | {
           block?: string[] | boolean | string
           line?: string[] | boolean | string
@@ -15,12 +16,24 @@ interface MakeFixesParameters {
       | string[]
       | boolean
       | string
+    groups?: (
+      | { newlinesBetween: 'ignore' | 'always' | 'never' }
+      | string[]
+      | string
+    )[]
+    customGroups?: Record<string, string[] | string> | CustomGroup[]
+    newlinesBetween?: 'ignore' | 'always' | 'never'
   }
   ignoreFirstNodeHighestBlockComment?: boolean
   sourceCode: TSESLint.SourceCode
   sortedNodes: SortingNode[]
   fixer: TSESLint.RuleFixer
   nodes: SortingNode[]
+}
+
+interface CustomGroup {
+  newlinesInside?: 'always' | 'never'
+  groupName: string
 }
 
 export let makeFixes = ({
@@ -31,72 +44,40 @@ export let makeFixes = ({
   fixer,
   nodes,
 }: MakeFixesParameters): TSESLint.RuleFix[] => {
-  let fixes: TSESLint.RuleFix[] = []
+  let orderFixes = makeOrderFixes({
+    ignoreFirstNodeHighestBlockComment,
+    sortedNodes,
+    sourceCode,
+    options,
+    nodes,
+    fixer,
+  })
 
-  for (let max = nodes.length, i = 0; i < max; i++) {
-    let sortingNode = nodes.at(i)!
-    let sortedSortingNode = sortedNodes.at(i)!
-    let { node } = sortingNode
-    let { addSafetySemicolonWhenInline, node: sortedNode } = sortedSortingNode
-    let isNodeFirstNode = node === nodes.at(0)!.node
-    let isSortedNodeFirstNode = sortedNode === nodes.at(0)!.node
-
-    if (node === sortedNode) {
-      continue
-    }
-
-    let sortedNodeCode = sourceCode.text.slice(
-      ...getNodeRange({
-        ignoreHighestBlockComment:
-          ignoreFirstNodeHighestBlockComment && isSortedNodeFirstNode,
-        node: sortedNode,
-        sourceCode,
-        options,
-      }),
-    )
-    let sortedNodeText = sourceCode.getText(sortedNode)
-    let tokensAfter = sourceCode.getTokensAfter(node, {
-      includeComments: false,
-      count: 1,
-    })
-    let nextToken = tokensAfter.at(0)
-
-    let sortedNextNodeEndsWithSafeCharacter =
-      sortedNodeText.endsWith(';') || sortedNodeText.endsWith(',')
-    let isNextTokenOnSameLineAsNode =
-      nextToken?.loc.start.line === node.loc.end.line
-    let isNextTokenSafeCharacter =
-      nextToken?.value === ';' || nextToken?.value === ','
-    if (
-      addSafetySemicolonWhenInline &&
-      isNextTokenOnSameLineAsNode &&
-      !sortedNextNodeEndsWithSafeCharacter &&
-      !isNextTokenSafeCharacter
-    ) {
-      sortedNodeCode += ';'
-    }
-    fixes.push(
-      fixer.replaceTextRange(
-        getNodeRange({
-          ignoreHighestBlockComment:
-            ignoreFirstNodeHighestBlockComment && isNodeFirstNode,
-          sourceCode,
-          options,
-          node,
-        }),
-        sortedNodeCode,
-      ),
-    )
-    fixes = [
-      ...fixes,
-      ...makeCommentAfterFixes({
-        sortedNode,
-        sourceCode,
-        fixer,
-        node,
-      }),
-    ]
+  let commentAfterFixes = makeCommentAfterFixes({
+    sortedNodes,
+    sourceCode,
+    nodes,
+    fixer,
+  })
+  if (
+    commentAfterFixes.length ||
+    !options?.groups ||
+    !options.newlinesBetween
+  ) {
+    return [...orderFixes, ...commentAfterFixes]
   }
 
-  return fixes
+  let newlinesFixes = makeNewlinesFixes({
+    options: {
+      ...options,
+      newlinesBetween: options.newlinesBetween,
+      groups: options.groups,
+    },
+    sortedNodes,
+    sourceCode,
+    fixer,
+    nodes,
+  })
+
+  return [...orderFixes, ...newlinesFixes]
 }

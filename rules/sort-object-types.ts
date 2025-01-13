@@ -41,7 +41,6 @@ import { isNodeFunctionType } from '../utils/is-node-function-type'
 import { createNodeIndexMap } from '../utils/create-node-index-map'
 import { sortNodesByGroups } from '../utils/sort-nodes-by-groups'
 import { getCommentsBefore } from '../utils/get-comments-before'
-import { makeNewlinesFixes } from '../utils/make-newlines-fixes'
 import { getNewlinesErrors } from '../utils/get-newlines-errors'
 import { createEslintRule } from '../utils/create-eslint-rule'
 import { getLinesBetween } from '../utils/get-lines-between'
@@ -447,22 +446,14 @@ export let sortObjectTypeElements = <MessageIds extends string>({
 
       for (let messageId of messageIds) {
         context.report({
-          fix: fixer => [
-            ...makeFixes({
+          fix: fixer =>
+            makeFixes({
               sortedNodes: sortedNodesExcludingEslintDisabled,
               sourceCode,
               options,
               fixer,
               nodes,
             }),
-            ...makeNewlinesFixes({
-              sortedNodes: sortedNodesExcludingEslintDisabled,
-              sourceCode,
-              options,
-              fixer,
-              nodes,
-            }),
-          ],
           data: {
             right: toSingleLine(right.name),
             left: toSingleLine(left.name),

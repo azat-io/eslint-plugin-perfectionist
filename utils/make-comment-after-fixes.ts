@@ -1,46 +1,42 @@
 import type { TSESLint } from '@typescript-eslint/utils'
-import type { TSESTree } from '@typescript-eslint/types'
 
-import { getCommentAfter } from './get-comment-after'
+import type { SortingNode } from '../types/sorting-node'
 
-interface CommentAfterFixesParameters {
-  sortedNode: TSESTree.Token | TSESTree.Node
-  node: TSESTree.Token | TSESTree.Node
+import { makeSingleNodeCommentAfterFixes } from './make-single-node-comment-after-fixes'
+
+interface MakeCommentAfterFixesParameters {
   sourceCode: TSESLint.SourceCode
+  sortedNodes: SortingNode[]
   fixer: TSESLint.RuleFixer
+  nodes: SortingNode[]
 }
 
 export let makeCommentAfterFixes = ({
-  sortedNode,
+  sortedNodes,
   sourceCode,
   fixer,
-  node,
-}: CommentAfterFixesParameters): TSESLint.RuleFix[] => {
-  let commentAfter = getCommentAfter(sortedNode, sourceCode)
-  let areNodesOnSameLine = node.loc.start.line === sortedNode.loc.end.line
-  if (!commentAfter || areNodesOnSameLine) {
-    return []
-  }
-
+  nodes,
+}: MakeCommentAfterFixesParameters): TSESLint.RuleFix[] => {
   let fixes: TSESLint.RuleFix[] = []
-  let tokenBefore = sourceCode.getTokenBefore(commentAfter)
+  for (let max = nodes.length, i = 0; i < max; i++) {
+    let sortingNode = nodes.at(i)!
+    let sortedSortingNode = sortedNodes.at(i)!
+    let { node } = sortingNode
+    let { node: sortedNode } = sortedSortingNode
 
-  let range: TSESTree.Range = [
-    tokenBefore!.range.at(1)!,
-    commentAfter.range.at(1)!,
-  ]
+    if (node === sortedNode) {
+      continue
+    }
 
-  fixes.push(fixer.replaceTextRange(range, ''))
-
-  let tokenAfterNode = sourceCode.getTokenAfter(node)
-  fixes.push(
-    fixer.insertTextAfter(
-      tokenAfterNode?.loc.end.line === node.loc.end.line
-        ? tokenAfterNode
-        : node,
-      sourceCode.text.slice(...range),
-    ),
-  )
-
+    fixes = [
+      ...fixes,
+      ...makeSingleNodeCommentAfterFixes({
+        sortedNode,
+        sourceCode,
+        fixer,
+        node,
+      }),
+    ]
+  }
   return fixes
 }
