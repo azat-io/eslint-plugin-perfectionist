@@ -86,11 +86,6 @@ export let defaultOptions: Required<Options[0]> = {
 export let jsonSchema: JSONSchema4 = {
   items: {
     properties: {
-      partitionByComment: {
-        ...partitionByCommentJsonSchema,
-        description:
-          'Allows you to use comments to separate the array members into logical groups.',
-      },
       groupKind: {
         enum: ['mixed', 'literals-first', 'spreads-first'],
         description: 'Specifies top-level groups.',
@@ -101,6 +96,7 @@ export let jsonSchema: JSONSchema4 = {
       }),
       useConfigurationIf: buildUseConfigurationIfJsonSchema(),
       type: buildTypeJsonSchema({ withUnsorted: true }),
+      partitionByComment: partitionByCommentJsonSchema,
       partitionByNewLine: partitionByNewLineJsonSchema,
       specialCharacters: specialCharactersJsonSchema,
       newlinesBetween: newlinesBetweenJsonSchema,

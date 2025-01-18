@@ -190,16 +190,12 @@ export default createEslintRule<Options, MESSAGE_ID>({
     schema: [
       {
         properties: {
-          partitionByComment: {
-            ...partitionByCommentJsonSchema,
-            description:
-              'Allows you to use comments to separate the named exports members into logical groups.',
-          },
           groupKind: {
             enum: ['mixed', 'values-first', 'types-first'],
             description: 'Specifies top-level groups.',
             type: 'string',
           },
+          partitionByComment: partitionByCommentJsonSchema,
           partitionByNewLine: partitionByNewLineJsonSchema,
           specialCharacters: specialCharactersJsonSchema,
           ignoreCase: ignoreCaseJsonSchema,

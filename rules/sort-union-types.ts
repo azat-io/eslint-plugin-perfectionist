@@ -91,11 +91,7 @@ let defaultOptions: Required<Options[0]> = {
 
 export let jsonSchema: JSONSchema4 = {
   properties: {
-    partitionByComment: {
-      ...partitionByCommentJsonSchema,
-      description:
-        'Allows you to use comments to separate the union types into logical groups.',
-    },
+    partitionByComment: partitionByCommentJsonSchema,
     partitionByNewLine: partitionByNewLineJsonSchema,
     specialCharacters: specialCharactersJsonSchema,
     newlinesBetween: newlinesBetweenJsonSchema,

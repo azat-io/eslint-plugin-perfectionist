@@ -685,14 +685,10 @@ export default createEslintRule<SortClassesOptions, MESSAGE_ID>({
             },
             type: 'array',
           },
-          partitionByComment: {
-            ...partitionByCommentJsonSchema,
-            description:
-              'Allows to use comments to separate the class members into logical groups.',
-          },
           customGroups: buildCustomGroupsArrayJsonSchema({
             singleCustomGroupJsonSchema,
           }),
+          partitionByComment: partitionByCommentJsonSchema,
           partitionByNewLine: partitionByNewLineJsonSchema,
           specialCharacters: specialCharactersJsonSchema,
           newlinesBetween: newlinesBetweenJsonSchema,

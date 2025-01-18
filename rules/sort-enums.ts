@@ -272,11 +272,6 @@ export default createEslintRule<Options, MESSAGE_ID>({
     schema: [
       {
         properties: {
-          partitionByComment: {
-            ...partitionByCommentJsonSchema,
-            description:
-              'Allows you to use comments to separate the members of enums into logical groups.',
-          },
           forceNumericSort: {
             description:
               'Will always sort numeric enums by their value regardless of the sort type specified.',
@@ -286,6 +281,7 @@ export default createEslintRule<Options, MESSAGE_ID>({
             description: 'Compare enum values instead of names.',
             type: 'boolean',
           },
+          partitionByComment: partitionByCommentJsonSchema,
           partitionByNewLine: partitionByNewLineJsonSchema,
           specialCharacters: specialCharactersJsonSchema,
           ignoreCase: ignoreCaseJsonSchema,

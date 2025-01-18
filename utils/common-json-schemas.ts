@@ -130,6 +130,8 @@ export let partitionByCommentJsonSchema: JSONSchema4 = {
       type: 'object',
     },
   ],
+  description:
+    'Allows to use comments to separate members into logical groups.',
 }
 
 export let partitionByNewLineJsonSchema: JSONSchema4 = {

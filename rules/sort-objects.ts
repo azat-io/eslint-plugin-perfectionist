@@ -566,11 +566,6 @@ export default createEslintRule<Options, MESSAGE_ID>({
               },
             },
           }),
-          partitionByComment: {
-            ...partitionByCommentJsonSchema,
-            description:
-              'Allows you to use comments to separate the keys of objects into logical groups.',
-          },
           customGroups: {
             oneOf: [
               customGroupsJsonSchema,
@@ -590,6 +585,7 @@ export default createEslintRule<Options, MESSAGE_ID>({
             type: 'boolean',
           },
           type: buildTypeJsonSchema({ withUnsorted: true }),
+          partitionByComment: partitionByCommentJsonSchema,
           partitionByNewLine: partitionByNewLineJsonSchema,
           specialCharacters: specialCharactersJsonSchema,
           newlinesBetween: newlinesBetweenJsonSchema,

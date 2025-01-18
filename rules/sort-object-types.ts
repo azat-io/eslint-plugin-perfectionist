@@ -106,11 +106,6 @@ export let jsonSchema: JSONSchema4 = {
           },
         },
       }),
-      partitionByComment: {
-        ...partitionByCommentJsonSchema,
-        description:
-          'Allows you to use comments to separate members into logical groups.',
-      },
       customGroups: {
         oneOf: [
           customGroupsJsonSchema,
@@ -123,6 +118,7 @@ export let jsonSchema: JSONSchema4 = {
         type: 'string',
       },
       type: buildTypeJsonSchema({ withUnsorted: true }),
+      partitionByComment: partitionByCommentJsonSchema,
       partitionByNewLine: partitionByNewLineJsonSchema,
       specialCharacters: specialCharactersJsonSchema,
       newlinesBetween: newlinesBetweenJsonSchema,

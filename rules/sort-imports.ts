@@ -621,11 +621,6 @@ export default createEslintRule<Options, MESSAGE_ID>({
             additionalProperties: false,
             type: 'object',
           },
-          partitionByComment: {
-            ...partitionByCommentJsonSchema,
-            description:
-              'Allows you to use comments to separate the interface properties into logical groups.',
-          },
           internalPattern: {
             description: 'Specifies the pattern for internal modules.',
             items: {
@@ -653,6 +648,7 @@ export default createEslintRule<Options, MESSAGE_ID>({
             description: 'Specifies the tsConfig root directory.',
             type: 'string',
           },
+          partitionByComment: partitionByCommentJsonSchema,
           partitionByNewLine: partitionByNewLineJsonSchema,
           specialCharacters: specialCharactersJsonSchema,
           newlinesBetween: newlinesBetweenJsonSchema,

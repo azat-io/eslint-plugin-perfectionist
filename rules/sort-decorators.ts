@@ -84,11 +84,6 @@ export default createEslintRule<Options, MESSAGE_ID>({
     schema: [
       {
         properties: {
-          partitionByComment: {
-            ...partitionByCommentJsonSchema,
-            description:
-              'Allows you to use comments to separate the decorators into logical groups.',
-          },
           sortOnParameters: {
             description:
               'Controls whether sorting should be enabled for method parameter decorators.',
@@ -114,6 +109,7 @@ export default createEslintRule<Options, MESSAGE_ID>({
               'Controls whether sorting should be enabled for class decorators.',
             type: 'boolean',
           },
+          partitionByComment: partitionByCommentJsonSchema,
           specialCharacters: specialCharactersJsonSchema,
           customGroups: customGroupsJsonSchema,
           ignoreCase: ignoreCaseJsonSchema,
