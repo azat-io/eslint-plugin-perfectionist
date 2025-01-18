@@ -1,6 +1,9 @@
 import type { JSONSchema4 } from '@typescript-eslint/utils/json-schema'
 
-import type { PartitionByCommentOption } from '../../types/common-options'
+import type {
+  PartitionByCommentOption,
+  GroupOptions,
+} from '../../types/common-options'
 
 import {
   buildCustomGroupSelectorJsonSchema,
@@ -8,11 +11,6 @@ import {
 } from '../../utils/common-json-schemas'
 
 export type Options = Partial<{
-  groups: (
-    | { newlinesBetween: 'ignore' | 'always' | 'never' }
-    | Group[]
-    | Group
-  )[]
   type: 'alphabetical' | 'line-length' | 'unsorted' | 'natural' | 'custom'
   useConfigurationIf: {
     allNamesMatchPattern?: string
@@ -25,6 +23,7 @@ export type Options = Partial<{
   specialCharacters: 'remove' | 'trim' | 'keep'
   partitionByComment: PartitionByCommentOption
   locales: NonNullable<Intl.LocalesArgument>
+  groups: GroupOptions<Group>
   customGroups: CustomGroup[]
   partitionByNewLine: boolean
   order: 'desc' | 'asc'

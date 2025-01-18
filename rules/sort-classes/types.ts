@@ -1,6 +1,9 @@
 import type { JSONSchema4 } from '@typescript-eslint/utils/json-schema'
 
-import type { PartitionByCommentOption } from '../../types/common-options'
+import type {
+  PartitionByCommentOption,
+  GroupOptions,
+} from '../../types/common-options'
 import type { JoinWithDash } from '../../types/join-with-dash'
 
 import {
@@ -12,17 +15,13 @@ import {
 
 export type SortClassesOptions = [
   Partial<{
-    groups: (
-      | { newlinesBetween: 'ignore' | 'always' | 'never' }
-      | Group[]
-      | Group
-    )[]
     type: 'alphabetical' | 'line-length' | 'natural' | 'custom'
     newlinesBetween: 'ignore' | 'always' | 'never'
     specialCharacters: 'remove' | 'trim' | 'keep'
     partitionByComment: PartitionByCommentOption
     ignoreCallbackDependenciesPatterns: string[]
     locales: NonNullable<Intl.LocalesArgument>
+    groups: GroupOptions<Group>
     partitionByNewLine: boolean
     customGroups: CustomGroup[]
     order: 'desc' | 'asc'

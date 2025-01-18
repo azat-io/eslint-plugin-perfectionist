@@ -2,7 +2,10 @@ import type { JSONSchema4 } from '@typescript-eslint/utils/json-schema'
 import type { RuleContext } from '@typescript-eslint/utils/ts-eslint'
 import type { TSESTree } from '@typescript-eslint/types'
 
-import type { PartitionByCommentOption } from '../types/common-options'
+import type {
+  PartitionByCommentOption,
+  GroupOptions,
+} from '../types/common-options'
 import type { SortingNode } from '../types/sorting-node'
 
 import {
@@ -41,16 +44,12 @@ import { pairwise } from '../utils/pairwise'
 
 export type Options = [
   Partial<{
-    groups: (
-      | { newlinesBetween: 'ignore' | 'always' | 'never' }
-      | Group[]
-      | Group
-    )[]
     type: 'alphabetical' | 'line-length' | 'natural' | 'custom'
     newlinesBetween: 'ignore' | 'always' | 'never'
     specialCharacters: 'remove' | 'trim' | 'keep'
     partitionByComment: PartitionByCommentOption
     locales: NonNullable<Intl.LocalesArgument>
+    groups: GroupOptions<Group>
     partitionByNewLine: boolean
     order: 'desc' | 'asc'
     ignoreCase: boolean

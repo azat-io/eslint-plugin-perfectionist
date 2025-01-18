@@ -6,3 +6,9 @@ export type PartitionByCommentOption =
   | string[]
   | boolean
   | string
+
+export type GroupOptions<T> = (
+  | { newlinesBetween: 'ignore' | 'always' | 'never' }
+  | T[]
+  | T
+)[]

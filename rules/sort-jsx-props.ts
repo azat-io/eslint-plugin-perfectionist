@@ -1,5 +1,6 @@
 import type { TSESTree } from '@typescript-eslint/types'
 
+import type { GroupOptions } from '../types/common-options'
 import type { SortingNode } from '../types/sorting-node'
 
 import {
@@ -37,16 +38,12 @@ import { matches } from '../utils/matches'
 
 type Options<T extends string = string> = [
   Partial<{
-    groups: (
-      | { newlinesBetween: 'ignore' | 'always' | 'never' }
-      | Group<T>[]
-      | Group<T>
-    )[]
     type: 'alphabetical' | 'line-length' | 'natural' | 'custom'
     newlinesBetween: 'ignore' | 'always' | 'never'
     specialCharacters: 'remove' | 'trim' | 'keep'
     customGroups: Record<T, string[] | string>
     locales: NonNullable<Intl.LocalesArgument>
+    groups: GroupOptions<Group<T>>
     partitionByNewLine: boolean
     ignorePattern: string[]
     order: 'desc' | 'asc'

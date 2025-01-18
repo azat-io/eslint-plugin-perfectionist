@@ -2,7 +2,10 @@ import type { TSESTree } from '@typescript-eslint/types'
 
 import { builtinModules } from 'node:module'
 
-import type { PartitionByCommentOption } from '../types/common-options'
+import type {
+  PartitionByCommentOption,
+  GroupOptions,
+} from '../types/common-options'
 import type { SortingNode } from '../types/sorting-node'
 
 import {
@@ -45,11 +48,6 @@ import { matches } from '../utils/matches'
 
 export type Options<T extends string = string> = [
   Partial<{
-    groups: (
-      | { newlinesBetween: 'ignore' | 'always' | 'never' }
-      | Group<T>[]
-      | Group<T>
-    )[]
     customGroups: {
       value?: Record<T, string[] | string>
       type?: Record<T, string[] | string>
@@ -59,6 +57,7 @@ export type Options<T extends string = string> = [
     specialCharacters: 'remove' | 'trim' | 'keep'
     partitionByComment: PartitionByCommentOption
     locales: NonNullable<Intl.LocalesArgument>
+    groups: GroupOptions<Group<T>>
     environment: 'node' | 'bun'
     partitionByNewLine: boolean
     internalPattern: string[]
