@@ -792,6 +792,642 @@ describe(ruleName, () => {
       ],
       invalid: [],
     })
+
+    describe(`${ruleName}: custom groups`, () => {
+      ruleTester.run(`${ruleName}: filters on elementNamePattern`, rule, {
+        invalid: [
+          {
+            errors: [
+              {
+                data: {
+                  rightGroup: 'keysStartingWithHello',
+                  leftGroup: 'unknown',
+                  right: "'helloKey'",
+                  left: "'b'",
+                },
+                messageId: 'unexpectedMapElementsGroupOrder',
+              },
+            ],
+            options: [
+              {
+                customGroups: [
+                  {
+                    groupName: 'keysStartingWithHello',
+                    elementNamePattern: 'hello*',
+                  },
+                ],
+                groups: ['keysStartingWithHello', 'unknown'],
+              },
+            ],
+            output: dedent`
+              new Map([
+                ['helloKey', 3],
+                ['a', 1],
+                ['b', 2]
+              ])
+            `,
+            code: dedent`
+              new Map([
+                ['a', 1],
+                ['b', 2],
+                ['helloKey', 3]
+              ])
+            `,
+          },
+        ],
+        valid: [],
+      })
+
+      ruleTester.run(
+        `${ruleName}: sort custom groups by overriding 'type' and 'order'`,
+        rule,
+        {
+          invalid: [
+            {
+              errors: [
+                {
+                  data: {
+                    right: '_bb',
+                    left: '_a',
+                  },
+                  messageId: 'unexpectedMapElementsOrder',
+                },
+                {
+                  data: {
+                    right: '_ccc',
+                    left: '_bb',
+                  },
+                  messageId: 'unexpectedMapElementsOrder',
+                },
+                {
+                  data: {
+                    right: '_dddd',
+                    left: '_ccc',
+                  },
+                  messageId: 'unexpectedMapElementsOrder',
+                },
+                {
+                  data: {
+                    rightGroup: 'reversedStartingWith_ByLineLength',
+                    leftGroup: 'unknown',
+                    right: '_eee',
+                    left: 'm',
+                  },
+                  messageId: 'unexpectedMapElementsGroupOrder',
+                },
+              ],
+              options: [
+                {
+                  customGroups: [
+                    {
+                      groupName: 'reversedStartingWith_ByLineLength',
+                      elementNamePattern: '_',
+                      type: 'line-length',
+                      order: 'desc',
+                    },
+                  ],
+                  groups: ['reversedStartingWith_ByLineLength', 'unknown'],
+                  type: 'alphabetical',
+                  order: 'asc',
+                },
+              ],
+              output: dedent`
+                new Map([
+                  [_dddd, null],
+                  [_ccc, null],
+                  [_eee, null],
+                  [_bb, null],
+                  [_ff, null],
+                  [_a, null],
+                  [_g, null],
+                  [m, null],
+                  [o, null],
+                  [p, null]
+                ])
+              `,
+              code: dedent`
+                new Map([
+                  [_a, null],
+                  [_bb, null],
+                  [_ccc, null],
+                  [_dddd, null],
+                  [m, null],
+                  [_eee, null],
+                  [_ff, null],
+                  [_g, null],
+                  [o, null],
+                  [p, null]
+                ])
+            `,
+            },
+          ],
+          valid: [],
+        },
+      )
+
+      ruleTester.run(
+        `${ruleName}: does not sort custom groups with 'unsorted' type`,
+        rule,
+        {
+          invalid: [
+            {
+              options: [
+                {
+                  customGroups: [
+                    {
+                      groupName: 'unsortedStartingWith_',
+                      elementNamePattern: '_',
+                      type: 'unsorted',
+                    },
+                  ],
+                  groups: ['unsortedStartingWith_', 'unknown'],
+                },
+              ],
+              errors: [
+                {
+                  data: {
+                    rightGroup: 'unsortedStartingWith_',
+                    leftGroup: 'unknown',
+                    right: "'_c'",
+                    left: "'m'",
+                  },
+                  messageId: 'unexpectedMapElementsGroupOrder',
+                },
+              ],
+              output: dedent`
+                new Map([
+                  ['_b', null],
+                  ['_a', null],
+                  ['_d', null],
+                  ['_e', null],
+                  ['_c', null],
+                  ['m', null]
+                ])
+              `,
+              code: dedent`
+                new Map([
+                  ['_b', null],
+                  ['_a', null],
+                  ['_d', null],
+                  ['_e', null],
+                  ['m', null],
+                  ['_c', null]
+                ])
+            `,
+            },
+          ],
+          valid: [],
+        },
+      )
+
+      ruleTester.run(`${ruleName}: sort custom group blocks`, rule, {
+        invalid: [
+          {
+            options: [
+              {
+                customGroups: [
+                  {
+                    anyOf: [
+                      {
+                        elementNamePattern: 'foo',
+                      },
+                      {
+                        elementNamePattern: 'Foo',
+                      },
+                    ],
+                    groupName: 'elementsIncludingFoo',
+                  },
+                ],
+                groups: ['elementsIncludingFoo', 'unknown'],
+              },
+            ],
+            errors: [
+              {
+                data: {
+                  rightGroup: 'elementsIncludingFoo',
+                  leftGroup: 'unknown',
+                  right: "'...foo'",
+                  left: "'a'",
+                },
+                messageId: 'unexpectedMapElementsGroupOrder',
+              },
+            ],
+            output: dedent`
+              new Map([
+                ['...foo', null],
+                ['cFoo', null],
+                ['a', null]
+              ])
+            `,
+            code: dedent`
+              new Map([
+                ['a', null],
+                ['...foo', null],
+                ['cFoo', null]
+              ])
+            `,
+          },
+        ],
+        valid: [],
+      })
+
+      ruleTester.run(
+        `${ruleName}: allows to use regex for element names in custom groups`,
+        rule,
+        {
+          valid: [
+            {
+              options: [
+                {
+                  customGroups: [
+                    {
+                      elementNamePattern: '^(?!.*Foo).*$',
+                      groupName: 'elementsWithoutFoo',
+                    },
+                  ],
+                  groups: ['unknown', 'elementsWithoutFoo'],
+                  type: 'alphabetical',
+                },
+              ],
+              code: dedent`
+                new Map([
+                  ['iHaveFooInMyName', null],
+                  ['meTooIHaveFoo', null],
+                  ['a', null],
+                  ['b', null]
+                ])
+              `,
+            },
+          ],
+          invalid: [],
+        },
+      )
+    })
+
+    describe(`${ruleName}: newlinesBetween`, () => {
+      ruleTester.run(
+        `${ruleName}(${type}): removes newlines when never`,
+        rule,
+        {
+          invalid: [
+            {
+              errors: [
+                {
+                  data: {
+                    right: 'y',
+                    left: 'a',
+                  },
+                  messageId: 'extraSpacingBetweenMapElementsMembers',
+                },
+                {
+                  data: {
+                    right: 'b',
+                    left: 'z',
+                  },
+                  messageId: 'unexpectedMapElementsOrder',
+                },
+                {
+                  data: {
+                    right: 'b',
+                    left: 'z',
+                  },
+                  messageId: 'extraSpacingBetweenMapElementsMembers',
+                },
+              ],
+              options: [
+                {
+                  ...options,
+                  customGroups: [
+                    {
+                      elementNamePattern: 'a',
+                      groupName: 'a',
+                    },
+                  ],
+                  groups: ['a', 'unknown'],
+                  newlinesBetween: 'never',
+                },
+              ],
+              code: dedent`
+                new Map([
+                  [a, null],
+
+
+                 [y, null],
+                [z, null],
+
+                    [b, null]
+                ])
+              `,
+              output: dedent`
+                new Map([
+                  [a, null],
+                 [b, null],
+                [y, null],
+                    [z, null]
+                ])
+              `,
+            },
+          ],
+          valid: [],
+        },
+      )
+
+      ruleTester.run(
+        `${ruleName}(${type}): keeps one newline when always`,
+        rule,
+        {
+          invalid: [
+            {
+              errors: [
+                {
+                  data: {
+                    right: 'z',
+                    left: 'a',
+                  },
+                  messageId: 'extraSpacingBetweenMapElementsMembers',
+                },
+                {
+                  data: {
+                    right: 'y',
+                    left: 'z',
+                  },
+                  messageId: 'unexpectedMapElementsOrder',
+                },
+                {
+                  data: {
+                    right: 'b',
+                    left: 'y',
+                  },
+                  messageId: 'missedSpacingBetweenMapElementsMembers',
+                },
+              ],
+              options: [
+                {
+                  ...options,
+                  customGroups: [
+                    {
+                      elementNamePattern: 'a',
+                      groupName: 'a',
+                    },
+                    {
+                      elementNamePattern: 'b',
+                      groupName: 'b',
+                    },
+                  ],
+                  groups: ['a', 'unknown', 'b'],
+                  newlinesBetween: 'always',
+                },
+              ],
+              output: dedent`
+                new Map([
+                  [a, null],
+
+                 [y, null],
+                [z, null],
+
+                    [b, null],
+                ])
+                `,
+              code: dedent`
+                new Map([
+                  [a, null],
+
+
+                 [z, null],
+                [y, null],
+                    [b, null],
+                ])
+              `,
+            },
+          ],
+          valid: [],
+        },
+      )
+
+      ruleTester.run(
+        `${ruleName}(${type}): allows to use "newlinesBetween" inside groups`,
+        rule,
+        {
+          invalid: [
+            {
+              options: [
+                {
+                  ...options,
+                  customGroups: [
+                    { elementNamePattern: 'a', groupName: 'a' },
+                    { elementNamePattern: 'b', groupName: 'b' },
+                    { elementNamePattern: 'c', groupName: 'c' },
+                    { elementNamePattern: 'd', groupName: 'd' },
+                    { elementNamePattern: 'e', groupName: 'e' },
+                  ],
+                  groups: [
+                    'a',
+                    { newlinesBetween: 'always' },
+                    'b',
+                    { newlinesBetween: 'always' },
+                    'c',
+                    { newlinesBetween: 'never' },
+                    'd',
+                    { newlinesBetween: 'ignore' },
+                    'e',
+                  ],
+                  newlinesBetween: 'always',
+                },
+              ],
+              errors: [
+                {
+                  data: {
+                    right: 'b',
+                    left: 'a',
+                  },
+                  messageId: 'missedSpacingBetweenMapElementsMembers',
+                },
+                {
+                  data: {
+                    right: 'c',
+                    left: 'b',
+                  },
+                  messageId: 'extraSpacingBetweenMapElementsMembers',
+                },
+                {
+                  data: {
+                    right: 'd',
+                    left: 'c',
+                  },
+                  messageId: 'extraSpacingBetweenMapElementsMembers',
+                },
+              ],
+              output: dedent`
+                new Map([
+                  [a, null],
+
+                  [b, null],
+
+                  [c, null],
+                  [d, null],
+
+
+                  [e, null]
+                ])
+              `,
+              code: dedent`
+                new Map([
+                  [a, null],
+                  [b, null],
+
+
+                  [c, null],
+
+                  [d, null],
+
+
+                  [e, null]
+                ])
+              `,
+            },
+          ],
+          valid: [],
+        },
+      )
+
+      ruleTester.run(
+        `${ruleName}(${type}): handles newlines and comment after fixes`,
+        rule,
+        {
+          invalid: [
+            {
+              output: [
+                dedent`
+                  new Map([
+                    [a, null], // Comment after
+                    [b, null],
+
+                    [c, null]
+                  ])
+                `,
+                dedent`
+                  new Map([
+                    [a, null], // Comment after
+
+                    [b, null],
+                    [c, null]
+                  ])
+                `,
+              ],
+              options: [
+                {
+                  customGroups: [
+                    {
+                      elementNamePattern: 'b|c',
+                      groupName: 'b|c',
+                    },
+                  ],
+                  groups: ['unknown', 'b|c'],
+                  newlinesBetween: 'always',
+                },
+              ],
+              errors: [
+                {
+                  data: {
+                    rightGroup: 'unknown',
+                    leftGroup: 'b|c',
+                    right: 'a',
+                    left: 'b',
+                  },
+                  messageId: 'unexpectedMapElementsGroupOrder',
+                },
+              ],
+              code: dedent`
+                new Map([
+                  [b, null],
+                  [a, null], // Comment after
+
+                  [c, null]
+                ])
+              `,
+            },
+          ],
+          valid: [],
+        },
+      )
+    })
+
+    describe(`${ruleName}(${type}): allows to use 'useConfigurationIf'`, () => {
+      ruleTester.run(
+        `${ruleName}(${type}): allows to use 'allNamesMatchPattern'`,
+        rule,
+        {
+          invalid: [
+            {
+              options: [
+                {
+                  ...options,
+                  useConfigurationIf: {
+                    allNamesMatchPattern: 'foo',
+                  },
+                },
+                {
+                  ...options,
+                  customGroups: [
+                    {
+                      elementNamePattern: '^r$',
+                      groupName: 'r',
+                    },
+                    {
+                      elementNamePattern: '^g$',
+                      groupName: 'g',
+                    },
+                    {
+                      elementNamePattern: '^b$',
+                      groupName: 'b',
+                    },
+                  ],
+                  useConfigurationIf: {
+                    allNamesMatchPattern: '^r|g|b$',
+                  },
+                  groups: ['r', 'g', 'b'],
+                },
+              ],
+              errors: [
+                {
+                  data: {
+                    rightGroup: 'g',
+                    leftGroup: 'b',
+                    right: 'g',
+                    left: 'b',
+                  },
+                  messageId: 'unexpectedMapElementsGroupOrder',
+                },
+                {
+                  data: {
+                    rightGroup: 'r',
+                    leftGroup: 'g',
+                    right: 'r',
+                    left: 'g',
+                  },
+                  messageId: 'unexpectedMapElementsGroupOrder',
+                },
+              ],
+              output: dedent`
+                new Map([
+                  [r, null],
+                  [g, null],
+                  [b, null]
+                ])
+              `,
+              code: dedent`
+                new Map([
+                  [b, null],
+                  [g, null],
+                  [r, null]
+                ])
+              `,
+            },
+          ],
+          valid: [],
+        },
+      )
+    })
   })
 
   describe(`${ruleName}: sorting by natural order`, () => {
