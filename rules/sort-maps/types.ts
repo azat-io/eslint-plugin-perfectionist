@@ -2,27 +2,25 @@ import type { JSONSchema4 } from '@typescript-eslint/utils/json-schema'
 
 import type {
   PartitionByCommentOption,
+  CommonOptions,
   GroupOptions,
 } from '../../types/common-options'
 
 import { elementNamePatternJsonSchema } from '../../utils/common-json-schemas'
 
-export type Options = Partial<{
-  useConfigurationIf: {
-    allNamesMatchPattern?: string
-  }
-  type: 'alphabetical' | 'line-length' | 'natural' | 'custom'
-  newlinesBetween: 'ignore' | 'always' | 'never'
-  specialCharacters: 'remove' | 'trim' | 'keep'
-  partitionByComment: PartitionByCommentOption
-  locales: NonNullable<Intl.LocalesArgument>
-  groups: GroupOptions<Group>
-  partitionByNewLine: boolean
-  customGroups: CustomGroup[]
-  order: 'desc' | 'asc'
-  ignoreCase: boolean
-  alphabet: string
-}>[]
+export type Options = Partial<
+  {
+    useConfigurationIf: {
+      allNamesMatchPattern?: string
+    }
+    type: 'alphabetical' | 'line-length' | 'natural' | 'custom'
+    newlinesBetween: 'ignore' | 'always' | 'never'
+    partitionByComment: PartitionByCommentOption
+    groups: GroupOptions<Group>
+    partitionByNewLine: boolean
+    customGroups: CustomGroup[]
+  } & CommonOptions
+>[]
 
 export interface SingleCustomGroup {
   elementNamePattern?: string

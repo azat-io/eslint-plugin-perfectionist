@@ -1,7 +1,10 @@
 import type { RuleContext } from '@typescript-eslint/utils/ts-eslint'
 import type { TSESTree } from '@typescript-eslint/types'
 
-import type { PartitionByCommentOption } from '../types/common-options'
+import type {
+  PartitionByCommentOption,
+  CommonOptions,
+} from '../types/common-options'
 import type { SortingNode } from '../types/sorting-node'
 
 import {
@@ -38,22 +41,19 @@ import { complete } from '../utils/complete'
 import { pairwise } from '../utils/pairwise'
 
 export type Options<T extends string = string> = [
-  Partial<{
-    type: 'alphabetical' | 'line-length' | 'natural' | 'custom'
-    specialCharacters: 'remove' | 'trim' | 'keep'
-    partitionByComment: PartitionByCommentOption
-    customGroups: Record<T, string[] | string>
-    locales: NonNullable<Intl.LocalesArgument>
-    groups: (Group<T>[] | Group<T>)[]
-    sortOnParameters: boolean
-    sortOnProperties: boolean
-    sortOnAccessors: boolean
-    sortOnMethods: boolean
-    sortOnClasses: boolean
-    order: 'desc' | 'asc'
-    ignoreCase: boolean
-    alphabet: string
-  }>,
+  Partial<
+    {
+      type: 'alphabetical' | 'line-length' | 'natural' | 'custom'
+      partitionByComment: PartitionByCommentOption
+      customGroups: Record<T, string[] | string>
+      groups: (Group<T>[] | Group<T>)[]
+      sortOnParameters: boolean
+      sortOnProperties: boolean
+      sortOnAccessors: boolean
+      sortOnMethods: boolean
+      sortOnClasses: boolean
+    } & CommonOptions
+  >,
 ]
 
 type MESSAGE_ID = 'unexpectedDecoratorsGroupOrder' | 'unexpectedDecoratorsOrder'

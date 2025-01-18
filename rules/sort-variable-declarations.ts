@@ -1,7 +1,10 @@
 import type { TSESTree } from '@typescript-eslint/types'
 
+import type {
+  PartitionByCommentOption,
+  CommonOptions,
+} from '../types/common-options'
 import type { SortingNodeWithDependencies } from '../utils/sort-nodes-by-dependencies'
-import type { PartitionByCommentOption } from '../types/common-options'
 
 import {
   partitionByCommentJsonSchema,
@@ -36,16 +39,13 @@ import { complete } from '../utils/complete'
 import { pairwise } from '../utils/pairwise'
 
 type Options = [
-  Partial<{
-    type: 'alphabetical' | 'line-length' | 'natural' | 'custom'
-    specialCharacters: 'remove' | 'trim' | 'keep'
-    partitionByComment: PartitionByCommentOption
-    locales: NonNullable<Intl.LocalesArgument>
-    partitionByNewLine: boolean
-    order: 'desc' | 'asc'
-    ignoreCase: boolean
-    alphabet: string
-  }>,
+  Partial<
+    {
+      type: 'alphabetical' | 'line-length' | 'natural' | 'custom'
+      partitionByComment: PartitionByCommentOption
+      partitionByNewLine: boolean
+    } & CommonOptions
+  >,
 ]
 
 type MESSAGE_ID =

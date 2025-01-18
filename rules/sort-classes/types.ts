@@ -2,6 +2,7 @@ import type { JSONSchema4 } from '@typescript-eslint/utils/json-schema'
 
 import type {
   PartitionByCommentOption,
+  CommonOptions,
   GroupOptions,
 } from '../../types/common-options'
 import type { JoinWithDash } from '../../types/join-with-dash'
@@ -13,23 +14,6 @@ import {
   elementNamePatternJsonSchema,
 } from '../../utils/common-json-schemas'
 
-export type SortClassesOptions = [
-  Partial<{
-    type: 'alphabetical' | 'line-length' | 'natural' | 'custom'
-    newlinesBetween: 'ignore' | 'always' | 'never'
-    specialCharacters: 'remove' | 'trim' | 'keep'
-    partitionByComment: PartitionByCommentOption
-    ignoreCallbackDependenciesPatterns: string[]
-    locales: NonNullable<Intl.LocalesArgument>
-    groups: GroupOptions<Group>
-    partitionByNewLine: boolean
-    customGroups: CustomGroup[]
-    order: 'desc' | 'asc'
-    ignoreCase: boolean
-    alphabet: string
-  }>,
-]
-
 export type SingleCustomGroup =
   | AdvancedSingleCustomGroup<FunctionPropertySelector>
   | AdvancedSingleCustomGroup<AccessorPropertySelector>
@@ -40,6 +24,20 @@ export type SingleCustomGroup =
   | BaseSingleCustomGroup<StaticBlockSelector>
   | BaseSingleCustomGroup<ConstructorSelector>
   | AdvancedSingleCustomGroup<MethodSelector>
+
+export type SortClassesOptions = [
+  Partial<
+    {
+      type: 'alphabetical' | 'line-length' | 'natural' | 'custom'
+      newlinesBetween: 'ignore' | 'always' | 'never'
+      partitionByComment: PartitionByCommentOption
+      ignoreCallbackDependenciesPatterns: string[]
+      groups: GroupOptions<Group>
+      partitionByNewLine: boolean
+      customGroups: CustomGroup[]
+    } & CommonOptions
+  >,
+]
 
 export type CustomGroup = (
   | {

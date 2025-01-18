@@ -1,6 +1,6 @@
 import type { TSESTree } from '@typescript-eslint/types'
 
-import type { GroupOptions } from '../types/common-options'
+import type { CommonOptions, GroupOptions } from '../types/common-options'
 import type { SortingNode } from '../types/sorting-node'
 
 import {
@@ -37,19 +37,16 @@ import { complete } from '../utils/complete'
 import { matches } from '../utils/matches'
 
 type Options<T extends string = string> = [
-  Partial<{
-    type: 'alphabetical' | 'line-length' | 'natural' | 'custom'
-    newlinesBetween: 'ignore' | 'always' | 'never'
-    specialCharacters: 'remove' | 'trim' | 'keep'
-    customGroups: Record<T, string[] | string>
-    locales: NonNullable<Intl.LocalesArgument>
-    groups: GroupOptions<Group<T>>
-    partitionByNewLine: boolean
-    ignorePattern: string[]
-    order: 'desc' | 'asc'
-    ignoreCase: boolean
-    alphabet: string
-  }>,
+  Partial<
+    {
+      type: 'alphabetical' | 'line-length' | 'natural' | 'custom'
+      newlinesBetween: 'ignore' | 'always' | 'never'
+      customGroups: Record<T, string[] | string>
+      groups: GroupOptions<Group<T>>
+      partitionByNewLine: boolean
+      ignorePattern: string[]
+    } & CommonOptions
+  >,
 ]
 
 type MESSAGE_ID =

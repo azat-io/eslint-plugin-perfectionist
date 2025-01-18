@@ -4,6 +4,7 @@ import type { TSESTree } from '@typescript-eslint/types'
 
 import type {
   PartitionByCommentOption,
+  CommonOptions,
   GroupOptions,
 } from '../types/common-options'
 import type { SortingNode } from '../types/sorting-node'
@@ -43,18 +44,15 @@ import { complete } from '../utils/complete'
 import { pairwise } from '../utils/pairwise'
 
 export type Options = [
-  Partial<{
-    type: 'alphabetical' | 'line-length' | 'natural' | 'custom'
-    newlinesBetween: 'ignore' | 'always' | 'never'
-    specialCharacters: 'remove' | 'trim' | 'keep'
-    partitionByComment: PartitionByCommentOption
-    locales: NonNullable<Intl.LocalesArgument>
-    groups: GroupOptions<Group>
-    partitionByNewLine: boolean
-    order: 'desc' | 'asc'
-    ignoreCase: boolean
-    alphabet: string
-  }>,
+  Partial<
+    {
+      type: 'alphabetical' | 'line-length' | 'natural' | 'custom'
+      newlinesBetween: 'ignore' | 'always' | 'never'
+      partitionByComment: PartitionByCommentOption
+      groups: GroupOptions<Group>
+      partitionByNewLine: boolean
+    } & CommonOptions
+  >,
 ]
 
 type Group =

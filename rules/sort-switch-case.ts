@@ -1,6 +1,7 @@
 import type { TSESTree } from '@typescript-eslint/types'
 import type { TSESLint } from '@typescript-eslint/utils'
 
+import type { CommonOptions } from '../types/common-options'
 import type { SortingNode } from '../types/sorting-node'
 
 import {
@@ -26,14 +27,11 @@ import { complete } from '../utils/complete'
 import { compare } from '../utils/compare'
 
 type Options = [
-  Partial<{
-    type: 'alphabetical' | 'line-length' | 'natural' | 'custom'
-    specialCharacters: 'remove' | 'trim' | 'keep'
-    locales: NonNullable<Intl.LocalesArgument>
-    order: 'desc' | 'asc'
-    ignoreCase: boolean
-    alphabet: string
-  }>,
+  Partial<
+    {
+      type: 'alphabetical' | 'line-length' | 'natural' | 'custom'
+    } & CommonOptions
+  >,
 ]
 
 interface SortSwitchCaseSortingNode extends SortingNode<TSESTree.SwitchCase> {

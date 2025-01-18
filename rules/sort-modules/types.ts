@@ -2,6 +2,7 @@ import type { JSONSchema4 } from '@typescript-eslint/utils/json-schema'
 
 import type {
   PartitionByCommentOption,
+  CommonOptions,
   GroupOptions,
 } from '../../types/common-options'
 import type { JoinWithDash } from '../../types/join-with-dash'
@@ -13,19 +14,16 @@ import {
 } from '../../utils/common-json-schemas'
 
 export type SortModulesOptions = [
-  Partial<{
-    type: 'alphabetical' | 'line-length' | 'natural' | 'custom'
-    newlinesBetween: 'ignore' | 'always' | 'never'
-    specialCharacters: 'remove' | 'trim' | 'keep'
-    partitionByComment: PartitionByCommentOption
-    locales: NonNullable<Intl.LocalesArgument>
-    groups: GroupOptions<Group>
-    customGroups: CustomGroup[]
-    partitionByNewLine: boolean
-    order: 'desc' | 'asc'
-    ignoreCase: boolean
-    alphabet: string
-  }>,
+  Partial<
+    {
+      type: 'alphabetical' | 'line-length' | 'natural' | 'custom'
+      newlinesBetween: 'ignore' | 'always' | 'never'
+      partitionByComment: PartitionByCommentOption
+      groups: GroupOptions<Group>
+      customGroups: CustomGroup[]
+      partitionByNewLine: boolean
+    } & CommonOptions
+  >,
 ]
 
 export type SingleCustomGroup = (

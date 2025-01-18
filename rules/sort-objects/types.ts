@@ -2,6 +2,7 @@ import type { JSONSchema4 } from '@typescript-eslint/utils/json-schema'
 
 import type {
   PartitionByCommentOption,
+  CommonOptions,
   GroupOptions,
 } from '../../types/common-options'
 import type { JoinWithDash } from '../../types/join-with-dash'
@@ -13,31 +14,28 @@ import {
   elementNamePatternJsonSchema,
 } from '../../utils/common-json-schemas'
 
-export type Options = Partial<{
-  useConfigurationIf: {
-    callingFunctionNamePattern?: string
-    allNamesMatchPattern?: string
-  }
-  type: 'alphabetical' | 'line-length' | 'unsorted' | 'natural' | 'custom'
-  customGroups: Record<string, string[] | string> | CustomGroup[]
-  destructuredObjects: { groups: boolean } | boolean
-  newlinesBetween: 'ignore' | 'always' | 'never'
-  specialCharacters: 'remove' | 'trim' | 'keep'
-  partitionByComment: PartitionByCommentOption
-  locales: NonNullable<Intl.LocalesArgument>
-  groups: GroupOptions<Group>
-  partitionByNewLine: boolean
-  objectDeclarations: boolean
-  styledComponents: boolean
-  /**
-   * @deprecated for {@link `destructuredObjects`} and {@link `objectDeclarations`}
-   */
-  destructureOnly: boolean
-  ignorePattern: string[]
-  order: 'desc' | 'asc'
-  ignoreCase: boolean
-  alphabet: string
-}>[]
+export type Options = Partial<
+  {
+    useConfigurationIf: {
+      callingFunctionNamePattern?: string
+      allNamesMatchPattern?: string
+    }
+    type: 'alphabetical' | 'line-length' | 'unsorted' | 'natural' | 'custom'
+    customGroups: Record<string, string[] | string> | CustomGroup[]
+    destructuredObjects: { groups: boolean } | boolean
+    newlinesBetween: 'ignore' | 'always' | 'never'
+    partitionByComment: PartitionByCommentOption
+    groups: GroupOptions<Group>
+    partitionByNewLine: boolean
+    objectDeclarations: boolean
+    styledComponents: boolean
+    /**
+     * @deprecated for {@link `destructuredObjects`} and {@link `objectDeclarations`}
+     */
+    destructureOnly: boolean
+    ignorePattern: string[]
+  } & CommonOptions
+>[]
 
 export type SingleCustomGroup = (
   | BaseSingleCustomGroup<MultilineSelector>
