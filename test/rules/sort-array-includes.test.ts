@@ -1455,6 +1455,294 @@ describe(ruleName, () => {
         },
       )
     })
+
+    describe(`${ruleName}: newlinesBetween`, () => {
+      ruleTester.run(
+        `${ruleName}(${type}): removes newlines when never`,
+        rule,
+        {
+          invalid: [
+            {
+              errors: [
+                {
+                  data: {
+                    right: 'y',
+                    left: 'a',
+                  },
+                  messageId: 'extraSpacingBetweenArrayIncludesMembers',
+                },
+                {
+                  data: {
+                    right: 'b',
+                    left: 'z',
+                  },
+                  messageId: 'unexpectedArrayIncludesOrder',
+                },
+                {
+                  data: {
+                    right: 'b',
+                    left: 'z',
+                  },
+                  messageId: 'extraSpacingBetweenArrayIncludesMembers',
+                },
+              ],
+              options: [
+                {
+                  ...options,
+                  customGroups: [
+                    {
+                      elementNamePattern: 'a',
+                      groupName: 'a',
+                    },
+                  ],
+                  groups: ['a', 'unknown'],
+                  newlinesBetween: 'never',
+                },
+              ],
+              code: dedent`
+                [
+                  'a',
+
+
+                 'y',
+                'z',
+
+                    'b'
+                ].includes(value)
+              `,
+              output: dedent`
+                [
+                  'a',
+                 'b',
+                'y',
+                    'z'
+                ].includes(value)
+              `,
+            },
+          ],
+          valid: [],
+        },
+      )
+
+      ruleTester.run(
+        `${ruleName}(${type}): keeps one newline when always`,
+        rule,
+        {
+          invalid: [
+            {
+              errors: [
+                {
+                  data: {
+                    right: 'z',
+                    left: 'a',
+                  },
+                  messageId: 'extraSpacingBetweenArrayIncludesMembers',
+                },
+                {
+                  data: {
+                    right: 'y',
+                    left: 'z',
+                  },
+                  messageId: 'unexpectedArrayIncludesOrder',
+                },
+                {
+                  data: {
+                    right: 'b',
+                    left: 'y',
+                  },
+                  messageId: 'missedSpacingBetweenArrayIncludesMembers',
+                },
+              ],
+              options: [
+                {
+                  ...options,
+                  customGroups: [
+                    {
+                      elementNamePattern: 'a',
+                      groupName: 'a',
+                    },
+                    {
+                      elementNamePattern: 'b',
+                      groupName: 'b',
+                    },
+                  ],
+                  groups: ['a', 'unknown', 'b'],
+                  newlinesBetween: 'always',
+                },
+              ],
+              output: dedent`
+                [
+                  'a',
+
+                 'y',
+                'z',
+
+                    'b',
+                ].includes(value)
+                `,
+              code: dedent`
+                [
+                  'a',
+
+
+                 'z',
+                'y',
+                    'b',
+                ].includes(value)
+              `,
+            },
+          ],
+          valid: [],
+        },
+      )
+
+      ruleTester.run(
+        `${ruleName}(${type}): allows to use "newlinesBetween" inside groups`,
+        rule,
+        {
+          invalid: [
+            {
+              options: [
+                {
+                  ...options,
+                  customGroups: [
+                    { elementNamePattern: 'a', groupName: 'a' },
+                    { elementNamePattern: 'b', groupName: 'b' },
+                    { elementNamePattern: 'c', groupName: 'c' },
+                    { elementNamePattern: 'd', groupName: 'd' },
+                    { elementNamePattern: 'e', groupName: 'e' },
+                  ],
+                  groups: [
+                    'a',
+                    { newlinesBetween: 'always' },
+                    'b',
+                    { newlinesBetween: 'always' },
+                    'c',
+                    { newlinesBetween: 'never' },
+                    'd',
+                    { newlinesBetween: 'ignore' },
+                    'e',
+                  ],
+                  newlinesBetween: 'always',
+                },
+              ],
+              errors: [
+                {
+                  data: {
+                    right: 'b',
+                    left: 'a',
+                  },
+                  messageId: 'missedSpacingBetweenArrayIncludesMembers',
+                },
+                {
+                  data: {
+                    right: 'c',
+                    left: 'b',
+                  },
+                  messageId: 'extraSpacingBetweenArrayIncludesMembers',
+                },
+                {
+                  data: {
+                    right: 'd',
+                    left: 'c',
+                  },
+                  messageId: 'extraSpacingBetweenArrayIncludesMembers',
+                },
+              ],
+              output: dedent`
+                [
+                  'a',
+
+                  'b',
+
+                  'c',
+                  'd',
+
+
+                  'e'
+                ].includes(value)
+              `,
+              code: dedent`
+                [
+                  'a',
+                  'b',
+
+
+                  'c',
+
+                  'd',
+
+
+                  'e'
+                ].includes(value)
+              `,
+            },
+          ],
+          valid: [],
+        },
+      )
+
+      ruleTester.run(
+        `${ruleName}(${type}): handles newlines and comment after fixes`,
+        rule,
+        {
+          invalid: [
+            {
+              output: [
+                dedent`
+                  [
+                    'a', // Comment after
+                    'b',
+
+                    'c'
+                  ].includes(value)
+                `,
+                dedent`
+                  [
+                    'a', // Comment after
+
+                    'b',
+                    'c'
+                  ].includes(value)
+                `,
+              ],
+              options: [
+                {
+                  customGroups: [
+                    {
+                      elementNamePattern: 'b|c',
+                      groupName: 'b|c',
+                    },
+                  ],
+                  groups: ['unknown', 'b|c'],
+                  newlinesBetween: 'always',
+                },
+              ],
+              errors: [
+                {
+                  data: {
+                    rightGroup: 'unknown',
+                    leftGroup: 'b|c',
+                    right: 'a',
+                    left: 'b',
+                  },
+                  messageId: 'unexpectedArrayIncludesGroupOrder',
+                },
+              ],
+              code: dedent`
+                [
+                  'b',
+                  'a', // Comment after
+
+                  'c'
+                ].includes(value)
+              `,
+            },
+          ],
+          valid: [],
+        },
+      )
+    })
   })
 
   describe(`${ruleName}: sorting by natural order`, () => {

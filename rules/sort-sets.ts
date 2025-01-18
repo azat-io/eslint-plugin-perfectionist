@@ -3,7 +3,11 @@ import type { Options } from './sort-array-includes/types'
 import { defaultOptions, jsonSchema, sortArray } from './sort-array-includes'
 import { createEslintRule } from '../utils/create-eslint-rule'
 
-type MESSAGE_ID = 'unexpectedSetsGroupOrder' | 'unexpectedSetsOrder'
+type MESSAGE_ID =
+  | 'missedSpacingBetweenSetsMembers'
+  | 'extraSpacingBetweenSetsMembers'
+  | 'unexpectedSetsGroupOrder'
+  | 'unexpectedSetsOrder'
 
 export default createEslintRule<Options, MESSAGE_ID>({
   create: context => ({
@@ -23,6 +27,8 @@ export default createEslintRule<Options, MESSAGE_ID>({
             : node.arguments[0].arguments
         sortArray<MESSAGE_ID>({
           availableMessageIds: {
+            missedSpacingBetweenMembers: 'missedSpacingBetweenSetsMembers',
+            extraSpacingBetweenMembers: 'extraSpacingBetweenSetsMembers',
             unexpectedGroupOrder: 'unexpectedSetsGroupOrder',
             unexpectedOrder: 'unexpectedSetsOrder',
           },
@@ -36,6 +42,10 @@ export default createEslintRule<Options, MESSAGE_ID>({
     messages: {
       unexpectedSetsGroupOrder:
         'Expected "{{right}}" ({{rightGroup}}) to come before "{{left}}" ({{leftGroup}}).',
+      missedSpacingBetweenSetsMembers:
+        'Missed spacing between "{{left}}" and "{{right}}" members.',
+      extraSpacingBetweenSetsMembers:
+        'Extra spacing between "{{left}}" and "{{right}}" members.',
       unexpectedSetsOrder: 'Expected "{{right}}" to come before "{{left}}".',
     },
     docs: {

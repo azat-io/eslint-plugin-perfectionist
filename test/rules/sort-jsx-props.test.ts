@@ -591,6 +591,336 @@ describe(ruleName, () => {
       ],
       invalid: [],
     })
+
+    ruleTester.run(
+      `${ruleName}(${type}): allows to use new line as partition`,
+      rule,
+      {
+        invalid: [
+          {
+            errors: [
+              {
+                data: {
+                  right: 'a',
+                  left: 'd',
+                },
+                messageId: 'unexpectedJSXPropsOrder',
+              },
+              {
+                data: {
+                  right: 'b',
+                  left: 'e',
+                },
+                messageId: 'unexpectedJSXPropsOrder',
+              },
+            ],
+            output: dedent`
+                <Component
+                  a
+                  d
+
+                  c
+
+                  b
+                  e
+                />
+              `,
+            code: dedent`
+                <Component
+                  d
+                  a
+
+                  c
+
+                  e
+                  b
+                />
+              `,
+            options: [
+              {
+                ...options,
+                partitionByNewLine: true,
+              },
+            ],
+          },
+        ],
+        valid: [],
+      },
+    )
+
+    describe(`${ruleName}: newlinesBetween`, () => {
+      ruleTester.run(
+        `${ruleName}(${type}): removes newlines when never`,
+        rule,
+        {
+          invalid: [
+            {
+              errors: [
+                {
+                  data: {
+                    right: 'y',
+                    left: 'a',
+                  },
+                  messageId: 'extraSpacingBetweenJSXPropsMembers',
+                },
+                {
+                  data: {
+                    right: 'b',
+                    left: 'z',
+                  },
+                  messageId: 'unexpectedJSXPropsOrder',
+                },
+                {
+                  data: {
+                    right: 'b',
+                    left: 'z',
+                  },
+                  messageId: 'extraSpacingBetweenJSXPropsMembers',
+                },
+              ],
+              options: [
+                {
+                  ...options,
+                  customGroups: { a: 'a' },
+                  groups: ['a', 'unknown'],
+                  newlinesBetween: 'never',
+                },
+              ],
+              code: dedent`
+                <Component
+                  a
+
+
+                 y
+                z
+
+                    b
+                />
+              `,
+              output: dedent`
+                <Component
+                  a
+                 b
+                y
+                    z
+                />
+              `,
+            },
+          ],
+          valid: [],
+        },
+      )
+
+      ruleTester.run(
+        `${ruleName}(${type}): keeps one newline when always`,
+        rule,
+        {
+          invalid: [
+            {
+              errors: [
+                {
+                  data: {
+                    right: 'z',
+                    left: 'a',
+                  },
+                  messageId: 'extraSpacingBetweenJSXPropsMembers',
+                },
+                {
+                  data: {
+                    right: 'y',
+                    left: 'z',
+                  },
+                  messageId: 'unexpectedJSXPropsOrder',
+                },
+                {
+                  data: {
+                    right: 'b',
+                    left: 'y',
+                  },
+                  messageId: 'missedSpacingBetweenJSXPropsMembers',
+                },
+              ],
+              options: [
+                {
+                  ...options,
+                  customGroups: {
+                    a: 'a',
+                    b: 'b',
+                  },
+                  groups: ['a', 'unknown', 'b'],
+                  newlinesBetween: 'always',
+                },
+              ],
+              output: dedent`
+                <Component
+                  a
+
+                 y
+                z
+
+                    b
+                />
+                `,
+              code: dedent`
+                <Component
+                  a
+
+
+                 z
+                y
+                    b
+                />
+              `,
+            },
+          ],
+          valid: [],
+        },
+      )
+
+      ruleTester.run(
+        `${ruleName}(${type}): allows to use "newlinesBetween" inside groups`,
+        rule,
+        {
+          invalid: [
+            {
+              options: [
+                {
+                  ...options,
+                  groups: [
+                    'a',
+                    { newlinesBetween: 'always' },
+                    'b',
+                    { newlinesBetween: 'always' },
+                    'c',
+                    { newlinesBetween: 'never' },
+                    'd',
+                    { newlinesBetween: 'ignore' },
+                    'e',
+                  ],
+                  customGroups: {
+                    a: 'a',
+                    b: 'b',
+                    c: 'c',
+                    d: 'd',
+                    e: 'e',
+                  },
+                  newlinesBetween: 'always',
+                },
+              ],
+              errors: [
+                {
+                  data: {
+                    right: 'b',
+                    left: 'a',
+                  },
+                  messageId: 'missedSpacingBetweenJSXPropsMembers',
+                },
+                {
+                  data: {
+                    right: 'c',
+                    left: 'b',
+                  },
+                  messageId: 'extraSpacingBetweenJSXPropsMembers',
+                },
+                {
+                  data: {
+                    right: 'd',
+                    left: 'c',
+                  },
+                  messageId: 'extraSpacingBetweenJSXPropsMembers',
+                },
+              ],
+              output: dedent`
+                <Component
+                  a
+
+                  b
+
+                  c
+                  d
+
+
+                  e
+                />
+              `,
+              code: dedent`
+                <Component
+                  a
+                  b
+
+
+                  c
+
+                  d
+
+
+                  e
+                />
+              `,
+            },
+          ],
+          valid: [],
+        },
+      )
+
+      ruleTester.run(
+        `${ruleName}(${type}): handles newlines and comment after fixes`,
+        rule,
+        {
+          invalid: [
+            {
+              output: [
+                dedent`
+                  <Component
+                    a // Comment after
+                    b
+
+                    c
+                  />
+                `,
+                dedent`
+                  <Component
+                    a // Comment after
+
+                    b
+                    c
+                  />
+                `,
+              ],
+              errors: [
+                {
+                  data: {
+                    rightGroup: 'unknown',
+                    leftGroup: 'b|c',
+                    right: 'a',
+                    left: 'b',
+                  },
+                  messageId: 'unexpectedJSXPropsGroupOrder',
+                },
+              ],
+              options: [
+                {
+                  customGroups: {
+                    'b|c': 'b|c',
+                  },
+                  groups: ['unknown', 'b|c'],
+                  newlinesBetween: 'always',
+                },
+              ],
+              code: dedent`
+                <Component
+                  b
+                  a // Comment after
+
+                  c
+                />
+              `,
+            },
+          ],
+          valid: [],
+        },
+      )
+    })
   })
 
   describe(`${ruleName}: sorting by natural order`, () => {

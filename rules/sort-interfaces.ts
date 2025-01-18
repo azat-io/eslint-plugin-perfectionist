@@ -34,9 +34,9 @@ export default createEslintRule<Options, MESSAGE_ID>({
       unexpectedInterfacePropertiesGroupOrder:
         'Expected "{{right}}" ({{rightGroup}}) to come before "{{left}}" ({{leftGroup}}).',
       missedSpacingBetweenInterfaceMembers:
-        'Missed spacing between "{{left}}" and "{{right}}" interfaces.',
+        'Missed spacing between "{{left}}" and "{{right}}" properties.',
       extraSpacingBetweenInterfaceMembers:
-        'Extra spacing between "{{left}}" and "{{right}}" interfaces.',
+        'Extra spacing between "{{left}}" and "{{right}}" properties.',
       unexpectedInterfacePropertiesOrder:
         'Expected "{{right}}" to come before "{{left}}".',
     },

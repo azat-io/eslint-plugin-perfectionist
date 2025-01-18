@@ -12,6 +12,7 @@ import {
   partitionByCommentJsonSchema,
   partitionByNewLineJsonSchema,
   specialCharactersJsonSchema,
+  newlinesBetweenJsonSchema,
   ignoreCaseJsonSchema,
   buildTypeJsonSchema,
   alphabetJsonSchema,
@@ -19,7 +20,9 @@ import {
   groupsJsonSchema,
   orderJsonSchema,
 } from '../utils/common-json-schemas'
+import { validateNewlinesAndPartitionConfiguration } from '../utils/validate-newlines-and-partition-configuration'
 import { validateGeneratedGroupsConfiguration } from '../utils/validate-generated-groups-configuration'
+import { validateCustomSortConfiguration } from '../utils/validate-custom-sort-configuration'
 import {
   singleCustomGroupJsonSchema,
   allSelectors,
@@ -34,6 +37,7 @@ import { hasPartitionComment } from '../utils/has-partition-comment'
 import { createNodeIndexMap } from '../utils/create-node-index-map'
 import { sortNodesByGroups } from '../utils/sort-nodes-by-groups'
 import { getCommentsBefore } from '../utils/get-comments-before'
+import { getNewlinesErrors } from '../utils/get-newlines-errors'
 import { createEslintRule } from '../utils/create-eslint-rule'
 import { getLinesBetween } from '../utils/get-lines-between'
 import { getGroupNumber } from '../utils/get-group-number'
@@ -52,20 +56,23 @@ import { pairwise } from '../utils/pairwise'
  */
 let cachedGroupsByModifiersAndSelectors = new Map<string, string[]>()
 
+type MESSAGE_ID =
+  | 'missedSpacingBetweenArrayIncludesMembers'
+  | 'extraSpacingBetweenArrayIncludesMembers'
+  | 'unexpectedArrayIncludesGroupOrder'
+  | 'unexpectedArrayIncludesOrder'
+
 interface SortArrayIncludesSortingNode
   extends SortingNode<TSESTree.SpreadElement | TSESTree.Expression> {
   groupKind: 'literal' | 'spread'
 }
-
-type MESSAGE_ID =
-  | 'unexpectedArrayIncludesGroupOrder'
-  | 'unexpectedArrayIncludesOrder'
 
 export let defaultOptions: Required<Options[0]> = {
   groupKind: 'literals-first',
   specialCharacters: 'keep',
   partitionByComment: false,
   partitionByNewLine: false,
+  newlinesBetween: 'ignore',
   useConfigurationIf: {},
   type: 'alphabetical',
   ignoreCase: true,
@@ -96,6 +103,7 @@ export let jsonSchema: JSONSchema4 = {
       type: buildTypeJsonSchema({ withUnsorted: true }),
       partitionByNewLine: partitionByNewLineJsonSchema,
       specialCharacters: specialCharactersJsonSchema,
+      newlinesBetween: newlinesBetweenJsonSchema,
       ignoreCase: ignoreCaseJsonSchema,
       alphabet: alphabetJsonSchema,
       locales: localesJsonSchema,
@@ -124,6 +132,10 @@ export default createEslintRule<Options, MESSAGE_ID>({
             : node.object.arguments
         sortArray<MESSAGE_ID>({
           availableMessageIds: {
+            missedSpacingBetweenMembers:
+              'missedSpacingBetweenArrayIncludesMembers',
+            extraSpacingBetweenMembers:
+              'extraSpacingBetweenArrayIncludesMembers',
             unexpectedGroupOrder: 'unexpectedArrayIncludesGroupOrder',
             unexpectedOrder: 'unexpectedArrayIncludesOrder',
           },
@@ -137,6 +149,10 @@ export default createEslintRule<Options, MESSAGE_ID>({
     messages: {
       unexpectedArrayIncludesGroupOrder:
         'Expected "{{right}}" ({{rightGroup}}) to come before "{{left}}" ({{leftGroup}}).',
+      missedSpacingBetweenArrayIncludesMembers:
+        'Missed spacing between "{{left}}" and "{{right}}" members.',
+      extraSpacingBetweenArrayIncludesMembers:
+        'Extra spacing between "{{left}}" and "{{right}}" members.',
       unexpectedArrayIncludesOrder:
         'Expected "{{right}}" to come before "{{left}}".',
     },
@@ -159,6 +175,8 @@ export let sortArray = <MessageIds extends string>({
   context,
 }: {
   availableMessageIds: {
+    missedSpacingBetweenMembers: MessageIds
+    extraSpacingBetweenMembers: MessageIds
     unexpectedGroupOrder: MessageIds
     unexpectedOrder: MessageIds
   }
@@ -192,12 +210,14 @@ export let sortArray = <MessageIds extends string>({
     ...completeOptions,
     type,
   }
+  validateCustomSortConfiguration(options)
   validateGeneratedGroupsConfiguration({
     customGroups: options.customGroups,
     selectors: allSelectors,
     groups: options.groups,
     modifiers: [],
   })
+  validateNewlinesAndPartitionConfiguration(options)
 
   let eslintDisabledLines = getEslintDisabledLines({
     ruleName: context.id,
@@ -329,34 +349,54 @@ export let sortArray = <MessageIds extends string>({
 
       let indexOfRightExcludingEslintDisabled =
         sortedNodesExcludingEslintDisabled.indexOf(right)
-      if (
-        leftIndex < rightIndex &&
-        leftIndex < indexOfRightExcludingEslintDisabled
-      ) {
-        return
-      }
 
-      context.report({
-        fix: fixer =>
-          makeFixes({
-            sortedNodes: sortedNodesExcludingEslintDisabled,
-            sourceCode,
-            options,
-            fixer,
-            nodes,
-          }),
-        data: {
-          right: toSingleLine(right.name),
-          left: toSingleLine(left.name),
-          rightGroup: right.group,
-          leftGroup: left.group,
-        },
-        messageId:
+      let messageIds: MessageIds[] = []
+
+      if (
+        leftIndex > rightIndex ||
+        leftIndex >= indexOfRightExcludingEslintDisabled
+      ) {
+        messageIds.push(
           leftNumber === rightNumber
             ? availableMessageIds.unexpectedOrder
             : availableMessageIds.unexpectedGroupOrder,
-        node: right.node,
-      })
+        )
+      }
+
+      messageIds = [
+        ...messageIds,
+        ...getNewlinesErrors({
+          missedSpacingError: availableMessageIds.missedSpacingBetweenMembers,
+          extraSpacingError: availableMessageIds.extraSpacingBetweenMembers,
+          rightNum: rightNumber,
+          leftNum: leftNumber,
+          sourceCode,
+          options,
+          right,
+          left,
+        }),
+      ]
+
+      for (let messageId of messageIds) {
+        context.report({
+          fix: fixer =>
+            makeFixes({
+              sortedNodes: sortedNodesExcludingEslintDisabled,
+              sourceCode,
+              options,
+              fixer,
+              nodes,
+            }),
+          data: {
+            right: toSingleLine(right.name),
+            left: toSingleLine(left.name),
+            rightGroup: right.group,
+            leftGroup: left.group,
+          },
+          node: right.node,
+          messageId,
+        })
+      }
     })
   }
 }

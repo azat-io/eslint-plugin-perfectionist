@@ -200,6 +200,12 @@ Allows you to specify names or patterns for JSX elements that should be ignored 
 
 You can specify their names or a regexp pattern to ignore, for example: `'^Table.+'` to ignore all object types whose names begin with the word Table.
 
+### partitionByNewLine
+
+<sub>default: `false`</sub>
+
+When `true`, the rule will not sort members if there is an empty line between them. This can be useful for keeping logically separated groups of members in their defined order.
+
 ### groups
 
 <sub>
@@ -224,6 +230,25 @@ Within a given group, members will be sorted according to the `type`, `order`, `
 
 Individual groups can be combined together by placing them in an array. The order of groups in that array does not matter.
 All members of the groups in the array will be sorted together as if they were part of a single group.
+
+#### Newlines between groups
+
+You may place `newlinesBetween` objects between your groups to enforce the newline behavior between two specific groups.
+
+See the [`newlinesBetween`](#newlinesbetween) option.
+
+This feature is only applicable when `partitionByNewLine` is false.
+
+```ts
+{
+  newlinesBetween: 'always',
+  groups: [
+    'a',
+    { newlinesBetween: 'never' }, // Overrides the global newlinesBetween option
+    'b',
+  ]
+}
+```
 
 ### customGroups
 
@@ -280,6 +305,8 @@ Custom group matching takes precedence over predefined group matching.
                   ignoreCase: true,
                   specialCharacters: 'keep',
                   ignorePattern: [],
+                  partitionByNewLine: false,
+                  newlinesBetween: 'ignore',
                   groups: [],
                   customGroups: {},
                 },
@@ -307,6 +334,8 @@ Custom group matching takes precedence over predefined group matching.
                 ignoreCase: true,
                 specialCharacters: 'keep',
                 ignorePattern: [],
+                partitionByNewLine: false,
+                newlinesBetween: 'ignore',
                 groups: [],
                 customGroups: {},
               },
