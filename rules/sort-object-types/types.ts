@@ -1,5 +1,6 @@
 import type { JSONSchema4 } from '@typescript-eslint/utils/json-schema'
 
+import type { PartitionByCommentOption } from '../../types/common-options'
 import type { JoinWithDash } from '../../types/join-with-dash'
 
 import {
@@ -9,14 +10,6 @@ import {
 } from '../../utils/common-json-schemas'
 
 export type Options = Partial<{
-  partitionByComment:
-    | {
-        block?: string[] | boolean | string
-        line?: string[] | boolean | string
-      }
-    | string[]
-    | boolean
-    | string
   useConfigurationIf: {
     declarationMatchesPattern?: string
     allNamesMatchPattern?: string
@@ -34,6 +27,7 @@ export type Options = Partial<{
   groupKind: 'required-first' | 'optional-first' | 'mixed'
   newlinesBetween: 'ignore' | 'always' | 'never'
   specialCharacters: 'remove' | 'trim' | 'keep'
+  partitionByComment: PartitionByCommentOption
   locales: NonNullable<Intl.LocalesArgument>
   partitionByNewLine: boolean
   /**

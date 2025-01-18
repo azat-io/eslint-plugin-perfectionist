@@ -1,6 +1,7 @@
 import type { TSESTree } from '@typescript-eslint/types'
 
 import type { SortingNodeWithDependencies } from '../utils/sort-nodes-by-dependencies'
+import type { PartitionByCommentOption } from '../types/common-options'
 import type { CompareOptions } from '../utils/compare'
 
 import {
@@ -38,16 +39,9 @@ import { pairwise } from '../utils/pairwise'
 
 export type Options = [
   Partial<{
-    partitionByComment:
-      | {
-          block?: string[] | boolean | string
-          line?: string[] | boolean | string
-        }
-      | string[]
-      | boolean
-      | string
     type: 'alphabetical' | 'line-length' | 'natural' | 'custom'
     specialCharacters: 'remove' | 'trim' | 'keep'
+    partitionByComment: PartitionByCommentOption
     locales: NonNullable<Intl.LocalesArgument>
     partitionByNewLine: boolean
     forceNumericSort: boolean

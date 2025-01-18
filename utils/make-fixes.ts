@@ -1,5 +1,6 @@
 import type { TSESLint } from '@typescript-eslint/utils'
 
+import type { PartitionByCommentOption } from '../types/common-options'
 import type { SortingNode } from '../types/sorting-node'
 
 import { makeCommentAfterFixes } from './make-comment-after-fixes'
@@ -8,14 +9,6 @@ import { makeOrderFixes } from './make-order-fixes'
 
 interface MakeFixesParameters {
   options?: {
-    partitionByComment?:
-      | {
-          block?: string[] | boolean | string
-          line?: string[] | boolean | string
-        }
-      | string[]
-      | boolean
-      | string
     groups?: (
       | { newlinesBetween: 'ignore' | 'always' | 'never' }
       | string[]
@@ -23,6 +16,7 @@ interface MakeFixesParameters {
     )[]
     customGroups?: Record<string, string[] | string> | CustomGroup[]
     newlinesBetween?: 'ignore' | 'always' | 'never'
+    partitionByComment?: PartitionByCommentOption
   }
   ignoreFirstNodeHighestBlockComment?: boolean
   sourceCode: TSESLint.SourceCode

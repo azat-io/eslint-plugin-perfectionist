@@ -1,6 +1,7 @@
 import type { RuleContext } from '@typescript-eslint/utils/ts-eslint'
 import type { TSESTree } from '@typescript-eslint/types'
 
+import type { PartitionByCommentOption } from '../types/common-options'
 import type { SortingNode } from '../types/sorting-node'
 
 import {
@@ -38,16 +39,9 @@ import { pairwise } from '../utils/pairwise'
 
 export type Options<T extends string = string> = [
   Partial<{
-    partitionByComment:
-      | {
-          block?: string[] | boolean | string
-          line?: string[] | boolean | string
-        }
-      | string[]
-      | boolean
-      | string
     type: 'alphabetical' | 'line-length' | 'natural' | 'custom'
     specialCharacters: 'remove' | 'trim' | 'keep'
+    partitionByComment: PartitionByCommentOption
     customGroups: Record<T, string[] | string>
     locales: NonNullable<Intl.LocalesArgument>
     groups: (Group<T>[] | Group<T>)[]
