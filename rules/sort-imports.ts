@@ -24,12 +24,10 @@ import { getOptionsWithCleanGroups } from '../utils/get-options-with-clean-group
 import { getEslintDisabledLines } from '../utils/get-eslint-disabled-lines'
 import { getTypescriptImport } from './sort-imports/get-typescript-import'
 import { isNodeEslintDisabled } from '../utils/is-node-eslint-disabled'
-import { hasPartitionComment } from '../utils/has-partition-comment'
 import { sortNodesByGroups } from '../utils/sort-nodes-by-groups'
-import { getCommentsBefore } from '../utils/get-comments-before'
 import { createEslintRule } from '../utils/create-eslint-rule'
-import { getLinesBetween } from '../utils/get-lines-between'
 import { reportAllErrors } from '../utils/report-all-errors'
+import { shouldPartition } from '../utils/should-partition'
 import { getSourceCode } from '../utils/get-source-code'
 import { rangeToDiff } from '../utils/range-to-diff'
 import { getSettings } from '../utils/get-settings'
@@ -471,16 +469,12 @@ export default createEslintRule<Options, MESSAGE_ID>({
           let lastSortingNode = lastGroup?.at(-1)
 
           if (
-            hasPartitionComment({
-              comments: getCommentsBefore({
-                node: sortingNode.node,
-                sourceCode,
-              }),
-              partitionByComment: options.partitionByComment,
+            shouldPartition({
+              lastSortingNode,
+              sortingNode,
+              sourceCode,
+              options,
             }) ||
-            (options.partitionByNewLine &&
-              lastSortingNode &&
-              getLinesBetween(sourceCode, lastSortingNode, sortingNode)) ||
             (lastSortingNode &&
               hasContentBetweenNodes(lastSortingNode, sortingNode))
           ) {

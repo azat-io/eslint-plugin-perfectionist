@@ -17,11 +17,9 @@ import { validateCustomSortConfiguration } from '../utils/validate-custom-sort-c
 import { sortNodesByDependencies } from '../utils/sort-nodes-by-dependencies'
 import { getEslintDisabledLines } from '../utils/get-eslint-disabled-lines'
 import { isNodeEslintDisabled } from '../utils/is-node-eslint-disabled'
-import { hasPartitionComment } from '../utils/has-partition-comment'
-import { getCommentsBefore } from '../utils/get-comments-before'
 import { createEslintRule } from '../utils/create-eslint-rule'
-import { getLinesBetween } from '../utils/get-lines-between'
 import { reportAllErrors } from '../utils/report-all-errors'
+import { shouldPartition } from '../utils/should-partition'
 import { getEnumMembers } from '../utils/get-enum-members'
 import { getSourceCode } from '../utils/get-source-code'
 import { rangeToDiff } from '../utils/range-to-diff'
@@ -144,16 +142,12 @@ export default createEslintRule<Options, MESSAGE_ID>({
           }
 
           if (
-            hasPartitionComment({
-              comments: getCommentsBefore({
-                node: member,
-                sourceCode,
-              }),
-              partitionByComment: options.partitionByComment,
-            }) ||
-            (options.partitionByNewLine &&
-              lastSortingNode &&
-              getLinesBetween(sourceCode, lastSortingNode, sortingNode))
+            shouldPartition({
+              lastSortingNode,
+              sortingNode,
+              sourceCode,
+              options,
+            })
           ) {
             accumulator.push([])
           }

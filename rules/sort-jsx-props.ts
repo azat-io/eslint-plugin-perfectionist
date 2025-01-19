@@ -18,8 +18,8 @@ import { getEslintDisabledLines } from '../utils/get-eslint-disabled-lines'
 import { isNodeEslintDisabled } from '../utils/is-node-eslint-disabled'
 import { sortNodesByGroups } from '../utils/sort-nodes-by-groups'
 import { createEslintRule } from '../utils/create-eslint-rule'
-import { getLinesBetween } from '../utils/get-lines-between'
 import { reportAllErrors } from '../utils/report-all-errors'
+import { shouldPartition } from '../utils/should-partition'
 import { getSourceCode } from '../utils/get-source-code'
 import { rangeToDiff } from '../utils/range-to-diff'
 import { getSettings } from '../utils/get-settings'
@@ -137,9 +137,12 @@ export default createEslintRule<Options, MESSAGE_ID>({
 
             let lastSortingNode = accumulator.at(-1)?.at(-1)
             if (
-              options.partitionByNewLine &&
-              lastSortingNode &&
-              getLinesBetween(sourceCode, lastSortingNode, sortingNode)
+              shouldPartition({
+                lastSortingNode,
+                sortingNode,
+                sourceCode,
+                options,
+              })
             ) {
               accumulator.push([])
             }

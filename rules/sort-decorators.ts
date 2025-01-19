@@ -19,12 +19,11 @@ import { validateGroupsConfiguration } from '../utils/validate-groups-configurat
 import { getEslintDisabledLines } from '../utils/get-eslint-disabled-lines'
 import { isNodeEslintDisabled } from '../utils/is-node-eslint-disabled'
 import { getDecoratorName } from './sort-decorators/get-decorator-name'
-import { hasPartitionComment } from '../utils/has-partition-comment'
 import { sortNodesByGroups } from '../utils/sort-nodes-by-groups'
-import { getCommentsBefore } from '../utils/get-comments-before'
 import { getNodeDecorators } from '../utils/get-node-decorators'
 import { createEslintRule } from '../utils/create-eslint-rule'
 import { reportAllErrors } from '../utils/report-all-errors'
+import { shouldPartition } from '../utils/should-partition'
 import { getSourceCode } from '../utils/get-source-code'
 import { rangeToDiff } from '../utils/range-to-diff'
 import { getSettings } from '../utils/get-settings'
@@ -203,18 +202,6 @@ let sortDecorators = (
 
   let formattedMembers: SortDecoratorsSortingNode[][] = decorators.reduce(
     (accumulator: SortDecoratorsSortingNode[][], decorator) => {
-      if (
-        hasPartitionComment({
-          comments: getCommentsBefore({
-            node: decorator,
-            sourceCode,
-          }),
-          partitionByComment: options.partitionByComment,
-        })
-      ) {
-        accumulator.push([])
-      }
-
       let { setCustomGroups, getGroup } = useGroups(options)
       let name = getDecoratorName(decorator)
 
@@ -226,6 +213,18 @@ let sortDecorators = (
         group: getGroup(),
         node: decorator,
         name,
+      }
+
+      let lastSortingNode = accumulator.at(-1)?.at(-1)
+      if (
+        shouldPartition({
+          lastSortingNode,
+          sortingNode,
+          sourceCode,
+          options,
+        })
+      ) {
+        accumulator.push([])
       }
 
       accumulator.at(-1)!.push(sortingNode)

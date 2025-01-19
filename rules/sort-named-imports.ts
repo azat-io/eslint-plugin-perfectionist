@@ -15,11 +15,9 @@ import {
 import { validateCustomSortConfiguration } from '../utils/validate-custom-sort-configuration'
 import { getEslintDisabledLines } from '../utils/get-eslint-disabled-lines'
 import { isNodeEslintDisabled } from '../utils/is-node-eslint-disabled'
-import { hasPartitionComment } from '../utils/has-partition-comment'
-import { getCommentsBefore } from '../utils/get-comments-before'
 import { createEslintRule } from '../utils/create-eslint-rule'
-import { getLinesBetween } from '../utils/get-lines-between'
 import { reportAllErrors } from '../utils/report-all-errors'
+import { shouldPartition } from '../utils/should-partition'
 import { getSourceCode } from '../utils/get-source-code'
 import { rangeToDiff } from '../utils/range-to-diff'
 import { getSettings } from '../utils/get-settings'
@@ -108,16 +106,12 @@ export default createEslintRule<Options, MESSAGE_ID>({
         }
 
         if (
-          hasPartitionComment({
-            comments: getCommentsBefore({
-              node: specifier,
-              sourceCode,
-            }),
-            partitionByComment: options.partitionByComment,
-          }) ||
-          (options.partitionByNewLine &&
-            lastSortingNode &&
-            getLinesBetween(sourceCode, lastSortingNode, sortingNode))
+          shouldPartition({
+            lastSortingNode,
+            sortingNode,
+            sourceCode,
+            options,
+          })
         ) {
           formattedMembers.push([])
         }

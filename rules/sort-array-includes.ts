@@ -29,12 +29,10 @@ import { getMatchingContextOptions } from '../utils/get-matching-context-options
 import { generatePredefinedGroups } from '../utils/generate-predefined-groups'
 import { getEslintDisabledLines } from '../utils/get-eslint-disabled-lines'
 import { isNodeEslintDisabled } from '../utils/is-node-eslint-disabled'
-import { hasPartitionComment } from '../utils/has-partition-comment'
 import { sortNodesByGroups } from '../utils/sort-nodes-by-groups'
-import { getCommentsBefore } from '../utils/get-comments-before'
 import { createEslintRule } from '../utils/create-eslint-rule'
-import { getLinesBetween } from '../utils/get-lines-between'
 import { reportAllErrors } from '../utils/report-all-errors'
+import { shouldPartition } from '../utils/should-partition'
 import { getSourceCode } from '../utils/get-source-code'
 import { rangeToDiff } from '../utils/range-to-diff'
 import { getSettings } from '../utils/get-settings'
@@ -268,16 +266,12 @@ export let sortArray = <MessageIds extends string>({
 
       let lastSortingNode = accumulator.at(-1)?.at(-1)
       if (
-        hasPartitionComment({
-          comments: getCommentsBefore({
-            node: element,
-            sourceCode,
-          }),
-          partitionByComment: options.partitionByComment,
-        }) ||
-        (options.partitionByNewLine &&
-          lastSortingNode &&
-          getLinesBetween(sourceCode, lastSortingNode, sortingNode))
+        shouldPartition({
+          lastSortingNode,
+          sortingNode,
+          sourceCode,
+          options,
+        })
       ) {
         accumulator.push([])
       }

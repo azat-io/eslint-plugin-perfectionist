@@ -22,12 +22,10 @@ import { validateCustomSortConfiguration } from '../utils/validate-custom-sort-c
 import { validateGroupsConfiguration } from '../utils/validate-groups-configuration'
 import { getEslintDisabledLines } from '../utils/get-eslint-disabled-lines'
 import { isNodeEslintDisabled } from '../utils/is-node-eslint-disabled'
-import { hasPartitionComment } from '../utils/has-partition-comment'
 import { sortNodesByGroups } from '../utils/sort-nodes-by-groups'
-import { getCommentsBefore } from '../utils/get-comments-before'
 import { createEslintRule } from '../utils/create-eslint-rule'
-import { getLinesBetween } from '../utils/get-lines-between'
 import { reportAllErrors } from '../utils/report-all-errors'
+import { shouldPartition } from '../utils/should-partition'
 import { getSourceCode } from '../utils/get-source-code'
 import { rangeToDiff } from '../utils/range-to-diff'
 import { getSettings } from '../utils/get-settings'
@@ -251,18 +249,15 @@ export let sortUnionOrIntersectionTypes = <MessageIds extends string>({
         group: getGroup(),
         node: type,
       }
+
       if (
-        hasPartitionComment({
-          comments: getCommentsBefore({
-            tokenValueToIgnoreBefore,
-            node: type,
-            sourceCode,
-          }),
-          partitionByComment: options.partitionByComment,
-        }) ||
-        (options.partitionByNewLine &&
-          lastSortingNode &&
-          getLinesBetween(sourceCode, lastSortingNode, sortingNode))
+        shouldPartition({
+          tokenValueToIgnoreBefore,
+          lastSortingNode,
+          sortingNode,
+          sourceCode,
+          options,
+        })
       ) {
         lastGroup = []
         accumulator.push(lastGroup)

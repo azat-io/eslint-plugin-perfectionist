@@ -31,12 +31,10 @@ import { sortNodesByDependencies } from '../utils/sort-nodes-by-dependencies'
 import { doesCustomGroupMatch } from './sort-classes/does-custom-group-match'
 import { getEslintDisabledLines } from '../utils/get-eslint-disabled-lines'
 import { isNodeEslintDisabled } from '../utils/is-node-eslint-disabled'
-import { hasPartitionComment } from '../utils/has-partition-comment'
 import { sortNodesByGroups } from '../utils/sort-nodes-by-groups'
-import { getCommentsBefore } from '../utils/get-comments-before'
 import { createEslintRule } from '../utils/create-eslint-rule'
-import { getLinesBetween } from '../utils/get-lines-between'
 import { reportAllErrors } from '../utils/report-all-errors'
+import { shouldPartition } from '../utils/should-partition'
 import { getGroupNumber } from '../utils/get-group-number'
 import { getSourceCode } from '../utils/get-source-code'
 import { rangeToDiff } from '../utils/range-to-diff'
@@ -549,18 +547,14 @@ export default createEslintRule<SortClassesOptions, MESSAGE_ID>({
             name,
           }
 
-          let lastMember = accumulator.at(-1)?.at(-1)
+          let lastSortingNode = accumulator.at(-1)?.at(-1)
 
           if (
-            (options.partitionByNewLine &&
-              lastMember &&
-              getLinesBetween(sourceCode, lastMember, sortingNode)) ||
-            hasPartitionComment({
-              comments: getCommentsBefore({
-                node: member,
-                sourceCode,
-              }),
-              partitionByComment: options.partitionByComment,
+            shouldPartition({
+              lastSortingNode,
+              sortingNode,
+              sourceCode,
+              options,
             })
           ) {
             accumulator.push([])
