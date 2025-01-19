@@ -1,10 +1,8 @@
+import type { GroupsOptions } from '../types/common-options'
+
 interface Options {
-  groups: (
-    | { newlinesBetween: 'ignore' | 'always' | 'never' }
-    | string[]
-    | string
-  )[]
   newlinesBetween: 'ignore' | 'always' | 'never'
+  groups: GroupsOptions<string>
   partitionByNewLine: boolean
 }
 

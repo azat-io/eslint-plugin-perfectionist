@@ -1,3 +1,4 @@
+import type { GroupsOptions } from '../types/common-options'
 import type { SortingNode } from '../types/sorting-node'
 
 import { getGroupNumber } from './get-group-number'
@@ -9,13 +10,9 @@ export interface GetNewlinesBetweenOptionParameters {
 }
 
 interface Options {
-  groups: (
-    | { newlinesBetween: 'ignore' | 'always' | 'never' }
-    | string[]
-    | string
-  )[]
   customGroups?: Record<string, string[] | string> | CustomGroup[]
   newlinesBetween: 'ignore' | 'always' | 'never'
+  groups: GroupsOptions<string>
 }
 
 interface CustomGroup {

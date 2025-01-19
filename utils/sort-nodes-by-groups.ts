@@ -1,3 +1,4 @@
+import type { GroupsOptions } from '../types/common-options'
 import type { SortingNode } from '../types/sorting-node'
 import type { CompareOptions } from './compare'
 
@@ -14,17 +15,13 @@ interface ExtraOptions<T extends SortingNode> {
   isNodeIgnored?(node: T): boolean
 }
 
-interface GroupsOptions {
-  groups: (
-    | { newlinesBetween: 'ignore' | 'always' | 'never' }
-    | string[]
-    | string
-  )[]
+interface GroupsOption {
+  groups: GroupsOptions<string>
 }
 
 export let sortNodesByGroups = <T extends SortingNode>(
   nodes: T[],
-  options: CompareOptions<T> & GroupsOptions,
+  options: CompareOptions<T> & GroupsOption,
   extraOptions?: ExtraOptions<T>,
 ): T[] => {
   let nodesByNonIgnoredGroupNumber: Record<number, T[]> = {}
