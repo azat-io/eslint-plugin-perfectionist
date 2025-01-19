@@ -20,20 +20,17 @@ import { getEslintDisabledLines } from '../utils/get-eslint-disabled-lines'
 import { isNodeEslintDisabled } from '../utils/is-node-eslint-disabled'
 import { getDecoratorName } from './sort-decorators/get-decorator-name'
 import { hasPartitionComment } from '../utils/has-partition-comment'
-import { createNodeIndexMap } from '../utils/create-node-index-map'
 import { sortNodesByGroups } from '../utils/sort-nodes-by-groups'
 import { getCommentsBefore } from '../utils/get-comments-before'
 import { getNodeDecorators } from '../utils/get-node-decorators'
 import { createEslintRule } from '../utils/create-eslint-rule'
-import { getGroupNumber } from '../utils/get-group-number'
+import { reportAllErrors } from '../utils/report-all-errors'
 import { getSourceCode } from '../utils/get-source-code'
-import { reportErrors } from '../utils/report-errors'
 import { rangeToDiff } from '../utils/range-to-diff'
 import { getSettings } from '../utils/get-settings'
 import { isSortable } from '../utils/is-sortable'
 import { useGroups } from '../utils/use-groups'
 import { complete } from '../utils/complete'
-import { pairwise } from '../utils/pairwise'
 
 export type Options<T extends string = string> = [
   Partial<
@@ -244,42 +241,18 @@ let sortDecorators = (
     formattedMembers.flatMap(nodes =>
       sortNodesByGroups(nodes, options, { ignoreEslintDisabledNodes }),
     )
-  let sortedNodes = sortNodesExcludingEslintDisabled(false)
-  let sortedNodesExcludingEslintDisabled =
-    sortNodesExcludingEslintDisabled(true)
-
   let nodes = formattedMembers.flat()
 
-  let nodeIndexMap = createNodeIndexMap(sortedNodes)
-
-  pairwise(nodes, (left, right) => {
-    let leftIndex = nodeIndexMap.get(left)!
-    let rightIndex = nodeIndexMap.get(right)!
-    let indexOfRightExcludingEslintDisabled =
-      sortedNodesExcludingEslintDisabled.indexOf(right)
-    if (
-      leftIndex < rightIndex &&
-      leftIndex < indexOfRightExcludingEslintDisabled
-    ) {
-      return
-    }
-    let leftNumber = getGroupNumber(options.groups, left)
-    let rightNumber = getGroupNumber(options.groups, right)
-
-    reportErrors({
-      messageIds: [
-        leftNumber === rightNumber
-          ? 'unexpectedDecoratorsOrder'
-          : 'unexpectedDecoratorsGroupOrder',
-      ],
-      sortedNodes: sortedNodesExcludingEslintDisabled,
-      ignoreFirstNodeHighestBlockComment: true,
-      sourceCode,
-      options,
-      context,
-      nodes,
-      right,
-      left,
-    })
+  reportAllErrors<MESSAGE_ID>({
+    availableMessageIds: {
+      unexpectedGroupOrder: 'unexpectedDecoratorsGroupOrder',
+      unexpectedOrder: 'unexpectedDecoratorsOrder',
+    },
+    ignoreFirstNodeHighestBlockComment: true,
+    sortNodesExcludingEslintDisabled,
+    sourceCode,
+    options,
+    context,
+    nodes,
   })
 }

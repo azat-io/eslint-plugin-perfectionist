@@ -13,27 +13,22 @@ import {
   buildTypeJsonSchema,
   commonJsonSchemas,
 } from '../utils/common-json-schemas'
-import {
-  getFirstUnorderedNodeDependentOn,
-  sortNodesByDependencies,
-} from '../utils/sort-nodes-by-dependencies'
 import { validateCustomSortConfiguration } from '../utils/validate-custom-sort-configuration'
+import { sortNodesByDependencies } from '../utils/sort-nodes-by-dependencies'
 import { getEslintDisabledLines } from '../utils/get-eslint-disabled-lines'
 import { isNodeEslintDisabled } from '../utils/is-node-eslint-disabled'
 import { hasPartitionComment } from '../utils/has-partition-comment'
-import { createNodeIndexMap } from '../utils/create-node-index-map'
 import { getCommentsBefore } from '../utils/get-comments-before'
 import { createEslintRule } from '../utils/create-eslint-rule'
 import { getLinesBetween } from '../utils/get-lines-between'
+import { reportAllErrors } from '../utils/report-all-errors'
 import { getEnumMembers } from '../utils/get-enum-members'
 import { getSourceCode } from '../utils/get-source-code'
-import { reportErrors } from '../utils/report-errors'
 import { rangeToDiff } from '../utils/range-to-diff'
 import { getSettings } from '../utils/get-settings'
 import { isSortable } from '../utils/is-sortable'
 import { sortNodes } from '../utils/sort-nodes'
 import { complete } from '../utils/complete'
-import { pairwise } from '../utils/pairwise'
 
 export type Options = [
   Partial<
@@ -206,7 +201,7 @@ export default createEslintRule<Options, MESSAGE_ID>({
         order: options.order,
       }
 
-      let sortNodesIgnoringEslintDisabledNodes = (
+      let sortNodesExcludingEslintDisabled = (
         ignoreEslintDisabledNodes: boolean,
       ): SortEnumsSortingNode[] =>
         sortNodesByDependencies(
@@ -220,43 +215,16 @@ export default createEslintRule<Options, MESSAGE_ID>({
           },
         )
 
-      let sortedNodes = sortNodesIgnoringEslintDisabledNodes(false)
-      let sortedNodesExcludingEslintDisabled =
-        sortNodesIgnoringEslintDisabledNodes(true)
-
-      let nodeIndexMap = createNodeIndexMap(sortedNodes)
-
-      pairwise(nodes, (left, right) => {
-        let leftIndex = nodeIndexMap.get(left)!
-        let rightIndex = nodeIndexMap.get(right)!
-
-        let indexOfRightExcludingEslintDisabled =
-          sortedNodesExcludingEslintDisabled.indexOf(right)
-        if (
-          leftIndex < rightIndex &&
-          leftIndex < indexOfRightExcludingEslintDisabled
-        ) {
-          return
-        }
-
-        let firstUnorderedNodeDependentOnRight =
-          getFirstUnorderedNodeDependentOn(right, nodes)
-
-        reportErrors({
-          messageIds: [
-            firstUnorderedNodeDependentOnRight
-              ? 'unexpectedEnumsDependencyOrder'
-              : 'unexpectedEnumsOrder',
-          ],
-          sortedNodes: sortedNodesExcludingEslintDisabled,
-          firstUnorderedNodeDependentOnRight,
-          sourceCode,
-          options,
-          context,
-          nodes,
-          right,
-          left,
-        })
+      reportAllErrors<MESSAGE_ID>({
+        availableMessageIds: {
+          unexpectedDependencyOrder: 'unexpectedEnumsDependencyOrder',
+          unexpectedOrder: 'unexpectedEnumsOrder',
+        },
+        sortNodesExcludingEslintDisabled,
+        sourceCode,
+        options,
+        context,
+        nodes,
       })
     },
   }),

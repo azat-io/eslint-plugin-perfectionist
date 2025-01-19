@@ -16,10 +16,6 @@ import {
   commonJsonSchemas,
   groupsJsonSchema,
 } from '../utils/common-json-schemas'
-import {
-  getFirstUnorderedNodeDependentOn,
-  sortNodesByDependencies,
-} from '../utils/sort-nodes-by-dependencies'
 import { validateNewlinesAndPartitionConfiguration } from '../utils/validate-newlines-and-partition-configuration'
 import { validateGeneratedGroupsConfiguration } from '../utils/validate-generated-groups-configuration'
 import {
@@ -31,24 +27,23 @@ import { validateCustomSortConfiguration } from '../utils/validate-custom-sort-c
 import { getCustomGroupsCompareOptions } from '../utils/get-custom-groups-compare-options'
 import { getOverloadSignatureGroups } from './sort-classes/get-overload-signature-groups'
 import { generatePredefinedGroups } from '../utils/generate-predefined-groups'
+import { sortNodesByDependencies } from '../utils/sort-nodes-by-dependencies'
 import { doesCustomGroupMatch } from './sort-classes/does-custom-group-match'
 import { getEslintDisabledLines } from '../utils/get-eslint-disabled-lines'
 import { isNodeEslintDisabled } from '../utils/is-node-eslint-disabled'
 import { hasPartitionComment } from '../utils/has-partition-comment'
 import { sortNodesByGroups } from '../utils/sort-nodes-by-groups'
 import { getCommentsBefore } from '../utils/get-comments-before'
-import { getNewlinesErrors } from '../utils/get-newlines-errors'
 import { createEslintRule } from '../utils/create-eslint-rule'
 import { getLinesBetween } from '../utils/get-lines-between'
+import { reportAllErrors } from '../utils/report-all-errors'
 import { getGroupNumber } from '../utils/get-group-number'
 import { getSourceCode } from '../utils/get-source-code'
-import { reportErrors } from '../utils/report-errors'
 import { rangeToDiff } from '../utils/range-to-diff'
 import { getSettings } from '../utils/get-settings'
 import { isSortable } from '../utils/is-sortable'
 import { useGroups } from '../utils/use-groups'
 import { complete } from '../utils/complete'
-import { pairwise } from '../utils/pairwise'
 import { matches } from '../utils/matches'
 
 /**
@@ -578,7 +573,7 @@ export default createEslintRule<SortClassesOptions, MESSAGE_ID>({
         [[]],
       )
 
-      let sortNodesIgnoringEslintDisabledNodes = (
+      let sortNodesExcludingEslintDisabled = (
         ignoreEslintDisabledNodes: boolean,
       ): SortingNodeWithDependencies[] =>
         sortNodesByDependencies(
@@ -596,64 +591,22 @@ export default createEslintRule<SortClassesOptions, MESSAGE_ID>({
             ignoreEslintDisabledNodes,
           },
         )
-      let sortedNodes = sortNodesIgnoringEslintDisabledNodes(false)
-      let sortedNodesExcludingEslintDisabled =
-        sortNodesIgnoringEslintDisabledNodes(true)
+
       let nodes = formattedNodes.flat()
 
-      pairwise(nodes, (left, right) => {
-        let leftNumber = getGroupNumber(options.groups, left)
-        let rightNumber = getGroupNumber(options.groups, right)
-
-        let indexOfLeft = sortedNodes.indexOf(left)
-        let indexOfRight = sortedNodes.indexOf(right)
-        let indexOfRightExcludingEslintDisabled =
-          sortedNodesExcludingEslintDisabled.indexOf(right)
-
-        let messageIds: MESSAGE_ID[] = []
-        let firstUnorderedNodeDependentOnRight =
-          getFirstUnorderedNodeDependentOn(right, nodes)
-        if (
-          firstUnorderedNodeDependentOnRight ||
-          indexOfLeft > indexOfRight ||
-          indexOfLeft >= indexOfRightExcludingEslintDisabled
-        ) {
-          if (firstUnorderedNodeDependentOnRight) {
-            messageIds.push('unexpectedClassesDependencyOrder')
-          } else {
-            messageIds.push(
-              leftNumber === rightNumber
-                ? 'unexpectedClassesOrder'
-                : 'unexpectedClassesGroupOrder',
-            )
-          }
-        }
-
-        messageIds = [
-          ...messageIds,
-          ...getNewlinesErrors({
-            missedSpacingError: 'missedSpacingBetweenClassMembers',
-            extraSpacingError: 'extraSpacingBetweenClassMembers',
-            rightNum: rightNumber,
-            leftNum: leftNumber,
-            sourceCode,
-            options,
-            right,
-            left,
-          }),
-        ]
-
-        reportErrors({
-          sortedNodes: sortedNodesExcludingEslintDisabled,
-          firstUnorderedNodeDependentOnRight,
-          sourceCode,
-          messageIds,
-          options,
-          context,
-          nodes,
-          right,
-          left,
-        })
+      reportAllErrors<MESSAGE_ID>({
+        availableMessageIds: {
+          missedSpacingBetweenMembers: 'missedSpacingBetweenClassMembers',
+          extraSpacingBetweenMembers: 'extraSpacingBetweenClassMembers',
+          unexpectedDependencyOrder: 'unexpectedClassesDependencyOrder',
+          unexpectedGroupOrder: 'unexpectedClassesGroupOrder',
+          unexpectedOrder: 'unexpectedClassesOrder',
+        },
+        sortNodesExcludingEslintDisabled,
+        sourceCode,
+        options,
+        context,
+        nodes,
       })
     },
   }),
