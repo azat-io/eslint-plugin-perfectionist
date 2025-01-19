@@ -15,18 +15,14 @@ import {
 import { validateCustomSortConfiguration } from '../utils/validate-custom-sort-configuration'
 import { getEslintDisabledLines } from '../utils/get-eslint-disabled-lines'
 import { isNodeEslintDisabled } from '../utils/is-node-eslint-disabled'
-import { hasPartitionComment } from '../utils/has-partition-comment'
-import { createNodeIndexMap } from '../utils/create-node-index-map'
-import { getCommentsBefore } from '../utils/get-comments-before'
 import { createEslintRule } from '../utils/create-eslint-rule'
-import { getLinesBetween } from '../utils/get-lines-between'
+import { reportAllErrors } from '../utils/report-all-errors'
+import { shouldPartition } from '../utils/should-partition'
 import { getSourceCode } from '../utils/get-source-code'
-import { reportErrors } from '../utils/report-errors'
 import { rangeToDiff } from '../utils/range-to-diff'
 import { getSettings } from '../utils/get-settings'
 import { sortNodes } from '../utils/sort-nodes'
 import { complete } from '../utils/complete'
-import { pairwise } from '../utils/pairwise'
 
 type Options = [
   Partial<
@@ -68,7 +64,6 @@ export default createEslintRule<Options, MESSAGE_ID>({
     validateCustomSortConfiguration(options)
 
     let sourceCode = getSourceCode(context)
-    let partitionComment = options.partitionByComment
     let eslintDisabledLines = getEslintDisabledLines({
       ruleName: context.id,
       sourceCode,
@@ -90,21 +85,18 @@ export default createEslintRule<Options, MESSAGE_ID>({
         node,
       }
       let lastNode = parts.at(-1)?.at(-1)
+
       if (
-        (partitionComment &&
-          hasPartitionComment({
-            comments: getCommentsBefore({
-              sourceCode,
-              node,
-            }),
-            partitionByComment: options.partitionByComment,
-          })) ||
-        (options.partitionByNewLine &&
-          lastNode &&
-          getLinesBetween(sourceCode, lastNode, sortingNode))
+        shouldPartition({
+          lastSortingNode: lastNode,
+          sortingNode,
+          sourceCode,
+          options,
+        })
       ) {
         parts.push([])
       }
+
       parts.at(-1)!.push(sortingNode)
     }
 
@@ -135,35 +127,15 @@ export default createEslintRule<Options, MESSAGE_ID>({
               }),
             )
 
-          let sortedNodes = sortNodesExcludingEslintDisabled(false)
-          let sortedNodesExcludingEslintDisabled =
-            sortNodesExcludingEslintDisabled(true)
-
-          let nodeIndexMap = createNodeIndexMap(sortedNodes)
-
-          pairwise(nodes, (left, right) => {
-            let leftIndex = nodeIndexMap.get(left)!
-            let rightIndex = nodeIndexMap.get(right)!
-
-            let indexOfRightExcludingEslintDisabled =
-              sortedNodesExcludingEslintDisabled.indexOf(right)
-            if (
-              leftIndex < rightIndex &&
-              leftIndex < indexOfRightExcludingEslintDisabled
-            ) {
-              return
-            }
-
-            reportErrors({
-              sortedNodes: sortedNodesExcludingEslintDisabled,
-              messageIds: ['unexpectedExportsOrder'],
-              sourceCode,
-              options,
-              context,
-              nodes,
-              right,
-              left,
-            })
+          reportAllErrors<MESSAGE_ID>({
+            availableMessageIds: {
+              unexpectedOrder: 'unexpectedExportsOrder',
+            },
+            sortNodesExcludingEslintDisabled,
+            sourceCode,
+            options,
+            context,
+            nodes,
           })
         }
       },

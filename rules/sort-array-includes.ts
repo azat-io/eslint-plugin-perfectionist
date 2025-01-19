@@ -29,22 +29,16 @@ import { getMatchingContextOptions } from '../utils/get-matching-context-options
 import { generatePredefinedGroups } from '../utils/generate-predefined-groups'
 import { getEslintDisabledLines } from '../utils/get-eslint-disabled-lines'
 import { isNodeEslintDisabled } from '../utils/is-node-eslint-disabled'
-import { hasPartitionComment } from '../utils/has-partition-comment'
-import { createNodeIndexMap } from '../utils/create-node-index-map'
 import { sortNodesByGroups } from '../utils/sort-nodes-by-groups'
-import { getCommentsBefore } from '../utils/get-comments-before'
-import { getNewlinesErrors } from '../utils/get-newlines-errors'
 import { createEslintRule } from '../utils/create-eslint-rule'
-import { getLinesBetween } from '../utils/get-lines-between'
-import { getGroupNumber } from '../utils/get-group-number'
+import { reportAllErrors } from '../utils/report-all-errors'
+import { shouldPartition } from '../utils/should-partition'
 import { getSourceCode } from '../utils/get-source-code'
-import { reportErrors } from '../utils/report-errors'
 import { rangeToDiff } from '../utils/range-to-diff'
 import { getSettings } from '../utils/get-settings'
 import { isSortable } from '../utils/is-sortable'
 import { useGroups } from '../utils/use-groups'
 import { complete } from '../utils/complete'
-import { pairwise } from '../utils/pairwise'
 
 /**
  * Cache computed groups by modifiers and selectors for performance
@@ -272,16 +266,12 @@ export let sortArray = <MessageIds extends string>({
 
       let lastSortingNode = accumulator.at(-1)?.at(-1)
       if (
-        hasPartitionComment({
-          comments: getCommentsBefore({
-            node: element,
-            sourceCode,
-          }),
-          partitionByComment: options.partitionByComment,
-        }) ||
-        (options.partitionByNewLine &&
-          lastSortingNode &&
-          getLinesBetween(sourceCode, lastSortingNode, sortingNode))
+        shouldPartition({
+          lastSortingNode,
+          sortingNode,
+          sourceCode,
+          options,
+        })
       ) {
         accumulator.push([])
       }
@@ -310,7 +300,7 @@ export let sortArray = <MessageIds extends string>({
       ),
     )
 
-    let sortNodesIgnoringEslintDisabledNodes = (
+    let sortNodesExcludingEslintDisabled = (
       ignoreEslintDisabledNodes: boolean,
     ): SortArrayIncludesSortingNode[] =>
       filteredGroupKindNodes.flatMap(groupedNodes =>
@@ -321,59 +311,13 @@ export let sortArray = <MessageIds extends string>({
         }),
       )
 
-    let sortedNodes = sortNodesIgnoringEslintDisabledNodes(false)
-    let sortedNodesExcludingEslintDisabled =
-      sortNodesIgnoringEslintDisabledNodes(true)
-
-    let nodeIndexMap = createNodeIndexMap(sortedNodes)
-
-    pairwise(nodes, (left, right) => {
-      let leftIndex = nodeIndexMap.get(left)!
-      let rightIndex = nodeIndexMap.get(right)!
-
-      let leftNumber = getGroupNumber(options.groups, left)
-      let rightNumber = getGroupNumber(options.groups, right)
-
-      let indexOfRightExcludingEslintDisabled =
-        sortedNodesExcludingEslintDisabled.indexOf(right)
-
-      let messageIds: MessageIds[] = []
-
-      if (
-        leftIndex > rightIndex ||
-        leftIndex >= indexOfRightExcludingEslintDisabled
-      ) {
-        messageIds.push(
-          leftNumber === rightNumber
-            ? availableMessageIds.unexpectedOrder
-            : availableMessageIds.unexpectedGroupOrder,
-        )
-      }
-
-      messageIds = [
-        ...messageIds,
-        ...getNewlinesErrors({
-          missedSpacingError: availableMessageIds.missedSpacingBetweenMembers,
-          extraSpacingError: availableMessageIds.extraSpacingBetweenMembers,
-          rightNum: rightNumber,
-          leftNum: leftNumber,
-          sourceCode,
-          options,
-          right,
-          left,
-        }),
-      ]
-
-      reportErrors({
-        sortedNodes: sortedNodesExcludingEslintDisabled,
-        sourceCode,
-        messageIds,
-        options,
-        context,
-        nodes,
-        right,
-        left,
-      })
+    reportAllErrors<MessageIds>({
+      sortNodesExcludingEslintDisabled,
+      availableMessageIds,
+      sourceCode,
+      options,
+      context,
+      nodes,
     })
   }
 }

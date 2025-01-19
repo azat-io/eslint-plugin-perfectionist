@@ -529,6 +529,13 @@ describe(ruleName, () => {
                   },
                   messageId: 'unexpectedObjectsDependencyOrder',
                 },
+                {
+                  data: {
+                    nodeDependentOnRight: 'b',
+                    right: 'd',
+                  },
+                  messageId: 'unexpectedObjectsDependencyOrder',
+                },
               ],
               output: dedent`
                 let Func = ({
@@ -590,6 +597,13 @@ describe(ruleName, () => {
                   data: {
                     nodeDependentOnRight: 'b',
                     right: 'c',
+                  },
+                  messageId: 'unexpectedObjectsDependencyOrder',
+                },
+                {
+                  data: {
+                    nodeDependentOnRight: 'b',
+                    right: 'd',
                   },
                   messageId: 'unexpectedObjectsDependencyOrder',
                 },
@@ -1029,7 +1043,7 @@ describe(ruleName, () => {
             {
               code: dedent`
                 let Func = ({
-                  b = a,
+                  b = 'b',
                   a = b as any,
                 }) => {
                   // ...
@@ -1054,7 +1068,7 @@ describe(ruleName, () => {
             {
               code: dedent`
                 let Func = ({
-                  b = a,
+                  b = 'b',
                   a = <any>b,
                 }) => {
                   // ...
@@ -1079,7 +1093,7 @@ describe(ruleName, () => {
             {
               code: dedent`
                 let Func = ({
-                  b = a,
+                  b = 'b',
                   a = \`\${b}\`,
                 }) => {
                   // ...
@@ -3555,6 +3569,13 @@ describe(ruleName, () => {
                 },
                 messageId: 'unexpectedObjectsDependencyOrder',
               },
+              {
+                data: {
+                  nodeDependentOnRight: 'b',
+                  right: 'd',
+                },
+                messageId: 'unexpectedObjectsDependencyOrder',
+              },
             ],
             output: dedent`
               let Func = ({
@@ -3616,6 +3637,13 @@ describe(ruleName, () => {
                 data: {
                   nodeDependentOnRight: 'b',
                   right: 'c',
+                },
+                messageId: 'unexpectedObjectsDependencyOrder',
+              },
+              {
+                data: {
+                  nodeDependentOnRight: 'b',
+                  right: 'd',
                 },
                 messageId: 'unexpectedObjectsDependencyOrder',
               },
@@ -4453,6 +4481,13 @@ describe(ruleName, () => {
                 },
                 messageId: 'unexpectedObjectsDependencyOrder',
               },
+              {
+                data: {
+                  nodeDependentOnRight: 'b',
+                  right: 'd',
+                },
+                messageId: 'unexpectedObjectsDependencyOrder',
+              },
             ],
             output: dedent`
               let Func = ({
@@ -4514,6 +4549,13 @@ describe(ruleName, () => {
                 data: {
                   nodeDependentOnRight: 'b',
                   right: 'c',
+                },
+                messageId: 'unexpectedObjectsDependencyOrder',
+              },
+              {
+                data: {
+                  nodeDependentOnRight: 'b',
+                  right: 'd',
                 },
                 messageId: 'unexpectedObjectsDependencyOrder',
               },

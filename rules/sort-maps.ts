@@ -22,23 +22,17 @@ import { getMatchingContextOptions } from '../utils/get-matching-context-options
 import { getEslintDisabledLines } from '../utils/get-eslint-disabled-lines'
 import { doesCustomGroupMatch } from './sort-maps/does-custom-group-match'
 import { isNodeEslintDisabled } from '../utils/is-node-eslint-disabled'
-import { hasPartitionComment } from '../utils/has-partition-comment'
-import { createNodeIndexMap } from '../utils/create-node-index-map'
 import { sortNodesByGroups } from '../utils/sort-nodes-by-groups'
-import { getCommentsBefore } from '../utils/get-comments-before'
-import { getNewlinesErrors } from '../utils/get-newlines-errors'
 import { singleCustomGroupJsonSchema } from './sort-maps/types'
 import { createEslintRule } from '../utils/create-eslint-rule'
-import { getLinesBetween } from '../utils/get-lines-between'
-import { getGroupNumber } from '../utils/get-group-number'
+import { reportAllErrors } from '../utils/report-all-errors'
+import { shouldPartition } from '../utils/should-partition'
 import { getSourceCode } from '../utils/get-source-code'
-import { reportErrors } from '../utils/report-errors'
 import { rangeToDiff } from '../utils/range-to-diff'
 import { getSettings } from '../utils/get-settings'
 import { isSortable } from '../utils/is-sortable'
 import { useGroups } from '../utils/use-groups'
 import { complete } from '../utils/complete'
-import { pairwise } from '../utils/pairwise'
 
 type MESSAGE_ID =
   | 'missedSpacingBetweenMapElementsMembers'
@@ -160,16 +154,12 @@ export default createEslintRule<Options, MESSAGE_ID>({
           }
 
           if (
-            hasPartitionComment({
-              comments: getCommentsBefore({
-                node: element,
-                sourceCode,
-              }),
-              partitionByComment: options.partitionByComment,
-            }) ||
-            (options.partitionByNewLine &&
-              lastSortingNode &&
-              getLinesBetween(sourceCode, lastSortingNode, sortingNode))
+            shouldPartition({
+              lastSortingNode,
+              sortingNode,
+              sourceCode,
+              options,
+            })
           ) {
             formattedMembers.push([])
           }
@@ -186,59 +176,21 @@ export default createEslintRule<Options, MESSAGE_ID>({
                 getCustomGroupsCompareOptions(options, groupNumber),
               ignoreEslintDisabledNodes,
             })
-          let sortedNodes = sortNodesExcludingEslintDisabled(false)
-          let sortedNodesExcludingEslintDisabled =
-            sortNodesExcludingEslintDisabled(true)
 
-          let nodeIndexMap = createNodeIndexMap(sortedNodes)
-
-          pairwise(nodes, (left, right) => {
-            let leftIndex = nodeIndexMap.get(left)!
-            let rightIndex = nodeIndexMap.get(right)!
-
-            let leftNumber = getGroupNumber(options.groups, left)
-            let rightNumber = getGroupNumber(options.groups, right)
-
-            let indexOfRightExcludingEslintDisabled =
-              sortedNodesExcludingEslintDisabled.indexOf(right)
-
-            let messageIds: MESSAGE_ID[] = []
-
-            if (
-              leftIndex > rightIndex ||
-              leftIndex >= indexOfRightExcludingEslintDisabled
-            ) {
-              messageIds.push(
-                leftNumber === rightNumber
-                  ? 'unexpectedMapElementsOrder'
-                  : 'unexpectedMapElementsGroupOrder',
-              )
-            }
-
-            messageIds = [
-              ...messageIds,
-              ...getNewlinesErrors({
-                missedSpacingError: 'missedSpacingBetweenMapElementsMembers',
-                extraSpacingError: 'extraSpacingBetweenMapElementsMembers',
-                rightNum: rightNumber,
-                leftNum: leftNumber,
-                sourceCode,
-                options,
-                right,
-                left,
-              }),
-            ]
-
-            reportErrors({
-              sortedNodes: sortedNodesExcludingEslintDisabled,
-              sourceCode,
-              messageIds,
-              options,
-              context,
-              nodes,
-              right,
-              left,
-            })
+          reportAllErrors<MESSAGE_ID>({
+            availableMessageIds: {
+              missedSpacingBetweenMembers:
+                'missedSpacingBetweenMapElementsMembers',
+              extraSpacingBetweenMembers:
+                'extraSpacingBetweenMapElementsMembers',
+              unexpectedGroupOrder: 'unexpectedMapElementsGroupOrder',
+              unexpectedOrder: 'unexpectedMapElementsOrder',
+            },
+            sortNodesExcludingEslintDisabled,
+            sourceCode,
+            options,
+            context,
+            nodes,
           })
         }
       }

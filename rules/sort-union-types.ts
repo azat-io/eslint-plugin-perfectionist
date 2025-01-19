@@ -22,21 +22,15 @@ import { validateCustomSortConfiguration } from '../utils/validate-custom-sort-c
 import { validateGroupsConfiguration } from '../utils/validate-groups-configuration'
 import { getEslintDisabledLines } from '../utils/get-eslint-disabled-lines'
 import { isNodeEslintDisabled } from '../utils/is-node-eslint-disabled'
-import { hasPartitionComment } from '../utils/has-partition-comment'
-import { createNodeIndexMap } from '../utils/create-node-index-map'
 import { sortNodesByGroups } from '../utils/sort-nodes-by-groups'
-import { getCommentsBefore } from '../utils/get-comments-before'
-import { getNewlinesErrors } from '../utils/get-newlines-errors'
 import { createEslintRule } from '../utils/create-eslint-rule'
-import { getLinesBetween } from '../utils/get-lines-between'
-import { getGroupNumber } from '../utils/get-group-number'
+import { reportAllErrors } from '../utils/report-all-errors'
+import { shouldPartition } from '../utils/should-partition'
 import { getSourceCode } from '../utils/get-source-code'
-import { reportErrors } from '../utils/report-errors'
 import { rangeToDiff } from '../utils/range-to-diff'
 import { getSettings } from '../utils/get-settings'
 import { useGroups } from '../utils/use-groups'
 import { complete } from '../utils/complete'
-import { pairwise } from '../utils/pairwise'
 
 export type Options = [
   Partial<
@@ -255,18 +249,15 @@ export let sortUnionOrIntersectionTypes = <MessageIds extends string>({
         group: getGroup(),
         node: type,
       }
+
       if (
-        hasPartitionComment({
-          comments: getCommentsBefore({
-            tokenValueToIgnoreBefore,
-            node: type,
-            sourceCode,
-          }),
-          partitionByComment: options.partitionByComment,
-        }) ||
-        (options.partitionByNewLine &&
-          lastSortingNode &&
-          getLinesBetween(sourceCode, lastSortingNode, sortingNode))
+        shouldPartition({
+          tokenValueToIgnoreBefore,
+          lastSortingNode,
+          sortingNode,
+          sourceCode,
+          options,
+        })
       ) {
         lastGroup = []
         accumulator.push(lastGroup)
@@ -283,59 +274,14 @@ export let sortUnionOrIntersectionTypes = <MessageIds extends string>({
       ignoreEslintDisabledNodes: boolean,
     ): SortingNode[] =>
       sortNodesByGroups(nodes, options, { ignoreEslintDisabledNodes })
-    let sortedNodes = sortNodesExcludingEslintDisabled(false)
-    let sortedNodesExcludingEslintDisabled =
-      sortNodesExcludingEslintDisabled(true)
 
-    let nodeIndexMap = createNodeIndexMap(sortedNodes)
-
-    pairwise(nodes, (left, right) => {
-      let leftNumber = getGroupNumber(options.groups, left)
-      let rightNumber = getGroupNumber(options.groups, right)
-
-      let leftIndex = nodeIndexMap.get(left)!
-      let rightIndex = nodeIndexMap.get(right)!
-
-      let indexOfRightExcludingEslintDisabled =
-        sortedNodesExcludingEslintDisabled.indexOf(right)
-
-      let messageIds: MessageIds[] = []
-
-      if (
-        leftIndex > rightIndex ||
-        leftIndex >= indexOfRightExcludingEslintDisabled
-      ) {
-        messageIds.push(
-          leftNumber === rightNumber
-            ? availableMessageIds.unexpectedOrder
-            : availableMessageIds.unexpectedGroupOrder,
-        )
-      }
-
-      messageIds = [
-        ...messageIds,
-        ...getNewlinesErrors({
-          missedSpacingError: availableMessageIds.missedSpacingBetweenMembers,
-          extraSpacingError: availableMessageIds.extraSpacingBetweenMembers,
-          rightNum: rightNumber,
-          leftNum: leftNumber,
-          sourceCode,
-          options,
-          right,
-          left,
-        }),
-      ]
-
-      reportErrors({
-        sortedNodes: sortedNodesExcludingEslintDisabled,
-        messageIds,
-        sourceCode,
-        options,
-        context,
-        nodes,
-        right,
-        left,
-      })
+    reportAllErrors<MessageIds>({
+      sortNodesExcludingEslintDisabled,
+      availableMessageIds,
+      sourceCode,
+      options,
+      context,
+      nodes,
     })
   }
 }

@@ -1,16 +1,13 @@
+import type { GroupsOptions } from '../types/common-options'
 import type { SortingNode } from '../types/sorting-node'
 import type { CompareOptions } from './compare'
 
 interface Options {
-  groups: (
-    | { newlinesBetween: 'ignore' | 'always' | 'never' }
-    | string[]
-    | string
-  )[]
   customGroups: Record<string, string[] | string> | CustomGroup[]
   type: 'alphabetical' | 'line-length' | 'natural' | 'custom'
   specialCharacters: 'remove' | 'trim' | 'keep'
   locales: NonNullable<Intl.LocalesArgument>
+  groups: GroupsOptions<string>
   order: 'desc' | 'asc'
   ignoreCase: boolean
   alphabet: string
@@ -40,7 +37,7 @@ type CustomGroup = (
  * if the group should not be sorted.
  */
 export let getCustomGroupsCompareOptions = <T extends SortingNode>(
-  options: Required<Options>,
+  options: Options,
   groupNumber: number,
 ): CompareOptions<T> | null => {
   if (!Array.isArray(options.customGroups)) {

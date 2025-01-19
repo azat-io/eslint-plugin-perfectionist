@@ -16,19 +16,15 @@ import { validateCustomSortConfiguration } from '../utils/validate-custom-sort-c
 import { validateGroupsConfiguration } from '../utils/validate-groups-configuration'
 import { getEslintDisabledLines } from '../utils/get-eslint-disabled-lines'
 import { isNodeEslintDisabled } from '../utils/is-node-eslint-disabled'
-import { createNodeIndexMap } from '../utils/create-node-index-map'
 import { sortNodesByGroups } from '../utils/sort-nodes-by-groups'
-import { getNewlinesErrors } from '../utils/get-newlines-errors'
 import { createEslintRule } from '../utils/create-eslint-rule'
-import { getLinesBetween } from '../utils/get-lines-between'
-import { getGroupNumber } from '../utils/get-group-number'
+import { reportAllErrors } from '../utils/report-all-errors'
+import { shouldPartition } from '../utils/should-partition'
 import { getSourceCode } from '../utils/get-source-code'
-import { reportErrors } from '../utils/report-errors'
 import { rangeToDiff } from '../utils/range-to-diff'
 import { getSettings } from '../utils/get-settings'
 import { isSortable } from '../utils/is-sortable'
 import { useGroups } from '../utils/use-groups'
-import { pairwise } from '../utils/pairwise'
 import { complete } from '../utils/complete'
 import { matches } from '../utils/matches'
 
@@ -141,9 +137,12 @@ export default createEslintRule<Options, MESSAGE_ID>({
 
             let lastSortingNode = accumulator.at(-1)?.at(-1)
             if (
-              options.partitionByNewLine &&
-              lastSortingNode &&
-              getLinesBetween(sourceCode, lastSortingNode, sortingNode)
+              shouldPartition({
+                lastSortingNode,
+                sortingNode,
+                sourceCode,
+                options,
+              })
             ) {
               accumulator.push([])
             }
@@ -160,59 +159,19 @@ export default createEslintRule<Options, MESSAGE_ID>({
           ignoreEslintDisabledNodes: boolean,
         ): SortingNode[] =>
           sortNodesByGroups(nodes, options, { ignoreEslintDisabledNodes })
-        let sortedNodes = sortNodesExcludingEslintDisabled(false)
-        let sortedNodesExcludingEslintDisabled =
-          sortNodesExcludingEslintDisabled(true)
 
-        let nodeIndexMap = createNodeIndexMap(sortedNodes)
-
-        pairwise(nodes, (left, right) => {
-          let leftIndex = nodeIndexMap.get(left)!
-          let rightIndex = nodeIndexMap.get(right)!
-
-          let indexOfRightExcludingEslintDisabled =
-            sortedNodesExcludingEslintDisabled.indexOf(right)
-
-          let leftNumber = getGroupNumber(options.groups, left)
-          let rightNumber = getGroupNumber(options.groups, right)
-
-          let messageIds: MESSAGE_ID[] = []
-
-          if (
-            leftIndex > rightIndex ||
-            leftIndex >= indexOfRightExcludingEslintDisabled
-          ) {
-            messageIds.push(
-              leftNumber === rightNumber
-                ? 'unexpectedJSXPropsOrder'
-                : 'unexpectedJSXPropsGroupOrder',
-            )
-          }
-
-          messageIds = [
-            ...messageIds,
-            ...getNewlinesErrors({
-              missedSpacingError: 'missedSpacingBetweenJSXPropsMembers',
-              extraSpacingError: 'extraSpacingBetweenJSXPropsMembers',
-              rightNum: rightNumber,
-              leftNum: leftNumber,
-              sourceCode,
-              options,
-              right,
-              left,
-            }),
-          ]
-
-          reportErrors({
-            sortedNodes: sortedNodesExcludingEslintDisabled,
-            sourceCode,
-            messageIds,
-            options,
-            context,
-            nodes,
-            right,
-            left,
-          })
+        reportAllErrors<MESSAGE_ID>({
+          availableMessageIds: {
+            missedSpacingBetweenMembers: 'missedSpacingBetweenJSXPropsMembers',
+            extraSpacingBetweenMembers: 'extraSpacingBetweenJSXPropsMembers',
+            unexpectedGroupOrder: 'unexpectedJSXPropsGroupOrder',
+            unexpectedOrder: 'unexpectedJSXPropsOrder',
+          },
+          sortNodesExcludingEslintDisabled,
+          sourceCode,
+          options,
+          context,
+          nodes,
         })
       }
     },

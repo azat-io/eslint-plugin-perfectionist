@@ -24,22 +24,16 @@ import { getOptionsWithCleanGroups } from '../utils/get-options-with-clean-group
 import { getEslintDisabledLines } from '../utils/get-eslint-disabled-lines'
 import { getTypescriptImport } from './sort-imports/get-typescript-import'
 import { isNodeEslintDisabled } from '../utils/is-node-eslint-disabled'
-import { hasPartitionComment } from '../utils/has-partition-comment'
-import { createNodeIndexMap } from '../utils/create-node-index-map'
 import { sortNodesByGroups } from '../utils/sort-nodes-by-groups'
-import { getCommentsBefore } from '../utils/get-comments-before'
-import { getNewlinesErrors } from '../utils/get-newlines-errors'
 import { createEslintRule } from '../utils/create-eslint-rule'
-import { getLinesBetween } from '../utils/get-lines-between'
-import { getGroupNumber } from '../utils/get-group-number'
+import { reportAllErrors } from '../utils/report-all-errors'
+import { shouldPartition } from '../utils/should-partition'
 import { getSourceCode } from '../utils/get-source-code'
-import { reportErrors } from '../utils/report-errors'
 import { rangeToDiff } from '../utils/range-to-diff'
 import { getSettings } from '../utils/get-settings'
 import { isSortable } from '../utils/is-sortable'
 import { useGroups } from '../utils/use-groups'
 import { complete } from '../utils/complete'
-import { pairwise } from '../utils/pairwise'
 import { matches } from '../utils/matches'
 
 export type Options<T extends string = string> = [
@@ -475,16 +469,12 @@ export default createEslintRule<Options, MESSAGE_ID>({
           let lastSortingNode = lastGroup?.at(-1)
 
           if (
-            hasPartitionComment({
-              comments: getCommentsBefore({
-                node: sortingNode.node,
-                sourceCode,
-              }),
-              partitionByComment: options.partitionByComment,
+            shouldPartition({
+              lastSortingNode,
+              sortingNode,
+              sourceCode,
+              options,
             }) ||
-            (options.partitionByNewLine &&
-              lastSortingNode &&
-              getLinesBetween(sourceCode, lastSortingNode, sortingNode)) ||
             (lastSortingNode &&
               hasContentBetweenNodes(lastSortingNode, sortingNode))
           ) {
@@ -511,65 +501,21 @@ export default createEslintRule<Options, MESSAGE_ID>({
               ignoreEslintDisabledNodes,
             })
 
-          let sortedNodes = sortNodesExcludingEslintDisabled(false)
-          let sortedNodesExcludingEslintDisabled =
-            sortNodesExcludingEslintDisabled(true)
-
-          let nodeIndexMap = createNodeIndexMap(sortedNodes)
-
-          pairwise(nodes, (left, right) => {
-            let leftNumber = getGroupNumber(options.groups, left)
-            let rightNumber = getGroupNumber(options.groups, right)
-
-            let leftIndex = nodeIndexMap.get(left)!
-            let rightIndex = nodeIndexMap.get(right)!
-
-            let indexOfRightExcludingEslintDisabled =
-              sortedNodesExcludingEslintDisabled.indexOf(right)
-
-            let messageIds: MESSAGE_ID[] = []
-
-            if (
-              leftIndex > rightIndex ||
-              leftIndex >= indexOfRightExcludingEslintDisabled
-            ) {
-              messageIds.push(
-                leftNumber === rightNumber
-                  ? 'unexpectedImportsOrder'
-                  : 'unexpectedImportsGroupOrder',
-              )
-            }
-
-            messageIds = [
-              ...messageIds,
-              ...getNewlinesErrors({
-                options: {
-                  ...options,
-                  customGroups: [],
-                },
-                missedSpacingError: 'missedSpacingBetweenImports',
-                extraSpacingError: 'extraSpacingBetweenImports',
-                rightNum: rightNumber,
-                leftNum: leftNumber,
-                sourceCode,
-                right,
-                left,
-              }),
-            ]
-
-            reportErrors({
-              options: {
-                ...options,
-                customGroups: [],
-              },
-              sortedNodes: sortedNodesExcludingEslintDisabled,
-              sourceCode,
-              messageIds,
-              context,
-              nodes,
-              right,
-              left,
-            })
+          reportAllErrors<MESSAGE_ID>({
+            availableMessageIds: {
+              missedSpacingBetweenMembers: 'missedSpacingBetweenImports',
+              extraSpacingBetweenMembers: 'extraSpacingBetweenImports',
+              unexpectedGroupOrder: 'unexpectedImportsGroupOrder',
+              unexpectedOrder: 'unexpectedImportsOrder',
+            },
+            options: {
+              ...options,
+              customGroups: [],
+            },
+            sortNodesExcludingEslintDisabled,
+            sourceCode,
+            context,
+            nodes,
           })
         }
       },
