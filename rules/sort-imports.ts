@@ -4,7 +4,7 @@ import { builtinModules } from 'node:module'
 
 import type {
   PartitionByCommentOption,
-  GroupOptions,
+  GroupsOptions,
 } from '../types/common-options'
 import type { SortingNode } from '../types/sorting-node'
 
@@ -53,7 +53,7 @@ export type Options<T extends string = string> = [
     specialCharacters: 'remove' | 'trim' | 'keep'
     partitionByComment: PartitionByCommentOption
     locales: NonNullable<Intl.LocalesArgument>
-    groups: GroupOptions<Group<T>>
+    groups: GroupsOptions<Group<T>>
     environment: 'node' | 'bun'
     partitionByNewLine: boolean
     internalPattern: string[]

@@ -1,6 +1,6 @@
 import type { TSESLint } from '@typescript-eslint/utils'
 
-import type { GroupOptions } from '../types/common-options'
+import type { GroupsOptions } from '../types/common-options'
 import type { SortingNode } from '../types/sorting-node'
 
 import { getNewlinesBetweenOption } from './get-newlines-between-option'
@@ -10,7 +10,7 @@ interface GetNewlinesErrorsParameters<T extends string> {
   options: {
     customGroups?: Record<string, string[] | string> | CustomGroup[]
     newlinesBetween: 'ignore' | 'always' | 'never'
-    groups: GroupOptions<string>
+    groups: GroupsOptions<string>
   }
   sourceCode: TSESLint.SourceCode
   missedSpacingError: T

@@ -3,7 +3,7 @@ import type { JSONSchema4 } from '@typescript-eslint/utils/json-schema'
 import type {
   PartitionByCommentOption,
   CommonOptions,
-  GroupOptions,
+  GroupsOptions,
 } from '../../types/common-options'
 import type { JoinWithDash } from '../../types/join-with-dash'
 
@@ -25,7 +25,7 @@ export type Options = Partial<
     destructuredObjects: { groups: boolean } | boolean
     newlinesBetween: 'ignore' | 'always' | 'never'
     partitionByComment: PartitionByCommentOption
-    groups: GroupOptions<Group>
+    groups: GroupsOptions<Group>
     partitionByNewLine: boolean
     objectDeclarations: boolean
     styledComponents: boolean

@@ -2,7 +2,7 @@ import type { TSESLint } from '@typescript-eslint/utils'
 
 import type {
   PartitionByCommentOption,
-  GroupOptions,
+  GroupsOptions,
 } from '../types/common-options'
 import type { SortingNode } from '../types/sorting-node'
 
@@ -15,7 +15,7 @@ export interface MakeFixesParameters {
     customGroups?: Record<string, string[] | string> | CustomGroup[]
     newlinesBetween?: 'ignore' | 'always' | 'never'
     partitionByComment?: PartitionByCommentOption
-    groups?: GroupOptions<string>
+    groups?: GroupsOptions<string>
   }
   ignoreFirstNodeHighestBlockComment?: boolean
   sourceCode: TSESLint.SourceCode

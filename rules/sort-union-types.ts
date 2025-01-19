@@ -5,7 +5,7 @@ import type { TSESTree } from '@typescript-eslint/types'
 import type {
   PartitionByCommentOption,
   CommonOptions,
-  GroupOptions,
+  GroupsOptions,
 } from '../types/common-options'
 import type { SortingNode } from '../types/sorting-node'
 
@@ -44,7 +44,7 @@ export type Options = [
       type: 'alphabetical' | 'line-length' | 'natural' | 'custom'
       newlinesBetween: 'ignore' | 'always' | 'never'
       partitionByComment: PartitionByCommentOption
-      groups: GroupOptions<Group>
+      groups: GroupsOptions<Group>
       partitionByNewLine: boolean
     } & CommonOptions
   >,

@@ -3,7 +3,7 @@ import type { JSONSchema4 } from '@typescript-eslint/utils/json-schema'
 import type {
   PartitionByCommentOption,
   CommonOptions,
-  GroupOptions,
+  GroupsOptions,
 } from '../../types/common-options'
 
 import {
@@ -23,7 +23,7 @@ export type Options = Partial<
     groupKind: 'literals-first' | 'spreads-first' | 'mixed'
     newlinesBetween: 'ignore' | 'always' | 'never'
     partitionByComment: PartitionByCommentOption
-    groups: GroupOptions<Group>
+    groups: GroupsOptions<Group>
     customGroups: CustomGroup[]
     partitionByNewLine: boolean
   } & CommonOptions

@@ -1,12 +1,12 @@
-interface GroupOptions {
-  groups: (
-    | { newlinesBetween: 'ignore' | 'always' | 'never' }
-    | string[]
-    | string
-  )[]
+import type { GroupsOptions } from '../types/common-options'
+
+interface GetOptionsWithCleanGroupsParameters {
+  groups: GroupsOptions<string>
 }
 
-export let getOptionsWithCleanGroups = <T extends GroupOptions>(
+export let getOptionsWithCleanGroups = <
+  T extends GetOptionsWithCleanGroupsParameters,
+>(
   options: T,
 ): T => ({
   ...options,

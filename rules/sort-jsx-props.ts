@@ -1,6 +1,6 @@
 import type { TSESTree } from '@typescript-eslint/types'
 
-import type { CommonOptions, GroupOptions } from '../types/common-options'
+import type { CommonOptions, GroupsOptions } from '../types/common-options'
 import type { SortingNode } from '../types/sorting-node'
 
 import {
@@ -38,7 +38,7 @@ type Options<T extends string = string> = [
       type: 'alphabetical' | 'line-length' | 'natural' | 'custom'
       newlinesBetween: 'ignore' | 'always' | 'never'
       customGroups: Record<T, string[] | string>
-      groups: GroupOptions<Group<T>>
+      groups: GroupsOptions<Group<T>>
       partitionByNewLine: boolean
       ignorePattern: string[]
     } & CommonOptions
