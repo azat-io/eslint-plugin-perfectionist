@@ -2,19 +2,20 @@ import type { JSONSchema4 } from '@typescript-eslint/utils/json-schema'
 import type { RuleContext } from '@typescript-eslint/utils/ts-eslint'
 import type { TSESTree } from '@typescript-eslint/types'
 
+import type {
+  PartitionByCommentOption,
+  CommonOptions,
+  GroupsOptions,
+} from '../types/common-options'
 import type { SortingNode } from '../types/sorting-node'
 
 import {
   partitionByCommentJsonSchema,
   partitionByNewLineJsonSchema,
-  specialCharactersJsonSchema,
   newlinesBetweenJsonSchema,
-  ignoreCaseJsonSchema,
   buildTypeJsonSchema,
-  alphabetJsonSchema,
-  localesJsonSchema,
+  commonJsonSchemas,
   groupsJsonSchema,
-  orderJsonSchema,
 } from '../utils/common-json-schemas'
 import { validateNewlinesAndPartitionConfiguration } from '../utils/validate-newlines-and-partition-configuration'
 import { validateCustomSortConfiguration } from '../utils/validate-custom-sort-configuration'
@@ -30,38 +31,23 @@ import { createEslintRule } from '../utils/create-eslint-rule'
 import { getLinesBetween } from '../utils/get-lines-between'
 import { getGroupNumber } from '../utils/get-group-number'
 import { getSourceCode } from '../utils/get-source-code'
-import { toSingleLine } from '../utils/to-single-line'
+import { reportErrors } from '../utils/report-errors'
 import { rangeToDiff } from '../utils/range-to-diff'
 import { getSettings } from '../utils/get-settings'
-import { makeFixes } from '../utils/make-fixes'
 import { useGroups } from '../utils/use-groups'
 import { complete } from '../utils/complete'
 import { pairwise } from '../utils/pairwise'
 
 export type Options = [
-  Partial<{
-    partitionByComment:
-      | {
-          block?: string[] | boolean | string
-          line?: string[] | boolean | string
-        }
-      | string[]
-      | boolean
-      | string
-    groups: (
-      | { newlinesBetween: 'ignore' | 'always' | 'never' }
-      | Group[]
-      | Group
-    )[]
-    type: 'alphabetical' | 'line-length' | 'natural' | 'custom'
-    newlinesBetween: 'ignore' | 'always' | 'never'
-    specialCharacters: 'remove' | 'trim' | 'keep'
-    locales: NonNullable<Intl.LocalesArgument>
-    partitionByNewLine: boolean
-    order: 'desc' | 'asc'
-    ignoreCase: boolean
-    alphabet: string
-  }>,
+  Partial<
+    {
+      type: 'alphabetical' | 'line-length' | 'natural' | 'custom'
+      newlinesBetween: 'ignore' | 'always' | 'never'
+      partitionByComment: PartitionByCommentOption
+      groups: GroupsOptions<Group>
+      partitionByNewLine: boolean
+    } & CommonOptions
+  >,
 ]
 
 type Group =
@@ -100,20 +86,12 @@ let defaultOptions: Required<Options[0]> = {
 
 export let jsonSchema: JSONSchema4 = {
   properties: {
-    partitionByComment: {
-      ...partitionByCommentJsonSchema,
-      description:
-        'Allows you to use comments to separate the union types into logical groups.',
-    },
+    ...commonJsonSchemas,
+    partitionByComment: partitionByCommentJsonSchema,
     partitionByNewLine: partitionByNewLineJsonSchema,
-    specialCharacters: specialCharactersJsonSchema,
     newlinesBetween: newlinesBetweenJsonSchema,
-    ignoreCase: ignoreCaseJsonSchema,
-    alphabet: alphabetJsonSchema,
     type: buildTypeJsonSchema(),
-    locales: localesJsonSchema,
     groups: groupsJsonSchema,
-    order: orderJsonSchema,
   },
   additionalProperties: false,
   type: 'object',
@@ -348,26 +326,16 @@ export let sortUnionOrIntersectionTypes = <MessageIds extends string>({
         }),
       ]
 
-      for (let messageId of messageIds) {
-        context.report({
-          fix: fixer =>
-            makeFixes({
-              sortedNodes: sortedNodesExcludingEslintDisabled,
-              sourceCode,
-              options,
-              fixer,
-              nodes,
-            }),
-          data: {
-            right: toSingleLine(right.name),
-            left: toSingleLine(left.name),
-            rightGroup: right.group,
-            leftGroup: left.group,
-          },
-          node: right.node,
-          messageId,
-        })
-      }
+      reportErrors({
+        sortedNodes: sortedNodesExcludingEslintDisabled,
+        messageIds,
+        sourceCode,
+        options,
+        context,
+        nodes,
+        right,
+        left,
+      })
     })
   }
 }

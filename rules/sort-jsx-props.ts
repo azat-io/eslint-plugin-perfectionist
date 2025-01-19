@@ -1,18 +1,15 @@
 import type { TSESTree } from '@typescript-eslint/types'
 
+import type { CommonOptions, GroupsOptions } from '../types/common-options'
 import type { SortingNode } from '../types/sorting-node'
 
 import {
   partitionByNewLineJsonSchema,
-  specialCharactersJsonSchema,
   newlinesBetweenJsonSchema,
   customGroupsJsonSchema,
-  ignoreCaseJsonSchema,
   buildTypeJsonSchema,
-  alphabetJsonSchema,
-  localesJsonSchema,
+  commonJsonSchemas,
   groupsJsonSchema,
-  orderJsonSchema,
 } from '../utils/common-json-schemas'
 import { validateNewlinesAndPartitionConfiguration } from '../utils/validate-newlines-and-partition-configuration'
 import { validateCustomSortConfiguration } from '../utils/validate-custom-sort-configuration'
@@ -26,33 +23,26 @@ import { createEslintRule } from '../utils/create-eslint-rule'
 import { getLinesBetween } from '../utils/get-lines-between'
 import { getGroupNumber } from '../utils/get-group-number'
 import { getSourceCode } from '../utils/get-source-code'
+import { reportErrors } from '../utils/report-errors'
 import { rangeToDiff } from '../utils/range-to-diff'
 import { getSettings } from '../utils/get-settings'
 import { isSortable } from '../utils/is-sortable'
-import { makeFixes } from '../utils/make-fixes'
 import { useGroups } from '../utils/use-groups'
 import { pairwise } from '../utils/pairwise'
 import { complete } from '../utils/complete'
 import { matches } from '../utils/matches'
 
-type Options<T extends string[]> = [
-  Partial<{
-    groups: (
-      | { newlinesBetween: 'ignore' | 'always' | 'never' }
-      | Group<T>[]
-      | Group<T>
-    )[]
-    type: 'alphabetical' | 'line-length' | 'natural' | 'custom'
-    customGroups: Record<T[number], string[] | string>
-    newlinesBetween: 'ignore' | 'always' | 'never'
-    specialCharacters: 'remove' | 'trim' | 'keep'
-    locales: NonNullable<Intl.LocalesArgument>
-    partitionByNewLine: boolean
-    ignorePattern: string[]
-    order: 'desc' | 'asc'
-    ignoreCase: boolean
-    alphabet: string
-  }>,
+type Options<T extends string = string> = [
+  Partial<
+    {
+      type: 'alphabetical' | 'line-length' | 'natural' | 'custom'
+      newlinesBetween: 'ignore' | 'always' | 'never'
+      customGroups: Record<T, string[] | string>
+      groups: GroupsOptions<Group<T>>
+      partitionByNewLine: boolean
+      ignorePattern: string[]
+    } & CommonOptions
+  >,
 ]
 
 type MESSAGE_ID =
@@ -61,13 +51,9 @@ type MESSAGE_ID =
   | 'unexpectedJSXPropsGroupOrder'
   | 'unexpectedJSXPropsOrder'
 
-type Group<T extends string[]> =
-  | 'multiline'
-  | 'shorthand'
-  | 'unknown'
-  | T[number]
+type Group<T extends string> = 'multiline' | 'shorthand' | 'unknown' | T
 
-let defaultOptions: Required<Options<string[]>[0]> = {
+let defaultOptions: Required<Options[0]> = {
   specialCharacters: 'keep',
   newlinesBetween: 'ignore',
   partitionByNewLine: false,
@@ -81,7 +67,7 @@ let defaultOptions: Required<Options<string[]>[0]> = {
   groups: [],
 }
 
-export default createEslintRule<Options<string[]>, MESSAGE_ID>({
+export default createEslintRule<Options, MESSAGE_ID>({
   create: context => ({
     JSXElement: node => {
       if (!isSortable(node.openingElement.attributes)) {
@@ -217,26 +203,16 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
             }),
           ]
 
-          for (let messageId of messageIds) {
-            context.report({
-              fix: fixer =>
-                makeFixes({
-                  sortedNodes: sortedNodesExcludingEslintDisabled,
-                  sourceCode,
-                  options,
-                  fixer,
-                  nodes,
-                }),
-              data: {
-                rightGroup: right.group,
-                leftGroup: left.group,
-                right: right.name,
-                left: left.name,
-              },
-              node: right.node,
-              messageId,
-            })
-          }
+          reportErrors({
+            sortedNodes: sortedNodesExcludingEslintDisabled,
+            sourceCode,
+            messageIds,
+            options,
+            context,
+            nodes,
+            right,
+            left,
+          })
         })
       }
     },
@@ -245,6 +221,7 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
     schema: [
       {
         properties: {
+          ...commonJsonSchemas,
           ignorePattern: {
             description:
               'Specifies names or patterns for nodes that should be ignored by rule.',
@@ -254,15 +231,10 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
             type: 'array',
           },
           partitionByNewLine: partitionByNewLineJsonSchema,
-          specialCharacters: specialCharactersJsonSchema,
           newlinesBetween: newlinesBetweenJsonSchema,
           customGroups: customGroupsJsonSchema,
-          ignoreCase: ignoreCaseJsonSchema,
-          alphabet: alphabetJsonSchema,
           type: buildTypeJsonSchema(),
-          locales: localesJsonSchema,
           groups: groupsJsonSchema,
-          order: orderJsonSchema,
         },
         additionalProperties: false,
         type: 'object',

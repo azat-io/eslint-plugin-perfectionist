@@ -1,17 +1,14 @@
 import type { RuleContext } from '@typescript-eslint/utils/ts-eslint'
 import type { TSESTree } from '@typescript-eslint/types'
 
+import type { CommonOptions } from '../types/common-options'
 import type { SortingNode } from '../types/sorting-node'
 
 import {
-  specialCharactersJsonSchema,
   customGroupsJsonSchema,
-  ignoreCaseJsonSchema,
   buildTypeJsonSchema,
-  alphabetJsonSchema,
-  localesJsonSchema,
+  commonJsonSchemas,
   groupsJsonSchema,
-  orderJsonSchema,
 } from '../utils/common-json-schemas'
 import { validateCustomSortConfiguration } from '../utils/validate-custom-sort-configuration'
 import { validateGroupsConfiguration } from '../utils/validate-groups-configuration'
@@ -22,35 +19,31 @@ import { sortNodesByGroups } from '../utils/sort-nodes-by-groups'
 import { createEslintRule } from '../utils/create-eslint-rule'
 import { getGroupNumber } from '../utils/get-group-number'
 import { getSourceCode } from '../utils/get-source-code'
-import { toSingleLine } from '../utils/to-single-line'
+import { reportErrors } from '../utils/report-errors'
 import { rangeToDiff } from '../utils/range-to-diff'
 import { getSettings } from '../utils/get-settings'
 import { isSortable } from '../utils/is-sortable'
-import { makeFixes } from '../utils/make-fixes'
 import { useGroups } from '../utils/use-groups'
 import { complete } from '../utils/complete'
 import { pairwise } from '../utils/pairwise'
 
-export type Options<T extends string[]> = [
-  Partial<{
-    type: 'alphabetical' | 'line-length' | 'natural' | 'custom'
-    customGroups: Record<T[number], string[] | string>
-    specialCharacters: 'remove' | 'trim' | 'keep'
-    locales: NonNullable<Intl.LocalesArgument>
-    groups: (Group<T>[] | Group<T>)[]
-    order: 'desc' | 'asc'
-    ignoreCase: boolean
-    alphabet: string
-  }>,
+export type Options<T extends string = string> = [
+  Partial<
+    {
+      type: 'alphabetical' | 'line-length' | 'natural' | 'custom'
+      customGroups: Record<T, string[] | string>
+      groups: (Group<T>[] | Group<T>)[]
+    } & CommonOptions
+  >,
 ]
 
 type MESSAGE_ID =
   | 'unexpectedHeritageClausesGroupOrder'
   | 'unexpectedHeritageClausesOrder'
 
-type Group<T extends string[]> = 'unknown' | T[number]
+type Group<T extends string> = 'unknown' | T
 
-let defaultOptions: Required<Options<string[]>[0]> = {
+let defaultOptions: Required<Options[0]> = {
   specialCharacters: 'keep',
   type: 'alphabetical',
   ignoreCase: true,
@@ -61,19 +54,15 @@ let defaultOptions: Required<Options<string[]>[0]> = {
   groups: [],
 }
 
-export default createEslintRule<Options<string[]>, MESSAGE_ID>({
+export default createEslintRule<Options, MESSAGE_ID>({
   meta: {
     schema: [
       {
         properties: {
-          specialCharacters: specialCharactersJsonSchema,
+          ...commonJsonSchemas,
           customGroups: customGroupsJsonSchema,
-          ignoreCase: ignoreCaseJsonSchema,
-          alphabet: alphabetJsonSchema,
           type: buildTypeJsonSchema(),
-          locales: localesJsonSchema,
           groups: groupsJsonSchema,
-          order: orderJsonSchema,
         },
         additionalProperties: false,
         type: 'object',
@@ -116,8 +105,8 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
 })
 
 let sortHeritageClauses = (
-  context: Readonly<RuleContext<MESSAGE_ID, Options<string[]>>>,
-  options: Required<Options<string[]>[0]>,
+  context: Readonly<RuleContext<MESSAGE_ID, Options>>,
+  options: Required<Options[0]>,
   heritageClauses:
     | TSESTree.TSInterfaceHeritage[]
     | TSESTree.TSClassImplements[]
@@ -175,25 +164,20 @@ let sortHeritageClauses = (
     }
     let leftNumber = getGroupNumber(options.groups, left)
     let rightNumber = getGroupNumber(options.groups, right)
-    context.report({
-      fix: fixer =>
-        makeFixes({
-          sortedNodes: sortedNodesExcludingEslintDisabled,
-          sourceCode,
-          fixer,
-          nodes,
-        }),
-      data: {
-        right: toSingleLine(right.name),
-        left: toSingleLine(left.name),
-        rightGroup: right.group,
-        leftGroup: left.group,
-      },
-      messageId:
+
+    reportErrors({
+      messageIds: [
         leftNumber === rightNumber
           ? 'unexpectedHeritageClausesOrder'
           : 'unexpectedHeritageClausesGroupOrder',
-      node: right.node,
+      ],
+      sortedNodes: sortedNodesExcludingEslintDisabled,
+      sourceCode,
+      options,
+      context,
+      nodes,
+      right,
+      left,
     })
   })
 }

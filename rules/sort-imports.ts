@@ -2,19 +2,19 @@ import type { TSESTree } from '@typescript-eslint/types'
 
 import { builtinModules } from 'node:module'
 
+import type {
+  PartitionByCommentOption,
+  GroupsOptions,
+} from '../types/common-options'
 import type { SortingNode } from '../types/sorting-node'
 
 import {
   partitionByCommentJsonSchema,
   partitionByNewLineJsonSchema,
-  specialCharactersJsonSchema,
   newlinesBetweenJsonSchema,
-  ignoreCaseJsonSchema,
   buildTypeJsonSchema,
-  alphabetJsonSchema,
-  localesJsonSchema,
+  commonJsonSchemas,
   groupsJsonSchema,
-  orderJsonSchema,
 } from '../utils/common-json-schemas'
 import { validateNewlinesAndPartitionConfiguration } from '../utils/validate-newlines-and-partition-configuration'
 import { validateCustomSortConfiguration } from '../utils/validate-custom-sort-configuration'
@@ -33,38 +33,27 @@ import { createEslintRule } from '../utils/create-eslint-rule'
 import { getLinesBetween } from '../utils/get-lines-between'
 import { getGroupNumber } from '../utils/get-group-number'
 import { getSourceCode } from '../utils/get-source-code'
+import { reportErrors } from '../utils/report-errors'
 import { rangeToDiff } from '../utils/range-to-diff'
 import { getSettings } from '../utils/get-settings'
 import { isSortable } from '../utils/is-sortable'
-import { makeFixes } from '../utils/make-fixes'
 import { useGroups } from '../utils/use-groups'
 import { complete } from '../utils/complete'
 import { pairwise } from '../utils/pairwise'
 import { matches } from '../utils/matches'
 
-export type Options<T extends string[]> = [
+export type Options<T extends string = string> = [
   Partial<{
-    partitionByComment:
-      | {
-          block?: string[] | boolean | string
-          line?: string[] | boolean | string
-        }
-      | string[]
-      | boolean
-      | string
     customGroups: {
-      value?: Record<T[number], string[] | string>
-      type?: Record<T[number], string[] | string>
+      value?: Record<T, string[] | string>
+      type?: Record<T, string[] | string>
     }
-    groups: (
-      | { newlinesBetween: 'ignore' | 'always' | 'never' }
-      | Group<T>[]
-      | Group<T>
-    )[]
     type: 'alphabetical' | 'line-length' | 'natural' | 'custom'
     newlinesBetween: 'ignore' | 'always' | 'never'
     specialCharacters: 'remove' | 'trim' | 'keep'
+    partitionByComment: PartitionByCommentOption
     locales: NonNullable<Intl.LocalesArgument>
+    groups: GroupsOptions<Group<T>>
     environment: 'node' | 'bun'
     partitionByNewLine: boolean
     internalPattern: string[]
@@ -83,7 +72,7 @@ export type MESSAGE_ID =
   | 'extraSpacingBetweenImports'
   | 'unexpectedImportsOrder'
 
-type Group<T extends string[]> =
+type Group<T extends string> =
   | 'side-effect-style'
   | 'external-type'
   | 'internal-type'
@@ -94,7 +83,6 @@ type Group<T extends string[]> =
   | 'index-type'
   | 'internal'
   | 'external'
-  | T[number]
   | 'sibling'
   | 'unknown'
   | 'builtin'
@@ -103,12 +91,13 @@ type Group<T extends string[]> =
   | 'index'
   | 'style'
   | 'type'
+  | T
 
 interface SortImportsSortingNode extends SortingNode {
   isIgnored: boolean
 }
 
-export default createEslintRule<Options<string[]>, MESSAGE_ID>({
+export default createEslintRule<Options, MESSAGE_ID>({
   create: context => {
     let settings = getSettings(context.settings)
 
@@ -223,7 +212,7 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
       ruleName: context.id,
       sourceCode,
     })
-    let nodes: SortImportsSortingNode[] = []
+    let sortingNodes: SortImportsSortingNode[] = []
 
     let isSideEffectImport = (node: TSESTree.Node): boolean =>
       node.type === 'ImportDeclaration' &&
@@ -449,7 +438,7 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
         }
       }
 
-      nodes.push({
+      sortingNodes.push({
         isIgnored:
           !options.sortSideEffects &&
           isSideEffect &&
@@ -481,7 +470,7 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
           }).length
 
         let formattedMembers: SortImportsSortingNode[][] = [[]]
-        for (let sortingNode of nodes) {
+        for (let sortingNode of sortingNodes) {
           let lastGroup = formattedMembers.at(-1)
           let lastSortingNode = lastGroup?.at(-1)
 
@@ -506,11 +495,11 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
           lastGroup!.push(sortingNode)
         }
 
-        for (let nodeList of formattedMembers) {
+        for (let nodes of formattedMembers) {
           let sortNodesExcludingEslintDisabled = (
             ignoreEslintDisabledNodes: boolean,
           ): SortImportsSortingNode[] =>
-            sortNodesByGroups(nodeList, options, {
+            sortNodesByGroups(nodes, options, {
               getGroupCompareOptions: groupNumber => {
                 if (options.sortSideEffects) {
                   return options
@@ -528,7 +517,7 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
 
           let nodeIndexMap = createNodeIndexMap(sortedNodes)
 
-          pairwise(nodeList, (left, right) => {
+          pairwise(nodes, (left, right) => {
             let leftNumber = getGroupNumber(options.groups, left)
             let rightNumber = getGroupNumber(options.groups, right)
 
@@ -568,29 +557,19 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
               }),
             ]
 
-            for (let messageId of messageIds) {
-              context.report({
-                fix: fixer =>
-                  makeFixes({
-                    options: {
-                      ...options,
-                      customGroups: [],
-                    },
-                    sortedNodes: sortedNodesExcludingEslintDisabled,
-                    nodes: nodeList,
-                    sourceCode,
-                    fixer,
-                  }),
-                data: {
-                  rightGroup: right.group,
-                  leftGroup: left.group,
-                  right: right.name,
-                  left: left.name,
-                },
-                node: right.node,
-                messageId,
-              })
-            }
+            reportErrors({
+              options: {
+                ...options,
+                customGroups: [],
+              },
+              sortedNodes: sortedNodesExcludingEslintDisabled,
+              sourceCode,
+              messageIds,
+              context,
+              nodes,
+              right,
+              left,
+            })
           })
         }
       },
@@ -613,6 +592,7 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
     schema: [
       {
         properties: {
+          ...commonJsonSchemas,
           customGroups: {
             properties: {
               value: {
@@ -627,11 +607,6 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
             description: 'Specifies custom groups.',
             additionalProperties: false,
             type: 'object',
-          },
-          partitionByComment: {
-            ...partitionByCommentJsonSchema,
-            description:
-              'Allows you to use comments to separate the interface properties into logical groups.',
           },
           internalPattern: {
             description: 'Specifies the pattern for internal modules.',
@@ -660,15 +635,11 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
             description: 'Specifies the tsConfig root directory.',
             type: 'string',
           },
+          partitionByComment: partitionByCommentJsonSchema,
           partitionByNewLine: partitionByNewLineJsonSchema,
-          specialCharacters: specialCharactersJsonSchema,
           newlinesBetween: newlinesBetweenJsonSchema,
-          ignoreCase: ignoreCaseJsonSchema,
-          alphabet: alphabetJsonSchema,
           type: buildTypeJsonSchema(),
-          locales: localesJsonSchema,
           groups: groupsJsonSchema,
-          order: orderJsonSchema,
         },
         definitions: {
           'max-line-length-requires-line-length-type': {

@@ -3,20 +3,15 @@ import type { TSESLint } from '@typescript-eslint/utils'
 
 import { ASTUtils } from '@typescript-eslint/utils'
 
+import type { PartitionByCommentOption } from '../types/common-options'
+
 import { getEslintDisabledRules } from './get-eslint-disabled-rules'
 import { isPartitionComment } from './is-partition-comment'
 import { getCommentsBefore } from './get-comments-before'
 
 interface GetNodeRangeParameters {
   options?: {
-    partitionByComment?:
-      | {
-          block?: string[] | boolean | string
-          line?: string[] | boolean | string
-        }
-      | string[]
-      | boolean
-      | string
+    partitionByComment?: PartitionByCommentOption
   }
   ignoreHighestBlockComment?: boolean
   sourceCode: TSESLint.SourceCode

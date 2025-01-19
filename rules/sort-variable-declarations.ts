@@ -1,16 +1,16 @@
 import type { TSESTree } from '@typescript-eslint/types'
 
+import type {
+  PartitionByCommentOption,
+  CommonOptions,
+} from '../types/common-options'
 import type { SortingNodeWithDependencies } from '../utils/sort-nodes-by-dependencies'
 
 import {
   partitionByCommentJsonSchema,
   partitionByNewLineJsonSchema,
-  specialCharactersJsonSchema,
-  ignoreCaseJsonSchema,
   buildTypeJsonSchema,
-  alphabetJsonSchema,
-  localesJsonSchema,
-  orderJsonSchema,
+  commonJsonSchemas,
 } from '../utils/common-json-schemas'
 import {
   getFirstUnorderedNodeDependentOn,
@@ -25,33 +25,22 @@ import { getCommentsBefore } from '../utils/get-comments-before'
 import { createEslintRule } from '../utils/create-eslint-rule'
 import { getLinesBetween } from '../utils/get-lines-between'
 import { getSourceCode } from '../utils/get-source-code'
-import { toSingleLine } from '../utils/to-single-line'
+import { reportErrors } from '../utils/report-errors'
 import { rangeToDiff } from '../utils/range-to-diff'
 import { getSettings } from '../utils/get-settings'
 import { isSortable } from '../utils/is-sortable'
-import { makeFixes } from '../utils/make-fixes'
 import { sortNodes } from '../utils/sort-nodes'
 import { complete } from '../utils/complete'
 import { pairwise } from '../utils/pairwise'
 
 type Options = [
-  Partial<{
-    partitionByComment:
-      | {
-          block?: string[] | boolean | string
-          line?: string[] | boolean | string
-        }
-      | string[]
-      | boolean
-      | string
-    type: 'alphabetical' | 'line-length' | 'natural' | 'custom'
-    specialCharacters: 'remove' | 'trim' | 'keep'
-    locales: NonNullable<Intl.LocalesArgument>
-    partitionByNewLine: boolean
-    order: 'desc' | 'asc'
-    ignoreCase: boolean
-    alphabet: string
-  }>,
+  Partial<
+    {
+      type: 'alphabetical' | 'line-length' | 'natural' | 'custom'
+      partitionByComment: PartitionByCommentOption
+      partitionByNewLine: boolean
+    } & CommonOptions
+  >,
 ]
 
 type MESSAGE_ID =
@@ -265,24 +254,21 @@ export default createEslintRule<Options, MESSAGE_ID>({
 
         let firstUnorderedNodeDependentOnRight =
           getFirstUnorderedNodeDependentOn(right, nodes)
-        context.report({
-          fix: fixer =>
-            makeFixes({
-              sortedNodes: sortedNodesExcludingEslintDisabled,
-              sourceCode,
-              options,
-              fixer,
-              nodes,
-            }),
-          data: {
-            nodeDependentOnRight: firstUnorderedNodeDependentOnRight?.name,
-            right: toSingleLine(right.name),
-            left: toSingleLine(left.name),
-          },
-          messageId: firstUnorderedNodeDependentOnRight
-            ? 'unexpectedVariableDeclarationsDependencyOrder'
-            : 'unexpectedVariableDeclarationsOrder',
-          node: right.node,
+
+        reportErrors({
+          messageIds: [
+            firstUnorderedNodeDependentOnRight
+              ? 'unexpectedVariableDeclarationsDependencyOrder'
+              : 'unexpectedVariableDeclarationsOrder',
+          ],
+          sortedNodes: sortedNodesExcludingEslintDisabled,
+          firstUnorderedNodeDependentOnRight,
+          sourceCode,
+          options,
+          context,
+          nodes,
+          right,
+          left,
         })
       })
     },
@@ -291,18 +277,10 @@ export default createEslintRule<Options, MESSAGE_ID>({
     schema: [
       {
         properties: {
-          partitionByComment: {
-            ...partitionByCommentJsonSchema,
-            description:
-              'Allows you to use comments to separate the variable declarations into logical groups.',
-          },
+          ...commonJsonSchemas,
+          partitionByComment: partitionByCommentJsonSchema,
           partitionByNewLine: partitionByNewLineJsonSchema,
-          specialCharacters: specialCharactersJsonSchema,
-          ignoreCase: ignoreCaseJsonSchema,
-          alphabet: alphabetJsonSchema,
           type: buildTypeJsonSchema(),
-          locales: localesJsonSchema,
-          order: orderJsonSchema,
         },
         additionalProperties: false,
         type: 'object',

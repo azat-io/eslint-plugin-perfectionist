@@ -1,21 +1,19 @@
 import type { TSESTree } from '@typescript-eslint/types'
 import type { TSESLint } from '@typescript-eslint/utils'
 
+import type { CommonOptions } from '../types/common-options'
 import type { SortingNode } from '../types/sorting-node'
 
-import {
-  specialCharactersJsonSchema,
-  ignoreCaseJsonSchema,
-  buildTypeJsonSchema,
-  alphabetJsonSchema,
-  localesJsonSchema,
-  orderJsonSchema,
-} from '../utils/common-json-schemas'
 import { makeSingleNodeCommentAfterFixes } from '../utils/make-single-node-comment-after-fixes'
 import { validateCustomSortConfiguration } from '../utils/validate-custom-sort-configuration'
+import {
+  buildTypeJsonSchema,
+  commonJsonSchemas,
+} from '../utils/common-json-schemas'
 import { createNodeIndexMap } from '../utils/create-node-index-map'
 import { createEslintRule } from '../utils/create-eslint-rule'
 import { getSourceCode } from '../utils/get-source-code'
+import { reportErrors } from '../utils/report-errors'
 import { rangeToDiff } from '../utils/range-to-diff'
 import { getSettings } from '../utils/get-settings'
 import { isSortable } from '../utils/is-sortable'
@@ -26,14 +24,11 @@ import { complete } from '../utils/complete'
 import { compare } from '../utils/compare'
 
 type Options = [
-  Partial<{
-    type: 'alphabetical' | 'line-length' | 'natural' | 'custom'
-    specialCharacters: 'remove' | 'trim' | 'keep'
-    locales: NonNullable<Intl.LocalesArgument>
-    order: 'desc' | 'asc'
-    ignoreCase: boolean
-    alphabet: string
-  }>,
+  Partial<
+    {
+      type: 'alphabetical' | 'line-length' | 'natural' | 'custom'
+    } & CommonOptions
+  >,
 ]
 
 interface SortSwitchCaseSortingNode extends SortingNode<TSESTree.SwitchCase> {
@@ -117,20 +112,14 @@ export default createEslintRule<Options, MESSAGE_ID>({
             return
           }
 
-          context.report({
-            fix: fixer =>
-              makeFixes({
-                sortedNodes: sortedCaseNameSortingNodes,
-                nodes: caseNodesSortingNodeGroup,
-                sourceCode,
-                fixer,
-              }),
-            data: {
-              right: right.name,
-              left: left.name,
-            },
-            messageId: 'unexpectedSwitchCaseOrder',
-            node: right.node,
+          reportErrors({
+            messageIds: ['unexpectedSwitchCaseOrder'],
+            sortedNodes: sortedCaseNameSortingNodes,
+            nodes: caseNodesSortingNodeGroup,
+            sourceCode,
+            context,
+            right,
+            left,
           })
         })
       }
@@ -274,12 +263,8 @@ export default createEslintRule<Options, MESSAGE_ID>({
     schema: [
       {
         properties: {
-          specialCharacters: specialCharactersJsonSchema,
-          ignoreCase: ignoreCaseJsonSchema,
-          alphabet: alphabetJsonSchema,
+          ...commonJsonSchemas,
           type: buildTypeJsonSchema(),
-          locales: localesJsonSchema,
-          order: orderJsonSchema,
         },
         additionalProperties: false,
         type: 'object',

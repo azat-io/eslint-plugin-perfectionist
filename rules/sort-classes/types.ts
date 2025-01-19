@@ -1,5 +1,10 @@
 import type { JSONSchema4 } from '@typescript-eslint/utils/json-schema'
 
+import type {
+  PartitionByCommentOption,
+  CommonOptions,
+  GroupsOptions,
+} from '../../types/common-options'
 import type { JoinWithDash } from '../../types/join-with-dash'
 
 import {
@@ -8,34 +13,6 @@ import {
   elementValuePatternJsonSchema,
   elementNamePatternJsonSchema,
 } from '../../utils/common-json-schemas'
-
-export type SortClassesOptions = [
-  Partial<{
-    partitionByComment:
-      | {
-          block?: string[] | boolean | string
-          line?: string[] | boolean | string
-        }
-      | string[]
-      | boolean
-      | string
-    groups: (
-      | { newlinesBetween: 'ignore' | 'always' | 'never' }
-      | Group[]
-      | Group
-    )[]
-    type: 'alphabetical' | 'line-length' | 'natural' | 'custom'
-    newlinesBetween: 'ignore' | 'always' | 'never'
-    specialCharacters: 'remove' | 'trim' | 'keep'
-    ignoreCallbackDependenciesPatterns: string[]
-    locales: NonNullable<Intl.LocalesArgument>
-    partitionByNewLine: boolean
-    customGroups: CustomGroup[]
-    order: 'desc' | 'asc'
-    ignoreCase: boolean
-    alphabet: string
-  }>,
-]
 
 export type SingleCustomGroup =
   | AdvancedSingleCustomGroup<FunctionPropertySelector>
@@ -47,6 +24,20 @@ export type SingleCustomGroup =
   | BaseSingleCustomGroup<StaticBlockSelector>
   | BaseSingleCustomGroup<ConstructorSelector>
   | AdvancedSingleCustomGroup<MethodSelector>
+
+export type SortClassesOptions = [
+  Partial<
+    {
+      type: 'alphabetical' | 'line-length' | 'natural' | 'custom'
+      newlinesBetween: 'ignore' | 'always' | 'never'
+      partitionByComment: PartitionByCommentOption
+      ignoreCallbackDependenciesPatterns: string[]
+      groups: GroupsOptions<Group>
+      partitionByNewLine: boolean
+      customGroups: CustomGroup[]
+    } & CommonOptions
+  >,
+]
 
 export type CustomGroup = (
   | {

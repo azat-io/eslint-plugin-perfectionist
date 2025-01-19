@@ -14,19 +14,19 @@ export let buildTypeJsonSchema = ({
   }
 }
 
-export let orderJsonSchema: JSONSchema4 = {
+let orderJsonSchema: JSONSchema4 = {
   description:
     'Determines whether the sorted items should be in ascending or descending order.',
   enum: ['asc', 'desc'],
   type: 'string',
 }
 
-export let alphabetJsonSchema: JSONSchema4 = {
+let alphabetJsonSchema: JSONSchema4 = {
   description: 'Alphabet to use for the `custom` sort type.',
   type: 'string',
 }
 
-export let localesJsonSchema: JSONSchema4 = {
+let localesJsonSchema: JSONSchema4 = {
   oneOf: [
     {
       type: 'string',
@@ -41,16 +41,24 @@ export let localesJsonSchema: JSONSchema4 = {
   description: 'Specifies the sorting locales.',
 }
 
-export let ignoreCaseJsonSchema: JSONSchema4 = {
+let ignoreCaseJsonSchema: JSONSchema4 = {
   description: 'Controls whether sorting should be case-sensitive or not.',
   type: 'boolean',
 }
 
-export let specialCharactersJsonSchema: JSONSchema4 = {
+let specialCharactersJsonSchema: JSONSchema4 = {
   description:
     'Controls how special characters should be handled before sorting.',
   enum: ['remove', 'trim', 'keep'],
   type: 'string',
+}
+
+export let commonJsonSchemas: Record<string, JSONSchema4> = {
+  specialCharacters: specialCharactersJsonSchema,
+  ignoreCase: ignoreCaseJsonSchema,
+  alphabet: alphabetJsonSchema,
+  locales: localesJsonSchema,
+  order: orderJsonSchema,
 }
 
 export let newlinesBetweenJsonSchema: JSONSchema4 = {
@@ -130,6 +138,8 @@ export let partitionByCommentJsonSchema: JSONSchema4 = {
       type: 'object',
     },
   ],
+  description:
+    'Allows to use comments to separate members into logical groups.',
 }
 
 export let partitionByNewLineJsonSchema: JSONSchema4 = {

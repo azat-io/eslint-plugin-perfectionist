@@ -1,5 +1,10 @@
 import type { JSONSchema4 } from '@typescript-eslint/utils/json-schema'
 
+import type {
+  PartitionByCommentOption,
+  CommonOptions,
+  GroupsOptions,
+} from '../../types/common-options'
 import type { JoinWithDash } from '../../types/join-with-dash'
 
 import {
@@ -9,42 +14,28 @@ import {
   elementNamePatternJsonSchema,
 } from '../../utils/common-json-schemas'
 
-export type Options = Partial<{
-  partitionByComment:
-    | {
-        block?: string[] | boolean | string
-        line?: string[] | boolean | string
-      }
-    | string[]
-    | boolean
-    | string
-  useConfigurationIf: {
-    callingFunctionNamePattern?: string
-    allNamesMatchPattern?: string
-  }
-  groups: (
-    | { newlinesBetween: 'ignore' | 'always' | 'never' }
-    | Group[]
-    | Group
-  )[]
-  type: 'alphabetical' | 'line-length' | 'unsorted' | 'natural' | 'custom'
-  customGroups: Record<string, string[] | string> | CustomGroup[]
-  destructuredObjects: { groups: boolean } | boolean
-  newlinesBetween: 'ignore' | 'always' | 'never'
-  specialCharacters: 'remove' | 'trim' | 'keep'
-  locales: NonNullable<Intl.LocalesArgument>
-  partitionByNewLine: boolean
-  objectDeclarations: boolean
-  styledComponents: boolean
-  /**
-   * @deprecated for {@link `destructuredObjects`} and {@link `objectDeclarations`}
-   */
-  destructureOnly: boolean
-  ignorePattern: string[]
-  order: 'desc' | 'asc'
-  ignoreCase: boolean
-  alphabet: string
-}>[]
+export type Options = Partial<
+  {
+    useConfigurationIf: {
+      callingFunctionNamePattern?: string
+      allNamesMatchPattern?: string
+    }
+    type: 'alphabetical' | 'line-length' | 'unsorted' | 'natural' | 'custom'
+    customGroups: Record<string, string[] | string> | CustomGroup[]
+    destructuredObjects: { groups: boolean } | boolean
+    newlinesBetween: 'ignore' | 'always' | 'never'
+    partitionByComment: PartitionByCommentOption
+    groups: GroupsOptions<Group>
+    partitionByNewLine: boolean
+    objectDeclarations: boolean
+    styledComponents: boolean
+    /**
+     * @deprecated for {@link `destructuredObjects`} and {@link `objectDeclarations`}
+     */
+    destructureOnly: boolean
+    ignorePattern: string[]
+  } & CommonOptions
+>[]
 
 export type SingleCustomGroup = (
   | BaseSingleCustomGroup<MultilineSelector>

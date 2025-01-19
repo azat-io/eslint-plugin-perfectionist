@@ -1,41 +1,33 @@
 import type { JSONSchema4 } from '@typescript-eslint/utils/json-schema'
 
+import type {
+  PartitionByCommentOption,
+  CommonOptions,
+  GroupsOptions,
+} from '../../types/common-options'
+
 import {
   buildCustomGroupSelectorJsonSchema,
   elementNamePatternJsonSchema,
 } from '../../utils/common-json-schemas'
 
-export type Options = Partial<{
-  partitionByComment:
-    | {
-        block?: string[] | boolean | string
-        line?: string[] | boolean | string
-      }
-    | string[]
-    | boolean
-    | string
-  groups: (
-    | { newlinesBetween: 'ignore' | 'always' | 'never' }
-    | Group[]
-    | Group
-  )[]
-  type: 'alphabetical' | 'line-length' | 'unsorted' | 'natural' | 'custom'
-  useConfigurationIf: {
-    allNamesMatchPattern?: string
-  }
-  /**
-   * @deprecated for {@link `groups`}
-   */
-  groupKind: 'literals-first' | 'spreads-first' | 'mixed'
-  newlinesBetween: 'ignore' | 'always' | 'never'
-  specialCharacters: 'remove' | 'trim' | 'keep'
-  locales: NonNullable<Intl.LocalesArgument>
-  customGroups: CustomGroup[]
-  partitionByNewLine: boolean
-  order: 'desc' | 'asc'
-  ignoreCase: boolean
-  alphabet: string
-}>[]
+export type Options = Partial<
+  {
+    type: 'alphabetical' | 'line-length' | 'unsorted' | 'natural' | 'custom'
+    useConfigurationIf: {
+      allNamesMatchPattern?: string
+    }
+    /**
+     * @deprecated for {@link `groups`}
+     */
+    groupKind: 'literals-first' | 'spreads-first' | 'mixed'
+    newlinesBetween: 'ignore' | 'always' | 'never'
+    partitionByComment: PartitionByCommentOption
+    groups: GroupsOptions<Group>
+    customGroups: CustomGroup[]
+    partitionByNewLine: boolean
+  } & CommonOptions
+>[]
 
 export interface SingleCustomGroup {
   elementNamePattern?: string

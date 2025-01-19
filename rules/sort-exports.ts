@@ -1,16 +1,16 @@
 import type { TSESTree } from '@typescript-eslint/types'
 
+import type {
+  PartitionByCommentOption,
+  CommonOptions,
+} from '../types/common-options'
 import type { SortingNode } from '../types/sorting-node'
 
 import {
   partitionByCommentJsonSchema,
   partitionByNewLineJsonSchema,
-  specialCharactersJsonSchema,
-  ignoreCaseJsonSchema,
   buildTypeJsonSchema,
-  alphabetJsonSchema,
-  localesJsonSchema,
-  orderJsonSchema,
+  commonJsonSchemas,
 } from '../utils/common-json-schemas'
 import { validateCustomSortConfiguration } from '../utils/validate-custom-sort-configuration'
 import { getEslintDisabledLines } from '../utils/get-eslint-disabled-lines'
@@ -21,32 +21,22 @@ import { getCommentsBefore } from '../utils/get-comments-before'
 import { createEslintRule } from '../utils/create-eslint-rule'
 import { getLinesBetween } from '../utils/get-lines-between'
 import { getSourceCode } from '../utils/get-source-code'
+import { reportErrors } from '../utils/report-errors'
 import { rangeToDiff } from '../utils/range-to-diff'
 import { getSettings } from '../utils/get-settings'
-import { makeFixes } from '../utils/make-fixes'
 import { sortNodes } from '../utils/sort-nodes'
 import { complete } from '../utils/complete'
 import { pairwise } from '../utils/pairwise'
 
 type Options = [
-  Partial<{
-    partitionByComment:
-      | {
-          block?: string[] | boolean | string
-          line?: string[] | boolean | string
-        }
-      | string[]
-      | boolean
-      | string
-    type: 'alphabetical' | 'line-length' | 'natural' | 'custom'
-    groupKind: 'values-first' | 'types-first' | 'mixed'
-    specialCharacters: 'remove' | 'trim' | 'keep'
-    locales: NonNullable<Intl.LocalesArgument>
-    partitionByNewLine: boolean
-    order: 'desc' | 'asc'
-    ignoreCase: boolean
-    alphabet: string
-  }>,
+  Partial<
+    {
+      type: 'alphabetical' | 'line-length' | 'natural' | 'custom'
+      groupKind: 'values-first' | 'types-first' | 'mixed'
+      partitionByComment: PartitionByCommentOption
+      partitionByNewLine: boolean
+    } & CommonOptions
+  >,
 ]
 
 interface SortExportsSortingNode
@@ -164,21 +154,15 @@ export default createEslintRule<Options, MESSAGE_ID>({
               return
             }
 
-            context.report({
-              fix: fixer =>
-                makeFixes({
-                  sortedNodes: sortedNodesExcludingEslintDisabled,
-                  sourceCode,
-                  options,
-                  fixer,
-                  nodes,
-                }),
-              data: {
-                right: right.name,
-                left: left.name,
-              },
-              messageId: 'unexpectedExportsOrder',
-              node: right.node,
+            reportErrors({
+              sortedNodes: sortedNodesExcludingEslintDisabled,
+              messageIds: ['unexpectedExportsOrder'],
+              sourceCode,
+              options,
+              context,
+              nodes,
+              right,
+              left,
             })
           })
         }
@@ -195,23 +179,15 @@ export default createEslintRule<Options, MESSAGE_ID>({
     schema: [
       {
         properties: {
-          partitionByComment: {
-            ...partitionByCommentJsonSchema,
-            description:
-              'Allows you to use comments to separate the exports into logical groups.',
-          },
+          ...commonJsonSchemas,
           groupKind: {
             enum: ['mixed', 'values-first', 'types-first'],
             description: 'Specifies top-level groups.',
             type: 'string',
           },
+          partitionByComment: partitionByCommentJsonSchema,
           partitionByNewLine: partitionByNewLineJsonSchema,
-          specialCharacters: specialCharactersJsonSchema,
-          ignoreCase: ignoreCaseJsonSchema,
-          alphabet: alphabetJsonSchema,
           type: buildTypeJsonSchema(),
-          locales: localesJsonSchema,
-          order: orderJsonSchema,
         },
         additionalProperties: false,
         type: 'object',

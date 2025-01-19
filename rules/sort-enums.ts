@@ -1,17 +1,17 @@
 import type { TSESTree } from '@typescript-eslint/types'
 
+import type {
+  PartitionByCommentOption,
+  CommonOptions,
+} from '../types/common-options'
 import type { SortingNodeWithDependencies } from '../utils/sort-nodes-by-dependencies'
 import type { CompareOptions } from '../utils/compare'
 
 import {
   partitionByCommentJsonSchema,
   partitionByNewLineJsonSchema,
-  specialCharactersJsonSchema,
-  ignoreCaseJsonSchema,
   buildTypeJsonSchema,
-  alphabetJsonSchema,
-  localesJsonSchema,
-  orderJsonSchema,
+  commonJsonSchemas,
 } from '../utils/common-json-schemas'
 import {
   getFirstUnorderedNodeDependentOn,
@@ -27,35 +27,24 @@ import { createEslintRule } from '../utils/create-eslint-rule'
 import { getLinesBetween } from '../utils/get-lines-between'
 import { getEnumMembers } from '../utils/get-enum-members'
 import { getSourceCode } from '../utils/get-source-code'
-import { toSingleLine } from '../utils/to-single-line'
+import { reportErrors } from '../utils/report-errors'
 import { rangeToDiff } from '../utils/range-to-diff'
 import { getSettings } from '../utils/get-settings'
 import { isSortable } from '../utils/is-sortable'
-import { makeFixes } from '../utils/make-fixes'
 import { sortNodes } from '../utils/sort-nodes'
 import { complete } from '../utils/complete'
 import { pairwise } from '../utils/pairwise'
 
 export type Options = [
-  Partial<{
-    partitionByComment:
-      | {
-          block?: string[] | boolean | string
-          line?: string[] | boolean | string
-        }
-      | string[]
-      | boolean
-      | string
-    type: 'alphabetical' | 'line-length' | 'natural' | 'custom'
-    specialCharacters: 'remove' | 'trim' | 'keep'
-    locales: NonNullable<Intl.LocalesArgument>
-    partitionByNewLine: boolean
-    forceNumericSort: boolean
-    order: 'desc' | 'asc'
-    sortByValue: boolean
-    ignoreCase: boolean
-    alphabet: string
-  }>,
+  Partial<
+    {
+      type: 'alphabetical' | 'line-length' | 'natural' | 'custom'
+      partitionByComment: PartitionByCommentOption
+      partitionByNewLine: boolean
+      forceNumericSort: boolean
+      sortByValue: boolean
+    } & CommonOptions
+  >,
 ]
 
 interface SortEnumsSortingNode
@@ -180,9 +169,9 @@ export default createEslintRule<Options, MESSAGE_ID>({
         [[]],
       )
 
-      let sortingNodes = formattedMembers.flat()
+      let nodes = formattedMembers.flat()
 
-      let isNumericEnum = sortingNodes.every(
+      let isNumericEnum = nodes.every(
         sortingNode =>
           sortingNode.numericValue !== null &&
           !Number.isNaN(sortingNode.numericValue),
@@ -221,8 +210,8 @@ export default createEslintRule<Options, MESSAGE_ID>({
         ignoreEslintDisabledNodes: boolean,
       ): SortEnumsSortingNode[] =>
         sortNodesByDependencies(
-          formattedMembers.flatMap(nodes =>
-            sortNodes(nodes, compareOptions, {
+          formattedMembers.flatMap(sortingNodes =>
+            sortNodes(sortingNodes, compareOptions, {
               ignoreEslintDisabledNodes,
             }),
           ),
@@ -237,7 +226,7 @@ export default createEslintRule<Options, MESSAGE_ID>({
 
       let nodeIndexMap = createNodeIndexMap(sortedNodes)
 
-      pairwise(sortingNodes, (left, right) => {
+      pairwise(nodes, (left, right) => {
         let leftIndex = nodeIndexMap.get(left)!
         let rightIndex = nodeIndexMap.get(right)!
 
@@ -251,25 +240,22 @@ export default createEslintRule<Options, MESSAGE_ID>({
         }
 
         let firstUnorderedNodeDependentOnRight =
-          getFirstUnorderedNodeDependentOn(right, sortingNodes)
-        context.report({
-          fix: fixer =>
-            makeFixes({
-              sortedNodes: sortedNodesExcludingEslintDisabled,
-              nodes: sortingNodes,
-              sourceCode,
-              options,
-              fixer,
-            }),
-          data: {
-            nodeDependentOnRight: firstUnorderedNodeDependentOnRight?.name,
-            right: toSingleLine(right.name),
-            left: toSingleLine(left.name),
-          },
-          messageId: firstUnorderedNodeDependentOnRight
-            ? 'unexpectedEnumsDependencyOrder'
-            : 'unexpectedEnumsOrder',
-          node: right.node,
+          getFirstUnorderedNodeDependentOn(right, nodes)
+
+        reportErrors({
+          messageIds: [
+            firstUnorderedNodeDependentOnRight
+              ? 'unexpectedEnumsDependencyOrder'
+              : 'unexpectedEnumsOrder',
+          ],
+          sortedNodes: sortedNodesExcludingEslintDisabled,
+          firstUnorderedNodeDependentOnRight,
+          sourceCode,
+          options,
+          context,
+          nodes,
+          right,
+          left,
         })
       })
     },
@@ -278,11 +264,7 @@ export default createEslintRule<Options, MESSAGE_ID>({
     schema: [
       {
         properties: {
-          partitionByComment: {
-            ...partitionByCommentJsonSchema,
-            description:
-              'Allows you to use comments to separate the members of enums into logical groups.',
-          },
+          ...commonJsonSchemas,
           forceNumericSort: {
             description:
               'Will always sort numeric enums by their value regardless of the sort type specified.',
@@ -292,13 +274,9 @@ export default createEslintRule<Options, MESSAGE_ID>({
             description: 'Compare enum values instead of names.',
             type: 'boolean',
           },
+          partitionByComment: partitionByCommentJsonSchema,
           partitionByNewLine: partitionByNewLineJsonSchema,
-          specialCharacters: specialCharactersJsonSchema,
-          ignoreCase: ignoreCaseJsonSchema,
-          alphabet: alphabetJsonSchema,
           type: buildTypeJsonSchema(),
-          locales: localesJsonSchema,
-          order: orderJsonSchema,
         },
         additionalProperties: false,
         type: 'object',

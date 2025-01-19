@@ -1,5 +1,4 @@
 import type { TSESTree } from '@typescript-eslint/types'
-import type { TSESLint } from '@typescript-eslint/utils'
 
 import type {
   SortClassesOptions,
@@ -12,14 +11,10 @@ import {
   buildCustomGroupsArrayJsonSchema,
   partitionByCommentJsonSchema,
   partitionByNewLineJsonSchema,
-  specialCharactersJsonSchema,
   newlinesBetweenJsonSchema,
-  ignoreCaseJsonSchema,
   buildTypeJsonSchema,
-  alphabetJsonSchema,
-  localesJsonSchema,
+  commonJsonSchemas,
   groupsJsonSchema,
-  orderJsonSchema,
 } from '../utils/common-json-schemas'
 import {
   getFirstUnorderedNodeDependentOn,
@@ -47,11 +42,10 @@ import { createEslintRule } from '../utils/create-eslint-rule'
 import { getLinesBetween } from '../utils/get-lines-between'
 import { getGroupNumber } from '../utils/get-group-number'
 import { getSourceCode } from '../utils/get-source-code'
-import { toSingleLine } from '../utils/to-single-line'
+import { reportErrors } from '../utils/report-errors'
 import { rangeToDiff } from '../utils/range-to-diff'
 import { getSettings } from '../utils/get-settings'
 import { isSortable } from '../utils/is-sortable'
-import { makeFixes } from '../utils/make-fixes'
 import { useGroups } from '../utils/use-groups'
 import { complete } from '../utils/complete'
 import { pairwise } from '../utils/pairwise'
@@ -649,27 +643,17 @@ export default createEslintRule<SortClassesOptions, MESSAGE_ID>({
           }),
         ]
 
-        for (let messageId of messageIds) {
-          context.report({
-            data: {
-              nodeDependentOnRight: firstUnorderedNodeDependentOnRight?.name,
-              right: toSingleLine(right.name),
-              left: toSingleLine(left.name),
-              rightGroup: right.group,
-              leftGroup: left.group,
-            },
-            fix: (fixer: TSESLint.RuleFixer) =>
-              makeFixes({
-                sortedNodes: sortedNodesExcludingEslintDisabled,
-                sourceCode,
-                options,
-                fixer,
-                nodes,
-              }),
-            node: right.node,
-            messageId,
-          })
-        }
+        reportErrors({
+          sortedNodes: sortedNodesExcludingEslintDisabled,
+          firstUnorderedNodeDependentOnRight,
+          sourceCode,
+          messageIds,
+          options,
+          context,
+          nodes,
+          right,
+          left,
+        })
       })
     },
   }),
@@ -677,6 +661,7 @@ export default createEslintRule<SortClassesOptions, MESSAGE_ID>({
     schema: [
       {
         properties: {
+          ...commonJsonSchemas,
           ignoreCallbackDependenciesPatterns: {
             description:
               'Patterns that should be ignored when detecting dependencies in method callbacks.',
@@ -685,23 +670,14 @@ export default createEslintRule<SortClassesOptions, MESSAGE_ID>({
             },
             type: 'array',
           },
-          partitionByComment: {
-            ...partitionByCommentJsonSchema,
-            description:
-              'Allows to use comments to separate the class members into logical groups.',
-          },
           customGroups: buildCustomGroupsArrayJsonSchema({
             singleCustomGroupJsonSchema,
           }),
+          partitionByComment: partitionByCommentJsonSchema,
           partitionByNewLine: partitionByNewLineJsonSchema,
-          specialCharacters: specialCharactersJsonSchema,
           newlinesBetween: newlinesBetweenJsonSchema,
-          ignoreCase: ignoreCaseJsonSchema,
-          alphabet: alphabetJsonSchema,
           type: buildTypeJsonSchema(),
-          locales: localesJsonSchema,
           groups: groupsJsonSchema,
-          order: orderJsonSchema,
         },
         additionalProperties: false,
         type: 'object',

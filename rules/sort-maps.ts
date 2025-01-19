@@ -10,14 +10,10 @@ import {
   buildCustomGroupsArrayJsonSchema,
   partitionByCommentJsonSchema,
   partitionByNewLineJsonSchema,
-  specialCharactersJsonSchema,
   newlinesBetweenJsonSchema,
-  ignoreCaseJsonSchema,
   buildTypeJsonSchema,
-  alphabetJsonSchema,
-  localesJsonSchema,
+  commonJsonSchemas,
   groupsJsonSchema,
-  orderJsonSchema,
 } from '../utils/common-json-schemas'
 import { validateGeneratedGroupsConfiguration } from '../utils/validate-generated-groups-configuration'
 import { validateCustomSortConfiguration } from '../utils/validate-custom-sort-configuration'
@@ -36,11 +32,10 @@ import { createEslintRule } from '../utils/create-eslint-rule'
 import { getLinesBetween } from '../utils/get-lines-between'
 import { getGroupNumber } from '../utils/get-group-number'
 import { getSourceCode } from '../utils/get-source-code'
-import { toSingleLine } from '../utils/to-single-line'
+import { reportErrors } from '../utils/report-errors'
 import { rangeToDiff } from '../utils/range-to-diff'
 import { getSettings } from '../utils/get-settings'
 import { isSortable } from '../utils/is-sortable'
-import { makeFixes } from '../utils/make-fixes'
 import { useGroups } from '../utils/use-groups'
 import { complete } from '../utils/complete'
 import { pairwise } from '../utils/pairwise'
@@ -234,26 +229,16 @@ export default createEslintRule<Options, MESSAGE_ID>({
               }),
             ]
 
-            for (let messageId of messageIds) {
-              context.report({
-                fix: fixer =>
-                  makeFixes({
-                    sortedNodes: sortedNodesExcludingEslintDisabled,
-                    sourceCode,
-                    options,
-                    fixer,
-                    nodes,
-                  }),
-                data: {
-                  right: toSingleLine(right.name),
-                  left: toSingleLine(left.name),
-                  rightGroup: right.group,
-                  leftGroup: left.group,
-                },
-                node: right.node,
-                messageId,
-              })
-            }
+            reportErrors({
+              sortedNodes: sortedNodesExcludingEslintDisabled,
+              sourceCode,
+              messageIds,
+              options,
+              context,
+              nodes,
+              right,
+              left,
+            })
           })
         }
       }
@@ -263,24 +248,16 @@ export default createEslintRule<Options, MESSAGE_ID>({
     schema: {
       items: {
         properties: {
-          partitionByComment: {
-            ...partitionByCommentJsonSchema,
-            description:
-              'Allows you to use comments to separate the maps members into logical groups.',
-          },
+          ...commonJsonSchemas,
           customGroups: buildCustomGroupsArrayJsonSchema({
             singleCustomGroupJsonSchema,
           }),
           useConfigurationIf: buildUseConfigurationIfJsonSchema(),
+          partitionByComment: partitionByCommentJsonSchema,
           partitionByNewLine: partitionByNewLineJsonSchema,
-          specialCharacters: specialCharactersJsonSchema,
           newlinesBetween: newlinesBetweenJsonSchema,
-          ignoreCase: ignoreCaseJsonSchema,
-          alphabet: alphabetJsonSchema,
           type: buildTypeJsonSchema(),
-          locales: localesJsonSchema,
           groups: groupsJsonSchema,
-          order: orderJsonSchema,
         },
         additionalProperties: false,
         type: 'object',

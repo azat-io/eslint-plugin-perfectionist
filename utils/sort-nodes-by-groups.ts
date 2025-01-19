@@ -14,7 +14,7 @@ interface ExtraOptions<T extends SortingNode> {
   isNodeIgnored?(node: T): boolean
 }
 
-interface GroupOptions {
+interface GroupsOptions {
   groups: (
     | { newlinesBetween: 'ignore' | 'always' | 'never' }
     | string[]
@@ -24,7 +24,7 @@ interface GroupOptions {
 
 export let sortNodesByGroups = <T extends SortingNode>(
   nodes: T[],
-  options: CompareOptions<T> & GroupOptions,
+  options: CompareOptions<T> & GroupsOptions,
   extraOptions?: ExtraOptions<T>,
 ): T[] => {
   let nodesByNonIgnoredGroupNumber: Record<number, T[]> = {}

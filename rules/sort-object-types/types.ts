@@ -1,5 +1,10 @@
 import type { JSONSchema4 } from '@typescript-eslint/utils/json-schema'
 
+import type {
+  PartitionByCommentOption,
+  CommonOptions,
+  GroupsOptions,
+} from '../../types/common-options'
 import type { JoinWithDash } from '../../types/join-with-dash'
 
 import {
@@ -8,42 +13,28 @@ import {
   elementNamePatternJsonSchema,
 } from '../../utils/common-json-schemas'
 
-export type Options = Partial<{
-  partitionByComment:
-    | {
-        block?: string[] | boolean | string
-        line?: string[] | boolean | string
-      }
-    | string[]
-    | boolean
-    | string
-  useConfigurationIf: {
-    declarationMatchesPattern?: string
-    allNamesMatchPattern?: string
-  }
-  groups: (
-    | { newlinesBetween: 'ignore' | 'always' | 'never' }
-    | Group[]
-    | Group
-  )[]
-  type: 'alphabetical' | 'line-length' | 'unsorted' | 'natural' | 'custom'
-  customGroups: Record<string, string[] | string> | CustomGroup[]
-  /**
-   * @deprecated for {@link `groups`}
-   */
-  groupKind: 'required-first' | 'optional-first' | 'mixed'
-  newlinesBetween: 'ignore' | 'always' | 'never'
-  specialCharacters: 'remove' | 'trim' | 'keep'
-  locales: NonNullable<Intl.LocalesArgument>
-  partitionByNewLine: boolean
-  /**
-   * @deprecated for {@link `useConfigurationIf.declarationMatchesPattern`}
-   */
-  ignorePattern: string[]
-  order: 'desc' | 'asc'
-  ignoreCase: boolean
-  alphabet: string
-}>[]
+export type Options = Partial<
+  {
+    useConfigurationIf: {
+      declarationMatchesPattern?: string
+      allNamesMatchPattern?: string
+    }
+    type: 'alphabetical' | 'line-length' | 'unsorted' | 'natural' | 'custom'
+    customGroups: Record<string, string[] | string> | CustomGroup[]
+    /**
+     * @deprecated for {@link `groups`}
+     */
+    groupKind: 'required-first' | 'optional-first' | 'mixed'
+    newlinesBetween: 'ignore' | 'always' | 'never'
+    partitionByComment: PartitionByCommentOption
+    groups: GroupsOptions<Group>
+    partitionByNewLine: boolean
+    /**
+     * @deprecated for {@link `useConfigurationIf.declarationMatchesPattern`}
+     */
+    ignorePattern: string[]
+  } & CommonOptions
+>[]
 
 export type SingleCustomGroup = (
   | BaseSingleCustomGroup<IndexSignatureSelector>
