@@ -35,7 +35,7 @@ import { pairwise } from '../utils/pairwise'
 import { complete } from '../utils/complete'
 import { matches } from '../utils/matches'
 
-type Options<T extends string[]> = [
+type Options<T extends string = string> = [
   Partial<{
     groups: (
       | { newlinesBetween: 'ignore' | 'always' | 'never' }
@@ -43,9 +43,9 @@ type Options<T extends string[]> = [
       | Group<T>
     )[]
     type: 'alphabetical' | 'line-length' | 'natural' | 'custom'
-    customGroups: Record<T[number], string[] | string>
     newlinesBetween: 'ignore' | 'always' | 'never'
     specialCharacters: 'remove' | 'trim' | 'keep'
+    customGroups: Record<T, string[] | string>
     locales: NonNullable<Intl.LocalesArgument>
     partitionByNewLine: boolean
     ignorePattern: string[]
@@ -61,13 +61,9 @@ type MESSAGE_ID =
   | 'unexpectedJSXPropsGroupOrder'
   | 'unexpectedJSXPropsOrder'
 
-type Group<T extends string[]> =
-  | 'multiline'
-  | 'shorthand'
-  | 'unknown'
-  | T[number]
+type Group<T extends string> = 'multiline' | 'shorthand' | 'unknown' | T
 
-let defaultOptions: Required<Options<string[]>[0]> = {
+let defaultOptions: Required<Options[0]> = {
   specialCharacters: 'keep',
   newlinesBetween: 'ignore',
   partitionByNewLine: false,
@@ -81,7 +77,7 @@ let defaultOptions: Required<Options<string[]>[0]> = {
   groups: [],
 }
 
-export default createEslintRule<Options<string[]>, MESSAGE_ID>({
+export default createEslintRule<Options, MESSAGE_ID>({
   create: context => ({
     JSXElement: node => {
       if (!isSortable(node.openingElement.attributes)) {

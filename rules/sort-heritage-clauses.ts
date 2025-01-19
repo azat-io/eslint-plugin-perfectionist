@@ -31,11 +31,11 @@ import { useGroups } from '../utils/use-groups'
 import { complete } from '../utils/complete'
 import { pairwise } from '../utils/pairwise'
 
-export type Options<T extends string[]> = [
+export type Options<T extends string = string> = [
   Partial<{
     type: 'alphabetical' | 'line-length' | 'natural' | 'custom'
-    customGroups: Record<T[number], string[] | string>
     specialCharacters: 'remove' | 'trim' | 'keep'
+    customGroups: Record<T, string[] | string>
     locales: NonNullable<Intl.LocalesArgument>
     groups: (Group<T>[] | Group<T>)[]
     order: 'desc' | 'asc'
@@ -48,9 +48,9 @@ type MESSAGE_ID =
   | 'unexpectedHeritageClausesGroupOrder'
   | 'unexpectedHeritageClausesOrder'
 
-type Group<T extends string[]> = 'unknown' | T[number]
+type Group<T extends string> = 'unknown' | T
 
-let defaultOptions: Required<Options<string[]>[0]> = {
+let defaultOptions: Required<Options[0]> = {
   specialCharacters: 'keep',
   type: 'alphabetical',
   ignoreCase: true,
@@ -61,7 +61,7 @@ let defaultOptions: Required<Options<string[]>[0]> = {
   groups: [],
 }
 
-export default createEslintRule<Options<string[]>, MESSAGE_ID>({
+export default createEslintRule<Options, MESSAGE_ID>({
   meta: {
     schema: [
       {
@@ -116,8 +116,8 @@ export default createEslintRule<Options<string[]>, MESSAGE_ID>({
 })
 
 let sortHeritageClauses = (
-  context: Readonly<RuleContext<MESSAGE_ID, Options<string[]>>>,
-  options: Required<Options<string[]>[0]>,
+  context: Readonly<RuleContext<MESSAGE_ID, Options>>,
+  options: Required<Options[0]>,
   heritageClauses:
     | TSESTree.TSInterfaceHeritage[]
     | TSESTree.TSClassImplements[]

@@ -6382,7 +6382,7 @@ describe(ruleName, () => {
 
     describe(`${ruleName}: checks compatibility between 'sortSideEffects' and 'groups'`, () => {
       let createRule = (
-        groups: Options<string[]>[0]['groups'],
+        groups: Options[0]['groups'],
         sortSideEffects: boolean = false,
       ): RuleListener =>
         rule.create({
@@ -6392,7 +6392,7 @@ describe(ruleName, () => {
               groups,
             },
           ],
-        } as Readonly<RuleContext<MESSAGE_ID, Options<string[]>>>)
+        } as Readonly<RuleContext<MESSAGE_ID, Options>>)
       let expectedThrownError =
         "Side effect groups cannot be nested with non side effect groups when 'sortSideEffects' is 'false'."
 

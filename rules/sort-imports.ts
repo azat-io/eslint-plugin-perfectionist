@@ -42,7 +42,7 @@ import { complete } from '../utils/complete'
 import { pairwise } from '../utils/pairwise'
 import { matches } from '../utils/matches'
 
-export type Options<T extends string[]> = [
+export type Options<T extends string = string> = [
   Partial<{
     partitionByComment:
       | {
@@ -52,15 +52,15 @@ export type Options<T extends string[]> = [
       | string[]
       | boolean
       | string
-    customGroups: {
-      value?: Record<T[number], string[] | string>
-      type?: Record<T[number], string[] | string>
-    }
     groups: (
       | { newlinesBetween: 'ignore' | 'always' | 'never' }
       | Group<T>[]
       | Group<T>
     )[]
+    customGroups: {
+      value?: Record<T, string[] | string>
+      type?: Record<T, string[] | string>
+    }
     type: 'alphabetical' | 'line-length' | 'natural' | 'custom'
     newlinesBetween: 'ignore' | 'always' | 'never'
     specialCharacters: 'remove' | 'trim' | 'keep'
@@ -83,7 +83,7 @@ export type MESSAGE_ID =
   | 'extraSpacingBetweenImports'
   | 'unexpectedImportsOrder'
 
-type Group<T extends string[]> =
+type Group<T extends string> =
   | 'side-effect-style'
   | 'external-type'
   | 'internal-type'
@@ -94,7 +94,6 @@ type Group<T extends string[]> =
   | 'index-type'
   | 'internal'
   | 'external'
-  | T[number]
   | 'sibling'
   | 'unknown'
   | 'builtin'
@@ -103,12 +102,13 @@ type Group<T extends string[]> =
   | 'index'
   | 'style'
   | 'type'
+  | T
 
 interface SortImportsSortingNode extends SortingNode {
   isIgnored: boolean
 }
 
-export default createEslintRule<Options<string[]>, MESSAGE_ID>({
+export default createEslintRule<Options, MESSAGE_ID>({
   create: context => {
     let settings = getSettings(context.settings)
 
