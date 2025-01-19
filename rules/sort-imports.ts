@@ -11,14 +11,10 @@ import type { SortingNode } from '../types/sorting-node'
 import {
   partitionByCommentJsonSchema,
   partitionByNewLineJsonSchema,
-  specialCharactersJsonSchema,
   newlinesBetweenJsonSchema,
-  ignoreCaseJsonSchema,
   buildTypeJsonSchema,
-  alphabetJsonSchema,
-  localesJsonSchema,
+  commonJsonSchemas,
   groupsJsonSchema,
-  orderJsonSchema,
 } from '../utils/common-json-schemas'
 import { validateNewlinesAndPartitionConfiguration } from '../utils/validate-newlines-and-partition-configuration'
 import { validateCustomSortConfiguration } from '../utils/validate-custom-sort-configuration'
@@ -606,6 +602,7 @@ export default createEslintRule<Options, MESSAGE_ID>({
     schema: [
       {
         properties: {
+          ...commonJsonSchemas,
           customGroups: {
             properties: {
               value: {
@@ -650,14 +647,9 @@ export default createEslintRule<Options, MESSAGE_ID>({
           },
           partitionByComment: partitionByCommentJsonSchema,
           partitionByNewLine: partitionByNewLineJsonSchema,
-          specialCharacters: specialCharactersJsonSchema,
           newlinesBetween: newlinesBetweenJsonSchema,
-          ignoreCase: ignoreCaseJsonSchema,
-          alphabet: alphabetJsonSchema,
           type: buildTypeJsonSchema(),
-          locales: localesJsonSchema,
           groups: groupsJsonSchema,
-          order: orderJsonSchema,
         },
         definitions: {
           'max-line-length-requires-line-length-type': {

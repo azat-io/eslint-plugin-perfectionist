@@ -9,12 +9,8 @@ import type { SortingNode } from '../types/sorting-node'
 import {
   partitionByCommentJsonSchema,
   partitionByNewLineJsonSchema,
-  specialCharactersJsonSchema,
-  ignoreCaseJsonSchema,
   buildTypeJsonSchema,
-  alphabetJsonSchema,
-  localesJsonSchema,
-  orderJsonSchema,
+  commonJsonSchemas,
 } from '../utils/common-json-schemas'
 import { validateCustomSortConfiguration } from '../utils/validate-custom-sort-configuration'
 import { getEslintDisabledLines } from '../utils/get-eslint-disabled-lines'
@@ -199,6 +195,7 @@ export default createEslintRule<Options, MESSAGE_ID>({
     schema: [
       {
         properties: {
+          ...commonJsonSchemas,
           groupKind: {
             enum: ['mixed', 'values-first', 'types-first'],
             description: 'Specifies top-level groups.',
@@ -210,12 +207,7 @@ export default createEslintRule<Options, MESSAGE_ID>({
           },
           partitionByComment: partitionByCommentJsonSchema,
           partitionByNewLine: partitionByNewLineJsonSchema,
-          specialCharacters: specialCharactersJsonSchema,
-          ignoreCase: ignoreCaseJsonSchema,
-          alphabet: alphabetJsonSchema,
           type: buildTypeJsonSchema(),
-          locales: localesJsonSchema,
-          order: orderJsonSchema,
         },
         additionalProperties: false,
         type: 'object',

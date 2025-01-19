@@ -9,15 +9,11 @@ import {
   buildCustomGroupsArrayJsonSchema,
   partitionByCommentJsonSchema,
   partitionByNewLineJsonSchema,
-  specialCharactersJsonSchema,
   newlinesBetweenJsonSchema,
   customGroupsJsonSchema,
-  ignoreCaseJsonSchema,
   buildTypeJsonSchema,
-  alphabetJsonSchema,
-  localesJsonSchema,
+  commonJsonSchemas,
   groupsJsonSchema,
-  orderJsonSchema,
 } from '../utils/common-json-schemas'
 import {
   getFirstUnorderedNodeDependentOn,
@@ -532,6 +528,7 @@ export default createEslintRule<Options, MESSAGE_ID>({
     schema: {
       items: {
         properties: {
+          ...commonJsonSchemas,
           destructuredObjects: {
             oneOf: [
               {
@@ -587,13 +584,8 @@ export default createEslintRule<Options, MESSAGE_ID>({
           type: buildTypeJsonSchema({ withUnsorted: true }),
           partitionByComment: partitionByCommentJsonSchema,
           partitionByNewLine: partitionByNewLineJsonSchema,
-          specialCharacters: specialCharactersJsonSchema,
           newlinesBetween: newlinesBetweenJsonSchema,
-          ignoreCase: ignoreCaseJsonSchema,
-          alphabet: alphabetJsonSchema,
-          locales: localesJsonSchema,
           groups: groupsJsonSchema,
-          order: orderJsonSchema,
         },
         additionalProperties: false,
         type: 'object',

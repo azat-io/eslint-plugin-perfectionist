@@ -12,14 +12,10 @@ import {
   buildCustomGroupsArrayJsonSchema,
   partitionByCommentJsonSchema,
   partitionByNewLineJsonSchema,
-  specialCharactersJsonSchema,
   newlinesBetweenJsonSchema,
-  ignoreCaseJsonSchema,
   buildTypeJsonSchema,
-  alphabetJsonSchema,
-  localesJsonSchema,
+  commonJsonSchemas,
   groupsJsonSchema,
-  orderJsonSchema,
 } from '../utils/common-json-schemas'
 import {
   getFirstUnorderedNodeDependentOn,
@@ -677,6 +673,7 @@ export default createEslintRule<SortClassesOptions, MESSAGE_ID>({
     schema: [
       {
         properties: {
+          ...commonJsonSchemas,
           ignoreCallbackDependenciesPatterns: {
             description:
               'Patterns that should be ignored when detecting dependencies in method callbacks.',
@@ -690,14 +687,9 @@ export default createEslintRule<SortClassesOptions, MESSAGE_ID>({
           }),
           partitionByComment: partitionByCommentJsonSchema,
           partitionByNewLine: partitionByNewLineJsonSchema,
-          specialCharacters: specialCharactersJsonSchema,
           newlinesBetween: newlinesBetweenJsonSchema,
-          ignoreCase: ignoreCaseJsonSchema,
-          alphabet: alphabetJsonSchema,
           type: buildTypeJsonSchema(),
-          locales: localesJsonSchema,
           groups: groupsJsonSchema,
-          order: orderJsonSchema,
         },
         additionalProperties: false,
         type: 'object',

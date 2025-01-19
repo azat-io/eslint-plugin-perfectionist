@@ -14,14 +14,10 @@ import {
   buildCustomGroupsArrayJsonSchema,
   partitionByCommentJsonSchema,
   partitionByNewLineJsonSchema,
-  specialCharactersJsonSchema,
   newlinesBetweenJsonSchema,
-  ignoreCaseJsonSchema,
   buildTypeJsonSchema,
-  alphabetJsonSchema,
-  localesJsonSchema,
+  commonJsonSchemas,
   groupsJsonSchema,
-  orderJsonSchema,
 } from '../utils/common-json-schemas'
 import {
   getFirstUnorderedNodeDependentOn,
@@ -101,27 +97,6 @@ let defaultOptions: Required<SortModulesOptions[0]> = {
 
 export default createEslintRule<SortModulesOptions, MESSAGE_ID>({
   meta: {
-    schema: [
-      {
-        properties: {
-          customGroups: buildCustomGroupsArrayJsonSchema({
-            singleCustomGroupJsonSchema,
-          }),
-          partitionByComment: partitionByCommentJsonSchema,
-          partitionByNewLine: partitionByNewLineJsonSchema,
-          specialCharacters: specialCharactersJsonSchema,
-          newlinesBetween: newlinesBetweenJsonSchema,
-          ignoreCase: ignoreCaseJsonSchema,
-          alphabet: alphabetJsonSchema,
-          type: buildTypeJsonSchema(),
-          locales: localesJsonSchema,
-          groups: groupsJsonSchema,
-          order: orderJsonSchema,
-        },
-        additionalProperties: false,
-        type: 'object',
-      },
-    ],
     messages: {
       unexpectedModulesGroupOrder:
         'Expected "{{right}}" ({{rightGroup}}) to come before "{{left}}" ({{leftGroup}}).',
@@ -133,6 +108,23 @@ export default createEslintRule<SortModulesOptions, MESSAGE_ID>({
         'Extra spacing between "{{left}}" and "{{right}}" objects.',
       unexpectedModulesOrder: 'Expected "{{right}}" to come before "{{left}}".',
     },
+    schema: [
+      {
+        properties: {
+          ...commonJsonSchemas,
+          customGroups: buildCustomGroupsArrayJsonSchema({
+            singleCustomGroupJsonSchema,
+          }),
+          partitionByComment: partitionByCommentJsonSchema,
+          partitionByNewLine: partitionByNewLineJsonSchema,
+          newlinesBetween: newlinesBetweenJsonSchema,
+          type: buildTypeJsonSchema(),
+          groups: groupsJsonSchema,
+        },
+        additionalProperties: false,
+        type: 'object',
+      },
+    ],
     docs: {
       url: 'https://perfectionist.dev/rules/sort-modules',
       description: 'Enforce sorted modules.',

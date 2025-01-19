@@ -9,14 +9,10 @@ import type { SortingNode } from '../types/sorting-node'
 
 import {
   partitionByCommentJsonSchema,
-  specialCharactersJsonSchema,
   customGroupsJsonSchema,
-  ignoreCaseJsonSchema,
   buildTypeJsonSchema,
-  alphabetJsonSchema,
-  localesJsonSchema,
+  commonJsonSchemas,
   groupsJsonSchema,
-  orderJsonSchema,
 } from '../utils/common-json-schemas'
 import { validateCustomSortConfiguration } from '../utils/validate-custom-sort-configuration'
 import { validateGroupsConfiguration } from '../utils/validate-groups-configuration'
@@ -84,6 +80,7 @@ export default createEslintRule<Options, MESSAGE_ID>({
     schema: [
       {
         properties: {
+          ...commonJsonSchemas,
           sortOnParameters: {
             description:
               'Controls whether sorting should be enabled for method parameter decorators.',
@@ -110,14 +107,9 @@ export default createEslintRule<Options, MESSAGE_ID>({
             type: 'boolean',
           },
           partitionByComment: partitionByCommentJsonSchema,
-          specialCharacters: specialCharactersJsonSchema,
           customGroups: customGroupsJsonSchema,
-          ignoreCase: ignoreCaseJsonSchema,
-          alphabet: alphabetJsonSchema,
           type: buildTypeJsonSchema(),
-          locales: localesJsonSchema,
           groups: groupsJsonSchema,
-          order: orderJsonSchema,
         },
         additionalProperties: false,
         type: 'object',

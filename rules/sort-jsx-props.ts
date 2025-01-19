@@ -5,15 +5,11 @@ import type { SortingNode } from '../types/sorting-node'
 
 import {
   partitionByNewLineJsonSchema,
-  specialCharactersJsonSchema,
   newlinesBetweenJsonSchema,
   customGroupsJsonSchema,
-  ignoreCaseJsonSchema,
   buildTypeJsonSchema,
-  alphabetJsonSchema,
-  localesJsonSchema,
+  commonJsonSchemas,
   groupsJsonSchema,
-  orderJsonSchema,
 } from '../utils/common-json-schemas'
 import { validateNewlinesAndPartitionConfiguration } from '../utils/validate-newlines-and-partition-configuration'
 import { validateCustomSortConfiguration } from '../utils/validate-custom-sort-configuration'
@@ -235,6 +231,7 @@ export default createEslintRule<Options, MESSAGE_ID>({
     schema: [
       {
         properties: {
+          ...commonJsonSchemas,
           ignorePattern: {
             description:
               'Specifies names or patterns for nodes that should be ignored by rule.',
@@ -244,15 +241,10 @@ export default createEslintRule<Options, MESSAGE_ID>({
             type: 'array',
           },
           partitionByNewLine: partitionByNewLineJsonSchema,
-          specialCharacters: specialCharactersJsonSchema,
           newlinesBetween: newlinesBetweenJsonSchema,
           customGroups: customGroupsJsonSchema,
-          ignoreCase: ignoreCaseJsonSchema,
-          alphabet: alphabetJsonSchema,
           type: buildTypeJsonSchema(),
-          locales: localesJsonSchema,
           groups: groupsJsonSchema,
-          order: orderJsonSchema,
         },
         additionalProperties: false,
         type: 'object',

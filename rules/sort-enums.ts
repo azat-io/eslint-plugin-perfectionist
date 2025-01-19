@@ -10,12 +10,8 @@ import type { CompareOptions } from '../utils/compare'
 import {
   partitionByCommentJsonSchema,
   partitionByNewLineJsonSchema,
-  specialCharactersJsonSchema,
-  ignoreCaseJsonSchema,
   buildTypeJsonSchema,
-  alphabetJsonSchema,
-  localesJsonSchema,
-  orderJsonSchema,
+  commonJsonSchemas,
 } from '../utils/common-json-schemas'
 import {
   getFirstUnorderedNodeDependentOn,
@@ -272,6 +268,7 @@ export default createEslintRule<Options, MESSAGE_ID>({
     schema: [
       {
         properties: {
+          ...commonJsonSchemas,
           forceNumericSort: {
             description:
               'Will always sort numeric enums by their value regardless of the sort type specified.',
@@ -283,12 +280,7 @@ export default createEslintRule<Options, MESSAGE_ID>({
           },
           partitionByComment: partitionByCommentJsonSchema,
           partitionByNewLine: partitionByNewLineJsonSchema,
-          specialCharacters: specialCharactersJsonSchema,
-          ignoreCase: ignoreCaseJsonSchema,
-          alphabet: alphabetJsonSchema,
           type: buildTypeJsonSchema(),
-          locales: localesJsonSchema,
-          order: orderJsonSchema,
         },
         additionalProperties: false,
         type: 'object',

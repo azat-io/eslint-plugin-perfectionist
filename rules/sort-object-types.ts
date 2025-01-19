@@ -11,15 +11,11 @@ import {
   buildCustomGroupsArrayJsonSchema,
   partitionByCommentJsonSchema,
   partitionByNewLineJsonSchema,
-  specialCharactersJsonSchema,
   newlinesBetweenJsonSchema,
   customGroupsJsonSchema,
-  ignoreCaseJsonSchema,
   buildTypeJsonSchema,
-  alphabetJsonSchema,
-  localesJsonSchema,
+  commonJsonSchemas,
   groupsJsonSchema,
-  orderJsonSchema,
 } from '../utils/common-json-schemas'
 import { validateNewlinesAndPartitionConfiguration } from '../utils/validate-newlines-and-partition-configuration'
 import {
@@ -91,6 +87,7 @@ let defaultOptions: Required<Options[0]> = {
 export let jsonSchema: JSONSchema4 = {
   items: {
     properties: {
+      ...commonJsonSchemas,
       ignorePattern: {
         description:
           'Specifies names or patterns for nodes that should be ignored by rule.',
@@ -120,13 +117,8 @@ export let jsonSchema: JSONSchema4 = {
       type: buildTypeJsonSchema({ withUnsorted: true }),
       partitionByComment: partitionByCommentJsonSchema,
       partitionByNewLine: partitionByNewLineJsonSchema,
-      specialCharacters: specialCharactersJsonSchema,
       newlinesBetween: newlinesBetweenJsonSchema,
-      ignoreCase: ignoreCaseJsonSchema,
-      alphabet: alphabetJsonSchema,
-      locales: localesJsonSchema,
       groups: groupsJsonSchema,
-      order: orderJsonSchema,
     },
     additionalProperties: false,
     type: 'object',

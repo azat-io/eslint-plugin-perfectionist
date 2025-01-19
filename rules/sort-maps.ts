@@ -10,14 +10,10 @@ import {
   buildCustomGroupsArrayJsonSchema,
   partitionByCommentJsonSchema,
   partitionByNewLineJsonSchema,
-  specialCharactersJsonSchema,
   newlinesBetweenJsonSchema,
-  ignoreCaseJsonSchema,
   buildTypeJsonSchema,
-  alphabetJsonSchema,
-  localesJsonSchema,
+  commonJsonSchemas,
   groupsJsonSchema,
-  orderJsonSchema,
 } from '../utils/common-json-schemas'
 import { validateGeneratedGroupsConfiguration } from '../utils/validate-generated-groups-configuration'
 import { validateCustomSortConfiguration } from '../utils/validate-custom-sort-configuration'
@@ -263,20 +259,16 @@ export default createEslintRule<Options, MESSAGE_ID>({
     schema: {
       items: {
         properties: {
+          ...commonJsonSchemas,
           customGroups: buildCustomGroupsArrayJsonSchema({
             singleCustomGroupJsonSchema,
           }),
           useConfigurationIf: buildUseConfigurationIfJsonSchema(),
           partitionByComment: partitionByCommentJsonSchema,
           partitionByNewLine: partitionByNewLineJsonSchema,
-          specialCharacters: specialCharactersJsonSchema,
           newlinesBetween: newlinesBetweenJsonSchema,
-          ignoreCase: ignoreCaseJsonSchema,
-          alphabet: alphabetJsonSchema,
           type: buildTypeJsonSchema(),
-          locales: localesJsonSchema,
           groups: groupsJsonSchema,
-          order: orderJsonSchema,
         },
         additionalProperties: false,
         type: 'object',

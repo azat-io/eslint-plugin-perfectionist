@@ -9,12 +9,8 @@ import type { SortingNodeWithDependencies } from '../utils/sort-nodes-by-depende
 import {
   partitionByCommentJsonSchema,
   partitionByNewLineJsonSchema,
-  specialCharactersJsonSchema,
-  ignoreCaseJsonSchema,
   buildTypeJsonSchema,
-  alphabetJsonSchema,
-  localesJsonSchema,
-  orderJsonSchema,
+  commonJsonSchemas,
 } from '../utils/common-json-schemas'
 import {
   getFirstUnorderedNodeDependentOn,
@@ -285,14 +281,10 @@ export default createEslintRule<Options, MESSAGE_ID>({
     schema: [
       {
         properties: {
+          ...commonJsonSchemas,
           partitionByComment: partitionByCommentJsonSchema,
           partitionByNewLine: partitionByNewLineJsonSchema,
-          specialCharacters: specialCharactersJsonSchema,
-          ignoreCase: ignoreCaseJsonSchema,
-          alphabet: alphabetJsonSchema,
           type: buildTypeJsonSchema(),
-          locales: localesJsonSchema,
-          order: orderJsonSchema,
         },
         additionalProperties: false,
         type: 'object',

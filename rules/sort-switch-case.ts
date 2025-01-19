@@ -4,16 +4,12 @@ import type { TSESLint } from '@typescript-eslint/utils'
 import type { CommonOptions } from '../types/common-options'
 import type { SortingNode } from '../types/sorting-node'
 
-import {
-  specialCharactersJsonSchema,
-  ignoreCaseJsonSchema,
-  buildTypeJsonSchema,
-  alphabetJsonSchema,
-  localesJsonSchema,
-  orderJsonSchema,
-} from '../utils/common-json-schemas'
 import { makeSingleNodeCommentAfterFixes } from '../utils/make-single-node-comment-after-fixes'
 import { validateCustomSortConfiguration } from '../utils/validate-custom-sort-configuration'
+import {
+  buildTypeJsonSchema,
+  commonJsonSchemas,
+} from '../utils/common-json-schemas'
 import { createNodeIndexMap } from '../utils/create-node-index-map'
 import { createEslintRule } from '../utils/create-eslint-rule'
 import { getSourceCode } from '../utils/get-source-code'
@@ -272,12 +268,8 @@ export default createEslintRule<Options, MESSAGE_ID>({
     schema: [
       {
         properties: {
-          specialCharacters: specialCharactersJsonSchema,
-          ignoreCase: ignoreCaseJsonSchema,
-          alphabet: alphabetJsonSchema,
+          ...commonJsonSchemas,
           type: buildTypeJsonSchema(),
-          locales: localesJsonSchema,
-          order: orderJsonSchema,
         },
         additionalProperties: false,
         type: 'object',

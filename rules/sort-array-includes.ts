@@ -11,14 +11,10 @@ import {
   buildCustomGroupsArrayJsonSchema,
   partitionByCommentJsonSchema,
   partitionByNewLineJsonSchema,
-  specialCharactersJsonSchema,
   newlinesBetweenJsonSchema,
-  ignoreCaseJsonSchema,
   buildTypeJsonSchema,
-  alphabetJsonSchema,
-  localesJsonSchema,
+  commonJsonSchemas,
   groupsJsonSchema,
-  orderJsonSchema,
 } from '../utils/common-json-schemas'
 import { validateNewlinesAndPartitionConfiguration } from '../utils/validate-newlines-and-partition-configuration'
 import { validateGeneratedGroupsConfiguration } from '../utils/validate-generated-groups-configuration'
@@ -86,6 +82,7 @@ export let defaultOptions: Required<Options[0]> = {
 export let jsonSchema: JSONSchema4 = {
   items: {
     properties: {
+      ...commonJsonSchemas,
       groupKind: {
         enum: ['mixed', 'literals-first', 'spreads-first'],
         description: 'Specifies top-level groups.',
@@ -98,13 +95,8 @@ export let jsonSchema: JSONSchema4 = {
       type: buildTypeJsonSchema({ withUnsorted: true }),
       partitionByComment: partitionByCommentJsonSchema,
       partitionByNewLine: partitionByNewLineJsonSchema,
-      specialCharacters: specialCharactersJsonSchema,
       newlinesBetween: newlinesBetweenJsonSchema,
-      ignoreCase: ignoreCaseJsonSchema,
-      alphabet: alphabetJsonSchema,
-      locales: localesJsonSchema,
       groups: groupsJsonSchema,
-      order: orderJsonSchema,
     },
     additionalProperties: false,
     type: 'object',
