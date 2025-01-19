@@ -561,7 +561,7 @@ describe(ruleName, () => {
               },
             ],
             code: dedent`
-              let b = a,
+              let b = 'b',
               a = b as any;
             `,
           },
@@ -582,7 +582,7 @@ describe(ruleName, () => {
               },
             ],
             code: dedent`
-              let b = a,
+              let b = 'b',
               a = <any>b;
             `,
           },
@@ -603,7 +603,7 @@ describe(ruleName, () => {
               },
             ],
             code: dedent`
-              let b = a,
+              let b = 'b',
               a = \`\${b}\`
             `,
           },
