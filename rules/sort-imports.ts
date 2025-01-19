@@ -33,10 +33,10 @@ import { createEslintRule } from '../utils/create-eslint-rule'
 import { getLinesBetween } from '../utils/get-lines-between'
 import { getGroupNumber } from '../utils/get-group-number'
 import { getSourceCode } from '../utils/get-source-code'
+import { reportErrors } from '../utils/report-errors'
 import { rangeToDiff } from '../utils/range-to-diff'
 import { getSettings } from '../utils/get-settings'
 import { isSortable } from '../utils/is-sortable'
-import { makeFixes } from '../utils/make-fixes'
 import { useGroups } from '../utils/use-groups'
 import { complete } from '../utils/complete'
 import { pairwise } from '../utils/pairwise'
@@ -212,7 +212,7 @@ export default createEslintRule<Options, MESSAGE_ID>({
       ruleName: context.id,
       sourceCode,
     })
-    let nodes: SortImportsSortingNode[] = []
+    let sortingNodes: SortImportsSortingNode[] = []
 
     let isSideEffectImport = (node: TSESTree.Node): boolean =>
       node.type === 'ImportDeclaration' &&
@@ -438,7 +438,7 @@ export default createEslintRule<Options, MESSAGE_ID>({
         }
       }
 
-      nodes.push({
+      sortingNodes.push({
         isIgnored:
           !options.sortSideEffects &&
           isSideEffect &&
@@ -470,7 +470,7 @@ export default createEslintRule<Options, MESSAGE_ID>({
           }).length
 
         let formattedMembers: SortImportsSortingNode[][] = [[]]
-        for (let sortingNode of nodes) {
+        for (let sortingNode of sortingNodes) {
           let lastGroup = formattedMembers.at(-1)
           let lastSortingNode = lastGroup?.at(-1)
 
@@ -495,11 +495,11 @@ export default createEslintRule<Options, MESSAGE_ID>({
           lastGroup!.push(sortingNode)
         }
 
-        for (let nodeList of formattedMembers) {
+        for (let nodes of formattedMembers) {
           let sortNodesExcludingEslintDisabled = (
             ignoreEslintDisabledNodes: boolean,
           ): SortImportsSortingNode[] =>
-            sortNodesByGroups(nodeList, options, {
+            sortNodesByGroups(nodes, options, {
               getGroupCompareOptions: groupNumber => {
                 if (options.sortSideEffects) {
                   return options
@@ -517,7 +517,7 @@ export default createEslintRule<Options, MESSAGE_ID>({
 
           let nodeIndexMap = createNodeIndexMap(sortedNodes)
 
-          pairwise(nodeList, (left, right) => {
+          pairwise(nodes, (left, right) => {
             let leftNumber = getGroupNumber(options.groups, left)
             let rightNumber = getGroupNumber(options.groups, right)
 
@@ -557,29 +557,19 @@ export default createEslintRule<Options, MESSAGE_ID>({
               }),
             ]
 
-            for (let messageId of messageIds) {
-              context.report({
-                fix: fixer =>
-                  makeFixes({
-                    options: {
-                      ...options,
-                      customGroups: [],
-                    },
-                    sortedNodes: sortedNodesExcludingEslintDisabled,
-                    nodes: nodeList,
-                    sourceCode,
-                    fixer,
-                  }),
-                data: {
-                  rightGroup: right.group,
-                  leftGroup: left.group,
-                  right: right.name,
-                  left: left.name,
-                },
-                node: right.node,
-                messageId,
-              })
-            }
+            reportErrors({
+              options: {
+                ...options,
+                customGroups: [],
+              },
+              sortedNodes: sortedNodesExcludingEslintDisabled,
+              sourceCode,
+              messageIds,
+              context,
+              nodes,
+              right,
+              left,
+            })
           })
         }
       },

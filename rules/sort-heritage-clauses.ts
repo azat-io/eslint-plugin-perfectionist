@@ -19,11 +19,10 @@ import { sortNodesByGroups } from '../utils/sort-nodes-by-groups'
 import { createEslintRule } from '../utils/create-eslint-rule'
 import { getGroupNumber } from '../utils/get-group-number'
 import { getSourceCode } from '../utils/get-source-code'
-import { toSingleLine } from '../utils/to-single-line'
+import { reportErrors } from '../utils/report-errors'
 import { rangeToDiff } from '../utils/range-to-diff'
 import { getSettings } from '../utils/get-settings'
 import { isSortable } from '../utils/is-sortable'
-import { makeFixes } from '../utils/make-fixes'
 import { useGroups } from '../utils/use-groups'
 import { complete } from '../utils/complete'
 import { pairwise } from '../utils/pairwise'
@@ -165,25 +164,20 @@ let sortHeritageClauses = (
     }
     let leftNumber = getGroupNumber(options.groups, left)
     let rightNumber = getGroupNumber(options.groups, right)
-    context.report({
-      fix: fixer =>
-        makeFixes({
-          sortedNodes: sortedNodesExcludingEslintDisabled,
-          sourceCode,
-          fixer,
-          nodes,
-        }),
-      data: {
-        right: toSingleLine(right.name),
-        left: toSingleLine(left.name),
-        rightGroup: right.group,
-        leftGroup: left.group,
-      },
-      messageId:
+
+    reportErrors({
+      messageIds: [
         leftNumber === rightNumber
           ? 'unexpectedHeritageClausesOrder'
           : 'unexpectedHeritageClausesGroupOrder',
-      node: right.node,
+      ],
+      sortedNodes: sortedNodesExcludingEslintDisabled,
+      sourceCode,
+      options,
+      context,
+      nodes,
+      right,
+      left,
     })
   })
 }

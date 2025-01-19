@@ -21,9 +21,9 @@ import { getCommentsBefore } from '../utils/get-comments-before'
 import { createEslintRule } from '../utils/create-eslint-rule'
 import { getLinesBetween } from '../utils/get-lines-between'
 import { getSourceCode } from '../utils/get-source-code'
+import { reportErrors } from '../utils/report-errors'
 import { rangeToDiff } from '../utils/range-to-diff'
 import { getSettings } from '../utils/get-settings'
-import { makeFixes } from '../utils/make-fixes'
 import { sortNodes } from '../utils/sort-nodes'
 import { complete } from '../utils/complete'
 import { pairwise } from '../utils/pairwise'
@@ -154,21 +154,15 @@ export default createEslintRule<Options, MESSAGE_ID>({
               return
             }
 
-            context.report({
-              fix: fixer =>
-                makeFixes({
-                  sortedNodes: sortedNodesExcludingEslintDisabled,
-                  sourceCode,
-                  options,
-                  fixer,
-                  nodes,
-                }),
-              data: {
-                right: right.name,
-                left: left.name,
-              },
-              messageId: 'unexpectedExportsOrder',
-              node: right.node,
+            reportErrors({
+              sortedNodes: sortedNodesExcludingEslintDisabled,
+              messageIds: ['unexpectedExportsOrder'],
+              sourceCode,
+              options,
+              context,
+              nodes,
+              right,
+              left,
             })
           })
         }

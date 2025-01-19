@@ -13,6 +13,7 @@ import {
 import { createNodeIndexMap } from '../utils/create-node-index-map'
 import { createEslintRule } from '../utils/create-eslint-rule'
 import { getSourceCode } from '../utils/get-source-code'
+import { reportErrors } from '../utils/report-errors'
 import { rangeToDiff } from '../utils/range-to-diff'
 import { getSettings } from '../utils/get-settings'
 import { isSortable } from '../utils/is-sortable'
@@ -111,20 +112,14 @@ export default createEslintRule<Options, MESSAGE_ID>({
             return
           }
 
-          context.report({
-            fix: fixer =>
-              makeFixes({
-                sortedNodes: sortedCaseNameSortingNodes,
-                nodes: caseNodesSortingNodeGroup,
-                sourceCode,
-                fixer,
-              }),
-            data: {
-              right: right.name,
-              left: left.name,
-            },
-            messageId: 'unexpectedSwitchCaseOrder',
-            node: right.node,
+          reportErrors({
+            messageIds: ['unexpectedSwitchCaseOrder'],
+            sortedNodes: sortedCaseNameSortingNodes,
+            nodes: caseNodesSortingNodeGroup,
+            sourceCode,
+            context,
+            right,
+            left,
           })
         })
       }

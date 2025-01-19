@@ -31,10 +31,9 @@ import { createEslintRule } from '../utils/create-eslint-rule'
 import { getLinesBetween } from '../utils/get-lines-between'
 import { getGroupNumber } from '../utils/get-group-number'
 import { getSourceCode } from '../utils/get-source-code'
-import { toSingleLine } from '../utils/to-single-line'
+import { reportErrors } from '../utils/report-errors'
 import { rangeToDiff } from '../utils/range-to-diff'
 import { getSettings } from '../utils/get-settings'
-import { makeFixes } from '../utils/make-fixes'
 import { useGroups } from '../utils/use-groups'
 import { complete } from '../utils/complete'
 import { pairwise } from '../utils/pairwise'
@@ -327,26 +326,16 @@ export let sortUnionOrIntersectionTypes = <MessageIds extends string>({
         }),
       ]
 
-      for (let messageId of messageIds) {
-        context.report({
-          fix: fixer =>
-            makeFixes({
-              sortedNodes: sortedNodesExcludingEslintDisabled,
-              sourceCode,
-              options,
-              fixer,
-              nodes,
-            }),
-          data: {
-            right: toSingleLine(right.name),
-            left: toSingleLine(left.name),
-            rightGroup: right.group,
-            leftGroup: left.group,
-          },
-          node: right.node,
-          messageId,
-        })
-      }
+      reportErrors({
+        sortedNodes: sortedNodesExcludingEslintDisabled,
+        messageIds,
+        sourceCode,
+        options,
+        context,
+        nodes,
+        right,
+        left,
+      })
     })
   }
 }

@@ -23,10 +23,10 @@ import { createEslintRule } from '../utils/create-eslint-rule'
 import { getLinesBetween } from '../utils/get-lines-between'
 import { getGroupNumber } from '../utils/get-group-number'
 import { getSourceCode } from '../utils/get-source-code'
+import { reportErrors } from '../utils/report-errors'
 import { rangeToDiff } from '../utils/range-to-diff'
 import { getSettings } from '../utils/get-settings'
 import { isSortable } from '../utils/is-sortable'
-import { makeFixes } from '../utils/make-fixes'
 import { useGroups } from '../utils/use-groups'
 import { pairwise } from '../utils/pairwise'
 import { complete } from '../utils/complete'
@@ -203,26 +203,16 @@ export default createEslintRule<Options, MESSAGE_ID>({
             }),
           ]
 
-          for (let messageId of messageIds) {
-            context.report({
-              fix: fixer =>
-                makeFixes({
-                  sortedNodes: sortedNodesExcludingEslintDisabled,
-                  sourceCode,
-                  options,
-                  fixer,
-                  nodes,
-                }),
-              data: {
-                rightGroup: right.group,
-                leftGroup: left.group,
-                right: right.name,
-                left: left.name,
-              },
-              node: right.node,
-              messageId,
-            })
-          }
+          reportErrors({
+            sortedNodes: sortedNodesExcludingEslintDisabled,
+            sourceCode,
+            messageIds,
+            options,
+            context,
+            nodes,
+            right,
+            left,
+          })
         })
       }
     },

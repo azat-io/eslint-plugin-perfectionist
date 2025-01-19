@@ -27,11 +27,10 @@ import { createEslintRule } from '../utils/create-eslint-rule'
 import { getLinesBetween } from '../utils/get-lines-between'
 import { getEnumMembers } from '../utils/get-enum-members'
 import { getSourceCode } from '../utils/get-source-code'
-import { toSingleLine } from '../utils/to-single-line'
+import { reportErrors } from '../utils/report-errors'
 import { rangeToDiff } from '../utils/range-to-diff'
 import { getSettings } from '../utils/get-settings'
 import { isSortable } from '../utils/is-sortable'
-import { makeFixes } from '../utils/make-fixes'
 import { sortNodes } from '../utils/sort-nodes'
 import { complete } from '../utils/complete'
 import { pairwise } from '../utils/pairwise'
@@ -170,9 +169,9 @@ export default createEslintRule<Options, MESSAGE_ID>({
         [[]],
       )
 
-      let sortingNodes = formattedMembers.flat()
+      let nodes = formattedMembers.flat()
 
-      let isNumericEnum = sortingNodes.every(
+      let isNumericEnum = nodes.every(
         sortingNode =>
           sortingNode.numericValue !== null &&
           !Number.isNaN(sortingNode.numericValue),
@@ -211,8 +210,8 @@ export default createEslintRule<Options, MESSAGE_ID>({
         ignoreEslintDisabledNodes: boolean,
       ): SortEnumsSortingNode[] =>
         sortNodesByDependencies(
-          formattedMembers.flatMap(nodes =>
-            sortNodes(nodes, compareOptions, {
+          formattedMembers.flatMap(sortingNodes =>
+            sortNodes(sortingNodes, compareOptions, {
               ignoreEslintDisabledNodes,
             }),
           ),
@@ -227,7 +226,7 @@ export default createEslintRule<Options, MESSAGE_ID>({
 
       let nodeIndexMap = createNodeIndexMap(sortedNodes)
 
-      pairwise(sortingNodes, (left, right) => {
+      pairwise(nodes, (left, right) => {
         let leftIndex = nodeIndexMap.get(left)!
         let rightIndex = nodeIndexMap.get(right)!
 
@@ -241,25 +240,22 @@ export default createEslintRule<Options, MESSAGE_ID>({
         }
 
         let firstUnorderedNodeDependentOnRight =
-          getFirstUnorderedNodeDependentOn(right, sortingNodes)
-        context.report({
-          fix: fixer =>
-            makeFixes({
-              sortedNodes: sortedNodesExcludingEslintDisabled,
-              nodes: sortingNodes,
-              sourceCode,
-              options,
-              fixer,
-            }),
-          data: {
-            nodeDependentOnRight: firstUnorderedNodeDependentOnRight?.name,
-            right: toSingleLine(right.name),
-            left: toSingleLine(left.name),
-          },
-          messageId: firstUnorderedNodeDependentOnRight
-            ? 'unexpectedEnumsDependencyOrder'
-            : 'unexpectedEnumsOrder',
-          node: right.node,
+          getFirstUnorderedNodeDependentOn(right, nodes)
+
+        reportErrors({
+          messageIds: [
+            firstUnorderedNodeDependentOnRight
+              ? 'unexpectedEnumsDependencyOrder'
+              : 'unexpectedEnumsOrder',
+          ],
+          sortedNodes: sortedNodesExcludingEslintDisabled,
+          firstUnorderedNodeDependentOnRight,
+          sourceCode,
+          options,
+          context,
+          nodes,
+          right,
+          left,
         })
       })
     },

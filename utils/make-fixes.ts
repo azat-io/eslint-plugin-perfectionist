@@ -10,7 +10,7 @@ import { makeCommentAfterFixes } from './make-comment-after-fixes'
 import { makeNewlinesFixes } from './make-newlines-fixes'
 import { makeOrderFixes } from './make-order-fixes'
 
-interface MakeFixesParameters {
+export interface MakeFixesParameters {
   options?: {
     customGroups?: Record<string, string[] | string> | CustomGroup[]
     newlinesBetween?: 'ignore' | 'always' | 'never'
