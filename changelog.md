@@ -1,5 +1,23 @@
 # Changelog
 
+## v4.7.0
+
+[compare changes](https://github.com/azat-io/eslint-plugin-perfectionist/compare/v4.6.0...v4.7.0)
+
+### 🚀 Features
+
+- **sort-objects:** Add array-based custom groups option ([afdda90](https://github.com/azat-io/eslint-plugin-perfectionist/commit/afdda90))
+- **sort-maps:** Add groups, custom groups and new lines between options ([317baaa](https://github.com/azat-io/eslint-plugin-perfectionist/commit/317baaa))
+- Add newlines-between to some rules ([231af42](https://github.com/azat-io/eslint-plugin-perfectionist/commit/231af42))
+
+### 🐞 Bug Fixes
+
+- Fix overlapping errors between newlines-between and comment-after fixes ([a6e1daf](https://github.com/azat-io/eslint-plugin-perfectionist/commit/a6e1daf))
+
+### ❤️ Contributors
+
+- Hugo ([@hugop95](http://github.com/hugop95))
+
 ## v4.6.0
 
 [compare changes](https://github.com/azat-io/eslint-plugin-perfectionist/compare/v4.5.0...v4.6.0)
