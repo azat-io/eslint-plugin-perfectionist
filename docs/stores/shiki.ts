@@ -1,7 +1,8 @@
 import type { HighlighterCore } from 'shiki'
 
-import { createJavaScriptRegexEngine, createHighlighter } from 'shiki'
+import { createJavaScriptRegexEngine } from 'shiki/engine/javascript'
 import { computed, onMount, atom, task } from 'nanostores'
+import { createHighlighterCore } from 'shiki/core'
 
 import { colorTheme } from '../utils/shiki-theme'
 
@@ -16,8 +17,8 @@ export let shiki = computed([shikiHighlighter], highlighter => ({
 
 onMount(shikiHighlighter, () => {
   task(async () => {
-    let highlighter = await createHighlighter({
-      langs: [import('shiki/langs/bash.mjs'), import('shiki/langs/tsx.mjs')],
+    let highlighter = await createHighlighterCore({
+      langs: [import('@shikijs/langs/bash'), import('@shikijs/langs/tsx')],
       themes: [colorTheme],
       engine: jsEngine,
     })

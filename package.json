@@ -70,6 +70,7 @@
     "@nanostores/persistent": "^0.10.2",
     "@playform/compress": "^0.1.7",
     "@poppanator/sveltekit-svg": "5.0.0",
+    "@shikijs/langs": "^1.26.1",
     "@shikijs/transformers": "^1.26.1",
     "@types/mdast": "^4.0.4",
     "@types/node": "^22.10.7",
